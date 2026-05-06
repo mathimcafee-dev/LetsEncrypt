@@ -46,7 +46,7 @@ export default function Generate() {
     console.log('calling /api/acme...')
     let data
     try {
-      const res = await fetch('/api/acme', {
+      const res = await fetch(window.location.origin + '/api/acme', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'start', sessionId, domain: domain.trim().replace(/^https?:\/\//, '').replace(/\/.*/, ''), staging, user_id: user?.id }),
