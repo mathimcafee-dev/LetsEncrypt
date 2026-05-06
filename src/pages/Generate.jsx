@@ -34,8 +34,7 @@ export default function Generate() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, sessionId, domain: domain.trim().replace(/^https?:\/\//,'').replace(/\/.*/,''), staging, user_id: user?.id }),
     })
-    const text = await res.text()
-    try { return JSON.parse(text) } catch(e) { return { error: text } }
+    return res.json()
   }
 
   const startOrder = async () => {
