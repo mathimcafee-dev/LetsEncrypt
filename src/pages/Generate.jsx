@@ -42,7 +42,7 @@ export default function Generate() {
     const d = domain.trim().replace(/^https?:\/\//,'').replace(/\/.*/,'')
     if (!d) { setError('Please enter a domain name'); return }
     if (!agreed) { setError('Please agree to the terms'); return }
-    if (!user) { window.location.href = '/auth'; return }
+    // don't block on user — api handles it
     setError(''); setLoading(true)
     const data = await call('start').catch(e => ({ error: e.message }))
     setLoading(false)
