@@ -37,7 +37,7 @@ export default function Generate() {
     return res.json()
   }
 
-  const startOrder = async () => {
+  const startOrder = async () => { console.log('startOrder fired, domain:', domain, 'agreed:', agreed);
     const d = domain.trim().replace(/^https?:\/\//,'').replace(/\/.*/,'')
     if (!d) { setError('Please enter a domain name'); return }
     if (!agreed) { setError('Please agree to the terms'); return }
