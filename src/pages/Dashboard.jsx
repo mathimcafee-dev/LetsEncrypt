@@ -17,8 +17,19 @@ export default function Dashboard({ nav }) {
 
   const loadCerts = async () => {
     setLoading(true)
-    const { data } = await supabase.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending: false })
-    setCerts(data || [])
+    // Load from certificates table
+    const { data: certs } = await supabase.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending: false })
+    // Also load from ssl_orders as fallback (for certs issued before user_id fix)
+    const { data: orders } = await supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'issued').order('updated_at', { ascending: false })
+    // Merge, avoiding duplicates by session_id
+    const certSessions = new Set((certs || []).map(c => c.session_id))
+    const ordersAsCerts = (orders || []).filter(o => !certSessions.has(o.session_id)).map(o => ({
+      id: o.id, user_id: o.user_id, session_id: o.session_id,
+      domain: o.domain, cert_pem: o.cert_pem, private_key_pem: o.account_key_pem,
+      issued_at: o.updated_at, expires_at: o.expires_at || new Date(Date.now() + 90*24*60*60*1000).toISOString(),
+      status: 'active'
+    }))
+    setCerts([...(certs || []), ...ordersAsCerts])
     setLoading(false)
   }
 

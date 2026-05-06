@@ -233,7 +233,7 @@ export default function Generate() {
             <button className="btn btn-primary" onClick={() => { download(certResult.cert,`${certResult.domain}-cert.pem`); setTimeout(()=>download(certResult.privateKey,`${certResult.domain}-key.pem`),300); setTimeout(()=>download(certResult.fullchain,`${certResult.domain}-fullchain.pem`),600) }}>
               <Download size={16} /> Download All Files
             </button>
-            <button className="btn btn-secondary" onClick={() => window.location.href='/dashboard'}><Shield size={16} /> Go to Dashboard</button>
+            <button className="btn btn-secondary" onClick={() => window.location.href='/dashboard'}><Shield size={16} /> View in Dashboard</button>
             <button className="btn btn-secondary" onClick={() => { setStep(0); setDomain(''); setCertResult(null); setChallenge(null); setError('') }}><RefreshCw size={16} /> Issue Another</button>
           </div>
         </div>
