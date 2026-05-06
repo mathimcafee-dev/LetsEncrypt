@@ -294,6 +294,32 @@ export default function Monitor() {
     return null
   }
 
+  const [bulkScanning, setBulkScanning] = useState(false)
+  const [bulkProgress, setBulkProgress] = useState('')
+
+  const bulkScan = async () => {
+    if (!monitored.length) return
+    setBulkScanning(true)
+    setBulkProgress(`Scanning ${monitored.length} domains...`)
+    try {
+      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/scan-ssl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bulk: true, user_id: user.id })
+      })
+      const data = await res.json()
+      if (data.ok) {
+        setBulkProgress(`✅ Scanned ${data.scanned} domains successfully`)
+        await loadAll()
+        setTimeout(() => setBulkProgress(''), 3000)
+      }
+    } catch(e) {
+      setBulkProgress('❌ Scan failed')
+      setTimeout(() => setBulkProgress(''), 3000)
+    }
+    setBulkScanning(false)
+  }
+
   const requestCertForDomain = (domain) => {
     // Store domain in sessionStorage and navigate to generate
     sessionStorage.setItem('prefill_domain', domain)
@@ -480,7 +506,15 @@ export default function Monitor() {
               <h2 style={{ fontWeight:700, fontSize:17, color:'var(--text)', marginBottom:4 }}>Monitored Domains</h2>
               <p style={{ color:'var(--text3)', fontSize:13 }}>Track SSL certificates on any external domain</p>
             </div>
+            <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+            {bulkProgress && <span style={{ fontSize:12, color:'var(--text2)', fontWeight:500 }}>{bulkProgress}</span>}
+            {monitored.length > 0 && (
+              <button onClick={bulkScan} disabled={bulkScanning} className="btn btn-secondary btn-sm">
+                {bulkScanning ? <><span className="spinner spinner-dark" /> Scanning all...</> : <><RefreshCw size={13}/> Scan All</>}
+              </button>
+            )}
             <button onClick={()=>setShowAdd(true)} className="btn btn-secondary btn-sm"><Plus size={13}/> Add Domain</button>
+          </div>
           </div>
 
           {monitored.length === 0 ? (
@@ -488,7 +522,15 @@ export default function Monitor() {
               <Globe size={32} style={{ margin:'0 auto 12px', opacity:0.3 }} color="var(--text3)" />
               <p style={{ fontWeight:600, color:'var(--text2)', marginBottom:6 }}>No domains monitored yet</p>
               <p style={{ fontSize:13, marginBottom:16 }}>Add any domain to track its SSL certificate expiry date</p>
-              <button onClick={()=>setShowAdd(true)} className="btn btn-secondary btn-sm"><Plus size={13}/> Add Domain</button>
+              <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+            {bulkProgress && <span style={{ fontSize:12, color:'var(--text2)', fontWeight:500 }}>{bulkProgress}</span>}
+            {monitored.length > 0 && (
+              <button onClick={bulkScan} disabled={bulkScanning} className="btn btn-secondary btn-sm">
+                {bulkScanning ? <><span className="spinner spinner-dark" /> Scanning all...</> : <><RefreshCw size={13}/> Scan All</>}
+              </button>
+            )}
+            <button onClick={()=>setShowAdd(true)} className="btn btn-secondary btn-sm"><Plus size={13}/> Add Domain</button>
+          </div>
             </div>
           ) : (
             <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
