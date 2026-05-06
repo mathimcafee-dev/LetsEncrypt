@@ -43,7 +43,7 @@ export default function Generate() {
     if (!agreed) { setError('Please agree to the terms'); return }
     // don't block on user — api handles it
     setError(''); setLoading(true)
-    console.log('calling /api/acme...')
+    console.log('calling /api/acme...', window.location.origin, 'sessionId:', sessionId, 'user:', user?.id)
     let data
     try {
       const res = await fetch(window.location.origin + '/api/acme', {
