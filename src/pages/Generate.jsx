@@ -14,7 +14,11 @@ function genSession() { return crypto.randomUUID().replace(/-/g,'') }
 export default function Generate() {
   const { user, loading: authLoading } = useAuth()
   const [step, setStep] = useState(0)
-  const [domain, setDomain] = useState('')
+  const [domain, setDomain] = useState(() => {
+    const prefill = sessionStorage.getItem('prefill_domain')
+    if (prefill) { sessionStorage.removeItem('prefill_domain'); return prefill }
+    return ''
+  })
   const [sessionId] = useState(genSession)
   const [staging, setStaging] = useState(false)
   const [agreed, setAgreed] = useState(false)
@@ -94,7 +98,7 @@ export default function Generate() {
     <div className="container" style={{ padding:'40px 24px 80px' }}>
       <div style={{ marginBottom:40 }}>
         <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
-          <div style={{ width:44, height:44, background:'linear-gradient(135deg,#38bdf8,#0ea5e9)', borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <div style={{ width:44, height:44, background:'linear-gradient(135deg,#2563eb,#1d4ed8)', borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <Shield size={22} color="white" />
           </div>
           <div>

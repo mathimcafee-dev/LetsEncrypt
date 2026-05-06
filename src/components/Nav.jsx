@@ -1,47 +1,63 @@
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Bell } from 'lucide-react'
+import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Bell, Menu, X } from 'lucide-react'
+import { useState } from 'react'
 
 export default function Nav({ nav, page }) {
   const { user } = useAuth()
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  const links = [
+    { path:'/generate', label:'Generate SSL', icon:PlusCircle },
+    { path:'/dashboard', label:'My Certificates', icon:LayoutDashboard },
+    { path:'/monitor', label:'Monitor', icon:Bell },
+  ]
 
   return (
     <nav>
-      <div className="container" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:64 }}>
-        <div onClick={() => nav('/')} style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer' }}>
-          <div style={{ width:32, height:32, background:'linear-gradient(135deg,#38bdf8,#0ea5e9)', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <Shield size={18} color="white" />
+      <div className="container" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:60 }}>
+        {/* Logo */}
+        <div onClick={() => nav('/')} style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer', textDecoration:'none' }}>
+          <div style={{ width:32, height:32, background:'linear-gradient(135deg, #2563eb, #1d4ed8)', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(37,99,235,0.3)' }}>
+            <Shield size={17} color="white" strokeWidth={2.5} />
           </div>
-          <span style={{ fontWeight:800, fontSize:18, color:'var(--text)', letterSpacing:'-0.5px' }}>
+          <span style={{ fontWeight:800, fontSize:17, color:'var(--text)', letterSpacing:'-0.3px' }}>
             SSL<span style={{ color:'var(--accent)' }}>Vault</span>
           </span>
         </div>
 
-        <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-          {[
-            { path:'/generate', label:'Generate SSL', icon:PlusCircle },
-            { path:'/dashboard', label:'My Certificates', icon:LayoutDashboard },
-    { path:'/monitor', label:'Monitor', icon:Bell },
-          ].map(({ path, label, icon:Icon }) => (
+        {/* Desktop links */}
+        <div style={{ display:'flex', alignItems:'center', gap:2 }}>
+          {links.map(({ path, label, icon:Icon }) => (
             <div key={path} onClick={() => nav(path)} style={{
-              display:'flex', alignItems:'center', gap:7, padding:'8px 16px',
-              borderRadius:'var(--radius-sm)', cursor:'pointer', fontSize:13, fontWeight:600,
-              color: page === path ? 'var(--accent)' : 'var(--text3)',
-              background: page === path ? 'rgba(56,189,248,0.08)' : 'transparent',
-              border: `1px solid ${page === path ? 'rgba(56,189,248,0.2)' : 'transparent'}`,
-              transition:'all 0.2s',
-            }}>
+              display:'flex', alignItems:'center', gap:6,
+              padding:'6px 14px', borderRadius:8, cursor:'pointer',
+              fontSize:13, fontWeight:600,
+              color: page===path ? 'var(--accent)' : 'var(--text2)',
+              background: page===path ? 'var(--accent-light)' : 'transparent',
+              transition:'all 0.15s',
+            }}
+            onMouseEnter={e => { if(page!==path) e.currentTarget.style.background='var(--bg2)' }}
+            onMouseLeave={e => { if(page!==path) e.currentTarget.style.background='transparent' }}>
               <Icon size={14} /> {label}
             </div>
           ))}
+        </div>
 
+        {/* Auth */}
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           {user ? (
-            <button onClick={() => supabase.auth.signOut()} className="btn btn-secondary btn-sm" style={{ marginLeft:8 }}>
-              <LogOut size={14} /> Sign Out
-            </button>
+            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+              <div style={{ width:32, height:32, borderRadius:'50%', background:'var(--accent-light)', border:'2px solid var(--accent-border)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, color:'var(--accent)' }}>
+                {user.email?.[0]?.toUpperCase() || 'U'}
+              </div>
+              <button onClick={() => supabase.auth.signOut()} className="btn btn-secondary btn-sm">
+                <LogOut size={13} /> Sign Out
+              </button>
+            </div>
           ) : (
-            <button onClick={() => nav('/auth')} className="btn btn-primary btn-sm" style={{ marginLeft:8 }}>
-              <LogIn size={14} /> Sign In
+            <button onClick={() => nav('/auth')} className="btn btn-primary btn-sm">
+              <LogIn size={13} /> Sign In
             </button>
           )}
         </div>

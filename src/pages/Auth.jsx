@@ -42,7 +42,7 @@ export default function Auth({ nav }) {
     <div style={{ minHeight:'calc(100vh - 64px)', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 24px' }}>
       <div style={{ width:'100%', maxWidth:420 }}>
         <div style={{ textAlign:'center', marginBottom:40 }}>
-          <div style={{ width:56, height:56, background:'linear-gradient(135deg,#38bdf8,#0ea5e9)', borderRadius:16, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
+          <div style={{ width:56, height:56, background:'linear-gradient(135deg,#2563eb,#1d4ed8)', borderRadius:16, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
             <Shield size={28} color="white" />
           </div>
           <h1 style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.5px', marginBottom:8 }}>Welcome to SSLVault</h1>
