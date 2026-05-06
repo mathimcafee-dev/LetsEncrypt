@@ -62,7 +62,8 @@ export default async function handler(req, res) {
       const challengeDomain = `_acme-challenge.${domain}`
       const dnsResult = await addVercelDNS(txtValue)
       const autoAdded = !dnsResult.error
-      console.log('DNS add result:', JSON.stringify(dnsResult))
+      console.log('DNS add result FULL:', JSON.stringify(dnsResult))
+      console.log('DNS add for domain:', domain, 'MANAGED_DOMAIN:', DOMAIN_NAME)
       await sb.from('ssl_orders').delete().eq('session_id', sessionId)
       const { error: de } = await sb.from('ssl_orders').insert({
         session_id: sessionId, user_id, domain, status: 'pending_dns',
