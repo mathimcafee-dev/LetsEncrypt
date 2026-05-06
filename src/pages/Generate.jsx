@@ -43,9 +43,24 @@ export default function Generate() {
     if (!agreed) { setError('Please agree to the terms'); return }
     // don't block on user — api handles it
     setError(''); setLoading(true)
-    const data = await call('start').catch(e => ({ error: e.message }))
+    console.log('calling /api/acme...')
+    let data
+    try {
+      const res = await fetch('/api/acme', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start', sessionId, domain: domain.trim().replace(/^https?:\/\//, '').replace(/\/.*/, ''), staging, user_id: user?.id }),
+      })
+      console.log('response status:', res.status)
+      const text = await res.text()
+      console.log('response text:', text)
+      data = JSON.parse(text)
+    } catch(e) {
+      console.log('fetch error:', e.message)
+      data = { error: e.message }
+    }
     setLoading(false)
-    console.log('start response:', JSON.stringify(data))
+    console.log('data:', JSON.stringify(data))
     if (!data || data.error) { setError(data?.error || 'Failed to start. Please try again.'); return }
     setChallenge(data)
     setStep(1)
