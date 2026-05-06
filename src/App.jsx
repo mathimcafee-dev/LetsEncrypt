@@ -4,6 +4,7 @@ import Nav from './components/Nav'
 import Home from './pages/Home'
 import Generate from './pages/Generate'
 import Dashboard from './pages/Dashboard'
+import Monitor from './pages/Monitor'
 import Auth from './pages/Auth'
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
       {page === '/' && <Home nav={nav} />}
       {page === '/generate' && <Generate />}
       {page === '/dashboard' && <Dashboard nav={nav} />}
+  {page === '/monitor' && <Monitor />}
       {page === '/auth' && <Auth nav={nav} />}
     </div>
   )

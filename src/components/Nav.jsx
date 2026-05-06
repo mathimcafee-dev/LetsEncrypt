@@ -1,6 +1,6 @@
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn } from 'lucide-react'
+import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Bell } from 'lucide-react'
 
 export default function Nav({ nav, page }) {
   const { user } = useAuth()
@@ -21,6 +21,7 @@ export default function Nav({ nav, page }) {
           {[
             { path:'/generate', label:'Generate SSL', icon:PlusCircle },
             { path:'/dashboard', label:'My Certificates', icon:LayoutDashboard },
+    { path:'/monitor', label:'Monitor', icon:Bell },
           ].map(({ path, label, icon:Icon }) => (
             <div key={path} onClick={() => nav(path)} style={{
               display:'flex', alignItems:'center', gap:7, padding:'8px 16px',
