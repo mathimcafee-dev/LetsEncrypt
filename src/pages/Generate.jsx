@@ -46,7 +46,7 @@ export default function Generate() {
     console.log('calling /api/acme...', window.location.origin, 'sessionId:', sessionId, 'user:', user?.id)
     let data
     try {
-      const res = await fetch(window.location.origin + '/api/acme', {
+      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'start', sessionId, domain: domain.trim().replace(/^https?:\/\//, '').replace(/\/.*/, ''), staging, user_id: user?.id }),

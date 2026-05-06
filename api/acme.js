@@ -52,7 +52,6 @@ export default async function handler(req, res) {
       if (!domain || !sessionId) return res.status(400).json({ error: 'domain and sessionId required' })
       const accountKey = await acme.crypto.createPrivateKey()
       const client = new acme.Client({ directoryUrl, accountKey })
-      await client.createAccount({ termsOfServiceAgreed: true, contact: ['mailto:mathimcafee@gmail.com'] })
       const order = await client.createOrder({ identifiers: [{ type: 'dns', value: domain }] })
       const authorizations = await client.getAuthorizations(order)
       const auth = authorizations[0]
