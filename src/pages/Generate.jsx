@@ -46,11 +46,15 @@ export default function Generate() {
     console.log('calling /api/acme...')
     let data
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
       const res = await fetch('/api/acme', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'start', sessionId, domain: domain.trim().replace(/^https?:\/\//, '').replace(/\/.*/, ''), staging, user_id: user?.id }),
+        signal: controller.signal,
       })
+      clearTimeout(timeout)
       console.log('response status:', res.status)
       const text = await res.text()
       console.log('response text:', text)
