@@ -12,7 +12,7 @@ const DNS_GUIDES = {
 function genSession() { return crypto.randomUUID().replace(/-/g,'') }
 
 export default function Generate() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [step, setStep] = useState(0)
   const [domain, setDomain] = useState('')
   const [sessionId] = useState(genSession)
@@ -133,10 +133,11 @@ export default function Generate() {
               <span>I agree to the <a href="https://letsencrypt.org/documents/LE-SA-v1.3-September-21-2022.pdf" target="_blank" rel="noopener noreferrer" style={{ color:'var(--accent)' }}>Lets Encrypt Subscriber Agreement</a> and confirm I control this domain.</span>
             </label>
             {error && <div className="alert alert-error" style={{ marginBottom:16 }}>{error}</div>}
-            <button className="btn btn-primary btn-lg" onClick={startOrder} disabled={loading || !domain.trim()} style={{ width:'100%', justifyContent:'center' }}>
+            <button className="btn btn-primary btn-lg" onClick={startOrder} disabled={loading || authLoading || !domain.trim()} style={{ width:'100%', justifyContent:'center' }}>
               {loading ? <><span className="spinner" /> Preparing...</> : <>Generate Free SSL <ArrowRight size={18} /></>}
             </button>
-            {!user && <p style={{ fontSize:12, color:'var(--text3)', textAlign:'center', marginTop:12 }}>You need to <a href="/auth" style={{ color:'var(--accent)' }}>sign in</a> to generate certificates</p>}
+            {authLoading && <p style={{ fontSize:12, color:'var(--text3)', textAlign:'center', marginTop:12 }}>Loading session...</p>}
+            {!authLoading && !user && <p style={{ fontSize:12, color:'var(--text3)', textAlign:'center', marginTop:12 }}>You need to <a href="/auth" style={{ color:'var(--accent)' }}>sign in</a> to generate certificates</p>}
           </div>
           <div className="card">
             <h2 style={{ fontWeight:700, fontSize:18, marginBottom:20 }}>About Free SSL</h2>
