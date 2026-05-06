@@ -45,7 +45,8 @@ export default function Generate() {
     setError(''); setLoading(true)
     const data = await call('start').catch(e => ({ error: e.message }))
     setLoading(false)
-    if (data.error) { setError(data.error); return }
+    console.log('start response:', JSON.stringify(data))
+    if (!data || data.error) { setError(data?.error || 'Failed to start. Please try again.'); return }
     setChallenge(data)
     setStep(1)
   }
