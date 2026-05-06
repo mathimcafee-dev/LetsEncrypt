@@ -176,8 +176,9 @@ function MonitoredDomainRow({ m, onScan, onDelete, onRequestCert, scanning }) {
               ['Domain', m.domain, true],
               ['Days Left', daysLeft !== null ? `${daysLeft} days` : 'Unknown', false],
               ['Last Scanned', m.last_scanned_at ? format(new Date(m.last_scanned_at), 'MMM d, yyyy HH:mm') : 'Never', false],
-              ['Cert Start', m.cert_start ? format(new Date(m.cert_start), 'MMM d, yyyy') : 'Unknown', false],
-              ['Cert End', m.cert_expiry ? format(new Date(m.cert_expiry), 'MMM d, yyyy') : 'Unknown', false],
+              ['Cert Start', m.cert_start ? format(new Date(m.cert_start), 'MMM d, yyyy') : 'Not scanned', false],
+              ['Cert Expiry', m.cert_expiry ? format(new Date(m.cert_expiry), 'MMM d, yyyy') : 'Not scanned', false],
+              ['Issuer', m.issuer || 'Not scanned', false],
               ['Alert At', `${m.alert_threshold_days} days before expiry`, false],
             ].map(([k,v,mono]) => (
               <div key={k} style={{ background:'white', border:'1px solid var(--border)', borderRadius:8, padding:'10px 14px' }}>
@@ -262,37 +263,30 @@ export default function Monitor() {
   const scanDomain = async (domain) => {
     setScanning(s => ({ ...s, [domain]: true }))
     try {
-      // Check DNS to get IP, then use ssl-checker for cert info
-      const dnsRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=A`)
-      const dns = await dnsRes.json()
-      const alive = dns.Status === 0 && dns.Answer?.length > 0
+      // Call our Supabase edge function which handles CORS and multiple APIs
+      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/scan-ssl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain, user_id: user.id, session_id: user.id + '_' + domain })
+      })
+      const data = await res.json()
+      console.log('scan result:', data)
 
-      // Try to get SSL info via public API
-      let daysLeft = null
-      let certStart = null
-      let certExpiry = null
-      try {
-        const sslRes = await fetch(`https://ssl-checker.io/api/v1/check/${encodeURIComponent(domain)}`)
-        if (sslRes.ok) {
-          const sslData = await sslRes.json()
-          if (sslData.valid_till) {
-            certExpiry = new Date(sslData.valid_till).toISOString()
-            daysLeft = differenceInDays(new Date(sslData.valid_till), new Date())
-          }
-          if (sslData.valid_from) certStart = new Date(sslData.valid_from).toISOString()
-        }
-      } catch(e) {}
-
-      await supabase.from('monitored_domains').update({
-        last_scanned_at: new Date().toISOString(),
-        last_alive: alive,
-        last_days_left: daysLeft,
-        cert_start: certStart,
-        cert_expiry: certExpiry,
-      }).eq('user_id', user.id).eq('domain', domain)
-
-      await loadAll()
-      return { alive, daysLeft }
+      if (!data.error) {
+        // Update local state immediately
+        setMonitored(m => m.map(item =>
+          item.domain === domain ? {
+            ...item,
+            last_scanned_at: data.scannedAt,
+            last_alive: data.alive,
+            last_days_left: data.daysLeft,
+            cert_start: data.certStart,
+            cert_expiry: data.certExpiry,
+            issuer: data.issuer,
+          } : item
+        ))
+        return data
+      }
     } catch(e) {
       console.error('Scan error:', e)
     }
