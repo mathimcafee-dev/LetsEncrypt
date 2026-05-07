@@ -74,7 +74,7 @@ function StatusBadge({ days, revoked }) {
 }
 
 function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke }) {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
   const [revoking, setRevoking] = useState(null)
 
   const sorted = [...certs].sort((a, b) => new Date(b.issued_at || 0) - new Date(a.issued_at || 0))
@@ -137,7 +137,14 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke }) {
             <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 2 }} />
           </div>
         </div>
-        {expanded ? <ChevronUp size={16} color="var(--text3)" /> : <ChevronDown size={16} color="var(--text3)" />}
+        <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
+          {!expanded && <span style={{ fontSize:11, color:'var(--text3)', fontStyle:'italic', display:'flex', alignItems:'center', gap:4 }}>
+            <Download size={11}/> {sorted.filter(c=>c.cert_pem).length} file{sorted.filter(c=>c.cert_pem).length!==1?'s':''} · click to manage
+          </span>}
+          <div style={{ width:28, height:28, borderRadius:'50%', background:expanded?'var(--accent)':'var(--bg2)', display:'flex', alignItems:'center', justifyContent:'center', transition:'background 0.15s' }}>
+            {expanded ? <ChevronUp size={14} color="white"/> : <ChevronDown size={14} color="var(--text3)"/>}
+          </div>
+        </div>
       </div>
 
       {/* Body */}
@@ -154,12 +161,16 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke }) {
               <div key={cert.id} style={{ padding: '20px 24px', borderBottom: ci < sorted.length - 1 ? '1px solid var(--border2)' : 'none', background: isLatest ? 'white' : '#fafafa' }}>
 
                 {/* Version label */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: isLatest ? 'var(--accent)' : 'var(--text3)', flexShrink: 0 }} />
                   <span style={{ fontSize: 11, fontWeight: 700, color: isLatest ? 'var(--accent)' : 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     {isLatest ? 'Latest Certificate' : `Previous — Version ${sorted.length - ci}`}
                   </span>
                   {certRevoked && <span className="badge badge-red" style={{ fontSize: 10 }}><XCircle size={9} /> Revoked</span>}
+                  <span style={{ fontSize: 11, color: 'var(--text3)', marginLeft: 4 }}>
+                    Issued: {cert.issued_at ? format(new Date(cert.issued_at), 'MMM d, yyyy · HH:mm') : '—'}
+                    {certRevoked && cert.revoked_at ? <span style={{ color: 'var(--red)', marginLeft: 8 }}>Revoked: {format(new Date(cert.revoked_at), 'MMM d, yyyy · HH:mm')}</span> : null}
+                  </span>
                 </div>
 
                 {/* Details grid */}
