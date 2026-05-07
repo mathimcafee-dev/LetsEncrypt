@@ -92,15 +92,22 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke }) {
   }
 
   const revoke = async (cert) => {
-    if (!confirm('Revoke this certificate? This cannot be undone and will invalidate it immediately.')) return
+    if (!confirm('Revoke this certificate for ' + cert.domain + '?\n\nThis will:\n• Immediately invalidate the certificate with Let\'s Encrypt\n• Mark it as revoked in your dashboard\n• Show as revoked in Monitor\n\nThis cannot be undone.')) return
     setRevoking(cert.id)
     try {
-      await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
+      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'revoke', certPem: cert.cert_pem, domain: cert.domain, sessionId: cert.session_id })
       })
-    } catch(e) {}
-    await supabase.from('certificates').update({ status: 'revoked' }).eq('id', cert.id)
+      const data = await res.json()
+      console.log('revoke result:', data)
+    } catch(e) { console.log('revoke error:', e.message) }
+    // Update DB status regardless
+    await supabase.from('certificates').update({ status: 'revoked', revoked_at: new Date().toISOString() }).eq('id', cert.id)
+    // Also update ssl_orders if it exists there
+    if (cert.session_id) {
+      await supabase.from('ssl_orders').update({ status: 'revoked' }).eq('session_id', cert.session_id)
+    }
     onRevoke(cert.id)
     setRevoking(null)
   }

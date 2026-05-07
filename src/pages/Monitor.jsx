@@ -4,7 +4,8 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { differenceInDays, formatDistanceToNow, format } from 'date-fns'
 
-function StatusBadge({ days }) {
+function StatusBadge({ days, revoked }) {
+  if (revoked) return <span className="badge badge-red">● Revoked</span>
   if (days < 0) return <span className="badge badge-red"><AlertTriangle size={10} /> Expired</span>
   if (days < 7) return <span className="badge badge-red"><AlertTriangle size={10} /> Critical</span>
   if (days < 14) return <span className="badge badge-yellow"><Clock size={10} /> Expiring Soon</span>
@@ -69,7 +70,7 @@ function CertDetailModal({ cert, onClose, onRenew }) {
             </div>
             <div>
               <div style={{ fontWeight:700, fontSize:15, fontFamily:'var(--mono)', color:'var(--text)' }}>{cert.domain}</div>
-              <StatusBadge days={days} />
+              <StatusBadge days={days} revoked={cert.status === "revoked"} />
             </div>
           </div>
           <button onClick={onClose} className="btn btn-ghost btn-sm"><X size={16}/></button>
@@ -464,8 +465,9 @@ export default function Monitor() {
               {filteredCerts.map(cert => {
                 const days = cert.expires_at ? differenceInDays(new Date(cert.expires_at), new Date()) : 0
                 const pct = Math.max(0, Math.min(100, (days/90)*100))
-                const color = days < 0 ? 'var(--red)' : days < 14 ? 'var(--yellow)' : 'var(--green)'
-                const bgColor = days < 0 ? 'var(--red-light)' : days < 14 ? 'var(--yellow-light)' : 'var(--green-light)'
+                const isRevoked = cert.status === 'revoked'
+                const color = isRevoked ? '#94a3b8' : days < 0 ? 'var(--red)' : days < 14 ? 'var(--yellow)' : 'var(--green)'
+                const bgColor = isRevoked ? 'var(--bg2)' : days < 0 ? 'var(--red-light)' : days < 14 ? 'var(--yellow-light)' : 'var(--green-light)'
                 return (
                   <div key={cert.id} style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:10, padding:'14px 18px', display:'flex', alignItems:'center', gap:14 }}>
                     <div style={{ width:40, height:40, borderRadius:10, background:bgColor, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -474,7 +476,7 @@ export default function Monitor() {
                     <div style={{ flex:1, minWidth:0 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
                         <span style={{ fontWeight:700, fontSize:14, fontFamily:'var(--mono)', color:'var(--text)' }}>{cert.domain}</span>
-                        <StatusBadge days={days} />
+                        <StatusBadge days={days} revoked={cert.status === "revoked"} />
                       </div>
                       <div style={{ display:'flex', gap:16, fontSize:12, color:'var(--text3)', marginBottom:8 }}>
                         <span>Issued: {cert.issued_at ? formatDistanceToNow(new Date(cert.issued_at),{addSuffix:true}) : '—'}</span>
