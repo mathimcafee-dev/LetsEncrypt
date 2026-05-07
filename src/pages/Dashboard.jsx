@@ -97,7 +97,7 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke }) {
     try {
       await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'revoke', certPem: cert.cert_pem, domain: cert.domain })
+        body: JSON.stringify({ action: 'revoke', certPem: cert.cert_pem, domain: cert.domain, sessionId: cert.session_id })
       })
     } catch(e) {}
     await supabase.from('certificates').update({ status: 'revoked' }).eq('id', cert.id)
