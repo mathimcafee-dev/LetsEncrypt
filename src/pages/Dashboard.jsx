@@ -1,8 +1,79 @@
 import { useState, useEffect } from 'react'
-import { Shield, Download, RefreshCw, Trash2, AlertTriangle, CheckCircle, Clock, PlusCircle, Eye } from 'lucide-react'
+import { Shield, Download, RefreshCw, Trash2, AlertTriangle, CheckCircle, Clock, PlusCircle, Eye, Copy, Check } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { differenceInDays, formatDistanceToNow, format } from 'date-fns'
+
+function PendingDNSCard({ order, onIssued }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [copied, setCopied] = useState(false)
+
+  const copy = (text) => {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const checkAndIssue = async () => {
+    setError(''); setLoading(true)
+    try {
+      // First verify DNS
+      const verifyRes = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify', sessionId: order.session_id, domain: order.domain, staging: order.staging })
+      })
+      const verifyData = await verifyRes.json()
+      if (!verifyData.verified) { setError(verifyData.message || 'DNS not propagated yet. Try again in a minute.'); setLoading(false); return }
+
+      // Then finalize
+      const finalRes = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'finalize', sessionId: order.session_id, domain: order.domain, staging: order.staging, user_id: order.user_id })
+      })
+      const finalData = await finalRes.json()
+      if (finalData.ok) onIssued()
+      else setError(finalData.error || 'Failed to issue. Try again.')
+    } catch(e) { setError(e.message) }
+    setLoading(false)
+  }
+
+  return (
+    <div style={{ background: 'var(--yellow-light)', border: '1px solid var(--yellow-border)', borderRadius: 10, padding: '16px 20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ width: 42, height: 42, borderRadius: 10, background: 'white', border: '1px solid var(--yellow-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Clock size={19} color="var(--yellow)" />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <span style={{ fontWeight: 700, fontSize: 14, fontFamily: 'var(--mono)', color: 'var(--text)' }}>{order.domain}</span>
+            <span className="badge badge-yellow">⏳ Pending DNS</span>
+          </div>
+          <p style={{ fontSize: 12, color: 'var(--text2)', marginBottom: order.challenge_key_auth ? 8 : 0 }}>
+            Add TXT record to your DNS then click Check DNS & Issue
+          </p>
+          {order.challenge_key_auth && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'white', borderRadius: 6, padding: '6px 10px', border: '1px solid var(--yellow-border)', marginTop: 6 }}>
+              <span style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 600, flexShrink: 0 }}>TXT VALUE:</span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.challenge_key_auth}</span>
+              <button onClick={() => copy(order.challenge_key_auth)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: copied ? 'var(--green)' : 'var(--text3)', padding: 2, flexShrink: 0 }}>
+                {copied ? <Check size={13} /> : <Copy size={13} />}
+              </button>
+            </div>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+          <button onClick={checkAndIssue} disabled={loading} className="btn btn-primary btn-sm">
+            {loading ? <><span className="spinner" /> Checking...</> : '⚡ Check DNS & Issue'}
+          </button>
+        </div>
+      </div>
+      {error && <div className="alert alert-error" style={{ marginTop: 10, fontSize: 12 }}>{error}</div>}
+    </div>
+  )
+}
 
 function StatusBadge({ days }) {
   if (days < 0) return <span className="badge badge-red"><AlertTriangle size={10} /> Expired</span>
@@ -15,6 +86,7 @@ export default function Dashboard({ nav }) {
   const [certs, setCerts] = useState([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState(null)
+  const [pendingOrders, setPendingOrders] = useState([])
 
   useEffect(() => {
     if (authLoading) return
@@ -29,6 +101,14 @@ export default function Dashboard({ nav }) {
       .from('certificates').select('*')
       .eq('user_id', user.id)
       .order('issued_at', { ascending: false })
+
+    // Load pending DNS orders
+    const { data: pendingData } = await supabase
+      .from('ssl_orders').select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'pending_dns')
+      .order('updated_at', { ascending: false })
+    setPendingOrders(pendingData || [])
 
     // Load from ssl_orders as fallback (issued but not in certificates table)
     const { data: ordersData } = await supabase
@@ -173,6 +253,19 @@ export default function Dashboard({ nav }) {
 
         {/* Certificates */}
         <div style={{ background: 'white', border: '1px solid var(--border)', borderRadius: 14, padding: 24, boxShadow: 'var(--shadow)' }}>
+          {pendingOrders.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <h3 style={{ fontWeight: 700, fontSize: 15, marginBottom: 12, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Clock size={16} color="var(--yellow)" /> Pending DNS Verification ({pendingOrders.length})
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                {pendingOrders.map(order => (
+                  <PendingDNSCard key={order.id} order={order} onIssued={loadCerts} />
+                ))}
+              </div>
+              <div style={{ height: 1, background: 'var(--border)', marginBottom: 20 }} />
+            </div>
+          )}
           <h2 style={{ fontWeight: 700, fontSize: 17, marginBottom: 20, color: 'var(--text)' }}>
             All Certificates {certs.length > 0 && <span style={{ fontSize: 13, color: 'var(--text3)', fontWeight: 500 }}>({certs.length})</span>}
           </h2>
