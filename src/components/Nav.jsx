@@ -11,6 +11,7 @@ export default function Nav({ nav, page }) {
     { path:'/generate', label:'Generate SSL', icon:PlusCircle },
     { path:'/dashboard', label:'My Certificates', icon:LayoutDashboard },
     { path:'/monitor', label:'Monitor', icon:Bell },
+    { path:'/dns-providers', label:'DNS Providers', icon:Settings },
   ]
 
   return (
