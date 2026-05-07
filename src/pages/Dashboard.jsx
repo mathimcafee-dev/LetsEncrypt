@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { differenceInDays, formatDistanceToNow, format } from 'date-fns'
 
-function PendingDNSCard({ order, onIssued }) {
+function PendingDNSCard({ order, onIssued, onDelete }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
@@ -67,6 +67,9 @@ function PendingDNSCard({ order, onIssued }) {
         <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
           <button onClick={checkAndIssue} disabled={loading} className="btn btn-primary btn-sm">
             {loading ? <><span className="spinner" /> Checking...</> : '⚡ Check DNS & Issue'}
+          </button>
+          <button onClick={onDelete} style={{ background: 'var(--red-light)', border: '1px solid var(--red-border)', color: 'var(--red)', cursor: 'pointer', borderRadius: 6, padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600 }}>
+            <Trash2 size={13} /> Delete
           </button>
         </div>
       </div>
@@ -154,6 +157,12 @@ export default function Dashboard({ nav }) {
         }, { onConflict: 'session_id' })
       }
     }
+  }
+
+  const deleteOrder = async (id) => {
+    if (!confirm('Delete this pending certificate request?')) return
+    await supabase.from('ssl_orders').delete().eq('id', id)
+    setPendingOrders(p => p.filter(x => x.id !== id))
   }
 
   const deleteCert = async (id) => {
@@ -260,7 +269,7 @@ export default function Dashboard({ nav }) {
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
                 {pendingOrders.map(order => (
-                  <PendingDNSCard key={order.id} order={order} onIssued={loadCerts} />
+                  <PendingDNSCard key={order.id} order={order} onIssued={loadCerts} onDelete={() => deleteOrder(order.id)} />
                 ))}
               </div>
               <div style={{ height: 1, background: 'var(--border)', marginBottom: 20 }} />
