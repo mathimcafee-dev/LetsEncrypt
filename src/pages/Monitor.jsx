@@ -125,7 +125,7 @@ function CertDetailModal({ cert, onClose, onRenew }) {
 
 function MonitoredDomainRow({ m, onScan, onDelete, onRequestCert, scanning }) {
   const [details, setDetails] = useState(null)
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(true)
   const [loading, setLoading] = useState(false)
 
   const scan = async () => {
