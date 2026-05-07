@@ -325,16 +325,22 @@ export default function Dashboard({ nav }) {
     const l = getLatest(d)
     const days = l && l.expires_at ? differenceInDays(new Date(l.expires_at), new Date()) : 0
     if (filter === 'active') return days >= 14 && l?.status !== 'revoked'
-    if (filter === 'expiring') return days >= 0 && days < 14
-    if (filter === 'expired') return days < 0
-    return true
+    if (filter === 'expiring') return days >= 0 && days < 14 && l?.status !== 'revoked'
+    if (filter === 'expired') return days < 0 && l?.status !== 'revoked'
+    if (filter === 'revoked') return l?.status === 'revoked'
+    return l?.status !== 'revoked' // 'all' hides revoked by default
   })
 
+  // Revoked domains shown separately
+  const revokedDomains = domains.filter(d => getLatest(d)?.status === 'revoked')
+  const activeDomains = domains.filter(d => getLatest(d)?.status !== 'revoked')
+
   const stats = {
-    total: domains.length,
-    active: domains.filter(d => { const l = getLatest(d); const days = l && l.expires_at ? differenceInDays(new Date(l.expires_at), new Date()) : 0; return days >= 14 && l?.status !== 'revoked' }).length,
-    expiring: domains.filter(d => { const l = getLatest(d); const days = l && l.expires_at ? differenceInDays(new Date(l.expires_at), new Date()) : 0; return days >= 0 && days < 14 }).length,
-    expired: domains.filter(d => { const l = getLatest(d); const days = l && l.expires_at ? differenceInDays(new Date(l.expires_at), new Date()) : 0; return days < 0 }).length,
+    total: activeDomains.length,
+    active: activeDomains.filter(d => { const l = getLatest(d); const days = l && l.expires_at ? differenceInDays(new Date(l.expires_at), new Date()) : 0; return days >= 14 }).length,
+    expiring: activeDomains.filter(d => { const l = getLatest(d); const days = l && l.expires_at ? differenceInDays(new Date(l.expires_at), new Date()) : 0; return days >= 0 && days < 14 }).length,
+    expired: activeDomains.filter(d => { const l = getLatest(d); const days = l && l.expires_at ? differenceInDays(new Date(l.expires_at), new Date()) : 0; return days < 0 }).length,
+    revoked: revokedDomains.length,
   }
 
   return (
@@ -376,7 +382,7 @@ export default function Dashboard({ nav }) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
             <h2 style={{ fontWeight: 700, fontSize: 17, color: 'var(--text)' }}>Certificates <span style={{ fontSize: 13, color: 'var(--text3)', fontWeight: 400 }}>({filteredDomains.length} domain{filteredDomains.length !== 1 ? 's' : ''})</span></h2>
             <div style={{ display: 'flex', gap: 6 }}>
-              {[['all', 'All'], ['active', 'Active'], ['expiring', 'Expiring'], ['expired', 'Expired']].map(([v, l]) => (
+              {[['all', 'All'], ['active', 'Active'], ['expiring', 'Expiring'], ['expired', 'Expired'], ['revoked', 'Revoked']].map(([v, l]) => (
                 <button key={v} onClick={() => setFilter(v)} className={`btn btn-sm ${filter === v ? 'btn-primary' : 'btn-secondary'}`}>{l}</button>
               ))}
             </div>
@@ -401,6 +407,37 @@ export default function Dashboard({ nav }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {filteredDomains.map((domain, i) => (
               <DomainPanel key={domain} index={i + 1} domain={domain} certs={grouped[domain]} onDelete={deleteCert} onRenew={handleRenew} onRevoke={handleRevoke} />
+            ))}
+          </div>
+        )}
+
+        {/* Revoked certificates section */}
+        {revokedDomains.length > 0 && filter !== 'revoked' && (
+          <div style={{ marginTop: 32 }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <h2 style={{ fontWeight:700, fontSize:17, color:'var(--text)', display:'flex', alignItems:'center', gap:8 }}>
+                <XCircle size={18} color="var(--red)" /> Revoked Certificates
+                <span style={{ fontSize:13, color:'var(--text3)', fontWeight:400 }}>({revokedDomains.length})</span>
+              </h2>
+              <button onClick={() => setFilter('revoked')} className="btn btn-secondary btn-sm">View All</button>
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+              {revokedDomains.map((domain, i) => (
+                <DomainPanel key={domain} index={i+1} domain={domain} certs={grouped[domain]} onDelete={deleteCert} onRenew={handleRenew} onRevoke={handleRevoke} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {filter === 'revoked' && (
+          <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+            {revokedDomains.length === 0 ? (
+              <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:14, padding:'48px 24px', textAlign:'center' }}>
+                <XCircle size={32} color="var(--text3)" style={{ margin:'0 auto 12px', display:'block' }} />
+                <p style={{ fontWeight:600, color:'var(--text2)' }}>No revoked certificates</p>
+              </div>
+            ) : revokedDomains.map((domain, i) => (
+              <DomainPanel key={domain} index={i+1} domain={domain} certs={grouped[domain]} onDelete={deleteCert} onRenew={handleRenew} onRevoke={handleRevoke} />
             ))}
           </div>
         )}
