@@ -5,6 +5,17 @@ import { useAuth } from '../hooks/useAuth'
 const EDGE_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider'
 
 const PROVIDERS = {
+  vercel: {
+    name: 'Vercel',
+    icon: '▲',
+    color: '#000000',
+    fields: [
+      { key: 'apiToken', label: 'API Token', type: 'password', placeholder: 'your-vercel-api-token', help: 'Create at vercel.com/account/tokens — needs access to your team' },
+      { key: 'teamId', label: 'Team ID (optional)', type: 'text', placeholder: 'team_xxxxxxxx (leave blank for personal)', help: 'Found in Vercel team settings URL. Leave blank for personal account.' },
+    ],
+    docs: 'https://vercel.com/account/tokens',
+    note: 'Works for all domains with Vercel nameservers. Token needs DNS record write access.'
+  },
   cloudflare: {
     name: 'Cloudflare',
     icon: '🔶',
@@ -287,7 +298,7 @@ export default function DnsProviders({ nav }) {
                 <span className="badge badge-green" style={{ marginLeft:'auto', fontSize:10 }}>✅ Supported</span>
               </div>
             ))}
-            {[['Route53','🟠','Coming soon'],['Namecheap','🔴','Coming soon'],['Azure DNS','🔷','Coming soon']].map(([name,icon,status]) => (
+            {[['Route53','🟠','Coming soon'],['Namecheap','🔴','Coming soon'],['Azure DNS','🔷','Coming soon'],['Custom API','🔧','Coming soon']].map(([name,icon,status]) => (
               <div key={name} style={{ border:'1px solid var(--border2)', borderRadius:10, padding:'14px 16px', display:'flex', alignItems:'center', gap:12, opacity:0.5 }}>
                 <span style={{ fontSize:24 }}>{icon}</span>
                 <div>
