@@ -16,6 +16,7 @@ function genSession() { return crypto.randomUUID().replace(/-/g,'') }
 export default function Generate() {
   const { user, loading: authLoading } = useAuth()
   const [step, setStep] = useState(0)
+  const [certType, setCertType] = useState('single')
   const [domain, setDomain] = useState(() => {
     const prefill = sessionStorage.getItem('prefill_domain')
     if (prefill) { sessionStorage.removeItem('prefill_domain'); return prefill }
@@ -132,8 +133,22 @@ export default function Generate() {
             <div style={{ background: 'white', border: '1px solid var(--border)', borderRadius: 14, padding: 28, boxShadow: 'var(--shadow)' }}>
               <h2 style={{ fontWeight: 700, fontSize: 18, marginBottom: 20, color: 'var(--text)' }}>Domain Details</h2>
               <div style={{ marginBottom: 16 }}>
+                {/* Single vs Wildcard toggle */}
+                <div style={{ display:'flex', gap:10, marginBottom:14 }}>
+                  {[['single','🌐 Single Domain','example.com'],['wildcard','✳️ Wildcard','*.example.com — covers all subdomains']].map(([t,label,desc]) => (
+                    <div key={t} onClick={() => {
+                      setCertType(t)
+                      if (t === 'wildcard' && domain && !domain.startsWith('*.')) setDomain('*.' + domain)
+                      if (t === 'single' && domain.startsWith('*.')) setDomain(domain.slice(2))
+                    }} style={{ flex:1, padding:'12px 14px', borderRadius:10, border:`2px solid ${certType===t?'var(--accent)':'var(--border)'}`, background:certType===t?'var(--accent-light)':'white', cursor:'pointer' }}>
+                      <div style={{ fontWeight:700, fontSize:13, color:certType===t?'var(--accent)':'var(--text)', marginBottom:2 }}>{label}</div>
+                      <div style={{ fontSize:11, color:'var(--text3)' }}>{desc}</div>
+                    </div>
+                  ))}
+                </div>
+
                 <label>Domain Name</label>
-                <input placeholder="example.com or *.example.com" value={domain}
+                <input placeholder={certType==='wildcard'?'*.example.com':'example.com'} value={domain}
                   onChange={e => setDomain(e.target.value.replace(/^https?:\/\//, '').replace(/\/.*/, ''))}
                   onKeyDown={e => e.key === 'Enter' && startOrder()} autoFocus />
                 <p style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6 }}>Wildcards (*.example.com) supported</p>
