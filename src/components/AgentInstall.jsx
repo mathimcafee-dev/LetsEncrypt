@@ -72,6 +72,9 @@ export default function AgentInstall({ cert, userId, onClose }) {
       a.href = phpUrl
       a.download = 'sslvault-agent.php'
       a.click()
+      // Auto-set agent URL to the domain default
+      const defaultUrl = 'https://' + cert.domain + '/sslvault-agent.php'
+      setAgentUrl(defaultUrl)
       setToken(data.token)
       setInstallId(data.install_id)
       setStep('php_instructions')
@@ -261,12 +264,15 @@ export default function AgentInstall({ cert, userId, onClose }) {
               ))}
 
               <div className="alert alert-info" style={{ marginTop:16, marginBottom:16, fontSize:12 }}>
-                💡 After visiting the URL, click below to check installation status in real-time.
+                💡 Upload the file to your server, then click <strong>Open Agent URL & Monitor</strong> — it will automatically open the agent in a new tab and track the installation live.
               </div>
 
               <div style={{ display:'flex', gap:10 }}>
-                <button onClick={startWaiting} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>
-                  ⏳ I visited the URL — Check Status
+                <button onClick={() => {
+                  if (agentUrl) window.open(agentUrl, '_blank')
+                  setTimeout(() => startWaiting(), 500)
+                }} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>
+                  ▶ Open Agent URL & Monitor
                 </button>
                 <a href={'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + token}
                   download="sslvault-agent.php" className="btn btn-secondary btn-sm">
