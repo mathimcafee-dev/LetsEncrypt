@@ -268,12 +268,6 @@ export default function AgentInstall({ cert, userId, onClose }) {
               </div>
 
               <div style={{ display:'flex', gap:10 }}>
-                <button onClick={() => {
-                  if (agentUrl) window.open(agentUrl, '_blank')
-                  setTimeout(() => startWaiting(), 500)
-                }} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>
-                  ▶ Open Agent URL & Monitor
-                </button>
                 <a href={'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + token}
                   download="sslvault-agent.php" className="btn btn-secondary btn-sm">
                   Re-download
