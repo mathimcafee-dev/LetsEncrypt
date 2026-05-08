@@ -65,8 +65,9 @@ function PendingDNSCard({ order, onIssued, onDelete }) {
   )
 }
 
-function StatusBadge({ days, revoked }) {
+function StatusBadge({ days, revoked, superseded }) {
   if (revoked) return <span className="badge badge-red"><XCircle size={10} /> Revoked</span>
+  if (superseded) return <span className="badge" style={{ background:'var(--bg2)', color:'var(--text3)', fontSize:10, padding:'2px 6px', borderRadius:100 }}>Superseded</span>
   if (days < 0) return <span className="badge badge-red"><XCircle size={10} /> Expired</span>
   if (days < 7) return <span className="badge badge-red"><AlertTriangle size={10} /> Critical</span>
   if (days < 14) return <span className="badge badge-yellow"><AlertTriangle size={10} /> Expiring Soon</span>
@@ -103,9 +104,9 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke, onInst
       const data = await res.json()
       console.log('revoke result:', data)
     } catch(e) { console.log('revoke error:', e.message) }
-    // Update DB status regardless
-    await supabase.from('certificates').update({ status: 'revoked', revoked_at: new Date().toISOString() }).eq('id', cert.id)
-    // Also update ssl_orders if it exists there
+    // Update DB status - confirmed write
+    const { error: rErr } = await supabase.from('certificates').update({ status: 'revoked', revoked_at: new Date().toISOString() }).eq('id', cert.id)
+    if (rErr) console.error('revoke DB error:', rErr.message)
     if (cert.session_id) {
       await supabase.from('ssl_orders').update({ status: 'revoked' }).eq('session_id', cert.session_id)
     }
@@ -125,7 +126,7 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke, onInst
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 3, flexWrap: 'wrap' }}>
             <Globe size={14} color="var(--accent)" />
             <span style={{ fontWeight: 700, fontSize: 15, fontFamily: 'var(--mono)', color: 'var(--text)' }}>{domain}</span>
-            <StatusBadge days={days} revoked={isRevoked} />
+            <StatusBadge days={days} revoked={isRevoked} superseded={latest && latest.status === 'superseded'} />
             {sorted.length > 1 && <span className="badge badge-blue">{sorted.length} versions</span>}
           </div>
           <div style={{ fontSize: 12, color: 'var(--text3)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -292,7 +293,9 @@ export default function Dashboard({ nav }) {
       issued_at: o.updated_at, expires_at: o.expires_at || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
       status: 'active', staging: o.staging || false
     }))
-    const all = [...(certsData || []), ...ordersAsCerts]
+    // Mark superseded certs - they show as history under domain panel
+    const allCerts = [...(certsData || []), ...ordersAsCerts]
+    const all = allCerts
     setCerts(all)
     for (const o of ordersAsCerts) {
       if (o.cert_pem) await supabase.from('certificates').upsert({ user_id: o.user_id, session_id: o.session_id, domain: o.domain, cert_pem: o.cert_pem, private_key_pem: o.private_key_pem, issued_at: o.issued_at, expires_at: o.expires_at, status: 'active' }, { onConflict: 'session_id' })
@@ -324,12 +327,16 @@ export default function Dashboard({ nav }) {
   }, {})
   const domains = Object.keys(grouped)
 
-  const getLatest = (domain) => [...grouped[domain]].sort((a, b) => new Date(b.issued_at || 0) - new Date(a.issued_at || 0))[0]
+  const getLatest = (domain) => {
+    const sorted = [...grouped[domain]].sort((a, b) => new Date(b.issued_at || 0) - new Date(a.issued_at || 0))
+    // Prefer active cert over superseded/revoked
+    return sorted.find(c => c.status === 'active') || sorted[0]
+  }
 
   const filteredDomains = domains.filter(d => {
     const l = getLatest(d)
     const days = l && l.expires_at ? differenceInDays(new Date(l.expires_at), new Date()) : 0
-    if (filter === 'active') return days >= 14 && l?.status !== 'revoked'
+    if (filter === 'active') return days >= 14 && l?.status !== 'revoked' && l?.status !== 'superseded'
     if (filter === 'expiring') return days >= 0 && days < 14 && l?.status !== 'revoked'
     if (filter === 'expired') return days < 0 && l?.status !== 'revoked'
     if (filter === 'revoked') return l?.status === 'revoked'
