@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, Loader, Copy, Check, Download, ArrowRight, RotateCcw } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 
@@ -32,23 +32,47 @@ export default function QuickSetup({ nav }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [sessionId] = useState(() => Math.random().toString(36).slice(2) + Date.now().toString(36))
+  const [savedCred, setSavedCred] = useState(null)
   const [txtValue, setTxtValue] = useState('')
   const [autoAdded, setAutoAdded] = useState(false)
   const [certData, setCertData] = useState(null)
 
   const d = domain.trim().replace(/^https?:\/\//,'').replace(/\/.*/,'').toLowerCase()
 
+  // Auto-load saved credentials for selected provider
+  useEffect(() => {
+    if (!user || provider === 'manual') return
+    fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'list', user_id:user.id })
+    }).then(r=>r.json()).then(data => {
+      if (!data.credentials) return
+      const match = data.credentials.find(c => c.provider === provider)
+      if (match) setSavedCred(match)
+      else setSavedCred(null)
+    }).catch(()=>{})
+  }, [provider, user])
+
   const startCert = async () => {
     if (!d) { setError('Enter a domain name'); return }
+    if (d.includes('@')) { setError('Please enter a domain name (e.g. example.com), not an email address'); return }
+    if (!d.includes('.')) { setError('Please enter a valid domain name (e.g. example.com)'); return }
     setError(''); setLoading(true)
     try {
       if (provider !== 'manual' && user) {
-        const vRes = await fetch(DNS_FN, {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ action:'save', user_id:user.id, provider, domain_pattern:d, credentials:creds, label:d })
-        })
-        const vData = await vRes.json()
-        if (vData.error) { setError('DNS credentials error: '+vData.error); setLoading(false); return }
+        // Only save new credentials if user entered them manually
+        const hasManualCreds = Object.values(creds).some(v => v)
+        if (hasManualCreds) {
+          const vRes = await fetch(DNS_FN, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ action:'save', user_id:user.id, provider, domain_pattern:d, credentials:creds, label:d })
+          })
+          const vData = await vRes.json()
+          if (vData.error) { setError('DNS credentials error: '+vData.error); setLoading(false); return }
+        } else if (!savedCred) {
+          setError('Please enter DNS provider credentials or save them in DNS Providers first')
+          setLoading(false); return
+        }
       }
       const res = await fetch(ACME, {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -136,6 +160,17 @@ export default function QuickSetup({ nav }) {
               {provider==='manual' ? 'You will add the DNS TXT record manually' : 'We will automatically add the DNS verification record for you'}
             </p>
 
+            {provider !== 'manual' && savedCred && (
+              <div className="alert alert-success" style={{ marginBottom:16, fontSize:12, display:'flex', alignItems:'center', gap:8 }}>
+                <CheckCircle size={14} color="var(--green)"/>
+                <span>Using saved <strong>{PROVIDERS[provider]?.name}</strong> credentials from DNS Providers. Fields pre-filled.</span>
+              </div>
+            )}
+            {provider !== 'manual' && !savedCred && (
+              <div className="alert alert-warning" style={{ marginBottom:12, fontSize:12 }}>
+                No saved credentials for {PROVIDERS[provider]?.name}. Enter below or save them in <button onClick={()=>nav('/dns-providers')} style={{background:'none',border:'none',color:'var(--accent)',cursor:'pointer',fontWeight:600,padding:0,fontSize:12}}>DNS Providers</button> first.
+              </div>
+            )}
             {provider !== 'manual' && PROVIDERS[provider].fields.map(f => (
               <div key={f.k} style={{ marginBottom:14 }}>
                 <label>{f.l}</label>
