@@ -25,7 +25,8 @@ function StatusStep({ done, active, label }) {
 }
 
 export default function AgentInstall({ cert, userId, onClose }) {
-  const [step, setStep] = useState('intro') // intro | token | waiting | success | failed
+  const [step, setStep] = useState('intro')
+  const [hostType, setHostType] = useState('server') // intro | token | waiting | success | failed
   const [token, setToken] = useState('')
   const [installId, setInstallId] = useState('')
   const [status, setStatus] = useState(null)
@@ -52,6 +53,28 @@ export default function AgentInstall({ cert, userId, onClose }) {
       setLoading(false)
       // Start countdown
       timerRef.current = setInterval(() => setTimeLeft(t => { if(t<=1){clearInterval(timerRef.current);return 0}; return t-1 }), 1000)
+    } catch(e) { setError(e.message); setLoading(false) }
+  }
+
+  const generatePhpToken = async () => {
+    setLoading(true); setError('')
+    try {
+      const res = await fetch(AGENT_API, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'create_token', user_id:userId, cert_id:cert.id, session_id:cert.session_id, domain:cert.domain })
+      })
+      const data = await res.json()
+      if (data.error) { setError(data.error); setLoading(false); return }
+      // Download PHP file with token embedded
+      const phpUrl = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + data.token
+      const a = document.createElement('a')
+      a.href = phpUrl
+      a.download = 'sslvault-agent.php'
+      a.click()
+      setToken(data.token)
+      setInstallId(data.install_id)
+      setStep('php_instructions')
+      setLoading(false)
     } catch(e) { setError(e.message); setLoading(false) }
   }
 
@@ -96,7 +119,24 @@ export default function AgentInstall({ cert, userId, onClose }) {
 
         <div style={{ padding:'24px' }}>
 
-          {/* INTRO STEP */}
+          {/* HOSTING TYPE SELECTOR */}
+        {step === 'intro' && (
+          <div style={{ display:'flex', gap:10, marginBottom:20 }}>
+            {[
+              ['server', '🖥️', 'VPS / Cloud Server', 'SSH access, Ubuntu/CentOS/Amazon Linux'],
+              ['shared', '🌐', 'Shared Hosting', 'cPanel, GoDaddy, Bluehost, Hostinger'],
+            ].map(([type, icon, title, desc]) => (
+              <div key={type} onClick={() => setHostType(type)}
+                style={{ flex:1, padding:'14px 16px', borderRadius:10, border:`2px solid ${hostType===type?'var(--accent)':'var(--border)'}`, background:hostType===type?'var(--accent-light)':'white', cursor:'pointer', transition:'all 0.15s' }}>
+                <div style={{ fontSize:24, marginBottom:6 }}>{icon}</div>
+                <div style={{ fontWeight:700, fontSize:13, color:hostType===type?'var(--accent)':'var(--text)', marginBottom:3 }}>{title}</div>
+                <div style={{ fontSize:11, color:'var(--text3)' }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* INTRO STEP */}
           {step === 'intro' && (
             <>
               <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:16, marginBottom:20 }}>
@@ -125,9 +165,54 @@ export default function AgentInstall({ cert, userId, onClose }) {
 
               {error && <div className="alert alert-error" style={{ marginBottom:16, fontSize:12 }}>{error}</div>}
 
-              <button onClick={generateToken} disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px' }}>
-                {loading ? <><span className="spinner"/> Generating secure token...</> : '🚀 Generate Install Token'}
-              </button>
+              {hostType === 'server' ? (
+                <button onClick={generateToken} disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px' }}>
+                  {loading ? <><span className="spinner"/> Generating secure token...</> : '🚀 Generate Install Token'}
+                </button>
+              ) : (
+                <button onClick={generatePhpToken} disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px', background:'#059669' }}>
+                  {loading ? <><span className="spinner"/> Preparing...</> : '📥 Download PHP Agent File'}
+                </button>
+              )}
+            </>
+          )}
+
+          {/* PHP INSTRUCTIONS STEP */}
+          {step === 'php_instructions' && (
+            <>
+              <div style={{ textAlign:'center', marginBottom:20 }}>
+                <div style={{ fontSize:40, marginBottom:8 }}>📥</div>
+                <p style={{ fontWeight:700, fontSize:16, color:'var(--text)', marginBottom:4 }}>PHP Agent Downloaded!</p>
+                <p style={{ fontSize:13, color:'var(--text3)' }}>Follow these 3 steps to install your certificate</p>
+              </div>
+
+              {[
+                ['1', '📁', 'Upload the file', 'Upload sslvault-agent.php to your website root folder using cPanel File Manager or FTP. The root folder is usually called public_html or www.'],
+                ['2', '🌐', 'Visit the URL', 'Open your browser and go to: https://' + cert.domain + '/sslvault-agent.php — The script will run automatically and install your certificate.'],
+                ['3', '🗑️', 'Delete the file', 'After installation, delete sslvault-agent.php from your server for security. The certificate stays installed.'],
+              ].map(([n, icon, title, desc]) => (
+                <div key={n} style={{ display:'flex', gap:14, padding:'14px 0', borderBottom:'1px solid var(--border2)' }}>
+                  <div style={{ width:32, height:32, borderRadius:'50%', background:'var(--accent)', color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, flexShrink:0 }}>{n}</div>
+                  <div>
+                    <div style={{ fontWeight:700, fontSize:13, marginBottom:4, color:'var(--text)' }}>{icon} {title}</div>
+                    <div style={{ fontSize:12, color:'var(--text2)', lineHeight:1.6 }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="alert alert-info" style={{ marginTop:16, marginBottom:16, fontSize:12 }}>
+                💡 After visiting the URL, click below to check installation status in real-time.
+              </div>
+
+              <div style={{ display:'flex', gap:10 }}>
+                <button onClick={startWaiting} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>
+                  ⏳ I visited the URL — Check Status
+                </button>
+                <a href={'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + token}
+                  download="sslvault-agent.php" className="btn btn-secondary btn-sm">
+                  Re-download
+                </a>
+              </div>
             </>
           )}
 
