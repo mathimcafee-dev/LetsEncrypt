@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Shield, Download, RefreshCw, Trash2, AlertTriangle, CheckCircle, Clock, PlusCircle, Copy, Check, ChevronDown, ChevronUp, XCircle, Globe, Calendar, Key, Link, Hash } from 'lucide-react'
+import { Shield, Download, RefreshCw, Trash2, AlertTriangle, CheckCircle, Clock, PlusCircle, Copy, Check, ChevronDown, ChevronUp, XCircle, Globe, Calendar, Key, Link, Hash, Server } from 'lucide-react'
+import AgentInstall from '../components/AgentInstall'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { differenceInDays, formatDistanceToNow, format } from 'date-fns'
@@ -73,7 +74,7 @@ function StatusBadge({ days, revoked }) {
   return <span className="badge badge-green"><CheckCircle size={10} /> Active</span>
 }
 
-function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke }) {
+function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke, onInstall }) {
   const [expanded, setExpanded] = useState(false)
   const [revoking, setRevoking] = useState(null)
 
@@ -241,6 +242,9 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke }) {
                       <button onClick={() => onRenew(domain)} className="btn btn-secondary btn-sm">
                         <RefreshCw size={12} /> Request Renewal
                       </button>
+                      <button onClick={() => onInstall(cert)} className="btn btn-secondary btn-sm" style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', color:'var(--accent)' }}>
+                        <Server size={12} /> Install on Server
+                      </button>
                       <button onClick={() => revoke(cert)} disabled={revoking === cert.id} style={{ background: 'var(--red-light)', border: '1px solid var(--red-border)', color: 'var(--red)', cursor: 'pointer', borderRadius: 6, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600 }}>
                         {revoking === cert.id ? <><span className="spinner spinner-dark" style={{ width: 12, height: 12, border: '2px solid var(--red-border)', borderTopColor: 'var(--red)' }} /> Revoking...</> : <><XCircle size={12} /> Revoke</>}
                       </button>
@@ -267,6 +271,7 @@ export default function Dashboard({ nav }) {
   const [pendingOrders, setPendingOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [agentCert, setAgentCert] = useState(null)
 
   useEffect(() => {
     if (authLoading) return
@@ -347,6 +352,7 @@ export default function Dashboard({ nav }) {
     <div style={{ background: 'var(--bg)', minHeight: 'calc(100vh - 60px)', padding: '40px 0 80px' }}>
       <div className="container">
 
+        {agentCert && <AgentInstall cert={agentCert} userId={user.id} onClose={() => setAgentCert(null)} />}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
           <div>
             <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 4, color: 'var(--text)' }}>My Certificates</h1>
@@ -406,7 +412,7 @@ export default function Dashboard({ nav }) {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {filteredDomains.map((domain, i) => (
-              <DomainPanel key={domain} index={i + 1} domain={domain} certs={grouped[domain]} onDelete={deleteCert} onRenew={handleRenew} onRevoke={handleRevoke} />
+              <DomainPanel key={domain} index={i + 1} domain={domain} certs={grouped[domain]} onDelete={deleteCert} onRenew={handleRenew} onRevoke={handleRevoke} onInstall={(cert) => setAgentCert(cert)} />
             ))}
           </div>
         )}
@@ -423,7 +429,7 @@ export default function Dashboard({ nav }) {
             </div>
             <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
               {revokedDomains.map((domain, i) => (
-                <DomainPanel key={domain} index={i+1} domain={domain} certs={grouped[domain]} onDelete={deleteCert} onRenew={handleRenew} onRevoke={handleRevoke} />
+                <DomainPanel key={domain} index={i+1} domain={domain} certs={grouped[domain]} onDelete={deleteCert} onRenew={handleRenew} onRevoke={handleRevoke} onInstall={(cert) => setAgentCert(cert)} />
               ))}
             </div>
           </div>
