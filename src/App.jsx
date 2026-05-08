@@ -7,6 +7,7 @@ import Generate from './pages/Generate'
 import Dashboard from './pages/Dashboard'
 import Monitor from './pages/Monitor'
 import Auth from './pages/Auth'
+import SharedHostingGuide from './pages/SharedHostingGuide'
 import KnowledgeBase from './pages/KnowledgeBase'
 import GetStarted from './pages/GetStarted'
 import Install from './pages/Install'
@@ -34,6 +35,7 @@ export default function App() {
       {page === '/install' && <Install nav={nav} />}
       {page === '/knowledge-base' && <KnowledgeBase nav={nav} />}
       {page === '/get-started' && <GetStarted nav={nav} />}
+      {page === '/shared-hosting-guide' && <SharedHostingGuide nav={nav} />}
       {page === '/auth' && <Auth nav={nav} />}
     </div>
   )

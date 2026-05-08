@@ -67,8 +67,9 @@ export default function KnowledgeBase({ nav }) {
             ['🚀', 'Auto-Install Agent', 'One command to install SSL on any server', 'agent'],
             ['📜', 'Manual Installation', 'Step-by-step for Nginx, Apache, cPanel', 'manual'],
             ['🔑', 'DNS Providers', 'Automatic DNS verification setup', 'dns'],
+            ['🌐', 'Shared Hosting Guide', 'cPanel PHP agent — no SSH needed', 'shared'],
           ].map(([icon,title,desc,id]) => (
-            <a key={id} href={'#'+id} style={{ display:'block', background:'white', border:'1px solid var(--border)', borderRadius:12, padding:'16px 18px', textDecoration:'none', boxShadow:'var(--shadow)' }}>
+            <a key={id} href={id==='shared'?'/shared-hosting-guide':'#'+id} onClick={id==='shared'?(e)=>{e.preventDefault();nav('/shared-hosting-guide')}:undefined} style={{ display:'block', background:'white', border:'1px solid var(--border)', borderRadius:12, padding:'16px 18px', textDecoration:'none', boxShadow:'var(--shadow)' }}>
               <div style={{ fontSize:24, marginBottom:8 }}>{icon}</div>
               <div style={{ fontWeight:700, fontSize:14, color:'var(--text)', marginBottom:4 }}>{title}</div>
               <div style={{ fontSize:12, color:'var(--text3)' }}>{desc}</div>
