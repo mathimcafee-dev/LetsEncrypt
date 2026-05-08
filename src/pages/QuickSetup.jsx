@@ -171,7 +171,7 @@ export default function QuickSetup({ nav }) {
                 No saved credentials for {PROVIDERS[provider]?.name}. Enter below or save them in <button onClick={()=>nav('/dns-providers')} style={{background:'none',border:'none',color:'var(--accent)',cursor:'pointer',fontWeight:600,padding:0,fontSize:12}}>DNS Providers</button> first.
               </div>
             )}
-            {provider !== 'manual' && PROVIDERS[provider].fields.map(f => (
+            {provider !== 'manual' && !savedCred && PROVIDERS[provider].fields.map(f => (
               <div key={f.k} style={{ marginBottom:14 }}>
                 <label>{f.l}</label>
                 <input type="password" placeholder={f.p} value={creds[f.k]||''} onChange={e=>setCreds(c=>({...c,[f.k]:e.target.value}))}/>
