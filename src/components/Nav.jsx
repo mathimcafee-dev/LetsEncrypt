@@ -1,44 +1,32 @@
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Bell, Menu, X, Settings, BookOpen, Zap } from 'lucide-react'
-import { useState } from 'react'
+import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Bell, Settings, BookOpen } from 'lucide-react'
 
 export default function Nav({ nav, page }) {
   const { user } = useAuth()
-  const [mobileOpen, setMobileOpen] = useState(false)
-
   const links = [
-    { path:'/quick-setup', label:'Quick Setup', icon:Zap },
     { path:'/generate', label:'Generate SSL', icon:PlusCircle },
     { path:'/dashboard', label:'My Certificates', icon:LayoutDashboard },
     { path:'/monitor', label:'Monitor', icon:Bell },
     { path:'/dns-providers', label:'DNS Providers', icon:Settings },
     { path:'/install', label:'Install Guide', icon:BookOpen },
   ]
-
   return (
     <nav>
       <div className="container" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:60 }}>
-        {/* Logo */}
-        <div onClick={() => nav('/')} style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer', textDecoration:'none' }}>
+        <div onClick={() => nav('/')} style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }}>
           <div style={{ width:32, height:32, background:'linear-gradient(135deg, #2563eb, #1d4ed8)', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(37,99,235,0.3)' }}>
             <Shield size={17} color="white" strokeWidth={2.5} />
           </div>
-          <span style={{ fontWeight:800, fontSize:17, color:'var(--text)', letterSpacing:'-0.3px' }}>
-            SSL<span style={{ color:'var(--accent)' }}>Vault</span>
-          </span>
+          <span style={{ fontWeight:800, fontSize:17, color:'var(--text)', letterSpacing:'-0.3px' }}>SSL<span style={{ color:'var(--accent)' }}>Vault</span></span>
         </div>
-
-        {/* Desktop links */}
         <div style={{ display:'flex', alignItems:'center', gap:2 }}>
           {links.map(({ path, label, icon:Icon }) => (
             <div key={path} onClick={() => nav(path)} style={{
-              display:'flex', alignItems:'center', gap:6,
-              padding:'6px 14px', borderRadius:8, cursor:'pointer',
+              display:'flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:8, cursor:'pointer',
               fontSize:13, fontWeight:600,
               color: page===path ? 'var(--accent)' : 'var(--text2)',
               background: page===path ? 'var(--accent-light)' : 'transparent',
-              transition:'all 0.15s',
             }}
             onMouseEnter={e => { if(page!==path) e.currentTarget.style.background='var(--bg2)' }}
             onMouseLeave={e => { if(page!==path) e.currentTarget.style.background='transparent' }}>
@@ -46,8 +34,6 @@ export default function Nav({ nav, page }) {
             </div>
           ))}
         </div>
-
-        {/* Auth */}
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           {user ? (
             <div style={{ display:'flex', alignItems:'center', gap:10 }}>
