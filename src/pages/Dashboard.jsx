@@ -232,6 +232,12 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke, onRevo
                       <button onClick={() => onInstall(cert)} className="btn btn-secondary btn-sm" style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', color:'var(--accent)' }}>
                         <Server size={12} /> Install on Server
                       </button>
+                      {cert.agent_url && (
+                        <a href={cert.agent_url} target="_blank" rel="noopener noreferrer"
+                          style={{ display:'inline-flex', alignItems:'center', gap:5, background:'var(--green-light)', border:'1px solid #86efac', color:'var(--green)', borderRadius:6, padding:'5px 10px', fontSize:12, fontWeight:600, textDecoration:'none' }}>
+                          ▶ Run Agent
+                        </a>
+                      )}
                       <button onClick={() => revoke(cert)} disabled={revoking === cert.id} style={{ background: 'var(--red-light)', border: '1px solid var(--red-border)', color: 'var(--red)', cursor: 'pointer', borderRadius: 6, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600 }}>
                         {revoking === cert.id ? <><span className="spinner spinner-dark" style={{ width: 12, height: 12, border: '2px solid var(--red-border)', borderTopColor: 'var(--red)' }} /> Revoking...</> : <><XCircle size={12} /> Revoke</>}
                       </button>

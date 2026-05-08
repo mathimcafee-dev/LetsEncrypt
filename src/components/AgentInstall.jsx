@@ -26,7 +26,8 @@ function StatusStep({ done, active, label }) {
 
 export default function AgentInstall({ cert, userId, onClose }) {
   const [step, setStep] = useState('intro')
-  const [hostType, setHostType] = useState('server') // intro | token | waiting | success | failed
+  const [hostType, setHostType] = useState('server')
+  const [agentUrl, setAgentUrl] = useState('') // intro | token | waiting | success | failed
   const [token, setToken] = useState('')
   const [installId, setInstallId] = useState('')
   const [status, setStatus] = useState(null)
@@ -78,7 +79,16 @@ export default function AgentInstall({ cert, userId, onClose }) {
     } catch(e) { setError(e.message); setLoading(false) }
   }
 
-  const startWaiting = () => {
+  const startWaiting = async () => {
+    // Save agent URL to database if provided
+    if (agentUrl && installId) {
+      try {
+        await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'save_url', install_id:installId, user_id:userId, agent_url:agentUrl })
+        })
+      } catch(e) {}
+    }
     setStep('waiting')
     pollRef.current = setInterval(async () => {
       try {
@@ -212,6 +222,30 @@ export default function AgentInstall({ cert, userId, onClose }) {
                 <p style={{ fontSize:13, color:'var(--text3)' }}>Follow these 3 steps to install your certificate</p>
               </div>
 
+              {/* Agent URL field */}
+              <div style={{ marginBottom:16 }}>
+                <label style={{ fontSize:13, fontWeight:600, color:'var(--text)', display:'block', marginBottom:6 }}>
+                  Your Agent URL
+                </label>
+                <div style={{ display:'flex', gap:8 }}>
+                  <input
+                    value={agentUrl}
+                    onChange={e => setAgentUrl(e.target.value)}
+                    placeholder={'https://' + cert.domain + '/sslvault-agent.php'}
+                    style={{ flex:1, fontSize:13 }}
+                  />
+                  {agentUrl && (
+                    <a href={agentUrl} target="_blank" rel="noopener noreferrer"
+                      style={{ display:'inline-flex', alignItems:'center', gap:5, background:'var(--green)', color:'white', border:'none', borderRadius:7, padding:'8px 14px', fontSize:13, fontWeight:700, textDecoration:'none', flexShrink:0 }}>
+                      ▶ Run Now
+                    </a>
+                  )}
+                </div>
+                <p style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
+                  Save this URL to run the agent anytime from your dashboard
+                </p>
+              </div>
+
               {[
                 ['1', '📁', 'Upload the file', 'Upload sslvault-agent.php to your website root folder using cPanel File Manager or FTP. The root folder is usually called public_html or www.'],
                 ['2', '🌐', 'Visit the URL', 'Open your browser and go to: https://' + cert.domain + '/sslvault-agent.php — The script will run automatically and install your certificate.'],
@@ -340,7 +374,13 @@ export default function AgentInstall({ cert, userId, onClose }) {
                 ))}
               </div>
 
-              <div style={{ display:'flex', gap:10 }}>
+              <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+                {agentUrl && (
+                  <a href={agentUrl} target="_blank" rel="noopener noreferrer"
+                    style={{ display:'inline-flex', alignItems:'center', gap:6, background:'var(--green)', color:'white', borderRadius:7, padding:'9px 16px', fontSize:13, fontWeight:700, textDecoration:'none' }}>
+                    ▶ Run Agent Again
+                  </a>
+                )}
                 <a href={'https://www.ssllabs.com/ssltest/analyze.html?d='+cert.domain} target="_blank" rel="noopener noreferrer"
                   className="btn btn-secondary" style={{ flex:1, justifyContent:'center', textDecoration:'none' }}>
                   🔍 Test SSL Grade
