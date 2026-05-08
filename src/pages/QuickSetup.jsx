@@ -150,7 +150,7 @@ export default function QuickSetup({ nav }) {
             <p style={{ fontSize:13, color:'var(--text2)', marginBottom:20 }}>We'll verify ownership and issue your free SSL certificate</p>
 
             <label>Domain Name</label>
-            <input value={domain} onChange={e=>setDomain(e.target.value)} placeholder="example.com" style={{ fontSize:15, marginBottom:20 }}/>
+            <input value={domain} onChange={e=>setDomain(e.target.value)} placeholder="example.com" style={{ fontSize:15, marginBottom:20 }} autoComplete="off" />
 
             <label>DNS Provider</label>
             <select value={provider} onChange={e=>{setProvider(e.target.value);setCreds({})}} style={{ marginBottom:8 }}>
@@ -174,7 +174,7 @@ export default function QuickSetup({ nav }) {
             {provider !== 'manual' && !savedCred && PROVIDERS[provider].fields.map(f => (
               <div key={f.k} style={{ marginBottom:14 }}>
                 <label>{f.l}</label>
-                <input type="password" placeholder={f.p} value={creds[f.k]||''} onChange={e=>setCreds(c=>({...c,[f.k]:e.target.value}))}/>
+                <input type="password" placeholder={f.p} value={creds[f.k]||''} onChange={e=>setCreds(c=>({...c,[f.k]:e.target.value}))} autoComplete="new-password"/>
               </div>
             ))}
 
