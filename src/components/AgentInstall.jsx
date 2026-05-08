@@ -139,29 +139,55 @@ export default function AgentInstall({ cert, userId, onClose }) {
         {/* INTRO STEP */}
           {step === 'intro' && (
             <>
-              <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:16, marginBottom:20 }}>
-                <p style={{ fontWeight:700, fontSize:14, marginBottom:8, color:'var(--text)' }}>What this does:</p>
-                <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                  {['Connects to your server via a one-time secure token','Auto-detects your OS and web server (Nginx/Apache)','Writes certificate and private key to correct paths','Updates your web server config automatically','Reloads Nginx/Apache — zero downtime'].map((t,i) => (
-                    <div key={i} style={{ display:'flex', gap:8, fontSize:13, color:'var(--text2)' }}>
-                      <span style={{ color:'var(--green)', fontWeight:700, flexShrink:0 }}>✓</span> {t}
+              {hostType === 'server' ? (
+                <>
+                  <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:16, marginBottom:16 }}>
+                    <p style={{ fontWeight:700, fontSize:14, marginBottom:8, color:'var(--text)' }}>What this does:</p>
+                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                      {['Connects to your server via a one-time secure token','Auto-detects your OS and web server (Nginx/Apache)','Writes certificate and private key to correct paths','Updates your web server config automatically','Reloads Nginx/Apache — zero downtime'].map((t,i) => (
+                        <div key={i} style={{ display:'flex', gap:8, fontSize:13, color:'var(--text2)' }}>
+                          <span style={{ color:'var(--green)', fontWeight:700, flexShrink:0 }}>✓</span> {t}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ background:'var(--yellow-light)', border:'1px solid var(--yellow-border)', borderRadius:10, padding:14, marginBottom:20, fontSize:12, color:'var(--text2)', lineHeight:1.7 }}>
-                ⚠ <strong>Before running:</strong> Make sure you have SSH access to your server with sudo/root privileges. The script will backup any existing web server config before modifying it.
-              </div>
-
-              <div style={{ marginBottom:20 }}>
-                <p style={{ fontWeight:600, fontSize:13, marginBottom:8, color:'var(--text)' }}>Supported:</p>
-                <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                  {['Ubuntu 20/22/24','Debian 10/11/12','CentOS 7/8/9','Amazon Linux 2/2023','Alpine Linux','+ Nginx or Apache'].map(s => (
-                    <span key={s} className="badge badge-blue" style={{ fontSize:11 }}>{s}</span>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                  <div style={{ background:'var(--yellow-light)', border:'1px solid var(--yellow-border)', borderRadius:10, padding:14, marginBottom:16, fontSize:12, color:'var(--text2)', lineHeight:1.7 }}>
+                    ⚠ <strong>Before running:</strong> Make sure you have SSH access to your server with sudo/root privileges. The script will backup any existing web server config before modifying it.
+                  </div>
+                  <div style={{ marginBottom:20 }}>
+                    <p style={{ fontWeight:600, fontSize:13, marginBottom:8, color:'var(--text)' }}>Supported:</p>
+                    <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                      {['Ubuntu 20/22/24','Debian 10/11/12','CentOS 7/8/9','Amazon Linux 2/2023','Alpine Linux','+ Nginx or Apache'].map(s => (
+                        <span key={s} className="badge badge-blue" style={{ fontSize:11 }}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ background:'var(--green-light)', border:'1px solid #86efac', borderRadius:10, padding:16, marginBottom:16 }}>
+                    <p style={{ fontWeight:700, fontSize:14, marginBottom:8, color:'var(--text)' }}>What this does:</p>
+                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                      {['Downloads a PHP file pre-loaded with your install token','You upload it to your website via cPanel File Manager','Visit the URL — it installs your certificate automatically','Saves cert files and updates .htaccess for HTTPS redirect','Shows exact file paths to paste in cPanel SSL Manager'].map((t,i) => (
+                        <div key={i} style={{ display:'flex', gap:8, fontSize:13, color:'var(--text2)' }}>
+                          <span style={{ color:'var(--green)', fontWeight:700, flexShrink:0 }}>✓</span> {t}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:14, marginBottom:16, fontSize:12, color:'var(--text2)', lineHeight:1.7 }}>
+                    ℹ <strong>No SSH needed.</strong> Works entirely through your browser and cPanel. You just upload one file and visit a URL.
+                  </div>
+                  <div style={{ marginBottom:20 }}>
+                    <p style={{ fontWeight:600, fontSize:13, marginBottom:8, color:'var(--text)' }}>Works with:</p>
+                    <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                      {['GoDaddy','Bluehost','Hostinger','Hostgator','SiteGround','Namecheap','Any cPanel host'].map(s => (
+                        <span key={s} className="badge badge-green" style={{ fontSize:11 }}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
 
               {error && <div className="alert alert-error" style={{ marginBottom:16, fontSize:12 }}>{error}</div>}
 
