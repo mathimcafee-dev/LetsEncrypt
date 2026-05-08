@@ -75,7 +75,7 @@ function StatusBadge({ days, revoked, superseded }) {
   return <span className="badge badge-green"><CheckCircle size={10} /> Active</span>
 }
 
-function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke, onInstall }) {
+function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke, onRevokeWithSave, onInstall }) {
   const [expanded, setExpanded] = useState(false)
   const [revoking, setRevoking] = useState(null)
 
@@ -94,23 +94,9 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onRevoke, onInst
   }
 
   const revoke = async (cert) => {
-    if (!confirm('Revoke this certificate for ' + cert.domain + '?\n\nThis will:\n• Immediately invalidate the certificate with Let\'s Encrypt\n• Mark it as revoked in your dashboard\n• Show as revoked in Monitor\n\nThis cannot be undone.')) return
+    if (!confirm('Revoke certificate for ' + cert.domain + '? This cannot be undone.')) return
     setRevoking(cert.id)
-    try {
-      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'revoke', certPem: cert.cert_pem, domain: cert.domain, sessionId: cert.session_id })
-      })
-      const data = await res.json()
-      console.log('revoke result:', data)
-    } catch(e) { console.log('revoke error:', e.message) }
-    // Update DB status - confirmed write
-    const { error: rErr } = await supabase.from('certificates').update({ status: 'revoked', revoked_at: new Date().toISOString() }).eq('id', cert.id)
-    if (rErr) console.error('revoke DB error:', rErr.message)
-    if (cert.session_id) {
-      await supabase.from('ssl_orders').update({ status: 'revoked' }).eq('session_id', cert.session_id)
-    }
-    onRevoke(cert.id)
+    await onRevokeWithSave(cert)
     setRevoking(null)
   }
 
@@ -316,6 +302,21 @@ export default function Dashboard({ nav }) {
   }
 
   const handleRevoke = (id) => setCerts(c => c.map(x => x.id === id ? { ...x, status: 'revoked' } : x))
+
+  const handleRevokeWithSave = async (cert) => {
+    // Call LE revoke API
+    try {
+      await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'revoke', certPem: cert.cert_pem, domain: cert.domain, sessionId: cert.session_id })
+      })
+    } catch(e) {}
+    // Update DB
+    await supabase.from('certificates').update({ status: 'revoked', revoked_at: new Date().toISOString() }).eq('id', cert.id)
+    if (cert.session_id) await supabase.from('ssl_orders').update({ status: 'revoked' }).eq('session_id', cert.session_id)
+    // Update UI
+    handleRevoke(cert.id)
+  }
   const handleRenew = (domain) => { sessionStorage.setItem('prefill_domain', domain); nav('/generate') }
 
   // Group by domain
