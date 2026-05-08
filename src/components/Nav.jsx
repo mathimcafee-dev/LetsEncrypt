@@ -1,6 +1,6 @@
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Bell, Menu, X, Settings, BookOpen } from 'lucide-react'
+import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Bell, Menu, X, Settings, BookOpen, Zap } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Nav({ nav, page }) {
@@ -8,6 +8,7 @@ export default function Nav({ nav, page }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const links = [
+    { path:'/quick-setup', label:'Quick Setup', icon:Zap },
     { path:'/generate', label:'Generate SSL', icon:PlusCircle },
     { path:'/dashboard', label:'My Certificates', icon:LayoutDashboard },
     { path:'/monitor', label:'Monitor', icon:Bell },
