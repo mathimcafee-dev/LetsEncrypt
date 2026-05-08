@@ -1,4 +1,4 @@
-// BUILD_TIME: 1778249639942
+// BUILD_TIME: 1778264810423
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import Nav from './components/Nav'
