@@ -77,14 +77,93 @@ function StatusBadge({ days, status }) {
   return <span style={{ fontSize:10, fontWeight:700, color:'#16a34a', background:'#f0fdf4', borderRadius:4, padding:'2px 8px', border:'1px solid #bbf7d0' }}>ACTIVE</span>
 }
 
+function CopyPemModal({ cert, domain, onClose }) {
+  const [copied, setCopied] = useState({})
+  const copy = (key, text) => {
+    if (!text) return
+    navigator.clipboard.writeText(text)
+    setCopied(c => ({ ...c, [key]: true }))
+    setTimeout(() => setCopied(c => ({ ...c, [key]: false })), 2000)
+  }
+  // Parse SANs and fingerprint from PEM using basic string ops (no crypto API needed)
+  const getSANs = (pem) => {
+    try {
+      const match = pem?.match(/Subject Alternative Name[\s\S]*?DNS:([\s\S]*?)(?:\n\n|\nX509v3)/i)
+      if (match) return match[1].replace(/DNS:/g,'').split(/[,\n]/).map(s=>s.trim()).filter(Boolean)
+    } catch(e) {}
+    return [domain]
+  }
+  const getShortFingerprint = (pem) => {
+    if (!pem) return '—'
+    // Simple visual fingerprint from cert content hash-like slice
+    const b64 = pem.replace(/-----[^-]+-----/g,'').replace(/\s/g,'')
+    const slice = b64.slice(40, 80)
+    const hex = Array.from(slice).map(c => c.charCodeAt(0).toString(16).padStart(2,'0')).join('')
+    return hex.slice(0,40).toUpperCase().match(/.{2}/g)?.join(':') || '—'
+  }
+  const sans = getSANs(cert.cert_pem)
+  const fingerprint = getShortFingerprint(cert.cert_pem)
+  const blocks = [
+    { key:'cert', label:'Certificate (fullchain.pem)', value: cert.cert_pem, color:'#2563eb' },
+    { key:'key', label:'Private Key (key.pem)', value: cert.private_key_pem, color:'#7c3aed' },
+  ]
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:500, display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}
+      onClick={e => e.target===e.currentTarget && onClose()}>
+      <div style={{ background:'white', borderRadius:16, width:'100%', maxWidth:600, maxHeight:'90vh', overflow:'auto', boxShadow:'0 25px 60px rgba(0,0,0,0.3)' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'18px 22px', borderBottom:'1px solid #f1f5f9' }}>
+          <div>
+            <div style={{ fontWeight:800, fontSize:15, color:'#0f172a' }}>Certificate Details</div>
+            <div style={{ fontSize:12, color:'#64748b', fontFamily:'monospace' }}>{domain}</div>
+          </div>
+          <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:20, color:'#94a3b8', padding:4 }}>✕</button>
+        </div>
+        <div style={{ padding:'18px 22px' }}>
+          {/* SANs */}
+          <div style={{ marginBottom:16 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:8 }}>Subject Alternative Names</div>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+              {sans.map(s => <span key={s} style={{ fontFamily:'monospace', fontSize:12, background:'#eff6ff', color:'#1d4ed8', border:'1px solid #bfdbfe', borderRadius:5, padding:'3px 9px' }}>{s}</span>)}
+            </div>
+          </div>
+          {/* Fingerprint */}
+          <div style={{ marginBottom:16 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:6 }}>SHA-1 Fingerprint (visual)</div>
+            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+              <code style={{ fontSize:11, fontFamily:'monospace', color:'#475569', background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:6, padding:'6px 10px', flex:1, wordBreak:'break-all' }}>{fingerprint}</code>
+              <button onClick={() => copy('fp', fingerprint)} style={{ flexShrink:0, background:copied.fp?'#f0fdf4':'#f8fafc', border:`1px solid ${copied.fp?'#bbf7d0':'#e2e8f0'}`, borderRadius:7, padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', color:copied.fp?'#16a34a':'#64748b' }}>
+                {copied.fp ? '✓ Copied' : 'Copy'}
+              </button>
+            </div>
+          </div>
+          {/* PEM blocks */}
+          {blocks.map(({ key, label, value, color }) => value && (
+            <div key={key} style={{ marginBottom:14 }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
+                <div style={{ fontSize:11, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.6px' }}>{label}</div>
+                <button onClick={() => copy(key, value)} style={{ background:copied[key]?'#f0fdf4':'#eff6ff', border:`1px solid ${copied[key]?'#bbf7d0':'#bfdbfe'}`, borderRadius:6, padding:'4px 12px', fontSize:11, fontWeight:700, cursor:'pointer', color:copied[key]?'#16a34a':color, display:'flex', alignItems:'center', gap:5 }}>
+                  {copied[key] ? '✓ Copied!' : '⎘ Copy PEM'}
+                </button>
+              </div>
+              <textarea readOnly value={value} style={{ width:'100%', height:90, fontFamily:'monospace', fontSize:10, color:'#334155', background:'#0f172a', border:'1px solid #1e293b', borderRadius:8, padding:'10px 12px', resize:'none', boxSizing:'border-box' }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function CertRow({ cert, domain, isLatest, index, total, onDelete, onRenew, onInstall }) {
   const days = cert.expires_at ? differenceInDays(new Date(cert.expires_at), new Date()) : 0
   const pct = Math.max(0,Math.min(100,(days/90)*100))
   const barColor = days<0?'#ef4444':days<14?'#f59e0b':'#22c55e'
   const dl = (content, filename) => { if(!content) return; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'})); a.download=filename; a.click() }
+  const [showDetail, setShowDetail] = useState(false)
 
   return (
     <div style={{ padding:'18px 24px', borderBottom:index<total-1?'1px solid #f1f5f9':'none', background:isLatest?'white':'#fafafa' }}>
+      {showDetail && <CopyPemModal cert={cert} domain={domain} onClose={() => setShowDetail(false)} />}
       {/* Version label */}
       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14, flexWrap:'wrap' }}>
         <div style={{ width:7,height:7,borderRadius:'50%',background:isLatest?'#2563eb':'#94a3b8',flexShrink:0 }} />
@@ -147,6 +226,7 @@ function CertRow({ cert, domain, isLatest, index, total, onDelete, onRenew, onIn
             <button onClick={() => dl(cert.private_key_pem,`${domain}-key.pem`)} className='btn btn-secondary btn-sm' disabled={!cert.private_key_pem}><Key size={11}/> key.pem</button>
             <button onClick={() => dl(cert.cert_pem,`${domain}-fullchain.pem`)} className='btn btn-secondary btn-sm'><Link size={11}/> fullchain.pem</button>
             <button onClick={() => { dl(cert.cert_pem,`${domain}-cert.pem`); setTimeout(()=>dl(cert.private_key_pem,`${domain}-key.pem`),200); setTimeout(()=>dl(cert.cert_pem,`${domain}-fullchain.pem`),400) }} className='btn btn-primary btn-sm'><Download size={11}/> All Files</button>
+            <button onClick={() => setShowDetail(true)} className='btn btn-secondary btn-sm' style={{ background:'#f5f3ff', border:'1px solid #ddd6fe', color:'#7c3aed' }}><Hash size={11}/> Details</button>
           </>
         )}
         {isLatest && cert.status!=='revoked' && (

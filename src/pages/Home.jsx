@@ -1,4 +1,6 @@
 import { Shield, Lock, CheckCircle, Zap, Globe, Server, ChevronRight, ArrowRight, Activity } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 
 function CertHeroIllustration() {
   return (
@@ -100,7 +102,17 @@ const STEPS = [
   { n: '04', title: 'Install and monitor', desc: 'Deploy with our guides, then track expiry in your dashboard.', color: '#d97706' },
 ]
 
-const STATS = [
+function useLiveStats() {
+  const [certCount, setCertCount] = useState(null)
+  useEffect(() => {
+    supabase.from('certificates').select('id', { count: 'exact', head: true })
+      .then(({ count }) => { if (count !== null) setCertCount(count) })
+      .catch(() => {})
+  }, [])
+  return { certCount }
+}
+
+const STATS_BASE = [
   { v: '100%', l: 'Free forever', sub: 'No credit card ever', color: '#2563eb' },
   { v: '90d', l: 'Certificate validity', sub: 'Auto-renewal reminders', color: '#7c3aed' },
   { v: '<60s', l: 'Issuance time', sub: 'ACME RFC 8555', color: '#059669' },
@@ -110,6 +122,10 @@ const STATS = [
 const TRUST = ['Nginx', 'Apache', 'cPanel', 'Plesk', 'Node.js', 'Docker', 'Cloudflare', 'Caddy']
 
 export default function Home({ nav }) {
+  const { certCount } = useLiveStats()
+  const STATS = certCount !== null
+    ? [{ v: certCount.toString(), l: 'Certs issued', sub: 'Live & counting', color: '#059669' }, ...STATS_BASE.filter(s => s.l !== 'Issuance time')]
+    : STATS_BASE
   return (
     <div style={{background:'#f8fafc',minHeight:'100vh',fontFamily:"'Segoe UI',system-ui,sans-serif"}}>
 

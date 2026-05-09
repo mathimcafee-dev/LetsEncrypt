@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Terminal, Copy, Check, CheckCircle, Clock, AlertTriangle, Loader, Server, Shield, ChevronDown, ChevronUp } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 
 const AGENT_API = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent'
 
@@ -43,6 +44,38 @@ export default function AgentInstall({ cert, userId, onClose }) {
 
   useEffect(() => () => { clearInterval(pollRef.current); clearInterval(timerRef.current) }, [])
 
+  // Load saved cPanel credentials on mount
+  useEffect(() => {
+    if (!userId) return
+    supabase.from('dns_credentials')
+      .select('credentials_enc')
+      .eq('user_id', userId)
+      .eq('provider', 'cpanel')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.credentials_enc) {
+          try {
+            const saved = JSON.parse(atob(data.credentials_enc))
+            if (saved.cpanel_user) setCpanelUser(saved.cpanel_user)
+            if (saved.cpanel_token) setCpanelToken(saved.cpanel_token)
+          } catch(e) {}
+        }
+      })
+  }, [userId])
+
+  const saveCpanelCredentials = async (user, token) => {
+    if (!userId || !user || !token) return
+    const enc = btoa(JSON.stringify({ cpanel_user: user, cpanel_token: token }))
+    await supabase.from('dns_credentials').upsert({
+      user_id: userId,
+      provider: 'cpanel',
+      label: 'cPanel API Token',
+      domain_pattern: '*',
+      credentials_enc: enc,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,provider,domain_pattern' }).catch(() => {})
+  }
+
   const generateToken = async () => {
     setLoading(true); setError('')
     try {
@@ -66,6 +99,8 @@ export default function AgentInstall({ cert, userId, onClose }) {
     if (!cpanelToken.trim()) { setError('Please enter your cPanel API token.'); return }
     setLoading(true); setError('')
     try {
+      // Save credentials for next time
+      await saveCpanelCredentials(cpanelUser.trim(), cpanelToken.trim())
       const res = await fetch(AGENT_API, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ action:'create_token', user_id:userId, cert_id:cert.id, session_id:cert.session_id, domain:cert.domain })
@@ -200,9 +235,12 @@ export default function AgentInstall({ cert, userId, onClose }) {
                   <div style={{ background:'white', border:'1.5px solid #e2e8f0', borderRadius:10, padding:16, marginBottom:14 }}>
                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
                       <p style={{ fontWeight:700, fontSize:13, color:'var(--text)', margin:0 }}>🔑 Your cPanel Credentials</p>
-                      <button onClick={() => setShowCpanelHelp(h => !h)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, color:'var(--accent)', fontWeight:600, padding:0 }}>
-                        {showCpanelHelp ? 'Hide help ▲' : 'Where do I find these? ▼'}
-                      </button>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        {cpanelUser && cpanelToken && <span style={{ fontSize:10, fontWeight:700, color:'#16a34a', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:4, padding:'2px 7px' }}>✓ Saved</span>}
+                        <button onClick={() => setShowCpanelHelp(h => !h)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, color:'var(--accent)', fontWeight:600, padding:0 }}>
+                          {showCpanelHelp ? 'Hide help ▲' : 'Where do I find these? ▼'}
+                        </button>
+                      </div>
                     </div>
 
                     {showCpanelHelp && (
