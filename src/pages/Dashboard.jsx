@@ -385,48 +385,59 @@ export default function Dashboard({ nav }) {
   }
 
   return (
-    <div style={{ background:'#f8fafc', minHeight:'calc(100vh - 60px)' }}>
+    <div style={{ background:'linear-gradient(160deg,#eef2ff 0%,#f0fdf4 35%,#fefce8 65%,#fdf4ff 100%)', minHeight:'calc(100vh - 56px)', position:'relative', overflow:'hidden', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
+      <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle,rgba(148,163,184,0.35) 1px,transparent 1px)', backgroundSize:'28px 28px', opacity:0.5, pointerEvents:'none' }} />
+
       {agentCert && <AgentInstall cert={agentCert} userId={user.id} onClose={() => setAgentCert(null)} />}
 
-      {/* Page header */}
-      <div style={{ background:'white', borderBottom:'1px solid #e2e8f0', padding:'24px 0' }}>
-        <div className='container'>
-          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
-            <div>
-              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
-                <div style={{ width:36, height:36, borderRadius:9, background:'linear-gradient(135deg,#2563eb,#1d4ed8)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <Shield size={18} color='white'/>
-                </div>
-                <h1 style={{ fontSize:22, fontWeight:800, letterSpacing:'-0.5px', color:'#0f172a' }}>Certificate Inventory</h1>
-              </div>
-              <p style={{ color:'#64748b', fontSize:13, marginLeft:46 }}>Manage, monitor and deploy your SSL/TLS certificates</p>
+      {/* Hero */}
+      <div style={{ position:'relative', maxWidth:1200, margin:'0 auto', padding:'48px 24px 0' }}>
+        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:20, marginBottom:32 }}>
+          <div>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', border:'1.5px solid #bfdbfe', borderRadius:100, padding:'5px 14px', marginBottom:18, boxShadow:'0 2px 8px rgba(37,99,235,0.1)' }}>
+              <div style={{ width:7, height:7, borderRadius:'50%', background:'#22c55e', boxShadow:'0 0 0 2px rgba(34,197,94,0.25)' }} />
+              <span style={{ fontSize:11, fontWeight:700, color:'#1d4ed8', letterSpacing:'0.5px' }}>Live · {stats.total} certificate{stats.total!==1?'s':''} in your vault</span>
             </div>
-            <button onClick={() => nav('/generate')} style={{ display:'inline-flex', alignItems:'center', gap:8, background:'linear-gradient(135deg,#2563eb,#1d4ed8)', color:'white', border:'none', padding:'10px 20px', borderRadius:9, fontSize:13, fontWeight:700, cursor:'pointer', boxShadow:'0 2px 10px rgba(37,99,235,0.3)' }}>
-              <PlusCircle size={15}/> Issue Certificate
-            </button>
+            <h1 style={{ fontSize:'clamp(30px,3.5vw,42px)', fontWeight:900, color:'#0f172a', lineHeight:1.06, letterSpacing:'-1.6px', marginBottom:6 }}>Certificate</h1>
+            <h1 style={{ fontSize:'clamp(30px,3.5vw,42px)', fontWeight:900, lineHeight:1.06, letterSpacing:'-1.6px', marginBottom:10, background:'linear-gradient(90deg,#2563eb 0%,#7c3aed 50%,#0ea5e9 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>inventory.</h1>
+            <p style={{ color:'#475569', fontSize:14, lineHeight:1.7, maxWidth:480 }}>Manage, monitor and deploy your SSL/TLS certificates. Track expiry, renew with one click.</p>
           </div>
+          <button onClick={() => nav('/generate')} style={{ display:'inline-flex', alignItems:'center', gap:8, background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', color:'white', border:'none', padding:'13px 22px', borderRadius:11, fontSize:13, fontWeight:800, cursor:'pointer', boxShadow:'0 4px 18px rgba(37,99,235,0.35)', letterSpacing:'-0.2px', flexShrink:0 }}>
+            <PlusCircle size={15}/> Issue Certificate
+          </button>
         </div>
       </div>
 
-      <div className='container' style={{ padding:'28px 24px 80px' }}>
+      <div style={{ position:'relative', maxWidth:1200, margin:'0 auto', padding:'0 24px 80px' }}>
 
         {/* Stats cards */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
           {[
-            ['Total Certificates', stats.total, '#2563eb', 'all', BarChart2],
-            ['Active', stats.active, '#16a34a', 'active', CheckCircle],
-            ['Expiring \u003C 14d', stats.expiring, '#d97706', 'expiring', AlertTriangle],
-            ['Expired', stats.expired, '#dc2626', 'expired', XCircle],
-          ].map(([label,value,color,f,Icon]) => (
-            <div key={label} onClick={() => setFilter(f)} style={{ background:'white', border:`1px solid ${filter===f?color:'#e2e8f0'}`, borderRadius:12, padding:'18px 20px', boxShadow:'0 1px 3px rgba(0,0,0,0.05)', cursor:'pointer', transition:'all 0.15s', borderTopWidth:filter===f?3:1 }}>
-              <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:10 }}>
-                <div style={{ width:36, height:36, borderRadius:9, background:`${color}12`, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <Icon size={18} color={color} strokeWidth={2}/>
+            ['Total Certificates', stats.total, '#2563eb', '#eff6ff', '#bfdbfe', 'all', BarChart2],
+            ['Active', stats.active, '#16a34a', '#ecfdf5', '#a7f3d0', 'active', CheckCircle],
+            ['Expiring \u003C 14d', stats.expiring, '#d97706', '#fffbeb', '#fde68a', 'expiring', AlertTriangle],
+            ['Expired', stats.expired, '#dc2626', '#fef2f2', '#fecaca', 'expired', XCircle],
+          ].map(([label,value,color,bg,border,f,Icon]) => (
+            <div key={label} onClick={() => setFilter(f)} style={{
+              background:'white',
+              border: filter===f ? '2px solid '+color : '1px solid #e2e8f0',
+              borderRadius:16,
+              padding:'18px 20px',
+              boxShadow: filter===f ? '0 4px 14px '+color+'30' : '0 1px 4px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.04)',
+              cursor:'pointer',
+              transition:'all 0.15s',
+              position:'relative'
+            }}
+              onMouseEnter={e => { if (filter !== f) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 8px rgba(15,23,42,0.06), 0 12px 32px rgba(15,23,42,0.08)' } }}
+              onMouseLeave={e => { if (filter !== f) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.04)' } }}>
+              <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14 }}>
+                <div style={{ width:42, height:42, borderRadius:12, background:bg, border:'1.5px solid '+border, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Icon size={19} color={color} strokeWidth={2}/>
                 </div>
-                {filter===f && <div style={{ width:7, height:7, borderRadius:'50%', background:color, marginTop:4 }} />}
+                {filter===f && <div style={{ width:8, height:8, borderRadius:'50%', background:color, marginTop:6, boxShadow:'0 0 0 3px '+color+'30' }} />}
               </div>
-              <div style={{ fontSize:30, fontWeight:800, color:color, lineHeight:1, marginBottom:4 }}>{value}</div>
-              <div style={{ fontSize:11, color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>{label}</div>
+              <div style={{ fontSize:36, fontWeight:900, color:color, lineHeight:1, marginBottom:6, letterSpacing:'-1.5px' }}>{value}</div>
+              <div style={{ fontSize:11, color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px' }}>{label}</div>
             </div>
           ))}
         </div>
@@ -461,42 +472,48 @@ export default function Dashboard({ nav }) {
 
         {/* Inventory table */}
         {domains.length>0 && (
-          <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:12, boxShadow:'0 1px 3px rgba(0,0,0,0.05)', overflow:'hidden' }}>
+          <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, boxShadow:'0 1px 4px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.04)', overflow:'hidden' }}>
 
             {/* Table toolbar */}
-            <div style={{ padding:'14px 20px', borderBottom:'1px solid #f1f5f9', display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
-              <h2 style={{ fontWeight:700, fontSize:14, color:'#0f172a', flex:1 }}>Certificate Inventory <span style={{ color:'#94a3b8', fontWeight:400, fontSize:13 }}>({filteredDomains.length} domain{filteredDomains.length!==1?'s':''})</span></h2>
+            <div style={{ padding:'18px 24px', borderBottom:'1px solid #f1f5f9', display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
+              <div style={{ flex:1 }}>
+                <h2 style={{ fontWeight:900, fontSize:15, color:'#0f172a', letterSpacing:'-0.3px' }}>Certificate Inventory <span style={{ color:'#94a3b8', fontWeight:500, fontSize:13 }}>({filteredDomains.length} domain{filteredDomains.length!==1?'s':''})</span></h2>
+              </div>
               {/* Search */}
               <div style={{ position:'relative' }}>
-                <Search size={13} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:'#94a3b8' }}/>
-                <input value={search} onChange={e=>setSearch(e.target.value)} placeholder='Search domains...' style={{ paddingLeft:30, width:200, fontSize:12, padding:'6px 10px 6px 28px', border:'1px solid #e2e8f0', borderRadius:7, background:'#f8fafc' }}/>
+                <Search size={13} style={{ position:'absolute', left:11, top:'50%', transform:'translateY(-50%)', color:'#94a3b8' }}/>
+                <input value={search} onChange={e=>setSearch(e.target.value)} placeholder='Search domains...' style={{ paddingLeft:32, width:220, fontSize:12, padding:'8px 12px 8px 32px', border:'1.5px solid #e2e8f0', borderRadius:9, background:'white', fontFamily:'inherit', outline:'none' }}
+                  onFocus={e => e.target.style.borderColor = '#2563eb'}
+                  onBlur={e => e.target.style.borderColor = '#e2e8f0'}/>
               </div>
               {/* Filters */}
-              <div style={{ display:'flex', gap:5 }}>
+              <div style={{ display:'flex', gap:6 }}>
                 {[['all','All'],['active','Active'],['expiring','Expiring'],['expired','Expired']].map(([v,l]) => (
-                  <button key={v} onClick={() => setFilter(v)} style={{ fontSize:11, fontWeight:700, padding:'5px 12px', borderRadius:6, border:`1px solid ${filter===v?'#2563eb':'#e2e8f0'}`, background:filter===v?'#eff6ff':'white', color:filter===v?'#2563eb':'#64748b', cursor:'pointer' }}>{l}</button>
+                  <button key={v} onClick={() => setFilter(v)} style={{ fontSize:11, fontWeight:700, padding:'7px 14px', borderRadius:8, border: filter===v ? 'none' : '1.5px solid #e2e8f0', background: filter===v ? 'linear-gradient(135deg,#1d4ed8,#4f46e5)' : 'white', color: filter===v ? 'white' : '#64748b', cursor:'pointer', fontFamily:'inherit', boxShadow: filter===v ? '0 2px 8px rgba(37,99,235,0.3)' : 'none', letterSpacing:'-0.1px', transition:'all 0.15s' }}>{l}</button>
                 ))}
               </div>
             </div>
 
             {/* Column headers */}
-            <div style={{ display:'grid', gridTemplateColumns:'48px 28px 1fr 120px 130px 90px 100px 80px', gap:0, padding:'9px 20px', background:'#f8fafc', borderBottom:'1px solid #f1f5f9' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'48px 32px 1fr 120px 130px 90px 100px 80px', gap:0, padding:'10px 24px', background:'#fafbfc', borderBottom:'1px solid #f1f5f9' }}>
               {['','#','Domain','Issuer','Expires','Days','Status',''].map((h,i) => (
-                <div key={i} style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px' }}>{h}</div>
+                <div key={i} style={{ fontSize:10, fontWeight:800, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.7px' }}>{h}</div>
               ))}
             </div>
 
             {/* Domain rows */}
             {loading ? (
-              <div style={{ textAlign:'center', padding:'48px 0', color:'#94a3b8' }}>
-                <span className='spinner spinner-dark' style={{ width:20, height:20, display:'block', margin:'0 auto 10px' }}/>
-                <p style={{ fontSize:13 }}>Loading certificates...</p>
+              <div style={{ textAlign:'center', padding:'56px 0', color:'#94a3b8' }}>
+                <span className='spinner spinner-dark' style={{ width:22, height:22, display:'block', margin:'0 auto 12px' }}/>
+                <p style={{ fontSize:13, fontWeight:600 }}>Loading certificates...</p>
               </div>
             ) : filteredDomains.length===0 ? (
-              <div style={{ textAlign:'center', padding:'48px 24px' }}>
-                <Shield size={32} color='#e2e8f0' style={{ display:'block', margin:'0 auto 12px' }}/>
-                <p style={{ fontWeight:600, color:'#64748b', fontSize:14 }}>{search?`No domains matching \u201c${search}\u201d`:`No ${filter!=='all'?filter+' ':''} certificates`}</p>
-                {filter==='all'&&!search && <button onClick={() => nav('/generate')} style={{ marginTop:16, fontSize:12, color:'#2563eb', background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:7, padding:'7px 16px', cursor:'pointer', fontWeight:600 }}>Issue First Certificate</button>}
+              <div style={{ textAlign:'center', padding:'56px 24px' }}>
+                <div style={{ width:60, height:60, borderRadius:16, background:'linear-gradient(135deg,#eff6ff,#e0f2fe)', border:'1.5px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
+                  <Shield size={26} color='#2563eb'/>
+                </div>
+                <p style={{ fontWeight:700, color:'#0f172a', fontSize:14, marginBottom:filter==='all'&&!search?14:0 }}>{search?`No domains matching \u201c${search}\u201d`:`No ${filter!=='all'?filter+' ':''}certificates`}</p>
+                {filter==='all'&&!search && <button onClick={() => nav('/generate')} style={{ marginTop:6, fontSize:12, color:'white', background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', border:'none', borderRadius:9, padding:'9px 18px', cursor:'pointer', fontWeight:700, fontFamily:'inherit', boxShadow:'0 2px 8px rgba(37,99,235,0.3)' }}>Issue First Certificate</button>}
               </div>
             ) : (
               <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
@@ -509,13 +526,13 @@ export default function Dashboard({ nav }) {
         )}
 
         {!loading && domains.length===0 && pendingOrders.length===0 && (
-          <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:14, padding:'72px 24px', textAlign:'center', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width:64, height:64, background:'linear-gradient(135deg,#eff6ff,#e0f2fe)', borderRadius:16, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', border:'1px solid #bfdbfe' }}>
-              <Shield size={30} color='#2563eb'/>
+          <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:20, padding:'72px 24px', textAlign:'center', boxShadow:'0 12px 40px rgba(15,23,42,0.06)' }}>
+            <div style={{ width:72, height:72, background:'linear-gradient(135deg,#eff6ff,#e0f2fe)', borderRadius:18, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 22px', border:'1.5px solid #bfdbfe', boxShadow:'0 0 0 6px rgba(37,99,235,0.08)' }}>
+              <Shield size={32} color='#2563eb'/>
             </div>
-            <h3 style={{ fontSize:18, fontWeight:700, marginBottom:8, color:'#0f172a' }}>No Certificates Yet</h3>
-            <p style={{ color:'#64748b', marginBottom:28, fontSize:14, maxWidth:360, margin:'0 auto 28px', lineHeight:1.6 }}>Issue your first SSL certificate to start building your certificate inventory.</p>
-            <button onClick={() => nav('/generate')} style={{ display:'inline-flex', alignItems:'center', gap:8, background:'linear-gradient(135deg,#2563eb,#1d4ed8)', color:'white', border:'none', padding:'12px 24px', borderRadius:9, fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 3px 12px rgba(37,99,235,0.3)' }}>
+            <h3 style={{ fontSize:22, fontWeight:900, marginBottom:10, color:'#0f172a', letterSpacing:'-0.5px' }}>No certificates yet</h3>
+            <p style={{ color:'#64748b', marginBottom:28, fontSize:14, maxWidth:380, margin:'0 auto 28px', lineHeight:1.65 }}>Issue your first SSL certificate to start building your inventory. Free forever, no credit card.</p>
+            <button onClick={() => nav('/generate')} style={{ display:'inline-flex', alignItems:'center', gap:8, background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', color:'white', border:'none', padding:'13px 26px', borderRadius:11, fontSize:14, fontWeight:800, cursor:'pointer', boxShadow:'0 4px 18px rgba(37,99,235,0.35)', fontFamily:'inherit', letterSpacing:'-0.2px' }}>
               <PlusCircle size={15}/> Issue Free Certificate
             </button>
           </div>
