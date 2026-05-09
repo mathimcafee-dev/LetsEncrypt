@@ -16,6 +16,15 @@ function StatusBadge({ days, revoked }) {
 function AddModal({ onAdd, onClose }) {
   const [domain, setDomain] = useState('')
   const [threshold, setThreshold] = useState(30)
+  const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
+  const handleAdd = async () => {
+    if (!domain.trim()) return
+    setSaving(true); setError('')
+    const err = await onAdd(domain.trim(), threshold)
+    if (err) setError(err)
+    setSaving(false)
+  }
   return (
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:300, display:'flex', alignItems:'center', justifyContent:'center' }}
       onClick={e=>e.target===e.currentTarget&&onClose()}>
@@ -28,7 +37,7 @@ function AddModal({ onAdd, onClose }) {
           <label>Domain Name</label>
           <input placeholder="example.com or api.example.com" value={domain}
             onChange={e=>setDomain(e.target.value.replace(/^https?:\/\//,'').replace(/\/.*/,''))}
-            onKeyDown={e=>e.key==='Enter'&&domain.trim()&&onAdd(domain.trim(),threshold)} autoFocus />
+            onKeyDown={e=>e.key==='Enter'&&handleAdd()} autoFocus />
           <p style={{ fontSize:12, color:'var(--text3)', marginTop:5 }}>We'll track this domain's SSL certificate expiry</p>
         </div>
         <div style={{ marginBottom:24 }}>
@@ -40,9 +49,10 @@ function AddModal({ onAdd, onClose }) {
           </div>
           <p style={{ fontSize:12, color:'var(--text3)', marginTop:6 }}>Alert when certificate expires within {threshold} days</p>
         </div>
+        {error && <p style={{ fontSize:12, color:'var(--red)', marginBottom:12 }}>{error}</p>}
         <div style={{ display:'flex', gap:10 }}>
-          <button className="btn btn-primary" onClick={()=>domain.trim()&&onAdd(domain.trim(),threshold)} style={{ flex:1, justifyContent:'center' }}>
-            <Plus size={15}/> Add Domain
+          <button className="btn btn-primary" onClick={handleAdd} disabled={saving || !domain.trim()} style={{ flex:1, justifyContent:'center' }}>
+            {saving ? <><span className="spinner" /> Adding...</> : <><Plus size={15}/> Add Domain</>}
           </button>
           <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
         </div>
@@ -252,7 +262,10 @@ export default function Monitor() {
       user_id: user.id, domain, alert_threshold_days: threshold,
       created_at: new Date().toISOString()
     }, { onConflict: 'user_id,domain' })
-    if (!error) { setShowAdd(false); await loadAll() }
+    if (error) return error.message || 'Failed to add domain'
+    setShowAdd(false)
+    await loadAll()
+    return null
   }
 
   const removeMonitored = async (id) => {
