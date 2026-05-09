@@ -32,15 +32,13 @@ export default function Developer({ nav }) {
                 <span style={{background:'linear-gradient(135deg,#2563eb,#7c3aed,#0ea5e9)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Kathirvel.</span>
               </h1>
               <div style={{fontSize:18,color:'#475569',fontWeight:600,marginBottom:18,letterSpacing:'-0.2px'}}>
-                Certified PKI Specialist · Partner Account Manager, APAC at DigiCert Inc.
+                Certified PKI Specialist · Builder & Open-source Contributor
               </div>
               <p style={{fontSize:15,color:'#475569',lineHeight:1.75,marginBottom:24,maxWidth:580}}>
-                I work with our channel partners across Asia-Pacific — including
-                <a href='https://www.thesslstore.com' target='_blank' rel='noreferrer' style={{color:'#2563eb',fontWeight:700,textDecoration:'none'}}> TheSSLStore.com</a> and
-                <a href='https://www.gogetssl.com' target='_blank' rel='noreferrer' style={{color:'#2563eb',fontWeight:700,textDecoration:'none'}}> GoGetSSL.com</a> —
-                helping them grow their digital trust business. SSLVault is my personal side
-                project: a free CLM platform built on Let's Encrypt for site owners who fall
-                outside the enterprise tier.
+                I'm passionate about PKI, digital trust, and the cryptographic infrastructure that
+                keeps the modern web secure. SSLVault is my personal project: a free CLM platform
+                built on Let's Encrypt for site owners who need enterprise-grade certificate
+                management without the enterprise price tag.
               </p>
               <div style={{display:'flex',alignItems:'center',gap:18,flexWrap:'wrap',marginBottom:28}}>
                 <div style={{display:'flex',alignItems:'center',gap:7,color:'#64748b',fontSize:13,fontWeight:600}}>
@@ -73,7 +71,7 @@ export default function Developer({ nav }) {
                   {/* gradient overlay at bottom */}
                   <div style={{position:'absolute',inset:'auto 0 0 0',height:'40%',background:'linear-gradient(to top,rgba(15,23,42,0.6),transparent)',pointerEvents:'none'}}/>
                   <div style={{position:'absolute',left:18,bottom:16,color:'white'}}>
-                    <div style={{fontSize:10,fontWeight:800,letterSpacing:'1.2px',textTransform:'uppercase',opacity:0.85,marginBottom:3}}>PKI Specialist · DigiCert</div>
+                    <div style={{fontSize:10,fontWeight:800,letterSpacing:'1.2px',textTransform:'uppercase',opacity:0.85,marginBottom:3}}>PKI Specialist · Builder</div>
                     <div style={{fontFamily:'Georgia, serif',fontSize:18,fontWeight:700,letterSpacing:'-0.3px'}}>Mathivanan</div>
                   </div>
                 </div>
@@ -98,9 +96,9 @@ export default function Developer({ nav }) {
         <div style={{maxWidth:1080,margin:'0 auto',padding:'0 24px'}}>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14}}>
             {[
-              {icon:Award,label:'Education',value:'MSc, Kongu Engineering College',color:'#2563eb',bg:'#dbeafe'},
+              {icon:Award,label:'Education',value:'MSc, Computer Science',color:'#2563eb',bg:'#dbeafe'},
               {icon:Award,label:'Certification',value:'Certified PKI Specialist',color:'#059669',bg:'#d1fae5'},
-              {icon:Briefcase,label:'Day role',value:'PAM, APAC · DigiCert Inc.',color:'#d97706',bg:'#fef3c7'},
+              {icon:Briefcase,label:'Based',value:'Netherlands',color:'#d97706',bg:'#fef3c7'},
               {icon:Code2,label:'Specialty',value:'PKI · CLM · Digital Trust',color:'#7c3aed',bg:'#ede9fe'},
             ].map(({icon:Icon,label,value,color,bg})=>(
               <div key={label} style={{background:'white',borderRadius:16,padding:'18px 20px',border:'1px solid #e2e8f0',display:'flex',alignItems:'center',gap:14,boxShadow:'0 2px 10px rgba(15,23,42,0.04)'}}>
@@ -126,10 +124,9 @@ export default function Developer({ nav }) {
             <div style={{fontSize:15,color:'#475569',lineHeight:1.85}}>
               <p style={{marginBottom:16}}>
                 I'm a PKI person at heart. Identity, trust, and the cryptographic plumbing that holds the
-                modern internet together — that's the work I love. By day I'm a Partner Account Manager at
-                DigiCert, working with channel partners across Asia-Pacific to bring digital trust solutions
-                to organisations of every size. The deeper I go, the more convinced I am that PKI done well
-                is one of the highest-leverage things in security.
+                modern internet together — that's the work I love. The deeper I go into certificate
+                lifecycle management, the more convinced I am that PKI done well is one of the
+                highest-leverage things in security.
               </p>
               <p style={{marginBottom:16}}>
                 What I see every day is that great certificate management — automated, monitored, never
