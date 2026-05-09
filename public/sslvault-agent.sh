@@ -242,6 +242,18 @@ process_job() {
   fi
 }
 
+# ── Simple JSON field extractor (pure bash, no python/jq required) ───
+json_get() {
+  local json="$1" key="$2"
+  # Extract value for "key":"value" or "key":value patterns
+  echo "$json" | grep -o "\"${key}\":[[:space:]]*\"[^\"]*\"" | head -1 | sed 's/.*":\s*"\(.*\)"/\1/'
+}
+
+json_get_raw() {
+  local json="$1" key="$2"
+  echo "$json" | grep -o "\"${key}\":[[:space:]]*[^,}]*" | head -1 | sed 's/.*":\s*//'
+}
+
 # ── Main daemon loop ──────────────────────────────────────────────────
 run_daemon() {
   info "SSLVault Agent v$AGENT_VERSION starting"
@@ -254,48 +266,31 @@ run_daemon() {
       \"agent_version\": \"$AGENT_VERSION\"
     }")
 
-    # Check for valid response
     if echo "$RESPONSE" | grep -q '"ok":true'; then
-      # Extract jobs array length
-      JOB_COUNT=$(echo "$RESPONSE" | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-jobs = data.get('jobs', [])
-print(len(jobs))
-for j in jobs:
-    print(j['id'], j['domain'], j.get('cert_pem',''), j.get('key_pem',''))
-" 2>/dev/null | head -1 || echo "0")
+      # Check if there are jobs by looking for job id patterns
+      if echo "$RESPONSE" | grep -q '"id":"'; then
+        info "Jobs found — processing..."
 
-      if [ "$JOB_COUNT" -gt 0 ] 2>/dev/null; then
-        info "Got $JOB_COUNT job(s)"
+        # Extract jobs array section and process each job
+        # Parse jobs by splitting on "JOB_TYPE" boundaries
+        echo "$RESPONSE" | grep -o '"id":"[^"]*","job_type":"[^"]*","domain":"[^"]*","cert_pem":"[^"]*","key_pem":"[^"]*"' | \
+        while IFS= read -r job_line; do
+          JOB_ID=$(echo "$job_line" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+          JOB_DOMAIN=$(echo "$job_line" | grep -o '"domain":"[^"]*"' | cut -d'"' -f4)
+          JOB_CERT_RAW=$(echo "$job_line" | grep -o '"cert_pem":"[^"]*"' | sed 's/"cert_pem":"//;s/"$//')
+          JOB_KEY_RAW=$(echo "$job_line" | grep -o '"key_pem":"[^"]*"' | sed 's/"key_pem":"//;s/"$//')
 
-        # Parse and process each job
-        echo "$RESPONSE" | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-for j in data.get('jobs', []):
-    print('JOB_START')
-    print(j.get('id',''))
-    print(j.get('domain',''))
-    print(j.get('cert_pem','').replace('\n','\\\\n'))
-    print(j.get('key_pem','').replace('\n','\\\\n'))
-    print('JOB_END')
-" 2>/dev/null | while IFS= read -r line; do
-          case "$line" in
-            JOB_START)
-              read -r JOB_ID; read -r JOB_DOMAIN
-              read -r JOB_CERT; read -r JOB_KEY
-              read -r _ # JOB_END
-              # Restore newlines in PEM
-              JOB_CERT=$(printf '%b' "${JOB_CERT//\\n/$'\n'}")
-              JOB_KEY=$(printf '%b' "${JOB_KEY//\\n/$'\n'}")
-              process_job "$JOB_ID" "$JOB_DOMAIN" "$JOB_CERT" "$JOB_KEY"
-              ;;
-          esac
+          if [ -z "$JOB_ID" ] || [ -z "$JOB_DOMAIN" ]; then continue; fi
+
+          # Unescape \n sequences in PEM data
+          JOB_CERT=$(printf '%b' "${JOB_CERT_RAW//\\n/$'\n'}")
+          JOB_KEY=$(printf '%b' "${JOB_KEY_RAW//\\n/$'\n'}")
+
+          process_job "$JOB_ID" "$JOB_DOMAIN" "$JOB_CERT" "$JOB_KEY"
         done
       fi
     else
-      err "Poll failed or no response — will retry in ${POLL_INTERVAL}s"
+      err "Poll failed — will retry in ${POLL_INTERVAL}s"
     fi
 
     sleep "$POLL_INTERVAL"

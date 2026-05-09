@@ -257,18 +257,36 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
   const [checking, setChecking] = useState(false)
   const [registered, setRegistered] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [agentToken, setAgentToken] = useState('')
+  const [tokenLoading, setTokenLoading] = useState(true)
+  const [tokenError, setTokenError] = useState('')
 
-  // Generate a stable token for this server
-  const agentToken = btoa(`${userId}:${server.id}:sslvault-agent`).replace(/[^a-zA-Z0-9]/g,'').slice(0,48)
-  const installCmd = `curl -fsSL https://www.easysecurity.in/agent-install.sh | sudo bash -s -- --token=${agentToken} --server-id=${server.id} --user-id=${userId} --nickname="${server.nickname}"`
+  // Fetch a cryptographically secure token from the backend on mount
+  useEffect(() => {
+    fetch(DAEMON_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'create_token', user_id:userId, server_id:server.id, nickname:server.nickname }) })
+      .then(r => r.json())
+      .then(data => {
+        if (data.agent_token) setAgentToken(data.agent_token)
+        else setTokenError(data.error || 'Failed to generate token')
+      })
+      .catch(() => setTokenError('Could not reach SSLVault API'))
+      .finally(() => setTokenLoading(false))
+  }, [])
+
+  const installCmd = agentToken
+    ? `curl -fsSL https://www.easysecurity.in/agent-install.sh | sudo bash -s -- --token=${agentToken} --server-id=${server.id} --user-id=${userId} --nickname="${server.nickname}"`
+    : ''
 
   const copy = () => {
+    if (!installCmd) return
     navigator.clipboard.writeText(installCmd)
     setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
 
-  // Poll for registration
+  // Poll for registration after token is ready
   useEffect(() => {
+    if (!agentToken) return
     const interval = setInterval(async () => {
       setChecking(true)
       try {
@@ -285,7 +303,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
       setChecking(false)
     }, 5000)
     return () => clearInterval(interval)
-  }, [])
+  }, [agentToken])
 
   return (
     <div style={{ position:'fixed', inset:0, background:'rgba(15,23,42,0.55)', zIndex:500, display:'flex', alignItems:'center', justifyContent:'center', padding:16, backdropFilter:'blur(2px)' }}
@@ -310,6 +328,15 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
               <div style={{ fontSize:48, marginBottom:12 }}>✅</div>
               <div style={{ fontWeight:800, fontSize:18, color:'#16a34a', marginBottom:6 }}>Agent Registered!</div>
               <div style={{ fontSize:14, color:'#64748b' }}>{server.nickname} is now fully automated.</div>
+            </div>
+          ) : tokenError ? (
+            <div style={{ background:'#fef2f2', border:'1px solid #fecaca', borderRadius:10, padding:16, color:'#dc2626', fontSize:13 }}>
+              ❌ {tokenError} — please close and try again.
+            </div>
+          ) : tokenLoading ? (
+            <div style={{ textAlign:'center', padding:'32px 0', color:'#64748b', fontSize:14 }}>
+              <div style={{ fontSize:28, marginBottom:10 }}>🔐</div>
+              Generating secure token...
             </div>
           ) : (
             <>
