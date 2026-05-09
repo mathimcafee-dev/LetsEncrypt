@@ -32,19 +32,22 @@ export default function Developer({ nav }) {
                 <span style={{background:'linear-gradient(135deg,#2563eb,#7c3aed,#0ea5e9)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Kathirvel.</span>
               </h1>
               <div style={{fontSize:18,color:'#475569',fontWeight:600,marginBottom:18,letterSpacing:'-0.2px'}}>
-                Identity & access engineer · Independent builder
+                Certified PKI Specialist · Partner Account Manager, APAC at DigiCert Inc.
               </div>
               <p style={{fontSize:15,color:'#475569',lineHeight:1.75,marginBottom:24,maxWidth:580}}>
-                I build SSLVault solo — a free certificate lifecycle platform on top of Let's Encrypt.
-                My day job is privileged access management; nights and weekends I write code that makes
-                infrastructure easier for the people who can't afford enterprise tools.
+                I work with our channel partners across Asia-Pacific — including
+                <a href='https://www.thesslstore.com' target='_blank' rel='noreferrer' style={{color:'#2563eb',fontWeight:700,textDecoration:'none'}}> TheSSLStore.com</a> and
+                <a href='https://www.gogetssl.com' target='_blank' rel='noreferrer' style={{color:'#2563eb',fontWeight:700,textDecoration:'none'}}> GoGetSSL.com</a> —
+                helping them grow their digital trust business. SSLVault is my personal side
+                project: a free CLM platform built on Let's Encrypt for site owners who fall
+                outside the enterprise tier.
               </p>
               <div style={{display:'flex',alignItems:'center',gap:18,flexWrap:'wrap',marginBottom:28}}>
                 <div style={{display:'flex',alignItems:'center',gap:7,color:'#64748b',fontSize:13,fontWeight:600}}>
                   <MapPin size={14}/> Netherlands
                 </div>
                 <div style={{display:'flex',alignItems:'center',gap:7,color:'#64748b',fontSize:13,fontWeight:600}}>
-                  <Briefcase size={14}/> Open to collaborations
+                  <Briefcase size={14}/> Building SSLVault on the side
                 </div>
               </div>
               <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
@@ -70,7 +73,7 @@ export default function Developer({ nav }) {
                   {/* gradient overlay at bottom */}
                   <div style={{position:'absolute',inset:'auto 0 0 0',height:'40%',background:'linear-gradient(to top,rgba(15,23,42,0.6),transparent)',pointerEvents:'none'}}/>
                   <div style={{position:'absolute',left:18,bottom:16,color:'white'}}>
-                    <div style={{fontSize:10,fontWeight:800,letterSpacing:'1.2px',textTransform:'uppercase',opacity:0.85,marginBottom:3}}>Founder · Engineer</div>
+                    <div style={{fontSize:10,fontWeight:800,letterSpacing:'1.2px',textTransform:'uppercase',opacity:0.85,marginBottom:3}}>PKI Specialist · DigiCert</div>
                     <div style={{fontFamily:'Georgia, serif',fontSize:18,fontWeight:700,letterSpacing:'-0.3px'}}>Mathivanan</div>
                   </div>
                 </div>
@@ -81,7 +84,7 @@ export default function Developer({ nav }) {
                   </div>
                   <div>
                     <div style={{fontSize:9,fontWeight:800,color:'#94a3b8',letterSpacing:'0.6px',textTransform:'uppercase'}}>Certified</div>
-                    <div style={{fontSize:11,fontWeight:800,color:'#0f172a'}}>PAM DigiCert</div>
+                    <div style={{fontSize:11,fontWeight:800,color:'#0f172a'}}>PKI Specialist</div>
                   </div>
                 </div>
               </div>
@@ -96,9 +99,9 @@ export default function Developer({ nav }) {
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14}}>
             {[
               {icon:Award,label:'Education',value:'MSc, Kongu Engineering College',color:'#2563eb',bg:'#dbeafe'},
-              {icon:Award,label:'Certification',value:'PAM DigiCert',color:'#059669',bg:'#d1fae5'},
-              {icon:Briefcase,label:'Specialty',value:'Identity & PAM',color:'#d97706',bg:'#fef3c7'},
-              {icon:Code2,label:'Side projects',value:'2 active builds',color:'#7c3aed',bg:'#ede9fe'},
+              {icon:Award,label:'Certification',value:'Certified PKI Specialist',color:'#059669',bg:'#d1fae5'},
+              {icon:Briefcase,label:'Day role',value:'PAM, APAC · DigiCert Inc.',color:'#d97706',bg:'#fef3c7'},
+              {icon:Code2,label:'Specialty',value:'PKI · CLM · Digital Trust',color:'#7c3aed',bg:'#ede9fe'},
             ].map(({icon:Icon,label,value,color,bg})=>(
               <div key={label} style={{background:'white',borderRadius:16,padding:'18px 20px',border:'1px solid #e2e8f0',display:'flex',alignItems:'center',gap:14,boxShadow:'0 2px 10px rgba(15,23,42,0.04)'}}>
                 <div style={{width:38,height:38,borderRadius:10,background:bg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
@@ -123,23 +126,24 @@ export default function Developer({ nav }) {
             <div style={{fontSize:15,color:'#475569',lineHeight:1.85}}>
               <p style={{marginBottom:16}}>
                 I'm a PKI person at heart. Identity, trust, and the cryptographic plumbing that holds the
-                modern internet together — that's the work I love. By day I get to do this professionally,
-                helping organisations design and operate certificate lifecycle management at scale.
-                The deeper I go, the more convinced I am that PKI done well is one of the highest-leverage
-                things in security.
+                modern internet together — that's the work I love. By day I'm a Partner Account Manager at
+                DigiCert, working with channel partners across Asia-Pacific to bring digital trust solutions
+                to organisations of every size. The deeper I go, the more convinced I am that PKI done well
+                is one of the highest-leverage things in security.
               </p>
               <p style={{marginBottom:16}}>
-                Outside of work hours, I wanted to give something back to the community that taught me
-                this craft. Let's Encrypt made certificates free a decade ago — a remarkable gift to
-                the open web. But the lifecycle around them — installation, monitoring, renewal across
-                heterogeneous infrastructure — still trips up the people who can least afford to think
-                about it: the indie developer, the small business, the non-profit running on a donated VPS.
+                What I see every day is that great certificate management — automated, monitored, never
+                expired — transforms how teams operate. The enterprise world has solved this beautifully.
+                But there's a long tail of indie developers, small businesses, and non-profits who run
+                websites on a shoestring and need the same reliability without the procurement cycle.
+                Let's Encrypt made certificates free a decade ago — a remarkable gift to the open web —
+                and the lifecycle around them is the missing piece for that audience.
               </p>
               <p style={{marginBottom:16}}>
-                SSLVault is my way of closing that gap. A free, open CLM platform that takes the principles
-                I work with every day — automated discovery, scheduled renewal, agent-based deployment,
-                visibility into every certificate you own — and puts them in the hands of anyone with a
-                domain, no matter their budget.
+                SSLVault is my small contribution to closing that gap. A free, open CLM platform that
+                takes the principles I work with — automated discovery, scheduled renewal, agent-based
+                deployment, full visibility into every certificate you own — and makes them accessible
+                to anyone with a domain, no matter their budget.
               </p>
               <p>
                 It's built in public, runs on open standards, and will stay free. If it helps even a few
@@ -161,7 +165,7 @@ export default function Developer({ nav }) {
               {icon:Server,title:'Infrastructure',items:['Linux · systemd','Nginx · Apache','Docker · Vercel','cPanel · Plesk'],color:'#2563eb',bg:'#dbeafe'},
               {icon:Code2,title:'Frontend',items:['React 18','Vite','Tailwind / inline CSS','Lucide icons'],color:'#0ea5e9',bg:'#e0f2fe'},
               {icon:Globe,title:'Backend',items:['Supabase','Postgres + RLS','Edge Functions','Resend (email)'],color:'#059669',bg:'#d1fae5'},
-              {icon:BookOpen,title:'Security',items:['ACME / RFC 8555','PKI · X.509','PAM','OAuth · OIDC'],color:'#d97706',bg:'#fef3c7'},
+              {icon:BookOpen,title:'PKI & CLM',items:['ACME / RFC 8555','X.509 · CT logs','Certificate lifecycle','Digital trust'],color:'#d97706',bg:'#fef3c7'},
             ].map(({icon:Icon,title,items,color,bg})=>(
               <div key={title} style={{background:'white',borderRadius:18,padding:'26px 22px',border:'1px solid #e2e8f0',boxShadow:'0 2px 12px rgba(15,23,42,0.04)'}}>
                 <div style={{width:42,height:42,borderRadius:11,background:bg,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:14}}>
