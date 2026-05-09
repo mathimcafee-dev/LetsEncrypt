@@ -211,6 +211,106 @@ function DomainPanel({ index, domain, certs, onDelete, onRenew, onInstall }) {
   )
 }
 
+function DashboardPreview({ nav }) {
+  const sample = [
+    { domain: 'api.acme.io',     issuer: "Let's Encrypt R3", days: 78, status: 'healthy' },
+    { domain: '*.shop.example',  issuer: "Let's Encrypt R3", days: 22, status: 'caution' },
+    { domain: 'portal.acme.com', issuer: "Let's Encrypt R3", days: 6,  status: 'warning' },
+    { domain: 'mail.acme.com',   issuer: "Let's Encrypt R3", days: 64, status: 'healthy' },
+  ]
+  const colors = {
+    healthy: { c:'#059669', bg:'#ecfdf5', label:'Active'   },
+    caution: { c:'#d97706', bg:'#fffbeb', label:'Renew Soon' },
+    warning: { c:'#dc2626', bg:'#fef2f2', label:'Expiring' },
+  }
+
+  return (
+    <div style={{ background:'linear-gradient(160deg,#eef2ff 0%,#f0fdf4 35%,#fefce8 65%,#fdf4ff 100%)', minHeight:'calc(100vh - 56px)', position:'relative', overflow:'hidden', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
+      <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle,rgba(148,163,184,0.35) 1px,transparent 1px)', backgroundSize:'28px 28px', opacity:0.5, pointerEvents:'none' }} />
+
+      <div style={{ position:'relative', maxWidth:1140, margin:'0 auto', padding:'72px 24px 64px' }}>
+        <div style={{ textAlign:'center', marginBottom:48 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', border:'1.5px solid #bfdbfe', borderRadius:100, padding:'5px 14px', marginBottom:20, boxShadow:'0 2px 8px rgba(37,99,235,0.1)' }}>
+            <div style={{ width:7, height:7, borderRadius:'50%', background:'#22c55e', boxShadow:'0 0 0 2px rgba(34,197,94,0.25)' }} />
+            <span style={{ fontSize:11, fontWeight:700, color:'#1d4ed8', letterSpacing:'0.5px' }}>Inventory Dashboard · Preview</span>
+          </div>
+          <h1 style={{ fontSize:42, fontWeight:900, color:'#0f172a', lineHeight:1.06, letterSpacing:'-1.8px', marginBottom:8 }}>Every certificate.</h1>
+          <h1 style={{ fontSize:42, fontWeight:900, lineHeight:1.06, letterSpacing:'-1.8px', marginBottom:14, background:'linear-gradient(90deg,#2563eb 0%,#7c3aed 50%,#0ea5e9 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>One inventory.</h1>
+          <p style={{ fontSize:15, color:'#475569', lineHeight:1.7, maxWidth:520, margin:'0 auto' }}>
+            Sign in to see your real certificates here. Below is a preview of what your inventory looks like.
+          </p>
+        </div>
+
+        <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:20, boxShadow:'0 24px 60px rgba(15,23,42,0.08)', overflow:'hidden', position:'relative' }}>
+          {/* Soft overlay gradient */}
+          <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg,transparent 50%,rgba(255,255,255,0.85) 100%)', pointerEvents:'none', zIndex:2 }} />
+
+          <div style={{ padding:'24px 28px', borderBottom:'1px solid #f1f5f9', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+            <div>
+              <div style={{ fontSize:18, fontWeight:900, color:'#0f172a', letterSpacing:'-0.5px' }}>Certificate Inventory</div>
+              <div style={{ fontSize:12, color:'#64748b', marginTop:2 }}>4 certificates · 1 expiring soon · last sync just now</div>
+            </div>
+            <div style={{ display:'flex', gap:8 }}>
+              <button style={{ background:'white', border:'1.5px solid #e2e8f0', color:'#64748b', padding:'7px 12px', borderRadius:8, fontSize:12, fontWeight:600, cursor:'not-allowed', display:'inline-flex', alignItems:'center', gap:5 }}><RefreshCw size={12}/> Bulk scan</button>
+              <button style={{ background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', border:'none', color:'white', padding:'7px 14px', borderRadius:8, fontSize:12, fontWeight:700, cursor:'not-allowed', display:'inline-flex', alignItems:'center', gap:5, opacity:0.9 }}><PlusCircle size={12}/> New Certificate</button>
+            </div>
+          </div>
+
+          <div style={{ padding:'18px 28px', borderBottom:'1px solid #f1f5f9', display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12 }}>
+            {[
+              { v:4, l:'Total',    c:'#2563eb' },
+              { v:3, l:'Active',   c:'#059669' },
+              { v:1, l:'Expiring', c:'#d97706' },
+              { v:0, l:'Expired',  c:'#dc2626' },
+            ].map(s => (
+              <div key={s.l} style={{ background:'#f8fafc', border:'1px solid #f1f5f9', borderRadius:12, padding:'14px 16px' }}>
+                <div style={{ fontSize:11, color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:4 }}>{s.l}</div>
+                <div style={{ fontSize:26, fontWeight:900, color:s.c, letterSpacing:'-0.7px', lineHeight:1 }}>{s.v}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ padding:'8px 28px 24px' }}>
+            {sample.map((cert, i) => {
+              const c = colors[cert.status]
+              return (
+                <div key={i} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 0', borderBottom: i < sample.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
+                  <div style={{ width:38, height:38, borderRadius:10, background:'linear-gradient(135deg,#eff6ff,#dbeafe)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <Globe size={16} color="#2563eb"/>
+                  </div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:14, fontWeight:800, color:'#0f172a', fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</div>
+                    <div style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>{cert.issuer} · {cert.days} days remaining</div>
+                  </div>
+                  <div style={{ width:120, height:5, background:'#f1f5f9', borderRadius:3, overflow:'hidden' }}>
+                    <div style={{ height:'100%', width: Math.max(5, (cert.days/90)*100) + '%', background:c.c, borderRadius:3 }} />
+                  </div>
+                  <span style={{ background:c.bg, color:c.c, fontSize:10, fontWeight:800, padding:'5px 10px', borderRadius:7, letterSpacing:'0.4px', minWidth:88, textAlign:'center' }}>● {c.label.toUpperCase()}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div style={{ marginTop:32, textAlign:'center' }}>
+          <button
+            onClick={() => nav('/auth')}
+            style={{ display:'inline-flex', alignItems:'center', gap:8, background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', color:'white', border:'none', padding:'14px 28px', borderRadius:12, fontSize:14, fontWeight:800, cursor:'pointer', boxShadow:'0 4px 20px rgba(37,99,235,0.35)', letterSpacing:'-0.2px' }}
+          >
+            Sign in to see yours <Shield size={14}/>
+          </button>
+          <button
+            onClick={() => nav('/generate')}
+            style={{ marginLeft:10, display:'inline-flex', alignItems:'center', gap:8, background:'white', color:'#374151', border:'1.5px solid #e2e8f0', padding:'14px 22px', borderRadius:12, fontSize:14, fontWeight:600, cursor:'pointer', boxShadow:'0 2px 8px rgba(0,0,0,0.06)' }}
+          >
+            Try issuing a certificate
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Dashboard({ nav }) {
   const { user, loading: authLoading } = useAuth()
   const [certs, setCerts] = useState([])
@@ -220,7 +320,8 @@ export default function Dashboard({ nav }) {
   const [search, setSearch] = useState('')
   const [agentCert, setAgentCert] = useState(null)
 
-  useEffect(() => { if(authLoading) return; if(!user){nav('/auth');return}; loadCerts() }, [user,authLoading])
+  useEffect(() => { if(authLoading) return; if(user) loadCerts() }, [user,authLoading])
+  if (!authLoading && !user) return <DashboardPreview nav={nav} />
 
   const loadCerts = async () => {
     setLoading(true)

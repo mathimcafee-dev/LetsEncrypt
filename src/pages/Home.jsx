@@ -1,302 +1,277 @@
-import { Shield, Lock, Bell, Download, RefreshCw, ArrowRight, CheckCircle, Zap, Globe, Clock, TrendingUp, AlertTriangle, Award, BarChart2, FileText, Settings, Search, Filter } from 'lucide-react'
+import { Shield, Lock, CheckCircle, Zap, Globe, Server, ChevronRight, ArrowRight, Activity } from 'lucide-react'
 
-export default function Home({ nav }) {
-  const capabilities = [
-    { icon:Zap, title:'Automated Issuance', desc:'DNS-01 validation with auto-record injection. Certificate issued in under 60 seconds with zero manual steps.', color:'#2563eb', tag:'CORE' },
-    { icon:Shield, title:'Wildcard Coverage', desc:'Single certificate secures all subdomains. *.domain.com — one issuance covers www, api, mail, app and more.', color:'#7c3aed', tag:'COVERAGE' },
-    { icon:Bell, title:'Expiry Intelligence', desc:'Continuous monitoring with threshold-based alerts at 30, 14 and 7 days. Never face an unexpected certificate outage.', color:'#d97706', tag:'MONITORING' },
-    { icon:Download, title:'Universal Compatibility', desc:'Export as PEM, DER, PKCS#12. Full chain, leaf cert and private key. Compatible with Nginx, Apache, Caddy, IIS, Node.js.', color:'#16a34a', tag:'DEPLOYMENT' },
-    { icon:Lock, title:'Secure Vault', desc:'Private keys encrypted at rest. AES-256-GCM storage with row-level security. Only you can access your certificates.', color:'#dc2626', tag:'SECURITY' },
-    { icon:RefreshCw, title:'One-Click Renewal', desc:'Renew expiring certificates with a single click. Same domain, fresh 90-day validity, no re-verification required.', color:'#0891b2', tag:'LIFECYCLE' },
-  ]
-
-  const lifecycle = [
-    { phase:'Request', icon:'01', desc:'Submit domain, select coverage type, configure DNS provider credentials.', color:'#2563eb' },
-    { phase:'Validate', icon:'02', desc:'ACME DNS-01 challenge. TXT record injected automatically or manually added.', color:'#7c3aed' },
-    { phase:'Issue', icon:'03', desc:'Let\u2019s Encrypt CA signs the certificate. 90-day validity, RSA 2048-bit key.', color:'#16a34a' },
-    { phase:'Deploy', icon:'04', desc:'Download all formats or auto-install via agent on VPS or cPanel hosting.', color:'#d97706' },
-    { phase:'Monitor', icon:'05', desc:'Continuous expiry tracking. Alerts at 30/14/7 days. Full audit history.', color:'#0891b2' },
-  ]
-
-  const stats = [
-    { value:'90', unit:'days', label:'Certificate Validity' },
-    { value:'100%', unit:'', label:'Free Forever' },
-    { value:'<60s', unit:'', label:'Issuance Time' },
-    { value:'RSA', unit:'2048', label:'Key Strength' },
-  ]
-
-  const trust = [
-    { name:"Let's Encrypt", role:'Certificate Authority', logo:'\ud83d\udd10' },
-    { name:'ACME Protocol', role:'RFC 8555 Compliant', logo:'\ud83d\udcdc' },
-    { name:'DNS-01 Challenge', role:'Domain Validation', logo:'\ud83c\udf10' },
-    { name:'AES-256-GCM', role:'Data Encryption', logo:'\ud83d\udd12' },
-  ]
-
+function CertHeroIllustration() {
   return (
-    <div style={{ background:'#f8fafc', fontFamily:'Plus Jakarta Sans, sans-serif' }}>
+    <div style={{position:'relative',width:'100%',height:420,display:'flex',alignItems:'center',justifyContent:'center'}}>
+      {/* Ambient blobs */}
+      <div style={{position:'absolute',width:320,height:320,borderRadius:'50%',background:'radial-gradient(circle,rgba(59,130,246,0.18) 0%,transparent 70%)',top:'50%',left:'50%',transform:'translate(-50%,-50%)',filter:'blur(40px)'}} />
+      <div style={{position:'absolute',width:200,height:200,borderRadius:'50%',background:'radial-gradient(circle,rgba(16,185,129,0.2) 0%,transparent 70%)',top:'20%',right:'10%',filter:'blur(30px)'}} />
+      <div style={{position:'absolute',width:180,height:180,borderRadius:'50%',background:'radial-gradient(circle,rgba(139,92,246,0.15) 0%,transparent 70%)',bottom:'10%',left:'8%',filter:'blur(28px)'}} />
 
-      {/* Top announcement bar */}
-      <div style={{ background:'linear-gradient(90deg,#1e3a8a,#2563eb)', padding:'10px 0', textAlign:'center' }}>
-        <div className="container">
-          <span style={{ fontSize:12, color:'rgba(255,255,255,0.9)', fontWeight:500, letterSpacing:'0.3px' }}>
-            \ud83d\udd12 Enterprise-grade Certificate Lifecycle Management \u00b7 Powered by Let\u2019s Encrypt \u00b7 100% Free
-          </span>
+      {/* Central shield */}
+      <div style={{position:'relative',zIndex:10,display:'flex',flexDirection:'column',alignItems:'center'}}>
+        <div style={{width:88,height:88,background:'linear-gradient(135deg,#1d4ed8 0%,#0ea5e9 100%)',borderRadius:24,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 0 12px rgba(59,130,246,0.12),0 0 0 24px rgba(59,130,246,0.06),0 20px 60px rgba(37,99,235,0.4)',marginBottom:0}}>
+          <Shield size={44} color='white' strokeWidth={1.5}/>
+        </div>
+        {/* Verified badge */}
+        <div style={{marginTop:-14,background:'linear-gradient(135deg,#059669,#10b981)',borderRadius:24,padding:'4px 14px',display:'flex',alignItems:'center',gap:5,boxShadow:'0 4px 16px rgba(16,185,129,0.4)',zIndex:12}}>
+          <CheckCircle size={11} color='white'/>
+          <span style={{fontSize:10,fontWeight:800,color:'white',letterSpacing:'0.8px'}}>VERIFIED & TRUSTED</span>
         </div>
       </div>
 
-      {/* Hero */}
-      <section style={{ background:'white', borderBottom:'1px solid #e2e8f0', padding:'80px 0 72px' }}>
-        <div className="container">
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 420px', gap:72, alignItems:'center' }}>
+      {/* Orbit ring 1 - dashed */}
+      <div style={{position:'absolute',width:240,height:240,borderRadius:'50%',border:'1.5px dashed rgba(59,130,246,0.3)',top:'50%',left:'50%',transform:'translate(-50%,-50%)'}} />
+      {/* Orbit ring 2 */}
+      <div style={{position:'absolute',width:360,height:360,borderRadius:'50%',border:'1px solid rgba(59,130,246,0.12)',top:'50%',left:'50%',transform:'translate(-50%,-50%)'}} />
+
+      {/* Orbiting nodes */}
+      {[
+        {angle:0,   r:120,icon:'N',label:'Nginx',    color:'#059669',bg:'#d1fae5',ring:'#6ee7b7'},
+        {angle:72,  r:120,icon:'A',label:'Apache',   color:'#7c3aed',bg:'#ede9fe',ring:'#c4b5fd'},
+        {angle:144, r:120,icon:'D',label:'Docker',   color:'#0ea5e9',bg:'#e0f2fe',ring:'#7dd3fc'},
+        {angle:216, r:120,icon:'C',label:'cPanel',   color:'#d97706',bg:'#fef3c7',ring:'#fcd34d'},
+        {angle:288, r:120,icon:'K',label:'Caddy',    color:'#db2777',bg:'#fce7f3',ring:'#f9a8d4'},
+      ].map(({angle, r, icon, label, color, bg, ring}) => {
+        const rad = (angle - 90) * Math.PI / 180
+        const x = Math.cos(rad) * r
+        const y = Math.sin(rad) * r
+        return (
+          <div key={label} style={{position:'absolute',top:'50%',left:'50%',transform:'translate(calc(-50% + '+x+'px), calc(-50% + '+y+'px))',zIndex:8,display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
+            <div style={{width:38,height:38,borderRadius:11,background:bg,border:'2px solid '+ring,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 14px rgba(0,0,0,0.1)'}}>
+              <span style={{fontSize:14,fontWeight:900,color:color}}>{icon}</span>
+            </div>
+            <span style={{fontSize:9,fontWeight:700,color:'#64748b',letterSpacing:'0.3px',background:'white',padding:'1px 6px',borderRadius:6,border:'1px solid #e2e8f0',whiteSpace:'nowrap'}}>{label}</span>
+          </div>
+        )
+      })}
+
+      {/* Floating cert card - top right */}
+      <div style={{position:'absolute',top:24,right:0,background:'white',borderRadius:14,padding:'12px 16px',boxShadow:'0 8px 32px rgba(0,0,0,0.1)',border:'1px solid #e2e8f0',zIndex:15,minWidth:170}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+          <div style={{width:28,height:28,background:'linear-gradient(135deg,#059669,#10b981)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}><Lock size={13} color='white'/></div>
+          <div>
+            <div style={{fontSize:11,fontWeight:800,color:'#0f172a',lineHeight:1}}>easysecurity.in</div>
+            <div style={{fontSize:9,color:'#64748b',marginTop:2}}>TLS 1.3 · RSA 2048</div>
+          </div>
+        </div>
+        <div style={{height:3,background:'#f1f5f9',borderRadius:2,overflow:'hidden'}}>
+          <div style={{height:'100%',width:'78%',background:'linear-gradient(90deg,#059669,#10b981)',borderRadius:2}} />
+        </div>
+        <div style={{display:'flex',justifyContent:'space-between',marginTop:5}}>
+          <span style={{fontSize:9,color:'#94a3b8'}}>70 days left</span>
+          <span style={{fontSize:9,fontWeight:700,color:'#059669'}}>✓ Valid</span>
+        </div>
+      </div>
+
+      {/* Floating ACME badge - bottom left */}
+      <div style={{position:'absolute',bottom:20,left:0,background:'white',borderRadius:12,padding:'10px 14px',boxShadow:'0 8px 24px rgba(0,0,0,0.09)',border:'1px solid #e2e8f0',zIndex:15,display:'flex',alignItems:'center',gap:8}}>
+        <div style={{width:32,height:32,background:'linear-gradient(135deg,#7c3aed,#a78bfa)',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <Zap size={15} color='white'/>
+        </div>
+        <div>
+          <div style={{fontSize:11,fontWeight:800,color:'#0f172a'}}>ACME RFC 8555</div>
+          <div style={{fontSize:9,color:'#64748b'}}>Issued in &lt;60 seconds</div>
+        </div>
+      </div>
+
+      {/* Floating free badge - top left */}
+      <div style={{position:'absolute',top:40,left:8,background:'linear-gradient(135deg,#f59e0b,#fbbf24)',borderRadius:10,padding:'7px 12px',boxShadow:'0 6px 20px rgba(245,158,11,0.35)',zIndex:15}}>
+        <div style={{fontSize:13,fontWeight:900,color:'white',lineHeight:1}}>100% Free</div>
+        <div style={{fontSize:9,color:'rgba(255,255,255,0.85)',marginTop:1}}>No credit card</div>
+      </div>
+    </div>
+  )
+}
+
+const FEATURES = [
+  { icon: Zap, title: 'Instant Issuance', desc: 'Trusted DV certificate in under 60 seconds via ACME — no forms, no waiting, no credit card.', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
+  { icon: Shield, title: 'Enterprise CLM', desc: 'Full lifecycle: inventory, health grades, expiry alerts, multi-domain tracking and renewal reminders.', color: '#2563eb', bg: '#eff6ff', border: '#bfdbfe' },
+  { icon: Globe, title: 'Any Domain', desc: 'Works with any publicly accessible domain. Supports HTTP-01 and DNS-01 ACME challenge methods.', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' },
+  { icon: Server, title: 'One-click Install', desc: 'Deploy to Nginx, Apache, cPanel, Node.js and Docker via our smart install guides.', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' },
+  { icon: Activity, title: 'External Monitor', desc: 'Track SSL health of any domain. Scan any host, get expiry dates and issuer details.', color: '#db2777', bg: '#fdf2f8', border: '#fbcfe8' },
+  { icon: Lock, title: 'PKI Best Practices', desc: 'OCSP stapling, HSTS, CT logging, TLS 1.3 guidance and cipher hardening in every guide.', color: '#0ea5e9', bg: '#f0f9ff', border: '#bae6fd' },
+]
+
+const STEPS = [
+  { n: '01', title: 'Enter your domain', desc: 'Type your domain name — single domain or wildcard (*.example.com).', color: '#2563eb' },
+  { n: '02', title: 'Complete DNS challenge', desc: 'Add a TXT record to _acme-challenge.yourdomain — proves ownership per RFC 8555.', color: '#7c3aed' },
+  { n: '03', title: 'Download certificates', desc: 'Get cert.pem, key.pem, and fullchain.pem in standard PKI formats.', color: '#059669' },
+  { n: '04', title: 'Install and monitor', desc: 'Deploy with our guides, then track expiry in your dashboard.', color: '#d97706' },
+]
+
+const STATS = [
+  { v: '100%', l: 'Free forever', sub: 'No credit card ever', color: '#2563eb' },
+  { v: '90d', l: 'Certificate validity', sub: 'Auto-renewal reminders', color: '#7c3aed' },
+  { v: '<60s', l: 'Issuance time', sub: 'ACME RFC 8555', color: '#059669' },
+  { v: 'A+', l: 'SSL Labs grade', sub: 'TLS 1.3 optimized', color: '#d97706' },
+]
+
+const TRUST = ['Nginx', 'Apache', 'cPanel', 'Plesk', 'Node.js', 'Docker', 'Cloudflare', 'Caddy']
+
+export default function Home({ nav }) {
+  return (
+    <div style={{background:'#f8fafc',minHeight:'100vh',fontFamily:"'Segoe UI',system-ui,sans-serif"}}>
+
+      {/* HERO */}
+      <section style={{position:'relative',overflow:'hidden',paddingTop:96,paddingBottom:80,background:'linear-gradient(160deg,#eef2ff 0%,#f0fdf4 35%,#fefce8 65%,#fdf4ff 100%)'}}>
+        {/* Subtle dot grid */}
+        <div style={{position:'absolute',inset:0,backgroundImage:'radial-gradient(circle,rgba(148,163,184,0.35) 1px,transparent 1px)',backgroundSize:'28px 28px',opacity:0.6}} />
+        {/* Top accent bar */}
+        <div style={{position:'absolute',top:0,left:0,right:0,height:4,background:'linear-gradient(90deg,#2563eb 0%,#7c3aed 35%,#059669 65%,#f59e0b 100%)'}} />
+
+        <div style={{position:'relative',maxWidth:1140,margin:'0 auto',padding:'0 24px'}}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:64,alignItems:'center'}}>
             <div>
-              <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:100, padding:'5px 14px', marginBottom:28, fontSize:11, fontWeight:700, color:'#1d4ed8', textTransform:'uppercase', letterSpacing:'1px' }}>
-                <span style={{ width:6, height:6, borderRadius:'50%', background:'#2563eb', display:'inline-block', animation:'pulse 2s infinite' }} />
-                Certificate Lifecycle Management Platform
+              <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'white',border:'1.5px solid #bfdbfe',borderRadius:100,padding:'5px 14px',marginBottom:28,boxShadow:'0 2px 8px rgba(37,99,235,0.1)'}}>
+                <div style={{width:7,height:7,borderRadius:'50%',background:'#22c55e',boxShadow:'0 0 0 2px rgba(34,197,94,0.25)'}} />
+                <span style={{fontSize:11,fontWeight:700,color:'#1d4ed8',letterSpacing:'0.5px'}}>Enterprise CLM · Let’s Encrypt · 100% Free</span>
               </div>
-              <h1 style={{ fontSize:'clamp(38px,4.5vw,62px)', fontWeight:800, lineHeight:1.05, letterSpacing:'-2px', marginBottom:24, color:'#0f172a' }}>
-                Automate Your SSL<br /><span style={{ background:'linear-gradient(135deg,#2563eb,#7c3aed)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>Certificate Lifecycle</span>
-              </h1>
-              <p style={{ fontSize:17, color:'#475569', maxWidth:520, lineHeight:1.75, marginBottom:40 }}>
-                SSLVault gives security teams complete visibility and control over the entire certificate lifecycle\u2014from issuance to expiry monitoring, deployment automation and compliance tracking.
-              </p>
-              <div style={{ display:'flex', gap:14, flexWrap:'wrap', marginBottom:44 }}>
-                <button onClick={() => nav('/generate')} style={{ display:'inline-flex', alignItems:'center', gap:9, background:'linear-gradient(135deg,#2563eb,#1d4ed8)', color:'white', border:'none', padding:'14px 28px', borderRadius:10, fontSize:15, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 20px rgba(37,99,235,0.35)' }}>
-                  <Shield size={17} /> Issue Certificate
+              <h1 style={{fontSize:54,fontWeight:900,color:'#0f172a',lineHeight:1.06,letterSpacing:'-2.5px',marginBottom:8}}>SSL Certificates</h1>
+              <h1 style={{fontSize:54,fontWeight:900,lineHeight:1.06,letterSpacing:'-2.5px',marginBottom:24,background:'linear-gradient(90deg,#2563eb 0%,#7c3aed 50%,#0ea5e9 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>issued in seconds.</h1>
+              <p style={{fontSize:16,color:'#475569',lineHeight:1.75,marginBottom:36,maxWidth:440}}>Full-stack certificate lifecycle management — issue, install, monitor and renew trusted DV certificates with zero cost and zero friction.</p>
+              <div style={{display:'flex',gap:10,flexWrap:'wrap',marginBottom:36}}>
+                <button onClick={()=>nav('/generate')} style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#1d4ed8 0%,#4f46e5 100%)',color:'white',border:'none',padding:'13px 24px',borderRadius:12,fontSize:14,fontWeight:700,cursor:'pointer',boxShadow:'0 4px 20px rgba(37,99,235,0.35)',letterSpacing:'-0.2px'}}>
+                  Issue Free Certificate <ArrowRight size={14}/>
                 </button>
-                <button onClick={() => nav('/dashboard')} style={{ display:'inline-flex', alignItems:'center', gap:9, background:'white', color:'#0f172a', border:'1px solid #e2e8f0', padding:'14px 28px', borderRadius:10, fontSize:15, fontWeight:600, cursor:'pointer' }}>
-                  <BarChart2 size={17} /> View Inventory
+                <button onClick={()=>nav('/dashboard')} style={{display:'inline-flex',alignItems:'center',gap:8,background:'white',color:'#374151',border:'1.5px solid #e2e8f0',padding:'13px 20px',borderRadius:12,fontSize:14,fontWeight:600,cursor:'pointer',boxShadow:'0 2px 8px rgba(0,0,0,0.06)'}}>
+                  Dashboard <ChevronRight size={14}/>
                 </button>
               </div>
-              <div style={{ display:'flex', gap:28, flexWrap:'wrap' }}>
-                {['RFC 8555 ACME Protocol','DNS-01 Domain Validation','Wildcard Certificate Support','AES-256 Private Key Storage'].map(t => (
-                  <div key={t} style={{ display:'flex', alignItems:'center', gap:7, color:'#64748b', fontSize:13, fontWeight:500 }}>
-                    <CheckCircle size={14} color='#16a34a' strokeWidth={2.5} /> {t}
+              <div style={{display:'flex',gap:20,flexWrap:'wrap'}}>
+                {['No registration required','Trusted by all browsers','Let’s Encrypt backed'].map(l=>(
+                  <div key={l} style={{display:'flex',alignItems:'center',gap:6,fontSize:12,color:'#64748b',fontWeight:600}}>
+                    <CheckCircle size={13} color='#059669'/> {l}
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Live CLM Dashboard preview */}
-            <div style={{ background:'#0f172a', borderRadius:16, overflow:'hidden', boxShadow:'0 24px 60px rgba(0,0,0,0.3)', border:'1px solid #1e293b' }}>
-              {/* Window chrome */}
-              <div style={{ background:'#1e293b', padding:'12px 16px', display:'flex', alignItems:'center', gap:10, borderBottom:'1px solid #334155' }}>
-                <div style={{ display:'flex', gap:6 }}>
-                  <div style={{ width:11, height:11, borderRadius:'50%', background:'#ef4444' }} />
-                  <div style={{ width:11, height:11, borderRadius:'50%', background:'#f59e0b' }} />
-                  <div style={{ width:11, height:11, borderRadius:'50%', background:'#10b981' }} />
-                </div>
-                <div style={{ flex:1, background:'#334155', borderRadius:5, padding:'4px 10px', fontSize:10, color:'#64748b', fontFamily:'monospace' }}>SSLVault \u2014 Certificate Inventory</div>
-              </div>
-              {/* Dashboard content */}
-              <div style={{ padding:'16px' }}>
-                {/* Stats row */}
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:14 }}>
-                  {[['12','Total',''],[' 9','Active','#10b981'],['2','Expiring','#f59e0b'],['1','Expired','#ef4444']].map(([v,l,c]) => (
-                    <div key={l} style={{ background:'#1e293b', borderRadius:8, padding:'10px 12px' }}>
-                      <div style={{ fontSize:20, fontWeight:800, color:c||'#f8fafc', lineHeight:1 }}>{v}</div>
-                      <div style={{ fontSize:10, color:'#64748b', marginTop:3, fontWeight:600 }}>{l}</div>
-                    </div>
-                  ))}
-                </div>
-                {/* Alert */}
-                <div style={{ background:'rgba(245,158,11,0.15)', border:'1px solid rgba(245,158,11,0.3)', borderRadius:7, padding:'8px 12px', marginBottom:10, display:'flex', alignItems:'center', gap:8 }}>
-                  <AlertTriangle size={12} color='#f59e0b' />
-                  <span style={{ fontSize:11, color:'#fbbf24', fontWeight:600 }}>2 certificates expiring within 14 days</span>
-                </div>
-                {/* Cert rows */}
-                {[
-                  ['easysecurity.in','Active',86,'#10b981'],
-                  ['freecerts.site','Active',62,'#10b981'],
-                  ['api.example.com','Expiring',11,'#f59e0b'],
-                  ['*.myapp.io','Active',45,'#10b981'],
-                ].map(([d,s,days,c]) => (
-                  <div key={d} style={{ background:'#1e293b', borderRadius:7, padding:'10px 12px', marginBottom:6, display:'flex', alignItems:'center', gap:10 }}>
-                    <div style={{ width:7, height:7, borderRadius:'50%', background:c, flexShrink:0 }} />
-                    <span style={{ fontSize:11, color:'#cbd5e1', fontFamily:'monospace', flex:1 }}>{d}</span>
-                    <span style={{ fontSize:10, color:c, fontWeight:700, background:`${c}20`, borderRadius:4, padding:'2px 7px' }}>{s}</span>
-                    <span style={{ fontSize:10, color:'#475569', fontWeight:500 }}>{days}d</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust signals */}
-      <section style={{ background:'#f8fafc', borderBottom:'1px solid #e2e8f0', padding:'24px 0' }}>
-        <div className="container">
-          <div style={{ display:'flex', alignItems:'center', gap:0, justifyContent:'space-around', flexWrap:'wrap' }}>
-            {trust.map((t,i) => (
-              <div key={t.name} style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 20px', borderRight:i<trust.length-1?'1px solid #e2e8f0':'none', flexShrink:0 }}>
-                <div style={{ width:36, height:36, borderRadius:8, background:'white', border:'1px solid #e2e8f0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>{t.logo}</div>
-                <div>
-                  <div style={{ fontSize:13, fontWeight:700, color:'#0f172a' }}>{t.name}</div>
-                  <div style={{ fontSize:11, color:'#94a3b8' }}>{t.role}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section style={{ background:'linear-gradient(135deg,#1e3a8a,#2563eb,#7c3aed)', padding:'48px 0' }}>
-        <div className="container">
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
-            {stats.map((s,i) => (
-              <div key={s.label} style={{ textAlign:'center', padding:'0 32px', borderRight:i<3?'1px solid rgba(255,255,255,0.15)':'' }}>
-                <div style={{ display:'flex', alignItems:'baseline', justifyContent:'center', gap:4 }}>
-                  <span style={{ fontSize:40, fontWeight:800, color:'white', lineHeight:1 }}>{s.value}</span>
-                  {s.unit && <span style={{ fontSize:16, fontWeight:700, color:'rgba(255,255,255,0.6)' }}>{s.unit}</span>}
-                </div>
-                <div style={{ fontSize:12, color:'rgba(255,255,255,0.65)', fontWeight:500, marginTop:6, textTransform:'uppercase', letterSpacing:'0.8px' }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Certificate Lifecycle */}
-      <section style={{ padding:'88px 0', background:'white' }}>
-        <div className="container">
-          <div style={{ textAlign:'center', marginBottom:60 }}>
-            <div style={{ display:'inline-block', background:'#eff6ff', color:'#1d4ed8', fontSize:11, fontWeight:700, padding:'4px 14px', borderRadius:100, marginBottom:16, border:'1px solid #bfdbfe', textTransform:'uppercase', letterSpacing:'1px' }}>CERTIFICATE LIFECYCLE</div>
-            <h2 style={{ fontSize:'clamp(28px,3.5vw,44px)', fontWeight:800, letterSpacing:'-1.5px', marginBottom:14, color:'#0f172a' }}>End-to-End Lifecycle Automation</h2>
-            <p style={{ color:'#475569', fontSize:16, maxWidth:480, margin:'0 auto', lineHeight:1.7 }}>From domain validation to deployment and renewal\u2014every phase of the certificate lifecycle managed in one platform.</p>
-          </div>
-          <div style={{ display:'flex', gap:0, position:'relative', overflowX:'auto' }}>
-            <div style={{ position:'absolute', top:36, left:80, right:80, height:2, background:'linear-gradient(90deg,#2563eb,#7c3aed,#0891b2)', zIndex:0, opacity:0.3 }} />
-            {lifecycle.map((l,i) => (
-              <div key={l.phase} style={{ flex:1, textAlign:'center', padding:'0 12px', position:'relative', zIndex:1, minWidth:140 }}>
-                <div style={{ width:72, height:72, borderRadius:16, background:`${l.color}12`, border:`2px solid ${l.color}30`, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:22, fontWeight:800, color:l.color }}>{l.icon}</div>
-                <div style={{ fontSize:11, fontWeight:800, color:l.color, textTransform:'uppercase', letterSpacing:'1px', marginBottom:6 }}>{l.phase}</div>
-                <p style={{ fontSize:12, color:'#64748b', lineHeight:1.6 }}>{l.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Capabilities grid */}
-      <section style={{ padding:'0 0 88px', background:'#f8fafc' }}>
-        <div className="container">
-          <div style={{ textAlign:'center', marginBottom:56 }}>
-            <div style={{ display:'inline-block', background:'#eff6ff', color:'#1d4ed8', fontSize:11, fontWeight:700, padding:'4px 14px', borderRadius:100, marginBottom:16, border:'1px solid #bfdbfe', textTransform:'uppercase', letterSpacing:'1px' }}>PLATFORM CAPABILITIES</div>
-            <h2 style={{ fontSize:'clamp(28px,3.5vw,44px)', fontWeight:800, letterSpacing:'-1.5px', marginBottom:14, color:'#0f172a' }}>Built for Security Teams</h2>
-            <p style={{ color:'#475569', fontSize:16, maxWidth:460, margin:'0 auto', lineHeight:1.7 }}>Every feature designed around the operational needs of PKI and certificate management teams.</p>
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
-            {capabilities.map(({ icon:Icon, title, desc, color, tag }) => (
-              <div key={title} style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:14, padding:28, boxShadow:'0 1px 3px rgba(0,0,0,0.06)', display:'flex', flexDirection:'column', gap:14, position:'relative', overflow:'hidden' }}>
-                <div style={{ position:'absolute', top:0, right:0, background:`${color}10`, borderRadius:'0 14px 0 14px', padding:'4px 10px' }}>
-                  <span style={{ fontSize:9, fontWeight:800, color:color, letterSpacing:'1px' }}>{tag}</span>
-                </div>
-                <div style={{ width:48, height:48, borderRadius:12, background:`${color}12`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                  <Icon size={22} color={color} strokeWidth={2} />
-                </div>
-                <div>
-                  <h3 style={{ fontWeight:700, fontSize:16, marginBottom:8, color:'#0f172a' }}>{title}</h3>
-                  <p style={{ color:'#475569', fontSize:13, lineHeight:1.7 }}>{desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Compliance & Risk */}
-      <section style={{ padding:'88px 0', background:'white' }}>
-        <div className="container">
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:60, alignItems:'center' }}>
             <div>
-              <div style={{ display:'inline-block', background:'#eff6ff', color:'#1d4ed8', fontSize:11, fontWeight:700, padding:'4px 14px', borderRadius:100, marginBottom:20, border:'1px solid #bfdbfe', textTransform:'uppercase', letterSpacing:'1px' }}>RISK & COMPLIANCE</div>
-              <h2 style={{ fontSize:'clamp(26px,3vw,38px)', fontWeight:800, letterSpacing:'-1px', marginBottom:16, color:'#0f172a' }}>Certificate Risk Visibility in Real Time</h2>
-              <p style={{ color:'#475569', fontSize:15, lineHeight:1.75, marginBottom:32 }}>Prevent certificate-related outages before they happen. SSLVault continuously monitors your inventory and surfaces risk signals so your team can act proactively.</p>
-              {[
-                ['\ud83d\udd14', 'Expiry Alerts', '30/14/7-day threshold notifications for every managed certificate.'],
-                ['\ud83d\udcca', 'Lifecycle Dashboard', 'Complete inventory with status, days-remaining and issuer details.'],
-                ['\ud83d\udd12', 'Private Key Security', 'Keys encrypted with AES-256-GCM. Never exposed in transit.'],
-                ['\ud83d\udd04', 'Renewal Automation', 'One-click renewal flow. No re-validation for the same domain.'],
-              ].map(([icon,title,desc]) => (
-                <div key={title} style={{ display:'flex', gap:14, marginBottom:20 }}>
-                  <div style={{ width:40, height:40, borderRadius:10, background:'#eff6ff', border:'1px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 }}>{icon}</div>
-                  <div>
-                    <div style={{ fontWeight:700, fontSize:14, color:'#0f172a', marginBottom:3 }}>{title}</div>
-                    <div style={{ fontSize:13, color:'#64748b', lineHeight:1.6 }}>{desc}</div>
-                  </div>
-                </div>
-              ))}
+              <CertHeroIllustration/>
             </div>
-            <div style={{ background:'#0f172a', borderRadius:16, padding:28, boxShadow:'0 20px 60px rgba(0,0,0,0.25)' }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
-                <span style={{ fontSize:12, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'1px' }}>Risk Overview</span>
-                <span style={{ fontSize:10, color:'#10b981', background:'rgba(16,185,129,0.1)', borderRadius:4, padding:'3px 8px', fontWeight:600 }}>LIVE</span>
+          </div>
+        </div>
+      </section>
+
+      {/* STATS BAND */}
+      <section style={{background:'white',borderTop:'1px solid #f1f5f9',borderBottom:'1px solid #f1f5f9',boxShadow:'0 1px 0 #f1f5f9'}}>
+        <div style={{maxWidth:1140,margin:'0 auto',padding:'0 24px'}}>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)'}}>
+            {STATS.map(({v,l,sub,color},i)=>(
+              <div key={l} style={{padding:'26px 0',textAlign:'center',borderRight:i<3?'1px solid #f1f5f9':'none'}}>
+                <div style={{fontSize:34,fontWeight:900,letterSpacing:'-1.5px',lineHeight:1,color:color}}>{v}</div>
+                <div style={{fontSize:12,color:'#374151',fontWeight:700,marginTop:5}}>{l}</div>
+                <div style={{fontSize:10,color:'#94a3b8',marginTop:2}}>{sub}</div>
               </div>
-              {[
-                { label:'Certificates Monitored', value:'12', color:'#60a5fa' },
-                { label:'Active (Healthy)', value:'9', color:'#34d399' },
-                { label:'Expiring \u003C 14 days', value:'2', color:'#fbbf24' },
-                { label:'Expired', value:'1', color:'#f87171' },
-                { label:'Avg. Days to Expiry', value:'54d', color:'#a78bfa' },
-                { label:'Wildcard Certificates', value:'3', color:'#38bdf8' },
-              ].map(({label,value,color}) => (
-                <div key={label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom:'1px solid #1e293b' }}>
-                  <span style={{ fontSize:12, color:'#94a3b8', fontWeight:500 }}>{label}</span>
-                  <span style={{ fontSize:14, fontWeight:800, color:color, fontFamily:'monospace' }}>{value}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section style={{padding:'96px 0',background:'#f8fafc'}}>
+        <div style={{maxWidth:1140,margin:'0 auto',padding:'0 24px'}}>
+          <div style={{textAlign:'center',marginBottom:60}}>
+            <div style={{display:'inline-block',fontSize:11,fontWeight:700,color:'#2563eb',letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:14,background:'#eff6ff',border:'1px solid #bfdbfe',borderRadius:100,padding:'5px 16px'}}>Full CLM Platform</div>
+            <h2 style={{fontSize:38,fontWeight:900,color:'#0f172a',letterSpacing:'-1px',marginBottom:14,lineHeight:1.1}}>Everything for certificate lifecycle management</h2>
+            <p style={{color:'#64748b',fontSize:16,maxWidth:480,margin:'0 auto',lineHeight:1.65}}>From first issuance to renewal, SSLVault covers the complete PKI lifecycle for free.</p>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:20}}>
+            {FEATURES.map(({icon:Icon,title,desc,color,bg,border})=>(
+              <div key={title} style={{background:bg,border:'1.5px solid '+border,borderRadius:18,padding:'28px',position:'relative',overflow:'hidden'}}>
+                <div style={{position:'absolute',top:-20,right:-20,width:80,height:80,borderRadius:'50%',background:color,opacity:0.06}} />
+                <div style={{width:44,height:44,borderRadius:12,background:'white',border:'1.5px solid '+border,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:16,boxShadow:'0 2px 8px rgba(0,0,0,0.06)'}}>
+                  <Icon size={20} color={color} strokeWidth={1.8}/>
+                </div>
+                <h3 style={{fontSize:15,fontWeight:800,color:'#0f172a',marginBottom:8,letterSpacing:'-0.3px'}}>{title}</h3>
+                <p style={{fontSize:13,color:'#475569',lineHeight:1.7}}>{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section style={{padding:'0 0 96px'}}>
+        <div style={{maxWidth:1140,margin:'0 auto',padding:'0 24px'}}>
+          <div style={{background:'linear-gradient(135deg,#1e1b4b 0%,#1d4ed8 50%,#0369a1 100%)',borderRadius:28,padding:'64px',position:'relative',overflow:'hidden'}}>
+            <div style={{position:'absolute',top:-60,right:-60,width:280,height:280,borderRadius:'50%',background:'rgba(255,255,255,0.04)'}} />
+            <div style={{position:'absolute',bottom:-80,left:-40,width:240,height:240,borderRadius:'50%',background:'rgba(255,255,255,0.03)'}} />
+            <div style={{position:'absolute',inset:0,backgroundImage:'radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px)',backgroundSize:'32px 32px'}} />
+            <div style={{textAlign:'center',marginBottom:56,position:'relative'}}>
+              <div style={{display:'inline-block',fontSize:11,fontWeight:700,color:'#a5f3fc',letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:14,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:100,padding:'5px 16px'}}>4 Simple Steps</div>
+              <h2 style={{fontSize:34,fontWeight:900,color:'white',letterSpacing:'-0.8px',marginBottom:12}}>Issue a certificate in minutes</h2>
+              <p style={{color:'rgba(255,255,255,0.55)',fontSize:15,maxWidth:400,margin:'0 auto'}}>No accounts required. Works for any publicly accessible domain.</p>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:24,position:'relative'}}>
+              <div style={{position:'absolute',top:22,left:'calc(12.5% + 16px)',right:'calc(12.5% + 16px)',height:1,background:'rgba(255,255,255,0.15)',zIndex:0}}/>
+              {STEPS.map(({n,title,desc,color})=>(
+                <div key={n} style={{textAlign:'center',position:'relative',zIndex:1}}>
+                  <div style={{width:46,height:46,borderRadius:'50%',background:'white',color:color,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 18px',fontSize:13,fontWeight:900,boxShadow:'0 0 0 4px rgba(255,255,255,0.15),0 8px 24px rgba(0,0,0,0.25)'}}>{n}</div>
+                  <h4 style={{fontSize:13,fontWeight:700,color:'white',marginBottom:8,letterSpacing:'-0.2px'}}>{title}</h4>
+                  <p style={{fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.65}}>{desc}</p>
                 </div>
               ))}
-              <button onClick={() => nav('/dashboard')} style={{ width:'100%', marginTop:20, background:'#2563eb', color:'white', border:'none', padding:'11px', borderRadius:8, fontSize:13, fontWeight:700, cursor:'pointer' }}>Open Certificate Inventory \u2192</button>
             </div>
+            <div style={{textAlign:'center',marginTop:52,position:'relative'}}>
+              <button onClick={()=>nav('/generate')} style={{display:'inline-flex',alignItems:'center',gap:8,background:'white',color:'#1d4ed8',border:'none',padding:'14px 28px',borderRadius:12,fontSize:14,fontWeight:800,cursor:'pointer',boxShadow:'0 4px 24px rgba(0,0,0,0.2)',letterSpacing:'-0.3px'}}>
+                Get Your Free Certificate <ArrowRight size={14}/>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PLATFORMS */}
+      <section style={{padding:'0 0 80px'}}>
+        <div style={{maxWidth:1140,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
+          <p style={{fontSize:11,fontWeight:700,color:'#94a3b8',letterSpacing:'1.8px',textTransform:'uppercase',marginBottom:24}}>Works with every platform</p>
+          <div style={{display:'flex',gap:10,flexWrap:'wrap',justifyContent:'center'}}>
+            {TRUST.map(t=>(
+              <div key={t} style={{background:'white',border:'1.5px solid #e2e8f0',borderRadius:10,padding:'9px 20px',fontSize:13,fontWeight:700,color:'#374151',boxShadow:'0 1px 4px rgba(0,0,0,0.05)'}}>{t}</div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section style={{ padding:'0 0 88px', background:'#f8fafc' }}>
-        <div className="container">
-          <div style={{ background:'linear-gradient(135deg,#1e3a8a 0%,#2563eb 50%,#7c3aed 100%)', borderRadius:20, padding:'68px 56px', textAlign:'center', position:'relative', overflow:'hidden' }}>
-            <div style={{ position:'absolute', top:-80, right:-80, width:300, height:300, background:'rgba(255,255,255,0.04)', borderRadius:'50%' }} />
-            <div style={{ position:'absolute', bottom:-60, left:-60, width:250, height:250, background:'rgba(255,255,255,0.04)', borderRadius:'50%' }} />
-            <div style={{ position:'relative', zIndex:1 }}>
-              <div style={{ display:'inline-block', background:'rgba(255,255,255,0.15)', color:'white', fontSize:11, fontWeight:700, padding:'4px 14px', borderRadius:100, marginBottom:20, border:'1px solid rgba(255,255,255,0.2)', textTransform:'uppercase', letterSpacing:'1px' }}>START IN 60 SECONDS</div>
-              <h2 style={{ fontSize:'clamp(28px,3.5vw,44px)', fontWeight:800, letterSpacing:'-1.5px', marginBottom:16, color:'white' }}>Start Managing Certificates Today</h2>
-              <p style={{ color:'rgba(255,255,255,0.75)', fontSize:16, maxWidth:480, margin:'0 auto 40px', lineHeight:1.7 }}>Free forever. No credit card. Trusted CA. Get your first SSL certificate issued and monitored in under 60 seconds.</p>
-              <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
-                <button onClick={() => nav('/generate')} style={{ display:'inline-flex', alignItems:'center', gap:8, background:'white', color:'#1d4ed8', border:'none', padding:'14px 30px', borderRadius:10, fontSize:15, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 20px rgba(0,0,0,0.2)' }}>
-                  <Shield size={17} /> Issue Your First Certificate
-                </button>
-                <button onClick={() => nav('/auth')} style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(255,255,255,0.12)', color:'white', border:'1px solid rgba(255,255,255,0.25)', padding:'14px 30px', borderRadius:10, fontSize:15, fontWeight:600, cursor:'pointer' }}>
-                  Create Free Account
-                </button>
-              </div>
+      <section style={{padding:'0 0 100px'}}>
+        <div style={{maxWidth:1140,margin:'0 auto',padding:'0 24px'}}>
+          <div style={{background:'linear-gradient(135deg,#ecfdf5 0%,#eff6ff 50%,#fdf4ff 100%)',border:'1.5px solid #e2e8f0',borderRadius:24,padding:'80px 60px',textAlign:'center',position:'relative',overflow:'hidden'}}>
+            <div style={{position:'absolute',top:-40,left:'50%',transform:'translateX(-50%)',width:400,height:200,background:'radial-gradient(ellipse,rgba(37,99,235,0.08),transparent)',borderRadius:'50%'}} />
+            <div style={{width:60,height:60,background:'linear-gradient(135deg,#1d4ed8,#7c3aed)',borderRadius:18,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px',boxShadow:'0 0 0 8px rgba(37,99,235,0.1),0 8px 32px rgba(37,99,235,0.3)',position:'relative'}}>
+              <Shield size={28} color='white'/>
+            </div>
+            <h2 style={{fontSize:40,fontWeight:900,color:'#0f172a',letterSpacing:'-1.2px',marginBottom:14,position:'relative'}}>Start securing your domains today</h2>
+            <p style={{color:'#64748b',fontSize:16,maxWidth:460,margin:'0 auto 36px',lineHeight:1.65,position:'relative'}}>Free TLS certificates for everyone. No credit card. No hidden fees. 100% Let’s Encrypt backed.</p>
+            <div style={{display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap',position:'relative'}}>
+              <button onClick={()=>nav('/generate')} style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#1d4ed8,#4f46e5)',color:'white',border:'none',padding:'14px 28px',borderRadius:12,fontSize:14,fontWeight:800,cursor:'pointer',boxShadow:'0 4px 20px rgba(37,99,235,0.35)',letterSpacing:'-0.3px'}}>
+                Issue Free Certificate <ArrowRight size={14}/>
+              </button>
+              <button onClick={()=>nav('/install')} style={{display:'inline-flex',alignItems:'center',gap:8,background:'white',color:'#374151',border:'1.5px solid #e2e8f0',padding:'14px 22px',borderRadius:12,fontSize:14,fontWeight:600,cursor:'pointer',boxShadow:'0 2px 8px rgba(0,0,0,0.06)'}}>
+                Install Guide <ChevronRight size={14}/>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{ background:'#0f172a', padding:'40px 0' }}>
-        <div className="container" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:20 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-            <div style={{ width:32, height:32, background:'linear-gradient(135deg,#2563eb,#1d4ed8)', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Shield size={16} color='white' />
-            </div>
-            <div>
-              <div style={{ fontWeight:800, fontSize:15, color:'white' }}>SSL<span style={{ color:'#60a5fa' }}>Vault</span></div>
-              <div style={{ fontSize:11, color:'#475569', marginTop:1 }}>Certificate Lifecycle Management</div>
-            </div>
+      {/* FOOTER */}
+      <footer style={{borderTop:'1px solid #f1f5f9',background:'white',padding:'28px 0'}}>
+        <div style={{maxWidth:1140,margin:'0 auto',padding:'0 24px',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <div style={{width:28,height:28,background:'linear-gradient(135deg,#1d4ed8,#4f46e5)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 2px 8px rgba(37,99,235,0.3)'}}><Shield size={13} color='white'/></div>
+            <span style={{color:'#1e293b',fontSize:14,fontWeight:800}}>SSL<span style={{color:'#2563eb'}}>Vault</span> CLM</span>
           </div>
-          <p style={{ fontSize:12, color:'#475569' }}>Free SSL certificates powered by Let\u2019s Encrypt \u00b7 AES-256 encryption \u00b7 RFC 8555 ACME</p>
-          <div style={{ display:'flex', gap:24 }}>
-            {[['Inventory','/dashboard'],['Issue Cert','/generate'],['Monitor','/monitor'],['Install','/install']].map(([l,p]) => (
-              <span key={l} onClick={() => nav(p)} style={{ fontSize:13, color:'#475569', cursor:'pointer', fontWeight:500, transition:'color 0.15s' }}
-                onMouseEnter={e => e.target.style.color='#94a3b8'}
-                onMouseLeave={e => e.target.style.color='#475569'}>{l}</span>
+          <p style={{color:'#94a3b8',fontSize:11,letterSpacing:'0.3px'}}>Powered by Let’s Encrypt · ACME RFC 8555 · Free forever</p>
+          <div style={{display:'flex',gap:16}}>
+            {[['Install Guide','/install'],['Knowledge Base','/knowledge-base'],['Dashboard','/dashboard']].map(([l,p])=>(
+              <button key={l} onClick={()=>nav(p)} style={{background:'none',border:'none',color:'#64748b',fontSize:11,cursor:'pointer',fontWeight:600}}>{l}</button>
             ))}
           </div>
         </div>
       </footer>
+
     </div>
   )
 }

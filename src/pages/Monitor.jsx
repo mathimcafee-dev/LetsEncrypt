@@ -223,7 +223,153 @@ function MonitoredDomainRow({ m, onScan, onDelete, onRequestCert, scanning }) {
   )
 }
 
-export default function Monitor() {
+function PublicScan({ nav }) {
+  const [domain, setDomain] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+
+  const runScan = async () => {
+    const cleaned = domain.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '')
+    if (!cleaned) { setError('Please enter a domain'); return }
+    setError(''); setLoading(true); setResult(null)
+    try {
+      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/scan-ssl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain: cleaned, public: true })
+      })
+      const data = await res.json()
+      if (data.error) setError(data.error)
+      else setResult({ ...data, domain: cleaned })
+    } catch (e) {
+      setError('Could not reach the scanner. Try again in a moment.')
+    }
+    setLoading(false)
+  }
+
+  const days = result?.daysLeft ?? null
+  const status = days == null ? null : days < 0 ? 'expired' : days < 14 ? 'warning' : days < 30 ? 'caution' : 'healthy'
+  const statusColor = status === 'healthy' ? '#059669' : status === 'caution' ? '#d97706' : status === 'warning' ? '#dc2626' : status === 'expired' ? '#dc2626' : '#94a3b8'
+  const statusBg    = status === 'healthy' ? '#ecfdf5' : status === 'caution' ? '#fffbeb' : status === 'warning' ? '#fef2f2' : status === 'expired' ? '#fef2f2' : '#f1f5f9'
+
+  return (
+    <div style={{ background:'linear-gradient(160deg,#eef2ff 0%,#f0fdf4 35%,#fefce8 65%,#fdf4ff 100%)', minHeight:'calc(100vh - 56px)', position:'relative', overflow:'hidden', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
+      <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle,rgba(148,163,184,0.35) 1px,transparent 1px)', backgroundSize:'28px 28px', opacity:0.5, pointerEvents:'none' }} />
+
+      <div style={{ position:'relative', maxWidth:880, margin:'0 auto', padding:'72px 24px 48px', textAlign:'center' }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', border:'1.5px solid #bfdbfe', borderRadius:100, padding:'5px 14px', marginBottom:24, boxShadow:'0 2px 8px rgba(37,99,235,0.1)' }}>
+          <div style={{ width:7, height:7, borderRadius:'50%', background:'#22c55e', boxShadow:'0 0 0 2px rgba(34,197,94,0.25)' }} />
+          <span style={{ fontSize:11, fontWeight:700, color:'#1d4ed8', letterSpacing:'0.5px' }}>Free SSL Health Check · No login required</span>
+        </div>
+
+        <h1 style={{ fontSize:48, fontWeight:900, color:'#0f172a', lineHeight:1.06, letterSpacing:'-2px', marginBottom:8 }}>Check any domain's</h1>
+        <h1 style={{ fontSize:48, fontWeight:900, lineHeight:1.06, letterSpacing:'-2px', marginBottom:18, background:'linear-gradient(90deg,#2563eb 0%,#7c3aed 50%,#0ea5e9 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>SSL certificate.</h1>
+        <p style={{ fontSize:15, color:'#475569', lineHeight:1.7, marginBottom:32, maxWidth:520, margin:'0 auto 32px' }}>
+          Get expiry dates, issuer details and TLS health for any public domain in seconds. Sign in to save domains and get email alerts before they expire.
+        </p>
+
+        <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:8, boxShadow:'0 12px 40px rgba(15,23,42,0.08)', display:'flex', gap:8, maxWidth:560, margin:'0 auto 14px' }}>
+          <div style={{ flex:1, display:'flex', alignItems:'center', gap:10, padding:'0 14px' }}>
+            <Search size={16} color="#94a3b8"/>
+            <input
+              type="text"
+              placeholder="example.com"
+              value={domain}
+              onChange={e => setDomain(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && runScan()}
+              autoFocus
+              style={{ flex:1, border:'none', outline:'none', padding:'13px 0', fontSize:15, fontFamily:'inherit', color:'#0f172a', background:'transparent' }}
+            />
+          </div>
+          <button
+            onClick={runScan}
+            disabled={loading}
+            style={{ background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', color:'white', border:'none', padding:'0 22px', borderRadius:12, fontSize:13, fontWeight:800, letterSpacing:'-0.2px', cursor:loading?'wait':'pointer', display:'inline-flex', alignItems:'center', gap:6, boxShadow:'0 4px 14px rgba(37,99,235,0.35)' }}
+          >
+            {loading ? 'Scanning…' : <>Scan SSL <ArrowRight size={13}/></>}
+          </button>
+        </div>
+        <p style={{ fontSize:11, color:'#94a3b8', marginBottom:36 }}>Try <span onClick={() => { setDomain('github.com'); }} style={{ color:'#2563eb', cursor:'pointer', fontWeight:600 }}>github.com</span>, <span onClick={() => { setDomain('vercel.com'); }} style={{ color:'#2563eb', cursor:'pointer', fontWeight:600 }}>vercel.com</span> or any domain you want to check.</p>
+
+        {error && (
+          <div style={{ maxWidth:560, margin:'0 auto 24px', background:'#fef2f2', border:'1px solid #fecaca', color:'#b91c1c', padding:'12px 14px', borderRadius:12, fontSize:13, fontWeight:600, display:'flex', alignItems:'center', gap:10 }}>
+            <AlertTriangle size={16}/> {error}
+          </div>
+        )}
+
+        {result && (
+          <div style={{ maxWidth:560, margin:'0 auto 32px', background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:24, textAlign:'left', boxShadow:'0 12px 40px rgba(15,23,42,0.08)' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12, paddingBottom:16, borderBottom:'1px solid #f1f5f9', marginBottom:16 }}>
+              <div style={{ width:42, height:42, background:'linear-gradient(135deg,#1d4ed8,#0ea5e9)', borderRadius:11, display:'flex', alignItems:'center', justifyContent:'center', color:'white' }}>
+                <Lock size={18} strokeWidth={2}/>
+              </div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontWeight:800, fontSize:15, color:'#0f172a', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{result.domain}</div>
+                <div style={{ fontSize:11, color:'#94a3b8', fontFamily:'monospace', marginTop:2 }}>{result.issuer || 'Issuer unknown'}</div>
+              </div>
+              <span style={{ background:statusBg, color:statusColor, fontSize:10, fontWeight:800, padding:'5px 10px', borderRadius:7, letterSpacing:'0.4px', whiteSpace:'nowrap' }}>
+                {status === 'healthy' && '● HEALTHY'}
+                {status === 'caution' && '● RENEW SOON'}
+                {status === 'warning' && '● EXPIRING'}
+                {status === 'expired' && '● EXPIRED'}
+              </span>
+            </div>
+
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:16 }}>
+              <div style={{ background:'#f8fafc', border:'1px solid #f1f5f9', borderRadius:10, padding:'12px 14px' }}>
+                <div style={{ fontSize:10, color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:4 }}>Days left</div>
+                <div style={{ fontSize:22, fontWeight:900, color:statusColor, letterSpacing:'-0.5px' }}>{days != null ? days : '—'}</div>
+              </div>
+              <div style={{ background:'#f8fafc', border:'1px solid #f1f5f9', borderRadius:10, padding:'12px 14px' }}>
+                <div style={{ fontSize:10, color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:4 }}>Reachable</div>
+                <div style={{ fontSize:22, fontWeight:900, color: result.alive ? '#059669' : '#dc2626', letterSpacing:'-0.5px' }}>{result.alive ? 'Yes' : 'No'}</div>
+              </div>
+            </div>
+
+            <div style={{ display:'flex', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid #f1f5f9', fontSize:12 }}>
+              <span style={{ color:'#94a3b8', fontWeight:600 }}>Issued</span>
+              <span style={{ color:'#0f172a', fontWeight:700 }}>{result.certStart ? format(new Date(result.certStart), 'MMM d, yyyy') : '—'}</span>
+            </div>
+            <div style={{ display:'flex', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid #f1f5f9', fontSize:12 }}>
+              <span style={{ color:'#94a3b8', fontWeight:600 }}>Expires</span>
+              <span style={{ color:'#0f172a', fontWeight:700 }}>{result.certExpiry ? format(new Date(result.certExpiry), 'MMM d, yyyy') : '—'}</span>
+            </div>
+            <div style={{ display:'flex', justifyContent:'space-between', padding:'7px 0', fontSize:12 }}>
+              <span style={{ color:'#94a3b8', fontWeight:600 }}>Issuer</span>
+              <span style={{ color:'#0f172a', fontWeight:700, maxWidth:'60%', textAlign:'right', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{result.issuer || '—'}</span>
+            </div>
+
+            <button
+              onClick={() => nav('/auth')}
+              style={{ marginTop:18, width:'100%', background:'#0f172a', color:'white', border:'none', padding:'12px', borderRadius:11, fontSize:13, fontWeight:800, cursor:'pointer', display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8 }}
+            >
+              <Bell size={14}/> Sign in to monitor this domain
+            </button>
+          </div>
+        )}
+
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, maxWidth:680, margin:'0 auto' }}>
+          {[
+            { icon:Bell,    color:'#d97706', bg:'#fffbeb', border:'#fde68a', title:'Expiry alerts',     desc:'Email warnings at 30, 14 and 7 days.' },
+            { icon:Globe,   color:'#7c3aed', bg:'#f5f3ff', border:'#ddd6fe', title:'Bulk monitoring',   desc:'Track all your domains in one inventory.' },
+            { icon:RefreshCw, color:'#2563eb', bg:'#eff6ff', border:'#bfdbfe', title:'One-click renewal', desc:'Renew expiring certs without re-validation.' },
+          ].map(({ icon:Icon, color, bg, border, title, desc }) => (
+            <div key={title} style={{ background:bg, border:'1.5px solid '+border, borderRadius:14, padding:18, textAlign:'left' }}>
+              <div style={{ width:34, height:34, borderRadius:9, background:'white', border:'1.5px solid '+border, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:10 }}>
+                <Icon size={15} color={color} strokeWidth={2}/>
+              </div>
+              <div style={{ fontSize:13, fontWeight:800, color:'#0f172a', marginBottom:4 }}>{title}</div>
+              <div style={{ fontSize:11, color:'#64748b', lineHeight:1.55 }}>{desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function Monitor({ nav }) {
   const { user, loading: authLoading } = useAuth()
   const [certs, setCerts] = useState([])
   const [monitored, setMonitored] = useState([])
@@ -381,16 +527,7 @@ export default function Monitor() {
     expired: certs.filter(c => getStatus(c) === 'expired').length,
   }
 
-  if (!authLoading && !user) return (
-    <div className="container" style={{ padding:'80px 24px', textAlign:'center' }}>
-      <div style={{ width:64, height:64, background:'var(--accent-light)', borderRadius:16, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
-        <Shield size={28} color="var(--accent)" />
-      </div>
-      <h2 style={{ fontSize:24, fontWeight:800, marginBottom:8, color:'var(--text)' }}>Sign in to Monitor Certificates</h2>
-      <p style={{ color:'var(--text2)', marginBottom:24 }}>Track expiry dates, get alerts, and manage all your SSL certificates.</p>
-      <button onClick={() => window.location.href='/auth'} className="btn btn-primary btn-lg">Sign In to Continue</button>
-    </div>
-  )
+  if (!authLoading && !user) return <PublicScan nav={nav} />
 
   return (
     <div style={{ background:'var(--bg)', minHeight:'calc(100vh - 60px)', padding:'40px 0 80px' }}>

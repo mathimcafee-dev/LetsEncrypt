@@ -236,10 +236,60 @@ export default function DnsProviders({ nav }) {
   }
 
   if (!authLoading && !user) return (
-    <div className="container" style={{ padding:'80px 24px', textAlign:'center' }}>
-      <Shield size={48} color="var(--text3)" style={{ margin:'0 auto 20px' }} />
-      <h2 style={{ fontSize:24, fontWeight:800, marginBottom:8 }}>Sign in Required</h2>
-      <button onClick={() => nav('/auth')} className="btn btn-primary btn-lg">Sign In</button>
+    <div style={{ background:'linear-gradient(160deg,#eef2ff 0%,#f0fdf4 35%,#fefce8 65%,#fdf4ff 100%)', minHeight:'calc(100vh - 56px)', position:'relative', overflow:'hidden', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
+      <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle,rgba(148,163,184,0.35) 1px,transparent 1px)', backgroundSize:'28px 28px', opacity:0.5, pointerEvents:'none' }} />
+
+      <div style={{ position:'relative', maxWidth:1140, margin:'0 auto', padding:'72px 24px 64px' }}>
+        <div style={{ textAlign:'center', marginBottom:48 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', border:'1.5px solid #bfdbfe', borderRadius:100, padding:'5px 14px', marginBottom:20, boxShadow:'0 2px 8px rgba(37,99,235,0.1)' }}>
+            <div style={{ width:7, height:7, borderRadius:'50%', background:'#22c55e', boxShadow:'0 0 0 2px rgba(34,197,94,0.25)' }} />
+            <span style={{ fontSize:11, fontWeight:700, color:'#1d4ed8', letterSpacing:'0.5px' }}>Auto-DNS · {Object.keys(PROVIDERS).length} providers supported</span>
+          </div>
+          <h1 style={{ fontSize:42, fontWeight:900, color:'#0f172a', lineHeight:1.06, letterSpacing:'-1.8px', marginBottom:8 }}>One-click DNS</h1>
+          <h1 style={{ fontSize:42, fontWeight:900, lineHeight:1.06, letterSpacing:'-1.8px', marginBottom:14, background:'linear-gradient(90deg,#2563eb 0%,#7c3aed 50%,#0ea5e9 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>for any provider.</h1>
+          <p style={{ fontSize:15, color:'#475569', lineHeight:1.7, maxWidth:540, margin:'0 auto' }}>
+            Connect your DNS provider once — we'll add the TXT records for ACME validation automatically. No more copy-pasting challenge tokens.
+          </p>
+        </div>
+
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:14, marginBottom:40 }}>
+          {Object.entries(PROVIDERS).map(([key, p]) => (
+            <div key={key} style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:14, padding:20, boxShadow:'0 1px 4px rgba(0,0,0,0.04)', display:'flex', alignItems:'center', gap:14 }}>
+              <div style={{ width:46, height:46, borderRadius:11, background:'linear-gradient(135deg,#f8fafc,#eff6ff)', border:'1px solid #e2e8f0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>
+                {p.icon}
+              </div>
+              <div style={{ minWidth:0 }}>
+                <div style={{ fontSize:14, fontWeight:800, color:'#0f172a', marginBottom:3 }}>{p.name}</div>
+                <div style={{ fontSize:11, color:'#64748b' }}>{p.fields.length} field{p.fields.length===1?'':'s'} to connect</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:36, textAlign:'center', boxShadow:'0 12px 40px rgba(15,23,42,0.06)' }}>
+          <div style={{ width:54, height:54, background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', borderRadius:14, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 18px', boxShadow:'0 0 0 6px rgba(37,99,235,0.08), 0 8px 20px rgba(37,99,235,0.3)' }}>
+            <Shield size={26} color="white" strokeWidth={2}/>
+          </div>
+          <h2 style={{ fontSize:22, fontWeight:900, color:'#0f172a', letterSpacing:'-0.6px', marginBottom:8 }}>Sign in to connect your DNS</h2>
+          <p style={{ color:'#64748b', fontSize:14, maxWidth:440, margin:'0 auto 24px', lineHeight:1.65 }}>
+            API tokens are encrypted at rest and used only for ACME challenge records.
+          </p>
+          <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
+            <button
+              onClick={() => nav('/auth')}
+              style={{ display:'inline-flex', alignItems:'center', gap:8, background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', color:'white', border:'none', padding:'13px 24px', borderRadius:12, fontSize:14, fontWeight:800, cursor:'pointer', boxShadow:'0 4px 16px rgba(37,99,235,0.35)', letterSpacing:'-0.2px' }}
+            >
+              Sign in to continue
+            </button>
+            <button
+              onClick={() => nav('/install')}
+              style={{ display:'inline-flex', alignItems:'center', gap:8, background:'white', color:'#374151', border:'1.5px solid #e2e8f0', padding:'13px 22px', borderRadius:12, fontSize:14, fontWeight:600, cursor:'pointer' }}
+            >
+              See install guide
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 
