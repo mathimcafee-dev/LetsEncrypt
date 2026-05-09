@@ -194,11 +194,102 @@ APACHE
   fi
 }
 
+# ── Server scan: read nginx/apache configs + cert expiry ─────────────
+run_server_scan() {
+  local job_id="$1"
+  info "Running server scan..."
+
+  local domains_json="[]"
+  local found_count=0
+
+  # Build JSON array of discovered certs
+  scan_cert() {
+    local domain_name="$1" cert_file="$2" key_file="$3" ws="$4"
+    [ -f "$cert_file" ] || return
+    local expiry="" issuer="" days_left=0
+    expiry=$(openssl x509 -enddate -noout -in "$cert_file" 2>/dev/null | cut -d= -f2)
+    issuer=$(openssl x509 -issuer -noout -in "$cert_file" 2>/dev/null | grep -o 'O=[^,/]*' | head -1 | sed 's/O=//')
+    if [ -n "$expiry" ]; then
+      local exp_ts now_ts
+      exp_ts=$(date -d "$expiry" +%s 2>/dev/null || date -j -f "%b %d %T %Y %Z" "$expiry" +%s 2>/dev/null || echo 0)
+      now_ts=$(date +%s)
+      days_left=$(( (exp_ts - now_ts) / 86400 ))
+    fi
+    local in_vault="false"
+    local iso_expiry=""
+    [ -n "$expiry" ] && iso_expiry=$(date -d "$expiry" -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo "")
+    # Append to JSON
+    local entry="{\"domain\":\"$domain_name\",\"web_server\":\"$ws\",\"cert_path\":\"$cert_file\",\"key_path\":\"$key_file\",\"cert_expiry\":\"$iso_expiry\",\"cert_issuer\":\"$issuer\",\"days_left\":$days_left,\"in_sslvault\":$in_vault}"
+    if [ "$found_count" -eq 0 ]; then
+      domains_json="[$entry"
+    else
+      domains_json="$domains_json,$entry"
+    fi
+    found_count=$((found_count + 1))
+    ok "Found: $domain_name ($days_left days) [$ws]"
+  }
+
+  # Scan Nginx configs
+  for conf in /etc/nginx/sites-enabled/* /etc/nginx/conf.d/*.conf 2>/dev/null; do
+    [ -f "$conf" ] || continue
+    local domain_name cert_file key_file
+    domain_name=$(grep -m1 'server_name' "$conf" 2>/dev/null | awk '{print $2}' | tr -d ';')
+    cert_file=$(grep -m1 'ssl_certificate ' "$conf" 2>/dev/null | awk '{print $2}' | tr -d ';')
+    key_file=$(grep -m1 'ssl_certificate_key' "$conf" 2>/dev/null | awk '{print $2}' | tr -d ';')
+    [ -n "$domain_name" ] && [ -n "$cert_file" ] && scan_cert "$domain_name" "$cert_file" "${key_file:-}" "nginx"
+  done
+
+  # Scan Apache configs
+  for conf in /etc/apache2/sites-enabled/* /etc/httpd/conf.d/*.conf 2>/dev/null; do
+    [ -f "$conf" ] || continue
+    local domain_name cert_file key_file
+    domain_name=$(grep -im1 'ServerName' "$conf" 2>/dev/null | awk '{print $2}')
+    cert_file=$(grep -im1 'SSLCertificateFile' "$conf" 2>/dev/null | awk '{print $2}')
+    key_file=$(grep -im1 'SSLCertificateKeyFile' "$conf" 2>/dev/null | awk '{print $2}')
+    [ -n "$domain_name" ] && [ -n "$cert_file" ] && scan_cert "$domain_name" "$cert_file" "${key_file:-}" "apache"
+  done
+
+  # Also scan SSLVault-managed certs directory
+  for domain_dir in "$CERT_DIR"/*/; do
+    [ -d "$domain_dir" ] || continue
+    local domain_name cert_file key_file
+    domain_name=$(basename "$domain_dir")
+    cert_file="$domain_dir/fullchain.pem"
+    key_file="$domain_dir/privkey.pem"
+    [ -f "$cert_file" ] && scan_cert "$domain_name" "$cert_file" "${key_file:-}" "$WEB_SERVER"
+  done
+
+  [ "$found_count" -gt 0 ] && domains_json="$domains_json]" || domains_json="[]"
+
+  info "Scan complete: $found_count cert(s) found"
+
+  # Escape for JSON embedding
+  local escaped_json
+  escaped_json=$(echo "$domains_json" | sed 's/\\/\\\\/g' | tr -d '\n')
+
+  api_post "agent-daemon" "{
+    \"action\": \"job_result\",
+    \"agent_token\": \"$AGENT_TOKEN\",
+    \"job_id\": \"$job_id\",
+    \"success\": true,
+    \"web_server\": \"$WEB_SERVER\",
+    \"scan_result\": {\"domains\": $escaped_json}
+  }" > /dev/null
+
+  ok "Scan results reported to SSLVault"
+}
+
 # ── Process a single job ──────────────────────────────────────────────
 process_job() {
-  local job_id="$1" domain="$2" cert_pem="$3" key_pem="$4"
+  local job_id="$1" domain="$2" cert_pem="$3" key_pem="$4" job_type="${5:-install}"
 
-  info "Processing job $job_id for $domain"
+  info "Processing $job_type job $job_id for $domain"
+
+  # Handle scan job type separately
+  if [ "$job_type" = "scan" ]; then
+    run_server_scan "$job_id"
+    return
+  fi
 
   local success=true error_msg=""
 
@@ -277,6 +368,7 @@ run_daemon() {
         while IFS= read -r job_line; do
           JOB_ID=$(echo "$job_line" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
           JOB_DOMAIN=$(echo "$job_line" | grep -o '"domain":"[^"]*"' | cut -d'"' -f4)
+          JOB_TYPE=$(echo "$job_line" | grep -o '"job_type":"[^"]*"' | cut -d'"' -f4)
           JOB_CERT_RAW=$(echo "$job_line" | grep -o '"cert_pem":"[^"]*"' | sed 's/"cert_pem":"//;s/"$//')
           JOB_KEY_RAW=$(echo "$job_line" | grep -o '"key_pem":"[^"]*"' | sed 's/"key_pem":"//;s/"$//')
 
@@ -286,7 +378,7 @@ run_daemon() {
           JOB_CERT=$(printf '%b' "${JOB_CERT_RAW//\\n/$'\n'}")
           JOB_KEY=$(printf '%b' "${JOB_KEY_RAW//\\n/$'\n'}")
 
-          process_job "$JOB_ID" "$JOB_DOMAIN" "$JOB_CERT" "$JOB_KEY"
+          process_job "$JOB_ID" "$JOB_DOMAIN" "$JOB_CERT" "$JOB_KEY" "${JOB_TYPE:-install}"
         done
       fi
     else

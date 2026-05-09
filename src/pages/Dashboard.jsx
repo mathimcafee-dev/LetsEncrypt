@@ -415,13 +415,40 @@ export default function Dashboard({ nav }) {
   const [discoveryResults, setDiscoveryResults] = useState(null)
   const [discoveryDomain, setDiscoveryDomain] = useState('')
   const [discoveryError, setDiscoveryError] = useState('')
+  // Connect DNS state
+  const [dnsMode, setDnsMode] = useState('ct') // ct | dns | server
+  const [dnsScanDomain, setDnsScanDomain] = useState('')
+  const [dnsScanRunning, setDnsScanRunning] = useState(false)
+  const [dnsScanResults, setDnsScanResults] = useState(null)
+  const [dnsScanError, setDnsScanError] = useState('')
+  const [dnsCredentials, setDnsCredentials] = useState([])
+  // Scan a server state
+  const [agents, setAgents] = useState([])
+  const [serverScanAgent, setServerScanAgent] = useState(null)
+  const [serverScanJobId, setServerScanJobId] = useState(null)
+  const [serverScanRunning, setServerScanRunning] = useState(false)
+  const [serverScanResults, setServerScanResults] = useState([])
+  const [serverScanError, setServerScanError] = useState('')
 
   useEffect(() => { if(authLoading) return; if(user) loadAll() }, [user,authLoading])
   if (!authLoading && !user) return <DashboardPreview nav={nav} />
 
   const loadAll = async () => {
+    setLoading(true)
     await loadCerts()
     await loadRenewalData()
+    // Load DNS credentials and agents for Discovery tab
+    try {
+      const [dnsRes, agentsRes] = await Promise.all([
+        fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'list', user_id:user.id }) }),
+        fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'list_agents', user_id:user.id }) })
+      ])
+      const dnsData = await dnsRes.json()
+      const agentsData = await agentsRes.json()
+      setDnsCredentials(dnsData.credentials || [])
+      setAgents(agentsData.agents || [])
+    } catch(e) {}
+    setLoading(false)
   }
 
   const loadRenewalData = async () => {
@@ -552,22 +579,104 @@ export default function Dashboard({ nav }) {
   }
 
   const importDiscoveredDomain = async (item) => {
-    // Import: add as a monitored_domains row + log a renewal_events row of type 'cert_discovered'
     try {
-      await supabase.from('monitored_domains').upsert({
-        user_id: user.id,
-        domain: item.domain,
-      }, { onConflict: 'user_id,domain' })
-      await supabase.from('renewal_events').insert({
-        user_id: user.id,
-        event_type: 'cert_discovered',
-        details: { domain: item.domain, issuer: item.issuer, expires_at: item.expires_at, source: 'ct_logs' }
-      })
-      // Mark imported in current results
+      await supabase.from('monitored_domains').upsert({ user_id: user.id, domain: item.domain }, { onConflict: 'user_id,domain' })
+      await supabase.from('renewal_events').insert({ user_id: user.id, event_type: 'cert_discovered', details: { domain: item.domain, issuer: item.issuer, expires_at: item.expires_at, source: 'ct_logs' } })
       setDiscoveryResults(r => r ? {...r, valid: r.valid.map(v => v.domain===item.domain ? {...v, _imported:true} : v)} : r)
-    } catch(e) {
-      alert('Import failed: '+e.message)
-    }
+    } catch(e) { alert('Import failed: '+e.message) }
+  }
+
+  // ── Connect DNS scan ──────────────────────────────────────────────
+  const runDnsScan = async () => {
+    if (!dnsScanDomain.trim()) { setDnsScanError('Enter a domain to scan'); return }
+    setDnsScanError(''); setDnsScanRunning(true); setDnsScanResults(null)
+    try {
+      // Step 1: get DNS records from provider
+      const recRes = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'list_records', user_id:user.id, domain:dnsScanDomain.trim() })
+      })
+      const recData = await recRes.json()
+      if (recData.error && !recData.records) { setDnsScanError(recData.error); setDnsScanRunning(false); return }
+      const records = recData.records || []
+      if (records.length === 0) { setDnsScanResults({ records:[], scanned:[] }); setDnsScanRunning(false); return }
+      // Step 2: batch SSL scan all hostnames
+      const hostnames = [...new Set(records.map(r => r.hostname))]
+      const sslRes = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/scan-ssl', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ domains: hostnames })
+      })
+      const sslData = await sslRes.json()
+      const sslMap = {}
+      ;(sslData.results || []).forEach(r => { sslMap[r.domain] = r })
+      // Step 3: check which are already in SSLVault
+      const vaultDomains = new Set(certs.map(c => c.domain))
+      const { data: monitoredRows } = await supabase.from('monitored_domains').select('domain').eq('user_id', user.id)
+      const monitoredSet = new Set((monitoredRows||[]).map(r => r.domain))
+      const enriched = records.map(rec => ({
+        ...rec,
+        ssl: sslMap[rec.hostname] || null,
+        in_sslvault: vaultDomains.has(rec.hostname),
+        in_monitor: monitoredSet.has(rec.hostname),
+      }))
+      setDnsScanResults({ provider: recData.provider, domain: dnsScanDomain.trim(), records: enriched })
+    } catch(e) { setDnsScanError(e.message || 'DNS scan failed') }
+    setDnsScanRunning(false)
+  }
+
+  const importDnsHost = async (item) => {
+    try {
+      await supabase.from('monitored_domains').upsert({ user_id: user.id, domain: item.hostname }, { onConflict: 'user_id,domain' })
+      setDnsScanResults(r => r ? {...r, records: r.records.map(rec => rec.hostname===item.hostname ? {...rec, in_monitor:true} : rec)} : r)
+    } catch(e) { alert('Import failed: '+e.message) }
+  }
+
+  // ── Server scan via agent ─────────────────────────────────────────
+  const runServerScan = async () => {
+    if (!serverScanAgent) { setServerScanError('Select a server with an active agent'); return }
+    setServerScanError(''); setServerScanRunning(true); setServerScanResults([])
+    try {
+      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'dispatch_scan', user_id:user.id, agent_id:serverScanAgent.id })
+      })
+      const data = await res.json()
+      if (data.error) { setServerScanError(data.error); setServerScanRunning(false); return }
+      setServerScanJobId(data.job_id)
+      // Poll for results
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusRes = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ action:'status', user_id:user.id, job_id:data.job_id })
+          })
+          const status = await statusRes.json()
+          if (status.status === 'done') {
+            clearInterval(pollInterval)
+            setServerScanRunning(false)
+            // Fetch actual results
+            const resultsRes = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon', {
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body: JSON.stringify({ action:'get_scan_results', user_id:user.id, agent_id:serverScanAgent.id })
+            })
+            const resultsData = await resultsRes.json()
+            setServerScanResults(resultsData.results || [])
+          }
+          if (status.status === 'failed') {
+            clearInterval(pollInterval)
+            setServerScanRunning(false)
+            setServerScanError(status.error_message || 'Scan failed')
+          }
+        } catch(e) {}
+      }, 5000)
+    } catch(e) { setServerScanError(e.message); setServerScanRunning(false) }
+  }
+
+  const importServerDomain = async (item) => {
+    try {
+      await supabase.from('monitored_domains').upsert({ user_id: user.id, domain: item.domain }, { onConflict: 'user_id,domain' })
+      setServerScanResults(r => r.map(row => row.domain===item.domain ? {...row, _imported:true} : row))
+    } catch(e) { alert('Import failed: '+e.message) }
   }
 
   const grouped = certs.reduce((acc,cert) => { const d=cert.domain||'Unknown'; if(!acc[d]) acc[d]=[]; acc[d].push(cert); return acc }, {})
@@ -809,14 +918,19 @@ export default function Dashboard({ nav }) {
         {/* DISCOVERY TAB */}
         {activeTab==='discovery' && (
           <DiscoveryView
-            domain={discoveryDomain}
-            setDomain={setDiscoveryDomain}
-            running={discoveryRunning}
-            results={discoveryResults}
-            error={discoveryError}
-            history={discoveryRuns}
-            onScan={runDiscoveryCT}
-            onImport={importDiscoveredDomain}
+            domain={discoveryDomain} setDomain={setDiscoveryDomain}
+            running={discoveryRunning} results={discoveryResults}
+            error={discoveryError} history={discoveryRuns}
+            onScan={runDiscoveryCT} onImport={importDiscoveredDomain}
+            dnsMode={dnsMode} setDnsMode={setDnsMode}
+            dnsScanDomain={dnsScanDomain} setDnsScanDomain={setDnsScanDomain}
+            dnsScanRunning={dnsScanRunning} dnsScanResults={dnsScanResults}
+            dnsScanError={dnsScanError} onDnsScan={runDnsScan} onDnsImport={importDnsHost}
+            dnsCredentials={dnsCredentials}
+            agents={agents} serverScanAgent={serverScanAgent} setServerScanAgent={setServerScanAgent}
+            serverScanRunning={serverScanRunning} serverScanResults={serverScanResults}
+            serverScanError={serverScanError} onServerScan={runServerScan} onServerImport={importServerDomain}
+            nav={nav}
           />
         )}
       </div>
@@ -1036,156 +1150,268 @@ function RenewalScheduleView({ certs, events, onToggleAutoRenew, onRefresh }) {
 // ============================================================================
 // DISCOVERY VIEW (Build 2)
 // ============================================================================
-function DiscoveryView({ domain, setDomain, running, results, error, history, onScan, onImport }) {
+function DiscoveryView({ 
+  domain, setDomain, running, results, error, history, onScan, onImport,
+  dnsMode, setDnsMode, dnsScanDomain, setDnsScanDomain, dnsScanRunning, dnsScanResults, dnsScanError, onDnsScan, onDnsImport, dnsCredentials,
+  agents, serverScanAgent, setServerScanAgent, serverScanRunning, serverScanResults, serverScanError, onServerScan, onServerImport, nav
+}) {
+  const activeAgents = agents.filter(a => a.last_seen_at && Math.floor((Date.now()-new Date(a.last_seen_at))/60000) < 15)
+
+  const modeCard = (id, icon, label, desc, color, bg, border, badge, onClick) => {
+    const active = dnsMode === id
+    return (
+      <div onClick={onClick} style={{ background:'white', border:`2px solid ${active ? color : '#e2e8f0'}`, borderRadius:14, padding:'18px 20px', position:'relative', cursor:'pointer', transition:'all 0.15s', opacity: badge==='coming-soon' ? 0.5 : 1 }}>
+        {badge==='active' && <div style={{ position:'absolute', top:10, right:10, fontSize:9, fontWeight:800, color, background:bg, border:`1px solid ${border}`, padding:'2px 8px', borderRadius:100, textTransform:'uppercase', letterSpacing:'0.5px' }}>Active</div>}
+        <div style={{ width:42, height:42, borderRadius:11, background:bg, border:`1.5px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
+          {icon}
+        </div>
+        <div style={{ fontWeight:800, fontSize:14, color:'#0f172a', marginBottom:4, letterSpacing:'-0.2px' }}>{label}</div>
+        <div style={{ fontSize:12, color:'#64748b', lineHeight:1.55 }}>{desc}</div>
+      </div>
+    )
+  }
+
   return (
     <div>
-      {/* Method picker */}
+      {/* Mode picker */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, marginBottom:18 }}>
-        <div style={{ background:'white', border:'2px solid #ddd6fe', borderRadius:14, padding:'18px 20px', position:'relative' }}>
-          <div style={{ position:'absolute', top:12, right:12, fontSize:9, fontWeight:800, color:'#7c3aed', background:'#f5f3ff', border:'1px solid #ddd6fe', padding:'2px 8px', borderRadius:100, textTransform:'uppercase', letterSpacing:'0.5px' }}>Active</div>
-          <div style={{ width:42, height:42, borderRadius:11, background:'#f5f3ff', border:'1.5px solid #ddd6fe', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
-            <FileSearch size={19} color='#7c3aed'/>
-          </div>
-          <div style={{ fontWeight:800, fontSize:14, color:'#0f172a', marginBottom:4, letterSpacing:'-0.2px' }}>Public CT Logs</div>
-          <div style={{ fontSize:12, color:'#64748b', lineHeight:1.55 }}>Find every cert ever issued for your domain. No setup.</div>
-        </div>
-        <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:14, padding:'18px 20px', opacity:0.6 }}>
-          <div style={{ position:'absolute', top:12, right:12, fontSize:9, fontWeight:800, color:'#94a3b8', background:'#f1f5f9', border:'1px solid #cbd5e1', padding:'2px 8px', borderRadius:100, textTransform:'uppercase', letterSpacing:'0.5px' }}>Coming soon</div>
-          <div style={{ width:42, height:42, borderRadius:11, background:'#eff6ff', border:'1.5px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
-            <Cloud size={19} color='#94a3b8'/>
-          </div>
-          <div style={{ fontWeight:800, fontSize:14, color:'#0f172a', marginBottom:4, letterSpacing:'-0.2px' }}>Connect DNS</div>
-          <div style={{ fontSize:12, color:'#64748b', lineHeight:1.55 }}>List every record. Find HTTPS-active hosts.</div>
-        </div>
-        <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:14, padding:'18px 20px', opacity:0.6 }}>
-          <div style={{ position:'absolute', top:12, right:12, fontSize:9, fontWeight:800, color:'#94a3b8', background:'#f1f5f9', border:'1px solid #cbd5e1', padding:'2px 8px', borderRadius:100, textTransform:'uppercase', letterSpacing:'0.5px' }}>Coming soon</div>
-          <div style={{ width:42, height:42, borderRadius:11, background:'#ecfdf5', border:'1.5px solid #a7f3d0', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
-            <Server size={19} color='#94a3b8'/>
-          </div>
-          <div style={{ fontWeight:800, fontSize:14, color:'#0f172a', marginBottom:4, letterSpacing:'-0.2px' }}>Scan a server</div>
-          <div style={{ fontSize:12, color:'#64748b', lineHeight:1.55 }}>Agent reads nginx, apache, file paths.</div>
-        </div>
+        {modeCard('ct', <FileSearch size={19} color='#7c3aed'/>, 'Public CT Logs', 'Find every cert ever issued for your domain. No setup.', '#7c3aed', '#f5f3ff', '#ddd6fe', 'active', () => setDnsMode('ct'))}
+        {modeCard('dns', <Cloud size={19} color={dnsCredentials.length>0?'#2563eb':'#94a3b8'}/>, 'Connect DNS', 'List every record. Find HTTPS-active hosts.', '#2563eb', '#eff6ff', '#bfdbfe', dnsCredentials.length>0?'active':null, () => setDnsMode('dns'))}
+        {modeCard('server', <Server size={19} color={activeAgents.length>0?'#059669':'#94a3b8'}/>, 'Scan a Server', 'Agent reads nginx, apache, file paths.', '#059669', '#ecfdf5', '#a7f3d0', activeAgents.length>0?'active':null, () => setDnsMode('server'))}
       </div>
 
-      {/* CT log scanner */}
-      <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:'22px 24px', marginBottom:18, boxShadow:'0 1px 4px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.04)' }}>
-        <div style={{ display:'flex', alignItems:'flex-start', gap:14, marginBottom:14 }}>
-          <div style={{ width:38, height:38, borderRadius:10, background:'linear-gradient(135deg,#7c3aed,#a855f7)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, boxShadow:'0 4px 12px rgba(124,58,237,0.3)' }}>
-            <FileSearch size={17} color='white'/>
-          </div>
-          <div>
-            <h2 style={{ fontWeight:900, fontSize:15, color:'#0f172a', letterSpacing:'-0.3px', marginBottom:3 }}>Scan Certificate Transparency logs</h2>
-            <p style={{ fontSize:12, color:'#64748b', lineHeight:1.55 }}>Enter your apex domain (e.g. <code style={{ background:'#f1f5f9', padding:'1px 6px', borderRadius:4, fontSize:11 }}>acme.com</code>). We'll find every cert ever issued for it and its subdomains using crt.sh — the public CT log archive.</p>
-          </div>
-        </div>
-
-        <div style={{ display:'flex', gap:10, marginTop:16 }}>
-          <input
-            value={domain}
-            onChange={e => setDomain(e.target.value)}
-            placeholder='acme.com'
-            disabled={running}
-            onKeyDown={e => { if(e.key==='Enter' && !running) onScan() }}
-            style={{ flex:1, padding:'11px 14px', fontSize:14, fontFamily:'inherit', border:'1.5px solid #e2e8f0', borderRadius:10, outline:'none', color:'#0f172a', background: running ? '#f8fafc' : 'white' }}
-            onFocus={e => e.target.style.borderColor = '#7c3aed'}
-            onBlur={e => e.target.style.borderColor = '#e2e8f0'}
-          />
-          <button onClick={onScan} disabled={running} style={{
-            background: running ? '#cbd5e1' : 'linear-gradient(135deg,#7c3aed,#a855f7)',
-            color:'white',
-            border:'none',
-            padding:'11px 22px',
-            borderRadius:10,
-            fontSize:13,
-            fontWeight:800,
-            cursor: running ? 'wait' : 'pointer',
-            display:'inline-flex',
-            alignItems:'center',
-            gap:7,
-            fontFamily:'inherit',
-            boxShadow: running ? 'none' : '0 4px 14px rgba(124,58,237,0.35)',
-            letterSpacing:'-0.2px',
-            flexShrink:0
-          }}>
-            {running ? <><RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }}/> Scanning...</> : <><Search size={14}/> Scan</>}
-          </button>
-        </div>
-
-        {error && (
-          <div style={{ background:'#fef2f2', border:'1.5px solid #fecaca', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#991b1b', marginTop:12, display:'flex', gap:8, alignItems:'center' }}>
-            <XCircle size={14}/> {error}
-          </div>
-        )}
-      </div>
-
-      {/* Results */}
-      {results && (
-        <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, marginBottom:18, boxShadow:'0 1px 4px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.04)', overflow:'hidden' }}>
-          <div style={{ background: results.valid.length > 0 ? '#ecfdf5' : '#f1f5f9', padding:'14px 24px', display:'flex', alignItems:'center', gap:12, borderBottom:'1.5px solid '+(results.valid.length > 0 ? '#a7f3d0' : '#cbd5e1') }}>
-            <div style={{ width:32, height:32, borderRadius:9, background:'white', border:'1.5px solid '+(results.valid.length > 0 ? '#a7f3d0' : '#cbd5e1'), display:'flex', alignItems:'center', justifyContent:'center' }}>
-              {results.valid.length > 0 ? <CheckCircle size={15} color='#059669'/> : <AlertTriangle size={15} color='#64748b'/>}
-            </div>
-            <div style={{ flex:1 }}>
-              <p style={{ fontSize:13, fontWeight:800, color: results.valid.length > 0 ? '#065f46' : '#475569', letterSpacing:'-0.2px' }}>
-                Found {results.valid.length} valid certificate{results.valid.length!==1?'s':''} · {results.total} total in CT history
-              </p>
-            </div>
-          </div>
-
-          {results.valid.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'40px 24px' }}>
-              <p style={{ color:'#64748b', fontSize:13 }}>No active certificates found in CT logs for this domain.</p>
-            </div>
-          ) : (
-            <>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 130px 100px 90px 110px', gap:0, padding:'10px 24px', background:'#fafbfc', borderBottom:'1px solid #f1f5f9' }}>
-                {['Domain','Issuer','Days left','Expires','Action'].map((h,i) => (
-                  <div key={i} style={{ fontSize:10, fontWeight:800, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.7px' }}>{h}</div>
-                ))}
+      {/* ── CT LOGS MODE ── */}
+      {dnsMode === 'ct' && (
+        <>
+          <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:'22px 24px', marginBottom:18, boxShadow:'0 1px 4px rgba(15,23,42,0.04)' }}>
+            <div style={{ display:'flex', alignItems:'flex-start', gap:14, marginBottom:14 }}>
+              <div style={{ width:38, height:38, borderRadius:10, background:'linear-gradient(135deg,#7c3aed,#a855f7)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <FileSearch size={17} color='white'/>
               </div>
-              <div style={{ maxHeight:480, overflowY:'auto' }}>
-                {results.valid.slice(0,100).map((r,i) => (
-                  <div key={r.serial+i} style={{ display:'grid', gridTemplateColumns:'1fr 130px 100px 90px 110px', gap:0, padding:'13px 24px', alignItems:'center', borderBottom: i===results.valid.length-1 ? 'none' : '1px solid #f1f5f9', fontSize:13 }}>
-                    <div style={{ fontWeight:600, color:'#0f172a', fontSize:13, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', paddingRight:12 }}>{r.domain}</div>
-                    <div style={{ color:'#64748b', fontSize:12, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', paddingRight:8 }}>{r.issuer}</div>
-                    <div style={{ fontSize:13, fontWeight:700, color: r.days_left < 14 ? '#d97706' : r.days_left < 30 ? '#ca8a04' : '#16a34a' }}>{r.days_left}</div>
-                    <div style={{ color:'#64748b', fontSize:11 }}>{format(new Date(r.expires_at),'dd MMM yy')}</div>
-                    <div>
-                      {r._imported ? (
-                        <span style={{ fontSize:10, fontWeight:800, color:'#059669', display:'inline-flex', alignItems:'center', gap:4, background:'#ecfdf5', padding:'4px 9px', borderRadius:7, border:'1.5px solid #a7f3d0', textTransform:'uppercase', letterSpacing:'0.4px' }}>
-                          <Check size={11}/> Imported
-                        </span>
-                      ) : (
-                        <button onClick={() => onImport(r)} style={{ background:'#f5f3ff', border:'1.5px solid #ddd6fe', color:'#7c3aed', padding:'4px 12px', borderRadius:7, fontSize:10, fontWeight:800, cursor:'pointer', textTransform:'uppercase', letterSpacing:'0.4px', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:4 }}>
-                          <PlusCircle size={11}/> Import
-                        </button>
-                      )}
-                    </div>
+              <div>
+                <h2 style={{ fontWeight:900, fontSize:15, color:'#0f172a', letterSpacing:'-0.3px', marginBottom:3 }}>Scan Certificate Transparency logs</h2>
+                <p style={{ fontSize:12, color:'#64748b', lineHeight:1.55 }}>Enter your apex domain (e.g. <code style={{ background:'#f1f5f9', padding:'1px 6px', borderRadius:4, fontSize:11 }}>acme.com</code>). We'll find every cert ever issued for it and its subdomains using crt.sh.</p>
+              </div>
+            </div>
+            <div style={{ display:'flex', gap:10, marginTop:16 }}>
+              <input value={domain} onChange={e => setDomain(e.target.value)} placeholder='acme.com' disabled={running}
+                onKeyDown={e => { if(e.key==='Enter'&&!running) onScan() }}
+                style={{ flex:1, padding:'11px 14px', fontSize:14, fontFamily:'inherit', border:'1.5px solid #e2e8f0', borderRadius:10, outline:'none', color:'#0f172a' }}
+                onFocus={e => e.target.style.borderColor='#7c3aed'} onBlur={e => e.target.style.borderColor='#e2e8f0'} />
+              <button onClick={onScan} disabled={running}
+                style={{ background:running?'#cbd5e1':'linear-gradient(135deg,#7c3aed,#a855f7)', color:'white', border:'none', padding:'11px 22px', borderRadius:10, fontSize:13, fontWeight:800, cursor:running?'wait':'pointer', display:'inline-flex', alignItems:'center', gap:7, boxShadow:running?'none':'0 4px 14px rgba(124,58,237,0.35)', flexShrink:0 }}>
+                {running ? <><RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }}/> Scanning...</> : <><Search size={14}/> Scan</>}
+              </button>
+            </div>
+            {error && <div style={{ background:'#fef2f2', border:'1.5px solid #fecaca', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#991b1b', marginTop:12, display:'flex', gap:8, alignItems:'center' }}><XCircle size={14}/> {error}</div>}
+          </div>
+          {results && (
+            <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, marginBottom:18, boxShadow:'0 1px 4px rgba(15,23,42,0.04)', overflow:'hidden' }}>
+              <div style={{ background:results.valid.length>0?'#ecfdf5':'#f1f5f9', padding:'14px 24px', display:'flex', alignItems:'center', gap:12, borderBottom:'1.5px solid '+(results.valid.length>0?'#a7f3d0':'#cbd5e1') }}>
+                <div style={{ width:32, height:32, borderRadius:9, background:'white', border:'1.5px solid '+(results.valid.length>0?'#a7f3d0':'#cbd5e1'), display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {results.valid.length>0?<CheckCircle size={15} color='#059669'/>:<AlertTriangle size={15} color='#64748b'/>}
+                </div>
+                <p style={{ fontSize:13, fontWeight:800, color:results.valid.length>0?'#065f46':'#475569' }}>
+                  Found {results.valid.length} valid certificate{results.valid.length!==1?'s':''} · {results.total} total in CT history
+                </p>
+              </div>
+              {results.valid.length===0 ? (
+                <div style={{ textAlign:'center', padding:'40px 24px' }}><p style={{ color:'#64748b', fontSize:13 }}>No active certificates found for this domain.</p></div>
+              ) : (
+                <>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 130px 100px 90px 110px', gap:0, padding:'10px 24px', background:'#fafbfc', borderBottom:'1px solid #f1f5f9' }}>
+                    {['Domain','Issuer','Days left','Expires','Action'].map((h,i) => <div key={i} style={{ fontSize:10, fontWeight:800, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.7px' }}>{h}</div>)}
                   </div>
-                ))}
-              </div>
-            </>
+                  <div style={{ maxHeight:480, overflowY:'auto' }}>
+                    {results.valid.slice(0,100).map((r,i) => (
+                      <div key={r.serial+i} style={{ display:'grid', gridTemplateColumns:'1fr 130px 100px 90px 110px', gap:0, padding:'13px 24px', alignItems:'center', borderBottom:i===results.valid.length-1?'none':'1px solid #f1f5f9', fontSize:13 }}>
+                        <div style={{ fontWeight:600, color:'#0f172a', fontSize:13, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', paddingRight:12 }}>{r.domain}</div>
+                        <div style={{ color:'#64748b', fontSize:12, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', paddingRight:8 }}>{r.issuer}</div>
+                        <div style={{ fontSize:13, fontWeight:700, color:r.days_left<14?'#d97706':r.days_left<30?'#ca8a04':'#16a34a' }}>{r.days_left}</div>
+                        <div style={{ color:'#64748b', fontSize:11 }}>{format(new Date(r.expires_at),'dd MMM yy')}</div>
+                        <div>
+                          {r._imported ? <span style={{ fontSize:10, fontWeight:800, color:'#059669', display:'inline-flex', alignItems:'center', gap:4, background:'#ecfdf5', padding:'4px 9px', borderRadius:7, border:'1.5px solid #a7f3d0', textTransform:'uppercase', letterSpacing:'0.4px' }}><Check size={11}/> Imported</span>
+                          : <button onClick={() => onImport(r)} style={{ background:'#f5f3ff', border:'1.5px solid #ddd6fe', color:'#7c3aed', padding:'4px 12px', borderRadius:7, fontSize:10, fontWeight:800, cursor:'pointer', textTransform:'uppercase', letterSpacing:'0.4px', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:4 }}><PlusCircle size={11}/> Import</button>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           )}
-        </div>
+        </>
       )}
 
-      {/* Discovery history */}
-      {history && history.length > 0 && (
-        <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, boxShadow:'0 1px 4px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.04)', overflow:'hidden' }}>
+      {/* ── CONNECT DNS MODE ── */}
+      {dnsMode === 'dns' && (
+        <>
+          {dnsCredentials.length === 0 ? (
+            <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:'48px 24px', textAlign:'center', boxShadow:'0 1px 4px rgba(15,23,42,0.04)' }}>
+              <div style={{ fontSize:40, marginBottom:12 }}>🌐</div>
+              <p style={{ fontWeight:700, fontSize:15, color:'#0f172a', marginBottom:6 }}>No DNS provider configured</p>
+              <p style={{ fontSize:13, color:'#64748b', marginBottom:20 }}>Connect a DNS provider to list your records and scan for SSL health.</p>
+              <button onClick={() => nav('/dns-providers')} style={{ background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', color:'white', border:'none', padding:'10px 22px', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer' }}>
+                Configure DNS Provider →
+              </button>
+            </div>
+          ) : (
+            <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:'22px 24px', marginBottom:18, boxShadow:'0 1px 4px rgba(15,23,42,0.04)' }}>
+              <div style={{ display:'flex', alignItems:'flex-start', gap:14, marginBottom:16 }}>
+                <div style={{ width:38, height:38, borderRadius:10, background:'linear-gradient(135deg,#1d4ed8,#2563eb)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                  <Cloud size={17} color='white'/>
+                </div>
+                <div>
+                  <h2 style={{ fontWeight:900, fontSize:15, color:'#0f172a', letterSpacing:'-0.3px', marginBottom:3 }}>Connect DNS Discovery</h2>
+                  <p style={{ fontSize:12, color:'#64748b', lineHeight:1.55 }}>We'll pull all A/CNAME records from your DNS provider and check each hostname for live SSL.</p>
+                </div>
+              </div>
+              <div style={{ display:'flex', gap:10 }}>
+                <input value={dnsScanDomain} onChange={e => setDnsScanDomain(e.target.value)} placeholder='example.com' disabled={dnsScanRunning}
+                  onKeyDown={e => { if(e.key==='Enter'&&!dnsScanRunning) onDnsScan() }}
+                  style={{ flex:1, padding:'11px 14px', fontSize:14, fontFamily:'inherit', border:'1.5px solid #e2e8f0', borderRadius:10, outline:'none' }}
+                  onFocus={e => e.target.style.borderColor='#2563eb'} onBlur={e => e.target.style.borderColor='#e2e8f0'} />
+                <button onClick={onDnsScan} disabled={dnsScanRunning}
+                  style={{ background:dnsScanRunning?'#cbd5e1':'linear-gradient(135deg,#1d4ed8,#2563eb)', color:'white', border:'none', padding:'11px 22px', borderRadius:10, fontSize:13, fontWeight:800, cursor:dnsScanRunning?'wait':'pointer', display:'inline-flex', alignItems:'center', gap:7, flexShrink:0 }}>
+                  {dnsScanRunning ? <><RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }}/> Scanning...</> : <><Search size={14}/> Scan DNS</>}
+                </button>
+              </div>
+              {dnsScanError && <div style={{ background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8, padding:'10px 14px', fontSize:12, color:'#991b1b', marginTop:10 }}>❌ {dnsScanError}</div>}
+            </div>
+          )}
+
+          {dnsScanResults && (
+            <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, overflow:'hidden', boxShadow:'0 1px 4px rgba(15,23,42,0.04)' }}>
+              <div style={{ background:'#eff6ff', padding:'14px 24px', borderBottom:'1.5px solid #bfdbfe', display:'flex', alignItems:'center', gap:12 }}>
+                <div style={{ width:30, height:30, borderRadius:8, background:'white', border:'1px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Cloud size={14} color='#2563eb'/>
+                </div>
+                <p style={{ fontSize:13, fontWeight:800, color:'#1d4ed8' }}>
+                  Found {dnsScanResults.records.length} host{dnsScanResults.records.length!==1?'s':''} in {dnsScanResults.domain} DNS ({dnsScanResults.provider})
+                </p>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 80px 100px 70px 110px', gap:0, padding:'10px 24px', background:'#fafbfc', borderBottom:'1px solid #f1f5f9' }}>
+                {['Hostname','Type','SSL Status','Days','Action'].map((h,i) => <div key={i} style={{ fontSize:10, fontWeight:800, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.7px' }}>{h}</div>)}
+              </div>
+              {dnsScanResults.records.map((r,i) => {
+                const ssl = r.ssl
+                const alive = ssl?.alive && ssl?.valid
+                const days = ssl?.daysLeft
+                return (
+                  <div key={r.hostname+i} style={{ display:'grid', gridTemplateColumns:'1fr 80px 100px 70px 110px', gap:0, padding:'12px 24px', alignItems:'center', borderBottom:i===dnsScanResults.records.length-1?'none':'1px solid #f1f5f9' }}>
+                    <div style={{ fontWeight:600, fontSize:13, color:'#0f172a', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', paddingRight:8 }}>{r.hostname}</div>
+                    <div><span style={{ fontSize:10, fontWeight:700, background:'#f1f5f9', color:'#475569', border:'1px solid #e2e8f0', borderRadius:4, padding:'2px 6px' }}>{r.record_type}</span></div>
+                    <div>
+                      {alive ? <span style={{ fontSize:11, fontWeight:700, color:'#16a34a', background:'#f0fdf4', border:'1px solid #a7f3d0', borderRadius:5, padding:'2px 8px' }}>✅ Valid</span>
+                      : ssl?.alive ? <span style={{ fontSize:11, fontWeight:700, color:'#d97706', background:'#fffbeb', border:'1px solid #fde68a', borderRadius:5, padding:'2px 8px' }}>⚠️ Expired</span>
+                      : <span style={{ fontSize:11, fontWeight:700, color:'#94a3b8', background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:5, padding:'2px 8px' }}>— No SSL</span>}
+                    </div>
+                    <div style={{ fontSize:13, fontWeight:700, color:!days?'#94a3b8':days<14?'#d97706':'#16a34a' }}>{days ?? '—'}</div>
+                    <div>
+                      {r.in_monitor ? <span style={{ fontSize:10, fontWeight:800, color:'#059669', background:'#ecfdf5', border:'1px solid #a7f3d0', borderRadius:6, padding:'3px 8px' }}>✓ Monitored</span>
+                      : <button onClick={() => onDnsImport(r)} style={{ background:'#eff6ff', border:'1.5px solid #bfdbfe', color:'#2563eb', padding:'4px 10px', borderRadius:7, fontSize:10, fontWeight:800, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:4 }}><PlusCircle size={11}/> Monitor</button>}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ── SCAN A SERVER MODE ── */}
+      {dnsMode === 'server' && (
+        <>
+          {activeAgents.length === 0 ? (
+            <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:'48px 24px', textAlign:'center', boxShadow:'0 1px 4px rgba(15,23,42,0.04)' }}>
+              <div style={{ fontSize:40, marginBottom:12 }}>🖥️</div>
+              <p style={{ fontWeight:700, fontSize:15, color:'#0f172a', marginBottom:6 }}>No active agents</p>
+              <p style={{ fontSize:13, color:'#64748b', marginBottom:20 }}>Add a VPS server and install the persistent agent to scan its installed certificates.</p>
+              <button onClick={() => nav('/dns-providers')} style={{ background:'linear-gradient(135deg,#059669,#10b981)', color:'white', border:'none', padding:'10px 22px', borderRadius:10, fontSize:13, fontWeight:700, cursor:'pointer' }}>
+                Set Up Server Agent →
+              </button>
+            </div>
+          ) : (
+            <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:'22px 24px', marginBottom:18, boxShadow:'0 1px 4px rgba(15,23,42,0.04)' }}>
+              <div style={{ display:'flex', alignItems:'flex-start', gap:14, marginBottom:16 }}>
+                <div style={{ width:38, height:38, borderRadius:10, background:'linear-gradient(135deg,#059669,#10b981)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                  <Server size={17} color='white'/>
+                </div>
+                <div>
+                  <h2 style={{ fontWeight:900, fontSize:15, color:'#0f172a', letterSpacing:'-0.3px', marginBottom:3 }}>Scan a Server</h2>
+                  <p style={{ fontSize:12, color:'#64748b', lineHeight:1.55 }}>Your agent reads nginx/apache configs and reports every cert installed — including ones not in SSLVault.</p>
+                </div>
+              </div>
+              {/* Agent picker */}
+              <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:14 }}>
+                {activeAgents.map(a => {
+                  const sel = serverScanAgent?.id === a.id
+                  const minsAgo = Math.floor((Date.now()-new Date(a.last_seen_at))/60000)
+                  return (
+                    <div key={a.id} onClick={() => setServerScanAgent(a)}
+                      style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 14px', borderRadius:10, border:`2px solid ${sel?'#059669':'#e2e8f0'}`, background:sel?'#f0fdf4':'#fafafa', cursor:'pointer', transition:'all 0.15s' }}>
+                      <div style={{ width:34, height:34, borderRadius:8, background:sel?'#ecfdf5':'white', border:`1.5px solid ${sel?'#a7f3d0':'#e2e8f0'}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>🖥️</div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontWeight:700, fontSize:13, color:sel?'#059669':'#0f172a' }}>{a.nickname}</div>
+                        <div style={{ fontSize:11, color:'#64748b' }}>{a.os} · {a.web_server} · seen {minsAgo}m ago</div>
+                      </div>
+                      {sel && <span style={{ fontSize:16, color:'#059669' }}>✓</span>}
+                    </div>
+                  )
+                })}
+              </div>
+              <button onClick={onServerScan} disabled={serverScanRunning || !serverScanAgent}
+                style={{ background:serverScanRunning||!serverScanAgent?'#cbd5e1':'linear-gradient(135deg,#059669,#10b981)', color:'white', border:'none', padding:'11px 22px', borderRadius:10, fontSize:13, fontWeight:800, cursor:serverScanRunning||!serverScanAgent?'not-allowed':'pointer', display:'inline-flex', alignItems:'center', gap:7, boxShadow:serverScanRunning||!serverScanAgent?'none':'0 4px 14px rgba(5,150,105,0.35)' }}>
+                {serverScanRunning ? <><RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }}/> Agent scanning...</> : <><Search size={14}/> Scan Server</>}
+              </button>
+              {serverScanRunning && <div style={{ marginTop:10, fontSize:12, color:'#64748b' }}>⏳ Agent is reading your server configs. This updates on the next poll cycle (up to 5 minutes).</div>}
+              {serverScanError && <div style={{ background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8, padding:'10px 14px', fontSize:12, color:'#991b1b', marginTop:10 }}>❌ {serverScanError}</div>}
+            </div>
+          )}
+
+          {serverScanResults.length > 0 && (
+            <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, overflow:'hidden', boxShadow:'0 1px 4px rgba(15,23,42,0.04)' }}>
+              <div style={{ background:'#ecfdf5', padding:'14px 24px', borderBottom:'1.5px solid #a7f3d0', display:'flex', alignItems:'center', gap:12 }}>
+                <div style={{ width:30, height:30, borderRadius:8, background:'white', border:'1px solid #a7f3d0', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Server size={14} color='#059669'/>
+                </div>
+                <p style={{ fontSize:13, fontWeight:800, color:'#065f46' }}>Found {serverScanResults.length} certificate{serverScanResults.length!==1?'s':''} on server</p>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 80px 100px 80px 110px', gap:0, padding:'10px 24px', background:'#fafbfc', borderBottom:'1px solid #f1f5f9' }}>
+                {['Domain','Server','Cert path','Days left','Action'].map((h,i) => <div key={i} style={{ fontSize:10, fontWeight:800, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.7px' }}>{h}</div>)}
+              </div>
+              {serverScanResults.map((r,i) => (
+                <div key={r.id} style={{ display:'grid', gridTemplateColumns:'1fr 80px 100px 80px 110px', gap:0, padding:'12px 24px', alignItems:'center', borderBottom:i===serverScanResults.length-1?'none':'1px solid #f1f5f9' }}>
+                  <div style={{ fontWeight:600, fontSize:13, color:'#0f172a', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', paddingRight:8 }}>{r.domain}</div>
+                  <div><span style={{ fontSize:10, fontWeight:700, background:'#f1f5f9', color:'#475569', border:'1px solid #e2e8f0', borderRadius:4, padding:'2px 6px' }}>{r.web_server||'—'}</span></div>
+                  <div style={{ fontSize:10, color:'#64748b', fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }} title={r.cert_path}>{r.cert_path?.split('/').slice(-2).join('/') || '—'}</div>
+                  <div style={{ fontSize:13, fontWeight:700, color:!r.days_left?'#94a3b8':r.days_left<0?'#dc2626':r.days_left<14?'#d97706':'#16a34a' }}>
+                    {r.days_left === null ? '—' : r.days_left < 0 ? 'Expired' : r.days_left}
+                  </div>
+                  <div>
+                    {r._imported ? <span style={{ fontSize:10, fontWeight:800, color:'#059669', background:'#ecfdf5', border:'1px solid #a7f3d0', borderRadius:6, padding:'3px 8px' }}>✓ Added</span>
+                    : <button onClick={() => onServerImport(r)} style={{ background:'#ecfdf5', border:'1.5px solid #a7f3d0', color:'#059669', padding:'4px 10px', borderRadius:7, fontSize:10, fontWeight:800, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:4 }}><PlusCircle size={11}/> Monitor</button>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Past CT scans history */}
+      {dnsMode === 'ct' && history && history.length > 0 && (
+        <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, boxShadow:'0 1px 4px rgba(15,23,42,0.04)', overflow:'hidden', marginTop:18 }}>
           <div style={{ padding:'18px 24px', borderBottom:'1px solid #f1f5f9' }}>
-            <h2 style={{ fontWeight:900, fontSize:15, color:'#0f172a', letterSpacing:'-0.3px' }}>
-              Past scans
-            </h2>
+            <h2 style={{ fontWeight:900, fontSize:15, color:'#0f172a', letterSpacing:'-0.3px' }}>Past scans</h2>
           </div>
           <div>
             {history.slice(0,10).map((h,i) => (
-              <div key={h.id} style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 24px', borderBottom: i===history.length-1 ? 'none' : '1px solid #f1f5f9', fontSize:12 }}>
-                <span style={{ fontSize:11, fontWeight:800, color:'#7c3aed', background:'#f5f3ff', border:'1px solid #ddd6fe', padding:'2px 8px', borderRadius:100, textTransform:'uppercase', letterSpacing:'0.4px' }}>{h.method}</span>
-                <span style={{ fontWeight:600, color:'#0f172a', fontSize:12 }}>{h.details?.domain || '\u2014'}</span>
+              <div key={h.id} style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 24px', borderBottom:i===history.length-1?'none':'1px solid #f1f5f9', fontSize:12 }}>
+                <span style={{ fontSize:11, fontWeight:800, color:'#7c3aed', background:'#f5f3ff', border:'1px solid #ddd6fe', padding:'2px 8px', borderRadius:100, textTransform:'uppercase', letterSpacing:'0.4px' }}>{h.method||'CT'}</span>
+                <span style={{ fontWeight:600, color:'#0f172a', fontSize:12 }}>{h.details?.domain || '—'}</span>
                 <span style={{ color:'#64748b', fontSize:11, marginLeft:'auto' }}>{h.domains_found} found</span>
-                <span style={{ color:'#94a3b8', fontSize:11, fontFamily:'monospace', flexShrink:0 }}>
-                  {format(new Date(h.created_at), 'dd MMM HH:mm')}
-                </span>
+                <span style={{ color:'#94a3b8', fontSize:11, fontFamily:'monospace', flexShrink:0 }}>{format(new Date(h.created_at),'dd MMM HH:mm')}</span>
               </div>
             ))}
           </div>
