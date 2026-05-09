@@ -39,19 +39,41 @@ export default function AgentInstall({ cert, userId, onClose }) {
   const [cpanelUser, setCpanelUser] = useState('')
   const [cpanelToken, setCpanelToken] = useState('')
   const [showCpanelHelp, setShowCpanelHelp] = useState(false)
+  const [savedServers, setSavedServers] = useState([])
+  const [selectedServer, setSelectedServer] = useState(null)
+  const [selectedServerId, setSelectedServerId] = useState(null)
+  const [serversLoading, setServersLoading] = useState(false)
   const pollRef = useRef(null)
   const timerRef = useRef(null)
 
+  const SERVER_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/server-credentials'
+  const SERVER_META = {
+    cpanel: { icon:'🖥️', color:'#d97706', bg:'#fffbeb', border:'#fde68a', short:'cPanel' },
+    ssh:    { icon:'🔒', color:'#2563eb', bg:'#eff6ff', border:'#bfdbfe', short:'SSH' },
+    plesk:  { icon:'🎛️', color:'#7c3aed', bg:'#f5f3ff', border:'#ddd6fe', short:'Plesk' },
+  }
+
   useEffect(() => () => { clearInterval(pollRef.current); clearInterval(timerRef.current) }, [])
 
-  // Load saved cPanel credentials on mount
+  // Load saved servers + legacy cPanel credentials on mount
   useEffect(() => {
     if (!userId) return
-    supabase.from('dns_credentials')
-      .select('credentials_enc')
-      .eq('user_id', userId)
-      .eq('provider', 'cpanel')
-      .maybeSingle()
+    setServersLoading(true)
+    fetch(SERVER_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'list', user_id: userId }) })
+      .then(r => r.json())
+      .then(data => {
+        const servers = data.servers || []
+        setSavedServers(servers)
+        // Auto-select domain-matched server or first server
+        const match = servers.find(s => s.domains?.includes(cert.domain))
+        const auto = match || (servers.length === 1 ? servers[0] : null)
+        if (auto) { setSelectedServerId(auto.id); setSelectedServer(auto) }
+      })
+      .catch(() => {})
+      .finally(() => setServersLoading(false))
+    // Also load legacy cPanel creds (fallback for manual entry)
+    supabase.from('dns_credentials').select('credentials_enc').eq('user_id', userId).eq('provider', 'cpanel').maybeSingle()
       .then(({ data }) => {
         if (data?.credentials_enc) {
           try {
@@ -95,12 +117,30 @@ export default function AgentInstall({ cert, userId, onClose }) {
   }
 
   const generatePhpToken = async () => {
-    if (!cpanelUser.trim()) { setError('Please enter your cPanel username.'); return }
-    if (!cpanelToken.trim()) { setError('Please enter your cPanel API token.'); return }
+    // Resolve credentials — from saved server or manual input
+    let resolvedUser = cpanelUser.trim()
+    let resolvedToken = cpanelToken.trim()
+
+    if (selectedServer) {
+      try {
+        const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/server-credentials', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'get_credentials', user_id:userId, id:selectedServer.id })
+        })
+        const data = await res.json()
+        if (data.server?.credentials_enc) {
+          const creds = JSON.parse(atob(data.server.credentials_enc))
+          resolvedUser = data.server.username
+          resolvedToken = creds.api_token || ''
+        }
+      } catch(e) {}
+    }
+
+    if (!resolvedUser) { setError('Please enter your cPanel username.'); return }
+    if (!resolvedToken) { setError('Please enter your cPanel API token.'); return }
     setLoading(true); setError('')
     try {
-      // Save credentials for next time
-      await saveCpanelCredentials(cpanelUser.trim(), cpanelToken.trim())
+      await saveCpanelCredentials(resolvedUser, resolvedToken)
       const res = await fetch(AGENT_API, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ action:'create_token', user_id:userId, cert_id:cert.id, session_id:cert.session_id, domain:cert.domain })
@@ -109,8 +149,8 @@ export default function AgentInstall({ cert, userId, onClose }) {
       if (data.error) { setError(data.error); setLoading(false); return }
       // Download PHP file with token + cPanel credentials embedded
       const phpUrl = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + data.token
-        + '&cpanel_user=' + encodeURIComponent(cpanelUser.trim())
-        + '&cpanel_token=' + encodeURIComponent(cpanelToken.trim())
+        + '&cpanel_user=' + encodeURIComponent(resolvedUser)
+        + '&cpanel_token=' + encodeURIComponent(resolvedToken)
       const a = document.createElement('a')
       a.href = phpUrl
       a.download = 'sslvault-agent.php'
@@ -231,50 +271,66 @@ export default function AgentInstall({ cert, userId, onClose }) {
                     </div>
                   </div>
 
-                  {/* cPanel credentials */}
-                  <div style={{ background:'white', border:'1.5px solid #e2e8f0', borderRadius:10, padding:16, marginBottom:14 }}>
-                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-                      <p style={{ fontWeight:700, fontSize:13, color:'var(--text)', margin:0 }}>🔑 Your cPanel Credentials</p>
-                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                        {cpanelUser && cpanelToken && <span style={{ fontSize:10, fontWeight:700, color:'#16a34a', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:4, padding:'2px 7px' }}>✓ Saved</span>}
-                        <button onClick={() => setShowCpanelHelp(h => !h)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, color:'var(--accent)', fontWeight:600, padding:0 }}>
-                          {showCpanelHelp ? 'Hide help ▲' : 'Where do I find these? ▼'}
-                        </button>
+                  {/* Saved server picker — shown when user has saved servers */}
+                  {savedServers.filter(s => s.server_type === 'cpanel').length > 0 && (
+                    <div style={{ marginBottom:14 }}>
+                      <label style={{ fontSize:12, fontWeight:700, color:'var(--text2)', display:'block', marginBottom:8 }}>🖥️ Saved cPanel Servers</label>
+                      <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
+                        {savedServers.filter(s => s.server_type === 'cpanel').map(s => (
+                          <div key={s.id} onClick={() => setSelectedServer(selectedServer?.id === s.id ? null : s)}
+                            style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 14px', borderRadius:10, border:`2px solid ${selectedServer?.id===s.id?'#d97706':'var(--border)'}`, background:selectedServer?.id===s.id?'#fffbeb':'white', cursor:'pointer', transition:'all 0.15s' }}>
+                            <span style={{ fontSize:18 }}>🖥️</span>
+                            <div style={{ flex:1 }}>
+                              <div style={{ fontWeight:700, fontSize:13, color:selectedServer?.id===s.id?'#d97706':'var(--text)' }}>{s.nickname}</div>
+                              <div style={{ fontSize:11, color:'var(--text3)', fontFamily:'monospace' }}>{s.username}@{s.host}</div>
+                            </div>
+                            <div style={{ width:18, height:18, borderRadius:'50%', background:selectedServer?.id===s.id?'#d97706':'#f1f5f9', border:`2px solid ${selectedServer?.id===s.id?'#d97706':'#e2e8f0'}`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                              {selectedServer?.id===s.id && <span style={{ color:'white', fontSize:9, fontWeight:900 }}>✓</span>}
+                            </div>
+                          </div>
+                        ))}
                       </div>
+                      {!selectedServer && (
+                        <p style={{ fontSize:11, color:'var(--text3)', marginTop:6 }}>Select a saved server, or enter credentials manually below.</p>
+                      )}
                     </div>
+                  )}
 
-                    {showCpanelHelp && (
-                      <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:8, padding:12, marginBottom:12, fontSize:12, color:'#92400e', lineHeight:1.7 }}>
-                        <strong>Username:</strong> Your short cPanel login name (not your email). Found in your hosting welcome email or at <em>yourdomain.com/cpanel</em> → top right corner.<br/><br/>
-                        <strong>API Token:</strong> In cPanel → search <em>"Manage API Tokens"</em> → Create token → give it any name → copy the token. Make sure it has <strong>SSL</strong> permissions (or full access).
+                  {/* Manual credential entry — hidden when a saved server is selected */}
+                  {!selectedServer && (
+                    <div style={{ background:'white', border:'1.5px solid #e2e8f0', borderRadius:10, padding:16, marginBottom:14 }}>
+                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+                        <p style={{ fontWeight:700, fontSize:13, color:'var(--text)', margin:0 }}>🔑 Your cPanel Credentials</p>
+                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                          {cpanelUser && cpanelToken && <span style={{ fontSize:10, fontWeight:700, color:'#16a34a', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:4, padding:'2px 7px' }}>✓ Saved</span>}
+                          <button onClick={() => setShowCpanelHelp(h => !h)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, color:'var(--accent)', fontWeight:600, padding:0 }}>
+                            {showCpanelHelp ? 'Hide help ▲' : 'Where do I find these? ▼'}
+                          </button>
+                        </div>
                       </div>
-                    )}
-
-                    <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                      <div>
-                        <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>cPanel Username</label>
-                        <input
-                          value={cpanelUser}
-                          onChange={e => setCpanelUser(e.target.value)}
-                          placeholder="e.g. johndoe"
-                          style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }}
-                        />
+                      {showCpanelHelp && (
+                        <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:8, padding:12, marginBottom:12, fontSize:12, color:'#92400e', lineHeight:1.7 }}>
+                          <strong>Username:</strong> Your short cPanel login name (not your email).<br/><br/>
+                          <strong>API Token:</strong> cPanel → search <em>"Manage API Tokens"</em> → Create token → give it SSL permissions.
+                        </div>
+                      )}
+                      <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                        <div>
+                          <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>cPanel Username</label>
+                          <input value={cpanelUser} onChange={e => setCpanelUser(e.target.value)} placeholder="e.g. johndoe"
+                            style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }} />
+                        </div>
+                        <div>
+                          <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>cPanel API Token</label>
+                          <input type="password" value={cpanelToken} onChange={e => setCpanelToken(e.target.value)} placeholder="Paste your API token here"
+                            style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }} />
+                        </div>
                       </div>
-                      <div>
-                        <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>cPanel API Token</label>
-                        <input
-                          type="password"
-                          value={cpanelToken}
-                          onChange={e => setCpanelToken(e.target.value)}
-                          placeholder="Paste your API token here"
-                          style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }}
-                        />
-                      </div>
+                      <p style={{ fontSize:11, color:'var(--text3)', marginTop:8, lineHeight:1.5 }}>
+                        🔒 Credentials embedded in the PHP file. <a href="/dns-providers" style={{ color:'var(--accent)', fontWeight:600 }}>Save a server</a> to skip this step next time.
+                      </p>
                     </div>
-                    <p style={{ fontSize:11, color:'var(--text3)', marginTop:8, lineHeight:1.5 }}>
-                      🔒 Credentials are embedded directly into the PHP file and never stored on SSLVault servers. Delete the file after install.
-                    </p>
-                  </div>
+                  )}
 
                   <div style={{ marginBottom:16 }}>
                     <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -347,7 +403,7 @@ export default function AgentInstall({ cert, userId, onClose }) {
               </div>
 
               <div style={{ display:'flex', gap:10 }}>
-                <a href={'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + token + '&cpanel_user=' + encodeURIComponent(cpanelUser) + '&cpanel_token=' + encodeURIComponent(cpanelToken)}
+                <a href={'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + token + '&cpanel_user=' + encodeURIComponent(cpanelUser||selectedServer?.username||'') + '&cpanel_token=' + encodeURIComponent(cpanelToken)}
                   download="sslvault-agent.php" className="btn btn-secondary btn-sm">
                   Re-download
                 </a>
