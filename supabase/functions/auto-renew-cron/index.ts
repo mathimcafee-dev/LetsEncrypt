@@ -15,9 +15,16 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
-const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+// Note: Supabase reserves the SUPABASE_* env var prefix and blocks reading
+// SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY from inside functions. We must use
+// custom-named env vars (set via Edge Function Secrets in the dashboard).
+const SUPABASE_URL = Deno.env.get('PROJECT_URL') || Deno.env.get('SUPABASE_URL') || 'https://frthcwkntciaakqsppss.supabase.co'
+const SERVICE_ROLE_KEY = Deno.env.get('SERVICE_ROLE_KEY') || Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
 const ACME_URL = Deno.env.get('ACME_FUNCTION_URL') || `${SUPABASE_URL}/functions/v1/acme-ssl`
+
+if (!SERVICE_ROLE_KEY) {
+  console.error('FATAL: SERVICE_ROLE_KEY env var is missing. Set it in Edge Function Secrets.')
+}
 
 const RENEWAL_WINDOW_DAYS = 14   // Renew anything expiring within 14 days
 const MAX_ATTEMPTS = 5           // After 5 consecutive failures, stop trying (alert user instead)
@@ -186,49 +193,61 @@ async function findCertsToRenew(): Promise<Certificate[]> {
 }
 
 Deno.serve(async (req) => {
-  // Authenticate the cron caller with the service role key
-  const auth = req.headers.get('Authorization') || ''
-  if (!auth.includes(SERVICE_ROLE_KEY)) {
-    return new Response(JSON.stringify({ error: 'unauthorized' }), {
-      status: 401,
+  try {
+    // Authenticate the cron caller with the service role key
+    const auth = req.headers.get('Authorization') || ''
+    if (!SERVICE_ROLE_KEY || !auth.includes(SERVICE_ROLE_KEY)) {
+      console.log('auth check failed: missing or wrong bearer token')
+      return new Response(JSON.stringify({ error: 'unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    console.log('cron starting...')
+    const startedAt = new Date().toISOString()
+    const certs = await findCertsToRenew()
+    const summary = {
+      started_at: startedAt,
+      finished_at: '',
+      total_candidates: certs.length,
+      renewed: 0,
+      failed: 0,
+      skipped_no_dns: 0,
+      skipped_backoff: 0,
+      errors: [] as Array<{ domain: string; error: string }>
+    }
+
+    for (const cert of certs) {
+      try {
+        const result = await processCert(cert)
+        if (result.status === 'renewed') summary.renewed++
+        else if (result.status === 'failed') {
+          summary.failed++
+          summary.errors.push({ domain: cert.domain, error: result.reason || 'unknown' })
+        } else if (result.reason === 'no_dns_provider') summary.skipped_no_dns++
+        else if (result.reason === 'backoff') summary.skipped_backoff++
+      } catch (err) {
+        summary.failed++
+        summary.errors.push({ domain: cert.domain, error: String(err) })
+        console.error(`Unhandled error processing ${cert.domain}:`, err)
+      }
+    }
+
+    summary.finished_at = new Date().toISOString()
+    console.log('cron summary:', JSON.stringify(summary))
+
+    return new Response(JSON.stringify(summary), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  } catch (err) {
+    // Top-level catch: ensure we always log something instead of silently dying
+    const errMsg = err instanceof Error ? err.message + '\n' + err.stack : String(err)
+    console.error('FATAL cron error:', errMsg)
+    return new Response(JSON.stringify({ error: 'internal_error', message: errMsg }), {
+      status: 500,
       headers: { 'Content-Type': 'application/json' }
     })
   }
-
-  const startedAt = new Date().toISOString()
-  const certs = await findCertsToRenew()
-  const summary = {
-    started_at: startedAt,
-    finished_at: '',
-    total_candidates: certs.length,
-    renewed: 0,
-    failed: 0,
-    skipped_no_dns: 0,
-    skipped_backoff: 0,
-    errors: [] as Array<{ domain: string; error: string }>
-  }
-
-  for (const cert of certs) {
-    try {
-      const result = await processCert(cert)
-      if (result.status === 'renewed') summary.renewed++
-      else if (result.status === 'failed') {
-        summary.failed++
-        summary.errors.push({ domain: cert.domain, error: result.reason || 'unknown' })
-      } else if (result.reason === 'no_dns_provider') summary.skipped_no_dns++
-      else if (result.reason === 'backoff') summary.skipped_backoff++
-    } catch (err) {
-      summary.failed++
-      summary.errors.push({ domain: cert.domain, error: String(err) })
-      console.error(`Unhandled error processing ${cert.domain}:`, err)
-    }
-  }
-
-  summary.finished_at = new Date().toISOString()
-  console.log('cron summary:', JSON.stringify(summary))
-
-  return new Response(JSON.stringify(summary), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' }
-  })
 })
