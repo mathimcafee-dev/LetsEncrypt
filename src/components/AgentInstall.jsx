@@ -34,6 +34,10 @@ export default function AgentInstall({ cert, userId, onClose }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [timeLeft, setTimeLeft] = useState(3600)
+  // cPanel credentials for shared hosting
+  const [cpanelUser, setCpanelUser] = useState('')
+  const [cpanelToken, setCpanelToken] = useState('')
+  const [showCpanelHelp, setShowCpanelHelp] = useState(false)
   const pollRef = useRef(null)
   const timerRef = useRef(null)
 
@@ -58,6 +62,8 @@ export default function AgentInstall({ cert, userId, onClose }) {
   }
 
   const generatePhpToken = async () => {
+    if (!cpanelUser.trim()) { setError('Please enter your cPanel username.'); return }
+    if (!cpanelToken.trim()) { setError('Please enter your cPanel API token.'); return }
     setLoading(true); setError('')
     try {
       const res = await fetch(AGENT_API, {
@@ -66,13 +72,14 @@ export default function AgentInstall({ cert, userId, onClose }) {
       })
       const data = await res.json()
       if (data.error) { setError(data.error); setLoading(false); return }
-      // Download PHP file with token embedded
+      // Download PHP file with token + cPanel credentials embedded
       const phpUrl = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + data.token
+        + '&cpanel_user=' + encodeURIComponent(cpanelUser.trim())
+        + '&cpanel_token=' + encodeURIComponent(cpanelToken.trim())
       const a = document.createElement('a')
       a.href = phpUrl
       a.download = 'sslvault-agent.php'
       a.click()
-      // Auto-set agent URL to the domain default
       const defaultUrl = 'https://' + cert.domain + '/sslvault-agent.php'
       setAgentUrl(defaultUrl)
       setToken(data.token)
@@ -181,18 +188,57 @@ export default function AgentInstall({ cert, userId, onClose }) {
                   <div style={{ background:'var(--green-light)', border:'1px solid #86efac', borderRadius:10, padding:16, marginBottom:16 }}>
                     <p style={{ fontWeight:700, fontSize:14, marginBottom:8, color:'var(--text)' }}>What this does:</p>
                     <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                      {['Downloads a PHP file pre-loaded with your install token','You upload it to your website via cPanel File Manager','Visit the URL — it installs your certificate automatically','Saves cert files and updates .htaccess for HTTPS redirect','Shows exact file paths to paste in cPanel SSL Manager'].map((t,i) => (
+                      {['Downloads a PHP file with your credentials pre-loaded','Upload it to public_html via cPanel File Manager','Visit the URL — it calls cPanel API and activates SSL instantly','Updates .htaccess for HTTPS redirect automatically','Dashboard updates to ✅ Installed in real-time'].map((t,i) => (
                         <div key={i} style={{ display:'flex', gap:8, fontSize:13, color:'var(--text2)' }}>
                           <span style={{ color:'var(--green)', fontWeight:700, flexShrink:0 }}>✓</span> {t}
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:14, marginBottom:16, fontSize:12, color:'var(--text2)', lineHeight:1.7 }}>
-                    ℹ <strong>No SSH needed.</strong> Works entirely through your browser and cPanel. You just upload one file and visit a URL.
+
+                  {/* cPanel credentials */}
+                  <div style={{ background:'white', border:'1.5px solid #e2e8f0', borderRadius:10, padding:16, marginBottom:14 }}>
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+                      <p style={{ fontWeight:700, fontSize:13, color:'var(--text)', margin:0 }}>🔑 Your cPanel Credentials</p>
+                      <button onClick={() => setShowCpanelHelp(h => !h)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, color:'var(--accent)', fontWeight:600, padding:0 }}>
+                        {showCpanelHelp ? 'Hide help ▲' : 'Where do I find these? ▼'}
+                      </button>
+                    </div>
+
+                    {showCpanelHelp && (
+                      <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:8, padding:12, marginBottom:12, fontSize:12, color:'#92400e', lineHeight:1.7 }}>
+                        <strong>Username:</strong> Your short cPanel login name (not your email). Found in your hosting welcome email or at <em>yourdomain.com/cpanel</em> → top right corner.<br/><br/>
+                        <strong>API Token:</strong> In cPanel → search <em>"Manage API Tokens"</em> → Create token → give it any name → copy the token. Make sure it has <strong>SSL</strong> permissions (or full access).
+                      </div>
+                    )}
+
+                    <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                      <div>
+                        <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>cPanel Username</label>
+                        <input
+                          value={cpanelUser}
+                          onChange={e => setCpanelUser(e.target.value)}
+                          placeholder="e.g. johndoe"
+                          style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>cPanel API Token</label>
+                        <input
+                          type="password"
+                          value={cpanelToken}
+                          onChange={e => setCpanelToken(e.target.value)}
+                          placeholder="Paste your API token here"
+                          style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }}
+                        />
+                      </div>
+                    </div>
+                    <p style={{ fontSize:11, color:'var(--text3)', marginTop:8, lineHeight:1.5 }}>
+                      🔒 Credentials are embedded directly into the PHP file and never stored on SSLVault servers. Delete the file after install.
+                    </p>
                   </div>
-                  <div style={{ marginBottom:20 }}>
-                    <p style={{ fontWeight:600, fontSize:13, marginBottom:8, color:'var(--text)' }}>Works with:</p>
+
+                  <div style={{ marginBottom:16 }}>
                     <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
                       {['GoDaddy','Bluehost','Hostinger','Hostgator','SiteGround','Namecheap','Any cPanel host'].map(s => (
                         <span key={s} className="badge badge-green" style={{ fontSize:11 }}>{s}</span>
@@ -222,37 +268,13 @@ export default function AgentInstall({ cert, userId, onClose }) {
               <div style={{ textAlign:'center', marginBottom:20 }}>
                 <div style={{ fontSize:40, marginBottom:8 }}>📥</div>
                 <p style={{ fontWeight:700, fontSize:16, color:'var(--text)', marginBottom:4 }}>PHP Agent Downloaded!</p>
-                <p style={{ fontSize:13, color:'var(--text3)' }}>Follow these 3 steps to install your certificate</p>
-              </div>
-
-              {/* Agent URL field */}
-              <div style={{ marginBottom:16 }}>
-                <label style={{ fontSize:13, fontWeight:600, color:'var(--text)', display:'block', marginBottom:6 }}>
-                  Your Agent URL
-                </label>
-                <div style={{ display:'flex', gap:8 }}>
-                  <input
-                    value={agentUrl}
-                    onChange={e => setAgentUrl(e.target.value)}
-                    placeholder={'https://' + cert.domain + '/sslvault-agent.php'}
-                    style={{ flex:1, fontSize:13 }}
-                  />
-                  {agentUrl && (
-                    <a href={agentUrl} target="_blank" rel="noopener noreferrer"
-                      style={{ display:'inline-flex', alignItems:'center', gap:5, background:'var(--green)', color:'white', border:'none', borderRadius:7, padding:'8px 14px', fontSize:13, fontWeight:700, textDecoration:'none', flexShrink:0 }}>
-                      ▶ Run Now
-                    </a>
-                  )}
-                </div>
-                <p style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
-                  Save this URL to run the agent anytime from your dashboard
-                </p>
+                <p style={{ fontSize:13, color:'var(--text3)' }}>2 steps — upload & visit URL. SSL activates automatically.</p>
               </div>
 
               {[
-                ['1', '📁', 'Upload the file', 'Upload sslvault-agent.php to your website root folder using cPanel File Manager or FTP. The root folder is usually called public_html or www.'],
-                ['2', '🌐', 'Visit the URL', 'Open your browser and go to: https://' + cert.domain + '/sslvault-agent.php — The script will run automatically and install your certificate.'],
-                ['3', '🗑️', 'Delete the file', 'After installation, delete sslvault-agent.php from your server for security. The certificate stays installed.'],
+                ['1', '📁', 'Upload the file', 'Open cPanel → File Manager → navigate to public_html → Upload → select sslvault-agent.php. Takes 5 seconds.'],
+                ['2', '🌐', 'Visit the URL to install', 'Open a new browser tab and go to: https://' + cert.domain + '/sslvault-agent.php — The script calls your cPanel API and activates SSL instantly. No manual steps.'],
+                ['3', '🗑️', 'Delete the file', 'After seeing the green ✅ success screen, delete sslvault-agent.php immediately. It contains your cPanel API token.'],
               ].map(([n, icon, title, desc]) => (
                 <div key={n} style={{ display:'flex', gap:14, padding:'14px 0', borderBottom:'1px solid var(--border2)' }}>
                   <div style={{ width:32, height:32, borderRadius:'50%', background:'var(--accent)', color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, flexShrink:0 }}>{n}</div>
@@ -263,15 +285,37 @@ export default function AgentInstall({ cert, userId, onClose }) {
                 </div>
               ))}
 
-              <div className="alert alert-info" style={{ marginTop:16, marginBottom:16, fontSize:12 }}>
-                💡 Upload the file to your server, then click <strong>Open Agent URL & Monitor</strong> — it will automatically open the agent in a new tab and track the installation live.
+              <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:8, padding:12, margin:'16px 0', fontSize:12, color:'var(--text2)', lineHeight:1.7 }}>
+                💡 After visiting the URL, click <strong>Monitor Installation</strong> below — this dashboard will update to ✅ automatically when cPanel confirms SSL is active.
+              </div>
+
+              {/* Agent URL field */}
+              <div style={{ marginBottom:16 }}>
+                <label style={{ fontSize:12, fontWeight:600, color:'var(--text)', display:'block', marginBottom:6 }}>Agent URL (for monitoring)</label>
+                <div style={{ display:'flex', gap:8 }}>
+                  <input
+                    value={agentUrl}
+                    onChange={e => setAgentUrl(e.target.value)}
+                    placeholder={'https://' + cert.domain + '/sslvault-agent.php'}
+                    style={{ flex:1, fontSize:13 }}
+                  />
+                  {agentUrl && (
+                    <a href={agentUrl} target="_blank" rel="noopener noreferrer"
+                      style={{ display:'inline-flex', alignItems:'center', gap:5, background:'var(--green)', color:'white', border:'none', borderRadius:7, padding:'8px 14px', fontSize:13, fontWeight:700, textDecoration:'none', flexShrink:0 }}>
+                      ▶ Open
+                    </a>
+                  )}
+                </div>
               </div>
 
               <div style={{ display:'flex', gap:10 }}>
-                <a href={'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + token}
+                <a href={'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + token + '&cpanel_user=' + encodeURIComponent(cpanelUser) + '&cpanel_token=' + encodeURIComponent(cpanelToken)}
                   download="sslvault-agent.php" className="btn btn-secondary btn-sm">
                   Re-download
                 </a>
+                <button onClick={startWaiting} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>
+                  ⏳ I've Uploaded It — Monitor Installation
+                </button>
               </div>
             </>
           )}
