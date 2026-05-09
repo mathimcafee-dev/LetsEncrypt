@@ -122,21 +122,28 @@ export default function Developer({ nav }) {
             <h2 style={{fontFamily:'Georgia, serif',fontSize:32,fontWeight:800,color:'#0f172a',letterSpacing:'-0.8px',marginBottom:20,lineHeight:1.2}}>The story behind it.</h2>
             <div style={{fontSize:15,color:'#475569',lineHeight:1.85}}>
               <p style={{marginBottom:16}}>
-                I spend a lot of time around enterprise certificate platforms — Venafi, DigiCert, Sectigo.
-                They're powerful, and they're priced for Fortune 500 buyers. Meanwhile the small business
-                running a single VPS, the indie developer with three side projects, the non-profit with
-                one donated server — they all need the exact same thing: a working HTTPS certificate that
-                renews itself.
+                I'm a PKI person at heart. Identity, trust, and the cryptographic plumbing that holds the
+                modern internet together — that's the work I love. By day I get to do this professionally,
+                helping organisations design and operate certificate lifecycle management at scale.
+                The deeper I go, the more convinced I am that PKI done well is one of the highest-leverage
+                things in security.
               </p>
               <p style={{marginBottom:16}}>
-                Let's Encrypt solved the issuance side a decade ago. The lifecycle around it — installation,
-                monitoring, renewal — is still manual, scripted, brittle. SSLVault is my attempt at the
-                missing piece: a free CLM platform that gives ordinary site owners the same automation big
-                companies pay for.
+                Outside of work hours, I wanted to give something back to the community that taught me
+                this craft. Let's Encrypt made certificates free a decade ago — a remarkable gift to
+                the open web. But the lifecycle around them — installation, monitoring, renewal across
+                heterogeneous infrastructure — still trips up the people who can least afford to think
+                about it: the indie developer, the small business, the non-profit running on a donated VPS.
+              </p>
+              <p style={{marginBottom:16}}>
+                SSLVault is my way of closing that gap. A free, open CLM platform that takes the principles
+                I work with every day — automated discovery, scheduled renewal, agent-based deployment,
+                visibility into every certificate you own — and puts them in the hands of anyone with a
+                domain, no matter their budget.
               </p>
               <p>
-                It's open, it's free, and it's built in public. If it makes the encrypted web a little more
-                accessible, that's the whole point.
+                It's built in public, runs on open standards, and will stay free. If it helps even a few
+                more sites stay encrypted without breaking, that's the whole reward.
               </p>
             </div>
           </div>
