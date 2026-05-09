@@ -273,17 +273,44 @@ export default function Home({ nav }) {
       </section>
 
       {/* FOOTER */}
-      <footer style={{borderTop:'1px solid #f1f5f9',background:'white',padding:'28px 0'}}>
-        <div style={{maxWidth:1140,margin:'0 auto',padding:'0 24px',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
-          <div style={{display:'flex',alignItems:'center',gap:8}}>
-            <div style={{width:28,height:28,background:'linear-gradient(135deg,#1d4ed8,#4f46e5)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 2px 8px rgba(37,99,235,0.3)'}}><Shield size={13} color='white'/></div>
-            <span style={{color:'#1e293b',fontSize:14,fontWeight:800}}>SSL<span style={{color:'#2563eb'}}>Vault</span> CLM</span>
+      <footer style={{borderTop:'1px solid #f1f5f9',background:'white',padding:'36px 0 24px'}}>
+        <div style={{maxWidth:1140,margin:'0 auto',padding:'0 24px'}}>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:32,marginBottom:28}}>
+            <div>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+                <div style={{width:28,height:28,background:'linear-gradient(135deg,#1d4ed8,#4f46e5)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 2px 8px rgba(37,99,235,0.3)'}}><Shield size={13} color='white'/></div>
+                <span style={{color:'#1e293b',fontSize:14,fontWeight:800}}>SSL<span style={{color:'#2563eb'}}>Vault</span> CLM</span>
+              </div>
+              <p style={{color:'#94a3b8',fontSize:11,letterSpacing:'0.3px',lineHeight:1.6}}>Powered by Let's Encrypt · ACME RFC 8555 · Free forever</p>
+            </div>
+            <div>
+              <div style={{fontSize:10,fontWeight:800,color:'#0f172a',textTransform:'uppercase',letterSpacing:'1px',marginBottom:10}}>Product</div>
+              <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                {[['Issue Certificate','/generate'],['Inventory & Monitor','/dashboard'],['DNS Providers','/dns-providers'],['Install Guide','/install']].map(([l,p])=>(
+                  <button key={l} onClick={()=>nav(p)} style={{background:'none',border:'none',color:'#64748b',fontSize:12,cursor:'pointer',fontWeight:600,textAlign:'left',padding:0}}>{l}</button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{fontSize:10,fontWeight:800,color:'#0f172a',textTransform:'uppercase',letterSpacing:'1px',marginBottom:10}}>Company</div>
+              <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                {[['About','/about'],['Developer','/developer'],['Contact','/contact'],['Knowledge Base','/knowledge-base']].map(([l,p])=>(
+                  <button key={l} onClick={()=>nav(p)} style={{background:'none',border:'none',color:'#64748b',fontSize:12,cursor:'pointer',fontWeight:600,textAlign:'left',padding:0}}>{l}</button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{fontSize:10,fontWeight:800,color:'#0f172a',textTransform:'uppercase',letterSpacing:'1px',marginBottom:10}}>Legal</div>
+              <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                {[['Privacy Policy','/privacy'],['Terms of Service','/terms']].map(([l,p])=>(
+                  <button key={l} onClick={()=>nav(p)} style={{background:'none',border:'none',color:'#64748b',fontSize:12,cursor:'pointer',fontWeight:600,textAlign:'left',padding:0}}>{l}</button>
+                ))}
+              </div>
+            </div>
           </div>
-          <p style={{color:'#94a3b8',fontSize:11,letterSpacing:'0.3px'}}>Powered by Let’s Encrypt · ACME RFC 8555 · Free forever</p>
-          <div style={{display:'flex',gap:16}}>
-            {[['Install Guide','/install'],['Knowledge Base','/knowledge-base'],['Dashboard','/dashboard']].map(([l,p])=>(
-              <button key={l} onClick={()=>nav(p)} style={{background:'none',border:'none',color:'#64748b',fontSize:11,cursor:'pointer',fontWeight:600}}>{l}</button>
-            ))}
+          <div style={{borderTop:'1px solid #f1f5f9',paddingTop:20,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12}}>
+            <p style={{color:'#94a3b8',fontSize:11,letterSpacing:'0.3px'}}>© {new Date().getFullYear()} SSLVault · Built by Mathivanan Kathirvel</p>
+            <p style={{color:'#cbd5e1',fontSize:11,letterSpacing:'0.3px'}}>Made with ♥ in the Netherlands</p>
           </div>
         </div>
       </footer>

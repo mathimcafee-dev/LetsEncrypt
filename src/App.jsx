@@ -1,4 +1,4 @@
-// BUILD_TIME: 1778313061
+// BUILD_TIME: 1778400000
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import Nav from './components/Nav'
@@ -12,6 +12,11 @@ import KnowledgeBase from './pages/KnowledgeBase'
 import GetStarted from './pages/GetStarted'
 import Install from './pages/Install'
 import DnsProviders from './pages/DnsProviders'
+import About from './pages/About'
+import Contact from './pages/Contact'
+import Developer from './pages/Developer'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
@@ -20,7 +25,7 @@ export default function App() {
     window.addEventListener('popstate', handler)
     return () => window.removeEventListener('popstate', handler)
   }, [])
-  const nav = (to) => { window.history.pushState({}, '', to); setPage(to) }
+  const nav = (to) => { window.history.pushState({}, '', to); setPage(to); window.scrollTo(0,0) }
   return (
     <div>
       <Nav nav={nav} page={page} />
@@ -35,6 +40,11 @@ export default function App() {
       {page === '/get-started' && <GetStarted nav={nav} />}
       {page === '/shared-hosting-guide' && <SharedHostingGuide nav={nav} />}
       {page === '/auth' && <Auth nav={nav} />}
+      {page === '/about' && <About nav={nav} />}
+      {page === '/contact' && <Contact nav={nav} />}
+      {page === '/developer' && <Developer nav={nav} />}
+      {page === '/privacy' && <Privacy nav={nav} />}
+      {page === '/terms' && <Terms nav={nav} />}
     </div>
   )
 }

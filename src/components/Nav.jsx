@@ -1,6 +1,6 @@
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Activity, Settings, BookOpen, ChevronDown } from 'lucide-react'
+import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Activity, Settings, BookOpen, ChevronDown, Info, Mail, User } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Nav({ nav, page }) {
@@ -14,6 +14,9 @@ export default function Nav({ nav, page }) {
     { path:'/dns-providers', label:'DNS Providers', icon:Settings },
     { path:'/install', label:'Install Guide', icon:BookOpen },
     { path:'/knowledge-base', label:'Knowledge Base', icon:BookOpen },
+    { path:'/about', label:'About', icon:Info },
+    { path:'/developer', label:'Developer', icon:User },
+    { path:'/contact', label:'Contact', icon:Mail },
   ]
   const isDash = page==='/dashboard'||page==='/monitor'
   return (
