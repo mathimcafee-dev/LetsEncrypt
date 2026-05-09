@@ -258,6 +258,7 @@ export default function Monitor() {
   }
 
   const addMonitored = async (domain, threshold) => {
+    if (!user?.id) return
     const { error } = await supabase.from('monitored_domains').upsert({
       user_id: user.id, domain, alert_threshold_days: threshold,
       created_at: new Date().toISOString()
