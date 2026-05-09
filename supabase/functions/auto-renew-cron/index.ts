@@ -133,6 +133,48 @@ async function renewSingle(cert: Certificate): Promise<{ ok: boolean; error?: st
     .eq('id', cert.id)
 
   if (updateError) return { ok: false, error: `DB update failed: ${updateError.message}` }
+
+  // Step 4: dispatch install job to persistent agent if one is registered for this domain
+  try {
+    const { data: serverRows } = await supabase
+      .from('server_credentials')
+      .select('agent_id')
+      .contains('domains', [cert.domain])
+      .not('agent_id', 'is', null)
+      .limit(1)
+
+    if (serverRows && serverRows.length > 0 && serverRows[0].agent_id) {
+      const agentId = serverRows[0].agent_id
+      // Verify agent is active (seen in last 30 min)
+      const { data: agent } = await supabase
+        .from('persistent_agents')
+        .select('id, last_seen_at')
+        .eq('id', agentId)
+        .eq('status', 'active')
+        .single()
+
+      if (agent && agent.last_seen_at) {
+        const minsAgo = Math.floor((Date.now() - new Date(agent.last_seen_at).getTime()) / 60000)
+        if (minsAgo < 30) {
+          await supabase.from('agent_jobs').insert({
+            agent_id: agentId,
+            user_id: cert.user_id,
+            cert_id: cert.id,
+            job_type: 'renew',
+            status: 'queued',
+            cert_pem: finalizeData.cert_pem,
+            key_pem: finalizeData.private_key_pem || '',
+            domain: cert.domain,
+          })
+          console.log(`Dispatched renewal job to agent ${agentId} for ${cert.domain}`)
+        }
+      }
+    }
+  } catch (agentErr: any) {
+    // Non-fatal — cert is already renewed, agent dispatch is best-effort
+    console.error('Agent dispatch failed (non-fatal):', agentErr.message)
+  }
+
   return { ok: true }
 }
 

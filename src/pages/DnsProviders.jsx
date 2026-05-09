@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 
 const DNS_FN    = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider'
 const SERVER_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/server-credentials'
+const DAEMON_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
 
 // ── DNS Providers config ─────────────────────────────────────────────
 const PROVIDERS = {
@@ -251,8 +252,129 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
 }
 
 // ── Server Card ──────────────────────────────────────────────────────
-function ServerCard({ server, onDelete, onEdit }) {
+// ── Install Agent Modal ──────────────────────────────────────────────
+function InstallAgentModal({ server, userId, onClose, onRegistered }) {
+  const [checking, setChecking] = useState(false)
+  const [registered, setRegistered] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  // Generate a stable token for this server
+  const agentToken = btoa(`${userId}:${server.id}:sslvault-agent`).replace(/[^a-zA-Z0-9]/g,'').slice(0,48)
+  const installCmd = `curl -fsSL https://www.easysecurity.in/agent-install.sh | sudo bash -s -- --token=${agentToken} --server-id=${server.id} --user-id=${userId} --nickname="${server.nickname}"`
+
+  const copy = () => {
+    navigator.clipboard.writeText(installCmd)
+    setCopied(true); setTimeout(() => setCopied(false), 2000)
+  }
+
+  // Poll for registration
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      setChecking(true)
+      try {
+        const res = await fetch(DAEMON_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'list_agents', user_id: userId }) })
+        const data = await res.json()
+        const found = (data.agents||[]).find(a => a.server_id === server.id)
+        if (found) {
+          setRegistered(true)
+          clearInterval(interval)
+          setTimeout(() => { onRegistered(); onClose() }, 2000)
+        }
+      } catch(e) {}
+      setChecking(false)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(15,23,42,0.55)', zIndex:500, display:'flex', alignItems:'center', justifyContent:'center', padding:16, backdropFilter:'blur(2px)' }}
+      onClick={e => e.target===e.currentTarget && onClose()}>
+      <div style={{ background:'white', borderRadius:20, width:'100%', maxWidth:560, boxShadow:'0 32px 80px rgba(15,23,42,0.3)', overflow:'hidden' }}>
+
+        {/* Header */}
+        <div style={{ background:'linear-gradient(135deg,#1e40af,#2563eb)', padding:'20px 24px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ width:40, height:40, background:'rgba(255,255,255,0.15)', borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🤖</div>
+            <div>
+              <div style={{ fontWeight:800, fontSize:15, color:'white' }}>Install Agent on {server.nickname}</div>
+              <div style={{ fontSize:12, color:'rgba(255,255,255,0.7)' }}>One command — zero-touch installs forever</div>
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background:'rgba(255,255,255,0.15)', border:'none', borderRadius:8, width:32, height:32, cursor:'pointer', color:'white', fontSize:18 }}>✕</button>
+        </div>
+
+        <div style={{ padding:'24px' }}>
+          {registered ? (
+            <div style={{ textAlign:'center', padding:'20px 0' }}>
+              <div style={{ fontSize:48, marginBottom:12 }}>✅</div>
+              <div style={{ fontWeight:800, fontSize:18, color:'#16a34a', marginBottom:6 }}>Agent Registered!</div>
+              <div style={{ fontSize:14, color:'#64748b' }}>{server.nickname} is now fully automated.</div>
+            </div>
+          ) : (
+            <>
+              {/* What this does */}
+              <div style={{ background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:10, padding:14, marginBottom:18 }}>
+                <p style={{ fontWeight:700, fontSize:13, color:'#0f172a', marginBottom:8 }}>What this does:</p>
+                {['Installs a lightweight background service (~2MB RAM)','Registers your server with SSLVault automatically','Handles all future cert installs — no SSH needed','Auto-renewals install directly — fully hands-off','Runs on every boot, restarts if it crashes'].map((t,i) => (
+                  <div key={i} style={{ display:'flex', gap:8, fontSize:12, color:'#475569', marginBottom:4 }}>
+                    <span style={{ color:'#16a34a', fontWeight:700, flexShrink:0 }}>✓</span> {t}
+                  </div>
+                ))}
+              </div>
+
+              {/* Command */}
+              <div style={{ marginBottom:18 }}>
+                <label style={{ fontSize:12, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px', display:'block', marginBottom:8 }}>
+                  SSH into your server and run this command:
+                </label>
+                <div style={{ background:'#0f172a', borderRadius:10, overflow:'hidden' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'8px 14px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
+                    <div style={{ display:'flex', gap:5 }}>
+                      {['#ef4444','#f59e0b','#10b981'].map(c => <div key={c} style={{ width:10, height:10, borderRadius:'50%', background:c }} />)}
+                    </div>
+                    <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', color:copied?'#34d399':'#64748b', fontSize:12, fontWeight:600, display:'flex', alignItems:'center', gap:5 }}>
+                      {copied ? '✓ Copied!' : '⎘ Copy'}
+                    </button>
+                  </div>
+                  <pre style={{ margin:0, padding:'14px 16px', color:'#e2e8f0', fontSize:11, fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all', lineHeight:1.7 }}>{installCmd}</pre>
+                </div>
+              </div>
+
+              {/* Requirements */}
+              <div style={{ background:'#f8fafc', border:'1px solid #f1f5f9', borderRadius:8, padding:'10px 14px', marginBottom:18, fontSize:12, color:'#64748b' }}>
+                <strong style={{ color:'#475569' }}>Requirements:</strong> Ubuntu 20/22/24, Debian 10/11/12, CentOS 7/8/9, Amazon Linux 2/2023 · Nginx or Apache · sudo access
+              </div>
+
+              {/* Waiting indicator */}
+              <div style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 16px', background:'#f0fdf4', border:'1px solid #a7f3d0', borderRadius:10, fontSize:13, color:'#15803d' }}>
+                <div style={{ width:8, height:8, borderRadius:'50%', background:'#22c55e', animation:'pulse 2s infinite', flexShrink:0 }} />
+                <span>{checking ? 'Checking registration...' : 'Waiting for agent to register — this page updates automatically when it connects'}</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function AgentBadge({ agent }) {
+  if (!agent) return (
+    <span style={{ fontSize:10, fontWeight:700, color:'#94a3b8', background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:4, padding:'2px 7px' }}>⚫ No Agent</span>
+  )
+  const lastSeen = agent.last_seen_at ? Math.floor((Date.now() - new Date(agent.last_seen_at)) / 60000) : null
+  const isActive = lastSeen !== null && lastSeen < 15
+  return (
+    <span style={{ fontSize:10, fontWeight:700, color:isActive?'#16a34a':'#d97706', background:isActive?'#f0fdf4':'#fffbeb', border:`1px solid ${isActive?'#a7f3d0':'#fde68a'}`, borderRadius:4, padding:'2px 7px' }}>
+      {isActive ? '🟢' : '🟡'} Agent {isActive ? `Active · ${lastSeen}m ago` : lastSeen !== null ? `Inactive · ${lastSeen}m ago` : 'Registered'}
+    </span>
+  )
+}
+
+function ServerCard({ server, onDelete, onEdit, agent, onInstallAgent }) {
   const t = SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel
+  const isVPS = server.server_type === 'ssh'
   return (
     <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:14, padding:'18px 22px', boxShadow:'0 1px 3px rgba(15,23,42,0.04)', display:'flex', alignItems:'center', gap:16 }}>
       <div style={{ width:46, height:46, borderRadius:12, background:t.bg, border:`1.5px solid ${t.border}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>
@@ -263,6 +385,7 @@ function ServerCard({ server, onDelete, onEdit }) {
           <span style={{ fontWeight:800, fontSize:14, color:'#0f172a', letterSpacing:'-0.2px' }}>{server.nickname}</span>
           <TypeChip type={server.server_type} />
           <span style={{ fontSize:10, fontWeight:700, color:'#16a34a', background:'#f0fdf4', border:'1px solid #a7f3d0', borderRadius:4, padding:'2px 7px' }}>🔒 Encrypted</span>
+          <AgentBadge agent={agent} />
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:10, fontSize:12, color:'#64748b', flexWrap:'wrap' }}>
           <span style={{ fontFamily:'monospace', background:'#f8fafc', border:'1px solid #f1f5f9', borderRadius:5, padding:'2px 7px' }}>{server.username}@{server.host}</span>
@@ -274,7 +397,13 @@ function ServerCard({ server, onDelete, onEdit }) {
           </div>
         )}
       </div>
-      <div style={{ display:'flex', gap:7, flexShrink:0 }}>
+      <div style={{ display:'flex', gap:7, flexShrink:0, flexWrap:'wrap' }}>
+        {isVPS && !agent && (
+          <button onClick={() => onInstallAgent(server)}
+            style={{ background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', border:'none', color:'white', cursor:'pointer', borderRadius:8, padding:'7px 12px', fontSize:12, fontWeight:700, display:'flex', alignItems:'center', gap:5, boxShadow:'0 2px 8px rgba(37,99,235,0.3)' }}>
+            🤖 Install Agent
+          </button>
+        )}
         <button onClick={() => onEdit(server)} style={{ background:'#f8fafc', border:'1px solid #e2e8f0', color:'#475569', cursor:'pointer', borderRadius:8, padding:'7px 12px', fontSize:12, fontWeight:600 }}>✏️ Edit</button>
         <button onClick={() => onDelete(server.id)} style={{ background:'#fef2f2', border:'1px solid #fecaca', color:'#dc2626', cursor:'pointer', borderRadius:8, padding:'7px 10px', fontSize:12, fontWeight:600 }}><Trash2 size={13}/></button>
       </div>
@@ -288,10 +417,12 @@ export default function DnsProviders({ nav }) {
   const [tab, setTab]               = useState('dns')
   const [credentials, setCredentials] = useState([])
   const [servers, setServers]       = useState([])
+  const [agents, setAgents]         = useState([])
   const [loading, setLoading]       = useState(true)
   const [showAddDns, setShowAddDns] = useState(false)
   const [showAddServer, setShowAddServer] = useState(false)
   const [editServer, setEditServer] = useState(null)
+  const [agentServer, setAgentServer] = useState(null)
   const [deleting, setDeleting]     = useState(null)
   const [testing, setTesting]       = useState(null)
   const [testResult, setTestResult] = useState({})
@@ -303,8 +434,17 @@ export default function DnsProviders({ nav }) {
 
   const loadAll = async () => {
     setLoading(true)
-    await Promise.all([loadCredentials(), loadServers()])
+    await Promise.all([loadCredentials(), loadServers(), loadAgents()])
     setLoading(false)
+  }
+
+  const loadAgents = async () => {
+    try {
+      const res = await fetch(DAEMON_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'list_agents', user_id: user.id }) })
+      const data = await res.json()
+      setAgents(data.agents || [])
+    } catch(e) {}
   }
 
   const loadCredentials = async () => {
@@ -393,6 +533,7 @@ export default function DnsProviders({ nav }) {
         {showAddDns    && <AddProviderModal userId={user?.id} onSave={loadCredentials} onClose={() => setShowAddDns(false)} />}
         {showAddServer && <AddServerModal  userId={user?.id} onSave={loadServers}     onClose={() => setShowAddServer(false)} />}
         {editServer    && <AddServerModal  userId={user?.id} onSave={loadServers}     onClose={() => setEditServer(null)} editServer={editServer} />}
+        {agentServer   && <InstallAgentModal server={agentServer} userId={user?.id} onClose={() => setAgentServer(null)} onRegistered={loadAgents} />}
 
         {/* Header */}
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:28, flexWrap:'wrap', gap:16 }}>
@@ -537,7 +678,7 @@ export default function DnsProviders({ nav }) {
                 </div>
               ) : (
                 <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                  {servers.map(s => <ServerCard key={s.id} server={s} onDelete={deleteServer} onEdit={setEditServer} />)}
+                  {servers.map(s => <ServerCard key={s.id} server={s} onDelete={deleteServer} onEdit={setEditServer} agent={agents.find(a => a.server_id === s.id) || null} onInstallAgent={setAgentServer} />)}
                 </div>
               )}
             </div>

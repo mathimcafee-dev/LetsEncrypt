@@ -85,6 +85,8 @@ export default function AgentInstall({ cert, userId, onClose }) {
       })
   }, [userId])
 
+  const DAEMON_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
+
   const saveCpanelCredentials = async (user, token) => {
     if (!userId || !user || !token) return
     const enc = btoa(JSON.stringify({ cpanel_user: user, cpanel_token: token }))
@@ -98,9 +100,56 @@ export default function AgentInstall({ cert, userId, onClose }) {
     }, { onConflict: 'user_id,provider,domain_pattern' }).catch(() => {})
   }
 
+  // Find active agent for selected server
+  const getActiveAgent = async (serverId) => {
+    try {
+      const res = await fetch(DAEMON_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'list_agents', user_id: userId }) })
+      const data = await res.json()
+      const agents = data.agents || []
+      const agent = agents.find(a => a.server_id === serverId)
+      if (!agent) return null
+      const lastSeen = agent.last_seen_at ? Math.floor((Date.now() - new Date(agent.last_seen_at)) / 60000) : 9999
+      return lastSeen < 15 ? agent : null // active = seen in last 15 min
+    } catch(e) { return null }
+  }
+
+  // Dispatch job to persistent agent
+  const dispatchToAgent = async (agentId) => {
+    setLoading(true); setError('')
+    try {
+      const res = await fetch(DAEMON_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'dispatch', user_id:userId, agent_id:agentId, cert_id:cert.id, domain:cert.domain, job_type:'install' }) })
+      const data = await res.json()
+      if (data.error) { setError(data.error); setLoading(false); return }
+      setInstallId(data.job_id)
+      setStep('agent_waiting')
+      setLoading(false)
+      // Poll job status
+      pollRef.current = setInterval(async () => {
+        try {
+          const res2 = await fetch(DAEMON_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ action:'status', user_id:userId, job_id:data.job_id }) })
+          const s = await res2.json()
+          if (s.status === 'done')   { clearInterval(pollRef.current); setStatus({ server_hostname: cert.domain, web_server: 'agent' }); setStep('success') }
+          if (s.status === 'failed') { clearInterval(pollRef.current); setStatus({ error_message: s.error_message }); setStep('failed') }
+          if (s.status === 'claimed' || s.status === 'running') setStatus({ status: s.status })
+        } catch(e) {}
+      }, 3000)
+    } catch(e) { setError(e.message); setLoading(false) }
+  }
+
   const generateToken = async () => {
     setLoading(true); setError('')
     try {
+      // Check for active persistent agent first (VPS server flow)
+      if (selectedServer && selectedServer.server_type === 'ssh') {
+        const agent = await getActiveAgent(selectedServer.id)
+        if (agent) {
+          await dispatchToAgent(agent.id)
+          return
+        }
+      }
       const res = await fetch(AGENT_API, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ action:'create_token', user_id:userId, cert_id:cert.id, session_id:cert.session_id, domain:cert.domain })
@@ -458,6 +507,28 @@ export default function AgentInstall({ cert, userId, onClose }) {
               <button onClick={startWaiting} className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }}>
                 ⏳ I've Run the Command — Monitor Progress
               </button>
+            </>
+          )}
+
+          {/* AGENT DISPATCH WAITING STEP */}
+          {step === 'agent_waiting' && (
+            <>
+              <div style={{ textAlign:'center', marginBottom:24 }}>
+                <div style={{ width:64, height:64, borderRadius:'50%', background:'linear-gradient(135deg,#eff6ff,#f5f3ff)', border:'2px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:32 }}>
+                  🤖
+                </div>
+                <p style={{ fontWeight:800, fontSize:17, color:'var(--text)', marginBottom:4 }}>Agent is installing...</p>
+                <p style={{ fontSize:13, color:'var(--text3)' }}>Your server agent picked up the job. Installing certificate now.</p>
+              </div>
+              <div style={{ background:'var(--bg)', borderRadius:10, padding:16, marginBottom:20 }}>
+                <StatusStep done={true}  active={false} label="Job dispatched to agent" />
+                <StatusStep done={status?.status==='claimed'||status?.status==='running'} active={!status} label="Agent received the job" />
+                <StatusStep done={false} active={status?.status==='running'} label="Writing cert files + reloading web server" />
+                <StatusStep done={false} active={false} label="Complete" />
+              </div>
+              <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:8, padding:12, fontSize:12, color:'var(--text2)' }}>
+                🤖 Agent polling every 5 minutes — this will complete on the next poll cycle.
+              </div>
             </>
           )}
 
