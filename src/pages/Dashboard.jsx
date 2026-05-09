@@ -768,8 +768,41 @@ function RenewalScheduleView({ certs, events, onToggleAutoRenew, onRefresh }) {
   const paused = certs.filter(c => c.expires_at && c.auto_renew_enabled === false).length
   const failed = certs.filter(c => c.last_renewal_status === 'failed').length
 
+  // Build 1.5: certs with auto-renew ON but no DNS provider — they can't actually renew
+  const noDnsCerts = certs.filter(c =>
+    c.expires_at &&
+    c.status === 'active' &&
+    c.auto_renew_enabled !== false &&
+    !c.dns_provider_id
+  ).map(c => {
+    const daysLeft = Math.max(0, Math.floor((new Date(c.expires_at) - now)/86400000))
+    return { ...c, daysLeft }
+  }).sort((a,b) => a.daysLeft - b.daysLeft)
+
   return (
     <div>
+      {/* Build 1.5: No-DNS warning — shown FIRST when there are certs that can't auto-renew */}
+      {noDnsCerts.length > 0 && (
+        <div style={{ background:'#fffbeb', border:'1.5px solid #fde68a', borderRadius:14, padding:'14px 18px', marginBottom:14, display:'flex', gap:14, alignItems:'flex-start' }}>
+          <div style={{ width:38, height:38, borderRadius:10, background:'white', border:'1.5px solid #fde68a', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <AlertTriangle size={17} color='#d97706'/>
+          </div>
+          <div style={{ flex:1 }}>
+            <p style={{ fontSize:13, fontWeight:800, color:'#78350f', marginBottom:4, letterSpacing:'-0.2px' }}>
+              {noDnsCerts.length} certificate{noDnsCerts.length>1?'s':''} can't auto-renew yet
+            </p>
+            <p style={{ fontSize:12, color:'#92400e', lineHeight:1.55, marginBottom:8 }}>
+              Connect a DNS provider to enable zero-touch renewal for {noDnsCerts.slice(0,3).map(c => <code key={c.id} style={{ background:'#fef3c7', padding:'1px 6px', borderRadius:4, fontSize:11, color:'#78350f', marginRight:4 }}>{c.domain}</code>)}
+              {noDnsCerts.length > 3 && <span style={{ color:'#92400e' }}>and {noDnsCerts.length - 3} more</span>}
+              . Without it, these certs will expire silently.
+            </p>
+            <a href='/dns-providers' style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#854d0e', color:'white', padding:'7px 13px', borderRadius:8, fontSize:11, fontWeight:700, textDecoration:'none', letterSpacing:'-0.1px' }}>
+              <Cloud size={12}/> Connect DNS provider
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Info banner */}
       <div style={{ background:'#ecfdf5', border:'1.5px solid #a7f3d0', borderRadius:14, padding:'16px 20px', marginBottom:18, display:'flex', gap:14, alignItems:'flex-start' }}>
         <div style={{ width:38, height:38, borderRadius:10, background:'white', border:'1.5px solid #a7f3d0', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>

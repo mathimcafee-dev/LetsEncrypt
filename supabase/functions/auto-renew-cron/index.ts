@@ -136,6 +136,71 @@ async function renewSingle(cert: Certificate): Promise<{ ok: boolean; error?: st
   return { ok: true }
 }
 
+// ============================================================================
+// EMAIL NOTIFICATIONS (Build 1.5)
+// ============================================================================
+
+const EMAIL_FUNCTION_URL = Deno.env.get('EMAIL_FUNCTION_URL')
+  || `${SUPABASE_URL}/functions/v1/send-renewal-email`
+
+// Cache: avoid re-fetching the same user's email in one cron run
+const userEmailCache = new Map<string, string | null>()
+
+async function getUserEmail(userId: string): Promise<string | null> {
+  if (userEmailCache.has(userId)) return userEmailCache.get(userId)!
+  try {
+    // Supabase admin API can read auth.users via the service role
+    const { data, error } = await supabase.auth.admin.getUserById(userId)
+    if (error || !data?.user?.email) {
+      userEmailCache.set(userId, null)
+      return null
+    }
+    userEmailCache.set(userId, data.user.email)
+    return data.user.email
+  } catch (err) {
+    console.error(`getUserEmail failed for ${userId}:`, err)
+    userEmailCache.set(userId, null)
+    return null
+  }
+}
+
+async function sendNotification(
+  type: 'renewal_succeeded' | 'renewal_failed',
+  cert: Certificate,
+  data: Record<string, unknown> = {}
+): Promise<void> {
+  // Best-effort. We never want a failed email to crash the cron.
+  try {
+    const to = await getUserEmail(cert.user_id)
+    if (!to) {
+      console.warn(`No email found for user ${cert.user_id}, skipping notification`)
+      return
+    }
+
+    const res = await fetch(EMAIL_FUNCTION_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        type,
+        to,
+        domain: cert.domain,
+        data: { ...data, user_id: cert.user_id, cert_id: cert.id }
+      })
+    })
+
+    if (!res.ok) {
+      const txt = await res.text()
+      console.warn(`Email send failed (${res.status}): ${txt.slice(0, 200)}`)
+    }
+  } catch (err) {
+    console.warn(`sendNotification crashed (continuing):`, err)
+  }
+}
+
+
 async function processCert(cert: Certificate): Promise<{ status: 'renewed' | 'failed' | 'skipped'; reason?: string }> {
   // Skip rules
   if (!cert.dns_provider_id) {
@@ -154,11 +219,27 @@ async function processCert(cert: Certificate): Promise<{ status: 'renewed' | 'fa
       domain: cert.domain,
       attempts_taken: cert.auto_renew_attempt_count + 1
     })
+
+    // Fetch the new expiry from the just-updated cert row (renewSingle wrote it)
+    const { data: updatedCert } = await supabase
+      .from('certificates')
+      .select('expires_at')
+      .eq('id', cert.id)
+      .single()
+
+    await sendNotification('renewal_succeeded', cert, {
+      new_expiry: updatedCert?.expires_at,
+      renewed_at: new Date().toISOString()
+    })
+
     return { status: 'renewed' }
   } else {
+    const newAttemptCount = cert.auto_renew_attempt_count + 1
+    const willRetry = newAttemptCount < MAX_ATTEMPTS
+
     // Bump attempt count + record error
     await supabase.from('certificates').update({
-      auto_renew_attempt_count: cert.auto_renew_attempt_count + 1,
+      auto_renew_attempt_count: newAttemptCount,
       last_renewal_attempt_at: new Date().toISOString(),
       last_renewal_status: 'failed',
       last_renewal_error: result.error?.slice(0, 500) || 'Unknown error',
@@ -167,9 +248,25 @@ async function processCert(cert: Certificate): Promise<{ status: 'renewed' | 'fa
     await logEvent(cert.id, cert.user_id, 'renewal_failed', {
       domain: cert.domain,
       error: result.error,
-      attempt: cert.auto_renew_attempt_count + 1,
-      will_retry: cert.auto_renew_attempt_count + 1 < MAX_ATTEMPTS
+      attempt: newAttemptCount,
+      will_retry: willRetry
     })
+
+    // Compute days left until expiry for the email
+    const daysLeft = cert.expires_at
+      ? Math.max(0, Math.floor((new Date(cert.expires_at).getTime() - Date.now()) / 86400000))
+      : 0
+    const nextRetryHours = BACKOFF_HOURS[Math.min(newAttemptCount, BACKOFF_HOURS.length - 1)] || 24
+
+    await sendNotification('renewal_failed', cert, {
+      error: result.error,
+      attempt: newAttemptCount,
+      max_attempts: MAX_ATTEMPTS,
+      will_retry: willRetry,
+      days_left: daysLeft,
+      next_retry_hours: nextRetryHours
+    })
+
     return { status: 'failed', reason: result.error }
   }
 }
