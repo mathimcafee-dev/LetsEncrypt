@@ -13,6 +13,7 @@ export default function Nav({ nav, page }) {
   const more = [
     { path:'/dns-providers', label:'DNS Providers', icon:Settings },
     { path:'/install', label:'Install Guide', icon:BookOpen },
+    { path:'/knowledge-base', label:'Knowledge Base', icon:BookOpen },
   ]
   const isDash = page==='/dashboard'||page==='/monitor'
   return (

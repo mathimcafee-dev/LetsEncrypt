@@ -876,9 +876,14 @@ function RenewalScheduleView({ certs, events, onToggleAutoRenew, onRefresh }) {
               {noDnsCerts.length > 3 && <span style={{ color:'#92400e' }}>and {noDnsCerts.length - 3} more</span>}
               . Without it, these certs will expire silently.
             </p>
-            <a href='/dns-providers' style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#854d0e', color:'white', padding:'7px 13px', borderRadius:8, fontSize:11, fontWeight:700, textDecoration:'none', letterSpacing:'-0.1px' }}>
-              <Cloud size={12}/> Connect DNS provider
-            </a>
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+              <a href='/dns-providers' style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#854d0e', color:'white', padding:'7px 13px', borderRadius:8, fontSize:11, fontWeight:700, textDecoration:'none', letterSpacing:'-0.1px' }}>
+                <Cloud size={12}/> Connect DNS provider
+              </a>
+              <a href='/knowledge-base#auto-renewal' style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#fef3c7', color:'#92400e', padding:'7px 13px', borderRadius:8, fontSize:11, fontWeight:600, textDecoration:'none', border:'1px solid #fde68a' }}>
+                Learn how →
+              </a>
+            </div>
           </div>
         </div>
       )}
