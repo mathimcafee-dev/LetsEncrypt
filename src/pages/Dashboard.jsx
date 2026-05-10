@@ -446,12 +446,20 @@ function LoggedInDashboard({ user, nav }) {
     setCerts(prev => prev.map(c => c.id === id ? { ...c, private_key_pem: null } : c))
   }
 
-  const total    = certs.length
-  const healthy  = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 }).length
-  const expiring = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 }).length
-  const expired  = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 }).length
+  const activeCerts = certs.filter(c => c.status !== 'rotating')
+  const total    = activeCerts.length
+  const healthy  = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 }).length
+  const expiring = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 }).length
+  const expired  = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 }).length
+
+  // Certs with status 'rotating' are hidden from the list
+  // They are kept in DB for 30-day rollback but not shown to user
+  const rotatingDomains = certs
+    .filter(c => c.status === 'rotating')
+    .map(c => c.domain)
 
   const visible = certs.filter(c => {
+    if (c.status === 'rotating') return false  // hide rotating (old) certs
     const d = daysLeft(c.expires_at)
     const s = statusOf(d, c.status === 'revoked')
     if (filter === 'healthy'  && s.cls !== 'green')  return false
@@ -460,6 +468,15 @@ function LoggedInDashboard({ user, nav }) {
     if (search && !c.domain.toLowerCase().includes(search.toLowerCase())) return false
     return true
   })
+
+  // Unique domains that have been rotated (new cert issued, old hidden)
+  // Only show banner for domains where new cert exists alongside rotating old one
+  const newlyRotated = [...new Set(
+    certs
+      .filter(c => c.status !== 'rotating') // new certs
+      .filter(c => rotatingDomains.includes(c.domain)) // that have a rotating counterpart
+      .map(c => c.domain)
+  )]
 
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
@@ -502,6 +519,33 @@ function LoggedInDashboard({ user, nav }) {
           <div className="v2-callout warning" style={{ marginBottom:16 }}>
             <div className="v2-callout-title">{expiring} certificate{expiring !== 1 ? 's' : ''} expiring within 30 days</div>
             Renew early to avoid any downtime or browser warnings.
+          </div>
+        )}
+
+        {/* Rotation banner — new cert issued, needs installing on server */}
+        {newlyRotated.length > 0 && (
+          <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a',
+                        borderRadius:'var(--v2-r-lg)', padding:'14px 18px',
+                        marginBottom:16, display:'flex', alignItems:'flex-start', gap:12 }}>
+            <div style={{ width:34, height:34, borderRadius:'var(--v2-r-md)', flexShrink:0,
+                           background:'#fef3c7', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <RefreshCw size={16} color='#b45309' />
+            </div>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontSize:13, fontWeight:600, color:'#92400e', marginBottom:4 }}>
+                New certificate{newlyRotated.length > 1 ? 's' : ''} issued — install on your server
+              </div>
+              <div style={{ fontSize:12, color:'#b45309', lineHeight:1.6 }}>
+                {newlyRotated.map(d => (
+                  <span key={d} className="v2-chip-mono" style={{ marginRight:6, fontSize:11 }}>{d}</span>
+                ))}
+                {' '}— your server is still running the old certificate. Install the new one as soon as possible.
+              </div>
+            </div>
+            <button className="v2-btn v2-btn-sm" onClick={() => nav('/install')}
+              style={{ fontSize:11, flexShrink:0 }}>
+              Install guide
+            </button>
           </div>
         )}
 

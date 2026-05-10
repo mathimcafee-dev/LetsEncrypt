@@ -126,3 +126,42 @@ select cron.schedule(
 Key rollback commits:
 - `3e8315e` — current HEAD
 - `212bcf2` — pre-v2 safe point
+
+---
+
+## Certificate Rotation UX — Design Decision (May 10 2026)
+
+### Problem
+When KeyLocker rotates a certificate, both old and new certs appeared in the Dashboard causing confusion about which is active.
+
+### Decision
+After rotation, old cert is hidden from Dashboard but kept in DB for 30-day rollback window.
+
+### Implementation
+
+**Database:**
+- `certificates.status` now supports: `active | issued | revoked | expired | rotating`
+- `certificates.rotated_at TIMESTAMPTZ` column added
+- Certs marked `rotating` are hidden from Dashboard list and stats
+
+**KeyLocker edge function (v4) — rotate action:**
+1. Issues new cert via ACME
+2. Stores new key encrypted in KeyLocker vault
+3. Marks OLD cert as `status = 'rotating'` in `certificates` table
+4. Archives old key in `keylocker_keys`
+5. Writes rotation record + audit log
+
+**Dashboard changes:**
+- `visible` filter excludes `status === 'rotating'` certs
+- Stats (total/healthy/expiring/expired) exclude rotating certs
+- Amber banner appears when a domain has a new cert + rotating old cert:
+  *"New certificate issued — install on your server · [Install guide]"*
+
+**30-day cleanup:** TODO — cron to permanently delete rotating certs after 30 days (pending items list)
+
+### Why not delete immediately?
+Old cert kept for 30 days as rollback safety. If new cert has issues after installation, old cert data still available for recovery. After 30 days, cron permanently deletes.
+
+### Applies to:
+- Manual rotation from KeyLocker vault
+- Auto-renewal cron (future — same status flow to be applied)
