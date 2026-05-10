@@ -331,7 +331,7 @@ export default function BuyCertificate({ nav }) {
                     Domain validation required
                   </div>
                   <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6 }}>
-                    Order placed with TheSSLStore. Add this CNAME record to prove you control
+                    Order placed with TheSSLStore. Add this DNS TXT record to prove you control
                     <strong style={{ fontFamily:'var(--mono, monospace)' }}> {domain}</strong>.
                     RapidSSL will validate automatically once the record propagates (1–10 min).
                   </div>
@@ -339,25 +339,29 @@ export default function BuyCertificate({ nav }) {
               </div>
 
               <div style={{ background:'#0a0a0a', borderRadius:'var(--v2-r-md)', padding:'16px', marginBottom:16, fontFamily:'var(--mono, monospace)' }}>
-                <div style={{ fontSize:10, color:'#6b7280', marginBottom:10, textTransform:'uppercase', letterSpacing:'0.5px' }}>Add CNAME record</div>
+                <div style={{ fontSize:10, color:'#6b7280', marginBottom:10, textTransform:'uppercase', letterSpacing:'0.5px' }}>Add DNS TXT record</div>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
                   <div>
                     <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>Name / Host</div>
-                    <div style={{ fontSize:12, color:'#e5e7eb', wordBreak:'break-all' }}>{orderData.dv_cname_host || '_ssl-verify.' + domain}</div>
+                    <div style={{ fontSize:12, color:'#e5e7eb', wordBreak:'break-all' }}>
+                      {orderData.dv_txt_name || orderData.dv_cname_host || `_rapidssl-challenge.${domain}`}
+                    </div>
                   </div>
-                  <CopyBtn text={orderData.dv_cname_host || '_ssl-verify.' + domain} />
+                  <CopyBtn text={orderData.dv_txt_name || orderData.dv_cname_host || `_rapidssl-challenge.${domain}`} />
                 </div>
                 <div style={{ borderTop:'0.5px solid #374151', paddingTop:8, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                   <div>
-                    <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>Value / Points to</div>
-                    <div style={{ fontSize:12, color:'#e5e7eb', wordBreak:'break-all' }}>{orderData.dv_cname_value || orderData.tss_order_id + '.thesslstore-validation.com'}</div>
+                    <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>TXT Value</div>
+                    <div style={{ fontSize:12, color:'#e5e7eb', wordBreak:'break-all' }}>
+                      {orderData.dv_txt_value || orderData.dv_cname_value || '—'}
+                    </div>
                   </div>
-                  <CopyBtn text={orderData.dv_cname_value || ''} />
+                  <CopyBtn text={orderData.dv_txt_value || orderData.dv_cname_value || ''} />
                 </div>
                 <div style={{ borderTop:'0.5px solid #374151', paddingTop:8, marginTop:8, display:'flex', justifyContent:'space-between' }}>
                   <div>
                     <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>Type</div>
-                    <div style={{ fontSize:12, color:'#10b981' }}>CNAME</div>
+                    <div style={{ fontSize:12, color:'#10b981' }}>TXT</div>
                   </div>
                   <div>
                     <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>TTL</div>
@@ -368,11 +372,17 @@ export default function BuyCertificate({ nav }) {
                     <div style={{ fontSize:11, color:'#9ca3af' }}>{orderData.tss_order_id || '—'}</div>
                   </div>
                 </div>
+                {/* Raw DV debug — shows full TSS DNSAuthDetails */}
+                {orderData.raw_dv && (
+                  <div style={{ borderTop:'0.5px solid #374151', paddingTop:8, marginTop:8, fontSize:10, color:'#6b7280', wordBreak:'break-all' }}>
+                    TSS raw DV: {JSON.stringify(orderData.raw_dv)}
+                  </div>
+                )}
               </div>
 
               <div className="v2-callout tip" style={{ marginBottom:16 }}>
                 <div className="v2-callout-title">Cloudflare / Vercel users</div>
-                If you have DNS credentials stored in SSLVault, you can auto-add this record from the DNS Providers page.
+                If you have DNS credentials stored in SSLVault, you can auto-add this TXT record from the DNS Providers page.
                 Wait 1–5 min after adding before clicking Check Status.
               </div>
 
