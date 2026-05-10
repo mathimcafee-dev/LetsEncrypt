@@ -9,6 +9,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { differenceInDays, format, formatDistanceToNow } from 'date-fns'
 import '../styles/design-v2.css'
+import AgentInstall from '../components/AgentInstall'
 
 // ── Helpers ──────────────────────────────────────────────────────────
 function daysLeft(iso) {
@@ -214,7 +215,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete }) {
 }
 
 // ── CertRow ──────────────────────────────────────────────────────────
-function CertRow({ cert, selected, onClick }) {
+function CertRow({ cert, selected, onClick, onInstall }) {
   const days = daysLeft(cert.expires_at)
   const s = statusOf(days, cert.status === 'revoked')
   const initials = cert.domain.replace(/^www\./, '').slice(0, 2).toUpperCase()
@@ -235,7 +236,13 @@ function CertRow({ cert, selected, onClick }) {
         </div>
         {days != null && days <= 90 && <div style={{ marginTop:6 }}><ProgressBar days={days} /></div>}
       </div>
-      <ChevronRight size={14} color="var(--v2-text-3)" style={{ flexShrink:0 }} />
+      <div style={{ display:'flex', flexDirection:'column', gap:4, flexShrink:0 }} onClick={e => e.stopPropagation()}>
+        <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={() => onInstall(cert)}
+          style={{ whiteSpace:'nowrap', fontSize:11 }}>
+          <Server size={10} /> Install
+        </button>
+        <ChevronRight size={14} color="var(--v2-text-3)" style={{ margin:'0 auto' }} />
+      </div>
     </div>
   )
 }
@@ -283,6 +290,7 @@ function LoggedInDashboard({ user, nav }) {
   const [filter, setFilter]   = useState('all')
   const [search, setSearch]   = useState('')
   const [renewDomain, setRenewDomain] = useState(null)
+  const [agentCert, setAgentCert] = useState(null)
 
   useEffect(() => {
     if (!user) return
@@ -432,7 +440,8 @@ function LoggedInDashboard({ user, nav }) {
                 {visible.map(cert => (
                   <CertRow key={cert.id} cert={cert}
                     selected={selected === cert.id}
-                    onClick={() => setSelected(selected === cert.id ? null : cert.id)} />
+                    onClick={() => setSelected(selected === cert.id ? null : cert.id)}
+                    onInstall={setAgentCert} />
                 ))}
               </div>
             )}
@@ -521,6 +530,7 @@ function LoggedInDashboard({ user, nav }) {
       </div>
 
       {renewDomain && <RenewModal domain={renewDomain} onClose={() => setRenewDomain(null)} nav={nav} />}
+      {agentCert && <AgentInstall cert={agentCert} userId={user.id} onClose={() => setAgentCert(null)} />}
 
       <style>{`
         .spin { animation: spin 1s linear infinite; }
