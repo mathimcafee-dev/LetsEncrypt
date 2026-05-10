@@ -1,16 +1,21 @@
 # SSLVault — Certificate Lifecycle Management Platform
 
 **Live:** https://easysecurity.in  
+**Author:** Mathivanan Kathirvel (Spartan)  
+**Role:** Certified PKI Specialist & Partner Account Manager, DigiCert  
 **Stack:** React 18 + Vite · Supabase · Vercel · Let's Encrypt ACME  
 **GitHub:** mathimcafee-dev/LetsEncrypt  
 **Supabase project:** `frthcwkntciaakqsppss`  
-**Vercel project:** `prj_RbtRZ3pm5TIz1nGFN9zsMNGXVdCB`
+**Vercel project:** `prj_RbtRZ3pm5TIz1nGFN9zsMNGXVdCB`  
+**Last updated:** May 10, 2026
 
 ---
 
 ## What SSLVault Does
 
-Free, open certificate lifecycle management platform built on Let's Encrypt. Issue, install, monitor, and auto-renew TLS certificates with zero cost and zero friction.
+SSLVault is a passion project by Mathivanan Kathirvel — a free, open certificate lifecycle management platform built on Let's Encrypt. Designed to give indie developers, small businesses, and non-profits the same SSL management tools that enterprise teams enjoy, without the enterprise price tag.
+
+Issue, install, monitor, and auto-renew TLS certificates with zero cost and zero friction.
 
 ---
 
@@ -77,9 +82,9 @@ All pages use the v2 design system defined in `src/styles/design-v2.css`.
 - No gradients, no emoji in UI, all Lucide icons
 - Solid `#0a0a0a` buttons, green accents
 
-**Components:** `v2-card`, `v2-btn`, `v2-btn-primary`, `v2-input`, `v2-stat`, `v2-list-row`, `v2-detail`, `v2-callout`, `v2-modal`, `v2-filter-chip`, `v2-status`, `v2-mono`
+**Brand logo:** Monogram mark — dark `#0a0a0a` square with bold green S + green lock badge (bottom-right). Wordmark: SSL in dark, Vault in green.
 
-**Migrated to v2:** Home, Auth, Dashboard, Generate, Monitor, DnsProviders, Install, KnowledgeBase, About, Developer, Contact, Pricing, KeyLocker, Nav
+**Components:** `v2-card`, `v2-btn`, `v2-btn-primary`, `v2-input`, `v2-stat`, `v2-list-row`, `v2-detail`, `v2-callout`, `v2-modal`, `v2-filter-chip`, `v2-status`, `v2-mono`
 
 ---
 
@@ -130,9 +135,9 @@ All pages use the v2 design system defined in `src/styles/design-v2.css`.
 
 ---
 
-## Security — Phase 1 (Shipped)
+## Security — Phase 1
 
-Per CAB Forum BR §6.1.2 review, Phase 1 security improvements shipped:
+Per CAB Forum BR §6.1.2 review, Phase 1 security improvements shipped May 10, 2026:
 
 - **Warning badge** on Dashboard cert rows when `private_key_pem` is stored server-side
 - **"Delete key from servers"** button in cert detail panel with 3-checkbox interlock
@@ -140,13 +145,11 @@ Per CAB Forum BR §6.1.2 review, Phase 1 security improvements shipped:
 - **Privacy Policy** updated with honest key storage disclosure
 - **Phase 2** (envelope encryption at rest) planned for future sprint
 
-**Key workflow:** Keys stored server-side only during the window between issuance and agent installation. User can delete after confirming installation. Auto-renewal creates a fresh key each cycle.
-
 See `SSLVault-Phase1-Security-Audit.md` for the full workflow documentation.
 
 ---
 
-## KeyLocker Pro (Built, Payment Integration Pending)
+## KeyLocker Pro
 
 Pro tier featuring encrypted key vault:
 
@@ -156,12 +159,12 @@ Pro tier featuring encrypted key vault:
 - **Email alerts:** Via Resend on key access
 
 **Pricing:**
-- Pro: €9.99/mo or €79/yr
-- Team: €29.99/mo or €229/yr
+- Pro: $9.99/mo or $79/yr
+- Team: $29.99/mo or $229/yr
 
-**Status:** UI complete, Supabase tables migrated. Payment links pending (Stripe/Razorpay/Lemon Squeezy TBD).
+**Status:** UI complete, Supabase tables live. Payment provider integration pending.
 
-**Supabase migration:** `supabase-keylocker-migration.sql` — run once in SQL editor.
+**Supabase migration:** `supabase-keylocker-migration.sql` — already applied May 10, 2026.
 
 ---
 
@@ -169,11 +172,11 @@ Pro tier featuring encrypted key vault:
 
 | Item | Status |
 |---|---|
-| SSL Monitor scan accuracy | Supabase edge functions cannot do raw TLS connections. Cloudflare Worker fix in progress (Worker code ready, pending deployment by Spartan) |
-| Payment provider | Exploring options (Stripe India invite-only, Lemon Squeezy requires Stripe, Razorpay international pending) |
+| SSL Monitor scan accuracy | Supabase edge functions cannot do raw TLS connections. Cloudflare Worker fix in progress — Worker code ready, pending Spartan deploying to Cloudflare account |
+| Payment provider | Exploring options (Stripe India invite-only, Razorpay international pending approval) |
 | Auto-scan cron | `monitored_domains` only scanned manually. No automatic periodic scan yet |
-| Email alerts on expiry | `alert_threshold_days` stored but no email sent yet |
-| KeyLocker edge function | `keylocker-rotate` edge function not yet built |
+| Email alerts on expiry | `alert_threshold_days` stored but no email triggered yet |
+| KeyLocker rotate edge fn | `keylocker-rotate` Supabase edge function not yet written |
 
 ---
 
@@ -181,10 +184,11 @@ Pro tier featuring encrypted key vault:
 
 | Commit | Description |
 |---|---|
-| `1626169` | Current production HEAD |
-| `f745443` | Pre-KeyLocker (Phase 1 security) |
-| `8ae0564` | Pre-Phase 1 (Auth v2) |
-| `2781251` | Pre-Auth (Generate v2) |
+| `3e8315e` | Current production HEAD |
+| `1626169` | Monitor cleaned up |
+| `f745443` | Phase 1 security |
+| `8ae0564` | Auth v2 |
+| `2781251` | Generate v2 |
 | `212bcf2` | Last known good before v2 redesign |
 
 ---
@@ -212,4 +216,8 @@ npm run dev      # localhost:5173
 npm run build    # production build
 ```
 
-*Built by Mathivanan Kathirvel — Certified PKI Specialist & Partner Account Manager, DigiCert*
+---
+
+*SSLVault is a personal project by Mathivanan Kathirvel (Spartan)*  
+*Certified PKI Specialist · Partner Account Manager APAC, DigiCert*  
+*Built with passion for open PKI and free encryption for everyone.*

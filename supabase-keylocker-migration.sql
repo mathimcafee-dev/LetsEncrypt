@@ -1,7 +1,9 @@
 -- ════════════════════════════════════════════════════════════════════
 -- SSLVault KeyLocker Pro — Supabase Migration
--- Run this ONCE in your Supabase SQL editor before deploying KeyLocker
+-- Author: Mathivanan Kathirvel (Spartan)
+-- Project: SSLVault — https://easysecurity.in
 -- Date: 10 May 2026
+-- Status: Applied to production (frthcwkntciaakqsppss)
 -- ════════════════════════════════════════════════════════════════════
 
 -- ── 1. profiles table (plan management + Stripe) ─────────────────────
