@@ -296,10 +296,6 @@ export default function About({ nav }) {
           </div>
           <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
             <button className="v2-btn v2-btn-primary" style={{ padding:'11px 24px', fontSize:14 }}
-              onClick={() => nav('/generate')}>
-              <Shield size={14} /> Issue certificate
-            </button>
-            <button className="v2-btn" style={{ padding:'11px 24px', fontSize:14 }}
               onClick={() => nav('/knowledge-base')}>
               <BookOpen size={14} /> Browse docs <ArrowRight size={12} />
             </button>
