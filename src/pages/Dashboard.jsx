@@ -34,20 +34,74 @@ function fmtDateLong(iso) {
   if (!iso) return '—'
   return format(new Date(iso), 'PPP')
 }
-// Extract a short visual fingerprint from PEM (last 16 base64 chars, formatted)
-function shortFp(pem) {
-  if (!pem) return null
-  const b64 = pem.replace(/-----[^-]+-----/g, '').replace(/\s/g, '')
-  if (b64.length < 16) return null
-  const raw = b64.slice(-16)
-  return raw.match(/.{1,4}/g)?.join(':').toUpperCase() || null
+// Decode PEM → DER bytes
+function pemToDer(pem) {
+  const b64 = pem
+    .replace(/-----BEGIN CERTIFICATE-----/, '')
+    .replace(/-----END CERTIFICATE-----/, '')
+    .replace(/\s/g, '')
+  const bin = atob(b64)
+  return Uint8Array.from(bin, c => c.charCodeAt(0))
 }
-// Extract serial-like ID from cert (first 8 chars of base64 body, uppercased)
-function shortSerial(pem) {
-  if (!pem) return null
-  const b64 = pem.replace(/-----[^-]+-----/g, '').replace(/\s/g, '')
-  if (b64.length < 8) return null
-  return b64.slice(0, 8).toUpperCase()
+
+// Real SHA-256 fingerprint via Web Crypto — returns "AA:BB:CC:…" (20 pairs shown)
+async function computeFingerprint(pem) {
+  try {
+    const der = pemToDer(pem)
+    const hash = await crypto.subtle.digest('SHA-256', der)
+    const hex = Array.from(new Uint8Array(hash))
+      .map(b => b.toString(16).padStart(2, '0').toUpperCase())
+    // Show first 10 pairs for display (SHA-256 is 32 bytes = 64 hex = 32 pairs, truncate for UI)
+    return hex.slice(0, 10).join(':') + '…'
+  } catch { return null }
+}
+
+// Real serial number from DER ASN.1 structure
+// X.509 DER layout: SEQUENCE { SEQUENCE { [0] version, INTEGER serialNumber, … } }
+// Outer SEQUENCE tag=0x30, inner SEQUENCE tag=0x30, skip version [0] if present, then INTEGER=0x02
+function parseSerial(pem) {
+  try {
+    const der = pemToDer(pem)
+    let pos = 0
+    const readLen = (d, p) => {
+      if (d[p] < 0x80) return { len: d[p], next: p + 1 }
+      const numBytes = d[p] & 0x7f
+      let len = 0
+      for (let i = 0; i < numBytes; i++) len = (len << 8) | d[p + 1 + i]
+      return { len, next: p + 1 + numBytes }
+    }
+    // Skip outer SEQUENCE
+    if (der[pos++] !== 0x30) return null
+    pos = readLen(der, pos).next
+    // Skip tbsCertificate SEQUENCE
+    if (der[pos++] !== 0x30) return null
+    pos = readLen(der, pos).next
+    // Skip optional version [0] EXPLICIT
+    if (der[pos] === 0xa0) { pos++; const v = readLen(der, pos); pos = v.next + v.len }
+    // Now at serialNumber INTEGER
+    if (der[pos++] !== 0x02) return null
+    const { len, next } = readLen(der, pos)
+    pos = next
+    // Serial bytes (skip leading 0x00 padding byte if present)
+    const start = der[pos] === 0x00 ? pos + 1 : pos
+    const end = Math.min(pos + len, pos + 20) // cap at 20 bytes for display
+    const hex = Array.from(der.slice(start, end))
+      .map(b => b.toString(16).padStart(2, '0').toUpperCase())
+    return hex.join(':')
+  } catch { return null }
+}
+
+// Hook: compute both fp and serial async from PEM
+function useCertMeta(pem) {
+  const [fp, setFp] = useState(null)
+  const [serial, setSerial] = useState(null)
+  useEffect(() => {
+    if (!pem) return
+    setFp(null); setSerial(null)
+    computeFingerprint(pem).then(setFp)
+    try { setSerial(parseSerial(pem)) } catch {}
+  }, [pem])
+  return { fp, serial }
 }
 
 function dl(text, filename) {
@@ -122,8 +176,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [justRotated])
 
-  const fp = shortFp(cert.cert_pem)
-  const serial = shortSerial(cert.cert_pem)
+  const { fp, serial } = useCertMeta(cert.cert_pem)
 
   const doDeleteKey = async () => {
     setKeyDeleting(true)
@@ -234,13 +287,13 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
         ))}
 
         {/* Fingerprint row */}
-        {fp && (
+        {cert.cert_pem && (
           <div className="v2-metric-row" style={{ justifyContent:'space-between', alignItems:'flex-start' }}>
             <span className="v2-metric-label" style={{ display:'flex', alignItems:'center', gap:4 }}>
               <Fingerprint size={10} color="var(--v2-text-3)" /> Fingerprint
             </span>
             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              {justRotated && newPillVisible && (
+              {justRotated && newPillVisible && fp && (
                 <span style={{
                   fontSize:8, fontWeight:700, color:'var(--v2-green)', background:'var(--v2-green-bg)',
                   border:'0.5px solid var(--v2-green-border)', borderRadius:3, padding:'1px 5px',
@@ -248,21 +301,25 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
                   animation:'pulse 2s ease-in-out infinite'
                 }}>NEW</span>
               )}
-              <span className="v2-mono" style={{ fontSize:10, color:'var(--v2-text-2)',
-                                                   letterSpacing:'0.3px' }}>{fp}</span>
-              <CopyBtn text={fp} label="" />
+              <span className="v2-mono" style={{ fontSize:10, color: fp ? 'var(--v2-text-2)' : 'var(--v2-text-3)',
+                                                   letterSpacing:'0.3px' }}>
+                {fp || 'computing…'}
+              </span>
+              {fp && <CopyBtn text={fp} label="" />}
             </div>
           </div>
         )}
 
         {/* Serial row */}
-        {serial && (
+        {cert.cert_pem && (
           <div className="v2-metric-row" style={{ justifyContent:'space-between' }}>
             <span className="v2-metric-label" style={{ display:'flex', alignItems:'center', gap:4 }}>
               <Hash size={10} color="var(--v2-text-3)" /> Serial
             </span>
-            <span className="v2-mono" style={{ fontSize:10, color:'var(--v2-text-2)',
-                                                letterSpacing:'0.3px' }}>{serial}</span>
+            <span className="v2-mono" style={{ fontSize:10, color: serial ? 'var(--v2-text-2)' : 'var(--v2-text-3)',
+                                                letterSpacing:'0.3px' }}>
+              {serial || 'computing…'}
+            </span>
           </div>
         )}
       </div>
@@ -591,12 +648,14 @@ function LoggedInDashboard({ user, nav }) {
           .sort((a, b) => new Date(b.issued_at || b.created_at) - new Date(a.issued_at || a.created_at))[0]
         if (newCert) {
           setSelected(newCert.id)
-          setJustRotated({
-            domain: oldCert.domain,
-            oldFingerprint: shortFp(oldCert.cert_pem),
-            oldExpires: oldCert.expires_at,
-            oldIssued: oldCert.issued_at,
-            at: Date.now(),
+          computeFingerprint(oldCert.cert_pem).then(oldFp => {
+            setJustRotated({
+              domain: oldCert.domain,
+              oldFingerprint: oldFp,
+              oldExpires: oldCert.expires_at,
+              oldIssued: oldCert.issued_at,
+              at: Date.now(),
+            })
           })
         }
       }
