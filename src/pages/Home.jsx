@@ -1,5 +1,5 @@
 import { Shield, Lock, CheckCircle, Zap, Globe, Server, ChevronRight,
-         ArrowRight, Activity, RefreshCw, Eye, BookOpen } from 'lucide-react'
+         ArrowRight, Activity, RefreshCw, Eye, BookOpen, Bell } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import '../styles/design-v2.css'
@@ -134,29 +134,29 @@ function CertHeroIllustration() {
 
 // ── Data ──────────────────────────────────────────────────────────────
 const FEATURES = [
-  { icon:Zap,      title:'Instant Issuance',   color:'#d97706',
-    desc:"Trusted DV certificate in under 60 seconds via ACME — no forms, no waiting, no credit card." },
-  { icon:Shield,   title:'Enterprise CLM',     color:'#2563eb',
-    desc:'Full lifecycle: inventory, health grades, expiry alerts, multi-domain tracking and renewal reminders.' },
-  { icon:Globe,    title:'Any Domain',         color:'#7c3aed',
-    desc:'Works with any publicly accessible domain. Supports HTTP-01 and DNS-01 ACME challenge methods.' },
-  { icon:Server,   title:'One-click Install',  color:'#059669',
-    desc:'Deploy to Nginx, Apache, cPanel, Node.js and Docker via our persistent agent or install guides.' },
-  { icon:Activity, title:'External Monitor',  color:'#db2777',
-    desc:'Track SSL health of any domain. Scan any host, get expiry dates and issuer details instantly.' },
-  { icon:Lock,     title:'PKI Best Practices', color:'#0ea5e9',
-    desc:'OCSP stapling, HSTS, CT logging, TLS 1.3 guidance and cipher hardening in every guide.' },
+  { icon:Activity, title:'Monitor Any Domain',    color:'#db2777',
+    desc:"Track SSL health across all your domains — regardless of who issued the cert. DigiCert, Cloudflare, cPanel, Let's Encrypt — one place for everything." },
+  { icon:Globe,    title:'Any CA, Any Host',       color:'#7c3aed',
+    desc:'Works with certificates from any certificate authority on any hosting platform. Add a domain, start monitoring in seconds.' },
+  { icon:Bell,     title:'Expiry Alerts',          color:'#d97706',
+    desc:'Get notified before certificates expire — at 60, 30, 14 or 7 days. Never let a domain go dark because of a missed renewal.' },
+  { icon:Zap,      title:'Free Certificate Issuance', color:'#2563eb',
+    desc:"Issue trusted DV certificates via Let's Encrypt where you need them — shared hosting, VPS, or any server. Free, no credit card." },
+  { icon:Server,   title:'One-click Install',      color:'#059669',
+    desc:'Deploy to Nginx, Apache, cPanel, or Plesk via the persistent agent or step-by-step install guides.' },
+  { icon:Lock,     title:'KeyLocker Pro',          color:'#7c3aed',
+    desc:'Encrypted key vault with rotation history and audit log. Enterprise-grade key protection at indie pricing.' },
 ]
 
 const STEPS = [
-  { n:'01', title:'Enter your domain',      color:'var(--v2-green)',
-    desc:'Type your domain name — single domain or wildcard (*.example.com).' },
-  { n:'02', title:'Complete DNS challenge', color:'#2563eb',
-    desc:'Add a TXT record to _acme-challenge.yourdomain — proves ownership per RFC 8555.' },
-  { n:'03', title:'Download certificates',  color:'#7c3aed',
-    desc:'Get cert.pem, key.pem, and fullchain.pem in standard PKI formats.' },
-  { n:'04', title:'Install and monitor',    color:'#d97706',
-    desc:'Deploy with our agent, then track expiry in your dashboard forever.' },
+  { n:'01', title:'Add any domain',         color:'var(--v2-green)',
+    desc:'Enter any domain you own or manage — regardless of where it is hosted or who issued the cert.' },
+  { n:'02', title:'Instant SSL scan',       color:'#2563eb',
+    desc:'SSLVault checks the certificate, reads issuer, expiry date, and health grade in seconds.' },
+  { n:'03', title:'Get expiry alerts',      color:'#7c3aed',
+    desc:'Set your alert threshold — 60, 30, 14 or 7 days. We notify you before anything expires.' },
+  { n:'04', title:'Issue or renew',         color:'#d97706',
+    desc:"Need a new cert? Issue free via Let's Encrypt in under 60 seconds, install with one click." },
 ]
 
 const TRUST = ['Nginx','Apache','cPanel','Plesk','Node.js','Docker','Cloudflare','Caddy']
@@ -199,38 +199,38 @@ export default function Home({ nav }) {
                             borderRadius:100, padding:'4px 14px', marginBottom:24 }}>
                 <span className="v2-pulse" />
                 <span style={{ fontSize:11, fontWeight:500, color:'var(--v2-green-text)' }}>
-                  Enterprise CLM · Let's Encrypt · 100% Free
+                  Certificate Lifecycle Management · Free forever
                 </span>
               </div>
               <h1 style={{ fontSize:'clamp(40px,5vw,58px)', fontWeight:700,
                             color:'var(--v2-text)', lineHeight:1.08,
                             letterSpacing:'-1.6px', marginBottom:6 }}>
-                SSL Certificates
+                All your SSL certificates.
               </h1>
               <h1 style={{ fontSize:'clamp(40px,5vw,58px)', fontWeight:700,
                             lineHeight:1.08, letterSpacing:'-1.6px', marginBottom:22,
                             color:'var(--v2-green)' }}>
-                issued in seconds.
+                One dashboard.
               </h1>
               <p style={{ fontSize:16, color:'var(--v2-text-2)', lineHeight:1.75,
                           marginBottom:32, maxWidth:440 }}>
-                Full-stack certificate lifecycle management — issue, install, monitor and
-                renew trusted DV certificates with zero cost and zero friction.
+                Monitor expiry across every domain you own — regardless of who issued the cert.
+                Get alerted before anything expires. Issue free certificates where you need them.
               </p>
               <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:28 }}>
-                <button onClick={() => nav('/generate')}
+                <button onClick={() => nav('/monitor')}
                   className="v2-btn v2-btn-primary"
                   style={{ padding:'12px 22px', fontSize:14 }}>
-                  Issue Free Certificate <ArrowRight size={13} />
+                  Monitor my domains <ArrowRight size={13} />
                 </button>
-                <button onClick={() => nav('/dashboard')}
+                <button onClick={() => nav('/generate')}
                   className="v2-btn"
                   style={{ padding:'12px 18px', fontSize:14 }}>
-                  Dashboard <ChevronRight size={13} />
+                  Issue free certificate <ChevronRight size={13} />
                 </button>
               </div>
               <div style={{ display:'flex', gap:18, flexWrap:'wrap' }}>
-                {['No registration required','Trusted by all browsers',"Let's Encrypt backed"].map(l => (
+                {['Works with DigiCert, Cloudflare, cPanel & more','Monitor any domain — any CA','Free forever · No credit card'].map(l => (
                   <div key={l} style={{ display:'flex', alignItems:'center', gap:5,
                                          fontSize:12, color:'var(--v2-text-3)', fontWeight:500 }}>
                     <CheckCircle size={12} color='var(--v2-green)' /> {l}
@@ -317,7 +317,7 @@ export default function Home({ nav }) {
               {/* Section label */}
               <div style={{ fontSize:11, color:'var(--v2-green)', fontWeight:600,
                              letterSpacing:'1px', textTransform:'uppercase', marginBottom:28 }}>
-                # Issue a certificate in minutes
+                # Monitor & manage all your SSL certificates
               </div>
 
               {/* Steps */}
@@ -399,23 +399,23 @@ export default function Home({ nav }) {
               </div>
               <h2 style={{ fontSize:28, fontWeight:700, color:'var(--v2-text)',
                             letterSpacing:'-0.6px', marginBottom:12 }}>
-                Start securing your domains today
+                Take control of all your SSL certificates
               </h2>
               <p style={{ color:'var(--v2-text-2)', fontSize:15, maxWidth:440,
                           margin:'0 auto 32px', lineHeight:1.65 }}>
-                Free TLS certificates for everyone. No credit card. No hidden fees.
-                100% Let's Encrypt backed.
+                One dashboard for every domain, every CA, every host.
+                Free forever. No credit card. No limits.
               </p>
               <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
-                <button onClick={() => nav('/install')}
+                <button onClick={() => nav('/monitor')}
                   className="v2-btn v2-btn-primary"
                   style={{ padding:'12px 24px', fontSize:14 }}>
-                  <BookOpen size={13} /> Install Guide <ChevronRight size={12} />
+                  <Activity size={14} /> Start monitoring free
                 </button>
-                <button onClick={() => nav('/monitor')}
+                <button onClick={() => nav('/generate')}
                   className="v2-btn"
                   style={{ padding:'12px 18px', fontSize:14 }}>
-                  <Activity size={13} /> Try SSL Scanner
+                  <Shield size={13} /> Issue certificate <ChevronRight size={12} />
                 </button>
               </div>
             </div>
