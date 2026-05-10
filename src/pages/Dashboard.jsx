@@ -492,9 +492,10 @@ function LoggedInDashboard({ user, nav }) {
         {/* Quick actions */}
         <div style={{ marginTop:24 }}>
           <div className="v2-section-label" style={{ marginBottom:12 }}>Quick actions</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
             {[
               { icon:<Shield size={16} />,   label:'Issue certificate', desc:"Generate a free DV SSL via Let's Encrypt", action:() => nav('/generate') },
+              { icon:<Download size={16} />, label:'Install Guide',     desc:'Step-by-step: Nginx, Apache, Caddy, cPanel', action:() => nav('/install') },
               { icon:<Activity size={16} />, label:'SSL Monitor',       desc:'Track expiry across all your domains',    action:() => nav('/monitor') },
               { icon:<Server size={16} />,   label:'DNS & Servers',     desc:'Manage providers and agent-enabled hosts',action:() => nav('/dns-providers') },
             ].map(({ icon, label, desc, action }) => (
@@ -634,7 +635,7 @@ function MarketingDashboard({ nav }) {
         {/* Feature grid */}
         <div style={{ marginBottom:56 }}>
           <div className="v2-section-label" style={{ textAlign:'center', marginBottom:20 }}>Everything you need</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12 }}>
             {features.map(f => (
               <div key={f.title} className="v2-card" style={{ padding:'20px 20px 18px' }}>
                 <div style={{ width:36, height:36, borderRadius:'var(--v2-r-md)',
