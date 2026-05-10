@@ -81,7 +81,7 @@ function ProgressBar({ days, max = 90 }) {
 }
 
 // ── CertDetail panel ─────────────────────────────────────────────────
-function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, isPro, nav }) {
+function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall, isPro, nav }) {
   const days = daysLeft(cert.expires_at)
   const s = statusOf(days, cert.status === 'revoked')
   const [showKey, setShowKey] = useState(false)
@@ -321,6 +321,10 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, isPro, nav
         <button className="v2-btn v2-btn-primary" style={{ flex:1 }} onClick={() => onRenew(cert.domain)}>
           <RefreshCw size={12} /> Renew certificate
         </button>
+        <button className="v2-btn v2-btn-sm" onClick={() => onInstall(cert)}
+          style={{ fontSize:12 }}>
+          <Server size={11} /> Install
+        </button>
         {!delConfirm
           ? <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => setDelConfirm(true)}><X size={11} /> Delete</button>
           : <button className="v2-btn v2-btn-danger" onClick={() => onDelete(cert.id)}>Confirm delete</button>
@@ -331,7 +335,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, isPro, nav
 }
 
 // ── CertRow ──────────────────────────────────────────────────────────
-function CertRow({ cert, selected, onClick, onInstall }) {
+function CertRow({ cert, selected, onClick }) {
   const days = daysLeft(cert.expires_at)
   const s = statusOf(days, cert.status === 'revoked')
   const initials = cert.domain.replace(/^www\./, '').slice(0, 2).toUpperCase()
@@ -359,13 +363,7 @@ function CertRow({ cert, selected, onClick, onInstall }) {
         </div>
         {days != null && days <= 90 && <div style={{ marginTop:6 }}><ProgressBar days={days} /></div>}
       </div>
-      <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
-        <button className="v2-btn v2-btn-sm" onClick={e => { e.stopPropagation(); onInstall(cert) }}
-          style={{ fontSize:11, color:'var(--v2-text-2)', border:'0.5px solid var(--v2-border-strong)' }}>
-          <Server size={10} /> Install
-        </button>
-        <ChevronRight size={14} color="var(--v2-text-3)" />
-      </div>
+      <ChevronRight size={14} color="var(--v2-text-3)" style={{ flexShrink:0 }} />
     </div>
   )
 }
@@ -568,8 +566,7 @@ function LoggedInDashboard({ user, nav }) {
                 {visible.map(cert => (
                   <CertRow key={cert.id} cert={cert}
                     selected={selected === cert.id}
-                    onClick={() => setSelected(selected === cert.id ? null : cert.id)}
-                    onInstall={setAgentCert} />
+                    onClick={() => setSelected(selected === cert.id ? null : cert.id)} />
                 ))}
               </div>
             )}
@@ -579,7 +576,7 @@ function LoggedInDashboard({ user, nav }) {
           {selectedCert && (
             <CertDetail cert={selectedCert} onClose={() => setSelected(null)}
               onRenew={setRenewDomain} onDelete={handleDelete} onKeyDeleted={handleKeyDeleted}
-              isPro={isPro} nav={nav} />
+              onInstall={setAgentCert} isPro={isPro} nav={nav} />
           )}
         </div>
 
