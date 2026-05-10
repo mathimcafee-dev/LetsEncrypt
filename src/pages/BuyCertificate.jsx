@@ -73,7 +73,18 @@ export default function BuyCertificate({ nav }) {
     })
     setOrdering(false)
     if (result.error) { setError(result.error); return }
-    setOrderData(result)
+    // Poll check_status until TXT value is populated (TSS can be slow)
+    setOrdering(true)
+    let dvData = result
+    if (result.order_id) {
+      for (let i = 0; i < 5; i++) {
+        await new Promise(r => setTimeout(r, 3000))
+        const s = await callTSS('check_status', { order_id: result.order_id })
+        if (s.txt_value) { dvData = { ...result, txt_name: s.txt_name, txt_value: s.txt_value }; break }
+      }
+    }
+    setOrdering(false)
+    setOrderData(dvData)
     setStep('dv')
     loadOrders()
   }
@@ -312,8 +323,8 @@ export default function BuyCertificate({ nav }) {
                 <button className="v2-btn v2-btn-primary" style={{ flex:1, justifyContent:'center' }}
                   onClick={placeOrder} disabled={ordering}>
                   {ordering
-                    ? <><RefreshCw size={13} className="spin" /> Placing order with TheSSLStore…</>
-                    : <><Shield size={13} /> Confirm & place order</>}
+                    ? <><RefreshCw size={13} className="spin" /> Placing order &amp; fetching DNS record…</>
+                    : <><Shield size={13} /> Confirm &amp; place order</>}
                 </button>
               </div>
             </div>
