@@ -90,14 +90,16 @@ export default function AgentInstall({ cert, userId, onClose }) {
   const saveCpanelCredentials = async (user, token) => {
     if (!userId || !user || !token) return
     const enc = btoa(JSON.stringify({ cpanel_user: user, cpanel_token: token }))
-    await supabase.from('dns_credentials').upsert({
-      user_id: userId,
-      provider: 'cpanel',
-      label: 'cPanel API Token',
-      domain_pattern: '*',
-      credentials_enc: enc,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'user_id,provider,domain_pattern' }).catch(() => {})
+    try {
+      await supabase.from('dns_credentials').upsert({
+        user_id: userId,
+        provider: 'cpanel',
+        label: 'cPanel API Token',
+        domain_pattern: '*',
+        credentials_enc: enc,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,provider,domain_pattern' })
+    } catch(e) {}
   }
 
   // Find active agent for selected server
