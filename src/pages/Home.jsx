@@ -407,15 +407,15 @@ export default function Home({ nav }) {
                 100% Let's Encrypt backed.
               </p>
               <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
-                <button onClick={() => nav('/generate')}
+                <button onClick={() => nav('/install')}
                   className="v2-btn v2-btn-primary"
                   style={{ padding:'12px 24px', fontSize:14 }}>
-                  <Shield size={14} /> Issue Free Certificate
+                  <BookOpen size={13} /> Install Guide <ChevronRight size={12} />
                 </button>
-                <button onClick={() => nav('/install')}
+                <button onClick={() => nav('/monitor')}
                   className="v2-btn"
                   style={{ padding:'12px 18px', fontSize:14 }}>
-                  <BookOpen size={13} /> Install Guide <ChevronRight size={12} />
+                  <Activity size={13} /> Try SSL Scanner
                 </button>
               </div>
             </div>
