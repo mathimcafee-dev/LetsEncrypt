@@ -493,7 +493,7 @@ export default function Home({ nav }) {
             <p style={{ color:'var(--v2-text-3)', fontSize:11 }}>
               © {new Date().getFullYear()} SSLVault · Built by Mathivanan Kathirvel
             </p>
-            <p style={{ color:'var(--v2-text-3)', fontSize:11 }}>Made with ♥ in the Netherlands</p>
+
           </div>
         </div>
       </footer>
