@@ -4,6 +4,7 @@ import { Copy, Check, ArrowRight, RefreshCw, Download, Shield, Bell,
          Zap, Server, ExternalLink, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { usePlan } from '../hooks/usePlan'
 import '../styles/design-v2.css'
 
 // ── Constants ─────────────────────────────────────────────────────────
@@ -164,6 +165,7 @@ function FileCard({ icon, title, badge, content, filename, warning }) {
 // ══════════════════════════════════════════════════════════════════════
 export default function Generate({ nav }) {
   const { user, loading: authLoading } = useAuth()
+  const { isPro } = usePlan(user)
   const [step, setStep]           = useState(0)
   const [certType, setCertType]   = useState('single')
   const [domain, setDomain]       = useState(() => {
@@ -219,7 +221,21 @@ export default function Generate({ nav }) {
     const data = await callAcme('finalize').catch(e => ({ error: e.message }))
     setLoading(false)
     if (data.error) { setError(data.error); return }
-    if (data.ok) { setCertResult(data); setStep(3) }
+    if (data.ok) {
+        setCertResult(data)
+        setStep(3)
+        // Pro users: store key in KeyLocker vault
+        if (isPro && data.privateKey) {
+          try {
+            const { data: { session } } = await supabase.auth.getSession()
+            await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/keylocker', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+              body: JSON.stringify({ action: 'store', domain: data.domain, private_key_pem: data.privateKey, expires_at: data.expiresAt }),
+            })
+          } catch (e) { console.log('KeyLocker store non-fatal:', e) }
+        }
+      }
     else setError(data.message || 'Failed to issue certificate')
   }
 

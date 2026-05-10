@@ -152,21 +152,27 @@ export default function KeyLocker({ nav }) {
     loadData()
   }, [user?.id, isPro, planLoading])
 
+  const callKeyLocker = async (action, extra = {}) => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch(
+      'https://frthcwkntciaakqsppss.supabase.co/functions/v1/keylocker',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ action, ...extra }),
+      }
+    )
+    return res.json()
+  }
+
   const loadData = async () => {
     setLoading(true)
-    const [{ data: keysData }, { data: auditData }] = await Promise.all([
-      supabase.from('keylocker_keys')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false }),
-      supabase.from('keylocker_audit_log')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50),
-    ])
-    setKeys(keysData || [])
-    setAudit(auditData || [])
+    const data = await callKeyLocker('list')
+    setKeys(data.keys || [])
+    setAudit(data.audit || [])
     setLoading(false)
   }
 
@@ -175,20 +181,7 @@ export default function KeyLocker({ nav }) {
     setRotateConfirm(null)
     setRotating(keyEntry.id)
     try {
-      // Call the keylocker-rotate edge function
-      const { data: { session } } = await supabase.auth.getSession()
-      const res = await fetch(
-        'https://frthcwkntciaakqsppss.supabase.co/functions/v1/keylocker-rotate',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ key_id: keyEntry.id, domain: keyEntry.domain }),
-        }
-      )
-      const result = await res.json()
+      const result = await callKeyLocker('rotate', { key_id: keyEntry.id })
       if (result.error) throw new Error(result.error)
       await loadData()
     } catch (err) {
