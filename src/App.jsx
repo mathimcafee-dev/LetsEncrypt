@@ -35,7 +35,6 @@ export default function App() {
       {page === '/generate' && <Generate nav={nav} />}
       {page === '/quick-setup' && <Generate nav={nav} />}
       {page === '/dashboard' && <Dashboard nav={nav} />}
-      {page === '/monitor' && <Monitor nav={nav} />}
       {page === '/dns-providers' && <DnsProviders nav={nav} />}
       {page === '/install' && <Install nav={nav} />}
       {page === '/knowledge-base' && <KnowledgeBase nav={nav} />}
