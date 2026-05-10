@@ -633,12 +633,7 @@ function MarketingDashboard({ nav }) {
                 </span>
               </div>
             ))}
-            {/* CTA */}
-            <div style={{ padding:'18px 20px', background:'var(--v2-surface-2)', borderTop:'0.5px solid var(--v2-border)',
-                          display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
-              <span style={{ fontSize:13, color:'var(--v2-text-2)' }}>Sign in to manage your own certificates</span>
-              <button className="v2-btn v2-btn-primary" onClick={() => nav('/auth')}>Sign in free <ArrowRight size={12} /></button>
-            </div>
+
           </div>
         </div>
 
@@ -674,16 +669,7 @@ function MarketingDashboard({ nav }) {
           </div>
         </div>
 
-        {/* Final CTA */}
-        <div style={{ textAlign:'center', paddingBottom:24 }}>
-          <div style={{ fontSize:22, fontWeight:700, letterSpacing:'-0.4px', marginBottom:10, color:'var(--v2-text)' }}>
-            Ready to secure your domains?
-          </div>
-          <div style={{ fontSize:14, color:'var(--v2-text-2)', marginBottom:24 }}>Free forever. No credit card. No limits.</div>
-          <button className="v2-btn v2-btn-primary" style={{ padding:'12px 28px', fontSize:14 }} onClick={() => nav('/auth')}>
-            <Shield size={14} /> Create your free account
-          </button>
-        </div>
+
 
       </div>
     </div>
