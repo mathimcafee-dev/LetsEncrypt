@@ -81,7 +81,7 @@ function ProgressBar({ days, max = 90 }) {
 }
 
 // ── CertDetail panel ─────────────────────────────────────────────────
-function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted }) {
+function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, isPro, nav }) {
   const days = daysLeft(cert.expires_at)
   const s = statusOf(days, cert.status === 'revoked')
   const [showKey, setShowKey] = useState(false)
@@ -578,7 +578,8 @@ function LoggedInDashboard({ user, nav }) {
           {/* Detail panel */}
           {selectedCert && (
             <CertDetail cert={selectedCert} onClose={() => setSelected(null)}
-              onRenew={setRenewDomain} onDelete={handleDelete} onKeyDeleted={handleKeyDeleted} />
+              onRenew={setRenewDomain} onDelete={handleDelete} onKeyDeleted={handleKeyDeleted}
+              isPro={isPro} nav={nav} />
           )}
         </div>
 
