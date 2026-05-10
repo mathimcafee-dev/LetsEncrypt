@@ -344,19 +344,19 @@ export default function BuyCertificate({ nav }) {
                   <div>
                     <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>Name / Host</div>
                     <div style={{ fontSize:12, color:'#e5e7eb', wordBreak:'break-all' }}>
-                      {orderData.dv_txt_name || orderData.dv_cname_host || `_rapidssl-challenge.${domain}`}
+                      {orderData.txt_name || orderData.dv_cname_host || `_rapidssl-challenge.${domain}`}
                     </div>
                   </div>
-                  <CopyBtn text={orderData.dv_txt_name || orderData.dv_cname_host || `_rapidssl-challenge.${domain}`} />
+                  <CopyBtn text={orderData.txt_name || orderData.dv_cname_host || `_rapidssl-challenge.${domain}`} />
                 </div>
                 <div style={{ borderTop:'0.5px solid #374151', paddingTop:8, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                   <div>
                     <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>TXT Value</div>
                     <div style={{ fontSize:12, color:'#e5e7eb', wordBreak:'break-all' }}>
-                      {orderData.dv_txt_value || orderData.dv_cname_value || '—'}
+                      {orderData.txt_value || orderData.dv_cname_value || '—'}
                     </div>
                   </div>
-                  <CopyBtn text={orderData.dv_txt_value || orderData.dv_cname_value || ''} />
+                  <CopyBtn text={orderData.txt_value || orderData.dv_cname_value || ''} />
                 </div>
                 <div style={{ borderTop:'0.5px solid #374151', paddingTop:8, marginTop:8, display:'flex', justifyContent:'space-between' }}>
                   <div>
@@ -464,8 +464,16 @@ export default function BuyCertificate({ nav }) {
                     </div>
                   </div>
                   {o.status === 'dv_pending' && (
-                    <button className="v2-btn v2-btn-sm" onClick={() => {
-                      setOrderData({ order_id: o.id, tss_order_id: o.tss_order_id, dv_cname_host: o.dv_cname_host, dv_cname_value: o.dv_cname_value })
+                    <button className="v2-btn v2-btn-sm" onClick={async () => {
+                      // Fetch fresh TXT details from TSS before showing DV screen
+                      const result = await callTSS('check_status', { order_id: o.id })
+                      setOrderData({
+                        order_id: o.id,
+                        tss_order_id: o.tss_order_id,
+                        txt_name: result.txt_name || o.dv_cname_host,
+                        txt_value: result.txt_value || o.dv_cname_value,
+                        raw_vetting: result.raw_vetting,
+                      })
                       setDomain(o.domain)
                       setStep('dv')
                     }}>
