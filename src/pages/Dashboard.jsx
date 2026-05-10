@@ -166,20 +166,112 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
   const [keyChecks, setKeyChecks] = useState({ downloaded: false, installed: false, understand: false })
   const [bannerVisible, setBannerVisible] = useState(true)
   const [newPillVisible, setNewPillVisible] = useState(true)
+  const [renewState, setRenewState] = useState(null)
+  // renewState: null | { phase: 'checking'|'issuing'|'verifying'|'finalizing'|'done'|'error', msg: string }
+
   const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
   const hasAgentInstall = cert.status === 'active' || cert.agent_url
+  const { fp, serial } = useCertMeta(cert.cert_pem)
 
   // Auto-dismiss the NEW pill after 30s, banner after 8s
   useEffect(() => {
     if (!justRotated) return
-    setBannerVisible(true)
-    setNewPillVisible(true)
+    setBannerVisible(true); setNewPillVisible(true)
     const t1 = setTimeout(() => setBannerVisible(false), 8000)
     const t2 = setTimeout(() => setNewPillVisible(false), 30000)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [justRotated])
 
-  const { fp, serial } = useCertMeta(cert.cert_pem)
+  // ── Smart renew: auto-issue if DNS creds exist, else send to Generate ──
+  const handleSmartRenew = async () => {
+    const domain = cert.domain
+    setRenewState({ phase: 'checking', msg: 'Checking DNS configuration…' })
+
+    // Check for stored DNS credentials matching this domain
+    const baseDomain = domain.split('.').slice(-2).join('.')
+    const { data: creds } = await supabase
+      .from('dns_credentials')
+      .select('id, provider')
+      .or(`domain_pattern.eq.${domain},domain_pattern.eq.${baseDomain}`)
+      .limit(1)
+
+    if (!creds || creds.length === 0) {
+      // No auto DNS — prefill and send to Generate
+      setRenewState(null)
+      sessionStorage.setItem('prefill_domain', domain)
+      onClose()
+      nav('/generate')
+      return
+    }
+
+    const provider = creds[0].provider
+    const sessionId = Math.random().toString(36).slice(2)
+    const callAcme = async (action) => {
+      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, sessionId, domain, user_id: cert.user_id }),
+      })
+      const text = await res.text()
+      try { return JSON.parse(text) } catch { return { error: text } }
+    }
+
+    try {
+      setRenewState({ phase: 'issuing', msg: `Starting ACME order for ${domain}…` })
+      const startData = await callAcme('start')
+      if (startData.error) throw new Error(startData.error)
+
+      if (!startData.autoAdded) {
+        // DNS creds exist but auto-add failed — fall back to Generate
+        setRenewState(null)
+        sessionStorage.setItem('prefill_domain', domain)
+        onClose()
+        nav('/generate')
+        return
+      }
+
+      // Poll verify up to 12 times × 5s = 60s max
+      setRenewState({ phase: 'verifying', msg: `DNS record added via ${provider} — verifying propagation…` })
+      let verified = false
+      for (let i = 0; i < 12; i++) {
+        await new Promise(r => setTimeout(r, 5000))
+        const v = await callAcme('verify')
+        if (v.verified) { verified = true; break }
+        setRenewState({ phase: 'verifying', msg: `Verifying DNS propagation… (attempt ${i + 2}/12)` })
+      }
+      if (!verified) throw new Error('DNS verification timed out. Please try again or use Issue Certificate for manual renewal.')
+
+      setRenewState({ phase: 'finalizing', msg: 'DNS verified — finalizing certificate…' })
+      const finalData = await callAcme('finalize')
+      if (finalData.error) throw new Error(finalData.error)
+      if (!finalData.ok) throw new Error(finalData.message || 'Finalization failed')
+
+      // Store in KeyLocker if Pro
+      if (isPro && finalData.privateKey) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession()
+          await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/keylocker', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+            body: JSON.stringify({ action: 'store', domain: finalData.domain, private_key_pem: finalData.privateKey, expires_at: finalData.expiresAt }),
+          })
+        } catch (e) { console.log('KeyLocker store non-fatal:', e) }
+      }
+
+      setRenewState({ phase: 'done', msg: `Certificate renewed for ${domain} — new cert is in your inventory.` })
+      setTimeout(() => onClose(), 3000)
+
+    } catch (err) {
+      const msg = err.message || ''
+      const isRateLimit = msg.toLowerCase().includes('rate') || msg.toLowerCase().includes('too many')
+      setRenewState({
+        phase: 'error',
+        msg: isRateLimit
+          ? `Let's Encrypt rate limit reached for ${domain}. LE allows 5 certs/domain/week. Try again in a few days.`
+          : `Renewal failed: ${msg}`
+      })
+    }
+  }
 
   const doDeleteKey = async () => {
     setKeyDeleting(true)
@@ -521,9 +613,44 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
         </>
       )}
 
+      {/* Smart renew progress */}
+      {renewState && (
+        <div style={{
+          background: renewState.phase === 'done' ? 'var(--v2-green-bg)'
+            : renewState.phase === 'error' ? '#fef2f2'
+            : 'var(--v2-surface-3)',
+          border: `0.5px solid ${renewState.phase === 'done' ? 'var(--v2-green-border)'
+            : renewState.phase === 'error' ? '#fecaca' : 'var(--v2-border)'}`,
+          borderRadius: 'var(--v2-r-md)', padding: '12px 14px', marginBottom: 12,
+          display: 'flex', alignItems: 'flex-start', gap: 10
+        }}>
+          {renewState.phase === 'done'
+            ? <CheckCircle size={14} color="var(--v2-green)" style={{ flexShrink:0, marginTop:1 }} />
+            : renewState.phase === 'error'
+            ? <AlertTriangle size={14} color="#dc2626" style={{ flexShrink:0, marginTop:1 }} />
+            : <RefreshCw size={14} color="var(--v2-text-3)" style={{ flexShrink:0, marginTop:1, animation:'spin 1s linear infinite' }} />}
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:12, fontWeight:600, marginBottom:2,
+              color: renewState.phase === 'done' ? 'var(--v2-green-text)'
+                : renewState.phase === 'error' ? '#dc2626' : 'var(--v2-text)' }}>
+              {renewState.phase === 'done' ? 'Renewed' : renewState.phase === 'error' ? 'Renewal failed' : 'Renewing…'}
+            </div>
+            <div style={{ fontSize:11, color: renewState.phase === 'error' ? '#dc2626' : 'var(--v2-text-2)', lineHeight:1.5 }}>
+              {renewState.msg}
+            </div>
+          </div>
+          {renewState.phase === 'error' && (
+            <button onClick={() => setRenewState(null)}
+              style={{ background:'none', border:'none', cursor:'pointer', color:'#dc2626', fontSize:14, flexShrink:0 }}>✕</button>
+          )}
+        </div>
+      )}
+
       {/* Actions */}
       <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-        <button className="v2-btn v2-btn-primary" style={{ flex:1 }} onClick={() => onRenew(cert.domain)}>
+        <button className="v2-btn v2-btn-primary" style={{ flex:1 }}
+          onClick={handleSmartRenew}
+          disabled={!!renewState && renewState.phase !== 'error'}>
           <RefreshCw size={12} /> Renew certificate
         </button>
         <button className="v2-btn v2-btn-sm" onClick={() => onInstall(cert)}
@@ -622,7 +749,6 @@ function LoggedInDashboard({ user, nav }) {
   const [selected, setSelected]   = useState(null)
   const [filter, setFilter]       = useState('all')
   const [search, setSearch]       = useState('')
-  const [renewDomain, setRenewDomain] = useState(null)
   const [agentCert, setAgentCert] = useState(null)
   const [showRotated, setShowRotated] = useState(false)
   const [justRotated, setJustRotated] = useState(null) // { domain, oldFingerprint, oldExpires, oldIssued, at }
@@ -940,7 +1066,7 @@ function LoggedInDashboard({ user, nav }) {
           {/* Detail panel */}
           {selectedCert && (
             <CertDetail cert={selectedCert} onClose={() => { setSelected(null); setJustRotated(null) }}
-              onRenew={setRenewDomain} onDelete={handleDelete} onKeyDeleted={handleKeyDeleted}
+              onDelete={handleDelete} onKeyDeleted={handleKeyDeleted}
               onInstall={setAgentCert} isPro={isPro} nav={nav}
               justRotated={justRotated?.domain === selectedCert.domain ? justRotated : null} />
           )}
@@ -1021,7 +1147,6 @@ function LoggedInDashboard({ user, nav }) {
         </div>
       </div>
 
-      {renewDomain && <RenewModal domain={renewDomain} onClose={() => setRenewDomain(null)} nav={nav} />}
       {agentCert && <AgentInstall cert={agentCert} userId={user.id} onClose={() => setAgentCert(null)} />}
 
       <style>{`
