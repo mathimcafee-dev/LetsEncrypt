@@ -10,6 +10,7 @@ export default function Nav({ nav, page }) {
   const [moreOpen, setMoreOpen] = useState(false)
   const primary = [
     { path:'/generate', label:'Issue Certificate', icon:PlusCircle },
+    { path:'/dashboard', label:'Dashboard', icon:LayoutDashboard },
     { path:'/buy', label:'Buy RapidSSL', icon:Star },
 
   ]
@@ -48,7 +49,7 @@ export default function Nav({ nav, page }) {
         </div>
         <div style={{display:'flex',alignItems:'center',gap:1}}>
           {primary.map(({path,label,icon:Icon})=>{
-            const active = path==='/dashboard'?isDash:page===path
+            const active = page===path
             return (
               <div key={path} onClick={()=>nav(path)} style={{display:'flex',alignItems:'center',gap:6,padding:'7px 13px',borderRadius:7,cursor:'pointer',fontSize:13,fontWeight:600,color:active?'#047857':'#525252',background:active?'#f0fdf4':'transparent',borderBottom:active?'2px solid #10b981':'2px solid transparent',marginBottom:'-1px'}}
                 onMouseEnter={e=>{if(!active)e.currentTarget.style.background='#f8fafc'}}
