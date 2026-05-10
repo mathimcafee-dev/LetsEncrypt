@@ -1,18 +1,44 @@
 import { useState, useEffect } from 'react'
-import { Shield, Plus, RefreshCw, Trash2, Bell, AlertTriangle, CheckCircle, Clock, Globe, Search, Download, ExternalLink, Eye, ArrowRight, X } from 'lucide-react'
+import {
+  Shield, Plus, RefreshCw, Trash2, Bell, AlertTriangle, Globe, Search,
+  Download, ExternalLink, Eye, ArrowRight, X, Lock, Activity, Filter,
+  ChevronRight, AlertCircle, Check, Calendar
+} from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { differenceInDays, formatDistanceToNow, format } from 'date-fns'
 
-function StatusBadge({ days, revoked }) {
-  if (revoked) return <span className="badge badge-red">● Revoked</span>
-  if (days < 0) return <span className="badge badge-red"><AlertTriangle size={10} /> Expired</span>
-  if (days < 7) return <span className="badge badge-red"><AlertTriangle size={10} /> Critical</span>
-  if (days < 14) return <span className="badge badge-yellow"><Clock size={10} /> Expiring Soon</span>
-  if (days < 30) return <span className="badge badge-yellow"><Bell size={10} /> Renew Soon</span>
-  return <span className="badge badge-green"><CheckCircle size={10} /> Active</span>
+// ── Status helpers ───────────────────────────────────────────────────
+function statusOf(days, revoked) {
+  if (revoked)         return { key: 'revoked',  label: 'Revoked',       cls: 'red',   tone: 'v2-status-grey' }
+  if (days == null)    return { key: 'pending',  label: 'Not scanned',   cls: 'grey',  tone: 'v2-status-grey' }
+  if (days < 0)        return { key: 'expired',  label: 'Expired',       cls: 'red',   tone: 'v2-status-amber' }
+  if (days < 14)       return { key: 'critical', label: `${days}d left`, cls: 'amber', tone: 'v2-status-amber' }
+  if (days < 30)       return { key: 'soon',     label: `${days}d left`, cls: 'amber', tone: 'v2-status-amber' }
+  return                      { key: 'healthy',  label: `${days}d left`, cls: 'green', tone: 'v2-status-green' }
 }
 
+function StatusPill({ days, revoked }) {
+  const s = statusOf(days, revoked)
+  return (
+    <span className={`v2-status v2-status-${s.cls === 'green' ? 'green' : s.cls === 'amber' ? 'amber' : 'grey'}`}>
+      <span className={`v2-dot v2-dot-${s.cls === 'green' ? 'green' : s.cls === 'amber' ? 'amber' : 'grey'}`} />
+      {s.label}
+    </span>
+  )
+}
+
+function ProgressBar({ days, max = 90 }) {
+  const pct = days == null ? 0 : Math.max(0, Math.min(100, (days / max) * 100))
+  const cls = days == null ? '' : days < 0 ? 'red' : days < 14 ? 'red' : days < 30 ? 'amber' : ''
+  return (
+    <div className="v2-bar">
+      <div className={`v2-bar-fill ${cls}`} style={{ width: `${pct}%` }} />
+    </div>
+  )
+}
+
+// ── Add monitor modal ────────────────────────────────────────────────
 function AddModal({ onAdd, onClose }) {
   const [domain, setDomain] = useState('')
   const [threshold, setThreshold] = useState(30)
@@ -26,196 +52,235 @@ function AddModal({ onAdd, onClose }) {
     setSaving(false)
   }
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:300, display:'flex', alignItems:'center', justifyContent:'center' }}
-      onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:16, padding:28, width:440, boxShadow:'var(--shadow-lg)' }}>
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
-          <h3 style={{ fontWeight:700, fontSize:17, color:'var(--text)' }}>Monitor a Domain</h3>
-          <button onClick={onClose} className="btn btn-ghost btn-sm"><X size={16}/></button>
-        </div>
-        <div style={{ marginBottom:16 }}>
-          <label>Domain Name</label>
-          <input placeholder="example.com or api.example.com" value={domain}
-            onChange={e=>setDomain(e.target.value.replace(/^https?:\/\//,'').replace(/\/.*/,''))}
-            onKeyDown={e=>e.key==='Enter'&&handleAdd()} autoFocus />
-          <p style={{ fontSize:12, color:'var(--text3)', marginTop:5 }}>We'll track this domain's SSL certificate expiry</p>
-        </div>
-        <div style={{ marginBottom:24 }}>
-          <label>Alert threshold</label>
-          <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-            {[7,14,30,60].map(d => (
-              <button key={d} onClick={()=>setThreshold(d)} className={`btn btn-sm ${threshold===d?'btn-primary':'btn-secondary'}`}>{d} days</button>
-            ))}
+    <div className="v2-modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="v2-modal" style={{ maxWidth: 440 }}>
+        <div className="v2-modal-head">
+          <div>
+            <div className="v2-modal-title">Monitor a domain</div>
+            <div className="v2-modal-subtitle">Track SSL expiry on any public domain</div>
           </div>
-          <p style={{ fontSize:12, color:'var(--text3)', marginTop:6 }}>Alert when certificate expires within {threshold} days</p>
+          <button className="v2-modal-close" onClick={onClose}><X size={16} /></button>
         </div>
-        {error && <p style={{ fontSize:12, color:'var(--red)', marginBottom:12 }}>{error}</p>}
-        <div style={{ display:'flex', gap:10 }}>
-          <button className="btn btn-primary" onClick={handleAdd} disabled={saving || !domain.trim()} style={{ flex:1, justifyContent:'center' }}>
-            {saving ? <><span className="spinner" /> Adding...</> : <><Plus size={15}/> Add Domain</>}
+        <div className="v2-modal-body">
+          <div style={{ marginBottom: 14 }}>
+            <label className="v2-label">Domain name</label>
+            <input
+              className="v2-input"
+              placeholder="example.com or api.example.com"
+              value={domain}
+              onChange={e => setDomain(e.target.value.replace(/^https?:\/\//, '').replace(/\/.*/, ''))}
+              onKeyDown={e => e.key === 'Enter' && handleAdd()}
+              autoFocus
+            />
+            <div className="v2-label-help">We'll track this domain's SSL certificate expiry</div>
+          </div>
+          <div style={{ marginBottom: 14 }}>
+            <label className="v2-label">Alert threshold</label>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {[7, 14, 30, 60].map(d => (
+                <button key={d}
+                        className={`v2-filter-chip ${threshold === d ? 'active' : ''}`}
+                        onClick={() => setThreshold(d)}>
+                  {d} days
+                </button>
+              ))}
+            </div>
+            <div className="v2-label-help">Alert when certificate expires within {threshold} days</div>
+          </div>
+          {error && <div className="v2-alert v2-alert-error" style={{ marginBottom: 8 }}>
+            <AlertCircle size={13} /> <span>{error}</span>
+          </div>}
+        </div>
+        <div className="v2-modal-foot">
+          <button className="v2-btn" onClick={onClose}>Cancel</button>
+          <button className="v2-btn v2-btn-primary" onClick={handleAdd} disabled={saving || !domain.trim()}>
+            {saving ? 'Adding…' : <><Plus size={13} strokeWidth={2.2} /> Add domain</>}
           </button>
-          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
         </div>
       </div>
     </div>
   )
 }
 
+// ── Cert detail modal ────────────────────────────────────────────────
 function CertDetailModal({ cert, onClose, onRenew }) {
   const days = cert.expires_at ? differenceInDays(new Date(cert.expires_at), new Date()) : 0
-  const pct = Math.max(0, Math.min(100, (days/90)*100))
   const download = (content, filename) => {
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(new Blob([content], {type:'text/plain'}))
+    a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' }))
     a.download = filename; a.click()
   }
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:300, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}
-      onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:16, padding:28, width:'100%', maxWidth:560, maxHeight:'85vh', overflow:'auto', boxShadow:'var(--shadow-lg)' }}>
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <div style={{ width:40, height:40, borderRadius:10, background:'var(--accent-light)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Shield size={20} color="var(--accent)" />
+    <div className="v2-modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="v2-modal" style={{ maxWidth: 540 }}>
+        <div className="v2-modal-head">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 6, background: '#eff6ff', border: '0.5px solid #bfdbfe',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Shield size={16} strokeWidth={1.8} color="#2563eb" />
             </div>
             <div>
-              <div style={{ fontWeight:700, fontSize:15, fontFamily:'var(--mono)', color:'var(--text)' }}>{cert.domain}</div>
-              <StatusBadge days={days} revoked={cert.status === "revoked"} />
+              <div className="v2-modal-title v2-mono">{cert.domain}</div>
+              <div className="v2-modal-subtitle">
+                <StatusPill days={days} revoked={cert.status === 'revoked'} />
+              </div>
             </div>
           </div>
-          <button onClick={onClose} className="btn btn-ghost btn-sm"><X size={16}/></button>
+          <button className="v2-modal-close" onClick={onClose}><X size={16} /></button>
         </div>
+        <div className="v2-modal-body">
+          <table className="v2-table" style={{ marginBottom: 14 }}>
+            <tbody>
+              <tr>
+                <td style={{ color: 'var(--v2-text-3)', width: 110 }}>Domain</td>
+                <td className="v2-mono" style={{ fontWeight: 500 }}>{cert.domain}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--v2-text-3)' }}>Status</td>
+                <td>{days >= 0 ? `Active — ${days} days remaining` : `Expired ${Math.abs(days)} days ago`}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--v2-text-3)' }}>Issued</td>
+                <td>{cert.issued_at ? format(new Date(cert.issued_at), 'PPP pp') : '—'}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--v2-text-3)' }}>Expires</td>
+                <td>{cert.expires_at ? format(new Date(cert.expires_at), 'PPP') : '—'}</td>
+              </tr>
+            </tbody>
+          </table>
 
-        {/* Details grid */}
-        <div style={{ background:'var(--bg)', borderRadius:10, padding:16, marginBottom:20 }}>
-          {[
-            ['Domain', cert.domain, true],
-            ['Status', days >= 0 ? `Active — ${days} days remaining` : `Expired ${Math.abs(days)} days ago`, false],
-            ['Issued', cert.issued_at ? format(new Date(cert.issued_at), 'PPP pp') : 'Unknown', false],
-            ['Expires', cert.expires_at ? format(new Date(cert.expires_at), 'PPP') : 'Unknown', false],
-          ].map(([k,v,mono]) => (
-            <div key={k} style={{ display:'flex', gap:16, padding:'8px 0', borderBottom:'1px solid var(--border2)', fontSize:13 }}>
-              <span style={{ color:'var(--text3)', fontWeight:600, minWidth:80, flexShrink:0 }}>{k}</span>
-              <span style={{ color:'var(--text)', fontFamily:mono?'var(--mono)':'inherit', fontWeight:mono?600:400 }}>{v}</span>
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 6 }}>
+              <span>Certificate health</span>
+              <span style={{ fontWeight: 500, color: days < 14 ? 'var(--v2-red-text)' : days < 30 ? 'var(--v2-amber-text)' : 'var(--v2-green-text)' }}>
+                {days > 0 ? `${days} days left` : `Expired ${Math.abs(days)} days ago`}
+              </span>
             </div>
-          ))}
-        </div>
-
-        {/* Expiry bar */}
-        <div style={{ marginBottom:20 }}>
-          <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, color:'var(--text3)', marginBottom:8 }}>
-            <span>Certificate health</span>
-            <span style={{ fontWeight:700, color: days < 14 ? 'var(--red)' : days < 30 ? 'var(--yellow)' : 'var(--green)' }}>
-              {days > 0 ? `${days} days left` : `Expired ${Math.abs(days)} days ago`}
-            </span>
+            <ProgressBar days={days} />
           </div>
-          <div style={{ height:8, background:'var(--bg2)', borderRadius:4 }}>
-            <div style={{ height:'100%', width:`${pct}%`, background: days < 14 ? 'var(--red)' : days < 30 ? 'var(--yellow)' : 'var(--green)', borderRadius:4, transition:'width 0.3s' }} />
-          </div>
-        </div>
 
-        {/* Download buttons */}
-        {(cert.cert_pem || cert.private_key_pem) && (
-          <div style={{ marginBottom:20 }}>
-            <label>Download Files</label>
-            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-              {cert.cert_pem && <button className="btn btn-secondary btn-sm" onClick={()=>download(cert.cert_pem,`${cert.domain}-cert.pem`)}><Download size={13}/> cert.pem</button>}
-              {cert.private_key_pem && <button className="btn btn-secondary btn-sm" onClick={()=>download(cert.private_key_pem,`${cert.domain}-key.pem`)}><Download size={13}/> key.pem</button>}
-              {cert.cert_pem && <button className="btn btn-secondary btn-sm" onClick={()=>download(cert.cert_pem,`${cert.domain}-fullchain.pem`)}><Download size={13}/> fullchain.pem</button>}
+          {(cert.cert_pem || cert.private_key_pem) && (
+            <div style={{ marginBottom: 14 }}>
+              <div className="v2-section-label" style={{ marginBottom: 8 }}>Download files</div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {cert.cert_pem && <button className="v2-btn" onClick={() => download(cert.cert_pem, `${cert.domain}-cert.pem`)}><Download size={11} /> cert.pem</button>}
+                {cert.private_key_pem && <button className="v2-btn" onClick={() => download(cert.private_key_pem, `${cert.domain}-key.pem`)}><Download size={11} /> key.pem</button>}
+                {cert.cert_pem && <button className="v2-btn" onClick={() => download(cert.cert_pem, `${cert.domain}-fullchain.pem`)}><Download size={11} /> fullchain.pem</button>}
+              </div>
             </div>
-          </div>
-        )}
-
-        <button className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }} onClick={()=>onRenew(cert.domain)}>
-          <RefreshCw size={15}/> Request New Certificate for {cert.domain}
-        </button>
+          )}
+        </div>
+        <div className="v2-modal-foot">
+          <button className="v2-btn" onClick={onClose}>Close</button>
+          <button className="v2-btn v2-btn-primary" onClick={() => onRenew(cert.domain)}>
+            <RefreshCw size={11} /> Request new certificate
+          </button>
+        </div>
       </div>
     </div>
   )
 }
 
-function MonitoredDomainRow({ m, onScan, onDelete, onRequestCert, scanning }) {
-  const [details, setDetails] = useState(null)
-  const [expanded, setExpanded] = useState(true)
+// ── Monitored domain row ─────────────────────────────────────────────
+function MonitoredRow({ m, onScan, onDelete, onRequestCert, scanning }) {
+  const [expanded, setExpanded] = useState(false)
   const [loading, setLoading] = useState(false)
+  const daysLeft = m.last_days_left
+  const hasScanned = m.last_scanned_at
+  const cls = !hasScanned ? 'grey' : daysLeft < 0 ? 'amber' : daysLeft < 14 ? 'amber' : 'green'
 
   const scan = async () => {
     setLoading(true)
-    const result = await onScan(m.domain)
-    if (result) setDetails(result)
+    await onScan(m.domain)
     setLoading(false)
   }
 
-  const daysLeft = m.last_days_left
-  const hasScanned = m.last_scanned_at
-
   return (
-    <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:12, overflow:'hidden', boxShadow:'var(--shadow)' }}>
-      {/* Main row */}
-      <div style={{ display:'flex', alignItems:'center', gap:16, padding:'16px 20px' }}>
-        <div style={{ width:40, height:40, borderRadius:10, background: !hasScanned ? 'var(--bg2)' : daysLeft < 0 ? 'var(--red-light)' : daysLeft < 14 ? 'var(--yellow-light)' : 'var(--green-light)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-          <Globe size={18} color={ !hasScanned ? 'var(--text3)' : daysLeft < 0 ? 'var(--red)' : daysLeft < 14 ? 'var(--yellow)' : 'var(--green)'} />
+    <div style={{ background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)', borderRadius: 'var(--v2-r-lg)', overflow: 'hidden' }}>
+      <div className={`v2-list-row status-${cls}`} style={{ borderBottom: 'none' }}
+           onClick={() => hasScanned && setExpanded(e => !e)}>
+        <div style={{
+          width: 32, height: 32, borderRadius: 6, background: 'var(--v2-surface-3)',
+          border: '0.5px solid var(--v2-border)', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', flexShrink: 0
+        }}>
+          <Globe size={15} strokeWidth={1.8} color="var(--v2-text-2)" />
         </div>
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
-            <span style={{ fontWeight:700, fontSize:14, fontFamily:'var(--mono)', color:'var(--text)' }}>{m.domain}</span>
-            {hasScanned && daysLeft !== null && <StatusBadge days={daysLeft} />}
-            {!hasScanned && <span className="badge" style={{ background:'var(--bg2)', color:'var(--text3)', border:'1px solid var(--border)' }}>Not scanned yet</span>}
+        <div className="v2-row-body">
+          <div className="v2-row-title-line">
+            <span className="v2-row-title v2-mono">{m.domain}</span>
+            {hasScanned ? (
+              <StatusPill days={daysLeft} />
+            ) : (
+              <span className="v2-status v2-status-grey">
+                <span className="v2-dot v2-dot-grey" /> Not scanned yet
+              </span>
+            )}
           </div>
-          <div style={{ fontSize:12, color:'var(--text3)' }}>
-            Alert at {m.alert_threshold_days} days · {hasScanned ? `Last scanned ${formatDistanceToNow(new Date(m.last_scanned_at), {addSuffix:true})}` : 'Click Scan to check certificate'}
+          <div className="v2-row-meta">
+            <span style={{ fontSize: 11 }}>Alert at {m.alert_threshold_days} days</span>
+            <span className="v2-row-meta-sep">·</span>
+            <span style={{ fontSize: 11 }}>
+              {hasScanned ? `Last scanned ${formatDistanceToNow(new Date(m.last_scanned_at), { addSuffix: true })}` : 'Click Scan to check'}
+            </span>
           </div>
         </div>
-        <div style={{ display:'flex', gap:8, flexShrink:0 }}>
-          <button onClick={scan} className="btn btn-secondary btn-sm" disabled={loading || scanning}>
-            {loading || scanning ? <span className="spinner spinner-dark" /> : <RefreshCw size={13}/>}
-            {loading || scanning ? 'Scanning...' : 'Scan'}
+        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+          <button className="v2-btn v2-btn-sm" onClick={scan} disabled={loading || scanning}>
+            <RefreshCw size={11} strokeWidth={2} className={loading || scanning ? 'spin' : ''} />
+            {loading || scanning ? 'Scanning' : 'Scan'}
           </button>
-          {hasScanned && <button onClick={()=>setExpanded(!expanded)} className="btn btn-secondary btn-sm"><Eye size={13}/> Details</button>}
-          <a href={`https://${m.domain}`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm"><ExternalLink size={13}/></a>
-          <button onClick={()=>onDelete(m.id)} style={{ background:'var(--red-light)', border:'1px solid var(--red-border)', color:'var(--red)', cursor:'pointer', borderRadius:'var(--radius-sm)', padding:'6px 10px', display:'flex', alignItems:'center' }}>
-            <Trash2 size={13}/>
+          <a href={`https://${m.domain}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-sm" style={{ textDecoration: 'none' }}>
+            <ExternalLink size={11} strokeWidth={2} />
+          </a>
+          <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => onDelete(m.id)}>
+            <Trash2 size={11} strokeWidth={2} />
           </button>
         </div>
       </div>
 
-      {/* Expanded details */}
       {expanded && hasScanned && (
-        <div style={{ borderTop:'1px solid var(--border)', padding:'16px 20px', background:'var(--bg)' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:16 }}>
-            {[
-              ['Domain', m.domain, true],
-              ['Days Left', daysLeft !== null ? `${daysLeft} days` : 'Unknown', false],
-              ['Last Scanned', m.last_scanned_at ? format(new Date(m.last_scanned_at), 'MMM d, yyyy HH:mm') : 'Never', false],
-              ['Cert Start', m.cert_start ? format(new Date(m.cert_start), 'MMM d, yyyy') : 'Not scanned', false],
-              ['Cert Expiry', m.cert_expiry ? format(new Date(m.cert_expiry), 'MMM d, yyyy') : 'Not scanned', false],
-              ['Issuer', m.issuer || 'Not scanned', false],
-              ['Alert At', `${m.alert_threshold_days} days before expiry`, false],
-            ].map(([k,v,mono]) => (
-              <div key={k} style={{ background:'white', border:'1px solid var(--border)', borderRadius:8, padding:'10px 14px' }}>
-                <div style={{ fontSize:11, color:'var(--text3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:4 }}>{k}</div>
-                <div style={{ fontSize:13, fontWeight:600, color:'var(--text)', fontFamily:mono?'var(--mono)':'inherit' }}>{v}</div>
-              </div>
-            ))}
-          </div>
+        <div style={{ borderTop: '0.5px solid var(--v2-border)', padding: 16, background: 'var(--v2-surface-2)' }}>
+          <table className="v2-table" style={{ marginBottom: 12, background: 'transparent' }}>
+            <tbody>
+              <tr>
+                <td style={{ color: 'var(--v2-text-3)', width: 130 }}>Days remaining</td>
+                <td style={{ fontWeight: 500 }}>{daysLeft != null ? `${daysLeft} days` : 'Unknown'}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--v2-text-3)' }}>Cert start</td>
+                <td>{m.cert_start ? format(new Date(m.cert_start), 'MMM d, yyyy') : '—'}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--v2-text-3)' }}>Cert expiry</td>
+                <td>{m.cert_expiry ? format(new Date(m.cert_expiry), 'MMM d, yyyy') : '—'}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--v2-text-3)' }}>Issuer</td>
+                <td>{m.issuer || '—'}</td>
+              </tr>
+              <tr>
+                <td style={{ color: 'var(--v2-text-3)' }}>Last scanned</td>
+                <td>{m.last_scanned_at ? format(new Date(m.last_scanned_at), 'MMM d, yyyy HH:mm') : '—'}</td>
+              </tr>
+            </tbody>
+          </table>
 
-          {/* Expiry progress */}
-          {daysLeft !== null && (
-            <div style={{ marginBottom:16 }}>
-              <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, marginBottom:6 }}>
-                <span style={{ color:'var(--text3)' }}>Certificate health</span>
-                <span style={{ fontWeight:700, color: daysLeft < 14 ? 'var(--red)' : daysLeft < 30 ? 'var(--yellow)' : 'var(--green)' }}>
+          {daysLeft != null && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 4 }}>
+                <span>Certificate health</span>
+                <span style={{ fontWeight: 500, color: daysLeft < 14 ? 'var(--v2-red-text)' : daysLeft < 30 ? 'var(--v2-amber-text)' : 'var(--v2-green-text)' }}>
                   {daysLeft > 0 ? `${daysLeft} days remaining` : 'Expired'}
                 </span>
               </div>
-              <div style={{ height:6, background:'var(--bg2)', borderRadius:3 }}>
-                <div style={{ height:'100%', width:`${Math.max(0,Math.min(100,(daysLeft/90)*100))}%`, background: daysLeft < 14 ? 'var(--red)' : daysLeft < 30 ? 'var(--yellow)' : 'var(--green)', borderRadius:3 }} />
-              </div>
+              <ProgressBar days={daysLeft} />
             </div>
           )}
 
-          <button className="btn btn-primary btn-sm" onClick={()=>onRequestCert(m.domain)}>
-            <Shield size={13}/> Request New Certificate for this Domain <ArrowRight size={13}/>
+          <button className="v2-btn v2-btn-primary" style={{ fontSize: 12 }} onClick={() => onRequestCert(m.domain)}>
+            <Shield size={12} strokeWidth={2.2} /> Request new certificate <ArrowRight size={11} />
           </button>
         </div>
       )}
@@ -223,6 +288,7 @@ function MonitoredDomainRow({ m, onScan, onDelete, onRequestCert, scanning }) {
   )
 }
 
+// ── Public scanner (logged-out) ──────────────────────────────────────
 function PublicScan({ nav }) {
   const [domain, setDomain] = useState('')
   const [loading, setLoading] = useState(false)
@@ -249,29 +315,27 @@ function PublicScan({ nav }) {
   }
 
   const days = result?.daysLeft ?? null
-  const status = days == null ? null : days < 0 ? 'expired' : days < 14 ? 'warning' : days < 30 ? 'caution' : 'healthy'
-  const statusColor = status === 'healthy' ? '#059669' : status === 'caution' ? '#d97706' : status === 'warning' ? '#dc2626' : status === 'expired' ? '#dc2626' : '#94a3b8'
-  const statusBg    = status === 'healthy' ? '#ecfdf5' : status === 'caution' ? '#fffbeb' : status === 'warning' ? '#fef2f2' : status === 'expired' ? '#fef2f2' : '#f1f5f9'
+  const status = days == null ? null : days < 0 ? 'expired' : days < 14 ? 'critical' : days < 30 ? 'soon' : 'healthy'
+  const statusLabel = status === 'healthy' ? 'Healthy' : status === 'soon' ? 'Renew soon' : status === 'critical' ? 'Expiring' : status === 'expired' ? 'Expired' : ''
+  const statusCls = status === 'healthy' ? 'green' : status === 'expired' ? 'red' : 'amber'
 
   return (
-    <div style={{ background:'linear-gradient(160deg,#eef2ff 0%,#f0fdf4 35%,#fefce8 65%,#fdf4ff 100%)', minHeight:'calc(100vh - 56px)', position:'relative', overflow:'hidden', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
-      <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle,rgba(148,163,184,0.35) 1px,transparent 1px)', backgroundSize:'28px 28px', opacity:0.5, pointerEvents:'none' }} />
+    <div className="v2-page">
+      <div className="v2-container" style={{ maxWidth: 720, paddingTop: 56 }}>
 
-      <div style={{ position:'relative', maxWidth:880, margin:'0 auto', padding:'72px 24px 48px', textAlign:'center' }}>
-        <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', border:'1.5px solid #bfdbfe', borderRadius:100, padding:'5px 14px', marginBottom:24, boxShadow:'0 2px 8px rgba(37,99,235,0.1)' }}>
-          <div style={{ width:7, height:7, borderRadius:'50%', background:'#22c55e', boxShadow:'0 0 0 2px rgba(34,197,94,0.25)' }} />
-          <span style={{ fontSize:11, fontWeight:700, color:'#1d4ed8', letterSpacing:'0.5px' }}>Free SSL Health Check · No login required</span>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <h1 className="v2-h1" style={{ fontSize: 30, letterSpacing: '-0.6px', marginBottom: 8 }}>
+            Check any domain's SSL certificate
+          </h1>
+          <p className="v2-subtitle" style={{ fontSize: 14, maxWidth: 480, margin: '0 auto' }}>
+            Get expiry dates, issuer details and TLS health for any public domain in seconds.
+            Sign in to save domains and get email alerts before they expire.
+          </p>
         </div>
 
-        <h1 style={{ fontSize:48, fontWeight:900, color:'#0f172a', lineHeight:1.06, letterSpacing:'-2px', marginBottom:8 }}>Check any domain's</h1>
-        <h1 style={{ fontSize:48, fontWeight:900, lineHeight:1.06, letterSpacing:'-2px', marginBottom:18, background:'linear-gradient(90deg,#2563eb 0%,#7c3aed 50%,#0ea5e9 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>SSL certificate.</h1>
-        <p style={{ fontSize:15, color:'#475569', lineHeight:1.7, marginBottom:32, maxWidth:520, margin:'0 auto 32px' }}>
-          Get expiry dates, issuer details and TLS health for any public domain in seconds. Sign in to save domains and get email alerts before they expire.
-        </p>
-
-        <div style={{ background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:8, boxShadow:'0 12px 40px rgba(15,23,42,0.08)', display:'flex', gap:8, maxWidth:560, margin:'0 auto 14px' }}>
-          <div style={{ flex:1, display:'flex', alignItems:'center', gap:10, padding:'0 14px' }}>
-            <Search size={16} color="#94a3b8"/>
+        <div className="v2-card" style={{ padding: 6, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px' }}>
+            <Search size={15} strokeWidth={2} style={{ color: 'var(--v2-text-3)' }} />
             <input
               type="text"
               placeholder="example.com"
@@ -279,88 +343,94 @@ function PublicScan({ nav }) {
               onChange={e => setDomain(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && runScan()}
               autoFocus
-              style={{ flex:1, border:'none', outline:'none', padding:'13px 0', fontSize:15, fontFamily:'inherit', color:'#0f172a', background:'transparent' }}
+              style={{ flex: 1, border: 'none', outline: 'none', padding: '12px 0', fontSize: 14, fontFamily: 'inherit', color: 'var(--v2-text)', background: 'transparent' }}
             />
           </div>
-          <button
-            onClick={runScan}
-            disabled={loading}
-            style={{ background:'linear-gradient(135deg,#1d4ed8,#4f46e5)', color:'white', border:'none', padding:'0 22px', borderRadius:12, fontSize:13, fontWeight:800, letterSpacing:'-0.2px', cursor:loading?'wait':'pointer', display:'inline-flex', alignItems:'center', gap:6, boxShadow:'0 4px 14px rgba(37,99,235,0.35)' }}
-          >
-            {loading ? 'Scanning…' : <>Scan SSL <ArrowRight size={13}/></>}
+          <button onClick={runScan} disabled={loading} className="v2-btn v2-btn-primary" style={{ padding: '10px 16px' }}>
+            {loading ? 'Scanning…' : <>Scan SSL <ArrowRight size={12} /></>}
           </button>
         </div>
-        <p style={{ fontSize:11, color:'#94a3b8', marginBottom:36 }}>Try <span onClick={() => { setDomain('github.com'); }} style={{ color:'#2563eb', cursor:'pointer', fontWeight:600 }}>github.com</span>, <span onClick={() => { setDomain('vercel.com'); }} style={{ color:'#2563eb', cursor:'pointer', fontWeight:600 }}>vercel.com</span> or any domain you want to check.</p>
+        <p style={{ fontSize: 11, color: 'var(--v2-text-3)', textAlign: 'center', marginBottom: 28 }}>
+          Try{' '}
+          <span onClick={() => setDomain('github.com')} style={{ color: 'var(--v2-text)', cursor: 'pointer', fontWeight: 500, textDecoration: 'underline', textUnderlineOffset: 2 }}>github.com</span>
+          {' · '}
+          <span onClick={() => setDomain('vercel.com')} style={{ color: 'var(--v2-text)', cursor: 'pointer', fontWeight: 500, textDecoration: 'underline', textUnderlineOffset: 2 }}>vercel.com</span>
+          {' · or any domain'}
+        </p>
 
         {error && (
-          <div style={{ maxWidth:560, margin:'0 auto 24px', background:'#fef2f2', border:'1px solid #fecaca', color:'#b91c1c', padding:'12px 14px', borderRadius:12, fontSize:13, fontWeight:600, display:'flex', alignItems:'center', gap:10 }}>
-            <AlertTriangle size={16}/> {error}
+          <div className="v2-alert v2-alert-error" style={{ marginBottom: 18 }}>
+            <AlertCircle size={13} /> <span>{error}</span>
           </div>
         )}
 
         {result && (
-          <div style={{ maxWidth:560, margin:'0 auto 32px', background:'white', border:'1px solid #e2e8f0', borderRadius:18, padding:24, textAlign:'left', boxShadow:'0 12px 40px rgba(15,23,42,0.08)' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:12, paddingBottom:16, borderBottom:'1px solid #f1f5f9', marginBottom:16 }}>
-              <div style={{ width:42, height:42, background:'linear-gradient(135deg,#1d4ed8,#0ea5e9)', borderRadius:11, display:'flex', alignItems:'center', justifyContent:'center', color:'white' }}>
-                <Lock size={18} strokeWidth={2}/>
+          <div className="v2-card" style={{ padding: 18, marginBottom: 28 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 12, borderBottom: '0.5px solid var(--v2-border)', marginBottom: 12 }}>
+              <div style={{ width: 36, height: 36, background: '#eff6ff', border: '0.5px solid #bfdbfe', borderRadius: 8,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Lock size={16} strokeWidth={1.8} color="#2563eb" />
               </div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontWeight:800, fontSize:15, color:'#0f172a', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{result.domain}</div>
-                <div style={{ fontSize:11, color:'#94a3b8', fontFamily:'monospace', marginTop:2 }}>{result.issuer || 'Issuer unknown'}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="v2-mono" style={{ fontWeight: 500, fontSize: 13, color: 'var(--v2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {result.domain}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 2 }}>{result.issuer || 'Issuer unknown'}</div>
               </div>
-              <span style={{ background:statusBg, color:statusColor, fontSize:10, fontWeight:800, padding:'5px 10px', borderRadius:7, letterSpacing:'0.4px', whiteSpace:'nowrap' }}>
-                {status === 'healthy' && '● HEALTHY'}
-                {status === 'caution' && '● RENEW SOON'}
-                {status === 'warning' && '● EXPIRING'}
-                {status === 'expired' && '● EXPIRED'}
+              <span className={`v2-status v2-status-${statusCls === 'green' ? 'green' : 'amber'}`}>
+                <span className={`v2-dot v2-dot-${statusCls === 'green' ? 'green' : 'amber'}`} />
+                {statusLabel}
               </span>
             </div>
 
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:16 }}>
-              <div style={{ background:'#f8fafc', border:'1px solid #f1f5f9', borderRadius:10, padding:'12px 14px' }}>
-                <div style={{ fontSize:10, color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:4 }}>Days left</div>
-                <div style={{ fontSize:22, fontWeight:900, color:statusColor, letterSpacing:'-0.5px' }}>{days != null ? days : '—'}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 12 }}>
+              <div className="v2-stat" style={{ padding: '10px 12px' }}>
+                <div className="v2-stat-label">Days left</div>
+                <div className="v2-stat-value" style={{ fontSize: 18 }}>{days != null ? days : '—'}</div>
               </div>
-              <div style={{ background:'#f8fafc', border:'1px solid #f1f5f9', borderRadius:10, padding:'12px 14px' }}>
-                <div style={{ fontSize:10, color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:4 }}>Reachable</div>
-                <div style={{ fontSize:22, fontWeight:900, color: result.alive ? '#059669' : '#dc2626', letterSpacing:'-0.5px' }}>{result.alive ? 'Yes' : 'No'}</div>
+              <div className="v2-stat" style={{ padding: '10px 12px' }}>
+                <div className="v2-stat-label">Reachable</div>
+                <div className="v2-stat-value" style={{ fontSize: 18, color: result.alive ? 'var(--v2-green-text)' : 'var(--v2-red-text)' }}>
+                  {result.alive ? 'Yes' : 'No'}
+                </div>
               </div>
             </div>
 
-            <div style={{ display:'flex', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid #f1f5f9', fontSize:12 }}>
-              <span style={{ color:'#94a3b8', fontWeight:600 }}>Issued</span>
-              <span style={{ color:'#0f172a', fontWeight:700 }}>{result.certStart ? format(new Date(result.certStart), 'MMM d, yyyy') : '—'}</span>
-            </div>
-            <div style={{ display:'flex', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid #f1f5f9', fontSize:12 }}>
-              <span style={{ color:'#94a3b8', fontWeight:600 }}>Expires</span>
-              <span style={{ color:'#0f172a', fontWeight:700 }}>{result.certExpiry ? format(new Date(result.certExpiry), 'MMM d, yyyy') : '—'}</span>
-            </div>
-            <div style={{ display:'flex', justifyContent:'space-between', padding:'7px 0', fontSize:12 }}>
-              <span style={{ color:'#94a3b8', fontWeight:600 }}>Issuer</span>
-              <span style={{ color:'#0f172a', fontWeight:700, maxWidth:'60%', textAlign:'right', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{result.issuer || '—'}</span>
-            </div>
+            <table className="v2-table" style={{ marginBottom: 14 }}>
+              <tbody>
+                <tr>
+                  <td style={{ color: 'var(--v2-text-3)', width: 90 }}>Issued</td>
+                  <td style={{ fontWeight: 500 }}>{result.certStart ? format(new Date(result.certStart), 'MMM d, yyyy') : '—'}</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--v2-text-3)' }}>Expires</td>
+                  <td style={{ fontWeight: 500 }}>{result.certExpiry ? format(new Date(result.certExpiry), 'MMM d, yyyy') : '—'}</td>
+                </tr>
+                <tr>
+                  <td style={{ color: 'var(--v2-text-3)' }}>Issuer</td>
+                  <td style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{result.issuer || '—'}</td>
+                </tr>
+              </tbody>
+            </table>
 
-            <button
-              onClick={() => nav('/auth')}
-              style={{ marginTop:18, width:'100%', background:'#0f172a', color:'white', border:'none', padding:'12px', borderRadius:11, fontSize:13, fontWeight:800, cursor:'pointer', display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8 }}
-            >
-              <Bell size={14}/> Sign in to monitor this domain
+            <button onClick={() => nav('/auth')} className="v2-btn v2-btn-primary" style={{ width: '100%', justifyContent: 'center', padding: 11 }}>
+              <Bell size={13} strokeWidth={2.2} /> Sign in to monitor this domain
             </button>
           </div>
         )}
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, maxWidth:680, margin:'0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
           {[
-            { icon:Bell,    color:'#d97706', bg:'#fffbeb', border:'#fde68a', title:'Expiry alerts',     desc:'Email warnings at 30, 14 and 7 days.' },
-            { icon:Globe,   color:'#7c3aed', bg:'#f5f3ff', border:'#ddd6fe', title:'Bulk monitoring',   desc:'Track all your domains in one inventory.' },
-            { icon:RefreshCw, color:'#2563eb', bg:'#eff6ff', border:'#bfdbfe', title:'One-click renewal', desc:'Renew expiring certs without re-validation.' },
-          ].map(({ icon:Icon, color, bg, border, title, desc }) => (
-            <div key={title} style={{ background:bg, border:'1.5px solid '+border, borderRadius:14, padding:18, textAlign:'left' }}>
-              <div style={{ width:34, height:34, borderRadius:9, background:'white', border:'1.5px solid '+border, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:10 }}>
-                <Icon size={15} color={color} strokeWidth={2}/>
+            { Icon: Bell,      title: 'Expiry alerts',    desc: 'Email warnings at 30, 14 and 7 days.' },
+            { Icon: Globe,     title: 'Bulk monitoring',  desc: 'Track all your domains in one inventory.' },
+            { Icon: RefreshCw, title: 'One-click renewal',desc: 'Renew expiring certs without re-validation.' },
+          ].map(({ Icon, title, desc }) => (
+            <div key={title} className="v2-card v2-card-pad">
+              <div className="v2-icontile" style={{ marginBottom: 10 }}>
+                <Icon size={14} strokeWidth={1.8} />
               </div>
-              <div style={{ fontSize:13, fontWeight:800, color:'#0f172a', marginBottom:4 }}>{title}</div>
-              <div style={{ fontSize:11, color:'#64748b', lineHeight:1.55 }}>{desc}</div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 3 }}>{title}</div>
+              <div style={{ fontSize: 11, color: 'var(--v2-text-2)', lineHeight: 1.55 }}>{desc}</div>
             </div>
           ))}
         </div>
@@ -369,6 +439,7 @@ function PublicScan({ nav }) {
   )
 }
 
+// ── Main page (logged-in) ────────────────────────────────────────────
 export default function Monitor({ nav }) {
   const { user, loading: authLoading } = useAuth()
   const [certs, setCerts] = useState([])
@@ -380,26 +451,29 @@ export default function Monitor({ nav }) {
   const [selectedCert, setSelectedCert] = useState(null)
   const [scanning, setScanning] = useState({})
   const [sortBy, setSortBy] = useState('expires')
+  const [bulkScanning, setBulkScanning] = useState(false)
+  const [bulkProgress, setBulkProgress] = useState('')
 
   useEffect(() => {
     if (!authLoading && user) loadAll()
     if (!authLoading && !user) setLoading(false)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading])
 
   const loadAll = async () => {
     setLoading(true)
     const { data: certsData } = await supabase.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending: false })
     const { data: ordersData } = await supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'issued').order('updated_at', { ascending: false })
-    const certSessions = new Set((certsData||[]).map(c=>c.session_id))
-    const ordersAsCerts = (ordersData||[]).filter(o=>!certSessions.has(o.session_id)).map(o=>({
-      id:o.id, user_id:o.user_id, session_id:o.session_id,
-      domain:o.domain, cert_pem:o.cert_pem, private_key_pem:o.priv_key,
-      issued_at:o.updated_at, expires_at:o.expires_at||new Date(Date.now()+90*24*60*60*1000).toISOString(),
-      status:'active'
+    const certSessions = new Set((certsData || []).map(c => c.session_id))
+    const ordersAsCerts = (ordersData || []).filter(o => !certSessions.has(o.session_id)).map(o => ({
+      id: o.id, user_id: o.user_id, session_id: o.session_id,
+      domain: o.domain, cert_pem: o.cert_pem, private_key_pem: o.priv_key,
+      issued_at: o.updated_at, expires_at: o.expires_at || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'active'
     }))
     const { data: monData } = await supabase.from('monitored_domains').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
-    setCerts([...(certsData||[]), ...ordersAsCerts])
-    setMonitored(monData||[])
+    setCerts([...(certsData || []), ...ordersAsCerts])
+    setMonitored(monData || [])
     setLoading(false)
   }
 
@@ -424,17 +498,13 @@ export default function Monitor({ nav }) {
   const scanDomain = async (domain) => {
     setScanning(s => ({ ...s, [domain]: true }))
     try {
-      // Call our Supabase edge function which handles CORS and multiple APIs
       const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/scan-ssl', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain, user_id: user.id, session_id: user.id + '_' + domain })
       })
       const data = await res.json()
-      console.log('scan result:', data)
-
       if (!data.error) {
-        // Update local state immediately
         setMonitored(m => m.map(item =>
           item.domain === domain ? {
             ...item,
@@ -446,22 +516,17 @@ export default function Monitor({ nav }) {
             issuer: data.issuer,
           } : item
         ))
-        return data
       }
-    } catch(e) {
+    } catch (e) {
       console.error('Scan error:', e)
     }
     setScanning(s => ({ ...s, [domain]: false }))
-    return null
   }
-
-  const [bulkScanning, setBulkScanning] = useState(false)
-  const [bulkProgress, setBulkProgress] = useState('')
 
   const bulkScan = async () => {
     if (!monitored.length) return
     setBulkScanning(true)
-    setBulkProgress(`Scanning ${monitored.length} domains...`)
+    setBulkProgress(`Scanning ${monitored.length} domain${monitored.length === 1 ? '' : 's'}…`)
     try {
       const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/scan-ssl', {
         method: 'POST',
@@ -470,19 +535,18 @@ export default function Monitor({ nav }) {
       })
       const data = await res.json()
       if (data.ok) {
-        setBulkProgress(`✅ Scanned ${data.scanned} domains successfully`)
+        setBulkProgress(`Scanned ${data.scanned} domains`)
         await loadAll()
         setTimeout(() => setBulkProgress(''), 3000)
       }
-    } catch(e) {
-      setBulkProgress('❌ Scan failed')
+    } catch (e) {
+      setBulkProgress('Scan failed')
       setTimeout(() => setBulkProgress(''), 3000)
     }
     setBulkScanning(false)
   }
 
   const requestCertForDomain = (domain) => {
-    // Store domain in sessionStorage and navigate to generate
     sessionStorage.setItem('prefill_domain', domain)
     window.location.href = '/generate'
   }
@@ -495,7 +559,7 @@ export default function Monitor({ nav }) {
 
   const download = (content, filename) => {
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(new Blob([content], {type:'text/plain'}))
+    a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' }))
     a.download = filename; a.click()
   }
 
@@ -515,9 +579,9 @@ export default function Monitor({ nav }) {
       return true
     })
     .sort((a, b) => {
-      if (sortBy === 'expires') return new Date(a.expires_at||0) - new Date(b.expires_at||0)
-      if (sortBy === 'domain') return (a.domain||'').localeCompare(b.domain||'')
-      return new Date(b.issued_at||0) - new Date(a.issued_at||0)
+      if (sortBy === 'expires') return new Date(a.expires_at || 0) - new Date(b.expires_at || 0)
+      if (sortBy === 'domain') return (a.domain || '').localeCompare(b.domain || '')
+      return new Date(b.issued_at || 0) - new Date(a.issued_at || 0)
     })
 
   const stats = {
@@ -530,119 +594,169 @@ export default function Monitor({ nav }) {
   if (!authLoading && !user) return <PublicScan nav={nav} />
 
   return (
-    <div style={{ background:'var(--bg)', minHeight:'calc(100vh - 60px)', padding:'40px 0 80px' }}>
-      <div className="container">
+    <div className="v2-page">
+      <div className="v2-container">
         {showAdd && <AddModal onAdd={addMonitored} onClose={() => setShowAdd(false)} />}
         {selectedCert && <CertDetailModal cert={selectedCert} onClose={() => setSelectedCert(null)} onRenew={requestCertForDomain} />}
 
         {/* Header */}
-        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:32, flexWrap:'wrap', gap:16 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 4, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h1 style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.5px', marginBottom:4, color:'var(--text)' }}>Certificate Monitor</h1>
-            <p style={{ color:'var(--text2)', fontSize:14 }}>Track expiry, manage certificates and monitor external domains</p>
+            <h1 className="v2-h1">Certificate monitor</h1>
+            <p className="v2-subtitle">
+              {stats.total} certificate{stats.total === 1 ? '' : 's'} ·{' '}
+              {monitored.length} monitored domain{monitored.length === 1 ? '' : 's'}
+            </p>
           </div>
-          <div style={{ display:'flex', gap:10 }}>
-            <button onClick={() => setShowAdd(true)} className="btn btn-secondary"><Plus size={15}/> Monitor Domain</button>
-            <button onClick={() => window.location.href='/generate'} className="btn btn-primary"><Plus size={15}/> New Certificate</button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="v2-btn" onClick={() => setShowAdd(true)}>
+              <Plus size={13} strokeWidth={2.2} /> Monitor domain
+            </button>
+            <button className="v2-btn v2-btn-primary" onClick={() => window.location.href = '/generate'}>
+              <Plus size={13} strokeWidth={2.2} /> New certificate
+            </button>
           </div>
         </div>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:28 }}>
-          {[['Total',stats.total,'var(--accent)','var(--accent-light)'],
-            ['Active',stats.active,'var(--green)','var(--green-light)'],
-            ['Expiring',stats.expiring,'var(--yellow)','var(--yellow-light)'],
-            ['Expired',stats.expired,'var(--red)','var(--red-light)'],
-          ].map(([label,value,color,bg]) => (
-            <div key={label} style={{ background:'white', border:'1px solid var(--border)', borderRadius:12, padding:'20px 24px', boxShadow:'var(--shadow)' }}>
-              <div style={{ fontSize:32, fontWeight:800, color, lineHeight:1 }}>{value}</div>
-              <div style={{ fontSize:12, color:'var(--text3)', marginTop:6, fontWeight:600, textTransform:'uppercase', letterSpacing:'0.5px' }}>{label}</div>
-            </div>
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, margin: '20px 0' }}>
+          <div className="v2-stat">
+            <div className="v2-stat-label">Total</div>
+            <div className="v2-stat-value">{stats.total}</div>
+          </div>
+          <div className="v2-stat">
+            <div className="v2-stat-label">Active</div>
+            <div className="v2-stat-value" style={{ color: stats.active > 0 ? 'var(--v2-green-text)' : 'var(--v2-text)' }}>{stats.active}</div>
+          </div>
+          <div className="v2-stat">
+            <div className="v2-stat-label">Expiring</div>
+            <div className="v2-stat-value" style={{ color: stats.expiring > 0 ? 'var(--v2-amber-text)' : 'var(--v2-text)' }}>{stats.expiring}</div>
+          </div>
+          <div className="v2-stat">
+            <div className="v2-stat-label">Expired</div>
+            <div className="v2-stat-value" style={{ color: stats.expired > 0 ? 'var(--v2-red-text)' : 'var(--v2-text)' }}>{stats.expired}</div>
+          </div>
         </div>
 
         {/* Alerts */}
         {stats.expiring > 0 && (
-          <div className="alert alert-warning" style={{ marginBottom:20, display:'flex', alignItems:'center', gap:10 }}>
-            <Bell size={15}/>
-            <span><strong>{stats.expiring} certificate{stats.expiring>1?'s':''}</strong> expiring within 14 days.</span>
-            <button onClick={()=>setFilter('expiring')} className="btn btn-sm" style={{ marginLeft:'auto', background:'var(--yellow-light)', border:'1px solid var(--yellow-border)', color:'var(--yellow)', cursor:'pointer', padding:'4px 10px', borderRadius:6, fontWeight:600, fontSize:12 }}>View</button>
+          <div className="v2-callout warning" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Bell size={14} strokeWidth={2} />
+            <span style={{ flex: 1 }}>
+              <strong>{stats.expiring} certificate{stats.expiring > 1 ? 's' : ''}</strong> expiring within 14 days.
+            </span>
+            <button className="v2-btn v2-btn-sm" onClick={() => setFilter('expiring')}>View</button>
           </div>
         )}
         {stats.expired > 0 && (
-          <div className="alert alert-error" style={{ marginBottom:20, display:'flex', alignItems:'center', gap:10 }}>
-            <AlertTriangle size={15}/>
-            <span><strong>{stats.expired} certificate{stats.expired>1?'s':''}</strong> already expired. Renew immediately.</span>
-            <button onClick={()=>setFilter('expired')} className="btn btn-sm" style={{ marginLeft:'auto', background:'var(--red-light)', border:'1px solid var(--red-border)', color:'var(--red)', cursor:'pointer', padding:'4px 10px', borderRadius:6, fontWeight:600, fontSize:12 }}>View</button>
+          <div className="v2-callout error" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <AlertTriangle size={14} strokeWidth={2} />
+            <span style={{ flex: 1 }}>
+              <strong>{stats.expired} certificate{stats.expired > 1 ? 's' : ''}</strong> already expired. Renew immediately.
+            </span>
+            <button className="v2-btn v2-btn-sm" onClick={() => setFilter('expired')}>View</button>
           </div>
         )}
 
-        {/* Issued Certificates */}
-        <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:14, padding:24, boxShadow:'var(--shadow)', marginBottom:28 }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, flexWrap:'wrap', gap:12 }}>
-            <h2 style={{ fontWeight:700, fontSize:17, color:'var(--text)' }}>Issued Certificates</h2>
-            <div style={{ display:'flex', gap:10, flexWrap:'wrap', alignItems:'center' }}>
-              <div style={{ position:'relative' }}>
-                <Search size={13} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'var(--text3)' }} />
-                <input placeholder="Search domain..." value={search} onChange={e=>setSearch(e.target.value)}
-                  style={{ paddingLeft:30, width:180, padding:'7px 10px 7px 30px', fontSize:13 }} />
+        {/* Issued certificates */}
+        <div className="v2-card" style={{ marginTop: 18, marginBottom: 18 }}>
+          <div style={{ padding: '14px 16px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <h2 style={{ fontSize: 14, fontWeight: 500, color: 'var(--v2-text)', margin: 0 }}>Issued certificates</h2>
+              {filteredCerts.length > 0 && <span className="v2-chip">{filteredCerts.length}</span>}
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                <Search size={12} strokeWidth={2} style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--v2-text-3)' }} />
+                <input
+                  className="v2-input"
+                  placeholder="Search domain"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  style={{ paddingLeft: 26, width: 180, fontSize: 12, padding: '6px 10px 6px 26px' }}
+                />
               </div>
-              <div style={{ display:'flex', gap:6 }}>
-                {[['all','All'],['active','Active'],['expiring','Expiring'],['expired','Expired']].map(([v,l]) => (
-                  <button key={v} onClick={()=>setFilter(v)} className={`btn btn-sm ${filter===v?'btn-primary':'btn-secondary'}`}>{l}</button>
+              <div style={{ display: 'flex', gap: 0, background: '#f4f4f3', borderRadius: 6, padding: 2 }}>
+                {[['all', 'All'], ['active', 'Active'], ['expiring', 'Expiring'], ['expired', 'Expired']].map(([v, l]) => (
+                  <button key={v}
+                          className={`v2-filter-chip ${filter === v ? 'active' : ''}`}
+                          onClick={() => setFilter(v)}>
+                    {l}
+                  </button>
                 ))}
               </div>
-              <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{ padding:'7px 12px', fontSize:13, width:'auto' }}>
-                <option value="expires">By Expiry</option>
-                <option value="domain">By Domain</option>
-                <option value="issued">By Issued</option>
+              <select className="v2-select" value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '6px 26px 6px 10px', fontSize: 12 }}>
+                <option value="expires">By expiry</option>
+                <option value="domain">By domain</option>
+                <option value="issued">By issued</option>
               </select>
             </div>
           </div>
 
           {loading ? (
-            <div style={{ textAlign:'center', padding:'48px 0', color:'var(--text3)' }}>
-              <span className="spinner spinner-dark" style={{ width:24, height:24, marginBottom:12, display:'block', margin:'0 auto 12px' }} />
-              <p>Loading certificates...</p>
+            <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>
+              Loading…
             </div>
           ) : filteredCerts.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'48px 0', color:'var(--text3)' }}>
-              <Shield size={36} style={{ margin:'0 auto 12px', opacity:0.3 }} color="var(--text3)" />
-              <p style={{ fontWeight:600, color:'var(--text2)', marginBottom:6 }}>{search||filter!=='all'?'No certificates match your filter':'No certificates yet'}</p>
-              {!search && filter==='all' && <button onClick={()=>window.location.href='/generate'} className="btn btn-primary btn-sm" style={{ marginTop:12 }}>Generate Your First Certificate</button>}
+            <div className="v2-empty">
+              <div className="v2-empty-icon"><Shield size={26} strokeWidth={1.6} /></div>
+              <div className="v2-empty-title">{search || filter !== 'all' ? 'No certificates match your filter' : 'No certificates yet'}</div>
+              {!search && filter === 'all' && (
+                <>
+                  <div className="v2-empty-desc">Issue your first 90-day SSL certificate in under a minute. Free from Let's Encrypt.</div>
+                  <button className="v2-btn v2-btn-primary" onClick={() => window.location.href = '/generate'}>
+                    <Plus size={13} strokeWidth={2.2} /> Generate your first certificate
+                  </button>
+                </>
+              )}
             </div>
           ) : (
-            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+            <div>
               {filteredCerts.map(cert => {
                 const days = cert.expires_at ? differenceInDays(new Date(cert.expires_at), new Date()) : 0
-                const pct = Math.max(0, Math.min(100, (days/90)*100))
                 const isRevoked = cert.status === 'revoked'
-                const color = isRevoked ? '#94a3b8' : days < 0 ? 'var(--red)' : days < 14 ? 'var(--yellow)' : 'var(--green)'
-                const bgColor = isRevoked ? 'var(--bg2)' : days < 0 ? 'var(--red-light)' : days < 14 ? 'var(--yellow-light)' : 'var(--green-light)'
+                const cls = isRevoked ? 'grey' : days < 0 ? 'amber' : days < 14 ? 'amber' : 'green'
                 return (
-                  <div key={cert.id} style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:10, padding:'14px 18px', display:'flex', alignItems:'center', gap:14 }}>
-                    <div style={{ width:40, height:40, borderRadius:10, background:bgColor, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                      <Shield size={18} color={color} />
+                  <div key={cert.id} className={`v2-list-row status-${cls}`} onClick={() => setSelectedCert(cert)}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: 6,
+                      background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                    }}>
+                      <Shield size={15} strokeWidth={1.8} color="var(--v2-text-2)" />
                     </div>
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
-                        <span style={{ fontWeight:700, fontSize:14, fontFamily:'var(--mono)', color:'var(--text)' }}>{cert.domain}</span>
-                        <StatusBadge days={days} revoked={cert.status === "revoked"} />
+                    <div className="v2-row-body">
+                      <div className="v2-row-title-line">
+                        <span className="v2-row-title v2-mono">{cert.domain}</span>
+                        <StatusPill days={days} revoked={isRevoked} />
                       </div>
-                      <div style={{ display:'flex', gap:16, fontSize:12, color:'var(--text3)', marginBottom:8 }}>
-                        <span>Issued: {cert.issued_at ? formatDistanceToNow(new Date(cert.issued_at),{addSuffix:true}) : '—'}</span>
-                        <span>Expires: {cert.expires_at ? format(new Date(cert.expires_at),'MMM d, yyyy') : '—'} · {days > 0 ? `${days} days left` : `${Math.abs(days)} days ago`}</span>
+                      <div className="v2-row-meta">
+                        <span style={{ fontSize: 11 }}>
+                          Issued {cert.issued_at ? formatDistanceToNow(new Date(cert.issued_at), { addSuffix: true }) : '—'}
+                        </span>
+                        <span className="v2-row-meta-sep">·</span>
+                        <span style={{ fontSize: 11 }}>
+                          Expires {cert.expires_at ? format(new Date(cert.expires_at), 'MMM d, yyyy') : '—'}
+                        </span>
                       </div>
-                      <div style={{ height:4, background:'var(--border)', borderRadius:2, maxWidth:280 }}>
-                        <div style={{ height:'100%', width:`${pct}%`, background:color, borderRadius:2 }} />
+                      <div style={{ marginTop: 6, maxWidth: 260 }}>
+                        <ProgressBar days={days} />
                       </div>
                     </div>
-                    <div style={{ display:'flex', gap:8, flexShrink:0 }}>
-                      <button onClick={()=>setSelectedCert(cert)} className="btn btn-secondary btn-sm"><Eye size={13}/> View</button>
-                      {cert.cert_pem && <button onClick={()=>download(cert.cert_pem,`${cert.domain}-cert.pem`)} className="btn btn-secondary btn-sm"><Download size={13}/></button>}
-                      <button onClick={()=>requestCertForDomain(cert.domain)} className="btn btn-secondary btn-sm"><RefreshCw size={13}/> Renew</button>
-                      <button onClick={()=>deleteCert(cert.id)} style={{ background:'var(--red-light)', border:'1px solid var(--red-border)', color:'var(--red)', cursor:'pointer', borderRadius:6, padding:'6px 10px', display:'flex', alignItems:'center' }}>
-                        <Trash2 size={13}/>
+                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+                      <button className="v2-btn v2-btn-sm" onClick={() => setSelectedCert(cert)}>
+                        <Eye size={11} strokeWidth={2} /> View
+                      </button>
+                      {cert.cert_pem && (
+                        <button className="v2-btn v2-btn-sm" onClick={() => download(cert.cert_pem, `${cert.domain}-cert.pem`)}>
+                          <Download size={11} strokeWidth={2} />
+                        </button>
+                      )}
+                      <button className="v2-btn v2-btn-sm" onClick={() => requestCertForDomain(cert.domain)}>
+                        <RefreshCw size={11} strokeWidth={2} /> Renew
+                      </button>
+                      <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => deleteCert(cert.id)}>
+                        <Trash2 size={11} strokeWidth={2} />
                       </button>
                     </div>
                   </div>
@@ -652,43 +766,43 @@ export default function Monitor({ nav }) {
           )}
         </div>
 
-        {/* Monitored Domains */}
-        <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:14, padding:24, boxShadow:'var(--shadow)' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+        {/* Monitored domains */}
+        <div className="v2-card">
+          <div style={{ padding: '14px 16px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h2 style={{ fontWeight:700, fontSize:17, color:'var(--text)', marginBottom:4 }}>Monitored Domains</h2>
-              <p style={{ color:'var(--text3)', fontSize:13 }}>Track SSL certificates on any external domain</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h2 style={{ fontSize: 14, fontWeight: 500, color: 'var(--v2-text)', margin: 0 }}>Monitored domains</h2>
+                {monitored.length > 0 && <span className="v2-chip">{monitored.length}</span>}
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--v2-text-3)', margin: '2px 0 0' }}>Track SSL certificates on any external domain</p>
             </div>
-            <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-            {bulkProgress && <span style={{ fontSize:12, color:'var(--text2)', fontWeight:500 }}>{bulkProgress}</span>}
-            {monitored.length > 0 && (
-              <button onClick={bulkScan} disabled={bulkScanning} className="btn btn-secondary btn-sm">
-                {bulkScanning ? <><span className="spinner spinner-dark" /> Scanning all...</> : <><RefreshCw size={13}/> Scan All</>}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              {bulkProgress && <span style={{ fontSize: 11, color: 'var(--v2-text-2)', fontWeight: 500 }}>{bulkProgress}</span>}
+              {monitored.length > 0 && (
+                <button className="v2-btn v2-btn-sm" onClick={bulkScan} disabled={bulkScanning}>
+                  <RefreshCw size={11} strokeWidth={2} className={bulkScanning ? 'spin' : ''} />
+                  {bulkScanning ? 'Scanning all…' : 'Scan all'}
+                </button>
+              )}
+              <button className="v2-btn v2-btn-sm" onClick={() => setShowAdd(true)}>
+                <Plus size={11} strokeWidth={2.2} /> Add domain
               </button>
-            )}
-            <button onClick={()=>setShowAdd(true)} className="btn btn-secondary btn-sm"><Plus size={13}/> Add Domain</button>
-          </div>
+            </div>
           </div>
 
           {monitored.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'40px 0', color:'var(--text3)' }}>
-              <Globe size={32} style={{ margin:'0 auto 12px', opacity:0.3 }} color="var(--text3)" />
-              <p style={{ fontWeight:600, color:'var(--text2)', marginBottom:6 }}>No domains monitored yet</p>
-              <p style={{ fontSize:13, marginBottom:16 }}>Add any domain to track its SSL certificate expiry date</p>
-              <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-            {bulkProgress && <span style={{ fontSize:12, color:'var(--text2)', fontWeight:500 }}>{bulkProgress}</span>}
-            {monitored.length > 0 && (
-              <button onClick={bulkScan} disabled={bulkScanning} className="btn btn-secondary btn-sm">
-                {bulkScanning ? <><span className="spinner spinner-dark" /> Scanning all...</> : <><RefreshCw size={13}/> Scan All</>}
+            <div className="v2-empty">
+              <div className="v2-empty-icon"><Globe size={26} strokeWidth={1.6} /></div>
+              <div className="v2-empty-title">No domains monitored yet</div>
+              <div className="v2-empty-desc">Add any domain to track its SSL certificate expiry. Get email alerts at 7, 14 or 30 days before expiry.</div>
+              <button className="v2-btn v2-btn-primary" onClick={() => setShowAdd(true)}>
+                <Plus size={13} strokeWidth={2.2} /> Add your first domain
               </button>
-            )}
-            <button onClick={()=>setShowAdd(true)} className="btn btn-secondary btn-sm"><Plus size={13}/> Add Domain</button>
-          </div>
             </div>
           ) : (
-            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+            <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {monitored.map(m => (
-                <MonitoredDomainRow
+                <MonitoredRow
                   key={m.id}
                   m={m}
                   onScan={scanDomain}
@@ -701,6 +815,11 @@ export default function Monitor({ nav }) {
           )}
         </div>
       </div>
+
+      <style>{`
+        .spin { animation: v2-spin 0.8s linear infinite; }
+        @keyframes v2-spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }
+      `}</style>
     </div>
   )
 }
