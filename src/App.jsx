@@ -5,6 +5,7 @@ import Nav from './components/Nav'
 import Home from './pages/Home'
 import Generate from './pages/Generate'
 import Dashboard from './pages/Dashboard'
+import Monitor from './pages/Monitor'
 import Auth from './pages/Auth'
 import SharedHostingGuide from './pages/SharedHostingGuide'
 import KnowledgeBase from './pages/KnowledgeBase'
@@ -16,9 +17,6 @@ import Contact from './pages/Contact'
 import Developer from './pages/Developer'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
-import Pricing from './pages/Pricing'
-import KeyLocker from './pages/KeyLocker'
-import BuyCertificate from './pages/BuyCertificate'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
@@ -35,6 +33,7 @@ export default function App() {
       {page === '/generate' && <Generate nav={nav} />}
       {page === '/quick-setup' && <Generate nav={nav} />}
       {page === '/dashboard' && <Dashboard nav={nav} />}
+      {page === '/monitor' && <Monitor nav={nav} />}
       {page === '/dns-providers' && <DnsProviders nav={nav} />}
       {page === '/install' && <Install nav={nav} />}
       {page === '/knowledge-base' && <KnowledgeBase nav={nav} />}
@@ -46,9 +45,6 @@ export default function App() {
       {page === '/developer' && <Developer nav={nav} />}
       {page === '/privacy' && <Privacy nav={nav} />}
       {page === '/terms' && <Terms nav={nav} />}
-      {page === '/pricing' && <Pricing nav={nav} />}
-      {page === '/keylocker' && <KeyLocker nav={nav} />}
-      {page === '/buy' && <BuyCertificate nav={nav} />}
     </div>
   )
 }
