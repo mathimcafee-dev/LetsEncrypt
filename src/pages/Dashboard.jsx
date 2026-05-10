@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   Shield, Plus, RefreshCw, Download, ExternalLink, X, Lock,
   AlertTriangle, CheckCircle, Globe, ChevronRight,
   Copy, Check, TrendingUp, Activity, Zap,
-  ArrowRight, Server, FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck
+  ArrowRight, Server, FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck,
+  Fingerprint, Hash
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -33,6 +34,22 @@ function fmtDateLong(iso) {
   if (!iso) return '—'
   return format(new Date(iso), 'PPP')
 }
+// Extract a short visual fingerprint from PEM (last 16 base64 chars, formatted)
+function shortFp(pem) {
+  if (!pem) return null
+  const b64 = pem.replace(/-----[^-]+-----/g, '').replace(/\s/g, '')
+  if (b64.length < 16) return null
+  const raw = b64.slice(-16)
+  return raw.match(/.{1,4}/g)?.join(':').toUpperCase() || null
+}
+// Extract serial-like ID from cert (first 8 chars of base64 body, uppercased)
+function shortSerial(pem) {
+  if (!pem) return null
+  const b64 = pem.replace(/-----[^-]+-----/g, '').replace(/\s/g, '')
+  if (b64.length < 8) return null
+  return b64.slice(0, 8).toUpperCase()
+}
+
 function dl(text, filename) {
   const blob = new Blob([text], { type: 'text/plain' })
   const url = URL.createObjectURL(blob)
@@ -81,7 +98,7 @@ function ProgressBar({ days, max = 90 }) {
 }
 
 // ── CertDetail panel ─────────────────────────────────────────────────
-function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall, isPro, nav }) {
+function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall, isPro, nav, justRotated }) {
   const days = daysLeft(cert.expires_at)
   const s = statusOf(days, cert.status === 'revoked')
   const [showKey, setShowKey] = useState(false)
@@ -90,8 +107,23 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
   const [keyDeleted, setKeyDeleted] = useState(!cert.private_key_pem)
   const [keyDeleting, setKeyDeleting] = useState(false)
   const [keyChecks, setKeyChecks] = useState({ downloaded: false, installed: false, understand: false })
+  const [bannerVisible, setBannerVisible] = useState(true)
+  const [newPillVisible, setNewPillVisible] = useState(true)
   const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
   const hasAgentInstall = cert.status === 'active' || cert.agent_url
+
+  // Auto-dismiss the NEW pill after 30s, banner after 8s
+  useEffect(() => {
+    if (!justRotated) return
+    setBannerVisible(true)
+    setNewPillVisible(true)
+    const t1 = setTimeout(() => setBannerVisible(false), 8000)
+    const t2 = setTimeout(() => setNewPillVisible(false), 30000)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [justRotated])
+
+  const fp = shortFp(cert.cert_pem)
+  const serial = shortSerial(cert.cert_pem)
 
   const doDeleteKey = async () => {
     setKeyDeleting(true)
@@ -107,7 +139,33 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
     }
   }
   return (
-    <div className="v2-detail" style={{ position: 'sticky', top: 20 }}>
+    <div className="v2-detail" style={{
+      position: 'sticky', top: 20,
+      borderLeft: justRotated && newPillVisible ? '3px solid var(--v2-green)' : undefined,
+      transition: 'border-left 0.5s ease'
+    }}>
+      {/* Rotation success banner */}
+      {justRotated && bannerVisible && (
+        <div style={{
+          background: 'var(--v2-green-bg)', border: '0.5px solid var(--v2-green-border)',
+          borderRadius: 'var(--v2-r-md)', padding: '10px 12px', marginBottom: 14,
+          display: 'flex', alignItems: 'flex-start', gap: 10,
+          animation: 'fadeIn 0.3s ease'
+        }}>
+          <CheckCircle size={14} color="var(--v2-green)" style={{ flexShrink:0, marginTop:1 }} />
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-green-text)', marginBottom:2 }}>
+              Certificate rotated successfully — new key active
+            </div>
+            <div style={{ fontSize:11, color:'var(--v2-green-text)', opacity:0.85 }}>
+              Old certificate archived for 30 days. Install the new certificate on your server.
+            </div>
+          </div>
+          <button onClick={() => setBannerVisible(false)}
+            style={{ background:'none', border:'none', cursor:'pointer', color:'var(--v2-green-text)',
+                      padding:'0 2px', lineHeight:1, flexShrink:0, fontSize:14 }}>✕</button>
+        </div>
+      )}
       {/* Header */}
       <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14, gap:12 }}>
         <div style={{ minWidth:0 }}>
@@ -154,17 +212,104 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
       <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
         {[
           { label:'Domain',  value: cert.domain },
-          { label:'Issued',  value: fmtDate(cert.issued_at || cert.created_at) },
-          { label:'Expires', value: fmtDate(cert.expires_at) },
+          { label:'Issued',  value: fmtDate(cert.issued_at || cert.created_at), isNew: justRotated && newPillVisible },
+          { label:'Expires', value: fmtDate(cert.expires_at), isNew: justRotated && newPillVisible },
           { label:'Type',    value: cert.cert_type || "Let's Encrypt DV" },
           { label:'Status',  value: cert.status || 'issued' },
-        ].map(({ label, value }) => (
+        ].map(({ label, value, isNew }) => (
           <div key={label} className="v2-metric-row" style={{ justifyContent:'space-between' }}>
             <span className="v2-metric-label">{label}</span>
-            <span className="v2-metric-value v2-mono" style={{ fontSize:11 }}>{value}</span>
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              {isNew && (
+                <span style={{
+                  fontSize:8, fontWeight:700, color:'var(--v2-green)', background:'var(--v2-green-bg)',
+                  border:'0.5px solid var(--v2-green-border)', borderRadius:3, padding:'1px 5px',
+                  textTransform:'uppercase', letterSpacing:'0.4px',
+                  animation:'pulse 2s ease-in-out infinite'
+                }}>NEW</span>
+              )}
+              <span className="v2-metric-value v2-mono" style={{ fontSize:11 }}>{value}</span>
+            </div>
           </div>
         ))}
+
+        {/* Fingerprint row */}
+        {fp && (
+          <div className="v2-metric-row" style={{ justifyContent:'space-between', alignItems:'flex-start' }}>
+            <span className="v2-metric-label" style={{ display:'flex', alignItems:'center', gap:4 }}>
+              <Fingerprint size={10} color="var(--v2-text-3)" /> Fingerprint
+            </span>
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              {justRotated && newPillVisible && (
+                <span style={{
+                  fontSize:8, fontWeight:700, color:'var(--v2-green)', background:'var(--v2-green-bg)',
+                  border:'0.5px solid var(--v2-green-border)', borderRadius:3, padding:'1px 5px',
+                  textTransform:'uppercase', letterSpacing:'0.4px',
+                  animation:'pulse 2s ease-in-out infinite'
+                }}>NEW</span>
+              )}
+              <span className="v2-mono" style={{ fontSize:10, color:'var(--v2-text-2)',
+                                                   letterSpacing:'0.3px' }}>{fp}</span>
+              <CopyBtn text={fp} label="" />
+            </div>
+          </div>
+        )}
+
+        {/* Serial row */}
+        {serial && (
+          <div className="v2-metric-row" style={{ justifyContent:'space-between' }}>
+            <span className="v2-metric-label" style={{ display:'flex', alignItems:'center', gap:4 }}>
+              <Hash size={10} color="var(--v2-text-3)" /> Serial
+            </span>
+            <span className="v2-mono" style={{ fontSize:10, color:'var(--v2-text-2)',
+                                                letterSpacing:'0.3px' }}>{serial}</span>
+          </div>
+        )}
       </div>
+
+      {/* Rotation verification block */}
+      {justRotated && (
+        <div style={{
+          background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-green-border)',
+          borderRadius:'var(--v2-r-md)', padding:'12px 14px', marginBottom:16
+        }}>
+          <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-green-text)', marginBottom:10,
+                         display:'flex', alignItems:'center', gap:6 }}>
+            <CheckCircle size={12} color="var(--v2-green)" /> Rotation verified
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr auto 1fr', gap:8, alignItems:'center' }}>
+            <div>
+              <div style={{ fontSize:9, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+                             letterSpacing:'0.4px', marginBottom:4 }}>Previous cert</div>
+              <div className="v2-mono" style={{ fontSize:10, color:'var(--v2-text-3)', wordBreak:'break-all' }}>
+                {justRotated.oldFingerprint || '—'}
+              </div>
+              <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:3 }}>
+                exp {fmtDate(justRotated.oldExpires)}
+              </div>
+            </div>
+            <ArrowRight size={12} color="var(--v2-green)" style={{ flexShrink:0 }} />
+            <div>
+              <div style={{ fontSize:9, fontWeight:600, color:'var(--v2-green-text)', textTransform:'uppercase',
+                             letterSpacing:'0.4px', marginBottom:4 }}>Current cert</div>
+              <div className="v2-mono" style={{ fontSize:10, color:'var(--v2-text)', wordBreak:'break-all' }}>
+                {fp || '—'}
+              </div>
+              <div style={{ fontSize:10, color:'var(--v2-text-2)', marginTop:3 }}>
+                exp {fmtDate(cert.expires_at)}
+              </div>
+            </div>
+          </div>
+          <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:8, borderTop:'0.5px solid var(--v2-border)', paddingTop:8 }}>
+            Rotated {formatDistanceToNow(new Date(justRotated.at), { addSuffix: true })} · Old cert archived for 30 days
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.55 } }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-4px) } to { opacity:1; transform:none } }
+      `}</style>
 
       {/* Key security banner */}
       {cert.private_key_pem && !keyDeleted && !keyDelConfirm && (
@@ -405,42 +550,78 @@ function RenewModal({ domain, onClose, nav }) {
 // ══════════════════════════════════════════════════════════════════════
 function LoggedInDashboard({ user, nav }) {
   const { isPro } = usePlan(user)
-  const [certs, setCerts]     = useState([])
-  const [monitored, setMon]   = useState([])
-  const [loading, setLoading] = useState(true)
-  const [selected, setSelected] = useState(null)
-  const [filter, setFilter]   = useState('all')
-  const [search, setSearch]   = useState('')
+  const [certs, setCerts]         = useState([])
+  const [monitored, setMon]       = useState([])
+  const [loading, setLoading]     = useState(true)
+  const [selected, setSelected]   = useState(null)
+  const [filter, setFilter]       = useState('all')
+  const [search, setSearch]       = useState('')
   const [renewDomain, setRenewDomain] = useState(null)
   const [agentCert, setAgentCert] = useState(null)
   const [showRotated, setShowRotated] = useState(false)
+  const [justRotated, setJustRotated] = useState(null) // { domain, oldFingerprint, oldExpires, oldIssued, at }
+  const selectedRef = useRef(null)
+  selectedRef.current = selected
 
-  useEffect(() => {
+  const loadCerts = useCallback(async () => {
     if (!user) return
-    async function load() {
-      setLoading(true)
-      const [{ data: certsData }, { data: ordersData }, { data: monData }] = await Promise.all([
-        supabase.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending: false }),
-        supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'issued').order('updated_at', { ascending: false }),
-        supabase.from('monitored_domains').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
-      ])
-      const all = [...(certsData || [])]
-      for (const o of (ordersData || [])) {
-        if (!all.find(c => c.domain === o.domain)) all.push({ ...o, from_order: true })
-      }
-      all.sort((a, b) => {
-        const da = daysLeft(a.expires_at), db = daysLeft(b.expires_at)
-        if (da == null) return 1; if (db == null) return -1; return da - db
-      })
-      setCerts(all); setMon(monData || []); setLoading(false)
+    setLoading(true)
+    const [{ data: certsData }, { data: ordersData }, { data: monData }] = await Promise.all([
+      supabase.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending: false }),
+      supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'issued').order('updated_at', { ascending: false }),
+      supabase.from('monitored_domains').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+    ])
+    const all = [...(certsData || [])]
+    for (const o of (ordersData || [])) {
+      if (!all.find(c => c.domain === o.domain)) all.push({ ...o, from_order: true })
     }
-    load()
+    all.sort((a, b) => {
+      const da = daysLeft(a.expires_at), db = daysLeft(b.expires_at)
+      if (da == null) return 1; if (db == null) return -1; return da - db
+    })
+    setCerts(all); setMon(monData || []); setLoading(false)
+
+    // Auto-switch: if current selected cert is now 'rotating', jump to the new one
+    const curSelected = selectedRef.current
+    if (curSelected) {
+      const oldCert = all.find(c => c.id === curSelected)
+      if (oldCert && oldCert.status === 'rotating') {
+        const newCert = all
+          .filter(c => c.domain === oldCert.domain && c.status !== 'rotating')
+          .sort((a, b) => new Date(b.issued_at || b.created_at) - new Date(a.issued_at || a.created_at))[0]
+        if (newCert) {
+          setSelected(newCert.id)
+          setJustRotated({
+            domain: oldCert.domain,
+            oldFingerprint: shortFp(oldCert.cert_pem),
+            oldExpires: oldCert.expires_at,
+            oldIssued: oldCert.issued_at,
+            at: Date.now(),
+          })
+        }
+      }
+    }
   }, [user])
+
+  // Initial load
+  useEffect(() => { loadCerts() }, [loadCerts])
+
+  // Refresh on tab focus (catches rotations done on KeyLocker page)
+  useEffect(() => {
+    const onFocus = () => { if (document.visibilityState === 'visible') loadCerts() }
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onFocus)
+    return () => {
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onFocus)
+    }
+  }, [loadCerts])
 
   const handleDelete = async (id) => {
     await supabase.from('certificates').delete().eq('id', id)
     setCerts(prev => prev.filter(c => c.id !== id))
     setSelected(null)
+    setJustRotated(null)
   }
 
   const handleKeyDeleted = (id) => {
@@ -690,9 +871,10 @@ function LoggedInDashboard({ user, nav }) {
 
           {/* Detail panel */}
           {selectedCert && (
-            <CertDetail cert={selectedCert} onClose={() => setSelected(null)}
+            <CertDetail cert={selectedCert} onClose={() => { setSelected(null); setJustRotated(null) }}
               onRenew={setRenewDomain} onDelete={handleDelete} onKeyDeleted={handleKeyDeleted}
-              onInstall={setAgentCert} isPro={isPro} nav={nav} />
+              onInstall={setAgentCert} isPro={isPro} nav={nav}
+              justRotated={justRotated?.domain === selectedCert.domain ? justRotated : null} />
           )}
         </div>
 

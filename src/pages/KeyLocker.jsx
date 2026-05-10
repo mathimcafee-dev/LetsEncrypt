@@ -270,7 +270,16 @@ export default function KeyLocker({ nav }) {
       setRotateSuccess(`Certificate rotated for ${keyEntry.domain}. New cert issued and stored in vault. Old key archived for 30 days.`)
       await loadData()
     } catch (err) {
-      setRotateError('Rotation failed: ' + err.message)
+      const msg = err.message || ''
+      const isRateLimit = msg.toLowerCase().includes('rate') || msg.toLowerCase().includes('too many') || msg.toLowerCase().includes('rateLimited')
+      if (isRateLimit) {
+        setRotateError(
+          `Let's Encrypt rate limit reached for ${keyEntry.domain}. LE allows 5 certificates per domain per week. ` +
+          `Please wait a few days before rotating again. This is a Let's Encrypt policy, not an SSLVault limitation.`
+        )
+      } else {
+        setRotateError('Rotation failed: ' + msg)
+      }
     }
     setRotating(null)
   }
@@ -407,12 +416,12 @@ export default function KeyLocker({ nav }) {
             </div>
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            {!importDone && activeKeys.length === 0 && (
-              <button className="v2-btn v2-btn-sm" onClick={handleImport} disabled={importing}
-                style={{ fontSize:12, background:'linear-gradient(135deg,#7c3aed,#6d28d9)', color:'white', border:'none' }}>
-                {importing ? <><RefreshCw size={11} className="spin" /> {importProgress}</> : <><Lock size={11} /> Import existing certs</>}
-              </button>
-            )}
+            <button className="v2-btn v2-btn-sm" onClick={handleImport} disabled={importing}
+              style={{ fontSize:12, background:'linear-gradient(135deg,#7c3aed,#6d28d9)', color:'white', border:'none' }}>
+              {importing
+                ? <><RefreshCw size={11} className="spin" /> {importProgress}</>
+                : <><Lock size={11} /> Import certs to vault</>}
+            </button>
             <button className="v2-btn v2-btn-sm" onClick={loadData} style={{ fontSize:12 }}>
               <RefreshCw size={11} /> Refresh
             </button>
