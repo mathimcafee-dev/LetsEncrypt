@@ -236,12 +236,12 @@ function CertRow({ cert, selected, onClick, onInstall }) {
         </div>
         {days != null && days <= 90 && <div style={{ marginTop:6 }}><ProgressBar days={days} /></div>}
       </div>
-      <div style={{ display:'flex', flexDirection:'column', gap:4, flexShrink:0 }} onClick={e => e.stopPropagation()}>
-        <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={() => onInstall(cert)}
-          style={{ whiteSpace:'nowrap', fontSize:11 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }} onClick={e => e.stopPropagation()}>
+        <button className="v2-btn v2-btn-sm" onClick={() => onInstall(cert)}
+          style={{ fontSize:11, color:'var(--v2-text-2)', border:'0.5px solid var(--v2-border-strong)' }}>
           <Server size={10} /> Install
         </button>
-        <ChevronRight size={14} color="var(--v2-text-3)" style={{ margin:'0 auto' }} />
+        <ChevronRight size={14} color="var(--v2-text-3)" />
       </div>
     </div>
   )
