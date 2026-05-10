@@ -42,7 +42,7 @@ export default function About({ nav }) {
         {/* ── MISSION ──────────────────────────────────────────────── */}
         <div className="v2-card" style={{ padding:'36px 40px', marginBottom:16,
                                           borderLeft:'3px solid var(--v2-green)' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20 }}>
             <div className="v2-icontile" style={{ background:'var(--v2-green-bg)',
                                                    border:'0.5px solid var(--v2-green-border)',
                                                    color:'var(--v2-green)' }}>
@@ -50,12 +50,41 @@ export default function About({ nav }) {
             </div>
             <span className="v2-section-label">Our Mission</span>
           </div>
-          <p style={{ fontSize:18, color:'var(--v2-text)', lineHeight:1.65, fontWeight:500, maxWidth:740, margin:0 }}>
-            The web should be encrypted by default. Certificate authorities once charged hundreds
-            per year for what Let's Encrypt now provides free — yet the operational burden of
-            installing, configuring, and renewing those certificates still pushes site owners away
-            from HTTPS. SSLVault closes that gap.
+          <p style={{ fontSize:19, color:'var(--v2-text)', lineHeight:1.65, fontWeight:600,
+                      maxWidth:740, margin:'0 0 20px', letterSpacing:'-0.2px' }}>
+            The web should be encrypted by default — and managing that encryption should never
+            be a barrier to entry.
           </p>
+          <div style={{ display:'flex', flexDirection:'column', gap:14, fontSize:14,
+                        color:'var(--v2-text-2)', lineHeight:1.8, maxWidth:780 }}>
+            <p style={{ margin:0 }}>
+              A decade ago, HTTPS was a privilege. Certificate authorities charged hundreds of
+              dollars per year for what Let's Encrypt now provides free. That was a landmark
+              shift — but it only solved half the problem. The operational side remains: obtaining
+              a certificate still requires DNS configuration, command-line tools, or expensive
+              hosting add-ons. Installing it means editing web server configs. Renewing it means
+              setting up cron jobs or trusting your hosting panel to remember. For a solo developer
+              or a small non-profit, that's a lot of friction standing between their site and a
+              padlock icon.
+            </p>
+            <p style={{ margin:0 }}>
+              Enterprise teams have solved this beautifully. Dedicated CLM platforms handle
+              discovery, issuance, installation, monitoring, and renewal automatically — with
+              full audit trails and alerting. But those platforms cost thousands per year and are
+              built for security teams managing thousands of certificates, not for the person
+              running a community website on a $5 VPS.
+            </p>
+            <p style={{ margin:0 }}>
+              SSLVault is our answer to that gap. We believe every site — no matter how small,
+              no matter the budget — deserves the same automated, reliable certificate lifecycle
+              that enterprises pay a premium for. Free issuance via Let's Encrypt. One-command
+              agent installation. Continuous expiry monitoring. Automatic renewal before anything
+              breaks. Built on open standards, deployed on open infrastructure, free forever.
+            </p>
+            <p style={{ margin:0 }}>
+              The padlock shouldn't be optional. We're here to make sure it never lapses.
+            </p>
+          </div>
         </div>
 
         {/* ── STATS ROW ────────────────────────────────────────────── */}
