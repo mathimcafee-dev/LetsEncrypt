@@ -3,7 +3,7 @@ import {
   Shield, Plus, RefreshCw, Download, ExternalLink, X, Lock,
   AlertTriangle, CheckCircle, Globe, ChevronRight,
   Copy, Check, TrendingUp, Activity, Zap,
-  ArrowRight, Server, FileText, Eye, EyeOff
+  ArrowRight, Server, FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -80,11 +80,31 @@ function ProgressBar({ days, max = 90 }) {
 }
 
 // ── CertDetail panel ─────────────────────────────────────────────────
-function CertDetail({ cert, onClose, onRenew, onDelete }) {
+function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted }) {
   const days = daysLeft(cert.expires_at)
   const s = statusOf(days, cert.status === 'revoked')
   const [showKey, setShowKey] = useState(false)
   const [delConfirm, setDelConfirm] = useState(false)
+  const [keyDelConfirm, setKeyDelConfirm] = useState(false)
+  const [keyDeleted, setKeyDeleted] = useState(!cert.private_key_pem)
+  const [keyDeleting, setKeyDeleting] = useState(false)
+  const [keyChecks, setKeyChecks] = useState({ downloaded: false, installed: false, understand: false })
+  const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
+  const hasAgentInstall = cert.status === 'active' || cert.agent_url
+
+  const doDeleteKey = async () => {
+    setKeyDeleting(true)
+    const { error } = await supabase
+      .from('certificates')
+      .update({ private_key_pem: null })
+      .eq('id', cert.id)
+    setKeyDeleting(false)
+    if (!error) {
+      setKeyDeleted(true)
+      setKeyDelConfirm(false)
+      if (onKeyDeleted) onKeyDeleted(cert.id)
+    }
+  }
   return (
     <div className="v2-detail" style={{ position: 'sticky', top: 20 }}>
       {/* Header */}
@@ -144,6 +164,96 @@ function CertDetail({ cert, onClose, onRenew, onDelete }) {
           </div>
         ))}
       </div>
+
+      {/* Key security banner */}
+      {cert.private_key_pem && !keyDeleted && !keyDelConfirm && (
+        <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:'var(--v2-r-md)',
+                      padding:'10px 12px', marginBottom:14, display:'flex', gap:10, alignItems:'flex-start' }}>
+          <ShieldOff size={13} color="#b45309" style={{ flexShrink:0, marginTop:1 }} />
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:12, fontWeight:600, color:'#92400e', marginBottom:2 }}>
+              Private key stored server-side
+            </div>
+            <div style={{ fontSize:11, color:'#b45309', lineHeight:1.5 }}>
+              After agent installation is complete, delete the server-side copy to reduce exposure.
+            </div>
+          </div>
+          <button className="v2-btn v2-btn-sm" onClick={() => setKeyDelConfirm(true)}
+            style={{ fontSize:10, whiteSpace:'nowrap', flexShrink:0, borderColor:'#fcd34d', color:'#92400e' }}>
+            <Trash2 size={9} /> Delete key
+          </button>
+        </div>
+      )}
+
+      {/* Key deleted confirmation badge */}
+      {keyDeleted && (
+        <div style={{ background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
+                      borderRadius:'var(--v2-r-md)', padding:'10px 12px', marginBottom:14,
+                      display:'flex', gap:8, alignItems:'center' }}>
+          <ShieldCheck size={13} color="var(--v2-green)" />
+          <div style={{ fontSize:12, color:'var(--v2-green-text)', fontWeight:500 }}>
+            Private key deleted from SSLVault servers — only your local copy remains.
+          </div>
+        </div>
+      )}
+
+      {/* Delete key confirmation modal */}
+      {keyDelConfirm && (
+        <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-amber-border)',
+                      borderRadius:'var(--v2-r-lg)', padding:'16px', marginBottom:14 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
+            <AlertTriangle size={14} color="var(--v2-amber)" />
+            <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>
+              Delete private key from servers
+            </span>
+          </div>
+
+          {/* Interlock warning if no install recorded */}
+          {!hasAgentInstall && (
+            <div className="v2-callout error" style={{ marginBottom:12, fontSize:11 }}>
+              <div className="v2-callout-title" style={{ fontSize:11 }}>No agent install recorded</div>
+              If you plan to use the SSLVault agent or cPanel agent to install this certificate,
+              do NOT delete the key yet — the agent requires the server-side copy.
+              Only proceed if you have already installed manually.
+            </div>
+          )}
+
+          <div style={{ fontSize:11, color:'var(--v2-text-2)', marginBottom:12, lineHeight:1.6 }}>
+            This permanently removes the private key from SSLVault servers.
+            This action cannot be undone. Confirm all three before proceeding:
+          </div>
+
+          {[
+            { key:'downloaded', label:'I have downloaded key.pem to a safe local location' },
+            { key:'installed',  label:'My server has the certificate installed and working' },
+            { key:'understand', label:'I understand this is irreversible and the key will be gone from SSLVault' },
+          ].map(({ key, label }) => (
+            <label key={key} style={{ display:'flex', alignItems:'flex-start', gap:8, marginBottom:8,
+                                       cursor:'pointer', fontSize:12, color:'var(--v2-text-2)', lineHeight:1.5 }}>
+              <input type="checkbox" checked={keyChecks[key]}
+                onChange={e => setKeyChecks(prev => ({ ...prev, [key]: e.target.checked }))}
+                style={{ marginTop:2, width:'auto', flexShrink:0 }} />
+              {label}
+            </label>
+          ))}
+
+          <div style={{ display:'flex', gap:8, marginTop:12 }}>
+            <button className="v2-btn v2-btn-sm" onClick={() => { setKeyDelConfirm(false); setKeyChecks({ downloaded:false, installed:false, understand:false }) }}
+              style={{ fontSize:11 }}>
+              Cancel
+            </button>
+            <button onClick={doDeleteKey} disabled={!allChecked || keyDeleting}
+              style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
+                        background: allChecked ? 'var(--v2-red)' : 'var(--v2-surface-3)',
+                        color: allChecked ? 'white' : 'var(--v2-text-3)',
+                        border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 10px',
+                        cursor: allChecked ? 'pointer' : 'not-allowed', fontFamily:'inherit', fontWeight:500 }}>
+              <Trash2 size={10} />
+              {keyDeleting ? 'Deleting…' : 'Permanently delete key'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Files */}
       {(cert.cert_pem || cert.private_key_pem) && (
@@ -227,6 +337,13 @@ function CertRow({ cert, selected, onClick, onInstall }) {
         <div className="v2-row-title-line">
           <span className="v2-row-title v2-mono">{cert.domain}</span>
           <StatusPill days={days} revoked={cert.status === 'revoked'} />
+          {cert.private_key_pem && (
+            <span title="Private key stored server-side" style={{ display:'inline-flex', alignItems:'center',
+              gap:3, fontSize:9, fontWeight:600, color:'#92400e', background:'#fffbeb',
+              border:'0.5px solid #fde68a', borderRadius:3, padding:'1px 5px', letterSpacing:'0.2px' }}>
+              <ShieldOff size={8} /> KEY STORED
+            </span>
+          )}
         </div>
         <div className="v2-row-meta">
           <span>Expires {fmtDate(cert.expires_at)}</span>
@@ -318,6 +435,10 @@ function LoggedInDashboard({ user, nav }) {
     await supabase.from('certificates').delete().eq('id', id)
     setCerts(prev => prev.filter(c => c.id !== id))
     setSelected(null)
+  }
+
+  const handleKeyDeleted = (id) => {
+    setCerts(prev => prev.map(c => c.id === id ? { ...c, private_key_pem: null } : c))
   }
 
   const total    = certs.length
@@ -450,7 +571,7 @@ function LoggedInDashboard({ user, nav }) {
           {/* Detail panel */}
           {selectedCert && (
             <CertDetail cert={selectedCert} onClose={() => setSelected(null)}
-              onRenew={setRenewDomain} onDelete={handleDelete} />
+              onRenew={setRenewDomain} onDelete={handleDelete} onKeyDeleted={handleKeyDeleted} />
           )}
         </div>
 
