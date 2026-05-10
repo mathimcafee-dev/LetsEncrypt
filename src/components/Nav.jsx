@@ -20,20 +20,32 @@ export default function Nav({ nav, page }) {
   ]
   const isDash = page==='/dashboard'||page==='/monitor'
   return (
-    <nav style={{position:'sticky',top:0,zIndex:200,background:'white',borderBottom:'1px solid #e2e8f0',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+    <nav style={{position:'sticky',top:0,zIndex:200,background:'#ffffff',borderBottom:'0.5px solid rgba(15,23,42,0.08)',boxShadow:'0 1px 3px rgba(15,23,42,0.04)'}}>
       <div className='container' style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:56}}>
-        <div onClick={()=>nav('/')} style={{display:'flex',alignItems:'center',gap:9,cursor:'pointer',userSelect:'none'}}>
-          <div style={{width:32,height:32,background:'linear-gradient(135deg,#1e3a8a,#2563eb)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 2px 8px rgba(37,99,235,0.3)'}}><Shield size={16} color='white' strokeWidth={2.5}/></div>
+        <div onClick={()=>nav('/')} style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer',userSelect:'none'}}>
+          {/* Option-2 monogram mark */}
+          <div style={{position:'relative',width:36,height:36,flexShrink:0}}>
+            <div style={{width:36,height:36,background:'#0a0a0a',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <span style={{fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif",fontSize:22,fontWeight:800,color:'#10b981',lineHeight:1,letterSpacing:'-1px',marginTop:1}}>S</span>
+            </div>
+            {/* green lock badge */}
+            <div style={{position:'absolute',bottom:-3,right:-3,width:16,height:16,background:'#10b981',borderRadius:4,border:'2px solid white',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <svg width="8" height="9" viewBox="0 0 8 9" fill="none">
+                <rect x="1" y="4" width="6" height="5" rx="1" fill="white"/>
+                <path d="M2 4V3a2 2 0 0 1 4 0v1" stroke="white" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
+              </svg>
+            </div>
+          </div>
           <div>
-            <div style={{fontWeight:800,fontSize:15,color:'#0f172a',letterSpacing:'-0.4px',lineHeight:1.1}}>SSL<span style={{color:'#2563eb'}}>Vault</span></div>
-            <div style={{fontSize:9,color:'#94a3b8',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.8px',lineHeight:1}}>CLM Platform</div>
+            <div style={{fontWeight:700,fontSize:15,color:'#0a0a0a',letterSpacing:'-0.4px',lineHeight:1.15}}>SSL<span style={{color:'#10b981'}}>Vault</span></div>
+            <div style={{fontSize:9,color:'#a3a3a3',fontWeight:500,textTransform:'uppercase',letterSpacing:'0.8px',lineHeight:1}}>CLM Platform</div>
           </div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:1}}>
           {primary.map(({path,label,icon:Icon})=>{
             const active = path==='/dashboard'?isDash:page===path
             return (
-              <div key={path} onClick={()=>nav(path)} style={{display:'flex',alignItems:'center',gap:6,padding:'7px 13px',borderRadius:7,cursor:'pointer',fontSize:13,fontWeight:600,color:active?'#2563eb':'#475569',background:active?'#eff6ff':'transparent',borderBottom:active?'2px solid #2563eb':'2px solid transparent',marginBottom:'-1px'}}
+              <div key={path} onClick={()=>nav(path)} style={{display:'flex',alignItems:'center',gap:6,padding:'7px 13px',borderRadius:7,cursor:'pointer',fontSize:13,fontWeight:600,color:active?'#047857':'#525252',background:active?'#f0fdf4':'transparent',borderBottom:active?'2px solid #10b981':'2px solid transparent',marginBottom:'-1px'}}
                 onMouseEnter={e=>{if(!active)e.currentTarget.style.background='#f8fafc'}}
                 onMouseLeave={e=>{if(!active)e.currentTarget.style.background='transparent'}}>
                 <Icon size={13}/>{label}
@@ -64,13 +76,13 @@ export default function Nav({ nav, page }) {
           {user?(
             <div style={{display:'flex',alignItems:'center',gap:8}}>
               <div style={{display:'flex',alignItems:'center',gap:6,padding:'4px 10px',background:'#f8fafc',borderRadius:6,border:'1px solid #e2e8f0'}}>
-                <div style={{width:22,height:22,borderRadius:'50%',background:'linear-gradient(135deg,#2563eb,#1d4ed8)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:800,color:'white'}}>{user.email?.[0]?.toUpperCase()||'U'}</div>
+                <div style={{width:22,height:22,borderRadius:'50%',background:'#0a0a0a',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,color:'#10b981'}}>{user.email?.[0]?.toUpperCase()||'U'}</div>
                 <span style={{fontSize:11,fontWeight:600,color:'#475569',maxWidth:110,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{user.email}</span>
               </div>
               <button onClick={()=>supabase.auth.signOut()} style={{display:'inline-flex',alignItems:'center',gap:5,background:'white',color:'#475569',border:'1px solid #e2e8f0',padding:'5px 10px',borderRadius:6,fontSize:11,fontWeight:600,cursor:'pointer'}}><LogOut size={11}/> Out</button>
             </div>
           ):(
-            <button onClick={()=>nav('/auth')} style={{display:'inline-flex',alignItems:'center',gap:6,background:'linear-gradient(135deg,#2563eb,#1d4ed8)',color:'white',border:'none',padding:'7px 14px',borderRadius:7,fontSize:12,fontWeight:700,cursor:'pointer'}}><LogIn size={12}/> Sign In</button>
+            <button onClick={()=>nav('/auth')} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#0a0a0a',color:'white',border:'none',padding:'7px 14px',borderRadius:7,fontSize:12,fontWeight:600,cursor:'pointer'}}><LogIn size={12}/> Sign In</button>
           )}
         </div>
       </div>
