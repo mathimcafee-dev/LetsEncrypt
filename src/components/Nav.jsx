@@ -11,7 +11,7 @@ export default function Nav({ nav, page }) {
   const primary = [
     { path:'/generate', label:'Issue Certificate', icon:PlusCircle },
     { path:'/buy', label:'Buy RapidSSL', icon:Star },
-    { path:'/dashboard', label:'Inventory & Monitor', icon:LayoutDashboard },
+
   ]
   const more = [
     { path:'/dns-providers', label:'DNS Providers', icon:Settings },
@@ -23,7 +23,7 @@ export default function Nav({ nav, page }) {
     { path:'/developer', label:'Developer', icon:User },
     { path:'/contact', label:'Contact', icon:Mail },
   ]
-  const isDash = page==='/dashboard'||page==='/monitor'
+
   return (
     <nav style={{position:'sticky',top:0,zIndex:200,background:'#ffffff',borderBottom:'0.5px solid rgba(15,23,42,0.08)',boxShadow:'0 1px 3px rgba(15,23,42,0.04)'}}>
       <div className='container' style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:56}}>
