@@ -452,15 +452,10 @@ function PublicScan({ nav }) {
 // ── Main page (logged-in) ────────────────────────────────────────────
 export default function Monitor({ nav }) {
   const { user, loading: authLoading } = useAuth()
-  const [certs, setCerts] = useState([])
   const [monitored, setMonitored] = useState([])
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
-  const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState('all')
-  const [selectedCert, setSelectedCert] = useState(null)
   const [scanning, setScanning] = useState({})
-  const [sortBy, setSortBy] = useState('expires')
   const [bulkScanning, setBulkScanning] = useState(false)
   const [bulkProgress, setBulkProgress] = useState('')
 
@@ -472,17 +467,7 @@ export default function Monitor({ nav }) {
 
   const loadAll = async () => {
     setLoading(true)
-    const { data: certsData } = await supabase.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending: false })
-    const { data: ordersData } = await supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'issued').order('updated_at', { ascending: false })
-    const certSessions = new Set((certsData || []).map(c => c.session_id))
-    const ordersAsCerts = (ordersData || []).filter(o => !certSessions.has(o.session_id)).map(o => ({
-      id: o.id, user_id: o.user_id, session_id: o.session_id,
-      domain: o.domain, cert_pem: o.cert_pem, private_key_pem: o.priv_key,
-      issued_at: o.updated_at, expires_at: o.expires_at || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'active'
-    }))
     const { data: monData } = await supabase.from('monitored_domains').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
-    setCerts([...(certsData || []), ...ordersAsCerts])
     setMonitored(monData || [])
     setLoading(false)
   }
@@ -668,114 +653,6 @@ export default function Monitor({ nav }) {
             <button className="v2-btn v2-btn-sm" onClick={() => setFilter('expired')}>View</button>
           </div>
         )}
-
-        {/* Issued certificates */}
-        <div className="v2-card" style={{ marginTop: 18, marginBottom: 18 }}>
-          <div style={{ padding: '14px 16px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h2 style={{ fontSize: 14, fontWeight: 500, color: 'var(--v2-text)', margin: 0 }}>Issued certificates</h2>
-              {filteredCerts.length > 0 && <span className="v2-chip">{filteredCerts.length}</span>}
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <div style={{ position: 'relative' }}>
-                <Search size={12} strokeWidth={2} style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--v2-text-3)' }} />
-                <input
-                  className="v2-input"
-                  placeholder="Search domain"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  style={{ paddingLeft: 26, width: 180, fontSize: 12, padding: '6px 10px 6px 26px' }}
-                />
-              </div>
-              <div style={{ display: 'flex', gap: 0, background: '#f4f4f3', borderRadius: 6, padding: 2 }}>
-                {[['all', 'All'], ['active', 'Active'], ['expiring', 'Expiring'], ['expired', 'Expired']].map(([v, l]) => (
-                  <button key={v}
-                          className={`v2-filter-chip ${filter === v ? 'active' : ''}`}
-                          onClick={() => setFilter(v)}>
-                    {l}
-                  </button>
-                ))}
-              </div>
-              <select className="v2-select" value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '6px 26px 6px 10px', fontSize: 12 }}>
-                <option value="expires">By expiry</option>
-                <option value="domain">By domain</option>
-                <option value="issued">By issued</option>
-              </select>
-            </div>
-          </div>
-
-          {loading ? (
-            <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>
-              Loading…
-            </div>
-          ) : filteredCerts.length === 0 ? (
-            <div className="v2-empty">
-              <div className="v2-empty-icon"><Shield size={26} strokeWidth={1.6} /></div>
-              <div className="v2-empty-title">{search || filter !== 'all' ? 'No certificates match your filter' : 'No certificates yet'}</div>
-              {!search && filter === 'all' && (
-                <>
-                  <div className="v2-empty-desc">Issue your first 90-day SSL certificate in under a minute. Free from Let's Encrypt.</div>
-                  <button className="v2-btn v2-btn-primary" onClick={() => window.location.href = '/generate'}>
-                    <Plus size={13} strokeWidth={2.2} /> Generate your first certificate
-                  </button>
-                </>
-              )}
-            </div>
-          ) : (
-            <div>
-              {filteredCerts.map(cert => {
-                const days = cert.expires_at ? differenceInDays(new Date(cert.expires_at), new Date()) : 0
-                const isRevoked = cert.status === 'revoked'
-                const cls = isRevoked ? 'grey' : days < 0 ? 'amber' : days < 14 ? 'amber' : 'green'
-                return (
-                  <div key={cert.id} className={`v2-list-row status-${cls}`} onClick={() => setSelectedCert(cert)}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: 6,
-                      background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                    }}>
-                      <Shield size={15} strokeWidth={1.8} color="var(--v2-text-2)" />
-                    </div>
-                    <div className="v2-row-body">
-                      <div className="v2-row-title-line">
-                        <span className="v2-row-title v2-mono">{cert.domain}</span>
-                        <StatusPill days={days} revoked={isRevoked} />
-                      </div>
-                      <div className="v2-row-meta">
-                        <span style={{ fontSize: 11 }}>
-                          Issued {cert.issued_at ? formatDistanceToNow(new Date(cert.issued_at), { addSuffix: true }) : '—'}
-                        </span>
-                        <span className="v2-row-meta-sep">·</span>
-                        <span style={{ fontSize: 11 }}>
-                          Expires {cert.expires_at ? format(new Date(cert.expires_at), 'MMM d, yyyy') : '—'}
-                        </span>
-                      </div>
-                      <div style={{ marginTop: 6, maxWidth: 260 }}>
-                        <ProgressBar days={days} />
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-                      <button className="v2-btn v2-btn-sm" onClick={() => setSelectedCert(cert)}>
-                        <Eye size={11} strokeWidth={2} /> View
-                      </button>
-                      {cert.cert_pem && (
-                        <button className="v2-btn v2-btn-sm" onClick={() => download(cert.cert_pem, `${cert.domain}-cert.pem`)}>
-                          <Download size={11} strokeWidth={2} />
-                        </button>
-                      )}
-                      <button className="v2-btn v2-btn-sm" onClick={() => requestCertForDomain(cert.domain)}>
-                        <RefreshCw size={11} strokeWidth={2} /> Renew
-                      </button>
-                      <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => deleteCert(cert.id)}>
-                        <Trash2 size={11} strokeWidth={2} />
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
 
         {/* Monitored domains */}
         <div className="v2-card">
