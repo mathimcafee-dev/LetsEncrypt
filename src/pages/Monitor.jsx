@@ -222,7 +222,9 @@ function MonitoredRow({ m, onScan, onDelete, onRequestCert, scanning }) {
             <span style={{ fontSize: 11 }}>Alert at {m.alert_threshold_days} days</span>
             <span className="v2-row-meta-sep">·</span>
             <span style={{ fontSize: 11 }}>
-              {hasScanned ? `Last scanned ${formatDistanceToNow(new Date(m.last_scanned_at), { addSuffix: true })}` : 'Click Scan to check'}
+              {hasScanned
+              ? `Last scanned ${formatDistanceToNow(new Date(m.last_scanned_at), { addSuffix: true })}${m.scan_source === 'ct-log' ? ' · CT log' : m.scan_source === 'live-tls' ? ' · Live TLS' : ''}`
+              : 'Click Scan to check'}
             </span>
           </div>
         </div>
@@ -279,6 +281,14 @@ function MonitoredRow({ m, onScan, onDelete, onRequestCert, scanning }) {
             </div>
           )}
 
+          {m.scan_source === 'ct-log' && (
+            <div className="v2-callout warning" style={{ marginBottom: 12, fontSize: 11 }}>
+              <div className="v2-callout-title" style={{ fontSize: 11 }}>CT log data — not a live scan</div>
+              Live TLS connection to this server failed. The dates shown are from Certificate Transparency logs
+              and reflect a recently issued certificate, but may not match what is currently installed on the server.
+              Try scanning again — if it keeps failing, check the domain is publicly reachable on port 443.
+            </div>
+          )}
           <button className="v2-btn v2-btn-primary" style={{ fontSize: 12 }} onClick={() => onRequestCert(m.domain)}>
             <Shield size={12} strokeWidth={2.2} /> Request new certificate <ArrowRight size={11} />
           </button>
@@ -514,6 +524,7 @@ export default function Monitor({ nav }) {
             cert_start: data.certStart,
             cert_expiry: data.certExpiry,
             issuer: data.issuer,
+            scan_source: data.source,
           } : item
         ))
       }
