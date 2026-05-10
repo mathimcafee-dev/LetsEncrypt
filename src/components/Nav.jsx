@@ -1,6 +1,6 @@
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Activity, Settings, BookOpen, ChevronDown, Info, Mail, User, Lock, Zap } from 'lucide-react'
+import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Activity, Settings, BookOpen, ChevronDown, Info, Mail, User, Lock, Zap, Star } from 'lucide-react'
 import { usePlan } from '../hooks/usePlan'
 import { useState } from 'react'
 
@@ -10,6 +10,7 @@ export default function Nav({ nav, page }) {
   const [moreOpen, setMoreOpen] = useState(false)
   const primary = [
     { path:'/generate', label:'Issue Certificate', icon:PlusCircle },
+    { path:'/buy', label:'Buy RapidSSL', icon:Star },
     { path:'/dashboard', label:'Inventory & Monitor', icon:LayoutDashboard },
   ]
   const more = [
@@ -52,7 +53,8 @@ export default function Nav({ nav, page }) {
               <div key={path} onClick={()=>nav(path)} style={{display:'flex',alignItems:'center',gap:6,padding:'7px 13px',borderRadius:7,cursor:'pointer',fontSize:13,fontWeight:600,color:active?'#047857':'#525252',background:active?'#f0fdf4':'transparent',borderBottom:active?'2px solid #10b981':'2px solid transparent',marginBottom:'-1px'}}
                 onMouseEnter={e=>{if(!active)e.currentTarget.style.background='#f8fafc'}}
                 onMouseLeave={e=>{if(!active)e.currentTarget.style.background='transparent'}}>
-                <Icon size={13}/>{label}
+                <Icon size={13} color={path==='/buy' && !active ? '#f59e0b' : undefined}/>{label}
+                {path==='/buy' && <span style={{fontSize:8,fontWeight:700,color:'#185FA5',background:'#E6F1FB',borderRadius:3,padding:'1px 4px',marginLeft:2}}>TSS</span>}
               </div>
             )
           })}

@@ -19,6 +19,7 @@ import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import Pricing from './pages/Pricing'
 import KeyLocker from './pages/KeyLocker'
+import BuyCertificate from './pages/BuyCertificate'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
@@ -49,6 +50,7 @@ export default function App() {
       {page === '/terms' && <Terms nav={nav} />}
       {page === '/pricing' && <Pricing nav={nav} />}
       {page === '/keylocker' && <KeyLocker nav={nav} />}
+      {page === '/buy' && <BuyCertificate nav={nav} />}
     </div>
   )
 }

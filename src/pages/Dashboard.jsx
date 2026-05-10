@@ -576,7 +576,10 @@ function CertRow({ cert, selected, onClick }) {
         <div className="v2-row-meta">
           <span>Expires {fmtDate(cert.expires_at)}</span>
           <span className="v2-row-meta-sep">·</span>
-          <span>{cert.cert_type || "Let's Encrypt"}</span>
+          {cert.cert_type === 'RapidSSL DV'
+            ? <span style={{ fontSize:9, fontWeight:700, color:'#185FA5', background:'#E6F1FB',
+                              border:'0.5px solid #B5D4F4', borderRadius:3, padding:'1px 5px' }}>RapidSSL</span>
+            : <span>{cert.cert_type || "Let's Encrypt"}</span>}
           {cert.issued_at && <><span className="v2-row-meta-sep">·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
         </div>
         {days != null && days <= 90 && <div style={{ marginTop:6 }}><ProgressBar days={days} /></div>}
