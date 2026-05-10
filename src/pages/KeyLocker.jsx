@@ -143,6 +143,8 @@ export default function KeyLocker({ nav }) {
   const [audit, setAudit]       = useState([])
   const [loading, setLoading]   = useState(true)
   const [rotating, setRotating] = useState(null)
+  const [rotateError, setRotateError] = useState('')
+  const [rotateSuccess, setRotateSuccess] = useState('')
   const [tab, setTab]           = useState('vault')
   const [rotateConfirm, setRotateConfirm] = useState(null)
   const [importing, setImporting] = useState(false)
@@ -254,13 +256,21 @@ export default function KeyLocker({ nav }) {
   // ── Key rotation ───────────────────────────────────────────────────
   const handleRotate = async (keyEntry) => {
     setRotateConfirm(null)
+    setRotateError('')
+    setRotateSuccess('')
     setRotating(keyEntry.id)
     try {
       const result = await callKeyLocker('rotate', { key_id: keyEntry.id })
+      if (result.manual_required) {
+        setRotateError('Auto-rotation requires a connected DNS provider. Please use the Issue Certificate page to renew manually.')
+        setRotating(null)
+        return
+      }
       if (result.error) throw new Error(result.error)
+      setRotateSuccess(`Certificate rotated for ${keyEntry.domain}. New cert issued and stored in vault. Old key archived for 30 days.`)
       await loadData()
     } catch (err) {
-      console.error('Rotation failed:', err)
+      setRotateError('Rotation failed: ' + err.message)
     }
     setRotating(null)
   }
@@ -442,6 +452,22 @@ export default function KeyLocker({ nav }) {
             </div>
           ))}
         </div>
+
+        {/* Rotate result banners */}
+        {rotateError && (
+          <div className="v2-alert v2-alert-error" style={{ marginBottom:12 }}>
+            <AlertTriangle size={13} /> {rotateError}
+            <button onClick={() => setRotateError('')} style={{ marginLeft:'auto', background:'none', border:'none', cursor:'pointer', color:'inherit' }}>✕</button>
+          </div>
+        )}
+        {rotateSuccess && (
+          <div style={{ background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
+            borderRadius:'var(--v2-r-md)', padding:'10px 14px', marginBottom:12,
+            display:'flex', alignItems:'center', gap:8, fontSize:12, color:'var(--v2-green-text)' }}>
+            <CheckCircle size={13} /> {rotateSuccess}
+            <button onClick={() => setRotateSuccess('')} style={{ marginLeft:'auto', background:'none', border:'none', cursor:'pointer', color:'inherit' }}>✕</button>
+          </div>
+        )}
 
         {/* Import progress */}
         {importing && (
