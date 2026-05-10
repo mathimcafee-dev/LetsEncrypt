@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, AlertTriangle, RefreshCw,
-         Copy, Check, ChevronRight, Lock, Star, Zap, Globe, X } from 'lucide-react'
+         Copy, Check, ChevronRight, Lock, Star, Globe } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import '../styles/design-v2.css'
 
 const SUPABASE_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
-// ── Products ────────────────────────────────────────────────────────
 const PRODUCTS = [
   {
     id: 'rapidssl',
@@ -72,9 +71,13 @@ function CopyBtn({ text }) {
   )
 }
 
+function cleanDomain(val) {
+  return val.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '')
+}
+
 export default function BuyCertificate({ nav }) {
   const { user, loading: authLoading } = useAuth()
-  const [step, setStep] = useState('product') // product | order | dv | done
+  const [step, setStep] = useState('product')
   const [selectedProduct, setSelectedProduct] = useState(PRODUCTS[0])
   const [domain, setDomain]         = useState('')
   const [years, setYears]           = useState(1)
@@ -88,7 +91,6 @@ export default function BuyCertificate({ nav }) {
   const [checking, setChecking]     = useState(false)
   const [checkResult, setCheckResult] = useState(null)
 
-  // Pre-fill domain from sessionStorage (set by Dashboard Renew button)
   useEffect(() => {
     const prefill = sessionStorage.getItem('prefill_domain')
     if (prefill) { setDomain(prefill); sessionStorage.removeItem('prefill_domain') }
@@ -107,7 +109,7 @@ export default function BuyCertificate({ nav }) {
   }
 
   const placeOrder = async () => {
-    const d = domain.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '')
+    const d = cleanDomain(domain)
     if (!d)                { setError('Please enter a domain'); return }
     if (!firstName.trim()) { setError('First name is required'); return }
     if (!lastName.trim())  { setError('Last name is required'); return }
@@ -123,7 +125,6 @@ export default function BuyCertificate({ nav }) {
       phone: phone.trim(),
     })
     if (result.error) { setError(result.error); setOrdering(false); return }
-    // Poll check_status until TXT value is populated
     let dvData = result
     if (result.order_id) {
       for (let i = 0; i < 5; i++) {
@@ -144,9 +145,7 @@ export default function BuyCertificate({ nav }) {
     if (result.txt_value && result.status !== 'active') {
       await callTSS('retry_dns', { order_id: orderId })
     }
-    if (result.status === 'active') {
-      setStep('done')
-    }
+    if (result.status === 'active') setStep('done')
   }
 
   if (authLoading) return null
@@ -163,7 +162,6 @@ export default function BuyCertificate({ nav }) {
     <div className="v2-page">
       <div className="v2-container" style={{ maxWidth: 860 }}>
 
-        {/* Hero */}
         <div className="v2-page-hero">
           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
             <div style={{ width:36, height:36, background:'#0a0a0a', borderRadius:'var(--v2-r-md)',
@@ -178,12 +176,10 @@ export default function BuyCertificate({ nav }) {
           <p className="v2-subtitle">Choose a certificate, enter your domain, and get issued in minutes. Fully managed in SSLVault.</p>
         </div>
 
-        {/* ── PRODUCT step ── */}
+        {/* PRODUCT step */}
         {step === 'product' && (
           <div style={{ display:'grid', gridTemplateColumns:'1fr 340px', gap:20, alignItems:'start' }}>
             <div>
-
-              {/* Product selector */}
               <div className="v2-section-label" style={{ marginBottom:10 }}>Select certificate</div>
               <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:20 }}>
                 {PRODUCTS.map(p => (
@@ -195,7 +191,8 @@ export default function BuyCertificate({ nav }) {
                       background: selectedProduct.id === p.id ? '#fafafa' : 'white',
                       transition:'all 0.12s'
                     }}>
-                    <div style={{ width:18, height:18, borderRadius:'50%', border:`2px solid ${selectedProduct.id === p.id ? '#0a0a0a' : 'var(--v2-border)'}`,
+                    <div style={{ width:18, height:18, borderRadius:'50%',
+                                  border: `2px solid ${selectedProduct.id === p.id ? '#0a0a0a' : 'var(--v2-border)'}`,
                                   background: selectedProduct.id === p.id ? '#0a0a0a' : 'white',
                                   display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2 }}>
                       {selectedProduct.id === p.id && <div style={{ width:6, height:6, borderRadius:'50%', background:'white' }} />}
@@ -217,7 +214,6 @@ export default function BuyCertificate({ nav }) {
                 ))}
               </div>
 
-              {/* Selected product features */}
               <div className="v2-card">
                 <div className="v2-section-label" style={{ marginBottom:12 }}>What you get with {selectedProduct.name}</div>
                 {selectedProduct.features.map(f => (
@@ -287,7 +283,6 @@ export default function BuyCertificate({ nav }) {
                 </div>
               </div>
 
-              {/* Price breakdown */}
               <div style={{ background:'var(--v2-surface-3)', borderRadius:'var(--v2-r-md)', padding:'12px', marginBottom:14 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, color:'var(--v2-text-2)', marginBottom:6 }}>
                   <span>{selectedProduct.name} {years}yr</span>
@@ -321,7 +316,7 @@ export default function BuyCertificate({ nav }) {
           </div>
         )}
 
-        {/* ── CONFIRM step ── */}
+        {/* CONFIRM step */}
         {step === 'order' && (
           <div style={{ maxWidth:520 }}>
             <div className="v2-card" style={{ marginBottom:16 }}>
@@ -329,7 +324,7 @@ export default function BuyCertificate({ nav }) {
               <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:16 }}>
                 {[
                   { label:'Certificate', value: selectedProduct.name },
-                  { label:'Domain',      value: domain.trim().split('://').pop().split('/')[0] || '—' },
+                  { label:'Domain',      value: cleanDomain(domain) || '—' },
                   { label:'Validity',    value: `${years} year${years > 1 ? 's' : ''}` },
                   { label:'Contact',     value: `${firstName} ${lastName}` },
                   { label:'Email',       value: adminEmail },
@@ -364,7 +359,7 @@ export default function BuyCertificate({ nav }) {
           </div>
         )}
 
-        {/* ── DV step ── */}
+        {/* DV step */}
         {step === 'dv' && orderData && (
           <div style={{ maxWidth:600 }}>
             <div className="v2-card" style={{ marginBottom:16 }}>
@@ -378,7 +373,7 @@ export default function BuyCertificate({ nav }) {
                   <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6 }}>
                     Order placed with TheSSLStore. Add this DNS TXT record to prove you control
                     <strong style={{ fontFamily:'var(--mono, monospace)' }}> {domain}</strong>.
-                    {selectedProduct.brand.split('·')[0].trim()} will validate automatically once the record propagates (1–10 min).
+                    RapidSSL will validate automatically once the record propagates (1–10 min).
                   </div>
                 </div>
               </div>
@@ -388,9 +383,7 @@ export default function BuyCertificate({ nav }) {
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
                   <div>
                     <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>Name / Host</div>
-                    <div style={{ fontSize:12, color:'#e5e7eb', wordBreak:'break-all' }}>
-                      {orderData.txt_name || domain}
-                    </div>
+                    <div style={{ fontSize:12, color:'#e5e7eb', wordBreak:'break-all' }}>{orderData.txt_name || domain}</div>
                   </div>
                   <CopyBtn text={orderData.txt_name || domain} />
                 </div>
@@ -437,7 +430,7 @@ export default function BuyCertificate({ nav }) {
           </div>
         )}
 
-        {/* ── DONE step ── */}
+        {/* DONE step */}
         {step === 'done' && (
           <div style={{ maxWidth:480 }}>
             <div className="v2-card" style={{ textAlign:'center', padding:'32px 24px' }}>
