@@ -108,94 +108,11 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
   }, [justRotated])
 
   // ── Smart renew: auto-issue if DNS creds exist, else send to Generate ──
-  const handleSmartRenew = async () => {
-    const domain = cert.domain
-    setRenewState({ phase: 'checking', msg: 'Checking DNS configuration…' })
-
-    // Check for stored DNS credentials matching this domain
-    const baseDomain = domain.split('.').slice(-2).join('.')
-    const { data: creds } = await supabase
-      .from('dns_credentials')
-      .select('id, provider')
-      .or(`domain_pattern.eq.${domain},domain_pattern.eq.${baseDomain}`)
-      .limit(1)
-
-    if (!creds || creds.length === 0) {
-      // No auto DNS — prefill and send to Generate
-      setRenewState(null)
-      sessionStorage.setItem('prefill_domain', domain)
-      onClose()
-      nav('/generate')
-      return
-    }
-
-    const provider = creds[0].provider
-    const sessionId = Math.random().toString(36).slice(2)
-    const callAcme = async (action) => {
-      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, sessionId, domain, user_id: cert.user_id }),
-      })
-      const text = await res.text()
-      try { return JSON.parse(text) } catch { return { error: text } }
-    }
-
-    try {
-      setRenewState({ phase: 'issuing', msg: `Starting ACME order for ${domain}…` })
-      const startData = await callAcme('start')
-      if (startData.error) throw new Error(startData.error)
-
-      if (!startData.autoAdded) {
-        // DNS creds exist but auto-add failed — fall back to Generate
-        setRenewState(null)
-        sessionStorage.setItem('prefill_domain', domain)
-        onClose()
-        nav('/generate')
-        return
-      }
-
-      // Poll verify up to 12 times × 5s = 60s max
-      setRenewState({ phase: 'verifying', msg: `DNS record added via ${provider} — verifying propagation…` })
-      let verified = false
-      for (let i = 0; i < 12; i++) {
-        await new Promise(r => setTimeout(r, 5000))
-        const v = await callAcme('verify')
-        if (v.verified) { verified = true; break }
-        setRenewState({ phase: 'verifying', msg: `Verifying DNS propagation… (attempt ${i + 2}/12)` })
-      }
-      if (!verified) throw new Error('DNS verification timed out. Please try again or use Issue Certificate for manual renewal.')
-
-      setRenewState({ phase: 'finalizing', msg: 'DNS verified — finalizing certificate…' })
-      const finalData = await callAcme('finalize')
-      if (finalData.error) throw new Error(finalData.error)
-      if (!finalData.ok) throw new Error(finalData.message || 'Finalization failed')
-
-      // Store in KeyLocker if Pro
-      if (isPro && finalData.privateKey) {
-        try {
-          const { data: { session } } = await supabase.auth.getSession()
-          await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/keylocker', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-            body: JSON.stringify({ action: 'store', domain: finalData.domain, private_key_pem: finalData.privateKey, expires_at: finalData.expiresAt }),
-          })
-        } catch (e) { console.log('KeyLocker store non-fatal:', e) }
-      }
-
-      setRenewState({ phase: 'done', msg: `Certificate renewed for ${domain} — new cert is in your inventory.` })
-      setTimeout(() => onClose(), 3000)
-
-    } catch (err) {
-      const msg = err.message || ''
-      const isRateLimit = msg.toLowerCase().includes('rate') || msg.toLowerCase().includes('too many')
-      setRenewState({
-        phase: 'error',
-        msg: isRateLimit
-          ? `Let's Encrypt rate limit reached for ${domain}. LE allows 5 certs/domain/week. Try again in a few days.`
-          : `Renewal failed: ${msg}`
-      })
-    }
+  const handleSmartRenew = () => {
+    // Renewal = place a new TSS order for the domain
+    sessionStorage.setItem('prefill_domain', cert.domain)
+    onClose()
+    nav('/buy')
   }
 
   const doDeleteKey = async () => {
@@ -287,7 +204,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
           { label:'Domain',  value: cert.domain },
           { label:'Issued',  value: fmtDate(cert.issued_at || cert.created_at), isNew: justRotated && newPillVisible },
           { label:'Expires', value: fmtDate(cert.expires_at), isNew: justRotated && newPillVisible },
-          { label:'Type',    value: cert.cert_type || "Let's Encrypt DV" },
+          { label:'Type',    value: cert.cert_type || 'SSL Certificate' },
           { label:'Status',  value: cert.status || 'issued' },
         ].map(({ label, value, isNew }) => (
           <div key={label} className="v2-metric-row" style={{ justifyContent:'space-between' }}>
@@ -579,7 +496,7 @@ function CertRow({ cert, selected, onClick }) {
           {cert.cert_type === 'RapidSSL DV'
             ? <span style={{ fontSize:9, fontWeight:700, color:'#185FA5', background:'#E6F1FB',
                               border:'0.5px solid #B5D4F4', borderRadius:3, padding:'1px 5px' }}>RapidSSL</span>
-            : <span>{cert.cert_type || "Let's Encrypt"}</span>}
+            : <span>{cert.cert_type || 'SSL Certificate'}</span>}
           {cert.issued_at && <><span className="v2-row-meta-sep">·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
         </div>
         {days != null && days <= 90 && <div style={{ marginTop:6 }}><ProgressBar days={days} /></div>}
@@ -608,7 +525,7 @@ function RenewModal({ domain, onClose, nav }) {
             Complete the DNS challenge to get a fresh 90-day certificate.
           </div>
           <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6 }}>
-            This issues a brand new certificate via Let's Encrypt ACME — same process as the first time.
+            This places a new RapidSSL order via TheSSLStore — same process as the first time.
             Your old certificate stays active until you install the new one.
           </div>
         </div>
@@ -617,7 +534,7 @@ function RenewModal({ domain, onClose, nav }) {
           <button className="v2-btn v2-btn-primary" onClick={() => {
             sessionStorage.setItem('prefill_domain', domain)
             onClose()
-            nav('/generate')
+            nav('/buy')
           }}>
             <Shield size={13} /> Renew certificate
           </button>
@@ -966,8 +883,8 @@ function LoggedInDashboard({ user, nav }) {
                 <div className="v2-h1" style={{ fontSize:15 }}>Monitored domains</div>
                 <div className="v2-subtitle">{monitored.length} domain{monitored.length !== 1 ? 's' : ''} tracked via SSL Monitor</div>
               </div>
-              <button className="v2-btn" onClick={() => nav('/monitor')}>
-                <Activity size={12} /> Open Monitor <ArrowRight size={11} />
+              <button className="v2-btn" onClick={() => nav('/dns-providers')}>
+                <Activity size={12} /> DNS Providers <ArrowRight size={11} />
               </button>
             </div>
             <div className="v2-card">
@@ -991,7 +908,7 @@ function LoggedInDashboard({ user, nav }) {
                           )}
                         </div>
                       </div>
-                      <button className="v2-btn v2-btn-ghost v2-btn-sm" onClick={() => nav('/monitor')}>
+                      <button className="v2-btn v2-btn-ghost v2-btn-sm" onClick={() => nav('/dns-providers')}>
                         <ExternalLink size={11} />
                       </button>
                     </div>
@@ -1007,9 +924,9 @@ function LoggedInDashboard({ user, nav }) {
           <div className="v2-section-label" style={{ marginBottom:12 }}>Quick actions</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
             {[
-              { icon:<Shield size={16} />,   label:'Issue certificate', desc:"Generate a free DV SSL via Let's Encrypt", action:() => nav('/generate') },
+              { icon:<Shield size={16} />,   label:'Buy SSL Certificate', desc:'Get a trusted RapidSSL DV cert via TheSSLStore', action:() => nav('/buy') },
               { icon:<Download size={16} />, label:'Install Guide',     desc:'Step-by-step: Nginx, Apache, Caddy, cPanel', action:() => nav('/install') },
-              { icon:<Activity size={16} />, label:'SSL Monitor',       desc:'Track expiry across all your domains',    action:() => nav('/monitor') },
+              { icon:<Activity size={16} />, label:'DNS & Providers',   desc:'Manage Cloudflare, Vercel and DNS credentials', action:() => nav('/dns-providers') },
               { icon:<Server size={16} />,   label:'DNS & Servers',     desc:'Manage providers and agent-enabled hosts',action:() => nav('/dns-providers') },
             ].map(({ icon, label, desc, action }) => (
               <button key={label} onClick={action}
@@ -1048,7 +965,7 @@ function LoggedInDashboard({ user, nav }) {
 // ══════════════════════════════════════════════════════════════════════
 function MarketingDashboard({ nav }) {
   const features = [
-    { icon:<Shield size={18} />,   color:'#10b981', title:'Free SSL Certificates', desc:"Issue trusted DV SSL certificates via Let's Encrypt ACME at zero cost. No credit card, no limits." },
+    { icon:<Shield size={18} />,   color:'#10b981', title:'Free SSL Certificates', desc:'Issue trusted RapidSSL DV certificates via TheSSLStore. Fast issuance, globally trusted.' },
     { icon:<Activity size={18} />, color:'#2563eb', title:'Expiry Monitoring',     desc:'Track SSL health across all your domains. Get alerted before certificates expire.' },
     { icon:<Server size={18} />,   color:'#7c3aed', title:'Agent Auto-Renewal',   desc:'Install the SSLVault agent on your VPS for fully automated renewal — no manual steps.' },
     { icon:<Globe size={18} />,    color:'#f59e0b', title:'DNS Provider Integration', desc:'Connect Cloudflare, Vercel, GoDaddy or DigitalOcean for seamless DNS validation.' },
@@ -1088,8 +1005,8 @@ function MarketingDashboard({ nav }) {
             <button className="v2-btn v2-btn-primary" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => nav('/auth')}>
               <Shield size={14} /> Get started free
             </button>
-            <button className="v2-btn" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => nav('/monitor')}>
-              <Activity size={14} /> Try SSL scanner
+            <button className="v2-btn" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => nav('/buy')}>
+              <Activity size={14} /> Buy SSL certificate
             </button>
           </div>
         </div>
@@ -1126,7 +1043,7 @@ function MarketingDashboard({ nav }) {
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ fontSize:13, fontWeight:500, fontFamily:'monospace', marginBottom:2 }}>{c.domain}</div>
                   <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
-                    {c.status === 'red' ? 'Expired — renew immediately' : `Expires in ${c.days} days · Let's Encrypt`}
+                    {c.status === 'red' ? 'Expired — renew immediately' : `Expires in ${c.days} days · RapidSSL`}
                   </div>
                 </div>
                 <span style={{ fontSize:11, fontWeight:500, color: c.status === 'green' ? 'var(--v2-green-text)' : c.status === 'amber' ? 'var(--v2-amber-text)' : 'var(--v2-red-text)',
