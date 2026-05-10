@@ -413,6 +413,7 @@ function LoggedInDashboard({ user, nav }) {
   const [search, setSearch]   = useState('')
   const [renewDomain, setRenewDomain] = useState(null)
   const [agentCert, setAgentCert] = useState(null)
+  const [showRotated, setShowRotated] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -606,6 +607,7 @@ function LoggedInDashboard({ user, nav }) {
                 )}
               </div>
             ) : (
+              <>
               <div className="v2-list-scroll">
                 {visible.map(cert => (
                   <CertRow key={cert.id} cert={cert}
@@ -613,6 +615,76 @@ function LoggedInDashboard({ user, nav }) {
                     onClick={() => setSelected(selected === cert.id ? null : cert.id)} />
                 ))}
               </div>
+
+              {/* Rotated certs toggle */}
+              {rotatingDomains.length > 0 && (
+                <div>
+                  <button onClick={() => setShowRotated(v => !v)}
+                    style={{ width:'100%', padding:'10px 16px', background:'none', border:'none',
+                              borderTop:'0.5px solid var(--v2-border)', cursor:'pointer',
+                              display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                              fontSize:12, color:'var(--v2-text-3)', fontFamily:'inherit',
+                              fontWeight:500 }}>
+                    <RefreshCw size={11} />
+                    {showRotated
+                      ? `Hide rotated certificates`
+                      : `Show ${rotatingDomains.length} rotated certificate${rotatingDomains.length > 1 ? 's' : ''}`}
+                    <span style={{ fontSize:10, transform: showRotated ? 'rotate(180deg)' : 'none',
+                                    display:'inline-block', transition:'transform 0.2s' }}>▾</span>
+                  </button>
+
+                  {showRotated && (
+                    <div style={{ borderTop:'0.5px solid var(--v2-border)',
+                                   background:'var(--v2-surface-3)' }}>
+                      <div style={{ padding:'8px 16px 4px', display:'flex', alignItems:'center', gap:6 }}>
+                        <span style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
+                                        textTransform:'uppercase', letterSpacing:'0.4px' }}>
+                          Rotated — replaced by new certificates above
+                        </span>
+                      </div>
+                      {certs.filter(c => c.status === 'rotating').map(cert => {
+                        const days = daysLeft(cert.expires_at)
+                        return (
+                          <div key={cert.id}
+                            style={{ display:'flex', alignItems:'center', gap:12,
+                                      padding:'10px 16px', opacity:0.55,
+                                      borderBottom:'0.5px solid var(--v2-border)' }}>
+                            <div style={{ width:30, height:30, borderRadius:6,
+                                           background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
+                                           display:'flex', alignItems:'center', justifyContent:'center',
+                                           flexShrink:0, fontSize:10, fontWeight:700,
+                                           color:'var(--v2-text-3)' }}>
+                              {cert.domain.replace(/^www\./, '').slice(0,2).toUpperCase()}
+                            </div>
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                                <span className="v2-mono" style={{ fontSize:12, color:'var(--v2-text-2)',
+                                                                     fontWeight:500 }}>
+                                  {cert.domain}
+                                </span>
+                                <span style={{ fontSize:9, fontWeight:600, color:'var(--v2-text-3)',
+                                                background:'var(--v2-surface)',
+                                                border:'0.5px solid var(--v2-border)',
+                                                borderRadius:3, padding:'1px 6px',
+                                                textTransform:'uppercase', letterSpacing:'0.3px' }}>
+                                  Rotated
+                                </span>
+                              </div>
+                              <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>
+                                Rotated {cert.rotated_at
+                                  ? formatDistanceToNow(new Date(cert.rotated_at), { addSuffix: true })
+                                  : 'recently'} · Expires {fmtDate(cert.expires_at)}
+                                {' · '}Archived for 30 days then permanently deleted
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+              </>
             )}
           </div>
 
