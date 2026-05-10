@@ -82,6 +82,10 @@ export default function BuyCertificate({ nav }) {
     setChecking(true); setCheckResult(null)
     const result = await callTSS('check_status', { order_id: orderId })
     setChecking(false); setCheckResult(result)
+    // If we got a TXT value back, auto-add it to DNS
+    if (result.txt_value && result.status !== 'active') {
+      await callTSS('retry_dns', { order_id: orderId })
+    }
     if (result.status === 'active') {
       setStep('done')
       loadOrders()
