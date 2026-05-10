@@ -565,3 +565,389 @@
     display: none;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   v2 PRIMITIVES — content pages, dashboards, monitor
+   Added 10 May 2026 — batch redesign of Dashboard, Monitor,
+   Install, KnowledgeBase. Extends what's above; nothing replaced.
+   ────────────────────────────────────────────────────────────── */
+
+/* ── stat tile (small KPI cards) ─────────────────────────────── */
+.v2-stat {
+  background: var(--v2-surface);
+  border: 0.5px solid var(--v2-border);
+  border-radius: var(--v2-r-lg);
+  padding: 14px 16px;
+}
+.v2-stat-label {
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  color: var(--v2-text-3);
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.v2-stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--v2-text);
+  letter-spacing: -0.4px;
+  font-feature-settings: 'tnum';
+}
+.v2-stat-delta {
+  font-size: 11px;
+  color: var(--v2-text-2);
+  margin-top: 3px;
+}
+.v2-stat-delta.up    { color: var(--v2-green-text); }
+.v2-stat-delta.down  { color: var(--v2-red-text); }
+
+/* ── page hero + sub-tabs (replaces gradient page banners) ───── */
+.v2-page-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+.v2-tablist {
+  display: inline-flex;
+  gap: 0;
+  background: transparent;
+  border-bottom: 0.5px solid var(--v2-border);
+  margin: 0 0 18px;
+  padding: 0;
+}
+.v2-tablist-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid transparent;
+  color: var(--v2-text-2);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 4px 11px;
+  margin-right: 22px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: color 0.12s ease, border-color 0.12s ease;
+  margin-bottom: -0.5px;
+}
+.v2-tablist-btn:hover { color: var(--v2-text); }
+.v2-tablist-btn.active {
+  color: var(--v2-text);
+  border-bottom-color: var(--v2-text);
+}
+.v2-tablist-btn .v2-tab-count {
+  color: var(--v2-text-3);
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--v2-hover);
+  border-radius: 100px;
+  padding: 1px 7px;
+}
+.v2-tablist-btn.active .v2-tab-count {
+  background: var(--v2-text);
+  color: white;
+}
+
+/* ── code block (terminal-style) ─────────────────────────────── */
+.v2-code {
+  background: #0a0a0a;
+  border-radius: var(--v2-r-lg);
+  overflow: hidden;
+  border: 0.5px solid #1a1a1a;
+}
+.v2-code-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 12px;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+  background: #111111;
+}
+.v2-code-dots {
+  display: flex;
+  gap: 5px;
+}
+.v2-code-dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: block;
+}
+.v2-code-copy {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #a3a3a3;
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: inherit;
+  transition: color 0.12s ease;
+}
+.v2-code-copy:hover { color: #e5e5e5; }
+.v2-code-copy.copied { color: #34d399; }
+.v2-code pre {
+  margin: 0;
+  padding: 12px 14px;
+  color: #e5e5e5;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.65;
+}
+
+/* ── inline kbd ──────────────────────────────────────────────── */
+.v2-kbd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  background: var(--v2-surface);
+  border: 0.5px solid var(--v2-border);
+  border-bottom-width: 1.5px;
+  border-radius: var(--v2-r-sm);
+  padding: 1px 6px;
+  color: var(--v2-text);
+}
+
+/* ── numbered step ───────────────────────────────────────────── */
+.v2-step {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 0.5px solid var(--v2-border);
+}
+.v2-step:last-child { border-bottom: none; }
+.v2-step-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--v2-text);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-feature-settings: 'tnum';
+  line-height: 1;
+  margin-top: 1px;
+}
+.v2-step-body {
+  flex: 1;
+  min-width: 0;
+}
+.v2-step-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v2-text);
+  margin-bottom: 6px;
+}
+.v2-step-body p {
+  font-size: 13px;
+  color: var(--v2-text-2);
+  line-height: 1.6;
+  margin: 0 0 8px 0;
+}
+
+/* ── accordion (knowledge base sections) ─────────────────────── */
+.v2-accordion {
+  background: var(--v2-surface);
+  border: 0.5px solid var(--v2-border);
+  border-radius: var(--v2-r-lg);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.v2-accordion-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.12s ease;
+}
+.v2-accordion-head:hover { background: var(--v2-surface-3); }
+.v2-accordion-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--v2-r-md);
+  background: var(--v2-surface-3);
+  border: 0.5px solid var(--v2-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--v2-text-2);
+}
+.v2-accordion-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--v2-text);
+  flex: 1;
+}
+.v2-accordion-subtitle {
+  font-size: 11px;
+  color: var(--v2-text-3);
+  margin-top: 2px;
+}
+.v2-accordion-chev {
+  color: var(--v2-text-3);
+  transition: transform 0.18s ease;
+  flex-shrink: 0;
+}
+.v2-accordion.open .v2-accordion-chev { transform: rotate(90deg); }
+.v2-accordion-body {
+  padding: 0 16px 16px;
+  border-top: 0.5px solid var(--v2-border);
+  padding-top: 16px;
+  font-size: 13px;
+  color: var(--v2-text-2);
+  line-height: 1.7;
+}
+.v2-accordion-body p { margin: 0 0 10px 0; }
+.v2-accordion-body strong { color: var(--v2-text); font-weight: 500; }
+.v2-accordion-body ul, .v2-accordion-body ol {
+  padding-left: 20px;
+  margin: 0 0 10px 0;
+}
+.v2-accordion-body li { margin-bottom: 4px; }
+.v2-accordion-body a { color: var(--v2-text); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ── data table ──────────────────────────────────────────────── */
+.v2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.v2-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--v2-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 0.5px solid var(--v2-border);
+  background: var(--v2-surface-2);
+}
+.v2-table td {
+  padding: 11px 12px;
+  border-bottom: 0.5px solid var(--v2-border);
+  color: var(--v2-text);
+  vertical-align: middle;
+}
+.v2-table tbody tr:hover { background: var(--v2-surface-3); }
+.v2-table tbody tr:last-child td { border-bottom: none; }
+
+/* ── progress / capacity bar ─────────────────────────────────── */
+.v2-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--v2-hover);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.v2-bar-fill {
+  height: 100%;
+  background: var(--v2-green);
+  border-radius: 100px;
+  transition: width 0.3s ease;
+}
+.v2-bar-fill.amber { background: var(--v2-amber); }
+.v2-bar-fill.red   { background: var(--v2-red); }
+
+/* ── select / native dropdown ────────────────────────────────── */
+.v2-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--v2-surface);
+  border: 0.5px solid var(--v2-border-strong);
+  border-radius: var(--v2-r-md);
+  padding: 7px 28px 7px 11px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--v2-text);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px;
+}
+.v2-select:focus {
+  outline: none;
+  border-color: var(--v2-text);
+  box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.06);
+}
+
+/* ── small icon-tile (used in info cards, knowledge base) ────── */
+.v2-icontile {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--v2-r-md);
+  background: var(--v2-surface-3);
+  border: 0.5px solid var(--v2-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--v2-text-2);
+  flex-shrink: 0;
+}
+
+/* ── soft callout (replaces yellow gradient banners) ─────────── */
+.v2-callout {
+  background: var(--v2-surface-2);
+  border: 0.5px solid var(--v2-border);
+  border-left: 2px solid var(--v2-text-3);
+  border-radius: var(--v2-r-md);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--v2-text-2);
+  line-height: 1.6;
+}
+.v2-callout-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--v2-text);
+  margin-bottom: 4px;
+}
+.v2-callout.tip      { border-left-color: var(--v2-green); }
+.v2-callout.warning  { border-left-color: var(--v2-amber); }
+.v2-callout.error    { border-left-color: var(--v2-red); }
+.v2-callout.info     { border-left-color: #2563eb; }
+
+/* ── metric row (small labelled values, side by side) ────────── */
+.v2-metric-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.v2-metric-row .v2-metric-label {
+  color: var(--v2-text-3);
+}
+.v2-metric-row .v2-metric-value {
+  color: var(--v2-text);
+  font-weight: 500;
+}
+
+/* ── responsive ──────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .v2-tablist-btn {
+    margin-right: 14px;
+    font-size: 12px;
+    padding: 9px 2px 10px;
+  }
+  .v2-stat-value { font-size: 19px; }
+  .v2-table th, .v2-table td { padding: 8px 10px; }
+}
