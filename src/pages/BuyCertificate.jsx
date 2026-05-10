@@ -329,7 +329,7 @@ export default function BuyCertificate({ nav }) {
               <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:16 }}>
                 {[
                   { label:'Certificate', value: selectedProduct.name },
-                  { label:'Domain',      value: domain.trim().replace(/^https?:///, '').replace(//.*/, '') || '—' },
+                  { label:'Domain',      value: domain.trim().split('://').pop().split('/')[0] || '—' },
                   { label:'Validity',    value: `${years} year${years > 1 ? 's' : ''}` },
                   { label:'Contact',     value: `${firstName} ${lastName}` },
                   { label:'Email',       value: adminEmail },
