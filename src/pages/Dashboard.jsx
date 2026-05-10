@@ -3,8 +3,7 @@ import {
   Shield, Plus, RefreshCw, Download, ExternalLink, X, Lock,
   AlertTriangle, CheckCircle, Globe, ChevronRight,
   Copy, Check, TrendingUp, Activity, Zap,
-  ArrowRight, Server, FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck,
-  Fingerprint, Hash
+  ArrowRight, Server, FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -34,79 +33,6 @@ function fmtDateLong(iso) {
   if (!iso) return '—'
   return format(new Date(iso), 'PPP')
 }
-// Decode PEM → DER bytes — extracts only the first cert from a fullchain
-function pemToDer(pem) {
-  // Extract just the first certificate block from potentially chained PEM
-  const match = pem.match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/)
-  if (!match) throw new Error('No certificate found in PEM')
-  const b64 = match[0]
-    .replace('-----BEGIN CERTIFICATE-----', '')
-    .replace('-----END CERTIFICATE-----', '')
-    .replace(/\s/g, '')
-  const bin = atob(b64)
-  return Uint8Array.from(bin, c => c.charCodeAt(0))
-}
-
-// Real SHA-256 fingerprint via Web Crypto — returns "AA:BB:CC:…" (20 pairs shown)
-async function computeFingerprint(pem) {
-  try {
-    const der = pemToDer(pem)
-    const hash = await crypto.subtle.digest('SHA-256', der)
-    const hex = Array.from(new Uint8Array(hash))
-      .map(b => b.toString(16).padStart(2, '0').toUpperCase())
-    // Show first 10 pairs for display (SHA-256 is 32 bytes = 64 hex = 32 pairs, truncate for UI)
-    return hex.slice(0, 10).join(':') + '…'
-  } catch { return null }
-}
-
-// Real serial number from DER ASN.1 structure
-// X.509 DER layout: SEQUENCE { SEQUENCE { [0] version, INTEGER serialNumber, … } }
-// Outer SEQUENCE tag=0x30, inner SEQUENCE tag=0x30, skip version [0] if present, then INTEGER=0x02
-function parseSerial(pem) {
-  try {
-    const der = pemToDer(pem)
-    let pos = 0
-    const readLen = (d, p) => {
-      if (d[p] < 0x80) return { len: d[p], next: p + 1 }
-      const numBytes = d[p] & 0x7f
-      let len = 0
-      for (let i = 0; i < numBytes; i++) len = (len << 8) | d[p + 1 + i]
-      return { len, next: p + 1 + numBytes }
-    }
-    // Skip outer SEQUENCE
-    if (der[pos++] !== 0x30) return null
-    pos = readLen(der, pos).next
-    // Skip tbsCertificate SEQUENCE
-    if (der[pos++] !== 0x30) return null
-    pos = readLen(der, pos).next
-    // Skip optional version [0] EXPLICIT
-    if (der[pos] === 0xa0) { pos++; const v = readLen(der, pos); pos = v.next + v.len }
-    // Now at serialNumber INTEGER
-    if (der[pos++] !== 0x02) return null
-    const { len, next } = readLen(der, pos)
-    pos = next
-    // Serial bytes (skip leading 0x00 padding byte if present)
-    const start = der[pos] === 0x00 ? pos + 1 : pos
-    const end = Math.min(pos + len, pos + 20) // cap at 20 bytes for display
-    const hex = Array.from(der.slice(start, end))
-      .map(b => b.toString(16).padStart(2, '0').toUpperCase())
-    return hex.join(':')
-  } catch { return null }
-}
-
-// Hook: compute both fp and serial async from PEM
-function useCertMeta(pem) {
-  const [fp, setFp] = useState(null)
-  const [serial, setSerial] = useState(null)
-  useEffect(() => {
-    if (!pem) return
-    setFp(null); setSerial(null)
-    computeFingerprint(pem).then(setFp)
-    try { setSerial(parseSerial(pem)) } catch {}
-  }, [pem])
-  return { fp, serial }
-}
-
 function dl(text, filename) {
   const blob = new Blob([text], { type: 'text/plain' })
   const url = URL.createObjectURL(blob)
@@ -171,7 +97,6 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
 
   const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
   const hasAgentInstall = cert.status === 'active' || cert.agent_url
-  const { fp, serial } = useCertMeta(cert.cert_pem)
 
   // Auto-dismiss the NEW pill after 30s, banner after 8s
   useEffect(() => {
@@ -382,41 +307,8 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
         ))}
 
         {/* Fingerprint row */}
-        {cert.cert_pem && (
-          <div className="v2-metric-row" style={{ justifyContent:'space-between', alignItems:'flex-start' }}>
-            <span className="v2-metric-label" style={{ display:'flex', alignItems:'center', gap:4 }}>
-              <Fingerprint size={10} color="var(--v2-text-3)" /> Fingerprint
-            </span>
-            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              {justRotated && newPillVisible && fp && (
-                <span style={{
-                  fontSize:8, fontWeight:700, color:'var(--v2-green)', background:'var(--v2-green-bg)',
-                  border:'0.5px solid var(--v2-green-border)', borderRadius:3, padding:'1px 5px',
-                  textTransform:'uppercase', letterSpacing:'0.4px',
-                  animation:'pulse 2s ease-in-out infinite'
-                }}>NEW</span>
-              )}
-              <span className="v2-mono" style={{ fontSize:10, color: fp ? 'var(--v2-text-2)' : 'var(--v2-text-3)',
-                                                   letterSpacing:'0.3px' }}>
-                {fp || 'computing…'}
-              </span>
-              {fp && <CopyBtn text={fp} label="" />}
-            </div>
-          </div>
-        )}
 
         {/* Serial row */}
-        {cert.cert_pem && (
-          <div className="v2-metric-row" style={{ justifyContent:'space-between' }}>
-            <span className="v2-metric-label" style={{ display:'flex', alignItems:'center', gap:4 }}>
-              <Hash size={10} color="var(--v2-text-3)" /> Serial
-            </span>
-            <span className="v2-mono" style={{ fontSize:10, color: serial ? 'var(--v2-text-2)' : 'var(--v2-text-3)',
-                                                letterSpacing:'0.3px' }}>
-              {serial || 'computing…'}
-            </span>
-          </div>
-        )}
       </div>
 
       {/* Rotation verification block */}
@@ -433,22 +325,16 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
             <div>
               <div style={{ fontSize:9, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
                              letterSpacing:'0.4px', marginBottom:4 }}>Previous cert</div>
-              <div className="v2-mono" style={{ fontSize:10, color:'var(--v2-text-3)', wordBreak:'break-all' }}>
-                {justRotated.oldFingerprint || '—'}
-              </div>
-              <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:3 }}>
-                exp {fmtDate(justRotated.oldExpires)}
+              <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
+                Expired {fmtDate(justRotated.oldExpires)}
               </div>
             </div>
             <ArrowRight size={12} color="var(--v2-green)" style={{ flexShrink:0 }} />
             <div>
               <div style={{ fontSize:9, fontWeight:600, color:'var(--v2-green-text)', textTransform:'uppercase',
                              letterSpacing:'0.4px', marginBottom:4 }}>Current cert</div>
-              <div className="v2-mono" style={{ fontSize:10, color:'var(--v2-text)', wordBreak:'break-all' }}>
-                {fp || '—'}
-              </div>
-              <div style={{ fontSize:10, color:'var(--v2-text-2)', marginTop:3 }}>
-                exp {fmtDate(cert.expires_at)}
+              <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>
+                Expires {fmtDate(cert.expires_at)}
               </div>
             </div>
           </div>
@@ -783,14 +669,11 @@ function LoggedInDashboard({ user, nav }) {
           .sort((a, b) => new Date(b.issued_at || b.created_at) - new Date(a.issued_at || a.created_at))[0]
         if (newCert) {
           setSelected(newCert.id)
-          computeFingerprint(oldCert.cert_pem).then(oldFp => {
-            setJustRotated({
-              domain: oldCert.domain,
-              oldFingerprint: oldFp,
-              oldExpires: oldCert.expires_at,
-              oldIssued: oldCert.issued_at,
-              at: Date.now(),
-            })
+          setJustRotated({
+            domain: oldCert.domain,
+            oldExpires: oldCert.expires_at,
+            oldIssued: oldCert.issued_at,
+            at: Date.now(),
           })
         }
       }
