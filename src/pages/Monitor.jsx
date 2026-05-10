@@ -547,60 +547,24 @@ export default function Monitor({ nav }) {
     window.location.href = '/generate'
   }
 
-  const deleteCert = async (id) => {
-    if (!confirm('Delete this certificate?')) return
-    await supabase.from('certificates').delete().eq('id', id)
-    setCerts(c => c.filter(x => x.id !== id))
-  }
-
-  const download = (content, filename) => {
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' }))
-    a.download = filename; a.click()
-  }
-
-  const getStatus = (cert) => {
-    const days = cert.expires_at ? differenceInDays(new Date(cert.expires_at), new Date()) : 0
-    if (days < 0) return 'expired'
-    if (days < 14) return 'expiring'
-    return 'active'
-  }
-
-  const filteredCerts = certs
-    .filter(c => {
-      if (search && !c.domain?.toLowerCase().includes(search.toLowerCase())) return false
-      if (filter === 'active') return getStatus(c) === 'active'
-      if (filter === 'expiring') return getStatus(c) === 'expiring'
-      if (filter === 'expired') return getStatus(c) === 'expired'
-      return true
-    })
-    .sort((a, b) => {
-      if (sortBy === 'expires') return new Date(a.expires_at || 0) - new Date(b.expires_at || 0)
-      if (sortBy === 'domain') return (a.domain || '').localeCompare(b.domain || '')
-      return new Date(b.issued_at || 0) - new Date(a.issued_at || 0)
-    })
-
-  const stats = {
-    total: certs.length,
-    active: certs.filter(c => getStatus(c) === 'active').length,
-    expiring: certs.filter(c => getStatus(c) === 'expiring').length,
-    expired: certs.filter(c => getStatus(c) === 'expired').length,
-  }
 
   if (!authLoading && !user) return <PublicScan nav={nav} />
+
+  // Stats from monitored domains only
+  const healthy  = monitored.filter(m => m.last_days_left != null && m.last_days_left >= 30).length
+  const expiring = monitored.filter(m => m.last_days_left != null && m.last_days_left >= 0 && m.last_days_left < 30).length
+  const expired  = monitored.filter(m => m.last_days_left != null && m.last_days_left < 0).length
 
   return (
     <div className="v2-page">
       <div className="v2-container">
         {showAdd && <AddModal onAdd={addMonitored} onClose={() => setShowAdd(false)} />}
-        {selectedCert && <CertDetailModal cert={selectedCert} onClose={() => setSelectedCert(null)} onRenew={requestCertForDomain} />}
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 4, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h1 className="v2-h1">Certificate monitor</h1>
+            <h1 className="v2-h1">SSL Monitor</h1>
             <p className="v2-subtitle">
-              {stats.total} certificate{stats.total === 1 ? '' : 's'} ·{' '}
               {monitored.length} monitored domain{monitored.length === 1 ? '' : 's'}
             </p>
           </div>
@@ -608,49 +572,49 @@ export default function Monitor({ nav }) {
             <button className="v2-btn" onClick={() => setShowAdd(true)}>
               <Plus size={13} strokeWidth={2.2} /> Monitor domain
             </button>
-            <button className="v2-btn v2-btn-primary" onClick={() => window.location.href = '/generate'}>
-              <Plus size={13} strokeWidth={2.2} /> New certificate
+            <button className="v2-btn v2-btn-primary" onClick={() => nav('/generate')}>
+              <Plus size={13} strokeWidth={2.2} /> Issue certificate
             </button>
           </div>
         </div>
 
         {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, margin: '20px 0' }}>
-          <div className="v2-stat">
-            <div className="v2-stat-label">Total</div>
-            <div className="v2-stat-value">{stats.total}</div>
+        {monitored.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, margin: '20px 0' }}>
+            <div className="v2-stat">
+              <div className="v2-stat-label">Monitored</div>
+              <div className="v2-stat-value">{monitored.length}</div>
+            </div>
+            <div className="v2-stat" style={{ borderTop: '2px solid var(--v2-green)' }}>
+              <div className="v2-stat-label">Healthy</div>
+              <div className="v2-stat-value" style={{ color: 'var(--v2-green-text)' }}>{healthy}</div>
+            </div>
+            <div className="v2-stat" style={{ borderTop: expiring > 0 ? '2px solid var(--v2-amber)' : undefined }}>
+              <div className="v2-stat-label">Expiring soon</div>
+              <div className="v2-stat-value" style={{ color: expiring > 0 ? 'var(--v2-amber-text)' : 'var(--v2-text)' }}>{expiring}</div>
+            </div>
+            <div className="v2-stat" style={{ borderTop: expired > 0 ? '2px solid var(--v2-red)' : undefined }}>
+              <div className="v2-stat-label">Expired</div>
+              <div className="v2-stat-value" style={{ color: expired > 0 ? 'var(--v2-red-text)' : 'var(--v2-text)' }}>{expired}</div>
+            </div>
           </div>
-          <div className="v2-stat">
-            <div className="v2-stat-label">Active</div>
-            <div className="v2-stat-value" style={{ color: stats.active > 0 ? 'var(--v2-green-text)' : 'var(--v2-text)' }}>{stats.active}</div>
-          </div>
-          <div className="v2-stat">
-            <div className="v2-stat-label">Expiring</div>
-            <div className="v2-stat-value" style={{ color: stats.expiring > 0 ? 'var(--v2-amber-text)' : 'var(--v2-text)' }}>{stats.expiring}</div>
-          </div>
-          <div className="v2-stat">
-            <div className="v2-stat-label">Expired</div>
-            <div className="v2-stat-value" style={{ color: stats.expired > 0 ? 'var(--v2-red-text)' : 'var(--v2-text)' }}>{stats.expired}</div>
-          </div>
-        </div>
+        )}
 
         {/* Alerts */}
-        {stats.expiring > 0 && (
+        {expiring > 0 && (
           <div className="v2-callout warning" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
             <Bell size={14} strokeWidth={2} />
             <span style={{ flex: 1 }}>
-              <strong>{stats.expiring} certificate{stats.expiring > 1 ? 's' : ''}</strong> expiring within 14 days.
+              <strong>{expiring} domain{expiring > 1 ? 's' : ''}</strong> expiring within 30 days.
             </span>
-            <button className="v2-btn v2-btn-sm" onClick={() => setFilter('expiring')}>View</button>
           </div>
         )}
-        {stats.expired > 0 && (
+        {expired > 0 && (
           <div className="v2-callout error" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
             <AlertTriangle size={14} strokeWidth={2} />
             <span style={{ flex: 1 }}>
-              <strong>{stats.expired} certificate{stats.expired > 1 ? 's' : ''}</strong> already expired. Renew immediately.
+              <strong>{expired} domain{expired > 1 ? 's' : ''}</strong> already expired.
             </span>
-            <button className="v2-btn v2-btn-sm" onClick={() => setFilter('expired')}>View</button>
           </div>
         )}
 
