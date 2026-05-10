@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { usePlan } from '../hooks/usePlan'
 import { differenceInDays, format, formatDistanceToNow } from 'date-fns'
 import '../styles/design-v2.css'
 import AgentInstall from '../components/AgentInstall'
@@ -176,6 +177,11 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted }) {
             </div>
             <div style={{ fontSize:11, color:'#b45309', lineHeight:1.5 }}>
               After agent installation is complete, delete the server-side copy to reduce exposure.
+              {!isPro && (
+                <span> Or <button onClick={() => nav('/pricing')} style={{ background:'none', border:'none',
+                  cursor:'pointer', color:'#7c3aed', fontWeight:600, fontSize:11, padding:0,
+                  textDecoration:'underline', textUnderlineOffset:2 }}>upgrade to KeyLocker Pro</button> for encrypted vault storage.</span>
+              )}
             </div>
           </div>
           <button className="v2-btn v2-btn-sm" onClick={() => setKeyDelConfirm(true)}
@@ -400,6 +406,7 @@ function RenewModal({ domain, onClose, nav }) {
 // LOGGED-IN DASHBOARD
 // ══════════════════════════════════════════════════════════════════════
 function LoggedInDashboard({ user, nav }) {
+  const { isPro } = usePlan(user)
   const [certs, setCerts]     = useState([])
   const [monitored, setMon]   = useState([])
   const [loading, setLoading] = useState(true)

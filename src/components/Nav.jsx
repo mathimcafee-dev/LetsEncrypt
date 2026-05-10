@@ -1,10 +1,12 @@
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Activity, Settings, BookOpen, ChevronDown, Info, Mail, User } from 'lucide-react'
+import { Shield, LayoutDashboard, PlusCircle, LogOut, LogIn, Activity, Settings, BookOpen, ChevronDown, Info, Mail, User, Lock, Zap } from 'lucide-react'
+import { usePlan } from '../hooks/usePlan'
 import { useState } from 'react'
 
 export default function Nav({ nav, page }) {
   const { user } = useAuth()
+  const { isPro } = usePlan(user)
   const [moreOpen, setMoreOpen] = useState(false)
   const primary = [
     { path:'/generate', label:'Issue Certificate', icon:PlusCircle },
@@ -14,6 +16,8 @@ export default function Nav({ nav, page }) {
     { path:'/dns-providers', label:'DNS Providers', icon:Settings },
     { path:'/install', label:'Install Guide', icon:BookOpen },
     { path:'/knowledge-base', label:'Knowledge Base', icon:BookOpen },
+    { path:'/keylocker', label:'KeyLocker', icon:Lock, pro:true },
+    { path:'/pricing', label:'Pricing', icon:Zap },
     { path:'/about', label:'About', icon:Info },
     { path:'/developer', label:'Developer', icon:User },
     { path:'/contact', label:'Contact', icon:Mail },
@@ -61,11 +65,21 @@ export default function Nav({ nav, page }) {
             {moreOpen&&(
               <div style={{position:'absolute',top:'calc(100% + 6px)',right:0,background:'white',border:'1px solid #e2e8f0',borderRadius:9,padding:5,boxShadow:'0 8px 24px rgba(0,0,0,0.1)',zIndex:300,minWidth:170}}
                 onMouseLeave={()=>setMoreOpen(false)}>
-                {more.map(({path,label,icon:Icon})=>(
+                {more.map(({path,label,icon:Icon,pro})=>(
                   <div key={path} onClick={()=>{nav(path);setMoreOpen(false)}} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 11px',borderRadius:6,cursor:'pointer',fontSize:13,fontWeight:600,color:'#475569'}}
                     onMouseEnter={e=>e.currentTarget.style.background='#f8fafc'}
                     onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
                     <Icon size={13} color='#94a3b8'/>{label}
+                    {pro && !isPro && (
+                      <span style={{marginLeft:'auto',fontSize:9,fontWeight:700,color:'#7c3aed',
+                        background:'rgba(124,58,237,0.08)',border:'0.5px solid rgba(124,58,237,0.2)',
+                        borderRadius:3,padding:'1px 5px',letterSpacing:'0.2px'}}>PRO</span>
+                    )}
+                    {pro && isPro && (
+                      <span style={{marginLeft:'auto',fontSize:9,fontWeight:700,color:'#059669',
+                        background:'var(--v2-green-bg)',border:'0.5px solid var(--v2-green-border)',
+                        borderRadius:3,padding:'1px 5px'}}>✓</span>
+                    )}
                   </div>
                 ))}
               </div>
