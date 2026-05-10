@@ -587,17 +587,23 @@ function RenewModal({ domain, onClose, nav }) {
         </div>
         <div className="v2-modal-body">
           <div className="v2-callout tip" style={{ marginBottom:16 }}>
-            <div className="v2-callout-title">Ready to renew</div>
-            Go to Issue Certificate, enter <strong>{domain}</strong>, and follow the steps.
+            <div className="v2-callout-title">Domain pre-filled for you</div>
+            Clicking Renew will open Issue Certificate with <strong>{domain}</strong> already entered.
+            Complete the DNS challenge to get a fresh 90-day certificate.
           </div>
           <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6 }}>
-            SSLVault uses ACME / Let's Encrypt to issue 90-day certificates at no cost. Renewal takes under 2 minutes if your DNS is configured.
+            This issues a brand new certificate via Let's Encrypt ACME — same process as the first time.
+            Your old certificate stays active until you install the new one.
           </div>
         </div>
         <div className="v2-modal-foot">
           <button className="v2-btn" onClick={onClose}>Cancel</button>
-          <button className="v2-btn v2-btn-primary" onClick={() => { onClose(); nav('/generate') }}>
-            <Shield size={13} /> Go to Issue Certificate
+          <button className="v2-btn v2-btn-primary" onClick={() => {
+            sessionStorage.setItem('prefill_domain', domain)
+            onClose()
+            nav('/generate')
+          }}>
+            <Shield size={13} /> Renew certificate
           </button>
         </div>
       </div>
