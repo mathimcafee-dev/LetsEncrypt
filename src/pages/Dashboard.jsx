@@ -34,11 +34,14 @@ function fmtDateLong(iso) {
   if (!iso) return '—'
   return format(new Date(iso), 'PPP')
 }
-// Decode PEM → DER bytes
+// Decode PEM → DER bytes — extracts only the first cert from a fullchain
 function pemToDer(pem) {
-  const b64 = pem
-    .replace(/-----BEGIN CERTIFICATE-----/, '')
-    .replace(/-----END CERTIFICATE-----/, '')
+  // Extract just the first certificate block from potentially chained PEM
+  const match = pem.match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/)
+  if (!match) throw new Error('No certificate found in PEM')
+  const b64 = match[0]
+    .replace('-----BEGIN CERTIFICATE-----', '')
+    .replace('-----END CERTIFICATE-----', '')
     .replace(/\s/g, '')
   const bin = atob(b64)
   return Uint8Array.from(bin, c => c.charCodeAt(0))
