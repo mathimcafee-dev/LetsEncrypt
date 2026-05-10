@@ -5,7 +5,6 @@ import Nav from './components/Nav'
 import Home from './pages/Home'
 import Generate from './pages/Generate'
 import Dashboard from './pages/Dashboard'
-import Monitor from './pages/Monitor'
 import Auth from './pages/Auth'
 import SharedHostingGuide from './pages/SharedHostingGuide'
 import KnowledgeBase from './pages/KnowledgeBase'
@@ -35,9 +34,7 @@ export default function App() {
       {page === '/' && <Home nav={nav} />}
       {page === '/generate' && <Generate nav={nav} />}
       {page === '/quick-setup' && <Generate nav={nav} />}
-      {page === '/dashboard' && <Dashboard nav={nav} />}
-      {page === '/monitor' && <Monitor nav={nav} />}
-      {page === '/dns-providers' && <DnsProviders nav={nav} />}
+      {page === '/dashboard' && <Dashboard nav={nav} />}      {page === '/dns-providers' && <DnsProviders nav={nav} />}
       {page === '/install' && <Install nav={nav} />}
       {page === '/knowledge-base' && <KnowledgeBase nav={nav} />}
       {page === '/get-started' && <GetStarted nav={nav} />}
