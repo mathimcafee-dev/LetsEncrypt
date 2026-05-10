@@ -132,7 +132,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
     const provider = creds[0].provider
     const sessionId = Math.random().toString(36).slice(2)
     const callAcme = async (action) => {
-      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl', {
+      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, sessionId, domain, user_id: cert.user_id }),
@@ -192,7 +192,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
       setRenewState({
         phase: 'error',
         msg: isRateLimit
-          ? `Let's Encrypt rate limit reached for ${domain}. LE allows 5 certs/domain/week. Try again in a few days.`
+          ? `SSL Certificate rate limit reached for ${domain}. LE allows 5 certs/domain/week. Try again in a few days.`
           : `Renewal failed: ${msg}`
       })
     }
@@ -287,7 +287,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
           { label:'Domain',  value: cert.domain },
           { label:'Issued',  value: fmtDate(cert.issued_at || cert.created_at), isNew: justRotated && newPillVisible },
           { label:'Expires', value: fmtDate(cert.expires_at), isNew: justRotated && newPillVisible },
-          { label:'Type',    value: cert.cert_type || "Let's Encrypt DV" },
+          { label:'Type',    value: cert.cert_type || "SSL Certificate" },
           { label:'Status',  value: cert.status || 'issued' },
         ].map(({ label, value, isNew }) => (
           <div key={label} className="v2-metric-row" style={{ justifyContent:'space-between' }}>
@@ -579,7 +579,7 @@ function CertRow({ cert, selected, onClick }) {
           {cert.cert_type === 'RapidSSL DV'
             ? <span style={{ fontSize:9, fontWeight:700, color:'#185FA5', background:'#E6F1FB',
                               border:'0.5px solid #B5D4F4', borderRadius:3, padding:'1px 5px' }}>RapidSSL</span>
-            : <span>{cert.cert_type || "Let's Encrypt"}</span>}
+            : <span>{cert.cert_type || "SSL Certificate"}</span>}
           {cert.issued_at && <><span className="v2-row-meta-sep">·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
         </div>
         {days != null && days <= 90 && <div style={{ marginTop:6 }}><ProgressBar days={days} /></div>}
@@ -608,7 +608,7 @@ function RenewModal({ domain, onClose, nav }) {
             Complete the DNS challenge to get a fresh 90-day certificate.
           </div>
           <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6 }}>
-            This issues a brand new certificate via Let's Encrypt ACME — same process as the first time.
+            This issues a brand new certificate via SSL Certificate ACME — same process as the first time.
             Your old certificate stays active until you install the new one.
           </div>
         </div>
@@ -1007,7 +1007,7 @@ function LoggedInDashboard({ user, nav }) {
           <div className="v2-section-label" style={{ marginBottom:12 }}>Quick actions</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
             {[
-              { icon:<Shield size={16} />,   label:'Issue certificate', desc:"Generate a free DV SSL via Let's Encrypt", action:() => nav('/generate') },
+              { icon:<Shield size={16} />,   label:'Issue certificate', desc:"Generate a free DV SSL via SSL Certificate", action:() => nav('/generate') },
               { icon:<Download size={16} />, label:'Install Guide',     desc:'Step-by-step: Nginx, Apache, Caddy, cPanel', action:() => nav('/install') },
               { icon:<Activity size={16} />, label:'SSL Monitor',       desc:'Track expiry across all your domains',    action:() => nav('/monitor') },
               { icon:<Server size={16} />,   label:'DNS & Servers',     desc:'Manage providers and agent-enabled hosts',action:() => nav('/dns-providers') },
@@ -1048,7 +1048,7 @@ function LoggedInDashboard({ user, nav }) {
 // ══════════════════════════════════════════════════════════════════════
 function MarketingDashboard({ nav }) {
   const features = [
-    { icon:<Shield size={18} />,   color:'#10b981', title:'Free SSL Certificates', desc:"Issue trusted DV SSL certificates via Let's Encrypt ACME at zero cost. No credit card, no limits." },
+    { icon:<Shield size={18} />,   color:'#10b981', title:'Free SSL Certificates', desc:"Issue trusted DV SSL certificates via SSL Certificate ACME at zero cost. No credit card, no limits." },
     { icon:<Activity size={18} />, color:'#2563eb', title:'Expiry Monitoring',     desc:'Track SSL health across all your domains. Get alerted before certificates expire.' },
     { icon:<Server size={18} />,   color:'#7c3aed', title:'Agent Auto-Renewal',   desc:'Install the SSLVault agent on your VPS for fully automated renewal — no manual steps.' },
     { icon:<Globe size={18} />,    color:'#f59e0b', title:'DNS Provider Integration', desc:'Connect Cloudflare, Vercel, GoDaddy or DigitalOcean for seamless DNS validation.' },
@@ -1126,7 +1126,7 @@ function MarketingDashboard({ nav }) {
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ fontSize:13, fontWeight:500, fontFamily:'monospace', marginBottom:2 }}>{c.domain}</div>
                   <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
-                    {c.status === 'red' ? 'Expired — renew immediately' : `Expires in ${c.days} days · Let's Encrypt`}
+                    {c.status === 'red' ? 'Expired — renew immediately' : `Expires in ${c.days} days · SSL Certificate`}
                   </div>
                 </div>
                 <span style={{ fontSize:11, fontWeight:500, color: c.status === 'green' ? 'var(--v2-green-text)' : c.status === 'amber' ? 'var(--v2-amber-text)' : 'var(--v2-red-text)',
