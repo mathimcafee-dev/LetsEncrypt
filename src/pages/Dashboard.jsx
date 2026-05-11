@@ -94,10 +94,32 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
   const [bannerVisible, setBannerVisible] = useState(true)
   const [newPillVisible, setNewPillVisible] = useState(true)
   const [renewState, setRenewState] = useState(null)
+  const [revokeConfirm, setRevokeConfirm] = useState(false)
+  const [revokeReason, setRevokeReason]   = useState('Unspecified')
+  const [revoking, setRevoking]           = useState(false)
+  const [revokeError, setRevokeError]     = useState('')
+  const isTssCert = !!cert.tss_order_id
+  const isRevoked = cert.status === 'revoked' || cert.status === 'sandbox_revoked'
   // renewState: null | { phase: 'checking'|'issuing'|'verifying'|'finalizing'|'done'|'error', msg: string }
 
   const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
   const hasAgentInstall = !!cert.agent_url
+
+  const doRevoke = async () => {
+    setRevoking(true); setRevokeError('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ action: 'revoke', cert_id: cert.id, revoke_reason: revokeReason })
+      })
+      const data = await res.json()
+      if (!data.ok) { setRevokeError(data.error || 'Revocation failed'); setRevoking(false); return }
+      setRevokeConfirm(false); setRevoking(false)
+      onDelete(cert.id)
+    } catch (e) { setRevokeError(String(e)); setRevoking(false) }
+  }
 
   // Auto-dismiss the NEW pill after 30s, banner after 8s
   useEffect(() => {
@@ -480,10 +502,73 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
           <Server size={11} /> Install
         </button>
         {!delConfirm
-          ? <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => setDelConfirm(true)}><X size={11} /> Delete</button>
+          ? <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => { setDelConfirm(true); setRevokeConfirm(false) }}><X size={11} /> Delete</button>
           : <button className="v2-btn v2-btn-danger" onClick={() => onDelete(cert.id)}>Confirm delete</button>
         }
+        {/* Revoke — only for TSS certs that are not already revoked */}
+        {isTssCert && !isRevoked && (
+          <button
+            className="v2-btn v2-btn-sm"
+            onClick={() => { setRevokeConfirm(v => !v); setDelConfirm(false); setRevokeError('') }}
+            style={{ fontSize:12, borderColor:'#f97316', color:'#f97316' }}>
+            🚫 Revoke
+          </button>
+        )}
       </div>
+
+      {/* Revoke confirmation panel */}
+      {revokeConfirm && (
+        <div style={{ marginTop:12, background:'#fff7ed', border:'1px solid #fed7aa',
+          borderRadius:'var(--v2-r-md)', padding:'14px' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
+            <span style={{ fontSize:16 }}>⚠️</span>
+            <span style={{ fontWeight:700, fontSize:13, color:'#9a3412' }}>Revoke this certificate?</span>
+          </div>
+          <p style={{ fontSize:12, color:'#92400e', marginBottom:12, lineHeight:1.6 }}>
+            This will permanently revoke <strong>{cert.domain}</strong> via TheSSLStore API.
+            Browsers will reject the certificate immediately. This cannot be undone.
+          </p>
+          <div style={{ marginBottom:12 }}>
+            <label style={{ fontSize:11, fontWeight:700, color:'#92400e', display:'block', marginBottom:5 }}>
+              Reason for revocation
+            </label>
+            <select
+              value={revokeReason}
+              onChange={e => setRevokeReason(e.target.value)}
+              style={{ width:'100%', fontSize:12, padding:'7px 10px', borderRadius:6,
+                border:'1px solid #fed7aa', background:'white', color:'#1c1917',
+                fontFamily:'inherit', cursor:'pointer' }}>
+              <option value="Unspecified">Unspecified</option>
+              <option value="KeyCompromise">Key Compromise — private key was exposed</option>
+              <option value="AffiliationChanged">Affiliation Changed — org details changed</option>
+              <option value="Superseded">Superseded — replaced by a new certificate</option>
+              <option value="CessationOfOperation">Cessation of Operation — domain no longer in use</option>
+              <option value="PrivilegeWithdrawn">Privilege Withdrawn</option>
+            </select>
+          </div>
+          {revokeError && (
+            <div style={{ fontSize:12, color:'#dc2626', background:'#fef2f2', border:'1px solid #fecaca',
+              borderRadius:6, padding:'8px 10px', marginBottom:10 }}>
+              {revokeError}
+            </div>
+          )}
+          <div style={{ display:'flex', gap:8 }}>
+            <button className="v2-btn v2-btn-sm" onClick={() => { setRevokeConfirm(false); setRevokeError('') }}
+              style={{ fontSize:11 }}>
+              Cancel
+            </button>
+            <button
+              onClick={doRevoke}
+              disabled={revoking}
+              style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
+                background: revoking ? '#d97706' : '#ea580c', color:'white',
+                border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 12px',
+                cursor: revoking ? 'not-allowed' : 'pointer', fontFamily:'inherit', fontWeight:600 }}>
+              {revoking ? '🔄 Revoking…' : '🚫 Confirm Revoke'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
