@@ -70,31 +70,37 @@ export default function BuyCertificate({ nav }) {
   const [checkResult, setCheckResult] = useState(null)
   const [txtPolling, setTxtPolling]   = useState(false)
 
+  const [pendingOrder, setPendingOrder] = useState(null) // existing pending order, shown as banner
+
   const stepIdx = { form:0, dv:1, done:2 }[step] ?? 0
 
   useEffect(() => {
+    // prefill_domain: only use if it was set in this same navigation (not a stale value)
     const p = sessionStorage.getItem('prefill_domain')
     if (p) { setDomain(p); sessionStorage.removeItem('prefill_domain') }
   }, [])
-  useEffect(() => { if (user) setAdminEmail(user.email || '') }, [user])
+  useEffect(() => { if (user) setAdminEmail(prev => prev || user.email || '') }, [user])
 
-  // Resume pending orders on load
+  // Check for pending orders — show as a banner, never auto-redirect
   useEffect(() => {
     if (!user) return
     ;(async () => {
       const { data: pending } = await supabase.from('tss_orders')
-        .select('id, domain, tss_order_id, dv_cname_host, dv_cname_value, is_sandbox')
+        .select('id, domain, tss_order_id, dv_cname_host, dv_cname_value')
         .eq('user_id', user.id).eq('status', 'dv_pending')
         .order('created_at', { ascending: false }).limit(1)
-      if (pending?.length) {
-        const o = pending[0]
-        setDomain(o.domain)
-        setOrderData({ order_id: o.id, tss_order_id: o.tss_order_id,
-          txt_name: o.dv_cname_host || o.domain, txt_value: o.dv_cname_value || '' })
-        setStep('dv')
-      }
+      if (pending?.length) setPendingOrder(pending[0])
     })()
   }, [user])
+
+  const resumePendingOrder = () => {
+    const o = pendingOrder
+    setDomain(o.domain)
+    setOrderData({ order_id: o.id, tss_order_id: o.tss_order_id,
+      txt_name: o.dv_cname_host || o.domain, txt_value: o.dv_cname_value || '' })
+    setPendingOrder(null)
+    setStep('dv')
+  }
 
   // Auto-poll for TXT value
   useEffect(() => {
@@ -246,6 +252,31 @@ export default function BuyCertificate({ nav }) {
         {/* ── STEP: FORM ──────────────────────────────────────────────── */}
         {step === 'form' && (
           <div>
+            {/* Pending order banner — shown only if one exists, user must choose */}
+            {pendingOrder && (
+              <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:10,
+                padding:'12px 14px', marginBottom:20, display:'flex', alignItems:'center', gap:10 }}>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:12, fontWeight:700, color:'#92400e', marginBottom:2 }}>
+                    Pending order for <span style={{ fontFamily:'monospace' }}>{pendingOrder.domain}</span>
+                  </div>
+                  <div style={{ fontSize:11, color:'#b45309' }}>
+                    DNS validation still pending · Order #{pendingOrder.tss_order_id}
+                  </div>
+                </div>
+                <button onClick={resumePendingOrder}
+                  style={{ background:'#d97706', color:'white', border:'none', borderRadius:6,
+                    padding:'7px 12px', fontSize:11, fontWeight:600, cursor:'pointer',
+                    fontFamily:'inherit', whiteSpace:'nowrap', flexShrink:0 }}>
+                  Resume →
+                </button>
+                <button onClick={() => setPendingOrder(null)}
+                  style={{ background:'none', border:'none', color:'#b45309',
+                    cursor:'pointer', fontSize:16, padding:'0 2px', lineHeight:1, flexShrink:0 }}>
+                  ×
+                </button>
+              </div>
+            )}
             {/* What you get — compact strip */}
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8, marginBottom:24 }}>
               {[
@@ -507,7 +538,7 @@ export default function BuyCertificate({ nav }) {
                     : <><RefreshCw size={12}/> Check Status</>}
                 </button>
 
-                <button onClick={() => { setStep('form'); setOrderData(null); setCheckResult(null) }}
+                <button onClick={() => { setStep('form'); setDomain(''); setOrderData(null); setCheckResult(null); setPendingOrder(null) }}
                   style={{ background:'transparent', color:'#a3a3a3', border:'none',
                     borderRadius:7, padding:'9px 12px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
                   ← New order
@@ -569,7 +600,7 @@ export default function BuyCertificate({ nav }) {
                       display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontFamily:'inherit' }}>
                     View dashboard
                   </button>
-                  <button onClick={() => { setStep('form'); setDomain(''); setOrderData(null); setCheckResult(null) }}
+                  <button onClick={() => { setStep('form'); setDomain(''); setOrderData(null); setCheckResult(null); setPendingOrder(null) }}
                     style={{ flex:1, background:'white', color:'#737373', border:'1px solid #e5e5e5',
                       borderRadius:8, padding:'10px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
                     Issue another
