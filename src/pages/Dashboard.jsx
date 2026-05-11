@@ -7,7 +7,6 @@ import {
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
-import { usePlan } from '../hooks/usePlan'
 import { differenceInDays, format, formatDistanceToNow } from 'date-fns'
 import '../styles/design-v2.css'
 import AgentInstall from '../components/AgentInstall'
@@ -82,7 +81,7 @@ function ProgressBar({ days, max = 90 }) {
 }
 
 // ── CertDetail panel ─────────────────────────────────────────────────
-function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall, isPro, nav, justRotated }) {
+function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall, nav, justRotated }) {
   const days = daysLeft(cert.expires_at)
   const s = statusOf(days, cert.status === 'revoked', cert.status)
   const [showKey, setShowKey] = useState(false)
@@ -318,11 +317,6 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
             </div>
             <div style={{ fontSize:11, color:'#b45309', lineHeight:1.5 }}>
               After agent installation is complete, delete the server-side copy to reduce exposure.
-              {!isPro && (
-                <span> Or <button onClick={() => nav('/pricing')} style={{ background:'none', border:'none',
-                  cursor:'pointer', color:'#7c3aed', fontWeight:600, fontSize:11, padding:0,
-                  textDecoration:'underline', textUnderlineOffset:2 }}>upgrade to KeyLocker Pro</button> for encrypted vault storage.</span>
-              )}
             </div>
           </div>
           <button className="v2-btn v2-btn-sm" onClick={() => setKeyDelConfirm(true)}
@@ -667,7 +661,6 @@ function RenewModal({ domain, onClose, nav }) {
 // LOGGED-IN DASHBOARD
 // ══════════════════════════════════════════════════════════════════════
 function LoggedInDashboard({ user, nav }) {
-  const { isPro } = usePlan(user)
   const [certs, setCerts]         = useState([])
   const [monitored, setMon]       = useState([])
   const [loading, setLoading]     = useState(true)
@@ -739,7 +732,7 @@ function LoggedInDashboard({ user, nav }) {
     }
   }, [certs])
 
-  // Refresh on tab focus (catches rotations done on KeyLocker page)
+  // Refresh on tab focus
   useEffect(() => {
     const onFocus = () => { if (document.visibilityState === 'visible') loadCerts() }
     window.addEventListener('focus', onFocus)
@@ -1147,7 +1140,7 @@ function LoggedInDashboard({ user, nav }) {
           {selectedCert && (
             <CertDetail cert={selectedCert} onClose={() => { setSelected(null); setJustRotated(null) }}
               onDelete={handleDelete} onKeyDeleted={handleKeyDeleted}
-              onInstall={setAgentCert} isPro={isPro} nav={nav}
+              onInstall={setAgentCert} nav={nav}
               justRotated={justRotated?.domain === selectedCert.domain ? justRotated : null} />
           )}
         </div>

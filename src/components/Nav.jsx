@@ -1,12 +1,10 @@
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { LayoutDashboard, PlusCircle, LogOut, LogIn, Settings, BookOpen, ChevronDown, Info, Mail, User, Lock, Zap, Upload } from 'lucide-react'
-import { usePlan } from '../hooks/usePlan'
+import { LayoutDashboard, PlusCircle, LogOut, LogIn, Settings, BookOpen, ChevronDown, Info, Mail, User, Zap, Upload } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Nav({ nav, page }) {
   const { user } = useAuth()
-  const { isPro } = usePlan(user)
   const [moreOpen, setMoreOpen] = useState(false)
   const primary = [
     { path:'/buy',       label:'Issue Certificate',   icon:PlusCircle },
@@ -17,7 +15,6 @@ export default function Nav({ nav, page }) {
     { path:'/dns-providers', label:'DNS Providers',      icon:Settings },
     { path:'/install',       label:'Install Guide',      icon:BookOpen },
     { path:'/knowledge-base',label:'Knowledge Base',     icon:BookOpen },
-    { path:'/keylocker',     label:'KeyLocker',          icon:Lock, pro:true },
     { path:'/pricing',       label:'Pricing',            icon:Zap },
     { path:'/about',         label:'About',              icon:Info },
     { path:'/developer',     label:'Developer',          icon:User },

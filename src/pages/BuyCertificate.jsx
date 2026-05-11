@@ -23,7 +23,7 @@ const PRODUCTS = [
       'Trusted by 99.9% of browsers — RapidSSL is a DigiCert brand',
       '1 or 2 year validity — no 90-day renewal hassle',
       'Issued in ~5 minutes — DV only, no paperwork',
-      'Managed in SSLVault — monitor, install via agent, KeyLocker',
+      'Managed in SSLVault — monitor, install via agent, auto-renew',
       'Auto-DV via DNS TXT — automatic if Cloudflare/Vercel creds stored',
     ],
   },

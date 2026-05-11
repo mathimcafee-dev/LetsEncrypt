@@ -141,11 +141,11 @@ const FEATURES = [
   { icon:Bell,     title:'Expiry Alerts',          color:'#d97706',
     desc:'Get notified before certificates expire — at 60, 30, 14 or 7 days. Never let a domain go dark because of a missed renewal.' },
   { icon:Zap,      title:'Free Certificate Issuance', color:'#2563eb',
-    desc:"Issue trusted DV certificates via Let's Encrypt where you need them — shared hosting, VPS, or any server. Free, no credit card." },
+    desc:"Issue trusted DV certificates via RapidSSL — one-year validity, auto-renewal, zero-touch delivery to your servers." },
   { icon:Server,   title:'One-click Install',      color:'#059669',
-    desc:'Deploy to Nginx, Apache, cPanel, or Plesk via the persistent agent or step-by-step install guides.' },
-  { icon:Lock,     title:'KeyLocker Pro',          color:'#7c3aed',
-    desc:'Encrypted key vault with rotation history and audit log. Enterprise-grade key protection at indie pricing.' },
+    desc:'Deploy to Nginx, Apache, cPanel, or Plesk via the persistent agent or direct SSH push. Fully automated.' },
+  { icon:RefreshCw, title:'Zero-touch Renewal',    color:'#2563eb',
+    desc:'Certificates renew automatically before expiry. No cron jobs, no manual steps, no downtime.' },
 ]
 
 const STEPS = [
