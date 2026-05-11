@@ -590,18 +590,23 @@ function LoggedInDashboard({ user, nav }) {
   const [filter, setFilter]       = useState('all')
   const [search, setSearch]       = useState('')
   const [agentCert, setAgentCert] = useState(null)
-  const [showRotated, setShowRotated] = useState(false)
-  const [justRotated, setJustRotated] = useState(null) // { domain, oldFingerprint, oldExpires, oldIssued, at }
+  const [showRotated, setShowRotated]       = useState(false)
+  const [justRotated, setJustRotated]       = useState(null)
+  const [pendingOrders, setPendingOrders]   = useState([])
+  const [showPendingOrders, setShowPendingOrders] = useState(true)
+  const [deletingOrder, setDeletingOrder]   = useState(null)
   const selectedRef = useRef(null)
   selectedRef.current = selected
 
   const loadCerts = useCallback(async () => {
     if (!user) return
     setLoading(true)
-    const [{ data: certsData }, { data: ordersData }, { data: monData }] = await Promise.all([
+    const [{ data: certsData }, { data: ordersData }, { data: monData }, { data: tssOrdersData }] = await Promise.all([
       supabase.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending: false }),
       supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'issued').order('updated_at', { ascending: false }),
       supabase.from('monitored_domains').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('tss_orders').select('id,domain,tss_order_id,status,major_status,minor_status,is_sandbox,product_code,created_at,updated_at')
+        .eq('user_id', user.id).in('status', ['dv_pending', 'failed', 'expired']).order('created_at', { ascending: false }),
     ])
     const all = [...(certsData || [])]
     for (const o of (ordersData || [])) {
@@ -611,7 +616,7 @@ function LoggedInDashboard({ user, nav }) {
       const da = daysLeft(a.expires_at), db = daysLeft(b.expires_at)
       if (da == null) return 1; if (db == null) return -1; return da - db
     })
-    setCerts(all); setMon(monData || []); setLoading(false)
+    setCerts(all); setMon(monData || []); setPendingOrders(tssOrdersData || []); setLoading(false)
 
     // Auto-switch: if current selected cert is now 'rotating', jump to the new one
     const curSelected = selectedRef.current
@@ -665,6 +670,13 @@ function LoggedInDashboard({ user, nav }) {
     setCerts(prev => prev.filter(c => c.id !== id))
     setSelected(null)
     setJustRotated(null)
+  }
+
+  const handleDeleteOrder = async (orderId) => {
+    setDeletingOrder(orderId)
+    await supabase.from('tss_orders').delete().eq('id', orderId).eq('user_id', user.id)
+    setPendingOrders(prev => prev.filter(o => o.id !== orderId))
+    setDeletingOrder(null)
   }
 
   const handleKeyDeleted = (id) => {
@@ -940,6 +952,101 @@ function LoggedInDashboard({ user, nav }) {
                                 {' · '}Archived for 30 days then permanently deleted
                               </div>
                             </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Pending Orders section */}
+              {pendingOrders.length > 0 && (
+                <div style={{ borderTop: '0.5px solid var(--v2-border)' }}>
+                  <button
+                    onClick={() => setShowPendingOrders(v => !v)}
+                    style={{ width:'100%', padding:'10px 16px', background:'none', border:'none',
+                      cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'space-between',
+                      fontSize:12, color:'var(--v2-text-3)', fontFamily:'inherit', fontWeight:500 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                      <span style={{ width:7, height:7, borderRadius:'50%', background:'#f59e0b',
+                        boxShadow:'0 0 0 2px #fde68a', flexShrink:0, display:'inline-block' }}/>
+                      {pendingOrders.length} pending order{pendingOrders.length > 1 ? 's' : ''} awaiting DNS validation
+                    </div>
+                    <span style={{ fontSize:10, transform: showPendingOrders ? 'rotate(180deg)' : 'none',
+                      display:'inline-block', transition:'transform 0.2s' }}>▾</span>
+                  </button>
+
+                  {showPendingOrders && (
+                    <div style={{ background:'var(--v2-surface-3)' }}>
+                      {pendingOrders.map(order => {
+                        const ageHours = Math.floor((Date.now() - new Date(order.created_at)) / 3600000)
+                        const statusColor = order.status === 'failed' ? '#dc2626'
+                          : order.status === 'expired' ? '#9ca3af' : '#d97706'
+                        const statusLabel = order.status === 'failed' ? 'Failed'
+                          : order.status === 'expired' ? 'Expired' : 'Pending DNS'
+                        return (
+                          <div key={order.id} style={{ padding:'10px 16px',
+                            borderBottom:'0.5px solid var(--v2-border)',
+                            display:'flex', alignItems:'center', gap:10 }}>
+                            {/* Icon */}
+                            <div style={{ width:30, height:30, borderRadius:8, flexShrink:0,
+                              background: order.status === 'dv_pending' ? '#fffbeb' : '#f9fafb',
+                              border:`0.5px solid ${order.status === 'dv_pending' ? '#fde68a' : '#e5e7eb'}`,
+                              display:'flex', alignItems:'center', justifyContent:'center', fontSize:14 }}>
+                              {order.status === 'dv_pending' ? '⏳' : order.status === 'failed' ? '❌' : '🗂️'}
+                            </div>
+
+                            {/* Info */}
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2 }}>
+                                <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)',
+                                  fontFamily:'var(--v2-font-mono)', overflow:'hidden',
+                                  textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                                  {order.domain}
+                                </span>
+                                <span style={{ fontSize:9, fontWeight:700, padding:'1px 5px',
+                                  borderRadius:3, flexShrink:0, textTransform:'uppercase',
+                                  letterSpacing:'0.3px', background: order.status === 'dv_pending'
+                                    ? '#fffbeb' : '#f3f4f6',
+                                  color: statusColor,
+                                  border:`0.5px solid ${order.status === 'dv_pending' ? '#fde68a' : '#e5e7eb'}` }}>
+                                  {statusLabel}
+                                </span>
+                                {order.is_sandbox && (
+                                  <span style={{ fontSize:9, fontWeight:700, padding:'1px 5px',
+                                    borderRadius:3, background:'#f5f3ff', color:'#6d28d9',
+                                    border:'0.5px solid #ddd6fe', textTransform:'uppercase',
+                                    letterSpacing:'0.3px', flexShrink:0 }}>Sandbox</span>
+                                )}
+                              </div>
+                              <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>
+                                {order.product_code?.toUpperCase() || 'RapidSSL'} · Order #{order.tss_order_id} · {ageHours < 1 ? 'just now' : `${ageHours}h ago`}
+                                {order.status === 'dv_pending' && (
+                                  <span style={{ color:'#d97706' }}> · Auto-activates within 5 min</span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Delete button */}
+                            <button
+                              onClick={() => handleDeleteOrder(order.id)}
+                              disabled={deletingOrder === order.id}
+                              title="Remove from records"
+                              style={{ flexShrink:0, width:26, height:26, borderRadius:6,
+                                background:'none', border:'0.5px solid var(--v2-border)',
+                                cursor: deletingOrder === order.id ? 'not-allowed' : 'pointer',
+                                display:'flex', alignItems:'center', justifyContent:'center',
+                                color:'var(--v2-text-3)', transition:'all 0.15s' }}
+                              onMouseEnter={e => { e.currentTarget.style.background='#fee2e2'; e.currentTarget.style.borderColor='#fca5a5'; e.currentTarget.style.color='#dc2626' }}
+                              onMouseLeave={e => { e.currentTarget.style.background='none'; e.currentTarget.style.borderColor='var(--v2-border)'; e.currentTarget.style.color='var(--v2-text-3)' }}>
+                              {deletingOrder === order.id
+                                ? <span style={{ fontSize:10 }}>…</span>
+                                : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                                  </svg>
+                              }
+                            </button>
                           </div>
                         )
                       })}
