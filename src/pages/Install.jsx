@@ -443,7 +443,7 @@ export default function Install({ nav }) {
             <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
               <Shield size={13} strokeWidth={2.2} /> Buy RapidSSL <ArrowRight size={13} strokeWidth={2} />
             </button>
-            <button className="v2-btn" onClick={() => nav('/generate')}>
+            <button className="v2-btn" onClick={() => nav('/buy')}>
               Free 90-day SSL
             </button>
           </div>

@@ -223,7 +223,7 @@ export default function Home({ nav }) {
                   style={{ padding:'12px 22px', fontSize:14 }}>
                   Monitor my domains <ArrowRight size={13} />
                 </button>
-                <button onClick={() => nav('/generate')}
+                <button onClick={() => nav('/buy')}
                   className="v2-btn"
                   style={{ padding:'12px 18px', fontSize:14 }}>
                   Issue free certificate <ChevronRight size={13} />
@@ -352,7 +352,7 @@ export default function Home({ nav }) {
                 <span style={{ fontSize:13, color:'#737373', fontFamily:'monospace' }}>
                   $ sslvault issue --domain yourdomain.com --free
                 </span>
-                <button onClick={() => nav('/generate')}
+                <button onClick={() => nav('/buy')}
                   style={{ display:'inline-flex', alignItems:'center', gap:7,
                             background:'white', color:'#0a0a0a', border:'none',
                             padding:'10px 20px', borderRadius:'var(--v2-r-md)',
@@ -412,7 +412,7 @@ export default function Home({ nav }) {
                   style={{ padding:'12px 24px', fontSize:14 }}>
                   <Activity size={14} /> Start monitoring free
                 </button>
-                <button onClick={() => nav('/generate')}
+                <button onClick={() => nav('/buy')}
                   className="v2-btn"
                   style={{ padding:'12px 18px', fontSize:14 }}>
                   <Shield size={13} /> Issue certificate <ChevronRight size={12} />
@@ -448,7 +448,7 @@ export default function Home({ nav }) {
             <div>
               <div className="v2-section-label" style={{ marginBottom:10 }}>Product</div>
               <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
-                {[['Issue Certificate','/generate'],['Inventory & Monitor','/dashboard'],
+                {[['Issue Certificate','/buy'],['Inventory & Monitor','/dashboard'],
                   ['DNS Providers','/dns-providers'],['Install Guide','/install']].map(([l,p]) => (
                   <button key={l} onClick={() => nav(p)}
                     style={{ background:'none', border:'none', color:'var(--v2-text-2)',

@@ -118,7 +118,7 @@ export default function SharedHostingGuide({ nav }) {
             First you need a certificate. Click <strong>Generate SSL</strong> in the navigation, enter your domain and complete DNS verification. Come back here once your certificate shows as <strong style={{ color:'var(--green)' }}>Active</strong> in My Certificates.
           </p>
           <Note type="info">Already have a certificate? Skip to Step 2.</Note>
-          <button onClick={() => nav('/generate')} className="btn btn-primary btn-sm">
+          <button onClick={() => nav('/buy')} className="btn btn-primary btn-sm">
             <Shield size={13}/> Generate Free SSL →
           </button>
         </Step>
@@ -333,7 +333,7 @@ export default function SharedHostingGuide({ nav }) {
           <h3 style={{ fontSize:20, fontWeight:800, color:'white', marginBottom:8 }}>Ready to secure your website?</h3>
           <p style={{ color:'rgba(255,255,255,0.8)', fontSize:14, marginBottom:20 }}>Start by generating your free SSL certificate — takes under 2 minutes.</p>
           <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
-            <button onClick={() => nav('/generate')} style={{ background:'white', color:'var(--accent)', border:'none', padding:'11px 24px', borderRadius:8, fontSize:14, fontWeight:700, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:8 }}>
+            <button onClick={() => nav('/buy')} style={{ background:'white', color:'var(--accent)', border:'none', padding:'11px 24px', borderRadius:8, fontSize:14, fontWeight:700, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:8 }}>
               <Shield size={15}/> Generate Free SSL
             </button>
             <button onClick={() => nav('/dashboard')} style={{ background:'rgba(255,255,255,0.15)', color:'white', border:'1px solid rgba(255,255,255,0.3)', padding:'11px 24px', borderRadius:8, fontSize:14, fontWeight:600, cursor:'pointer' }}>

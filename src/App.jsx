@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import Nav from './components/Nav'
 import Home from './pages/Home'
-import Generate from './pages/Generate'
+import Import from './pages/Import'
 import Dashboard from './pages/Dashboard'
 import Auth from './pages/Auth'
 import SharedHostingGuide from './pages/SharedHostingGuide'
@@ -28,12 +28,18 @@ export default function App() {
     return () => window.removeEventListener('popstate', handler)
   }, [])
   const nav = (to) => { window.history.pushState({}, '', to); setPage(to); window.scrollTo(0,0) }
+
+  // Legacy ACME routes — redirect to /buy on next render
+  useEffect(() => {
+    if (page === '/generate' || page === '/quick-setup') nav('/buy')
+  }, [page])
+  if (page === '/generate' || page === '/quick-setup') return null
+
   return (
     <div>
       <Nav nav={nav} page={page} />
       {page === '/' && <Home nav={nav} />}
-      {page === '/generate' && <Generate nav={nav} />}
-      {page === '/quick-setup' && <Generate nav={nav} />}
+      {page === '/import' && <Import nav={nav} />}
       {page === '/dashboard' && <Dashboard nav={nav} />}      {page === '/dns-providers' && <DnsProviders nav={nav} />}
       {page === '/install' && <Install nav={nav} />}
       {page === '/knowledge-base' && <KnowledgeBase nav={nav} />}

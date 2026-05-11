@@ -527,7 +527,7 @@ export default function KeyLocker({ nav }) {
                       Issue a certificate to automatically add its key to the KeyLocker vault.
                       New certificates issued while on Pro are stored here automatically.
                     </div>
-                    <button className="v2-btn v2-btn-primary" onClick={() => nav('/generate')}>
+                    <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
                       Issue certificate
                     </button>
                   </div>

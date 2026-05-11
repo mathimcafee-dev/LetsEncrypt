@@ -95,7 +95,7 @@ export default function GetStarted({ nav }) {
               className="btn btn-primary btn-lg">
               Start Learning <ArrowRight size={16}/>
             </button>
-            <button onClick={() => nav('/generate')} className="btn btn-secondary btn-lg">
+            <button onClick={() => nav('/buy')} className="btn btn-secondary btn-lg">
               Skip — Generate SSL Now
             </button>
           </div>
@@ -207,7 +207,7 @@ export default function GetStarted({ nav }) {
                             </div>
                           </div>
                         ))}
-                        <button onClick={() => nav('/generate')} className="btn btn-primary" style={{ marginTop:8 }}>
+                        <button onClick={() => nav('/buy')} className="btn btn-primary" style={{ marginTop:8 }}>
                           <Shield size={15}/> Generate My Certificate Now
                         </button>
                       </>
@@ -257,7 +257,7 @@ export default function GetStarted({ nav }) {
                         <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.7, marginBottom:12 }}>
                           However, if you need a certificate for something Vercel/Netlify doesn't manage (like a backend API server), use SSLVault to generate one and install it manually.
                         </p>
-                        <button onClick={() => nav('/generate')} className="btn btn-secondary">Generate Certificate Anyway</button>
+                        <button onClick={() => nav('/buy')} className="btn btn-secondary">Generate Certificate Anyway</button>
                       </>
                     )}
                     {p.id === 'noserver' && (
@@ -442,7 +442,7 @@ export default function GetStarted({ nav }) {
             It's completely free. Takes under 5 minutes. Your visitors deserve a secure experience.
           </p>
           <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
-            <button onClick={() => nav('/generate')} style={{ background:'white', color:'var(--accent)', border:'none', padding:'14px 28px', borderRadius:10, fontSize:16, fontWeight:800, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:8, boxShadow:'0 4px 14px rgba(0,0,0,0.15)' }}>
+            <button onClick={() => nav('/buy')} style={{ background:'white', color:'var(--accent)', border:'none', padding:'14px 28px', borderRadius:10, fontSize:16, fontWeight:800, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:8, boxShadow:'0 4px 14px rgba(0,0,0,0.15)' }}>
               <Shield size={18}/> Generate Free SSL
             </button>
             <button onClick={() => nav('/knowledge-base')} style={{ background:'rgba(255,255,255,0.15)', color:'white', border:'1px solid rgba(255,255,255,0.3)', padding:'14px 28px', borderRadius:10, fontSize:16, fontWeight:700, cursor:'pointer' }}>

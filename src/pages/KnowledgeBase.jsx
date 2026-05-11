@@ -468,7 +468,7 @@ export default function KnowledgeBase({ nav }) {
             Free SSL, auto-renewal, and one-command installs. No credit card ever.
           </p>
           <div style={{ display: 'inline-flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button className="v2-btn v2-btn-primary" onClick={() => nav('/generate')}>
+            <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
               <Shield size={13} strokeWidth={2.2} /> Issue free certificate <ArrowRight size={13} strokeWidth={2} />
             </button>
             <button className="v2-btn" onClick={() => nav('/dashboard')}>

@@ -941,7 +941,7 @@ function LoggedInDashboard({ user, nav }) {
                   <Globe size={12} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)',
                                             color:'var(--v2-text-3)', pointerEvents:'none' }} />
                 </div>
-                <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={() => nav('/generate')}>
+                <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={() => nav('/buy')}>
                   <Plus size={12} /> Issue certificate
                 </button>
               </div>
@@ -961,7 +961,7 @@ function LoggedInDashboard({ user, nav }) {
                   {total === 0 ? 'Issue your first free SSL certificate to get started.' : 'Try a different filter or search term.'}
                 </div>
                 {total === 0 && (
-                  <button className="v2-btn v2-btn-primary" onClick={() => nav('/generate')}>
+                  <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
                     <Plus size={13} /> Issue your first certificate
                   </button>
                 )}
