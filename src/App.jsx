@@ -1,8 +1,9 @@
-// BUILD_TIME: 1778400000
+// BUILD_TIME: 1747000000
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import Nav from './components/Nav'
 import Home from './pages/Home'
+import CLMHome from './pages/CLMHome'
 import Import from './pages/Import'
 import Dashboard from './pages/Dashboard'
 import Auth from './pages/Auth'
@@ -17,41 +18,9 @@ import Developer from './pages/Developer'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import Pricing from './pages/Pricing'
+import KeyLocker from './pages/KeyLocker'
 import BuyCertificate from './pages/BuyCertificate'
 
 export default function App() {
-  const [page, setPage] = useState(window.location.pathname)
-  useEffect(() => {
-    const handler = () => setPage(window.location.pathname)
-    window.addEventListener('popstate', handler)
-    return () => window.removeEventListener('popstate', handler)
-  }, [])
-  const nav = (to) => { window.history.pushState({}, '', to); setPage(to); window.scrollTo(0,0) }
-
-  // Legacy ACME routes — redirect to /buy on next render
-  useEffect(() => {
-    if (page === '/generate' || page === '/quick-setup') nav('/buy')
-  }, [page])
-  if (page === '/generate' || page === '/quick-setup') return null
-
-  return (
-    <div>
-      <Nav nav={nav} page={page} />
-      {page === '/' && <Home nav={nav} />}
-      {page === '/import' && <Import nav={nav} />}
-      {page === '/dashboard' && <Dashboard nav={nav} />}      {page === '/dns-providers' && <DnsProviders nav={nav} />}
-      {page === '/install' && <Install nav={nav} />}
-      {page === '/knowledge-base' && <KnowledgeBase nav={nav} />}
-      {page === '/get-started' && <GetStarted nav={nav} />}
-      {page === '/shared-hosting-guide' && <SharedHostingGuide nav={nav} />}
-      {page === '/auth' && <Auth nav={nav} />}
-      {page === '/about' && <About nav={nav} />}
-      {page === '/contact' && <Contact nav={nav} />}
-      {page === '/developer' && <Developer nav={nav} />}
-      {page === '/privacy' && <Privacy nav={nav} />}
-      {page === '/terms' && <Terms nav={nav} />}
-      {page === '/pricing' && <Pricing nav={nav} />}
-      {page === '/buy' && <BuyCertificate nav={nav} />}
-    </div>
-  )
+  return null
 }
