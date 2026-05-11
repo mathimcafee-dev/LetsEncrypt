@@ -1,468 +1,333 @@
-#!/usr/bin/env bash
-# SSLVault Agent Daemon v1.0
-# Installed to /usr/local/bin/sslvault-agent by agent-install.sh
-# Commands: daemon | status | uninstall
-# -------------------------------------------------------------------
+#!/bin/bash
+# SSLVault Persistent Agent Daemon v2.0
+# Zero-touch certificate renewal for VPS servers.
+# Polls SSLVault every 5 minutes for jobs (install, renew, scan).
+# On renewal: atomically replaces cert files and reloads web server.
+
 set -euo pipefail
 
-CONF_FILE="/etc/sslvault/agent.conf"
-LOG_TAG="sslvault-agent"
+# ── Config ────────────────────────────────────────────────────────────
+DAEMON_API="https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon"
+AGENT_TOKEN_FILE="/etc/sslvault/agent.token"
+POLL_INTERVAL=300
+LOG_FILE="/var/log/sslvault-agent.log"
+CERT_BASE="/etc/ssl/sslvault"
+VERSION="2.0"
 
-# ── Load config ───────────────────────────────────────────────────────
-load_config() {
-  [ -f "$CONF_FILE" ] || { echo "Config not found: $CONF_FILE"; exit 1; }
-  # shellcheck disable=SC1090
-  source "$CONF_FILE"
-  : "${AGENT_TOKEN:?}" "${API_BASE:?}" "${CERT_DIR:?}"
-  POLL_INTERVAL="${POLL_INTERVAL:-300}"
-  WEB_SERVER="${WEB_SERVER:-unknown}"
-  AGENT_VERSION="${AGENT_VERSION:-1.0.0}"
-}
+# ── Logging ───────────────────────────────────────────────────────────
+log()  { echo "$(date '+%Y-%m-%d %H:%M:%S') [SSLVault] $1" | tee -a "$LOG_FILE"; }
+ok()   { echo "$(date '+%Y-%m-%d %H:%M:%S') [OK] $1"       | tee -a "$LOG_FILE"; }
+warn() { echo "$(date '+%Y-%m-%d %H:%M:%S') [WARN] $1"     | tee -a "$LOG_FILE"; }
+fail() { echo "$(date '+%Y-%m-%d %H:%M:%S') [FAIL] $1"     | tee -a "$LOG_FILE"; }
 
-log()  { logger -t "$LOG_TAG" "$1" || echo "[$(date '+%H:%M:%S')] $1"; }
-info() { log "INFO  $1"; }
-ok()   { log "OK    $1"; }
-err()  { log "ERROR $1"; }
+# ── Read stored token ─────────────────────────────────────────────────
+if [ ! -f "$AGENT_TOKEN_FILE" ]; then
+  fail "Agent token not found at $AGENT_TOKEN_FILE. Run agent-install.sh first."
+  exit 1
+fi
+AGENT_TOKEN=$(cat "$AGENT_TOKEN_FILE" | tr -d '\n')
+if [ -z "$AGENT_TOKEN" ]; then
+  fail "Agent token is empty. Re-run agent-install.sh."
+  exit 1
+fi
 
-# ── API helper ────────────────────────────────────────────────────────
-api_post() {
-  local endpoint="$1"
-  local payload="$2"
-  curl -fsSL --max-time 30 \
-    -H "Content-Type: application/json" \
-    -d "$payload" \
-    "$API_BASE/$endpoint" 2>/dev/null || echo '{"error":"curl_failed"}'
-}
-
-# ── Write certificate files ───────────────────────────────────────────
-write_cert() {
-  local domain="$1" cert_pem="$2" key_pem="$3"
-  local dir="$CERT_DIR/$domain"
-  mkdir -p "$dir"
-  chmod 750 "$dir"
-
-  printf '%s' "$cert_pem" > "$dir/fullchain.pem"
-  printf '%s' "$key_pem"  > "$dir/privkey.pem"
-  chmod 644 "$dir/fullchain.pem"
-  chmod 600 "$dir/privkey.pem"
-
-  ok "Cert files written to $dir"
-}
-
-# ── Update Nginx config ───────────────────────────────────────────────
-update_nginx() {
-  local domain="$1"
-  local cert_path="$CERT_DIR/$domain/fullchain.pem"
-  local key_path="$CERT_DIR/$domain/privkey.pem"
-
-  # Find the server config file for this domain
-  local conf_file=""
-  for f in /etc/nginx/sites-enabled/* /etc/nginx/conf.d/*.conf; do
-    [ -f "$f" ] || continue
-    grep -q "$domain" "$f" 2>/dev/null && { conf_file="$f"; break; }
-  done
-
-  if [ -n "$conf_file" ]; then
-    # Backup original
-    cp "$conf_file" "${conf_file}.sslvault-bak"
-
-    # Check if SSL directives already exist
-    if grep -q "ssl_certificate" "$conf_file"; then
-      # Replace existing cert paths
-      sed -i "s|ssl_certificate .*|ssl_certificate $cert_path;|g" "$conf_file"
-      sed -i "s|ssl_certificate_key .*|ssl_certificate_key $key_path;|g" "$conf_file"
-      ok "Updated Nginx SSL paths in $conf_file"
-    else
-      # Add SSL block — find the server { block and inject after listen 80
-      sed -i "/listen 80/a\\    listen 443 ssl;\\n    ssl_certificate $cert_path;\\n    ssl_certificate_key $key_path;\\n    ssl_protocols TLSv1.2 TLSv1.3;\\n    ssl_ciphers HIGH:!aNULL:!MD5;" "$conf_file"
-      ok "Added SSL block to $conf_file"
-    fi
-
-    # Test config before reloading
-    if nginx -t 2>/dev/null; then
-      systemctl reload nginx
-      ok "Nginx reloaded"
-    else
-      # Restore backup
-      cp "${conf_file}.sslvault-bak" "$conf_file"
-      err "Nginx config test failed — restored backup"
-      return 1
-    fi
+# ── Detect web server ─────────────────────────────────────────────────
+detect_web_server() {
+  if command -v nginx &>/dev/null && (systemctl is-active --quiet nginx 2>/dev/null || pgrep -x nginx &>/dev/null); then
+    echo "nginx"
+  elif systemctl is-active --quiet apache2 2>/dev/null; then
+    echo "apache2"
+  elif systemctl is-active --quiet httpd 2>/dev/null; then
+    echo "httpd"
+  elif command -v nginx &>/dev/null; then
+    echo "nginx"
   else
-    # No existing config — create a minimal one
-    local new_conf="/etc/nginx/conf.d/sslvault-$domain.conf"
-    cat > "$new_conf" << NGINX
-server {
-    listen 80;
-    listen 443 ssl;
-    server_name $domain www.$domain;
-
-    ssl_certificate     $cert_path;
-    ssl_certificate_key $key_path;
-    ssl_protocols       TLSv1.2 TLSv1.3;
-    ssl_ciphers         HIGH:!aNULL:!MD5;
-
-    # Redirect HTTP to HTTPS
-    if (\$scheme = http) {
-        return 301 https://\$host\$request_uri;
-    }
-
-    root /var/www/html;
-    index index.html index.php;
-    location / { try_files \$uri \$uri/ =404; }
-}
-NGINX
-
-    if nginx -t 2>/dev/null; then
-      systemctl reload nginx
-      ok "Created new Nginx config + reloaded"
-    else
-      rm -f "$new_conf"
-      err "New Nginx config test failed"
-      return 1
-    fi
+    echo "none"
   fi
 }
 
-# ── Update Apache config ──────────────────────────────────────────────
-update_apache() {
+# ── Reload web server ─────────────────────────────────────────────────
+reload_web_server() {
+  local ws="$1"
+  case "$ws" in
+    nginx)
+      nginx -t 2>/dev/null || { fail "nginx config test failed"; return 1; }
+      systemctl reload nginx 2>/dev/null || service nginx reload 2>/dev/null || nginx -s reload 2>/dev/null
+      ;;
+    apache2)
+      apache2ctl -t 2>/dev/null || apachectl -t 2>/dev/null || { fail "apache config test failed"; return 1; }
+      systemctl reload apache2 2>/dev/null || service apache2 reload 2>/dev/null
+      ;;
+    httpd)
+      apachectl -t 2>/dev/null || { fail "httpd config test failed"; return 1; }
+      systemctl reload httpd 2>/dev/null || service httpd reload 2>/dev/null
+      ;;
+    *)
+      warn "Unknown web server '$ws' — cert written, reload manually"
+      return 0
+      ;;
+  esac
+  ok "Web server $ws reloaded"
+}
+
+# ── Write cert files (atomic for renewals) ────────────────────────────
+# For renewals: write to .new files, verify key matches cert, then rename.
+# This guarantees the web server never reads a half-written cert pair.
+write_cert_files() {
   local domain="$1"
-  local cert_path="$CERT_DIR/$domain/fullchain.pem"
-  local key_path="$CERT_DIR/$domain/privkey.pem"
-  local apache_cmd="apache2ctl"
-  command -v apache2ctl &>/dev/null || apache_cmd="apachectl"
+  local cert_pem="$2"
+  local key_pem="$3"
+  local is_renewal="${4:-false}"
 
-  # Find config file
-  local conf_file=""
-  for dir in /etc/apache2/sites-enabled /etc/httpd/conf.d; do
-    [ -d "$dir" ] || continue
-    for f in "$dir"/*; do
-      [ -f "$f" ] || continue
-      grep -q "$domain" "$f" 2>/dev/null && { conf_file="$f"; break 2; }
-    done
-  done
+  local cert_dir="$CERT_BASE/$domain"
+  mkdir -p "$cert_dir" && chmod 755 "$cert_dir"
 
-  if [ -n "$conf_file" ]; then
-    cp "$conf_file" "${conf_file}.sslvault-bak"
-    sed -i "s|SSLCertificateFile .*|SSLCertificateFile $cert_path|g" "$conf_file"
-    sed -i "s|SSLCertificateKeyFile .*|SSLCertificateKeyFile $key_path|g" "$conf_file"
-    ok "Updated Apache SSL paths in $conf_file"
+  if [ "$is_renewal" = "true" ]; then
+    # Write to staging paths first
+    printf '%s' "$cert_pem" > "$cert_dir/fullchain.pem.new"
+    printf '%s' "$key_pem"  > "$cert_dir/privkey.pem.new"
+    chmod 644 "$cert_dir/fullchain.pem.new"
+    chmod 600 "$cert_dir/privkey.pem.new"
+
+    # Verify key matches cert before committing
+    if command -v openssl &>/dev/null; then
+      local cert_hash key_hash
+      cert_hash=$(openssl x509 -noout -modulus -in "$cert_dir/fullchain.pem.new" 2>/dev/null | md5sum | cut -d' ' -f1)
+      key_hash=$(openssl rsa  -noout -modulus -in "$cert_dir/privkey.pem.new"  2>/dev/null | md5sum | cut -d' ' -f1)
+      if [ "$cert_hash" != "$key_hash" ]; then
+        rm -f "$cert_dir/fullchain.pem.new" "$cert_dir/privkey.pem.new"
+        fail "Key/cert mismatch for $domain — renewal aborted, keeping existing cert"
+        return 1
+      fi
+      ok "Key/cert pair verified for $domain"
+    fi
+
+    # Atomic rename — web server always sees a complete consistent pair
+    mv "$cert_dir/fullchain.pem.new" "$cert_dir/fullchain.pem"
+    mv "$cert_dir/privkey.pem.new"  "$cert_dir/privkey.pem"
+    ok "Cert files atomically updated for $domain"
   else
-    # Create new vhost config
-    local new_conf
-    if [ -d /etc/apache2/sites-enabled ]; then
-      new_conf="/etc/apache2/sites-available/sslvault-$domain.conf"
-      cat > "$new_conf" << APACHE
+    # First install — write directly
+    printf '%s' "$cert_pem" > "$cert_dir/fullchain.pem"
+    printf '%s' "$key_pem"  > "$cert_dir/privkey.pem"
+    chmod 644 "$cert_dir/fullchain.pem"
+    chmod 600 "$cert_dir/privkey.pem"
+    ok "Cert files written for $domain"
+  fi
+  return 0
+}
+
+# ── Configure web server (first install only) ─────────────────────────
+configure_web_server() {
+  local domain="$1"
+  local ws="$2"
+  local cert_dir="$CERT_BASE/$domain"
+
+  if [ "$ws" = "nginx" ]; then
+    local conf
+    if [ -d /etc/nginx/sites-available ]; then
+      conf="/etc/nginx/sites-available/$domain"
+      [ -f "$conf" ] && cp "$conf" "$conf.bak"
+      cat > "$conf" << NGINX_CONF
+server {
+    listen 80;
+    server_name $domain;
+    return 301 https://\$host\$request_uri;
+}
+server {
+    listen 443 ssl http2;
+    server_name $domain;
+    ssl_certificate     $cert_dir/fullchain.pem;
+    ssl_certificate_key $cert_dir/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    add_header Strict-Transport-Security "max-age=63072000" always;
+    root /var/www/html;
+    index index.html index.htm;
+    location / { try_files \$uri \$uri/ =404; }
+}
+NGINX_CONF
+      [ ! -L "/etc/nginx/sites-enabled/$domain" ] && ln -s "$conf" "/etc/nginx/sites-enabled/$domain" 2>/dev/null || true
+    else
+      conf="/etc/nginx/conf.d/$domain.conf"
+      [ -f "$conf" ] && cp "$conf" "$conf.bak"
+      cat > "$conf" << NGINX_CONF
+server {
+    listen 80;
+    server_name $domain;
+    return 301 https://\$host\$request_uri;
+}
+server {
+    listen 443 ssl http2;
+    server_name $domain;
+    ssl_certificate     $cert_dir/fullchain.pem;
+    ssl_certificate_key $cert_dir/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    add_header Strict-Transport-Security "max-age=63072000" always;
+    root /var/www/html;
+    index index.html index.htm;
+    location / { try_files \$uri \$uri/ =404; }
+}
+NGINX_CONF
+    fi
+    ok "Nginx config written for $domain"
+
+  elif [ "$ws" = "apache2" ] || [ "$ws" = "httpd" ]; then
+    local conf
+    if [ -d /etc/apache2/sites-available ]; then
+      conf="/etc/apache2/sites-available/$domain.conf"
+      a2enmod ssl rewrite headers 2>/dev/null || true
+    else
+      conf="/etc/httpd/conf.d/$domain.conf"
+    fi
+    [ -f "$conf" ] && cp "$conf" "$conf.bak"
+    cat > "$conf" << APACHE_CONF
 <VirtualHost *:80>
     ServerName $domain
     Redirect permanent / https://$domain/
 </VirtualHost>
 <VirtualHost *:443>
     ServerName $domain
-    DocumentRoot /var/www/html
     SSLEngine on
-    SSLCertificateFile    $cert_path
-    SSLCertificateKeyFile $key_path
-    SSLProtocol           all -SSLv3 -TLSv1 -TLSv1.1
-</VirtualHost>
-APACHE
-      a2ensite "sslvault-$domain.conf" 2>/dev/null || true
-      a2enmod ssl 2>/dev/null || true
-    else
-      new_conf="/etc/httpd/conf.d/sslvault-$domain.conf"
-      cat > "$new_conf" << APACHE
-<VirtualHost *:443>
-    ServerName $domain
+    SSLCertificateFile     $cert_dir/fullchain.pem
+    SSLCertificateKeyFile  $cert_dir/privkey.pem
+    SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+    Header always set Strict-Transport-Security "max-age=63072000"
     DocumentRoot /var/www/html
-    SSLEngine on
-    SSLCertificateFile    $cert_path
-    SSLCertificateKeyFile $key_path
 </VirtualHost>
-APACHE
-    fi
-    ok "Created new Apache config: $new_conf"
-  fi
-
-  if $apache_cmd configtest 2>/dev/null; then
-    if systemctl reload apache2 2>/dev/null || systemctl reload httpd 2>/dev/null; then
-      ok "Apache reloaded"
-    fi
-  else
-    [ -n "$conf_file" ] && cp "${conf_file}.sslvault-bak" "$conf_file"
-    err "Apache config test failed — restored backup"
-    return 1
+APACHE_CONF
+    [ -d /etc/apache2/sites-available ] && a2ensite "$domain.conf" 2>/dev/null || true
+    ok "Apache config written for $domain"
   fi
 }
 
-# ── Server scan: read nginx/apache configs + cert expiry ─────────────
-run_server_scan() {
+# ── Report job result back to SSLVault ────────────────────────────────
+report_result() {
   local job_id="$1"
-  info "Running server scan..."
+  local success="$2"
+  local error_msg="$3"
+  local ws="$4"
+  local hostname_val
+  hostname_val=$(hostname -f 2>/dev/null || hostname)
+  local escaped_error
+  escaped_error=$(printf '%s' "$error_msg" | sed 's/"/\\"/g' | head -c 500)
 
-  local domains_json="[]"
-  local found_count=0
-
-  # Build JSON array of discovered certs
-  scan_cert() {
-    local domain_name="$1" cert_file="$2" key_file="$3" ws="$4"
-    [ -f "$cert_file" ] || return
-    local expiry="" issuer="" days_left=0
-    expiry=$(openssl x509 -enddate -noout -in "$cert_file" 2>/dev/null | cut -d= -f2)
-    issuer=$(openssl x509 -issuer -noout -in "$cert_file" 2>/dev/null | grep -o 'O=[^,/]*' | head -1 | sed 's/O=//')
-    if [ -n "$expiry" ]; then
-      local exp_ts now_ts
-      exp_ts=$(date -d "$expiry" +%s 2>/dev/null || date -j -f "%b %d %T %Y %Z" "$expiry" +%s 2>/dev/null || echo 0)
-      now_ts=$(date +%s)
-      days_left=$(( (exp_ts - now_ts) / 86400 ))
-    fi
-    local in_vault="false"
-    local iso_expiry=""
-    [ -n "$expiry" ] && iso_expiry=$(date -d "$expiry" -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo "")
-    # Append to JSON
-    local entry="{\"domain\":\"$domain_name\",\"web_server\":\"$ws\",\"cert_path\":\"$cert_file\",\"key_path\":\"$key_file\",\"cert_expiry\":\"$iso_expiry\",\"cert_issuer\":\"$issuer\",\"days_left\":$days_left,\"in_sslvault\":$in_vault}"
-    if [ "$found_count" -eq 0 ]; then
-      domains_json="[$entry"
-    else
-      domains_json="$domains_json,$entry"
-    fi
-    found_count=$((found_count + 1))
-    ok "Found: $domain_name ($days_left days) [$ws]"
-  }
-
-  # Scan Nginx configs
-  for conf in /etc/nginx/sites-enabled/* /etc/nginx/conf.d/*.conf 2>/dev/null; do
-    [ -f "$conf" ] || continue
-    local domain_name cert_file key_file
-    domain_name=$(grep -m1 'server_name' "$conf" 2>/dev/null | awk '{print $2}' | tr -d ';')
-    cert_file=$(grep -m1 'ssl_certificate ' "$conf" 2>/dev/null | awk '{print $2}' | tr -d ';')
-    key_file=$(grep -m1 'ssl_certificate_key' "$conf" 2>/dev/null | awk '{print $2}' | tr -d ';')
-    [ -n "$domain_name" ] && [ -n "$cert_file" ] && scan_cert "$domain_name" "$cert_file" "${key_file:-}" "nginx"
-  done
-
-  # Scan Apache configs
-  for conf in /etc/apache2/sites-enabled/* /etc/httpd/conf.d/*.conf 2>/dev/null; do
-    [ -f "$conf" ] || continue
-    local domain_name cert_file key_file
-    domain_name=$(grep -im1 'ServerName' "$conf" 2>/dev/null | awk '{print $2}')
-    cert_file=$(grep -im1 'SSLCertificateFile' "$conf" 2>/dev/null | awk '{print $2}')
-    key_file=$(grep -im1 'SSLCertificateKeyFile' "$conf" 2>/dev/null | awk '{print $2}')
-    [ -n "$domain_name" ] && [ -n "$cert_file" ] && scan_cert "$domain_name" "$cert_file" "${key_file:-}" "apache"
-  done
-
-  # Also scan SSLVault-managed certs directory
-  for domain_dir in "$CERT_DIR"/*/; do
-    [ -d "$domain_dir" ] || continue
-    local domain_name cert_file key_file
-    domain_name=$(basename "$domain_dir")
-    cert_file="$domain_dir/fullchain.pem"
-    key_file="$domain_dir/privkey.pem"
-    [ -f "$cert_file" ] && scan_cert "$domain_name" "$cert_file" "${key_file:-}" "$WEB_SERVER"
-  done
-
-  [ "$found_count" -gt 0 ] && domains_json="$domains_json]" || domains_json="[]"
-
-  info "Scan complete: $found_count cert(s) found"
-
-  # Escape for JSON embedding
-  local escaped_json
-  escaped_json=$(echo "$domains_json" | sed 's/\\/\\\\/g' | tr -d '\n')
-
-  api_post "agent-daemon" "{
-    \"action\": \"job_result\",
-    \"agent_token\": \"$AGENT_TOKEN\",
-    \"job_id\": \"$job_id\",
-    \"success\": true,
-    \"web_server\": \"$WEB_SERVER\",
-    \"scan_result\": {\"domains\": $escaped_json}
-  }" > /dev/null
-
-  ok "Scan results reported to SSLVault"
+  curl -sf -X POST "$DAEMON_API" \
+    -H "Content-Type: application/json" \
+    -d "{\"action\":\"job_result\",\"agent_token\":\"$AGENT_TOKEN\",\"job_id\":\"$job_id\",\"success\":$success,\"error_message\":\"$escaped_error\",\"web_server\":\"$ws\",\"hostname\":\"$hostname_val\"}" \
+    > /dev/null 2>&1 || warn "Failed to report job result for $job_id"
 }
 
-# ── Process a single job ──────────────────────────────────────────────
+# ── Process one job ───────────────────────────────────────────────────
 process_job() {
-  local job_id="$1" domain="$2" cert_pem="$3" key_pem="$4" job_type="${5:-install}"
+  local job_id="$1"
+  local job_type="$2"
+  local domain="$3"
+  local cert_pem="$4"
+  local key_pem="$5"
 
-  info "Processing $job_type job $job_id for $domain"
+  log "Job $job_id: type=$job_type domain=$domain"
 
-  # Handle scan job type separately
-  if [ "$job_type" = "scan" ]; then
-    run_server_scan "$job_id"
-    return
-  fi
+  local ws
+  ws=$(detect_web_server)
 
-  local success=true error_msg=""
-
-  # Write cert files
-  if ! write_cert "$domain" "$cert_pem" "$key_pem"; then
-    success=false; error_msg="Failed to write cert files"
-  fi
-
-  # Update web server config
-  if $success; then
-    case "$WEB_SERVER" in
-      nginx)
-        update_nginx "$domain" || { success=false; error_msg="Nginx config failed"; }
-        ;;
-      apache2|httpd|apache)
-        update_apache "$domain" || { success=false; error_msg="Apache config failed"; }
-        ;;
-      *)
-        info "Unknown web server ($WEB_SERVER) — cert files written, manual config needed"
-        ;;
-    esac
-  fi
-
-  # Report result back to SSLVault
-  local success_val="true"
-  $success || success_val="false"
-
-  api_post "agent-daemon" "{
-    \"action\": \"job_result\",
-    \"agent_token\": \"$AGENT_TOKEN\",
-    \"job_id\": \"$job_id\",
-    \"success\": $success_val,
-    \"error_message\": \"$error_msg\",
-    \"web_server\": \"$WEB_SERVER\"
-  }" > /dev/null
-
-  if $success; then
-    ok "Job $job_id completed for $domain"
-  else
-    err "Job $job_id failed: $error_msg"
-  fi
-}
-
-# ── Simple JSON field extractor (pure bash, no python/jq required) ───
-json_get() {
-  local json="$1" key="$2"
-  # Extract value for "key":"value" or "key":value patterns
-  echo "$json" | grep -o "\"${key}\":[[:space:]]*\"[^\"]*\"" | head -1 | sed 's/.*":\s*"\(.*\)"/\1/'
-}
-
-json_get_raw() {
-  local json="$1" key="$2"
-  echo "$json" | grep -o "\"${key}\":[[:space:]]*[^,}]*" | head -1 | sed 's/.*":\s*//'
-}
-
-# ── Main daemon loop ──────────────────────────────────────────────────
-run_daemon() {
-  info "SSLVault Agent v$AGENT_VERSION starting"
-  info "Polling every ${POLL_INTERVAL}s | Web server: $WEB_SERVER"
-
-  while true; do
-    RESPONSE=$(api_post "agent-daemon" "{
-      \"action\": \"poll\",
-      \"agent_token\": \"$AGENT_TOKEN\",
-      \"agent_version\": \"$AGENT_VERSION\"
-    }")
-
-    if echo "$RESPONSE" | grep -q '"ok":true'; then
-      # Check if there are jobs by looking for job id patterns
-      if echo "$RESPONSE" | grep -q '"id":"'; then
-        info "Jobs found — processing..."
-
-        # Extract jobs array section and process each job
-        # Parse jobs by splitting on "JOB_TYPE" boundaries
-        echo "$RESPONSE" | grep -o '"id":"[^"]*","job_type":"[^"]*","domain":"[^"]*","cert_pem":"[^"]*","key_pem":"[^"]*"' | \
-        while IFS= read -r job_line; do
-          JOB_ID=$(echo "$job_line" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
-          JOB_DOMAIN=$(echo "$job_line" | grep -o '"domain":"[^"]*"' | cut -d'"' -f4)
-          JOB_TYPE=$(echo "$job_line" | grep -o '"job_type":"[^"]*"' | cut -d'"' -f4)
-          JOB_CERT_RAW=$(echo "$job_line" | grep -o '"cert_pem":"[^"]*"' | sed 's/"cert_pem":"//;s/"$//')
-          JOB_KEY_RAW=$(echo "$job_line" | grep -o '"key_pem":"[^"]*"' | sed 's/"key_pem":"//;s/"$//')
-
-          if [ -z "$JOB_ID" ] || [ -z "$JOB_DOMAIN" ]; then continue; fi
-
-          # Unescape \n sequences in PEM data
-          JOB_CERT=$(printf '%b' "${JOB_CERT_RAW//\\n/$'\n'}")
-          JOB_KEY=$(printf '%b' "${JOB_KEY_RAW//\\n/$'\n'}")
-
-          process_job "$JOB_ID" "$JOB_DOMAIN" "$JOB_CERT" "$JOB_KEY" "${JOB_TYPE:-install}"
-        done
-      fi
-    else
-      err "Poll failed — will retry in ${POLL_INTERVAL}s"
+  if [ "$job_type" = "install" ] || [ "$job_type" = "renew" ]; then
+    if [ -z "$cert_pem" ] || [ -z "$key_pem" ]; then
+      fail "Empty cert/key in job $job_id for $domain"
+      report_result "$job_id" "false" "cert_pem or key_pem empty in job" "$ws"
+      return
     fi
 
-    sleep "$POLL_INTERVAL"
-  done
-}
+    local is_renewal="false"
+    [ "$job_type" = "renew" ] && is_renewal="true"
 
-# ── Status command ────────────────────────────────────────────────────
-show_status() {
-  load_config
-  echo ""
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "  SSLVault Agent Status"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "  Config:     $CONF_FILE"
-  echo "  Cert dir:   $CERT_DIR"
-  echo "  Web server: $WEB_SERVER"
-  echo "  Version:    $AGENT_VERSION"
-  echo "  Poll:       every ${POLL_INTERVAL}s"
-  echo ""
+    if ! write_cert_files "$domain" "$cert_pem" "$key_pem" "$is_renewal"; then
+      report_result "$job_id" "false" "Failed to write cert files" "$ws"
+      return
+    fi
 
-  if systemctl is-active --quiet sslvault-agent 2>/dev/null; then
-    echo "  Service:    🟢 Active"
-    echo "  Uptime:    $(systemctl show sslvault-agent --property=ActiveEnterTimestamp | cut -d= -f2)"
+    # Configure web server on first install only (not on renewals)
+    if [ "$job_type" = "install" ]; then
+      configure_web_server "$domain" "$ws"
+    fi
+
+    if ! reload_web_server "$ws"; then
+      report_result "$job_id" "false" "Web server reload failed" "$ws"
+      return
+    fi
+
+    ok "Job $job_id complete: $job_type $domain ($ws)"
+    report_result "$job_id" "true" "" "$ws"
+
+  elif [ "$job_type" = "scan" ]; then
+    log "Running certificate scan..."
+    local scan_domains="[]"
+    if command -v openssl &>/dev/null; then
+      # Scan /etc/ssl/sslvault for managed certs
+      local scan_result='{"domains":['
+      local first=true
+      for cert_file in "$CERT_BASE"/*/fullchain.pem; do
+        [ -f "$cert_file" ] || continue
+        local d expiry days_left issuer
+        d=$(basename "$(dirname "$cert_file")")
+        expiry=$(openssl x509 -noout -enddate -in "$cert_file" 2>/dev/null | cut -d= -f2)
+        issuer=$(openssl x509 -noout -issuer -in "$cert_file" 2>/dev/null | sed 's/.*CN=//;s/,.*//')
+        if [ -n "$expiry" ]; then
+          local expiry_epoch now_epoch
+          expiry_epoch=$(date -d "$expiry" +%s 2>/dev/null || date -jf "%b %d %T %Y %Z" "$expiry" +%s 2>/dev/null || echo 0)
+          now_epoch=$(date +%s)
+          days_left=$(( (expiry_epoch - now_epoch) / 86400 ))
+          [ "$first" = "true" ] || scan_result+=","
+          scan_result+="{\"domain\":\"$d\",\"cert_path\":\"$cert_file\",\"key_path\":\"$CERT_BASE/$d/privkey.pem\",\"cert_expiry\":\"$expiry\",\"cert_issuer\":\"$issuer\",\"days_left\":$days_left,\"web_server\":\"$ws\"}"
+          first=false
+        fi
+      done
+      scan_result+=']}'
+      scan_domains="$scan_result"
+    fi
+
+    curl -sf -X POST "$DAEMON_API" \
+      -H "Content-Type: application/json" \
+      -d "{\"action\":\"job_result\",\"agent_token\":\"$AGENT_TOKEN\",\"job_id\":\"$job_id\",\"success\":true,\"web_server\":\"$ws\",\"scan_result\":$scan_domains}" \
+      > /dev/null 2>&1 || warn "Failed to report scan result"
+    ok "Scan job $job_id complete"
   else
-    echo "  Service:    🔴 Inactive"
+    warn "Unknown job type: $job_type — skipping"
+    report_result "$job_id" "false" "Unknown job type: $job_type" "$ws"
   fi
-
-  echo ""
-  RESPONSE=$(api_post "agent-daemon" "{\"action\":\"heartbeat\",\"agent_token\":\"$AGENT_TOKEN\"}")
-  if echo "$RESPONSE" | grep -q '"ok":true'; then
-    echo "  SSLVault:   🟢 Connected"
-  else
-    echo "  SSLVault:   🔴 Cannot reach API"
-  fi
-  echo ""
 }
 
-# ── Uninstall command ─────────────────────────────────────────────────
-do_uninstall() {
-  load_config 2>/dev/null || true
-  echo "Uninstalling SSLVault Agent..."
+# ── Main poll loop ────────────────────────────────────────────────────
+log "SSLVault Agent v$VERSION starting (poll every ${POLL_INTERVAL}s)"
 
-  systemctl stop sslvault-agent 2>/dev/null || true
-  systemctl disable sslvault-agent 2>/dev/null || true
-  rm -f /etc/systemd/system/sslvault-agent.service
-  systemctl daemon-reload 2>/dev/null || true
+while true; do
+  # Poll for jobs
+  RESPONSE=$(curl -sf -X POST "$DAEMON_API" \
+    -H "Content-Type: application/json" \
+    -d "{\"action\":\"poll\",\"agent_token\":\"$AGENT_TOKEN\",\"agent_version\":\"$VERSION\"}" \
+    2>/dev/null) || { warn "Poll failed — will retry in ${POLL_INTERVAL}s"; sleep "$POLL_INTERVAL"; continue; }
 
-  # Deregister from SSLVault
-  if [ -n "${AGENT_TOKEN:-}" ] && [ -n "${USER_ID:-}" ] && [ -n "${AGENT_ID:-}" ]; then
-    api_post "agent-daemon" "{
-      \"action\": \"deregister\",
-      \"user_id\": \"$USER_ID\",
-      \"agent_id\": \"$AGENT_ID\"
-    }" > /dev/null
+  # Parse jobs array using python3 (always available)
+  JOB_COUNT=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('jobs',[])))" 2>/dev/null || echo "0")
+
+  if [ "$JOB_COUNT" -gt 0 ]; then
+    log "$JOB_COUNT job(s) received"
+
+    for i in $(seq 0 $((JOB_COUNT - 1))); do
+      JOB_ID=$(echo "$RESPONSE"     | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i]['id'])" 2>/dev/null || echo "")
+      JOB_TYPE=$(echo "$RESPONSE"   | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i]['job_type'])" 2>/dev/null || echo "")
+      DOMAIN=$(echo "$RESPONSE"     | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i]['domain'])" 2>/dev/null || echo "")
+      CERT_PEM=$(echo "$RESPONSE"   | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i].get('cert_pem',''))" 2>/dev/null || echo "")
+      KEY_PEM=$(echo "$RESPONSE"    | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i].get('key_pem',''))" 2>/dev/null || echo "")
+
+      if [ -n "$JOB_ID" ] && [ -n "$JOB_TYPE" ]; then
+        process_job "$JOB_ID" "$JOB_TYPE" "$DOMAIN" "$CERT_PEM" "$KEY_PEM"
+      fi
+    done
   fi
 
-  rm -f /usr/local/bin/sslvault-agent
-  rm -rf /etc/sslvault
-
-  echo "✅ SSLVault Agent uninstalled."
-  echo "   Cert files in $CERT_DIR are preserved."
-}
-
-# ── Entry point ───────────────────────────────────────────────────────
-COMMAND="${1:-daemon}"
-
-case "$COMMAND" in
-  daemon)
-    load_config
-    run_daemon
-    ;;
-  status)
-    load_config
-    show_status
-    ;;
-  uninstall)
-    do_uninstall
-    ;;
-  *)
-    echo "Usage: sslvault-agent [daemon|status|uninstall]"
-    exit 1
-    ;;
-esac
+  sleep "$POLL_INTERVAL"
+done
