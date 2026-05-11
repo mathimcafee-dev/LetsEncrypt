@@ -70,6 +70,32 @@ export default function BuyCertificate({ nav }) {
 
   useEffect(() => { if (user) setAdminEmail(user.email || '') }, [user])
 
+  // On load: check for any existing dv_pending orders — jump straight to DV step
+  useEffect(() => {
+    if (!user) return
+    ;(async () => {
+      const { data: pending } = await supabase
+        .from('tss_orders')
+        .select('id, domain, tss_order_id, dv_cname_host, dv_cname_value, is_sandbox')
+        .eq('user_id', user.id)
+        .eq('status', 'dv_pending')
+        .order('created_at', { ascending: false })
+        .limit(1)
+      if (pending?.length) {
+        const o = pending[0]
+        setDomain(o.domain)
+        setOrderData({
+          order_id:  o.id,
+          tss_order_id: o.tss_order_id,
+          txt_name:  o.dv_cname_host || o.domain,
+          txt_value: o.dv_cname_value || '',
+          is_sandbox: o.is_sandbox,
+        })
+        setStep('dv')
+      }
+    })()
+  }, [user])
+
   // Auto-poll for TXT value when on DV step and value hasn't arrived yet
   useEffect(() => {
     if (step !== 'dv' || !orderData?.order_id || orderData?.txt_value) return
@@ -414,9 +440,9 @@ export default function BuyCertificate({ nav }) {
               </div>
 
               <div className="v2-callout tip" style={{ marginBottom:16 }}>
-                <div className="v2-callout-title">Cloudflare / Vercel users</div>
-                If you have DNS credentials stored in SSLVault, the TXT record may already be added automatically.
-                Wait 1–5 min after adding before clicking Check Status.
+                <div className="v2-callout-title">DNS auto-add via Vercel / Cloudflare</div>
+                If you have DNS credentials saved in SSLVault, click <strong>Retry DNS Auto-Add</strong> to push the TXT record automatically.
+                Then wait 1–5 min for propagation before clicking Check Status.
               </div>
 
               {checkResult && checkResult.status !== 'active' && (
@@ -426,10 +452,30 @@ export default function BuyCertificate({ nav }) {
                   DNS not yet validated — status: {checkResult.major_status}/{checkResult.minor_status}. Wait a few minutes and try again.
                 </div>
               )}
+              {checkResult?.dns_auto && (
+                <div style={{ background: checkResult.dns_auto.ok ? '#f0fdf4' : '#fef2f2',
+                  border: `0.5px solid ${checkResult.dns_auto.ok ? '#86efac' : '#fecaca'}`,
+                  borderRadius:'var(--v2-r-md)', padding:'10px 12px', marginBottom:12,
+                  fontSize:12, color: checkResult.dns_auto.ok ? '#166534' : '#dc2626' }}>
+                  {checkResult.dns_auto.ok
+                    ? `✅ TXT record added via ${checkResult.dns_auto.provider} — wait 1–2 min then click Check Status`
+                    : `⚠️ DNS auto-add: ${checkResult.dns_auto.message}`}
+                </div>
+              )}
 
-              <div style={{ display:'flex', gap:8 }}>
+              <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                <button className="v2-btn v2-btn-primary" onClick={async () => {
+                  setChecking(true); setCheckResult(null)
+                  try {
+                    const r = await callTSS('retry_dns', { order_id: orderData.order_id })
+                    setCheckResult({ dns_auto: r })
+                  } catch(e) { setCheckResult({ dns_auto: { ok: false, message: String(e) } }) }
+                  setChecking(false)
+                }} disabled={checking || !orderData.txt_value}>
+                  {checking ? <><RefreshCw size={12} className="spin"/> Working…</> : <>⚡ Retry DNS Auto-Add</>}
+                </button>
                 <button className="v2-btn" onClick={() => checkStatus(orderData.order_id)} disabled={checking}>
-                  {checking ? <><RefreshCw size={12} className="spin" /> Checking…</> : <><RefreshCw size={12} /> Check status</>}
+                  {checking ? <><RefreshCw size={12} className="spin" /> Checking…</> : <><RefreshCw size={12} /> Check Status</>}
                 </button>
                 <button className="v2-btn" onClick={() => { setStep('product'); setOrderData(null); setCheckResult(null) }}>
                   Order another
