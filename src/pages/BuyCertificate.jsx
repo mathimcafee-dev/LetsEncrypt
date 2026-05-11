@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, AlertTriangle, RefreshCw,
-         Copy, Check, ChevronRight, Lock, Star, Globe, Server } from 'lucide-react'
+         Copy, Check, ChevronRight, Lock, Star, Globe, Server, FlaskConical } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import '../styles/design-v2.css'
 
 const SUPABASE_URL = 'https://frthcwkntciaakqsppss.supabase.co'
+
+// ── Sandbox mode: set to false when going live ──
+const IS_SANDBOX = true
 
 const PRODUCTS = [
   {
@@ -91,6 +94,7 @@ export default function BuyCertificate({ nav }) {
       lastName: lastName.trim(),
       adminEmail: adminEmail.trim(),
       phone: phone.trim(),
+      is_sandbox: IS_SANDBOX,
     })
     if (result.error) { setError(result.error); setOrdering(false); return }
     let dvData = result
@@ -142,6 +146,14 @@ export default function BuyCertificate({ nav }) {
             </div>
           </div>
           <p className="v2-subtitle">Choose a certificate, enter your domain, and get issued in minutes. Fully managed in SSLVault.</p>
+          {IS_SANDBOX && (
+            <div style={{ display:'inline-flex', alignItems:'center', gap:7, marginTop:10,
+                          background:'#f5f3ff', border:'0.5px solid #ddd6fe', borderRadius:'var(--v2-r-md)',
+                          padding:'7px 12px', fontSize:12, color:'#6d28d9' }}>
+              <RefreshCw size={12} />
+              <strong>Sandbox mode</strong> — certificates are auto-revoked by TSS within 24 hours and auto-renewed by SSLVault. Switch <code style={{ fontFamily:'monospace', fontSize:11 }}>IS_SANDBOX</code> to <code style={{ fontFamily:'monospace', fontSize:11 }}>false</code> when going live.
+            </div>
+          )}
         </div>
 
         {/* PRODUCT step */}

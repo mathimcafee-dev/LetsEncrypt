@@ -17,7 +17,8 @@ function daysLeft(iso) {
   if (!iso) return null
   return differenceInDays(new Date(iso), new Date())
 }
-function statusOf(days, revoked) {
+function statusOf(days, revoked, status) {
+  if (status === 'sandbox_revoked') return { cls: 'grey',  label: 'Sandbox revoked', dot: 'grey'  }
   if (revoked)       return { cls: 'red',   label: 'Revoked',       dot: 'red'   }
   if (days == null)  return { cls: 'grey',  label: 'Not scanned',   dot: 'grey'  }
   if (days < 0)      return { cls: 'red',   label: 'Expired',       dot: 'red'   }
@@ -58,8 +59,8 @@ function CopyBtn({ text, label = 'Copy' }) {
 }
 
 // ── StatusPill ───────────────────────────────────────────────────────
-function StatusPill({ days, revoked }) {
-  const s = statusOf(days, revoked)
+function StatusPill({ days, revoked, status }) {
+  const s = statusOf(days, revoked, status)
   const tone = s.cls === 'green' ? 'green' : s.cls === 'amber' ? 'amber' : 'grey'
   return (
     <span className={`v2-status v2-status-${tone}`}>
@@ -83,7 +84,7 @@ function ProgressBar({ days, max = 90 }) {
 // ── CertDetail panel ─────────────────────────────────────────────────
 function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall, isPro, nav, justRotated }) {
   const days = daysLeft(cert.expires_at)
-  const s = statusOf(days, cert.status === 'revoked')
+  const s = statusOf(days, cert.status === 'revoked', cert.status)
   const [showKey, setShowKey] = useState(false)
   const [delConfirm, setDelConfirm] = useState(false)
   const [keyDelConfirm, setKeyDelConfirm] = useState(false)
@@ -163,7 +164,13 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
             <span className="v2-mono" style={{ fontSize:14, fontWeight:600, wordBreak:'break-all', color:'var(--v2-text)' }}>
               {cert.domain}
             </span>
-            <StatusPill days={days} revoked={cert.status === 'revoked'} />
+            <StatusPill days={days} revoked={cert.status === 'revoked'} status={cert.status} />
+            {cert.is_sandbox && (
+              <span style={{ fontSize:9, fontWeight:700, color:'#7c3aed', background:'#f5f3ff',
+                border:'0.5px solid #ddd6fe', borderRadius:3, padding:'1px 6px', letterSpacing:'0.3px' }}>
+                SANDBOX
+              </span>
+            )}
           </div>
           <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
             Issued {fmtDateLong(cert.issued_at || cert.created_at)}
@@ -175,13 +182,25 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
       </div>
 
       {/* Status banner */}
-      {days != null && days < 30 && (
+      {cert.status === 'sandbox_revoked' && (
+        <div className="v2-detail-banner" style={{ marginBottom:14, background:'#f5f3ff', border:'0.5px solid #ddd6fe', color:'#6d28d9' }}>
+          <RefreshCw size={13} />
+          This sandbox certificate was auto-revoked by TheSSLStore and has been replaced by a new certificate above.
+        </div>
+      )}
+      {cert.status !== 'sandbox_revoked' && cert.is_sandbox && (
+        <div className="v2-detail-banner" style={{ marginBottom:14, background:'#f5f3ff', border:'0.5px solid #ddd6fe', color:'#6d28d9' }}>
+          <RefreshCw size={13} />
+          Sandbox mode — TSS will revoke this cert within 24 hours. SSLVault auto-renews it automatically.
+        </div>
+      )}
+      {cert.status !== 'sandbox_revoked' && days != null && days < 30 && (
         <div className={`v2-detail-banner ${s.cls === 'amber' ? 'amber' : ''}`} style={{ marginBottom:14 }}>
           <AlertTriangle size={13} />
           {days < 0 ? 'This certificate has expired. Renew immediately.' : `Expires in ${days} days. Renew before it impacts your site.`}
         </div>
       )}
-      {days != null && days >= 30 && (
+      {cert.status !== 'sandbox_revoked' && days != null && days >= 30 && (
         <div className="v2-detail-banner" style={{ marginBottom:14 }}>
           <CheckCircle size={13} />
           Certificate is healthy — {days} days remaining.
@@ -472,17 +491,27 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
 // ── CertRow ──────────────────────────────────────────────────────────
 function CertRow({ cert, selected, onClick }) {
   const days = daysLeft(cert.expires_at)
-  const s = statusOf(days, cert.status === 'revoked')
+  const isSandboxRevoked = cert.status === 'sandbox_revoked'
+  const s = statusOf(days, cert.status === 'revoked', cert.status)
   const initials = cert.domain.replace(/^www\./, '').slice(0, 2).toUpperCase()
   const colors = { green:'#10b981', amber:'#f59e0b', red:'#dc2626', grey:'#d4d4d4' }
   return (
-    <div className={`v2-list-row status-${s.dot} ${selected ? 'selected' : ''}`} onClick={onClick}>
+    <div className={`v2-list-row status-${s.dot} ${selected ? 'selected' : ''}`}
+      onClick={onClick}
+      style={isSandboxRevoked ? { opacity: 0.45, pointerEvents: 'none', cursor: 'default' } : {}}>
       <div className="v2-row-icon" style={{ background: colors[s.dot] }}>{initials}</div>
       <div className="v2-row-body">
         <div className="v2-row-title-line">
           <span className="v2-row-title v2-mono">{cert.domain}</span>
-          <StatusPill days={days} revoked={cert.status === 'revoked'} />
-          {cert.private_key_pem && (
+          <StatusPill days={days} revoked={cert.status === 'revoked'} status={cert.status} />
+          {cert.is_sandbox && !isSandboxRevoked && (
+            <span title="Sandbox certificate — auto-renews every ~20 hours" style={{ display:'inline-flex', alignItems:'center',
+              gap:3, fontSize:9, fontWeight:600, color:'#7c3aed', background:'#f5f3ff',
+              border:'0.5px solid #ddd6fe', borderRadius:3, padding:'1px 5px', letterSpacing:'0.2px' }}>
+              SANDBOX
+            </span>
+          )}
+          {cert.private_key_pem && !isSandboxRevoked && (
             <span title="Private key stored server-side" style={{ display:'inline-flex', alignItems:'center',
               gap:3, fontSize:9, fontWeight:600, color:'#92400e', background:'#fffbeb',
               border:'0.5px solid #fde68a', borderRadius:3, padding:'1px 5px', letterSpacing:'0.2px' }}>
@@ -491,17 +520,22 @@ function CertRow({ cert, selected, onClick }) {
           )}
         </div>
         <div className="v2-row-meta">
-          <span>Expires {fmtDate(cert.expires_at)}</span>
-          <span className="v2-row-meta-sep">·</span>
-          {cert.cert_type === 'RapidSSL DV'
-            ? <span style={{ fontSize:9, fontWeight:700, color:'#185FA5', background:'#E6F1FB',
-                              border:'0.5px solid #B5D4F4', borderRadius:3, padding:'1px 5px' }}>RapidSSL</span>
-            : <span>{cert.cert_type || 'SSL Certificate'}</span>}
-          {cert.issued_at && <><span className="v2-row-meta-sep">·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
+          {isSandboxRevoked
+            ? <span>Sandbox cert — replaced by renewed certificate above</span>
+            : <>
+                <span>Expires {fmtDate(cert.expires_at)}</span>
+                <span className="v2-row-meta-sep">·</span>
+                {cert.cert_type === 'RapidSSL DV'
+                  ? <span style={{ fontSize:9, fontWeight:700, color:'#185FA5', background:'#E6F1FB',
+                                    border:'0.5px solid #B5D4F4', borderRadius:3, padding:'1px 5px' }}>RapidSSL</span>
+                  : <span>{cert.cert_type || 'SSL Certificate'}</span>}
+                {cert.issued_at && <><span className="v2-row-meta-sep">·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
+              </>
+          }
         </div>
-        {days != null && days <= 90 && <div style={{ marginTop:6 }}><ProgressBar days={days} /></div>}
+        {!isSandboxRevoked && days != null && days <= 90 && <div style={{ marginTop:6 }}><ProgressBar days={days} /></div>}
       </div>
-      <ChevronRight size={14} color="var(--v2-text-3)" style={{ flexShrink:0 }} />
+      {!isSandboxRevoked && <ChevronRight size={14} color="var(--v2-text-3)" style={{ flexShrink:0 }} />}
     </div>
   )
 }
@@ -637,11 +671,16 @@ function LoggedInDashboard({ user, nav }) {
     setCerts(prev => prev.map(c => c.id === id ? { ...c, private_key_pem: null } : c))
   }
 
-  const activeCerts = certs.filter(c => c.status !== 'rotating')
+  const activeCerts = certs.filter(c => c.status !== 'rotating' && c.status !== 'sandbox_revoked')
   const total    = activeCerts.length
   const healthy  = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 }).length
   const expiring = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 }).length
   const expired  = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 }).length
+
+  // Sandbox certs that are currently active
+  const sandboxActiveDomains = [...new Set(
+    certs.filter(c => c.is_sandbox && c.status === 'active').map(c => c.domain)
+  )]
 
   // Certs with status 'rotating' are hidden from the list
   // They are kept in DB for 30-day rollback but not shown to user
@@ -649,10 +688,21 @@ function LoggedInDashboard({ user, nav }) {
     .filter(c => c.status === 'rotating')
     .map(c => c.domain)
 
+  // sandbox_revoked certs — shown greyed out, grouped below active certs
+  const sandboxRevokedDomains = [...new Set(
+    certs.filter(c => c.status === 'sandbox_revoked').map(c => c.domain)
+  )]
+
   const visible = certs.filter(c => {
     if (c.status === 'rotating') return false  // hide rotating (old) certs
+    // sandbox_revoked: only show in 'all' filter, not in health filters
+    if (c.status === 'sandbox_revoked') {
+      if (filter !== 'all') return false
+      if (search && !c.domain.toLowerCase().includes(search.toLowerCase())) return false
+      return true
+    }
     const d = daysLeft(c.expires_at)
-    const s = statusOf(d, c.status === 'revoked')
+    const s = statusOf(d, c.status === 'revoked', c.status)
     if (filter === 'healthy'  && s.cls !== 'green')  return false
     if (filter === 'expiring' && s.cls !== 'amber')  return false
     if (filter === 'expired'  && s.cls !== 'red')    return false
@@ -698,6 +748,21 @@ function LoggedInDashboard({ user, nav }) {
             </div>
           ))}
         </div>
+
+        {/* Sandbox mode banner */}
+        {sandboxActiveDomains.length > 0 && (
+          <div style={{ background:'#f5f3ff', border:'0.5px solid #ddd6fe',
+                        borderRadius:'var(--v2-r-lg)', padding:'12px 16px',
+                        marginBottom:16, display:'flex', alignItems:'center', gap:12 }}>
+            <RefreshCw size={15} color="#7c3aed" style={{ flexShrink:0 }} />
+            <div style={{ flex:1 }}>
+              <span style={{ fontSize:12, fontWeight:600, color:'#6d28d9' }}>Sandbox mode active — </span>
+              <span style={{ fontSize:12, color:'#7c3aed' }}>
+                TSS sandbox certs are auto-revoked within 24 hours. SSLVault renews them automatically every ~20 hours. Greyed entries below are previous sandbox revocations.
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Alerts */}
         {expired > 0 && (
@@ -911,7 +976,7 @@ function LoggedInDashboard({ user, nav }) {
               <div className="v2-list-scroll" style={{ maxHeight:280 }}>
                 {monitored.map(m => {
                   const days = m.cert_expiry ? differenceInDays(new Date(m.cert_expiry), new Date()) : null
-                  const s = statusOf(days, false)
+                  const s = statusOf(days, false, null)
                   return (
                     <div key={m.id} className={`v2-list-row status-${s.dot}`} style={{ cursor:'default' }}>
                       <Globe size={14} color="var(--v2-text-3)" style={{ flexShrink:0 }} />
