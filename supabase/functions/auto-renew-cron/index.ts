@@ -115,7 +115,7 @@ async function renewAcme(cert: Certificate): Promise<{ ok: boolean; error?: stri
 
   if (updateError) return { ok: false, error: `DB update failed: ${updateError.message}` }
 
-  await dispatchAgentJobIfAvailable(cert, finalizeData)
+  await dispatchToAllAgents(cert, finalizeData)
   return { ok: true }
 }
 
@@ -151,7 +151,7 @@ async function renewSandboxTss(cert: Certificate): Promise<{ ok: boolean; error?
   // But we also handle the case where we need to do the DB work here.
   if (tssData.db_handled) {
     // Edge function handled DB writes — just dispatch agent job
-    if (tssData.new_cert) await dispatchAgentJobIfAvailable(cert, tssData.new_cert)
+    if (tssData.new_cert) await dispatchToAllAgents(cert, tssData.new_cert)
     return { ok: true }
   }
 
@@ -198,35 +198,71 @@ async function renewSandboxTss(cert: Certificate): Promise<{ ok: boolean; error?
     return { ok: false, error: `DB insert new cert failed: ${insertError.message}` }
   }
 
-  if (newCert) await dispatchAgentJobIfAvailable(cert, tssData)
+  if (newCert) await dispatchToAllAgents(cert, tssData)
   return { ok: true }
 }
 
 // ── Dispatch install job to persistent agent if domain is registered ──
-async function dispatchAgentJobIfAvailable(cert: Certificate, certData: Record<string, unknown>) {
+// Dispatch a renew job to EVERY SSH server registered for this domain.
+// Key design decisions:
+//   1. No online check — job stays queued until agent polls. Agent may be
+//      temporarily offline; it will pick up the job on its next 5-min poll.
+//   2. Dispatch to ALL matched servers — a domain may be on multiple VPS.
+//   3. Dedup — skip if a queued/claimed renew job already exists for this
+//      agent+cert combination (avoids duplicate jobs on rapid cron runs).
+async function dispatchToAllAgents(cert: Certificate, certData: Record<string, unknown>) {
   try {
+    // Find ALL server_credentials rows for this domain that have an agent linked
     const { data: serverRows } = await supabase
-      .from('server_credentials').select('agent_id')
-      .contains('domains', [cert.domain]).not('agent_id', 'is', null).limit(1)
+      .from('server_credentials')
+      .select('id, agent_id, nickname, server_type')
+      .contains('domains', [cert.domain])
+      .not('agent_id', 'is', null)
 
-    if (!serverRows?.length || !serverRows[0].agent_id) return
+    if (!serverRows?.length) {
+      console.log(`No agents registered for ${cert.domain} — skipping dispatch`)
+      return
+    }
 
-    const { data: agent } = await supabase.from('persistent_agents')
-      .select('id, last_seen_at').eq('id', serverRows[0].agent_id).eq('status', 'active').single()
+    const certPem = certData.cert_pem as string || ''
+    const keyPem  = certData.private_key_pem as string || ''
 
-    if (!agent?.last_seen_at) return
-    const minsAgo = Math.floor((Date.now() - new Date(agent.last_seen_at).getTime()) / 60000)
-    if (minsAgo >= 30) return
+    for (const row of serverRows) {
+      // Only dispatch to SSH servers (VPS persistent agent)
+      if (row.server_type && row.server_type !== 'ssh') continue
 
-    await supabase.from('agent_jobs').insert({
-      agent_id: agent.id, user_id: cert.user_id, cert_id: cert.id,
-      job_type: 'renew', status: 'queued',
-      cert_pem: certData.cert_pem, key_pem: certData.private_key_pem || '',
-      domain: cert.domain,
-    })
-    console.log(`Dispatched renewal job to agent ${agent.id} for ${cert.domain}`)
-  } catch (agentErr: any) {
-    console.error('Agent dispatch failed (non-fatal):', agentErr.message)
+      try {
+        // Dedup: check if a pending renew job already exists for this agent+cert
+        const { data: existing } = await supabase
+          .from('agent_jobs')
+          .select('id')
+          .eq('agent_id', row.agent_id)
+          .eq('cert_id', cert.id)
+          .in('status', ['queued', 'claimed'])
+          .maybeSingle()
+
+        if (existing) {
+          console.log(`Renew job already queued for agent ${row.agent_id} cert ${cert.id} — skipping`)
+          continue
+        }
+
+        await supabase.from('agent_jobs').insert({
+          agent_id: row.agent_id,
+          user_id: cert.user_id,
+          cert_id: cert.id,
+          job_type: 'renew',
+          status: 'queued',
+          cert_pem: certPem,
+          key_pem: keyPem,
+          domain: cert.domain,
+        })
+        console.log(`Queued renew job → agent ${row.agent_id} (${row.nickname}) for ${cert.domain}`)
+      } catch (rowErr: any) {
+        console.error(`Failed to queue job for agent ${row.agent_id}:`, rowErr.message)
+      }
+    }
+  } catch (err: any) {
+    console.error('dispatchToAllAgents failed (non-fatal):', err.message)
   }
 }
 
