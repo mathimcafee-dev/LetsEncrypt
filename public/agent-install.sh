@@ -94,7 +94,7 @@ success "Web server: $WEB_SERVER"
 # ── Step 3: Check dependencies ────────────────────────────────────────
 info "Checking dependencies..."
 MISSING=()
-for cmd in curl jq openssl; do
+for cmd in curl python3 openssl; do
   command -v $cmd &>/dev/null || MISSING+=($cmd)
 done
 
@@ -131,6 +131,10 @@ AGENT_VERSION=${AGENT_VERSION}
 CONF
 
 chmod 600 "$CONF_FILE"
+
+# Write the token to /etc/sslvault/agent.token — this is what the daemon reads
+echo -n "$AGENT_TOKEN" > "$CONF_DIR/agent.token"
+chmod 600 "$CONF_DIR/agent.token"
 success "Config written to $CONF_FILE"
 
 # ── Step 6: Register with SSLVault ───────────────────────────────────
