@@ -1,270 +1,426 @@
-import { useState, useEffect, useRef } from 'react'
-import { Shield, CheckCircle, AlertTriangle, RefreshCw,
-         Copy, Check, Lock, Zap, Globe, Server, ArrowRight, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Shield, CheckCircle, AlertTriangle, RefreshCw, Copy, Check,
+         Lock, Zap, Globe, Server, ArrowRight, ChevronRight, Star } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 
-const SUPABASE_URL = 'https://frthcwkntciaakqsppss.supabase.co'
-const IS_SANDBOX   = true
+const URL = 'https://frthcwkntciaakqsppss.supabase.co'
+const IS_SANDBOX = true
 
-const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+const STYLES = `
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
 
-  .sv-page { font-family:'Inter',system-ui,sans-serif; background:#f8fafc; min-height:calc(100vh - 56px); }
+.ic-root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f0f2f5;
+  min-height: calc(100vh - 56px);
+  -webkit-font-smoothing: antialiased;
+}
 
-  /* ── Hero strip ── */
-  .sv-hero {
-    background: linear-gradient(135deg, #0a0a0a 0%, #111827 100%);
-    padding: 28px 24px 24px;
-    position: relative;
-    overflow: hidden;
-  }
-  .sv-hero::before {
-    content:'';
-    position:absolute; inset:0;
-    background: radial-gradient(ellipse 600px 300px at 50% -50%, rgba(16,185,129,0.15), transparent);
-    pointer-events:none;
-  }
-  .sv-hero-inner { max-width:640px; margin:0 auto; position:relative; }
+/* ─── HERO ─────────────────────────────────────────────── */
+.ic-hero {
+  background: linear-gradient(160deg, #0a0a0a 0%, #0f1923 60%, #0d2137 100%);
+  padding: 32px 20px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.ic-hero-noise {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+.ic-hero-glow {
+  position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 300px; pointer-events: none;
+  background: radial-gradient(ellipse, rgba(16,185,129,0.18) 0%, transparent 65%);
+}
+.ic-hero-inner {
+  max-width: 560px; margin: 0 auto; position: relative; z-index: 1;
+}
+.ic-hero-top {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}
+.ic-logo {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.08));
+  border: 1px solid rgba(16,185,129,0.3);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 24px rgba(16,185,129,0.15);
+}
+.ic-hero-title { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.4px; line-height: 1.2; }
+.ic-hero-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; letter-spacing: 0.1px; }
+.ic-hero-badges {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.ic-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px; padding: 4px 10px;
+  font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.5);
+  letter-spacing: 0.2px;
+}
+.ic-badge-green {
+  background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.25); color: #34d399;
+}
+.ic-sandbox-pill {
+  margin-left: auto; flex-shrink: 0;
+  background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
+  color: #a78bfa; font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; border-radius: 4px; padding: 3px 8px;
+}
 
-  /* ── Step bar ── */
-  .sv-steps { display:flex; align-items:center; gap:0; padding:20px 24px 0; max-width:640px; margin:0 auto; }
-  .sv-step-dot {
-    width:24px; height:24px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-size:10px; font-weight:700; flex-shrink:0;
-    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-  }
-  .sv-step-dot.done { background:#10b981; border:2px solid #10b981; color:white; transform:scale(1.05); }
-  .sv-step-dot.active { background:#0a0a0a; border:2px solid #0a0a0a; color:white; box-shadow:0 0 0 4px rgba(10,10,10,0.08); }
-  .sv-step-dot.future { background:white; border:2px solid #e2e8f0; color:#cbd5e1; }
-  .sv-step-label { font-size:11px; font-weight:500; transition:color 0.3s; }
-  .sv-step-label.active { color:#0a0a0a; font-weight:600; }
-  .sv-step-label.done { color:#10b981; }
-  .sv-step-label.future { color:#cbd5e1; }
-  .sv-step-line { flex:1; height:1px; margin:0 8px; transition:background 0.4s; }
-  .sv-step-line.done { background:#10b981; }
-  .sv-step-line.future { background:#e2e8f0; }
+/* ─── STEPS ────────────────────────────────────────────── */
+.ic-steps {
+  display: flex; align-items: center;
+  background: white; border-bottom: 1px solid #e8edf2;
+  padding: 0 20px;
+  position: sticky; top: 56px; z-index: 50;
+}
+.ic-step {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 0; flex-shrink: 0;
+}
+.ic-step-circle {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; transition: all 0.3s;
+}
+.ic-step-circle.done   { background: #10b981; color: white; }
+.ic-step-circle.active { background: #0a0a0a; color: white; box-shadow: 0 0 0 3px rgba(10,10,10,0.1); }
+.ic-step-circle.future { background: #f1f5f9; color: #94a3b8; border: 1.5px solid #e2e8f0; }
+.ic-step-text { font-size: 12px; font-weight: 600; transition: color 0.3s; }
+.ic-step-text.done   { color: #10b981; }
+.ic-step-text.active { color: #0a0a0a; }
+.ic-step-text.future { color: #cbd5e1; }
+.ic-step-line { flex: 1; height: 1px; margin: 0 12px; min-width: 20px; transition: background 0.4s; }
+.ic-step-line.done   { background: #10b981; }
+.ic-step-line.future { background: #e8edf2; }
 
-  /* ── Main body ── */
-  .sv-body { max-width:640px; margin:0 auto; padding:20px 16px 80px; }
-  @media(min-width:640px) { .sv-body { padding:24px 24px 80px; } }
+/* ─── BODY ─────────────────────────────────────────────── */
+.ic-body {
+  max-width: 560px; margin: 0 auto; padding: 20px 16px 80px;
+}
+@media (min-width: 600px) { .ic-body { padding: 24px 20px 80px; } }
 
-  /* ── Pending banner ── */
-  .sv-pending-banner {
-    background:#fffbeb; border:1px solid #fde68a; border-radius:12px;
-    padding:12px 14px; margin-bottom:20px;
-    display:flex; align-items:center; gap:10;
-    animation: slideDown 0.3s ease;
-  }
+/* ─── PENDING BANNER ───────────────────────────────────── */
+.ic-pending {
+  display: flex; align-items: center; gap: 10;
+  background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px;
+  padding: 12px 14px; margin-bottom: 18px;
+  animation: ic-slidein 0.3s ease;
+}
+.ic-pending-text { flex: 1; min-width: 0; }
+.ic-pending-title { font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 2px; }
+.ic-pending-sub   { font-size: 11px; color: #b45309; }
 
-  /* ── Stats row ── */
-  .sv-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px; }
-  .sv-stat {
-    background:white; border:1px solid #e8edf2; border-radius:10px;
-    padding:12px 10px; text-align:center;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .sv-stat:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.06); }
-  .sv-stat-val { font-size:16px; font-weight:800; color:#0a0a0a; letter-spacing:-0.4px; }
-  .sv-stat-lbl { font-size:10px; color:#94a3b8; margin-top:2px; font-weight:500; }
+/* ─── STAT TILES ───────────────────────────────────────── */
+.ic-stats {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 18px;
+}
+.ic-stat {
+  background: white; border: 1px solid #e8edf2; border-radius: 10px;
+  padding: 14px 12px; text-align: center; cursor: default;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.ic-stat:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
+.ic-stat-v { font-size: 17px; font-weight: 800; color: #0a0a0a; letter-spacing: -0.5px; }
+.ic-stat-l { font-size: 10px; color: #94a3b8; margin-top: 3px; font-weight: 500; letter-spacing: 0.1px; }
 
-  /* ── Domain field ── */
-  .sv-domain-wrap { margin-bottom:16px; }
-  .sv-domain-label { font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:6px; }
-  .sv-domain-input-wrap { position:relative; }
-  .sv-domain-icon { position:absolute; left:13px; top:50%; transform:translateY(-50%); pointer-events:none; color:#94a3b8; }
-  .sv-domain-input {
-    width:100%; height:52px; padding:0 14px 0 38px;
-    font-size:15px; font-weight:700; font-family:'SF Mono','JetBrains Mono',monospace;
-    color:#0a0a0a; background:white;
-    border:2px solid #e2e8f0; border-radius:10px;
-    outline:none; transition:border-color 0.2s, box-shadow 0.2s;
-    box-sizing:border-box; letter-spacing:-0.2px;
-  }
-  .sv-domain-input:focus { border-color:#0a0a0a; box-shadow:0 0 0 4px rgba(10,10,10,0.06); }
-  .sv-domain-input::placeholder { color:#cbd5e1; font-family:'Inter',system-ui,sans-serif; font-weight:400; font-size:14px; }
+/* ─── DOMAIN FIELD ─────────────────────────────────────── */
+.ic-domain { margin-bottom: 16px; }
+.ic-domain-label {
+  display: block; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: #64748b; margin-bottom: 7px;
+}
+.ic-domain-wrap { position: relative; }
+.ic-domain-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none; }
+.ic-domain-input {
+  width: 100%; height: 52px; box-sizing: border-box;
+  padding: 0 14px 0 38px;
+  font-size: 16px; font-weight: 700;
+  font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  letter-spacing: -0.3px; color: #0a0a0a;
+  background: white; border: 2px solid #e2e8f0;
+  border-radius: 12px; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ic-domain-input:focus {
+  border-color: #0a0a0a;
+  box-shadow: 0 0 0 4px rgba(10,10,10,0.06);
+}
+.ic-domain-input::placeholder { color: #c8d3e0; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 400; }
 
-  /* ── Card ── */
-  .sv-card { background:white; border:1px solid #e8edf2; border-radius:12px; overflow:hidden; margin-bottom:12px; }
-  .sv-card-head { padding:14px 16px; border-bottom:1px solid #f1f5f9; background:#fafbfc; }
-  .sv-card-label { font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; }
-  .sv-card-body { padding:16px; }
+/* ─── CARD ─────────────────────────────────────────────── */
+.ic-card {
+  background: white; border: 1px solid #e8edf2; border-radius: 14px;
+  overflow: hidden; margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+}
+.ic-card-head {
+  padding: 12px 16px; background: #fafbfc;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ic-section-label {
+  font-size: 10px; font-weight: 700; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.ic-card-body { padding: 16px; }
 
-  /* ── Inputs inside card ── */
-  .sv-input {
-    width:100%; padding:9px 11px; font-size:13px;
-    border:1px solid #e2e8f0; border-radius:7px;
-    font-family:'Inter',system-ui,sans-serif; color:#0a0a0a; background:white;
-    outline:none; transition:border-color 0.15s, box-shadow 0.15s;
-    box-sizing:border-box;
-  }
-  .sv-input:focus { border-color:#0a0a0a; box-shadow:0 0 0 3px rgba(10,10,10,0.06); }
-  .sv-input::placeholder { color:#cbd5e1; }
-  .sv-2col { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .sv-field-label { font-size:10px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.3px; display:block; margin-bottom:5px; }
+/* ─── FORM INPUTS ──────────────────────────────────────── */
+.ic-field { margin-bottom: 12px; }
+.ic-field:last-child { margin-bottom: 0; }
+.ic-label {
+  display: block; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  color: #64748b; margin-bottom: 5px;
+}
+.ic-input {
+  width: 100%; box-sizing: border-box;
+  padding: 10px 12px; font-size: 13px; font-weight: 500;
+  font-family: 'Inter', sans-serif; color: #0a0a0a;
+  background: white; border: 1.5px solid #e2e8f0;
+  border-radius: 9px; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ic-input:focus { border-color: #0a0a0a; box-shadow: 0 0 0 3px rgba(10,10,10,0.06); }
+.ic-input::placeholder { color: #c8d3e0; font-weight: 400; }
+.ic-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 440px) { .ic-row2 { grid-template-columns: 1fr; } }
 
-  /* ── Validity toggle ── */
-  .sv-validity { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .sv-validity-btn {
-    padding:11px 12px; border-radius:9px; cursor:pointer; font-family:'Inter',system-ui,sans-serif;
-    text-align:left; transition:all 0.2s cubic-bezier(0.4,0,0.2,1);
-    border:2px solid #e2e8f0; background:white;
-  }
-  .sv-validity-btn.selected { border-color:#0a0a0a; background:#0a0a0a; box-shadow:0 4px 12px rgba(0,0,0,0.2); transform:translateY(-1px); }
-  .sv-validity-val { font-size:13px; font-weight:700; }
-  .sv-validity-btn.selected .sv-validity-val { color:white; }
-  .sv-validity-btn:not(.selected) .sv-validity-val { color:#0a0a0a; }
-  .sv-validity-price { font-size:11px; margin-top:1px; }
-  .sv-validity-btn.selected .sv-validity-price { color:rgba(255,255,255,0.55); }
-  .sv-validity-btn:not(.selected) .sv-validity-price { color:#94a3b8; }
+/* ─── VALIDITY TOGGLE ──────────────────────────────────── */
+.ic-validity { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ic-val-btn {
+  padding: 12px 14px; border-radius: 10px; cursor: pointer;
+  font-family: 'Inter', sans-serif; text-align: left;
+  border: 2px solid #e2e8f0; background: white;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+.ic-val-btn:hover { border-color: #94a3b8; }
+.ic-val-btn.sel {
+  border-color: #0a0a0a; background: #0a0a0a;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+  transform: translateY(-1px);
+}
+.ic-val-yr { font-size: 14px; font-weight: 700; }
+.ic-val-btn:not(.sel) .ic-val-yr { color: #0a0a0a; }
+.ic-val-btn.sel .ic-val-yr { color: white; }
+.ic-val-pr { font-size: 11px; margin-top: 2px; }
+.ic-val-btn:not(.sel) .ic-val-pr { color: #94a3b8; }
+.ic-val-btn.sel .ic-val-pr { color: rgba(255,255,255,0.5); }
 
-  /* ── Summary + CTA ── */
-  .sv-summary { background:white; border:1px solid #e8edf2; border-radius:12px; overflow:hidden; }
-  .sv-summary-rows { padding:12px 16px; border-bottom:1px solid #f1f5f9; }
-  .sv-summary-row { display:flex; justify-content:space-between; font-size:12px; color:#64748b; margin-bottom:4px; }
-  .sv-summary-row:last-child { margin-bottom:0; }
-  .sv-summary-row.green { color:#10b981; }
-  .sv-summary-footer { padding:14px 16px; background:#f8fafc; display:flex; justify-content:space-between; align-items:center; gap:12; }
-  .sv-total-label { font-size:10px; color:#94a3b8; margin-bottom:2px; }
-  .sv-total-val { font-size:24px; font-weight:800; color:#0a0a0a; letter-spacing:-0.6px; line-height:1; }
-  .sv-total-note { font-size:9px; color:#cbd5e1; margin-top:2px; }
+/* ─── ORDER SUMMARY ────────────────────────────────────── */
+.ic-summary {
+  background: white; border: 1px solid #e8edf2; border-radius: 14px;
+  overflow: hidden; margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.ic-summary-rows { padding: 14px 16px; }
+.ic-sum-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: #64748b; margin-bottom: 6px;
+}
+.ic-sum-row:last-child { margin-bottom: 0; }
+.ic-sum-row.em { color: #10b981; font-weight: 600; }
+.ic-sum-foot {
+  border-top: 1px solid #f1f5f9; padding: 14px 16px;
+  background: #fafbfc;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.ic-price-label { font-size: 10px; color: #94a3b8; margin-bottom: 2px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
+.ic-price-val { font-size: 26px; font-weight: 900; color: #0a0a0a; letter-spacing: -0.8px; line-height: 1; }
+.ic-price-note { font-size: 9px; color: #c8d3e0; margin-top: 3px; }
 
-  /* ── CTA Button ── */
-  .sv-cta {
-    background:#0a0a0a; color:white; border:none; border-radius:10px;
-    padding:13px 20px; font-size:13px; font-weight:700; cursor:pointer;
-    display:inline-flex; align-items:center; gap:7; font-family:'Inter',system-ui,sans-serif;
-    white-space:nowrap; flex-shrink:0;
-    box-shadow:0 2px 8px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.1);
-    transition:all 0.2s cubic-bezier(0.4,0,0.2,1);
-  }
-  .sv-cta:hover { background:#1a1a1a; box-shadow:0 4px 16px rgba(0,0,0,0.3); transform:translateY(-1px); }
-  .sv-cta:active { transform:translateY(0); box-shadow:0 1px 4px rgba(0,0,0,0.2); }
-  .sv-cta:disabled { background:#94a3b8; cursor:not-allowed; transform:none; box-shadow:none; }
-  .sv-cta-green { background:#10b981; box-shadow:0 2px 8px rgba(16,185,129,0.35); }
-  .sv-cta-green:hover { background:#059669; box-shadow:0 4px 16px rgba(16,185,129,0.4); }
-  .sv-cta-outline { background:white; color:#0a0a0a; border:1.5px solid #e2e8f0; box-shadow:none; }
-  .sv-cta-outline:hover { background:#f8fafc; border-color:#cbd5e1; box-shadow:none; transform:none; }
-  .sv-cta-ghost { background:transparent; color:#94a3b8; border:none; box-shadow:none; padding:9px 10px; }
-  .sv-cta-ghost:hover { background:transparent; color:#64748b; box-shadow:none; transform:none; }
+/* ─── BUTTONS ──────────────────────────────────────────── */
+.ic-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-family: 'Inter', sans-serif; font-weight: 700; cursor: pointer;
+  border: none; border-radius: 10px; white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+.ic-btn-primary {
+  background: #0a0a0a; color: white; font-size: 14px;
+  padding: 14px 22px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.15);
+}
+.ic-btn-primary:hover { background: #1a1a1a; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.18); }
+.ic-btn-primary:active { transform: translateY(0); }
+.ic-btn-primary:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+.ic-btn-green {
+  background: #10b981; color: white; font-size: 13px; padding: 11px 18px;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.4);
+}
+.ic-btn-green:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(16,185,129,0.45); }
+.ic-btn-green:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+.ic-btn-outline {
+  background: white; color: #374151; font-size: 13px; padding: 11px 18px;
+  border: 1.5px solid #e2e8f0;
+}
+.ic-btn-outline:hover { background: #f8fafc; border-color: #c8d3e0; }
+.ic-btn-ghost {
+  background: transparent; color: #94a3b8; font-size: 12px; padding: 10px;
+  border: none;
+}
+.ic-btn-ghost:hover { color: #64748b; }
 
-  /* ── Error alert ── */
-  .sv-error { display:flex; gap:8px; align-items:flex-start; background:#fef2f2; border:1px solid #fecaca; border-radius:9px; padding:10px 12px; font-size:12px; color:#dc2626; margin-top:12px; animation:fadeIn 0.2s ease; }
+/* ─── TRUST STRIP ──────────────────────────────────────── */
+.ic-trust {
+  display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 18px;
+}
+.ic-trust-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #94a3b8; }
 
-  /* ── Trust chips ── */
-  .sv-trust { display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:20px; }
-  .sv-trust-item { font-size:11px; color:#94a3b8; display:flex; align-items:center; gap:5; }
+/* ─── ERROR ────────────────────────────────────────────── */
+.ic-error {
+  display: flex; gap: 8px; align-items: flex-start;
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: 10px; padding: 11px 13px;
+  font-size: 12px; color: #dc2626; margin-top: 12px;
+  animation: ic-fadein 0.2s ease;
+}
 
-  /* ── DV Card ── */
-  .sv-dv-header { background:linear-gradient(135deg,#fffbeb,#fefce8); border-bottom:1px solid #fde68a; padding:14px 16px; display:flex; align-items:center; gap:10; }
-  .sv-dv-icon { width:36px; height:36px; background:#fef3c7; border:1px solid #fde68a; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .sv-dv-title { font-size:13px; font-weight:700; color:#92400e; }
-  .sv-dv-sub { font-size:11px; color:#b45309; margin-top:1px; }
-  .sv-order-badge { font-size:10px; color:#b45309; background:#fef3c7; border:0.5px solid #fde68a; border-radius:4px; padding:3px 8px; flex-shrink:0; }
+/* ─── DV SCREEN ────────────────────────────────────────── */
+.ic-dv-head {
+  display: flex; align-items: center; gap: 12px;
+  background: linear-gradient(135deg, #fffbeb, #fefce8);
+  border-bottom: 1px solid #fde68a; padding: 16px;
+}
+.ic-dv-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  background: #fef3c7; border: 1px solid #fde68a;
+  display: flex; align-items: center; justify-content: center;
+}
+.ic-dv-title { font-size: 14px; font-weight: 700; color: #92400e; }
+.ic-dv-sub   { font-size: 11px; color: #b45309; margin-top: 2px; line-height: 1.5; }
+.ic-order-no {
+  margin-left: auto; flex-shrink: 0;
+  font-size: 10px; color: #b45309; background: #fef3c7;
+  border: 1px solid #fde68a; border-radius: 5px; padding: 3px 8px; font-weight: 600;
+}
 
-  /* ── DNS terminal ── */
-  .sv-terminal { background:#0d1117; margin:14px 16px; border-radius:9px; overflow:hidden; border:1px solid #21262d; }
-  .sv-terminal-head { padding:8px 12px; background:#161b22; border-bottom:1px solid #21262d; display:flex; align-items:center; gap:5; }
-  .sv-terminal-dot { width:9px; height:9px; border-radius:50%; }
-  .sv-terminal-title { font-size:9px; color:#484f58; font-family:monospace; margin-left:4px; }
-  .sv-dns-row { padding:9px 12px; border-bottom:1px solid #1a1a1a; display:flex; align-items:center; gap:10; }
-  .sv-dns-key { font-size:9px; color:#484f58; width:38px; flex-shrink:0; font-family:monospace; text-transform:uppercase; letter-spacing:0.4px; }
-  .sv-dns-val { flex:1; font-size:11px; font-family:monospace; color:#c9d1d9; word-break:break-all; display:flex; align-items:center; gap:7; line-height:1.5; }
-  .sv-dns-val.green { color:#10b981; }
-  .sv-dns-val.muted { color:#484f58; }
-  .sv-copy-btn { display:inline-flex; align-items:center; gap:4; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#6b7280; border-radius:4px; padding:3px 8px; font-size:10px; cursor:pointer; font-family:'Inter',system-ui,sans-serif; transition:all 0.15s; flex-shrink:0; }
-  .sv-copy-btn.copied { background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.3); color:#34d399; }
+/* ─── TERMINAL ─────────────────────────────────────────── */
+.ic-terminal {
+  background: #0d1117; margin: 14px 16px; border-radius: 10px;
+  overflow: hidden; border: 1px solid #21262d;
+}
+.ic-term-head {
+  background: #161b22; border-bottom: 1px solid #21262d;
+  padding: 9px 13px; display: flex; align-items: center; gap: 5px;
+}
+.ic-dot { width: 10px; height: 10px; border-radius: 50%; }
+.ic-term-name { font-size: 10px; color: #484f58; font-family: monospace; margin-left: 5px; }
+.ic-dns-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 13px; border-bottom: 1px solid #161b22;
+}
+.ic-dns-key { font-size: 9px; color: #484f58; width: 38px; flex-shrink: 0; font-family: monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+.ic-dns-val { flex: 1; font-size: 11px; font-family: 'SF Mono', monospace; color: #c9d1d9; word-break: break-all; display: flex; align-items: center; gap: 7px; line-height: 1.6; }
+.ic-dns-val.green { color: #3fb950; }
+.ic-dns-val.dim   { color: #484f58; }
+.ic-copy {
+  display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  color: #6b7280; border-radius: 5px; padding: 3px 8px;
+  font-size: 10px; cursor: pointer; font-family: 'Inter',sans-serif;
+  transition: all 0.15s;
+}
+.ic-copy.ok { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #34d399; }
 
-  /* ── DV Action row ── */
-  .sv-dv-actions { padding:0 16px 16px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-  .sv-auto-note { padding:11px 14px; background:white; border:1px solid #e8edf2; border-radius:9px; font-size:12px; color:#64748b; line-height:1.7; display:flex; gap:8px; }
+/* ─── FEEDBACK ─────────────────────────────────────────── */
+.ic-feedback {
+  margin: 0 16px 12px; border-radius: 9px;
+  padding: 10px 13px; font-size: 12px;
+  display: flex; gap: 8px; align-items: flex-start;
+  animation: ic-fadein 0.2s ease;
+}
+.ic-feedback.ok   { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+.ic-feedback.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+.ic-feedback.err  { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
 
-  /* ── Feedback ── */
-  .sv-feedback-ok { margin:0 16px 12px; border-radius:8px; padding:9px 12px; font-size:12px; display:flex; gap:7; align-items:flex-start; background:#f0fdf4; border:1px solid #86efac; color:#166534; animation:fadeIn 0.2s ease; }
-  .sv-feedback-err { margin:0 16px 12px; border-radius:8px; padding:9px 12px; font-size:12px; display:flex; gap:7; align-items:flex-start; background:#fef2f2; border:1px solid #fecaca; color:#dc2626; animation:fadeIn 0.2s ease; }
-  .sv-feedback-warn { margin:0 16px 12px; border-radius:8px; padding:9px 12px; font-size:12px; background:#fffbeb; border:1px solid #fde68a; color:#92400e; display:flex; gap:7; }
+/* ─── DV ACTIONS ───────────────────────────────────────── */
+.ic-dv-actions { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 16px 16px; align-items: center; }
+.ic-auto-note {
+  background: white; border: 1px solid #e8edf2; border-radius: 10px;
+  padding: 12px 14px; font-size: 12px; color: #64748b; line-height: 1.7;
+  display: flex; gap: 9px; align-items: flex-start;
+}
 
-  /* ── Done screen ── */
-  .sv-done-header { background:linear-gradient(135deg,#f0fdf4,#fafff9); border-bottom:1px solid #dcfce7; padding:40px 24px; text-align:center; }
-  .sv-done-ring {
-    width:72px; height:72px; border-radius:50%;
-    background:#dcfce7; border:2.5px solid #86efac;
-    display:flex; align-items:center; justify-content:center;
-    margin:0 auto 20px; position:relative;
-    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  .sv-done-ring::before {
-    content:''; position:absolute; inset:-10px; border-radius:50%;
-    background:radial-gradient(circle,rgba(16,185,129,0.12) 0%,transparent 70%);
-    animation:pulse 2s ease-in-out infinite;
-  }
-  .sv-done-title { font-size:22px; font-weight:800; color:#0a0a0a; letter-spacing:-0.5px; margin-bottom:6px; }
-  .sv-done-sub { font-size:13px; color:#64748b; line-height:1.6; }
-  .sv-done-actions { padding:16px; display:flex; flex-direction:column; gap:8px; }
+/* ─── DONE ─────────────────────────────────────────────── */
+.ic-done-head {
+  background: linear-gradient(160deg, #ecfdf5, #f0fdf4);
+  border-bottom: 1px solid #bbf7d0; padding: 40px 24px;
+  text-align: center;
+}
+.ic-done-ring {
+  width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 20px;
+  background: linear-gradient(135deg, #d1fae5, #bbf7d0);
+  border: 3px solid #6ee7b7; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  animation: ic-popin 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ic-done-ring::after {
+  content: ''; position: absolute; inset: -12px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(16,185,129,0.15), transparent 70%);
+  animation: ic-breathe 2.5s ease-in-out infinite;
+}
+.ic-done-title { font-size: 22px; font-weight: 900; color: #0a0a0a; letter-spacing: -0.6px; margin-bottom: 6px; }
+.ic-done-sub   { font-size: 13px; color: #64748b; line-height: 1.6; }
+.ic-done-body  { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.ic-btn-full   { width: 100%; }
+.ic-row2-btn   { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-  /* ── Animations ── */
-  @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-  @keyframes popIn { 0% { transform:scale(0.6); opacity:0; } 100% { transform:scale(1); opacity:1; } }
-  @keyframes pulse { 0%,100% { transform:scale(1); opacity:0.5; } 50% { transform:scale(1.15); opacity:1; } }
-  @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
-  @keyframes shimmer { 0% { opacity:0.5; } 50% { opacity:1; } 100% { opacity:0.5; } }
-  .spin { animation:spin 0.8s linear infinite; }
-  .shimmer { animation:shimmer 1.5s ease-in-out infinite; }
+/* ─── ANIMATIONS ───────────────────────────────────────── */
+@keyframes ic-slidein  { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+@keyframes ic-fadein   { from { opacity:0; } to { opacity:1; } }
+@keyframes ic-popin    { 0% { transform: scale(0.5); opacity:0; } 100% { transform: scale(1); opacity:1; } }
+@keyframes ic-breathe  { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } }
+@keyframes ic-spin     { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes ic-pulse    { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+.ic-spin    { animation: ic-spin 0.8s linear infinite; }
+.ic-pulse   { animation: ic-pulse 1.4s ease-in-out infinite; }
+.ic-enter   { animation: ic-slidein 0.32s cubic-bezier(0.4,0,0.2,1); }
+.ic-fade    { animation: ic-fadein 0.35s ease; }
 
-  /* ── Mobile ── */
-  @media(max-width:480px) {
-    .sv-hero { padding:20px 16px 18px; }
-    .sv-2col { grid-template-columns:1fr; }
-    .sv-stats { gap:6px; }
-    .sv-stat-val { font-size:14px; }
-    .sv-summary-footer { flex-direction:column; align-items:flex-start; gap:10px; }
-    .sv-cta { width:100%; justify-content:center; }
-    .sv-steps { padding:16px 16px 0; }
-    .sv-domain-input { font-size:14px; height:48px; }
-    .sv-done-title { font-size:19px; }
-    .sv-hero-stats { display:none; }
-  }
+/* ─── MOBILE ───────────────────────────────────────────── */
+@media (max-width: 460px) {
+  .ic-row2 { grid-template-columns: 1fr; }
+  .ic-row2-btn { grid-template-columns: 1fr; }
+  .ic-sum-foot { flex-direction: column; align-items: stretch; }
+  .ic-btn-primary { width: 100%; font-size: 15px; padding: 14px; }
+  .ic-hero-badges { display: none; }
+  .ic-stats { gap: 6px; }
+  .ic-stat-v { font-size: 15px; }
+  .ic-steps { padding: 0 12px; }
+  .ic-step-text { font-size: 11px; }
+}
 `
 
 function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
   return (
-    <button className={`sv-copy-btn${ok?' copied':''}`}
-      onClick={() => { navigator.clipboard.writeText(text); setOk(true); setTimeout(() => setOk(false), 1800) }}>
+    <button className={`ic-copy${ok ? ' ok' : ''}`}
+      onClick={() => { navigator.clipboard.writeText(text); setOk(true); setTimeout(() => setOk(false), 2000) }}>
       {ok ? <><Check size={9}/> Copied</> : <><Copy size={9}/> Copy</>}
     </button>
   )
 }
 
-function Field({ label, hint, children }) {
+function StepBar({ current }) {
+  const i = { form: 0, dv: 1, done: 2 }[current] ?? 0
+  const steps = ['Configure', 'Validate', 'Done']
   return (
-    <div style={{ marginBottom:12 }}>
-      <div style={{ display:'flex', justifyContent:'space-between', marginBottom:5 }}>
-        <span className="sv-field-label">{label}</span>
-        {hint && <span style={{ fontSize:10, color:'#94a3b8' }}>{hint}</span>}
-      </div>
-      {children}
-    </div>
-  )
-}
-
-function Steps({ step }) {
-  const idx = { form:0, dv:1, done:2 }[step] ?? 0
-  return (
-    <div className="sv-steps">
-      {['Configure','Validate','Done'].map((s, i) => {
-        const done = i < idx, active = i === idx
+    <div className="ic-steps">
+      {steps.map((s, n) => {
+        const done = n < i, active = n === i
+        const state = done ? 'done' : active ? 'active' : 'future'
         return (
-          <div key={s} style={{ display:'flex', alignItems:'center', flex: i < 2 ? 1 : 'none' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
-              <div className={`sv-step-dot ${done?'done':active?'active':'future'}`}>
-                {done ? <Check size={11} strokeWidth={3}/> : i+1}
+          <div key={s} style={{ display:'flex', alignItems:'center', flex: n < 2 ? 1 : 'none' }}>
+            <div className="ic-step">
+              <div className={`ic-step-circle ${state}`}>
+                {done ? <Check size={11} strokeWidth={3}/> : n + 1}
               </div>
-              <span className={`sv-step-label ${done?'done':active?'active':'future'}`}>{s}</span>
+              <span className={`ic-step-text ${state}`}>{s}</span>
             </div>
-            {i < 2 && <div className={`sv-step-line ${i < idx?'done':'future'}`}/>}
+            {n < 2 && <div className={`ic-step-line ${n < i ? 'done' : 'future'}`}/>}
           </div>
         )
       })}
@@ -272,298 +428,296 @@ function Steps({ step }) {
   )
 }
 
-function cleanDomain(v) {
-  return v.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
-}
+const clean = v => v.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
 
 export default function BuyCertificate({ nav }) {
   const { user, loading: authLoading } = useAuth()
-  const [step, setStep]           = useState('form')
-  const [domain, setDomain]       = useState('')
-  const [years, setYears]         = useState(1)
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName]   = useState('')
-  const [phone, setPhone]         = useState('')
-  const [adminEmail, setAdminEmail] = useState('')
-  const [ordering, setOrdering]   = useState(false)
-  const [error, setError]         = useState('')
-  const [orderData, setOrderData] = useState(null)
-  const [checking, setChecking]   = useState(false)
-  const [dnsAdding, setDnsAdding] = useState(false)
-  const [checkResult, setCheckResult] = useState(null)
-  const [txtPolling, setTxtPolling]   = useState(false)
-  const [pendingOrder, setPendingOrder] = useState(null)
+  const [step, setStep]   = useState('form')
+  const [domain, setD]    = useState('')
+  const [years, setYears] = useState(1)
+  const [fn, setFn]       = useState('')
+  const [ln, setLn]       = useState('')
+  const [ph, setPh]       = useState('')
+  const [em, setEm]       = useState('')
+  const [busy, setBusy]   = useState(false)
+  const [err, setErr]     = useState('')
+  const [ord, setOrd]     = useState(null)
+  const [chk, setChk]     = useState(false)
+  const [dns, setDns]     = useState(false)
+  const [res, setRes]     = useState(null)
+  const [polling, setPoll]= useState(false)
+  const [pending, setPend]= useState(null)
 
   useEffect(() => {
     const p = sessionStorage.getItem('prefill_domain')
-    if (p) { setDomain(p); sessionStorage.removeItem('prefill_domain') }
+    if (p) { setD(p); sessionStorage.removeItem('prefill_domain') }
   }, [])
-  useEffect(() => { if (user) setAdminEmail(prev => prev || user.email || '') }, [user])
-
+  useEffect(() => { if (user) setEm(e => e || user.email || '') }, [user])
   useEffect(() => {
     if (!user) return
-    ;(async () => {
-      const { data } = await supabase.from('tss_orders')
-        .select('id,domain,tss_order_id,dv_cname_host,dv_cname_value')
-        .eq('user_id', user.id).eq('status','dv_pending')
-        .order('created_at', { ascending:false }).limit(1)
-      if (data?.length) setPendingOrder(data[0])
-    })()
+    supabase.from('tss_orders').select('id,domain,tss_order_id,dv_cname_host,dv_cname_value')
+      .eq('user_id', user.id).eq('status', 'dv_pending')
+      .order('created_at', { ascending: false }).limit(1)
+      .then(({ data }) => { if (data?.length) setPend(data[0]) })
   }, [user])
 
   useEffect(() => {
-    if (step !== 'dv' || !orderData?.order_id || orderData?.txt_value) return
-    setTxtPolling(true)
-    let n = 0
+    if (step !== 'dv' || !ord?.order_id || ord?.txt_value) return
+    setPoll(true); let n = 0
     const iv = setInterval(async () => {
       n++
       try {
-        const s = await callTSS('check_status', { order_id: orderData.order_id })
-        if (s.txt_value) { setOrderData(p => ({ ...p, txt_name:s.txt_name, txt_value:s.txt_value })); setTxtPolling(false); clearInterval(iv) }
-        if (s.status === 'active') { setStep('done'); setTxtPolling(false); clearInterval(iv) }
+        const s = await call('check_status', { order_id: ord.order_id })
+        if (s.txt_value) { setOrd(p => ({...p, txt_name: s.txt_name, txt_value: s.txt_value})); setPoll(false); clearInterval(iv) }
+        if (s.status === 'active') { setStep('done'); setPoll(false); clearInterval(iv) }
       } catch(e) {}
-      if (n >= 24) { setTxtPolling(false); clearInterval(iv) }
+      if (n >= 24) { setPoll(false); clearInterval(iv) }
     }, 5000)
-    return () => { clearInterval(iv); setTxtPolling(false) }
-  }, [step, orderData?.order_id])
+    return () => { clearInterval(iv); setPoll(false) }
+  }, [step, ord?.order_id])
 
-  const callTSS = async (action, extra = {}) => {
+  const call = async (action, extra = {}) => {
     const { data: { session } } = await supabase.auth.getSession()
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/tss-issue`, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${session.access_token}` },
+    const r = await fetch(`${URL}/functions/v1/tss-issue`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ action, ...extra }),
     })
-    return res.json()
+    return r.json()
   }
 
-  const placeOrder = async () => {
-    const d = cleanDomain(domain)
-    if (!d)                { setError('Enter a domain name'); return }
-    if (!firstName.trim()) { setError('First name required'); return }
-    if (!lastName.trim())  { setError('Last name required'); return }
-    if (!adminEmail.trim()){ setError('Email required'); return }
-    if (!phone.trim())     { setError('Phone number required'); return }
-    setError(''); setOrdering(true)
-    const result = await callTSS('place_order', {
-      domain:d, years, product_code:'rapidssl',
-      firstName:firstName.trim(), lastName:lastName.trim(),
-      adminEmail:adminEmail.trim(), phone:phone.trim(), is_sandbox:IS_SANDBOX,
-    })
-    if (result.error) { setError(result.error); setOrdering(false); return }
-    let dvData = result
-    if (result.order_id) {
+  const place = async () => {
+    const d = clean(domain)
+    if (!d)     { setErr('Enter a domain name'); return }
+    if (!fn.trim()) { setErr('First name required'); return }
+    if (!ln.trim()) { setErr('Last name required'); return }
+    if (!em.trim()) { setErr('Email required'); return }
+    if (!ph.trim()) { setErr('Phone required'); return }
+    setErr(''); setBusy(true)
+    const r = await call('place_order', { domain: d, years, product_code: 'rapidssl', firstName: fn.trim(), lastName: ln.trim(), adminEmail: em.trim(), phone: ph.trim(), is_sandbox: IS_SANDBOX })
+    if (r.error) { setErr(r.error); setBusy(false); return }
+    let dv = r
+    if (r.order_id) {
       for (let i = 0; i < 5; i++) {
-        await new Promise(r => setTimeout(r, 3000))
-        const s = await callTSS('check_status', { order_id:result.order_id })
-        if (s.txt_value) { dvData = { ...result, txt_name:s.txt_name, txt_value:s.txt_value }; break }
+        await new Promise(x => setTimeout(x, 3000))
+        const s = await call('check_status', { order_id: r.order_id })
+        if (s.txt_value) { dv = {...r, txt_name: s.txt_name, txt_value: s.txt_value}; break }
       }
     }
-    setOrdering(false); setOrderData(dvData); setStep('dv')
+    setBusy(false); setOrd(dv); setStep('dv')
   }
 
-  const checkStatus = async () => {
-    setChecking(true); setCheckResult(null)
-    const r = await callTSS('check_status', { order_id:orderData.order_id })
-    setChecking(false); setCheckResult(r)
+  const check = async () => {
+    setChk(true); setRes(null)
+    const r = await call('check_status', { order_id: ord.order_id })
+    setChk(false); setRes(r)
     if (r.status === 'active') setStep('done')
   }
 
-  const retryDns = async () => {
-    setDnsAdding(true); setCheckResult(null)
-    try {
-      const r = await callTSS('retry_dns', { order_id:orderData.order_id })
-      setCheckResult({ dns_auto:r })
-    } catch(e) { setCheckResult({ dns_auto:{ ok:false, message:String(e) } }) }
-    setDnsAdding(false)
+  const addDns = async () => {
+    setDns(true); setRes(null)
+    try { const r = await call('retry_dns', { order_id: ord.order_id }); setRes({ dns_auto: r }) }
+    catch(e) { setRes({ dns_auto: { ok: false, message: String(e) } }) }
+    setDns(false)
   }
 
-  const reset = () => { setStep('form'); setDomain(''); setOrderData(null); setCheckResult(null); setPendingOrder(null); setError('') }
-  const resumePending = () => {
-    const o = pendingOrder
-    setDomain(o.domain)
-    setOrderData({ order_id:o.id, tss_order_id:o.tss_order_id, txt_name:o.dv_cname_host||o.domain, txt_value:o.dv_cname_value||'' })
-    setPendingOrder(null); setStep('dv')
+  const reset = () => { setStep('form'); setD(''); setOrd(null); setRes(null); setPend(null); setErr('') }
+  const resume = () => {
+    const o = pending
+    setD(o.domain)
+    setOrd({ order_id: o.id, tss_order_id: o.tss_order_id, txt_name: o.dv_cname_host || o.domain, txt_value: o.dv_cname_value || '' })
+    setPend(null); setStep('dv')
   }
 
   if (authLoading) return null
   if (!user) return (
     <>
-      <style>{CSS}</style>
-      <div className="sv-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'80vh' }}>
-        <div style={{ textAlign:'center', maxWidth:320, padding:24, animation:'fadeIn 0.4s ease' }}>
-          <div style={{ width:52, height:52, background:'#0a0a0a', borderRadius:13, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', boxShadow:'0 8px 24px rgba(0,0,0,0.15)' }}>
-            <Shield size={24} color="white"/>
+      <style>{STYLES}</style>
+      <div className="ic-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'70vh' }}>
+        <div className="ic-fade" style={{ textAlign:'center', padding:24, maxWidth:300 }}>
+          <div style={{ width:56, height:56, background:'#0a0a0a', borderRadius:14, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', boxShadow:'0 8px 28px rgba(0,0,0,0.18)' }}>
+            <Shield size={26} color="white"/>
           </div>
-          <div style={{ fontSize:18, fontWeight:800, color:'#0a0a0a', marginBottom:8, letterSpacing:'-0.4px' }}>Sign in to continue</div>
-          <div style={{ fontSize:13, color:'#64748b', marginBottom:24, lineHeight:1.7 }}>Your SSLVault account manages all certificates, auto-renewal, and server delivery.</div>
-          <button className="sv-cta" onClick={() => nav('/auth')} style={{ margin:'0 auto' }}><Lock size={14}/> Sign in to SSLVault</button>
+          <div style={{ fontSize:19, fontWeight:800, color:'#0a0a0a', letterSpacing:'-0.4px', marginBottom:8 }}>Sign in to continue</div>
+          <div style={{ fontSize:13, color:'#64748b', lineHeight:1.7, marginBottom:24 }}>SSLVault manages all your certificates, auto-renewal, and server deployment.</div>
+          <button className="ic-btn ic-btn-primary" onClick={() => nav('/auth')}><Lock size={14}/> Sign in to SSLVault</button>
         </div>
       </div>
     </>
   )
 
+  const price = years === 1 ? 19 : 34
+
   return (
     <>
-      <style>{CSS}</style>
-      <div className="sv-page">
+      <style>{STYLES}</style>
+      <div className="ic-root">
 
-        {/* ── HERO HEADER ──────────────────────────────────────── */}
-        <div className="sv-hero">
-          <div className="sv-hero-inner">
-            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-              <div style={{ width:36, height:36, background:'rgba(16,185,129,0.12)', border:'1px solid rgba(16,185,129,0.25)', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                <Shield size={16} color='#10b981'/>
+        {/* HERO */}
+        <div className="ic-hero">
+          <div className="ic-hero-noise"/>
+          <div className="ic-hero-glow"/>
+          <div className="ic-hero-inner">
+            <div className="ic-hero-top">
+              <div className="ic-logo"><Shield size={20} color="#10b981"/></div>
+              <div style={{ flex: 1 }}>
+                <div className="ic-hero-title">Issue SSL Certificate</div>
+                <div className="ic-hero-sub">RapidSSL DV · TheSSLStore · DigiCert Trust Network</div>
               </div>
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:15, fontWeight:700, color:'white', letterSpacing:'-0.2px' }}>Issue Certificate</div>
-                <div style={{ fontSize:11, color:'#6b7280', marginTop:1 }}>RapidSSL DV · TheSSLStore · DigiCert Trust Network</div>
-              </div>
-              <div className="sv-hero-stats" style={{ display:'flex', gap:20 }}>
-                {[['~5 min','Issuance'],['1 yr','Validity'],['99.9%','Trust']].map(([v,l]) => (
-                  <div key={l} style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:14, fontWeight:800, color:'#10b981', letterSpacing:'-0.3px' }}>{v}</div>
-                    <div style={{ fontSize:9, color:'#6b7280', marginTop:1 }}>{l}</div>
-                  </div>
-                ))}
-              </div>
-              {IS_SANDBOX && <span style={{ fontSize:9, fontWeight:700, color:'#a78bfa', background:'rgba(167,139,250,0.1)', border:'1px solid rgba(167,139,250,0.2)', borderRadius:3, padding:'3px 7px', letterSpacing:'0.5px', textTransform:'uppercase', flexShrink:0 }}>Sandbox</span>}
+              {IS_SANDBOX && <span className="ic-sandbox-pill">Sandbox</span>}
+            </div>
+            <div className="ic-hero-badges">
+              <span className="ic-badge ic-badge-green">✓ DigiCert chain</span>
+              <span className="ic-badge">~5 min issuance</span>
+              <span className="ic-badge">Auto-renewal</span>
+              <span className="ic-badge">99.9% browser trust</span>
             </div>
           </div>
         </div>
 
-        {/* ── STEP INDICATOR ───────────────────────────────────── */}
-        <Steps step={step}/>
+        {/* STEP BAR */}
+        <StepBar current={step}/>
 
-        {/* ── BODY ─────────────────────────────────────────────── */}
-        <div className="sv-body">
+        {/* BODY */}
+        <div className="ic-body">
 
-          {/* ── FORM STEP ────────────────────────────────────── */}
+          {/* ── FORM ──────────────────────────────────────── */}
           {step === 'form' && (
-            <div style={{ animation:'slideDown 0.3s ease' }}>
-
-              {/* Pending order banner */}
-              {pendingOrder && (
-                <div className="sv-pending-banner">
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:12, fontWeight:700, color:'#92400e', marginBottom:2 }}>
-                      Pending order — <span style={{ fontFamily:'monospace' }}>{pendingOrder.domain}</span>
-                    </div>
-                    <div style={{ fontSize:11, color:'#b45309' }}>DNS validation in progress · Order #{pendingOrder.tss_order_id}</div>
+            <div className="ic-enter">
+              {pending && (
+                <div className="ic-pending">
+                  <div className="ic-pending-text">
+                    <div className="ic-pending-title">Pending order — <span style={{ fontFamily:'monospace' }}>{pending.domain}</span></div>
+                    <div className="ic-pending-sub">DNS validation in progress · #{pending.tss_order_id}</div>
                   </div>
-                  <button className="sv-cta" style={{ background:'#d97706', padding:'7px 12px', fontSize:11, flexShrink:0 }} onClick={resumePending}>Resume →</button>
-                  <button onClick={() => setPendingOrder(null)} style={{ background:'none', border:'none', color:'#b45309', cursor:'pointer', fontSize:18, padding:0, lineHeight:1, flexShrink:0 }}>×</button>
+                  <button className="ic-btn ic-btn-green" style={{ padding:'8px 14px', fontSize:11, flexShrink:0 }} onClick={resume}>Resume →</button>
+                  <button onClick={() => setPend(null)} style={{ background:'none', border:'none', color:'#b45309', cursor:'pointer', fontSize:20, padding:'0 2px', lineHeight:1, flexShrink:0 }}>×</button>
                 </div>
               )}
 
               {/* Stats */}
-              <div className="sv-stats">
-                {[['1 Year','Validity'],['~5 min','Issuance'],['€19/yr','From']].map(([v,l]) => (
-                  <div className="sv-stat" key={l}>
-                    <div className="sv-stat-val">{v}</div>
-                    <div className="sv-stat-lbl">{l}</div>
+              <div className="ic-stats">
+                {[['1 Year', 'Validity'], ['~5 min', 'Issuance'], ['€19/yr', 'From']].map(([v, l]) => (
+                  <div className="ic-stat" key={l}>
+                    <div className="ic-stat-v">{v}</div>
+                    <div className="ic-stat-l">{l}</div>
                   </div>
                 ))}
               </div>
 
               {/* Domain */}
-              <div className="sv-domain-wrap">
-                <span className="sv-domain-label">Domain name</span>
-                <div className="sv-domain-input-wrap">
-                  <Globe size={15} className="sv-domain-icon"/>
-                  <input className="sv-domain-input" placeholder="yourdomain.com"
-                    value={domain} onChange={e => setDomain(e.target.value)}/>
+              <div className="ic-domain">
+                <label className="ic-domain-label">Domain name</label>
+                <div className="ic-domain-wrap">
+                  <Globe size={15} className="ic-domain-icon"/>
+                  <input className="ic-domain-input" placeholder="yourdomain.com"
+                    value={domain} onChange={e => setD(e.target.value)}/>
                 </div>
               </div>
 
-              {/* Contact card */}
-              <div className="sv-card">
-                <div className="sv-card-head"><span className="sv-card-label">Contact details</span></div>
-                <div className="sv-card-body">
-                  <div className="sv-2col">
-                    <Field label="First name">
-                      <input className="sv-input" placeholder="John" value={firstName} onChange={e => setFirstName(e.target.value)}/>
-                    </Field>
-                    <Field label="Last name">
-                      <input className="sv-input" placeholder="Smith" value={lastName} onChange={e => setLastName(e.target.value)}/>
-                    </Field>
+              {/* Contact */}
+              <div className="ic-card">
+                <div className="ic-card-head">
+                  <span className="ic-section-label">Contact details</span>
+                  <span style={{ fontSize:10, color:'#cbd5e1' }}>Required by TSS</span>
+                </div>
+                <div className="ic-card-body">
+                  <div className="ic-row2">
+                    <div className="ic-field">
+                      <label className="ic-label">First name</label>
+                      <input className="ic-input" placeholder="John" value={fn} onChange={e => setFn(e.target.value)}/>
+                    </div>
+                    <div className="ic-field">
+                      <label className="ic-label">Last name</label>
+                      <input className="ic-input" placeholder="Smith" value={ln} onChange={e => setLn(e.target.value)}/>
+                    </div>
                   </div>
-                  <Field label="Email" hint="cert delivery">
-                    <input className="sv-input" type="email" placeholder="you@example.com" value={adminEmail} onChange={e => setAdminEmail(e.target.value)}/>
-                  </Field>
-                  <Field label="Phone" hint="required by TSS">
-                    <input className="sv-input" placeholder="+1 415 555 0100" value={phone} onChange={e => setPhone(e.target.value)}/>
-                  </Field>
-                  <Field label="Validity">
-                    <div className="sv-validity">
+                  <div className="ic-field">
+                    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:5 }}>
+                      <label className="ic-label" style={{ margin:0 }}>Email</label>
+                      <span style={{ fontSize:10, color:'#94a3b8' }}>cert delivery</span>
+                    </div>
+                    <input className="ic-input" type="email" placeholder="you@example.com" value={em} onChange={e => setEm(e.target.value)}/>
+                  </div>
+                  <div className="ic-field">
+                    <label className="ic-label">Phone</label>
+                    <input className="ic-input" placeholder="+1 415 555 0100" value={ph} onChange={e => setPh(e.target.value)}/>
+                  </div>
+                  <div className="ic-field">
+                    <label className="ic-label">Validity period</label>
+                    <div className="ic-validity">
                       {[{y:1,p:19},{y:2,p:34}].map(({y,p}) => (
-                        <button key={y} className={`sv-validity-btn${years===y?' selected':''}`} onClick={() => setYears(y)}>
-                          <div className="sv-validity-val">{y} year{y>1?'s':''}</div>
-                          <div className="sv-validity-price">€{p} / year</div>
+                        <button key={y} className={`ic-val-btn${years===y?' sel':''}`} onClick={() => setYears(y)}>
+                          <div className="ic-val-yr">{y} year{y>1?'s':''}</div>
+                          <div className="ic-val-pr">€{p} / year</div>
                         </button>
                       ))}
                     </div>
-                  </Field>
+                  </div>
                 </div>
               </div>
 
-              {/* Summary + CTA */}
-              <div className="sv-summary">
-                <div className="sv-summary-rows">
-                  <div className="sv-summary-row"><span>RapidSSL Standard DV · {years}yr</span><span>€{years===1?19:34}</span></div>
-                  <div className="sv-summary-row green"><span>SSLVault lifecycle management</span><span>Free</span></div>
+              {/* Summary */}
+              <div className="ic-summary">
+                <div className="ic-summary-rows">
+                  <div className="ic-sum-row"><span>RapidSSL Standard DV · {years}yr</span><span>€{price}</span></div>
+                  <div className="ic-sum-row em"><span>SSLVault lifecycle management</span><span>Free</span></div>
                 </div>
-                <div className="sv-summary-footer">
+                <div className="ic-sum-foot">
                   <div>
-                    <div className="sv-total-label">Total today</div>
-                    <div className="sv-total-val">€{years===1?19:34}</div>
-                    <div className="sv-total-note">Demo mode · no payment</div>
+                    <div className="ic-price-label">Total today</div>
+                    <div className="ic-price-val">€{price}</div>
+                    <div className="ic-price-note">Demo mode · no payment required</div>
                   </div>
-                  <button className="sv-cta" onClick={placeOrder} disabled={ordering}>
-                    {ordering ? <><RefreshCw size={14} className="spin"/> Placing order…</> : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
+                  <button className="ic-btn ic-btn-primary" onClick={place} disabled={busy}>
+                    {busy
+                      ? <><RefreshCw size={14} className="ic-spin"/> Placing order…</>
+                      : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
                   </button>
                 </div>
               </div>
 
-              {error && <div className="sv-error"><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{error}</div>}
+              {err && <div className="ic-error"><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{err}</div>}
 
-              <div className="sv-trust">
-                {['🔒 256-bit TLS','🏆 DigiCert chain','⚡ Auto-renewal','🌐 All browsers'].map(t => (
-                  <span className="sv-trust-item" key={t}>{t}</span>
+              <div className="ic-trust">
+                {['🔒 256-bit TLS', '🏆 DigiCert chain', '⚡ Auto-renewal', '🌐 All browsers'].map(t => (
+                  <span className="ic-trust-item" key={t}>{t}</span>
                 ))}
               </div>
             </div>
           )}
 
-          {/* ── DV VALIDATION STEP ──────────────────────────── */}
-          {step === 'dv' && orderData && (
-            <div style={{ animation:'slideDown 0.3s ease' }}>
-              <div className="sv-card">
-                <div className="sv-dv-header">
-                  <div className="sv-dv-icon"><Globe size={16} color='#d97706'/></div>
+          {/* ── DNS VALIDATION ────────────────────────────── */}
+          {step === 'dv' && ord && (
+            <div className="ic-enter">
+              <div className="ic-card">
+                <div className="ic-dv-head">
+                  <div className="ic-dv-icon"><Globe size={17} color="#d97706"/></div>
                   <div style={{ flex:1 }}>
-                    <div className="sv-dv-title">Verify domain ownership</div>
-                    <div className="sv-dv-sub">Add the TXT record below to <strong style={{ fontFamily:'monospace' }}>{domain}</strong></div>
+                    <div className="ic-dv-title">Verify domain ownership</div>
+                    <div className="ic-dv-sub">Add this TXT record to prove you control <strong style={{ fontFamily:'monospace' }}>{domain}</strong></div>
                   </div>
-                  <div className="sv-order-badge">#{orderData.tss_order_id||'—'}</div>
+                  <div className="ic-order-no">#{ord.tss_order_id || '—'}</div>
                 </div>
 
-                <div className="sv-terminal">
-                  <div className="sv-terminal-head">
-                    {['#ff5f56','#ffbd2e','#27c93f'].map(c => <span key={c} className="sv-terminal-dot" style={{ background:c }}/>)}
-                    <span className="sv-terminal-title">DNS TXT record · {domain}</span>
+                <div className="ic-terminal">
+                  <div className="ic-term-head">
+                    <span className="ic-dot" style={{ background:'#ff5f56' }}/>
+                    <span className="ic-dot" style={{ background:'#ffbd2e' }}/>
+                    <span className="ic-dot" style={{ background:'#27c93f' }}/>
+                    <span className="ic-term-name">DNS TXT · {domain}</span>
                   </div>
                   {[
-                    { k:'Name',  v:orderData.txt_name||domain, copy:true },
-                    { k:'Type',  v:'TXT', green:true },
-                    { k:'Value', v:orderData.txt_value||null, copy:true, loading:!orderData.txt_value },
-                    { k:'TTL',   v:'300' },
+                    { k:'Name',  v: ord.txt_name || domain, copy: true },
+                    { k:'Type',  v: 'TXT', green: true },
+                    { k:'Value', v: ord.txt_value || null, copy: true, loading: !ord.txt_value },
+                    { k:'TTL',   v: '300' },
                   ].map(({ k, v, copy, green, loading }) => (
-                    <div key={k} className="sv-dns-row">
-                      <span className="sv-dns-key">{k}</span>
-                      <span className={`sv-dns-val${green?' green':loading?' muted':''}`}>
+                    <div className="ic-dns-row" key={k}>
+                      <span className="ic-dns-key">{k}</span>
+                      <span className={`ic-dns-val${green ? ' green' : loading ? ' dim' : ''}`}>
                         {loading
-                          ? <><RefreshCw size={10} className="shimmer" style={{ color:'#484f58', flexShrink:0 }}/><span>Fetching from TSS{txtPolling?'…':' — click Auto-Add DNS'}</span></>
+                          ? <><RefreshCw size={11} className="ic-pulse" style={{ color:'#484f58', flexShrink:0 }}/><span>{polling ? 'Fetching from TSS…' : 'Click Auto-Add DNS'}</span></>
                           : v}
                       </span>
                       {copy && v && !loading && <CopyBtn text={v}/>}
@@ -571,54 +725,60 @@ export default function BuyCertificate({ nav }) {
                   ))}
                 </div>
 
-                {/* Feedback */}
-                {checkResult?.dns_auto && (
-                  checkResult.dns_auto.ok
-                    ? <div className="sv-feedback-ok"><Check size={12} style={{ flexShrink:0, marginTop:1 }}/>TXT added via {checkResult.dns_auto.provider} — wait 1–2 min then Check Status</div>
-                    : <div className="sv-feedback-err"><AlertTriangle size={12} style={{ flexShrink:0, marginTop:1 }}/>{checkResult.dns_auto.message}</div>
+                {res?.dns_auto && (
+                  <div className={`ic-feedback ${res.dns_auto.ok ? 'ok' : 'err'}`}>
+                    {res.dns_auto.ok
+                      ? <><Check size={13} style={{ flexShrink:0, marginTop:1 }}/>TXT record added via {res.dns_auto.provider} — wait 1–2 min then click Check Status.</>
+                      : <><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{res.dns_auto.message}</>}
+                  </div>
                 )}
-                {checkResult && checkResult.status !== 'active' && !checkResult.dns_auto && (
-                  <div className="sv-feedback-warn"><AlertTriangle size={12} style={{ flexShrink:0, marginTop:1 }}/>Not validated yet ({checkResult.major_status}) — wait a few minutes.</div>
+                {res && res.status !== 'active' && !res.dns_auto && (
+                  <div className="ic-feedback warn">
+                    <AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>
+                    Not validated yet ({res.major_status}) — wait a few minutes and retry.
+                  </div>
                 )}
 
-                <div className="sv-dv-actions">
-                  <button className="sv-cta sv-cta-green" onClick={retryDns} disabled={dnsAdding||!orderData.txt_value}>
-                    {dnsAdding ? <><RefreshCw size={13} className="spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS</>}
+                <div className="ic-dv-actions">
+                  <button className="ic-btn ic-btn-green" onClick={addDns} disabled={dns || !ord.txt_value}>
+                    {dns ? <><RefreshCw size={13} className="ic-spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS</>}
                   </button>
-                  <button className="sv-cta sv-cta-outline" onClick={checkStatus} disabled={checking}>
-                    {checking ? <><RefreshCw size={13} className="spin"/> Checking…</> : <><RefreshCw size={13}/> Check Status</>}
+                  <button className="ic-btn ic-btn-outline" onClick={check} disabled={chk}>
+                    {chk ? <><RefreshCw size={13} className="ic-spin"/> Checking…</> : <><RefreshCw size={13}/> Check Status</>}
                   </button>
-                  <button className="sv-cta sv-cta-ghost" onClick={reset}>← New order</button>
+                  <button className="ic-btn ic-btn-ghost" onClick={reset}>← New order</button>
                 </div>
               </div>
 
-              <div className="sv-auto-note">
-                <Zap size={13} color='#10b981' style={{ flexShrink:0, marginTop:1 }}/>
-                <span><strong style={{ color:'#0a0a0a' }}>Fully automatic:</strong> SSLVault polls TSS every 5 min. Once your TXT record propagates, the cert activates automatically — no action needed.</span>
+              <div className="ic-auto-note">
+                <Zap size={14} color="#10b981" style={{ flexShrink:0, marginTop:1 }}/>
+                <span><strong style={{ color:'#0a0a0a' }}>Fully automatic:</strong> SSLVault polls TheSSLStore every 5 minutes. Once your DNS propagates, the certificate activates with no action needed.</span>
               </div>
             </div>
           )}
 
-          {/* ── DONE STEP ───────────────────────────────────── */}
+          {/* ── DONE ──────────────────────────────────────── */}
           {step === 'done' && (
-            <div style={{ animation:'fadeIn 0.4s ease' }}>
-              <div className="sv-card">
-                <div className="sv-done-header">
-                  <div className="sv-done-ring"><CheckCircle size={32} color='#10b981'/></div>
-                  <div className="sv-done-title">Certificate issued!</div>
-                  <div className="sv-done-sub">
-                    <span style={{ fontFamily:'monospace', fontWeight:700, color:'#0a0a0a' }}>{cleanDomain(domain)}</span>
+            <div className="ic-fade">
+              <div className="ic-card">
+                <div className="ic-done-head">
+                  <div className="ic-done-ring">
+                    <CheckCircle size={34} color="#10b981" strokeWidth={2}/>
+                  </div>
+                  <div className="ic-done-title">Certificate issued!</div>
+                  <div className="ic-done-sub">
+                    <span style={{ fontFamily:'monospace', fontWeight:700, color:'#0a0a0a' }}>{clean(domain)}</span>
                     {' '}is now secured · Auto-renewal active
                   </div>
                 </div>
-                <div className="sv-done-actions">
-                  <button className="sv-cta" style={{ width:'100%', justifyContent:'center' }}
-                    onClick={() => { sessionStorage.setItem('install_domain', cleanDomain(domain)); nav('/dashboard') }}>
-                    <Server size={14}/> Install on server
+                <div className="ic-done-body">
+                  <button className="ic-btn ic-btn-primary ic-btn-full"
+                    onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); nav('/dashboard') }}>
+                    <Server size={15}/> Install on server
                   </button>
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
-                    <button className="sv-cta sv-cta-outline" onClick={() => nav('/dashboard')} style={{ justifyContent:'center' }}>View dashboard</button>
-                    <button className="sv-cta sv-cta-outline" onClick={reset} style={{ justifyContent:'center', color:'#64748b' }}>Issue another</button>
+                  <div className="ic-row2-btn">
+                    <button className="ic-btn ic-btn-outline" onClick={() => nav('/dashboard')}>View dashboard</button>
+                    <button className="ic-btn ic-btn-outline" onClick={reset} style={{ color:'#64748b' }}>Issue another</button>
                   </div>
                 </div>
               </div>
