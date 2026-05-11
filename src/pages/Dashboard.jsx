@@ -191,7 +191,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
       {cert.status !== 'sandbox_revoked' && cert.is_sandbox && (
         <div className="v2-detail-banner" style={{ marginBottom:14, background:'#f5f3ff', border:'0.5px solid #ddd6fe', color:'#6d28d9' }}>
           <RefreshCw size={13} />
-          Sandbox mode — TSS will revoke this cert within 24 hours. SSLVault auto-renews it automatically.
+          Sandbox mode — TSS will revoke this cert within 48 hours. SSLVault auto-renews it automatically.
         </div>
       )}
       {cert.status !== 'sandbox_revoked' && days != null && days < 30 && (
@@ -505,7 +505,7 @@ function CertRow({ cert, selected, onClick }) {
           <span className="v2-row-title v2-mono">{cert.domain}</span>
           <StatusPill days={days} revoked={cert.status === 'revoked'} status={cert.status} />
           {cert.is_sandbox && !isSandboxRevoked && (
-            <span title="Sandbox certificate — auto-renews every ~20 hours" style={{ display:'inline-flex', alignItems:'center',
+            <span title="Sandbox certificate — auto-renews every ~40 hours" style={{ display:'inline-flex', alignItems:'center',
               gap:3, fontSize:9, fontWeight:600, color:'#7c3aed', background:'#f5f3ff',
               border:'0.5px solid #ddd6fe', borderRadius:3, padding:'1px 5px', letterSpacing:'0.2px' }}>
               SANDBOX
@@ -758,7 +758,7 @@ function LoggedInDashboard({ user, nav }) {
             <div style={{ flex:1 }}>
               <span style={{ fontSize:12, fontWeight:600, color:'#6d28d9' }}>Sandbox mode active — </span>
               <span style={{ fontSize:12, color:'#7c3aed' }}>
-                TSS sandbox certs are auto-revoked within 24 hours. SSLVault renews them automatically every ~20 hours. Greyed entries below are previous sandbox revocations.
+                TSS sandbox certs are auto-revoked within 48 hours. SSLVault renews them automatically every ~40 hours. Greyed entries below are previous sandbox revocations.
               </span>
             </div>
           </div>

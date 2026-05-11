@@ -178,7 +178,7 @@ export default function BuyCertificate({ nav }) {
                           background:'#f5f3ff', border:'0.5px solid #ddd6fe', borderRadius:'var(--v2-r-md)',
                           padding:'9px 12px', fontSize:12, color:'#6d28d9', lineHeight:1.5 }}>
               <RefreshCw size={12} style={{ flexShrink:0, marginTop:1 }} />
-              <span><strong>Sandbox mode</strong> — TSS auto-revokes certs within 24 hours. SSLVault renews them automatically. Flip IS_SANDBOX to false before going live.</span>
+              <span><strong>Sandbox mode</strong> — TSS auto-revokes certs within 48 hours. SSLVault renews them automatically. Flip IS_SANDBOX to false before going live.</span>
             </div>
           )}
         </div>

@@ -29,7 +29,7 @@ if (!SERVICE_ROLE_KEY) {
 }
 
 const RENEWAL_WINDOW_DAYS    = 14    // Normal certs: renew if expiring within 14 days
-const SANDBOX_RENEWAL_HOURS  = 20    // Sandbox certs: renew if expiring within 20 hours
+const SANDBOX_RENEWAL_HOURS  = 40    // Sandbox certs: renew if expiring within 40 hours (TSS sandbox validity = 48h)
 const MAX_ATTEMPTS = 5
 const BACKOFF_HOURS = [0, 6, 24, 72, 168]
 
