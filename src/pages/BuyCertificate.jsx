@@ -24,38 +24,6 @@ const PRODUCTS = [
       'Auto-DV via DNS TXT — automatic if Cloudflare/Vercel creds stored',
     ],
   },
-  {
-    id: 'geotrust_quickssl_premium',
-    name: 'GeoTrust QuickSSL Premium',
-    brand: 'GeoTrust · DigiCert',
-    badge: 'Recommended',
-    badgeColor: '#2563eb',
-    price1: 49, price2: 89,
-    desc: 'Premium DV SSL from GeoTrust — enhanced site seal, stronger brand recognition and DigiCert infrastructure.',
-    features: [
-      'GeoTrust brand — stronger trust signal than entry-level DV',
-      'Dynamic site seal — shows real-time validation to visitors',
-      '1 or 2 year validity — set and forget',
-      'Issued in ~5 minutes — same fast DNS TXT validation',
-      'Managed in SSLVault — full lifecycle in one dashboard',
-    ],
-  },
-  {
-    id: 'thawte_ssl123',
-    name: 'Thawte SSL123',
-    brand: 'Thawte · DigiCert',
-    badge: 'Enterprise',
-    badgeColor: '#7c3aed',
-    price1: 39, price2: 69,
-    desc: 'Thawte SSL123 — globally recognised CA brand trusted by enterprises for over 25 years.',
-    features: [
-      'Thawte brand — 25+ years of enterprise SSL heritage',
-      'Globally recognised CA — trusted in all major browsers',
-      '1 or 2 year validity',
-      'Issued in ~5 minutes — DNS TXT domain validation',
-      'Managed in SSLVault — monitor expiry, auto-install via agent',
-    ],
-  },
 ]
 
 function CopyBtn({ text }) {
