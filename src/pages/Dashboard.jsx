@@ -96,7 +96,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
   // renewState: null | { phase: 'checking'|'issuing'|'verifying'|'finalizing'|'done'|'error', msg: string }
 
   const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
-  const hasAgentInstall = cert.status === 'active' || cert.agent_url
+  const hasAgentInstall = !!cert.agent_url
 
   // Auto-dismiss the NEW pill after 30s, banner after 8s
   useEffect(() => {
@@ -603,6 +603,18 @@ function LoggedInDashboard({ user, nav }) {
   // Initial load
   useEffect(() => { loadCerts() }, [loadCerts])
 
+  // Auto-open install modal when arriving from BuyCertificate "Install on server" button
+  useEffect(() => {
+    const domain = sessionStorage.getItem('install_domain')
+    if (!domain || !certs.length) return
+    sessionStorage.removeItem('install_domain')
+    const cert = certs.find(c => c.domain === domain && c.private_key_pem)
+    if (cert) {
+      setSelected(cert.id)
+      setAgentCert(cert)
+    }
+  }, [certs])
+
   // Refresh on tab focus (catches rotations done on KeyLocker page)
   useEffect(() => {
     const onFocus = () => { if (document.visibilityState === 'visible') loadCerts() }
@@ -721,10 +733,18 @@ function LoggedInDashboard({ user, nav }) {
                 {' '}— your server is still running the old certificate. Install the new one as soon as possible.
               </div>
             </div>
-            <button className="v2-btn v2-btn-sm" onClick={() => nav('/install')}
-              style={{ fontSize:11, flexShrink:0 }}>
-              Install guide
-            </button>
+            <div style={{ display:'flex', gap:6, flexShrink:0 }}>
+              <button className="v2-btn v2-btn-sm v2-btn-primary" onClick={() => {
+                const cert = certs.find(c => newlyRotated.includes(c.domain) && c.status !== 'rotating' && c.private_key_pem)
+                if (cert) { setSelected(cert.id); setAgentCert(cert) }
+              }} style={{ fontSize:11 }}>
+                Install now
+              </button>
+              <button className="v2-btn v2-btn-sm" onClick={() => nav('/install')}
+                style={{ fontSize:11 }}>
+                Guide
+              </button>
+            </div>
           </div>
         )}
 

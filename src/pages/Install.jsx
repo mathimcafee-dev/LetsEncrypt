@@ -436,12 +436,17 @@ export default function Install({ nav }) {
           <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6, letterSpacing: '-0.3px' }}>
             Need an SSL certificate?
           </h3>
-          <p style={{ color: 'var(--v2-text-2)', fontSize: 13, maxWidth: 380, margin: '0 auto 16px', lineHeight: 1.6 }}>
-            Free 90-day certificate, issued in under 60 seconds. No credit card.
+          <p style={{ color: 'var(--v2-text-2)', fontSize: 13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
+            Get a trusted RapidSSL DV certificate issued in minutes, or a free 90-day certificate — both fully managed in SSLVault.
           </p>
-          <button className="v2-btn v2-btn-primary" onClick={() => nav('/generate')}>
-            <Shield size={13} strokeWidth={2.2} /> Generate free SSL <ArrowRight size={13} strokeWidth={2} />
-          </button>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
+              <Shield size={13} strokeWidth={2.2} /> Buy RapidSSL <ArrowRight size={13} strokeWidth={2} />
+            </button>
+            <button className="v2-btn" onClick={() => nav('/generate')}>
+              Free 90-day SSL
+            </button>
+          </div>
         </div>
 
       </div>

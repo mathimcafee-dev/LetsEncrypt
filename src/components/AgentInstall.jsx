@@ -58,29 +58,31 @@ export default function AgentInstall({ cert, userId, onClose }) {
   // Load saved servers + legacy cPanel credentials on mount
   useEffect(() => {
     if (!userId) return
-    setServersLoading(true)
-    try {
-      const res = await fetch(SERVER_FN, { method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'list', user_id: userId }) })
-      const data = await res.json()
-      const servers = data.servers || []
-      setSavedServers(servers)
-      const match = servers.find(s => s.domains?.includes(cert.domain))
-      const auto = match || (servers.length === 1 ? servers[0] : null)
-      if (auto) { setSelectedServerId(auto.id); setSelectedServer(auto) }
-    } catch(e) {}
-    setServersLoading(false)
-    // Also load legacy cPanel creds (fallback for manual entry)
-    try {
-      const { data: cpData } = await supabase.from('dns_credentials').select('credentials_enc').eq('user_id', userId).eq('provider', 'cpanel').maybeSingle()
-      if (cpData?.credentials_enc) {
-        try {
-          const saved = JSON.parse(atob(cpData.credentials_enc))
-          if (saved.cpanel_user) setCpanelUser(saved.cpanel_user)
-          if (saved.cpanel_token) setCpanelToken(saved.cpanel_token)
-        } catch(e) {}
-      }
-    } catch(e) {}
+    ;(async () => {
+      setServersLoading(true)
+      try {
+        const res = await fetch(SERVER_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'list', user_id: userId }) })
+        const data = await res.json()
+        const servers = data.servers || []
+        setSavedServers(servers)
+        const match = servers.find(s => s.domains?.includes(cert.domain))
+        const auto = match || (servers.length === 1 ? servers[0] : null)
+        if (auto) { setSelectedServerId(auto.id); setSelectedServer(auto) }
+      } catch(e) {}
+      setServersLoading(false)
+      // Also load legacy cPanel creds (fallback for manual entry)
+      try {
+        const { data: cpData } = await supabase.from('dns_credentials').select('credentials_enc').eq('user_id', userId).eq('provider', 'cpanel').maybeSingle()
+        if (cpData?.credentials_enc) {
+          try {
+            const saved = JSON.parse(atob(cpData.credentials_enc))
+            if (saved.cpanel_user) setCpanelUser(saved.cpanel_user)
+            if (saved.cpanel_token) setCpanelToken(saved.cpanel_token)
+          } catch(e) {}
+        }
+      } catch(e) {}
+    })()
   }, [userId])
 
   const DAEMON_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'

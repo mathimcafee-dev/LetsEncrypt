@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, AlertTriangle, RefreshCw,
-         Copy, Check, ChevronRight, Lock, Star, Globe } from 'lucide-react'
+         Copy, Check, ChevronRight, Lock, Star, Globe, Server } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import '../styles/design-v2.css'
@@ -406,14 +406,22 @@ export default function BuyCertificate({ nav }) {
                              display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
                 <CheckCircle size={28} color="#10b981" />
               </div>
-              <div style={{ fontSize:18, fontWeight:700, color:'var(--v2-text)', marginBottom:8 }}>Certificate issued</div>
-              <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6, marginBottom:24 }}>
-                Your {selectedProduct.name} for <strong>{domain}</strong> has been issued and is now in your dashboard.
-                Download it, install via agent, or store the key in KeyLocker.
+              <div style={{ fontSize:18, fontWeight:700, color:'var(--v2-text)', marginBottom:8 }}>Certificate issued!</div>
+              <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6, marginBottom:8 }}>
+                Your <strong>{selectedProduct.name}</strong> for <strong style={{ fontFamily:'var(--mono,monospace)' }}>{cleanDomain(domain)}</strong> is ready.
               </div>
-              <div style={{ display:'flex', gap:10, justifyContent:'center' }}>
-                <button className="v2-btn v2-btn-primary" onClick={() => nav('/dashboard')}>
-                  <ChevronRight size={13} /> View in dashboard
+              <div style={{ background:'var(--v2-surface-3)', borderRadius:'var(--v2-r-md)', padding:'10px 14px', marginBottom:24, fontSize:12, color:'var(--v2-text-2)', lineHeight:1.6 }}>
+                Next step: install it on your server — VPS agent, cPanel PHP agent, or manual. Your private key is securely stored in SSLVault until you delete it.
+              </div>
+              <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
+                <button className="v2-btn v2-btn-primary" onClick={() => {
+                  sessionStorage.setItem('install_domain', cleanDomain(domain))
+                  nav('/dashboard')
+                }}>
+                  <Server size={13} /> Install on server
+                </button>
+                <button className="v2-btn" onClick={() => nav('/dashboard')}>
+                  View in dashboard
                 </button>
                 <button className="v2-btn" onClick={() => { setStep('product'); setDomain(''); setOrderData(null); setCheckResult(null) }}>
                   Order another
