@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Terminal, Copy, Check, CheckCircle, Clock, AlertTriangle, Loader, Server, Shield, ChevronDown, ChevronUp } from 'lucide-react'
+import { X, Terminal, Copy, Check, CheckCircle, Clock, AlertTriangle, Loader, Server, Shield, Zap } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
-const AGENT_API = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent'
+const DAEMON_FN  = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
+const AGENT_API  = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent'
+const SERVER_FN  = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/server-credentials'
+const SSH_FN     = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/ssh-deploy'
 
 function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
@@ -26,36 +29,28 @@ function StatusStep({ done, active, label }) {
 }
 
 export default function AgentInstall({ cert, userId, onClose }) {
-  const [step, setStep] = useState('intro')
-  const [hostType, setHostType] = useState('server')
-  const [agentUrl, setAgentUrl] = useState('') // intro | token | waiting | success | failed
-  const [token, setToken] = useState('')
-  const [installId, setInstallId] = useState('')
-  const [status, setStatus] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [timeLeft, setTimeLeft] = useState(3600)
-  // cPanel credentials for shared hosting
-  const [cpanelUser, setCpanelUser] = useState('')
+  const [step, setStep]               = useState('intro')
+  const [hostType, setHostType]       = useState('server')
+  const [installMode, setInstallMode] = useState(null) // null = not chosen yet, 'agent' | 'ssh_push'
+  const [agentUrl, setAgentUrl]       = useState('')
+  const [token, setToken]             = useState('')
+  const [installId, setInstallId]     = useState('')
+  const [status, setStatus]           = useState(null)
+  const [loading, setLoading]         = useState(false)
+  const [error, setError]             = useState('')
+  const [timeLeft, setTimeLeft]       = useState(3600)
+  const [cpanelUser, setCpanelUser]   = useState('')
   const [cpanelToken, setCpanelToken] = useState('')
   const [showCpanelHelp, setShowCpanelHelp] = useState(false)
-  const [savedServers, setSavedServers] = useState([])
+  const [savedServers, setSavedServers]     = useState([])
   const [selectedServer, setSelectedServer] = useState(null)
-  const [selectedServerId, setSelectedServerId] = useState(null)
   const [serversLoading, setServersLoading] = useState(false)
   const pollRef = useRef(null)
   const timerRef = useRef(null)
 
-  const SERVER_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/server-credentials'
-  const SERVER_META = {
-    cpanel: { icon:'🖥️', color:'#d97706', bg:'#fffbeb', border:'#fde68a', short:'cPanel' },
-    ssh:    { icon:'🔒', color:'#2563eb', bg:'#eff6ff', border:'#bfdbfe', short:'SSH' },
-    plesk:  { icon:'🎛️', color:'#7c3aed', bg:'#f5f3ff', border:'#ddd6fe', short:'Plesk' },
-  }
-
   useEffect(() => () => { clearInterval(pollRef.current); clearInterval(timerRef.current) }, [])
 
-  // Load saved servers + legacy cPanel credentials on mount
+  // Load saved servers on mount
   useEffect(() => {
     if (!userId) return
     ;(async () => {
@@ -66,57 +61,57 @@ export default function AgentInstall({ cert, userId, onClose }) {
         const data = await res.json()
         const servers = data.servers || []
         setSavedServers(servers)
+        // Auto-select server matching this cert's domain
         const match = servers.find(s => s.domains?.includes(cert.domain))
         const auto = match || (servers.length === 1 ? servers[0] : null)
-        if (auto) { setSelectedServerId(auto.id); setSelectedServer(auto) }
+        if (auto) {
+          setSelectedServer(auto)
+          // Pre-select install mode from saved server preference
+          if (auto.install_mode) setInstallMode(auto.install_mode)
+        }
       } catch(e) {}
       setServersLoading(false)
-      // Also load legacy cPanel creds (fallback for manual entry)
+      // Load legacy cPanel creds
       try {
-        const { data: cpData } = await supabase.from('dns_credentials').select('credentials_enc').eq('user_id', userId).eq('provider', 'cpanel').maybeSingle()
+        const { data: cpData } = await supabase.from('dns_credentials').select('credentials_enc')
+          .eq('user_id', userId).eq('provider', 'cpanel').maybeSingle()
         if (cpData?.credentials_enc) {
-          try {
-            const saved = JSON.parse(atob(cpData.credentials_enc))
-            if (saved.cpanel_user) setCpanelUser(saved.cpanel_user)
-            if (saved.cpanel_token) setCpanelToken(saved.cpanel_token)
-          } catch(e) {}
+          const saved = JSON.parse(atob(cpData.credentials_enc))
+          if (saved.cpanel_user) setCpanelUser(saved.cpanel_user)
+          if (saved.cpanel_token) setCpanelToken(saved.cpanel_token)
         }
       } catch(e) {}
     })()
   }, [userId])
 
-  const DAEMON_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
-
-  const saveCpanelCredentials = async (user, token) => {
-    if (!userId || !user || !token) return
-    const enc = btoa(JSON.stringify({ cpanel_user: user, cpanel_token: token }))
+  // ── SSH Push install ─────────────────────────────────────────────────
+  const doSshPush = async () => {
+    if (!selectedServer) { setError('Select a server first'); return }
+    setLoading(true); setError('')
+    setStep('ssh_pushing')
     try {
-      await supabase.from('dns_credentials').upsert({
-        user_id: userId,
-        provider: 'cpanel',
-        label: 'cPanel API Token',
-        domain_pattern: '*',
-        credentials_enc: enc,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id,provider,domain_pattern' })
-    } catch(e) {}
-  }
-
-  // Find active agent for selected server
-  const getActiveAgent = async (serverId) => {
-    try {
-      const res = await fetch(DAEMON_FN, { method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'list_agents', user_id: userId }) })
+      const res = await fetch(SSH_FN, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'install',
+          user_id: userId,
+          server_id: selectedServer.id,
+          cert_id: cert.id,
+        })
+      })
       const data = await res.json()
-      const agents = data.agents || []
-      const agent = agents.find(a => a.server_id === serverId)
-      if (!agent) return null
-      const lastSeen = agent.last_seen_at ? Math.floor((Date.now() - new Date(agent.last_seen_at)) / 60000) : 9999
-      return lastSeen < 15 ? agent : null // active = seen in last 15 min
-    } catch(e) { return null }
+      setLoading(false)
+      if (data.ok) {
+        setStatus({ web_server: data.web_server, server_hostname: data.host })
+        setStep('success')
+      } else {
+        setStatus({ error_message: data.error })
+        setStep('failed')
+      }
+    } catch(e) { setError(e.message); setLoading(false); setStep('intro') }
   }
 
-  // Dispatch job to persistent agent
+  // ── Agent dispatch (persistent agent already installed) ──────────────
   const dispatchToAgent = async (agentId) => {
     setLoading(true); setError('')
     try {
@@ -127,13 +122,12 @@ export default function AgentInstall({ cert, userId, onClose }) {
       setInstallId(data.job_id)
       setStep('agent_waiting')
       setLoading(false)
-      // Poll job status
       pollRef.current = setInterval(async () => {
         try {
           const res2 = await fetch(DAEMON_FN, { method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({ action:'status', user_id:userId, job_id:data.job_id }) })
           const s = await res2.json()
-          if (s.status === 'done')   { clearInterval(pollRef.current); setStatus({ server_hostname: cert.domain, web_server: 'agent' }); setStep('success') }
+          if (s.status === 'done')   { clearInterval(pollRef.current); setStatus({ web_server: 'agent' }); setStep('success') }
           if (s.status === 'failed') { clearInterval(pollRef.current); setStatus({ error_message: s.error_message }); setStep('failed') }
           if (s.status === 'claimed' || s.status === 'running') setStatus({ status: s.status })
         } catch(e) {}
@@ -141,16 +135,27 @@ export default function AgentInstall({ cert, userId, onClose }) {
     } catch(e) { setError(e.message); setLoading(false) }
   }
 
+  const getActiveAgent = async (serverId) => {
+    try {
+      const res = await fetch(DAEMON_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'list_agents', user_id: userId }) })
+      const data = await res.json()
+      const agents = data.agents || []
+      const agent = agents.find(a => a.server_id === serverId)
+      if (!agent) return null
+      const minsAgo = agent.last_seen_at ? Math.floor((Date.now() - new Date(agent.last_seen_at)) / 60000) : 9999
+      return minsAgo < 15 ? agent : null
+    } catch(e) { return null }
+  }
+
+  // ── Token-based one-time install ─────────────────────────────────────
   const generateToken = async () => {
     setLoading(true); setError('')
     try {
-      // Check for active persistent agent first (VPS server flow)
-      if (selectedServer && selectedServer.server_type === 'ssh') {
+      // Check if active persistent agent exists for this server
+      if (selectedServer?.server_type === 'ssh' && installMode === 'agent') {
         const agent = await getActiveAgent(selectedServer.id)
-        if (agent) {
-          await dispatchToAgent(agent.id)
-          return
-        }
+        if (agent) { await dispatchToAgent(agent.id); return }
       }
       const res = await fetch(AGENT_API, {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -162,22 +167,17 @@ export default function AgentInstall({ cert, userId, onClose }) {
       setInstallId(data.install_id)
       setStep('token')
       setLoading(false)
-      // Start countdown
       timerRef.current = setInterval(() => setTimeLeft(t => { if(t<=1){clearInterval(timerRef.current);return 0}; return t-1 }), 1000)
     } catch(e) { setError(e.message); setLoading(false) }
   }
 
   const generatePhpToken = async () => {
-    // Resolve credentials — from saved server or manual input
     let resolvedUser = cpanelUser.trim()
     let resolvedToken = cpanelToken.trim()
-
     if (selectedServer) {
       try {
-        const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/server-credentials', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ action:'get_credentials', user_id:userId, id:selectedServer.id })
-        })
+        const res = await fetch(SERVER_FN, { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'get_credentials', user_id:userId, id:selectedServer.id }) })
         const data = await res.json()
         if (data.server?.credentials_enc) {
           const creds = JSON.parse(atob(data.server.credentials_enc))
@@ -186,63 +186,58 @@ export default function AgentInstall({ cert, userId, onClose }) {
         }
       } catch(e) {}
     }
-
     if (!resolvedUser) { setError('Please enter your cPanel username.'); return }
     if (!resolvedToken) { setError('Please enter your cPanel API token.'); return }
     setLoading(true); setError('')
     try {
-      await saveCpanelCredentials(resolvedUser, resolvedToken)
-      const res = await fetch(AGENT_API, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'create_token', user_id:userId, cert_id:cert.id, session_id:cert.session_id, domain:cert.domain })
-      })
+      const res = await fetch(AGENT_API, { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'create_token', user_id:userId, cert_id:cert.id, session_id:cert.session_id, domain:cert.domain }) })
       const data = await res.json()
       if (data.error) { setError(data.error); setLoading(false); return }
-      // Download PHP file with token + cPanel credentials embedded
       const phpUrl = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + data.token
         + '&cpanel_user=' + encodeURIComponent(resolvedUser)
         + '&cpanel_token=' + encodeURIComponent(resolvedToken)
-      const a = document.createElement('a')
-      a.href = phpUrl
-      a.download = 'sslvault-agent.php'
-      a.click()
-      const defaultUrl = 'https://' + cert.domain + '/sslvault-agent.php'
-      setAgentUrl(defaultUrl)
-      setToken(data.token)
-      setInstallId(data.install_id)
+      const a = document.createElement('a'); a.href = phpUrl; a.download = 'sslvault-agent.php'; a.click()
+      setAgentUrl('https://' + cert.domain + '/sslvault-agent.php')
+      setToken(data.token); setInstallId(data.install_id)
       setStep('php_instructions')
       setLoading(false)
     } catch(e) { setError(e.message); setLoading(false) }
   }
 
   const startWaiting = async () => {
-    // Save agent URL to database if provided
     if (agentUrl && installId) {
       try {
-        await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ action:'save_url', install_id:installId, user_id:userId, agent_url:agentUrl })
-        })
+        await fetch(AGENT_API, { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'save_url', install_id:installId, user_id:userId, agent_url:agentUrl }) })
       } catch(e) {}
     }
     setStep('waiting')
     pollRef.current = setInterval(async () => {
       try {
-        const res = await fetch(AGENT_API, {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ action:'status', install_id:installId, user_id:userId })
-        })
+        const res = await fetch(AGENT_API, { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'status', install_id:installId, user_id:userId }) })
         const data = await res.json()
         if (data.status === 'installed') { clearInterval(pollRef.current); setStatus(data); setStep('success') }
-        if (data.status === 'failed') { clearInterval(pollRef.current); setStatus(data); setStep('failed') }
+        if (data.status === 'failed')    { clearInterval(pollRef.current); setStatus(data); setStep('failed') }
         if (data.status === 'installing') setStatus(data)
       } catch(e) {}
     }, 3000)
   }
 
-  const installCmd = `curl -s https://www.easysecurity.in/agent-install.sh | sudo bash -s -- --token=${token}`
+  const installCmd = `curl -fsSL https://www.easysecurity.in/agent-install.sh | sudo bash -s -- --token=${token}`
   const mins = Math.floor(timeLeft/60).toString().padStart(2,'0')
   const secs = (timeLeft%60).toString().padStart(2,'0')
+
+  // ── Determine which primary action to take ───────────────────────────
+  const handlePrimaryAction = () => {
+    if (hostType === 'shared') return generatePhpToken()
+    if (installMode === 'ssh_push') return doSshPush()
+    return generateToken()
+  }
+
+  const vpsServers = savedServers.filter(s => s.server_type === 'ssh')
+  const cpanelServers = savedServers.filter(s => s.server_type === 'cpanel')
 
   return (
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:400, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}
@@ -256,7 +251,7 @@ export default function AgentInstall({ cert, userId, onClose }) {
               <Server size={18} color="white"/>
             </div>
             <div>
-              <h3 style={{ fontWeight:700, fontSize:16, color:'var(--text)' }}>Auto-Install Certificate</h3>
+              <h3 style={{ fontWeight:700, fontSize:16, color:'var(--text)' }}>Install Certificate</h3>
               <p style={{ fontSize:12, color:'var(--text3)' }}>{cert.domain}</p>
             </div>
           </div>
@@ -265,202 +260,261 @@ export default function AgentInstall({ cert, userId, onClose }) {
 
         <div style={{ padding:'24px' }}>
 
-          {/* HOSTING TYPE SELECTOR */}
-        {step === 'intro' && (
-          <div style={{ display:'flex', gap:10, marginBottom:20 }}>
-            {[
-              ['server', '🖥️', 'VPS / Cloud Server', 'SSH access, Ubuntu/CentOS/Amazon Linux'],
-              ['shared', '🌐', 'Shared Hosting', 'cPanel, GoDaddy, Bluehost, Hostinger'],
-            ].map(([type, icon, title, desc]) => (
-              <div key={type} onClick={() => setHostType(type)}
-                style={{ flex:1, padding:'14px 16px', borderRadius:10, border:`2px solid ${hostType===type?'var(--accent)':'var(--border)'}`, background:hostType===type?'var(--accent-light)':'white', cursor:'pointer', transition:'all 0.15s' }}>
-                <div style={{ fontSize:24, marginBottom:6 }}>{icon}</div>
-                <div style={{ fontWeight:700, fontSize:13, color:hostType===type?'var(--accent)':'var(--text)', marginBottom:3 }}>{title}</div>
-                <div style={{ fontSize:11, color:'var(--text3)' }}>{desc}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* INTRO STEP */}
+          {/* INTRO STEP */}
           {step === 'intro' && (
             <>
-              {hostType === 'server' ? (
-                <>
-                  <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:16, marginBottom:16 }}>
-                    <p style={{ fontWeight:700, fontSize:14, marginBottom:8, color:'var(--text)' }}>What this does:</p>
-                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                      {['Connects to your server via a one-time secure token','Auto-detects your OS and web server (Nginx/Apache)','Writes certificate and private key to correct paths','Updates your web server config automatically','Reloads Nginx/Apache — zero downtime'].map((t,i) => (
-                        <div key={i} style={{ display:'flex', gap:8, fontSize:13, color:'var(--text2)' }}>
-                          <span style={{ color:'var(--green)', fontWeight:700, flexShrink:0 }}>✓</span> {t}
-                        </div>
-                      ))}
-                    </div>
+              {/* Hosting type */}
+              <div style={{ display:'flex', gap:10, marginBottom:20 }}>
+                {[
+                  ['server', '🖥️', 'VPS / Cloud Server', 'Ubuntu, CentOS, Amazon Linux'],
+                  ['shared', '🌐', 'Shared Hosting',     'cPanel, GoDaddy, Bluehost'],
+                ].map(([type, icon, title, desc]) => (
+                  <div key={type} onClick={() => { setHostType(type); setInstallMode(null) }}
+                    style={{ flex:1, padding:'14px 16px', borderRadius:10, border:`2px solid ${hostType===type?'var(--accent)':'var(--border)'}`, background:hostType===type?'var(--accent-light)':'white', cursor:'pointer', transition:'all 0.15s' }}>
+                    <div style={{ fontSize:24, marginBottom:6 }}>{icon}</div>
+                    <div style={{ fontWeight:700, fontSize:13, color:hostType===type?'var(--accent)':'var(--text)', marginBottom:3 }}>{title}</div>
+                    <div style={{ fontSize:11, color:'var(--text3)' }}>{desc}</div>
                   </div>
-                  <div style={{ background:'var(--yellow-light)', border:'1px solid var(--yellow-border)', borderRadius:10, padding:14, marginBottom:16, fontSize:12, color:'var(--text2)', lineHeight:1.7 }}>
-                    ⚠ <strong>Before running:</strong> Make sure you have SSH access to your server with sudo/root privileges. The script will backup any existing web server config before modifying it.
-                  </div>
-                  <div style={{ marginBottom:20 }}>
-                    <p style={{ fontWeight:600, fontSize:13, marginBottom:8, color:'var(--text)' }}>Supported:</p>
-                    <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                      {['Ubuntu 20/22/24','Debian 10/11/12','CentOS 7/8/9','Amazon Linux 2/2023','Alpine Linux','+ Nginx or Apache'].map(s => (
-                        <span key={s} className="badge badge-blue" style={{ fontSize:11 }}>{s}</span>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div style={{ background:'var(--green-light)', border:'1px solid #86efac', borderRadius:10, padding:16, marginBottom:16 }}>
-                    <p style={{ fontWeight:700, fontSize:14, marginBottom:8, color:'var(--text)' }}>What this does:</p>
-                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                      {['Downloads a PHP file with your credentials pre-loaded','Upload it to public_html via cPanel File Manager','Visit the URL — it calls cPanel API and activates SSL instantly','Updates .htaccess for HTTPS redirect automatically','Dashboard updates to ✅ Installed in real-time'].map((t,i) => (
-                        <div key={i} style={{ display:'flex', gap:8, fontSize:13, color:'var(--text2)' }}>
-                          <span style={{ color:'var(--green)', fontWeight:700, flexShrink:0 }}>✓</span> {t}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                ))}
+              </div>
 
-                  {/* Saved server picker — shown when user has saved servers */}
-                  {savedServers.filter(s => s.server_type === 'cpanel').length > 0 && (
-                    <div style={{ marginBottom:14 }}>
-                      <label style={{ fontSize:12, fontWeight:700, color:'var(--text2)', display:'block', marginBottom:8 }}>🖥️ Saved cPanel Servers</label>
+              {/* VPS: saved server picker + install mode */}
+              {hostType === 'server' && (
+                <>
+                  {serversLoading ? (
+                    <div style={{ textAlign:'center', padding:16, color:'var(--text3)', fontSize:13 }}>Loading servers...</div>
+                  ) : vpsServers.length > 0 ? (
+                    <div style={{ marginBottom:16 }}>
+                      <label style={{ fontSize:12, fontWeight:700, color:'var(--text2)', display:'block', marginBottom:8 }}>Your VPS Servers</label>
                       <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
-                        {savedServers.filter(s => s.server_type === 'cpanel').map(s => (
-                          <div key={s.id} onClick={() => setSelectedServer(selectedServer?.id === s.id ? null : s)}
-                            style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 14px', borderRadius:10, border:`2px solid ${selectedServer?.id===s.id?'#d97706':'var(--border)'}`, background:selectedServer?.id===s.id?'#fffbeb':'white', cursor:'pointer', transition:'all 0.15s' }}>
+                        {vpsServers.map(s => (
+                          <div key={s.id} onClick={() => { setSelectedServer(selectedServer?.id===s.id ? null : s); setInstallMode(s.install_mode || null) }}
+                            style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 14px', borderRadius:10,
+                              border:`2px solid ${selectedServer?.id===s.id?'var(--accent)':'var(--border)'}`,
+                              background:selectedServer?.id===s.id?'var(--accent-light)':'white', cursor:'pointer', transition:'all 0.15s' }}>
                             <span style={{ fontSize:18 }}>🖥️</span>
                             <div style={{ flex:1 }}>
-                              <div style={{ fontWeight:700, fontSize:13, color:selectedServer?.id===s.id?'#d97706':'var(--text)' }}>{s.nickname}</div>
+                              <div style={{ fontWeight:700, fontSize:13, color:selectedServer?.id===s.id?'var(--accent)':'var(--text)' }}>{s.nickname}</div>
                               <div style={{ fontSize:11, color:'var(--text3)', fontFamily:'monospace' }}>{s.username}@{s.host}</div>
                             </div>
-                            <div style={{ width:18, height:18, borderRadius:'50%', background:selectedServer?.id===s.id?'#d97706':'#f1f5f9', border:`2px solid ${selectedServer?.id===s.id?'#d97706':'#e2e8f0'}`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                            {/* Show install mode badge */}
+                            <span style={{ fontSize:10, fontWeight:700, padding:'3px 7px', borderRadius:4,
+                              background: s.install_mode === 'ssh_push' ? '#f0fdf4' : '#eff6ff',
+                              color: s.install_mode === 'ssh_push' ? '#16a34a' : '#2563eb',
+                              border: `1px solid ${s.install_mode === 'ssh_push' ? '#86efac' : '#bfdbfe'}` }}>
+                              {s.install_mode === 'ssh_push' ? '⚡ SSH Push' : '🤖 Agent'}
+                            </span>
+                            <div style={{ width:18, height:18, borderRadius:'50%',
+                              background:selectedServer?.id===s.id?'var(--accent)':'#f1f5f9',
+                              border:`2px solid ${selectedServer?.id===s.id?'var(--accent)':'#e2e8f0'}`,
+                              display:'flex', alignItems:'center', justifyContent:'center' }}>
                               {selectedServer?.id===s.id && <span style={{ color:'white', fontSize:9, fontWeight:900 }}>✓</span>}
                             </div>
                           </div>
                         ))}
                       </div>
-                      {!selectedServer && (
-                        <p style={{ fontSize:11, color:'var(--text3)', marginTop:6 }}>Select a saved server, or enter credentials manually below.</p>
+                    </div>
+                  ) : (
+                    <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:10, padding:14, marginBottom:16, fontSize:13, color:'#92400e' }}>
+                      No VPS servers saved yet. <a href="/dns-providers" style={{ color:'var(--accent)', fontWeight:600 }}>Add a server</a> to get started.
+                    </div>
+                  )}
+
+                  {/* Install mode selector — shown when a server is selected */}
+                  {selectedServer && (
+                    <div style={{ marginBottom:18 }}>
+                      <label style={{ fontSize:12, fontWeight:700, color:'var(--text2)', display:'block', marginBottom:8 }}>
+                        How should SSLVault install this certificate?
+                      </label>
+                      <div style={{ display:'flex', gap:10 }}>
+                        {/* SSH Push */}
+                        <div onClick={() => setInstallMode('ssh_push')}
+                          style={{ flex:1, padding:'14px', borderRadius:10, cursor:'pointer', transition:'all 0.15s',
+                            border:`2px solid ${installMode==='ssh_push'?'#16a34a':'var(--border)'}`,
+                            background:installMode==='ssh_push'?'#f0fdf4':'white' }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
+                            <Zap size={16} color={installMode==='ssh_push'?'#16a34a':'#64748b'}/>
+                            <span style={{ fontWeight:700, fontSize:13, color:installMode==='ssh_push'?'#16a34a':'var(--text)' }}>
+                              SSH Push
+                            </span>
+                            <span style={{ fontSize:10, fontWeight:700, padding:'2px 6px', borderRadius:4,
+                              background:'#dcfce7', color:'#16a34a', border:'1px solid #86efac' }}>
+                              FULLY AUTO
+                            </span>
+                          </div>
+                          <div style={{ fontSize:11, color:'var(--text3)', lineHeight:1.6 }}>
+                            SSLVault SSHes into your server and installs directly. Zero steps for you — now and every renewal.
+                          </div>
+                        </div>
+                        {/* Agent */}
+                        <div onClick={() => setInstallMode('agent')}
+                          style={{ flex:1, padding:'14px', borderRadius:10, cursor:'pointer', transition:'all 0.15s',
+                            border:`2px solid ${installMode==='agent'?'var(--accent)':'var(--border)'}`,
+                            background:installMode==='agent'?'var(--accent-light)':'white' }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
+                            <Shield size={16} color={installMode==='agent'?'var(--accent)':'#64748b'}/>
+                            <span style={{ fontWeight:700, fontSize:13, color:installMode==='agent'?'var(--accent)':'var(--text)' }}>
+                              Agent
+                            </span>
+                            <span style={{ fontSize:10, fontWeight:700, padding:'2px 6px', borderRadius:4,
+                              background:'#eff6ff', color:'#2563eb', border:'1px solid #bfdbfe' }}>
+                              MORE SECURE
+                            </span>
+                          </div>
+                          <div style={{ fontSize:11, color:'var(--text3)', lineHeight:1.6 }}>
+                            Run one-time install on your server. No credentials stored — server calls SSLVault, never the other way.
+                          </div>
+                        </div>
+                      </div>
+                      {installMode === 'ssh_push' && !selectedServer.credentials_enc && (
+                        <div style={{ marginTop:10, background:'#fff7ed', border:'1px solid #fdba74', borderRadius:8, padding:12, fontSize:12, color:'#9a3412' }}>
+                          ⚠ This server has no SSH credentials saved. <a href="/dns-providers" style={{ color:'var(--accent)', fontWeight:600 }}>Edit server</a> to add them.
+                        </div>
                       )}
                     </div>
                   )}
 
-                  {/* Manual credential entry — hidden when a saved server is selected */}
+                  {!selectedServer && vpsServers.length > 0 && (
+                    <div style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:8, padding:12, marginBottom:16, fontSize:12, color:'var(--text2)' }}>
+                      Select a server above to continue.
+                    </div>
+                  )}
+
+                  {!selectedServer && vpsServers.length === 0 && (
+                    <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:16, marginBottom:16 }}>
+                      <p style={{ fontWeight:700, fontSize:13, marginBottom:8, color:'var(--text)' }}>Manual install via one-time token:</p>
+                      <div style={{ display:'flex', flexDirection:'column', gap:5 }}>
+                        {['Auto-detects OS and web server (Nginx/Apache)','Writes cert and key to correct paths','Reloads web server — zero downtime'].map((t,i) => (
+                          <div key={i} style={{ display:'flex', gap:8, fontSize:12, color:'var(--text2)' }}>
+                            <span style={{ color:'var(--green)', fontWeight:700, flexShrink:0 }}>✓</span> {t}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Shared hosting cPanel fields */}
+              {hostType === 'shared' && (
+                <>
+                  {cpanelServers.length > 0 && (
+                    <div style={{ marginBottom:14 }}>
+                      <label style={{ fontSize:12, fontWeight:700, color:'var(--text2)', display:'block', marginBottom:8 }}>Saved cPanel Servers</label>
+                      <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
+                        {cpanelServers.map(s => (
+                          <div key={s.id} onClick={() => setSelectedServer(selectedServer?.id===s.id ? null : s)}
+                            style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 14px', borderRadius:10,
+                              border:`2px solid ${selectedServer?.id===s.id?'#d97706':'var(--border)'}`,
+                              background:selectedServer?.id===s.id?'#fffbeb':'white', cursor:'pointer' }}>
+                            <span style={{ fontSize:18 }}>🖥️</span>
+                            <div style={{ flex:1 }}>
+                              <div style={{ fontWeight:700, fontSize:13 }}>{s.nickname}</div>
+                              <div style={{ fontSize:11, color:'var(--text3)', fontFamily:'monospace' }}>{s.username}@{s.host}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {!selectedServer && (
                     <div style={{ background:'white', border:'1.5px solid #e2e8f0', borderRadius:10, padding:16, marginBottom:14 }}>
-                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-                        <p style={{ fontWeight:700, fontSize:13, color:'var(--text)', margin:0 }}>🔑 Your cPanel Credentials</p>
-                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                          {cpanelUser && cpanelToken && <span style={{ fontSize:10, fontWeight:700, color:'#16a34a', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:4, padding:'2px 7px' }}>✓ Saved</span>}
-                          <button onClick={() => setShowCpanelHelp(h => !h)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, color:'var(--accent)', fontWeight:600, padding:0 }}>
-                            {showCpanelHelp ? 'Hide help ▲' : 'Where do I find these? ▼'}
-                          </button>
-                        </div>
+                      <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
+                        <p style={{ fontWeight:700, fontSize:13, color:'var(--text)', margin:0 }}>cPanel Credentials</p>
+                        <button onClick={() => setShowCpanelHelp(h => !h)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, color:'var(--accent)', fontWeight:600 }}>
+                          {showCpanelHelp ? 'Hide ▲' : 'Where to find? ▼'}
+                        </button>
                       </div>
                       {showCpanelHelp && (
-                        <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:8, padding:12, marginBottom:12, fontSize:12, color:'#92400e', lineHeight:1.7 }}>
-                          <strong>Username:</strong> Your short cPanel login name (not your email).<br/><br/>
-                          <strong>API Token:</strong> cPanel → search <em>"Manage API Tokens"</em> → Create token → give it SSL permissions.
+                        <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:8, padding:12, marginBottom:10, fontSize:12, color:'#92400e', lineHeight:1.7 }}>
+                          <strong>Username:</strong> Your cPanel login name.<br/>
+                          <strong>API Token:</strong> cPanel → Manage API Tokens → Create with SSL permissions.
                         </div>
                       )}
                       <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                         <div>
-                          <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>cPanel Username</label>
+                          <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>Username</label>
                           <input value={cpanelUser} onChange={e => setCpanelUser(e.target.value)} placeholder="e.g. johndoe"
                             style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }} />
                         </div>
                         <div>
-                          <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>cPanel API Token</label>
-                          <input type="password" value={cpanelToken} onChange={e => setCpanelToken(e.target.value)} placeholder="Paste your API token here"
+                          <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>API Token</label>
+                          <input type="password" value={cpanelToken} onChange={e => setCpanelToken(e.target.value)} placeholder="Paste your token"
                             style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }} />
                         </div>
                       </div>
-                      <p style={{ fontSize:11, color:'var(--text3)', marginTop:8, lineHeight:1.5 }}>
-                        🔒 Credentials embedded in the PHP file. <a href="/dns-providers" style={{ color:'var(--accent)', fontWeight:600 }}>Save a server</a> to skip this step next time.
-                      </p>
                     </div>
                   )}
-
-                  <div style={{ marginBottom:16 }}>
-                    <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                      {['GoDaddy','Bluehost','Hostinger','Hostgator','SiteGround','Namecheap','Any cPanel host'].map(s => (
-                        <span key={s} className="badge badge-green" style={{ fontSize:11 }}>{s}</span>
-                      ))}
-                    </div>
-                  </div>
                 </>
               )}
 
               {error && <div className="alert alert-error" style={{ marginBottom:16, fontSize:12 }}>{error}</div>}
 
-              {hostType === 'server' ? (
-                <button onClick={generateToken} disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px' }}>
-                  {loading ? <><span className="spinner"/> Generating secure token...</> : '🚀 Generate Install Token'}
-                </button>
-              ) : (
-                <button onClick={generatePhpToken} disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px', background:'#059669' }}>
+              {/* Primary CTA */}
+              {hostType === 'server' && (
+                installMode === 'ssh_push' ? (
+                  <button onClick={handlePrimaryAction}
+                    disabled={loading || !selectedServer || !selectedServer.credentials_enc}
+                    className="btn btn-primary"
+                    style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px', background:'#16a34a' }}>
+                    {loading ? <><span className="spinner"/> Connecting...</> : '⚡ Install via SSH — Fully Automatic'}
+                  </button>
+                ) : installMode === 'agent' ? (
+                  <button onClick={handlePrimaryAction} disabled={loading} className="btn btn-primary"
+                    style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px' }}>
+                    {loading ? <><span className="spinner"/> Generating token...</> : '🔑 Generate Install Token'}
+                  </button>
+                ) : (
+                  <button onClick={handlePrimaryAction} disabled={loading || (vpsServers.length > 0 && !selectedServer)} className="btn btn-primary"
+                    style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px' }}>
+                    {loading ? <><span className="spinner"/> Please wait...</> : '🚀 Continue'}
+                  </button>
+                )
+              )}
+              {hostType === 'shared' && (
+                <button onClick={handlePrimaryAction} disabled={loading} className="btn btn-primary"
+                  style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px', background:'#059669' }}>
                   {loading ? <><span className="spinner"/> Preparing...</> : '📥 Download PHP Agent File'}
                 </button>
               )}
             </>
           )}
 
-          {/* PHP INSTRUCTIONS STEP */}
-          {step === 'php_instructions' && (
+          {/* SSH PUSH IN PROGRESS */}
+          {step === 'ssh_pushing' && (
             <>
-              <div style={{ textAlign:'center', marginBottom:20 }}>
-                <div style={{ fontSize:40, marginBottom:8 }}>📥</div>
-                <p style={{ fontWeight:700, fontSize:16, color:'var(--text)', marginBottom:4 }}>PHP Agent Downloaded!</p>
-                <p style={{ fontSize:13, color:'var(--text3)' }}>2 steps — upload & visit URL. SSL activates automatically.</p>
-              </div>
-
-              {[
-                ['1', '📁', 'Upload the file', 'Open cPanel → File Manager → navigate to public_html → Upload → select sslvault-agent.php. Takes 5 seconds.'],
-                ['2', '🌐', 'Visit the URL to install', 'Open a new browser tab and go to: https://' + cert.domain + '/sslvault-agent.php — The script calls your cPanel API and activates SSL instantly. No manual steps.'],
-                ['3', '🗑️', 'Delete the file', 'After seeing the green ✅ success screen, delete sslvault-agent.php immediately. It contains your cPanel API token.'],
-              ].map(([n, icon, title, desc]) => (
-                <div key={n} style={{ display:'flex', gap:14, padding:'14px 0', borderBottom:'1px solid var(--border2)' }}>
-                  <div style={{ width:32, height:32, borderRadius:'50%', background:'var(--accent)', color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, flexShrink:0 }}>{n}</div>
-                  <div>
-                    <div style={{ fontWeight:700, fontSize:13, marginBottom:4, color:'var(--text)' }}>{icon} {title}</div>
-                    <div style={{ fontSize:12, color:'var(--text2)', lineHeight:1.6 }}>{desc}</div>
-                  </div>
+              <div style={{ textAlign:'center', marginBottom:24 }}>
+                <div style={{ width:64, height:64, borderRadius:'50%', background:'#f0fdf4', border:'2px solid #86efac', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
+                  <Loader size={28} color="#16a34a" style={{ animation:'spin 1s linear infinite' }}/>
                 </div>
-              ))}
-
-              <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:8, padding:12, margin:'16px 0', fontSize:12, color:'var(--text2)', lineHeight:1.7 }}>
-                💡 After visiting the URL, click <strong>Monitor Installation</strong> below — this dashboard will update to ✅ automatically when cPanel confirms SSL is active.
+                <p style={{ fontWeight:800, fontSize:17, color:'var(--text)', marginBottom:4 }}>Installing via SSH...</p>
+                <p style={{ fontSize:13, color:'var(--text3)' }}>SSLVault is connecting to your server and installing the certificate.</p>
               </div>
-
-              {/* Agent URL field */}
-              <div style={{ marginBottom:16 }}>
-                <label style={{ fontSize:12, fontWeight:600, color:'var(--text)', display:'block', marginBottom:6 }}>Agent URL (for monitoring)</label>
-                <div style={{ display:'flex', gap:8 }}>
-                  <input
-                    value={agentUrl}
-                    onChange={e => setAgentUrl(e.target.value)}
-                    placeholder={'https://' + cert.domain + '/sslvault-agent.php'}
-                    style={{ flex:1, fontSize:13 }}
-                  />
-                  {agentUrl && (
-                    <a href={agentUrl} target="_blank" rel="noopener noreferrer"
-                      style={{ display:'inline-flex', alignItems:'center', gap:5, background:'var(--green)', color:'white', border:'none', borderRadius:7, padding:'8px 14px', fontSize:13, fontWeight:700, textDecoration:'none', flexShrink:0 }}>
-                      ▶ Open
-                    </a>
-                  )}
-                </div>
+              <div style={{ background:'var(--bg)', borderRadius:10, padding:16, marginBottom:20 }}>
+                <StatusStep done={true}  active={false} label="SSH connection established" />
+                <StatusStep done={false} active={true}  label="Writing cert files to server" />
+                <StatusStep done={false} active={false} label="Configuring and reloading web server" />
+                <StatusStep done={false} active={false} label="Complete" />
               </div>
+              <div style={{ background:'#f0fdf4', border:'1px solid #86efac', borderRadius:8, padding:12, fontSize:12, color:'#166534' }}>
+                ⚡ SSH push usually completes in 5–15 seconds. No action needed from you.
+              </div>
+            </>
+          )}
 
-              <div style={{ display:'flex', gap:10 }}>
-                <a href={'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-script-php?token=' + token + '&cpanel_user=' + encodeURIComponent(cpanelUser||selectedServer?.username||'') + '&cpanel_token=' + encodeURIComponent(cpanelToken)}
-                  download="sslvault-agent.php" className="btn btn-secondary btn-sm">
-                  Re-download
-                </a>
-                <button onClick={startWaiting} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>
-                  ⏳ I've Uploaded It — Monitor Installation
-                </button>
+          {/* AGENT WAITING */}
+          {step === 'agent_waiting' && (
+            <>
+              <div style={{ textAlign:'center', marginBottom:24 }}>
+                <div style={{ width:64, height:64, borderRadius:'50%', background:'linear-gradient(135deg,#eff6ff,#f5f3ff)', border:'2px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:32 }}>🤖</div>
+                <p style={{ fontWeight:800, fontSize:17, color:'var(--text)', marginBottom:4 }}>Agent installing...</p>
+                <p style={{ fontSize:13, color:'var(--text3)' }}>Your server agent picked up the job.</p>
+              </div>
+              <div style={{ background:'var(--bg)', borderRadius:10, padding:16 }}>
+                <StatusStep done={true} active={false} label="Job dispatched to agent" />
+                <StatusStep done={status?.status==='claimed'||status?.status==='running'} active={!status} label="Agent received the job" />
+                <StatusStep done={false} active={status?.status==='running'} label="Writing cert + reloading web server" />
+                <StatusStep done={false} active={false} label="Complete" />
               </div>
             </>
           )}
@@ -471,12 +525,9 @@ export default function AgentInstall({ cert, userId, onClose }) {
               <div style={{ textAlign:'center', marginBottom:20 }}>
                 <div style={{ fontSize:32, marginBottom:8 }}>🔑</div>
                 <p style={{ fontWeight:700, fontSize:16, color:'var(--text)', marginBottom:4 }}>Your install token is ready</p>
-                <p style={{ fontSize:13, color:'var(--text3)' }}>Token expires in <strong style={{ color:timeLeft<300?'var(--red)':'var(--text)', fontFamily:'monospace' }}>{mins}:{secs}</strong></p>
+                <p style={{ fontSize:13, color:'var(--text3)' }}>Expires in <strong style={{ color:timeLeft<300?'var(--red)':'var(--text)', fontFamily:'monospace' }}>{mins}:{secs}</strong></p>
               </div>
-
-              <p style={{ fontSize:13, fontWeight:600, color:'var(--text)', marginBottom:8 }}>
-                Step 1 — SSH into your server, then run this command:
-              </p>
+              <p style={{ fontSize:13, fontWeight:600, color:'var(--text)', marginBottom:8 }}>SSH into your server and run:</p>
               <div style={{ background:'#0f172a', borderRadius:10, marginBottom:20, overflow:'hidden' }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'8px 14px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
                   <span style={{ fontSize:11, color:'#475569' }}>bash</span>
@@ -484,57 +535,45 @@ export default function AgentInstall({ cert, userId, onClose }) {
                 </div>
                 <pre style={{ margin:0, padding:'14px', color:'#e2e8f0', fontSize:11, fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all', lineHeight:1.7 }}>{installCmd}</pre>
               </div>
-
-              <div style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:10, padding:14, marginBottom:20 }}>
-                <p style={{ fontSize:12, fontWeight:600, color:'var(--text)', marginBottom:8 }}>Step 2 — What you'll see in your terminal:</p>
-                <pre style={{ fontSize:11, color:'#059669', fontFamily:'monospace', lineHeight:1.8, margin:0 }}>
-{`[SSLVault] Detecting operating system...
-[✓] Detected: Ubuntu 22.04 LTS
-[SSLVault] Detecting web server...
-[✓] Found: Nginx
-[SSLVault] Connecting to SSLVault...
-[✓] Got certificate for: ${cert.domain}
-[SSLVault] Writing certificate files...
-[✓] Certificate files saved
-[SSLVault] Configuring Nginx...
-[✓] Nginx configured and reloaded
-✅  Installation Complete!`}
-                </pre>
-              </div>
-
               <div className="alert alert-info" style={{ marginBottom:20, fontSize:12 }}>
-                💡 After running the command, click below to monitor the installation in real-time.
+                💡 After running the command, click below to monitor in real-time.
               </div>
-
               <button onClick={startWaiting} className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }}>
-                ⏳ I've Run the Command — Monitor Progress
+                ⏳ I've Run It — Monitor Progress
               </button>
             </>
           )}
 
-          {/* AGENT DISPATCH WAITING STEP */}
-          {step === 'agent_waiting' && (
+          {/* PHP INSTRUCTIONS */}
+          {step === 'php_instructions' && (
             <>
-              <div style={{ textAlign:'center', marginBottom:24 }}>
-                <div style={{ width:64, height:64, borderRadius:'50%', background:'linear-gradient(135deg,#eff6ff,#f5f3ff)', border:'2px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:32 }}>
-                  🤖
+              <div style={{ textAlign:'center', marginBottom:20 }}>
+                <div style={{ fontSize:40, marginBottom:8 }}>📥</div>
+                <p style={{ fontWeight:700, fontSize:16, color:'var(--text)', marginBottom:4 }}>PHP Agent Downloaded!</p>
+                <p style={{ fontSize:13, color:'var(--text3)' }}>2 steps — upload and visit.</p>
+              </div>
+              {[
+                ['1','📁','Upload the file','cPanel → File Manager → public_html → Upload → sslvault-agent.php'],
+                ['2','🌐','Visit the URL','Open https://' + cert.domain + '/sslvault-agent.php — SSL activates instantly.'],
+                ['3','🗑️','Delete the file','After ✅ success, delete sslvault-agent.php — it contains your API token.'],
+              ].map(([n,icon,title,desc]) => (
+                <div key={n} style={{ display:'flex', gap:14, padding:'14px 0', borderBottom:'1px solid var(--border2)' }}>
+                  <div style={{ width:32, height:32, borderRadius:'50%', background:'var(--accent)', color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, flexShrink:0 }}>{n}</div>
+                  <div>
+                    <div style={{ fontWeight:700, fontSize:13, marginBottom:4 }}>{icon} {title}</div>
+                    <div style={{ fontSize:12, color:'var(--text2)', lineHeight:1.6 }}>{desc}</div>
+                  </div>
                 </div>
-                <p style={{ fontWeight:800, fontSize:17, color:'var(--text)', marginBottom:4 }}>Agent is installing...</p>
-                <p style={{ fontSize:13, color:'var(--text3)' }}>Your server agent picked up the job. Installing certificate now.</p>
-              </div>
-              <div style={{ background:'var(--bg)', borderRadius:10, padding:16, marginBottom:20 }}>
-                <StatusStep done={true}  active={false} label="Job dispatched to agent" />
-                <StatusStep done={status?.status==='claimed'||status?.status==='running'} active={!status} label="Agent received the job" />
-                <StatusStep done={false} active={status?.status==='running'} label="Writing cert files + reloading web server" />
-                <StatusStep done={false} active={false} label="Complete" />
-              </div>
-              <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:8, padding:12, fontSize:12, color:'var(--text2)' }}>
-                🤖 Agent polling every 5 minutes — this will complete on the next poll cycle.
+              ))}
+              <div style={{ display:'flex', gap:10, marginTop:20 }}>
+                <button onClick={startWaiting} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>
+                  ⏳ Monitor Installation
+                </button>
               </div>
             </>
           )}
 
-          {/* WAITING STEP */}
+          {/* WAITING */}
           {step === 'waiting' && (
             <>
               <div style={{ textAlign:'center', marginBottom:24 }}>
@@ -542,68 +581,45 @@ export default function AgentInstall({ cert, userId, onClose }) {
                   <Loader size={28} color="var(--accent)" style={{ animation:'spin 1s linear infinite' }}/>
                 </div>
                 <p style={{ fontWeight:700, fontSize:16, color:'var(--text)', marginBottom:4 }}>Waiting for agent...</p>
-                <p style={{ fontSize:13, color:'var(--text3)' }}>Polling every 3 seconds for installation status</p>
               </div>
-
-              <div style={{ background:'var(--bg)', borderRadius:10, padding:16, marginBottom:20 }}>
-                <StatusStep done={true} active={false} label="Token generated and ready" />
-                <StatusStep done={status?.status==='installing'||status?.status==='installed'} active={!status} label="Waiting for agent to connect" />
-                <StatusStep done={false} active={status?.status==='installing'} label="Agent installing certificate" />
+              <div style={{ background:'var(--bg)', borderRadius:10, padding:16 }}>
+                <StatusStep done={true} active={false} label="Token generated" />
+                <StatusStep done={!!status} active={!status} label="Agent connecting" />
+                <StatusStep done={false} active={status?.status==='installing'} label="Installing certificate" />
                 <StatusStep done={false} active={false} label="Web server reloaded" />
               </div>
-
-              {status && (
-                <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:8, padding:12, fontSize:12, color:'var(--text2)' }}>
-                  🔌 Agent connected from <strong>{status.server_hostname || 'unknown'}</strong> running <strong>{status.server_os || 'unknown'}</strong>
-                </div>
-              )}
             </>
           )}
 
-          {/* SUCCESS STEP */}
+          {/* SUCCESS */}
           {step === 'success' && (
             <>
               <div style={{ textAlign:'center', marginBottom:24 }}>
-                <div style={{ width:64, height:64, borderRadius:'50%', background:'var(--green-light)', border:'2px solid var(--green-border,#86efac)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
+                <div style={{ width:64, height:64, borderRadius:'50%', background:'var(--green-light)', border:'2px solid #86efac', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
                   <CheckCircle size={32} color="var(--green)"/>
                 </div>
                 <p style={{ fontWeight:800, fontSize:20, color:'var(--text)', marginBottom:4 }}>✅ Installed Successfully!</p>
                 <p style={{ fontSize:14, color:'var(--text3)' }}>Certificate is live on your server</p>
               </div>
-
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
-                {[
-                  ['Domain', cert.domain],
-                  ['Server', status?.server_hostname || '—'],
-                  ['OS', status?.server_os || '—'],
-                  ['Web Server', status?.web_server || '—'],
-                ].map(([l,v]) => (
+                {[['Domain', cert.domain], ['Server', status?.server_hostname || selectedServer?.host || '—'], ['Web Server', status?.web_server || '—'], ['Mode', installMode === 'ssh_push' ? '⚡ SSH Push' : '🤖 Agent']].map(([l,v]) => (
                   <div key={l} style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:8, padding:'10px 12px' }}>
                     <div style={{ fontSize:10, color:'var(--text3)', fontWeight:700, textTransform:'uppercase', marginBottom:3 }}>{l}</div>
-                    <div style={{ fontSize:13, fontWeight:600, color:'var(--text)', fontFamily:l==='Domain'?'monospace':'inherit' }}>{v}</div>
+                    <div style={{ fontSize:13, fontWeight:600, color:'var(--text)' }}>{v}</div>
                   </div>
                 ))}
               </div>
-
-              <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-                {agentUrl && (
-                  <a href={agentUrl} target="_blank" rel="noopener noreferrer"
-                    style={{ display:'inline-flex', alignItems:'center', gap:6, background:'var(--green)', color:'white', borderRadius:7, padding:'9px 16px', fontSize:13, fontWeight:700, textDecoration:'none' }}>
-                    ▶ Run Agent Again
-                  </a>
-                )}
+              <div style={{ display:'flex', gap:10 }}>
                 <a href={'https://www.ssllabs.com/ssltest/analyze.html?d='+cert.domain} target="_blank" rel="noopener noreferrer"
                   className="btn btn-secondary" style={{ flex:1, justifyContent:'center', textDecoration:'none' }}>
                   🔍 Test SSL Grade
                 </a>
-                <button onClick={onClose} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>
-                  Done
-                </button>
+                <button onClick={onClose} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>Done</button>
               </div>
             </>
           )}
 
-          {/* FAILED STEP */}
+          {/* FAILED */}
           {step === 'failed' && (
             <>
               <div style={{ textAlign:'center', marginBottom:20 }}>
@@ -611,21 +627,17 @@ export default function AgentInstall({ cert, userId, onClose }) {
                   <AlertTriangle size={32} color="var(--red)"/>
                 </div>
                 <p style={{ fontWeight:700, fontSize:18, color:'var(--text)', marginBottom:4 }}>Installation Failed</p>
-                <p style={{ fontSize:13, color:'var(--text3)' }}>Certificate files were saved but web server config failed</p>
               </div>
               {status?.error_message && (
-                <div className="alert alert-error" style={{ marginBottom:16, fontSize:12 }}>
-                  {status.error_message}
-                </div>
+                <div className="alert alert-error" style={{ marginBottom:16, fontSize:12 }}>{status.error_message}</div>
               )}
               <div style={{ background:'var(--bg)', borderRadius:8, padding:14, marginBottom:16, fontSize:12, color:'var(--text2)', lineHeight:1.8 }}>
-                <p style={{ fontWeight:600, marginBottom:6 }}>Certificate files are saved at:</p>
+                Cert files are at:<br/>
                 <code style={{ fontFamily:'monospace', color:'var(--accent)' }}>/etc/ssl/sslvault/{cert.domain}/fullchain.pem</code><br/>
                 <code style={{ fontFamily:'monospace', color:'var(--accent)' }}>/etc/ssl/sslvault/{cert.domain}/privkey.pem</code>
-                <p style={{ marginTop:8 }}>Configure your web server manually using these paths. See <strong>Install Guide</strong> in the nav for help.</p>
               </div>
               <div style={{ display:'flex', gap:10 }}>
-                <button onClick={() => { setStep('intro'); setToken(''); setStatus(null) }} className="btn btn-secondary" style={{ flex:1, justifyContent:'center' }}>Try Again</button>
+                <button onClick={() => { setStep('intro'); setStatus(null); setError('') }} className="btn btn-secondary" style={{ flex:1, justifyContent:'center' }}>Try Again</button>
                 <button onClick={onClose} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>Close</button>
               </div>
             </>

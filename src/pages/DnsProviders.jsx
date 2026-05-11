@@ -597,15 +597,21 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
   const [fields, setFields] = useState({})
   const [showField, setShowField] = useState({})
   const [domains, setDomains] = useState((editServer?.domains || []).join(', '))
+  const [installMode, setInstallMode] = useState(editServer?.install_mode || 'agent')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const t = SERVER_TYPES[type]
+  const isVpsType = type === 'ssh'
 
   const submit = async () => {
     if (!nickname.trim()) { setError('Enter a nickname'); return }
     if (!fields.host?.trim()) { setError(`Enter the ${t.fields[0].label}`); return }
     if (!fields.username?.trim()) { setError('Enter the username'); return }
+    // SSH Push requires password or private key
+    if (isVpsType && installMode === 'ssh_push' && !fields.password?.trim() && !fields.ssh_key?.trim()) {
+      setError('SSH Push mode requires a password or private key.'); return
+    }
     setError(''); setLoading(true)
     try {
       const body = {
@@ -614,6 +620,8 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
         server_type: type, nickname: nickname.trim(),
         host: fields.host.trim(), username: fields.username.trim(),
         domains: domains.split(',').map(d => d.trim()).filter(Boolean),
+        install_mode: isVpsType ? installMode : 'agent',
+        port: fields.port ? parseInt(fields.port) : 22,
         credentials: { ...fields }
       }
       const res = await fetch(SERVER_FN, {
@@ -718,6 +726,36 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
               value={domains} onChange={e => setDomains(e.target.value)} />
             <div className="v2-label-help">Comma-separated. Used to match certs for one-click install.</div>
           </div>
+
+          {/* Install mode — only shown for VPS/SSH servers */}
+          {isVpsType && (
+            <div style={{ marginBottom: 16 }}>
+              <label className="v2-label">Certificate install method</label>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {[
+                  { id: 'agent', icon: '🛡️', title: 'Agent (recommended)', desc: 'One-time setup on your server. No SSH credentials stored here. Most secure.' },
+                  { id: 'ssh_push', icon: '⚡', title: 'SSH Push', desc: 'SSLVault SSHes in directly. Fully automatic — no manual steps ever.' },
+                ].map(opt => (
+                  <div key={opt.id} onClick={() => setInstallMode(opt.id)}
+                    style={{
+                      flex: 1, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s',
+                      border: installMode === opt.id ? `1.5px solid ${opt.id === 'ssh_push' ? '#16a34a' : 'var(--v2-accent)'}` : '1px solid var(--v2-border)',
+                      background: installMode === opt.id ? (opt.id === 'ssh_push' ? '#f0fdf4' : 'var(--v2-accent-bg)') : 'var(--v2-surface)',
+                    }}>
+                    <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 4, color: installMode === opt.id ? (opt.id === 'ssh_push' ? '#16a34a' : 'var(--v2-accent)') : 'var(--v2-text)' }}>
+                      {opt.icon} {opt.title}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--v2-text-3)', lineHeight: 1.5 }}>{opt.desc}</div>
+                  </div>
+                ))}
+              </div>
+              {installMode === 'ssh_push' && (
+                <div style={{ marginTop: 10, padding: 12, background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, fontSize: 12, color: '#92400e', lineHeight: 1.6 }}>
+                  ⚠ SSH Push requires a <strong>password or private key</strong> in the credentials above. Credentials are encrypted with AES-256-GCM and never stored in plaintext.
+                </div>
+              )}
+            </div>
+          )}
 
           {error && <div className="v2-alert v2-alert-error" style={{ marginBottom: 12 }}>
             <AlertCircle size={13} strokeWidth={2} /> <span>{error}</span>
