@@ -221,9 +221,9 @@ report_result() {
   local ws="$4"
   local hostname_val
   hostname_val=$(hostname -f 2>/dev/null || hostname 2>/dev/null || echo "unknown")
-  # Escape quotes in error message and truncate
+  # Escape quotes and strip newlines — both break JSON
   local escaped_error
-  escaped_error=$(printf '%s' "$error_msg" | sed 's/"/\\"/g' | head -c 400)
+  escaped_error=$(printf '%s' "$error_msg" | tr -d '\n\r' | sed 's/"/\\"/g' | head -c 400)
 
   curl -sf --max-time 15 -X POST "$DAEMON_API" \
     -H "Content-Type: application/json" \
