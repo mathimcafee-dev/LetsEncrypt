@@ -61,6 +61,7 @@ export default function BuyCertificate({ nav }) {
   const [orderData, setOrderData]   = useState(null)
   const [checking, setChecking]     = useState(false)
   const [checkResult, setCheckResult] = useState(null)
+  const [txtPolling, setTxtPolling] = useState(false)
 
   useEffect(() => {
     const prefill = sessionStorage.getItem('prefill_domain')
@@ -68,6 +69,32 @@ export default function BuyCertificate({ nav }) {
   }, [])
 
   useEffect(() => { if (user) setAdminEmail(user.email || '') }, [user])
+
+  // Auto-poll for TXT value when on DV step and value hasn't arrived yet
+  useEffect(() => {
+    if (step !== 'dv' || !orderData?.order_id || orderData?.txt_value) return
+    setTxtPolling(true)
+    let attempts = 0
+    const maxAttempts = 24 // 24 × 5s = 2 minutes
+    const interval = setInterval(async () => {
+      attempts++
+      try {
+        const s = await callTSS('check_status', { order_id: orderData.order_id })
+        if (s.txt_value) {
+          setOrderData(prev => ({ ...prev, txt_name: s.txt_name, txt_value: s.txt_value }))
+          setTxtPolling(false)
+          clearInterval(interval)
+        }
+        if (s.status === 'active') {
+          setStep('done')
+          setTxtPolling(false)
+          clearInterval(interval)
+        }
+      } catch(e) {}
+      if (attempts >= maxAttempts) { setTxtPolling(false); clearInterval(interval) }
+    }, 5000)
+    return () => { clearInterval(interval); setTxtPolling(false) }
+  }, [step, orderData?.order_id])
 
   const callTSS = async (action, extra = {}) => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -147,11 +174,11 @@ export default function BuyCertificate({ nav }) {
           </div>
           <p className="v2-subtitle">Choose a certificate, enter your domain, and get issued in minutes. Fully managed in SSLVault.</p>
           {IS_SANDBOX && (
-            <div style={{ display:'inline-flex', alignItems:'center', gap:7, marginTop:10,
+            <div style={{ display:'flex', alignItems:'flex-start', gap:8, marginTop:10,
                           background:'#f5f3ff', border:'0.5px solid #ddd6fe', borderRadius:'var(--v2-r-md)',
-                          padding:'7px 12px', fontSize:12, color:'#6d28d9' }}>
-              <RefreshCw size={12} />
-              <strong>Sandbox mode</strong> — certificates are auto-revoked by TSS within 24 hours and auto-renewed by SSLVault. Switch <code style={{ fontFamily:'monospace', fontSize:11 }}>IS_SANDBOX</code> to <code style={{ fontFamily:'monospace', fontSize:11 }}>false</code> when going live.
+                          padding:'9px 12px', fontSize:12, color:'#6d28d9', lineHeight:1.5 }}>
+              <RefreshCw size={12} style={{ flexShrink:0, marginTop:1 }} />
+              <span><strong>Sandbox mode</strong> — TSS auto-revokes certs within 24 hours. SSLVault renews them automatically. Flip IS_SANDBOX to false before going live.</span>
             </div>
           )}
         </div>
@@ -368,10 +395,13 @@ export default function BuyCertificate({ nav }) {
                   <CopyBtn text={orderData.txt_name || domain} />
                 </div>
                 <div style={{ borderTop:'0.5px solid #374151', paddingTop:8, display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
-                  <div>
+                  <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>TXT Value</div>
-                    <div style={{ fontSize:12, color: orderData.txt_value ? '#e5e7eb' : '#6b7280', wordBreak:'break-all' }}>
-                      {orderData.txt_value || '— checking with TSS…'}
+                    <div style={{ fontSize:12, color: orderData.txt_value ? '#e5e7eb' : '#6b7280', wordBreak:'break-all', display:'flex', alignItems:'center', gap:6 }}>
+                      {orderData.txt_value
+                        ? orderData.txt_value
+                        : <><RefreshCw size={11} style={{ animation:'spin 1s linear infinite', flexShrink:0 }} color="#6b7280" /> Fetching from TSS{txtPolling ? '…' : ' — click Check Status'}</>
+                      }
                     </div>
                   </div>
                   {orderData.txt_value && <CopyBtn text={orderData.txt_value} />}
