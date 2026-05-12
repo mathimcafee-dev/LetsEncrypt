@@ -26,10 +26,16 @@ export default function CLMHome({ user, nav }) {
     { id:'dashboard', label:'Dashboard', icon:Layout },
     { id:'issue', label:'Issue Certificate', icon:Plus },
     { id:'import', label:'Import Certificate', icon:FileText },
+  ]
+
+  const NAV_MANAGE = [
     { id:'dns', label:'DNS Providers', icon:Globe },
     { id:'servers', label:'Servers', icon:Server },
-    { id:'install', label:'Install Guide', icon:Download },
-    { id:'kb', label:'Knowledge Base', icon:BookOpen },
+  ]
+
+  const NAV_RESOURCES = [
+    { id:'install', label:'Installation', icon:Download },
+    { id:'kb', label:'Docs & Help', icon:BookOpen },
   ]
 
   const NAV_MORE = [
@@ -43,7 +49,7 @@ export default function CLMHome({ user, nav }) {
   const SECTION_TITLES = {
     dashboard:'Dashboard', issue:'Issue Certificate',
     import:'Import Certificate', dns:'DNS Providers', servers:'Servers',
-    install:'Install Guide', kb:'Knowledge Base', pricing:'Pricing',
+    install:'Installation', kb:'Docs & Help', pricing:'Pricing',
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
   }
 
@@ -97,19 +103,21 @@ export default function CLMHome({ user, nav }) {
       <div style={{ display:'flex', flex:1, background:'#f4f6f9' }}>
         {/* SIDEBAR */}
         <nav style={{ width:210, background:'#1c2d3e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto' }}>
-          <button style={{ margin:'12px 10px 8px', background:'#00b48a', color:'white', border:'none', borderRadius:7, padding:'9px 12px', fontSize:11, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontFamily:'inherit' }} onClick={() => setSection('issue')}>
-            <Plus size={12}/> Request a Certificate
+          <button style={{ margin:'12px 10px 8px', background:'#10b981', color:'white', border:'none', borderRadius:6, padding:'9px 12px', fontSize:11, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontFamily:'inherit' }} onClick={() => setSection('issue')}>
+            <Plus size={12}/> Issue Certificate
           </button>
 
-          <div style={{ padding:'8px 0 4px' }}>
-            <div style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.25)', letterSpacing:'0.8px', textTransform:'uppercase', padding:'4px 16px 6px' }}>Main</div>
-            {NAV_MAIN.map(item => <NavItem key={item.id} {...item}/>)}
-          </div>
-
-          <div style={{ padding:'8px 0 4px', borderTop:'1px solid rgba(255,255,255,0.06)', marginTop:4 }}>
-            <div style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.25)', letterSpacing:'0.8px', textTransform:'uppercase', padding:'4px 16px 6px' }}>More</div>
-            {NAV_MORE.map(item => <NavItem key={item.id} {...item}/>)}
-          </div>
+          {[
+            { label:'Main',      items: NAV_MAIN },
+            { label:'Manage',    items: NAV_MANAGE },
+            { label:'Resources', items: NAV_RESOURCES },
+            { label:'More',      items: NAV_MORE },
+          ].map(({ label, items }, i) => (
+            <div key={label} style={{ padding:'8px 0 2px', borderTop: i > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none', marginTop: i > 0 ? 4 : 0 }}>
+              <div style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.7)', letterSpacing:'0.6px', textTransform:'uppercase', padding:'6px 16px 4px' }}>{label}</div>
+              {items.map(item => <NavItem key={item.id} {...item}/>)}
+            </div>
+          ))}
 
           <div style={{ marginTop:'auto', padding:'12px 16px', borderTop:'1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ fontSize:9, color:'rgba(255,255,255,0.3)', marginBottom:2 }}>Signed in as</div>
