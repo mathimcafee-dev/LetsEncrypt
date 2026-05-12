@@ -514,8 +514,9 @@ export default function CertInventory({ user, nav, onIssue }) {
 
       {/* Table */}
       <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, overflow:'hidden' }}>
+        <div style={{ overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
         {/* Header */}
-        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'#f8fafc', borderBottom:'0.5px solid #e8edf2', fontSize:11, fontWeight:600, color:'#737373', letterSpacing:'.3px', textTransform:'uppercase' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'#f8fafc', borderBottom:'0.5px solid #e8edf2', fontSize:11, fontWeight:600, color:'#737373', letterSpacing:'.3px', textTransform:'uppercase', minWidth:760 }}>
           <div>Domain</div>
           <div>Order ID</div>
           <div>Product</div>
@@ -544,7 +545,7 @@ export default function CertInventory({ user, nav, onIssue }) {
             <div key={cert.id}>
               <div
                 onClick={() => setExpanded(isExpanded ? null : cert.id)}
-                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid #f1f5f9', background:isExpanded?'#f0fdf4':'white', transition:'background 0.1s' }}
+                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid #f1f5f9', background:isExpanded?'#f0fdf4':'white', transition:'background 0.1s', minWidth:760 }}
                 onMouseEnter={e => { if(!isExpanded) e.currentTarget.style.background='#fafafa' }}
                 onMouseLeave={e => { if(!isExpanded) e.currentTarget.style.background='white' }}
               >
@@ -602,6 +603,7 @@ export default function CertInventory({ user, nav, onIssue }) {
             </div>
           )
         })}
+        </div>
       </div>
 
       {agentCert && <AgentInstall cert={agentCert} userId={user?.id} onClose={() => setAgentCert(null)} onOpenCpanel={() => { setAgentCert(null); setCpanelCert(agentCert) }}/>}
