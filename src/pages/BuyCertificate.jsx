@@ -408,7 +408,6 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
   const [ln, setLn]       = useState('')
   const [ph, setPh]       = useState('')
   const [em, setEm]       = useState('')
-  const [isSubscription, setIsSubscription] = useState(false)
   const [busy, setBusy]   = useState(false)
   const [err, setErr]     = useState('')
   const [ord, setOrd]     = useState(null)
@@ -464,7 +463,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     if (!em.trim()) { setErr('Email required'); return }
     if (!ph.trim()) { setErr('Phone required'); return }
     setErr(''); setBusy(true)
-    const r = await call(isSubscription ? 'place_subscription_order' : 'place_order', { domain: d, years, product_code: product, firstName: fn.trim(), lastName: ln.trim(), adminEmail: em.trim(), phone: ph.trim(), is_sandbox: IS_SANDBOX })
+    const r = await call('place_order', { domain: d, years, product_code: product, firstName: fn.trim(), lastName: ln.trim(), adminEmail: em.trim(), phone: ph.trim(), is_sandbox: IS_SANDBOX })
     if (r.error) { setErr(r.error); setBusy(false); return }
     let dv = r
     if (r.order_id) {
@@ -492,7 +491,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     setDns(false)
   }
 
-  const reset = () => { setStep('form'); setD(''); setOrd(null); setRes(null); setPend(null); setErr(''); setProduct('rapidssl'); setIsSubscription(false) }
+  const reset = () => { setStep('form'); setD(''); setOrd(null); setRes(null); setPend(null); setErr(''); setProduct('rapidssl') }
   const resume = () => {
     const o = pending
     setD(o.domain)
@@ -677,34 +676,6 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                   <div className="ic-sum-row"><span>Validity</span><span>{years} year{years>1?'s':''}</span></div>
                   <div className="ic-sum-row"><span>Issuance</span><span>{PRODUCTS.find(p=>p.code===product)?.type==='DV'?'~5 minutes':'1–3 days'}</span></div>
                   <div className="ic-sum-row em"><span>Auto-renewal</span><span>Included</span></div>
-
-                  {/* Subscription toggle */}
-                  <div style={{ padding:'10px 0', borderBottom:'0.5px solid #e8edf2' }}>
-                    <label style={{ display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer' }}>
-                      <div>
-                        <div style={{ fontSize:12, fontWeight:600, color:'#0a0a0a' }}>Subscription model</div>
-                        <div style={{ fontSize:10, color:'#737373', marginTop:2 }}>TSS auto-reissues every 200 days</div>
-                      </div>
-                      <div onClick={() => setIsSubscription(v=>!v)} style={{
-                        width:36, height:20, borderRadius:10, position:'relative', cursor:'pointer', flexShrink:0,
-                        background: isSubscription ? '#10b981' : '#e2e8f0', transition:'background 0.2s'
-                      }}>
-                        <div style={{
-                          position:'absolute', top:2, left: isSubscription ? 18 : 2,
-                          width:16, height:16, borderRadius:'50%', background:'white',
-                          transition:'left 0.2s', boxShadow:'0 1px 3px rgba(0,0,0,0.2)'
-                        }}/>
-                      </div>
-                    </label>
-                    {isSubscription && (
-                      <div style={{ marginTop:8, padding:'8px 10px', background:'#f0fdf4', border:'0.5px solid #bbf7d0', borderRadius:6, fontSize:10, color:'#065f46', lineHeight:1.5 }}>
-                        ✓ TSS will push new cert every 200 days via webhook<br/>
-                        ✓ SSLVault auto-installs to your server — zero manual steps<br/>
-                        ✓ Subscription valid for {years} year{years>1?'s':''}
-                      </div>
-                    )}
-                  </div>
-
                   <div className="ic-sum-row"><span>{PRODUCTS.find(p=>p.code===product)?.name}</span><span>€{PRODUCTS.find(p=>p.code===product)?.price || 19}</span></div>
                   <div className="ic-sum-row em"><span>CLM management</span><span>Free</span></div>
                 </div>
