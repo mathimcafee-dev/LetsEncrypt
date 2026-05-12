@@ -1,63 +1,86 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, AlertTriangle, RefreshCw, Copy, Check,
-         Lock, Zap, Globe, Server, ArrowRight, Clock, RotateCcw, Terminal } from 'lucide-react'
+         Lock, Zap, Globe, Server, ArrowRight, RotateCcw, Clock,
+         ShieldCheck, Wifi, FileText } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import '../styles/design-v2.css'
 
 const SUPABASE_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const IS_SANDBOX = true
-
 const PRODUCTS = [
-  { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', price: 19, wildcard: false, available: true },
+  { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', price: 9.99, available: true },
 ]
 
 function CopyBtn({ text }) {
-  const [copied, setCopied] = useState(false)
-  const copy = () => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true); setTimeout(() => setCopied(false), 1800)
-    })
-  }
+  const [ok, setOk] = useState(false)
   return (
-    <button className="v2-btn v2-btn-sm" onClick={copy}
-      style={{ minWidth: 60, fontSize: 10 }}>
-      {copied ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
+    <button onClick={() => { navigator.clipboard.writeText(text); setOk(true); setTimeout(() => setOk(false), 1800) }}
+      style={{ background: 'rgba(255,255,255,0.07)', border: '0.5px solid rgba(255,255,255,0.12)',
+        borderRadius: 4, cursor: 'pointer', color: ok ? '#34d399' : '#9ca3af',
+        display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, padding: '3px 8px', fontFamily: 'inherit' }}>
+      {ok ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
     </button>
   )
 }
 
-function StepBar({ current }) {
-  const steps = [{ id:'form', label:'Configure' }, { id:'dv', label:'Validate' }, { id:'done', label:'Done' }]
-  const idx = steps.findIndex(s => s.id === current)
+// Live cert preview card — fills in as user types
+function CertPreview({ domain, fn, ln, em, product, years }) {
+  const d = domain || 'yourdomain.com'
+  const issued = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+  const exp = new Date(Date.now() + years * 365 * 86400000).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+  const name = [fn, ln].filter(Boolean).join(' ') || 'Your Name'
   return (
-    <div style={{ background: '#fff', borderBottom: '1px solid var(--v2-border)',
-      padding: '0 32px', display: 'flex', alignItems: 'center', height: 44 }}>
-      {steps.map((s, i) => {
-        const state = i < idx ? 'done' : i === idx ? 'active' : 'idle'
-        const numBg = state === 'done' ? 'var(--v2-green)' : state === 'active' ? 'var(--v2-text)' : 'var(--v2-surface-3)'
-        const numColor = state === 'idle' ? 'var(--v2-text-3)' : '#fff'
-        const labelColor = state === 'done' ? 'var(--v2-green-text)' : state === 'active' ? 'var(--v2-text)' : 'var(--v2-text-3)'
-        return (
-          <div key={s.id} style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: numBg,
-                color: numColor, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 10, fontWeight: 700, flexShrink: 0, transition: 'all 0.2s' }}>
-                {state === 'done' ? <Check size={10}/> : i + 1}
-              </div>
-              <span style={{ fontSize: 12, fontWeight: 500, color: labelColor, transition: 'color 0.2s' }}>
-                {s.label}
-              </span>
-            </div>
-            {i < 2 && (
-              <div style={{ width: 32, height: 1, margin: '0 8px', flexShrink: 0,
-                background: i < idx ? 'var(--v2-green)' : 'var(--v2-border)',
-                transition: 'background 0.3s' }}/>
-            )}
+    <div style={{ background: '#0a0f1a', border: '1px solid rgba(14,127,192,0.3)',
+      borderRadius: 10, overflow: 'hidden', fontFamily: 'var(--v2-font-mono)' }}>
+      {/* Header */}
+      <div style={{ background: 'linear-gradient(135deg, #0e7fc0 0%, #1a56db 100%)',
+        padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <ShieldCheck size={20} color="white" strokeWidth={2}/>
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'white', letterSpacing: '-0.2px' }}>
+            SSL Certificate
           </div>
-        )
-      })}
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)' }}>DigiCert / RapidSSL trust chain</div>
+        </div>
+        {IS_SANDBOX && (
+          <div style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.15)', borderRadius: 3,
+            padding: '2px 7px', fontSize: 9, fontWeight: 700, color: 'white', letterSpacing: '0.5px' }}>
+            SANDBOX
+          </div>
+        )}
+      </div>
+      {/* Fields */}
+      <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {[
+          { label: 'Subject', value: `CN=${d}` },
+          { label: 'Issued to', value: name },
+          { label: 'Issuer', value: 'RapidSSL Global TLS RSA4096 SHA256 2022 CA1' },
+          { label: 'Valid from', value: issued },
+          { label: 'Valid until', value: exp, highlight: true },
+          { label: 'Validity', value: `${years} year${years > 1 ? 's' : ''}` },
+          { label: 'Key', value: 'RSA 2048-bit / SHA-256' },
+          { label: 'Contact', value: em || 'your@email.com' },
+        ].map(({ label, value, highlight }) => (
+          <div key={label} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 8 }}>
+            <span style={{ fontSize: 9, fontWeight: 600, color: '#4b5563',
+              textTransform: 'uppercase', letterSpacing: '0.4px', paddingTop: 1 }}>{label}</span>
+            <span style={{ fontSize: 11, color: highlight ? '#34d399' : '#9ca3af',
+              wordBreak: 'break-all', fontWeight: highlight ? 600 : 400 }}>{value}</span>
+          </div>
+        ))}
+      </div>
+      {/* Footer */}
+      <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
+        display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399',
+          boxShadow: '0 0 0 3px rgba(52,211,153,0.2)' }}/>
+        <span style={{ fontSize: 10, color: '#4b5563' }}>
+          {domain ? 'Ready to issue' : 'Enter domain to preview'}
+        </span>
+        <span style={{ marginLeft: 'auto', fontSize: 9, color: '#374151', fontWeight: 600,
+          textTransform: 'uppercase', letterSpacing: '0.3px' }}>€{PRODUCTS[0].price}/yr</span>
+      </div>
     </div>
   )
 }
@@ -66,22 +89,22 @@ const clean = v => v.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLo
 
 export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
   const { user, loading: authLoading } = useAuth()
-  const [step, setStep]       = useState('form')
+  const [step, setStep]    = useState('form')
   const [product, setProduct] = useState('rapidssl')
-  const [domain, setD]        = useState('')
-  const [years, setYears]     = useState(1)
-  const [fn, setFn]           = useState('')
-  const [ln, setLn]           = useState('')
-  const [ph, setPh]           = useState('')
-  const [em, setEm]           = useState('')
-  const [busy, setBusy]       = useState(false)
-  const [err, setErr]         = useState('')
-  const [ord, setOrd]         = useState(null)
-  const [chk, setChk]         = useState(false)
-  const [dns, setDns]         = useState(false)
-  const [res, setRes]         = useState(null)
-  const [polling, setPoll]    = useState(false)
-  const [pending, setPend]    = useState(null)
+  const [domain, setD]     = useState('')
+  const [years, setYears]  = useState(1)
+  const [fn, setFn]        = useState('')
+  const [ln, setLn]        = useState('')
+  const [ph, setPh]        = useState('')
+  const [em, setEm]        = useState('')
+  const [busy, setBusy]    = useState(false)
+  const [err, setErr]      = useState('')
+  const [ord, setOrd]      = useState(null)
+  const [chk, setChk]      = useState(false)
+  const [dns, setDns]      = useState(false)
+  const [res, setRes]      = useState(null)
+  const [polling, setPoll] = useState(false)
+  const [pending, setPend] = useState(null)
 
   useEffect(() => {
     const p = sessionStorage.getItem('prefill_domain')
@@ -95,7 +118,6 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
       .order('created_at', { ascending: false }).limit(1)
       .then(({ data }) => { if (data?.length) setPend(data[0]) })
   }, [user])
-
   useEffect(() => {
     if (step !== 'dv' || !ord?.order_id || ord?.txt_value) return
     setPoll(true); let n = 0
@@ -159,413 +181,502 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
 
   const reset = () => { setStep('form'); setD(''); setOrd(null); setRes(null); setPend(null); setErr(''); setProduct('rapidssl') }
   const resume = () => {
-    const o = pending
-    setD(o.domain)
+    const o = pending; setD(o.domain)
     const isCname = o.dv_type === 'CNAME'
-    setOrd({
-      order_id: o.id, tss_order_id: o.tss_order_id,
-      dv_type: o.dv_type || 'TXT',
+    setOrd({ order_id: o.id, tss_order_id: o.tss_order_id, dv_type: o.dv_type || 'TXT',
       txt_name: isCname ? undefined : (o.dv_cname_host || o.domain),
       txt_value: isCname ? undefined : (o.dv_cname_value || ''),
       cname_name: isCname ? o.dv_cname_host : undefined,
-      cname_value: isCname ? o.dv_cname_value : undefined,
-    })
+      cname_value: isCname ? o.dv_cname_value : undefined })
     setPend(null); setStep('dv')
   }
 
   if (authLoading) return null
   if (!user) return (
-    <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'70vh' }}>
-      <div style={{ textAlign:'center', padding:32, maxWidth:320 }}>
-        <div style={{ width:52, height:52, background:'var(--v2-text)', borderRadius:12,
-          display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
-          <Shield size={22} color="white"/>
+    <div style={{ minHeight: '100vh', background: '#0a0f1a', display: 'flex',
+      alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{ textAlign: 'center', maxWidth: 320 }}>
+        <div style={{ width: 56, height: 56, background: 'rgba(14,127,192,0.15)',
+          border: '1px solid rgba(14,127,192,0.3)', borderRadius: 14,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+          <Shield size={24} color="#0e7fc0"/>
         </div>
-        <h2 className="v2-h1" style={{ marginBottom:8 }}>Sign in to continue</h2>
-        <p style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.7, marginBottom:24 }}>
-          SSLVault manages your certificates, auto-renewal, and server deployment.
+        <h2 style={{ fontSize: 22, fontWeight: 800, color: 'white', marginBottom: 8, letterSpacing: '-0.4px' }}>Sign in to continue</h2>
+        <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.7, marginBottom: 24 }}>
+          SSLVault issues, installs, and renews your SSL certificates automatically.
         </p>
-        <button className="v2-btn v2-btn-primary" onClick={() => nav('/auth')}>
+        <button onClick={() => nav('/auth')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#0e7fc0',
+            color: 'white', border: 'none', borderRadius: 8, padding: '12px 24px',
+            fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
           <Lock size={14}/> Sign in to SSLVault
         </button>
       </div>
     </div>
   )
 
-  const prod = PRODUCTS.find(p => p.code === product) || PRODUCTS[0]
-  const price = years === 1 ? 19 : 34
-
-  return (
-    <div className="v2-page">
+  // ── STEP: FORM ──────────────────────────────────────────────────────────────
+  if (step === 'form') return (
+    <div style={{ minHeight: '100vh', background: '#050a14' }}>
 
       {/* Top bar */}
-      <div style={{ background:'#fff', borderBottom:'1px solid var(--v2-border)', padding:'0 32px',
-        display:'flex', alignItems:'center', justifyContent:'space-between', height:52, flexShrink:0 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{ width:28, height:28, borderRadius:6, background:'var(--v2-text)',
-            display:'flex', alignItems:'center', justifyContent:'center' }}>
+      <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
+        padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg,#0e7fc0,#1a56db)',
+            borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Shield size={14} color="white"/>
           </div>
-          <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>Issue SSL Certificate</span>
-        </div>
-        <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
-          <span className="v2-chip" style={{ display:'inline-flex', alignItems:'center', gap:4 }}>
-            <CheckCircle size={10} style={{ color:'var(--v2-green)' }}/> DigiCert chain
-          </span>
-          <span className="v2-chip"><Clock size={10}/> ~5 min</span>
-          <span className="v2-chip"><RotateCcw size={10}/> Auto-renewal</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'white' }}>Issue SSL Certificate</span>
           {IS_SANDBOX && (
-            <span style={{ background:'#7c3aed', color:'white', fontSize:9, fontWeight:700,
-              letterSpacing:'0.8px', textTransform:'uppercase', borderRadius:3, padding:'3px 7px' }}>
+            <span style={{ background: '#7c3aed', color: 'white', fontSize: 9, fontWeight: 700,
+              letterSpacing: '0.8px', textTransform: 'uppercase', borderRadius: 3, padding: '3px 7px' }}>
               Sandbox
             </span>
           )}
         </div>
+        <div style={{ display: 'flex', gap: 12 }}>
+          {[{ icon:<Clock size={11}/>, t:'~5 min' }, { icon:<RotateCcw size={11}/>, t:'Auto-renewal' }, { icon:<ShieldCheck size={11}/>, t:'DigiCert chain' }].map(({icon,t}) => (
+            <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#4b5563' }}>
+              {icon} {t}
+            </span>
+          ))}
+        </div>
       </div>
 
-      {/* Progress */}
-      <StepBar current={step}/>
+      {/* Progress rail */}
+      <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+        padding: '0 32px', display: 'flex', alignItems: 'center', gap: 4, height: 40 }}>
+        {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
+          <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: 18, height: 18, borderRadius: '50%',
+              background: i === 0 ? '#0e7fc0' : 'rgba(255,255,255,0.06)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 9, fontWeight: 700, color: i === 0 ? 'white' : '#374151' }}>
+              {i + 1}
+            </div>
+            <span style={{ fontSize: 11, fontWeight: i === 0 ? 600 : 400,
+              color: i === 0 ? '#e5e7eb' : '#374151' }}>{s}</span>
+            {i < 2 && <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.06)', margin: '0 4px' }}/>}
+          </div>
+        ))}
+      </div>
 
-      {/* FORM STEP */}
-      {step === 'form' && (
-        <div className="v2-container" style={{ paddingTop:24 }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 300px', gap:20, alignItems:'start' }}>
+      {/* Pending banner */}
+      {pending && (
+        <div style={{ background: 'rgba(245,158,11,0.08)', borderBottom: '0.5px solid rgba(245,158,11,0.2)',
+          padding: '10px 32px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <AlertTriangle size={13} color="#f59e0b"/>
+          <span style={{ fontSize: 12, color: '#fbbf24', flex: 1 }}>
+            Pending validation for <strong style={{ fontFamily: 'monospace' }}>{pending.domain}</strong>
+          </span>
+          <button onClick={resume} style={{ background: '#0e7fc0', color: 'white', border: 'none',
+            borderRadius: 5, padding: '5px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+            Resume →
+          </button>
+          <button onClick={() => setPend(null)} style={{ background: 'none', border: 'none',
+            color: '#4b5563', cursor: 'pointer', fontSize: 16 }}>×</button>
+        </div>
+      )}
 
-            {/* LEFT */}
-            <div>
-              {pending && (
-                <div className="v2-callout tip" style={{ marginBottom:14 }}>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontWeight:600, fontSize:12, marginBottom:2 }}>
-                      Pending order — <span style={{ fontFamily:'var(--v2-font-mono)' }}>{pending.domain}</span>
+      {/* Main body */}
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 32px 80px',
+        display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32, alignItems: 'start' }}>
+
+        {/* LEFT — form */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+          {/* Section: Certificate */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.07)',
+            borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#4b5563',
+                textTransform: 'uppercase', letterSpacing: '0.5px' }}>Certificate</span>
+            </div>
+            <div style={{ padding: '18px 20px' }}>
+              <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+                {PRODUCTS.map(p => (
+                  <div key={p.code} onClick={() => setProduct(p.code)}
+                    style={{ flex: 1, padding: '12px 16px', borderRadius: 8, cursor: 'pointer',
+                      border: product === p.code ? '1.5px solid #0e7fc0' : '0.5px solid rgba(255,255,255,0.08)',
+                      background: product === p.code ? 'rgba(14,127,192,0.1)' : 'rgba(255,255,255,0.02)',
+                      transition: 'all 0.12s' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ width: 14, height: 14, borderRadius: '50%',
+                          border: product === p.code ? '4px solid #0e7fc0' : '1.5px solid rgba(255,255,255,0.15)',
+                          transition: 'all 0.12s' }}/>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#e5e7eb' }}>{p.name}</span>
+                        <span style={{ fontSize: 9, fontWeight: 700, background: 'rgba(14,127,192,0.2)',
+                          color: '#60a5fa', borderRadius: 3, padding: '2px 6px', letterSpacing: '0.3px' }}>DV</span>
+                      </div>
+                      <span style={{ fontSize: 16, fontWeight: 800, color: 'white' }}>€{p.price}</span>
                     </div>
-                    <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>DNS validation in progress · #{pending.tss_order_id}</div>
+                    <div style={{ fontSize: 10, color: '#4b5563', marginLeft: 22 }}>
+                      DigiCert chain · 99.9% browser trust · ~5 min
+                    </div>
                   </div>
-                  <button className="v2-btn v2-btn-sm v2-btn-primary" onClick={resume}>Resume →</button>
-                  <button onClick={() => setPend(null)}
-                    style={{ background:'none', border:'none', color:'var(--v2-amber-text)', cursor:'pointer', fontSize:18, lineHeight:1 }}>×</button>
-                </div>
-              )}
-
-              {/* Certificate Type */}
-              <div className="v2-card" style={{ marginBottom:14, overflow:'hidden' }}>
-                <div style={{ padding:'10px 16px', borderBottom:'1px solid var(--v2-border)',
-                  background:'var(--v2-surface-2)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:'var(--v2-text-2)',
-                    textTransform:'uppercase', letterSpacing:'0.6px' }}>Certificate Type</span>
-                  {IS_SANDBOX && <span style={{ fontSize:10, color:'var(--v2-green-text)', fontWeight:500 }}>Sandbox · All available</span>}
-                </div>
-                <div style={{ padding:'14px 16px' }}>
-                  {PRODUCTS.map(p => (
-                    <div key={p.code}
-                      onClick={() => p.available && setProduct(p.code)}
-                      style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
-                        borderRadius:6, cursor:p.available?'pointer':'not-allowed',
-                        border: product===p.code ? '1.5px solid var(--v2-text)' : '1px solid var(--v2-border)',
-                        background: product===p.code ? 'var(--v2-surface-3)' : '#fff',
-                        opacity: p.available ? 1 : 0.5, transition:'all 0.12s' }}>
-                      <div style={{ width:16, height:16, borderRadius:'50%', flexShrink:0,
-                        border: product===p.code ? '5px solid var(--v2-text)' : '2px solid var(--v2-border)',
-                        transition:'all 0.12s' }}/>
-                      <div style={{ flex:1 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                          <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>{p.name}</span>
-                          <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:3,
-                            textTransform:'uppercase', letterSpacing:'0.4px',
-                            background:'#dcfce7', color:'#15803d' }}>{p.type}</span>
-                        </div>
-                      </div>
-                      <div style={{ textAlign:'right', flexShrink:0 }}>
-                        <div style={{ fontSize:15, fontWeight:700, color:'var(--v2-text)' }}>€{p.price}</div>
-                        <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>/year</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
 
               {/* Domain */}
-              <div className="v2-card" style={{ marginBottom:14, overflow:'hidden' }}>
-                <div style={{ padding:'10px 16px', borderBottom:'1px solid var(--v2-border)', background:'var(--v2-surface-2)' }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:'var(--v2-text-2)',
-                    textTransform:'uppercase', letterSpacing:'0.6px' }}>Domain Name</span>
-                </div>
-                <div style={{ padding:'16px' }}>
-                  <label className="v2-label">Common Name (CN) <span style={{ color:'var(--v2-red)' }}>*</span></label>
-                  <div style={{ position:'relative' }}>
-                    <Globe size={14} style={{ position:'absolute', left:11, top:'50%', transform:'translateY(-50%)',
-                      color:'var(--v2-text-3)', pointerEvents:'none' }}/>
-                    <input className="v2-input"
-                      style={{ paddingLeft:34, fontFamily:'var(--v2-font-mono)', fontSize:14, height:42 }}
-                      placeholder="yourdomain.com"
-                      value={domain} onChange={e => setD(e.target.value)}/>
-                  </div>
-                </div>
-              </div>
-
-              {/* Requester Details */}
-              <div className="v2-card" style={{ overflow:'hidden' }}>
-                <div style={{ padding:'10px 16px', borderBottom:'1px solid var(--v2-border)',
-                  background:'var(--v2-surface-2)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:'var(--v2-text-2)',
-                    textTransform:'uppercase', letterSpacing:'0.6px' }}>Requester Details</span>
-                  <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:500 }}>Required by TheSSLStore</span>
-                </div>
-                <div style={{ padding:'16px', display:'flex', flexDirection:'column', gap:12 }}>
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                    <div className="v2-field">
-                      <label className="v2-label">First Name <span style={{ color:'var(--v2-red)' }}>*</span></label>
-                      <input className="v2-input" placeholder="John" value={fn} onChange={e => setFn(e.target.value)}/>
-                    </div>
-                    <div className="v2-field">
-                      <label className="v2-label">Last Name <span style={{ color:'var(--v2-red)' }}>*</span></label>
-                      <input className="v2-input" placeholder="Smith" value={ln} onChange={e => setLn(e.target.value)}/>
-                    </div>
-                  </div>
-                  <div className="v2-field">
-                    <label className="v2-label" style={{ display:'flex', justifyContent:'space-between' }}>
-                      <span>Email <span style={{ color:'var(--v2-red)' }}>*</span></span>
-                      <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:400 }}>Certificate delivery</span>
-                    </label>
-                    <input className="v2-input" type="email" placeholder="you@example.com" value={em} onChange={e => setEm(e.target.value)}/>
-                  </div>
-                  <div className="v2-field">
-                    <label className="v2-label">Phone <span style={{ color:'var(--v2-red)' }}>*</span></label>
-                    <input className="v2-input" placeholder="+1 415 555 0100" value={ph} onChange={e => setPh(e.target.value)}/>
-                  </div>
-                  <div className="v2-field" style={{ marginBottom:0 }}>
-                    <label className="v2-label">Validity Period</label>
-                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
-                      {[{y:1,p:19},{y:2,p:34}].map(({y,p}) => (
-                        <button key={y} onClick={() => setYears(y)}
-                          style={{ padding:'10px 14px', borderRadius:6, cursor:'pointer', textAlign:'left',
-                            fontFamily:'inherit', transition:'all 0.12s',
-                            border: years===y ? '1.5px solid var(--v2-text)' : '1px solid var(--v2-border)',
-                            background: years===y ? 'var(--v2-surface-3)' : '#fff' }}>
-                          <div style={{ fontSize:13, fontWeight:600, color: years===y ? 'var(--v2-text)' : 'var(--v2-text)' }}>
-                            {y} year{y>1?'s':''}
-                          </div>
-                          <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1 }}>€{p} / year</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280',
+                  textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: 7 }}>
+                  Domain name <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <Globe size={14} style={{ position: 'absolute', left: 12, top: '50%',
+                    transform: 'translateY(-50%)', color: '#4b5563', pointerEvents: 'none' }}/>
+                  <input value={domain} onChange={e => setD(e.target.value)}
+                    placeholder="yourdomain.com"
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)',
+                      border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'white',
+                      fontSize: 15, fontFamily: 'var(--v2-font-mono)', fontWeight: 500,
+                      padding: '11px 12px 11px 36px', outline: 'none' }}/>
                 </div>
               </div>
 
-              {err && (
-                <div className="v2-callout error" style={{ marginTop:12 }}>
-                  <AlertTriangle size={13} style={{ flexShrink:0 }}/> {err}
+              {/* Validity */}
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280',
+                  textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: 7 }}>
+                  Validity period
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  {[{y:1,p:9.99},{y:2,p:17.99}].map(({y,p}) => (
+                    <div key={y} onClick={() => setYears(y)}
+                      style={{ padding: '10px 14px', borderRadius: 7, cursor: 'pointer',
+                        border: years === y ? '1.5px solid #0e7fc0' : '0.5px solid rgba(255,255,255,0.08)',
+                        background: years === y ? 'rgba(14,127,192,0.1)' : 'rgba(255,255,255,0.02)',
+                        transition: 'all 0.12s' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#e5e7eb' }}>{y} year{y>1?'s':''}</span>
+                        <span style={{ fontSize: 14, fontWeight: 800, color: 'white' }}>€{p}</span>
+                      </div>
+                      {y === 2 && <div style={{ fontSize: 10, color: '#0e7fc0', marginTop: 2, fontWeight: 500 }}>Save €2</div>}
+                    </div>
+                  ))}
                 </div>
-              )}
+              </div>
             </div>
+          </div>
 
-            {/* RIGHT — summary */}
-            <div style={{ position:'sticky', top:20 }}>
-              <div style={{ background:'#111827', border:'1px solid #1f2937', borderRadius:8, overflow:'hidden' }}>
-                <div style={{ padding:'16px 20px', borderBottom:'1px solid #1f2937' }}>
-                  <div style={{ fontSize:11, fontWeight:700, color:'#6b7280',
-                    textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:10 }}>Order Summary</div>
-                  {[
-                    { k:'Certificate', v: prod.name },
-                    { k:'Type', v: prod.type },
-                    { k:'Validity', v: `${years} year${years>1?'s':''}` },
-                    { k:'Auto-renewal', v: 'Included', green: true },
-                    { k:prod.name, v: `€${prod.price}` },
-                    { k:'CLM management', v: 'Free', blue: true },
-                  ].map(({ k, v, green, blue }) => (
-                    <div key={k} style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline',
-                      fontSize:12, marginBottom:7, gap:8 }}>
-                      <span style={{ color:'#6b7280', flexShrink:0 }}>{k}</span>
-                      <span style={{ fontWeight:500, color: green?'#3b82f6' : blue?'#60a5fa' : '#e5e7eb',
-                        textAlign:'right' }}>{v}</span>
-                    </div>
-                  ))}
+          {/* Section: Contact */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.07)',
+            borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#4b5563',
+                textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact details</span>
+              <span style={{ fontSize: 10, color: '#374151' }}>Required by certificate authority</span>
+            </div>
+            <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {[{label:'First name',val:fn,set:setFn,ph:'John'},{label:'Last name',val:ln,set:setLn,ph:'Smith'}].map(f => (
+                  <div key={f.label}>
+                    <label style={{ fontSize: 11, fontWeight: 600, color: '#4b5563',
+                      textTransform: 'uppercase', letterSpacing: '0.3px', display: 'block', marginBottom: 6 }}>
+                      {f.label} <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph}
+                      style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)',
+                        border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'white',
+                        fontSize: 13, fontFamily: 'inherit', padding: '9px 12px', outline: 'none' }}/>
+                  </div>
+                ))}
+              </div>
+              {[{label:'Email address',val:em,set:setEm,ph:'you@example.com',type:'email',note:'Certificate delivery'},
+                {label:'Phone number',val:ph,set:setPh,ph:'+1 415 555 0100',type:'tel'}].map(f => (
+                <div key={f.label}>
+                  <label style={{ fontSize: 11, fontWeight: 600, color: '#4b5563',
+                    textTransform: 'uppercase', letterSpacing: '0.3px', display: 'block', marginBottom: 6 }}>
+                    {f.label} <span style={{ color: '#ef4444' }}>*</span>
+                    {f.note && <span style={{ color: '#374151', fontWeight: 400, textTransform: 'none', letterSpacing: 0, marginLeft: 6 }}>· {f.note}</span>}
+                  </label>
+                  <input value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph} type={f.type||'text'}
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)',
+                      border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'white',
+                      fontSize: 13, fontFamily: 'inherit', padding: '9px 12px', outline: 'none' }}/>
                 </div>
-                <div style={{ padding:'16px 20px', borderBottom:'1px solid #1f2937' }}>
-                  <div style={{ fontSize:10, color:'#6b7280', fontWeight:500, letterSpacing:'0.3px',
-                    textTransform:'uppercase', marginBottom:4 }}>Total today</div>
-                  <div style={{ fontSize:28, fontWeight:700, color:'#f9fafb', letterSpacing:'-1px', lineHeight:1 }}>€{price}</div>
-                  <div style={{ fontSize:10, color:'#4b5563', marginTop:4 }}>
-                    {IS_SANDBOX ? 'Demo mode · no payment required' : 'Billed immediately'}
+              ))}
+            </div>
+          </div>
+
+          {err && (
+            <div style={{ background: 'rgba(220,38,38,0.1)', border: '0.5px solid rgba(220,38,38,0.3)',
+              borderRadius: 7, padding: '10px 14px', fontSize: 12, color: '#fca5a5',
+              display: 'flex', alignItems: 'center', gap: 8 }}>
+              <AlertTriangle size={13} style={{ flexShrink: 0 }}/> {err}
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT — live preview + order summary */}
+        <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <CertPreview domain={clean(domain)} fn={fn} ln={ln} em={em} product={product} years={years}/>
+
+          {/* Order summary */}
+          <div style={{ background: '#111827', border: '0.5px solid rgba(255,255,255,0.06)',
+            borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 18px', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#4b5563',
+                textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Order summary</div>
+              {[
+                { k: 'Certificate', v: PRODUCTS[0].name },
+                { k: 'Validity', v: `${years} year${years>1?'s':''}` },
+                { k: 'Auto-renewal', v: 'Included', blue: true },
+                { k: 'DNS validation', v: 'Automatic', blue: true },
+              ].map(({ k, v, blue }) => (
+                <div key={k} style={{ display: 'flex', justifyContent: 'space-between',
+                  fontSize: 12, marginBottom: 7 }}>
+                  <span style={{ color: '#4b5563' }}>{k}</span>
+                  <span style={{ color: blue ? '#60a5fa' : '#9ca3af', fontWeight: blue ? 500 : 400 }}>{v}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: '12px 18px 16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+                <span style={{ fontSize: 11, color: '#4b5563', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Total</span>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: 26, fontWeight: 800, color: 'white', letterSpacing: '-0.5px' }}>
+                    €{years === 1 ? '9.99' : '17.99'}
+                  </span>
+                  <div style={{ fontSize: 10, color: '#374151' }}>
+                    {IS_SANDBOX ? 'Demo · no charge' : 'One-time, per year'}
                   </div>
                 </div>
-                <div style={{ padding:'16px 20px' }}>
-                  <button onClick={place} disabled={busy}
-                    style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:7,
-                      background: busy ? '#374151' : '#0a0a0a', color: busy ? '#6b7280' : '#fff',
-                      border:'none', borderRadius:6, padding:12, fontFamily:'inherit',
-                      fontSize:13, fontWeight:600, cursor: busy ? 'not-allowed' : 'pointer', transition:'background 0.15s' }}>
-                    {busy
-                      ? <><RefreshCw size={14} className="spin"/> Placing order…</>
-                      : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
-                  </button>
-                </div>
-                <div style={{ padding:'0 20px 16px', display:'flex', flexDirection:'column', gap:8 }}>
-                  {[
-                    { icon:<Lock size={11}/>,      text:'DigiCert trust chain' },
-                    { icon:<Zap size={11}/>,        text:'Auto-renews before expiry' },
-                    { icon:<Globe size={11}/>,      text:'99.9% browser compatibility' },
-                  ].map((t, i) => (
-                    <div key={i} style={{ display:'flex', alignItems:'center', gap:8,
-                      fontSize:11, color:'#6b7280' }}>
-                      <span style={{ color:'#3b82f6' }}>{t.icon}</span>
-                      {t.text}
-                    </div>
-                  ))}
-                </div>
+              </div>
+              <button onClick={place} disabled={busy}
+                style={{ width: '100%', background: busy ? '#1f2937' : 'linear-gradient(135deg,#0e7fc0,#1a56db)',
+                  color: busy ? '#4b5563' : 'white', border: 'none', borderRadius: 8,
+                  padding: '13px', fontSize: 14, fontWeight: 700, cursor: busy ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  fontFamily: 'inherit', transition: 'all 0.15s' }}>
+                {busy
+                  ? <><RefreshCw size={14} className="spin"/> Placing order…</>
+                  : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
+              </button>
+              <div style={{ marginTop: 10, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                {['DigiCert trust', 'No subscription', '99.9% browser'].map(t => (
+                  <span key={t} style={{ fontSize: 10, color: '#374151', display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <Check size={9} style={{ color: '#0e7fc0' }}/> {t}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
+      <style>{`.spin{animation:spin .8s linear infinite}@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+    </div>
+  )
 
-      {/* DV STEP */}
-      {step === 'dv' && ord && (
-        <div className="v2-container" style={{ maxWidth:760, paddingTop:24 }}>
+  // ── STEP: DV ──────────────────────────────────────────────────────────────
+  if (step === 'dv' && ord) return (
+    <div style={{ minHeight: '100vh', background: '#050a14' }}>
+      <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
+        padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Shield size={16} color="#0e7fc0"/>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'white' }}>Validate Domain Ownership</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, alignItems: 'center' }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b',
+            boxShadow: '0 0 0 3px rgba(245,158,11,0.2)', animation: 'pulse 2s infinite' }}/>
+          <span style={{ fontSize: 11, color: '#f59e0b', fontWeight: 500 }}>Awaiting DNS validation</span>
+        </div>
+      </div>
 
-          {/* Header card */}
-          <div className="v2-card v2-card-pad" style={{ marginBottom:14, display:'flex', alignItems:'flex-start', gap:14 }}>
-            <div style={{ width:36, height:36, borderRadius:8, flexShrink:0,
-              background:'var(--v2-amber-bg)', border:'1px solid var(--v2-amber-border)',
-              display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Globe size={17} color="var(--v2-amber)"/>
+      {/* Progress */}
+      <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+        padding: '0 32px', display: 'flex', alignItems: 'center', gap: 4, height: 40 }}>
+        {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
+          <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: 18, height: 18, borderRadius: '50%',
+              background: i === 0 ? '#15803d' : i === 1 ? '#0e7fc0' : 'rgba(255,255,255,0.06)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 9, fontWeight: 700, color: 'white' }}>
+              {i === 0 ? <Check size={10}/> : i + 1}
             </div>
-            <div style={{ flex:1 }}>
-              <div style={{ fontSize:14, fontWeight:700, color:'var(--v2-text)', marginBottom:3 }}>Verify Domain Ownership</div>
-              <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.5 }}>
-                Add this <strong>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record</strong> to prove you control{' '}
-                <strong style={{ fontFamily:'var(--v2-font-mono)', color:'var(--v2-text)' }}>{domain || ord.txt_name}</strong>
-              </div>
-            </div>
-            <div style={{ flexShrink:0, background:'var(--v2-surface-3)', border:'1px solid var(--v2-border)',
-              borderRadius:4, padding:'4px 10px', fontSize:11, fontWeight:600,
-              color:'var(--v2-text-2)', fontFamily:'var(--v2-font-mono)' }}>
-              #{ord.tss_order_id || '—'}
-            </div>
+            <span style={{ fontSize: 11, fontWeight: i === 1 ? 600 : 400,
+              color: i === 0 ? '#15803d' : i === 1 ? '#e5e7eb' : '#374151' }}>{s}</span>
+            {i < 2 && <div style={{ width: 24, height: 1, background: i === 0 ? '#15803d' : 'rgba(255,255,255,0.06)', margin: '0 4px' }}/>}
           </div>
+        ))}
+      </div>
 
-          {/* DNS record panel */}
-          <div className="v2-card" style={{ marginBottom:14, overflow:'hidden' }}>
-            {/* Terminal header */}
-            <div style={{ background:'#111827', padding:'10px 16px', display:'flex', alignItems:'center', gap:6 }}>
-              <span style={{ width:10, height:10, borderRadius:'50%', background:'#ff5f56', display:'inline-block' }}/>
-              <span style={{ width:10, height:10, borderRadius:'50%', background:'#ffbd2e', display:'inline-block' }}/>
-              <span style={{ width:10, height:10, borderRadius:'50%', background:'#0e7fc0', display:'inline-block' }}/>
-              <span style={{ fontSize:11, color:'#9ca3af', fontFamily:'var(--v2-font-mono)', marginLeft:6 }}>
-                DNS {ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} · {domain || ord.txt_name}
-              </span>
-            </div>
-
-            {/* DNS record rows */}
-            <table style={{ width:'100%', borderCollapse:'collapse' }}>
-              {(ord.dv_type === 'CNAME' ? [
-                { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy:true },
-                { k:'Type',  v: 'CNAME', green:true },
-                { k:'Value', v: ord.cname_value || ord.txt_value || null, copy:true, loading:!(ord.cname_value||ord.txt_value) },
-                { k:'TTL',   v: '300' },
-              ] : [
-                { k:'Name',  v: ord.txt_name || domain, copy:true },
-                { k:'Type',  v: 'TXT', green:true },
-                { k:'Value', v: ord.txt_value || null, copy:true, loading:!ord.txt_value },
-                { k:'TTL',   v: '300' },
-              ]).map(({ k, v, copy, green, loading }) => (
-                <tr key={k} style={{ borderBottom:'1px solid var(--v2-border)' }}>
-                  <td style={{ padding:'10px 16px', fontSize:11, fontWeight:600,
-                    color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.5px', width:72 }}>
-                    {k}
-                  </td>
-                  <td style={{ padding:'10px 0', fontSize:12, fontFamily:'var(--v2-font-mono)',
-                    color: green ? 'var(--v2-green-text)' : loading ? 'var(--v2-text-3)' : 'var(--v2-text)' }}>
-                    {loading
-                      ? <span style={{ display:'inline-flex', alignItems:'center', gap:6 }}>
-                          <RefreshCw size={11} className="spin"/>
-                          {polling ? 'Fetching from TSS…' : 'Click Auto-Add DNS'}
-                        </span>
-                      : v}
-                  </td>
-                  <td style={{ padding:'10px 16px 10px 0', textAlign:'right' }}>
-                    {copy && v && !loading && <CopyBtn text={v}/>}
-                  </td>
-                </tr>
-              ))}
-            </table>
-
-            {/* Feedback */}
-            {res?.dns_auto && (
-              <div className={`v2-callout ${res.dns_auto.ok ? 'tip' : 'error'}`}
-                style={{ margin:0, borderRadius:0, borderLeft:'none', borderRight:'none', borderBottom:'none' }}>
-                {res.dns_auto.ok
-                  ? <><Check size={13} style={{ flexShrink:0 }}/>{ord.dv_type==='CNAME'?'CNAME':'TXT'} record added via {res.dns_auto.provider} — wait 1–2 min then click Check Status.</>
-                  : <><AlertTriangle size={13} style={{ flexShrink:0 }}/>{res.dns_auto.message}</>}
-              </div>
-            )}
-            {res && res.status !== 'active' && !res.dns_auto && (
-              <div className="v2-callout" style={{ margin:0, borderRadius:0, borderLeft:'none', borderRight:'none', borderBottom:'none' }}>
-                <AlertTriangle size={13} style={{ flexShrink:0 }}/>
-                Not validated yet ({res.major_status}) — wait a few minutes and retry.
-              </div>
-            )}
-
-            {/* Actions */}
-            <div style={{ padding:'12px 16px', display:'flex', alignItems:'center', gap:8,
-              borderTop:'1px solid var(--v2-border)', flexWrap:'wrap' }}>
-              <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={addDns} disabled={dns || !ord.txt_value}>
-                {dns ? <><RefreshCw size={12} className="spin"/> Adding…</> : <><Zap size={12}/> Auto-Add DNS</>}
-              </button>
-              <button className="v2-btn v2-btn-sm" onClick={check} disabled={chk}>
-                {chk ? <><RefreshCw size={12} className="spin"/> Checking…</> : <><RefreshCw size={12}/> Check Status</>}
-              </button>
-              <button className="v2-btn v2-btn-sm" onClick={reset}
-                style={{ color:'var(--v2-text-3)', border:'none', background:'none' }}>← New order</button>
-            </div>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 32px' }}>
+        {/* Header */}
+        <div style={{ marginBottom: 28, textAlign: 'center' }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: 'white', letterSpacing: '-0.4px', marginBottom: 8 }}>
+            Add this DNS record to prove ownership
           </div>
+          <div style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.6 }}>
+            Add a <strong style={{ color: '#9ca3af' }}>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record</strong> to your DNS for{' '}
+            <strong style={{ color: '#0e7fc0', fontFamily: 'monospace' }}>{domain || ord.txt_name}</strong>
+          </div>
+        </div>
 
-          {/* Auto note */}
-          <div className="v2-callout tip">
-            <Zap size={13} style={{ flexShrink:0, color:'var(--v2-green)' }}/>
-            <span>
-              <strong>Fully automatic:</strong> SSLVault polls TheSSLStore every 5 minutes. Once your DNS propagates, the certificate activates with no action needed.
+        {/* DNS record terminal */}
+        <div style={{ background: '#0a0f1a', border: '0.5px solid rgba(255,255,255,0.08)',
+          borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
+          {/* Terminal header */}
+          <div style={{ background: '#111827', padding: '10px 16px',
+            display: 'flex', alignItems: 'center', gap: 6, borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+            {['#ff5f56','#ffbd2e','#27c93f'].map(c => (
+              <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, display: 'block' }}/>
+            ))}
+            <span style={{ fontSize: 11, color: '#4b5563', fontFamily: 'monospace', marginLeft: 8 }}>
+              DNS record · {ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'}
+            </span>
+            <span style={{ marginLeft: 'auto', fontFamily: 'monospace', fontSize: 10, color: '#374151' }}>
+              Order #{ord.tss_order_id || '—'}
             </span>
           </div>
-        </div>
-      )}
 
-      {/* DONE STEP */}
-      {step === 'done' && (
-        <div className="v2-container" style={{ maxWidth:560, paddingTop:24 }}>
-          <div className="v2-card v2-card-pad" style={{ textAlign:'center', padding:'48px 32px' }}>
-            <div style={{ width:64, height:64, borderRadius:'50%',
-              background:'var(--v2-green-bg)', border:'1.5px solid var(--v2-green-border)',
-              display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
-              <CheckCircle size={30} color="var(--v2-green)" strokeWidth={2}/>
-            </div>
-            <h2 className="v2-h1" style={{ marginBottom:6 }}>Certificate Issued</h2>
-            <p style={{ fontSize:13, color:'var(--v2-text-2)', marginBottom:28 }}>
-              <strong style={{ fontFamily:'var(--v2-font-mono)', color:'var(--v2-text)' }}>{clean(domain)}</strong>
-              {' '}is now secured · Auto-renewal active
-            </p>
-            <div style={{ display:'flex', flexDirection:'column', gap:8, maxWidth:300, margin:'0 auto' }}>
-              <button className="v2-btn v2-btn-primary" style={{ justifyContent:'center' }}
-                onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}>
-                <Server size={14}/> Install on Server
-              </button>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
-                <button className="v2-btn" style={{ justifyContent:'center' }}
-                  onClick={() => { if (onDashboard) onDashboard(); else nav('/dashboard') }}>
-                  View Dashboard
-                </button>
-                <button className="v2-btn" style={{ justifyContent:'center' }}
-                  onClick={() => { if (onIssueAnother) { reset(); onIssueAnother() } else reset() }}>
-                  Issue Another
-                </button>
+          {/* Record rows */}
+          <div style={{ padding: '4px 0' }}>
+            {(ord.dv_type === 'CNAME' ? [
+              { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy: true },
+              { k:'Type',  v: 'CNAME', accent: true },
+              { k:'Value', v: ord.cname_value || ord.txt_value || null, copy: true, loading: !(ord.cname_value||ord.txt_value) },
+              { k:'TTL',   v: '300 seconds' },
+            ] : [
+              { k:'Name',  v: ord.txt_name || domain, copy: true },
+              { k:'Type',  v: 'TXT', accent: true },
+              { k:'Value', v: ord.txt_value || null, copy: true, loading: !ord.txt_value },
+              { k:'TTL',   v: '300 seconds' },
+            ]).map(({ k, v, copy, accent, loading }) => (
+              <div key={k} style={{ display: 'grid', gridTemplateColumns: '70px 1fr auto',
+                alignItems: 'center', padding: '10px 18px',
+                borderBottom: '0.5px solid rgba(255,255,255,0.04)' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#374151',
+                  textTransform: 'uppercase', letterSpacing: '0.4px' }}>{k}</span>
+                <span style={{ fontSize: 12, fontFamily: 'monospace',
+                  color: loading ? '#374151' : accent ? '#34d399' : '#9ca3af',
+                  wordBreak: 'break-all', lineHeight: 1.5 }}>
+                  {loading
+                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <RefreshCw size={11} className="spin"/> Fetching…
+                      </span>
+                    : v}
+                </span>
+                {copy && v && !loading && <CopyBtn text={v}/>}
               </div>
+            ))}
+          </div>
+
+          {/* Feedback */}
+          {res?.dns_auto && (
+            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
+              background: res.dns_auto.ok ? 'rgba(52,211,153,0.06)' : 'rgba(220,38,38,0.06)',
+              display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+              {res.dns_auto.ok
+                ? <Check size={12} style={{ color: '#34d399', flexShrink: 0, marginTop: 1 }}/>
+                : <AlertTriangle size={12} style={{ color: '#f87171', flexShrink: 0, marginTop: 1 }}/>}
+              <span style={{ fontSize: 11, color: res.dns_auto.ok ? '#34d399' : '#f87171', lineHeight: 1.5 }}>
+                {res.dns_auto.ok
+                  ? `Record added via ${res.dns_auto.provider}. Wait 1–2 minutes, then click Check Status.`
+                  : res.dns_auto.message}
+              </span>
             </div>
+          )}
+          {res && res.status !== 'active' && !res.dns_auto && (
+            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
+              background: 'rgba(245,158,11,0.06)', display: 'flex', gap: 8 }}>
+              <AlertTriangle size={12} style={{ color: '#f59e0b', flexShrink: 0, marginTop: 1 }}/>
+              <span style={{ fontSize: 11, color: '#fbbf24' }}>
+                Not validated yet — DNS may still be propagating. Try again in a minute.
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
+          <button onClick={addDns} disabled={dns || !ord.txt_value}
+            style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#0e7fc0',
+              color: 'white', border: 'none', borderRadius: 7, padding: '10px 18px',
+              fontSize: 13, fontWeight: 600, cursor: dns || !ord.txt_value ? 'not-allowed' : 'pointer',
+              opacity: !ord.txt_value ? 0.4 : 1, fontFamily: 'inherit' }}>
+            {dns ? <><RefreshCw size={13} className="spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS Record</>}
+          </button>
+          <button onClick={check} disabled={chk}
+            style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.06)',
+              color: '#e5e7eb', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7,
+              padding: '10px 18px', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
+            {chk ? <><RefreshCw size={13} className="spin"/> Checking…</> : <><RefreshCw size={13}/> Check Status</>}
+          </button>
+          <button onClick={reset}
+            style={{ background: 'none', border: 'none', color: '#374151', fontSize: 12,
+              cursor: 'pointer', fontFamily: 'inherit', marginLeft: 'auto' }}>
+            ← Start over
+          </button>
+        </div>
+
+        {/* Auto note */}
+        <div style={{ background: 'rgba(14,127,192,0.08)', border: '0.5px solid rgba(14,127,192,0.2)',
+          borderRadius: 8, padding: '12px 16px', display: 'flex', gap: 10 }}>
+          <Zap size={14} style={{ color: '#0e7fc0', flexShrink: 0, marginTop: 1 }}/>
+          <div style={{ fontSize: 12, color: '#4b5563', lineHeight: 1.6 }}>
+            <strong style={{ color: '#9ca3af' }}>Fully automatic:</strong> SSLVault polls TheSSLStore every 5 minutes.
+            Once your DNS propagates, the certificate activates and installs itself — no action needed.
           </div>
         </div>
-      )}
+      </div>
+      <style>{`
+        .spin{animation:spin .8s linear infinite}
+        @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+      `}</style>
+    </div>
+  )
 
-      <style>{`.spin{animation:v2-spin .8s linear infinite}@keyframes v2-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+  // ── STEP: DONE ────────────────────────────────────────────────────────────
+  return (
+    <div style={{ minHeight: '100vh', background: '#050a14', display: 'flex',
+      alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+      <div style={{ maxWidth: 500, width: '100%', textAlign: 'center' }}>
+        <div style={{ width: 72, height: 72, borderRadius: '50%',
+          background: 'rgba(52,211,153,0.1)', border: '1.5px solid rgba(52,211,153,0.3)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+          <ShieldCheck size={32} color="#34d399" strokeWidth={2}/>
+        </div>
+        <h2 style={{ fontSize: 28, fontWeight: 800, color: 'white', letterSpacing: '-0.6px', marginBottom: 8 }}>
+          Certificate Issued
+        </h2>
+        <div style={{ fontFamily: 'monospace', fontSize: 15, color: '#0e7fc0',
+          marginBottom: 8, fontWeight: 600 }}>{clean(domain)}</div>
+        <p style={{ fontSize: 13, color: '#4b5563', marginBottom: 32, lineHeight: 1.6 }}>
+          DigiCert / RapidSSL certificate issued. Auto-renewal is active —
+          it will renew itself 14 days before expiry.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
+          <button onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              background: 'linear-gradient(135deg,#0e7fc0,#1a56db)', color: 'white',
+              border: 'none', borderRadius: 8, padding: '13px', fontSize: 14,
+              fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+            <Server size={15}/> Install on Server
+          </button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <button onClick={() => { if (onDashboard) onDashboard(); else nav('/dashboard') }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                background: 'rgba(255,255,255,0.06)', color: '#9ca3af',
+                border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 8,
+                padding: '11px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+              View Dashboard
+            </button>
+            <button onClick={reset}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                background: 'rgba(255,255,255,0.06)', color: '#9ca3af',
+                border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 8,
+                padding: '11px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+              Issue Another
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
