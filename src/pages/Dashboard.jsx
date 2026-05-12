@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
-  Shield, Plus, RefreshCw, Download, ExternalLink, X, Lock,
+  Shield, Plus, RefreshCw, RotateCcw, Download, ExternalLink, X, Lock,
   AlertTriangle, CheckCircle, Globe, ChevronRight,
   Copy, Check, TrendingUp, Activity, Zap,
   ArrowRight, Server, FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck
@@ -576,47 +576,49 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
       )}
 
       {/* Actions */}
-      <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-        <button className="v2-btn v2-btn-primary" style={{ flex:1 }}
-          onClick={handleSmartRenew}
-          disabled={!!renewState && renewState.phase !== 'error'}
-          title="New TSS order — new validity period, new key, new DV challenge">
-          <RefreshCw size={12} /> Renew
-        </button>
-        {isTssCert && !isRevoked && (
-          <button
-            className={`v2-btn v2-btn-sm${reissueState === 'confirm' ? ' v2-btn-primary' : ''}`}
-            onClick={handleReissue}
-            disabled={reissueState === 'loading'}
-            title="Same order — fresh cert PEM + key, same expiry, no new payment"
-            style={{ fontSize:12 }}>
-            {reissueState === 'confirm'
-              ? <><AlertTriangle size={11}/> Confirm?</>
-              : reissueState === 'loading'
-              ? <><RefreshCw size={11} style={{ animation:'spin 1s linear infinite' }}/> Reissuing...</>
-              : <><RefreshCw size={11}/> Reissue</>}
+      <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+        {/* Primary action row */}
+        <div style={{ display:'flex', gap:8 }}>
+          <button className="v2-btn v2-btn-primary" style={{ flex:1, justifyContent:'center' }}
+            onClick={handleSmartRenew}
+            disabled={!!renewState && renewState.phase !== 'error'}>
+            <RotateCcw size={12}/> Renew Certificate
           </button>
-        )}
-        {reissueState === 'confirm' && (
-          <button className="v2-btn v2-btn-sm" onClick={() => setReissueState(null)}
-            style={{ fontSize:12 }}>Cancel</button>
-        )}
-        <button className="v2-btn v2-btn-sm" onClick={() => onInstall(cert)}
-          style={{ fontSize:12 }}>
-          <Server size={11} /> Install
-        </button>
-        {!delConfirm
-          ? <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => { setDelConfirm(true); setRevokeConfirm(false) }}><X size={11} /> Delete</button>
-          : <button className="v2-btn v2-btn-danger" onClick={() => onDelete(cert.id)}>Confirm delete</button>
-        }
-        {/* Revoke — only for TSS certs that are not already revoked */}
-        {isTssCert && !isRevoked && (
-          <button
-            className="v2-btn v2-btn-sm"
-            onClick={() => { setRevokeConfirm(v => !v); setDelConfirm(false); setRevokeError('') }}
-            style={{ fontSize:12, borderColor:'#f97316', color:'#f97316' }}>
-            🚫 Revoke
+          <button className="v2-btn v2-btn-sm" onClick={() => onInstall(cert)}>
+            <Server size={11}/> Install
           </button>
+          {!delConfirm
+            ? <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => { setDelConfirm(true); setRevokeConfirm(false) }}><X size={11}/> Delete</button>
+            : <button className="v2-btn v2-btn-danger" onClick={() => onDelete(cert.id)}>Confirm delete</button>
+          }
+        </div>
+
+        {/* TSS-only advanced actions */}
+        {isTssCert && !isRevoked && (
+          <div style={{ display:'flex', gap:6, paddingTop:6, borderTop:'0.5px solid var(--v2-border)', alignItems:'center' }}>
+            <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:500, marginRight:2 }}>TSS</span>
+            <button
+              className={`v2-btn v2-btn-sm${reissueState === 'confirm' ? ' v2-btn-primary' : ''}`}
+              onClick={handleReissue}
+              disabled={reissueState === 'loading'}
+              title="Same TSS order — new CSR + PEM, same expiry window, no charge">
+              {reissueState === 'confirm'
+                ? <><AlertTriangle size={11}/> Confirm reissue?</>
+                : reissueState === 'loading'
+                ? <><RefreshCw size={11} style={{ animation:'spin 1s linear infinite' }}/> Reissuing…</>
+                : <><RefreshCw size={11}/> Reissue</>}
+            </button>
+            {reissueState === 'confirm' && (
+              <button className="v2-btn v2-btn-sm" onClick={() => setReissueState(null)}>Cancel</button>
+            )}
+            <div style={{ flex:1 }}/>
+            <button
+              className="v2-btn v2-btn-sm"
+              onClick={() => { setRevokeConfirm(v => !v); setDelConfirm(false); setRevokeError('') }}
+              style={{ fontSize:11, borderColor:'#f97316', color:'#f97316' }}>
+              Revoke
+            </button>
+          </div>
         )}
       </div>
 
