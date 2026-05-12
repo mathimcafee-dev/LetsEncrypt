@@ -153,6 +153,85 @@ function Tabs({ tab, setTab, counts }) {
 }
 
 // ── DNS Provider row ──────────────────────────────────────────────────
+// ── Unified domain row ────────────────────────────────────────────────
+function DomainRow({ group, selected, onSelect, credStatus, agents }) {
+  const { domain, dns, server } = group
+  const hasBoth = dns && server
+  const dnsOnly = dns && !server
+  const srvOnly = !dns && server
+
+  const dnsStatus = dns ? (credStatus[dns.id] || 'untested') : null
+  const dnsCls = dnsStatus === 'healthy' ? 'green' : dnsStatus === 'expired' ? 'amber' : 'grey'
+
+  const agent = server ? agents.find(a => a.server_id === server.id) : null
+  const agentActive = agent?.last_seen_at
+    ? (Date.now() - new Date(agent.last_seen_at).getTime()) / 60000 < 15
+    : false
+
+  const rowDot = hasBoth
+    ? (dnsStatus === 'healthy' && agentActive ? 'green' : dnsStatus === 'expired' ? 'amber' : 'grey')
+    : dnsOnly
+    ? dnsCls
+    : (agentActive ? 'green' : 'grey')
+
+  const p = dns ? (PROVIDERS[dns.provider] || { name: dns.provider, mono: '?', color: '#475569' }) : null
+  const t = server ? (SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel) : null
+  const TIcon = t?.Icon
+
+  return (
+    <div className={`v2-list-row status-${rowDot} ${selected ? 'selected' : ''}`}
+      onClick={() => onSelect(domain)}>
+      <div className="v2-row-icon" style={{
+        background: hasBoth ? '#0d3c6e' : dnsOnly ? (p?.color || '#475569') : (t?.color || '#475569'),
+        fontSize: 10
+      }}>
+        {hasBoth ? '✦' : dnsOnly ? p?.mono : (TIcon ? null : '?')}
+        {hasBoth ? '' : srvOnly && TIcon ? <TIcon size={13} color="white"/> : null}
+      </div>
+      <div className="v2-row-body">
+        <div className="v2-row-title-line">
+          <span className="v2-row-title v2-mono">{domain}</span>
+          <span style={{
+            fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+            textTransform: 'uppercase', letterSpacing: '0.3px',
+            background: hasBoth ? '#eff6ff' : dnsOnly ? '#f0fdf4' : '#fafafa',
+            color: hasBoth ? '#1d4ed8' : dnsOnly ? '#15803d' : '#6b7280',
+            border: hasBoth ? '0.5px solid #bfdbfe' : dnsOnly ? '0.5px solid #bbf7d0' : '0.5px solid #e5e7eb',
+          }}>
+            {hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'}
+          </span>
+        </div>
+        <div className="v2-row-meta" style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+          {dns && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3,
+              fontSize: 10, color: 'var(--v2-text-3)' }}>
+              <span style={{ width: 12, height: 12, borderRadius: 2, background: p?.color,
+                color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 7, fontWeight: 700, flexShrink: 0 }}>{p?.mono}</span>
+              {p?.name}
+            </span>
+          )}
+          {dns && server && <span className="v2-row-meta-sep">·</span>}
+          {server && TIcon && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3,
+              fontSize: 10, color: 'var(--v2-text-3)' }}>
+              <TIcon size={10} style={{ color: t?.color }}/>
+              {t?.short}
+              {agent && (
+                <span style={{ width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+                  background: agentActive ? '#10b981' : '#d1d5db',
+                  display: 'inline-block', marginLeft: 2 }}/>
+              )}
+            </span>
+          )}
+        </div>
+      </div>
+      <ChevronRight size={14} strokeWidth={1.8} style={{ color: 'var(--v2-text-3)', flexShrink: 0 }}/>
+    </div>
+  )
+}
+
+// ── DNS Provider row (kept for backward compat, not used in main list) ─
 function DnsRow({ cred, selected, onSelect, status }) {
   const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#475569' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
@@ -1232,7 +1311,7 @@ function LoggedOutView({ nav }) {
 // ── Main page ─────────────────────────────────────────────────────────
 export default function DnsProviders({ nav }) {
   const { user, loading: authLoading } = useAuth()
-  const [tab, setTab]                 = useState('dns')
+  const [tab, setTab]                 = useState('dns') // kept for PageHeader compat
   const [credentials, setCredentials] = useState([])
   const [servers, setServers]         = useState([])
   const [agents, setAgents]           = useState([])
@@ -1242,9 +1321,7 @@ export default function DnsProviders({ nav }) {
   const [showAddBoth, setShowAddBoth] = useState(false)
   const [editServer, setEditServer]   = useState(null)
   const [agentServer, setAgentServer] = useState(null)
-  const [serverTypeFilter, setServerTypeFilter] = useState('all')
-  const [selectedDns, setSelectedDns]       = useState(null)
-  const [selectedServer, setSelectedServer] = useState(null)
+  const [selectedDomain, setSelectedDomain] = useState(null)
   const [testing, setTesting]               = useState(null)
   const [testResult, setTestResult]         = useState({})
   const [credStatus, setCredStatus]         = useState({})
@@ -1352,15 +1429,26 @@ export default function DnsProviders({ nav }) {
     }).length
   }
 
-  const filteredServers = serverTypeFilter === 'all'
-    ? servers
-    : servers.filter(s => s.server_type === serverTypeFilter)
+  // Build unified domain list — group DNS + Server by domain
+  const domainMap = {}
+  credentials.forEach(c => {
+    const d = c.domain_pattern
+    if (!domainMap[d]) domainMap[d] = { domain: d, dns: null, server: null }
+    domainMap[d].dns = c
+  })
+  servers.forEach(s => {
+    (s.domains || []).forEach(d => {
+      if (!domainMap[d]) domainMap[d] = { domain: d, dns: null, server: null }
+      // Only link one server per domain (prefer exact match)
+      if (!domainMap[d].server) domainMap[d].server = s
+    })
+  })
+  const domainGroups = Object.values(domainMap).sort((a, b) => a.domain.localeCompare(b.domain))
 
-  const selDnsCred = credentials.find(c => c.id === selectedDns)
-  const selSrv     = servers.find(s => s.id === selectedServer)
-  const selSrvAgent = agents.find(a => a.server_id === selectedServer) || null
-
-  const onAdd = () => tab === 'dns' ? setShowAddDns(true) : setShowAddSrv(true)
+  const selGroup = domainGroups.find(g => g.domain === selectedDomain)
+  const selDnsCred = selGroup?.dns || null
+  const selSrv     = selGroup?.server || null
+  const selSrvAgent = selSrv ? (agents.find(a => a.server_id === selSrv.id) || null) : null
 
   return (
     <div className="v2-page">
@@ -1371,119 +1459,143 @@ export default function DnsProviders({ nav }) {
         {editServer  && <UnifiedSetupModal userId={user?.id} defaultMode="server" onSave={loadServers} onClose={() => setEditServer(null)} editServer={editServer} />}
         {agentServer && <InstallAgentModal server={agentServer} userId={user?.id} onClose={() => setAgentServer(null)} onRegistered={loadAgents} />}
 
-        <PageHeader counts={counts} tab={tab} onAdd={onAdd} onAddBoth={() => setShowAddBoth(true)} />
-        <Tabs tab={tab} setTab={setTab} counts={counts} />
+        <PageHeader counts={counts} tab={tab} onAdd={() => setShowAddDns(true)} onAddBoth={() => setShowAddBoth(true)} />
 
-        {tab === 'dns' && (
-          <div className="v2-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
-            <div className="v2-card">
-              {credentials.length > 0 && (
-                <div className="v2-filter-bar">
-                  <Search size={13} strokeWidth={2} style={{ color: 'var(--v2-text-3)' }} />
-                  <span style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>
-                    {credentials.length} provider{credentials.length === 1 ? '' : 's'} configured
-                  </span>
-                </div>
-              )}
-              {loading ? (
-                <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>
-                  Loading…
-                </div>
-              ) : credentials.length === 0 ? (
-                <EmptyState
-                  icon={Globe}
-                  title="No DNS providers yet"
-                  desc="Add a provider so SSLVault can create _acme-challenge records automatically during cert generation."
-                  ctaLabel="Add your first provider"
-                  onCta={() => setShowAddDns(true)}
-                />
-              ) : (
-                credentials.map(cred => (
-                  <DnsRow key={cred.id} cred={cred}
-                    selected={selectedDns === cred.id}
-                    onSelect={setSelectedDns}
-                    status={credStatus[cred.id] || 'untested'} />
-                ))
-              )}
-            </div>
-            <div>
-              {selDnsCred ? (
-                <DnsDetail
-                  cred={selDnsCred}
-                  status={credStatus[selDnsCred.id] || 'untested'}
-                  testing={testing === selDnsCred.id}
-                  testResult={testResult[selDnsCred.id]}
-                  onTest={testCred}
-                  onDelete={deleteCred}
-                />
-              ) : credentials.length > 0 ? (
-                <div className="v2-detail" style={{ textAlign: 'center', padding: '40px 16px' }}>
-                  <div style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>Select a provider to see details</div>
-                </div>
-              ) : null}
-            </div>
+        {/* Unified domain list */}
+        <div className="v2-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
+          <div className="v2-card">
+            {loading ? (
+              <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>Loading…</div>
+            ) : domainGroups.length === 0 ? (
+              <EmptyState
+                icon={Globe}
+                title="No domains configured yet"
+                desc="Add a DNS provider, a server, or both to get started. SSLVault will handle cert issuance and installation automatically."
+                ctaLabel="Add DNS + Server"
+                onCta={() => setShowAddBoth(true)}
+              />
+            ) : (
+              <>
+                {/* Group: DNS + Server */}
+                {domainGroups.filter(g => g.dns && g.server).length > 0 && (
+                  <>
+                    <div style={{ padding: '10px 16px 4px', fontSize: 10, fontWeight: 700,
+                      color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px',
+                      borderBottom: '0.5px solid var(--v2-border)' }}>
+                      DNS + Server · full automation
+                    </div>
+                    {domainGroups.filter(g => g.dns && g.server).map(g => (
+                      <DomainRow key={g.domain} group={g}
+                        selected={selectedDomain === g.domain}
+                        onSelect={setSelectedDomain}
+                        credStatus={credStatus}
+                        agents={agents} />
+                    ))}
+                  </>
+                )}
+                {/* Group: DNS only */}
+                {domainGroups.filter(g => g.dns && !g.server).length > 0 && (
+                  <>
+                    <div style={{ padding: '10px 16px 4px', fontSize: 10, fontWeight: 700,
+                      color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px',
+                      borderBottom: '0.5px solid var(--v2-border)',
+                      borderTop: domainGroups.filter(g => g.dns && g.server).length > 0 ? '0.5px solid var(--v2-border)' : 'none',
+                      marginTop: domainGroups.filter(g => g.dns && g.server).length > 0 ? 4 : 0 }}>
+                      DNS only
+                    </div>
+                    {domainGroups.filter(g => g.dns && !g.server).map(g => (
+                      <DomainRow key={g.domain} group={g}
+                        selected={selectedDomain === g.domain}
+                        onSelect={setSelectedDomain}
+                        credStatus={credStatus}
+                        agents={agents} />
+                    ))}
+                  </>
+                )}
+                {/* Group: Server only */}
+                {domainGroups.filter(g => !g.dns && g.server).length > 0 && (
+                  <>
+                    <div style={{ padding: '10px 16px 4px', fontSize: 10, fontWeight: 700,
+                      color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px',
+                      borderBottom: '0.5px solid var(--v2-border)',
+                      borderTop: '0.5px solid var(--v2-border)', marginTop: 4 }}>
+                      Server only
+                    </div>
+                    {domainGroups.filter(g => !g.dns && g.server).map(g => (
+                      <DomainRow key={g.domain} group={g}
+                        selected={selectedDomain === g.domain}
+                        onSelect={setSelectedDomain}
+                        credStatus={credStatus}
+                        agents={agents} />
+                    ))}
+                  </>
+                )}
+              </>
+            )}
           </div>
-        )}
 
-        {tab === 'servers' && (
-          <div className="v2-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
-            <div className="v2-card">
-              {servers.length > 0 && (
-                <div className="v2-filter-bar">
-                  <span className="v2-section-label" style={{ marginRight: 4 }}>FILTER</span>
-                  {[
-                    { id: 'all',    label: 'All',    n: servers.length },
-                    { id: 'ssh',    label: 'VPS',    n: servers.filter(s => s.server_type === 'ssh').length },
-                    { id: 'cpanel', label: 'cPanel', n: servers.filter(s => s.server_type === 'cpanel').length },
-                    { id: 'plesk',  label: 'Plesk',  n: servers.filter(s => s.server_type === 'plesk').length },
-                  ].filter(f => f.id === 'all' || f.n > 0).map(f => (
-                    <button key={f.id} className={`v2-filter-chip ${serverTypeFilter === f.id ? 'active' : ''}`}
-                            onClick={() => setServerTypeFilter(f.id)}>
-                      {f.label}<span className="v2-filter-chip-count">{f.n}</span>
+          {/* Detail panel */}
+          <div>
+            {selGroup ? (
+              <div>
+                {/* DNS section */}
+                {selDnsCred && (
+                  <DnsDetail
+                    cred={selDnsCred}
+                    status={credStatus[selDnsCred.id] || 'untested'}
+                    testing={testing === selDnsCred.id}
+                    testResult={testResult[selDnsCred.id]}
+                    onTest={testCred}
+                    onDelete={deleteCred}
+                  />
+                )}
+                {/* Server section */}
+                {selSrv && (
+                  <div style={{ marginTop: selDnsCred ? 12 : 0 }}>
+                    <ServerDetail
+                      server={selSrv}
+                      agent={selSrvAgent}
+                      onDelete={deleteServer}
+                      onEdit={setEditServer}
+                      onInstallAgent={setAgentServer}
+                      userId={user?.id}
+                    />
+                  </div>
+                )}
+                {/* Add missing piece CTA */}
+                {selDnsCred && !selSrv && (
+                  <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--v2-surface-2)',
+                    border: '1px dashed var(--v2-border)', borderRadius: 8, textAlign: 'center' }}>
+                    <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 6 }}>
+                      No server saved for this domain
+                    </div>
+                    <button className="v2-btn v2-btn-sm v2-btn-primary"
+                      onClick={() => setShowAddSrv(true)}>
+                      <Plus size={11}/> Add server
                     </button>
-                  ))}
-                </div>
-              )}
-              {loading ? (
-                <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>
-                  Loading…
-                </div>
-              ) : servers.length === 0 ? (
-                <EmptyState
-                  icon={Server}
-                  title="No servers saved yet"
-                  desc="Save cPanel, VPS, or Plesk credentials so you can install certs in one click — no re-entering passwords."
-                  ctaLabel="Add your first server"
-                  onCta={() => setShowAddSrv(true)}
-                />
-              ) : (
-                filteredServers.map(s => (
-                  <ServerRow key={s.id} server={s}
-                    selected={selectedServer === s.id}
-                    onSelect={setSelectedServer}
-                    agent={agents.find(a => a.server_id === s.id) || null}
-                    onInstallAgent={setAgentServer} />
-                ))
-              )}
-            </div>
-            <div>
-              {selSrv ? (
-                <ServerDetail
-                  server={selSrv}
-                  agent={selSrvAgent}
-                  onDelete={deleteServer}
-                  onEdit={setEditServer}
-                  onInstallAgent={setAgentServer}
-                  userId={user?.id}
-                />
-              ) : servers.length > 0 ? (
-                <div className="v2-detail" style={{ textAlign: 'center', padding: '40px 16px' }}>
-                  <div style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>Select a server to see details</div>
-                </div>
-              ) : null}
-            </div>
+                  </div>
+                )}
+                {!selDnsCred && selSrv && (
+                  <div style={{ padding: '10px 14px', background: 'var(--v2-surface-2)',
+                    border: '1px dashed var(--v2-border)', borderRadius: 8, textAlign: 'center',
+                    marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 6 }}>
+                      No DNS provider for this domain
+                    </div>
+                    <button className="v2-btn v2-btn-sm v2-btn-primary"
+                      onClick={() => setShowAddDns(true)}>
+                      <Plus size={11}/> Add DNS provider
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : domainGroups.length > 0 ? (
+              <div className="v2-detail" style={{ textAlign: 'center', padding: '40px 16px' }}>
+                <div style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>Select a domain to see details</div>
+              </div>
+            ) : null}
           </div>
-        )}
+        </div>
       </div>
 
       <style>{`
