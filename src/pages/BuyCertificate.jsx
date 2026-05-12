@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, AlertTriangle, RefreshCw, Copy, Check,
-         Lock, Zap, Globe, Server, ArrowRight, ChevronRight, Star } from 'lucide-react'
+         Lock, Zap, Globe, Server, ArrowRight, ShieldCheck, Clock,
+         RotateCcw, Terminal } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 
@@ -8,387 +9,194 @@ const URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const IS_SANDBOX = true
 
 const PRODUCTS = [
-  { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', icon: '🔒', price: 19, popular: false, wildcard: false, available: true, desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites and SMBs.' },
+  { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', price: 19, wildcard: false, available: true,
+    desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites and SMBs.',
+    algo: 'SHA-256 / RSA 2048', trust: 'DigiCert root', issuance: '~5 minutes' },
 ]
 
 const STYLES = `
-.ic-root {
-  font-family: system-ui,-apple-system,'Segoe UI',sans-serif;
-  background: #fafafa;
-  min-height: calc(100vh - 100px);
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+.ec-root {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: #f4f6f9;
+  min-height: calc(100vh - 60px);
   -webkit-font-smoothing: antialiased;
-  padding: 20px 24px 60px;
+  padding: 0 0 80px;
 }
-.ic-header {
-  background: white; border: 0.5px solid #e8edf2; border-radius: 8px;
-  padding: 16px 20px; margin-bottom: 10px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+.ec-topbar {
+  background: #fff; border-bottom: 1px solid #e2e6ed;
+  padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px;
 }
-.ic-header-left { display: flex; align-items: center; gap: 14px; }
-.ic-logo {
-  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
-  background: #f0fdf4; border: 0.5px solid #bbf7d0;
-  display: flex; align-items: center; justify-content: center;
-}
-.ic-hero-title { font-size: 15px; font-weight: 500; color: #0a0a0a; letter-spacing: -0.2px; }
-.ic-hero-sub { font-size: 11px; color: #a3a3a3; margin-top: 3px; }
-.ic-hero-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-.ic-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: #fafafa; border: 0.5px solid #e8edf2;
-  border-radius: 100px; padding: 3px 9px;
-  font-size: 10px; font-weight: 500; color: #525252;
-}
-.ic-badge-green { color: #047857; background: #f0fdf4; border-color: #bbf7d0; }
-.ic-sandbox-pill {
-  flex-shrink: 0; background: #f5f3ff; border: 0.5px solid #ddd6fe;
-  color: #6d28d9; font-size: 9px; font-weight: 500; letter-spacing: 0.4px;
-  text-transform: uppercase; border-radius: 4px; padding: 3px 8px;
-}
-.ic-steps {
-  display: flex; align-items: center;
-  background: white; border: 0.5px solid #e8edf2; border-radius: 8px;
-  padding: 12px 20px; margin-bottom: 12px;
-}
-.ic-step { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.ic-step-circle {
-  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 500; transition: all 0.3s;
-}
-.ic-step-circle.done   { background: #10b981; color: white; }
-.ic-step-circle.active { background: #0a0a0a; color: white; }
-.ic-step-circle.future { background: #f1f5f9; color: #94a3b8; border: 0.5px solid #e2e8f0; }
-.ic-step-text { font-size: 12px; font-weight: 500; transition: color 0.3s; }
-.ic-step-text.done   { color: #10b981; }
-.ic-step-text.active { color: #0a0a0a; }
-.ic-step-text.future { color: #d4d4d4; }
-.ic-step-line { flex: 1; height: 0.5px; margin: 0 14px; min-width: 20px; transition: background 0.4s; }
-.ic-step-line.done   { background: #10b981; }
-.ic-step-line.future { background: #e8edf2; }
-.ic-body { display: grid; grid-template-columns: 1fr 300px; gap: 12px; align-items: start; }
-.ic-body-full { max-width: 680px; }
-
-/* ─── PENDING BANNER ───────────────────────────────────── */
-.ic-pending {
-  display: flex; align-items: center; gap: 10;
-  background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px;
-  padding: 12px 14px; margin-bottom: 18px;
-  animation: ic-slidein 0.3s ease;
-}
-.ic-pending-text { flex: 1; min-width: 0; }
-.ic-pending-title { font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 2px; }
-.ic-pending-sub   { font-size: 11px; color: #b45309; }
-
-/* ─── STAT TILES ───────────────────────────────────────── */
-.ic-stats {
-  display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 18px;
-}
-.ic-stat {
-  background: white; border: 1px solid #e8edf2; border-radius: 10px;
-  padding: 14px 12px; text-align: center; cursor: default;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.ic-stat:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
-.ic-stat-v { font-size: 17px; font-weight: 800; color: #0a0a0a; letter-spacing: -0.5px; }
-.ic-stat-l { font-size: 10px; color: #94a3b8; margin-top: 3px; font-weight: 500; letter-spacing: 0.1px; }
-
-/* ─── DOMAIN FIELD ─────────────────────────────────────── */
-.ic-domain { margin-bottom: 16px; }
-.ic-domain-label {
-  display: block; font-size: 10px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.6px;
-  color: #64748b; margin-bottom: 7px;
-}
-.ic-domain-wrap { position: relative; }
-.ic-domain-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none; }
-.ic-domain-input {
-  width: 100%; height: 52px; box-sizing: border-box;
-  padding: 0 14px 0 38px;
-  font-size: 16px; font-weight: 700;
-  font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
-  letter-spacing: -0.3px; color: #0a0a0a;
-  background: white; border: 2px solid #e2e8f0;
-  border-radius: 12px; outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.ic-domain-input:focus {
-  border-color: #0a0a0a;
-  box-shadow: 0 0 0 4px rgba(10,10,10,0.06);
-}
-.ic-domain-input::placeholder { color: #c8d3e0; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 400; }
-
-/* ─── CARD ─────────────────────────────────────────────── */
-.ic-card {
-  background: white; border: 1px solid #e8edf2; border-radius: 14px;
-  overflow: hidden; margin-bottom: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
-}
-.ic-card-head {
-  padding: 12px 16px; background: #fafbfc;
-  border-bottom: 1px solid #f1f5f9;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.ic-section-label {
-  font-size: 10px; font-weight: 700; color: #94a3b8;
-  text-transform: uppercase; letter-spacing: 0.6px;
-}
-.ic-card-body { padding: 16px; }
-
-/* ─── FORM INPUTS ──────────────────────────────────────── */
-.ic-field { margin-bottom: 12px; }
-.ic-field:last-child { margin-bottom: 0; }
-.ic-label {
-  display: block; font-size: 10px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.4px;
-  color: #64748b; margin-bottom: 5px;
-}
-.ic-input {
-  width: 100%; box-sizing: border-box;
-  padding: 10px 12px; font-size: 13px; font-weight: 500;
-  font-family: 'Inter', sans-serif; color: #0a0a0a;
-  background: white; border: 1.5px solid #e2e8f0;
-  border-radius: 9px; outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.ic-input:focus { border-color: #0a0a0a; box-shadow: 0 0 0 3px rgba(10,10,10,0.06); }
-.ic-input::placeholder { color: #c8d3e0; font-weight: 400; }
-.ic-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-@media (max-width: 440px) { .ic-row2 { grid-template-columns: 1fr; } }
-
-/* ─── VALIDITY TOGGLE ──────────────────────────────────── */
-.ic-validity { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.ic-val-btn {
-  padding: 12px 14px; border-radius: 10px; cursor: pointer;
-  font-family: 'Inter', sans-serif; text-align: left;
-  border: 2px solid #e2e8f0; background: white;
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-}
-.ic-val-btn:hover { border-color: #94a3b8; }
-.ic-val-btn.sel {
-  border-color: #0a0a0a; background: #0a0a0a;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.22);
-  transform: translateY(-1px);
-}
-.ic-val-yr { font-size: 14px; font-weight: 700; }
-.ic-val-btn:not(.sel) .ic-val-yr { color: #0a0a0a; }
-.ic-val-btn.sel .ic-val-yr { color: white; }
-.ic-val-pr { font-size: 11px; margin-top: 2px; }
-.ic-val-btn:not(.sel) .ic-val-pr { color: #94a3b8; }
-.ic-val-btn.sel .ic-val-pr { color: rgba(255,255,255,0.5); }
-
-/* ─── ORDER SUMMARY ────────────────────────────────────── */
-.ic-summary {
-  background: white; border: 1px solid #e8edf2; border-radius: 14px;
-  overflow: hidden; margin-bottom: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-}
-.ic-summary-rows { padding: 14px 16px; }
-.ic-sum-row {
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 12px; color: #64748b; margin-bottom: 6px;
-}
-.ic-sum-row:last-child { margin-bottom: 0; }
-.ic-sum-row.em { color: #10b981; font-weight: 600; }
-.ic-sum-foot {
-  border-top: 1px solid #f1f5f9; padding: 14px 16px;
-  background: #fafbfc;
-  display: flex; flex-direction: column; gap: 10px;
-}
-.ic-price-label { font-size: 10px; color: #94a3b8; margin-bottom: 2px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
-.ic-price-val { font-size: 26px; font-weight: 900; color: #0a0a0a; letter-spacing: -0.8px; line-height: 1; }
-.ic-price-note { font-size: 9px; color: #c8d3e0; margin-top: 3px; }
-
-/* ─── BUTTONS ──────────────────────────────────────────── */
-.ic-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  font-family: 'Inter', sans-serif; font-weight: 700; cursor: pointer;
-  border: none; border-radius: 10px; white-space: nowrap;
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-}
-.ic-btn-primary {
-  background: #0a0a0a; color: white; font-size: 14px;
-  padding: 14px 22px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.15);
-}
-.ic-btn-primary:hover { background: #1a1a1a; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.18); }
-.ic-btn-primary:active { transform: translateY(0); }
-.ic-btn-primary:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
-.ic-btn-green {
-  background: #10b981; color: white; font-size: 13px; padding: 11px 18px;
-  box-shadow: 0 2px 8px rgba(16,185,129,0.4);
-}
-.ic-btn-green:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(16,185,129,0.45); }
-.ic-btn-green:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
-.ic-btn-outline {
-  background: white; color: #374151; font-size: 13px; padding: 11px 18px;
-  border: 1.5px solid #e2e8f0;
-}
-.ic-btn-outline:hover { background: #f8fafc; border-color: #c8d3e0; }
-.ic-btn-ghost {
-  background: transparent; color: #94a3b8; font-size: 12px; padding: 10px;
-  border: none;
-}
-.ic-btn-ghost:hover { color: #64748b; }
-
-/* ─── TRUST STRIP ──────────────────────────────────────── */
-.ic-trust {
-  display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 18px;
-}
-.ic-trust-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #94a3b8; }
-
-/* ─── ERROR ────────────────────────────────────────────── */
-.ic-error {
-  display: flex; gap: 8px; align-items: flex-start;
-  background: #fef2f2; border: 1px solid #fecaca;
-  border-radius: 10px; padding: 11px 13px;
-  font-size: 12px; color: #dc2626; margin-top: 12px;
-  animation: ic-fadein 0.2s ease;
-}
-
-/* ─── DV SCREEN ────────────────────────────────────────── */
-.ic-dv-head {
-  display: flex; align-items: center; gap: 12px;
-  background: linear-gradient(135deg, #fffbeb, #fefce8);
-  border-bottom: 1px solid #fde68a; padding: 16px;
-}
-.ic-dv-icon {
-  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
-  background: #fef3c7; border: 1px solid #fde68a;
-  display: flex; align-items: center; justify-content: center;
-}
-.ic-dv-title { font-size: 14px; font-weight: 700; color: #92400e; }
-.ic-dv-sub   { font-size: 11px; color: #b45309; margin-top: 2px; line-height: 1.5; }
-.ic-order-no {
-  margin-left: auto; flex-shrink: 0;
-  font-size: 10px; color: #b45309; background: #fef3c7;
-  border: 1px solid #fde68a; border-radius: 5px; padding: 3px 8px; font-weight: 600;
-}
-
-/* ─── TERMINAL ─────────────────────────────────────────── */
-.ic-terminal {
-  background: #0d1117; margin: 14px 16px; border-radius: 10px;
-  overflow: hidden; border: 1px solid #21262d;
-}
-.ic-term-head {
-  background: #161b22; border-bottom: 1px solid #21262d;
-  padding: 9px 13px; display: flex; align-items: center; gap: 5px;
-}
-.ic-dot { width: 10px; height: 10px; border-radius: 50%; }
-.ic-term-name { font-size: 10px; color: #484f58; font-family: monospace; margin-left: 5px; }
-.ic-dns-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 13px; border-bottom: 1px solid #161b22;
-}
-.ic-dns-key { font-size: 9px; color: #484f58; width: 38px; flex-shrink: 0; font-family: monospace; text-transform: uppercase; letter-spacing: 0.5px; }
-.ic-dns-val { flex: 1; font-size: 11px; font-family: 'SF Mono', monospace; color: #c9d1d9; word-break: break-all; display: flex; align-items: center; gap: 7px; line-height: 1.6; }
-.ic-dns-val.green { color: #3fb950; }
-.ic-dns-val.dim   { color: #484f58; }
-.ic-copy {
-  display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-  color: #6b7280; border-radius: 5px; padding: 3px 8px;
-  font-size: 10px; cursor: pointer; font-family: 'Inter',sans-serif;
-  transition: all 0.15s;
-}
-.ic-copy.ok { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #34d399; }
-
-/* ─── FEEDBACK ─────────────────────────────────────────── */
-.ic-feedback {
-  margin: 0 16px 12px; border-radius: 9px;
-  padding: 10px 13px; font-size: 12px;
-  display: flex; gap: 8px; align-items: flex-start;
-  animation: ic-fadein 0.2s ease;
-}
-.ic-feedback.ok   { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
-.ic-feedback.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
-.ic-feedback.err  { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
-
-/* ─── DV ACTIONS ───────────────────────────────────────── */
-.ic-dv-actions { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 16px 16px; align-items: center; }
-.ic-auto-note {
-  background: white; border: 1px solid #e8edf2; border-radius: 10px;
-  padding: 12px 14px; font-size: 12px; color: #64748b; line-height: 1.7;
-  display: flex; gap: 9px; align-items: flex-start;
-}
-
-/* ─── DONE ─────────────────────────────────────────────── */
-.ic-done-head {
-  background: linear-gradient(160deg, #ecfdf5, #f0fdf4);
-  border-bottom: 1px solid #bbf7d0; padding: 40px 24px;
-  text-align: center;
-}
-.ic-done-ring {
-  width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 20px;
-  background: linear-gradient(135deg, #d1fae5, #bbf7d0);
-  border: 3px solid #6ee7b7; position: relative;
-  display: flex; align-items: center; justify-content: center;
-  animation: ic-popin 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.ic-done-ring::after {
-  content: ''; position: absolute; inset: -12px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(16,185,129,0.15), transparent 70%);
-  animation: ic-breathe 2.5s ease-in-out infinite;
-}
-.ic-done-title { font-size: 22px; font-weight: 900; color: #0a0a0a; letter-spacing: -0.6px; margin-bottom: 6px; }
-.ic-done-sub   { font-size: 13px; color: #64748b; line-height: 1.6; }
-.ic-done-body  { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-.ic-btn-full   { width: 100%; }
-.ic-row2-btn   { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-/* ─── ANIMATIONS ───────────────────────────────────────── */
-@keyframes ic-slidein  { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
-@keyframes ic-fadein   { from { opacity:0; } to { opacity:1; } }
-@keyframes ic-popin    { 0% { transform: scale(0.5); opacity:0; } 100% { transform: scale(1); opacity:1; } }
-@keyframes ic-breathe  { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } }
-@keyframes ic-spin     { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes ic-pulse    { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
-.ic-spin    { animation: ic-spin 0.8s linear infinite; }
-.ic-pulse   { animation: ic-pulse 1.4s ease-in-out infinite; }
-.ic-enter   { animation: ic-slidein 0.32s cubic-bezier(0.4,0,0.2,1); }
-.ic-fade    { animation: ic-fadein 0.35s ease; }
-
-/* ─── MOBILE ───────────────────────────────────────────── */
-@media (max-width: 460px) {
-  .ic-row2 { grid-template-columns: 1fr; }
-  .ic-row2-btn { grid-template-columns: 1fr; }
-  .ic-sum-foot { flex-direction: column; align-items: stretch; }
-  .ic-btn-primary { width: 100%; font-size: 15px; padding: 14px; }
-  .ic-hero-badges { display: none; }
-  .ic-stats { gap: 6px; }
-  .ic-stat-v { font-size: 15px; }
-  .ic-steps { padding: 0 12px; }
-  .ic-step-text { font-size: 11px; }
-}
+.ec-topbar-left { display: flex; align-items: center; gap: 10px; }
+.ec-topbar-icon { width: 28px; height: 28px; border-radius: 6px; background: #1a56db; display: flex; align-items: center; justify-content: center; }
+.ec-topbar-title { font-size: 13px; font-weight: 600; color: #111827; letter-spacing: -0.1px; }
+.ec-topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ec-chip { display: inline-flex; align-items: center; gap: 4px; border: 1px solid #e2e6ed; border-radius: 4px; padding: 3px 8px; font-size: 11px; font-weight: 500; color: #6b7280; background: #fff; }
+.ec-chip-blue  { border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8; }
+.ec-chip-green { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
+.ec-sandbox-tag { background: #7c3aed; color: white; font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; border-radius: 3px; padding: 3px 7px; }
+.ec-progress { background: #fff; border-bottom: 1px solid #e2e6ed; padding: 0 32px; display: flex; align-items: center; height: 48px; }
+.ec-step-item { display: flex; align-items: center; gap: 8px; padding: 0 16px 0 0; }
+.ec-step-item:first-child { padding-left: 0; }
+.ec-step-num { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; transition: all 0.2s; }
+.ec-step-num.done   { background: #15803d; color: #fff; }
+.ec-step-num.active { background: #1a56db; color: #fff; }
+.ec-step-num.idle   { background: #e5e7eb; color: #9ca3af; }
+.ec-step-label { font-size: 12px; font-weight: 500; transition: color 0.2s; }
+.ec-step-label.done   { color: #15803d; }
+.ec-step-label.active { color: #1a56db; }
+.ec-step-label.idle   { color: #9ca3af; }
+.ec-step-sep { height: 1px; width: 32px; background: #e5e7eb; flex-shrink: 0; margin: 0 4px; transition: background 0.3s; }
+.ec-step-sep.done { background: #15803d; }
+.ec-body { max-width: 1120px; margin: 0 auto; padding: 24px 32px 0; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+.ec-body-full { max-width: 760px; margin: 0 auto; padding: 24px 32px 0; }
+.ec-section { background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+.ec-section-head { padding: 12px 20px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; background: #fafbfc; }
+.ec-section-title { font-size: 11px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.7px; }
+.ec-section-meta  { font-size: 10px; color: #9ca3af; font-weight: 500; }
+.ec-section-body  { padding: 20px; }
+.ec-product-card { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border-radius: 6px; cursor: pointer; border: 1.5px solid transparent; background: #f9fafb; transition: all 0.15s; margin-bottom: 6px; }
+.ec-product-card:last-child { margin-bottom: 0; }
+.ec-product-card:hover { background: #f3f4f6; border-color: #d1d5db; }
+.ec-product-card.selected { background: #eff6ff; border-color: #3b82f6; }
+.ec-product-check { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #d1d5db; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.ec-product-card.selected .ec-product-check { background: #1a56db; border-color: #1a56db; }
+.ec-product-info { flex: 1; min-width: 0; }
+.ec-product-name { font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+.ec-product-desc { font-size: 11px; color: #6b7280; line-height: 1.5; margin-bottom: 6px; }
+.ec-product-attrs { display: flex; gap: 12px; flex-wrap: wrap; }
+.ec-attr { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #6b7280; }
+.ec-product-price { flex-shrink: 0; text-align: right; }
+.ec-price-big { font-size: 16px; font-weight: 700; color: #111827; }
+.ec-price-yr  { font-size: 10px; color: #9ca3af; }
+.ec-type-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; }
+.ec-dv { background: #dcfce7; color: #15803d; }
+.ec-ov { background: #dbeafe; color: #1d4ed8; }
+.ec-ev { background: #fef3c7; color: #b45309; }
+.ec-field { margin-bottom: 14px; }
+.ec-field:last-child { margin-bottom: 0; }
+.ec-label { display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 5px; }
+.ec-label-req { color: #ef4444; margin-left: 2px; }
+.ec-input { width: 100%; box-sizing: border-box; padding: 9px 12px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: #111827; background: #fff; border: 1px solid #d1d5db; border-radius: 6px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+.ec-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+.ec-input::placeholder { color: #d1d5db; }
+.ec-input-domain { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; padding-left: 36px; height: 42px; }
+.ec-domain-wrap { position: relative; }
+.ec-domain-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none; }
+.ec-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width:520px) { .ec-row2 { grid-template-columns: 1fr; } }
+.ec-validity { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ec-val-opt { padding: 10px 14px; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; text-align: left; border: 1.5px solid #e5e7eb; background: #f9fafb; transition: all 0.15s; }
+.ec-val-opt:hover { border-color: #9ca3af; background: #f3f4f6; }
+.ec-val-opt.sel { border-color: #1a56db; background: #eff6ff; }
+.ec-val-yr { font-size: 13px; font-weight: 600; color: #111827; }
+.ec-val-opt.sel .ec-val-yr { color: #1a56db; }
+.ec-val-pr { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+.ec-val-opt.sel .ec-val-pr { color: #3b82f6; }
+.ec-error { display: flex; gap: 8px; align-items: flex-start; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 10px 13px; font-size: 12px; color: #dc2626; margin-top: 12px; }
+.ec-pending { display: flex; align-items: center; gap: 10px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; }
+.ec-pending-info { flex: 1; min-width: 0; }
+.ec-pending-title { font-size: 12px; font-weight: 600; color: #92400e; }
+.ec-pending-sub   { font-size: 11px; color: #b45309; margin-top: 1px; }
+.ec-summary { background: #111827; border: 1px solid #1f2937; border-radius: 8px; overflow: hidden; position: sticky; top: 20px; }
+.ec-summary-head { padding: 16px 20px; border-bottom: 1px solid #1f2937; }
+.ec-summary-title { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; }
+.ec-sum-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; margin-bottom: 7px; gap: 8px; }
+.ec-sum-row:last-child { margin-bottom: 0; }
+.ec-sum-key { color: #6b7280; flex-shrink: 0; }
+.ec-sum-val { color: #e5e7eb; font-weight: 500; text-align: right; }
+.ec-sum-val.green { color: #34d399; }
+.ec-sum-val.blue  { color: #60a5fa; }
+.ec-summary-price { padding: 16px 20px; border-bottom: 1px solid #1f2937; }
+.ec-price-label { font-size: 10px; color: #6b7280; font-weight: 500; letter-spacing: 0.3px; text-transform: uppercase; margin-bottom: 4px; }
+.ec-price-amount { font-size: 28px; font-weight: 700; color: #f9fafb; letter-spacing: -1px; line-height: 1; }
+.ec-price-note   { font-size: 10px; color: #4b5563; margin-top: 4px; }
+.ec-summary-cta { padding: 16px 20px; }
+.ec-btn-issue { width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px; background: #1a56db; color: #fff; border: none; border-radius: 6px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.ec-btn-issue:hover:not(:disabled) { background: #1d4ed8; }
+.ec-btn-issue:disabled { background: #374151; color: #6b7280; cursor: not-allowed; }
+.ec-trust-list { padding: 14px 20px; display: flex; flex-direction: column; gap: 8px; }
+.ec-trust-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6b7280; }
+.ec-trust-item svg { flex-shrink: 0; color: #34d399; }
+.ec-dv-header { background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 14px; }
+.ec-dv-icon-wrap { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; background: #fef3c7; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; }
+.ec-dv-title { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
+.ec-dv-sub   { font-size: 12px; color: #6b7280; line-height: 1.5; }
+.ec-order-badge { flex-shrink: 0; margin-left: auto; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: #374151; font-family: 'DM Mono', monospace; }
+.ec-dns-panel { background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+.ec-dns-panel-head { background: #111827; padding: 10px 16px; display: flex; align-items: center; gap: 6px; }
+.ec-dns-dot { width: 10px; height: 10px; border-radius: 50%; }
+.ec-dns-panel-name { font-size: 11px; color: #9ca3af; font-family: 'DM Mono', monospace; margin-left: 4px; }
+.ec-dns-table { width: 100%; border-collapse: collapse; }
+.ec-dns-tr { border-bottom: 1px solid #f3f4f6; }
+.ec-dns-tr:last-child { border-bottom: none; }
+.ec-dns-key { padding: 11px 16px; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; width: 80px; vertical-align: middle; }
+.ec-dns-val { padding: 11px 16px 11px 0; font-size: 12px; color: #111827; font-family: 'DM Mono', monospace; vertical-align: middle; }
+.ec-dns-val.green { color: #15803d; font-weight: 600; }
+.ec-dns-val.dim   { color: #9ca3af; display: flex; align-items: center; gap: 6px; }
+.ec-dns-copy { padding: 11px 16px 11px 0; text-align: right; vertical-align: middle; }
+.ec-feedback { display: flex; gap: 8px; align-items: flex-start; border-radius: 0; padding: 10px 16px; font-size: 12px; margin: 0; border-top: 1px solid transparent; }
+.ec-feedback.ok   { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+.ec-feedback.err  { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+.ec-feedback.warn { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.ec-dv-actions { padding: 14px 20px; display: flex; align-items: center; gap: 8px; border-top: 1px solid #f3f4f6; flex-wrap: wrap; }
+.ec-btn-primary   { display: inline-flex; align-items: center; gap: 6px; background: #15803d; color: #fff; border: none; border-radius: 6px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.ec-btn-primary:hover:not(:disabled) { background: #166534; }
+.ec-btn-primary:disabled { background: #d1d5db; color: #9ca3af; cursor: not-allowed; }
+.ec-btn-secondary { display: inline-flex; align-items: center; gap: 6px; background: #fff; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.ec-btn-secondary:hover:not(:disabled) { background: #f9fafb; border-color: #9ca3af; }
+.ec-btn-secondary:disabled { color: #d1d5db; cursor: not-allowed; }
+.ec-btn-ghost { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; color: #9ca3af; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; padding: 9px 4px; transition: color 0.15s; }
+.ec-btn-ghost:hover { color: #6b7280; }
+.ec-auto-note { display: flex; gap: 10px; align-items: flex-start; background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #6b7280; line-height: 1.5; }
+.ec-done { background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; padding: 48px 32px; text-align: center; }
+.ec-done-ring { width: 64px; height: 64px; border-radius: 50%; background: #f0fdf4; border: 2px solid #bbf7d0; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.ec-done-title { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 6px; letter-spacing: -0.3px; }
+.ec-done-sub   { font-size: 13px; color: #6b7280; margin-bottom: 28px; }
+.ec-done-actions { display: flex; flex-direction: column; gap: 8px; max-width: 300px; margin: 0 auto; }
+.ec-btn-done-primary { display: flex; align-items: center; justify-content: center; gap: 7px; background: #111827; color: #fff; border: none; border-radius: 6px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.ec-btn-done-primary:hover { background: #1f2937; }
+.ec-done-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ec-copy { display: inline-flex; align-items: center; gap: 4px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 500; color: #6b7280; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
+.ec-copy:hover { background: #e5e7eb; color: #374151; }
+.ec-copy.copied { background: #dcfce7; border-color: #bbf7d0; color: #15803d; }
+@keyframes ec-spin { from { transform:rotate(0deg) } to { transform:rotate(360deg) } }
+.ec-spin { animation: ec-spin 0.8s linear infinite; }
+@keyframes ec-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.ec-pulse { animation: ec-pulse 1.4s ease-in-out infinite; }
+@keyframes ec-fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.ec-enter { animation: ec-fadein 0.25s ease; }
 `
 
 function CopyBtn({ text }) {
-  const [ok, setOk] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const copy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true); setTimeout(() => setCopied(false), 1800)
+    })
+  }
   return (
-    <button className={`ic-copy${ok ? ' ok' : ''}`}
-      onClick={() => { navigator.clipboard.writeText(text); setOk(true); setTimeout(() => setOk(false), 2000) }}>
-      {ok ? <><Check size={9}/> Copied</> : <><Copy size={9}/> Copy</>}
+    <button className={`ec-copy${copied ? ' copied' : ''}`} onClick={copy}>
+      {copied ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
     </button>
   )
 }
 
-function StepBar({ current }) {
-  const i = { form: 0, dv: 1, done: 2 }[current] ?? 0
-  const steps = ['Configure', 'Validate', 'Done']
+function ProgressBar({ current }) {
+  const steps = [{ id:'form', label:'Configure' }, { id:'dv', label:'Validate' }, { id:'done', label:'Done' }]
+  const idx = steps.findIndex(s => s.id === current)
   return (
-    <div className="ic-steps">
-      {steps.map((s, n) => {
-        const done = n < i, active = n === i
-        const state = done ? 'done' : active ? 'active' : 'future'
+    <div className="ec-progress">
+      {steps.map((s, i) => {
+        const state = i < idx ? 'done' : i === idx ? 'active' : 'idle'
         return (
-          <div key={s} style={{ display:'flex', alignItems:'center', flex: n < 2 ? 1 : 'none' }}>
-            <div className="ic-step">
-              <div className={`ic-step-circle ${state}`}>
-                {done ? <Check size={11} strokeWidth={3}/> : n + 1}
-              </div>
-              <span className={`ic-step-text ${state}`}>{s}</span>
+          <div key={s.id} style={{ display:'flex', alignItems:'center' }}>
+            <div className="ec-step-item">
+              <div className={`ec-step-num ${state}`}>{state === 'done' ? <Check size={10}/> : i + 1}</div>
+              <span className={`ec-step-label ${state}`}>{s.label}</span>
             </div>
-            {n < 2 && <div className={`ic-step-line ${n < i ? 'done' : 'future'}`}/>}
+            {i < 2 && <div className={`ec-step-sep ${i < idx ? 'done' : ''}`}/>}
           </div>
         )
       })}
@@ -400,22 +208,22 @@ const clean = v => v.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLo
 
 export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
   const { user, loading: authLoading } = useAuth()
-  const [step, setStep]   = useState('form')
+  const [step, setStep]       = useState('form')
   const [product, setProduct] = useState('rapidssl')
-  const [domain, setD]    = useState('')
-  const [years, setYears] = useState(1)
-  const [fn, setFn]       = useState('')
-  const [ln, setLn]       = useState('')
-  const [ph, setPh]       = useState('')
-  const [em, setEm]       = useState('')
-  const [busy, setBusy]   = useState(false)
-  const [err, setErr]     = useState('')
-  const [ord, setOrd]     = useState(null)
-  const [chk, setChk]     = useState(false)
-  const [dns, setDns]     = useState(false)
-  const [res, setRes]     = useState(null)
-  const [polling, setPoll]= useState(false)
-  const [pending, setPend]= useState(null)
+  const [domain, setD]        = useState('')
+  const [years, setYears]     = useState(1)
+  const [fn, setFn]           = useState('')
+  const [ln, setLn]           = useState('')
+  const [ph, setPh]           = useState('')
+  const [em, setEm]           = useState('')
+  const [busy, setBusy]       = useState(false)
+  const [err, setErr]         = useState('')
+  const [ord, setOrd]         = useState(null)
+  const [chk, setChk]         = useState(false)
+  const [dns, setDns]         = useState(false)
+  const [res, setRes]         = useState(null)
+  const [polling, setPoll]    = useState(false)
+  const [pending, setPend]    = useState(null)
 
   useEffect(() => {
     const p = sessionStorage.getItem('prefill_domain')
@@ -457,7 +265,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
 
   const place = async () => {
     const d = clean(domain)
-    if (!d)     { setErr('Enter a domain name'); return }
+    if (!d)         { setErr('Enter a domain name'); return }
     if (!fn.trim()) { setErr('First name required'); return }
     if (!ln.trim()) { setErr('Last name required'); return }
     if (!em.trim()) { setErr('Email required'); return }
@@ -511,337 +319,295 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
   if (!user) return (
     <>
       <style>{STYLES}</style>
-      <div className="ic-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'70vh' }}>
-        <div className="ic-fade" style={{ textAlign:'center', padding:24, maxWidth:300 }}>
-          <div style={{ width:56, height:56, background:'#0a0a0a', borderRadius:14, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', boxShadow:'0 8px 28px rgba(0,0,0,0.18)' }}>
-            <Shield size={26} color="white"/>
+      <div className="ec-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'70vh' }}>
+        <div className="ec-enter" style={{ textAlign:'center', padding:32, maxWidth:320 }}>
+          <div style={{ width:52, height:52, background:'#1a56db', borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
+            <Shield size={24} color="white"/>
           </div>
-          <div style={{ fontSize:19, fontWeight:800, color:'#0a0a0a', letterSpacing:'-0.4px', marginBottom:8 }}>Sign in to continue</div>
-          <div style={{ fontSize:13, color:'#64748b', lineHeight:1.7, marginBottom:24 }}>SSLVault manages all your certificates, auto-renewal, and server deployment.</div>
-          <button className="ic-btn ic-btn-primary" onClick={() => nav('/auth')}><Lock size={14}/> Sign in to SSLVault</button>
+          <div style={{ fontSize:18, fontWeight:700, color:'#111827', letterSpacing:'-0.3px', marginBottom:8 }}>Sign in to continue</div>
+          <div style={{ fontSize:13, color:'#6b7280', lineHeight:1.7, marginBottom:24 }}>SSLVault manages your certificates, auto-renewal, and server deployment.</div>
+          <button className="ec-btn-issue" style={{ borderRadius:6 }} onClick={() => nav('/auth')}>
+            <Lock size={14}/> Sign in to SSLVault
+          </button>
         </div>
       </div>
     </>
   )
 
+  const prod = PRODUCTS.find(p => p.code === product) || PRODUCTS[0]
   const price = years === 1 ? 19 : 34
 
   return (
     <>
       <style>{STYLES}</style>
-      <div className="ic-root">
+      <div className="ec-root">
 
-        {/* HEADER */}
-        <div className="ic-header">
-          <div className="ic-header-left">
-            <div className="ic-logo"><Shield size={18} color="#10b981"/></div>
-            <div>
-              <div className="ic-hero-title">Issue SSL Certificate</div>
-              <div className="ic-hero-sub">RapidSSL DV · TheSSLStore · DigiCert Trust Network</div>
-            </div>
+        {/* TOP BAR */}
+        <div className="ec-topbar">
+          <div className="ec-topbar-left">
+            <div className="ec-topbar-icon"><Shield size={14} color="white"/></div>
+            <span className="ec-topbar-title">Issue SSL Certificate</span>
           </div>
-          <div className="ic-hero-badges">
-            <span className="ic-badge ic-badge-green"><CheckCircle size={10}/> DigiCert chain</span>
-            <span className="ic-badge">~5 min issuance</span>
-            <span className="ic-badge">Auto-renewal</span>
-            <span className="ic-badge">99.9% browser trust</span>
-            {IS_SANDBOX && <span className="ic-sandbox-pill">Sandbox</span>}
+          <div className="ec-topbar-right">
+            <span className="ec-chip ec-chip-green"><CheckCircle size={10}/> DigiCert chain</span>
+            <span className="ec-chip"><Clock size={10}/> ~5 min issuance</span>
+            <span className="ec-chip"><RotateCcw size={10}/> Auto-renewal</span>
+            <span className="ec-chip"><ShieldCheck size={10}/> 99.9% browser trust</span>
+            {IS_SANDBOX && <span className="ec-sandbox-tag">Sandbox</span>}
           </div>
         </div>
 
-        {/* STEP BAR */}
-        <StepBar current={step}/>
+        {/* PROGRESS */}
+        <ProgressBar current={step}/>
 
-        {/* BODY */}
-        {step === 'form' ? (
-          <div className="ic-body">
-            {/* LEFT — form */}
-            <div className="ic-enter">
+        {/* FORM STEP */}
+        {step === 'form' && (
+          <div className="ec-body ec-enter">
+            <div>
               {pending && (
-                <div className="ic-pending">
-                  <div className="ic-pending-text">
-                    <div className="ic-pending-title">Pending order — <span style={{ fontFamily:'monospace' }}>{pending.domain}</span></div>
-                    <div className="ic-pending-sub">DNS validation in progress · #{pending.tss_order_id}</div>
+                <div className="ec-pending">
+                  <div className="ec-pending-info">
+                    <div className="ec-pending-title">Pending order — <span style={{ fontFamily:'DM Mono,monospace' }}>{pending.domain}</span></div>
+                    <div className="ec-pending-sub">DNS validation in progress · #{pending.tss_order_id}</div>
                   </div>
-                  <button className="ic-btn ic-btn-green" style={{ padding:'8px 14px', fontSize:11, flexShrink:0 }} onClick={resume}>Resume →</button>
-                  <button onClick={() => setPend(null)} style={{ background:'none', border:'none', color:'#b45309', cursor:'pointer', fontSize:20, padding:'0 2px', lineHeight:1, flexShrink:0 }}>×</button>
+                  <button className="ec-btn-primary" style={{ padding:'7px 12px', fontSize:11 }} onClick={resume}>Resume <ArrowRight size={11}/></button>
+                  <button onClick={() => setPend(null)} style={{ background:'none', border:'none', color:'#b45309', cursor:'pointer', fontSize:18, padding:'0 2px', lineHeight:1 }}>×</button>
                 </div>
               )}
 
-              {/* Product selector */}
-              <div className="ic-card" style={{ marginBottom:12 }}>
-                <div className="ic-card-head">
-                  <span className="ic-section-label">Certificate type</span>
-                  <span style={{ fontSize:10, color:'#10b981', fontWeight:500 }}>Sandbox · All products available</span>
+              <div className="ec-section">
+                <div className="ec-section-head">
+                  <span className="ec-section-title">Certificate Type</span>
+                  {IS_SANDBOX && <span className="ec-section-meta">Sandbox · All products available</span>}
                 </div>
-                <div className="ic-card-body" style={{ padding:'10px 14px' }}>
+                <div className="ec-section-body">
                   {PRODUCTS.map(p => (
-                    <button key={p.code} onClick={() => p.available && setProduct(p.code)} style={{
-                      display:'flex', alignItems:'flex-start', gap:12, width:'100%',
-                      padding:'10px 12px', marginBottom:6, borderRadius:7,
-                      cursor: p.available ? 'pointer' : 'not-allowed',
-                      border: product === p.code ? '1.5px solid #10b981' : '0.5px solid #e8edf2',
-                      background: !p.available ? '#fafafa' : product === p.code ? '#f0fdf4' : 'white',
-                      textAlign:'left', fontFamily:'inherit', transition:'all 0.12s',
-                      opacity: p.available ? 1 : 0.55
-                    }}>
-                      <div style={{ fontSize:20, flexShrink:0, marginTop:1 }}>{p.icon}</div>
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2, flexWrap:'wrap' }}>
-                          <span style={{ fontSize:12, fontWeight:600, color:'#0a0a0a' }}>{p.name}</span>
-                          <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:4,
-                            background: p.type==='EV'?'#fef3c7':p.type==='OV'?'#eff6ff':p.type==='Wildcard'?'#fdf4ff':'#f0fdf4',
-                            color: p.type==='EV'?'#92400e':p.type==='OV'?'#1e40af':p.type==='Wildcard'?'#7e22ce':'#065f46'
-                          }}>{p.type}</span>
-                          {p.popular && p.available && <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:4, background:'#fff7ed', color:'#c2410c' }}>Popular</span>}
-                          {!p.available && <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:4, background:'#f1f5f9', color:'#64748b' }}>Coming Soon</span>}
+                    <div key={p.code}
+                      className={`ec-product-card${product === p.code ? ' selected' : ''}`}
+                      onClick={() => p.available && setProduct(p.code)}
+                      style={{ cursor: p.available ? 'pointer' : 'not-allowed', opacity: p.available ? 1 : 0.5 }}>
+                      <div className="ec-product-check">
+                        {product === p.code && <Check size={9} color="white"/>}
+                      </div>
+                      <div className="ec-product-info">
+                        <div className="ec-product-name">
+                          {p.name}
+                          <span className={`ec-type-badge ec-${p.type.toLowerCase()}`}>{p.type}</span>
+                          {!p.available && <span className="ec-type-badge" style={{ background:'#f3f4f6', color:'#9ca3af' }}>Soon</span>}
                         </div>
-                        <div style={{ fontSize:11, color:'#737373', lineHeight:1.5 }}>{p.desc}</div>
+                        <div className="ec-product-desc">{p.desc}</div>
+                        <div className="ec-product-attrs">
+                          <span className="ec-attr"><ShieldCheck size={10}/>{p.trust}</span>
+                          <span className="ec-attr"><Terminal size={10}/>{p.algo}</span>
+                          <span className="ec-attr"><Clock size={10}/>{p.issuance}</span>
+                        </div>
                       </div>
-                      <div style={{ flexShrink:0, textAlign:'right' }}>
-                        <div style={{ fontSize:13, fontWeight:700, color: product===p.code?'#10b981':'#0a0a0a' }}>€{p.price}</div>
-                        <div style={{ fontSize:9, color:'#a3a3a3' }}>/year</div>
+                      <div className="ec-product-price">
+                        <div className="ec-price-big">€{p.price}</div>
+                        <div className="ec-price-yr">/year</div>
                       </div>
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>
 
-              {/* Domain */}
-              <div className="ic-card" style={{ marginBottom:12 }}>
-                <div className="ic-card-head">
-                  <span className="ic-section-label">
-                    {PRODUCTS.find(p=>p.code===product)?.wildcard ? 'Wildcard domain (*.yourdomain.com)' : 'Domain name'}
-                  </span>
+              <div className="ec-section">
+                <div className="ec-section-head">
+                  <span className="ec-section-title">Domain Name</span>
                 </div>
-                <div className="ic-card-body">
-                  <div className="ic-domain-wrap">
-                    <Globe size={15} className="ic-domain-icon"/>
-                    <input className="ic-domain-input" style={{ height:40, fontSize:14 }} placeholder="yourdomain.com"
-                      value={domain} onChange={e => setD(e.target.value)}/>
+                <div className="ec-section-body">
+                  <div className="ec-field">
+                    <label className="ec-label">Common Name (CN) <span className="ec-label-req">*</span></label>
+                    <div className="ec-domain-wrap">
+                      <Globe size={14} className="ec-domain-icon"/>
+                      <input className="ec-input ec-input-domain" placeholder="yourdomain.com"
+                        value={domain} onChange={e => setD(e.target.value)}/>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Contact */}
-              <div className="ic-card">
-                <div className="ic-card-head">
-                  <span className="ic-section-label">Contact details</span>
-                  <span style={{ fontSize:10, color:'#cbd5e1' }}>Required by TSS</span>
+              <div className="ec-section">
+                <div className="ec-section-head">
+                  <span className="ec-section-title">Requester Details</span>
+                  <span className="ec-section-meta">Required by TheSSLStore</span>
                 </div>
-                <div className="ic-card-body">
-                  <div className="ic-row2">
-                    <div className="ic-field">
-                      <label className="ic-label">First name</label>
-                      <input className="ic-input" placeholder="John" value={fn} onChange={e => setFn(e.target.value)}/>
+                <div className="ec-section-body">
+                  <div className="ec-row2">
+                    <div className="ec-field">
+                      <label className="ec-label">First Name <span className="ec-label-req">*</span></label>
+                      <input className="ec-input" placeholder="John" value={fn} onChange={e => setFn(e.target.value)}/>
                     </div>
-                    <div className="ic-field">
-                      <label className="ic-label">Last name</label>
-                      <input className="ic-input" placeholder="Smith" value={ln} onChange={e => setLn(e.target.value)}/>
+                    <div className="ec-field">
+                      <label className="ec-label">Last Name <span className="ec-label-req">*</span></label>
+                      <input className="ec-input" placeholder="Smith" value={ln} onChange={e => setLn(e.target.value)}/>
                     </div>
                   </div>
-                  <div className="ic-field">
-                    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:5 }}>
-                      <label className="ic-label" style={{ margin:0 }}>Email</label>
-                      <span style={{ fontSize:10, color:'#94a3b8' }}>cert delivery</span>
-                    </div>
-                    <input className="ic-input" type="email" placeholder="you@example.com" value={em} onChange={e => setEm(e.target.value)}/>
+                  <div className="ec-field">
+                    <label className="ec-label" style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                      <span>Email Address <span className="ec-label-req">*</span></span>
+                      <span style={{ fontSize:10, color:'#9ca3af', fontWeight:400 }}>Certificate delivery</span>
+                    </label>
+                    <input className="ec-input" type="email" placeholder="you@example.com" value={em} onChange={e => setEm(e.target.value)}/>
                   </div>
-                  <div className="ic-field">
-                    <label className="ic-label">Phone</label>
-                    <input className="ic-input" placeholder="+1 415 555 0100" value={ph} onChange={e => setPh(e.target.value)}/>
+                  <div className="ec-field">
+                    <label className="ec-label">Phone <span className="ec-label-req">*</span></label>
+                    <input className="ec-input" placeholder="+1 415 555 0100" value={ph} onChange={e => setPh(e.target.value)}/>
                   </div>
-                  <div className="ic-field">
-                    <label className="ic-label">Validity period</label>
-                    <div className="ic-validity">
+                  <div className="ec-field">
+                    <label className="ec-label">Validity Period</label>
+                    <div className="ec-validity">
                       {[{y:1,p:19},{y:2,p:34}].map(({y,p}) => (
-                        <button key={y} className={`ic-val-btn${years===y?' sel':''}`} onClick={() => setYears(y)}>
-                          <div className="ic-val-yr">{y} year{y>1?'s':''}</div>
-                          <div className="ic-val-pr">€{p} / year</div>
+                        <button key={y} className={`ec-val-opt${years===y?' sel':''}`} onClick={() => setYears(y)}>
+                          <div className="ec-val-yr">{y} year{y>1?'s':''}</div>
+                          <div className="ec-val-pr">€{p} / year</div>
                         </button>
                       ))}
                     </div>
                   </div>
                 </div>
               </div>
-              {err && <div className="ic-error"><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{err}</div>}
+
+              {err && <div className="ec-error"><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{err}</div>}
             </div>
 
-            {/* RIGHT — order summary */}
+            {/* SUMMARY */}
             <div>
-              <div className="ic-summary">
-                <div className="ic-summary-rows">
-                  <div className="ic-sum-row"><span>Certificate</span><span>{PRODUCTS.find(p=>p.code===product)?.name || 'RapidSSL DV'}</span></div>
-                  <div className="ic-sum-row"><span>Type</span><span>{PRODUCTS.find(p=>p.code===product)?.type || 'DV'}</span></div>
-                  <div className="ic-sum-row"><span>Validity</span><span>{years} year{years>1?'s':''}</span></div>
-                  <div className="ic-sum-row"><span>Issuance</span><span>{PRODUCTS.find(p=>p.code===product)?.type==='DV'?'~5 minutes':'1–3 days'}</span></div>
-                  <div className="ic-sum-row em"><span>Auto-renewal</span><span>Included</span></div>
-                  <div className="ic-sum-row"><span>{PRODUCTS.find(p=>p.code===product)?.name}</span><span>€{PRODUCTS.find(p=>p.code===product)?.price || 19}</span></div>
-                  <div className="ic-sum-row em"><span>CLM management</span><span>Free</span></div>
+              <div className="ec-summary">
+                <div className="ec-summary-head">
+                  <div className="ec-summary-title">Order Summary</div>
+                  <div className="ec-sum-row"><span className="ec-sum-key">Certificate</span><span className="ec-sum-val">{prod.name}</span></div>
+                  <div className="ec-sum-row"><span className="ec-sum-key">Type</span><span className="ec-sum-val">{prod.type}</span></div>
+                  <div className="ec-sum-row"><span className="ec-sum-key">Validity</span><span className="ec-sum-val">{years} year{years>1?'s':''}</span></div>
+                  <div className="ec-sum-row"><span className="ec-sum-key">Issuance</span><span className="ec-sum-val">{prod.issuance}</span></div>
+                  <div className="ec-sum-row"><span className="ec-sum-key">Auto-renewal</span><span className="ec-sum-val green">Included</span></div>
+                  <div className="ec-sum-row"><span className="ec-sum-key">{prod.name}</span><span className="ec-sum-val">€{prod.price}</span></div>
+                  <div className="ec-sum-row"><span className="ec-sum-key">CLM management</span><span className="ec-sum-val blue">Free</span></div>
                 </div>
-                <div className="ic-sum-foot">
-                  <div>
-                    <div className="ic-price-label">Total today</div>
-                    <div className="ic-price-val">€{PRODUCTS.find(p=>p.code===product)?.price || 19}</div>
-                    <div className="ic-price-note">Demo mode · no payment required</div>
-                  </div>
-                  <button className="ic-btn ic-btn-green ic-btn-full" onClick={place} disabled={busy}>
+                <div className="ec-summary-price">
+                  <div className="ec-price-label">Total today</div>
+                  <div className="ec-price-amount">€{price}</div>
+                  <div className="ec-price-note">{IS_SANDBOX ? 'Demo mode · no payment required' : 'Billed immediately'}</div>
+                </div>
+                <div className="ec-summary-cta">
+                  <button className="ec-btn-issue" onClick={place} disabled={busy}>
                     {busy
-                      ? <><RefreshCw size={14} className="ic-spin"/> Placing order…</>
+                      ? <><RefreshCw size={14} className="ec-spin"/> Placing order…</>
                       : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
                   </button>
                 </div>
-                <div className="ic-trust" style={{ justifyContent:'flex-start', flexDirection:'column', gap:8, padding:'12px 16px' }}>
-                  {[<><Lock size={11}/> DigiCert trust chain</>, <><Zap size={11}/> Auto-renews before expiry</>, <><Globe size={11}/> 99.9% browser compatibility</>].map((t, i) => (
-                    <span key={i} className="ic-trust-item" style={{ color:'#10b981' }}>{t}</span>
-                  ))}
+                <div className="ec-trust-list">
+                  <div className="ec-trust-item"><Lock size={11}/> DigiCert trust chain</div>
+                  <div className="ec-trust-item"><Zap size={11}/> Auto-renews before expiry</div>
+                  <div className="ec-trust-item"><Globe size={11}/> 99.9% browser compatibility</div>
                 </div>
               </div>
             </div>
           </div>
-        ) : (
-          <div className="ic-body-full ic-enter">
-
-          {/* ── DNS VALIDATION ────────────────────────────── */}
-          {step === 'dv' && ord && (
-            <div className="ic-enter">
-              <div className="ic-card">
-                <div className="ic-dv-head">
-                  <div className="ic-dv-icon"><Globe size={17} color="#d97706"/></div>
-                  <div style={{ flex:1 }}>
-                    <div className="ic-dv-title">Verify domain ownership</div>
-                    <div className="ic-dv-sub">
-                      {ord.dv_type === 'CNAME'
-                        ? <>Add this <strong>CNAME record</strong> to prove you control <strong style={{ fontFamily:'monospace' }}>{domain}</strong></>
-                        : <>Add this <strong>TXT record</strong> to prove you control <strong style={{ fontFamily:'monospace' }}>{domain}</strong></>
-                      }
-                    </div>
-                  </div>
-                  <div className="ic-order-no">#{ord.tss_order_id || '—'}</div>
-                </div>
-
-                <div className="ic-terminal">
-                  <div className="ic-term-head">
-                    <span className="ic-dot" style={{ background:'#ff5f56' }}/>
-                    <span className="ic-dot" style={{ background:'#ffbd2e' }}/>
-                    <span className="ic-dot" style={{ background:'#27c93f' }}/>
-                    <span className="ic-term-name">
-                      {ord.dv_type === 'CNAME' ? `DNS CNAME · ${domain}` : `DNS TXT · ${domain}`}
-                    </span>
-                  </div>
-                  {ord.dv_type === 'CNAME' ? [
-                    { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy: true },
-                    { k:'Type',  v: 'CNAME', green: true },
-                    { k:'Value', v: ord.cname_value || ord.txt_value || null, copy: true, loading: !(ord.cname_value || ord.txt_value) },
-                    { k:'TTL',   v: '300' },
-                  ] : [
-                    { k:'Name',  v: ord.txt_name || domain, copy: true },
-                    { k:'Type',  v: 'TXT', green: true },
-                    { k:'Value', v: ord.txt_value || null, copy: true, loading: !ord.txt_value },
-                    { k:'TTL',   v: '300' },
-                  ].map(({ k, v, copy, green, loading }) => (
-                    <div className="ic-dns-row" key={k}>
-                      <span className="ic-dns-key">{k}</span>
-                      <span className={`ic-dns-val${green ? ' green' : loading ? ' dim' : ''}`}>
-                        {loading
-                          ? <><RefreshCw size={11} className="ic-pulse" style={{ color:'#484f58', flexShrink:0 }}/><span>{polling ? 'Fetching from TSS…' : 'Click Auto-Add DNS'}</span></>
-                          : v}
-                      </span>
-                      {copy && v && !loading && <CopyBtn text={v}/>}
-                    </div>
-                  ))}
-                  {/* Render CNAME rows separately if dv_type is CNAME */}
-                  {ord.dv_type === 'CNAME' && [
-                    { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy: true },
-                    { k:'Type',  v: 'CNAME', green: true },
-                    { k:'Value', v: ord.cname_value || ord.txt_value || null, copy: true, loading: !(ord.cname_value || ord.txt_value) },
-                    { k:'TTL',   v: '300' },
-                  ].map(({ k, v, copy, green, loading }) => (
-                    <div className="ic-dns-row" key={k}>
-                      <span className="ic-dns-key">{k}</span>
-                      <span className={`ic-dns-val${green ? ' green' : loading ? ' dim' : ''}`}>
-                        {loading
-                          ? <><RefreshCw size={11} className="ic-pulse" style={{ color:'#484f58', flexShrink:0 }}/><span>{polling ? 'Fetching from TSS…' : 'Click Auto-Add DNS'}</span></>
-                          : v}
-                      </span>
-                      {copy && v && !loading && <CopyBtn text={v}/>}
-                    </div>
-                  ))}
-                </div>
-
-                {res?.dns_auto && (
-                  <div className={`ic-feedback ${res.dns_auto.ok ? 'ok' : 'err'}`}>
-                    {res.dns_auto.ok
-                      ? <><Check size={13} style={{ flexShrink:0, marginTop:1 }}/>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record added via {res.dns_auto.provider} — wait 1–2 min then click Check Status.</>
-                      : <><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{res.dns_auto.message}</>}
-                  </div>
-                )}
-                {res && res.status !== 'active' && !res.dns_auto && (
-                  <div className="ic-feedback warn">
-                    <AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>
-                    Not validated yet ({res.major_status}) — wait a few minutes and retry.
-                  </div>
-                )}
-
-                <div className="ic-dv-actions">
-                  <button className="ic-btn ic-btn-green" onClick={addDns} disabled={dns || !ord.txt_value}>
-                    {dns ? <><RefreshCw size={13} className="ic-spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS</>}
-                  </button>
-                  <button className="ic-btn ic-btn-outline" onClick={check} disabled={chk}>
-                    {chk ? <><RefreshCw size={13} className="ic-spin"/> Checking…</> : <><RefreshCw size={13}/> Check Status</>}
-                  </button>
-                  <button className="ic-btn ic-btn-ghost" onClick={reset}>← New order</button>
-                </div>
-              </div>
-
-              <div className="ic-auto-note">
-                <Zap size={14} color="#10b981" style={{ flexShrink:0, marginTop:1 }}/>
-                <span><strong style={{ color:'#0a0a0a' }}>Fully automatic:</strong> SSLVault polls TheSSLStore every 5 minutes. Once your DNS propagates, the certificate activates with no action needed.</span>
-              </div>
-            </div>
-          )}
-
-          {/* ── DONE ──────────────────────────────────────── */}
-          {step === 'done' && (
-            <div className="ic-fade">
-              <div className="ic-card">
-                <div className="ic-done-head">
-                  <div className="ic-done-ring">
-                    <CheckCircle size={34} color="#10b981" strokeWidth={2}/>
-                  </div>
-                  <div className="ic-done-title">Certificate issued!</div>
-                  <div className="ic-done-sub">
-                    <span style={{ fontFamily:'monospace', fontWeight:700, color:'#0a0a0a' }}>{clean(domain)}</span>
-                    {' '}is now secured · Auto-renewal active
-                  </div>
-                </div>
-                <div className="ic-done-body">
-                  <button className="ic-btn ic-btn-primary ic-btn-full"
-                    onClick={() => {
-                      sessionStorage.setItem('install_domain', clean(domain))
-                      if (onDashboard) onDashboard()
-                      else nav('/dashboard')
-                    }}>
-                    <Server size={15}/> Install on server
-                  </button>
-                  <div className="ic-row2-btn">
-                    <button className="ic-btn ic-btn-outline"
-                      onClick={() => { if (onDashboard) onDashboard(); else nav('/dashboard') }}>
-                      View dashboard
-                    </button>
-                    <button className="ic-btn ic-btn-outline"
-                      onClick={() => { if (onIssueAnother) { reset(); onIssueAnother() } else reset() }}
-                      style={{ color:'#64748b' }}>
-                      Issue another
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-        </div>
         )}
+
+        {/* DV STEP */}
+        {step === 'dv' && ord && (
+          <div className="ec-body-full ec-enter">
+            <div className="ec-dv-header">
+              <div className="ec-dv-icon-wrap"><Globe size={17} color="#d97706"/></div>
+              <div style={{ flex:1 }}>
+                <div className="ec-dv-title">Verify Domain Ownership</div>
+                <div className="ec-dv-sub">
+                  Add this <strong>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record</strong> to prove you control{' '}
+                  <strong style={{ fontFamily:'DM Mono,monospace', color:'#111827' }}>{domain || ord.txt_name}</strong>
+                </div>
+              </div>
+              <div className="ec-order-badge">#{ord.tss_order_id || '—'}</div>
+            </div>
+
+            <div className="ec-dns-panel">
+              <div className="ec-dns-panel-head">
+                <span className="ec-dns-dot" style={{ background:'#ff5f56' }}/>
+                <span className="ec-dns-dot" style={{ background:'#ffbd2e' }}/>
+                <span className="ec-dns-dot" style={{ background:'#27c93f' }}/>
+                <span className="ec-dns-panel-name">DNS {ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} · {domain || ord.txt_name}</span>
+              </div>
+              <table className="ec-dns-table">
+                {(ord.dv_type === 'CNAME' ? [
+                  { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy:true },
+                  { k:'Type',  v: 'CNAME', green:true },
+                  { k:'Value', v: ord.cname_value || ord.txt_value || null, copy:true, loading:!(ord.cname_value||ord.txt_value) },
+                  { k:'TTL',   v: '300' },
+                ] : [
+                  { k:'Name',  v: ord.txt_name || domain, copy:true },
+                  { k:'Type',  v: 'TXT', green:true },
+                  { k:'Value', v: ord.txt_value || null, copy:true, loading:!ord.txt_value },
+                  { k:'TTL',   v: '300' },
+                ]).map(({ k, v, copy, green, loading }) => (
+                  <tr className="ec-dns-tr" key={k}>
+                    <td className="ec-dns-key">{k}</td>
+                    <td className={`ec-dns-val${green ? ' green' : loading ? ' dim' : ''}`}>
+                      {loading
+                        ? <><RefreshCw size={11} className="ec-pulse" style={{ flexShrink:0 }}/><span>{polling ? 'Fetching from TSS…' : 'Click Auto-Add DNS'}</span></>
+                        : v}
+                    </td>
+                    <td className="ec-dns-copy">{copy && v && !loading && <CopyBtn text={v}/>}</td>
+                  </tr>
+                ))}
+              </table>
+
+              {res?.dns_auto && (
+                <div className={`ec-feedback ${res.dns_auto.ok ? 'ok' : 'err'}`}>
+                  {res.dns_auto.ok
+                    ? <><Check size={13} style={{ flexShrink:0 }}/>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record added via {res.dns_auto.provider} — wait 1–2 min then click Check Status.</>
+                    : <><AlertTriangle size={13} style={{ flexShrink:0 }}/>{res.dns_auto.message}</>}
+                </div>
+              )}
+              {res && res.status !== 'active' && !res.dns_auto && (
+                <div className="ec-feedback warn">
+                  <AlertTriangle size={13} style={{ flexShrink:0 }}/>
+                  Not validated yet ({res.major_status}) — wait a few minutes and retry.
+                </div>
+              )}
+
+              <div className="ec-dv-actions">
+                <button className="ec-btn-primary" onClick={addDns} disabled={dns || !ord.txt_value}>
+                  {dns ? <><RefreshCw size={13} className="ec-spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS</>}
+                </button>
+                <button className="ec-btn-secondary" onClick={check} disabled={chk}>
+                  {chk ? <><RefreshCw size={13} className="ec-spin"/> Checking…</> : <><RefreshCw size={13}/> Check Status</>}
+                </button>
+                <button className="ec-btn-ghost" onClick={reset}>← New order</button>
+              </div>
+            </div>
+
+            <div className="ec-auto-note">
+              <Zap size={14} color="#10b981" style={{ flexShrink:0, marginTop:1 }}/>
+              <span><strong style={{ color:'#111827' }}>Fully automatic:</strong> SSLVault polls TheSSLStore every 5 minutes. Once your DNS propagates, the certificate activates with no action needed.</span>
+            </div>
+          </div>
+        )}
+
+        {/* DONE STEP */}
+        {step === 'done' && (
+          <div className="ec-body-full ec-enter">
+            <div className="ec-done">
+              <div className="ec-done-ring"><CheckCircle size={32} color="#15803d" strokeWidth={2}/></div>
+              <div className="ec-done-title">Certificate Issued</div>
+              <div className="ec-done-sub">
+                <strong style={{ fontFamily:'DM Mono,monospace', color:'#111827' }}>{clean(domain)}</strong>
+                {' '}is now secured · Auto-renewal active
+              </div>
+              <div className="ec-done-actions">
+                <button className="ec-btn-done-primary"
+                  onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}>
+                  <Server size={15}/> Install on Server
+                </button>
+                <div className="ec-done-row2">
+                  <button className="ec-btn-secondary" onClick={() => { if (onDashboard) onDashboard(); else nav('/dashboard') }}>View Dashboard</button>
+                  <button className="ec-btn-secondary" onClick={() => { if (onIssueAnother) { reset(); onIssueAnother() } else reset() }}>Issue Another</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </>
   )
