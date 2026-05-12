@@ -85,7 +85,7 @@ export default function CLMHome({ user, nav }) {
       {/* SLIM TOP BAR */}
       <div style={{ background:'#0d3c6e', height:44, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', flexShrink:0, position:'sticky', top:0, zIndex:50 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <div style={{ width:26, height:26, borderRadius:6, background:'#10b981', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+          <div style={{ width:26, height:26, borderRadius:6, background:'#1a56db', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <Shield size={13} color="white" strokeWidth={2.5}/>
           </div>
           <span style={{ fontSize:13, fontWeight:700, color:'white' }}>SSLVault</span>

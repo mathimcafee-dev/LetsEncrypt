@@ -377,7 +377,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                     <div key={k} style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline',
                       fontSize:12, marginBottom:7, gap:8 }}>
                       <span style={{ color:'#6b7280', flexShrink:0 }}>{k}</span>
-                      <span style={{ fontWeight:500, color: green?'#34d399' : blue?'#60a5fa' : '#e5e7eb',
+                      <span style={{ fontWeight:500, color: green?'#3b82f6' : blue?'#60a5fa' : '#e5e7eb',
                         textAlign:'right' }}>{v}</span>
                     </div>
                   ))}
@@ -409,7 +409,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                   ].map((t, i) => (
                     <div key={i} style={{ display:'flex', alignItems:'center', gap:8,
                       fontSize:11, color:'#6b7280' }}>
-                      <span style={{ color:'#34d399' }}>{t.icon}</span>
+                      <span style={{ color:'#3b82f6' }}>{t.icon}</span>
                       {t.text}
                     </div>
                   ))}
@@ -451,7 +451,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
             <div style={{ background:'#111827', padding:'10px 16px', display:'flex', alignItems:'center', gap:6 }}>
               <span style={{ width:10, height:10, borderRadius:'50%', background:'#ff5f56', display:'inline-block' }}/>
               <span style={{ width:10, height:10, borderRadius:'50%', background:'#ffbd2e', display:'inline-block' }}/>
-              <span style={{ width:10, height:10, borderRadius:'50%', background:'#27c93f', display:'inline-block' }}/>
+              <span style={{ width:10, height:10, borderRadius:'50%', background:'#1a56db', display:'inline-block' }}/>
               <span style={{ fontSize:11, color:'#9ca3af', fontFamily:'var(--v2-font-mono)', marginLeft:6 }}>
                 DNS {ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} · {domain || ord.txt_name}
               </span>

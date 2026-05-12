@@ -192,7 +192,7 @@ export default function About({ nav }) {
                 <div className="v2-code-dots">
                   <span style={{ background:'#ef4444' }} />
                   <span style={{ background:'#f59e0b' }} />
-                  <span style={{ background:'#10b981' }} />
+                  <span style={{ background:'#1a56db' }} />
                 </div>
                 <span style={{ fontSize:11, color:'#737373', fontFamily:'monospace' }}>stack.json</span>
               </div>
@@ -200,10 +200,10 @@ export default function About({ nav }) {
             </div>
             <div style={{ padding:'20px 24px', display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
               {[
-                { label:"Let's Encrypt", sub:'Certificate Authority',  color:'#34d399' },
+                { label:"Let's Encrypt", sub:'Certificate Authority',  color:'#3b82f6' },
                 { label:'ACME RFC 8555', sub:'Issuance Protocol',      color:'#60a5fa' },
                 { label:'React + Vite',  sub:'Frontend',               color:'#a78bfa' },
-                { label:'Supabase',      sub:'Backend & Database',     color:'#34d399' },
+                { label:'Supabase',      sub:'Backend & Database',     color:'#3b82f6' },
                 { label:'Vercel Edge',   sub:'Global Hosting',         color:'#60a5fa' },
                 { label:'systemd + bash',sub:'VPS Agent Daemon',       color:'#f59e0b' },
               ].map(({ label, sub, color }) => (

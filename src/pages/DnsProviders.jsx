@@ -101,7 +101,7 @@ function Sparkline({ status = 'green' }) {
     status === 'green' ? '0,16 8,12 16,14 24,9 32,11 40,6 48,8 56,4 64,5'
   : status === 'amber' ? '0,8 8,9 16,7 24,10 32,12 40,16 48,18 56,18 64,18'
   : '0,12 8,12 16,12 24,12 32,12 40,12 48,12 56,12 64,12'
-  const stroke = status === 'green' ? '#10b981' : status === 'amber' ? '#f59e0b' : '#d4d4d4'
+  const stroke = status === 'green' ? '#1a56db' : status === 'amber' ? '#f59e0b' : '#d4d4d4'
   return (
     <svg width="64" height="22" viewBox="0 0 64 22" style={{ flexShrink: 0 }}>
       <polyline points={points} fill="none" stroke={stroke} strokeWidth="1.4"
@@ -194,9 +194,9 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
           <span style={{
             fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
             textTransform: 'uppercase', letterSpacing: '0.3px',
-            background: hasBoth ? '#eff6ff' : dnsOnly ? '#f0fdf4' : '#fafafa',
+            background: hasBoth ? '#eff6ff' : dnsOnly ? '#eff6ff' : '#fafafa',
             color: hasBoth ? '#1d4ed8' : dnsOnly ? '#15803d' : '#6b7280',
-            border: hasBoth ? '0.5px solid #bfdbfe' : dnsOnly ? '0.5px solid #bbf7d0' : '0.5px solid #e5e7eb',
+            border: hasBoth ? '0.5px solid #bfdbfe' : dnsOnly ? '0.5px solid #bfdbfe' : '0.5px solid #e5e7eb',
           }}>
             {hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'}
           </span>
@@ -219,7 +219,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
               {t?.short}
               {agent && (
                 <span style={{ width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
-                  background: agentActive ? '#10b981' : '#d1d5db',
+                  background: agentActive ? '#1a56db' : '#d1d5db',
                   display: 'inline-block', marginLeft: 2 }}/>
               )}
             </span>
@@ -1076,7 +1076,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                       <div key={opt.id} onClick={() => setInstallMode(opt.id)}
                         style={{ padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
                           border: installMode === opt.id ? `1.5px solid ${opt.color}` : '1px solid var(--v2-border)',
-                          background: installMode === opt.id ? (opt.id === 'ssh_push' ? '#f0fdf4' : 'var(--v2-accent-bg)') : 'var(--v2-surface)' }}>
+                          background: installMode === opt.id ? (opt.id === 'ssh_push' ? '#eff6ff' : 'var(--v2-accent-bg)') : 'var(--v2-surface)' }}>
                         <div style={{ fontWeight: 700, fontSize: 11, marginBottom: 3,
                           color: installMode === opt.id ? opt.color : 'var(--v2-text)' }}>
                           {opt.title}
@@ -1176,7 +1176,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 border: '0.5px solid var(--v2-green-border)', display: 'inline-flex',
                 alignItems: 'center', justifyContent: 'center', marginBottom: 12
               }}>
-                <Check size={22} strokeWidth={2.2} color="#065f46" />
+                <Check size={22} strokeWidth={2.2} color="#1e3a8a" />
               </div>
               <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>Agent registered</div>
               <div style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>{server.nickname} is now fully automated</div>
@@ -1209,11 +1209,11 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                     <div style={{ display: 'flex', gap: 5 }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#ef4444' }} />
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f59e0b' }} />
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#10b981' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#1a56db' }} />
                     </div>
                     <button onClick={copy} style={{
                       background: 'transparent', border: 'none', cursor: 'pointer',
-                      color: copied ? '#34d399' : '#a3a3a3', fontSize: 11, fontWeight: 500,
+                      color: copied ? '#3b82f6' : '#a3a3a3', fontSize: 11, fontWeight: 500,
                       display: 'inline-flex', alignItems: 'center', gap: 4
                     }}>
                       {copied ? <><Check size={11} /> Copied</> : 'Copy'}

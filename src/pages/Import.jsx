@@ -188,7 +188,7 @@ export default function Import({ nav }) {
                   <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 }}>
                     <div style={{ width: 28, height: 28, borderRadius: 6, background: '#1f2937',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                      color: '#34d399' }}>
+                      color: '#3b82f6' }}>
                       {icon}
                     </div>
                     <div>
@@ -212,7 +212,7 @@ export default function Import({ nav }) {
                   <div key={label} style={{ display: 'flex', justifyContent: 'space-between',
                     alignItems: 'baseline', fontSize: 12, marginBottom: 6 }}>
                     <span style={{ color: '#6b7280' }}>{label}</span>
-                    <span style={{ color: req ? '#34d399' : '#60a5fa', fontWeight: 500 }}>
+                    <span style={{ color: req ? '#3b82f6' : '#60a5fa', fontWeight: 500 }}>
                       {req ? 'Required' : `Optional${note ? ` · ${note}` : ''}`}
                     </span>
                   </div>

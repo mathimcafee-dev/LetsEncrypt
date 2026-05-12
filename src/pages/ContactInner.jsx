@@ -22,9 +22,9 @@ export default function ContactInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Main contact card */}
-      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'28px 32px', marginBottom:16, borderLeft:'3px solid #10b981' }}>
+      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'28px 32px', marginBottom:16, borderLeft:'3px solid #1a56db' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
-          <Mail size={14} color="#10b981"/>
+          <Mail size={14} color="#1a56db"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Contact</span>
         </div>
         <div style={{ fontSize:20, fontWeight:500, color:'#0a0a0a', letterSpacing:'-.3px', marginBottom:8 }}>
@@ -34,7 +34,7 @@ export default function ContactInner({ nav }) {
           SSLVault is built and maintained by a single developer. Bug reports, feature requests, and partnership ideas all land directly in one inbox — with a typical reply time of 1–2 days.
         </p>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <a href={`mailto:${email}`} style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#10b981', color:'white', textDecoration:'none', borderRadius:6, padding:'9px 16px', fontSize:13, fontWeight:500 }}>
+          <a href={`mailto:${email}`} style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#1a56db', color:'white', textDecoration:'none', borderRadius:6, padding:'9px 16px', fontSize:13, fontWeight:500 }}>
             <Mail size={13}/> {email}
           </a>
           <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'#525252', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 12px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
@@ -55,7 +55,7 @@ export default function ContactInner({ nav }) {
         {TOPICS.map(({ icon:Icon, label, body }) => (
           <div key={label} style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'16px 18px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-              <Icon size={13} color="#10b981"/>
+              <Icon size={13} color="#1a56db"/>
               <span style={{ fontSize:12, fontWeight:500, color:'#0a0a0a' }}>{label}</span>
             </div>
             <p style={{ fontSize:11, color:'#525252', lineHeight:1.7, margin:0 }}>{body}</p>

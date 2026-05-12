@@ -102,13 +102,13 @@ export default function Pricing({ nav }) {
             <div style={{ flex:1, display:'flex', flexDirection:'column', gap:10, marginBottom:24 }}>
               {paidPros.map(item => (
                 <div key={item} style={{ display:'flex', alignItems:'center', gap:10 }}>
-                  <CheckCircle size={14} color="#10b981" style={{ flexShrink:0 }}/>
+                  <CheckCircle size={14} color="#1a56db" style={{ flexShrink:0 }}/>
                   <span style={{ fontSize:13, color:'#d1d5db' }}>{item}</span>
                 </div>
               ))}
             </div>
             <button onClick={() => nav('/buy')}
-              style={{ width:'100%', background:'#10b981', color:'white', border:'none',
+              style={{ width:'100%', background:'#1a56db', color:'white', border:'none',
                 borderRadius:'var(--v2-r-md)', padding:'11px', fontSize:13, fontWeight:700,
                 cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:7,
                 fontFamily:'inherit' }}>
@@ -130,7 +130,7 @@ export default function Pricing({ nav }) {
                   fontSize:11, textTransform:'uppercase', letterSpacing:'0.4px', width:'55%' }}>Feature</th>
                 <th style={{ padding:'12px 16px', textAlign:'center', fontWeight:700, color:'var(--v2-text-3)',
                   fontSize:11, textTransform:'uppercase', letterSpacing:'0.4px' }}>Free</th>
-                <th style={{ padding:'12px 16px', textAlign:'center', fontWeight:700, color:'#10b981',
+                <th style={{ padding:'12px 16px', textAlign:'center', fontWeight:700, color:'#1a56db',
                   fontSize:11, textTransform:'uppercase', letterSpacing:'0.4px' }}>Managed Certs</th>
               </tr>
             </thead>
@@ -153,7 +153,7 @@ export default function Pricing({ nav }) {
                   <td style={{ padding:'11px 16px', textAlign:'center',
                     color: free==='✓'?'var(--v2-green)':'var(--v2-text-3)', fontWeight: free==='✓'?700:400 }}>{free}</td>
                   <td style={{ padding:'11px 16px', textAlign:'center',
-                    color: paid==='✓'?'#10b981':'var(--v2-text-3)', fontWeight: paid==='✓'?700:400 }}>{paid}</td>
+                    color: paid==='✓'?'#1a56db':'var(--v2-text-3)', fontWeight: paid==='✓'?700:400 }}>{paid}</td>
                 </tr>
               ))}
             </tbody>

@@ -33,7 +33,7 @@ function ScreenMock({ title, children }) {
       <div style={{ background:'#1e293b', padding:'10px 16px', display:'flex', alignItems:'center', gap:8 }}>
         <div style={{ width:12, height:12, borderRadius:'50%', background:'#ef4444' }}/>
         <div style={{ width:12, height:12, borderRadius:'50%', background:'#f59e0b' }}/>
-        <div style={{ width:12, height:12, borderRadius:'50%', background:'#10b981' }}/>
+        <div style={{ width:12, height:12, borderRadius:'50%', background:'#1a56db' }}/>
         <span style={{ fontSize:12, color:'#475569', marginLeft:8 }}>{title}</span>
       </div>
       <div style={{ padding:'16px 18px' }}>{children}</div>
@@ -174,7 +174,7 @@ export default function SharedHostingGuide({ nav }) {
             <TermLine color="#94a3b8">📁 /home/youraccount/public_html/</TermLine>
             <TermLine color="#e2e8f0">├── index.html</TermLine>
             <TermLine color="#e2e8f0">├── wp-content/</TermLine>
-            <TermLine color="#34d399">├── sslvault-agent.php  ← Upload here</TermLine>
+            <TermLine color="#3b82f6">├── sslvault-agent.php  ← Upload here</TermLine>
             <TermLine color="#e2e8f0">└── wp-config.php</TermLine>
           </ScreenMock>
           <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:14 }}>
@@ -209,12 +209,12 @@ export default function SharedHostingGuide({ nav }) {
           <ScreenMock title="https://yourdomain.com/sslvault-agent.php">
             <TermLine color="#94a3b8">🔒 SSLVault Certificate Installer</TermLine>
             <div style={{ height:8 }}/>
-            <TermLine color="#34d399">✅ Step 1: Connected to SSLVault — Token validated</TermLine>
-            <TermLine color="#34d399">✅ Step 2: Certificate downloaded — Domain: yourdomain.com</TermLine>
-            <TermLine color="#34d399">✅ Step 3: Certificate files saved — /home/account/ssl/</TermLine>
-            <TermLine color="#34d399">✅ Step 4: Certificate verified — Expires: 2026-08-05</TermLine>
-            <TermLine color="#34d399">✅ Step 5: HTTPS redirect configured — .htaccess updated</TermLine>
-            <TermLine color="#34d399">✅ Step 6: Dashboard updated — Installation reported</TermLine>
+            <TermLine color="#3b82f6">✅ Step 1: Connected to SSLVault — Token validated</TermLine>
+            <TermLine color="#3b82f6">✅ Step 2: Certificate downloaded — Domain: yourdomain.com</TermLine>
+            <TermLine color="#3b82f6">✅ Step 3: Certificate files saved — /home/account/ssl/</TermLine>
+            <TermLine color="#3b82f6">✅ Step 4: Certificate verified — Expires: 2026-08-05</TermLine>
+            <TermLine color="#3b82f6">✅ Step 5: HTTPS redirect configured — .htaccess updated</TermLine>
+            <TermLine color="#3b82f6">✅ Step 6: Dashboard updated — Installation reported</TermLine>
           </ScreenMock>
         </Step>
 

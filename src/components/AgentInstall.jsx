@@ -11,7 +11,7 @@ function CopyBtn({ text }) {
   }
   return (
     <button onClick={copy} style={{ background:'none', border:'0.5px solid #e8edf2', borderRadius:5,
-      cursor:'pointer', color: ok ? '#10b981' : '#64748b', display:'flex', alignItems:'center',
+      cursor:'pointer', color: ok ? '#1a56db' : '#64748b', display:'flex', alignItems:'center',
       gap:4, fontSize:11, padding:'3px 8px', fontFamily:'inherit' }}>
       {ok ? <><Check size={11}/> Copied</> : <><Copy size={11}/> Copy</>}
     </button>
@@ -160,12 +160,12 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                 <div style={{ textAlign:'center', padding:'20px 0' }}>
                   {jobStatus === 'done' ? (
                     <>
-                      <CheckCircle size={40} color="#10b981" style={{ marginBottom:12 }}/>
+                      <CheckCircle size={40} color="#1a56db" style={{ marginBottom:12 }}/>
                       <div style={{ fontSize:15, fontWeight:600, color:'#0a0a0a', marginBottom:6 }}>Certificate installed</div>
                       <div style={{ fontSize:12, color:'#525252', marginBottom:20 }}>
                         Agent has installed the certificate and reloaded the web server.
                       </div>
-                      <button onClick={onClose} style={{ background:'#10b981', color:'white', border:'none',
+                      <button onClick={onClose} style={{ background:'#1a56db', color:'white', border:'none',
                         borderRadius:7, padding:'9px 24px', fontSize:13, cursor:'pointer', fontFamily:'inherit' }}>
                         Done
                       </button>
@@ -217,7 +217,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                           borderRadius:7, marginBottom:8, cursor:'pointer',
                           background: selectedAgent===a.id ? '#f0f9ff' : 'white' }}>
                         <div style={{ width:8, height:8, borderRadius:'50%', flexShrink:0,
-                          background: isActive ? '#10b981' : '#e5e7eb' }}/>
+                          background: isActive ? '#1a56db' : '#e5e7eb' }}/>
                         <div style={{ flex:1 }}>
                           <div style={{ fontSize:13, fontWeight:500, color:'#0a0a0a' }}>
                             {a.hostname || a.nickname || 'Agent ' + a.id.slice(0,8)}
@@ -231,7 +231,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                   })}
                   {error && <div style={{ fontSize:12, color:'#dc2626', marginBottom:10 }}>{error}</div>}
                   <button onClick={dispatchToAgent} disabled={!selectedAgent || dispatching}
-                    style={{ width:'100%', background: selectedAgent ? '#10b981' : '#e5e7eb',
+                    style={{ width:'100%', background: selectedAgent ? '#1a56db' : '#e5e7eb',
                       color: selectedAgent ? 'white' : '#94a3b8', border:'none', borderRadius:7,
                       padding:'10px', fontSize:13, fontWeight:500, cursor: selectedAgent ? 'pointer' : 'default',
                       fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
@@ -274,7 +274,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                 Your credentials are encrypted in Supabase Vault and never exposed.
               </div>
               <button onClick={() => { onClose(); onOpenCpanel && onOpenCpanel() }}
-                style={{ width:'100%', background:'#10b981', color:'white', border:'none',
+                style={{ width:'100%', background:'#1a56db', color:'white', border:'none',
                   borderRadius:7, padding:'11px', fontSize:13, fontWeight:500,
                   cursor:'pointer', fontFamily:'inherit', display:'flex',
                   alignItems:'center', justifyContent:'center', gap:7 }}>

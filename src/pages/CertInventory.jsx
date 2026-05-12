@@ -29,7 +29,7 @@ function statusInfo(days, status) {
   if (days != null && days < 0)     return { label:'Expired',    color:'#dc2626', bg:'#fef2f2', border:'#fecaca' }
   if (days != null && days <= 7)    return { label:'Exp. Soon',  color:'#b45309', bg:'#fefce8', border:'#fde68a' }
   if (days != null && days <= 30)   return { label:'Expiring',   color:'#d97706', bg:'#fff7ed', border:'#fed7aa' }
-  if (status === 'active')          return { label:'Active',     color:'#047857', bg:'#f0fdf4', border:'#bbf7d0' }
+  if (status === 'active')          return { label:'Active',     color:'#1e40af', bg:'#eff6ff', border:'#bfdbfe' }
   return                                   { label:'Pending',    color:'#b45309', bg:'#fefce8', border:'#fde68a' }
 }
 
@@ -123,7 +123,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
           <span style={{ fontSize:mono?11:12, color:color||'#0a0a0a', fontFamily:mono?"'SF Mono','Menlo',monospace":'inherit', wordBreak:'break-all' }}>{value || '—'}</span>
           {copiable && value && (
             <button onClick={() => copy(value, label)} style={{ flexShrink:0, background:'none', border:'none', cursor:'pointer', color:'#a3a3a3', padding:0 }}>
-              {copiedField===label ? <Check size={12} color="#10b981"/> : <Copy size={12}/>}
+              {copiedField===label ? <Check size={12} color="#1a56db"/> : <Copy size={12}/>}
             </button>
           )}
         </div>
@@ -141,7 +141,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
   )
 
   return (
-    <div style={{ borderTop:'2px solid #10b981', background:'#fafafa' }}>
+    <div style={{ borderTop:'2px solid #1a56db', background:'#fafafa' }}>
       {/* Header */}
       <div style={{ padding:'14px 20px', background:'white', borderBottom:'0.5px solid #e8edf2', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div>
@@ -168,7 +168,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 <InfoRow label="Order Status" value={
                   <span style={{ display:'flex', alignItems:'center', gap:6 }}>
                     <span style={{ color:si.color, fontWeight:600 }}>{si.label}</span>
-                    <button onClick={onRefresh} style={{ background:'none', border:'none', cursor:'pointer', color:'#10b981', padding:0, display:'flex' }}><RefreshCw size={11}/></button>
+                    <button onClick={onRefresh} style={{ background:'none', border:'none', cursor:'pointer', color:'#1a56db', padding:0, display:'flex' }}><RefreshCw size={11}/></button>
                   </span>
                 }/>
               </tbody>
@@ -178,10 +178,10 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 <InfoRow label="Order Date"     value={fmtDateFull(order?.created_at || cert.created_at)}/>
                 <InfoRow label="Order Expiration" value={order?.years ? fmtDate(new Date(new Date(order.created_at).getTime() + order.years*365*86400000).toISOString()) : '—'}/>
                 <InfoRow label="Validity"       value={order?.years ? `${order.years} Year${order.years>1?'s':''}` : '1 Year'}/>
-                <InfoRow label="Vendor Status"  value={(order?.minor_status||cert.status||'').toUpperCase()} color="#047857"/>
+                <InfoRow label="Vendor Status"  value={(order?.minor_status||cert.status||'').toUpperCase()} color="#1e40af"/>
                 <InfoRow label="Install Method" value={cert.install_method ? cert.install_method.toUpperCase() : '—'}/>
-                <InfoRow label="Install Status" value={cert.install_status === 'success' ? (cert.install_verified ? '✓ Verified Live' : 'Installed') : (cert.install_status||'Not installed')} color={cert.install_status==='success'?'#047857':'#737373'}/>
-                <InfoRow label="Environment"    value={cert.is_sandbox?'Sandbox':'Production'} color={cert.is_sandbox?'#6d28d9':'#047857'}/>
+                <InfoRow label="Install Status" value={cert.install_status === 'success' ? (cert.install_verified ? '✓ Verified Live' : 'Installed') : (cert.install_status||'Not installed')} color={cert.install_status==='success'?'#1e40af':'#737373'}/>
+                <InfoRow label="Environment"    value={cert.is_sandbox?'Sandbox':'Production'} color={cert.is_sandbox?'#6d28d9':'#1e40af'}/>
               </tbody>
             </table>
           </div>
@@ -227,7 +227,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                       const k = ['downloaded','installed','understand'][i]
                       return (
                         <label key={k} style={{ display:'flex', alignItems:'center', gap:8, fontSize:11, color:'#525252', padding:'4px 0', cursor:'pointer' }}>
-                          <input type="checkbox" checked={keyChecks[k]} onChange={e => setKeyChecks({...keyChecks,[k]:e.target.checked})} style={{ accentColor:'#10b981' }}/> {lbl}
+                          <input type="checkbox" checked={keyChecks[k]} onChange={e => setKeyChecks({...keyChecks,[k]:e.target.checked})} style={{ accentColor:'#1a56db' }}/> {lbl}
                         </label>
                       )
                     })}
@@ -420,7 +420,7 @@ export default function CertInventory({ user, nav, onIssue }) {
           <button onClick={downloadCSV} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'#525252', border:'0.5px solid #e8edf2', borderRadius:6, padding:'8px 14px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Download size={13}/> Download CSV
           </button>
-          <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#10b981', color:'white', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#1a56db', color:'white', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Plus size={13}/> Issue Certificate
           </button>
         </div>
@@ -436,7 +436,7 @@ export default function CertInventory({ user, nav, onIssue }) {
               { label:'Expired in last 7 days',  val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=-7&&d<0 }).length, color:'#dc2626', filter:'Exp7' },
               { label:'Expires in 0–30 days',    val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=0&&d<=30&&c.status==='active' }).length, color:'#d97706', filter:'Exp30' },
               { label:'Expires in 31–60 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>30&&d<=60&&c.status==='active' }).length, color:'#d97706', filter:'Exp60' },
-              { label:'Expires in 61–90 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>60&&d<=90&&c.status==='active' }).length, color:'#10b981', filter:'Exp90' },
+              { label:'Expires in 61–90 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>60&&d<=90&&c.status==='active' }).length, color:'#1a56db', filter:'Exp90' },
             ].map(({ label, val, color, filter:f }, i) => (
               <div key={label} style={{ padding:'0 16px 0 0', borderRight: i<3 ? '0.5px solid #f1f5f9' : 'none', marginRight: i<3 ? 16 : 0 }}>
                 <div style={{ fontSize:9, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.3px', marginBottom:6, lineHeight:1.4 }}>{label}</div>
@@ -459,7 +459,7 @@ export default function CertInventory({ user, nav, onIssue }) {
               { label:'Expired in last 7 days',  val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=-7&&d<0 }).length, color:'#dc2626', filter:'Exp7' },
               { label:'Expires in 0–30 days',    val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=0&&d<=30&&c.status==='active' }).length, color:'#d97706', filter:'Exp30' },
               { label:'Expires in 31–60 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>30&&d<=60&&c.status==='active' }).length, color:'#d97706', filter:'Exp60' },
-              { label:'Expires in 61–90 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>60&&d<=90&&c.status==='active' }).length, color:'#10b981', filter:'Exp90' },
+              { label:'Expires in 61–90 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>60&&d<=90&&c.status==='active' }).length, color:'#1a56db', filter:'Exp90' },
             ].map(({ label, val, color, filter:f }, i) => (
               <div key={label} style={{ padding:'0 16px 0 0', borderRight: i<3 ? '0.5px solid #f1f5f9' : 'none', marginRight: i<3 ? 16 : 0 }}>
                 <div style={{ fontSize:9, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.3px', marginBottom:6, lineHeight:1.4 }}>{label}</div>
@@ -490,7 +490,7 @@ export default function CertInventory({ user, nav, onIssue }) {
             {showDrop && (
               <div style={{ position:'absolute', top:'100%', left:0, background:'white', border:'0.5px solid #e8edf2', borderRadius:6, boxShadow:'0 4px 16px rgba(0,0,0,0.08)', marginTop:4, minWidth:180, overflow:'hidden' }}>
                 {STATUS_FILTERS.map(f => (
-                  <button key={f.id} onClick={() => { setFilter(f.id); setShowDrop(false) }} style={{ display:'block', width:'100%', padding:'9px 14px', fontSize:12, background:statusFilter===f.id?'#10b981':'white', color:statusFilter===f.id?'white':'#0a0a0a', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}
+                  <button key={f.id} onClick={() => { setFilter(f.id); setShowDrop(false) }} style={{ display:'block', width:'100%', padding:'9px 14px', fontSize:12, background:statusFilter===f.id?'#1a56db':'white', color:statusFilter===f.id?'white':'#0a0a0a', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}
                     onMouseEnter={e => statusFilter!==f.id&&(e.currentTarget.style.background='#f8fafc')}
                     onMouseLeave={e => statusFilter!==f.id&&(e.currentTarget.style.background='white')}
                   >{f.label}</button>
@@ -507,7 +507,7 @@ export default function CertInventory({ user, nav, onIssue }) {
           </div>
         </div>
         {(statusFilter!=='ALL'||domainSearch) && (
-          <button onClick={() => { setFilter('ALL'); setSearch('') }} style={{ fontSize:11, color:'#10b981', background:'none', border:'none', cursor:'pointer', fontFamily:'inherit' }}>Clear filters</button>
+          <button onClick={() => { setFilter('ALL'); setSearch('') }} style={{ fontSize:11, color:'#1a56db', background:'none', border:'none', cursor:'pointer', fontFamily:'inherit' }}>Clear filters</button>
         )}
       </div>
       {showDrop && <div onClick={() => setShowDrop(false)} style={{ position:'fixed', inset:0, zIndex:40 }}/>}
@@ -534,7 +534,7 @@ export default function CertInventory({ user, nav, onIssue }) {
             <Shield size={32} color="#d4d4d4" strokeWidth={1.5} style={{ marginBottom:10 }}/>
             <div style={{ fontSize:13, fontWeight:500, color:'#0a0a0a', marginBottom:4 }}>{certs.length===0?'No certificates yet':'No matches'}</div>
             <div style={{ fontSize:11, color:'#a3a3a3', marginBottom:16 }}>{certs.length===0?'Issue your first SSL certificate to get started':'Try a different filter or search term'}</div>
-            {certs.length===0 && <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#10b981', color:'white', border:'none', borderRadius:6, padding:'8px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}><Plus size={12}/> Issue certificate</button>}
+            {certs.length===0 && <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#1a56db', color:'white', border:'none', borderRadius:6, padding:'8px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}><Plus size={12}/> Issue certificate</button>}
           </div>
         ) : filtered.map(cert => {
           const days = daysLeft(cert.expires_at)
@@ -545,13 +545,13 @@ export default function CertInventory({ user, nav, onIssue }) {
             <div key={cert.id}>
               <div
                 onClick={() => setExpanded(isExpanded ? null : cert.id)}
-                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid #f1f5f9', background:isExpanded?'#f0fdf4':'white', transition:'background 0.1s', minWidth:760 }}
+                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid #f1f5f9', background:isExpanded?'#eff6ff':'white', transition:'background 0.1s', minWidth:760 }}
                 onMouseEnter={e => { if(!isExpanded) e.currentTarget.style.background='#fafafa' }}
                 onMouseLeave={e => { if(!isExpanded) e.currentTarget.style.background='white' }}
               >
                 {/* Domain */}
                 <div style={{ display:'flex', flexDirection:'column', gap:3, minWidth:0 }}>
-                  <span style={{ fontFamily:"'SF Mono','Menlo',monospace", fontSize:12, color:'#10b981', fontWeight:500, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</span>
+                  <span style={{ fontFamily:"'SF Mono','Menlo',monospace", fontSize:12, color:'#1a56db', fontWeight:500, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</span>
                   <span style={{ fontSize:10, color:'#a3a3a3' }}>{cert.is_sandbox?'Sandbox':'Production'}</span>
                 </div>
                 {/* Order ID */}
@@ -593,7 +593,7 @@ export default function CertInventory({ user, nav, onIssue }) {
                   }
                 </div>
                 {/* Chevron */}
-                <div style={{ color:isExpanded?'#10b981':'#a3a3a3', display:'flex', justifyContent:'center' }}>
+                <div style={{ color:isExpanded?'#1a56db':'#a3a3a3', display:'flex', justifyContent:'center' }}>
                   {isExpanded ? <ChevronDown size={15}/> : <ChevronRight size={15}/>}
                 </div>
               </div>

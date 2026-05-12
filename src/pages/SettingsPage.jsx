@@ -47,7 +47,7 @@ export default function SettingsPage({ user }) {
           <span style={{ fontSize:12, color:'#525252' }}>{createdAt}</span>
         </Row>
         <Row label="Plan" desc="No payment required for sandbox and community use">
-          <span style={{ fontSize:11, fontWeight:500, color:'#047857', background:'#f0fdf4', border:'0.5px solid #bbf7d0', borderRadius:4, padding:'3px 8px' }}>Free</span>
+          <span style={{ fontSize:11, fontWeight:500, color:'#1e40af', background:'#eff6ff', border:'0.5px solid #bfdbfe', borderRadius:4, padding:'3px 8px' }}>Free</span>
         </Row>
       </Section>
 
@@ -56,7 +56,7 @@ export default function SettingsPage({ user }) {
         <Row label="Expiry alerts" desc="Get notified when certificates are within 30 days of expiry">
           <button
             onClick={() => setEmailAlerts(v => !v)}
-            style={{ width:36, height:20, borderRadius:10, border:'none', cursor:'pointer', background: emailAlerts ? '#10b981' : '#e8edf2', position:'relative', transition:'background .15s', flexShrink:0 }}>
+            style={{ width:36, height:20, borderRadius:10, border:'none', cursor:'pointer', background: emailAlerts ? '#1a56db' : '#e8edf2', position:'relative', transition:'background .15s', flexShrink:0 }}>
             <span style={{ position:'absolute', top:2, left: emailAlerts ? 18 : 2, width:16, height:16, borderRadius:'50%', background:'white', transition:'left .15s', boxShadow:'0 1px 3px rgba(0,0,0,.15)' }}/>
           </button>
         </Row>
@@ -71,7 +71,7 @@ export default function SettingsPage({ user }) {
           <span style={{ fontSize:11, color:'#525252' }}>Magic link / email</span>
         </Row>
         <Row label="Private key storage" desc="Keys are stored encrypted at rest in your Supabase vault">
-          <span style={{ fontSize:11, fontWeight:500, color:'#047857', display:'flex', alignItems:'center', gap:4 }}><Shield size={11}/> Encrypted</span>
+          <span style={{ fontSize:11, fontWeight:500, color:'#1e40af', display:'flex', alignItems:'center', gap:4 }}><Shield size={11}/> Encrypted</span>
         </Row>
       </Section>
 
@@ -90,7 +90,7 @@ export default function SettingsPage({ user }) {
       </Section>
 
       <div style={{ display:'flex', justifyContent:'flex-end' }}>
-        <button onClick={handleSave} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#10b981', color:'white', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+        <button onClick={handleSave} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#1a56db', color:'white', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
           {saved ? <><Check size={13}/> Saved</> : 'Save preferences'}
         </button>
       </div>

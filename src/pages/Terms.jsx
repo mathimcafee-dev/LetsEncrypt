@@ -1,7 +1,7 @@
 import { Scale, AlertTriangle, Mail, ArrowRight, Shield, FileText } from 'lucide-react'
 
 export default function Terms({ nav }) {
-  const bg = 'linear-gradient(160deg,#eef2ff,#f0fdf4 35%,#fefce8 65%,#fdf4ff)'
+  const bg = 'linear-gradient(160deg,#eef2ff,#eff6ff 35%,#fefce8 65%,#fdf4ff)'
   const updated = 'May 9, 2026'
 
   return (
@@ -12,7 +12,7 @@ export default function Terms({ nav }) {
       <section style={{position:'relative',padding:'70px 0 30px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'white',border:'1px solid #e2e8f0',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-            <span style={{width:7,height:7,borderRadius:'50%',background:'#10b981',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
+            <span style={{width:7,height:7,borderRadius:'50%',background:'#1a56db',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
             <span style={{fontSize:11,fontWeight:700,color:'#475569',letterSpacing:'0.4px',textTransform:'uppercase'}}>Terms of Service</span>
           </div>
           <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#0f172a'}}>

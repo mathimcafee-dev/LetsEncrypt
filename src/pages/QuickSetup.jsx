@@ -210,7 +210,7 @@ export default function QuickSetup({ nav }) {
                 <p style={{ fontSize:13, color:'var(--text2)', marginBottom:16 }}>Add this record to your DNS provider, then click Verify</p>
                 <div style={{ background:'#0f172a', borderRadius:10, padding:16, marginBottom:12 }}>
                   <div style={{ display:'grid', gridTemplateColumns:'80px 1fr', gap:'8px 16px', fontFamily:'monospace', fontSize:13 }}>
-                    <span style={{ color:'#64748b', fontWeight:600 }}>TYPE</span><span style={{ color:'#34d399' }}>TXT</span>
+                    <span style={{ color:'#64748b', fontWeight:600 }}>TYPE</span><span style={{ color:'#3b82f6' }}>TXT</span>
                     <span style={{ color:'#64748b', fontWeight:600 }}>NAME</span><span style={{ color:'#38bdf8' }}>_acme-challenge</span>
                     <span style={{ color:'#64748b', fontWeight:600 }}>VALUE</span><span style={{ color:'#fbbf24', wordBreak:'break-all' }}>{txtValue}</span>
                     <span style={{ color:'#64748b', fontWeight:600 }}>TTL</span><span style={{ color:'#e2e8f0' }}>300</span>

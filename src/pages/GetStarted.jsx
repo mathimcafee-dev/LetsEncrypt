@@ -58,12 +58,12 @@ function Terminal({ lines }) {
       <div style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.07)', background:'#1e293b' }}>
         <div style={{ width:12, height:12, borderRadius:'50%', background:'#ef4444' }}/>
         <div style={{ width:12, height:12, borderRadius:'50%', background:'#f59e0b' }}/>
-        <div style={{ width:12, height:12, borderRadius:'50%', background:'#10b981' }}/>
+        <div style={{ width:12, height:12, borderRadius:'50%', background:'#1a56db' }}/>
         <span style={{ fontSize:11, color:'#475569', marginLeft:8, fontFamily:'monospace' }}>Terminal</span>
       </div>
       <div style={{ padding:'16px 18px' }}>
         {lines.map((line, i) => (
-          <div key={i} style={{ fontFamily:'monospace', fontSize:13, lineHeight:1.9, color: line.startsWith('#') ? '#64748b' : line.startsWith('[✓]') ? '#34d399' : line.startsWith('[!]') ? '#fbbf24' : line.startsWith('[✗]') ? '#f87171' : line.startsWith('$') ? '#38bdf8' : '#e2e8f0' }}>
+          <div key={i} style={{ fontFamily:'monospace', fontSize:13, lineHeight:1.9, color: line.startsWith('#') ? '#64748b' : line.startsWith('[✓]') ? '#3b82f6' : line.startsWith('[!]') ? '#fbbf24' : line.startsWith('[✗]') ? '#f87171' : line.startsWith('$') ? '#38bdf8' : '#e2e8f0' }}>
             {line}
           </div>
         ))}
@@ -141,10 +141,10 @@ export default function GetStarted({ nav }) {
           <h2 style={{ fontSize:26, fontWeight:800, marginBottom:20, color:'var(--text)' }}>🙋 Do I need SSL?</h2>
           <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:12 }}>
             {[
-              ['✅ YES', 'You have a website', 'Any website benefits from SSL. It builds trust with visitors and is required by modern browsers.', '#10b981'],
-              ['✅ YES', 'You run an online shop', 'SSL is mandatory for accepting payments. No SSL = no credit cards accepted.', '#10b981'],
-              ['✅ YES', 'You have a blog or portfolio', 'Google gives higher rankings to HTTPS sites. More traffic, free.', '#10b981'],
-              ['✅ YES', 'You collect any user data', 'Email signups, contact forms, login pages — all require SSL to be safe.', '#10b981'],
+              ['✅ YES', 'You have a website', 'Any website benefits from SSL. It builds trust with visitors and is required by modern browsers.', '#1a56db'],
+              ['✅ YES', 'You run an online shop', 'SSL is mandatory for accepting payments. No SSL = no credit cards accepted.', '#1a56db'],
+              ['✅ YES', 'You have a blog or portfolio', 'Google gives higher rankings to HTTPS sites. More traffic, free.', '#1a56db'],
+              ['✅ YES', 'You collect any user data', 'Email signups, contact forms, login pages — all require SSL to be safe.', '#1a56db'],
               ['⚠️ MAYBE', 'It\'s just a local test site', 'If nobody else visits it, you might not need it yet. But it\'s still good practice.', '#f59e0b'],
             ].map(([badge, title, desc, color]) => (
               <div key={title} style={{ background:'white', border:'1px solid var(--border)', borderRadius:12, padding:'16px 20px', display:'flex', gap:16, alignItems:'flex-start', boxShadow:'var(--shadow)' }}>
@@ -167,7 +167,7 @@ export default function GetStarted({ nav }) {
           </p>
           <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:12 }}>
             {[
-              { id:'managed', emoji:'🖥️', title:'I use cPanel, GoDaddy Hosting, Bluehost, or similar', desc:'You have a hosting control panel. No command line needed. Install takes 2 minutes by pasting text.', badge:'Easiest', color:'#10b981' },
+              { id:'managed', emoji:'🖥️', title:'I use cPanel, GoDaddy Hosting, Bluehost, or similar', desc:'You have a hosting control panel. No command line needed. Install takes 2 minutes by pasting text.', badge:'Easiest', color:'#1a56db' },
               { id:'vps', emoji:'🖧', title:'I have a VPS or Cloud Server (DigitalOcean, AWS, Linode)', desc:'You have full server access via SSH. The auto-install agent handles everything in one command.', badge:'Automatic', color:'#2563eb' },
               { id:'vercel', emoji:'▲', title:'My site is on Vercel, Netlify or similar', desc:'These platforms often handle SSL automatically. But if your custom domain needs a cert, we cover it.', badge:'Usually Auto', color:'#7c3aed' },
               { id:'noserver', emoji:'🌐', title:'I just own a domain name, no hosting yet', desc:'Get your SSL certificate ready first, then choose a hosting provider. We explain what to look for.', badge:'Beginner', color:'#f59e0b' },
@@ -328,7 +328,7 @@ export default function GetStarted({ nav }) {
             </p>
             <div style={{ background:'#0f172a', borderRadius:10, padding:16, marginBottom:16 }}>
               <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:'6px 16px', fontFamily:'monospace', fontSize:13 }}>
-                <span style={{ color:'#64748b', fontWeight:600 }}>TYPE</span><span style={{ color:'#34d399' }}>TXT</span>
+                <span style={{ color:'#64748b', fontWeight:600 }}>TYPE</span><span style={{ color:'#3b82f6' }}>TXT</span>
                 <span style={{ color:'#64748b', fontWeight:600 }}>NAME</span><span style={{ color:'#38bdf8' }}>_acme-challenge</span>
                 <span style={{ color:'#64748b', fontWeight:600 }}>VALUE</span><span style={{ color:'#fbbf24', wordBreak:'break-all' }}>abc123def456ghi789jkl012mno345pqr678</span>
                 <span style={{ color:'#64748b', fontWeight:600 }}>TTL</span><span style={{ color:'#e2e8f0' }}>300</span>
@@ -363,7 +363,7 @@ export default function GetStarted({ nav }) {
             </p>
             <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:16 }}>
               {[
-                ['fullchain.pem', '✅ Use this one on your server', '#10b981'],
+                ['fullchain.pem', '✅ Use this one on your server', '#1a56db'],
                 ['key.pem', '🔑 Private key — keep secret!', '#ef4444'],
                 ['cert.pem', '(Not usually needed)', '#94a3b8'],
               ].map(([name, note, color]) => (

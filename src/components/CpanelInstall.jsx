@@ -19,7 +19,7 @@ async function call(action, body, token) {
 
 // ── Step indicator ────────────────────────────────────────────────────
 function Step({ done, active, error, label }) {
-  const bg = done ? '#10b981' : error ? '#dc2626' : active ? '#0e7fc0' : '#e8edf2'
+  const bg = done ? '#1a56db' : error ? '#dc2626' : active ? '#0e7fc0' : '#e8edf2'
   const Icon = done ? CheckCircle : error ? XCircle : active ? Loader : null
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0' }}>
@@ -237,9 +237,9 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
         <div style={{ padding: '18px 22px', borderBottom: '0.5px solid #e8edf2',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: '#f0fdf4',
-              border: '0.5px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Server size={15} color="#10b981"/>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: '#eff6ff',
+              border: '0.5px solid #bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Server size={15} color="#1a56db"/>
             </div>
             <div>
               <div style={{ fontSize: 14, fontWeight: 500, color: '#0a0a0a' }}>Install via cPanel</div>
@@ -259,10 +259,10 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
           {/* DONE state */}
           {phase === 'done' && (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#f0fdf4',
-                border: '2px solid #10b981', display: 'flex', alignItems: 'center',
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#eff6ff',
+                border: '2px solid #1a56db', display: 'flex', alignItems: 'center',
                 justifyContent: 'center', margin: '0 auto 16px' }}>
-                <CheckCircle size={28} color="#10b981"/>
+                <CheckCircle size={28} color="#1a56db"/>
               </div>
               <div style={{ fontSize: 16, fontWeight: 500, color: '#0a0a0a', marginBottom: 6 }}>
                 Certificate installed successfully
@@ -272,17 +272,17 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
               </div>
 
               {/* SSL verification result */}
-              <div style={{ background: sslVerified ? '#f0fdf4' : verifyPending ? '#f0f9ff' : '#fffbeb',
-                border: `0.5px solid ${sslVerified ? '#bbf7d0' : verifyPending ? '#bae6fd' : '#fde68a'}`,
+              <div style={{ background: sslVerified ? '#eff6ff' : verifyPending ? '#f0f9ff' : '#fffbeb',
+                border: `0.5px solid ${sslVerified ? '#bfdbfe' : verifyPending ? '#bae6fd' : '#fde68a'}`,
                 borderRadius: 8, padding: '12px 16px', marginBottom: 20, textAlign: 'left' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                   {sslVerified
-                    ? <CheckCircle size={14} color="#10b981"/>
+                    ? <CheckCircle size={14} color="#1a56db"/>
                     : verifyPending
                     ? <Loader size={14} color="#0369a1" style={{ animation: 'spin 1s linear infinite' }}/>
                     : <AlertTriangle size={14} color="#d97706"/>}
                   <span style={{ fontSize: 12, fontWeight: 500,
-                    color: sslVerified ? '#047857' : verifyPending ? '#0369a1' : '#92400e' }}>
+                    color: sslVerified ? '#1e40af' : verifyPending ? '#0369a1' : '#92400e' }}>
                     {sslVerified
                       ? 'Live SSL verification passed — cert is being served'
                       : verifyPending
@@ -307,7 +307,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                 )}
               </div>
 
-              <button onClick={onClose} style={{ background: '#10b981', color: 'white', border: 'none',
+              <button onClick={onClose} style={{ background: '#1a56db', color: 'white', border: 'none',
                 borderRadius: 6, padding: '9px 24px', fontSize: 13, fontWeight: 500,
                 cursor: 'pointer', fontFamily: 'inherit' }}>Done</button>
             </div>
@@ -362,9 +362,9 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                 const cred = savedCreds.find(c => c.id === selectedCred)
                 return cred ? (
                   <div>
-                    <div style={{ background: '#f0fdf4', border: '0.5px solid #bbf7d0',
+                    <div style={{ background: '#eff6ff', border: '0.5px solid #bfdbfe',
                       borderRadius: 8, padding: '14px 16px', marginBottom: 14 }}>
-                      <div style={{ fontSize: 11, fontWeight: 500, color: '#047857',
+                      <div style={{ fontSize: 11, fontWeight: 500, color: '#1e40af',
                         textTransform: 'uppercase', letterSpacing: '.4px', marginBottom: 8 }}>
                         Using saved server
                       </div>
@@ -487,7 +487,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                       fontSize: 12, color: '#525252', cursor: 'pointer' }}>
                       <input type="checkbox" checked={saveForFuture}
                         onChange={e => setSaveForFuture(e.target.checked)}
-                        style={{ accentColor: '#10b981' }}/>
+                        style={{ accentColor: '#1a56db' }}/>
                       Save credentials for future installs and auto-renewal
                     </label>
                   </div>
@@ -507,7 +507,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
 
               {/* Install button */}
               <button onClick={handleInstall} disabled={busy}
-                style={{ width: '100%', background: '#10b981', color: 'white', border: 'none',
+                style={{ width: '100%', background: '#1a56db', color: 'white', border: 'none',
                   borderRadius: 7, padding: '11px', fontSize: 13, fontWeight: 500,
                   cursor: busy ? 'default' : 'pointer', fontFamily: 'inherit', marginTop: 4,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
