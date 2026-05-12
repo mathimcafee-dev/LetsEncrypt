@@ -101,7 +101,7 @@ function Sparkline({ status = 'green' }) {
     status === 'green' ? '0,16 8,12 16,14 24,9 32,11 40,6 48,8 56,4 64,5'
   : status === 'amber' ? '0,8 8,9 16,7 24,10 32,12 40,16 48,18 56,18 64,18'
   : '0,12 8,12 16,12 24,12 32,12 40,12 48,12 56,12 64,12'
-  const stroke = status === 'green' ? '#1a56db' : status === 'amber' ? '#f59e0b' : '#d4d4d4'
+  const stroke = status === 'green' ? '#0e7fc0' : status === 'amber' ? '#f59e0b' : '#d4d4d4'
   return (
     <svg width="64" height="22" viewBox="0 0 64 22" style={{ flexShrink: 0 }}>
       <polyline points={points} fill="none" stroke={stroke} strokeWidth="1.4"
@@ -219,7 +219,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
               {t?.short}
               {agent && (
                 <span style={{ width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
-                  background: agentActive ? '#1a56db' : '#d1d5db',
+                  background: agentActive ? '#0e7fc0' : '#d1d5db',
                   display: 'inline-block', marginLeft: 2 }}/>
               )}
             </span>
@@ -1176,7 +1176,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 border: '0.5px solid var(--v2-green-border)', display: 'inline-flex',
                 alignItems: 'center', justifyContent: 'center', marginBottom: 12
               }}>
-                <Check size={22} strokeWidth={2.2} color="#1e3a8a" />
+                <Check size={22} strokeWidth={2.2} color="#075985" />
               </div>
               <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>Agent registered</div>
               <div style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>{server.nickname} is now fully automated</div>
@@ -1209,7 +1209,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                     <div style={{ display: 'flex', gap: 5 }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#ef4444' }} />
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f59e0b' }} />
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#1a56db' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#0e7fc0' }} />
                     </div>
                     <button onClick={copy} style={{
                       background: 'transparent', border: 'none', cursor: 'pointer',

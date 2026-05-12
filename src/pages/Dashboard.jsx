@@ -599,7 +599,7 @@ function CertRow({ cert, selected, onClick }) {
   const isSandboxRevoked = cert.status === 'sandbox_revoked'
   const s = statusOf(days, cert.status === 'revoked', cert.status)
   const initials = cert.domain.replace(/^www\./, '').slice(0, 2).toUpperCase()
-  const colors = { green:'#1a56db', amber:'#f59e0b', red:'#dc2626', grey:'#d4d4d4' }
+  const colors = { green:'#0e7fc0', amber:'#f59e0b', red:'#dc2626', grey:'#d4d4d4' }
   return (
     <div className={`v2-list-row status-${s.dot} ${selected ? 'selected' : ''}`}
       onClick={onClick}
@@ -1261,7 +1261,7 @@ function LoggedInDashboard({ user, nav }) {
 // ══════════════════════════════════════════════════════════════════════
 function MarketingDashboard({ nav }) {
   const features = [
-    { icon:<Shield size={18} />,   color:'#1a56db', title:'Free SSL Certificates', desc:'Issue trusted RapidSSL DV certificates via TheSSLStore. Fast issuance, globally trusted.' },
+    { icon:<Shield size={18} />,   color:'#0e7fc0', title:'Free SSL Certificates', desc:'Issue trusted RapidSSL DV certificates via TheSSLStore. Fast issuance, globally trusted.' },
     { icon:<Activity size={18} />, color:'#2563eb', title:'Expiry Monitoring',     desc:'Track SSL health across all your domains. Get alerted before certificates expire.' },
     { icon:<Server size={18} />,   color:'#7c3aed', title:'Agent Auto-Renewal',   desc:'Install the SSLVault agent on your VPS for fully automated renewal — no manual steps.' },
     { icon:<Globe size={18} />,    color:'#f59e0b', title:'DNS Provider Integration', desc:'Connect Cloudflare, Vercel, GoDaddy or DigitalOcean for seamless DNS validation.' },
@@ -1274,7 +1274,7 @@ function MarketingDashboard({ nav }) {
     { domain:'shop.yourbrand.com',days:6,  status:'amber' },
     { domain:'blog.yourbrand.com',days:-3, status:'red'   },
   ]
-  const colors = { green:'#1a56db', amber:'#f59e0b', red:'#dc2626' }
+  const colors = { green:'#0e7fc0', amber:'#f59e0b', red:'#dc2626' }
   const labels = (c) => c.status === 'red' ? 'Expired' : `${c.days}d left`
 
   return (

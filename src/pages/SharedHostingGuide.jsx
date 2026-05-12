@@ -33,7 +33,7 @@ function ScreenMock({ title, children }) {
       <div style={{ background:'#1e293b', padding:'10px 16px', display:'flex', alignItems:'center', gap:8 }}>
         <div style={{ width:12, height:12, borderRadius:'50%', background:'#ef4444' }}/>
         <div style={{ width:12, height:12, borderRadius:'50%', background:'#f59e0b' }}/>
-        <div style={{ width:12, height:12, borderRadius:'50%', background:'#1a56db' }}/>
+        <div style={{ width:12, height:12, borderRadius:'50%', background:'#0e7fc0' }}/>
         <span style={{ fontSize:12, color:'#475569', marginLeft:8 }}>{title}</span>
       </div>
       <div style={{ padding:'16px 18px' }}>{children}</div>
@@ -70,7 +70,7 @@ export default function SharedHostingGuide({ nav }) {
       <div className="container" style={{ maxWidth:780 }}>
 
         {/* Hero */}
-        <div style={{ background:'linear-gradient(135deg,#1e40af,#2563eb)', borderRadius:20, padding:'40px 36px', marginBottom:40, color:'white' }}>
+        <div style={{ background:'linear-gradient(135deg,#0369a1,#2563eb)', borderRadius:20, padding:'40px 36px', marginBottom:40, color:'white' }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(255,255,255,0.15)', borderRadius:100, padding:'5px 14px', fontSize:12, fontWeight:700, marginBottom:16 }}>
             🌐 SHARED HOSTING GUIDE
           </div>
@@ -329,7 +329,7 @@ export default function SharedHostingGuide({ nav }) {
           a="Yes! The PHP agent works the same way for saving files. For installing in Plesk: Websites and Domains → your domain → SSL/TLS Certificates → Add SSL/TLS Certificate → paste fullchain.pem and key.pem → Upload Certificate → Hosting Settings → assign the certificate." />
 
         {/* CTA */}
-        <div style={{ background:'linear-gradient(135deg,#1e40af,#2563eb)', borderRadius:16, padding:'32px 28px', textAlign:'center', marginTop:32 }}>
+        <div style={{ background:'linear-gradient(135deg,#0369a1,#2563eb)', borderRadius:16, padding:'32px 28px', textAlign:'center', marginTop:32 }}>
           <h3 style={{ fontSize:20, fontWeight:800, color:'white', marginBottom:8 }}>Ready to secure your website?</h3>
           <p style={{ color:'rgba(255,255,255,0.8)', fontSize:14, marginBottom:20 }}>Start by generating your free SSL certificate — takes under 2 minutes.</p>
           <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>

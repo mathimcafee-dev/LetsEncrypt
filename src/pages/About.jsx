@@ -192,7 +192,7 @@ export default function About({ nav }) {
                 <div className="v2-code-dots">
                   <span style={{ background:'#ef4444' }} />
                   <span style={{ background:'#f59e0b' }} />
-                  <span style={{ background:'#1a56db' }} />
+                  <span style={{ background:'#0e7fc0' }} />
                 </div>
                 <span style={{ fontSize:11, color:'#737373', fontFamily:'monospace' }}>stack.json</span>
               </div>

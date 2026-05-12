@@ -147,7 +147,7 @@ label {
 .alert { padding: 12px 16px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; }
 .alert-error { background: var(--red-light); border: 1px solid var(--red-border); color: #991b1b; }
 .alert-success { background: var(--green-light); border: 1px solid var(--green-border); color: #166534; }
-.alert-info { background: var(--accent-light); border: 1px solid var(--accent-border); color: #1e40af; }
+.alert-info { background: var(--accent-light); border: 1px solid var(--accent-border); color: #0369a1; }
 .alert-warning { background: var(--yellow-light); border: 1px solid var(--yellow-border); color: #92400e; }
 
 /* Spinner */

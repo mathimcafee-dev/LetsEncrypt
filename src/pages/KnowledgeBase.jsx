@@ -21,7 +21,7 @@ function CodeBlock({ code, label = 'shell' }) {
         <div className="v2-code-dots">
           <span style={{ background: '#ef4444' }} />
           <span style={{ background: '#f59e0b' }} />
-          <span style={{ background: '#1a56db' }} />
+          <span style={{ background: '#0e7fc0' }} />
           <span style={{ marginLeft: 8, fontSize: 10, color: '#737373', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>{label}</span>
         </div>
         <button className={`v2-code-copy ${ok ? 'copied' : ''}`} onClick={doCopy}>

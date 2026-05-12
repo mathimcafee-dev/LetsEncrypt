@@ -34,9 +34,9 @@ export default function Nav({ nav, page }) {
         <div onClick={()=>nav('/')} style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer',userSelect:'none'}}>
           <div style={{position:'relative',width:36,height:36,flexShrink:0}}>
             <div style={{width:36,height:36,background:'#0a0a0a',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <span style={{fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif",fontSize:22,fontWeight:800,color:'#1a56db',lineHeight:1,letterSpacing:'-1px',marginTop:1}}>S</span>
+              <span style={{fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif",fontSize:22,fontWeight:800,color:'#0e7fc0',lineHeight:1,letterSpacing:'-1px',marginTop:1}}>S</span>
             </div>
-            <div style={{position:'absolute',bottom:-3,right:-3,width:16,height:16,background:'#1a56db',borderRadius:4,border:'2px solid white',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <div style={{position:'absolute',bottom:-3,right:-3,width:16,height:16,background:'#0e7fc0',borderRadius:4,border:'2px solid white',display:'flex',alignItems:'center',justifyContent:'center'}}>
               <svg width="8" height="9" viewBox="0 0 8 9" fill="none">
                 <rect x="1" y="4" width="6" height="5" rx="1" fill="white"/>
                 <path d="M2 4V3a2 2 0 0 1 4 0v1" stroke="white" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
@@ -44,7 +44,7 @@ export default function Nav({ nav, page }) {
             </div>
           </div>
           <div>
-            <div style={{fontWeight:700,fontSize:15,color:'#0a0a0a',letterSpacing:'-0.4px',lineHeight:1.15}}>SSL<span style={{color:'#1a56db'}}>Vault</span></div>
+            <div style={{fontWeight:700,fontSize:15,color:'#0a0a0a',letterSpacing:'-0.4px',lineHeight:1.15}}>SSL<span style={{color:'#0e7fc0'}}>Vault</span></div>
             <div style={{fontSize:9,color:'#a3a3a3',fontWeight:500,textTransform:'uppercase',letterSpacing:'0.8px',lineHeight:1}}>CLM Platform</div>
           </div>
         </div>
@@ -56,7 +56,7 @@ export default function Nav({ nav, page }) {
             return (
               <div key={label} onClick={onClick}
                 style={{padding:'7px 13px',borderRadius:7,cursor:'pointer',
-                  fontSize:13,fontWeight:600,color:active?'#1e40af':'#525252',
+                  fontSize:13,fontWeight:600,color:active?'#0369a1':'#525252',
                   background:active?'#eff6ff':'transparent'}}
                 onMouseEnter={e=>{if(!active)e.currentTarget.style.background='#f8fafc'}}
                 onMouseLeave={e=>{if(!active)e.currentTarget.style.background='transparent'}}>
@@ -99,7 +99,7 @@ export default function Nav({ nav, page }) {
             <LogIn size={12}/> Sign In
           </button>
           <button onClick={()=>nav('/auth')}
-            style={{display:'inline-flex',alignItems:'center',gap:5,background:'#1a56db',color:'white',border:'none',padding:'7px 14px',borderRadius:7,fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>
+            style={{display:'inline-flex',alignItems:'center',gap:5,background:'#0e7fc0',color:'white',border:'none',padding:'7px 14px',borderRadius:7,fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>
             Get Started <ArrowRight size={12}/>
           </button>
         </div>

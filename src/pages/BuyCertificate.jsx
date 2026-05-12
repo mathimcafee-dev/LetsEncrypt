@@ -451,7 +451,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
             <div style={{ background:'#111827', padding:'10px 16px', display:'flex', alignItems:'center', gap:6 }}>
               <span style={{ width:10, height:10, borderRadius:'50%', background:'#ff5f56', display:'inline-block' }}/>
               <span style={{ width:10, height:10, borderRadius:'50%', background:'#ffbd2e', display:'inline-block' }}/>
-              <span style={{ width:10, height:10, borderRadius:'50%', background:'#1a56db', display:'inline-block' }}/>
+              <span style={{ width:10, height:10, borderRadius:'50%', background:'#0e7fc0', display:'inline-block' }}/>
               <span style={{ fontSize:11, color:'#9ca3af', fontFamily:'var(--v2-font-mono)', marginLeft:6 }}>
                 DNS {ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} · {domain || ord.txt_name}
               </span>

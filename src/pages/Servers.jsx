@@ -9,7 +9,7 @@ function agentStatus(last_seen_at, status) {
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
   if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#b91c1c', dot: '#dc2626', bg: '#fef2f2' }
   if (mins > 6) return { label: 'Idle', color: '#b45309', dot: '#f59e0b', bg: '#fffbeb' }
-  return { label: 'Online', color: '#1e40af', dot: '#1a56db', bg: '#eff6ff' }
+  return { label: 'Online', color: '#0369a1', dot: '#0e7fc0', bg: '#eff6ff' }
 }
 
 function fmtRelative(iso) {
@@ -19,7 +19,7 @@ function fmtRelative(iso) {
 
 function JobRow({ job }) {
   const icon = job.status === 'completed'
-    ? <CheckCircle size={12} color="#1a56db"/>
+    ? <CheckCircle size={12} color="#0e7fc0"/>
     : job.status === 'failed'
     ? <XCircle size={12} color="#dc2626"/>
     : <Clock size={12} color="#f59e0b"/>
@@ -175,7 +175,7 @@ function InstallModal({ onClose }) {
 
   const CmdBlock = ({ cmd, id }) => (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#0a0a0a', borderRadius:6, padding:'10px 14px', marginBottom:8 }}>
-      <code style={{ fontSize:12, color:'#1a56db', fontFamily:"'SF Mono',monospace", flex:1, overflow:'auto' }}>{cmd}</code>
+      <code style={{ fontSize:12, color:'#0e7fc0', fontFamily:"'SF Mono',monospace", flex:1, overflow:'auto' }}>{cmd}</code>
       <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, marginLeft:12, fontSize:10, fontWeight:500, color:'rgba(255,255,255,0.6)', padding:'4px 8px', border:'0.5px solid rgba(255,255,255,0.15)', borderRadius:4, background:'none', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
         {copied===id ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
       </button>
@@ -198,7 +198,7 @@ function InstallModal({ onClose }) {
           <div style={{ fontSize:11, fontWeight:500, color:'#525252', margin:'14px 0 8px' }}>2. Verify it's running</div>
           <CmdBlock cmd={cmd2} id="verify"/>
           <div style={{ background:'#eff6ff', border:'0.5px solid #bfdbfe', borderRadius:6, padding:'10px 12px', marginTop:14 }}>
-            <div style={{ fontSize:11, color:'#1e40af', lineHeight:1.6 }}>
+            <div style={{ fontSize:11, color:'#0369a1', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and reports its status here. It will appear in this list within 1–2 minutes of installation.
             </div>
           </div>
@@ -250,7 +250,7 @@ export default function ServersPage({ user }) {
         <div>
           <div style={{ fontSize:14, color:'#525252', marginBottom:2 }}>
             {loading ? '—' : `${agents.length} server${agents.length !== 1 ? 's' : ''} connected`}
-            {!loading && online > 0 && <span style={{ marginLeft:8, fontSize:11, color:'#1e40af', fontWeight:500 }}>· {online} online</span>}
+            {!loading && online > 0 && <span style={{ marginLeft:8, fontSize:11, color:'#0369a1', fontWeight:500 }}>· {online} online</span>}
           </div>
           <div style={{ fontSize:11, color:'#a3a3a3' }}>Persistent agents auto-renew certificates every 5 minutes</div>
         </div>
@@ -258,7 +258,7 @@ export default function ServersPage({ user }) {
           <button onClick={refresh} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'#525252', border:'0.5px solid #e8edf2', padding:'7px 12px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <RefreshCw size={12} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }}/> Refresh
           </button>
-          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#1a56db', color:'white', border:'none', padding:'7px 14px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0e7fc0', color:'white', border:'none', padding:'7px 14px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Plus size={12}/> Add server
           </button>
         </div>
@@ -269,7 +269,7 @@ export default function ServersPage({ user }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, marginBottom:24 }}>
           {[
             { label:'Total servers', val:agents.length, color:'#0a0a0a' },
-            { label:'Online now', val:online, color: online > 0 ? '#1e40af' : '#0a0a0a' },
+            { label:'Online now', val:online, color: online > 0 ? '#0369a1' : '#0a0a0a' },
             { label:'Offline / idle', val:agents.length - online, color: agents.length - online > 0 ? '#b45309' : '#0a0a0a' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'14px 18px' }}>
@@ -301,7 +301,7 @@ export default function ServersPage({ user }) {
           <div style={{ fontSize:12, color:'#a3a3a3', marginBottom:20, maxWidth:340, margin:'0 auto 20px' }}>
             Install the SSLVault agent on any Linux VPS or cPanel server. It will auto-renew your certificates and report status here.
           </div>
-          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#1a56db', color:'white', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0e7fc0', color:'white', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Terminal size={13}/> Install agent
           </button>
         </div>

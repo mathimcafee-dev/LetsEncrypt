@@ -58,7 +58,7 @@ function Terminal({ lines }) {
       <div style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.07)', background:'#1e293b' }}>
         <div style={{ width:12, height:12, borderRadius:'50%', background:'#ef4444' }}/>
         <div style={{ width:12, height:12, borderRadius:'50%', background:'#f59e0b' }}/>
-        <div style={{ width:12, height:12, borderRadius:'50%', background:'#1a56db' }}/>
+        <div style={{ width:12, height:12, borderRadius:'50%', background:'#0e7fc0' }}/>
         <span style={{ fontSize:11, color:'#475569', marginLeft:8, fontFamily:'monospace' }}>Terminal</span>
       </div>
       <div style={{ padding:'16px 18px' }}>
@@ -141,10 +141,10 @@ export default function GetStarted({ nav }) {
           <h2 style={{ fontSize:26, fontWeight:800, marginBottom:20, color:'var(--text)' }}>🙋 Do I need SSL?</h2>
           <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:12 }}>
             {[
-              ['✅ YES', 'You have a website', 'Any website benefits from SSL. It builds trust with visitors and is required by modern browsers.', '#1a56db'],
-              ['✅ YES', 'You run an online shop', 'SSL is mandatory for accepting payments. No SSL = no credit cards accepted.', '#1a56db'],
-              ['✅ YES', 'You have a blog or portfolio', 'Google gives higher rankings to HTTPS sites. More traffic, free.', '#1a56db'],
-              ['✅ YES', 'You collect any user data', 'Email signups, contact forms, login pages — all require SSL to be safe.', '#1a56db'],
+              ['✅ YES', 'You have a website', 'Any website benefits from SSL. It builds trust with visitors and is required by modern browsers.', '#0e7fc0'],
+              ['✅ YES', 'You run an online shop', 'SSL is mandatory for accepting payments. No SSL = no credit cards accepted.', '#0e7fc0'],
+              ['✅ YES', 'You have a blog or portfolio', 'Google gives higher rankings to HTTPS sites. More traffic, free.', '#0e7fc0'],
+              ['✅ YES', 'You collect any user data', 'Email signups, contact forms, login pages — all require SSL to be safe.', '#0e7fc0'],
               ['⚠️ MAYBE', 'It\'s just a local test site', 'If nobody else visits it, you might not need it yet. But it\'s still good practice.', '#f59e0b'],
             ].map(([badge, title, desc, color]) => (
               <div key={title} style={{ background:'white', border:'1px solid var(--border)', borderRadius:12, padding:'16px 20px', display:'flex', gap:16, alignItems:'flex-start', boxShadow:'var(--shadow)' }}>
@@ -167,7 +167,7 @@ export default function GetStarted({ nav }) {
           </p>
           <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:12 }}>
             {[
-              { id:'managed', emoji:'🖥️', title:'I use cPanel, GoDaddy Hosting, Bluehost, or similar', desc:'You have a hosting control panel. No command line needed. Install takes 2 minutes by pasting text.', badge:'Easiest', color:'#1a56db' },
+              { id:'managed', emoji:'🖥️', title:'I use cPanel, GoDaddy Hosting, Bluehost, or similar', desc:'You have a hosting control panel. No command line needed. Install takes 2 minutes by pasting text.', badge:'Easiest', color:'#0e7fc0' },
               { id:'vps', emoji:'🖧', title:'I have a VPS or Cloud Server (DigitalOcean, AWS, Linode)', desc:'You have full server access via SSH. The auto-install agent handles everything in one command.', badge:'Automatic', color:'#2563eb' },
               { id:'vercel', emoji:'▲', title:'My site is on Vercel, Netlify or similar', desc:'These platforms often handle SSL automatically. But if your custom domain needs a cert, we cover it.', badge:'Usually Auto', color:'#7c3aed' },
               { id:'noserver', emoji:'🌐', title:'I just own a domain name, no hosting yet', desc:'Get your SSL certificate ready first, then choose a hosting provider. We explain what to look for.', badge:'Beginner', color:'#f59e0b' },
@@ -363,7 +363,7 @@ export default function GetStarted({ nav }) {
             </p>
             <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:16 }}>
               {[
-                ['fullchain.pem', '✅ Use this one on your server', '#1a56db'],
+                ['fullchain.pem', '✅ Use this one on your server', '#0e7fc0'],
                 ['key.pem', '🔑 Private key — keep secret!', '#ef4444'],
                 ['cert.pem', '(Not usually needed)', '#94a3b8'],
               ].map(([name, note, color]) => (
@@ -435,7 +435,7 @@ export default function GetStarted({ nav }) {
         </div>
 
         {/* Final CTA */}
-        <div style={{ background:'linear-gradient(135deg,#1e40af,#2563eb)', borderRadius:20, padding:'40px 36px', textAlign:'center', boxShadow:'0 20px 60px rgba(37,99,235,0.3)' }}>
+        <div style={{ background:'linear-gradient(135deg,#0369a1,#2563eb)', borderRadius:20, padding:'40px 36px', textAlign:'center', boxShadow:'0 20px 60px rgba(37,99,235,0.3)' }}>
           <div style={{ fontSize:48, marginBottom:16 }}>🔒</div>
           <h2 style={{ fontSize:28, fontWeight:900, color:'white', marginBottom:12, letterSpacing:'-0.5px' }}>Ready to secure your website?</h2>
           <p style={{ color:'rgba(255,255,255,0.85)', fontSize:16, marginBottom:28, lineHeight:1.7, maxWidth:500, margin:'0 auto 28px' }}>
