@@ -74,7 +74,7 @@ function CertExpand({ cert, nav, onClose, onDelete, onKeyDeleted }) {
 
   const handleRenew = () => {
     sessionStorage.setItem('prefill_domain', cert.domain)
-    nav('/buy')
+    onIssue?.()
   }
 
   const handleInstall = () => {
@@ -258,7 +258,7 @@ function CertExpand({ cert, nav, onClose, onDelete, onKeyDeleted }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────
-export default function CertInventory({ user, nav }) {
+export default function CertInventory({ user, nav, onIssue }) {
   const [certs, setCerts] = useState([])
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(null)
@@ -408,7 +408,7 @@ export default function CertInventory({ user, nav }) {
               {certs.length === 0 ? 'Issue your first SSL certificate to get started' : 'Try a different filter or search term'}
             </div>
             {certs.length === 0 && (
-              <button onClick={() => nav('/buy')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#10b981', color:'white', border:'none', borderRadius:6, padding:'8px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+              <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#10b981', color:'white', border:'none', borderRadius:6, padding:'8px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
                 <Plus size={12}/> Issue certificate
               </button>
             )}
