@@ -256,7 +256,7 @@ export default function Home({ nav }) {
               <p style={{ fontSize:11, color:'#a3a3a3', lineHeight:1.7 }}>Certificate Lifecycle Management Platform.<br/>Powered by TheSSLStore · DigiCert.</p>
             </div>
             {[
-              { t:'Product',   links:[['Features','#features'],['Pricing','/pricing'],['DNS Providers','/dns-providers']] },
+              { t:'Product',   links:[['Features','#features'],['Pricing','/pricing']] },
               { t:'Resources', links:[['Install Guide','/install'],['Knowledge Base','/knowledge-base'],['Get Started','/auth'],['Sign In','/auth']] },
               { t:'Company',   links:[['About','/about'],['Developer','/developer'],['Contact','/contact']] },
               { t:'Legal',     links:[['Privacy Policy','/privacy'],['Terms of Service','/terms']] },

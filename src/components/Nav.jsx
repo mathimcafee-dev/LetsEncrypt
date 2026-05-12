@@ -1,4 +1,4 @@
-import { LogIn, ChevronDown, ArrowRight, BookOpen, Globe, Code, FileText } from 'lucide-react'
+import { LogIn, ChevronDown, ArrowRight, BookOpen, Code, FileText } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Nav({ nav, page }) {
@@ -24,7 +24,6 @@ export default function Nav({ nav, page }) {
   const resources = [
     { path:'/install',         label:'Install Guide',   icon:BookOpen },
     { path:'/knowledge-base',  label:'Knowledge Base',  icon:FileText },
-    { path:'/dns-providers',   label:'DNS Providers',   icon:Globe },
     { path:'/developer',       label:'Developer',       icon:Code },
   ]
 
