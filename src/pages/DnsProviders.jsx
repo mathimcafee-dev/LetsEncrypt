@@ -623,6 +623,15 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
     }
     setError(''); setLoading(true)
     try {
+      // Separate sensitive credentials from basic fields
+      const credentialFields = {}
+      const sensitiveKeys = ['password', 'ssh_key', 'api_token', 'token', 'secret_key']
+      sensitiveKeys.forEach(k => { if (fields[k]?.trim()) credentialFields[k] = fields[k].trim() })
+
+      // cPanel default port is 2083, not 22
+      const defaultPort = type === 'cpanel' ? 2083 : type === 'plesk' ? 8443 : 22
+      const port = fields.port ? parseInt(fields.port) : defaultPort
+
       const body = {
         action: isEdit ? 'update' : 'save', user_id: userId,
         ...(isEdit && { id: editServer.id }),
@@ -630,8 +639,9 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
         host: fields.host.trim(), username: fields.username.trim(),
         domains: domains.split(',').map(d => d.trim()).filter(Boolean),
         install_mode: isVpsType ? installMode : 'agent',
-        port: fields.port ? parseInt(fields.port) : 22,
-        credentials: { ...fields }
+        port,
+        // Only send credentials if there are actual secret values
+        ...(Object.keys(credentialFields).length > 0 && { credentials: credentialFields })
       }
       const res = await fetch(SERVER_FN, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
