@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Plus, Trash2, RefreshCw, Eye, EyeOff, Globe, Server, Cloud,
   ChevronRight, Check, X, Search, Settings, ExternalLink,
@@ -594,8 +594,6 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
   const isEdit = !!editServer
   const [type, setType] = useState(editServer?.server_type || 'ssh')
   const [nickname, setNickname] = useState(editServer?.nickname || '')
-  // Pre-fill host + username from editServer (plain text in DB)
-  // Sensitive fields (token/password) stay blank — user types new one or leaves blank to keep existing
   const [fields, setFields] = useState(() => {
     if (!editServer) return {}
     return {
@@ -604,6 +602,8 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
       port: editServer.port ? String(editServer.port) : '',
     }
   })
+  // Refs for password/secret fields — uncontrolled to defeat autofill completely
+  const secretRefs = useRef({})
   const [showField, setShowField] = useState({})
   const [domains, setDomains] = useState((editServer?.domains || []).join(', '))
   const [installMode, setInstallMode] = useState(editServer?.install_mode || 'agent')
@@ -623,17 +623,17 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
     }
     setError(''); setLoading(true)
     try {
-      // Separate sensitive credentials from basic fields
+      // Read secret fields from refs (uncontrolled — immune to autofill)
       const credentialFields = {}
       const sensitiveKeys = ['password', 'ssh_key', 'api_token', 'token', 'secret_key']
-      sensitiveKeys.forEach(k => { if (fields[k]?.trim()) credentialFields[k] = fields[k].trim() })
+      sensitiveKeys.forEach(k => {
+        const val = secretRefs.current[k]?.value?.trim()
+        if (val) credentialFields[k] = val
+      })
 
       console.log('=== SUBMIT DEBUG ===')
-      console.log('fields keys:', Object.keys(fields))
-      console.log('fields.api_token length:', fields.api_token?.length)
-      console.log('fields.api_token value:', fields.api_token)
       console.log('credentialFields keys:', Object.keys(credentialFields))
-      console.log('credentialFields.api_token length:', credentialFields.api_token?.length)
+      console.log('api_token length:', credentialFields.api_token?.length)
       console.log('===================')
 
       // cPanel default port is 2083, not 22
@@ -726,18 +726,16 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
                   <>
                     <input
                       className="v2-input mono"
+                      ref={el => secretRefs.current[f.key] = el}
                       autoComplete="new-password"
                       data-lpignore="true"
                       data-form-type="other"
-                      name={f.type === 'password' ? `new-${f.key}` : f.key}
-                      type={f.type === 'password' && !showField[f.key] ? 'password' : 'text'}
-                      placeholder={isEdit && f.type === 'password' && editServer?.credentials_enc
+                      name={`sslvault-${f.key}-${Math.random()}`}
+                      type={showField[f.key] ? 'text' : 'password'}
+                      placeholder={isEdit && editServer?.credentials_enc
                         ? '(saved — type new value to replace)'
                         : f.placeholder}
-                      readOnly={f.type === 'password' && !fields[`_touched_${f.key}`]}
-                      onFocus={() => f.type === 'password' && setFields(s => ({ ...s, [`_touched_${f.key}`]: true }))}
-                      value={fields[f.key] || ''}
-                      onChange={e => setFields(s => ({ ...s, [f.key]: e.target.value }))}
+                      defaultValue=""
                       style={f.type === 'password' ? { paddingRight: 36 } : {}}
                     />
                     {f.type === 'password' && (
