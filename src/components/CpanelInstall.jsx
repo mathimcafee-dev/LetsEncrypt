@@ -94,14 +94,11 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
   const [saveForFuture, setSaveForFuture] = useState(true)
 
   // Flow state
-  const [phase, setPhase] = useState('form') // form | verifying | installing | verifying_ssl | done | error
-  const [steps, setSteps] = useState({
-    creds: null,   // null | active | done | error
-    install: null,
-    verify: null,
-  })
+  const [phase, setPhase] = useState('form')
+  const [steps, setSteps] = useState({ creds: null, install: null, verify: null })
   const [errorMsg, setErrorMsg] = useState('')
   const [sslVerified, setSslVerified] = useState(null)
+  const [verifyPending, setVerifyPending] = useState(false)
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
@@ -123,8 +120,6 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
     setSavedCreds(prev => prev.filter(c => c.id !== credId))
     if (selectedCred === credId) setSelectedCred(null)
   }
-
-  const [verifyPending, setVerifyPending] = useState(false)
 
   const handleInstall = async () => {
     // Read values from uncontrolled refs
