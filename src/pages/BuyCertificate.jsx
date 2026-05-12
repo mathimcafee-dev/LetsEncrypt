@@ -189,7 +189,7 @@ const STYLES = `
 .ic-sum-foot {
   border-top: 1px solid #f1f5f9; padding: 14px 16px;
   background: #fafbfc;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  display: flex; flex-direction: column; gap: 10px;
 }
 .ic-price-label { font-size: 10px; color: #94a3b8; margin-bottom: 2px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
 .ic-price-val { font-size: 26px; font-weight: 900; color: #0a0a0a; letter-spacing: -0.8px; line-height: 1; }
@@ -555,12 +555,16 @@ export default function BuyCertificate({ nav }) {
               )}
 
               {/* Domain */}
-              <div className="ic-domain">
-                <label className="ic-domain-label">Domain name</label>
-                <div className="ic-domain-wrap">
-                  <Globe size={15} className="ic-domain-icon"/>
-                  <input className="ic-domain-input" placeholder="yourdomain.com"
-                    value={domain} onChange={e => setD(e.target.value)}/>
+              <div className="ic-card" style={{ marginBottom:12 }}>
+                <div className="ic-card-head">
+                  <span className="ic-section-label">Domain name</span>
+                </div>
+                <div className="ic-card-body">
+                  <div className="ic-domain-wrap">
+                    <Globe size={15} className="ic-domain-icon"/>
+                    <input className="ic-domain-input" style={{ height:40, fontSize:14 }} placeholder="yourdomain.com"
+                      value={domain} onChange={e => setD(e.target.value)}/>
+                  </div>
                 </div>
               </div>
 
@@ -625,7 +629,7 @@ export default function BuyCertificate({ nav }) {
                     <div className="ic-price-val">€{price}</div>
                     <div className="ic-price-note">Demo mode · no payment required</div>
                   </div>
-                  <button className="ic-btn ic-btn-primary ic-btn-full" style={{ marginTop:12 }} onClick={place} disabled={busy}>
+                  <button className="ic-btn ic-btn-green ic-btn-full" onClick={place} disabled={busy}>
                     {busy
                       ? <><RefreshCw size={14} className="ic-spin"/> Placing order…</>
                       : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
