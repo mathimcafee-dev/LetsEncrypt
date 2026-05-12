@@ -113,19 +113,27 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
   useEffect(() => { if (user) setEm(e => e || user.email || '') }, [user])
   useEffect(() => {
     if (!user) return
-    supabase.from('tss_orders').select('id,domain,tss_order_id,dv_cname_host,dv_cname_value')
+    supabase.from('tss_orders').select('id,domain,tss_order_id,dv_cname_host,dv_cname_value,dv_type')
       .eq('user_id', user.id).eq('status', 'dv_pending')
       .order('created_at', { ascending: false }).limit(1)
       .then(({ data }) => { if (data?.length) setPend(data[0]) })
   }, [user])
   useEffect(() => {
-    if (step !== 'dv' || !ord?.order_id || ord?.txt_value) return
+    if (step !== 'dv' || !ord?.order_id || ord?.txt_value || ord?.cname_value) return
     setPoll(true); let n = 0
     const iv = setInterval(async () => {
       n++
       try {
         const s = await call('check_status', { order_id: ord.order_id })
-        if (s.txt_value) { setOrd(p => ({...p, txt_name: s.txt_name, txt_value: s.txt_value})); setPoll(false); clearInterval(iv) }
+        if (s.txt_value || s.cname_value) {
+          setOrd(p => ({...p,
+            txt_name:    s.txt_name    || p.txt_name,
+            txt_value:   s.txt_value   || p.txt_value,
+            cname_name:  s.cname_name  || p.cname_name,
+            cname_value: s.cname_value || p.cname_value,
+          }))
+          setPoll(false); clearInterval(iv)
+        }
         if (s.status === 'active') { setStep('done'); setPoll(false); clearInterval(iv) }
       } catch(e) {}
       if (n >= 24) { setPoll(false); clearInterval(iv) }
@@ -160,6 +168,22 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
         await new Promise(x => setTimeout(x, 3000))
         const s = await call('check_status', { order_id: r.order_id })
         if (s.txt_value || s.cname_value) { dv = {...r, ...s}; break }
+      }
+      // Fallback: if TSS polling didn't return DV value, read directly from DB
+      if (!dv.txt_value && !dv.cname_value) {
+        const { data: dbOrder } = await supabase
+          .from('tss_orders').select('dv_cname_host,dv_cname_value,dv_type')
+          .eq('id', r.order_id).single()
+        if (dbOrder?.dv_cname_value) {
+          const isCname = dbOrder.dv_type === 'CNAME'
+          dv = { ...r,
+            txt_name:   isCname ? undefined : (dbOrder.dv_cname_host || clean(domain)),
+            txt_value:  isCname ? undefined : dbOrder.dv_cname_value,
+            cname_name:  isCname ? dbOrder.dv_cname_host : undefined,
+            cname_value: isCname ? dbOrder.dv_cname_value : undefined,
+            dv_type:    dbOrder.dv_type || 'TXT',
+          }
+        }
       }
     }
     setBusy(false); setOrd(dv); setStep('dv')
