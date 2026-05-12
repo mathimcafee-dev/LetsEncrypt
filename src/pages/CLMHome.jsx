@@ -103,10 +103,6 @@ export default function CLMHome({ user, nav }) {
       <div style={{ display:'flex', flex:1, background:'#f4f6f9' }}>
         {/* SIDEBAR */}
         <nav style={{ width:210, background:'#1c2d3e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto' }}>
-          <button style={{ margin:'12px 10px 8px', background:'#10b981', color:'white', border:'none', borderRadius:6, padding:'9px 12px', fontSize:11, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontFamily:'inherit' }} onClick={() => setSection('issue')}>
-            <Plus size={12}/> Issue Certificate
-          </button>
-
           {[
             { label:'Main',      items: NAV_MAIN },
             { label:'Manage',    items: NAV_MANAGE },
@@ -127,13 +123,8 @@ export default function CLMHome({ user, nav }) {
 
         {/* MAIN CONTENT */}
         <div style={{ flex:1, minWidth:0, display:'flex', flexDirection:'column' }}>
-          <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', justifyContent:'space-between', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
+          <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
             <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
-            <div style={{ display:'flex', gap:10 }}>
-              <button style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#00b48a', color:'white', border:'none', borderRadius:7, padding:'7px 14px', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }} onClick={() => setSection('issue')}>
-                <Plus size={13}/> Issue Certificate
-              </button>
-            </div>
           </div>
           <div style={{ flex:1, overflowY:'auto' }}>
             {renderContent()}
