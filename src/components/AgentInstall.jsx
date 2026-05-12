@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Server, Globe, Copy, Check, RefreshCw, CheckCircle, Shield } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { Server, Globe, Copy, Check, RefreshCw, CheckCircle, Shield } from 'lucide-react'
 
 const DAEMON_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
 
@@ -33,11 +32,9 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
     if (!userId) return
     ;(async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!session) return
         const res = await fetch(DAEMON_FN, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'list_agents', user_id: userId })
         })
         const data = await res.json()
@@ -53,11 +50,17 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
     if (!selectedAgent) { setError('Select an agent first'); return }
     setDispatching(true); setError('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch(DAEMON_FN, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-        body: JSON.stringify({ action: 'dispatch_install', agent_id: selectedAgent, cert_id: cert.id, user_id: userId })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'dispatch',
+          user_id: userId,
+          agent_id: selectedAgent,
+          cert_id: cert.id,
+          domain: cert.domain,
+          job_type: 'install'
+        })
       })
       const data = await res.json()
       if (data.ok) setDispatched(true)
