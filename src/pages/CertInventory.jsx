@@ -343,6 +343,38 @@ export default function CertInventory({ user, nav, onIssue }) {
     if (cert) setAgentCert(cert)
   }, [certs])
 
+  const downloadCSV = () => {
+    const rows = [
+      ['Domain','Order ID','Product','Status','Cert Start','Cert Expiry','Days Remaining','Order Date','Order End','Environment','Install Method','Install Status'],
+      ...certs.map(cert => {
+        const order = orders[cert.tss_order_id]
+        const days = daysLeft(cert.expires_at)
+        const si = statusInfo(days, cert.status)
+        const orderEnd = order?.years ? new Date(new Date(order.created_at).getTime() + order.years*365*86400000).toISOString() : ''
+        return [
+          cert.domain,
+          cert.tss_order_id || '',
+          productName(order?.product_code, cert.cert_type),
+          si.label,
+          fmtDate(cert.issued_at),
+          fmtDate(cert.expires_at),
+          days != null ? days : '',
+          fmtDate(order?.created_at || cert.created_at),
+          fmtDate(orderEnd),
+          cert.is_sandbox ? 'Sandbox' : 'Production',
+          cert.install_method || '',
+          cert.install_status || '',
+        ]
+      })
+    ]
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type:'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = `sslvault-certificates-${new Date().toISOString().slice(0,10)}.csv`; a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const handleDelete = async (id) => {
     await supabase.from('certificates').delete().eq('id',id)
     setCerts(prev => prev.filter(c => c.id!==id))
@@ -381,27 +413,66 @@ export default function CertInventory({ user, nav, onIssue }) {
       {/* Header */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
         <div>
-          <h2 style={{ fontSize:20, fontWeight:600, color:'#0a0a0a', margin:0, letterSpacing:'-0.3px' }}>Total Orders</h2>
+          <h2 style={{ fontSize:20, fontWeight:600, color:'#0a0a0a', margin:0, letterSpacing:'-0.3px' }}>Orders</h2>
           <div style={{ fontSize:11, color:'#a3a3a3', marginTop:4 }}>{total} certificate{total!==1?'s':''} in inventory</div>
         </div>
-        <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#10b981', color:'white', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
-          <Plus size={13}/> Issue Certificate
-        </button>
+        <div style={{ display:'flex', gap:8 }}>
+          <button onClick={downloadCSV} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'#525252', border:'0.5px solid #e8edf2', borderRadius:6, padding:'8px 14px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+            <Download size={13}/> Download CSV
+          </button>
+          <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#10b981', color:'white', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+            <Plus size={13}/> Issue Certificate
+          </button>
+        </div>
       </div>
 
-      {/* KPI strip */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:20 }}>
-        {[
-          { label:'Total Active',   val:active,   color:'#047857', bg:'#f0fdf4', border:'#bbf7d0' },
-          { label:'Expiring ≤30d',  val:expiring, color:'#b45309', bg:'#fefce8', border:'#fde68a' },
-          { label:'Expired',        val:expired,  color:'#dc2626', bg:'#fef2f2', border:'#fecaca' },
-          { label:'Total Orders',   val:total,    color:'#0a0a0a', bg:'white',   border:'#e8edf2' },
-        ].map(({ label,val,color,bg,border }) => (
-          <div key={label} style={{ background:bg, border:`0.5px solid ${border}`, borderRadius:8, padding:'14px 16px' }}>
-            <div style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:6 }}>{label}</div>
-            <div style={{ fontSize:28, fontWeight:600, color, lineHeight:1, letterSpacing:'-.5px' }}>{loading?'—':val}</div>
+      {/* Alert strips — DigiCert style */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:20 }}>
+        {/* Certificate alerts */}
+        <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'16px 20px' }}>
+          <div style={{ fontSize:12, fontWeight:600, color:'#0a0a0a', marginBottom:14 }}>Certificate alerts</div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
+            {[
+              { label:'Expired in last 7 days',  val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=-7&&d<0 }).length, color:'#dc2626', filter:'Exp7' },
+              { label:'Expires in 0–30 days',    val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=0&&d<=30&&c.status==='active' }).length, color:'#d97706', filter:'Exp30' },
+              { label:'Expires in 31–60 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>30&&d<=60&&c.status==='active' }).length, color:'#d97706', filter:'Exp60' },
+              { label:'Expires in 61–90 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>60&&d<=90&&c.status==='active' }).length, color:'#10b981', filter:'Exp90' },
+            ].map(({ label, val, color, filter:f }, i) => (
+              <div key={label} style={{ padding:'0 16px 0 0', borderRight: i<3 ? '0.5px solid #f1f5f9' : 'none', marginRight: i<3 ? 16 : 0 }}>
+                <div style={{ fontSize:9, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.3px', marginBottom:6, lineHeight:1.4 }}>{label}</div>
+                <div style={{ display:'flex', alignItems:'baseline', gap:6 }}>
+                  <span style={{ fontSize:26, fontWeight:700, color, lineHeight:1 }}>{loading?'—':val}</span>
+                  {val > 0 && (
+                    <button onClick={() => { setFilter(f); setSearch('') }} style={{ fontSize:10, color:'#3b82f6', background:'none', border:'none', cursor:'pointer', padding:0, fontFamily:'inherit', textDecoration:'underline' }}>view</button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
+        {/* Order alerts */}
+        <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'16px 20px' }}>
+          <div style={{ fontSize:12, fontWeight:600, color:'#0a0a0a', marginBottom:14 }}>Order alerts</div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
+            {[
+              { label:'Expired in last 7 days',  val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=-7&&d<0 }).length, color:'#dc2626', filter:'Exp7' },
+              { label:'Expires in 0–30 days',    val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=0&&d<=30&&c.status==='active' }).length, color:'#d97706', filter:'Exp30' },
+              { label:'Expires in 31–60 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>30&&d<=60&&c.status==='active' }).length, color:'#d97706', filter:'Exp60' },
+              { label:'Expires in 61–90 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>60&&d<=90&&c.status==='active' }).length, color:'#10b981', filter:'Exp90' },
+            ].map(({ label, val, color, filter:f }, i) => (
+              <div key={label} style={{ padding:'0 16px 0 0', borderRight: i<3 ? '0.5px solid #f1f5f9' : 'none', marginRight: i<3 ? 16 : 0 }}>
+                <div style={{ fontSize:9, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.3px', marginBottom:6, lineHeight:1.4 }}>{label}</div>
+                <div style={{ display:'flex', alignItems:'baseline', gap:6 }}>
+                  <span style={{ fontSize:26, fontWeight:700, color, lineHeight:1 }}>{loading?'—':val}</span>
+                  {val > 0 && (
+                    <button onClick={() => { setFilter(f); setSearch('') }} style={{ fontSize:10, color:'#3b82f6', background:'none', border:'none', cursor:'pointer', padding:0, fontFamily:'inherit', textDecoration:'underline' }}>view</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Filter bar */}
@@ -444,12 +515,14 @@ export default function CertInventory({ user, nav, onIssue }) {
       {/* Table */}
       <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, overflow:'hidden' }}>
         {/* Header */}
-        <div style={{ display:'grid', gridTemplateColumns:'1.6fr 90px 1.8fr 100px 80px 36px', padding:'10px 18px', background:'#f8fafc', borderBottom:'0.5px solid #e8edf2', fontSize:11, fontWeight:600, color:'#737373', letterSpacing:'.3px', textTransform:'uppercase' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'#f8fafc', borderBottom:'0.5px solid #e8edf2', fontSize:11, fontWeight:600, color:'#737373', letterSpacing:'.3px', textTransform:'uppercase' }}>
           <div>Domain</div>
           <div>Order ID</div>
           <div>Product</div>
-          <div>Expiry</div>
           <div>Status</div>
+          <div>Certificate Validity</div>
+          <div>Order Date</div>
+          <div>Order End</div>
           <div></div>
         </div>
 
@@ -471,27 +544,52 @@ export default function CertInventory({ user, nav, onIssue }) {
             <div key={cert.id}>
               <div
                 onClick={() => setExpanded(isExpanded ? null : cert.id)}
-                style={{ display:'grid', gridTemplateColumns:'1.6fr 90px 1.8fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid #f1f5f9', background:isExpanded?'#f0fdf4':'white', transition:'background 0.1s' }}
+                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid #f1f5f9', background:isExpanded?'#f0fdf4':'white', transition:'background 0.1s' }}
                 onMouseEnter={e => { if(!isExpanded) e.currentTarget.style.background='#fafafa' }}
                 onMouseLeave={e => { if(!isExpanded) e.currentTarget.style.background='white' }}
               >
                 {/* Domain */}
                 <div style={{ display:'flex', flexDirection:'column', gap:3, minWidth:0 }}>
-                  <span style={{ fontFamily:"'SF Mono','Menlo',monospace", fontSize:13, color:'#10b981', fontWeight:500, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</span>
-                  <span style={{ fontSize:10, color:'#a3a3a3' }}>{fmtDate(cert.created_at)} · {cert.is_sandbox?'Sandbox':'Production'}</span>
+                  <span style={{ fontFamily:"'SF Mono','Menlo',monospace", fontSize:12, color:'#10b981', fontWeight:500, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</span>
+                  <span style={{ fontSize:10, color:'#a3a3a3' }}>{cert.is_sandbox?'Sandbox':'Production'}</span>
                 </div>
                 {/* Order ID */}
-                <div style={{ fontSize:11, color:'#525252', fontFamily:"'SF Mono','Menlo',monospace" }}>{cert.tss_order_id||'—'}</div>
+                <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
+                  <span style={{ fontSize:11, color:'#3b82f6', fontFamily:"'SF Mono','Menlo',monospace", cursor:'pointer' }} onClick={e => { e.stopPropagation(); setExpanded(isExpanded?null:cert.id) }}>{cert.tss_order_id||'—'}</span>
+                  {cert.tss_order_id && <span style={{ fontSize:9, color:'#a3a3a3' }}>Quick View</span>}
+                </div>
                 {/* Product */}
-                <div style={{ display:'flex', flexDirection:'column', gap:3 }}>
+                <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
                   <span style={{ fontSize:12, color:'#0a0a0a', fontWeight:500 }}>{productName(order?.product_code, cert.cert_type)}</span>
                   {order && <span style={{ fontSize:10, color:'#a3a3a3' }}>Transaction ID: {order.tss_order_id}</span>}
                 </div>
-                {/* Expiry */}
-                <div style={{ fontSize:12, color:si.color, fontWeight:500 }}>{fmtDate(cert.expires_at)}</div>
                 {/* Status */}
                 <div>
-                  <span style={{ display:'inline-flex', alignItems:'center', fontSize:11, fontWeight:600, padding:'3px 9px', borderRadius:4, background:si.bg, color:si.color, border:`0.5px solid ${si.border}` }}>{si.label}</span>
+                  <span style={{ display:'inline-flex', alignItems:'center', fontSize:11, fontWeight:600, padding:'3px 8px', borderRadius:4, background:si.bg, color:si.color, border:`0.5px solid ${si.border}` }}>{si.label}</span>
+                </div>
+                {/* Certificate validity — date range */}
+                <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
+                  {cert.issued_at && cert.expires_at
+                    ? <span style={{ fontSize:11, color:'#525252' }}>{fmtDate(cert.issued_at)} → <span style={{ color:si.color, fontWeight:500 }}>{fmtDate(cert.expires_at)}</span></span>
+                    : <span style={{ fontSize:11, color:'#a3a3a3' }}>—</span>
+                  }
+                  {days != null && !['revoked','sandbox_revoked'].includes(cert.status) && (
+                    <span style={{ fontSize:10, color: days < 0 ? '#dc2626' : days <= 30 ? '#d97706' : '#a3a3a3' }}>
+                      {days < 0 ? `Expired ${Math.abs(days)}d ago` : `${days}d remaining`}
+                    </span>
+                  )}
+                </div>
+                {/* Order date */}
+                <div style={{ fontSize:11, color:'#525252' }}>{fmtDate(order?.created_at || cert.created_at)}</div>
+                {/* Order end date */}
+                <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
+                  {order?.years
+                    ? <>
+                        <span style={{ fontSize:11, color:'#525252' }}>{fmtDate(new Date(new Date(order.created_at).getTime() + order.years*365*86400000).toISOString())}</span>
+                        <span style={{ fontSize:10, color:'#a3a3a3' }}>{order.years}-year plan</span>
+                      </>
+                    : <span style={{ fontSize:11, color:'#a3a3a3' }}>—</span>
+                  }
                 </div>
                 {/* Chevron */}
                 <div style={{ color:isExpanded?'#10b981':'#a3a3a3', display:'flex', justifyContent:'center' }}>
