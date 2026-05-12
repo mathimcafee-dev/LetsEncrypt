@@ -54,7 +54,7 @@ export default function CLMHome({ user, nav }) {
   }
 
   const NavItem = ({ id, label, icon:Icon }) => (
-    <button style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 16px', cursor:'pointer', fontSize:12, fontWeight:500, color: section===id ? 'white' : 'rgba(255,255,255,0.55)', background: section===id ? 'rgba(0,180,138,0.15)' : 'none', borderLeft: section===id ? '3px solid #00b48a' : '3px solid transparent', border:'none', width:'100%', textAlign:'left', fontFamily:'inherit', transition:'all 0.15s' }} onClick={() => setSection(id)}>
+    <button style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 16px', cursor:'pointer', fontSize:12, fontWeight:500, color: section===id ? 'white' : 'rgba(255,255,255,0.75)', background: section===id ? '#0e7fc0' : 'none', borderLeft: section===id ? '3px solid #00a3e0' : '3px solid transparent', border:'none', width:'100%', textAlign:'left', fontFamily:'inherit', transition:'all 0.15s' }} onClick={() => setSection(id)}>
       <Icon size={14} strokeWidth={1.8}/>{label}
     </button>
   )
@@ -83,17 +83,17 @@ export default function CLMHome({ user, nav }) {
   return (
     <div style={{ display:'flex', flexDirection:'column', minHeight:'calc(100vh - 0px)', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
       {/* SLIM TOP BAR */}
-      <div style={{ background:'#1c2d3e', height:44, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', flexShrink:0, position:'sticky', top:0, zIndex:50 }}>
+      <div style={{ background:'#0d3c6e', height:44, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', flexShrink:0, position:'sticky', top:0, zIndex:50 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <div style={{ width:26, height:26, borderRadius:6, background:'linear-gradient(135deg,#00b48a,#007a5e)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+          <div style={{ width:26, height:26, borderRadius:6, background:'#10b981', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <Shield size={13} color="white" strokeWidth={2.5}/>
           </div>
           <span style={{ fontSize:13, fontWeight:700, color:'white' }}>SSLVault</span>
-          <span style={{ fontSize:10, color:'rgba(255,255,255,0.35)', marginLeft:2 }}>CLM PLATFORM</span>
+          <span style={{ fontSize:10, color:'rgba(255,255,255,0.4)', marginLeft:2 }}>CLM PLATFORM</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:16 }}>
           <span style={{ fontSize:11, color:'rgba(255,255,255,0.5)' }}>{email}</span>
-          <button onClick={handleSignOut} style={{ display:'flex', alignItems:'center', gap:5, background:'none', border:'none', cursor:'pointer', color:'rgba(255,255,255,0.45)', fontSize:11, fontFamily:'inherit', padding:0 }}>
+          <button onClick={handleSignOut} style={{ display:'flex', alignItems:'center', gap:5, background:'none', border:'none', cursor:'pointer', color:'rgba(255,255,255,0.5)', fontSize:11, fontFamily:'inherit', padding:0 }}>
             <LogOut size={13}/> Sign out
           </button>
         </div>
@@ -102,22 +102,22 @@ export default function CLMHome({ user, nav }) {
       {/* MAIN LAYOUT */}
       <div style={{ display:'flex', flex:1, background:'#f4f6f9' }}>
         {/* SIDEBAR */}
-        <nav style={{ width:210, background:'#1c2d3e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto' }}>
+        <nav style={{ width:210, background:'#0d3c6e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto' }}>
           {[
             { label:'Main',      items: NAV_MAIN },
             { label:'Manage',    items: NAV_MANAGE },
             { label:'Resources', items: NAV_RESOURCES },
             { label:'More',      items: NAV_MORE },
           ].map(({ label, items }, i) => (
-            <div key={label} style={{ padding:'8px 0 2px', borderTop: i > 0 ? '0.5px solid rgba(255,255,255,0.06)' : 'none', marginTop: i > 0 ? 4 : 0 }}>
-              <div style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.7)', letterSpacing:'0.6px', textTransform:'uppercase', padding:'6px 16px 4px' }}>{label}</div>
+            <div key={label} style={{ padding:'8px 0 2px', borderTop: i > 0 ? '0.5px solid rgba(255,255,255,0.1)' : 'none', marginTop: i > 0 ? 4 : 0 }}>
+              <div style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.6px', textTransform:'uppercase', padding:'6px 16px 4px' }}>{label}</div>
               {items.map(item => <NavItem key={item.id} {...item}/>)}
             </div>
           ))}
 
-          <div style={{ marginTop:'auto', padding:'12px 16px', borderTop:'1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ fontSize:9, color:'rgba(255,255,255,0.3)', marginBottom:2 }}>Signed in as</div>
-            <div style={{ fontSize:10, color:'rgba(255,255,255,0.55)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{email}</div>
+          <div style={{ marginTop:'auto', padding:'12px 16px', borderTop:'0.5px solid rgba(255,255,255,0.1)' }}>
+            <div style={{ fontSize:9, color:'rgba(255,255,255,0.35)', marginBottom:2 }}>Signed in as</div>
+            <div style={{ fontSize:10, color:'rgba(255,255,255,0.6)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{email}</div>
           </div>
         </nav>
 
