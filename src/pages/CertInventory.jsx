@@ -44,7 +44,7 @@ function dotBg(dot) {
 }
 
 // ── Inline expanded row ───────────────────────────────────────────────
-function CertExpand({ cert, nav, onClose, onDelete, onKeyDeleted, onInstall }) {
+function CertExpand({ cert, nav, onClose, onDelete, onKeyDeleted, onInstall, onIssue }) {
   const [showKey, setShowKey] = useState(false)
   const [copiedField, setCopiedField] = useState(null)
   const [revokeOpen, setRevokeOpen] = useState(false)
@@ -538,6 +538,7 @@ export default function CertInventory({ user, nav, onIssue }) {
                   onDelete={handleDelete}
                   onKeyDeleted={handleKeyDeleted}
                   onInstall={setAgentCert}
+                  onIssue={onIssue}
                 />
               )}
             </div>
