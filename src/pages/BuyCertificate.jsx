@@ -1,168 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, AlertTriangle, RefreshCw, Copy, Check,
-         Lock, Zap, Globe, Server, ArrowRight, ShieldCheck, Clock, RotateCcw } from 'lucide-react'
+         Lock, Zap, Globe, Server, ArrowRight, Clock, RotateCcw, Terminal } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import '../styles/design-v2.css'
 
-const URL = 'https://frthcwkntciaakqsppss.supabase.co'
+const SUPABASE_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const IS_SANDBOX = true
 
 const PRODUCTS = [
   { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', price: 19, wildcard: false, available: true },
 ]
-
-const STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-
-.ec-root {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  background: #f4f6f9;
-  min-height: calc(100vh - 60px);
-  -webkit-font-smoothing: antialiased;
-  padding: 0 0 80px;
-}
-.ec-topbar {
-  background: #fff; border-bottom: 1px solid #e2e6ed;
-  padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px;
-}
-.ec-topbar-left { display: flex; align-items: center; gap: 10px; }
-.ec-topbar-icon { width: 28px; height: 28px; border-radius: 6px; background: #1a56db; display: flex; align-items: center; justify-content: center; }
-.ec-topbar-title { font-size: 13px; font-weight: 600; color: #111827; letter-spacing: -0.1px; }
-.ec-topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.ec-chip { display: inline-flex; align-items: center; gap: 4px; border: 1px solid #e2e6ed; border-radius: 4px; padding: 3px 8px; font-size: 11px; font-weight: 500; color: #6b7280; background: #fff; }
-.ec-chip-blue  { border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8; }
-.ec-chip-green { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
-.ec-sandbox-tag { background: #7c3aed; color: white; font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; border-radius: 3px; padding: 3px 7px; }
-.ec-progress { background: #fff; border-bottom: 1px solid #e2e6ed; padding: 0 32px; display: flex; align-items: center; height: 48px; }
-.ec-step-item { display: flex; align-items: center; gap: 8px; padding: 0 16px 0 0; }
-.ec-step-item:first-child { padding-left: 0; }
-.ec-step-num { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; transition: all 0.2s; }
-.ec-step-num.done   { background: #15803d; color: #fff; }
-.ec-step-num.active { background: #1a56db; color: #fff; }
-.ec-step-num.idle   { background: #e5e7eb; color: #9ca3af; }
-.ec-step-label { font-size: 12px; font-weight: 500; transition: color 0.2s; }
-.ec-step-label.done   { color: #15803d; }
-.ec-step-label.active { color: #1a56db; }
-.ec-step-label.idle   { color: #9ca3af; }
-.ec-step-sep { height: 1px; width: 32px; background: #e5e7eb; flex-shrink: 0; margin: 0 4px; transition: background 0.3s; }
-.ec-step-sep.done { background: #15803d; }
-.ec-body { max-width: 1120px; margin: 0 auto; padding: 24px 32px 0; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
-.ec-body-full { max-width: 760px; margin: 0 auto; padding: 24px 32px 0; }
-.ec-section { background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
-.ec-section-head { padding: 12px 20px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; background: #fafbfc; }
-.ec-section-title { font-size: 11px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.7px; }
-.ec-section-meta  { font-size: 10px; color: #9ca3af; font-weight: 500; }
-.ec-section-body  { padding: 20px; }
-.ec-product-card { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border-radius: 6px; cursor: pointer; border: 1.5px solid transparent; background: #f9fafb; transition: all 0.15s; margin-bottom: 6px; }
-.ec-product-card:last-child { margin-bottom: 0; }
-.ec-product-card:hover { background: #f3f4f6; border-color: #d1d5db; }
-.ec-product-card.selected { background: #eff6ff; border-color: #3b82f6; }
-.ec-product-check { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #d1d5db; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.ec-product-card.selected .ec-product-check { background: #1a56db; border-color: #1a56db; }
-.ec-product-info { flex: 1; min-width: 0; }
-.ec-product-name { font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
-
-.ec-product-price { flex-shrink: 0; text-align: right; }
-.ec-price-big { font-size: 16px; font-weight: 700; color: #111827; }
-.ec-price-yr  { font-size: 10px; color: #9ca3af; }
-.ec-type-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; }
-.ec-dv { background: #dcfce7; color: #15803d; }
-.ec-ov { background: #dbeafe; color: #1d4ed8; }
-.ec-ev { background: #fef3c7; color: #b45309; }
-.ec-field { margin-bottom: 14px; }
-.ec-field:last-child { margin-bottom: 0; }
-.ec-label { display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 5px; }
-.ec-label-req { color: #ef4444; margin-left: 2px; }
-.ec-input { width: 100%; box-sizing: border-box; padding: 9px 12px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: #111827; background: #fff; border: 1px solid #d1d5db; border-radius: 6px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
-.ec-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
-.ec-input::placeholder { color: #d1d5db; }
-.ec-input-domain { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; padding-left: 36px; height: 42px; }
-.ec-domain-wrap { position: relative; }
-.ec-domain-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none; }
-.ec-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-@media (max-width:520px) { .ec-row2 { grid-template-columns: 1fr; } }
-.ec-validity { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.ec-val-opt { padding: 10px 14px; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; text-align: left; border: 1.5px solid #e5e7eb; background: #f9fafb; transition: all 0.15s; }
-.ec-val-opt:hover { border-color: #9ca3af; background: #f3f4f6; }
-.ec-val-opt.sel { border-color: #1a56db; background: #eff6ff; }
-.ec-val-yr { font-size: 13px; font-weight: 600; color: #111827; }
-.ec-val-opt.sel .ec-val-yr { color: #1a56db; }
-.ec-val-pr { font-size: 11px; color: #9ca3af; margin-top: 1px; }
-.ec-val-opt.sel .ec-val-pr { color: #3b82f6; }
-.ec-error { display: flex; gap: 8px; align-items: flex-start; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 10px 13px; font-size: 12px; color: #dc2626; margin-top: 12px; }
-.ec-pending { display: flex; align-items: center; gap: 10px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; }
-.ec-pending-info { flex: 1; min-width: 0; }
-.ec-pending-title { font-size: 12px; font-weight: 600; color: #92400e; }
-.ec-pending-sub   { font-size: 11px; color: #b45309; margin-top: 1px; }
-.ec-summary { background: #111827; border: 1px solid #1f2937; border-radius: 8px; overflow: hidden; position: sticky; top: 20px; }
-.ec-summary-head { padding: 16px 20px; border-bottom: 1px solid #1f2937; }
-.ec-summary-title { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; }
-.ec-sum-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; margin-bottom: 7px; gap: 8px; }
-.ec-sum-row:last-child { margin-bottom: 0; }
-.ec-sum-key { color: #6b7280; flex-shrink: 0; }
-.ec-sum-val { color: #e5e7eb; font-weight: 500; text-align: right; }
-.ec-sum-val.green { color: #34d399; }
-.ec-sum-val.blue  { color: #60a5fa; }
-.ec-summary-price { padding: 16px 20px; border-bottom: 1px solid #1f2937; }
-.ec-price-label { font-size: 10px; color: #6b7280; font-weight: 500; letter-spacing: 0.3px; text-transform: uppercase; margin-bottom: 4px; }
-.ec-price-amount { font-size: 28px; font-weight: 700; color: #f9fafb; letter-spacing: -1px; line-height: 1; }
-.ec-price-note   { font-size: 10px; color: #4b5563; margin-top: 4px; }
-.ec-summary-cta { padding: 16px 20px; }
-.ec-btn-issue { width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px; background: #1a56db; color: #fff; border: none; border-radius: 6px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-.ec-btn-issue:hover:not(:disabled) { background: #1d4ed8; }
-.ec-btn-issue:disabled { background: #374151; color: #6b7280; cursor: not-allowed; }
-.ec-trust-list { padding: 14px 20px; display: flex; flex-direction: column; gap: 8px; }
-.ec-trust-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6b7280; }
-.ec-trust-item svg { flex-shrink: 0; color: #34d399; }
-.ec-dv-header { background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 14px; }
-.ec-dv-icon-wrap { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; background: #fef3c7; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; }
-.ec-dv-title { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
-.ec-dv-sub   { font-size: 12px; color: #6b7280; line-height: 1.5; }
-.ec-order-badge { flex-shrink: 0; margin-left: auto; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: #374151; font-family: 'DM Mono', monospace; }
-.ec-dns-panel { background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
-.ec-dns-panel-head { background: #111827; padding: 10px 16px; display: flex; align-items: center; gap: 6px; }
-.ec-dns-dot { width: 10px; height: 10px; border-radius: 50%; }
-.ec-dns-panel-name { font-size: 11px; color: #9ca3af; font-family: 'DM Mono', monospace; margin-left: 4px; }
-.ec-dns-table { width: 100%; border-collapse: collapse; }
-.ec-dns-tr { border-bottom: 1px solid #f3f4f6; }
-.ec-dns-tr:last-child { border-bottom: none; }
-.ec-dns-key { padding: 11px 16px; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; width: 80px; vertical-align: middle; }
-.ec-dns-val { padding: 11px 16px 11px 0; font-size: 12px; color: #111827; font-family: 'DM Mono', monospace; vertical-align: middle; }
-.ec-dns-val.green { color: #15803d; font-weight: 600; }
-.ec-dns-val.dim   { color: #9ca3af; display: flex; align-items: center; gap: 6px; }
-.ec-dns-copy { padding: 11px 16px 11px 0; text-align: right; vertical-align: middle; }
-.ec-feedback { display: flex; gap: 8px; align-items: flex-start; border-radius: 0; padding: 10px 16px; font-size: 12px; margin: 0; border-top: 1px solid transparent; }
-.ec-feedback.ok   { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
-.ec-feedback.err  { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
-.ec-feedback.warn { background: #fffbeb; border-color: #fde68a; color: #92400e; }
-.ec-dv-actions { padding: 14px 20px; display: flex; align-items: center; gap: 8px; border-top: 1px solid #f3f4f6; flex-wrap: wrap; }
-.ec-btn-primary   { display: inline-flex; align-items: center; gap: 6px; background: #15803d; color: #fff; border: none; border-radius: 6px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-.ec-btn-primary:hover:not(:disabled) { background: #166534; }
-.ec-btn-primary:disabled { background: #d1d5db; color: #9ca3af; cursor: not-allowed; }
-.ec-btn-secondary { display: inline-flex; align-items: center; gap: 6px; background: #fff; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-.ec-btn-secondary:hover:not(:disabled) { background: #f9fafb; border-color: #9ca3af; }
-.ec-btn-secondary:disabled { color: #d1d5db; cursor: not-allowed; }
-.ec-btn-ghost { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; color: #9ca3af; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; padding: 9px 4px; transition: color 0.15s; }
-.ec-btn-ghost:hover { color: #6b7280; }
-.ec-auto-note { display: flex; gap: 10px; align-items: flex-start; background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #6b7280; line-height: 1.5; }
-.ec-done { background: #fff; border: 1px solid #e2e6ed; border-radius: 8px; padding: 48px 32px; text-align: center; }
-.ec-done-ring { width: 64px; height: 64px; border-radius: 50%; background: #f0fdf4; border: 2px solid #bbf7d0; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-.ec-done-title { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 6px; letter-spacing: -0.3px; }
-.ec-done-sub   { font-size: 13px; color: #6b7280; margin-bottom: 28px; }
-.ec-done-actions { display: flex; flex-direction: column; gap: 8px; max-width: 300px; margin: 0 auto; }
-.ec-btn-done-primary { display: flex; align-items: center; justify-content: center; gap: 7px; background: #111827; color: #fff; border: none; border-radius: 6px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-.ec-btn-done-primary:hover { background: #1f2937; }
-.ec-done-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.ec-copy { display: inline-flex; align-items: center; gap: 4px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 500; color: #6b7280; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
-.ec-copy:hover { background: #e5e7eb; color: #374151; }
-.ec-copy.copied { background: #dcfce7; border-color: #bbf7d0; color: #15803d; }
-@keyframes ec-spin { from { transform:rotate(0deg) } to { transform:rotate(360deg) } }
-.ec-spin { animation: ec-spin 0.8s linear infinite; }
-@keyframes ec-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.ec-pulse { animation: ec-pulse 1.4s ease-in-out infinite; }
-@keyframes ec-fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-.ec-enter { animation: ec-fadein 0.25s ease; }
-`
 
 function CopyBtn({ text }) {
   const [copied, setCopied] = useState(false)
@@ -172,26 +20,41 @@ function CopyBtn({ text }) {
     })
   }
   return (
-    <button className={`ec-copy${copied ? ' copied' : ''}`} onClick={copy}>
+    <button className="v2-btn v2-btn-sm" onClick={copy}
+      style={{ minWidth: 60, fontSize: 10 }}>
       {copied ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
     </button>
   )
 }
 
-function ProgressBar({ current }) {
+function StepBar({ current }) {
   const steps = [{ id:'form', label:'Configure' }, { id:'dv', label:'Validate' }, { id:'done', label:'Done' }]
   const idx = steps.findIndex(s => s.id === current)
   return (
-    <div className="ec-progress">
+    <div style={{ background: '#fff', borderBottom: '1px solid var(--v2-border)',
+      padding: '0 32px', display: 'flex', alignItems: 'center', height: 44 }}>
       {steps.map((s, i) => {
         const state = i < idx ? 'done' : i === idx ? 'active' : 'idle'
+        const numBg = state === 'done' ? 'var(--v2-green)' : state === 'active' ? 'var(--v2-text)' : 'var(--v2-surface-3)'
+        const numColor = state === 'idle' ? 'var(--v2-text-3)' : '#fff'
+        const labelColor = state === 'done' ? 'var(--v2-green-text)' : state === 'active' ? 'var(--v2-text)' : 'var(--v2-text-3)'
         return (
-          <div key={s.id} style={{ display:'flex', alignItems:'center' }}>
-            <div className="ec-step-item">
-              <div className={`ec-step-num ${state}`}>{state === 'done' ? <Check size={10}/> : i + 1}</div>
-              <span className={`ec-step-label ${state}`}>{s.label}</span>
+          <div key={s.id} style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: numBg,
+                color: numColor, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 10, fontWeight: 700, flexShrink: 0, transition: 'all 0.2s' }}>
+                {state === 'done' ? <Check size={10}/> : i + 1}
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 500, color: labelColor, transition: 'color 0.2s' }}>
+                {s.label}
+              </span>
             </div>
-            {i < 2 && <div className={`ec-step-sep ${i < idx ? 'done' : ''}`}/>}
+            {i < 2 && (
+              <div style={{ width: 32, height: 1, margin: '0 8px', flexShrink: 0,
+                background: i < idx ? 'var(--v2-green)' : 'var(--v2-border)',
+                transition: 'background 0.3s' }}/>
+            )}
           </div>
         )
       })}
@@ -250,7 +113,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
 
   const call = async (action, extra = {}) => {
     const { data: { session } } = await supabase.auth.getSession()
-    const r = await fetch(`${URL}/functions/v1/tss-issue`, {
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/tss-issue`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ action, ...extra }),
@@ -266,15 +129,15 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     if (!em.trim()) { setErr('Email required'); return }
     if (!ph.trim()) { setErr('Phone required'); return }
     setErr(''); setBusy(true)
-    const r = await call('place_order', { domain: d, years, product_code: product, firstName: fn.trim(), lastName: ln.trim(), adminEmail: em.trim(), phone: ph.trim(), is_sandbox: IS_SANDBOX })
+    const r = await call('place_order', { domain: d, years, product_code: product,
+      firstName: fn.trim(), lastName: ln.trim(), adminEmail: em.trim(), phone: ph.trim(), is_sandbox: IS_SANDBOX })
     if (r.error) { setErr(r.error); setBusy(false); return }
     let dv = r
     if (r.order_id) {
       for (let i = 0; i < 5; i++) {
         await new Promise(x => setTimeout(x, 3000))
         const s = await call('check_status', { order_id: r.order_id })
-        const hasValue = s.txt_value || s.cname_value
-        if (hasValue) { dv = {...r, ...s}; break }
+        if (s.txt_value || s.cname_value) { dv = {...r, ...s}; break }
       }
     }
     setBusy(false); setOrd(dv); setStep('dv')
@@ -312,145 +175,177 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
 
   if (authLoading) return null
   if (!user) return (
-    <>
-      <style>{STYLES}</style>
-      <div className="ec-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'70vh' }}>
-        <div className="ec-enter" style={{ textAlign:'center', padding:32, maxWidth:320 }}>
-          <div style={{ width:52, height:52, background:'#1a56db', borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
-            <Shield size={24} color="white"/>
-          </div>
-          <div style={{ fontSize:18, fontWeight:700, color:'#111827', letterSpacing:'-0.3px', marginBottom:8 }}>Sign in to continue</div>
-          <div style={{ fontSize:13, color:'#6b7280', lineHeight:1.7, marginBottom:24 }}>SSLVault manages your certificates, auto-renewal, and server deployment.</div>
-          <button className="ec-btn-issue" style={{ borderRadius:6 }} onClick={() => nav('/auth')}>
-            <Lock size={14}/> Sign in to SSLVault
-          </button>
+    <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'70vh' }}>
+      <div style={{ textAlign:'center', padding:32, maxWidth:320 }}>
+        <div style={{ width:52, height:52, background:'var(--v2-text)', borderRadius:12,
+          display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
+          <Shield size={22} color="white"/>
         </div>
+        <h2 className="v2-h1" style={{ marginBottom:8 }}>Sign in to continue</h2>
+        <p style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.7, marginBottom:24 }}>
+          SSLVault manages your certificates, auto-renewal, and server deployment.
+        </p>
+        <button className="v2-btn v2-btn-primary" onClick={() => nav('/auth')}>
+          <Lock size={14}/> Sign in to SSLVault
+        </button>
       </div>
-    </>
+    </div>
   )
 
   const prod = PRODUCTS.find(p => p.code === product) || PRODUCTS[0]
   const price = years === 1 ? 19 : 34
 
   return (
-    <>
-      <style>{STYLES}</style>
-      <div className="ec-root">
+    <div className="v2-page">
 
-        {/* TOP BAR */}
-        <div className="ec-topbar">
-          <div className="ec-topbar-left">
-            <div className="ec-topbar-icon"><Shield size={14} color="white"/></div>
-            <span className="ec-topbar-title">Issue SSL Certificate</span>
+      {/* Top bar */}
+      <div style={{ background:'#fff', borderBottom:'1px solid var(--v2-border)', padding:'0 32px',
+        display:'flex', alignItems:'center', justifyContent:'space-between', height:52, flexShrink:0 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <div style={{ width:28, height:28, borderRadius:6, background:'var(--v2-text)',
+            display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <Shield size={14} color="white"/>
           </div>
-          <div className="ec-topbar-right">
-            <span className="ec-chip ec-chip-green"><CheckCircle size={10}/> DigiCert chain</span>
-            <span className="ec-chip"><Clock size={10}/> ~5 min issuance</span>
-            <span className="ec-chip"><RotateCcw size={10}/> Auto-renewal</span>
-            <span className="ec-chip"><ShieldCheck size={10}/> 99.9% browser trust</span>
-            {IS_SANDBOX && <span className="ec-sandbox-tag">Sandbox</span>}
-          </div>
+          <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>Issue SSL Certificate</span>
         </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
+          <span className="v2-chip" style={{ display:'inline-flex', alignItems:'center', gap:4 }}>
+            <CheckCircle size={10} style={{ color:'var(--v2-green)' }}/> DigiCert chain
+          </span>
+          <span className="v2-chip"><Clock size={10}/> ~5 min</span>
+          <span className="v2-chip"><RotateCcw size={10}/> Auto-renewal</span>
+          {IS_SANDBOX && (
+            <span style={{ background:'#7c3aed', color:'white', fontSize:9, fontWeight:700,
+              letterSpacing:'0.8px', textTransform:'uppercase', borderRadius:3, padding:'3px 7px' }}>
+              Sandbox
+            </span>
+          )}
+        </div>
+      </div>
 
-        {/* PROGRESS */}
-        <ProgressBar current={step}/>
+      {/* Progress */}
+      <StepBar current={step}/>
 
-        {/* FORM STEP */}
-        {step === 'form' && (
-          <div className="ec-body ec-enter">
+      {/* FORM STEP */}
+      {step === 'form' && (
+        <div className="v2-container" style={{ paddingTop:24 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 300px', gap:20, alignItems:'start' }}>
+
+            {/* LEFT */}
             <div>
               {pending && (
-                <div className="ec-pending">
-                  <div className="ec-pending-info">
-                    <div className="ec-pending-title">Pending order — <span style={{ fontFamily:'DM Mono,monospace' }}>{pending.domain}</span></div>
-                    <div className="ec-pending-sub">DNS validation in progress · #{pending.tss_order_id}</div>
+                <div className="v2-callout tip" style={{ marginBottom:14 }}>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontWeight:600, fontSize:12, marginBottom:2 }}>
+                      Pending order — <span style={{ fontFamily:'var(--v2-font-mono)' }}>{pending.domain}</span>
+                    </div>
+                    <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>DNS validation in progress · #{pending.tss_order_id}</div>
                   </div>
-                  <button className="ec-btn-primary" style={{ padding:'7px 12px', fontSize:11 }} onClick={resume}>Resume <ArrowRight size={11}/></button>
-                  <button onClick={() => setPend(null)} style={{ background:'none', border:'none', color:'#b45309', cursor:'pointer', fontSize:18, padding:'0 2px', lineHeight:1 }}>×</button>
+                  <button className="v2-btn v2-btn-sm v2-btn-primary" onClick={resume}>Resume →</button>
+                  <button onClick={() => setPend(null)}
+                    style={{ background:'none', border:'none', color:'var(--v2-amber-text)', cursor:'pointer', fontSize:18, lineHeight:1 }}>×</button>
                 </div>
               )}
 
-              <div className="ec-section">
-                <div className="ec-section-head">
-                  <span className="ec-section-title">Certificate Type</span>
-                  {IS_SANDBOX && <span className="ec-section-meta">Sandbox · All products available</span>}
+              {/* Certificate Type */}
+              <div className="v2-card" style={{ marginBottom:14, overflow:'hidden' }}>
+                <div style={{ padding:'10px 16px', borderBottom:'1px solid var(--v2-border)',
+                  background:'var(--v2-surface-2)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:'var(--v2-text-2)',
+                    textTransform:'uppercase', letterSpacing:'0.6px' }}>Certificate Type</span>
+                  {IS_SANDBOX && <span style={{ fontSize:10, color:'var(--v2-green-text)', fontWeight:500 }}>Sandbox · All available</span>}
                 </div>
-                <div className="ec-section-body">
+                <div style={{ padding:'14px 16px' }}>
                   {PRODUCTS.map(p => (
                     <div key={p.code}
-                      className={`ec-product-card${product === p.code ? ' selected' : ''}`}
                       onClick={() => p.available && setProduct(p.code)}
-                      style={{ cursor: p.available ? 'pointer' : 'not-allowed', opacity: p.available ? 1 : 0.5 }}>
-                      <div className="ec-product-check">
-                        {product === p.code && <Check size={9} color="white"/>}
-                      </div>
-                      <div className="ec-product-info">
-                        <div className="ec-product-name">
-                          {p.name}
-                          <span className={`ec-type-badge ec-${p.type.toLowerCase()}`}>{p.type}</span>
-                          {!p.available && <span className="ec-type-badge" style={{ background:'#f3f4f6', color:'#9ca3af' }}>Soon</span>}
+                      style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
+                        borderRadius:6, cursor:p.available?'pointer':'not-allowed',
+                        border: product===p.code ? '1.5px solid var(--v2-text)' : '1px solid var(--v2-border)',
+                        background: product===p.code ? 'var(--v2-surface-3)' : '#fff',
+                        opacity: p.available ? 1 : 0.5, transition:'all 0.12s' }}>
+                      <div style={{ width:16, height:16, borderRadius:'50%', flexShrink:0,
+                        border: product===p.code ? '5px solid var(--v2-text)' : '2px solid var(--v2-border)',
+                        transition:'all 0.12s' }}/>
+                      <div style={{ flex:1 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                          <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>{p.name}</span>
+                          <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:3,
+                            textTransform:'uppercase', letterSpacing:'0.4px',
+                            background:'#dcfce7', color:'#15803d' }}>{p.type}</span>
                         </div>
-
                       </div>
-                      <div className="ec-product-price">
-                        <div className="ec-price-big">€{p.price}</div>
-                        <div className="ec-price-yr">/year</div>
+                      <div style={{ textAlign:'right', flexShrink:0 }}>
+                        <div style={{ fontSize:15, fontWeight:700, color:'var(--v2-text)' }}>€{p.price}</div>
+                        <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>/year</div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="ec-section">
-                <div className="ec-section-head">
-                  <span className="ec-section-title">Domain Name</span>
+              {/* Domain */}
+              <div className="v2-card" style={{ marginBottom:14, overflow:'hidden' }}>
+                <div style={{ padding:'10px 16px', borderBottom:'1px solid var(--v2-border)', background:'var(--v2-surface-2)' }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:'var(--v2-text-2)',
+                    textTransform:'uppercase', letterSpacing:'0.6px' }}>Domain Name</span>
                 </div>
-                <div className="ec-section-body">
-                  <div className="ec-field">
-                    <label className="ec-label">Common Name (CN) <span className="ec-label-req">*</span></label>
-                    <div className="ec-domain-wrap">
-                      <Globe size={14} className="ec-domain-icon"/>
-                      <input className="ec-input ec-input-domain" placeholder="yourdomain.com"
-                        value={domain} onChange={e => setD(e.target.value)}/>
-                    </div>
+                <div style={{ padding:'16px' }}>
+                  <label className="v2-label">Common Name (CN) <span style={{ color:'var(--v2-red)' }}>*</span></label>
+                  <div style={{ position:'relative' }}>
+                    <Globe size={14} style={{ position:'absolute', left:11, top:'50%', transform:'translateY(-50%)',
+                      color:'var(--v2-text-3)', pointerEvents:'none' }}/>
+                    <input className="v2-input"
+                      style={{ paddingLeft:34, fontFamily:'var(--v2-font-mono)', fontSize:14, height:42 }}
+                      placeholder="yourdomain.com"
+                      value={domain} onChange={e => setD(e.target.value)}/>
                   </div>
                 </div>
               </div>
 
-              <div className="ec-section">
-                <div className="ec-section-head">
-                  <span className="ec-section-title">Requester Details</span>
-                  <span className="ec-section-meta">Required by TheSSLStore</span>
+              {/* Requester Details */}
+              <div className="v2-card" style={{ overflow:'hidden' }}>
+                <div style={{ padding:'10px 16px', borderBottom:'1px solid var(--v2-border)',
+                  background:'var(--v2-surface-2)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:'var(--v2-text-2)',
+                    textTransform:'uppercase', letterSpacing:'0.6px' }}>Requester Details</span>
+                  <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:500 }}>Required by TheSSLStore</span>
                 </div>
-                <div className="ec-section-body">
-                  <div className="ec-row2">
-                    <div className="ec-field">
-                      <label className="ec-label">First Name <span className="ec-label-req">*</span></label>
-                      <input className="ec-input" placeholder="John" value={fn} onChange={e => setFn(e.target.value)}/>
+                <div style={{ padding:'16px', display:'flex', flexDirection:'column', gap:12 }}>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                    <div className="v2-field">
+                      <label className="v2-label">First Name <span style={{ color:'var(--v2-red)' }}>*</span></label>
+                      <input className="v2-input" placeholder="John" value={fn} onChange={e => setFn(e.target.value)}/>
                     </div>
-                    <div className="ec-field">
-                      <label className="ec-label">Last Name <span className="ec-label-req">*</span></label>
-                      <input className="ec-input" placeholder="Smith" value={ln} onChange={e => setLn(e.target.value)}/>
+                    <div className="v2-field">
+                      <label className="v2-label">Last Name <span style={{ color:'var(--v2-red)' }}>*</span></label>
+                      <input className="v2-input" placeholder="Smith" value={ln} onChange={e => setLn(e.target.value)}/>
                     </div>
                   </div>
-                  <div className="ec-field">
-                    <label className="ec-label" style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                      <span>Email Address <span className="ec-label-req">*</span></span>
-                      <span style={{ fontSize:10, color:'#9ca3af', fontWeight:400 }}>Certificate delivery</span>
+                  <div className="v2-field">
+                    <label className="v2-label" style={{ display:'flex', justifyContent:'space-between' }}>
+                      <span>Email <span style={{ color:'var(--v2-red)' }}>*</span></span>
+                      <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:400 }}>Certificate delivery</span>
                     </label>
-                    <input className="ec-input" type="email" placeholder="you@example.com" value={em} onChange={e => setEm(e.target.value)}/>
+                    <input className="v2-input" type="email" placeholder="you@example.com" value={em} onChange={e => setEm(e.target.value)}/>
                   </div>
-                  <div className="ec-field">
-                    <label className="ec-label">Phone <span className="ec-label-req">*</span></label>
-                    <input className="ec-input" placeholder="+1 415 555 0100" value={ph} onChange={e => setPh(e.target.value)}/>
+                  <div className="v2-field">
+                    <label className="v2-label">Phone <span style={{ color:'var(--v2-red)' }}>*</span></label>
+                    <input className="v2-input" placeholder="+1 415 555 0100" value={ph} onChange={e => setPh(e.target.value)}/>
                   </div>
-                  <div className="ec-field">
-                    <label className="ec-label">Validity Period</label>
-                    <div className="ec-validity">
+                  <div className="v2-field" style={{ marginBottom:0 }}>
+                    <label className="v2-label">Validity Period</label>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
                       {[{y:1,p:19},{y:2,p:34}].map(({y,p}) => (
-                        <button key={y} className={`ec-val-opt${years===y?' sel':''}`} onClick={() => setYears(y)}>
-                          <div className="ec-val-yr">{y} year{y>1?'s':''}</div>
-                          <div className="ec-val-pr">€{p} / year</div>
+                        <button key={y} onClick={() => setYears(y)}
+                          style={{ padding:'10px 14px', borderRadius:6, cursor:'pointer', textAlign:'left',
+                            fontFamily:'inherit', transition:'all 0.12s',
+                            border: years===y ? '1.5px solid var(--v2-text)' : '1px solid var(--v2-border)',
+                            background: years===y ? 'var(--v2-surface-3)' : '#fff' }}>
+                          <div style={{ fontSize:13, fontWeight:600, color: years===y ? 'var(--v2-text)' : 'var(--v2-text)' }}>
+                            {y} year{y>1?'s':''}
+                          </div>
+                          <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1 }}>€{p} / year</div>
                         </button>
                       ))}
                     </div>
@@ -458,146 +353,219 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                 </div>
               </div>
 
-              {err && <div className="ec-error"><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{err}</div>}
+              {err && (
+                <div className="v2-callout error" style={{ marginTop:12 }}>
+                  <AlertTriangle size={13} style={{ flexShrink:0 }}/> {err}
+                </div>
+              )}
             </div>
 
-            {/* SUMMARY */}
-            <div>
-              <div className="ec-summary">
-                <div className="ec-summary-head">
-                  <div className="ec-summary-title">Order Summary</div>
-                  <div className="ec-sum-row"><span className="ec-sum-key">Certificate</span><span className="ec-sum-val">{prod.name}</span></div>
-                  <div className="ec-sum-row"><span className="ec-sum-key">Type</span><span className="ec-sum-val">{prod.type}</span></div>
-                  <div className="ec-sum-row"><span className="ec-sum-key">Validity</span><span className="ec-sum-val">{years} year{years>1?'s':''}</span></div>
-                  <div className="ec-sum-row"><span className="ec-sum-key">Auto-renewal</span><span className="ec-sum-val green">Included</span></div>
-                  <div className="ec-sum-row"><span className="ec-sum-key">{prod.name}</span><span className="ec-sum-val">€{prod.price}</span></div>
-                  <div className="ec-sum-row"><span className="ec-sum-key">CLM management</span><span className="ec-sum-val blue">Free</span></div>
+            {/* RIGHT — summary */}
+            <div style={{ position:'sticky', top:20 }}>
+              <div style={{ background:'#111827', border:'1px solid #1f2937', borderRadius:8, overflow:'hidden' }}>
+                <div style={{ padding:'16px 20px', borderBottom:'1px solid #1f2937' }}>
+                  <div style={{ fontSize:11, fontWeight:700, color:'#6b7280',
+                    textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:10 }}>Order Summary</div>
+                  {[
+                    { k:'Certificate', v: prod.name },
+                    { k:'Type', v: prod.type },
+                    { k:'Validity', v: `${years} year${years>1?'s':''}` },
+                    { k:'Auto-renewal', v: 'Included', green: true },
+                    { k:prod.name, v: `€${prod.price}` },
+                    { k:'CLM management', v: 'Free', blue: true },
+                  ].map(({ k, v, green, blue }) => (
+                    <div key={k} style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline',
+                      fontSize:12, marginBottom:7, gap:8 }}>
+                      <span style={{ color:'#6b7280', flexShrink:0 }}>{k}</span>
+                      <span style={{ fontWeight:500, color: green?'#34d399' : blue?'#60a5fa' : '#e5e7eb',
+                        textAlign:'right' }}>{v}</span>
+                    </div>
+                  ))}
                 </div>
-                <div className="ec-summary-price">
-                  <div className="ec-price-label">Total today</div>
-                  <div className="ec-price-amount">€{price}</div>
-                  <div className="ec-price-note">{IS_SANDBOX ? 'Demo mode · no payment required' : 'Billed immediately'}</div>
+                <div style={{ padding:'16px 20px', borderBottom:'1px solid #1f2937' }}>
+                  <div style={{ fontSize:10, color:'#6b7280', fontWeight:500, letterSpacing:'0.3px',
+                    textTransform:'uppercase', marginBottom:4 }}>Total today</div>
+                  <div style={{ fontSize:28, fontWeight:700, color:'#f9fafb', letterSpacing:'-1px', lineHeight:1 }}>€{price}</div>
+                  <div style={{ fontSize:10, color:'#4b5563', marginTop:4 }}>
+                    {IS_SANDBOX ? 'Demo mode · no payment required' : 'Billed immediately'}
+                  </div>
                 </div>
-                <div className="ec-summary-cta">
-                  <button className="ec-btn-issue" onClick={place} disabled={busy}>
+                <div style={{ padding:'16px 20px' }}>
+                  <button onClick={place} disabled={busy}
+                    style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:7,
+                      background: busy ? '#374151' : '#0a0a0a', color: busy ? '#6b7280' : '#fff',
+                      border:'none', borderRadius:6, padding:12, fontFamily:'inherit',
+                      fontSize:13, fontWeight:600, cursor: busy ? 'not-allowed' : 'pointer', transition:'background 0.15s' }}>
                     {busy
-                      ? <><RefreshCw size={14} className="ec-spin"/> Placing order…</>
+                      ? <><RefreshCw size={14} className="spin"/> Placing order…</>
                       : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
                   </button>
                 </div>
-                <div className="ec-trust-list">
-                  <div className="ec-trust-item"><Lock size={11}/> DigiCert trust chain</div>
-                  <div className="ec-trust-item"><Zap size={11}/> Auto-renews before expiry</div>
-                  <div className="ec-trust-item"><Globe size={11}/> 99.9% browser compatibility</div>
+                <div style={{ padding:'0 20px 16px', display:'flex', flexDirection:'column', gap:8 }}>
+                  {[
+                    { icon:<Lock size={11}/>,      text:'DigiCert trust chain' },
+                    { icon:<Zap size={11}/>,        text:'Auto-renews before expiry' },
+                    { icon:<Globe size={11}/>,      text:'99.9% browser compatibility' },
+                  ].map((t, i) => (
+                    <div key={i} style={{ display:'flex', alignItems:'center', gap:8,
+                      fontSize:11, color:'#6b7280' }}>
+                      <span style={{ color:'#34d399' }}>{t.icon}</span>
+                      {t.text}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* DV STEP */}
-        {step === 'dv' && ord && (
-          <div className="ec-body-full ec-enter">
-            <div className="ec-dv-header">
-              <div className="ec-dv-icon-wrap"><Globe size={17} color="#d97706"/></div>
-              <div style={{ flex:1 }}>
-                <div className="ec-dv-title">Verify Domain Ownership</div>
-                <div className="ec-dv-sub">
-                  Add this <strong>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record</strong> to prove you control{' '}
-                  <strong style={{ fontFamily:'DM Mono,monospace', color:'#111827' }}>{domain || ord.txt_name}</strong>
-                </div>
-              </div>
-              <div className="ec-order-badge">#{ord.tss_order_id || '—'}</div>
+      {/* DV STEP */}
+      {step === 'dv' && ord && (
+        <div className="v2-container" style={{ maxWidth:760, paddingTop:24 }}>
+
+          {/* Header card */}
+          <div className="v2-card v2-card-pad" style={{ marginBottom:14, display:'flex', alignItems:'flex-start', gap:14 }}>
+            <div style={{ width:36, height:36, borderRadius:8, flexShrink:0,
+              background:'var(--v2-amber-bg)', border:'1px solid var(--v2-amber-border)',
+              display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Globe size={17} color="var(--v2-amber)"/>
             </div>
-
-            <div className="ec-dns-panel">
-              <div className="ec-dns-panel-head">
-                <span className="ec-dns-dot" style={{ background:'#ff5f56' }}/>
-                <span className="ec-dns-dot" style={{ background:'#ffbd2e' }}/>
-                <span className="ec-dns-dot" style={{ background:'#27c93f' }}/>
-                <span className="ec-dns-panel-name">DNS {ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} · {domain || ord.txt_name}</span>
-              </div>
-              <table className="ec-dns-table">
-                {(ord.dv_type === 'CNAME' ? [
-                  { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy:true },
-                  { k:'Type',  v: 'CNAME', green:true },
-                  { k:'Value', v: ord.cname_value || ord.txt_value || null, copy:true, loading:!(ord.cname_value||ord.txt_value) },
-                  { k:'TTL',   v: '300' },
-                ] : [
-                  { k:'Name',  v: ord.txt_name || domain, copy:true },
-                  { k:'Type',  v: 'TXT', green:true },
-                  { k:'Value', v: ord.txt_value || null, copy:true, loading:!ord.txt_value },
-                  { k:'TTL',   v: '300' },
-                ]).map(({ k, v, copy, green, loading }) => (
-                  <tr className="ec-dns-tr" key={k}>
-                    <td className="ec-dns-key">{k}</td>
-                    <td className={`ec-dns-val${green ? ' green' : loading ? ' dim' : ''}`}>
-                      {loading
-                        ? <><RefreshCw size={11} className="ec-pulse" style={{ flexShrink:0 }}/><span>{polling ? 'Fetching from TSS…' : 'Click Auto-Add DNS'}</span></>
-                        : v}
-                    </td>
-                    <td className="ec-dns-copy">{copy && v && !loading && <CopyBtn text={v}/>}</td>
-                  </tr>
-                ))}
-              </table>
-
-              {res?.dns_auto && (
-                <div className={`ec-feedback ${res.dns_auto.ok ? 'ok' : 'err'}`}>
-                  {res.dns_auto.ok
-                    ? <><Check size={13} style={{ flexShrink:0 }}/>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record added via {res.dns_auto.provider} — wait 1–2 min then click Check Status.</>
-                    : <><AlertTriangle size={13} style={{ flexShrink:0 }}/>{res.dns_auto.message}</>}
-                </div>
-              )}
-              {res && res.status !== 'active' && !res.dns_auto && (
-                <div className="ec-feedback warn">
-                  <AlertTriangle size={13} style={{ flexShrink:0 }}/>
-                  Not validated yet ({res.major_status}) — wait a few minutes and retry.
-                </div>
-              )}
-
-              <div className="ec-dv-actions">
-                <button className="ec-btn-primary" onClick={addDns} disabled={dns || !ord.txt_value}>
-                  {dns ? <><RefreshCw size={13} className="ec-spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS</>}
-                </button>
-                <button className="ec-btn-secondary" onClick={check} disabled={chk}>
-                  {chk ? <><RefreshCw size={13} className="ec-spin"/> Checking…</> : <><RefreshCw size={13}/> Check Status</>}
-                </button>
-                <button className="ec-btn-ghost" onClick={reset}>← New order</button>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:14, fontWeight:700, color:'var(--v2-text)', marginBottom:3 }}>Verify Domain Ownership</div>
+              <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.5 }}>
+                Add this <strong>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record</strong> to prove you control{' '}
+                <strong style={{ fontFamily:'var(--v2-font-mono)', color:'var(--v2-text)' }}>{domain || ord.txt_name}</strong>
               </div>
             </div>
-
-            <div className="ec-auto-note">
-              <Zap size={14} color="#10b981" style={{ flexShrink:0, marginTop:1 }}/>
-              <span><strong style={{ color:'#111827' }}>Fully automatic:</strong> SSLVault polls TheSSLStore every 5 minutes. Once your DNS propagates, the certificate activates with no action needed.</span>
+            <div style={{ flexShrink:0, background:'var(--v2-surface-3)', border:'1px solid var(--v2-border)',
+              borderRadius:4, padding:'4px 10px', fontSize:11, fontWeight:600,
+              color:'var(--v2-text-2)', fontFamily:'var(--v2-font-mono)' }}>
+              #{ord.tss_order_id || '—'}
             </div>
           </div>
-        )}
 
-        {/* DONE STEP */}
-        {step === 'done' && (
-          <div className="ec-body-full ec-enter">
-            <div className="ec-done">
-              <div className="ec-done-ring"><CheckCircle size={32} color="#15803d" strokeWidth={2}/></div>
-              <div className="ec-done-title">Certificate Issued</div>
-              <div className="ec-done-sub">
-                <strong style={{ fontFamily:'DM Mono,monospace', color:'#111827' }}>{clean(domain)}</strong>
-                {' '}is now secured · Auto-renewal active
+          {/* DNS record panel */}
+          <div className="v2-card" style={{ marginBottom:14, overflow:'hidden' }}>
+            {/* Terminal header */}
+            <div style={{ background:'#111827', padding:'10px 16px', display:'flex', alignItems:'center', gap:6 }}>
+              <span style={{ width:10, height:10, borderRadius:'50%', background:'#ff5f56', display:'inline-block' }}/>
+              <span style={{ width:10, height:10, borderRadius:'50%', background:'#ffbd2e', display:'inline-block' }}/>
+              <span style={{ width:10, height:10, borderRadius:'50%', background:'#27c93f', display:'inline-block' }}/>
+              <span style={{ fontSize:11, color:'#9ca3af', fontFamily:'var(--v2-font-mono)', marginLeft:6 }}>
+                DNS {ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} · {domain || ord.txt_name}
+              </span>
+            </div>
+
+            {/* DNS record rows */}
+            <table style={{ width:'100%', borderCollapse:'collapse' }}>
+              {(ord.dv_type === 'CNAME' ? [
+                { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy:true },
+                { k:'Type',  v: 'CNAME', green:true },
+                { k:'Value', v: ord.cname_value || ord.txt_value || null, copy:true, loading:!(ord.cname_value||ord.txt_value) },
+                { k:'TTL',   v: '300' },
+              ] : [
+                { k:'Name',  v: ord.txt_name || domain, copy:true },
+                { k:'Type',  v: 'TXT', green:true },
+                { k:'Value', v: ord.txt_value || null, copy:true, loading:!ord.txt_value },
+                { k:'TTL',   v: '300' },
+              ]).map(({ k, v, copy, green, loading }) => (
+                <tr key={k} style={{ borderBottom:'1px solid var(--v2-border)' }}>
+                  <td style={{ padding:'10px 16px', fontSize:11, fontWeight:600,
+                    color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.5px', width:72 }}>
+                    {k}
+                  </td>
+                  <td style={{ padding:'10px 0', fontSize:12, fontFamily:'var(--v2-font-mono)',
+                    color: green ? 'var(--v2-green-text)' : loading ? 'var(--v2-text-3)' : 'var(--v2-text)' }}>
+                    {loading
+                      ? <span style={{ display:'inline-flex', alignItems:'center', gap:6 }}>
+                          <RefreshCw size={11} className="spin"/>
+                          {polling ? 'Fetching from TSS…' : 'Click Auto-Add DNS'}
+                        </span>
+                      : v}
+                  </td>
+                  <td style={{ padding:'10px 16px 10px 0', textAlign:'right' }}>
+                    {copy && v && !loading && <CopyBtn text={v}/>}
+                  </td>
+                </tr>
+              ))}
+            </table>
+
+            {/* Feedback */}
+            {res?.dns_auto && (
+              <div className={`v2-callout ${res.dns_auto.ok ? 'tip' : 'error'}`}
+                style={{ margin:0, borderRadius:0, borderLeft:'none', borderRight:'none', borderBottom:'none' }}>
+                {res.dns_auto.ok
+                  ? <><Check size={13} style={{ flexShrink:0 }}/>{ord.dv_type==='CNAME'?'CNAME':'TXT'} record added via {res.dns_auto.provider} — wait 1–2 min then click Check Status.</>
+                  : <><AlertTriangle size={13} style={{ flexShrink:0 }}/>{res.dns_auto.message}</>}
               </div>
-              <div className="ec-done-actions">
-                <button className="ec-btn-done-primary"
-                  onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}>
-                  <Server size={15}/> Install on Server
+            )}
+            {res && res.status !== 'active' && !res.dns_auto && (
+              <div className="v2-callout" style={{ margin:0, borderRadius:0, borderLeft:'none', borderRight:'none', borderBottom:'none' }}>
+                <AlertTriangle size={13} style={{ flexShrink:0 }}/>
+                Not validated yet ({res.major_status}) — wait a few minutes and retry.
+              </div>
+            )}
+
+            {/* Actions */}
+            <div style={{ padding:'12px 16px', display:'flex', alignItems:'center', gap:8,
+              borderTop:'1px solid var(--v2-border)', flexWrap:'wrap' }}>
+              <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={addDns} disabled={dns || !ord.txt_value}>
+                {dns ? <><RefreshCw size={12} className="spin"/> Adding…</> : <><Zap size={12}/> Auto-Add DNS</>}
+              </button>
+              <button className="v2-btn v2-btn-sm" onClick={check} disabled={chk}>
+                {chk ? <><RefreshCw size={12} className="spin"/> Checking…</> : <><RefreshCw size={12}/> Check Status</>}
+              </button>
+              <button className="v2-btn v2-btn-sm" onClick={reset}
+                style={{ color:'var(--v2-text-3)', border:'none', background:'none' }}>← New order</button>
+            </div>
+          </div>
+
+          {/* Auto note */}
+          <div className="v2-callout tip">
+            <Zap size={13} style={{ flexShrink:0, color:'var(--v2-green)' }}/>
+            <span>
+              <strong>Fully automatic:</strong> SSLVault polls TheSSLStore every 5 minutes. Once your DNS propagates, the certificate activates with no action needed.
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* DONE STEP */}
+      {step === 'done' && (
+        <div className="v2-container" style={{ maxWidth:560, paddingTop:24 }}>
+          <div className="v2-card v2-card-pad" style={{ textAlign:'center', padding:'48px 32px' }}>
+            <div style={{ width:64, height:64, borderRadius:'50%',
+              background:'var(--v2-green-bg)', border:'1.5px solid var(--v2-green-border)',
+              display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
+              <CheckCircle size={30} color="var(--v2-green)" strokeWidth={2}/>
+            </div>
+            <h2 className="v2-h1" style={{ marginBottom:6 }}>Certificate Issued</h2>
+            <p style={{ fontSize:13, color:'var(--v2-text-2)', marginBottom:28 }}>
+              <strong style={{ fontFamily:'var(--v2-font-mono)', color:'var(--v2-text)' }}>{clean(domain)}</strong>
+              {' '}is now secured · Auto-renewal active
+            </p>
+            <div style={{ display:'flex', flexDirection:'column', gap:8, maxWidth:300, margin:'0 auto' }}>
+              <button className="v2-btn v2-btn-primary" style={{ justifyContent:'center' }}
+                onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}>
+                <Server size={14}/> Install on Server
+              </button>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                <button className="v2-btn" style={{ justifyContent:'center' }}
+                  onClick={() => { if (onDashboard) onDashboard(); else nav('/dashboard') }}>
+                  View Dashboard
                 </button>
-                <div className="ec-done-row2">
-                  <button className="ec-btn-secondary" onClick={() => { if (onDashboard) onDashboard(); else nav('/dashboard') }}>View Dashboard</button>
-                  <button className="ec-btn-secondary" onClick={() => { if (onIssueAnother) { reset(); onIssueAnother() } else reset() }}>Issue Another</button>
-                </div>
+                <button className="v2-btn" style={{ justifyContent:'center' }}
+                  onClick={() => { if (onIssueAnother) { reset(); onIssueAnother() } else reset() }}>
+                  Issue Another
+                </button>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-      </div>
-    </>
+      <style>{`.spin{animation:v2-spin .8s linear infinite}@keyframes v2-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+    </div>
   )
 }
