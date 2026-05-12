@@ -377,6 +377,9 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
               {/* New credentials form */}
               {(useNew || savedCreds.length === 0) && (
                 <div>
+                  {/* Honeypot — tricks browser autofill away from real fields */}
+                  <input type="text" name="username" style={{ display:'none' }} tabIndex={-1} readOnly/>
+                  <input type="password" name="password" style={{ display:'none' }} tabIndex={-1} readOnly/>
                   <div style={{ fontSize: 11, fontWeight: 500, color: '#0a0a0a',
                     marginBottom: 12, paddingBottom: 8, borderBottom: '0.5px solid #f1f5f9' }}>
                     cPanel connection details
@@ -384,7 +387,8 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
 
                   <div style={{ marginBottom: 10 }}>
                     <Label required>Hostname</Label>
-                    <input ref={hostnameRef} defaultValue="" autoComplete="off"
+                    <input ref={hostnameRef} defaultValue="" 
+                      autoComplete="off" name="cpanel-host" data-lpignore="true" data-form-type="other"
                       placeholder="cpanel.myhost.com or mysite.com"
                       style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
                         padding: '9px 12px', fontSize: 13, fontFamily: 'inherit', color: '#0a0a0a',
@@ -397,7 +401,8 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px', gap: 8, marginBottom: 10 }}>
                     <div>
                       <Label required>cPanel username</Label>
-                      <input ref={cpanelUserRef} defaultValue="" autoComplete="off"
+                      <input ref={cpanelUserRef} defaultValue="" 
+                        autoComplete="off" name="cpanel-username" data-lpignore="true" data-form-type="other"
                         placeholder="myuser"
                         style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
                           padding: '9px 12px', fontSize: 13, fontFamily: 'inherit', color: '#0a0a0a',
@@ -422,7 +427,8 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                   <div style={{ marginBottom: 10 }}>
                     <Label required>API token</Label>
                     <div style={{ position: 'relative' }}>
-                      <input ref={apiTokenRef} defaultValue="" autoComplete="off"
+                      <input ref={apiTokenRef} defaultValue="" 
+                        autoComplete="off" name="cpanel-apitoken" data-lpignore="true" data-form-type="other"
                         type={showToken ? 'text' : 'password'}
                         placeholder="Paste your cPanel API token"
                         style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
