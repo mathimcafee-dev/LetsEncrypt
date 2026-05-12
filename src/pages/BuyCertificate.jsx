@@ -8,8 +8,7 @@ const URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const IS_SANDBOX = true
 
 const PRODUCTS = [
-  { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', price: 19, wildcard: false, available: true,
-    desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites and SMBs.' },
+  { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', price: 19, wildcard: false, available: true },
 ]
 
 const STYLES = `
@@ -62,7 +61,7 @@ const STYLES = `
 .ec-product-card.selected .ec-product-check { background: #1a56db; border-color: #1a56db; }
 .ec-product-info { flex: 1; min-width: 0; }
 .ec-product-name { font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
-.ec-product-desc { font-size: 11px; color: #6b7280; line-height: 1.5; margin-bottom: 0; }
+
 .ec-product-price { flex-shrink: 0; text-align: right; }
 .ec-price-big { font-size: 16px; font-weight: 700; color: #111827; }
 .ec-price-yr  { font-size: 10px; color: #9ca3af; }
@@ -391,7 +390,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                           <span className={`ec-type-badge ec-${p.type.toLowerCase()}`}>{p.type}</span>
                           {!p.available && <span className="ec-type-badge" style={{ background:'#f3f4f6', color:'#9ca3af' }}>Soon</span>}
                         </div>
-                        <div className="ec-product-desc">{p.desc}</div>
+
                       </div>
                       <div className="ec-product-price">
                         <div className="ec-price-big">€{p.price}</div>
