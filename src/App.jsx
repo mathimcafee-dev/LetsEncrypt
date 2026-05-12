@@ -21,6 +21,4 @@ import Pricing from './pages/Pricing'
 import KeyLocker from './pages/KeyLocker'
 import BuyCertificate from './pages/BuyCertificate'
 
-export default function App() {
-  return null
-}
+export default function App() { return null }\n
