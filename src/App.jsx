@@ -49,6 +49,7 @@ export default function App() {
     window.scrollTo(0, 0)
   }
 
+  // Legacy ACME routes → redirect to /buy
   if (page === '/generate' || page === '/quick-setup') {
     nav('/buy')
     return null
@@ -57,6 +58,7 @@ export default function App() {
   return (
     <div>
       <Nav nav={nav} page={page} />
+      {/* HOME: show CLMHome if logged in, landing Home if not */}
       {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} /> : <Home nav={nav} />)}
       {page === '/import' && <Import nav={nav} />}
       {page === '/dashboard' && <Dashboard nav={nav} />}
