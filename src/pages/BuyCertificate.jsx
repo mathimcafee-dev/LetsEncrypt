@@ -476,7 +476,8 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
       for (let i = 0; i < 5; i++) {
         await new Promise(x => setTimeout(x, 3000))
         const s = await call('check_status', { order_id: r.order_id })
-        if (s.txt_value) { dv = {...r, txt_name: s.txt_name, txt_value: s.txt_value}; break }
+        const hasValue = s.txt_value || s.cname_value
+        if (hasValue) { dv = {...r, ...s}; break }
       }
     }
     setBusy(false); setOrd(dv); setStep('dv')
@@ -500,7 +501,15 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
   const resume = () => {
     const o = pending
     setD(o.domain)
-    setOrd({ order_id: o.id, tss_order_id: o.tss_order_id, txt_name: o.dv_cname_host || o.domain, txt_value: o.dv_cname_value || '' })
+    const isCname = o.dv_type === 'CNAME'
+    setOrd({
+      order_id: o.id, tss_order_id: o.tss_order_id,
+      dv_type: o.dv_type || 'TXT',
+      txt_name: isCname ? undefined : (o.dv_cname_host || o.domain),
+      txt_value: isCname ? undefined : (o.dv_cname_value || ''),
+      cname_name: isCname ? o.dv_cname_host : undefined,
+      cname_value: isCname ? o.dv_cname_value : undefined,
+    })
     setPend(null); setStep('dv')
   }
 
@@ -707,7 +716,12 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                   <div className="ic-dv-icon"><Globe size={17} color="#d97706"/></div>
                   <div style={{ flex:1 }}>
                     <div className="ic-dv-title">Verify domain ownership</div>
-                    <div className="ic-dv-sub">Add this TXT record to prove you control <strong style={{ fontFamily:'monospace' }}>{domain}</strong></div>
+                    <div className="ic-dv-sub">
+                      {ord.dv_type === 'CNAME'
+                        ? <>Add this <strong>CNAME record</strong> to prove you control <strong style={{ fontFamily:'monospace' }}>{domain}</strong></>
+                        : <>Add this <strong>TXT record</strong> to prove you control <strong style={{ fontFamily:'monospace' }}>{domain}</strong></>
+                      }
+                    </div>
                   </div>
                   <div className="ic-order-no">#{ord.tss_order_id || '—'}</div>
                 </div>
@@ -717,12 +731,36 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                     <span className="ic-dot" style={{ background:'#ff5f56' }}/>
                     <span className="ic-dot" style={{ background:'#ffbd2e' }}/>
                     <span className="ic-dot" style={{ background:'#27c93f' }}/>
-                    <span className="ic-term-name">DNS TXT · {domain}</span>
+                    <span className="ic-term-name">
+                      {ord.dv_type === 'CNAME' ? `DNS CNAME · ${domain}` : `DNS TXT · ${domain}`}
+                    </span>
                   </div>
-                  {[
+                  {ord.dv_type === 'CNAME' ? [
+                    { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy: true },
+                    { k:'Type',  v: 'CNAME', green: true },
+                    { k:'Value', v: ord.cname_value || ord.txt_value || null, copy: true, loading: !(ord.cname_value || ord.txt_value) },
+                    { k:'TTL',   v: '300' },
+                  ] : [
                     { k:'Name',  v: ord.txt_name || domain, copy: true },
                     { k:'Type',  v: 'TXT', green: true },
                     { k:'Value', v: ord.txt_value || null, copy: true, loading: !ord.txt_value },
+                    { k:'TTL',   v: '300' },
+                  ].map(({ k, v, copy, green, loading }) => (
+                    <div className="ic-dns-row" key={k}>
+                      <span className="ic-dns-key">{k}</span>
+                      <span className={`ic-dns-val${green ? ' green' : loading ? ' dim' : ''}`}>
+                        {loading
+                          ? <><RefreshCw size={11} className="ic-pulse" style={{ color:'#484f58', flexShrink:0 }}/><span>{polling ? 'Fetching from TSS…' : 'Click Auto-Add DNS'}</span></>
+                          : v}
+                      </span>
+                      {copy && v && !loading && <CopyBtn text={v}/>}
+                    </div>
+                  ))}
+                  {/* Render CNAME rows separately if dv_type is CNAME */}
+                  {ord.dv_type === 'CNAME' && [
+                    { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy: true },
+                    { k:'Type',  v: 'CNAME', green: true },
+                    { k:'Value', v: ord.cname_value || ord.txt_value || null, copy: true, loading: !(ord.cname_value || ord.txt_value) },
                     { k:'TTL',   v: '300' },
                   ].map(({ k, v, copy, green, loading }) => (
                     <div className="ic-dns-row" key={k}>
@@ -740,7 +778,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                 {res?.dns_auto && (
                   <div className={`ic-feedback ${res.dns_auto.ok ? 'ok' : 'err'}`}>
                     {res.dns_auto.ok
-                      ? <><Check size={13} style={{ flexShrink:0, marginTop:1 }}/>TXT record added via {res.dns_auto.provider} — wait 1–2 min then click Check Status.</>
+                      ? <><Check size={13} style={{ flexShrink:0, marginTop:1 }}/>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record added via {res.dns_auto.provider} — wait 1–2 min then click Check Status.</>
                       : <><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{res.dns_auto.message}</>}
                   </div>
                 )}
