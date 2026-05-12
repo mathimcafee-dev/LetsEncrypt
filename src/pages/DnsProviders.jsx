@@ -594,7 +594,16 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
   const isEdit = !!editServer
   const [type, setType] = useState(editServer?.server_type || 'ssh')
   const [nickname, setNickname] = useState(editServer?.nickname || '')
-  const [fields, setFields] = useState({})
+  // Pre-fill host + username from editServer (plain text in DB)
+  // Sensitive fields (token/password) stay blank — user types new one or leaves blank to keep existing
+  const [fields, setFields] = useState(() => {
+    if (!editServer) return {}
+    return {
+      host: editServer.host || '',
+      username: editServer.username || '',
+      port: editServer.port ? String(editServer.port) : '',
+    }
+  })
   const [showField, setShowField] = useState({})
   const [domains, setDomains] = useState((editServer?.domains || []).join(', '))
   const [installMode, setInstallMode] = useState(editServer?.install_mode || 'agent')
@@ -608,8 +617,8 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
     if (!nickname.trim()) { setError('Enter a nickname'); return }
     if (!fields.host?.trim()) { setError(`Enter the ${t.fields[0].label}`); return }
     if (!fields.username?.trim()) { setError('Enter the username'); return }
-    // SSH Push requires password or private key
-    if (isVpsType && installMode === 'ssh_push' && !fields.password?.trim() && !fields.ssh_key?.trim()) {
+    // SSH Push requires password or private key — only on new servers (edit can keep existing)
+    if (!isEdit && isVpsType && installMode === 'ssh_push' && !fields.password?.trim() && !fields.ssh_key?.trim()) {
       setError('SSH Push mode requires a password or private key.'); return
     }
     setError(''); setLoading(true)
@@ -687,7 +696,7 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
                   <textarea
                     className="v2-input mono"
                     rows={5}
-                    placeholder={f.placeholder}
+                    placeholder={isEdit && editServer?.credentials_enc ? '(saved — paste new key to replace)' : f.placeholder}
                     value={fields[f.key] || ''}
                     onChange={e => setFields(s => ({ ...s, [f.key]: e.target.value }))}
                     style={{ resize: 'vertical', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, lineHeight: 1.5 }}
@@ -696,8 +705,11 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
                   <>
                     <input
                       className="v2-input mono"
+                      autoComplete="off"
                       type={f.type === 'password' && !showField[f.key] ? 'password' : 'text'}
-                      placeholder={f.placeholder}
+                      placeholder={isEdit && f.type === 'password' && editServer?.credentials_enc
+                        ? '(saved — type new value to replace)'
+                        : f.placeholder}
                       value={fields[f.key] || ''}
                       onChange={e => setFields(s => ({ ...s, [f.key]: e.target.value }))}
                       style={f.type === 'password' ? { paddingRight: 36 } : {}}
