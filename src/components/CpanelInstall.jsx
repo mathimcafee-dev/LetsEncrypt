@@ -78,7 +78,7 @@ function CredentialSelector({ creds, selected, onSelect, onDelete }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────
-export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
+export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline = false }) {
   const [token, setToken] = useState('')
   const [savedCreds, setSavedCreds] = useState([])
   const [selectedCred, setSelectedCred] = useState(null)
@@ -123,6 +123,8 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
     setSavedCreds(prev => prev.filter(c => c.id !== credId))
     if (selectedCred === credId) setSelectedCred(null)
   }
+
+  const [verifyPending, setVerifyPending] = useState(false)
 
   const handleInstall = async () => {
     setBusy(true)
@@ -195,6 +197,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
 
     // Step 3 — SSL verification result (already done in edge fn, just read it)
     setSslVerified(installRes.ssl_verified)
+    setVerifyPending(installRes.verify_pending ?? false)
     setSteps({ creds: 'done', install: 'done', verify: 'done' })
     setPhase('done')
     setBusy(false)
@@ -216,10 +219,13 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
   )
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 300,
+    <div style={inline ? {} : { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 300,
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ background: 'white', borderRadius: 10, width: '100%', maxWidth: 520,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.2)', overflow: 'hidden', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={inline
+        ? { background: 'white', borderRadius: 8, overflow: 'hidden' }
+        : { background: 'white', borderRadius: 10, width: '100%', maxWidth: 520,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.2)', overflow: 'hidden', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }
+      }>
 
         {/* Header */}
         <div style={{ padding: '18px 22px', borderBottom: '0.5px solid #e8edf2',
@@ -260,23 +266,35 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
               </div>
 
               {/* SSL verification result */}
-              <div style={{ background: sslVerified ? '#f0fdf4' : '#fffbeb',
-                border: `0.5px solid ${sslVerified ? '#bbf7d0' : '#fde68a'}`,
+              <div style={{ background: sslVerified ? '#f0fdf4' : verifyPending ? '#f0f9ff' : '#fffbeb',
+                border: `0.5px solid ${sslVerified ? '#bbf7d0' : verifyPending ? '#bae6fd' : '#fde68a'}`,
                 borderRadius: 8, padding: '12px 16px', marginBottom: 20, textAlign: 'left' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                   {sslVerified
                     ? <CheckCircle size={14} color="#10b981"/>
+                    : verifyPending
+                    ? <Loader size={14} color="#0369a1" style={{ animation: 'spin 1s linear infinite' }}/>
                     : <AlertTriangle size={14} color="#d97706"/>}
                   <span style={{ fontSize: 12, fontWeight: 500,
-                    color: sslVerified ? '#047857' : '#92400e' }}>
+                    color: sslVerified ? '#047857' : verifyPending ? '#0369a1' : '#92400e' }}>
                     {sslVerified
                       ? 'Live SSL verification passed — cert is being served'
-                      : 'SSL installed, but live verification is pending'}
+                      : verifyPending
+                      ? 'SSL installed — live verification running in background (~60s)'
+                      : 'SSL installed, but live verification could not confirm'}
                   </span>
                 </div>
-                {!sslVerified && (
+                {verifyPending && (
+                  <p style={{ fontSize: 11, color: '#0c4a6e', margin: 0, lineHeight: 1.6 }}>
+                    cPanel is reloading your web server. Verification runs automatically
+                    after ~30 seconds. Check your site at{' '}
+                    <a href={`https://${cert.domain}`} target="_blank" rel="noopener noreferrer"
+                      style={{ color: '#0e7fc0' }}>https://{cert.domain}</a> in a minute.
+                  </p>
+                )}
+                {!sslVerified && !verifyPending && (
                   <p style={{ fontSize: 11, color: '#92400e', margin: 0, lineHeight: 1.6 }}>
-                    DNS propagation can take up to 10 minutes. Your cert is installed — check back shortly or visit{' '}
+                    DNS propagation can take up to 10 minutes. Your cert is installed — check{' '}
                     <a href={`https://${cert.domain}`} target="_blank" rel="noopener noreferrer"
                       style={{ color: '#0e7fc0' }}>https://{cert.domain}</a> to confirm.
                   </p>

@@ -402,8 +402,8 @@ export default function AgentInstall({ cert, userId, onClose }) {
                   cert={cert}
                   userId={userId}
                   onClose={onClose}
+                  inline={true}
                   onSuccess={() => {
-                    // Close AgentInstall modal on success
                     setTimeout(onClose, 1500)
                   }}
                 />
