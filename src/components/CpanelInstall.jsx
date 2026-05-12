@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X, CheckCircle, XCircle, Loader, Shield, Server,
   Eye, EyeOff, Plus, Trash2, ChevronDown, AlertTriangle, Globe } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -84,14 +84,14 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
   const [selectedCred, setSelectedCred] = useState(null)
   const [useNew, setUseNew] = useState(false)
 
-  // New credentials form
-  const [hostname, setHostname] = useState('')
+  // Form refs — uncontrolled inputs avoid re-render lag on each keystroke
+  const hostnameRef = useRef(null)
+  const cpanelUserRef = useRef(null)
+  const apiTokenRef = useRef(null)
+  const labelRef = useRef(null)
   const [port, setPort] = useState(2083)
-  const [cpanelUser, setCpanelUser] = useState('')
-  const [apiToken, setApiToken] = useState('')
   const [showToken, setShowToken] = useState(false)
   const [saveForFuture, setSaveForFuture] = useState(true)
-  const [label, setLabel] = useState('')
 
   // Flow state
   const [phase, setPhase] = useState('form') // form | verifying | installing | verifying_ssl | done | error
@@ -127,6 +127,12 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
   const [verifyPending, setVerifyPending] = useState(false)
 
   const handleInstall = async () => {
+    // Read values from uncontrolled refs
+    const hostname = hostnameRef.current?.value?.trim() || ''
+    const cpanelUser = cpanelUserRef.current?.value?.trim() || ''
+    const apiToken = apiTokenRef.current?.value?.trim() || ''
+    const label = labelRef.current?.value?.trim() || ''
+
     setBusy(true)
     setPhase('running')
     setSteps({ creds: 'active', install: null, verify: null })
@@ -137,7 +143,6 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
     if (!tok) { setErrorMsg('Not authenticated'); setBusy(false); setPhase('error'); return }
 
     let finalCredId = selectedCred
-    let verifyOk = false
 
     // Step 1 — verify or save credentials
     if (useNew || !selectedCred) {
@@ -195,7 +200,6 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
 
     setSteps({ creds: 'done', install: 'done', verify: 'active' })
 
-    // Step 3 — SSL verification result (already done in edge fn, just read it)
     setSslVerified(installRes.ssl_verified)
     setVerifyPending(installRes.verify_pending ?? false)
     setSteps({ creds: 'done', install: 'done', verify: 'done' })
@@ -211,12 +215,6 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
     </div>
   )
 
-  const Input = ({ value, onChange, placeholder, type = 'text' }) => (
-    <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-      type={type} style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
-        padding: '9px 12px', fontSize: 12, fontFamily: 'inherit', color: '#0a0a0a',
-        background: 'white', outline: 'none', boxSizing: 'border-box' }}/>
-  )
 
   return (
     <div style={inline ? {} : { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 300,
@@ -391,7 +389,11 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
 
                   <div style={{ marginBottom: 10 }}>
                     <Label required>Hostname</Label>
-                    <Input value={hostname} onChange={setHostname} placeholder="cpanel.myhost.com or mysite.com"/>
+                    <input ref={hostnameRef} defaultValue="" autoComplete="off"
+                      placeholder="cpanel.myhost.com or mysite.com"
+                      style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
+                        padding: '9px 12px', fontSize: 13, fontFamily: 'inherit', color: '#0a0a0a',
+                        background: 'white', outline: 'none', boxSizing: 'border-box' }}/>
                     <div style={{ fontSize: 10, color: '#a3a3a3', marginTop: 4 }}>
                       Your cPanel URL without https://. Check your hosting welcome email.
                     </div>
@@ -400,7 +402,11 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px', gap: 8, marginBottom: 10 }}>
                     <div>
                       <Label required>cPanel username</Label>
-                      <Input value={cpanelUser} onChange={setCpanelUser} placeholder="myuser"/>
+                      <input ref={cpanelUserRef} defaultValue="" autoComplete="off"
+                        placeholder="myuser"
+                        style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
+                          padding: '9px 12px', fontSize: 13, fontFamily: 'inherit', color: '#0a0a0a',
+                          background: 'white', outline: 'none', boxSizing: 'border-box' }}/>
                     </div>
                     <div>
                       <Label>Port</Label>
@@ -421,7 +427,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                   <div style={{ marginBottom: 10 }}>
                     <Label required>API token</Label>
                     <div style={{ position: 'relative' }}>
-                      <input value={apiToken} onChange={e => setApiToken(e.target.value)}
+                      <input ref={apiTokenRef} defaultValue="" autoComplete="off"
                         type={showToken ? 'text' : 'password'}
                         placeholder="Paste your cPanel API token"
                         style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
@@ -451,8 +457,11 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                   {saveForFuture && (
                     <div style={{ marginBottom: 14 }}>
                       <Label>Server label (optional)</Label>
-                      <Input value={label} onChange={setLabel}
-                        placeholder={`e.g. GoDaddy – ${cert.domain || 'mysite.com'}`}/>
+                      <input ref={labelRef} defaultValue=""
+                        placeholder={`e.g. GoDaddy – ${cert.domain || 'mysite.com'}`}
+                        style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
+                          padding: '9px 12px', fontSize: 13, fontFamily: 'inherit', color: '#0a0a0a',
+                          background: 'white', outline: 'none', boxSizing: 'border-box' }}/>
                     </div>
                   )}
                 </div>
