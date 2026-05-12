@@ -299,8 +299,8 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
             <span className="v2-metric-label">Install</span>
             <div style={{ display:'flex', alignItems:'center', gap:5 }}>
               {cert.install_method && (
-                <span style={{ fontSize:9, fontWeight:600, color:'#374151', background:'#f3f4f6',
-                  border:'0.5px solid #e5e7eb', borderRadius:3, padding:'1px 5px', textTransform:'uppercase' }}>
+                <span style={{ fontSize:9, fontWeight:600, color:'#94a3b8', background:'#f3f4f6',
+                  border:'0.5px solid #1e293b', borderRadius:3, padding:'1px 5px', textTransform:'uppercase' }}>
                   {cert.install_method}
                 </span>
               )}
@@ -924,15 +924,15 @@ function LoggedInDashboard({ user, nav }) {
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
   return (
-    <div style={{ background: '#050a14', minHeight: '100vh', color: 'white' }}>
+    <div style={{ background: '#f0f4f8', minHeight: '100vh' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 80px' }}>
 
         {/* Page hero */}
         <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: 'white', letterSpacing: '-0.4px', marginBottom: 4 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.4px', marginBottom: 4 }}>
             Dashboard
           </h1>
-          <p style={{ fontSize: 12, color: '#4b5563' }}>
+          <p style={{ fontSize: 12, color: '#64748b' }}>
             {user.email} · {total} certificate{total !== 1 ? 's' : ''} · {monitored.length} monitored
           </p>
         </div>
@@ -940,18 +940,18 @@ function LoggedInDashboard({ user, nav }) {
         {/* Stats — dark cards matching Pricing */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:24 }}>
           {[
-            { label:'Total',        value: total,    accent:'rgba(255,255,255,0.1)', sub: 'certificates' },
+            { label:'Total',        value: total,    accent:'#e2e8f0', sub: 'certificates' },
             { label:'Healthy',      value: healthy,  accent:'#1a56db', sub: healthy > 0 ? 'All valid' : 'None active' },
-            { label:'Expiring',     value: expiring, accent: expiring > 0 ? '#f59e0b' : 'rgba(255,255,255,0.06)', sub: expiring > 0 ? 'Renew soon' : 'None' },
-            { label:'Expired',      value: expired,  accent: expired > 0 ? '#dc2626' : 'rgba(255,255,255,0.06)', sub: expired > 0 ? 'Action needed' : 'None' },
+            { label:'Expiring',     value: expiring, accent: expiring > 0 ? '#f59e0b' : '#f1f5f9', sub: expiring > 0 ? 'Renew soon' : 'None' },
+            { label:'Expired',      value: expired,  accent: expired > 0 ? '#dc2626' : '#f1f5f9', sub: expired > 0 ? 'Action needed' : 'None' },
           ].map(s => (
-            <div key={s.label} style={{ background: '#111827', border: '0.5px solid rgba(255,255,255,0.06)',
+            <div key={s.label} style={{ background: '#ffffff', border: '0.5px solid #f1f5f9',
               borderRadius: 8, padding: '16px 18px', borderTop: `2px solid ${s.accent}` }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#4b5563',
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b',
                 textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>{s.label}</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: 'white', letterSpacing: '-0.5px',
+              <div style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px',
                 lineHeight: 1, marginBottom: 4 }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: '#4b5563' }}>{s.sub}</div>
+              <div style={{ fontSize: 11, color: '#64748b' }}>{s.sub}</div>
             </div>
           ))}
         </div>
@@ -1000,10 +1000,10 @@ function LoggedInDashboard({ user, nav }) {
               <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24', marginBottom: 4 }}>
                 New certificate{newlyRotated.length > 1 ? 's' : ''} issued — install on your server
               </div>
-              <div style={{ fontSize: 12, color: '#4b5563' }}>
+              <div style={{ fontSize: 12, color: '#64748b' }}>
                 {newlyRotated.map(d => (
-                  <span key={d} style={{ fontFamily: 'monospace', background: 'rgba(255,255,255,0.06)',
-                    borderRadius: 3, padding: '1px 6px', marginRight: 6, fontSize: 11, color: '#9ca3af' }}>{d}</span>
+                  <span key={d} style={{ fontFamily: 'monospace', background: '#f1f5f9',
+                    borderRadius: 3, padding: '1px 6px', marginRight: 6, fontSize: 11, color: '#64748b' }}>{d}</span>
                 ))}
               </div>
             </div>
@@ -1011,13 +1011,13 @@ function LoggedInDashboard({ user, nav }) {
               <button onClick={() => {
                 const cert = certs.find(c => newlyRotated.includes(c.domain) && c.status !== 'rotating' && c.private_key_pem)
                 if (cert) { setSelected(cert.id); setAgentCert(cert) }
-              }} style={{ background: '#1a56db', color: 'white', border: 'none', borderRadius: 6,
+              }} style={{ background: '#0e7fc0', color: 'white', border: 'none', borderRadius: 6,
                 padding: '7px 14px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                 Install now
               </button>
               <button onClick={() => nav('/install')}
-                style={{ background: 'rgba(255,255,255,0.06)', color: '#9ca3af',
-                  border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 6,
+                style={{ background: '#f1f5f9', color: '#64748b',
+                  border: '0.5px solid #e2e8f0', borderRadius: 6,
                   padding: '7px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}>
                 Guide
               </button>
@@ -1029,10 +1029,10 @@ function LoggedInDashboard({ user, nav }) {
         <div style={{ display: 'grid', gridTemplateColumns: selectedCert ? '1fr 380px' : '1fr', gap: 16, alignItems: 'start' }}>
 
           {/* Certificate list — dark card */}
-          <div style={{ background: '#0a0f1a', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: 10, overflow: 'hidden' }}>
+          <div style={{ background: '#ffffff', border: '0.5px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
 
             {/* Toolbar */}
-            <div style={{ padding: '12px 16px', borderBottom: '0.5px solid rgba(255,255,255,0.06)',
+            <div style={{ padding: '12px 16px', borderBottom: '0.5px solid #f1f5f9',
               display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', gap: 4 }}>
                 {[
@@ -1044,9 +1044,9 @@ function LoggedInDashboard({ user, nav }) {
                   <button key={f.key} onClick={() => setFilter(f.key)}
                     style={{ padding: '4px 10px', borderRadius: 5, fontSize: 11, fontWeight: 500,
                       cursor: 'pointer', fontFamily: 'inherit',
-                      background: filter === f.key ? '#1a56db' : 'rgba(255,255,255,0.04)',
-                      color: filter === f.key ? 'white' : '#4b5563',
-                      border: filter === f.key ? '0.5px solid #1a56db' : '0.5px solid rgba(255,255,255,0.08)' }}>
+                      background: filter === f.key ? '#0e7fc0' : '#f8fafc',
+                      color: filter === f.key ? 'white' : '#64748b',
+                      border: filter === f.key ? '0.5px solid #0e7fc0' : '0.5px solid #e2e8f0' }}>
                     {f.label} <span style={{ opacity: 0.7 }}>{f.count}</span>
                   </button>
                 ))}
@@ -1055,15 +1055,15 @@ function LoggedInDashboard({ user, nav }) {
                 <div style={{ position: 'relative' }}>
                   <input value={search} onChange={e => setSearch(e.target.value)}
                     placeholder="Search domains…"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(255,255,255,0.1)',
+                    style={{ background: '#f8fafc', border: '0.5px solid #e2e8f0',
                       borderRadius: 6, color: 'white', fontSize: 12, padding: '5px 10px 5px 28px',
                       width: 180, outline: 'none', fontFamily: 'inherit' }}/>
                   <Globe size={12} style={{ position: 'absolute', left: 9, top: '50%',
-                    transform: 'translateY(-50%)', color: '#374151', pointerEvents: 'none' }}/>
+                    transform: 'translateY(-50%)', color: '#94a3b8', pointerEvents: 'none' }}/>
                 </div>
                 <button onClick={() => nav('/buy')}
                   style={{ display: 'flex', alignItems: 'center', gap: 5,
-                    background: '#1a56db', color: 'white', border: 'none', borderRadius: 6,
+                    background: '#0e7fc0', color: 'white', border: 'none', borderRadius: 6,
                     padding: '6px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                   <Plus size={11}/> Issue certificate
                 </button>
@@ -1073,21 +1073,21 @@ function LoggedInDashboard({ user, nav }) {
             {/* Rows */}
             {loading ? (
               <div style={{ padding: '48px 16px', textAlign: 'center' }}>
-                <RefreshCw size={20} className="spin" style={{ color: '#374151' }}/>
-                <div style={{ fontSize: 12, color: '#374151', marginTop: 10 }}>Loading…</div>
+                <RefreshCw size={20} className="spin" style={{ color: '#94a3b8' }}/>
+                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>Loading…</div>
               </div>
             ) : visible.length === 0 && pendingOrders.length === 0 ? (
               <div style={{ padding: '48px 16px', textAlign: 'center' }}>
-                <Shield size={24} style={{ color: '#1f2937', marginBottom: 12 }}/>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+                <Shield size={24} style={{ color: '#f8fafc', marginBottom: 12 }}/>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>
                   {total === 0 ? 'No certificates yet' : 'No results'}
                 </div>
-                <div style={{ fontSize: 12, color: '#1f2937', marginBottom: 16 }}>
+                <div style={{ fontSize: 12, color: '#f8fafc', marginBottom: 16 }}>
                   {total === 0 ? 'Issue your first SSL certificate to get started.' : 'Try a different filter.'}
                 </div>
                 {total === 0 && (
                   <button onClick={() => nav('/buy')}
-                    style={{ background: '#1a56db', color: 'white', border: 'none', borderRadius: 7,
+                    style={{ background: '#0e7fc0', color: 'white', border: 'none', borderRadius: 7,
                       padding: '9px 18px', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                     Issue your first certificate
                   </button>
@@ -1100,7 +1100,7 @@ function LoggedInDashboard({ user, nav }) {
                   const ageHours = Math.floor((Date.now() - new Date(order.created_at)) / 3600000)
                   return (
                     <div key={order.id} style={{ display: 'flex', alignItems: 'center', gap: 12,
-                      padding: '11px 16px', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+                      padding: '11px 16px', borderBottom: '0.5px solid #f1f5f9',
                       background: 'rgba(245,158,11,0.04)' }}>
                       <div style={{ width: 30, height: 30, borderRadius: 7, flexShrink: 0,
                         background: 'rgba(245,158,11,0.1)', border: '0.5px solid rgba(245,158,11,0.25)',
@@ -1109,7 +1109,7 @@ function LoggedInDashboard({ user, nav }) {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2 }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#e5e7eb',
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#1e293b',
                             fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {order.domain}
                           </span>
@@ -1126,7 +1126,7 @@ function LoggedInDashboard({ user, nav }) {
                               letterSpacing: '0.3px', flexShrink: 0 }}>Sandbox</span>
                           )}
                         </div>
-                        <div style={{ fontSize: 10, color: '#374151' }}>
+                        <div style={{ fontSize: 10, color: '#94a3b8' }}>
                           #{order.tss_order_id} · {ageHours < 1 ? 'just now' : `${ageHours}h ago`}
                           {order.status === 'dv_pending' && (
                             <span style={{ color: '#d97706' }}> · DNS validation in progress</span>
@@ -1136,9 +1136,9 @@ function LoggedInDashboard({ user, nav }) {
                       <button onClick={() => handleDeleteOrder(order.id)} disabled={deletingOrder === order.id}
                         title="Remove order"
                         style={{ width: 26, height: 26, borderRadius: 5, background: 'none',
-                          border: '0.5px solid rgba(255,255,255,0.08)', cursor: 'pointer',
+                          border: '0.5px solid #e2e8f0', cursor: 'pointer',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          color: '#374151', flexShrink: 0 }}>
+                          color: '#94a3b8', flexShrink: 0 }}>
                         {deletingOrder === order.id ? '…' : <X size={11}/>}
                       </button>
                     </div>
@@ -1157,36 +1157,36 @@ function LoggedInDashboard({ user, nav }) {
                   <div>
                     <button onClick={() => setShowRotated(v => !v)}
                       style={{ width: '100%', padding: '10px 16px', background: 'none',
-                        border: 'none', borderTop: '0.5px solid rgba(255,255,255,0.05)',
+                        border: 'none', borderTop: '0.5px solid #f1f5f9',
                         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        gap: 6, fontSize: 12, color: '#374151', fontFamily: 'inherit', fontWeight: 500 }}>
+                        gap: 6, fontSize: 12, color: '#94a3b8', fontFamily: 'inherit', fontWeight: 500 }}>
                       <RefreshCw size={11}/>
                       {showRotated ? 'Hide rotated certificates' : `Show ${rotatingDomains.length} rotated`}
                     </button>
                     {showRotated && (
-                      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}>
+                      <div style={{ borderTop: '0.5px solid #f1f5f9', background: 'rgba(255,255,255,0.01)' }}>
                         {certs.filter(c => c.status === 'rotating').map(cert => {
                           const days = daysLeft(cert.expires_at)
                           return (
                             <div key={cert.id} style={{ display: 'flex', alignItems: 'center', gap: 12,
                               padding: '10px 16px', opacity: 0.4,
-                              borderBottom: '0.5px solid rgba(255,255,255,0.04)' }}>
+                              borderBottom: '0.5px solid #f8fafc' }}>
                               <div style={{ width: 28, height: 28, borderRadius: 6,
-                                background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(255,255,255,0.06)',
+                                background: '#f8fafc', border: '0.5px solid #f1f5f9',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: 9, fontWeight: 700, color: '#374151', flexShrink: 0 }}>
+                                fontSize: 9, fontWeight: 700, color: '#94a3b8', flexShrink: 0 }}>
                                 {cert.domain.replace(/^www\./, '').slice(0,2).toUpperCase()}
                               </div>
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                  <span style={{ fontSize: 12, color: '#4b5563', fontFamily: 'monospace', fontWeight: 500 }}>
+                                  <span style={{ fontSize: 12, color: '#64748b', fontFamily: 'monospace', fontWeight: 500 }}>
                                     {cert.domain}
                                   </span>
-                                  <span style={{ fontSize: 9, fontWeight: 600, color: '#374151',
-                                    background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(255,255,255,0.06)',
+                                  <span style={{ fontSize: 9, fontWeight: 600, color: '#94a3b8',
+                                    background: '#f8fafc', border: '0.5px solid #f1f5f9',
                                     borderRadius: 3, padding: '1px 6px', textTransform: 'uppercase' }}>Rotated</span>
                                 </div>
-                                <div style={{ fontSize: 11, color: '#1f2937', marginTop: 2 }}>
+                                <div style={{ fontSize: 11, color: '#f8fafc', marginTop: 2 }}>
                                   Expires {fmtDate(cert.expires_at)} · Archived for 30 days
                                 </div>
                               </div>
@@ -1215,35 +1215,35 @@ function LoggedInDashboard({ user, nav }) {
           <div style={{ marginTop: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: 'white', letterSpacing: '-0.2px' }}>Monitored domains</div>
-                <div style={{ fontSize: 12, color: '#4b5563' }}>{monitored.length} domain{monitored.length !== 1 ? 's' : ''} tracked via SSL Monitor</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', letterSpacing: '-0.2px' }}>Monitored domains</div>
+                <div style={{ fontSize: 12, color: '#64748b' }}>{monitored.length} domain{monitored.length !== 1 ? 's' : ''} tracked via SSL Monitor</div>
               </div>
               <button onClick={() => nav('/dns-providers')}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.04)',
-                  color: '#9ca3af', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 6,
+                style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f8fafc',
+                  color: '#64748b', border: '0.5px solid #e2e8f0', borderRadius: 6,
                   padding: '6px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Activity size={11}/> DNS Providers <ArrowRight size={10}/>
               </button>
             </div>
-            <div style={{ background: '#0a0f1a', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ background: '#ffffff', border: '0.5px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
               {monitored.map(m => {
                 const days = m.cert_expiry ? differenceInDays(new Date(m.cert_expiry), new Date()) : null
                 const s = statusOf(days, false, null)
                 return (
                   <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '11px 16px', borderBottom: '0.5px solid rgba(255,255,255,0.05)', cursor: 'default' }}>
-                    <Globe size={13} color="#374151" style={{ flexShrink: 0 }}/>
+                    padding: '11px 16px', borderBottom: '0.5px solid #f1f5f9', cursor: 'default' }}>
+                    <Globe size={13} color="#94a3b8" style={{ flexShrink: 0 }}/>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize: 12, color: '#e5e7eb', fontFamily: 'monospace', fontWeight: 500 }}>{m.domain}</span>
+                        <span style={{ fontSize: 12, color: '#1e293b', fontFamily: 'monospace', fontWeight: 500 }}>{m.domain}</span>
                         <StatusPill days={days} revoked={false}/>
                       </div>
-                      <div style={{ fontSize: 11, color: '#374151', marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
                         {m.cert_expiry ? `Expires ${fmtDate(m.cert_expiry)}` : 'Not scanned yet'}
                       </div>
                     </div>
                     <button onClick={() => nav('/dns-providers')}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#374151' }}>
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}>
                       <ExternalLink size={11}/>
                     </button>
                   </div>
@@ -1255,7 +1255,7 @@ function LoggedInDashboard({ user, nav }) {
 
         {/* Quick actions */}
         <div style={{ marginTop: 24 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#374151', textTransform: 'uppercase',
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase',
             letterSpacing: '0.5px', marginBottom: 12 }}>Quick actions</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
             {[
@@ -1265,14 +1265,14 @@ function LoggedInDashboard({ user, nav }) {
               { icon:<Zap size={15}/>,      label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',         action:() => nav('/knowledge-base') },
             ].map(({ icon, label, desc, action }) => (
               <button key={label} onClick={action}
-                style={{ background: '#111827', border: '0.5px solid rgba(255,255,255,0.06)',
+                style={{ background: '#ffffff', border: '0.5px solid #f1f5f9',
                   borderRadius: 8, padding: '14px 16px', textAlign: 'left',
                   cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.12s' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#1f2937'}
-                onMouseLeave={e => e.currentTarget.style.background = '#111827'}>
-                <div style={{ color: '#1a56db', marginBottom: 8 }}>{icon}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#e5e7eb', marginBottom: 4 }}>{label}</div>
-                <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.5 }}>{desc}</div>
+                onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}>
+                <div style={{ color: '#0e7fc0', marginBottom: 8 }}>{icon}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#1e293b', marginBottom: 4 }}>{label}</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.5 }}>{desc}</div>
               </button>
             ))}
           </div>

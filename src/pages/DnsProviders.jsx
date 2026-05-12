@@ -196,7 +196,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
             textTransform: 'uppercase', letterSpacing: '0.3px',
             background: hasBoth ? '#eff6ff' : dnsOnly ? '#eff6ff' : '#fafafa',
             color: hasBoth ? '#1d4ed8' : dnsOnly ? '#15803d' : '#6b7280',
-            border: hasBoth ? '0.5px solid #bfdbfe' : dnsOnly ? '0.5px solid #bfdbfe' : '0.5px solid #e5e7eb',
+            border: hasBoth ? '0.5px solid #bfdbfe' : dnsOnly ? '0.5px solid #bfdbfe' : '0.5px solid #1e293b',
           }}>
             {hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'}
           </span>
@@ -1205,7 +1205,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 <label className="v2-label">SSH into your server and run</label>
                 <div style={{ background: '#0a0a0a', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                padding: '7px 12px', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+                                padding: '7px 12px', borderBottom: '0.5px solid #f1f5f9' }}>
                     <div style={{ display: 'flex', gap: 5 }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#ef4444' }} />
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f59e0b' }} />
@@ -1449,7 +1449,7 @@ export default function DnsProviders({ nav }) {
   const selSrvAgent = selSrv ? (agents.find(a => a.server_id === selSrv.id) || null) : null
 
   return (
-    <div style={{ background: '#050a14', minHeight: '100vh' }}>
+    <div style={{ background: '#f0f4f8', minHeight: '100vh' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 24px 80px' }}>
         {showAddDns  && <UnifiedSetupModal userId={user?.id} defaultMode="dns"    onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddDns(false)} />}
         {showAddSrv  && <UnifiedSetupModal userId={user?.id} defaultMode="server" onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddSrv(false)} />}
@@ -1461,7 +1461,7 @@ export default function DnsProviders({ nav }) {
 
         {/* Unified domain list */}
         <div className="v2-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
-          <div style={{ background: '#0a0f1a', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: 10, overflow: 'hidden' }}>
+          <div style={{ background: '#ffffff', border: '0.5px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
             {loading ? (
               <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>Loading…</div>
             ) : domainGroups.length === 0 ? (

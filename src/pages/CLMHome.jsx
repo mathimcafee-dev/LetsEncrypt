@@ -100,7 +100,7 @@ export default function CLMHome({ user, nav }) {
       </div>
 
       {/* MAIN LAYOUT */}
-      <div style={{ display:'flex', flex:1, background: ['issue','import','dashboard','dns'].includes(section) ? '#050a14' : '#f4f6f9' }}>
+      <div style={{ display:'flex', flex:1, background: ['issue','import'].includes(section) ? '#050a14' : '#f0f4f8' }}>
         {/* SIDEBAR */}
         <nav style={{ width:210, background:'#0d3c6e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto' }}>
           {[
