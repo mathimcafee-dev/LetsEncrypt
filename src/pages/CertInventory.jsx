@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   Shield, Plus, Search, ChevronRight, ChevronDown, Copy, Eye, EyeOff,
-  RefreshCw, Download, X, AlertTriangle, Check, Trash2, FileText, Key, Lock
+  RefreshCw, RotateCcw, Download, X, AlertTriangle, Check, Trash2, FileText, Key, Lock
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { differenceInDays, format } from 'date-fns'
@@ -259,10 +259,31 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
           <div style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:10 }}>Actions</div>
           <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
             <ActionBtn icon={Download}  label="Download Certificate" onClick={downloadZip}/>
-            <ActionBtn icon={RefreshCw} label="Re-issue / Renew"     onClick={() => { sessionStorage.setItem('prefill_domain',cert.domain); onIssue?.() }} disabled={isRevoked}/>
+            <ActionBtn icon={RotateCcw} label="Renew Certificate"    onClick={() => { sessionStorage.setItem('prefill_domain',cert.domain); onIssue?.() }} disabled={isRevoked}/>
             <ActionBtn icon={Lock}      label="Install to Server"    onClick={() => onInstall?.(cert)} disabled={isRevoked||!cert.cert_pem}/>
             {!cert.tss_order_id && <ActionBtn icon={Trash2} label="Delete" onClick={() => setDelConfirm(true)} color="#b91c1c"/>}
-            {cert.tss_order_id && !isRevoked && <ActionBtn icon={X} label="Cancel / Revoke" onClick={() => setRevokeOpen(true)} color="#b91c1c"/>}
+            {cert.tss_order_id && !isRevoked && (
+              <>
+                <div style={{ borderTop:'0.5px solid #e8edf2', margin:'4px 0', display:'flex', alignItems:'center', gap:6 }}>
+                  <span style={{ fontSize:9, color:'#a3a3a3', fontWeight:600, textTransform:'uppercase', letterSpacing:'.4px', padding:'2px 0' }}>TSS actions</span>
+                </div>
+                <ActionBtn icon={RefreshCw} label="Reissue — same order, fresh PEM, no charge" onClick={async () => {
+                  if (!window.confirm('Reissue this certificate? This generates a new CSR and PEM on the same TSS order — same expiry, no charge.')) return
+                  try {
+                    const { data: { session } } = await (await import('../lib/supabase')).supabase.auth.getSession()
+                    const r = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
+                      body: JSON.stringify({ action: 'reissue', cert_id: cert.id })
+                    })
+                    const d = await r.json()
+                    if (d.ok) { alert('Reissued successfully. Refreshing…'); onRefresh?.() }
+                    else alert('Reissue failed: ' + (d.error || 'unknown error'))
+                  } catch(e) { alert('Error: ' + String(e)) }
+                }} disabled={isRevoked}/>
+                <ActionBtn icon={X} label="Cancel / Revoke" onClick={() => setRevokeOpen(true)} color="#b91c1c"/>
+              </>
+            )}
             {delConfirm && (
               <div style={{ display:'flex', gap:6, marginTop:4 }}>
                 <button onClick={() => setDelConfirm(false)} style={btnStyle}>Cancel</button>
