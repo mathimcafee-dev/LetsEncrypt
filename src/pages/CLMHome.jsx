@@ -126,7 +126,7 @@ export default function CLMHome({ user, nav }) {
           <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
             <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
           </div>
-          <div style={{ flex:1, overflowY:'auto' }}>
+          <div style={{ flex:1, overflowY:'auto', overflowX:'hidden' }}>
             {renderContent()}
           </div>
         </div>
