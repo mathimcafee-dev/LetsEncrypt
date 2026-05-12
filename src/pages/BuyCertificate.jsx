@@ -8,13 +8,13 @@ const URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const IS_SANDBOX = true
 
 const PRODUCTS = [
-  { code: 'rapidssl',          name: 'RapidSSL DV',              type: 'DV',       icon: '🔒', price: 19,  popular: false, wildcard: false, desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites.' },
-  { code: 'rapidssl_wildcard', name: 'RapidSSL Wildcard',        type: 'Wildcard', icon: '🌐', price: 65,  popular: true,  wildcard: true,  desc: 'Secures *.yourdomain.com — unlimited subdomains with one certificate.' },
-  { code: 'positivessl',       name: 'Sectigo PositiveSSL',      type: 'DV',       icon: '✅', price: 16,  popular: false, wildcard: false, desc: 'Low cost DV SSL from Sectigo. Fast issuance, strong browser trust.' },
-  { code: 'positivssl_wildcard', name: 'Sectigo Wildcard',       type: 'Wildcard', icon: '⭐', price: 128, popular: false, wildcard: true,  desc: 'Sectigo wildcard — all subdomains secured, cost-effective management.' },
-  { code: 'geotrust_dv',       name: 'GeoTrust DV',              type: 'DV',       icon: '🛡️', price: 32,  popular: false, wildcard: false, desc: 'GeoTrust trusted DV. Flex feature — add more domains if needed.' },
-  { code: 'geotrust_truebiz',  name: 'GeoTrust TrueBusiness OV', type: 'OV',       icon: '🏢', price: 112, popular: false, wildcard: false, desc: 'Organisation validated. Shows verified company info in cert details.' },
-  { code: 'sectigo_ev',        name: 'Sectigo EV SSL',           type: 'EV',       icon: '🏦', price: 65,  popular: false, wildcard: false, desc: 'Extended Validation — maximum trust, verified company identity, warranty.' },
+  { code: 'rapidssl',          name: 'RapidSSL DV',              type: 'DV',       icon: '🔒', price: 19,  popular: false, wildcard: false, available: true,  desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites.' },
+  { code: 'rapidssl_wildcard', name: 'RapidSSL Wildcard',        type: 'Wildcard', icon: '🌐', price: 65,  popular: true,  wildcard: true,  available: false, desc: 'Secures *.yourdomain.com — unlimited subdomains with one certificate.' },
+  { code: 'positivessl',       name: 'Sectigo PositiveSSL',      type: 'DV',       icon: '✅', price: 16,  popular: false, wildcard: false, available: false, desc: 'Low cost DV SSL from Sectigo. Fast issuance, strong browser trust.' },
+  { code: 'positivssl_wildcard', name: 'Sectigo Wildcard',       type: 'Wildcard', icon: '⭐', price: 128, popular: false, wildcard: true,  available: false, desc: 'Sectigo wildcard — all subdomains secured, cost-effective management.' },
+  { code: 'geotrust_dv',       name: 'GeoTrust DV',              type: 'DV',       icon: '🛡️', price: 32,  popular: false, wildcard: false, available: false, desc: 'GeoTrust trusted DV. Flex feature — add more domains if needed.' },
+  { code: 'geotrust_truebiz',  name: 'GeoTrust TrueBusiness OV', type: 'OV',       icon: '🏢', price: 112, popular: false, wildcard: false, available: false, desc: 'Organisation validated. Shows verified company info in cert details.' },
+  { code: 'sectigo_ev',        name: 'Sectigo EV SSL',           type: 'EV',       icon: '🏦', price: 65,  popular: false, wildcard: false, available: false, desc: 'Extended Validation — maximum trust, verified company identity, warranty.' },
 ]
 
 const STYLES = `
@@ -573,22 +573,25 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                 </div>
                 <div className="ic-card-body" style={{ padding:'10px 14px' }}>
                   {PRODUCTS.map(p => (
-                    <button key={p.code} onClick={() => setProduct(p.code)} style={{
+                    <button key={p.code} onClick={() => p.available && setProduct(p.code)} style={{
                       display:'flex', alignItems:'flex-start', gap:12, width:'100%',
-                      padding:'10px 12px', marginBottom:6, borderRadius:7, cursor:'pointer',
+                      padding:'10px 12px', marginBottom:6, borderRadius:7,
+                      cursor: p.available ? 'pointer' : 'not-allowed',
                       border: product === p.code ? '1.5px solid #10b981' : '0.5px solid #e8edf2',
-                      background: product === p.code ? '#f0fdf4' : 'white',
-                      textAlign:'left', fontFamily:'inherit', transition:'all 0.12s'
+                      background: !p.available ? '#fafafa' : product === p.code ? '#f0fdf4' : 'white',
+                      textAlign:'left', fontFamily:'inherit', transition:'all 0.12s',
+                      opacity: p.available ? 1 : 0.55
                     }}>
                       <div style={{ fontSize:20, flexShrink:0, marginTop:1 }}>{p.icon}</div>
                       <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2, flexWrap:'wrap' }}>
                           <span style={{ fontSize:12, fontWeight:600, color:'#0a0a0a' }}>{p.name}</span>
                           <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:4,
                             background: p.type==='EV'?'#fef3c7':p.type==='OV'?'#eff6ff':p.type==='Wildcard'?'#fdf4ff':'#f0fdf4',
                             color: p.type==='EV'?'#92400e':p.type==='OV'?'#1e40af':p.type==='Wildcard'?'#7e22ce':'#065f46'
                           }}>{p.type}</span>
-                          {p.popular && <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:4, background:'#fff7ed', color:'#c2410c' }}>Popular</span>}
+                          {p.popular && p.available && <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:4, background:'#fff7ed', color:'#c2410c' }}>Popular</span>}
+                          {!p.available && <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:4, background:'#f1f5f9', color:'#64748b' }}>Coming Soon</span>}
                         </div>
                         <div style={{ fontSize:11, color:'#737373', lineHeight:1.5 }}>{p.desc}</div>
                       </div>
