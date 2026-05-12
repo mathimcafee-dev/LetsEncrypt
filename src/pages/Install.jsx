@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   Terminal, Copy, Check, ChevronRight, ExternalLink, Shield,
   ArrowRight, Download, Upload, Server, Globe, Cloud, Settings,
-  AlertCircle, Search, Wrench, Box, Code2, Wind
+  AlertCircle, Search, Wrench, Box, Code2, Wind, Zap
 } from 'lucide-react'
 
 // ── Code block with copy button (uses v2-code) ───────────────────────
@@ -132,8 +132,30 @@ export default function Install({ nav }) {
             Install your SSL certificate
           </h1>
           <p className="v2-subtitle" style={{ fontSize: 14, marginTop: 4, maxWidth: 560 }}>
-            Step-by-step commands for every web server, on every operating system. Personalise the domain below — every command updates automatically.
+            Step-by-step commands for every web server and operating system. Personalise the domain below — every command updates automatically.
           </p>
+        </div>
+
+        {/* AGENT CALLOUT — prominently before manual steps */}
+        <div className="v2-callout v2-callout-green" style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+            <Zap size={15} style={{ color: 'var(--v2-green)', flexShrink: 0, marginTop: 2 }}/>
+            <div>
+              <div className="v2-callout-title">Automate this entirely — skip the manual steps</div>
+              <p style={{ margin: '4px 0 8px', fontSize: 12, lineHeight: 1.7 }}>
+                If your server is a Linux VPS, the <strong>SSLVault persistent agent</strong> handles installation automatically.
+                No file uploads, no SSH after setup, no manual renewal — ever.
+              </p>
+              <p style={{ margin: '0 0 8px', fontSize: 12, lineHeight: 1.7 }}>
+                <strong>How:</strong> Go to <strong>Dashboard</strong> → click your cert row → click <strong>Install</strong>.
+                The modal will either dispatch to an already-connected agent, or walk you through a one-line agent install first.
+                The agent can be set up before <em>or</em> after the certificate is issued.
+              </p>
+              <p style={{ margin: 0, fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.7 }}>
+                The manual steps below are for servers without the agent, or where you prefer direct control.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* DOMAIN INPUT */}
@@ -156,7 +178,7 @@ export default function Install({ nav }) {
 
         {/* PRELIMINARIES */}
         <Divider label="GETTING READY" title="Step 1 — Download your certificate files" />
-        <Section title="Files you'll need" subtitle="Download from Inventory & Monitor → click your domain panel" icon={Download} defaultOpen>
+        <Section title="Files you'll need" subtitle="Dashboard → click cert row → expand → Copy or Download" icon={Download} defaultOpen>
           <p>Two files come with every issued certificate:</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 12 }}>
             <div style={{ background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)', borderRadius: 'var(--v2-r-md)', padding: '12px 14px' }}>

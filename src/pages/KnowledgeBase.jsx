@@ -146,33 +146,31 @@ export default function KnowledgeBase({ nav }) {
         <Divider label="01 · BASICS" title="Issue your first SSL certificate" />
         <Section anchor="getting-started"
                  title="Getting started"
-                 subtitle="Free 90-day cert via Let's Encrypt, no credit card"
+                 subtitle="RapidSSL DV cert via TheSSLStore · DigiCert, issued in ~5 minutes"
                  icon={Zap}
                  defaultOpen>
           <Step n={1} title="Go to Issue Certificate">
-            <p>Click <strong>Issue Certificate</strong> in the top navigation. Enter your domain name (e.g. <span className="v2-kbd">example.com</span> or <span className="v2-kbd">shop.example.com</span>). Wildcard certs (<span className="v2-kbd">*.example.com</span>) require DNS verification.</p>
+            <p>Click <strong>Issue Certificate</strong> in the sidebar under <strong>Main</strong>. Enter your domain name (e.g. <span className="v2-kbd">example.com</span> or <span className="v2-kbd">shop.example.com</span>), fill in contact details, choose validity period, and click <strong>Issue Certificate</strong>.</p>
           </Step>
-          <Step n={2} title="Complete DNS verification">
-            <p>SSLVault creates an ACME challenge. You have two options:</p>
+          <Step n={2} title="Complete DNS validation">
+            <p>SSLVault creates a CNAME challenge via TheSSLStore. You have two options:</p>
             <ul>
-              <li><strong>Automatic (recommended)</strong> — connect a DNS provider (Cloudflare, GoDaddy, Vercel, DigitalOcean) and the TXT record is added for you. No copy-pasting.</li>
-              <li><strong>Manual</strong> — copy the <span className="v2-kbd">_acme-challenge</span> TXT record shown and add it to your DNS registrar. Takes 1–5 minutes to propagate.</li>
+              <li><strong>Automatic (recommended)</strong> — if your domain uses Cloudflare, Vercel, or another supported DNS provider, SSLVault adds the record for you.</li>
+              <li><strong>Manual</strong> — copy the CNAME record shown and add it to your DNS registrar. Propagation takes 1–10 minutes.</li>
             </ul>
           </Step>
-          <Step n={3} title="Download your certificate">
-            <p>Once verified, your certificate appears in <strong>Inventory &amp; Monitor</strong>. Click the domain to expand it and download:</p>
-            <table className="v2-table" style={{ marginBottom: 6 }}>
-              <tbody>
-                <tr><td className="v2-mono" style={{ fontWeight: 500, width: 130 }}>cert.pem</td><td>Your certificate file</td></tr>
-                <tr><td className="v2-mono" style={{ fontWeight: 500 }}>key.pem</td><td>Your private key</td></tr>
-                <tr><td className="v2-mono" style={{ fontWeight: 500 }}>fullchain.pem</td><td>Cert + chain bundle</td></tr>
-              </tbody>
-            </table>
+          <Step n={3} title="Certificate appears in Dashboard">
+            <p>Once issued, your certificate appears in the <strong>Dashboard</strong> inventory. Click any row to expand it — you'll see full certificate details, file copy/download buttons, and the private key reveal.</p>
           </Step>
           <Step n={4} title="Install on your server">
-            <p>Click <strong>Install on Server</strong> inside the certificate panel. Choose your hosting type — VPS/cloud server (SSH) or shared hosting (cPanel). See sections below for full install guides.</p>
+            <p>In the expanded cert row, click <strong>Install</strong>. A modal opens with three paths:</p>
+            <ul>
+              <li><strong>Persistent agent (VPS)</strong> — if you've already installed the SSLVault agent on your server, the cert is dispatched automatically. No SSH needed.</li>
+              <li><strong>Install agent first</strong> — if no agent is running yet, the modal shows a one-line install command. Run it on your server, then dispatch the cert.</li>
+              <li><strong>cPanel / shared hosting</strong> — enter your cPanel username and API token. SSLVault installs via UAPI directly. No agent or SSH required.</li>
+            </ul>
           </Step>
-          <Note type="tip">Sign in to save certificates, enable auto-renewal, and manage multiple domains from one dashboard.</Note>
+          <Note type="tip">The agent can be installed before or after the certificate is issued — the Install modal handles both flows.</Note>
         </Section>
 
         {/* SECTION 2 */}
@@ -181,26 +179,29 @@ export default function KnowledgeBase({ nav }) {
                  title="Install the agent on your VPS"
                  subtitle="One curl command, zero-touch installs forever"
                  icon={Bot}>
-          <Step n={1} title="Save your server in DNS Providers → Servers tab">
-            <p>Go to <strong>More → DNS Providers</strong> → click the <strong>Servers</strong> tab → <strong>Add Server</strong>. Select <strong>VPS / Cloud Server (SSH)</strong>, enter your server IP/hostname and SSH username. Associate your domains so installs auto-select this server.</p>
+          <Step n={1} title="Go to Manage → Servers">
+            <p>In the sidebar under <strong>Manage</strong>, click <strong>Servers</strong>. This shows all connected agents. If none are connected, click <strong>Add server</strong> — a modal appears with the install command.</p>
           </Step>
-          <Step n={2} title='Click "Install Agent" on the server card'>
-            <p>On the server card, click <strong>Install Agent</strong>. A modal appears with a one-line install command pre-configured with your server token.</p>
-          </Step>
-          <Step n={3} title="SSH in and run the one-line command"
-                terminal={`ssh user@yourserver.com\n\ncurl -fsSL https://www.easysecurity.in/agent-install.sh | \\\n  sudo bash -s -- --token=YOUR_TOKEN --server-id=ID --user-id=UID`}>
-            <p>The installer automatically:</p>
+          <Step n={2} title="Run the one-line install command on your server"
+                terminal={`curl -fsSL https://easysecurity.in/agent-install.sh | bash`}>
+            <p>SSH into your server and run the command shown. The installer automatically:</p>
             <ul>
               <li>Detects your OS (Ubuntu / Debian / CentOS / Amazon Linux)</li>
               <li>Detects your web server (Nginx or Apache)</li>
-              <li>Downloads and installs the agent daemon</li>
-              <li>Creates a systemd service that starts on every boot</li>
-              <li>Registers with SSLVault — dashboard updates immediately</li>
+              <li>Installs the agent daemon and creates a systemd service</li>
+              <li>Registers with SSLVault — your server appears in the Servers list within 1–2 minutes</li>
             </ul>
           </Step>
-          <Step n={4} title="Dashboard shows Agent Active — you're done">
-            <p>The server card now shows <strong>Agent Active</strong> with a live pulse. From now on, clicking <strong>Install on Server</strong> on any certificate will dispatch the job to your agent — it installs the cert, updates Nginx/Apache config, reloads the web server, and reports back. No file uploads, no SSH.</p>
+          <Step n={3} title="Server appears online in Servers page">
+            <p>Once registered, the server card shows a green <strong>Online</strong> dot with last-seen time and agent version. Click the card to expand and see recent job activity.</p>
           </Step>
+          <Step n={4} title="Install a certificate via the agent">
+            <p>Go to <strong>Dashboard</strong> → click any cert row to expand it → click <strong>Install</strong>. The modal detects your connected agent and dispatches the install job. The agent installs the cert, updates Nginx/Apache config, reloads the web server, and reports back — no SSH, no file uploads.</p>
+          </Step>
+          <Note type="tip">
+            <span className="v2-callout-title">Agent before or after — both work</span>
+            You can install the agent before or after issuing a certificate. If you already issued a cert, just click <strong>Install</strong> on the cert row and the modal will guide you through installing the agent and dispatching in one flow.
+          </Note>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, margin: '14px 0 10px' }}>
             <div className="v2-card v2-card-pad">
@@ -239,13 +240,13 @@ export default function KnowledgeBase({ nav }) {
                  title="cPanel installer (PHP agent)"
                  subtitle="GoDaddy, Bluehost, Hostinger, SiteGround"
                  icon={Cloud}>
-          <Step n={1} title="Save your cPanel server credentials">
-            <p>Go to <strong>DNS Providers → Servers tab → Add Server → cPanel / Shared Hosting</strong>. Enter your cPanel username and API token once — it's saved encrypted for all future installs.</p>
+          <Step n={1} title="Go to Dashboard → click your cert row → Install">
+            <p>In the <strong>Dashboard</strong>, click your cert row to expand it, then click <strong>Install</strong>. In the modal, choose <strong>cPanel / Shared Hosting</strong>.</p>
+          </Step>
+          <Step n={2} title="Enter cPanel credentials">
+            <p>Enter your cPanel username and API token. These are saved encrypted for future installs.</p>
             <Note type="tip">Your cPanel username is your short login name (not your email). Find it in your hosting welcome email or at <em>yourdomain.com/cpanel</em> → top right corner.</Note>
             <Note type="info">To create a cPanel API token: cPanel → <em>Manage API Tokens</em> → Create token → give it SSL permissions → copy.</Note>
-          </Step>
-          <Step n={2} title='Click "Install on Server" on your certificate'>
-            <p>In <strong>Inventory &amp; Monitor</strong> → expand your domain → find the certificate → click <strong>Install on Server</strong>. Select <strong>Shared Hosting</strong>. If you saved a server in step 1, it will appear as a card to select — credentials are pre-filled automatically.</p>
           </Step>
           <Step n={3} title="Download and upload the PHP agent file"
                 terminal={`# No terminal needed — done through your browser:\n# 1. Click "Download PHP Agent" — saves sslvault-agent.php\n# 2. Log in to cPanel → File Manager → public_html\n# 3. Upload sslvault-agent.php to public_html`}>
@@ -259,7 +260,7 @@ export default function KnowledgeBase({ nav }) {
           <Step n={5} title="Delete the file immediately after">
             <p>The PHP file contains your cPanel API token. Delete it from File Manager right after installation. Your certificate and SSL remain active — only the temporary installer file is removed.</p>
           </Step>
-          <Note type="warn">Every 90-day renewal requires repeating steps 2–5 for shared hosting. For zero-touch renewals, upgrade to a VPS with the persistent agent.</Note>
+          <Note type="warn">Every renewal requires repeating steps 1–5 for shared hosting. For zero-touch renewals, upgrade to a VPS with the persistent agent.</Note>
         </Section>
 
         {/* SECTION 4 */}
