@@ -3,7 +3,7 @@ import {
   Shield, Plus, Activity, Globe, Server, Zap,
   RefreshCw, AlertTriangle, CheckCircle, ChevronRight,
   BarChart2, Clock, X, Settings, FileText, Search,
-  Database, Layout, Users, Tool, CreditCard, LogOut,
+  Database, Layout, Users, Wrench, CreditCard, LogOut,
   Menu, Bell, ChevronDown, Download, ExternalLink
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -108,7 +108,8 @@ export default function CLMHome({ user, nav }) {
           </div>
           <div className="cc-canvas">
             <div style={{ marginBottom:20, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8 }}>
-              <div><div style={{ fontSize:14, fontWeight:700, color:'#1a2332' }}>{same+hint+greeting}?, <span style={{ color:'#00b48a' }}>{name}</span></div></div>
+              <div><div style={{ fontSize:14, fontWeight:700, color:'#1a2332' }}>{greeting}, <span style={{ color:'#00b48a' }}>{name}</span></div></div>
+              {expired > 0 && <div style={{ display:'flex', alignItems:'center', gap:6, background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8, padding:'7px 5px', cursor:'pointer' }} onClick={() => nav('/dashboard')}><AlertTriangle size={13} color="#dc2626"/><span style={{ fontSize:12, fontWeight:600, color:'#b91c1c' }}>{expired} expired</span><ChevronRight size={12} color="#dc2626"/></div>}
             </div>
             <div className="cc-kpi-row">
               {[{ label:'Total', val:total, sub:'certs', color:'#1a2332', bg:'#f4f6f9', icon:Shield },{ label:'Valid', val:healthy, sub:'30d+', color:'#059669', bg:'#ecfdf5', icon:CheckCircle },{ label:'Expiring', val:expiring, sub:'<30d', color:'#d97706', bg:'#fffbeb', icon:Clock },{ label:'Expired', val:expired, sub:'action needed', color:'#dc2626', bg:'#fef2f2', icon:AlertTriangle }].map(({ label, val, sub, color, bg, icon: Icon }) => (
