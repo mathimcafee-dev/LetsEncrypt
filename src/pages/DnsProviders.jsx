@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import {
   Plus, Trash2, RefreshCw, Eye, EyeOff, Globe, Server, Cloud,
   ChevronRight, Check, X, Search, Settings, ExternalLink,
-  Lock, AlertCircle, Wifi, WifiOff, Edit3
+  Lock, AlertCircle, Wifi, WifiOff, Edit3, Zap
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 
@@ -111,7 +111,7 @@ function Sparkline({ status = 'green' }) {
 }
 
 // ── Page header ───────────────────────────────────────────────────────
-function PageHeader({ counts, tab, onAdd }) {
+function PageHeader({ counts, tab, onAdd, onAddBoth }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
                   marginBottom: 4, flexWrap: 'wrap', gap: 12 }}>
@@ -123,10 +123,15 @@ function PageHeader({ counts, tab, onAdd }) {
           {counts.activeAgents} agent{counts.activeAgents === 1 ? '' : 's'} active
         </p>
       </div>
-      <button className="v2-btn v2-btn-primary" onClick={onAdd}>
-        <Plus size={14} strokeWidth={2.2} />
-        {tab === 'dns' ? 'Add provider' : 'Add server'}
-      </button>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <button className="v2-btn v2-btn-sm" onClick={onAdd}>
+          <Plus size={12} strokeWidth={2.2} />
+          {tab === 'dns' ? 'DNS only' : 'Server only'}
+        </button>
+        <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={onAddBoth}>
+          <Zap size={12} strokeWidth={2.2} /> DNS + Server
+        </button>
+      </div>
     </div>
   )
 }
@@ -622,360 +627,398 @@ function EmptyState({ icon: Icon, title, desc, ctaLabel, onCta }) {
 }
 
 // ── Add DNS Provider modal ────────────────────────────────────────────
-function AddProviderModal({ onSave, onClose, userId }) {
-  const [provider, setProvider] = useState('cloudflare')
-  const [domainPattern, setDomainPattern] = useState('')
-  const [label, setLabel] = useState('')
-  const [fields, setFields] = useState({})
-  const [showField, setShowField] = useState({})
+// ── Unified DNS + Server Setup Modal ─────────────────────────────────
+// Replaces AddProviderModal and AddServerModal.
+// defaultMode: 'dns' | 'server' | 'both'
+// editDns: existing dns credential object (for edit mode)
+// editServer: existing server credential object (for edit mode)
+function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', editDns = null, editServer = null }) {
+  const isEditDns    = !!editDns
+  const isEditServer = !!editServer
+  const isEdit       = isEditDns || isEditServer
+
+  // If editing, lock mode to what's being edited
+  const [mode, setMode] = useState(
+    isEditDns && !isEditServer ? 'dns' :
+    isEditServer && !isEditDns ? 'server' :
+    defaultMode
+  )
+
+  // Shared
+  const [domain, setDomain] = useState(
+    editDns?.domain_pattern || editServer?.domains?.[0] || ''
+  )
+
+  // DNS section
+  const [provider, setProvider] = useState(editDns?.provider || 'cloudflare')
+  const [dnsLabel, setDnsLabel] = useState(editDns?.label || '')
+  const [dnsFields, setDnsFields] = useState({})
+  const [showDnsField, setShowDnsField] = useState({})
+
+  // Server section
+  const [serverType, setServerType] = useState(editServer?.server_type || 'cpanel')
+  const [nickname, setNickname] = useState(editServer?.nickname || '')
+  const [serverFields, setServerFields] = useState(() => {
+    if (!editServer) return {}
+    return { host: editServer.host || '', username: editServer.username || '', port: editServer.port ? String(editServer.port) : '' }
+  })
+  const [extraDomains, setExtraDomains] = useState(
+    (editServer?.domains || []).filter(d => d !== (editDns?.domain_pattern || editServer?.domains?.[0] || '')).join(', ')
+  )
+  const [installMode, setInstallMode] = useState(editServer?.install_mode || 'agent')
+  const secretRefs = useRef({})
+  const [showServerField, setShowServerField] = useState({})
+
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError]   = useState('')
   const [success, setSuccess] = useState('')
+
+  const saveDns  = mode === 'dns'    || mode === 'both'
+  const saveServer = mode === 'server' || mode === 'both'
   const p = PROVIDERS[provider]
+  const t = SERVER_TYPES[serverType]
+  const isVPS = serverType === 'ssh'
 
   const submit = async () => {
-    if (!domainPattern.trim()) { setError('Enter the domain this provider manages'); return }
-    const required = p.fields.filter(f => !f.optional && !fields[f.key])
-    if (required.length) { setError(`Missing: ${required.map(f => f.label).join(', ')}`); return }
-    setError(''); setLoading(true)
-    try {
-      const res = await fetch(DNS_FN, {
+    setError('')
+    // Validate shared
+    if (!domain.trim()) { setError('Enter a domain name'); return }
+    // Validate DNS section
+    if (saveDns) {
+      const required = p.fields.filter(f => !f.optional && !dnsFields[f.key])
+      if (required.length) { setError(`DNS: missing ${required.map(f => f.label).join(', ')}`); return }
+    }
+    // Validate server section
+    if (saveServer) {
+      if (!nickname.trim()) { setError('Server: enter a nickname'); return }
+      if (!serverFields.host?.trim()) { setError(`Server: enter the ${t.fields[0].label}`); return }
+      if (!serverFields.username?.trim()) { setError('Server: enter the username'); return }
+      // cPanel API token required on new save
+      const secretKeys = ['api_token', 'password', 'ssh_key', 'secret_key', 'token']
+      const hasSecret = secretKeys.some(k => secretRefs.current[k]?.value?.trim())
+      if (!isEditServer && !hasSecret) { setError('Server: enter the API token or password'); return }
+    }
+
+    setLoading(true)
+    const cleanDomain = domain.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
+
+    const results = await Promise.allSettled([
+      // DNS save
+      saveDns ? fetch(DNS_FN, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'save', user_id: userId, provider,
-          domain_pattern: domainPattern.trim().replace(/^https?:\/\//, '').replace(/\/.*/, ''),
-          label: label || domainPattern, credentials: fields
+          action: isEditDns ? 'update' : 'save',
+          user_id: userId,
+          ...(isEditDns && { id: editDns.id }),
+          provider,
+          domain_pattern: cleanDomain,
+          label: dnsLabel || `${PROVIDERS[provider].name} · ${cleanDomain}`,
+          credentials: dnsFields,
         })
-      })
-      const data = await res.json()
-      if (data.error) { setError(data.error); setLoading(false); return }
-      setSuccess(data.message || 'Saved')
-      setTimeout(() => { onSave(); onClose() }, 900)
-    } catch (e) { setError(e.message) }
-    setLoading(false)
-  }
+      }).then(r => r.json()) : Promise.resolve(null),
 
-  return (
-    <div className="v2-modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="v2-modal">
-        <div className="v2-modal-head">
-          <div>
-            <div className="v2-modal-title">Add DNS provider</div>
-            <div className="v2-modal-subtitle">Encrypted at rest · used for auto-DNS challenge</div>
-          </div>
-          <button className="v2-modal-close" onClick={onClose}><X size={16} /></button>
-        </div>
-        <div className="v2-modal-body">
-          <div style={{ marginBottom: 16 }}>
-            <label className="v2-label">Provider</label>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {Object.entries(PROVIDERS).map(([key, prov]) => (
-                <button key={key} type="button"
-                  onClick={() => { setProvider(key); setFields({}); setError('') }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 7, padding: '7px 11px',
-                    borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                    border: provider === key ? `1.2px solid ${prov.color}` : '0.5px solid var(--v2-border)',
-                    background: provider === key ? `${prov.color}10` : 'var(--v2-surface)',
-                    color: provider === key ? prov.color : 'var(--v2-text-2)',
-                  }}>
-                  <span style={{
-                    width: 18, height: 18, borderRadius: 4, background: prov.color,
-                    color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 9, fontWeight: 700
-                  }}>{prov.mono}</span>
-                  {prov.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ marginBottom: 14 }}>
-            <label className="v2-label">Domain managed by this provider</label>
-            <input className="v2-input" placeholder="example.com"
-              value={domainPattern} onChange={e => setDomainPattern(e.target.value)} />
-            <div className="v2-label-help">Root domain only. Covers example.com and *.example.com</div>
-          </div>
-
-          <div style={{ marginBottom: 14 }}>
-            <label className="v2-label">Label <span style={{ color: 'var(--v2-text-3)', fontWeight: 400 }}>· optional</span></label>
-            <input className="v2-input" placeholder={`My ${p.name} account`}
-              value={label} onChange={e => setLabel(e.target.value)} />
-          </div>
-
-          {p.fields.map(f => (
-            <div key={f.key} style={{ marginBottom: 12 }}>
-              <label className="v2-label">
-                {f.label}
-                {f.optional && <span style={{ color: 'var(--v2-text-3)', fontWeight: 400 }}> · optional</span>}
-              </label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  className="v2-input mono"
-                  type={f.type === 'password' && !showField[f.key] ? 'password' : 'text'}
-                  placeholder={f.placeholder}
-                  value={fields[f.key] || ''}
-                  onChange={e => setFields(s => ({ ...s, [f.key]: e.target.value }))}
-                  style={f.type === 'password' ? { paddingRight: 36 } : {}}
-                />
-                {f.type === 'password' && (
-                  <button type="button"
-                    onClick={() => setShowField(s => ({ ...s, [f.key]: !s[f.key] }))}
-                    style={{
-                      position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                      background: 'transparent', border: 'none', cursor: 'pointer',
-                      color: 'var(--v2-text-3)', display: 'flex'
-                    }}>
-                    {showField[f.key] ? <EyeOff size={14} /> : <Eye size={14} />}
-                  </button>
-                )}
-              </div>
-              <div className="v2-label-help">{f.help}</div>
-            </div>
-          ))}
-
-          <div className="v2-alert v2-alert-info" style={{ marginBottom: 12 }}>
-            <span style={{ flex: 1 }}>
-              <a href={p.docs} target="_blank" rel="noopener noreferrer"
-                 style={{ color: 'var(--v2-text)', textDecoration: 'underline', fontWeight: 500 }}>
-                {p.name} docs
-              </a> — {p.note}
-            </span>
-          </div>
-
-          {error && <div className="v2-alert v2-alert-error" style={{ marginBottom: 12 }}>
-            <AlertCircle size={13} strokeWidth={2} /> <span>{error}</span>
-          </div>}
-          {success && <div className="v2-alert v2-alert-success" style={{ marginBottom: 12 }}>
-            <Check size={13} strokeWidth={2.4} /> <span>{success}</span>
-          </div>}
-        </div>
-        <div className="v2-modal-foot">
-          <button className="v2-btn" onClick={onClose}>Cancel</button>
-          <button className="v2-btn v2-btn-primary" onClick={submit} disabled={loading || !!success}>
-            {loading ? 'Saving…' : 'Save provider'}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ── Add/Edit Server modal ─────────────────────────────────────────────
-function AddServerModal({ onSave, onClose, userId, editServer }) {
-  const isEdit = !!editServer
-  const [type, setType] = useState(editServer?.server_type || 'ssh')
-  const [nickname, setNickname] = useState(editServer?.nickname || '')
-  const [fields, setFields] = useState(() => {
-    if (!editServer) return {}
-    return {
-      host: editServer.host || '',
-      username: editServer.username || '',
-      port: editServer.port ? String(editServer.port) : '',
-    }
-  })
-  // Refs for password/secret fields — uncontrolled to defeat autofill completely
-  const secretRefs = useRef({})
-  const [showField, setShowField] = useState({})
-  const [domains, setDomains] = useState((editServer?.domains || []).join(', '))
-  const [installMode, setInstallMode] = useState(editServer?.install_mode || 'agent')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const t = SERVER_TYPES[type]
-  const isVpsType = type === 'ssh'
-
-  const submit = async () => {
-    if (!nickname.trim()) { setError('Enter a nickname'); return }
-    if (!fields.host?.trim()) { setError(`Enter the ${t.fields[0].label}`); return }
-    if (!fields.username?.trim()) { setError('Enter the username'); return }
-    // SSH Push requires password or private key — only on new servers (edit can keep existing)
-    if (!isEdit && isVpsType && installMode === 'ssh_push' && !fields.password?.trim() && !fields.ssh_key?.trim()) {
-      setError('SSH Push mode requires a password or private key.'); return
-    }
-    setError(''); setLoading(true)
-    try {
-      // Read secret fields from refs (uncontrolled — immune to autofill)
-      const credentialFields = {}
-      const sensitiveKeys = ['password', 'ssh_key', 'api_token', 'token', 'secret_key']
-      sensitiveKeys.forEach(k => {
-        const val = secretRefs.current[k]?.value?.trim()
-        if (val) credentialFields[k] = val
-      })
-
-      console.log('=== SUBMIT DEBUG ===')
-      console.log('credentialFields keys:', Object.keys(credentialFields))
-      console.log('api_token length:', credentialFields.api_token?.length)
-      console.log('===================')
-
-      // cPanel default port is 2083, not 22
-      const defaultPort = type === 'cpanel' ? 2083 : type === 'plesk' ? 8443 : 22
-      const port = fields.port ? parseInt(fields.port) : defaultPort
-
-      const body = {
-        action: isEdit ? 'update' : 'save', user_id: userId,
-        ...(isEdit && { id: editServer.id }),
-        server_type: type, nickname: nickname.trim(),
-        host: fields.host.trim(), username: fields.username.trim(),
-        domains: domains.split(',').map(d => d.trim()).filter(Boolean),
-        install_mode: isVpsType ? installMode : 'agent',
-        port,
-        // Only send credentials if there are actual secret values
-        ...(Object.keys(credentialFields).length > 0 && { credentials: credentialFields })
-      }
-      const res = await fetch(SERVER_FN, {
+      // Server save
+      saveServer ? fetch(SERVER_FN, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
-      const data = await res.json()
-      if (data.error) { setError(data.error); setLoading(false); return }
-      setSuccess(isEdit ? 'Updated' : 'Saved')
-      setTimeout(() => { onSave(); onClose() }, 900)
-    } catch (e) { setError(e.message) }
+        body: JSON.stringify({
+          action: isEditServer ? 'update' : 'save',
+          user_id: userId,
+          ...(isEditServer && { id: editServer.id }),
+          server_type: serverType,
+          nickname: nickname.trim() || cleanDomain,
+          host: serverFields.host?.trim() || cleanDomain,
+          username: serverFields.username?.trim() || '',
+          port: serverFields.port ? parseInt(serverFields.port) : (serverType === 'cpanel' ? 2083 : serverType === 'plesk' ? 8443 : 22),
+          domains: [cleanDomain, ...extraDomains.split(',').map(d => d.trim()).filter(Boolean)],
+          install_mode: isVPS ? installMode : 'agent',
+          credentials: (() => {
+            const creds = {}
+            const keys = ['api_token', 'password', 'ssh_key', 'secret_key', 'token']
+            keys.forEach(k => { const v = secretRefs.current[k]?.value?.trim(); if (v) creds[k] = v })
+            return Object.keys(creds).length ? creds : undefined
+          })(),
+        })
+      }).then(r => r.json()) : Promise.resolve(null),
+    ])
+
+    const [dnsResult, srvResult] = results
+    const dnsErr = dnsResult.status === 'fulfilled' && dnsResult.value?.error ? dnsResult.value.error : null
+    const srvErr = srvResult.status === 'fulfilled' && srvResult.value?.error ? srvResult.value.error : null
+    const errors = [dnsErr && `DNS: ${dnsErr}`, srvErr && `Server: ${srvErr}`].filter(Boolean)
+
     setLoading(false)
+    if (errors.length) { setError(errors.join(' · ')); return }
+
+    setSuccess(isEdit ? 'Updated successfully' : 'Saved successfully')
+    setTimeout(() => { onSave(); onClose() }, 900)
   }
+
+  const modeOptions = [
+    { key: 'dns',    label: 'DNS only',        icon: <Globe size={13}/>,  desc: 'Auto DNS challenge for cert issuance' },
+    { key: 'server', label: 'Server only',     icon: <Server size={13}/>, desc: 'Auto-install certs to your server' },
+    { key: 'both',   label: 'DNS + Server',    icon: <Zap size={13}/>,    desc: 'Full automation — issue & install' },
+  ]
 
   return (
     <div className="v2-modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="v2-modal">
+      <div className="v2-modal" style={{ maxWidth: 560 }}>
         <div className="v2-modal-head">
           <div>
-            <div className="v2-modal-title">{isEdit ? 'Edit server' : 'Add server'}</div>
+            <div className="v2-modal-title">{isEdit ? 'Edit configuration' : 'Add server & DNS'}</div>
             <div className="v2-modal-subtitle">Credentials encrypted with AES-256-GCM</div>
           </div>
           <button className="v2-modal-close" onClick={onClose}><X size={16} /></button>
         </div>
+
         <div className="v2-modal-body">
-          {/* Honeypot inputs — trap browser autofill away from real fields */}
-          <input type="text" name="username" style={{ display: 'none' }} tabIndex={-1} readOnly />
-          <input type="password" name="password" style={{ display: 'none' }} tabIndex={-1} readOnly />
+
+          {/* Mode selector — hidden in edit mode */}
           {!isEdit && (
-            <div style={{ marginBottom: 16 }}>
-              <label className="v2-label">Server type</label>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {Object.entries(SERVER_TYPES).map(([key, st]) => {
-                  const Icon = st.Icon
-                  return (
-                    <button key={key} type="button"
-                      onClick={() => { setType(key); setFields({}); setError('') }}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 7, padding: '7px 11px',
-                        borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                        border: type === key ? `1.2px solid ${st.color}` : '0.5px solid var(--v2-border)',
-                        background: type === key ? st.bg : 'var(--v2-surface)',
-                        color: type === key ? st.color : 'var(--v2-text-2)',
-                      }}>
-                      <Icon size={13} strokeWidth={2} />
-                      {st.short}
-                    </button>
-                  )
-                })}
+            <div style={{ marginBottom: 20 }}>
+              <label className="v2-label" style={{ marginBottom: 8, display: 'block' }}>What do you want to save?</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                {modeOptions.map(m => (
+                  <button key={m.key} type="button" onClick={() => { setMode(m.key); setError('') }}
+                    style={{
+                      padding: '10px 8px', borderRadius: 8, cursor: 'pointer', textAlign: 'center',
+                      border: mode === m.key ? '2px solid var(--v2-accent)' : '1px solid var(--v2-border)',
+                      background: mode === m.key ? 'var(--v2-accent-bg)' : 'var(--v2-surface)',
+                      fontFamily: 'inherit', transition: 'all 0.12s',
+                    }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 4,
+                      color: mode === m.key ? 'var(--v2-accent)' : 'var(--v2-text-3)' }}>
+                      {m.icon}
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: mode === m.key ? 'var(--v2-accent)' : 'var(--v2-text)',
+                      marginBottom: 2 }}>{m.label}</div>
+                    <div style={{ fontSize: 10, color: 'var(--v2-text-3)', lineHeight: 1.4 }}>{m.desc}</div>
+                  </button>
+                ))}
               </div>
-              <div className="v2-label-help">{t.desc}</div>
             </div>
           )}
 
-          <div style={{ marginBottom: 14 }}>
-            <label className="v2-label">Nickname</label>
-            <input className="v2-input" placeholder="production-web-01"
-              value={nickname} onChange={e => setNickname(e.target.value)} />
+          {/* Shared domain field */}
+          <div style={{ marginBottom: 16 }}>
+            <label className="v2-label">Domain <span style={{ color: '#ef4444' }}>*</span></label>
+            <input className="v2-input mono" placeholder="yourdomain.com"
+              value={domain} onChange={e => setDomain(e.target.value)} />
+            <div className="v2-label-help">
+              {saveDns && saveServer ? 'Used for both DNS challenge and server cert matching'
+               : saveDns ? 'Root domain managed by this DNS provider'
+               : 'Domain hosted on this server'}
+            </div>
           </div>
 
-          {t.fields.map(f => (
-            <div key={f.key} style={{ marginBottom: 12 }}>
-              <label className="v2-label">{f.label}</label>
-              <div style={{ position: 'relative' }}>
-                {f.key === 'ssh_key' ? (
-                  <textarea
-                    className="v2-input mono"
-                    rows={5}
-                    placeholder={isEdit && editServer?.credentials_enc ? '(saved — paste new key to replace)' : f.placeholder}
-                    value={fields[f.key] || ''}
-                    onChange={e => setFields(s => ({ ...s, [f.key]: e.target.value }))}
-                    style={{ resize: 'vertical', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, lineHeight: 1.5 }}
-                  />
-                ) : (
-                  <>
-                    <input
-                      className="v2-input mono"
-                      ref={el => secretRefs.current[f.key] = el}
-                      autoComplete="new-password"
-                      data-lpignore="true"
-                      data-form-type="other"
-                      name={`sslvault-${f.key}-${Math.random()}`}
-                      type={showField[f.key] ? 'text' : 'password'}
-                      placeholder={isEdit && editServer?.credentials_enc
-                        ? '(saved — type new value to replace)'
-                        : f.placeholder}
-                      defaultValue=""
+          {/* ── DNS SECTION ── */}
+          {saveDns && (
+            <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)',
+              borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--v2-text)', marginBottom: 12,
+                display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Globe size={13} style={{ color: 'var(--v2-accent)' }}/> DNS Provider
+              </div>
+
+              {/* Provider picker */}
+              <div style={{ marginBottom: 12 }}>
+                <label className="v2-label">Provider</label>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {Object.entries(PROVIDERS).map(([key, prov]) => (
+                    <button key={key} type="button"
+                      onClick={() => { setProvider(key); setDnsFields({}); setError('') }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
+                        borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: 'pointer',
+                        border: provider === key ? `1.5px solid ${prov.color}` : '0.5px solid var(--v2-border)',
+                        background: provider === key ? `${prov.color}15` : 'var(--v2-surface)',
+                        color: provider === key ? prov.color : 'var(--v2-text-2)',
+                        fontFamily: 'inherit',
+                      }}>
+                      <span style={{ width: 16, height: 16, borderRadius: 3, background: prov.color,
+                        color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 8, fontWeight: 700 }}>{prov.mono}</span>
+                      {prov.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* DNS credential fields */}
+              {p.fields.map(f => (
+                <div key={f.key} style={{ marginBottom: 10 }}>
+                  <label className="v2-label">
+                    {f.label}
+                    {f.optional && <span style={{ color: 'var(--v2-text-3)', fontWeight: 400 }}> · optional</span>}
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input className="v2-input mono"
+                      type={f.type === 'password' && !showDnsField[f.key] ? 'password' : 'text'}
+                      placeholder={f.placeholder}
+                      value={dnsFields[f.key] || ''}
+                      onChange={e => setDnsFields(s => ({ ...s, [f.key]: e.target.value }))}
                       style={f.type === 'password' ? { paddingRight: 36 } : {}}
                     />
                     {f.type === 'password' && (
                       <button type="button"
-                        onClick={() => setShowField(s => ({ ...s, [f.key]: !s[f.key] }))}
-                        style={{
-                          position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                        onClick={() => setShowDnsField(s => ({ ...s, [f.key]: !s[f.key] }))}
+                        style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
                           background: 'transparent', border: 'none', cursor: 'pointer',
-                          color: 'var(--v2-text-3)', display: 'flex'
-                        }}>
-                        {showField[f.key] ? <EyeOff size={14} /> : <Eye size={14} />}
+                          color: 'var(--v2-text-3)', display: 'flex' }}>
+                        {showDnsField[f.key] ? <EyeOff size={14}/> : <Eye size={14}/>}
                       </button>
                     )}
-                  </>
-                )}
-              </div>
-              <div className="v2-label-help">{f.help}</div>
-            </div>
-          ))}
-
-          <div style={{ marginBottom: 12 }}>
-            <label className="v2-label">Hosted domains <span style={{ color: 'var(--v2-text-3)', fontWeight: 400 }}>· optional</span></label>
-            <input className="v2-input" placeholder="example.com, www.example.com"
-              value={domains} onChange={e => setDomains(e.target.value)} />
-            <div className="v2-label-help">Comma-separated. Used to match certs for one-click install.</div>
-          </div>
-
-          {/* Install mode — only shown for VPS/SSH servers */}
-          {isVpsType && (
-            <div style={{ marginBottom: 16 }}>
-              <label className="v2-label">Certificate install method</label>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {[
-                  { id: 'agent', icon: '🛡️', title: 'Agent (recommended)', desc: 'One-time setup on your server. No SSH credentials stored here. Most secure.' },
-                  { id: 'ssh_push', icon: '⚡', title: 'SSH Push', desc: 'SSLVault SSHes in directly. Fully automatic — no manual steps ever.' },
-                ].map(opt => (
-                  <div key={opt.id} onClick={() => setInstallMode(opt.id)}
-                    style={{
-                      flex: 1, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s',
-                      border: installMode === opt.id ? `1.5px solid ${opt.id === 'ssh_push' ? '#16a34a' : 'var(--v2-accent)'}` : '1px solid var(--v2-border)',
-                      background: installMode === opt.id ? (opt.id === 'ssh_push' ? '#f0fdf4' : 'var(--v2-accent-bg)') : 'var(--v2-surface)',
-                    }}>
-                    <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 4, color: installMode === opt.id ? (opt.id === 'ssh_push' ? '#16a34a' : 'var(--v2-accent)') : 'var(--v2-text)' }}>
-                      {opt.icon} {opt.title}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'var(--v2-text-3)', lineHeight: 1.5 }}>{opt.desc}</div>
                   </div>
-                ))}
+                  <div className="v2-label-help">{f.help}</div>
+                </div>
+              ))}
+
+              <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 4 }}>
+                <a href={p.docs} target="_blank" rel="noopener noreferrer"
+                  style={{ color: 'var(--v2-accent)', textDecoration: 'none' }}>
+                  {p.name} docs
+                </a> · {p.note}
               </div>
-              {installMode === 'ssh_push' && (
-                <div style={{ marginTop: 10, padding: 12, background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, fontSize: 12, color: '#92400e', lineHeight: 1.6 }}>
-                  ⚠ SSH Push requires a <strong>password or private key</strong> in the credentials above. Credentials are encrypted with AES-256-GCM and never stored in plaintext.
+            </div>
+          )}
+
+          {/* ── SERVER SECTION ── */}
+          {saveServer && (
+            <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)',
+              borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--v2-text)', marginBottom: 12,
+                display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Server size={13} style={{ color: 'var(--v2-accent)' }}/> Server
+              </div>
+
+              {/* Honeypot */}
+              <input type="text" name="username" style={{ display: 'none' }} tabIndex={-1} readOnly/>
+              <input type="password" name="password" style={{ display: 'none' }} tabIndex={-1} readOnly/>
+
+              {/* Server type picker */}
+              {!isEditServer && (
+                <div style={{ marginBottom: 12 }}>
+                  <label className="v2-label">Type</label>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {Object.entries(SERVER_TYPES).map(([key, st]) => {
+                      const Icon = st.Icon
+                      return (
+                        <button key={key} type="button"
+                          onClick={() => { setServerType(key); setError('') }}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
+                            borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: 'pointer',
+                            border: serverType === key ? `1.5px solid ${st.color}` : '0.5px solid var(--v2-border)',
+                            background: serverType === key ? st.bg : 'var(--v2-surface)',
+                            color: serverType === key ? st.color : 'var(--v2-text-2)',
+                            fontFamily: 'inherit',
+                          }}>
+                          <Icon size={12} strokeWidth={2}/>
+                          {st.short}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <div className="v2-label-help">{t.desc}</div>
+                </div>
+              )}
+
+              {/* Nickname */}
+              <div style={{ marginBottom: 10 }}>
+                <label className="v2-label">Nickname</label>
+                <input className="v2-input" placeholder="production-web-01"
+                  value={nickname} onChange={e => setNickname(e.target.value)}/>
+              </div>
+
+              {/* Server credential fields */}
+              {t.fields.map(f => (
+                <div key={f.key} style={{ marginBottom: 10 }}>
+                  <label className="v2-label">{f.label}</label>
+                  <div style={{ position: 'relative' }}>
+                    {f.key === 'ssh_key' ? (
+                      <textarea className="v2-input mono" rows={4}
+                        placeholder={isEditServer && editServer?.credentials_enc
+                          ? '(saved — paste new key to replace)' : f.placeholder}
+                        value={serverFields[f.key] || ''}
+                        onChange={e => setServerFields(s => ({ ...s, [f.key]: e.target.value }))}
+                        style={{ resize: 'vertical', fontSize: 11, lineHeight: 1.4 }}/>
+                    ) : ['host', 'username', 'port'].includes(f.key) ? (
+                      <input className="v2-input mono" placeholder={f.placeholder}
+                        value={serverFields[f.key] || ''}
+                        onChange={e => setServerFields(s => ({ ...s, [f.key]: e.target.value }))}/>
+                    ) : (
+                      <>
+                        <input className="v2-input mono"
+                          ref={el => secretRefs.current[f.key] = el}
+                          autoComplete="new-password"
+                          data-lpignore="true" data-form-type="other"
+                          name={`sv-${f.key}-${Math.random()}`}
+                          type={showServerField[f.key] ? 'text' : 'password'}
+                          placeholder={isEditServer && editServer?.credentials_enc
+                            ? '(saved — type new value to replace)' : f.placeholder}
+                          defaultValue=""
+                          style={{ paddingRight: 36 }}/>
+                        <button type="button"
+                          onClick={() => setShowServerField(s => ({ ...s, [f.key]: !s[f.key] }))}
+                          style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                            background: 'transparent', border: 'none', cursor: 'pointer',
+                            color: 'var(--v2-text-3)', display: 'flex' }}>
+                          {showServerField[f.key] ? <EyeOff size={14}/> : <Eye size={14}/>}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  <div className="v2-label-help">{f.help}</div>
+                </div>
+              ))}
+
+              {/* Additional domains (only shown in server-only or both mode) */}
+              {mode !== 'dns' && (
+                <div style={{ marginBottom: 10 }}>
+                  <label className="v2-label">Additional domains
+                    <span style={{ color: 'var(--v2-text-3)', fontWeight: 400 }}> · optional</span>
+                  </label>
+                  <input className="v2-input" placeholder="www.example.com, api.example.com"
+                    value={extraDomains} onChange={e => setExtraDomains(e.target.value)}/>
+                  <div className="v2-label-help">Comma-separated. The domain above is always included.</div>
+                </div>
+              )}
+
+              {/* Install method — VPS only */}
+              {isVPS && (
+                <div style={{ marginTop: 12 }}>
+                  <label className="v2-label" style={{ marginBottom: 8, display: 'block' }}>
+                    Certificate install method
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    {[
+                      { id: 'agent',    title: 'Agent', desc: 'One-time setup on server. No SSH stored. Recommended.', color: 'var(--v2-accent)' },
+                      { id: 'ssh_push', title: 'SSH Push', desc: 'SSLVault SSHes in directly. Fully automatic.', color: '#16a34a' },
+                    ].map(opt => (
+                      <div key={opt.id} onClick={() => setInstallMode(opt.id)}
+                        style={{ padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+                          border: installMode === opt.id ? `1.5px solid ${opt.color}` : '1px solid var(--v2-border)',
+                          background: installMode === opt.id ? (opt.id === 'ssh_push' ? '#f0fdf4' : 'var(--v2-accent-bg)') : 'var(--v2-surface)' }}>
+                        <div style={{ fontWeight: 700, fontSize: 11, marginBottom: 3,
+                          color: installMode === opt.id ? opt.color : 'var(--v2-text)' }}>
+                          {opt.title}
+                        </div>
+                        <div style={{ fontSize: 10, color: 'var(--v2-text-3)', lineHeight: 1.4 }}>{opt.desc}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
           )}
 
-          {error && <div className="v2-alert v2-alert-error" style={{ marginBottom: 12 }}>
-            <AlertCircle size={13} strokeWidth={2} /> <span>{error}</span>
-          </div>}
-          {success && <div className="v2-alert v2-alert-success" style={{ marginBottom: 12 }}>
-            <Check size={13} strokeWidth={2.4} /> <span>{success}</span>
-          </div>}
+          {error   && <div className="v2-alert v2-alert-error"   style={{ marginBottom: 12 }}><AlertCircle size={13}/> <span>{error}</span></div>}
+          {success && <div className="v2-alert v2-alert-success" style={{ marginBottom: 12 }}><Check size={13} strokeWidth={2.4}/> <span>{success}</span></div>}
         </div>
+
         <div className="v2-modal-foot">
           <button className="v2-btn" onClick={onClose}>Cancel</button>
           <button className="v2-btn v2-btn-primary" onClick={submit} disabled={loading || !!success}>
-            {loading ? 'Saving…' : isEdit ? 'Save changes' : 'Save server'}
+            {loading ? 'Saving…' : isEdit ? 'Save changes' : `Save ${mode === 'both' ? 'DNS & server' : mode === 'dns' ? 'DNS provider' : 'server'}`}
           </button>
         </div>
       </div>
@@ -983,7 +1026,6 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
   )
 }
 
-// ── Install Agent modal ───────────────────────────────────────────────
 function InstallAgentModal({ server, userId, onClose, onRegistered }) {
   const [agentToken, setAgentToken] = useState('')
   const [tokenLoading, setTokenLoading] = useState(true)
@@ -1197,6 +1239,7 @@ export default function DnsProviders({ nav }) {
   const [loading, setLoading]         = useState(true)
   const [showAddDns, setShowAddDns]   = useState(false)
   const [showAddSrv, setShowAddSrv]   = useState(false)
+  const [showAddBoth, setShowAddBoth] = useState(false)
   const [editServer, setEditServer]   = useState(null)
   const [agentServer, setAgentServer] = useState(null)
   const [serverTypeFilter, setServerTypeFilter] = useState('all')
@@ -1322,12 +1365,13 @@ export default function DnsProviders({ nav }) {
   return (
     <div className="v2-page">
       <div className="v2-container">
-        {showAddDns  && <AddProviderModal userId={user?.id} onSave={loadCredentials} onClose={() => setShowAddDns(false)} />}
-        {showAddSrv  && <AddServerModal   userId={user?.id} onSave={loadServers}     onClose={() => setShowAddSrv(false)} />}
-        {editServer  && <AddServerModal   userId={user?.id} onSave={loadServers}     onClose={() => setEditServer(null)} editServer={editServer} />}
+        {showAddDns  && <UnifiedSetupModal userId={user?.id} defaultMode="dns"    onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddDns(false)} />}
+        {showAddSrv  && <UnifiedSetupModal userId={user?.id} defaultMode="server" onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddSrv(false)} />}
+        {showAddBoth && <UnifiedSetupModal userId={user?.id} defaultMode="both"   onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddBoth(false)} />}
+        {editServer  && <UnifiedSetupModal userId={user?.id} defaultMode="server" onSave={loadServers} onClose={() => setEditServer(null)} editServer={editServer} />}
         {agentServer && <InstallAgentModal server={agentServer} userId={user?.id} onClose={() => setAgentServer(null)} onRegistered={loadAgents} />}
 
-        <PageHeader counts={counts} tab={tab} onAdd={onAdd} />
+        <PageHeader counts={counts} tab={tab} onAdd={onAdd} onAddBoth={() => setShowAddBoth(true)} />
         <Tabs tab={tab} setTab={setTab} counts={counts} />
 
         {tab === 'dns' && (
