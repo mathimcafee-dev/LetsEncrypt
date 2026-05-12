@@ -55,10 +55,12 @@ export default function App() {
     return null
   }
 
+  // When logged in on home page, CLMHome handles everything including its own top bar
+  const isLoggedInHome = page === '/' && !authLoading && user
+
   return (
     <div>
-      <Nav nav={nav} page={page} />
-      {/* HOME: show CLMHome if logged in, landing Home if not */}
+      {!isLoggedInHome && <Nav nav={nav} page={page} />}
       {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} /> : <Home nav={nav} />)}
       {page === '/import' && <Import nav={nav} />}
       {page === '/dashboard' && <Dashboard nav={nav} />}
