@@ -100,7 +100,7 @@ export default function CLMHome({ user, nav }) {
       </div>
 
       {/* MAIN LAYOUT */}
-      <div style={{ display:'flex', flex:1, background:'#f4f6f9' }}>
+      <div style={{ display:'flex', flex:1, background: (section === 'issue' || section === 'import') ? '#050a14' : '#f4f6f9' }}>
         {/* SIDEBAR */}
         <nav style={{ width:210, background:'#0d3c6e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto' }}>
           {[
@@ -123,9 +123,11 @@ export default function CLMHome({ user, nav }) {
 
         {/* MAIN CONTENT */}
         <div style={{ flex:1, minWidth:0, display:'flex', flexDirection:'column' }}>
-          <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
-            <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
-          </div>
+          {section !== 'issue' && section !== 'import' && (
+            <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
+              <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
+            </div>
+          )}
           <div style={{ flex:1, overflowY:'auto', overflowX:'hidden' }}>
             {renderContent()}
           </div>
