@@ -106,15 +106,14 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return
       setToken(session.access_token)
-      const res = await call('list_credentials', {}, session.access_token)
+      // list_all_cpanel_servers returns both cpanel_credentials + server_credentials(cpanel)
+      const res = await call('list_all_cpanel_servers', {}, session.access_token)
       if (res.ok) {
         const creds = res.credentials || []
         setSavedCreds(creds)
         if (creds.length === 0) {
-          // No saved creds — show new form
           setUseNew(true)
         } else {
-          // Auto-select: prefer one matching this cert's domain, else first
           const match = creds.find(c => c.domains?.includes(cert.domain)) || creds[0]
           setSelectedCred(match.id)
           setUseNew(false)
@@ -189,7 +188,10 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
     const installPayload = {
       cert_id: cert.id,
       domain: cert.domain,
-      ...(finalCredId ? { credential_id: finalCredId } : {
+      ...(finalCredId ? {
+        credential_id: finalCredId,
+        credential_source: savedCreds.find(c => c.id === finalCredId)?.source || 'vault'
+      } : {
         hostname, port,
         cpanel_user: cpanelUser,
         api_token: apiToken,
