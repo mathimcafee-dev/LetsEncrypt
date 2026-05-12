@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Shield, Plus, Globe, Server,
   FileText, Layout, Download, Settings,
@@ -20,6 +20,13 @@ import Pricing from './Pricing'
 
 export default function CLMHome({ user, nav }) {
   const [section, setSection] = useState('dashboard')
+  const [animKey, setAnimKey] = useState(0)
+
+  const navigate = (id) => {
+    if (id === section) return
+    setSection(id)
+    setAnimKey(k => k + 1)
+  }
   const email = user?.email || ''
 
   const NAV_MAIN = [
@@ -53,19 +60,38 @@ export default function CLMHome({ user, nav }) {
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
   }
 
-  const NavItem = ({ id, label, icon:Icon }) => (
-    <button style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 16px', cursor:'pointer', fontSize:12, fontWeight:500, color: section===id ? 'white' : 'rgba(255,255,255,0.75)', background: section===id ? '#0e7fc0' : 'none', borderLeft: section===id ? '3px solid #00a3e0' : '3px solid transparent', border:'none', width:'100%', textAlign:'left', fontFamily:'inherit', transition:'all 0.15s' }} onClick={() => setSection(id)}>
-      <Icon size={14} strokeWidth={1.8}/>{label}
-    </button>
-  )
+  const NavItem = ({ id, label, icon:Icon }) => {
+    const isActive = section === id
+    return (
+      <button
+        onClick={() => navigate(id)}
+        style={{
+          display:'flex', alignItems:'center', gap:10, padding:'8px 16px',
+          cursor:'pointer', fontSize:12, fontWeight: isActive ? 600 : 500,
+          color: isActive ? 'white' : 'rgba(255,255,255,0.65)',
+          background: isActive ? 'rgba(14,127,192,0.35)' : 'transparent',
+          borderLeft: isActive ? '3px solid #00a3e0' : '3px solid transparent',
+          border:'none', width:'100%', textAlign:'left', fontFamily:'inherit',
+          transition:'all 0.18s cubic-bezier(0.4,0,0.2,1)',
+          borderRadius:'0 6px 6px 0',
+          transform: isActive ? 'translateX(0)' : 'translateX(0)',
+        }}
+        onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = 'white' }}}
+        onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.65)' }}}
+      >
+        <Icon size={14} strokeWidth={isActive ? 2 : 1.8} style={{ flexShrink:0, transition:'all 0.18s' }}/>
+        {label}
+      </button>
+    )
+  }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
   }
 
   const renderContent = () => {
-    if (section === 'dashboard') return <CertInventory user={user} nav={nav} onIssue={() => setSection('issue')}/>
-    if (section === 'issue') return <BuyCertificate nav={nav} onDashboard={() => setSection('dashboard')} onIssueAnother={() => setSection('issue')}/>
+    if (section === 'dashboard') return <CertInventory user={user} nav={nav} onIssue={() => navigate('issue')}/>
+    if (section === 'issue') return <BuyCertificate nav={nav} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
     if (section === 'import') return <Import nav={nav}/>
     if (section === 'dns') return <DnsProviders nav={nav}/>
     if (section === 'install') return <Install nav={nav}/>
@@ -76,7 +102,6 @@ export default function CLMHome({ user, nav }) {
     if (section === 'pricing') return <Pricing nav={nav}/>
     if (section === 'servers') return <ServersPage user={user}/>
     if (section === 'settings') return <SettingsPage user={user}/>
-
     return null
   }
 
@@ -102,7 +127,8 @@ export default function CLMHome({ user, nav }) {
       {/* MAIN LAYOUT */}
       <div style={{ display:'flex', flex:1, background: ['issue','import'].includes(section) ? '#050a14' : '#f0f4f8' }}>
         {/* SIDEBAR */}
-        <nav style={{ width:210, background:'#0d3c6e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto' }}>
+        <nav style={{ width:210, background:'#0d3c6e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto',
+          boxShadow:'4px 0 24px rgba(0,0,0,0.18), 1px 0 0 rgba(255,255,255,0.06)' }}>
           {[
             { label:'Main',      items: NAV_MAIN },
             { label:'Manage',    items: NAV_MANAGE },
@@ -128,11 +154,17 @@ export default function CLMHome({ user, nav }) {
               <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
             </div>
           )}
-          <div style={{ flex:1, overflowY:'auto', overflowX:'hidden' }}>
+          <div key={animKey} style={{ flex:1, overflowY:'auto', overflowX:'hidden', animation:'clm-fadein 0.22s cubic-bezier(0.4,0,0.2,1)' }}>
             {renderContent()}
           </div>
         </div>
       </div>
+      <style>{`
+        @keyframes clm-fadein {
+          from { opacity: 0; transform: translateY(7px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
 }
