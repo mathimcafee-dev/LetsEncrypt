@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Terminal, Copy, Check, CheckCircle, Clock, AlertTriangle, Loader, Server, Shield, Zap } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import CpanelInstall from './CpanelInstall'
 
 const DAEMON_FN  = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
 const AGENT_API  = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent'
@@ -46,6 +45,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
   const [savedServers, setSavedServers]     = useState([])
   const [selectedServer, setSelectedServer] = useState(null)
   const [serversLoading, setServersLoading] = useState(false)
+  const [cpanelOpen, setCpanelOpen] = useState(false)
   const pollRef = useRef(null)
   const timerRef = useRef(null)
 
@@ -237,7 +237,6 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
     return generateToken()
   }
 
-  const [cpanelOpen, setCpanelOpen] = useState(false) // kept for fragment render compatibility
   const cpanelServers = savedServers.filter(s => s.server_type === 'cpanel')
 
   return (
