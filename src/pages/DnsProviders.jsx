@@ -334,7 +334,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
 }
 
 // ── Server detail ─────────────────────────────────────────────────────
-function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent }) {
+function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId }) {
   if (!server) return null
   const t = SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel
   const Icon = t.Icon
@@ -343,6 +343,95 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent }) {
     : null
   const agentActive = lastSeenMin !== null && lastSeenMin < 15
   const isVPS = server.server_type === 'ssh'
+
+  const [jobs, setJobs] = useState([])
+  const [certs, setCerts] = useState([])
+  const [loadingJobs, setLoadingJobs] = useState(false)
+  const [showInstall, setShowInstall] = useState(false)
+  const [installCertId, setInstallCertId] = useState('')
+  const [installDomain, setInstallDomain] = useState(server.domains?.[0] || '')
+  const [dispatching, setDispatching] = useState(false)
+  const [dispatchResult, setDispatchResult] = useState(null)
+
+  const AGENT_URL = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
+
+  const loadJobs = async () => {
+    if (!agent?.id || !userId) return
+    setLoadingJobs(true)
+    try {
+      const r = await fetch(AGENT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'list_jobs', user_id: userId, agent_id: agent.id })
+      })
+      const d = await r.json()
+      if (d.ok) setJobs(d.jobs || [])
+    } catch(e) {}
+    setLoadingJobs(false)
+  }
+
+  useEffect(() => {
+    loadJobs()
+    // Load active certs with private keys for install picker
+    if (userId) {
+      fetch('https://frthcwkntciaakqsppss.supabase.co/rest/v1/certificates?select=id,domain,cert_type,status,private_key_pem&status=eq.active&user_id=eq.' + userId, {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydGhjd2tudGNpYWFrcXNwcHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNjcxNTMsImV4cCI6MjA5MzY0MzE1M30.lbBMb5JibjimVTeZ9q0n_zQ_T7VT1p6Xaq2v3s9vpyg',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydGhjd2tudGNpYWFrcXNwcHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNjcxNTMsImV4cCI6MjA5MzY0MzE1M30.lbBMb5JibjimVTeZ9q0n_zQ_T7VT1p6Xaq2v3s9vpyg'
+        }
+      }).then(r => r.json()).then(data => {
+        if (Array.isArray(data)) setCerts(data.filter(c => c.private_key_pem))
+      }).catch(() => {})
+    }
+  }, [agent?.id, userId])
+
+  // Poll every 10s while any job is active
+  useEffect(() => {
+    const hasActive = jobs.some(j => j.status === 'queued' || j.status === 'claimed')
+    if (!hasActive) return
+    const iv = setInterval(loadJobs, 10000)
+    return () => clearInterval(iv)
+  }, [jobs])
+
+  const dispatchInstall = async () => {
+    if (!installCertId || !installDomain) return
+    setDispatching(true); setDispatchResult(null)
+    try {
+      const r = await fetch(AGENT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'dispatch', user_id: userId, agent_id: agent.id,
+          cert_id: installCertId, domain: installDomain, job_type: 'install'
+        })
+      })
+      const d = await r.json()
+      if (d.ok) {
+        setDispatchResult({ ok: true, msg: 'Job queued — agent will install within 5 minutes' })
+        setShowInstall(false)
+        setTimeout(loadJobs, 2000)
+      } else {
+        setDispatchResult({ ok: false, msg: d.error || 'Dispatch failed' })
+      }
+    } catch(e) { setDispatchResult({ ok: false, msg: String(e) }) }
+    setDispatching(false)
+  }
+
+  const jobDot = (s) => {
+    if (s === 'done')    return { color: 'var(--v2-green)',   label: 'Done' }
+    if (s === 'failed')  return { color: '#dc2626',           label: 'Failed' }
+    if (s === 'claimed') return { color: '#f59e0b',           label: 'Running' }
+    if (s === 'queued')  return { color: '#3b82f6',           label: 'Queued' }
+    return { color: 'var(--v2-grey-dot)', label: s }
+  }
+
+  const fmtJobTime = (iso) => {
+    if (!iso) return '—'
+    const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
+    if (m < 1) return 'just now'
+    if (m < 60) return `${m}m ago`
+    return `${Math.floor(m/60)}h ago`
+  }
   return (
     <div className="v2-detail mobile-collapse open">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
@@ -403,14 +492,97 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent }) {
         </div>
       )}
 
+
+      {/* Job history — real install/renew results from agent */}
       <div style={{ marginBottom: 14 }}>
-        <div className="v2-section-label" style={{ marginBottom: 8 }}>Recent activity</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div className="v2-section-label">Recent activity</div>
+          {agent && agentActive && (
+            <button
+              className="v2-btn v2-btn-sm v2-btn-primary"
+              style={{ fontSize: 10, padding: '3px 10px' }}
+              onClick={() => { setShowInstall(true); setDispatchResult(null) }}>
+              + Install cert
+            </button>
+          )}
+        </div>
+
+        {/* Install cert modal */}
+        {showInstall && (
+          <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)', borderRadius: 8, padding: 14, marginBottom: 10 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text-1)', marginBottom: 10 }}>
+              Install certificate to this server
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <label className="v2-section-label" style={{ marginBottom: 4, display: 'block' }}>Certificate</label>
+              <select className="v2-input" style={{ fontSize: 12 }}
+                value={installCertId} onChange={e => {
+                  setInstallCertId(e.target.value)
+                  const cert = certs?.find(c => c.id === e.target.value)
+                  if (cert) setInstallDomain(cert.domain)
+                }}>
+                <option value="">— select cert —</option>
+                {(certs || []).filter(c => c.status === 'active' && c.private_key_pem).map(c => (
+                  <option key={c.id} value={c.id}>{c.domain} · {c.cert_type || 'SSL'}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              <label className="v2-section-label" style={{ marginBottom: 4, display: 'block' }}>Domain on server</label>
+              <input className="v2-input" style={{ fontSize: 12, fontFamily: 'var(--v2-font-mono)' }}
+                value={installDomain} onChange={e => setInstallDomain(e.target.value)}
+                placeholder="yourdomain.com"/>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={dispatchInstall} disabled={dispatching || !installCertId || !installDomain}>
+                {dispatching ? <><RefreshCw size={11} className="spin"/> Dispatching…</> : 'Dispatch install'}
+              </button>
+              <button className="v2-btn v2-btn-sm" onClick={() => { setShowInstall(false); setDispatchResult(null) }}>Cancel</button>
+            </div>
+            {dispatchResult && (
+              <div style={{ marginTop: 8, fontSize: 11, color: dispatchResult.ok ? 'var(--v2-green-text)' : '#dc2626' }}>
+                {dispatchResult.msg}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Job list */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {agent?.last_seen_at && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-green" />
               <span style={{ color: 'var(--v2-text-2)' }}>Agent heartbeat</span>
               <span className="v2-timeline-time">{timeAgo(agent.last_seen_at)}</span>
+            </div>
+          )}
+          {loadingJobs && jobs.length === 0 && (
+            <div className="v2-timeline-item">
+              <span className="v2-dot v2-dot-grey" />
+              <span style={{ color: 'var(--v2-text-3)', fontSize: 11 }}>Loading job history…</span>
+            </div>
+          )}
+          {jobs.map(j => {
+            const d = jobDot(j.status)
+            const isActive = j.status === 'queued' || j.status === 'claimed'
+            return (
+              <div key={j.id} className="v2-timeline-item" title={j.error_message || ''}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: d.color, flexShrink: 0,
+                  boxShadow: isActive ? `0 0 0 3px ${d.color}33` : 'none',
+                  animation: isActive ? 'v2-pulse 1.5s ease-in-out infinite' : 'none' }}/>
+                <span style={{ color: 'var(--v2-text-2)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <strong style={{ color: d.color, fontWeight: 600 }}>{d.label}</strong>
+                  {' · '}{j.job_type} · <span style={{ fontFamily: 'var(--v2-font-mono)', fontSize: 10 }}>{j.domain}</span>
+                  {j.error_message && <span style={{ color: '#dc2626', marginLeft: 4 }}>— {j.error_message.slice(0,60)}</span>}
+                </span>
+                <span className="v2-timeline-time">{fmtJobTime(j.completed_at || j.claimed_at || j.created_at)}</span>
+              </div>
+            )
+          })}
+          {!loadingJobs && jobs.length === 0 && (
+            <div className="v2-timeline-item">
+              <span className="v2-dot v2-dot-grey" />
+              <span style={{ color: 'var(--v2-text-3)', fontSize: 11 }}>No jobs yet — cert installs and renewals will appear here</span>
             </div>
           )}
           <div className="v2-timeline-item">
@@ -1257,6 +1429,7 @@ export default function DnsProviders({ nav }) {
                   onDelete={deleteServer}
                   onEdit={setEditServer}
                   onInstallAgent={setAgentServer}
+                  userId={user?.id}
                 />
               ) : servers.length > 0 ? (
                 <div className="v2-detail" style={{ textAlign: 'center', padding: '40px 16px' }}>

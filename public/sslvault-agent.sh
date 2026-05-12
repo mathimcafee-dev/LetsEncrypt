@@ -14,7 +14,7 @@ AGENT_TOKEN_FILE="/etc/sslvault/agent.token"
 POLL_INTERVAL=300
 LOG_FILE="/var/log/sslvault-agent.log"
 CERT_BASE="/etc/ssl/sslvault"
-VERSION="2.1"
+VERSION="3.0"
 
 # ── Logging ───────────────────────────────────────────────────────────
 log()  { echo "$(date '+%Y-%m-%d %H:%M:%S') [SSLVault] $1" | tee -a "$LOG_FILE"; }
@@ -145,21 +145,141 @@ write_cert_files() {
   return 0
 }
 
-# ── Configure web server vhost (first install only) ───────────────────
+# ── Find existing vhost file for a domain ─────────────────────────────
+find_vhost_file() {
+  local domain="$1"
+  local ws="$2"
+  # Search common locations for an existing vhost mentioning this domain
+  local candidates=()
+  if [ "$ws" = "nginx" ]; then
+    candidates=(
+      "/etc/nginx/sites-available/$domain"
+      "/etc/nginx/sites-enabled/$domain"
+      "/etc/nginx/conf.d/$domain.conf"
+      "/etc/nginx/conf.d/default.conf"
+      "/etc/nginx/sites-available/default"
+    )
+  else
+    candidates=(
+      "/etc/apache2/sites-available/$domain.conf"
+      "/etc/apache2/sites-enabled/$domain.conf"
+      "/etc/httpd/conf.d/$domain.conf"
+      "/etc/httpd/conf.d/ssl.conf"
+    )
+  fi
+  for f in "${candidates[@]}"; do
+    if [ -f "$f" ] && grep -q "$domain" "$f" 2>/dev/null; then
+      echo "$f"
+      return 0
+    fi
+  done
+  # Broader search as fallback
+  if [ "$ws" = "nginx" ]; then
+    grep -rl "server_name.*$domain" /etc/nginx/ 2>/dev/null | head -1
+  else
+    grep -rl "ServerName.*$domain" /etc/apache2/ /etc/httpd/ 2>/dev/null | head -1
+  fi
+}
+
+# ── Patch cert paths in an existing vhost ─────────────────────────────
+# Replaces ssl_certificate / SSLCertificateFile lines — never touches
+# anything else. The vhost content (PHP-FPM, proxy_pass, etc) is preserved.
+patch_cert_paths() {
+  local conf="$1"
+  local ws="$2"
+  local cert_dir="$3"
+  cp "$conf" "$conf.sslvault.bak" 2>/dev/null || true
+  if [ "$ws" = "nginx" ]; then
+    sed -i \
+      -e "s|ssl_certificate[^_].*|ssl_certificate     $cert_dir/fullchain.pem;|g" \
+      -e "s|ssl_certificate_key.*|ssl_certificate_key $cert_dir/privkey.pem;|g" \
+      "$conf"
+    ok "Patched SSL cert paths in existing nginx vhost: $conf"
+  else
+    sed -i \
+      -e "s|SSLCertificateFile.*|SSLCertificateFile  $cert_dir/fullchain.pem|g" \
+      -e "s|SSLCertificateKeyFile.*|SSLCertificateKeyFile $cert_dir/privkey.pem|g" \
+      "$conf"
+    ok "Patched SSL cert paths in existing apache vhost: $conf"
+  fi
+}
+
+# ── Configure web server vhost ─────────────────────────────────────────
+# Safe strategy:
+#   1. If no web server detected → skip, just write cert files
+#   2. If existing vhost found with SSL lines → patch cert paths only (safe)
+#   3. If existing vhost found without SSL → add SSL block at the end
+#   4. If no vhost at all → write a fresh minimal one
 configure_web_server() {
   local domain="$1"
   local ws="$2"
   local cert_dir="$CERT_BASE/$domain"
 
-  if [ "$ws" = "nginx" ]; then
-    local conf
-    if [ -d /etc/nginx/sites-available ]; then
-      conf="/etc/nginx/sites-available/$domain"
-    else
-      conf="/etc/nginx/conf.d/$domain.conf"
+  # Skip entirely if no web server running — user manages their own config
+  if [ "$ws" = "none" ]; then
+    warn "No web server detected — cert files written to $cert_dir. Configure your server to use them."
+    return 0
+  fi
+
+  local existing_conf
+  existing_conf=$(find_vhost_file "$domain" "$ws")
+
+  if [ -n "$existing_conf" ]; then
+    # Check if the existing vhost already has SSL directives
+    local has_ssl=false
+    if [ "$ws" = "nginx" ] && grep -q "ssl_certificate" "$existing_conf" 2>/dev/null; then
+      has_ssl=true
+    elif ( [ "$ws" = "apache2" ] || [ "$ws" = "httpd" ] ) && grep -q "SSLCertificateFile" "$existing_conf" 2>/dev/null; then
+      has_ssl=true
     fi
-    [ -f "$conf" ] && cp "$conf" "$conf.bak"
-    cat > "$conf" << NGINX_CONF
+
+    if [ "$has_ssl" = "true" ]; then
+      # Just patch the cert paths — never overwrite existing config
+      patch_cert_paths "$existing_conf" "$ws" "$cert_dir"
+    else
+      # Vhost exists but no SSL — append SSL directives
+      warn "Existing vhost found but no SSL config. Adding SSL block."
+      if [ "$ws" = "nginx" ]; then
+        cat >> "$existing_conf" << NGINX_SSL
+
+# SSLVault — added $(date '+%Y-%m-%d')
+server {
+    listen 443 ssl http2;
+    server_name $domain;
+    ssl_certificate     $cert_dir/fullchain.pem;
+    ssl_certificate_key $cert_dir/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+}
+NGINX_SSL
+        ok "Added SSL server block to existing nginx vhost"
+      else
+        cat >> "$existing_conf" << APACHE_SSL
+
+# SSLVault — added $(date '+%Y-%m-%d')
+<VirtualHost *:443>
+    ServerName $domain
+    SSLEngine on
+    SSLCertificateFile  $cert_dir/fullchain.pem
+    SSLCertificateKeyFile $cert_dir/privkey.pem
+    SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+</VirtualHost>
+APACHE_SSL
+        ok "Added SSL VirtualHost to existing apache vhost"
+      fi
+    fi
+  else
+    # No existing vhost — write a fresh minimal one
+    log "No existing vhost found for $domain — creating new config"
+    if [ "$ws" = "nginx" ]; then
+      local conf
+      if [ -d /etc/nginx/sites-available ]; then
+        conf="/etc/nginx/sites-available/$domain"
+      else
+        conf="/etc/nginx/conf.d/$domain.conf"
+      fi
+      cat > "$conf" << NGINX_NEW
+# SSLVault — created $(date '+%Y-%m-%d')
 server {
     listen 80;
     server_name $domain;
@@ -178,22 +298,21 @@ server {
     index index.html index.htm;
     location / { try_files \$uri \$uri/ =404; }
 }
-NGINX_CONF
-    if [ -d /etc/nginx/sites-available ] && [ ! -L "/etc/nginx/sites-enabled/$domain" ]; then
-      ln -s "$conf" "/etc/nginx/sites-enabled/$domain" 2>/dev/null || true
-    fi
-    ok "Nginx config written for $domain"
-
-  elif [ "$ws" = "apache2" ] || [ "$ws" = "httpd" ]; then
-    local conf
-    if [ -d /etc/apache2/sites-available ]; then
-      conf="/etc/apache2/sites-available/$domain.conf"
-      a2enmod ssl rewrite headers 2>/dev/null || true
-    else
-      conf="/etc/httpd/conf.d/$domain.conf"
-    fi
-    [ -f "$conf" ] && cp "$conf" "$conf.bak"
-    cat > "$conf" << APACHE_CONF
+NGINX_NEW
+      if [ -d /etc/nginx/sites-available ] && [ ! -L "/etc/nginx/sites-enabled/$domain" ]; then
+        ln -s "$conf" "/etc/nginx/sites-enabled/$domain" 2>/dev/null || true
+      fi
+      ok "New nginx vhost created: $conf"
+    elif [ "$ws" = "apache2" ] || [ "$ws" = "httpd" ]; then
+      local conf
+      if [ -d /etc/apache2/sites-available ]; then
+        conf="/etc/apache2/sites-available/$domain.conf"
+        a2enmod ssl rewrite headers 2>/dev/null || true
+      else
+        conf="/etc/httpd/conf.d/$domain.conf"
+      fi
+      cat > "$conf" << APACHE_NEW
+# SSLVault — created $(date '+%Y-%m-%d')
 <VirtualHost *:80>
     ServerName $domain
     Redirect permanent / https://$domain/
@@ -201,15 +320,16 @@ NGINX_CONF
 <VirtualHost *:443>
     ServerName $domain
     SSLEngine on
-    SSLCertificateFile     $cert_dir/fullchain.pem
-    SSLCertificateKeyFile  $cert_dir/privkey.pem
+    SSLCertificateFile  $cert_dir/fullchain.pem
+    SSLCertificateKeyFile $cert_dir/privkey.pem
     SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
     Header always set Strict-Transport-Security "max-age=63072000"
     DocumentRoot /var/www/html
 </VirtualHost>
-APACHE_CONF
-    [ -d /etc/apache2/sites-available ] && a2ensite "$domain.conf" 2>/dev/null || true
-    ok "Apache config written for $domain"
+APACHE_NEW
+      [ -d /etc/apache2/sites-available ] && a2ensite "$domain.conf" 2>/dev/null || true
+      ok "New apache vhost created: $conf"
+    fi
   fi
 }
 
@@ -312,6 +432,54 @@ process_job() {
 
   return 0
 }
+
+# ── CLI commands (uninstall / status) ────────────────────────────────
+CMD="${1:-daemon}"
+
+if [ "$CMD" = "uninstall" ]; then
+  echo "[SSLVault] Uninstalling agent..."
+  systemctl stop sslvault-agent 2>/dev/null || true
+  systemctl disable sslvault-agent 2>/dev/null || true
+  rm -f /etc/systemd/system/sslvault-agent.service
+  systemctl daemon-reload 2>/dev/null || true
+  # Deregister from SSLVault API
+  if [ -f "$AGENT_TOKEN_FILE" ]; then
+    local tok
+    tok=$(cat "$AGENT_TOKEN_FILE" | tr -d '\n')
+    curl -sf --max-time 10 -X POST "$DAEMON_API" \
+      -H "Content-Type: application/json" \
+      -d "{\"action\":\"deregister_by_token\",\"agent_token\":\"$tok\"}" > /dev/null 2>&1 || true
+  fi
+  rm -rf /etc/sslvault
+  rm -f /usr/local/bin/sslvault-agent
+  echo "[SSLVault] Agent removed. Cert files preserved at $CERT_BASE (delete manually if needed)."
+  exit 0
+fi
+
+if [ "$CMD" = "status" ]; then
+  echo ""
+  echo "═══════════════════════════════════════"
+  echo "  SSLVault Agent v$VERSION"
+  echo "═══════════════════════════════════════"
+  if systemctl is-active --quiet sslvault-agent 2>/dev/null; then
+    echo "  Service:    ● running"
+  else
+    echo "  Service:    ○ stopped"
+  fi
+  echo "  Token:      $([ -f "$AGENT_TOKEN_FILE" ] && echo 'present' || echo 'MISSING')"
+  echo "  Web server: $(detect_web_server)"
+  echo "  Cert dir:   $CERT_BASE"
+  if [ -d "$CERT_BASE" ]; then
+    local count
+    count=$(find "$CERT_BASE" -name "fullchain.pem" 2>/dev/null | wc -l | tr -d ' ')
+    echo "  Certs:      $count domain(s) installed"
+  fi
+  echo "  Log:        $LOG_FILE"
+  echo "  Last 5 log lines:"
+  tail -5 "$LOG_FILE" 2>/dev/null | sed 's/^/    /'
+  echo ""
+  exit 0
+fi
 
 # ── Main poll loop ────────────────────────────────────────────────────
 # Runs forever. Each iteration is fully isolated — a crash in one job
