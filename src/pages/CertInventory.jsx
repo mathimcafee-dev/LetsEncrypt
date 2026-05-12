@@ -5,6 +5,7 @@ import {
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { differenceInDays, format, formatDistanceToNow } from 'date-fns'
+import AgentInstall from '../components/AgentInstall'
 
 // ── Helpers ───────────────────────────────────────────────────────────
 function daysLeft(iso) {
@@ -42,7 +43,7 @@ function dotBg(dot) {
 }
 
 // ── Inline expanded row ───────────────────────────────────────────────
-function CertExpand({ cert, nav, onClose, onDelete, onKeyDeleted }) {
+function CertExpand({ cert, nav, onClose, onDelete, onKeyDeleted, onInstall }) {
   const [showKey, setShowKey] = useState(false)
   const [copiedField, setCopiedField] = useState(null)
   const [revokeOpen, setRevokeOpen] = useState(false)
@@ -78,8 +79,7 @@ function CertExpand({ cert, nav, onClose, onDelete, onKeyDeleted }) {
   }
 
   const handleInstall = () => {
-    sessionStorage.setItem('install_domain', cert.domain)
-    nav('/install')
+    onInstall?.(cert)
   }
 
   const doRevoke = async () => {
@@ -264,6 +264,7 @@ export default function CertInventory({ user, nav, onIssue }) {
   const [expanded, setExpanded] = useState(null)
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [agentCert, setAgentCert] = useState(null)
 
   const email = user?.email || ''
   const name = email.split('@')[0] || 'there'
@@ -293,6 +294,15 @@ export default function CertInventory({ user, nav, onIssue }) {
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
   }, [loadCerts])
+
+  // Auto-open AgentInstall when arriving from BuyCertificate "Install on server"
+  useEffect(() => {
+    const domain = sessionStorage.getItem('install_domain')
+    if (!domain || !certs.length) return
+    sessionStorage.removeItem('install_domain')
+    const cert = certs.find(c => c.domain === domain && c.private_key_pem)
+    if (cert) setAgentCert(cert)
+  }, [certs])
 
   const handleDelete = async (id) => {
     await supabase.from('certificates').delete().eq('id', id)
@@ -456,12 +466,20 @@ export default function CertInventory({ user, nav, onIssue }) {
                   onClose={() => setExpanded(null)}
                   onDelete={handleDelete}
                   onKeyDeleted={handleKeyDeleted}
+                  onInstall={setAgentCert}
                 />
               )}
             </div>
           )
         })}
       </div>
+      {agentCert && (
+        <AgentInstall
+          cert={agentCert}
+          userId={user?.id}
+          onClose={() => setAgentCert(null)}
+        />
+      )}
     </div>
   )
 }
