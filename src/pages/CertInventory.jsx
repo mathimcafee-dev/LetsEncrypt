@@ -261,7 +261,6 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
             <ActionBtn icon={Download}  label="Download Certificate" onClick={downloadZip}/>
             <ActionBtn icon={RotateCcw} label="Renew Certificate"    onClick={() => { sessionStorage.setItem('prefill_domain',cert.domain); onIssue?.() }} disabled={isRevoked}/>
             <ActionBtn icon={Lock}      label="Install to Server"    onClick={() => onInstall?.(cert)} disabled={isRevoked||!cert.cert_pem}/>
-            {!cert.tss_order_id && <ActionBtn icon={Trash2} label="Delete" onClick={() => setDelConfirm(true)} color="#b91c1c"/>}
             {cert.tss_order_id && !isRevoked && (
               <>
                 <div style={{ borderTop:'0.5px solid #e8edf2', margin:'4px 0', display:'flex', alignItems:'center', gap:6 }}>
@@ -284,10 +283,26 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 <ActionBtn icon={X} label="Cancel / Revoke" onClick={() => setRevokeOpen(true)} color="#b91c1c"/>
               </>
             )}
-            {delConfirm && (
-              <div style={{ display:'flex', gap:6, marginTop:4 }}>
-                <button onClick={() => setDelConfirm(false)} style={btnStyle}>Cancel</button>
-                <button onClick={() => onDelete(cert.id)} style={{ ...btnStyle, background:'#b91c1c', color:'white', border:'none' }}>Confirm</button>
+
+            {/* Purge — available for all certs including wrong-domain / test orders */}
+            <div style={{ borderTop:'0.5px solid #e8edf2', margin:'4px 0' }}/>
+            {!delConfirm ? (
+              <ActionBtn icon={Trash2} label="Purge all records permanently" onClick={() => setDelConfirm(true)} color="#b91c1c"/>
+            ) : (
+              <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:6, padding:'10px 12px' }}>
+                <div style={{ fontSize:11, fontWeight:600, color:'#991b1b', marginBottom:6 }}>
+                  Permanently delete all records for <span style={{ fontFamily:'monospace' }}>{cert.domain}</span>?
+                </div>
+                <div style={{ fontSize:10, color:'#b91c1c', marginBottom:10, lineHeight:1.5 }}>
+                  Removes certificate, TSS orders, install history and renewal logs. Cannot be undone.
+                </div>
+                <div style={{ display:'flex', gap:6 }}>
+                  <button onClick={() => setDelConfirm(false)} style={btnStyle}>Cancel</button>
+                  <button onClick={() => onDelete(cert.id)}
+                    style={{ ...btnStyle, background:'#b91c1c', color:'white', border:'none', flex:1, justifyContent:'center' }}>
+                    Yes, purge everything
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -397,8 +412,20 @@ export default function CertInventory({ user, nav, onIssue }) {
   }
 
   const handleDelete = async (id) => {
-    await supabase.from('certificates').delete().eq('id',id)
-    setCerts(prev => prev.filter(c => c.id!==id))
+    // Full purge — cascade delete all related records
+    await Promise.all([
+      supabase.from('agent_jobs').delete().eq('cert_id', id),
+      supabase.from('cpanel_installs').delete().eq('cert_id', id),
+      supabase.from('renewal_events').delete().eq('cert_id', id),
+    ])
+    // Delete TSS orders linked to this cert
+    const cert = certs.find(c => c.id === id)
+    if (cert?.domain) {
+      await supabase.from('tss_orders').delete()
+        .eq('user_id', user.id).eq('domain', cert.domain)
+    }
+    await supabase.from('certificates').delete().eq('id', id)
+    setCerts(prev => prev.filter(c => c.id !== id))
     setExpanded(null)
   }
   const handleKeyDeleted = (id) => {
