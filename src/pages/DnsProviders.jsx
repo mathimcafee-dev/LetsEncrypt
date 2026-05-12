@@ -628,6 +628,14 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
       const sensitiveKeys = ['password', 'ssh_key', 'api_token', 'token', 'secret_key']
       sensitiveKeys.forEach(k => { if (fields[k]?.trim()) credentialFields[k] = fields[k].trim() })
 
+      console.log('=== SUBMIT DEBUG ===')
+      console.log('fields keys:', Object.keys(fields))
+      console.log('fields.api_token length:', fields.api_token?.length)
+      console.log('fields.api_token value:', fields.api_token)
+      console.log('credentialFields keys:', Object.keys(credentialFields))
+      console.log('credentialFields.api_token length:', credentialFields.api_token?.length)
+      console.log('===================')
+
       // cPanel default port is 2083, not 22
       const defaultPort = type === 'cpanel' ? 2083 : type === 'plesk' ? 8443 : 22
       const port = fields.port ? parseInt(fields.port) : defaultPort
