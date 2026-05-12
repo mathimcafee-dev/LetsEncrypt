@@ -1346,7 +1346,6 @@ export default function DnsProviders({ nav }) {
     const data = await res.json()
     const list = data.credentials || []
     setCredentials(list)
-    setSelectedDns(prev => prev && list.some(c => c.id === prev) ? prev : (list[0]?.id || null))
     const status = {}
     for (const c of list) {
       if (c.tested_at) {
@@ -1365,7 +1364,6 @@ export default function DnsProviders({ nav }) {
     const data = await res.json()
     const list = data.servers || []
     setServers(list)
-    setSelectedServer(prev => prev && list.some(s => s.id === prev) ? prev : (list[0]?.id || null))
   }
 
   const loadAgents = async () => {
