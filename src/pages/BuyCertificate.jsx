@@ -8,13 +8,7 @@ const URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const IS_SANDBOX = true
 
 const PRODUCTS = [
-  { code: 'rapidssl',          name: 'RapidSSL DV',              type: 'DV',       icon: '🔒', price: 19,  popular: false, wildcard: false, available: true,  desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites.' },
-  { code: 'rapidssl_wildcard', name: 'RapidSSL Wildcard',        type: 'Wildcard', icon: '🌐', price: 65,  popular: true,  wildcard: true,  available: false, desc: 'Secures *.yourdomain.com — unlimited subdomains with one certificate.' },
-  { code: 'positivessl',       name: 'Sectigo PositiveSSL',      type: 'DV',       icon: '✅', price: 16,  popular: false, wildcard: false, available: false, desc: 'Low cost DV SSL from Sectigo. Fast issuance, strong browser trust.' },
-  { code: 'positivssl_wildcard', name: 'Sectigo Wildcard',       type: 'Wildcard', icon: '⭐', price: 128, popular: false, wildcard: true,  available: false, desc: 'Sectigo wildcard — all subdomains secured, cost-effective management.' },
-  { code: 'geotrust_dv',       name: 'GeoTrust DV',              type: 'DV',       icon: '🛡️', price: 32,  popular: false, wildcard: false, available: false, desc: 'GeoTrust trusted DV. Flex feature — add more domains if needed.' },
-  { code: 'geotrust_truebiz',  name: 'GeoTrust TrueBusiness OV', type: 'OV',       icon: '🏢', price: 112, popular: false, wildcard: false, available: false, desc: 'Organisation validated. Shows verified company info in cert details.' },
-  { code: 'sectigo_ev',        name: 'Sectigo EV SSL',           type: 'EV',       icon: '🏦', price: 65,  popular: false, wildcard: false, available: false, desc: 'Extended Validation — maximum trust, verified company identity, warranty.' },
+  { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', icon: '🔒', price: 19, popular: false, wildcard: false, available: true, desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites and SMBs.' },
 ]
 
 const STYLES = `
