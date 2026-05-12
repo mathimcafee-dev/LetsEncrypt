@@ -108,8 +108,19 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
       setToken(session.access_token)
       const res = await call('list_credentials', {}, session.access_token)
       if (res.ok) {
-        setSavedCreds(res.credentials || [])
-        if (res.credentials?.length === 0) setUseNew(true)
+        const creds = res.credentials || []
+        setSavedCreds(creds)
+        if (creds.length === 0) {
+          // No saved creds — show new form
+          setUseNew(true)
+        } else {
+          // Auto-select: prefer one matching this cert's domain, else first
+          const match = creds.find(c => c.domains?.includes(cert.domain)) || creds[0]
+          setSelectedCred(match.id)
+          setUseNew(false)
+        }
+      } else {
+        setUseNew(true)
       }
     })()
   }, [])
@@ -344,50 +355,74 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
           {/* FORM state */}
           {phase === 'form' && (
             <div>
-              {/* Info callout */}
-              <div style={{ background: '#f0f9ff', border: '0.5px solid #bae6fd', borderRadius: 8,
-                padding: '10px 14px', marginBottom: 18, display: 'flex', gap: 10 }}>
-                <Globe size={14} color="#0369a1" style={{ flexShrink: 0, marginTop: 1 }}/>
-                <div style={{ fontSize: 11, color: '#0c4a6e', lineHeight: 1.7 }}>
-                  SSLVault calls cPanel's API directly from its own servers — your token is stored
-                  encrypted in the vault and <strong>never exposed in a public file</strong>.
-                  No PHP file, no manual upload.
-                </div>
-              </div>
+              {/* Saved credential — shown by default when available */}
+              {!useNew && selectedCred && savedCreds.length > 0 && (() => {
+                const cred = savedCreds.find(c => c.id === selectedCred)
+                return cred ? (
+                  <div>
+                    <div style={{ background: '#f0fdf4', border: '0.5px solid #bbf7d0',
+                      borderRadius: 8, padding: '14px 16px', marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: '#047857',
+                        textTransform: 'uppercase', letterSpacing: '.4px', marginBottom: 8 }}>
+                        Using saved server
+                      </div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: '#0a0a0a', marginBottom: 2 }}>
+                        {cred.label || `${cred.cpanel_user}@${cred.hostname}`}
+                      </div>
+                      <div style={{ fontSize: 12, color: '#525252', fontFamily: 'monospace' }}>
+                        {cred.cpanel_user}@{cred.hostname}:{cred.port}
+                      </div>
+                    </div>
+                    {savedCreds.length > 1 && (
+                      <div style={{ marginBottom: 12 }}>
+                        <Label>Switch server</Label>
+                        <CredentialSelector
+                          creds={savedCreds}
+                          selected={selectedCred}
+                          onSelect={id => setSelectedCred(id)}
+                          onDelete={handleDeleteCred}
+                        />
+                      </div>
+                    )}
+                    <button onClick={() => { setUseNew(true); setSelectedCred(null) }}
+                      style={{ fontSize: 11, color: '#0e7fc0', background: 'none',
+                        border: 'none', cursor: 'pointer', padding: 0, marginBottom: 16,
+                        display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}>
+                      <Plus size={11}/> Use a different server
+                    </button>
+                  </div>
+                ) : null
+              })()}
 
-              {/* Saved credentials */}
-              {savedCreds.length > 0 && (
-                <div style={{ marginBottom: 16 }}>
-                  <Label>Saved cPanel servers</Label>
-                  <CredentialSelector
-                    creds={savedCreds}
-                    selected={selectedCred}
-                    onSelect={id => { setSelectedCred(id); setUseNew(false) }}
-                    onDelete={handleDeleteCred}
-                  />
-                  <button onClick={() => { setUseNew(!useNew); setSelectedCred(null) }}
-                    style={{ marginTop: 8, fontSize: 11, color: '#0e7fc0', background: 'none',
-                      border: 'none', cursor: 'pointer', padding: 0, display: 'flex',
-                      alignItems: 'center', gap: 4, fontFamily: 'inherit' }}>
-                    <Plus size={11}/> {useNew ? 'Use saved server' : 'Use a different server'}
-                  </button>
-                </div>
-              )}
-
-              {/* New credentials form */}
+              {/* New credentials form — only shown when adding new */}
               {(useNew || savedCreds.length === 0) && (
                 <div>
+                  {/* Info callout */}
+                  <div style={{ background: '#f0f9ff', border: '0.5px solid #bae6fd', borderRadius: 8,
+                    padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 10 }}>
+                    <Globe size={14} color="#0369a1" style={{ flexShrink: 0, marginTop: 1 }}/>
+                    <div style={{ fontSize: 11, color: '#0c4a6e', lineHeight: 1.7 }}>
+                      SSLVault calls cPanel's API directly — token stored encrypted in vault,
+                      <strong> never exposed in a public file</strong>. No PHP file, no upload.
+                    </div>
+                  </div>
+
+                  {savedCreds.length > 0 && (
+                    <button onClick={() => { setUseNew(false); setSelectedCred(savedCreds[0].id) }}
+                      style={{ fontSize: 11, color: '#0e7fc0', background: 'none',
+                        border: 'none', cursor: 'pointer', padding: 0, marginBottom: 14,
+                        display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}>
+                      ← Use saved server instead
+                    </button>
+                  )}
+
                   {/* Honeypot — tricks browser autofill away from real fields */}
                   <input type="text" name="username" style={{ display:'none' }} tabIndex={-1} readOnly/>
                   <input type="password" name="password" style={{ display:'none' }} tabIndex={-1} readOnly/>
-                  <div style={{ fontSize: 11, fontWeight: 500, color: '#0a0a0a',
-                    marginBottom: 12, paddingBottom: 8, borderBottom: '0.5px solid #f1f5f9' }}>
-                    cPanel connection details
-                  </div>
 
                   <div style={{ marginBottom: 10 }}>
                     <Label required>Hostname</Label>
-                    <input ref={hostnameRef} defaultValue="" 
+                    <input ref={hostnameRef} defaultValue=""
                       autoComplete="off" name="cpanel-host" data-lpignore="true" data-form-type="other"
                       placeholder="cpanel.myhost.com or mysite.com"
                       style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
@@ -401,7 +436,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px', gap: 8, marginBottom: 10 }}>
                     <div>
                       <Label required>cPanel username</Label>
-                      <input ref={cpanelUserRef} defaultValue="" 
+                      <input ref={cpanelUserRef} defaultValue=""
                         autoComplete="off" name="cpanel-username" data-lpignore="true" data-form-type="other"
                         placeholder="myuser"
                         style={{ width: '100%', border: '0.5px solid #e8edf2', borderRadius: 6,
@@ -427,7 +462,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                   <div style={{ marginBottom: 10 }}>
                     <Label required>API token</Label>
                     <div style={{ position: 'relative' }}>
-                      <input ref={apiTokenRef} defaultValue="" 
+                      <input ref={apiTokenRef} defaultValue=""
                         autoComplete="off" name="cpanel-apitoken" data-lpignore="true" data-form-type="other"
                         type={showToken ? 'text' : 'password'}
                         placeholder="Paste your cPanel API token"
