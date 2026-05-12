@@ -29,7 +29,7 @@ function StatusStep({ done, active, label }) {
   )
 }
 
-export default function AgentInstall({ cert, userId, onClose }) {
+export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
   const [step, setStep]               = useState('intro')
   const [hostType, setHostType]       = useState('server')
   const [installMode, setInstallMode] = useState(null) // null = not chosen yet, 'agent' | 'ssh_push'
@@ -237,19 +237,11 @@ export default function AgentInstall({ cert, userId, onClose }) {
     return generateToken()
   }
 
-  const [cpanelOpen, setCpanelOpen] = useState(false)
+  const [cpanelOpen, setCpanelOpen] = useState(false) // kept for fragment render compatibility
   const cpanelServers = savedServers.filter(s => s.server_type === 'cpanel')
 
   return (
     <>
-      {cpanelOpen && (
-        <CpanelInstall
-          cert={cert}
-          userId={userId}
-          onClose={() => setCpanelOpen(false)}
-          onSuccess={() => { setCpanelOpen(false); onClose() }}
-        />
-      )}
       <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:400, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}
         onClick={e => e.target===e.currentTarget && onClose()}>
       <div style={{ background:'white', borderRadius:16, width:'100%', maxWidth:580, maxHeight:'90vh', overflow:'auto', boxShadow:'0 25px 60px rgba(0,0,0,0.3)' }}>
@@ -414,7 +406,7 @@ export default function AgentInstall({ cert, userId, onClose }) {
                     Your credentials are encrypted in Supabase Vault.
                   </div>
                   <button
-                    onClick={() => { onClose(); setTimeout(() => setCpanelOpen(true), 100) }}
+                    onClick={() => onOpenCpanel ? onOpenCpanel() : onClose()}
                     style={{ width: '100%', background: '#10b981', color: 'white', border: 'none',
                       borderRadius: 7, padding: '11px', fontSize: 13, fontWeight: 500,
                       cursor: 'pointer', fontFamily: 'inherit', display: 'flex',

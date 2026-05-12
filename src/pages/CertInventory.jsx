@@ -6,6 +6,7 @@ import {
 import { supabase } from '../lib/supabase'
 import { differenceInDays, format, formatDistanceToNow } from 'date-fns'
 import AgentInstall from '../components/AgentInstall'
+import CpanelInstall from '../components/CpanelInstall'
 
 // ── Helpers ───────────────────────────────────────────────────────────
 function daysLeft(iso) {
@@ -265,6 +266,7 @@ export default function CertInventory({ user, nav, onIssue }) {
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [agentCert, setAgentCert] = useState(null)
+  const [cpanelCert, setCpanelCert] = useState(null)
 
   const email = user?.email || ''
   const name = email.split('@')[0] || 'there'
@@ -483,6 +485,15 @@ export default function CertInventory({ user, nav, onIssue }) {
           cert={agentCert}
           userId={user?.id}
           onClose={() => setAgentCert(null)}
+          onOpenCpanel={() => { setAgentCert(null); setCpanelCert(agentCert) }}
+        />
+      )}
+      {cpanelCert && (
+        <CpanelInstall
+          cert={cpanelCert}
+          userId={user?.id}
+          onClose={() => setCpanelCert(null)}
+          onSuccess={() => { setCpanelCert(null); loadCerts() }}
         />
       )}
     </div>
