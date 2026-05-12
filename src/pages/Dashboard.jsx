@@ -263,6 +263,32 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
           </div>
         ))}
 
+        {/* Install status row */}
+        {(cert.install_method || cert.last_install_status) && (
+          <div className="v2-metric-row" style={{ justifyContent:'space-between' }}>
+            <span className="v2-metric-label">Install</span>
+            <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+              {cert.install_method && (
+                <span style={{ fontSize:9, fontWeight:600, color:'#374151', background:'#f3f4f6',
+                  border:'0.5px solid #e5e7eb', borderRadius:3, padding:'1px 5px', textTransform:'uppercase' }}>
+                  {cert.install_method}
+                </span>
+              )}
+              {(cert.install_status === 'success' || cert.last_install_status === 'success') && (
+                <span style={{ fontSize:10, color:'#15803d', fontWeight:600 }}>✓ Installed</span>
+              )}
+              {(cert.install_status === 'failed' || cert.last_install_status === 'failed') && (
+                <span style={{ fontSize:10, color:'#dc2626', fontWeight:600 }}>✗ Failed</span>
+              )}
+              {cert.last_install_server && (
+                <span className="v2-mono" style={{ fontSize:10, color:'var(--v2-text-3)' }}>
+                  · {cert.last_install_server}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Fingerprint row */}
 
         {/* Serial row */}

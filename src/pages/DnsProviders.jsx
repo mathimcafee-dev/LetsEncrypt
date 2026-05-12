@@ -1001,7 +1001,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
         })
         const data = await res.json()
         if (cancelled) return
-        if (data.token) setAgentToken(data.token)
+        if (data.agent_token) setAgentToken(data.agent_token)
         else setTokenError(data.error || 'Could not create token')
       } catch (e) { if (!cancelled) setTokenError(e.message) }
       if (!cancelled) setTokenLoading(false)
@@ -1015,10 +1015,11 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
       try {
         const res = await fetch(DAEMON_FN, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'check_registered', token: agentToken })
+          body: JSON.stringify({ action: 'list_agents', user_id: userId })
         })
         const data = await res.json()
-        if (data.registered) {
+        const found = (data.agents || []).find(a => a.server_id === server.id)
+        if (found) {
           setRegistered(true)
           setTimeout(() => { onRegistered(); onClose() }, 1800)
         }
@@ -1028,7 +1029,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
   }, [agentToken, onClose, onRegistered])
 
   const installCmd = agentToken
-    ? `curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash -s -- ${agentToken}`
+    ? `curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash -s -- --token=${agentToken} --user-id=${userId} --server-id=${server.id} --nickname="${server.nickname || server.host}"`
     : ''
 
   const copy = async () => {
