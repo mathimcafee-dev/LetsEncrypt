@@ -8,98 +8,62 @@ const URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const IS_SANDBOX = true
 
 const STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
-
 .ic-root {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f0f2f5;
-  min-height: calc(100vh - 56px);
+  font-family: system-ui,-apple-system,'Segoe UI',sans-serif;
+  background: #fafafa;
+  min-height: calc(100vh - 100px);
   -webkit-font-smoothing: antialiased;
+  padding: 20px 24px 60px;
 }
-
-/* ─── HERO ─────────────────────────────────────────────── */
-.ic-hero {
-  background: linear-gradient(160deg, #0a0a0a 0%, #0f1923 60%, #0d2137 100%);
-  padding: 32px 20px 28px;
-  position: relative;
-  overflow: hidden;
+.ic-header {
+  background: white; border: 0.5px solid #e8edf2; border-radius: 8px;
+  padding: 16px 20px; margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
 }
-.ic-hero-noise {
-  position: absolute; inset: 0; pointer-events: none; opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-}
-.ic-hero-glow {
-  position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
-  width: 600px; height: 300px; pointer-events: none;
-  background: radial-gradient(ellipse, rgba(16,185,129,0.18) 0%, transparent 65%);
-}
-.ic-hero-inner {
-  max-width: 560px; margin: 0 auto; position: relative; z-index: 1;
-}
-.ic-hero-top {
-  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
-}
+.ic-header-left { display: flex; align-items: center; gap: 14px; }
 .ic-logo {
-  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
-  background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.08));
-  border: 1px solid rgba(16,185,129,0.3);
+  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  background: #f0fdf4; border: 0.5px solid #bbf7d0;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 24px rgba(16,185,129,0.15);
 }
-.ic-hero-title { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.4px; line-height: 1.2; }
-.ic-hero-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; letter-spacing: 0.1px; }
-.ic-hero-badges {
-  display: flex; gap: 6px; flex-wrap: wrap;
-}
+.ic-hero-title { font-size: 15px; font-weight: 500; color: #0a0a0a; letter-spacing: -0.2px; }
+.ic-hero-sub { font-size: 11px; color: #a3a3a3; margin-top: 3px; }
+.ic-hero-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .ic-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 100px; padding: 4px 10px;
-  font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.5);
-  letter-spacing: 0.2px;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #fafafa; border: 0.5px solid #e8edf2;
+  border-radius: 100px; padding: 3px 9px;
+  font-size: 10px; font-weight: 500; color: #525252;
 }
-.ic-badge-green {
-  background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.25); color: #34d399;
-}
+.ic-badge-green { color: #047857; background: #f0fdf4; border-color: #bbf7d0; }
 .ic-sandbox-pill {
-  margin-left: auto; flex-shrink: 0;
-  background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
-  color: #a78bfa; font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
+  flex-shrink: 0; background: #f5f3ff; border: 0.5px solid #ddd6fe;
+  color: #6d28d9; font-size: 9px; font-weight: 500; letter-spacing: 0.4px;
   text-transform: uppercase; border-radius: 4px; padding: 3px 8px;
 }
-
-/* ─── STEPS ────────────────────────────────────────────── */
 .ic-steps {
   display: flex; align-items: center;
-  background: white; border-bottom: 1px solid #e8edf2;
-  padding: 0 20px;
-  position: sticky; top: 56px; z-index: 50;
+  background: white; border: 0.5px solid #e8edf2; border-radius: 8px;
+  padding: 12px 20px; margin-bottom: 12px;
 }
-.ic-step {
-  display: flex; align-items: center; gap: 8px;
-  padding: 14px 0; flex-shrink: 0;
-}
+.ic-step { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .ic-step-circle {
   width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; transition: all 0.3s;
+  font-size: 10px; font-weight: 500; transition: all 0.3s;
 }
 .ic-step-circle.done   { background: #10b981; color: white; }
-.ic-step-circle.active { background: #0a0a0a; color: white; box-shadow: 0 0 0 3px rgba(10,10,10,0.1); }
-.ic-step-circle.future { background: #f1f5f9; color: #94a3b8; border: 1.5px solid #e2e8f0; }
-.ic-step-text { font-size: 12px; font-weight: 600; transition: color 0.3s; }
+.ic-step-circle.active { background: #0a0a0a; color: white; }
+.ic-step-circle.future { background: #f1f5f9; color: #94a3b8; border: 0.5px solid #e2e8f0; }
+.ic-step-text { font-size: 12px; font-weight: 500; transition: color 0.3s; }
 .ic-step-text.done   { color: #10b981; }
 .ic-step-text.active { color: #0a0a0a; }
-.ic-step-text.future { color: #cbd5e1; }
-.ic-step-line { flex: 1; height: 1px; margin: 0 12px; min-width: 20px; transition: background 0.4s; }
+.ic-step-text.future { color: #d4d4d4; }
+.ic-step-line { flex: 1; height: 0.5px; margin: 0 14px; min-width: 20px; transition: background 0.4s; }
 .ic-step-line.done   { background: #10b981; }
 .ic-step-line.future { background: #e8edf2; }
-
-/* ─── BODY ─────────────────────────────────────────────── */
-.ic-body {
-  max-width: 560px; margin: 0 auto; padding: 20px 16px 80px;
-}
-@media (min-width: 600px) { .ic-body { padding: 24px 20px 80px; } }
+.ic-body { display: grid; grid-template-columns: 1fr 300px; gap: 12px; align-items: start; }
+.ic-body-full { max-width: 680px; }
 
 /* ─── PENDING BANNER ───────────────────────────────────── */
 .ic-pending {
@@ -553,25 +517,21 @@ export default function BuyCertificate({ nav }) {
       <style>{STYLES}</style>
       <div className="ic-root">
 
-        {/* HERO */}
-        <div className="ic-hero">
-          <div className="ic-hero-noise"/>
-          <div className="ic-hero-glow"/>
-          <div className="ic-hero-inner">
-            <div className="ic-hero-top">
-              <div className="ic-logo"><Shield size={20} color="#10b981"/></div>
-              <div style={{ flex: 1 }}>
-                <div className="ic-hero-title">Issue SSL Certificate</div>
-                <div className="ic-hero-sub">RapidSSL DV · TheSSLStore · DigiCert Trust Network</div>
-              </div>
-              {IS_SANDBOX && <span className="ic-sandbox-pill">Sandbox</span>}
+        {/* HEADER */}
+        <div className="ic-header">
+          <div className="ic-header-left">
+            <div className="ic-logo"><Shield size={18} color="#10b981"/></div>
+            <div>
+              <div className="ic-hero-title">Issue SSL Certificate</div>
+              <div className="ic-hero-sub">RapidSSL DV · TheSSLStore · DigiCert Trust Network</div>
             </div>
-            <div className="ic-hero-badges">
-              <span className="ic-badge ic-badge-green">✓ DigiCert chain</span>
-              <span className="ic-badge">~5 min issuance</span>
-              <span className="ic-badge">Auto-renewal</span>
-              <span className="ic-badge">99.9% browser trust</span>
-            </div>
+          </div>
+          <div className="ic-hero-badges">
+            <span className="ic-badge ic-badge-green"><CheckCircle size={10}/> DigiCert chain</span>
+            <span className="ic-badge">~5 min issuance</span>
+            <span className="ic-badge">Auto-renewal</span>
+            <span className="ic-badge">99.9% browser trust</span>
+            {IS_SANDBOX && <span className="ic-sandbox-pill">Sandbox</span>}
           </div>
         </div>
 
@@ -579,10 +539,9 @@ export default function BuyCertificate({ nav }) {
         <StepBar current={step}/>
 
         {/* BODY */}
-        <div className="ic-body">
-
-          {/* ── FORM ──────────────────────────────────────── */}
-          {step === 'form' && (
+        {step === 'form' ? (
+          <div className="ic-body">
+            {/* LEFT — form */}
             <div className="ic-enter">
               {pending && (
                 <div className="ic-pending">
@@ -594,16 +553,6 @@ export default function BuyCertificate({ nav }) {
                   <button onClick={() => setPend(null)} style={{ background:'none', border:'none', color:'#b45309', cursor:'pointer', fontSize:20, padding:'0 2px', lineHeight:1, flexShrink:0 }}>×</button>
                 </div>
               )}
-
-              {/* Stats */}
-              <div className="ic-stats">
-                {[['1 Year', 'Validity'], ['~5 min', 'Issuance'], ['€19/yr', 'From']].map(([v, l]) => (
-                  <div className="ic-stat" key={l}>
-                    <div className="ic-stat-v">{v}</div>
-                    <div className="ic-stat-l">{l}</div>
-                  </div>
-                ))}
-              </div>
 
               {/* Domain */}
               <div className="ic-domain">
@@ -656,12 +605,19 @@ export default function BuyCertificate({ nav }) {
                   </div>
                 </div>
               </div>
+              {err && <div className="ic-error"><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{err}</div>}
+            </div>
 
-              {/* Summary */}
+            {/* RIGHT — order summary */}
+            <div>
               <div className="ic-summary">
                 <div className="ic-summary-rows">
-                  <div className="ic-sum-row"><span>RapidSSL Standard DV · {years}yr</span><span>€{price}</span></div>
-                  <div className="ic-sum-row em"><span>SSLVault lifecycle management</span><span>Free</span></div>
+                  <div className="ic-sum-row"><span>Certificate</span><span>RapidSSL DV</span></div>
+                  <div className="ic-sum-row"><span>Validity</span><span>{years} year{years>1?'s':''}</span></div>
+                  <div className="ic-sum-row"><span>Issuance</span><span>~5 minutes</span></div>
+                  <div className="ic-sum-row em"><span>Auto-renewal</span><span>Included</span></div>
+                  <div className="ic-sum-row"><span>RapidSSL Standard DV</span><span>€{price}</span></div>
+                  <div className="ic-sum-row em"><span>CLM management</span><span>Free</span></div>
                 </div>
                 <div className="ic-sum-foot">
                   <div>
@@ -669,23 +625,22 @@ export default function BuyCertificate({ nav }) {
                     <div className="ic-price-val">€{price}</div>
                     <div className="ic-price-note">Demo mode · no payment required</div>
                   </div>
-                  <button className="ic-btn ic-btn-primary" onClick={place} disabled={busy}>
+                  <button className="ic-btn ic-btn-primary ic-btn-full" style={{ marginTop:12 }} onClick={place} disabled={busy}>
                     {busy
                       ? <><RefreshCw size={14} className="ic-spin"/> Placing order…</>
                       : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
                   </button>
                 </div>
-              </div>
-
-              {err && <div className="ic-error"><AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{err}</div>}
-
-              <div className="ic-trust">
-                {['🔒 256-bit TLS', '🏆 DigiCert chain', '⚡ Auto-renewal', '🌐 All browsers'].map(t => (
-                  <span className="ic-trust-item" key={t}>{t}</span>
-                ))}
+                <div className="ic-trust" style={{ justifyContent:'flex-start', flexDirection:'column', gap:8, padding:'12px 16px' }}>
+                  {[<><Lock size={11}/> DigiCert trust chain</>, <><Zap size={11}/> Auto-renews before expiry</>, <><Globe size={11}/> 99.9% browser compatibility</>].map((t, i) => (
+                    <span key={i} className="ic-trust-item" style={{ color:'#10b981' }}>{t}</span>
+                  ))}
+                </div>
               </div>
             </div>
-          )}
+          </div>
+        ) : (
+          <div className="ic-body-full ic-enter">
 
           {/* ── DNS VALIDATION ────────────────────────────── */}
           {step === 'dv' && ord && (
@@ -786,6 +741,7 @@ export default function BuyCertificate({ nav }) {
           )}
 
         </div>
+        )}
       </div>
     </>
   )
