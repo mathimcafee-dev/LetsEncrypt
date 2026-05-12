@@ -6,14 +6,16 @@ import {
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import CertInventory from './CertInventory'
+import ServersPage from './Servers'
+import AboutInner from './AboutInner'
+import ContactInner from './ContactInner'
+import DeveloperInner from './DeveloperInner'
+import SettingsPage from './SettingsPage'
 import Import from './Import'
 import DnsProviders from './DnsProviders'
 import Install from './Install'
 import KnowledgeBase from './KnowledgeBase'
 import BuyCertificate from './BuyCertificate'
-import About from './About'
-import Contact from './Contact'
-import Developer from './Developer'
 import Pricing from './Pricing'
 
 export default function CLMHome({ user, nav }) {
@@ -62,27 +64,12 @@ export default function CLMHome({ user, nav }) {
     if (section === 'dns') return <DnsProviders nav={nav}/>
     if (section === 'install') return <Install nav={nav}/>
     if (section === 'kb') return <KnowledgeBase nav={nav}/>
-    if (section === 'about') return <About nav={nav}/>
-    if (section === 'contact') return <Contact nav={nav}/>
-    if (section === 'developer') return <Developer nav={nav}/>
+    if (section === 'about') return <AboutInner nav={nav}/>
+    if (section === 'contact') return <ContactInner nav={nav}/>
+    if (section === 'developer') return <DeveloperInner nav={nav}/>
     if (section === 'pricing') return <Pricing nav={nav}/>
-    if (section === 'servers') return (
-      <div style={{ padding:'60px 20px', textAlign:'center', color:'#8492a6' }}>
-        <Server size={40} strokeWidth={1.5} style={{ marginBottom:12, opacity:0.3 }}/>
-        <div style={{ fontSize:14, fontWeight:700, color:'#1a2332', marginBottom:6 }}>Servers</div>
-        <div style={{ fontSize:12, marginBottom:20 }}>Manage VPS and cPanel servers with the persistent agent</div>
-        <button style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#00b48a', color:'white', border:'none', borderRadius:8, padding:'10px 20px', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }} onClick={() => setSection('install')}>
-          <Download size={13}/> Install Guide
-        </button>
-      </div>
-    )
-    if (section === 'settings') return (
-      <div style={{ padding:'60px 20px', textAlign:'center', color:'#8492a6' }}>
-        <Settings size={40} strokeWidth={1.5} style={{ marginBottom:12, opacity:0.3 }}/>
-        <div style={{ fontSize:14, fontWeight:700, color:'#1a2332', marginBottom:6 }}>Settings</div>
-        <div style={{ fontSize:12 }}>Account settings coming soon</div>
-      </div>
-    )
+    if (section === 'servers') return <ServersPage user={user}/>
+    if (section === 'settings') return <SettingsPage user={user}/>
 
     return null
   }
