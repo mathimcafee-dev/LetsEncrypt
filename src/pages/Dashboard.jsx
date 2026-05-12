@@ -93,6 +93,8 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
   const [bannerVisible, setBannerVisible] = useState(true)
   const [newPillVisible, setNewPillVisible] = useState(true)
   const [renewState, setRenewState] = useState(null)
+  const [reissueState, setReissueState] = useState(null) // null | 'confirm' | 'loading' | 'done' | 'processing' | 'error'
+  const [reissueMsg, setReissueMsg] = useState('')
   const [revokeConfirm, setRevokeConfirm] = useState(false)
   const [revokeReason, setRevokeReason]   = useState('Unspecified')
   const [revoking, setRevoking]           = useState(false)
@@ -135,6 +137,34 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
     sessionStorage.setItem('prefill_domain', cert.domain)
     onClose()
     nav('/buy')
+  }
+
+  // ── Reissue: fresh cert PEM on same order, same validity window ─────
+  const handleReissue = async () => {
+    if (reissueState === 'confirm') {
+      setReissueState('loading'); setReissueMsg('Generating new CSR and submitting reissue to TSS…')
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
+          body: JSON.stringify({ action: 'reissue', cert_id: cert.id })
+        })
+        const data = await res.json()
+        if (data.ok && data.status === 'reissued') {
+          setReissueState('done')
+          setReissueMsg(data.message || 'Certificate reissued. New cert deployed to your servers.')
+        } else if (data.ok && data.status === 'processing') {
+          setReissueState('processing')
+          setReissueMsg(data.message || 'Reissue submitted — TSS is processing. Check back in a few minutes.')
+        } else {
+          setReissueState('error')
+          setReissueMsg(data.error || 'Reissue failed')
+        }
+      } catch(e) { setReissueState('error'); setReissueMsg(String(e)) }
+    } else {
+      setReissueState('confirm')
+    }
   }
 
   const doDeleteKey = async () => {
@@ -510,13 +540,67 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
         </div>
       )}
 
+      {/* Reissue state feedback */}
+      {reissueState && reissueState !== 'confirm' && (
+        <div style={{
+          background: reissueState === 'done' ? 'var(--v2-green-bg)'
+            : reissueState === 'error' ? '#fef2f2' : 'var(--v2-surface-3)',
+          border: `0.5px solid ${reissueState === 'done' ? 'var(--v2-green-border)'
+            : reissueState === 'error' ? '#fecaca' : 'var(--v2-border)'}`,
+          borderRadius: 'var(--v2-r-md)', padding: '10px 12px', marginBottom: 10,
+          display: 'flex', alignItems: 'flex-start', gap: 10
+        }}>
+          {reissueState === 'done'
+            ? <CheckCircle size={14} color="var(--v2-green)" style={{ flexShrink:0, marginTop:1 }}/>
+            : reissueState === 'error'
+            ? <AlertTriangle size={14} color="#dc2626" style={{ flexShrink:0, marginTop:1 }}/>
+            : <RefreshCw size={14} color="var(--v2-text-3)" style={{ flexShrink:0, marginTop:1,
+                animation: reissueState === 'loading' ? 'spin 1s linear infinite' : 'none' }}/>}
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:12, fontWeight:600, marginBottom:2,
+              color: reissueState === 'done' ? 'var(--v2-green-text)'
+                : reissueState === 'error' ? '#dc2626' : 'var(--v2-text)' }}>
+              {reissueState === 'done' ? 'Reissued successfully'
+                : reissueState === 'error' ? 'Reissue failed'
+                : reissueState === 'processing' ? 'Processing at TSS' : 'Reissuing...'}
+            </div>
+            <div style={{ fontSize:11, color: reissueState === 'error' ? '#dc2626' : 'var(--v2-text-2)', lineHeight:1.5 }}>
+              {reissueMsg}
+            </div>
+          </div>
+          {(reissueState === 'error' || reissueState === 'done' || reissueState === 'processing') && (
+            <button onClick={() => { setReissueState(null); setReissueMsg('') }}
+              style={{ background:'none', border:'none', cursor:'pointer', color:'var(--v2-text-3)', fontSize:14, flexShrink:0 }}>x</button>
+          )}
+        </div>
+      )}
+
       {/* Actions */}
       <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
         <button className="v2-btn v2-btn-primary" style={{ flex:1 }}
           onClick={handleSmartRenew}
-          disabled={!!renewState && renewState.phase !== 'error'}>
-          <RefreshCw size={12} /> Renew certificate
+          disabled={!!renewState && renewState.phase !== 'error'}
+          title="New TSS order — new validity period, new key, new DV challenge">
+          <RefreshCw size={12} /> Renew
         </button>
+        {isTssCert && !isRevoked && (
+          <button
+            className={`v2-btn v2-btn-sm${reissueState === 'confirm' ? ' v2-btn-primary' : ''}`}
+            onClick={handleReissue}
+            disabled={reissueState === 'loading'}
+            title="Same order — fresh cert PEM + key, same expiry, no new payment"
+            style={{ fontSize:12 }}>
+            {reissueState === 'confirm'
+              ? <><AlertTriangle size={11}/> Confirm?</>
+              : reissueState === 'loading'
+              ? <><RefreshCw size={11} style={{ animation:'spin 1s linear infinite' }}/> Reissuing...</>
+              : <><RefreshCw size={11}/> Reissue</>}
+          </button>
+        )}
+        {reissueState === 'confirm' && (
+          <button className="v2-btn v2-btn-sm" onClick={() => setReissueState(null)}
+            style={{ fontSize:12 }}>Cancel</button>
+        )}
         <button className="v2-btn v2-btn-sm" onClick={() => onInstall(cert)}
           style={{ fontSize:12 }}>
           <Server size={11} /> Install
