@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, AlertTriangle, RefreshCw, Copy, Check,
-         Lock, Zap, Globe, Server, ArrowRight, ShieldCheck, Clock,
-         RotateCcw, Terminal } from 'lucide-react'
+         Lock, Zap, Globe, Server, ArrowRight, ShieldCheck, Clock, RotateCcw } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 
@@ -10,8 +9,7 @@ const IS_SANDBOX = true
 
 const PRODUCTS = [
   { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', price: 19, wildcard: false, available: true,
-    desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites and SMBs.',
-    algo: 'SHA-256 / RSA 2048', trust: 'DigiCert root', issuance: '~5 minutes' },
+    desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites and SMBs.' },
 ]
 
 const STYLES = `
@@ -64,9 +62,7 @@ const STYLES = `
 .ec-product-card.selected .ec-product-check { background: #1a56db; border-color: #1a56db; }
 .ec-product-info { flex: 1; min-width: 0; }
 .ec-product-name { font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
-.ec-product-desc { font-size: 11px; color: #6b7280; line-height: 1.5; margin-bottom: 6px; }
-.ec-product-attrs { display: flex; gap: 12px; flex-wrap: wrap; }
-.ec-attr { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #6b7280; }
+.ec-product-desc { font-size: 11px; color: #6b7280; line-height: 1.5; margin-bottom: 0; }
 .ec-product-price { flex-shrink: 0; text-align: right; }
 .ec-price-big { font-size: 16px; font-weight: 700; color: #111827; }
 .ec-price-yr  { font-size: 10px; color: #9ca3af; }
@@ -396,11 +392,6 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                           {!p.available && <span className="ec-type-badge" style={{ background:'#f3f4f6', color:'#9ca3af' }}>Soon</span>}
                         </div>
                         <div className="ec-product-desc">{p.desc}</div>
-                        <div className="ec-product-attrs">
-                          <span className="ec-attr"><ShieldCheck size={10}/>{p.trust}</span>
-                          <span className="ec-attr"><Terminal size={10}/>{p.algo}</span>
-                          <span className="ec-attr"><Clock size={10}/>{p.issuance}</span>
-                        </div>
                       </div>
                       <div className="ec-product-price">
                         <div className="ec-price-big">€{p.price}</div>
@@ -479,7 +470,6 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                   <div className="ec-sum-row"><span className="ec-sum-key">Certificate</span><span className="ec-sum-val">{prod.name}</span></div>
                   <div className="ec-sum-row"><span className="ec-sum-key">Type</span><span className="ec-sum-val">{prod.type}</span></div>
                   <div className="ec-sum-row"><span className="ec-sum-key">Validity</span><span className="ec-sum-val">{years} year{years>1?'s':''}</span></div>
-                  <div className="ec-sum-row"><span className="ec-sum-key">Issuance</span><span className="ec-sum-val">{prod.issuance}</span></div>
                   <div className="ec-sum-row"><span className="ec-sum-key">Auto-renewal</span><span className="ec-sum-val green">Included</span></div>
                   <div className="ec-sum-row"><span className="ec-sum-key">{prod.name}</span><span className="ec-sum-val">€{prod.price}</span></div>
                   <div className="ec-sum-row"><span className="ec-sum-key">CLM management</span><span className="ec-sum-val blue">Free</span></div>
