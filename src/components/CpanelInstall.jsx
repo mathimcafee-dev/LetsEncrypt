@@ -184,14 +184,6 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
       setSteps({ creds: 'done', install: 'active', verify: null })
     }
 
-    // DEBUG: resolve credentials without calling cPanel
-    const debugRes = await call('debug_resolve', {
-      cert_id: cert.id,
-      credential_id: finalCredId,
-      credential_source: savedCreds.find(c => c.id === finalCredId)?.source || 'vault'
-    }, tok)
-    console.log('=== DEBUG RESOLVE ===', JSON.stringify(debugRes, null, 2))
-
     // Step 2 — install via cPanel API
     const installPayload = {
       cert_id: cert.id,
