@@ -7,6 +7,16 @@ import { useAuth } from '../hooks/useAuth'
 const URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const IS_SANDBOX = true
 
+const PRODUCTS = [
+  { code: 'rapidssl',          name: 'RapidSSL DV',              type: 'DV',       icon: '🔒', price: 19,  popular: false, wildcard: false, desc: 'Fast domain validation. Issued in minutes. Perfect for blogs, personal sites.' },
+  { code: 'rapidssl_wildcard', name: 'RapidSSL Wildcard',        type: 'Wildcard', icon: '🌐', price: 65,  popular: true,  wildcard: true,  desc: 'Secures *.yourdomain.com — unlimited subdomains with one certificate.' },
+  { code: 'positivessl',       name: 'Sectigo PositiveSSL',      type: 'DV',       icon: '✅', price: 16,  popular: false, wildcard: false, desc: 'Low cost DV SSL from Sectigo. Fast issuance, strong browser trust.' },
+  { code: 'positivssl_wildcard', name: 'Sectigo Wildcard',       type: 'Wildcard', icon: '⭐', price: 128, popular: false, wildcard: true,  desc: 'Sectigo wildcard — all subdomains secured, cost-effective management.' },
+  { code: 'geotrust_dv',       name: 'GeoTrust DV',              type: 'DV',       icon: '🛡️', price: 32,  popular: false, wildcard: false, desc: 'GeoTrust trusted DV. Flex feature — add more domains if needed.' },
+  { code: 'geotrust_truebiz',  name: 'GeoTrust TrueBusiness OV', type: 'OV',       icon: '🏢', price: 112, popular: false, wildcard: false, desc: 'Organisation validated. Shows verified company info in cert details.' },
+  { code: 'sectigo_ev',        name: 'Sectigo EV SSL',           type: 'EV',       icon: '🏦', price: 65,  popular: false, wildcard: false, desc: 'Extended Validation — maximum trust, verified company identity, warranty.' },
+]
+
 const STYLES = `
 .ic-root {
   font-family: system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -397,6 +407,7 @@ const clean = v => v.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLo
 export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
   const { user, loading: authLoading } = useAuth()
   const [step, setStep]   = useState('form')
+  const [product, setProduct] = useState('rapidssl')
   const [domain, setD]    = useState('')
   const [years, setYears] = useState(1)
   const [fn, setFn]       = useState('')
@@ -458,7 +469,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     if (!em.trim()) { setErr('Email required'); return }
     if (!ph.trim()) { setErr('Phone required'); return }
     setErr(''); setBusy(true)
-    const r = await call('place_order', { domain: d, years, product_code: 'rapidssl', firstName: fn.trim(), lastName: ln.trim(), adminEmail: em.trim(), phone: ph.trim(), is_sandbox: IS_SANDBOX })
+    const r = await call('place_order', { domain: d, years, product_code: product, firstName: fn.trim(), lastName: ln.trim(), adminEmail: em.trim(), phone: ph.trim(), is_sandbox: IS_SANDBOX })
     if (r.error) { setErr(r.error); setBusy(false); return }
     let dv = r
     if (r.order_id) {
@@ -485,7 +496,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     setDns(false)
   }
 
-  const reset = () => { setStep('form'); setD(''); setOrd(null); setRes(null); setPend(null); setErr('') }
+  const reset = () => { setStep('form'); setD(''); setOrd(null); setRes(null); setPend(null); setErr(''); setProduct('rapidssl') }
   const resume = () => {
     const o = pending
     setD(o.domain)
@@ -554,10 +565,48 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                 </div>
               )}
 
+              {/* Product selector */}
+              <div className="ic-card" style={{ marginBottom:12 }}>
+                <div className="ic-card-head">
+                  <span className="ic-section-label">Certificate type</span>
+                  <span style={{ fontSize:10, color:'#10b981', fontWeight:500 }}>Sandbox · All products available</span>
+                </div>
+                <div className="ic-card-body" style={{ padding:'10px 14px' }}>
+                  {PRODUCTS.map(p => (
+                    <button key={p.code} onClick={() => setProduct(p.code)} style={{
+                      display:'flex', alignItems:'flex-start', gap:12, width:'100%',
+                      padding:'10px 12px', marginBottom:6, borderRadius:7, cursor:'pointer',
+                      border: product === p.code ? '1.5px solid #10b981' : '0.5px solid #e8edf2',
+                      background: product === p.code ? '#f0fdf4' : 'white',
+                      textAlign:'left', fontFamily:'inherit', transition:'all 0.12s'
+                    }}>
+                      <div style={{ fontSize:20, flexShrink:0, marginTop:1 }}>{p.icon}</div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2 }}>
+                          <span style={{ fontSize:12, fontWeight:600, color:'#0a0a0a' }}>{p.name}</span>
+                          <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:4,
+                            background: p.type==='EV'?'#fef3c7':p.type==='OV'?'#eff6ff':p.type==='Wildcard'?'#fdf4ff':'#f0fdf4',
+                            color: p.type==='EV'?'#92400e':p.type==='OV'?'#1e40af':p.type==='Wildcard'?'#7e22ce':'#065f46'
+                          }}>{p.type}</span>
+                          {p.popular && <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:4, background:'#fff7ed', color:'#c2410c' }}>Popular</span>}
+                        </div>
+                        <div style={{ fontSize:11, color:'#737373', lineHeight:1.5 }}>{p.desc}</div>
+                      </div>
+                      <div style={{ flexShrink:0, textAlign:'right' }}>
+                        <div style={{ fontSize:13, fontWeight:700, color: product===p.code?'#10b981':'#0a0a0a' }}>€{p.price}</div>
+                        <div style={{ fontSize:9, color:'#a3a3a3' }}>/year</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Domain */}
               <div className="ic-card" style={{ marginBottom:12 }}>
                 <div className="ic-card-head">
-                  <span className="ic-section-label">Domain name</span>
+                  <span className="ic-section-label">
+                    {PRODUCTS.find(p=>p.code===product)?.wildcard ? 'Wildcard domain (*.yourdomain.com)' : 'Domain name'}
+                  </span>
                 </div>
                 <div className="ic-card-body">
                   <div className="ic-domain-wrap">
@@ -616,17 +665,18 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
             <div>
               <div className="ic-summary">
                 <div className="ic-summary-rows">
-                  <div className="ic-sum-row"><span>Certificate</span><span>RapidSSL DV</span></div>
+                  <div className="ic-sum-row"><span>Certificate</span><span>{PRODUCTS.find(p=>p.code===product)?.name || 'RapidSSL DV'}</span></div>
+                  <div className="ic-sum-row"><span>Type</span><span>{PRODUCTS.find(p=>p.code===product)?.type || 'DV'}</span></div>
                   <div className="ic-sum-row"><span>Validity</span><span>{years} year{years>1?'s':''}</span></div>
-                  <div className="ic-sum-row"><span>Issuance</span><span>~5 minutes</span></div>
+                  <div className="ic-sum-row"><span>Issuance</span><span>{PRODUCTS.find(p=>p.code===product)?.type==='DV'?'~5 minutes':'1–3 days'}</span></div>
                   <div className="ic-sum-row em"><span>Auto-renewal</span><span>Included</span></div>
-                  <div className="ic-sum-row"><span>RapidSSL Standard DV</span><span>€{price}</span></div>
+                  <div className="ic-sum-row"><span>{PRODUCTS.find(p=>p.code===product)?.name}</span><span>€{PRODUCTS.find(p=>p.code===product)?.price || 19}</span></div>
                   <div className="ic-sum-row em"><span>CLM management</span><span>Free</span></div>
                 </div>
                 <div className="ic-sum-foot">
                   <div>
                     <div className="ic-price-label">Total today</div>
-                    <div className="ic-price-val">€{price}</div>
+                    <div className="ic-price-val">€{PRODUCTS.find(p=>p.code===product)?.price || 19}</div>
                     <div className="ic-price-note">Demo mode · no payment required</div>
                   </div>
                   <button className="ic-btn ic-btn-green ic-btn-full" onClick={place} disabled={busy}>
