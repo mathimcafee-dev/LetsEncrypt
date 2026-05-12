@@ -718,14 +718,16 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
                   <>
                     <input
                       className="v2-input mono"
-                      autoComplete="off"
+                      autoComplete="new-password"
                       data-lpignore="true"
                       data-form-type="other"
-                      name={`server-${f.key}-${Date.now()}`}
+                      name={f.type === 'password' ? `new-${f.key}` : f.key}
                       type={f.type === 'password' && !showField[f.key] ? 'password' : 'text'}
                       placeholder={isEdit && f.type === 'password' && editServer?.credentials_enc
                         ? '(saved — type new value to replace)'
                         : f.placeholder}
+                      readOnly={f.type === 'password' && !fields[`_touched_${f.key}`]}
+                      onFocus={() => f.type === 'password' && setFields(s => ({ ...s, [`_touched_${f.key}`]: true }))}
                       value={fields[f.key] || ''}
                       onChange={e => setFields(s => ({ ...s, [f.key]: e.target.value }))}
                       style={f.type === 'password' ? { paddingRight: 36 } : {}}
