@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
-  Shield, Plus, Globe, Server, Zap,
-  AlertTriangle, CheckCircle, Clock, FileText,
-  Layout, Download, Settings, ChevronRight,
+  Shield, Plus, Globe, Server,
+  FileText, Layout, Download, Settings,
   BookOpen, CreditCard, Info, User, Mail, LogOut
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { differenceInDays } from 'date-fns'
-import Dashboard from './Dashboard'
+import CertInventory from './CertInventory'
 import Import from './Import'
 import DnsProviders from './DnsProviders'
 import Install from './Install'
@@ -18,39 +16,9 @@ import Contact from './Contact'
 import Developer from './Developer'
 import Pricing from './Pricing'
 
-function daysLeft(iso) {
-  if (!iso) return null
-  return differenceInDays(new Date(iso), new Date())
-}
-
 export default function CLMHome({ user, nav }) {
-  const [certs, setCerts] = useState([])
-  const [loading, setLoading] = useState(true)
   const [section, setSection] = useState('dashboard')
   const email = user?.email || ''
-  const name = email.split('@')[0] || 'Spartan'
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
-
-  useEffect(() => {
-    if (!user) return
-    ;(async () => {
-      setLoading(true)
-      const { data } = await supabase.from('certificates')
-        .select('id,domain,expires_at,status,issued_at,is_sandbox,cert_type,tss_order_id')
-        .eq('user_id', user.id)
-        .not('status', 'eq', 'rotating')
-        .order('issued_at', { ascending: false })
-      setCerts(data || [])
-      setLoading(false)
-    })()
-  }, [user])
-
-  const active = certs.filter(c => c.status !== 'sandbox_revoked' && c.status !== 'revoked')
-  const total = active.length
-  const healthy = active.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 }).length
-  const expiring = active.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 }).length
-  const expired = active.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 }).length
 
   const NAV_MAIN = [
     { id:'dashboard', label:'Dashboard', icon:Layout },
@@ -88,6 +56,7 @@ export default function CLMHome({ user, nav }) {
   }
 
   const renderContent = () => {
+    if (section === 'dashboard') return <CertInventory user={user} nav={nav}/>
     if (section === 'issue') return <BuyCertificate nav={nav}/>
     if (section === 'import') return <Import nav={nav}/>
     if (section === 'dns') return <DnsProviders nav={nav}/>
@@ -115,65 +84,7 @@ export default function CLMHome({ user, nav }) {
       </div>
     )
 
-    return (
-      <>
-        <div style={{ marginBottom:20, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8 }}>
-          <div>
-            <div style={{ fontSize:14, fontWeight:700, color:'#1a2332' }}>{greeting}, <span style={{ color:'#00b48a' }}>{name}</span></div>
-            <div style={{ fontSize:11, color:'#8492a6', marginTop:2 }}>{new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
-          </div>
-          {expired > 0 && (
-            <div style={{ display:'flex', alignItems:'center', gap:6, background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8, padding:'7px 12px', cursor:'pointer' }} onClick={() => document.getElementById('inventory-section')?.scrollIntoView({ behavior:'smooth', block:'start' })}>
-              <AlertTriangle size={13} color="#dc2626"/>
-              <span style={{ fontSize:12, fontWeight:600, color:'#b91c1c' }}>{expired} expired</span>
-              <ChevronRight size={12} color="#dc2626"/>
-            </div>
-          )}
-        </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:24 }}>
-          {[
-            { label:'Total', val:total, sub:'certificates', color:'#1a2332', bg:'#f4f6f9', icon:Shield },
-            { label:'Valid', val:healthy, sub:'30d+', color:'#059669', bg:'#ecfdf5', icon:CheckCircle },
-            { label:'Expiring', val:expiring, sub:'under 30d', color:'#d97706', bg:'#fffbeb', icon:Clock },
-            { label:'Expired', val:expired, sub:'action needed', color:'#dc2626', bg:'#fef2f2', icon:AlertTriangle },
-          ].map(({ label, val, sub, color, bg, icon:Icon }) => (
-            <div key={label} style={{ background:'white', borderRadius:10, padding:'18px 20px', border:'1px solid #e8edf2', display:'flex', alignItems:'center', gap:14, cursor:'pointer', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }} onClick={() => document.getElementById('inventory-section')?.scrollIntoView({ behavior:'smooth', block:'start' })}>
-              <div style={{ width:44, height:44, borderRadius:10, background:bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                <Icon size={20} color={color} strokeWidth={1.8}/>
-              </div>
-              <div>
-                <div style={{ fontSize:11, color:'#8492a6', fontWeight:600, textTransform:'uppercase', letterSpacing:'.4px', marginBottom:3 }}>{label}</div>
-                <div style={{ fontSize:26, fontWeight:800, letterSpacing:'-.8px', lineHeight:1, color }}>{loading ? '-' : val}</div>
-                <div style={{ fontSize:10, color:'#8492a6', marginTop:3 }}>{sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, marginBottom:24 }}>
-          {[
-            { icon:Shield, color:'#00b48a', bg:'#ecfdf5', label:'Issue Certificate', desc:'RapidSSL DV', fn:() => setSection('issue') },
-            { icon:FileText, color:'#3b82f6', bg:'#eff6ff', label:'Import Certificate', desc:'Bring your own', fn:() => setSection('import') },
-            { icon:BookOpen, color:'#7c3aed', bg:'#f5f3ff', label:'Knowledge Base', desc:'Guides and FAQs', fn:() => setSection('kb') },
-            { icon:Globe, color:'#0ea5e9', bg:'#f0f9ff', label:'DNS Providers', desc:'Auto-validation', fn:() => setSection('dns') },
-            { icon:Server, color:'#d97706', bg:'#fffbeb', label:'Servers', desc:'VPS and cPanel', fn:() => setSection('servers') },
-            { icon:Zap, color:'#10b981', bg:'#ecfdf5', label:'Install Cert', desc:'VPS or shared', fn:() => setSection('install') },
-          ].map(({ icon:Icon, color, bg, label, desc, fn }) => (
-            <button key={label} style={{ border:'1.5px solid #e8edf2', borderRadius:9, padding:'16px 14px', cursor:'pointer', background:'white', textAlign:'left', fontFamily:'inherit', display:'flex', flexDirection:'column', gap:8 }} onClick={fn}
-              onMouseEnter={e => { e.currentTarget.style.borderColor='#00b48a'; e.currentTarget.style.background='#f0fdf9' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor='#e8edf2'; e.currentTarget.style.background='white' }}>
-              <div style={{ width:36, height:36, borderRadius:8, background:bg, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <Icon size={17} color={color} strokeWidth={1.8}/>
-              </div>
-              <div style={{ fontSize:12, fontWeight:700, color:'#1a2332' }}>{label}</div>
-              <div style={{ fontSize:10, color:'#8492a6', lineHeight:1.5 }}>{desc}</div>
-            </button>
-          ))}
-        </div>
-        <div id="inventory-section">
-          <Dashboard nav={nav}/>
-        </div>
-      </>
-    )
+    return null
   }
 
   return (
@@ -230,10 +141,7 @@ export default function CLMHome({ user, nav }) {
             </div>
           </div>
           <div style={{ flex:1, overflowY:'auto' }}>
-            {section === 'dashboard'
-              ? <div style={{ padding:'24px 28px 60px' }}>{renderContent()}</div>
-              : renderContent()
-            }
+            {renderContent()}
           </div>
         </div>
       </div>
