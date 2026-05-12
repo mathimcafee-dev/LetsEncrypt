@@ -143,7 +143,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── FOUR PILLARS ─────────────────────────────────────────── */}
-      <section style={{ padding:'80px 24px', background:'#fafaf9' }}>
+      <section id="features" style={{ padding:'80px 24px', background:'#fafaf9', scrollMarginTop:72 }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <div style={{ textAlign:'center', marginBottom:48 }}>
             <div style={{ fontSize:11, fontWeight:700, color:'#10b981', textTransform:'uppercase', letterSpacing:'1px', marginBottom:10 }}>Full CLM Platform</div>
@@ -247,7 +247,7 @@ export default function Home({ nav }) {
       {/* ── FOOTER ───────────────────────────────────────────────── */}
       <footer style={{ borderTop:'0.5px solid #e5e5e5', background:'white', padding:'40px 24px 28px' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:32, marginBottom:32 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'1.3fr 1fr 1fr 1fr 1fr', gap:32, marginBottom:32 }}>
             <div>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
                 <div style={{ width:28, height:28, background:'#0a0a0a', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}><Shield size={13} color='white'/></div>
@@ -256,15 +256,22 @@ export default function Home({ nav }) {
               <p style={{ fontSize:11, color:'#a3a3a3', lineHeight:1.7 }}>Certificate Lifecycle Management Platform.<br/>Powered by TheSSLStore · DigiCert.</p>
             </div>
             {[
-              { t:'Product',  links:[['Issue Certificate','/buy'],['Import Certificate','/import'],['Dashboard','/dashboard'],['DNS Providers','/dns-providers']] },
-              { t:'Resources',links:[['Install Guide','/install'],['Knowledge Base','/knowledge-base'],['Pricing','/pricing'],['About','/about']] },
-              { t:'Legal',    links:[['Privacy Policy','/privacy'],['Terms of Service','/terms'],['Contact','/contact'],['Developer','/developer']] },
+              { t:'Product',   links:[['Features','#features'],['Pricing','/pricing'],['DNS Providers','/dns-providers']] },
+              { t:'Resources', links:[['Install Guide','/install'],['Knowledge Base','/knowledge-base'],['Get Started','/auth'],['Sign In','/auth']] },
+              { t:'Company',   links:[['About','/about'],['Developer','/developer'],['Contact','/contact']] },
+              { t:'Legal',     links:[['Privacy Policy','/privacy'],['Terms of Service','/terms']] },
             ].map(({ t, links }) => (
               <div key={t}>
                 <div style={{ fontSize:10, fontWeight:700, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>{t}</div>
                 <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                   {links.map(([l, p]) => (
-                    <button key={l} onClick={() => nav && nav(p)} style={{ background:'none', border:'none', color:'#525252', fontSize:12, cursor:'pointer', textAlign:'left', padding:0, fontFamily:'inherit' }}>{l}</button>
+                    <button key={l} onClick={() => {
+                      if (p.startsWith('#')) {
+                        document.querySelector(p)?.scrollIntoView({ behavior:'smooth', block:'start' })
+                      } else {
+                        nav && nav(p)
+                      }
+                    }} style={{ background:'none', border:'none', color:'#525252', fontSize:12, cursor:'pointer', textAlign:'left', padding:0, fontFamily:'inherit' }}>{l}</button>
                   ))}
                 </div>
               </div>

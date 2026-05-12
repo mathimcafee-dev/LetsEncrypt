@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  Shield, Plus, Activity, Globe, Server, Zap,
+  Shield, Plus, Globe, Server, Zap,
   AlertTriangle, CheckCircle, Clock, FileText,
   Layout, Download, Settings, ChevronRight,
   BookOpen, CreditCard, Info, User, Mail, LogOut
@@ -8,6 +8,7 @@ import {
 import { supabase } from '../lib/supabase'
 import { differenceInDays } from 'date-fns'
 import Dashboard from './Dashboard'
+import Import from './Import'
 import DnsProviders from './DnsProviders'
 import Install from './Install'
 import KnowledgeBase from './KnowledgeBase'
@@ -20,14 +21,6 @@ import Pricing from './Pricing'
 function daysLeft(iso) {
   if (!iso) return null
   return differenceInDays(new Date(iso), new Date())
-}
-
-function statusOf(days, status) {
-  if (status === 'revoked' || status === 'sandbox_revoked') return { color:'#64748b', bg:'#f1f5f9', dot:'#94a3b8', label:'Revoked' }
-  if (days == null) return { color:'#64748b', bg:'#f1f5f9', dot:'#94a3b8', label:'Unknown' }
-  if (days < 0) return { color:'#dc2626', bg:'#fef2f2', dot:'#ef4444', label:'Expired' }
-  if (days < 30) return { color:'#d97706', bg:'#fffbeb', dot:'#f59e0b', label:`${days}d left` }
-  return { color:'#059669', bg:'#ecfdf5', dot:'#10b981', label:`${days}d left` }
 }
 
 export default function CLMHome({ user, nav }) {
@@ -58,11 +51,9 @@ export default function CLMHome({ user, nav }) {
   const healthy = active.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 }).length
   const expiring = active.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 }).length
   const expired = active.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 }).length
-  const recent = certs.slice(0, 8)
 
   const NAV_MAIN = [
     { id:'dashboard', label:'Dashboard', icon:Layout },
-    { id:'certs', label:'Certificates', icon:Shield },
     { id:'issue', label:'Issue Certificate', icon:Plus },
     { id:'import', label:'Import Certificate', icon:FileText },
     { id:'dns', label:'DNS Providers', icon:Globe },
@@ -80,7 +71,7 @@ export default function CLMHome({ user, nav }) {
   ]
 
   const SECTION_TITLES = {
-    dashboard:'Overview', certs:'Certificates', issue:'Issue Certificate',
+    dashboard:'Dashboard', issue:'Issue Certificate',
     import:'Import Certificate', dns:'DNS Providers', servers:'Servers',
     install:'Install Guide', kb:'Knowledge Base', pricing:'Pricing',
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
@@ -98,11 +89,10 @@ export default function CLMHome({ user, nav }) {
 
   const renderContent = () => {
     if (section === 'issue') return <BuyCertificate nav={nav}/>
-    if (section === 'import') return <Dashboard nav={nav}/>
+    if (section === 'import') return <Import nav={nav}/>
     if (section === 'dns') return <DnsProviders nav={nav}/>
     if (section === 'install') return <Install nav={nav}/>
     if (section === 'kb') return <KnowledgeBase nav={nav}/>
-    if (section === 'certs') return <Dashboard nav={nav}/>
     if (section === 'about') return <About nav={nav}/>
     if (section === 'contact') return <Contact nav={nav}/>
     if (section === 'developer') return <Developer nav={nav}/>
@@ -133,7 +123,7 @@ export default function CLMHome({ user, nav }) {
             <div style={{ fontSize:11, color:'#8492a6', marginTop:2 }}>{new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
           </div>
           {expired > 0 && (
-            <div style={{ display:'flex', alignItems:'center', gap:6, background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8, padding:'7px 12px', cursor:'pointer' }} onClick={() => setSection('certs')}>
+            <div style={{ display:'flex', alignItems:'center', gap:6, background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8, padding:'7px 12px', cursor:'pointer' }} onClick={() => document.getElementById('inventory-section')?.scrollIntoView({ behavior:'smooth', block:'start' })}>
               <AlertTriangle size={13} color="#dc2626"/>
               <span style={{ fontSize:12, fontWeight:600, color:'#b91c1c' }}>{expired} expired</span>
               <ChevronRight size={12} color="#dc2626"/>
@@ -147,7 +137,7 @@ export default function CLMHome({ user, nav }) {
             { label:'Expiring', val:expiring, sub:'under 30d', color:'#d97706', bg:'#fffbeb', icon:Clock },
             { label:'Expired', val:expired, sub:'action needed', color:'#dc2626', bg:'#fef2f2', icon:AlertTriangle },
           ].map(({ label, val, sub, color, bg, icon:Icon }) => (
-            <div key={label} style={{ background:'white', borderRadius:10, padding:'18px 20px', border:'1px solid #e8edf2', display:'flex', alignItems:'center', gap:14, cursor:'pointer', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }} onClick={() => setSection('certs')}>
+            <div key={label} style={{ background:'white', borderRadius:10, padding:'18px 20px', border:'1px solid #e8edf2', display:'flex', alignItems:'center', gap:14, cursor:'pointer', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }} onClick={() => document.getElementById('inventory-section')?.scrollIntoView({ behavior:'smooth', block:'start' })}>
               <div style={{ width:44, height:44, borderRadius:10, background:bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                 <Icon size={20} color={color} strokeWidth={1.8}/>
               </div>
@@ -163,7 +153,7 @@ export default function CLMHome({ user, nav }) {
           {[
             { icon:Shield, color:'#00b48a', bg:'#ecfdf5', label:'Issue Certificate', desc:'RapidSSL DV', fn:() => setSection('issue') },
             { icon:FileText, color:'#3b82f6', bg:'#eff6ff', label:'Import Certificate', desc:'Bring your own', fn:() => setSection('import') },
-            { icon:Activity, color:'#7c3aed', bg:'#f5f3ff', label:'Manage Certs', desc:'View inventory', fn:() => setSection('certs') },
+            { icon:BookOpen, color:'#7c3aed', bg:'#f5f3ff', label:'Knowledge Base', desc:'Guides and FAQs', fn:() => setSection('kb') },
             { icon:Globe, color:'#0ea5e9', bg:'#f0f9ff', label:'DNS Providers', desc:'Auto-validation', fn:() => setSection('dns') },
             { icon:Server, color:'#d97706', bg:'#fffbeb', label:'Servers', desc:'VPS and cPanel', fn:() => setSection('servers') },
             { icon:Zap, color:'#10b981', bg:'#ecfdf5', label:'Install Cert', desc:'VPS or shared', fn:() => setSection('install') },
@@ -179,59 +169,8 @@ export default function CLMHome({ user, nav }) {
             </button>
           ))}
         </div>
-        <div style={{ background:'white', borderRadius:10, border:'1px solid #e8edf2', overflow:'hidden' }}>
-          <div style={{ padding:'16px 20px 12px', borderBottom:'1px solid #f1f5f9', display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
-            <div>
-              <div style={{ fontSize:13, fontWeight:700, color:'#1a2332' }}>Recent Certificates</div>
-              <div style={{ fontSize:11, color:'#8492a6', marginTop:2 }}>Latest {recent.length} in inventory</div>
-            </div>
-            <button style={{ fontSize:11, fontWeight:600, color:'#00b48a', background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:4, fontFamily:'inherit' }} onClick={() => setSection('certs')}>
-              View all <ChevronRight size={11}/>
-            </button>
-          </div>
-          {recent.length === 0 ? (
-            <div style={{ padding:'40px 20px', textAlign:'center' }}>
-              <div style={{ fontSize:36, marginBottom:12 }}>🛡️</div>
-              <div style={{ fontSize:14, fontWeight:700, color:'#1a2332', marginBottom:6 }}>No certificates yet</div>
-              <div style={{ fontSize:12, color:'#8492a6', marginBottom:16 }}>Issue your first SSL certificate to get started</div>
-              <button style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#00b48a', color:'white', border:'none', borderRadius:8, padding:'10px 20px', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }} onClick={() => setSection('issue')}>
-                <Shield size={13}/> Issue Certificate
-              </button>
-            </div>
-          ) : (
-            <div style={{ overflowX:'auto' }}>
-              <table style={{ width:'100%', borderCollapse:'collapse' }}>
-                <thead><tr>{['Domain','Status','Expires','Type'].map(h => (
-                  <th key={h} style={{ fontSize:10, fontWeight:700, color:'#8492a6', textTransform:'uppercase', letterSpacing:'.5px', padding:'8px 12px', textAlign:'left', background:'#f8fafc', borderBottom:'1px solid #e8edf2' }}>{h}</th>
-                ))}</tr></thead>
-                <tbody>{recent.map(cert => {
-                  const days = daysLeft(cert.expires_at)
-                  const { color, bg, dot, label } = statusOf(days, cert.status)
-                  return (
-                    <tr key={cert.id} onClick={() => setSection('certs')} style={{ cursor:'pointer' }}>
-                      <td style={{ padding:'11px 12px', fontSize:12, color:'#1a2332', borderBottom:'1px solid #f1f5f9' }}>
-                        <span style={{ fontFamily:"'SF Mono',monospace", fontWeight:600 }}>{cert.domain}</span>
-                        {cert.is_sandbox && <span style={{ marginLeft:6, fontSize:9, fontWeight:700, color:'#7c3aed', background:'#f5f3ff', border:'1px solid #ddd6fe', borderRadius:3, padding:'1px 5px' }}>SANDBOX</span>}
-                      </td>
-                      <td style={{ padding:'11px 12px', borderBottom:'1px solid #f1f5f9' }}>
-                        <span style={{ display:'inline-flex', alignItems:'center', gap:4, borderRadius:100, padding:'3px 9px', fontSize:10, fontWeight:700, color, background:bg }}>
-                          <span style={{ width:5, height:5, borderRadius:'50%', background:dot, display:'block' }}/>{label}
-                        </span>
-                      </td>
-                      <td style={{ padding:'11px 12px', fontSize:12, color:'#64748b', borderBottom:'1px solid #f1f5f9' }}>
-                        {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '-'}
-                      </td>
-                      <td style={{ padding:'11px 12px', fontSize:12, borderBottom:'1px solid #f1f5f9' }}>
-                        {cert.tss_order_id
-                          ? <span style={{ fontSize:10, fontWeight:700, color:'#185FA5', background:'#E6F1FB', border:'.5px solid #B5D4F4', borderRadius:3, padding:'2px 6px' }}>RapidSSL</span>
-                          : <span style={{ color:'#64748b' }}>{cert.cert_type || 'SSL'}</span>}
-                      </td>
-                    </tr>
-                  )
-                })}</tbody>
-              </table>
-            </div>
-          )}
+        <div id="inventory-section">
+          <Dashboard nav={nav}/>
         </div>
       </>
     )
@@ -285,9 +224,6 @@ export default function CLMHome({ user, nav }) {
           <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', justifyContent:'space-between', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
             <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
             <div style={{ display:'flex', gap:10 }}>
-              <button style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'#1a2332', border:'1px solid #d1d9e0', borderRadius:7, padding:'7px 14px', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }} onClick={() => setSection('certs')}>
-                <Activity size={13}/> All Certs
-              </button>
               <button style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#00b48a', color:'white', border:'none', borderRadius:7, padding:'7px 14px', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }} onClick={() => setSection('issue')}>
                 <Plus size={13}/> Issue Certificate
               </button>

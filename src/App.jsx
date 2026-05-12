@@ -55,12 +55,22 @@ export default function App() {
     return null
   }
 
-  // When logged in on home page, CLMHome handles everything including its own top bar
-  const isLoggedInHome = page === '/' && !authLoading && user
+  // Routes that remain accessible to logged-in users (auth flow + legal pages)
+  const publicAllowedWhenLoggedIn = ['/auth', '/privacy', '/terms']
+
+  // If a logged-in user lands on any subroute that isn't allowed, bounce to '/' so they enter CLMHome
+  if (!authLoading && user && page !== '/' && !publicAllowedWhenLoggedIn.includes(page)) {
+    nav('/')
+    return null
+  }
+
+  // Public Nav only renders for logged-out visitors.
+  // Logged-in users get the CLMHome shell (which has its own top bar) on '/'.
+  const showPublicNav = !authLoading && !user
 
   return (
     <div>
-      {!isLoggedInHome && <Nav nav={nav} page={page} />}
+      {showPublicNav && <Nav nav={nav} page={page} />}
       {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} /> : <Home nav={nav} />)}
       {page === '/import' && <Import nav={nav} />}
       {page === '/dashboard' && <Dashboard nav={nav} />}
