@@ -454,6 +454,11 @@ export default function CertInventory({ user, nav, onIssue }) {
                     ? <span style={{ fontSize:9, fontWeight:500, color:'#0c447c', background:'#e6f1fb', border:'0.5px solid #b5d4f4', borderRadius:3, padding:'2px 6px', letterSpacing:'.3px' }}>RAPIDSSL</span>
                     : <span style={{ fontSize:9, fontWeight:500, color:'#525252', background:'#f1f5f9', border:'0.5px solid #e8edf2', borderRadius:3, padding:'2px 6px', letterSpacing:'.3px' }}>{(cert.cert_type || 'SSL').toUpperCase()}</span>}
                   {cert.is_sandbox && <span style={{ fontSize:9, fontWeight:500, color:'#6d28d9', background:'#f5f3ff', border:'0.5px solid #ddd6fe', borderRadius:3, padding:'2px 6px', letterSpacing:'.3px' }}>SANDBOX</span>}
+                  {cert.install_status === 'success' && (
+                    <span style={{ fontSize:9, fontWeight:500, color:'#047857', background:'#f0fdf4', border:'0.5px solid #bbf7d0', borderRadius:3, padding:'2px 6px', letterSpacing:'.3px' }}>
+                      {cert.install_verified ? '✓ LIVE' : 'INSTALLED'}
+                    </span>
+                  )}
                 </div>
                 <div style={{ textAlign:'right', color: isExpanded ? '#10b981' : '#a3a3a3', display:'flex', justifyContent:'flex-end' }}>
                   {isExpanded ? <ChevronDown size={15}/> : <ChevronRight size={15}/>}

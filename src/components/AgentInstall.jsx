@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Terminal, Copy, Check, CheckCircle, Clock, AlertTriangle, Loader, Server, Shield, Zap } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import CpanelInstall from './CpanelInstall'
 
 const DAEMON_FN  = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
 const AGENT_API  = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent'
@@ -395,57 +396,17 @@ export default function AgentInstall({ cert, userId, onClose }) {
                 </>
               )}
 
-              {/* Shared hosting cPanel fields */}
+              {/* Shared hosting — direct cPanel API install */}
               {hostType === 'shared' && (
-                <>
-                  {cpanelServers.length > 0 && (
-                    <div style={{ marginBottom:14 }}>
-                      <label style={{ fontSize:12, fontWeight:700, color:'var(--text2)', display:'block', marginBottom:8 }}>Saved cPanel Servers</label>
-                      <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
-                        {cpanelServers.map(s => (
-                          <div key={s.id} onClick={() => setSelectedServer(selectedServer?.id===s.id ? null : s)}
-                            style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 14px', borderRadius:10,
-                              border:`2px solid ${selectedServer?.id===s.id?'#d97706':'var(--border)'}`,
-                              background:selectedServer?.id===s.id?'#fffbeb':'white', cursor:'pointer' }}>
-                            <span style={{ fontSize:18 }}>🖥️</span>
-                            <div style={{ flex:1 }}>
-                              <div style={{ fontWeight:700, fontSize:13 }}>{s.nickname}</div>
-                              <div style={{ fontSize:11, color:'var(--text3)', fontFamily:'monospace' }}>{s.username}@{s.host}</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {!selectedServer && (
-                    <div style={{ background:'white', border:'1.5px solid #e2e8f0', borderRadius:10, padding:16, marginBottom:14 }}>
-                      <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
-                        <p style={{ fontWeight:700, fontSize:13, color:'var(--text)', margin:0 }}>cPanel Credentials</p>
-                        <button onClick={() => setShowCpanelHelp(h => !h)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, color:'var(--accent)', fontWeight:600 }}>
-                          {showCpanelHelp ? 'Hide ▲' : 'Where to find? ▼'}
-                        </button>
-                      </div>
-                      {showCpanelHelp && (
-                        <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:8, padding:12, marginBottom:10, fontSize:12, color:'#92400e', lineHeight:1.7 }}>
-                          <strong>Username:</strong> Your cPanel login name.<br/>
-                          <strong>API Token:</strong> cPanel → Manage API Tokens → Create with SSL permissions.
-                        </div>
-                      )}
-                      <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                        <div>
-                          <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>Username</label>
-                          <input value={cpanelUser} onChange={e => setCpanelUser(e.target.value)} placeholder="e.g. johndoe"
-                            style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }} />
-                        </div>
-                        <div>
-                          <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:4 }}>API Token</label>
-                          <input type="password" value={cpanelToken} onChange={e => setCpanelToken(e.target.value)} placeholder="Paste your token"
-                            style={{ width:'100%', fontSize:13, padding:'8px 10px', border:'1.5px solid #e2e8f0', borderRadius:7, fontFamily:'monospace' }} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </>
+                <CpanelInstall
+                  cert={cert}
+                  userId={userId}
+                  onClose={onClose}
+                  onSuccess={() => {
+                    // Close AgentInstall modal on success
+                    setTimeout(onClose, 1500)
+                  }}
+                />
               )}
 
               {error && <div className="alert alert-error" style={{ marginBottom:16, fontSize:12 }}>{error}</div>}
@@ -471,12 +432,7 @@ export default function AgentInstall({ cert, userId, onClose }) {
                   </button>
                 )
               )}
-              {hostType === 'shared' && (
-                <button onClick={handlePrimaryAction} disabled={loading} className="btn btn-primary"
-                  style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px', background:'#059669' }}>
-                  {loading ? <><span className="spinner"/> Preparing...</> : '📥 Download PHP Agent File'}
-                </button>
-              )}
+              {hostType === 'shared' && null}
             </>
           )}
 
