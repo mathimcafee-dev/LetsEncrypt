@@ -666,6 +666,9 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
           <button className="v2-modal-close" onClick={onClose}><X size={16} /></button>
         </div>
         <div className="v2-modal-body">
+          {/* Honeypot inputs — trap browser autofill away from real fields */}
+          <input type="text" name="username" style={{ display: 'none' }} tabIndex={-1} readOnly />
+          <input type="password" name="password" style={{ display: 'none' }} tabIndex={-1} readOnly />
           {!isEdit && (
             <div style={{ marginBottom: 16 }}>
               <label className="v2-label">Server type</label>
@@ -716,6 +719,9 @@ function AddServerModal({ onSave, onClose, userId, editServer }) {
                     <input
                       className="v2-input mono"
                       autoComplete="off"
+                      data-lpignore="true"
+                      data-form-type="other"
+                      name={`server-${f.key}-${Date.now()}`}
                       type={f.type === 'password' && !showField[f.key] ? 'password' : 'text'}
                       placeholder={isEdit && f.type === 'password' && editServer?.credentials_enc
                         ? '(saved — type new value to replace)'
