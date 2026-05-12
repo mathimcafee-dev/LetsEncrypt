@@ -394,7 +394,7 @@ function StepBar({ current }) {
 
 const clean = v => v.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
 
-export default function BuyCertificate({ nav }) {
+export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
   const { user, loading: authLoading } = useAuth()
   const [step, setStep]   = useState('form')
   const [domain, setD]    = useState('')
@@ -732,12 +732,23 @@ export default function BuyCertificate({ nav }) {
                 </div>
                 <div className="ic-done-body">
                   <button className="ic-btn ic-btn-primary ic-btn-full"
-                    onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); nav('/dashboard') }}>
+                    onClick={() => {
+                      sessionStorage.setItem('install_domain', clean(domain))
+                      if (onDashboard) onDashboard()
+                      else nav('/dashboard')
+                    }}>
                     <Server size={15}/> Install on server
                   </button>
                   <div className="ic-row2-btn">
-                    <button className="ic-btn ic-btn-outline" onClick={() => nav('/dashboard')}>View dashboard</button>
-                    <button className="ic-btn ic-btn-outline" onClick={reset} style={{ color:'#64748b' }}>Issue another</button>
+                    <button className="ic-btn ic-btn-outline"
+                      onClick={() => { if (onDashboard) onDashboard(); else nav('/dashboard') }}>
+                      View dashboard
+                    </button>
+                    <button className="ic-btn ic-btn-outline"
+                      onClick={() => { if (onIssueAnother) { reset(); onIssueAnother() } else reset() }}
+                      style={{ color:'#64748b' }}>
+                      Issue another
+                    </button>
                   </div>
                 </div>
               </div>
