@@ -62,7 +62,7 @@ export default function CLMHome({ user, nav }) {
     { icon:Shield, color:'#00b48a', bg:'#ecfdf5', label:'Issue Certificate', desc:'RapidSSL DV', fn:() => nav('/buy') },
     { icon:FileText, color:'#3b82f6', bg:'#eff6ff', label:'Import Certificate', desc:'Bring your own', fn:() => nav('/import') },
     { icon:Activity, color:'#7c3aed', bg:'#f5f3ff', label:'Manage Certs', desc:'View inventory', fn:() => nav('/dashboard') },
-    { icon:Globe, color:'x�0ea5e9', bg:'#f0f9ff', label:'DNS Providers', desc:'uto-validation', fn:() => nav('/dns-providers') },
+    { icon:Globe, color:'#0ea5e9', bg:'#f0f9ff', label:'DNS Providers', desc:'Auto-validation', fn:() => nav('/dns-providers') },
     { icon:Server, color:'#d97706', bg:'#fffbeb', label:'Servers', desc:'VPS and cPanel', fn:() => nav('/dashboard') },
     { icon:Zap, color:'#10b981', bg:'#ecfdf5', label:'Install Cert', desc:'VPS or shared', fn:() => nav('/install') },
   ]
@@ -132,17 +132,17 @@ export default function CLMHome({ user, nav }) {
                   <Icon size={20} color={color} strokeWidth={1.8}/>
                 </div>
                 <div>
-                  <div style={{ fontSize:11, color:'#8492a6', fontWeight:600, textTransform:'uppercase', letterSpacing:'.4px', marginBottom :3 }}>{label}</div>
+                  <div style={{ fontSize:11, color:'#8492a6', fontWeight:600, textTransform:'uppercase', letterSpacing:'.4px', marginBottom:3 }}>{label}</div>
                   <div style={{ fontSize:26, fontWeight:800, letterSpacing:'-.8px', lineHeight:1, color }}>{loading ? '-' : val}</div>
-                  <div style={{ fontSize:10, color:#8492a6, marginTop:3 }}>{sub}</div>
+                  <div style={{ fontSize:10, color:'#8492a6', marginTop:3 }}>{sub}</div>
                 </div>
               </div>
             ))}
           </div>
-          <div style={{ background:'white', borderRadius:10, border:'1px solid #e8edf2', boxShadow:'0 1px 3px rgba(0,0,0,0.04)', overflow:'hidden', marginBottom:20 }}>
+          <div style={{ background:'white', borderRadius:10, border:'1px solid #e8edf2', overflow:'hidden', marginBottom:20 }}>
             <div style={{ padding:'16px 20px 12px', borderBottom:'1px solid #f1f5f9' }}>
               <div style={{ fontSize:13, fontWeight:700, color:'#1a2332' }}>Quick Actions</div>
-              <div style={{ fontSize:11, color:#8492a6, marginTop:2 }}>Common certificate tasks</div>
+              <div style={{ fontSize:11, color:'#8492a6', marginTop:2 }}>Common certificate tasks</div>
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, padding:'16px 20px' }}>
               {ACTIONS.map(({ icon:Icon, color, bg, label, desc, fn }) => (
@@ -158,7 +158,7 @@ export default function CLMHome({ user, nav }) {
               ))}
             </div>
           </div>
-          <div style={{ background:'white', borderRadius:10, border:'1px solid #e8edf2', boxShadow:'0 1px 3px rgba(0,0,0,0.04)', overflow:'hidden' }}>
+          <div style={{ background:'white', borderRadius:10, border:'1px solid #e8edf2', overflow:'hidden' }}>
             <div style={{ padding:'16px 20px 12px', borderBottom:'1px solid #f1f5f9', display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
               <div>
                 <div style={{ fontSize:13, fontWeight:700, color:'#1a2332' }}>Recent Certificates</div>
@@ -170,7 +170,7 @@ export default function CLMHome({ user, nav }) {
             </div>
             {recent.length === 0 ? (
               <div style={{ padding:'40px 20px', textAlign:'center' }}>
-                <div style={{ fontSize:36, marginBottom:12 }}>SSL</div>
+                <div style={{ fontSize:36, marginBottom:12 }}>🛡️</div>
                 <div style={{ fontSize:14, fontWeight:700, color:'#1a2332', marginBottom:6 }}>No certificates yet</div>
                 <div style={{ fontSize:12, color:'#8492a6', marginBottom:16 }}>Issue your first SSL certificate to get started</div>
                 <button style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#00b48a', color:'white', border:'none', borderRadius:8, padding:'10px 20px', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }} onClick={() => nav('/buy')}>
@@ -180,41 +180,35 @@ export default function CLMHome({ user, nav }) {
             ) : (
               <div style={{ overflowX:'auto' }}>
                 <table style={{ width:'100%', borderCollapse:'collapse' }}>
-                  <thead>
-                    <tr>
-                      {['Domain','Status','Expires','Type'].map(h => (
-                        <th key={h} style={{ fontSize:10, fontWeight:700, color:#8492a6, textTransform:'uppercase', letterSpacing:'.5px', padding:'8px 12px', textAlign:'left', background:'#f8fafc', borderBottom:'1px solid #e8edf2' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recent.map(cert => {
-                      const days = daysLeft(cert.expires_at)
-                      const { color, bg, dot, label } = statusOf(days, cert.status)
-                      return (
-                        <tr key={cert.id} onClick={() => nav('/dashboard')} style={{ cursor:'pointer' }}>
-                          <td style={{ padding:'11px 12px', fontSize:12, color:'#1a2332', borderBottom:'1px solid #f1f5f9' }}>
-                            <span style={{ fontFamily:"'SF Mono',monospace", fontWeight:600 }}>{cert.domain}</span>
-                            {cert.is_sandbox && <span style={{ marginLeft:6, fontSize:9, fontWeight:700, color:'#7c3aed', background:'#f5f3ff', border:'1px solid #ddd6fe', borderRadius:3, padding:'1px 5px' }}>SANDBOX</span>}
-                          </td>
-                          <td style={{ padding:'11px 12px', borderBottom:'1px solid #f1f5f9' }}>
-                            <span style={{ display:'inline-flex', alignItems:'center', gap:4, borderRadius:100, padding:'3px 9px', fontSize:10, fontWeight:700, color, background:bg }}>
-                              <span style={{ width:5, height:5, borderRadius:'50%', background:dot, display:'block' }}/>
-                              {label}
-                            </span>
-                          </td>
-                          <td style={{ padding:'11px 12px', fontSize:12, color:#64748b, borderBottom:'1px solid #f1f5f9' }}>
-                            {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '-'}
-                          </td>
-                          <td style={{ padding:'11px 12px', fontSize:12, borderBottom:'1px solid #f1f5f9' }}>
-                            {cert.tss_order_id
-                              ? <span style={{ fontSize:10, fontWeight:700, color:#185FA5, background:'#E6F1FB', border:'.5px solid #B5D4F4', borderRadius:3, padding:'2px 6px' }}>RapidSSL</span>
-                              : <span style={{ color:#64748b }}>{cert.cert_type || 'SSL'}</span>}
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
+                  <thead><tr>{['Domain','Status','Expires','Type'].map(h => (
+                    <th key={h} style={{ fontSize:10, fontWeight:700, color:'#8492a6', textTransform:'uppercase', letterSpacing:'.5px', padding:'8px 12px', textAlign:'left', background:'#f8fafc', borderBottom:'1px solid #e8edf2' }}>{h}</th>
+                  ))}</tr></thead>
+                  <tbody>{recent.map(cert => {
+                    const days = daysLeft(cert.expires_at)
+                    const { color, bg, dot, label } = statusOf(days, cert.status)
+                    return (
+                      <tr key={cert.id} onClick={() => nav('/dashboard')} style={{ cursor:'pointer' }}>
+                        <td style={{ padding:'11px 12px', fontSize:12, color:'#1a2332', borderBottom:'1px solid #f1f5f9' }}>
+                          <span style={{ fontFamily:"'SF Mono',monospace", fontWeight:600 }}>{cert.domain}</span>
+                          {cert.is_sandbox && <span style={{ marginLeft:6, fontSize:9, fontWeight:700, color:'#7c3aed', background:'#f5f3ff', border:'1px solid #ddd6fe', borderRadius:3, padding:'1px 5px' }}>SANDBOX</span>}
+                        </td>
+                        <td style={{ padding:'11px 12px', borderBottom:'1px solid #f1f5f9' }}>
+                          <span style={{ display:'inline-flex', alignItems:'center', gap:4, borderRadius:100, padding:'3px 9px', fontSize:10, fontWeight:700, color, background:bg }}>
+                            <span style={{ width:5, height:5, borderRadius:'50%', background:dot, display:'block' }}/>
+                            {label}
+                          </span>
+                        </td>
+                        <td style={{ padding:'11px 12px', fontSize:12, color:'#64748b', borderBottom:'1px solid #f1f5f9' }}>
+                          {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '-'}
+                        </td>
+                        <td style={{ padding:'11px 12px', fontSize:12, borderBottom:'1px solid #f1f5f9' }}>
+                          {cert.tss_order_id
+                            ? <span style={{ fontSize:10, fontWeight:700, color:'#185FA5', background:'#E6F1FB', border:'.5px solid #B5D4F4', borderRadius:3, padding:'2px 6px' }}>RapidSSL</span>
+                            : <span style={{ color:'#64748b' }}>{cert.cert_type || 'SSL'}</span>}
+                        </td>
+                      </tr>
+                    )
+                  })}</tbody>
                 </table>
               </div>
             )}
