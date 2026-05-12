@@ -18,7 +18,17 @@ export default defineConfig({
       output: {
         entryFileNames: `assets/app-[hash].js`,
         chunkFileNames: `assets/chunk-[hash].js`,
-      }
-    }
-  }
+        // Split vendor libraries into separate cached chunks
+        manualChunks(id) {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) return 'vendor-react'
+          if (id.includes('node_modules/@supabase')) return 'vendor-supabase'
+          if (id.includes('node_modules/lucide-react') || id.includes('node_modules/date-fns')) return 'vendor-ui'
+          if (id.includes('node_modules/')) return 'vendor'
+        },
+      },
+    },
+    // Raise warning threshold — we know about the size
+    chunkSizeWarningLimit: 600,
+  },
 })
+
