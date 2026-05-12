@@ -1449,8 +1449,8 @@ export default function DnsProviders({ nav }) {
   const selSrvAgent = selSrv ? (agents.find(a => a.server_id === selSrv.id) || null) : null
 
   return (
-    <div className="v2-page">
-      <div className="v2-container">
+    <div style={{ background: '#050a14', minHeight: '100vh' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 24px 80px' }}>
         {showAddDns  && <UnifiedSetupModal userId={user?.id} defaultMode="dns"    onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddDns(false)} />}
         {showAddSrv  && <UnifiedSetupModal userId={user?.id} defaultMode="server" onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddSrv(false)} />}
         {showAddBoth && <UnifiedSetupModal userId={user?.id} defaultMode="both"   onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddBoth(false)} />}
@@ -1461,7 +1461,7 @@ export default function DnsProviders({ nav }) {
 
         {/* Unified domain list */}
         <div className="v2-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
-          <div className="v2-card">
+          <div style={{ background: '#0a0f1a', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: 10, overflow: 'hidden' }}>
             {loading ? (
               <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>Loading…</div>
             ) : domainGroups.length === 0 ? (
