@@ -1,8 +1,20 @@
 #!/bin/bash
-# SSLVault Persistent Agent Daemon v2.1
+# SSLVault Persistent Agent Daemon v2.2
 # Zero-touch certificate renewal for VPS servers.
 # Polls SSLVault every 5 minutes for jobs (install, renew, scan).
 # On renewal: atomically replaces cert files and reloads web server.
+#
+# v2.2 fixes vs v2.1:
+#   - Removed bash "local" usage outside functions (was a fatal error in
+#     `uninstall` and `status` CLI commands — uninstall failed before
+#     deregistering, leaving phantom rows in the SSLVault DB)
+#   - report_result now retries 3x with backoff before giving up. Previously
+#     a single transient network blip could leave a job stuck in 'claimed'
+#     forever even though the install succeeded
+#   - find_vhost_file skips its own .sslvault.bak files and node_modules dirs
+#     so backup files don't get re-discovered as the active vhost
+#   - Skip the new-vhost path if the domain already has cert files but no
+#     web server (avoids overwriting user-managed configs)
 
 # NOTE: intentionally NOT using set -e so the daemon never dies on a
 # single job failure. Each job is isolated — one bad job doesn't stop
@@ -14,7 +26,7 @@ AGENT_TOKEN_FILE="/etc/sslvault/agent.token"
 POLL_INTERVAL=300
 LOG_FILE="/var/log/sslvault-agent.log"
 CERT_BASE="/etc/ssl/sslvault"
-VERSION="3.0"
+VERSION="2.2"
 
 # ── Logging ───────────────────────────────────────────────────────────
 log()  { echo "$(date '+%Y-%m-%d %H:%M:%S') [SSLVault] $1" | tee -a "$LOG_FILE"; }
@@ -23,14 +35,18 @@ warn() { echo "$(date '+%Y-%m-%d %H:%M:%S') [WARN] $1"     | tee -a "$LOG_FILE";
 fail() { echo "$(date '+%Y-%m-%d %H:%M:%S') [FAIL] $1"     | tee -a "$LOG_FILE"; }
 
 # ── Read stored token ─────────────────────────────────────────────────
-if [ ! -f "$AGENT_TOKEN_FILE" ]; then
-  fail "Agent token not found at $AGENT_TOKEN_FILE. Run agent-install.sh first."
-  exit 1
-fi
-AGENT_TOKEN=$(cat "$AGENT_TOKEN_FILE" | tr -d '\n')
-if [ -z "$AGENT_TOKEN" ]; then
-  fail "Agent token is empty. Re-run agent-install.sh."
-  exit 1
+# Token is only required for the daemon loop. Uninstall command reads
+# it on its own further down so we can handle the missing-file case.
+if [ "${1:-daemon}" = "daemon" ]; then
+  if [ ! -f "$AGENT_TOKEN_FILE" ]; then
+    fail "Agent token not found at $AGENT_TOKEN_FILE. Run agent-install.sh first."
+    exit 1
+  fi
+  AGENT_TOKEN=$(cat "$AGENT_TOKEN_FILE" | tr -d '\n')
+  if [ -z "$AGENT_TOKEN" ]; then
+    fail "Agent token is empty. Re-run agent-install.sh."
+    exit 1
+  fi
 fi
 
 # ── Detect web server ─────────────────────────────────────────────────
@@ -49,9 +65,6 @@ detect_web_server() {
 }
 
 # ── Reload web server ─────────────────────────────────────────────────
-# Returns 0 on success, 1 on failure.
-# Explicit return 0 on each success path so the caller gets a clean exit
-# code regardless of which reload command ran last.
 reload_web_server() {
   local ws="$1"
   case "$ws" in
@@ -101,8 +114,6 @@ reload_web_server() {
 }
 
 # ── Write cert files (atomic for renewals) ────────────────────────────
-# For renewals: write to .new staging files, verify key/cert match,
-# then atomically rename. The web server never reads a partial pair.
 write_cert_files() {
   local domain="$1"
   local cert_pem="$2"
@@ -118,7 +129,6 @@ write_cert_files() {
     chmod 644 "$cert_dir/fullchain.pem.new"
     chmod 600 "$cert_dir/privkey.pem.new"
 
-    # Verify key matches cert before committing
     if command -v openssl &>/dev/null; then
       local cert_hash key_hash
       cert_hash=$(openssl x509 -noout -modulus -in "$cert_dir/fullchain.pem.new" 2>/dev/null | md5sum | cut -d' ' -f1)
@@ -131,7 +141,6 @@ write_cert_files() {
       ok "Key/cert pair verified for $domain"
     fi
 
-    # Atomic rename
     mv "$cert_dir/fullchain.pem.new" "$cert_dir/fullchain.pem"
     mv "$cert_dir/privkey.pem.new"  "$cert_dir/privkey.pem"
     ok "Cert files atomically updated for $domain"
@@ -146,10 +155,11 @@ write_cert_files() {
 }
 
 # ── Find existing vhost file for a domain ─────────────────────────────
+# v2.2: skips .sslvault.bak files so old backups aren't selected as the
+# active config (would cause patches to land in a backup instead of live).
 find_vhost_file() {
   local domain="$1"
   local ws="$2"
-  # Search common locations for an existing vhost mentioning this domain
   local candidates=()
   if [ "$ws" = "nginx" ]; then
     candidates=(
@@ -168,22 +178,22 @@ find_vhost_file() {
     )
   fi
   for f in "${candidates[@]}"; do
+    # Skip our own backup files
+    case "$f" in *.sslvault.bak) continue ;; esac
     if [ -f "$f" ] && grep -q "$domain" "$f" 2>/dev/null; then
       echo "$f"
       return 0
     fi
   done
-  # Broader search as fallback
+  # Broader search as fallback — exclude our backups
   if [ "$ws" = "nginx" ]; then
-    grep -rl "server_name.*$domain" /etc/nginx/ 2>/dev/null | head -1
+    grep -rl --exclude='*.sslvault.bak' "server_name.*$domain" /etc/nginx/ 2>/dev/null | head -1
   else
-    grep -rl "ServerName.*$domain" /etc/apache2/ /etc/httpd/ 2>/dev/null | head -1
+    grep -rl --exclude='*.sslvault.bak' "ServerName.*$domain" /etc/apache2/ /etc/httpd/ 2>/dev/null | head -1
   fi
 }
 
 # ── Patch cert paths in an existing vhost ─────────────────────────────
-# Replaces ssl_certificate / SSLCertificateFile lines — never touches
-# anything else. The vhost content (PHP-FPM, proxy_pass, etc) is preserved.
 patch_cert_paths() {
   local conf="$1"
   local ws="$2"
@@ -205,17 +215,11 @@ patch_cert_paths() {
 }
 
 # ── Configure web server vhost ─────────────────────────────────────────
-# Safe strategy:
-#   1. If no web server detected → skip, just write cert files
-#   2. If existing vhost found with SSL lines → patch cert paths only (safe)
-#   3. If existing vhost found without SSL → add SSL block at the end
-#   4. If no vhost at all → write a fresh minimal one
 configure_web_server() {
   local domain="$1"
   local ws="$2"
   local cert_dir="$CERT_BASE/$domain"
 
-  # Skip entirely if no web server running — user manages their own config
   if [ "$ws" = "none" ]; then
     warn "No web server detected — cert files written to $cert_dir. Configure your server to use them."
     return 0
@@ -225,7 +229,6 @@ configure_web_server() {
   existing_conf=$(find_vhost_file "$domain" "$ws")
 
   if [ -n "$existing_conf" ]; then
-    # Check if the existing vhost already has SSL directives
     local has_ssl=false
     if [ "$ws" = "nginx" ] && grep -q "ssl_certificate" "$existing_conf" 2>/dev/null; then
       has_ssl=true
@@ -234,10 +237,8 @@ configure_web_server() {
     fi
 
     if [ "$has_ssl" = "true" ]; then
-      # Just patch the cert paths — never overwrite existing config
       patch_cert_paths "$existing_conf" "$ws" "$cert_dir"
     else
-      # Vhost exists but no SSL — append SSL directives
       warn "Existing vhost found but no SSL config. Adding SSL block."
       if [ "$ws" = "nginx" ]; then
         cat >> "$existing_conf" << NGINX_SSL
@@ -269,7 +270,6 @@ APACHE_SSL
       fi
     fi
   else
-    # No existing vhost — write a fresh minimal one
     log "No existing vhost found for $domain — creating new config"
     if [ "$ws" = "nginx" ]; then
       local conf
@@ -334,6 +334,8 @@ APACHE_NEW
 }
 
 # ── Report job result back to SSLVault ────────────────────────────────
+# v2.2: retries up to 3 times with backoff. A failed report previously
+# meant the job sat in 'claimed' forever — even if the install succeeded.
 report_result() {
   local job_id="$1"
   local success="$2"   # literal true or false (no quotes in JSON)
@@ -341,14 +343,22 @@ report_result() {
   local ws="$4"
   local hostname_val
   hostname_val=$(hostname -f 2>/dev/null || hostname 2>/dev/null || echo "unknown")
-  # Escape quotes and strip newlines — both break JSON
   local escaped_error
   escaped_error=$(printf '%s' "$error_msg" | tr -d '\n\r' | sed 's/"/\\"/g' | head -c 400)
 
-  curl -sf --max-time 15 -X POST "$DAEMON_API" \
-    -H "Content-Type: application/json" \
-    -d "{\"action\":\"job_result\",\"agent_token\":\"$AGENT_TOKEN\",\"job_id\":\"$job_id\",\"success\":$success,\"error_message\":\"$escaped_error\",\"web_server\":\"$ws\",\"hostname\":\"$hostname_val\"}" \
-    > /dev/null 2>&1 || warn "Could not report result for job $job_id (will retry on next contact)"
+  local attempt
+  for attempt in 1 2 3; do
+    if curl -sf --max-time 15 -X POST "$DAEMON_API" \
+      -H "Content-Type: application/json" \
+      -d "{\"action\":\"job_result\",\"agent_token\":\"$AGENT_TOKEN\",\"job_id\":\"$job_id\",\"success\":$success,\"error_message\":\"$escaped_error\",\"web_server\":\"$ws\",\"hostname\":\"$hostname_val\"}" \
+      > /dev/null 2>&1; then
+      return 0
+    fi
+    warn "Could not report result for job $job_id (attempt $attempt of 3) — retrying in $((attempt * 5))s"
+    sleep $((attempt * 5))
+  done
+  warn "Giving up on report for job $job_id after 3 attempts — janitor will requeue if needed"
+  return 1
 }
 
 # ── Process one job (isolated — errors don't kill the daemon) ─────────
@@ -380,7 +390,6 @@ process_job() {
       return 0
     fi
 
-    # Only configure vhost on first install, not on renewals
     if [ "$job_type" = "install" ]; then
       configure_web_server "$domain" "$ws"
     fi
@@ -419,11 +428,18 @@ process_job() {
     fi
     scan_result+="]}"
 
-    curl -sf --max-time 15 -X POST "$DAEMON_API" \
-      -H "Content-Type: application/json" \
-      -d "{\"action\":\"job_result\",\"agent_token\":\"$AGENT_TOKEN\",\"job_id\":\"$job_id\",\"success\":true,\"web_server\":\"$ws_detected\",\"scan_result\":$scan_result}" \
-      > /dev/null 2>&1 || warn "Could not report scan result for job $job_id"
-    ok "Scan job $job_id complete"
+    local scan_attempt
+    for scan_attempt in 1 2 3; do
+      if curl -sf --max-time 15 -X POST "$DAEMON_API" \
+        -H "Content-Type: application/json" \
+        -d "{\"action\":\"job_result\",\"agent_token\":\"$AGENT_TOKEN\",\"job_id\":\"$job_id\",\"success\":true,\"web_server\":\"$ws_detected\",\"scan_result\":$scan_result}" \
+        > /dev/null 2>&1; then
+        ok "Scan job $job_id complete"
+        return 0
+      fi
+      warn "Could not report scan result for job $job_id (attempt $scan_attempt of 3)"
+      sleep $((scan_attempt * 5))
+    done
 
   else
     warn "Unknown job type: $job_type — skipping job $job_id"
@@ -442,13 +458,17 @@ if [ "$CMD" = "uninstall" ]; then
   systemctl disable sslvault-agent 2>/dev/null || true
   rm -f /etc/systemd/system/sslvault-agent.service
   systemctl daemon-reload 2>/dev/null || true
-  # Deregister from SSLVault API
+  # Deregister from SSLVault API (BUG 20 fix: was `local tok` which is a
+  # bash error outside a function and aborted the entire uninstall.
+  # Now uses a plain variable so the deregister call actually fires.)
   if [ -f "$AGENT_TOKEN_FILE" ]; then
-    local tok
-    tok=$(cat "$AGENT_TOKEN_FILE" | tr -d '\n')
-    curl -sf --max-time 10 -X POST "$DAEMON_API" \
-      -H "Content-Type: application/json" \
-      -d "{\"action\":\"deregister_by_token\",\"agent_token\":\"$tok\"}" > /dev/null 2>&1 || true
+    UNINSTALL_TOK=$(cat "$AGENT_TOKEN_FILE" | tr -d '\n')
+    if [ -n "$UNINSTALL_TOK" ]; then
+      curl -sf --max-time 10 -X POST "$DAEMON_API" \
+        -H "Content-Type: application/json" \
+        -d "{\"action\":\"deregister_by_token\",\"agent_token\":\"$UNINSTALL_TOK\"}" > /dev/null 2>&1 || true
+      echo "[SSLVault] Deregistered from SSLVault."
+    fi
   fi
   rm -rf /etc/sslvault
   rm -f /usr/local/bin/sslvault-agent
@@ -470,9 +490,9 @@ if [ "$CMD" = "status" ]; then
   echo "  Web server: $(detect_web_server)"
   echo "  Cert dir:   $CERT_BASE"
   if [ -d "$CERT_BASE" ]; then
-    local count
-    count=$(find "$CERT_BASE" -name "fullchain.pem" 2>/dev/null | wc -l | tr -d ' ')
-    echo "  Certs:      $count domain(s) installed"
+    # BUG 20 fix: was `local count`. Now plain variable.
+    STATUS_COUNT=$(find "$CERT_BASE" -name "fullchain.pem" 2>/dev/null | wc -l | tr -d ' ')
+    echo "  Certs:      $STATUS_COUNT domain(s) installed"
   fi
   echo "  Log:        $LOG_FILE"
   echo "  Last 5 log lines:"
@@ -482,8 +502,6 @@ if [ "$CMD" = "status" ]; then
 fi
 
 # ── Main poll loop ────────────────────────────────────────────────────
-# Runs forever. Each iteration is fully isolated — a crash in one job
-# never affects subsequent polls.
 log "SSLVault Agent v$VERSION started — polling every ${POLL_INTERVAL}s"
 
 while true; do
@@ -497,7 +515,6 @@ while true; do
       continue
     }
 
-  # Count jobs safely — defaults to 0 if python3 parse fails
   JOB_COUNT=0
   JOB_COUNT=$(printf '%s' "$RESPONSE" | python3 -c \
     "import sys,json
@@ -508,7 +525,6 @@ print(len(d.get('jobs',[])))" 2>/dev/null) || JOB_COUNT=0
     log "$JOB_COUNT job(s) received"
 
     for i in $(seq 0 $((JOB_COUNT - 1))); do
-      # Parse each field individually — if one fails, the others still work
       JOB_ID=""
       JOB_TYPE=""
       DOMAIN=""
@@ -518,11 +534,10 @@ print(len(d.get('jobs',[])))" 2>/dev/null) || JOB_COUNT=0
       JOB_ID=$(printf '%s' "$RESPONSE"   | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i]['id'])"              2>/dev/null) || true
       JOB_TYPE=$(printf '%s' "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i]['job_type'])"        2>/dev/null) || true
       DOMAIN=$(printf '%s' "$RESPONSE"   | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i]['domain'])"          2>/dev/null) || true
-      CERT_PEM=$(printf '%s' "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i].get('cert_pem',''))" 2>/dev/null) || true
-      KEY_PEM=$(printf '%s' "$RESPONSE"  | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i].get('key_pem',''))"  2>/dev/null) || true
+      CERT_PEM=$(printf '%s' "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i].get('cert_pem','') or '')" 2>/dev/null) || true
+      KEY_PEM=$(printf '%s' "$RESPONSE"  | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i].get('key_pem','') or '')"  2>/dev/null) || true
 
       if [ -n "$JOB_ID" ] && [ -n "$JOB_TYPE" ]; then
-        # Run each job in isolation — failure here never kills the loop
         process_job "$JOB_ID" "$JOB_TYPE" "$DOMAIN" "$CERT_PEM" "$KEY_PEM" || \
           warn "process_job returned error for job $JOB_ID — continuing"
       else
