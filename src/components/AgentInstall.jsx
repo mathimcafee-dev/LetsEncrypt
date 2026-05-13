@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Server, Globe, Copy, Check, RefreshCw, CheckCircle, Shield } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 
-const DAEMON_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
+const DAEMON_FN = 'agent-daemon'
 
 function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
@@ -24,28 +25,31 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
   const [selectedAgent, setSelectedAgent] = useState(null)
   const [dispatching, setDispatching] = useState(false)
   const [dispatchedJobId, setDispatchedJobId] = useState(null)
-  const [jobStatus, setJobStatus] = useState(null) // null | 'queued' | 'claimed' | 'done' | 'failed'
+  const [jobStatus, setJobStatus] = useState(null) // null | 'queued' | 'claimed' | 'success' | 'failed'
   const [jobError, setJobError] = useState('')
   const [error, setError] = useState('')
 
-  // Install command shown when no agents connected
-  const installCmd = userId
-    ? `curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash`
-    : `curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash`
+  // Pairing command (fetched from server when modal opens with no agents)
+  const [pairingCmd, setPairingCmd] = useState('')
+  const [pairingLoading, setPairingLoading] = useState(false)
+  const [pairingError, setPairingError] = useState('')
+  const [serverNickname, setServerNickname] = useState('My Server')
 
+  // Helper: call agent-daemon via supabase.functions.invoke so the user's JWT is included
+  const callDaemon = async (body) => {
+    const { data, error } = await supabase.functions.invoke(DAEMON_FN, { body })
+    if (error) throw error
+    return data
+  }
+
+  // Initial load: list agents
   useEffect(() => {
     if (!userId) return
     ;(async () => {
       try {
-        const res = await fetch(DAEMON_FN, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'list_agents', user_id: userId })
-        })
-        const data = await res.json()
+        const data = await callDaemon({ action: 'list_agents', user_id: userId })
         const list = data.agents || []
         setAgents(list)
-        // FIX: DB stores 'active', not 'online'
         const online = list.find(a => {
           const mins = a.last_seen_at
             ? Math.floor((Date.now() - new Date(a.last_seen_at).getTime()) / 60000)
@@ -53,22 +57,46 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
           return mins < 15
         })
         if (online) setSelectedAgent(online.id)
-      } catch(e) {}
+      } catch(e) { console.error(e) }
     })()
   }, [userId])
+
+  // Auto-fetch pairing command when no agents exist
+  const fetchPairingCmd = async () => {
+    if (!userId) return
+    setPairingLoading(true); setPairingError('')
+    try {
+      const data = await callDaemon({
+        action: 'create_install_command',
+        user_id: userId,
+        nickname: serverNickname || 'My Server',
+      })
+      if (data.ok && data.command) {
+        setPairingCmd(data.command)
+      } else {
+        setPairingError(data.error || 'Failed to generate install command')
+      }
+    } catch(e) {
+      setPairingError(String(e?.message || e))
+    }
+    setPairingLoading(false)
+  }
+
+  // Auto-fetch pairing command first time we enter "no agents" state
+  useEffect(() => {
+    if (hostType === 'server' && agents.length === 0 && !pairingCmd && !pairingLoading && userId) {
+      fetchPairingCmd()
+    }
+    // eslint-disable-next-line
+  }, [hostType, agents.length, userId])
 
   // Poll job status after dispatch
   useEffect(() => {
     if (!dispatchedJobId || !userId) return
-    if (jobStatus === 'done' || jobStatus === 'failed') return
+    if (jobStatus === 'success' || jobStatus === 'failed') return
     const iv = setInterval(async () => {
       try {
-        const res = await fetch(DAEMON_FN, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'status', user_id: userId, job_id: dispatchedJobId })
-        })
-        const d = await res.json()
+        const d = await callDaemon({ action: 'status', user_id: userId, job_id: dispatchedJobId })
         if (d.ok) {
           setJobStatus(d.status)
           if (d.status === 'failed') setJobError(d.error_message || 'Install failed')
@@ -76,32 +104,52 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
       } catch(e) {}
     }, 5000)
     return () => clearInterval(iv)
+    // eslint-disable-next-line
   }, [dispatchedJobId, jobStatus, userId])
+
+  // Also poll for new agents when in "no agents" state (so once user runs the install
+  // command, this modal auto-detects the new server)
+  useEffect(() => {
+    if (hostType !== 'server' || agents.length > 0 || !userId || dispatchedJobId) return
+    const iv = setInterval(async () => {
+      try {
+        const data = await callDaemon({ action: 'list_agents', user_id: userId })
+        const list = data.agents || []
+        if (list.length > 0) {
+          setAgents(list)
+          const online = list.find(a => {
+            const mins = a.last_seen_at
+              ? Math.floor((Date.now() - new Date(a.last_seen_at).getTime()) / 60000)
+              : 999
+            return mins < 15
+          })
+          if (online) setSelectedAgent(online.id)
+        }
+      } catch(e) {}
+    }, 8000)
+    return () => clearInterval(iv)
+    // eslint-disable-next-line
+  }, [hostType, agents.length, userId, dispatchedJobId])
 
   const dispatchToAgent = async () => {
     if (!selectedAgent) { setError('Select an agent first'); return }
     setDispatching(true); setError('')
     try {
-      const res = await fetch(DAEMON_FN, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'dispatch',
-          user_id: userId,
-          agent_id: selectedAgent,
-          cert_id: cert.id,
-          domain: cert.domain,
-          job_type: 'install'
-        })
+      const data = await callDaemon({
+        action: 'dispatch',
+        user_id: userId,
+        agent_id: selectedAgent,
+        cert_id: cert.id,
+        domain: cert.domain,
+        job_type: 'install'
       })
-      const data = await res.json()
       if (data.ok) {
         setDispatchedJobId(data.job_id)
         setJobStatus('queued')
       } else {
         setError(data.error || 'Dispatch failed')
       }
-    } catch(e) { setError(String(e)) }
+    } catch(e) { setError(String(e?.message || e)) }
     setDispatching(false)
   }
 
@@ -155,10 +203,9 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
 
           {hostType === 'server' && (
             <div>
-              {/* Job status feedback after dispatch */}
               {isDispatched ? (
                 <div style={{ textAlign:'center', padding:'20px 0' }}>
-                  {jobStatus === 'done' ? (
+                  {jobStatus === 'success' ? (
                     <>
                       <CheckCircle size={40} color="#0e7fc0" style={{ marginBottom:12 }}/>
                       <div style={{ fontSize:15, fontWeight:600, color:'#0a0a0a', marginBottom:6 }}>Certificate installed</div>
@@ -218,8 +265,9 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                           background: selectedAgent===a.id ? '#f0f9ff' : 'white' }}>
                         <div style={{ width:8, height:8, borderRadius:'50%', flexShrink:0,
                           background: isActive ? '#0e7fc0' : '#e5e7eb' }}/>
-                        <div style={{ flex:1 }}>
-                          <div style={{ fontSize:13, fontWeight:500, color:'#0a0a0a' }}>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#0a0a0a',
+                            whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
                             {a.hostname || a.nickname || 'Agent ' + a.id.slice(0,8)}
                           </div>
                           <div style={{ fontSize:11, color:'#94a3b8' }}>
@@ -247,19 +295,51 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                     No agent connected yet. Run this on your server to install the SSLVault agent.
                     Once connected, cert installs and renewals are fully automatic.
                   </div>
+
+                  {/* Nickname field — lets user label the server */}
+                  <div style={{ marginBottom:10 }}>
+                    <label style={{ fontSize:11, fontWeight:500, color:'#525252', display:'block', marginBottom:4 }}>
+                      Server label (shows in your dashboard)
+                    </label>
+                    <input
+                      type="text"
+                      value={serverNickname}
+                      onChange={e => setServerNickname(e.target.value)}
+                      onBlur={() => { if (serverNickname) fetchPairingCmd() }}
+                      placeholder="My Production Server"
+                      style={{ width:'100%', padding:'8px 10px', fontSize:13, borderRadius:6,
+                        border:'0.5px solid #e2e8f0', fontFamily:'inherit', boxSizing:'border-box' }}
+                    />
+                  </div>
+
                   <div style={{ background:'#0f172a', borderRadius:8, overflow:'hidden', marginBottom:14 }}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center',
                       padding:'8px 12px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
-                      <span style={{ fontSize:10, color:'#475569' }}>bash</span>
-                      <CopyBtn text={installCmd}/>
+                      <span style={{ fontSize:10, color:'#475569' }}>bash · paste on your server as root</span>
+                      {pairingCmd && <CopyBtn text={pairingCmd}/>}
                     </div>
-                    <pre style={{ margin:0, padding:'12px 14px', color:'#e2e8f0', fontSize:12,
-                      fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all' }}>
-                      {installCmd}
+                    <pre style={{ margin:0, padding:'12px 14px', color:'#e2e8f0', fontSize:11,
+                      fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all',
+                      maxHeight:160, overflow:'auto' }}>
+                      {pairingLoading
+                        ? 'Generating one-time install command…'
+                        : pairingError
+                          ? `Error: ${pairingError}`
+                          : pairingCmd || 'Click below to generate a command'}
                     </pre>
                   </div>
-                  <div style={{ fontSize:11, color:'#94a3b8', lineHeight:1.7 }}>
-                    After install, this modal will auto-detect your server. Then click <strong style={{ color:'#525252' }}>Install</strong> again to deploy the certificate.
+
+                  {!pairingCmd && !pairingLoading && (
+                    <button onClick={fetchPairingCmd} style={{ width:'100%', background:'#0e7fc0',
+                      color:'white', border:'none', borderRadius:7, padding:'10px',
+                      fontSize:13, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+                      Generate install command
+                    </button>
+                  )}
+
+                  <div style={{ fontSize:11, color:'#94a3b8', lineHeight:1.7, marginTop:12 }}>
+                    After install, this dialog will auto-detect your server. Then click <strong style={{ color:'#525252' }}>Install on this server</strong> to deploy the certificate.
+                    The token in the command is single-use and tied to your account.
                   </div>
                 </div>
               )}
