@@ -4,6 +4,18 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import '../styles/design-v2.css'
 
+function useIsMobile(breakpoint = 760) {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= breakpoint : false
+  )
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= breakpoint)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [breakpoint])
+  return isMobile
+}
+
 function useLiveStats() {
   const [count, setCount] = useState(null)
   useEffect(() => {
@@ -24,12 +36,13 @@ const PLATFORMS = ['Nginx','Apache','cPanel','Plesk','Node.js','Docker','Cloudfl
 
 export default function Home({ nav }) {
   const count = useLiveStats()
+  const isMobile = useIsMobile()
 
   return (
     <div style={{ background:'#fafaf9', fontFamily:"'Segoe UI',-apple-system,system-ui,sans-serif" }}>
 
-      {/* ── HERO ─────────────────────────────────────────────────── */}
-      <section style={{ background:'#0a0a0a', padding:'80px 24px 72px', position:'relative', overflow:'hidden' }}>
+      {/* ── HERO ─────────────────────────────────────────────────────── */}
+      <section style={{ background:'#0a0a0a', padding: isMobile ? '52px 18px 48px' : '80px 24px 72px', position:'relative', overflow:'hidden' }}>
         {/* Grid texture */}
         <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px)', backgroundSize:'48px 48px', pointerEvents:'none' }}/>
         {/* Green glow */}
@@ -37,21 +50,21 @@ export default function Home({ nav }) {
 
         <div style={{ maxWidth:1100, margin:'0 auto', position:'relative' }}>
           {/* Badge */}
-          <div style={{ display:'inline-flex', alignItems:'center', gap:7, background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.25)', borderRadius:100, padding:'5px 14px', marginBottom:28 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:7, background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.25)', borderRadius:100, padding:'5px 14px', marginBottom: isMobile ? 20 : 28 }}>
             <span style={{ width:6, height:6, borderRadius:'50%', background:'#0e7fc0', display:'block', boxShadow:'0 0 0 2px rgba(16,185,129,0.3)' }}/>
             <span style={{ fontSize:11, fontWeight:600, color:'#3b82f6', letterSpacing:'0.2px' }}>Certificate Lifecycle Management Platform</span>
           </div>
 
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 420px', gap:64, alignItems:'center' }}>
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 420px', gap: isMobile ? 32 : 64, alignItems:'center' }}>
             {/* Left: text */}
             <div>
-              <h1 style={{ fontSize:'clamp(36px,4.5vw,54px)', fontWeight:800, color:'white', lineHeight:1.1, letterSpacing:'-1.5px', margin:'0 0 6px' }}>
+              <h1 style={{ fontSize: isMobile ? 'clamp(32px,7vw,42px)' : 'clamp(36px,4.5vw,54px)', fontWeight:800, color:'white', lineHeight:1.1, letterSpacing:'-1.5px', margin:'0 0 6px' }}>
                 All your SSL certs.
               </h1>
-              <h1 style={{ fontSize:'clamp(36px,4.5vw,54px)', fontWeight:800, color:'#0e7fc0', lineHeight:1.1, letterSpacing:'-1.5px', margin:'0 0 24px' }}>
+              <h1 style={{ fontSize: isMobile ? 'clamp(32px,7vw,42px)' : 'clamp(36px,4.5vw,54px)', fontWeight:800, color:'#0e7fc0', lineHeight:1.1, letterSpacing:'-1.5px', margin:'0 0 24px' }}>
                 One platform.
               </h1>
-              <p style={{ fontSize:16, color:'#9ca3af', lineHeight:1.75, maxWidth:460, marginBottom:36 }}>
+              <p style={{ fontSize: isMobile ? 15 : 16, color:'#9ca3af', lineHeight:1.75, maxWidth:460, marginBottom: isMobile ? 28 : 36 }}>
                 Issue trusted RapidSSL certificates, monitor expiry across every domain, and automate renewal and deployment to your servers — all from a single dashboard.
               </p>
               <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:32 }}>
@@ -123,34 +136,46 @@ export default function Home({ nav }) {
         </div>
       </section>
 
-      {/* ── STATS BAND ───────────────────────────────────────────── */}
+      {/* ── STATS BAND ─────────────────────────────────────────────────── */}
       <section style={{ background:'white', borderBottom:'0.5px solid #f0f0f0' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)' }}>
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)' }}>
             {[
               { v: count != null ? count.toLocaleString() : '100+', l:'Certificates managed', c:'#0e7fc0' },
               { v:'~5min', l:'Issuance time', c:'#2563eb' },
               { v:'99.9%', l:'Browser trust', c:'#7c3aed' },
               { v:'A+', l:'SSL Labs grade', c:'#0a0a0a' },
-            ].map(({ v, l, c }, i) => (
-              <div key={l} style={{ padding:'24px 0', textAlign:'center', borderRight: i < 3 ? '0.5px solid #f0f0f0' : 'none', borderTop:`2.5px solid ${c}` }}>
-                <div style={{ fontSize:28, fontWeight:800, color:'#0a0a0a', letterSpacing:'-0.8px' }}>{v}</div>
-                <div style={{ fontSize:12, color:'#737373', marginTop:4, fontWeight:500 }}>{l}</div>
-              </div>
-            ))}
+            ].map(({ v, l, c }, i) => {
+              const isLastDesktop = i === 3
+              const isMobileRightCol = isMobile && i % 2 === 1
+              const isMobileBottomRow = isMobile && i >= 2
+              const rightBorder = isMobile
+                ? (isMobileRightCol ? 'none' : '0.5px solid #f0f0f0')
+                : (isLastDesktop ? 'none' : '0.5px solid #f0f0f0')
+              const bottomBorder = isMobile && !isMobileBottomRow ? '0.5px solid #f0f0f0' : 'none'
+              return (
+                <div key={l} style={{ padding: isMobile ? '20px 0' : '24px 0', textAlign:'center',
+                  borderRight: rightBorder,
+                  borderBottom: bottomBorder,
+                  borderTop:`2.5px solid ${c}` }}>
+                  <div style={{ fontSize: isMobile ? 24 : 28, fontWeight:800, color:'#0a0a0a', letterSpacing:'-0.8px' }}>{v}</div>
+                  <div style={{ fontSize: isMobile ? 11 : 12, color:'#737373', marginTop:4, fontWeight:500, padding: isMobile ? '0 8px' : 0 }}>{l}</div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* ── FOUR PILLARS ─────────────────────────────────────────── */}
-      <section id="features" style={{ padding:'80px 24px', background:'#fafaf9', scrollMarginTop:72 }}>
+      {/* ── FOUR PILLARS ────────────────────────────────────────────────── */}
+      <section id="features" style={{ padding: isMobile ? '56px 18px' : '80px 24px', background:'#fafaf9', scrollMarginTop:72 }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <div style={{ textAlign:'center', marginBottom:48 }}>
+          <div style={{ textAlign:'center', marginBottom: isMobile ? 32 : 48 }}>
             <div style={{ fontSize:11, fontWeight:700, color:'#0e7fc0', textTransform:'uppercase', letterSpacing:'1px', marginBottom:10 }}>Full CLM Platform</div>
-            <h2 style={{ fontSize:30, fontWeight:800, color:'#0a0a0a', letterSpacing:'-0.7px', marginBottom:12 }}>Everything for SSL lifecycle management</h2>
-            <p style={{ fontSize:15, color:'#737373', maxWidth:500, margin:'0 auto', lineHeight:1.7 }}>From first issuance to zero-touch renewal — one platform for every stage of the certificate lifecycle.</p>
+            <h2 style={{ fontSize: isMobile ? 24 : 30, fontWeight:800, color:'#0a0a0a', letterSpacing:'-0.7px', marginBottom:12, lineHeight:1.2 }}>Everything for SSL lifecycle management</h2>
+            <p style={{ fontSize: isMobile ? 14 : 15, color:'#737373', maxWidth:500, margin:'0 auto', lineHeight:1.7 }}>From first issuance to zero-touch renewal — one platform for every stage of the certificate lifecycle.</p>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12 }}>
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4,1fr)', gap:12 }}>
             {PILLARS.map(({ icon:Icon, color, title, sub }) => (
               <div key={title} style={{ background:'white', border:'0.5px solid #e5e5e5', borderRadius:12, padding:'24px 20px', borderTop:`3px solid ${color}`, boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
                 <div style={{ width:38, height:38, borderRadius:9, background:`${color}14`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:14 }}>
@@ -164,8 +189,8 @@ export default function Home({ nav }) {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS — DARK TERMINAL ─────────────────────────── */}
-      <section style={{ padding:'0 24px 80px', background:'#fafaf9' }}>
+      {/* ── HOW IT WORKS — DARK TERMINAL ────────────────────────── */}
+      <section style={{ padding: isMobile ? '0 18px 56px' : '0 24px 80px', background:'#fafaf9' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <div style={{ background:'#0d1117', borderRadius:14, overflow:'hidden', border:'1px solid #21262d' }}>
             {/* Terminal header */}
@@ -175,27 +200,37 @@ export default function Home({ nav }) {
               </div>
               <span style={{ fontSize:11, color:'#484f58', fontFamily:'monospace', marginLeft:4 }}>certificate-workflow.sh</span>
             </div>
-            <div style={{ padding:'36px 40px' }}>
-              <div style={{ fontSize:11, color:'#0e7fc0', fontFamily:'monospace', letterSpacing:'0.5px', marginBottom:32 }}>
+            <div style={{ padding: isMobile ? '24px 20px' : '36px 40px' }}>
+              <div style={{ fontSize:11, color:'#0e7fc0', fontFamily:'monospace', letterSpacing:'0.5px', marginBottom: isMobile ? 20 : 32 }}>
                 # SSLVault — Complete certificate lifecycle in 4 steps
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:20, position:'relative' }}>
-                <div style={{ position:'absolute', top:18, left:'calc(12.5% + 14px)', right:'calc(12.5% + 14px)', height:'1px', background:'rgba(255,255,255,0.06)' }}/>
+              <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4,1fr)', gap: isMobile ? 22 : 20, position:'relative' }}>
+                {!isMobile && (
+                  <div style={{ position:'absolute', top:18, left:'calc(12.5% + 14px)', right:'calc(12.5% + 14px)', height:'1px', background:'rgba(255,255,255,0.06)' }}/>
+                )}
                 {[
                   { n:'01', color:'#0e7fc0', label:'Issue', desc:'Place order via TheSSLStore · DNS DV auto-validated · Cert issued in ~5 min' },
                   { n:'02', color:'#2563eb', label:'Validate', desc:'SSLVault auto-adds DNS TXT to Vercel or Cloudflare · no manual action' },
                   { n:'03', color:'#7c3aed', label:'Install', desc:'Push to Nginx/Apache via agent daemon or SSH Push · zero-downtime reload' },
                   { n:'04', color:'#f59e0b', label:'Renew', desc:'Auto-renew runs 14 days before expiry · repeats forever' },
                 ].map(({ n, color, label, desc }) => (
-                  <div key={n} style={{ textAlign:'center', position:'relative', zIndex:1 }}>
-                    <div style={{ width:36, height:36, borderRadius:'50%', background:'rgba(255,255,255,0.04)', border:`1.5px solid ${color}`, color, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:11, fontWeight:700, fontFamily:'monospace' }}>{n}</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:'white', marginBottom:6 }}>{label}</div>
-                    <div style={{ fontSize:11, color:'#6b7280', lineHeight:1.65 }}>{desc}</div>
+                  <div key={n} style={{
+                    textAlign: isMobile ? 'left' : 'center',
+                    position:'relative', zIndex:1,
+                    display: isMobile ? 'flex' : 'block',
+                    alignItems: isMobile ? 'flex-start' : undefined,
+                    gap: isMobile ? 14 : undefined,
+                  }}>
+                    <div style={{ width:36, height:36, borderRadius:'50%', background:'rgba(255,255,255,0.04)', border:`1.5px solid ${color}`, color, display:'flex', alignItems:'center', justifyContent:'center', margin: isMobile ? '0' : '0 auto 16px', fontSize:11, fontWeight:700, fontFamily:'monospace', flexShrink:0 }}>{n}</div>
+                    <div style={{ flex: isMobile ? 1 : undefined }}>
+                      <div style={{ fontSize:13, fontWeight:700, color:'white', marginBottom:6 }}>{label}</div>
+                      <div style={{ fontSize:11, color:'#6b7280', lineHeight:1.65 }}>{desc}</div>
+                    </div>
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop:36, paddingTop:28, borderTop:'1px solid #21262d', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:12 }}>
-                <span style={{ fontSize:12, color:'#484f58', fontFamily:'monospace' }}>$ sslvault issue --domain yourdomain.com</span>
+              <div style={{ marginTop: isMobile ? 24 : 36, paddingTop: isMobile ? 20 : 28, borderTop:'1px solid #21262d', display:'flex', justifyContent: isMobile ? 'center' : 'space-between', alignItems:'center', flexWrap:'wrap', gap:12 }}>
+                {!isMobile && <span style={{ fontSize:12, color:'#484f58', fontFamily:'monospace' }}>$ sslvault issue --domain yourdomain.com</span>}
                 <button onClick={() => nav('/buy')}
                   style={{ background:'#0e7fc0', color:'white', border:'none', borderRadius:7, padding:'10px 20px', fontSize:13, fontWeight:700, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:7, fontFamily:'inherit' }}>
                   Issue Your Certificate <ArrowRight size={13}/>
@@ -206,8 +241,8 @@ export default function Home({ nav }) {
         </div>
       </section>
 
-      {/* ── PLATFORMS ────────────────────────────────────────────── */}
-      <section style={{ padding:'0 24px 80px' }}>
+      {/* ── PLATFORMS ──────────────────────────────────────────────────── */}
+      <section style={{ padding: isMobile ? '0 18px 56px' : '0 24px 80px' }}>
         <div style={{ maxWidth:1100, margin:'0 auto', textAlign:'center' }}>
           <div style={{ fontSize:11, fontWeight:700, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'1px', marginBottom:16 }}>Works with every platform</div>
           <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'center' }}>
@@ -218,16 +253,16 @@ export default function Home({ nav }) {
         </div>
       </section>
 
-      {/* ── CTA ──────────────────────────────────────────────────── */}
-      <section style={{ padding:'0 24px 96px' }}>
+      {/* ── CTA ────────────────────────────────────────────────────────── */}
+      <section style={{ padding: isMobile ? '0 18px 64px' : '0 24px 96px' }}>
         <div style={{ maxWidth:700, margin:'0 auto' }}>
-          <div style={{ background:'#0a0a0a', borderRadius:16, padding:'56px 48px', textAlign:'center', position:'relative', overflow:'hidden' }}>
+          <div style={{ background:'#0a0a0a', borderRadius:16, padding: isMobile ? '40px 24px' : '56px 48px', textAlign:'center', position:'relative', overflow:'hidden' }}>
             <div style={{ position:'absolute', top:-80, left:'50%', transform:'translateX(-50%)', width:500, height:300, background:'radial-gradient(ellipse,rgba(16,185,129,0.12) 0%,transparent 65%)', pointerEvents:'none' }}/>
             <div style={{ position:'relative' }}>
               <div style={{ width:52, height:52, background:'rgba(16,185,129,0.12)', border:'1px solid rgba(16,185,129,0.25)', borderRadius:13, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
                 <Shield size={24} color='#0e7fc0'/>
               </div>
-              <h2 style={{ fontSize:26, fontWeight:800, color:'white', letterSpacing:'-0.6px', marginBottom:12 }}>Take control of your certificates</h2>
+              <h2 style={{ fontSize: isMobile ? 22 : 26, fontWeight:800, color:'white', letterSpacing:'-0.6px', marginBottom:12, lineHeight:1.2 }}>Take control of your certificates</h2>
               <p style={{ color:'#6b7280', fontSize:14, maxWidth:400, margin:'0 auto 32px', lineHeight:1.7 }}>
                 One dashboard for every domain, every CA, every server. Trusted by PKI professionals.
               </p>
@@ -244,11 +279,11 @@ export default function Home({ nav }) {
         </div>
       </section>
 
-      {/* ── FOOTER ───────────────────────────────────────────────── */}
-      <footer style={{ borderTop:'0.5px solid #e5e5e5', background:'white', padding:'40px 24px 28px' }}>
+      {/* ── FOOTER ────────────────────────────────────────────────────── */}
+      <footer style={{ borderTop:'0.5px solid #e5e5e5', background:'white', padding: isMobile ? '32px 18px 24px' : '40px 24px 28px' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1.3fr 1fr 1fr 1fr 1fr', gap:32, marginBottom:32 }}>
-            <div>
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1.3fr 1fr 1fr 1fr 1fr', gap: isMobile ? 24 : 32, marginBottom: isMobile ? 24 : 32 }}>
+            <div style={{ gridColumn: isMobile ? '1 / -1' : 'auto' }}>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
                 <div style={{ width:28, height:28, background:'#0a0a0a', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}><Shield size={13} color='white'/></div>
                 <span style={{ fontSize:14, fontWeight:700, color:'#0a0a0a' }}>SSL<span style={{ color:'#0e7fc0' }}>Vault</span></span>
