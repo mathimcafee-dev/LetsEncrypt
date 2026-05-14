@@ -12,12 +12,34 @@ export default function Auth({ nav }) {
   const [error, setError]       = useState('')
   const [message, setMessage]   = useState('')
 
+  // Read invite token from URL — e.g. /auth?invite=abc123
+  const inviteToken = new URLSearchParams(window.location.search).get('invite')
+
+  // If invite token present, default to sign-up mode
+  useEffect(() => {
+    if (inviteToken) setIsSignUp(true)
+  }, [inviteToken])
+
+  async function routeAfterLogin() {
+    try {
+      const { data } = await supabase.functions.invoke('account-manage', {
+        body: { action: 'get_my_account' }
+      })
+      const role = data?.account?.role
+      if (role === 'master_admin') nav('/')
+      else if (role === 'sub_admin') nav('/reseller')
+      else nav('/portal')
+    } catch {
+      nav('/')
+    }
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) nav('/dashboard')
+      if (data.session) routeAfterLogin()
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) nav('/dashboard')
+      if (session) routeAfterLogin()
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -29,6 +51,16 @@ export default function Auth({ nav }) {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
+        // If invite token present, accept it after signup
+        if (inviteToken) {
+          await new Promise(r => setTimeout(r, 1500))
+          const { data: sessionData } = await supabase.auth.getSession()
+          if (sessionData?.session) {
+            await supabase.functions.invoke('account-manage', {
+              body: { action: 'accept_invite', token: inviteToken }
+            })
+          }
+        }
         setMessage('Check your email to confirm your account.')
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -131,10 +163,10 @@ export default function Auth({ nav }) {
               <div>
                 <div style={{ fontSize:16, fontWeight:700, color:'var(--v2-text)',
                                letterSpacing:'-0.3px' }}>
-                  {isSignUp ? 'Create your account' : 'Sign in to SSLVault'}
+                  {isSignUp ? (inviteToken ? 'Accept your invitation' : 'Create your account') : 'Sign in to SSLVault'}
                 </div>
                 <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>
-                  {isSignUp ? 'Start issuing certificates for free' : 'Welcome back'}
+                  {isSignUp ? (inviteToken ? 'You have been invited to SSLVault' : 'Start issuing certificates for free') : 'Welcome back'}
                 </div>
               </div>
             </div>
