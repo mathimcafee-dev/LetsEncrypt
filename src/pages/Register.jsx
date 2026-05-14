@@ -39,17 +39,18 @@ export default function Register({ nav }) {
       })
       if (signupErr) throw signupErr
 
-      // 2. Create accounts row via anon key — self_register handles auth internally
-      // Pass email so edge fn can look up the user server-side
-      const { data: regData, error: accountErr } = await supabase.functions.invoke('account-manage', {
-        body: {
-          action: 'self_register',
-          company_name: form.company_name,
-          email: form.email,
-        }
-      })
-      if (accountErr) throw new Error('Account setup failed. Please try again.')
-      if (regData?.error) throw new Error(regData.error)
+      // 2. Create accounts row — retry up to 3 times to handle Supabase user propagation delay
+      let regData = null
+      let lastErr = null
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (attempt > 0) await new Promise(r => setTimeout(r, 1500))
+        const { data, error } = await supabase.functions.invoke('account-manage', {
+          body: { action: 'self_register', company_name: form.company_name, email: form.email }
+        })
+        if (!error && !data?.error) { regData = data; break }
+        lastErr = data?.error || error?.message || 'Account setup failed'
+      }
+      if (!regData) throw new Error(lastErr || 'Account setup failed. Please try again.')
 
       setStep('pending')
     } catch (e) {

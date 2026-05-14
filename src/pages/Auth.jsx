@@ -6,13 +6,17 @@ import '../styles/design-v2.css'
 export default function Auth({ nav }) {
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [isSignUp, setIsSignUp] = useState(false)
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [showPw, setShowPw]     = useState(false)
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
   const [message, setMessage]   = useState('')
-  // settingPassword: true when user arrived via invite link and needs to set a password
-  const [settingPassword, setSettingPassword] = useState(false)
+  // Mode: 'login' | 'set_password' (invite landing)
+  const [mode, setMode]         = useState('login')
+
+  // Detect invite session from URL hash (Supabase puts access_token + type=invite)
+  const hashParams = new URLSearchParams(window.location.hash.replace('#', ''))
+  const isInviteHash = hashParams.get('type') === 'invite' || hashParams.get('type') === 'signup'
 
   async function routeAfterLogin() {
     try {
@@ -31,52 +35,66 @@ export default function Auth({ nav }) {
   }
 
   useEffect(() => {
+    // If invite hash present, session is already established by Supabase
+    // Show set-password screen immediately
+    if (isInviteHash) {
+      setMode('set_password')
+      return
+    }
+
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        // If session came from an invite link, show set-password screen instead of routing
-        const hash = window.location.hash
-        const isInviteSession = hash.includes('type=invite') || hash.includes('type=recovery')
-        if (isInviteSession) {
-          setSettingPassword(true)
-          return
-        }
-        routeAfterLogin()
-      }
+      if (data.session) routeAfterLogin()
     })
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setSettingPassword(true)
+      // SIGNED_IN from invite magic link — show set-password, don't route yet
+      if (event === 'SIGNED_IN' && isInviteHash) {
+        setMode('set_password')
         return
       }
-      if (session && !settingPassword) routeAfterLogin()
+      if (event === 'PASSWORD_RECOVERY') {
+        setMode('set_password')
+        return
+      }
+      if (event === 'SIGNED_IN' && mode !== 'set_password') {
+        routeAfterLogin()
+      }
+      if (event === 'USER_UPDATED') {
+        routeAfterLogin()
+      }
     })
     return () => subscription.unsubscribe()
   }, [])
 
   const handleSubmit = async () => {
+    if (mode === 'set_password') {
+      if (!password) { setError('Please enter a password'); return }
+      if (password.length < 8) { setError('Password must be at least 8 characters'); return }
+      if (password !== confirmPassword) { setError('Passwords do not match'); return }
+      setError(''); setLoading(true)
+      try {
+        const { error } = await supabase.auth.updateUser({ password })
+        if (error) throw error
+        // USER_UPDATED event will fire and call routeAfterLogin
+      } catch (err) { setError(err.message) }
+      setLoading(false)
+      return
+    }
+
     if (!email || !password) { setError('Please enter your email and password'); return }
     setError(''); setLoading(true)
     try {
-      if (settingPassword) {
-        // User arrived via invite — set their password then route by role
-        const { error } = await supabase.auth.updateUser({ password })
-        if (error) throw error
-        await routeAfterLogin()
-      } else if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password })
-        if (error) throw error
-        setMessage('Check your email to confirm your account.')
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) throw error
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
     } catch (err) {
       setError(err.message)
     }
     setLoading(false)
   }
 
-  const toggle = () => { setIsSignUp(v => !v); setError(''); setMessage('') }
+  // isSignUp kept for UI toggle compatibility but signup redirects to /register
+  const isSignUp = false
+  const toggle = () => { nav('/register') }
 
   const perks = [
     { icon:<Zap size={15} />,    color:'var(--v2-amber)',       title:'Unlimited certificates',   desc:'No cap on domains or issuances — ever.' },
@@ -167,16 +185,16 @@ export default function Auth({ nav }) {
               <div>
                 <div style={{ fontSize:16, fontWeight:700, color:'var(--v2-text)',
                                letterSpacing:'-0.3px' }}>
-                  {settingPassword ? 'Set your password' : isSignUp ? 'Create your account' : 'Sign in to SSLVault'}
+                  {mode === 'set_password' ? 'Set your password' : 'Sign in to SSLVault'}
                 </div>
                 <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>
-                  {settingPassword ? 'Choose a password to activate your account' : isSignUp ? 'Start issuing certificates for free' : 'Welcome back'}
+                  {mode === 'set_password' ? 'Choose a password to activate your account' : 'Welcome back'}
                 </div>
               </div>
             </div>
 
             {/* Email — hidden when setting password on invite (already authenticated) */}
-            {!settingPassword && <div style={{ marginBottom:14 }}>
+            {mode !== 'set_password' && <div style={{ marginBottom:14 }}>
               <label className="v2-label">Email address</label>
               <input
                 className="v2-input"
@@ -209,10 +227,25 @@ export default function Auth({ nav }) {
                   {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
-              {isSignUp && (
-                <div className="v2-label-help">Minimum 8 characters recommended.</div>
+                {mode === 'set_password' && (
+                <div className="v2-label-help">Minimum 8 characters.</div>
               )}
             </div>
+
+            {/* Confirm password — only shown in set_password mode */}
+            {mode === 'set_password' && (
+              <div style={{ marginBottom:20 }}>
+                <label className="v2-label">Confirm password</label>
+                <input
+                  className="v2-input"
+                  type={showPw ? 'text' : 'password'}
+                  placeholder="Repeat password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                />
+              </div>
+            )}
 
             {/* Error / success */}
             {error && (
@@ -232,19 +265,21 @@ export default function Auth({ nav }) {
               style={{ width:'100%', justifyContent:'center',
                         padding:'12px', fontSize:14, marginBottom:16 }}>
               {loading
-                ? <><RefreshCw size={13} className="spin" /> {isSignUp ? 'Creating account…' : 'Signing in…'}</>
-                : <>{isSignUp ? 'Create free account' : 'Sign in'} <ArrowRight size={13} /></>}
+                ? <><RefreshCw size={13} className="spin" /> {mode === 'set_password' ? 'Setting password…' : 'Signing in…'}</>
+                : <>{mode === 'set_password' ? 'Set password & continue' : 'Sign in'} <ArrowRight size={13} /></>}
             </button>
 
             {/* Toggle */}
             <div style={{ textAlign:'center', fontSize:13, color:'var(--v2-text-3)' }}>
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-              <button onClick={toggle}
+              {mode !== 'set_password' && (<>
+              Are you a reseller?{' '}
+              <button onClick={() => nav('/register')}
                 style={{ background:'none', border:'none', cursor:'pointer',
                           color:'var(--v2-text)', fontWeight:600, fontSize:13,
                           padding:0, textDecoration:'underline', textUnderlineOffset:2 }}>
-                {isSignUp ? 'Sign in' : 'Create one free'}
+                Register here
               </button>
+              </>)}
             </div>
           </div>
 

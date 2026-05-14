@@ -54,18 +54,29 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Load account role from accounts table
+  // Load account role from accounts table and route accordingly
   async function loadAccount(u) {
     try {
       const { data, error } = await supabase.functions.invoke('account-manage', {
         body: { action: 'get_my_account' }
       })
       if (!error && data?.account) {
-        setAccount(data.account)
+        const acct = data.account
+        setAccount(acct)
+
         // Check for active impersonation session in sessionStorage
         const imp = sessionStorage.getItem('impersonation')
         if (imp) {
           try { setImpersonation(JSON.parse(imp)) } catch {}
+        }
+
+        // Route non-admin roles away from '/' (which renders CLMHome)
+        const currentPage = window.location.pathname
+        if (currentPage === '/') {
+          if (acct.status === 'pending') { nav('/pending'); return }
+          if (acct.role === 'sub_reseller') { nav('/reseller'); return }
+          if (acct.role === 'end_customer') { nav('/portal'); return }
+          // master_admin stays on '/' (CLMHome)
         }
       }
     } catch {}
