@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import {
   Shield, Plus, FileText, Globe, Server,
   Download, BookOpen, Settings, LogOut,
-  Layout, Key, AlertTriangle, CheckCircle, Clock
+  Layout, AlertTriangle, CheckCircle, Clock, FileInput
 } from 'lucide-react'
 import BuyCertificate from './BuyCertificate'
 import CertInventory from './CertInventory'
@@ -12,7 +12,7 @@ import ServersPage from './Servers'
 import SettingsPage from './SettingsPage'
 import Install from './Install'
 import KnowledgeBase from './KnowledgeBase'
-import KeyLocker from './KeyLocker'
+import Import from './Import'
 import '../styles/design-v2.css'
 
 const NAV = '#0d3c6e'
@@ -24,10 +24,10 @@ const NAV_SECTIONS = [
   {
     label: 'Main',
     items: [
-      { id: 'dashboard', label: 'Dashboard',         Icon: Layout   },
-      { id: 'issue',     label: 'Issue Certificate', Icon: Plus     },
-      { id: 'certs',     label: 'My Certificates',   Icon: FileText },
-      { id: 'keylocker', label: 'KeyLocker',          Icon: Key      },
+      { id: 'dashboard', label: 'Dashboard',            Icon: Layout    },
+      { id: 'issue',     label: 'Issue Certificate',    Icon: Plus      },
+      { id: 'certs',     label: 'My Certificates',      Icon: FileText  },
+      { id: 'import',    label: 'Import Certificate',   Icon: FileInput },
     ],
   },
   {
@@ -49,14 +49,12 @@ const NAV_SECTIONS = [
 
 const SECTION_TITLES = {
   dashboard: 'Dashboard', issue: 'Issue Certificate',
-  certs: 'My Certificates', keylocker: 'KeyLocker',
+  certs: 'My Certificates', import: 'Import Certificate',
   dns: 'DNS Providers', servers: 'Servers',
   install: 'Installation', kb: 'Docs & Help', settings: 'Settings',
 }
 
-// Sections where the content handles its own background / padding
 const DARK_SECTIONS = ['issue']
-// Sections that don't need the white breadcrumb bar
 const NO_HEADER_SECTIONS = ['issue', 'dashboard', 'dns']
 
 export default function PortalHome({ user, nav, account, impersonatedBy }) {
@@ -124,17 +122,15 @@ export default function PortalHome({ user, nav, account, impersonatedBy }) {
   const NavItem = ({ id, label, Icon }) => {
     const active = section === id
     return (
-      <button
-        onClick={() => navigate(id)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px',
-          cursor: 'pointer', fontSize: 12, fontWeight: active ? 600 : 500,
-          color: active ? 'white' : 'rgba(255,255,255,0.65)',
-          background: active ? 'rgba(14,127,192,0.35)' : 'transparent',
-          borderLeft: active ? `3px solid ${ACCENT}` : '3px solid transparent',
-          border: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit',
-          borderRadius: '0 6px 6px 0', transition: 'all 0.15s',
-        }}
+      <button onClick={() => navigate(id)} style={{
+        display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px',
+        cursor: 'pointer', fontSize: 12, fontWeight: active ? 600 : 500,
+        color: active ? 'white' : 'rgba(255,255,255,0.65)',
+        background: active ? 'rgba(14,127,192,0.35)' : 'transparent',
+        borderLeft: active ? `3px solid ${ACCENT}` : '3px solid transparent',
+        border: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit',
+        borderRadius: '0 6px 6px 0', transition: 'all 0.15s',
+      }}
         onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.07)' }}
         onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
       >
@@ -146,7 +142,7 @@ export default function PortalHome({ user, nav, account, impersonatedBy }) {
   function renderContent() {
     if (section === 'dashboard') return (
       <div style={{ padding: 28 }}>
-        {/* Stats row */}
+        {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 24 }}>
           {[
             { label: 'Active Certificates', value: stats.active,   color: '#15803d' },
@@ -164,7 +160,7 @@ export default function PortalHome({ user, nav, account, impersonatedBy }) {
         <div style={{ background: `linear-gradient(135deg, ${NAV}, ${ACCENT})`, borderRadius: 10, padding: '18px 24px', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ color: '#fff', fontWeight: 600, fontSize: 14, marginBottom: 3 }}>Need a new certificate?</div>
-            <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12 }}>Issue an SSL/TLS certificate in minutes — auto DCV via your saved DNS credentials</div>
+            <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12 }}>Issue an SSL/TLS certificate — auto DCV via your saved DNS credentials</div>
           </div>
           <button onClick={() => navigate('issue')} style={{ background: 'white', color: NAV, border: 'none', borderRadius: 7, padding: '9px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
             <Plus size={13} /> Issue Certificate
@@ -174,9 +170,9 @@ export default function PortalHome({ user, nav, account, impersonatedBy }) {
         {/* Quick actions */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 24 }}>
           {[
-            { id: 'dns',      Icon: Globe,  label: 'Save DNS Credentials',  desc: 'Auto DCV for certificate issuance',     color: '#0369a1', bg: '#eff6ff' },
-            { id: 'servers',  Icon: Server, label: 'Add Servers',           desc: 'Auto-install certs on your servers',    color: '#15803d', bg: '#f0fdf4' },
-            { id: 'keylocker',Icon: Key,    label: 'KeyLocker',             desc: 'Manage and archive private keys',       color: '#b45309', bg: '#fffbeb' },
+            { id: 'dns',     Icon: Globe,      label: 'DNS Credentials',  desc: 'Auto DCV — connect Cloudflare or Vercel',  color: '#0369a1', bg: '#eff6ff' },
+            { id: 'servers', Icon: Server,     label: 'Servers',          desc: 'Auto-install certs on your servers',        color: '#15803d', bg: '#f0fdf4' },
+            { id: 'import',  Icon: FileInput,  label: 'Import Cert',      desc: "Import existing certs from any CA",         color: '#7c3aed', bg: '#faf5ff' },
           ].map(({ id, Icon, label, desc, color, bg }) => (
             <button key={id} onClick={() => navigate(id)} style={{ background: 'white', border: '0.5px solid var(--v2-border)', borderRadius: 10, padding: '16px 18px', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', transition: 'box-shadow 0.15s' }}
               onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(15,23,42,0.08)'}
@@ -225,14 +221,14 @@ export default function PortalHome({ user, nav, account, impersonatedBy }) {
       </div>
     )
 
-    if (section === 'issue')     return <BuyCertificate nav={nav} embeddedUser={user} onDashboard={() => navigate('dashboard')} />
-    if (section === 'certs')     return <CertInventory nav={nav} embeddedUser={user} onIssue={() => navigate('issue')} />
-    if (section === 'dns')       return <DnsProviders nav={nav} />
-    if (section === 'servers')   return <ServersPage user={user} />
-    if (section === 'keylocker') return <KeyLocker nav={nav} />
-    if (section === 'install')   return <Install nav={nav} />
-    if (section === 'kb')        return <KnowledgeBase nav={nav} />
-    if (section === 'settings')  return <SettingsPage user={user} />
+    if (section === 'issue')    return <BuyCertificate nav={nav} embeddedUser={user} onDashboard={() => navigate('dashboard')} />
+    if (section === 'certs')    return <CertInventory nav={nav} embeddedUser={user} onIssue={() => navigate('issue')} />
+    if (section === 'import')   return <Import nav={nav} />
+    if (section === 'dns')      return <DnsProviders nav={nav} />
+    if (section === 'servers')  return <ServersPage user={user} />
+    if (section === 'install')  return <Install nav={nav} />
+    if (section === 'kb')       return <KnowledgeBase nav={nav} />
+    if (section === 'settings') return <SettingsPage user={user} />
     return null
   }
 
@@ -270,7 +266,6 @@ export default function PortalHome({ user, nav, account, impersonatedBy }) {
       )}
 
       <div style={{ display: 'flex', flex: 1, background: DARK_SECTIONS.includes(section) ? '#050a14' : BG }}>
-
         {/* Sidebar */}
         <nav style={{
           width: 210, background: NAV, display: 'flex', flexDirection: 'column',
