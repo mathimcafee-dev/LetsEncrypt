@@ -20,11 +20,17 @@ import Terms from './pages/Terms'
 import Pricing from './pages/Pricing'
 import KeyLocker from './pages/KeyLocker'
 import BuyCertificate from './pages/BuyCertificate'
+// Multi-tenant portals — additive only, no existing pages modified
+import PortalHome from './pages/PortalHome'
+import ResellerHome from './pages/ResellerHome'
+import AdminHome from './pages/AdminHome'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
   const [user, setUser]   = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
+  const [account, setAccount] = useState(null)
+  const [impersonation, setImpersonation] = useState(null)
 
   useEffect(() => {
     const handler = () => setPage(window.location.pathname)
@@ -36,12 +42,32 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setAuthLoading(false)
+      if (session?.user) loadAccount(session.user)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      if (session?.user) loadAccount(session.user)
+      else { setAccount(null); setImpersonation(null) }
     })
     return () => subscription.unsubscribe()
   }, [])
+
+  // Load account role from accounts table
+  async function loadAccount(u) {
+    try {
+      const { data, error } = await supabase.functions.invoke('account-manage', {
+        body: { action: 'get_my_account' }
+      })
+      if (!error && data?.account) {
+        setAccount(data.account)
+        // Check for active impersonation session in sessionStorage
+        const imp = sessionStorage.getItem('impersonation')
+        if (imp) {
+          try { setImpersonation(JSON.parse(imp)) } catch {}
+        }
+      }
+    } catch {}
+  }
 
   const nav = (to) => {
     window.history.pushState({}, '', to)
@@ -55,12 +81,21 @@ export default function App() {
     return null
   }
 
-  // Routes that remain accessible to logged-in users (auth flow + legal pages)
-  const publicAllowedWhenLoggedIn = ['/auth', '/privacy', '/terms']
+  // Multi-tenant portal routes — accessible to logged-in users only
+  const portalRoutes = ['/portal', '/reseller', '/admin']
+
+  // Routes that remain accessible to logged-in users (auth flow + legal pages + portals)
+  const publicAllowedWhenLoggedIn = ['/auth', '/privacy', '/terms', ...portalRoutes]
 
   // If a logged-in user lands on any subroute that isn't allowed, bounce to '/' so they enter CLMHome
   if (!authLoading && user && page !== '/' && !publicAllowedWhenLoggedIn.includes(page)) {
     nav('/')
+    return null
+  }
+
+  // Guard portal routes — must be logged in
+  if (!authLoading && !user && portalRoutes.includes(page)) {
+    nav('/auth')
     return null
   }
 
@@ -88,6 +123,10 @@ export default function App() {
       {page === '/pricing' && <Pricing nav={nav} />}
       {page === '/keylocker' && <KeyLocker nav={nav} />}
       {page === '/buy' && <BuyCertificate nav={nav} />}
+      {/* Multi-tenant portals — role-gated, additive */}
+      {page === '/portal' && user && <PortalHome user={user} nav={nav} account={impersonation?.target || account} impersonatedBy={impersonation?.admin} />}
+      {page === '/reseller' && user && account?.role === 'sub_admin' && <ResellerHome user={user} nav={nav} account={account} />}
+      {page === '/admin' && user && account?.role === 'master_admin' && <AdminHome user={user} nav={nav} account={account} />}
     </div>
   )
 }
