@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Shield, Users, Plus, LogOut, Eye, UserX, UserCheck, Mail, CheckCircle, Copy, AlertTriangle } from 'lucide-react'
+import { Shield, Users, Plus, LogOut, Eye, UserX, UserCheck, Mail, CheckCircle, Copy, AlertTriangle, Download } from 'lucide-react'
+import { downloadAllOrdersReseller, downloadCustomerOrders } from '../lib/exportOrders'
 
 export default function ResellerHome({ user, nav, account, impersonatedBy }) {
   const [section, setSection] = useState('customers')
@@ -12,6 +13,7 @@ export default function ResellerHome({ user, nav, account, impersonatedBy }) {
   const [inviting, setInviting] = useState(false)
   const [inviteSent, setInviteSent] = useState(false)
   const [error, setError] = useState('')
+  const [downloading, setDownloading] = useState({})
 
   const companyName = account?.company_name || user?.email?.split('@')[1] || 'My Portal'
 
@@ -23,6 +25,18 @@ export default function ResellerHome({ user, nav, account, impersonatedBy }) {
       const { data } = await supabase.functions.invoke('account-manage', { body: { action: 'list_my_customers' } })
       if (data) { setCustomers(data.customers || []); setPendingInvites(data.pending_invites || []) }
     } finally { setLoading(false) }
+  }
+
+  async function handleDownloadAll() {
+    setDownloading(d => ({ ...d, all: true }))
+    try { await downloadAllOrdersReseller(user.id, account?.company_name || user.email) } catch(e) { alert(e.message) }
+    setDownloading(d => ({ ...d, all: false }))
+  }
+
+  async function handleDownloadCustomer(customerId, customerName) {
+    setDownloading(d => ({ ...d, [customerId]: true }))
+    try { await downloadCustomerOrders(customerId, customerName) } catch(e) { alert(e.message) }
+    setDownloading(d => ({ ...d, [customerId]: false }))
   }
 
   async function handleInvite() {
@@ -159,6 +173,9 @@ export default function ResellerHome({ user, nav, account, impersonatedBy }) {
                       <div style={{ display: 'flex', gap: 6 }}>
                         <button onClick={() => handleViewAs(c)} style={{ background: 'rgba(59,130,246,0.15)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.25)', borderRadius: 6, padding: '5px 10px', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                           <Eye size={12} /> View as
+                        </button>
+                        <button onClick={() => handleDownloadCustomer(c.id, c.company_name || c.email)} disabled={downloading[c.id]} style={{ background: 'rgba(16,185,129,0.1)', color: '#34d399', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 6, padding: '5px 8px', fontSize: 12, cursor: 'pointer', display:'flex', alignItems:'center', gap:4 }}>
+                          <Download size={12} /> {downloading[c.id] ? '...' : 'Orders'}
                         </button>
                         <button onClick={() => handleSuspend(c.id, c.status)} style={{ background: c.status === 'active' ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)', color: c.status === 'active' ? '#f87171' : '#34d399', border: `1px solid ${c.status === 'active' ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'}`, borderRadius: 6, padding: '5px 8px', fontSize: 12, cursor: 'pointer' }}>
                           {c.status === 'active' ? <UserX size={12} /> : <UserCheck size={12} />}

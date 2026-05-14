@@ -3,8 +3,9 @@ import { supabase } from '../lib/supabase'
 import {
   Shield, Users, CheckCircle, XCircle, LogOut,
   Eye, UserX, UserCheck, ChevronRight, ChevronDown,
-  BarChart2, Clock, RefreshCw
+  BarChart2, Clock, RefreshCw, Download
 } from 'lucide-react'
+import { downloadAllOrdersAdmin, downloadResellerOrders } from '../lib/exportOrders'
 
 export default function AdminHome({ user, nav }) {
   const [section, setSection] = useState('approvals')
@@ -14,6 +15,7 @@ export default function AdminHome({ user, nav }) {
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState({})
   const [acting, setActing] = useState({})
+  const [downloading, setDownloading] = useState({})
 
   useEffect(() => { loadAll() }, [])
 
@@ -74,6 +76,18 @@ export default function AdminHome({ user, nav }) {
 
   async function handleSignOut() { await supabase.auth.signOut(); nav('/') }
 
+  async function handleDownloadAll() {
+    setDownloading(d => ({ ...d, all: true }))
+    try { await downloadAllOrdersAdmin() } catch(e) { alert(e.message) }
+    setDownloading(d => ({ ...d, all: false }))
+  }
+
+  async function handleDownloadReseller(resellerId, resellerName) {
+    setDownloading(d => ({ ...d, [resellerId]: true }))
+    try { await downloadResellerOrders(resellerId, resellerName) } catch(e) { alert(e.message) }
+    setDownloading(d => ({ ...d, [resellerId]: false }))
+  }
+
   const NavItem = ({ id, label, Icon, badge }) => (
     <button onClick={() => setSection(id)} style={{
       display: 'flex', alignItems: 'center', gap: 10, padding: '9px 16px',
@@ -127,6 +141,11 @@ export default function AdminHome({ user, nav }) {
               <button onClick={() => handleImpersonate(node)} style={{ background: 'rgba(59,130,246,0.15)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.25)', borderRadius: 6, padding: '4px 8px', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Eye size={11} /> View as
               </button>
+              {node.role === 'sub_reseller' && (
+                <button onClick={() => handleDownloadReseller(node.id, node.company_name || node.email)} disabled={downloading[node.id]} style={{ background: 'rgba(16,185,129,0.1)', color: '#34d399', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 6, padding: '4px 8px', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Download size={11} /> {downloading[node.id] ? '...' : 'Orders'}
+                </button>
+              )}
               <button onClick={() => handleSuspend(node.id, node.status)} style={{ background: node.status === 'active' ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)', color: node.status === 'active' ? '#f87171' : '#34d399', border: `1px solid ${node.status === 'active' ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'}`, borderRadius: 6, padding: '4px 8px', fontSize: 11, cursor: 'pointer' }}>
                 {node.status === 'active' ? <UserX size={11} /> : <UserCheck size={11} />}
               </button>
@@ -204,8 +223,15 @@ export default function AdminHome({ user, nav }) {
         )}
         {section === 'stats' && (
           <>
-            <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 600, margin: '0 0 6px' }}>Platform Stats</h2>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: '0 0 24px' }}>Live snapshot</p>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:24 }}>
+              <div>
+                <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 600, margin: '0 0 4px' }}>Platform Stats</h2>
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: 0 }}>Live snapshot across all accounts</p>
+              </div>
+              <button onClick={handleDownloadAll} disabled={downloading.all} style={{ background:'#7c3aed', color:'#fff', border:'none', borderRadius:8, padding:'9px 18px', fontSize:13, fontWeight:600, cursor:'pointer', display:'flex', alignItems:'center', gap:6 }}>
+                <Download size={14} /> {downloading.all ? 'Downloading...' : 'Download All Orders'}
+              </button>
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
               {[
                 { label: 'Active Resellers', value: stats?.active_resellers, color: '#60a5fa' },
