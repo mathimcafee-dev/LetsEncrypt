@@ -79,7 +79,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
           {domain ? 'Ready to issue' : 'Enter domain to preview'}
         </span>
         <span style={{ marginLeft: 'auto', fontSize: 9, color: '#374151', fontWeight: 600,
-          textTransform: 'uppercase', letterSpacing: '0.3px' }}>€{PRODUCTS[0].price}/yr</span>
+          textTransform: 'uppercase', letterSpacing: '0.3px' }}>{IS_SANDBOX ? 'SANDBOX' : 'RapidSSL DV'}</span>
       </div>
     </div>
   )
@@ -335,7 +335,10 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                         <span style={{ fontSize: 9, fontWeight: 700, background: 'rgba(14,127,192,0.2)',
                           color: '#60a5fa', borderRadius: 3, padding: '2px 6px', letterSpacing: '0.3px' }}>DV</span>
                       </div>
-                      <span style={{ fontSize: 16, fontWeight: 800, color: 'white' }}>€{p.price}</span>
+                      {IS_SANDBOX
+                        ? <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.1)', borderRadius: 4, padding: '2px 8px' }}>Sandbox</span>
+                        : <span style={{ fontSize: 16, fontWeight: 800, color: 'white' }}>€{p.price}</span>
+                      }
                     </div>
                     <div style={{ fontSize: 10, color: '#4b5563', marginLeft: 22 }}>
                       DigiCert chain · 99.9% browser trust · ~5 min
@@ -369,17 +372,17 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                   Validity period
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {[{y:1,p:9.99},{y:2,p:17.99}].map(({y,p}) => (
+                  {[{y:1,label:'1 year',sub:'Standard validity'},{y:2,label:'2 years',sub:'Best value'}].map(({y,label,sub}) => (
                     <div key={y} onClick={() => setYears(y)}
                       style={{ padding: '10px 14px', borderRadius: 7, cursor: 'pointer',
                         border: years === y ? '1.5px solid #0e7fc0' : '0.5px solid rgba(255,255,255,0.08)',
                         background: years === y ? 'rgba(14,127,192,0.1)' : 'rgba(255,255,255,0.02)',
                         transition: 'all 0.12s' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: '#e5e7eb' }}>{y} year{y>1?'s':''}</span>
-                        <span style={{ fontSize: 14, fontWeight: 800, color: 'white' }}>€{p}</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#e5e7eb' }}>{label}</span>
+                        {years === y && <span style={{ fontSize: 11, color: '#0e7fc0' }}>✓</span>}
                       </div>
-                      {y === 2 && <div style={{ fontSize: 10, color: '#0e7fc0', marginTop: 2, fontWeight: 500 }}>Save €2</div>}
+                      <div style={{ fontSize: 10, color: '#4b5563', marginTop: 2 }}>{sub}</div>
                     </div>
                   ))}
                 </div>
@@ -461,15 +464,21 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
               ))}
             </div>
             <div style={{ padding: '12px 18px 16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-                <span style={{ fontSize: 11, color: '#4b5563', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Total</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <span style={{ fontSize: 11, color: '#4b5563', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Order</span>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: 26, fontWeight: 800, color: 'white', letterSpacing: '-0.5px' }}>
-                    €{years === 1 ? '9.99' : '17.99'}
-                  </span>
-                  <div style={{ fontSize: 10, color: '#374151' }}>
-                    {IS_SANDBOX ? 'Demo · no charge' : 'One-time, per year'}
-                  </div>
+                  {IS_SANDBOX
+                    ? <div style={{ background: 'rgba(52,211,153,0.1)', border: '0.5px solid rgba(52,211,153,0.2)', borderRadius: 6, padding: '6px 12px', textAlign: 'center' }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#34d399' }}>Sandbox Mode</div>
+                        <div style={{ fontSize: 10, color: '#4b5563', marginTop: 2 }}>No charge · test environment</div>
+                      </div>
+                    : <div>
+                        <span style={{ fontSize: 26, fontWeight: 800, color: 'white', letterSpacing: '-0.5px' }}>
+                          €{years === 1 ? '9.99' : '17.99'}
+                        </span>
+                        <div style={{ fontSize: 10, color: '#374151' }}>One-time, per year</div>
+                      </div>
+                  }
                 </div>
               </div>
               <button onClick={place} disabled={busy}
