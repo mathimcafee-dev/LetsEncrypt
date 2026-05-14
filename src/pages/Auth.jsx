@@ -12,13 +12,13 @@ export default function Auth({ nav }) {
   const [error, setError]       = useState('')
   const [message, setMessage]   = useState('')
 
-  // Read invite token from URL — e.g. /auth?invite=abc123
-  const inviteToken = new URLSearchParams(window.location.search).get('invite')
+  // Detect if this is a Supabase invite link (?type=invite in hash or query)
+  const isInviteLink = window.location.hash.includes('type=invite') ||
+                       new URLSearchParams(window.location.search).get('type') === 'invite'
 
-  // If invite token present, default to sign-up mode
   useEffect(() => {
-    if (inviteToken) setIsSignUp(true)
-  }, [inviteToken])
+    if (isInviteLink) setIsSignUp(true)
+  }, [isInviteLink])
 
   async function routeAfterLogin() {
     try {
@@ -49,19 +49,16 @@ export default function Auth({ nav }) {
     setError(''); setLoading(true)
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password })
-        if (error) throw error
-        // If invite token present, accept it after signup
-        if (inviteToken) {
-          await new Promise(r => setTimeout(r, 1500))
-          const { data: sessionData } = await supabase.auth.getSession()
-          if (sessionData?.session) {
-            await supabase.functions.invoke('account-manage', {
-              body: { action: 'accept_invite', token: inviteToken }
-            })
-          }
+        // For invite links: updateUser sets the password on the already-created auth user
+        if (isInviteLink) {
+          const { error } = await supabase.auth.updateUser({ password })
+          if (error) throw error
+          // get_my_account will auto-create the accounts row with correct role
+        } else {
+          const { error } = await supabase.auth.signUp({ email, password })
+          if (error) throw error
+          setMessage('Check your email to confirm your account.')
         }
-        setMessage('Check your email to confirm your account.')
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
@@ -163,10 +160,10 @@ export default function Auth({ nav }) {
               <div>
                 <div style={{ fontSize:16, fontWeight:700, color:'var(--v2-text)',
                                letterSpacing:'-0.3px' }}>
-                  {isSignUp ? (inviteToken ? 'Accept your invitation' : 'Create your account') : 'Sign in to SSLVault'}
+                  {isSignUp ? (isInviteLink ? 'Accept your invitation' : 'Create your account') : 'Sign in to SSLVault'}
                 </div>
                 <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>
-                  {isSignUp ? (inviteToken ? 'You have been invited to SSLVault' : 'Start issuing certificates for free') : 'Welcome back'}
+                  {isSignUp ? (isInviteLink ? 'You have been invited to SSLVault' : 'Start issuing certificates for free') : 'Welcome back'}
                 </div>
               </div>
             </div>
