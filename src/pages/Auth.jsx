@@ -11,14 +11,8 @@ export default function Auth({ nav }) {
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
   const [message, setMessage]   = useState('')
-
-  // Detect if this is a Supabase invite link (?type=invite in hash or query)
-  const isInviteLink = window.location.hash.includes('type=invite') ||
-                       new URLSearchParams(window.location.search).get('type') === 'invite'
-
-  useEffect(() => {
-    if (isInviteLink) setIsSignUp(true)
-  }, [isInviteLink])
+  // settingPassword: true when user arrived via invite link and needs to set a password
+  const [settingPassword, setSettingPassword] = useState(false)
 
   async function routeAfterLogin() {
     try {
@@ -36,10 +30,23 @@ export default function Auth({ nav }) {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) routeAfterLogin()
+      if (data.session) {
+        // If session came from an invite link, show set-password screen instead of routing
+        const hash = window.location.hash
+        const isInviteSession = hash.includes('type=invite') || hash.includes('type=recovery')
+        if (isInviteSession) {
+          setSettingPassword(true)
+          return
+        }
+        routeAfterLogin()
+      }
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) routeAfterLogin()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setSettingPassword(true)
+        return
+      }
+      if (session && !settingPassword) routeAfterLogin()
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -48,17 +55,15 @@ export default function Auth({ nav }) {
     if (!email || !password) { setError('Please enter your email and password'); return }
     setError(''); setLoading(true)
     try {
-      if (isSignUp) {
-        // For invite links: updateUser sets the password on the already-created auth user
-        if (isInviteLink) {
-          const { error } = await supabase.auth.updateUser({ password })
-          if (error) throw error
-          // get_my_account will auto-create the accounts row with correct role
-        } else {
-          const { error } = await supabase.auth.signUp({ email, password })
-          if (error) throw error
-          setMessage('Check your email to confirm your account.')
-        }
+      if (settingPassword) {
+        // User arrived via invite — set their password then route by role
+        const { error } = await supabase.auth.updateUser({ password })
+        if (error) throw error
+        await routeAfterLogin()
+      } else if (isSignUp) {
+        const { error } = await supabase.auth.signUp({ email, password })
+        if (error) throw error
+        setMessage('Check your email to confirm your account.')
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
@@ -160,16 +165,16 @@ export default function Auth({ nav }) {
               <div>
                 <div style={{ fontSize:16, fontWeight:700, color:'var(--v2-text)',
                                letterSpacing:'-0.3px' }}>
-                  {isSignUp ? (isInviteLink ? 'Accept your invitation' : 'Create your account') : 'Sign in to SSLVault'}
+                  {settingPassword ? 'Set your password' : isSignUp ? 'Create your account' : 'Sign in to SSLVault'}
                 </div>
                 <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>
-                  {isSignUp ? (isInviteLink ? 'You have been invited to SSLVault' : 'Start issuing certificates for free') : 'Welcome back'}
+                  {settingPassword ? 'Choose a password to activate your account' : isSignUp ? 'Start issuing certificates for free' : 'Welcome back'}
                 </div>
               </div>
             </div>
 
-            {/* Email */}
-            <div style={{ marginBottom:14 }}>
+            {/* Email — hidden when setting password on invite (already authenticated) */}
+            {!settingPassword && <div style={{ marginBottom:14 }}>
               <label className="v2-label">Email address</label>
               <input
                 className="v2-input"
@@ -180,7 +185,7 @@ export default function Auth({ nav }) {
                 onKeyDown={e => e.key === 'Enter' && handleSubmit()}
                 autoFocus
               />
-            </div>
+            </div>}
 
             {/* Password */}
             <div style={{ marginBottom:20 }}>
