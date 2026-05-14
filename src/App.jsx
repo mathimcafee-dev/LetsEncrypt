@@ -24,6 +24,8 @@ import BuyCertificate from './pages/BuyCertificate'
 import PortalHome from './pages/PortalHome'
 import ResellerHome from './pages/ResellerHome'
 import AdminHome from './pages/AdminHome'
+import Register from './pages/Register'
+import PendingApproval from './pages/PendingApproval'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
@@ -83,9 +85,10 @@ export default function App() {
 
   // Multi-tenant portal routes — accessible to logged-in users only
   const portalRoutes = ['/portal', '/reseller', '/admin']
+  const registerRoute = '/register'
 
   // Routes that remain accessible to logged-in users (auth flow + legal pages + portals)
-  const publicAllowedWhenLoggedIn = ['/auth', '/privacy', '/terms', ...portalRoutes]
+  const publicAllowedWhenLoggedIn = ['/auth', '/privacy', '/terms', '/pending', ...portalRoutes]
 
   // If a logged-in user lands on any subroute that isn't allowed, bounce to '/' so they enter CLMHome
   if (!authLoading && user && page !== '/' && !publicAllowedWhenLoggedIn.includes(page)) {
@@ -99,6 +102,13 @@ export default function App() {
     return null
   }
 
+  // /register is public — logged-in users get bounced to their dashboard
+  if (!authLoading && user && page === '/register') {
+    nav('/')
+    return null
+  }
+
+  // Pending sub-resellers see a waiting screen at /
   // Public Nav only renders for logged-out visitors.
   // Logged-in users get the CLMHome shell (which has its own top bar) on '/'.
   const showPublicNav = !authLoading && !user
@@ -123,9 +133,11 @@ export default function App() {
       {page === '/pricing' && <Pricing nav={nav} />}
       {page === '/keylocker' && <KeyLocker nav={nav} />}
       {page === '/buy' && <BuyCertificate nav={nav} />}
-      {/* Multi-tenant portals — role-gated, additive */}
+      {/* Multi-tenant portals */}
+      {page === '/pending' && <PendingApproval nav={nav} />}
+      {page === '/register' && <Register nav={nav} />}
       {page === '/portal' && user && <PortalHome user={user} nav={nav} account={impersonation?.target || account} impersonatedBy={impersonation?.admin} />}
-      {page === '/reseller' && user && account?.role === 'sub_admin' && <ResellerHome user={user} nav={nav} account={account} />}
+      {page === '/reseller' && user && (account?.role === 'sub_reseller' || account?.role === 'master_admin') && <ResellerHome user={user} nav={nav} account={impersonation?.target || account} impersonatedBy={impersonation?.admin} />}
       {page === '/admin' && user && account?.role === 'master_admin' && <AdminHome user={user} nav={nav} account={account} />}
     </div>
   )

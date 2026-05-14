@@ -19,9 +19,11 @@ export default function Auth({ nav }) {
       const { data } = await supabase.functions.invoke('account-manage', {
         body: { action: 'get_my_account' }
       })
-      const role = data?.account?.role
-      if (role === 'master_admin') nav('/')
-      else if (role === 'sub_admin') nav('/reseller')
+      const acct = data?.account
+      if (!acct) { nav('/register'); return }
+      if (acct.status === 'pending') { nav('/pending'); return }
+      if (acct.role === 'master_admin') nav('/')
+      else if (acct.role === 'sub_reseller') nav('/reseller')
       else nav('/portal')
     } catch {
       nav('/')
