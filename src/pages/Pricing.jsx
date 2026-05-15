@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CheckCircle, Shield, Server, RefreshCw, Globe,
-         ArrowRight, Building2, ChevronDown, ChevronUp, Users } from 'lucide-react'
+         ArrowRight, ChevronDown, ChevronUp, Users } from 'lucide-react'
 import '../styles/design-v2.css'
 
 function FAQ({ q, a }) {
@@ -55,7 +55,7 @@ export default function Pricing({ nav }) {
       bg: '#f0fdf4',
       border: '#bbf7d0',
       desc: 'Manage their own end customers. Issue certificates under your partner account.',
-      features: ['Invite end customers', 'View all orders under them', 'Per-customer billing export', 'View-as impersonation for support', 'Scoped to their account only'],
+      features: ['Manage multiple domains', 'Per-domain billing export', 'Priority support', 'Advanced monitoring', 'Team access controls'],
       badge: 'Requires approval',
     },
     {
@@ -72,7 +72,7 @@ export default function Pricing({ nav }) {
 
   const faqs = [
     { q: 'What SSL certificates does SSLVault issue?', a: 'SSLVault issues RapidSSL Domain Validated (DV) certificates via TheSSLStore reseller API. These are backed by the DigiCert trust chain with 99.9% browser and OS compatibility. Validity periods up to 2 years.' },
-    { q: 'How does the reseller model work?', a: 'You register as a sub-reseller and get approved by the platform admin. Once approved, you can invite your own end customers. All certificate orders go through the master reseller\'s TheSSLStore partner account — your customers never interact with TSS directly.' },
+    { q: 'How do I get started?', a: 'Sign in to your SSLVault account and start issuing SSL certificates immediately. Connect your DNS provider for automated DCV, and install the persistent agent on your servers for zero-touch auto-renewal.' },
     { q: 'How does auto-renewal work?', a: 'A cron job runs every few hours checking for certificates expiring within 30 days. For certificates with connected DNS credentials, it automatically issues a new certificate, handles DCV via DNS, downloads the cert, and installs it to connected servers. Zero manual steps.' },
     { q: 'Can end customers save their own DNS credentials?', a: 'Yes. End customers can connect their Cloudflare or Vercel accounts in their portal. When a certificate is issued or renewed, SSLVault auto-creates the required DNS TXT/CNAME records for domain validation.' },
     { q: 'How is billing handled?', a: 'The platform itself manages certificate issuance via the master reseller\'s TSS account. Resellers and admins can download Excel billing reports showing all orders by customer. Payment collection between you and your customers is handled outside SSLVault.' },
@@ -100,8 +100,8 @@ export default function Pricing({ nav }) {
           <p style={{ fontSize: 15, color: 'var(--v2-text-2)', lineHeight: 1.7, maxWidth: 520, margin: '0 auto 32px' }}>
             RapidSSL DV certificates issued via TheSSLStore. Full lifecycle automation for master admins, sub-resellers, and end customers.
           </p>
-          <button className="v2-btn v2-btn-primary" style={{ fontSize: 14, padding: '11px 24px' }} onClick={() => nav('/register')}>
-            <Building2 size={14} /> Register as Reseller <ArrowRight size={13} />
+          <button className="v2-btn v2-btn-primary" style={{ fontSize: 14, padding: '11px 24px' }} onClick={() => nav('/auth')}>
+            <Shield size={14} /> Get Started <ArrowRight size={13} />
           </button>
         </div>
 
@@ -161,11 +161,11 @@ export default function Pricing({ nav }) {
         <div style={{ background: '#0d3c6e', borderRadius: 14, padding: '36px 32px', textAlign: 'center' }}>
           <h3 style={{ fontSize: 22, fontWeight: 700, color: 'white', letterSpacing: '-0.4px', margin: '0 0 10px' }}>Ready to start?</h3>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: '0 0 24px' }}>
-            Register as a reseller and get approved to start issuing certificates for your customers.
+            Sign in and start managing your SSL certificates today.
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-            <button className="v2-btn v2-btn-primary" style={{ fontSize: 13 }} onClick={() => nav('/register')}>
-              <Building2 size={13} /> Register as Reseller
+            <button className="v2-btn v2-btn-primary" style={{ fontSize: 13 }} onClick={() => nav('/auth')}>
+              <Shield size={13} /> Sign In
             </button>
             <button className="v2-btn" style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)' }} onClick={() => nav('/auth')}>
               Already have an account

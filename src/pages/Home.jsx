@@ -1,5 +1,5 @@
 import { Shield, CheckCircle, Zap, Globe, Server, ArrowRight,
-         RefreshCw, Activity, Lock, Bell, ChevronRight, Users, Building2 } from 'lucide-react'
+         RefreshCw, Activity, Lock, Bell } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import '../styles/design-v2.css'
@@ -33,9 +33,9 @@ const PILLARS = [
 
 const FEATURES = [
   {
-    icon: Building2, color: '#0e7fc0', bg: '#eff6ff',
-    title: 'Multi-tier reseller model',
-    desc: 'You onboard sub-resellers. They manage their own end customers. Full isolation — every customer sees only their own certificates.',
+    icon: Globe, color: '#0e7fc0', bg: '#eff6ff',
+    title: 'Multi-domain support',
+    desc: 'Issue certificates for single domains, wildcards, and SANs. One platform handles DV, OV, and EV certificates across all your customers.',
   },
   {
     icon: Globe, color: '#15803d', bg: '#f0fdf4',
@@ -53,9 +53,9 @@ const FEATURES = [
     desc: 'Persistent VPS agent polls for new certs and deploys them. cPanel one-click install. SSH push. Set it once, forget it.',
   },
   {
-    icon: Users, color: '#0369a1', bg: '#eff6ff',
-    title: 'Customer management',
-    desc: 'Invite customers by email. Approve sub-resellers. Impersonate any account for support. Download billing reports as Excel.',
+    icon: Bell, color: '#0369a1', bg: '#eff6ff',
+    title: 'Expiry alerts',
+    desc: 'Get notified before certificates expire. Set custom thresholds per domain. Never miss a renewal again.',
   },
   {
     icon: Shield, color: '#b45309', bg: '#fffbeb',
@@ -93,12 +93,12 @@ export default function Home({ nav }) {
                 Managed for your customers.
               </h1>
               <p style={{ fontSize: isMobile ? 15 : 16, color: '#9ca3af', lineHeight: 1.75, maxWidth: 480, marginBottom: isMobile ? 28 : 36 }}>
-                Issue trusted RapidSSL certificates via TheSSLStore, manage multi-tier reseller accounts, and automate renewal and deployment — all from one platform.
+                Issue trusted SSL certificates, monitor expiry across all your domains, and automate renewal and deployment — all from one platform.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 36 }}>
-                <button onClick={() => nav('/register')}
+                <button onClick={() => nav('/auth')}
                   style={{ background: '#0e7fc0', color: 'white', border: 'none', borderRadius: 8, padding: '12px 24px', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'inherit', boxShadow: '0 4px 16px rgba(14,127,192,0.35)' }}>
-                  <Building2 size={15} /> Become a Reseller
+                  <Shield size={15} /> Get Started Free
                 </button>
                 <button onClick={() => nav('/auth')}
                   style={{ background: 'rgba(255,255,255,0.06)', color: 'white', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '12px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: 'inherit' }}>
@@ -142,18 +142,17 @@ export default function Home({ nav }) {
       <section style={{ background: 'white', padding: isMobile ? '48px 18px' : '64px 24px', borderBottom: '0.5px solid rgba(15,23,42,0.06)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#0e7fc0', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12 }}>How it works</div>
-          <h2 style={{ fontSize: isMobile ? 26 : 34, fontWeight: 800, color: '#0a0a0a', letterSpacing: '-0.8px', marginBottom: 14 }}>Three tiers. One platform.</h2>
+          <h2 style={{ fontSize: isMobile ? 26 : 34, fontWeight: 800, color: '#0a0a0a', letterSpacing: '-0.8px', marginBottom: 14 }}>Issue. Monitor. Renew. Repeat.</h2>
           <p style={{ fontSize: 15, color: '#525252', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 48px' }}>
-            You're the master reseller. Your customers are sub-resellers. Their customers are end users. Everyone gets their own scoped dashboard.
+            From issuance to auto-renewal, SSLVault handles the full certificate lifecycle so you never have to think about expiry again.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: isMobile ? 16 : 0, position: 'relative' }}>
             {[
-              { num: '1', role: 'You (Master Admin)', color: '#0e7fc0', bg: '#eff6ff', border: '#bfdbfe', desc: 'Approve sub-resellers, see all orders platform-wide, impersonate any account, download billing reports.' },
-              { num: '2', role: 'Sub-Resellers', color: '#15803d', bg: '#f0fdf4', border: '#bbf7d0', desc: 'Manage their own end customers, send invite links, see all orders under their account.' },
-              { num: '3', role: 'End Customers', color: '#7c3aed', bg: '#faf5ff', border: '#ddd6fe', desc: 'Issue certificates, save DNS credentials, connect servers, manage their own certs — full automation.' },
+              { num: '1', role: 'Issue', color: '#0e7fc0', bg: '#eff6ff', border: '#bfdbfe', desc: 'Order SSL certificates in minutes. Supports DV, wildcard, and multi-domain. Auto-creates DCV records via your DNS provider.' },
+              { num: '2', role: 'Monitor', color: '#15803d', bg: '#f0fdf4', border: '#bbf7d0', desc: 'Track every certificate across all domains and servers. Get expiry alerts before they become incidents.' },
+              { num: '3', role: 'Renew & Deploy', color: '#7c3aed', bg: '#faf5ff', border: '#ddd6fe', desc: 'Auto-renewal fires 30 days before expiry. New cert issued, validated, installed — fully automatic via agent or cron.' },
             ].map(({ num, role, color, bg, border, desc }, i) => (
               <div key={num} style={{ background: bg, border: `1px solid ${border}`, borderRadius: isMobile ? 12 : i === 0 ? '12px 0 0 12px' : i === 2 ? '0 12px 12px 0' : 0, padding: '28px 24px', position: 'relative' }}>
-                {!isMobile && i < 2 && <ChevronRight size={20} color={color} style={{ position: 'absolute', right: -10, top: '50%', transform: 'translateY(-50%)', zIndex: 1, background: bg }} />}
                 <div style={{ width: 36, height: 36, borderRadius: '50%', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 800, color: 'white', marginBottom: 14 }}>{num}</div>
                 <div style={{ fontSize: 15, fontWeight: 700, color: '#0a0a0a', marginBottom: 8 }}>{role}</div>
                 <div style={{ fontSize: 13, color: '#525252', lineHeight: 1.6 }}>{desc}</div>
@@ -169,7 +168,7 @@ export default function Home({ nav }) {
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0e7fc0', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12 }}>Platform features</div>
             <h2 style={{ fontSize: isMobile ? 26 : 36, fontWeight: 800, color: '#0a0a0a', letterSpacing: '-0.8px', marginBottom: 14 }}>Everything for SSL lifecycle management</h2>
-            <p style={{ fontSize: 15, color: '#525252', lineHeight: 1.7, maxWidth: 520, margin: '0 auto' }}>Built for resellers who need to manage SSL certificates at scale, for multiple customers, with zero manual intervention.</p>
+            <p style={{ fontSize: 15, color: '#525252', lineHeight: 1.7, maxWidth: 520, margin: '0 auto' }}>Built for anyone who needs to manage SSL certificates at scale, with zero manual intervention.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: 16 }}>
             {FEATURES.map(({ icon: Icon, color, bg, title, desc }) => (
@@ -204,15 +203,15 @@ export default function Home({ nav }) {
       <section style={{ background: '#0d3c6e', padding: isMobile ? '52px 18px' : '72px 24px' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: isMobile ? 28 : 38, fontWeight: 800, color: 'white', letterSpacing: '-0.8px', marginBottom: 14 }}>
-            Ready to start reselling SSL?
+            Ready to manage SSL at scale?
           </h2>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.7, marginBottom: 36 }}>
-            Register as a reseller, get approved, and start issuing RapidSSL certificates for your customers today.
+            Sign in and start issuing, monitoring, and auto-renewing SSL certificates — all from one platform.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={() => nav('/register')}
+            <button onClick={() => nav('/auth')}
               style={{ background: '#0e7fc0', color: 'white', border: 'none', borderRadius: 8, padding: '13px 28px', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'inherit', boxShadow: '0 4px 20px rgba(14,127,192,0.4)' }}>
-              <Building2 size={16} /> Register as Reseller
+              <Shield size={16} /> Sign In Free
             </button>
             <button onClick={() => nav('/auth')}
               style={{ background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '13px 24px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
@@ -234,7 +233,7 @@ export default function Home({ nav }) {
               <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6, margin: 0 }}>Certificate Lifecycle Management platform for SSL resellers and businesses.</p>
             </div>
             {[
-              { label: 'Platform', links: [{ l: 'Sign In', p: '/auth' }, { l: 'Register Reseller', p: '/register' }, { l: 'Pricing', p: '/pricing' }] },
+              { label: 'Platform', links: [{ l: 'Sign In', p: '/auth' }, { l: 'Pricing', p: '/pricing' }, { l: 'About', p: '/about' }] },
               { label: 'Resources', links: [{ l: 'Install Guide', p: '/install' }, { l: 'Knowledge Base', p: '/knowledge-base' }, { l: 'Developer', p: '/developer' }] },
               { label: 'Company', links: [{ l: 'About', p: '/about' }, { l: 'Contact', p: '/contact' }, { l: 'Privacy', p: '/privacy' }, { l: 'Terms', p: '/terms' }] },
             ].map(({ label, links }) => (
@@ -250,7 +249,7 @@ export default function Home({ nav }) {
             ))}
           </div>
           <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-            <span style={{ fontSize: 12, color: '#6b7280' }}>© 2026 SSLVault · Powered by TheSSLStore · RapidSSL · DigiCert</span>
+            <span style={{ fontSize: 12, color: '#6b7280' }}>© 2026 SSLVault · Made with ♥ in NL</span>
             <span style={{ fontSize: 12, color: '#6b7280' }}>Built with PKI expertise</span>
           </div>
         </div>

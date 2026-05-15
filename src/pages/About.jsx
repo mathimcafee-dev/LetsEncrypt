@@ -1,5 +1,5 @@
 import { Shield, Lock, Globe, CheckCircle, ArrowRight, Server,
-         RefreshCw, Users, Building2, Activity, Code2 } from 'lucide-react'
+         RefreshCw, Users, Activity, Code2 } from 'lucide-react'
 import '../styles/design-v2.css'
 
 export default function About({ nav }) {
@@ -26,8 +26,8 @@ export default function About({ nav }) {
             and automate renewal and deployment — all from one dashboard.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="v2-btn v2-btn-primary" style={{ padding: '11px 22px', fontSize: 14 }} onClick={() => nav('/register')}>
-              <Building2 size={14} /> Become a Reseller
+            <button className="v2-btn v2-btn-primary" style={{ padding: '11px 22px', fontSize: 14 }} onClick={() => nav('/auth')}>
+              <Shield size={14} /> Get Started
             </button>
             <button className="v2-btn" style={{ padding: '11px 22px', fontSize: 14 }} onClick={() => nav('/auth')}>
               Sign In <ArrowRight size={13} />
@@ -119,11 +119,11 @@ export default function About({ nav }) {
         <div style={{ background: '#0d3c6e', borderRadius: 14, padding: '36px 32px', textAlign: 'center' }}>
           <h3 style={{ fontSize: 22, fontWeight: 700, color: 'white', letterSpacing: '-0.4px', margin: '0 0 10px' }}>Ready to get started?</h3>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: '0 0 24px', lineHeight: 1.6 }}>
-            Register as a reseller and start issuing certificates for your customers today.
+            Sign in and start managing your SSL certificates with full automation.
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-            <button className="v2-btn v2-btn-primary" style={{ fontSize: 13 }} onClick={() => nav('/register')}>
-              <Building2 size={13} /> Register as Reseller
+            <button className="v2-btn v2-btn-primary" style={{ fontSize: 13 }} onClick={() => nav('/auth')}>
+              <Shield size={13} /> Sign In
             </button>
             <button className="v2-btn" style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)' }} onClick={() => nav('/contact')}>
               Contact us

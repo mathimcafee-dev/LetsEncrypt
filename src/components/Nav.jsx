@@ -115,10 +115,6 @@ export default function Nav({ nav, page }) {
         {/* Desktop auth CTAs — hidden on mobile */}
         {!isMobile && (
           <div style={{display:'flex',alignItems:'center',gap:8}}>
-            <button onClick={()=>nav('/register')}
-              style={{display:'inline-flex',alignItems:'center',gap:5,background:'white',color:'#525252',border:'1px solid #e2e8f0',padding:'7px 14px',borderRadius:7,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:'inherit'}}>
-              Reseller Register
-            </button>
             <button onClick={()=>nav('/auth')}
               style={{display:'inline-flex',alignItems:'center',gap:5,background:'#0e7fc0',color:'white',border:'none',padding:'7px 14px',borderRadius:7,fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>
               <LogIn size={12}/> Sign In
