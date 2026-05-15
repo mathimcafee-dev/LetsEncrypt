@@ -7,9 +7,24 @@ import { useAuth } from '../hooks/useAuth'
 import '../styles/design-v2.css'
 
 const SUPABASE_URL = 'https://frthcwkntciaakqsppss.supabase.co'
-const IS_SANDBOX = true
+
 const PRODUCTS = [
-  { code: 'rapidssl', name: 'RapidSSL DV', type: 'DV', price: 9.99, available: true },
+  {
+    code: 'rapidssl',
+    name: 'RapidSSL DV',
+    type: 'DV',
+    badge: 'DV',
+    sub: 'DigiCert chain · 99.9% browser trust · ~5 min',
+    wildcard: false,
+  },
+  {
+    code: 'rapidssl_wildcard',
+    name: 'RapidSSL Wildcard',
+    type: 'DV Wildcard',
+    badge: 'WILDCARD',
+    sub: '*.yourdomain.com · all subdomains · ~5 min',
+    wildcard: true,
+  },
 ]
 
 function CopyBtn({ text }) {
@@ -24,43 +39,40 @@ function CopyBtn({ text }) {
   )
 }
 
-// Live cert preview card — fills in as user types
 function CertPreview({ domain, fn, ln, em, product, years }) {
-  const d = domain || 'yourdomain.com'
+  const d   = domain || 'yourdomain.com'
+  const p   = PRODUCTS.find(p => p.code === product) || PRODUCTS[0]
+  const cn  = p.wildcard ? (d.startsWith('*.') ? d : `*.${d}`) : d
   const issued = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
-  const exp = new Date(Date.now() + years * 365 * 86400000).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
-  const name = [fn, ln].filter(Boolean).join(' ') || 'Your Name'
+  const exp    = new Date(Date.now() + years * 365 * 86400000).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+  const name   = [fn, ln].filter(Boolean).join(' ') || 'Your Name'
   return (
     <div style={{ background: '#0a0f1a', border: '1px solid rgba(14,127,192,0.3)',
       borderRadius: 10, overflow: 'hidden', fontFamily: 'var(--v2-font-mono)' }}>
-      {/* Header */}
       <div style={{ background: 'linear-gradient(135deg, #0e7fc0 0%, #1a56db 100%)',
         padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 10 }}>
         <ShieldCheck size={20} color="white" strokeWidth={2}/>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'white', letterSpacing: '-0.2px' }}>
-            SSL Certificate
+            SSL Certificate — {p.name}
           </div>
           <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)' }}>DigiCert / RapidSSL trust chain</div>
         </div>
-        {IS_SANDBOX && (
-          <div style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.15)', borderRadius: 3,
-            padding: '2px 7px', fontSize: 9, fontWeight: 700, color: 'white', letterSpacing: '0.5px' }}>
-            SANDBOX
-          </div>
-        )}
+        <div style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.15)', borderRadius: 3,
+          padding: '2px 7px', fontSize: 9, fontWeight: 700, color: 'white', letterSpacing: '0.5px' }}>
+          LIVE
+        </div>
       </div>
-      {/* Fields */}
       <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {[
-          { label: 'Subject', value: `CN=${d}` },
-          { label: 'Issued to', value: name },
-          { label: 'Issuer', value: 'RapidSSL Global TLS RSA4096 SHA256 2022 CA1' },
-          { label: 'Valid from', value: issued },
+          { label: 'Subject',     value: `CN=${cn}` },
+          { label: 'Issued to',   value: name },
+          { label: 'Issuer',      value: 'RapidSSL Global TLS RSA4096 SHA256 2022 CA1' },
+          { label: 'Valid from',  value: issued },
           { label: 'Valid until', value: exp, highlight: true },
-          { label: 'Validity', value: `${years} year${years > 1 ? 's' : ''}` },
-          { label: 'Key', value: 'RSA 2048-bit / SHA-256' },
-          { label: 'Contact', value: em || 'your@email.com' },
+          { label: 'Validity',    value: `${years} year${years > 1 ? 's' : ''}` },
+          { label: 'Key',         value: 'RSA 2048-bit / SHA-256' },
+          { label: 'Contact',     value: em || 'your@email.com' },
         ].map(({ label, value, highlight }) => (
           <div key={label} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 8 }}>
             <span style={{ fontSize: 9, fontWeight: 600, color: '#4b5563',
@@ -70,7 +82,6 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
           </div>
         ))}
       </div>
-      {/* Footer */}
       <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
         display: 'flex', alignItems: 'center', gap: 6 }}>
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399',
@@ -79,7 +90,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
           {domain ? 'Ready to issue' : 'Enter domain to preview'}
         </span>
         <span style={{ marginLeft: 'auto', fontSize: 9, color: '#374151', fontWeight: 600,
-          textTransform: 'uppercase', letterSpacing: '0.3px' }}>{IS_SANDBOX ? 'SANDBOX' : 'RapidSSL DV'}</span>
+          textTransform: 'uppercase', letterSpacing: '0.3px' }}>{p.name}</span>
       </div>
     </div>
   )
@@ -87,63 +98,53 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
 
 const clean = v => v.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
 
-export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
+export default function BuyCertificate({ nav, onDashboard }) {
   const { user, loading: authLoading } = useAuth()
-  const [step, setStep]    = useState('form')
+  const [step, setStep]       = useState('form')
   const [product, setProduct] = useState('rapidssl')
-  const [domain, setD]     = useState('')
-  const [years, setYears]  = useState(1)
-  const [fn, setFn]        = useState('')
-  const [ln, setLn]        = useState('')
-  const [ph, setPh]        = useState('')
-  const [em, setEm]        = useState('')
-  const [busy, setBusy]    = useState(false)
-  const [err, setErr]      = useState('')
-  const [ord, setOrd]      = useState(null)
-  const [chk, setChk]      = useState(false)
-  const [dns, setDns]      = useState(false)
-  const [res, setRes]      = useState(null)
-  const [polling, setPoll] = useState(false)
-  const [pending, setPend] = useState(null)
+  const [domain, setD]        = useState('')
+  const [years, setYears]     = useState(1)
+  const [fn, setFn]           = useState('')
+  const [ln, setLn]           = useState('')
+  const [ph, setPh]           = useState('')
+  const [em, setEm]           = useState('')
+  const [busy, setBusy]       = useState(false)
+  const [err, setErr]         = useState('')
+  const [ord, setOrd]         = useState(null)
+  const [chk, setChk]         = useState(false)
+  const [dns, setDns]         = useState(false)
+  const [res, setRes]         = useState(null)
+  const [polling, setPoll]    = useState(false)
 
   useEffect(() => {
     const p = sessionStorage.getItem('prefill_domain')
     if (p) { setD(p); sessionStorage.removeItem('prefill_domain') }
   }, [])
   useEffect(() => { if (user) setEm(e => e || user.email || '') }, [user])
+
+  // Auto-poll for DCV value after order placed
   useEffect(() => {
-    if (!user) return
-    supabase.from('tss_orders').select('id,domain,tss_order_id,dv_cname_host,dv_cname_value,dv_type')
-      .eq('user_id', user.id).eq('status', 'dv_pending')
-      .order('created_at', { ascending: false }).limit(1)
-      .then(({ data }) => { if (data?.length) setPend(data[0]) })
-  }, [user])
-  useEffect(() => {
-    if (step !== 'dv' || !ord?.order_id || ord?.txt_value || ord?.cname_value) return
-    setPoll(true); let n = 0
+    if (step !== 'dv' || !ord?.order_id || ord?.dcv_cname_value) return
+    setPoll(true)
+    let n = 0
     const iv = setInterval(async () => {
       n++
       try {
         const s = await call('check_status', { order_id: ord.order_id })
-        if (s.txt_value || s.cname_value) {
-          setOrd(p => ({...p,
-            txt_name:    s.txt_name    || p.txt_name,
-            txt_value:   s.txt_value   || p.txt_value,
-            cname_name:  s.cname_name  || p.cname_name,
-            cname_value: s.cname_value || p.cname_value,
-          }))
+        if (s.dcv_cname_value) {
+          setOrd(p => ({ ...p, dcv_cname_name: s.dcv_cname_name, dcv_cname_value: s.dcv_cname_value }))
           setPoll(false); clearInterval(iv)
         }
         if (s.status === 'active') { setStep('done'); setPoll(false); clearInterval(iv) }
-      } catch(e) {}
-      if (n >= 24) { setPoll(false); clearInterval(iv) }
+      } catch {}
+      if (n >= 12) { setPoll(false); clearInterval(iv) }
     }, 5000)
     return () => { clearInterval(iv); setPoll(false) }
   }, [step, ord?.order_id])
 
   const call = async (action, extra = {}) => {
     const { data: { session } } = await supabase.auth.getSession()
-    const r = await fetch(`${SUPABASE_URL}/functions/v1/tss-issue`, {
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/gogetssl-issue`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ action, ...extra }),
@@ -159,34 +160,16 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     if (!em.trim()) { setErr('Email required'); return }
     if (!ph.trim()) { setErr('Phone required'); return }
     setErr(''); setBusy(true)
-    const r = await call('place_order', { domain: d, years, product_code: product,
-      firstName: fn.trim(), lastName: ln.trim(), adminEmail: em.trim(), phone: ph.trim(), is_sandbox: IS_SANDBOX })
-    if (r.error) { setErr(r.error); setBusy(false); return }
-    let dv = r
-    if (r.order_id) {
-      for (let i = 0; i < 5; i++) {
-        await new Promise(x => setTimeout(x, 3000))
-        const s = await call('check_status', { order_id: r.order_id })
-        if (s.txt_value || s.cname_value) { dv = {...r, ...s}; break }
-      }
-      // Fallback: if TSS polling didn't return DV value, read directly from DB
-      if (!dv.txt_value && !dv.cname_value) {
-        const { data: dbOrder } = await supabase
-          .from('tss_orders').select('dv_cname_host,dv_cname_value,dv_type')
-          .eq('id', r.order_id).single()
-        if (dbOrder?.dv_cname_value) {
-          const isCname = dbOrder.dv_type === 'CNAME'
-          dv = { ...r,
-            txt_name:   isCname ? undefined : (dbOrder.dv_cname_host || clean(domain)),
-            txt_value:  isCname ? undefined : dbOrder.dv_cname_value,
-            cname_name:  isCname ? dbOrder.dv_cname_host : undefined,
-            cname_value: isCname ? dbOrder.dv_cname_value : undefined,
-            dv_type:    dbOrder.dv_type || 'TXT',
-          }
-        }
-      }
-    }
-    setBusy(false); setOrd(dv); setStep('dv')
+    const r = await call('place_order', {
+      domain: d, years, product_code: product,
+      firstName: fn.trim(), lastName: ln.trim(),
+      adminEmail: em.trim(), phone: ph.trim(),
+      period: years * 12,
+    })
+    setBusy(false)
+    if (r.error) { setErr(r.error); return }
+    setOrd(r)
+    setStep('dv')
   }
 
   const check = async () => {
@@ -194,26 +177,28 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     const r = await call('check_status', { order_id: ord.order_id })
     setChk(false); setRes(r)
     if (r.status === 'active') setStep('done')
+    if (r.dcv_cname_value) setOrd(p => ({ ...p, dcv_cname_name: r.dcv_cname_name, dcv_cname_value: r.dcv_cname_value }))
   }
 
   const addDns = async () => {
     setDns(true); setRes(null)
-    try { const r = await call('retry_dns', { order_id: ord.order_id }); setRes({ dns_auto: r }) }
-    catch(e) { setRes({ dns_auto: { ok: false, message: String(e) } }) }
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const r = await fetch(`${SUPABASE_URL}/functions/v1/dns-auto-add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({
+          domain: ord.domain || clean(domain),
+          cname_name: ord.dcv_cname_name,
+          cname_value: ord.dcv_cname_value,
+        }),
+      })
+      setRes({ dns_auto: await r.json() })
+    } catch (e) { setRes({ dns_auto: { ok: false, message: String(e) } }) }
     setDns(false)
   }
 
-  const reset = () => { setStep('form'); setD(''); setOrd(null); setRes(null); setPend(null); setErr(''); setProduct('rapidssl') }
-  const resume = () => {
-    const o = pending; setD(o.domain)
-    const isCname = o.dv_type === 'CNAME'
-    setOrd({ order_id: o.id, tss_order_id: o.tss_order_id, dv_type: o.dv_type || 'TXT',
-      txt_name: isCname ? undefined : (o.dv_cname_host || o.domain),
-      txt_value: isCname ? undefined : (o.dv_cname_value || ''),
-      cname_name: isCname ? o.dv_cname_host : undefined,
-      cname_value: isCname ? o.dv_cname_value : undefined })
-    setPend(null); setStep('dv')
-  }
+  const reset = () => { setStep('form'); setD(''); setOrd(null); setRes(null); setErr('') }
 
   if (authLoading) return null
   if (!user) return (
@@ -225,9 +210,11 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
           <Shield size={24} color="#0e7fc0"/>
         </div>
-        <h2 style={{ fontSize: 22, fontWeight: 800, color: 'white', marginBottom: 8, letterSpacing: '-0.4px' }}>Sign in to continue</h2>
+        <h2 style={{ fontSize: 22, fontWeight: 800, color: 'white', marginBottom: 8, letterSpacing: '-0.4px' }}>
+          Sign in to continue
+        </h2>
         <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.7, marginBottom: 24 }}>
-          SSLVault issues, installs, and renews your SSL certificates automatically.
+          Issue, manage and auto-renew SSL certificates from SSLVault.
         </p>
         <button onClick={() => nav('/auth')}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#0e7fc0',
@@ -239,7 +226,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     </div>
   )
 
-  // ── STEP: FORM ──────────────────────────────────────────────────────────────
+  // ── FORM ────────────────────────────────────────────────────────────────────
   if (step === 'form') return (
     <div style={{ minHeight: '100vh', background: '#050a14' }}>
 
@@ -252,12 +239,10 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
             <Shield size={14} color="white"/>
           </div>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'white' }}>Issue SSL Certificate</span>
-          {IS_SANDBOX && (
-            <span style={{ background: '#7c3aed', color: 'white', fontSize: 9, fontWeight: 700,
-              letterSpacing: '0.8px', textTransform: 'uppercase', borderRadius: 3, padding: '3px 7px' }}>
-              Sandbox
-            </span>
-          )}
+          <span style={{ background: '#15803d', color: 'white', fontSize: 9, fontWeight: 700,
+            letterSpacing: '0.8px', textTransform: 'uppercase', borderRadius: 3, padding: '3px 7px' }}>
+            LIVE
+          </span>
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           {[{ icon:<Clock size={11}/>, t:'~5 min' }, { icon:<RotateCcw size={11}/>, t:'Auto-renewal' }, { icon:<ShieldCheck size={11}/>, t:'DigiCert chain' }].map(({icon,t}) => (
@@ -268,7 +253,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
         </div>
       </div>
 
-      {/* Progress rail */}
+      {/* Progress */}
       <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
         padding: '0 32px', display: 'flex', alignItems: 'center', gap: 4, height: 40 }}>
         {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
@@ -286,37 +271,17 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
         ))}
       </div>
 
-      {/* Pending banner */}
-      {pending && (
-        <div style={{ background: 'rgba(245,158,11,0.08)', borderBottom: '0.5px solid rgba(245,158,11,0.2)',
-          padding: '10px 32px', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <AlertTriangle size={13} color="#f59e0b"/>
-          <span style={{ fontSize: 12, color: '#fbbf24', flex: 1 }}>
-            Pending validation for <strong style={{ fontFamily: 'monospace' }}>{pending.domain}</strong>
-          </span>
-          <button onClick={resume} style={{ background: '#0e7fc0', color: 'white', border: 'none',
-            borderRadius: 5, padding: '5px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-            Resume →
-          </button>
-          <button onClick={() => setPend(null)} style={{ background: 'none', border: 'none',
-            color: '#4b5563', cursor: 'pointer', fontSize: 16 }}>×</button>
-        </div>
-      )}
-
-      {/* Main body */}
+      {/* Body */}
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 32px 80px',
         display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32, alignItems: 'start' }}>
 
-        {/* LEFT — form */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-          {/* Section: Certificate */}
+          {/* Certificate selection */}
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.07)',
             borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#4b5563',
-                textTransform: 'uppercase', letterSpacing: '0.5px' }}>Certificate</span>
+            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Certificate type</span>
             </div>
             <div style={{ padding: '18px 20px' }}>
               <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
@@ -326,23 +291,15 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                       border: product === p.code ? '1.5px solid #0e7fc0' : '0.5px solid rgba(255,255,255,0.08)',
                       background: product === p.code ? 'rgba(14,127,192,0.1)' : 'rgba(255,255,255,0.02)',
                       transition: 'all 0.12s' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ width: 14, height: 14, borderRadius: '50%',
-                          border: product === p.code ? '4px solid #0e7fc0' : '1.5px solid rgba(255,255,255,0.15)',
-                          transition: 'all 0.12s' }}/>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: '#e5e7eb' }}>{p.name}</span>
-                        <span style={{ fontSize: 9, fontWeight: 700, background: 'rgba(14,127,192,0.2)',
-                          color: '#60a5fa', borderRadius: 3, padding: '2px 6px', letterSpacing: '0.3px' }}>DV</span>
-                      </div>
-                      {IS_SANDBOX
-                        ? <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.1)', borderRadius: 4, padding: '2px 8px' }}>Sandbox</span>
-                        : <span style={{ fontSize: 16, fontWeight: 800, color: 'white' }}>€{p.price}</span>
-                      }
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <div style={{ width: 14, height: 14, borderRadius: '50%',
+                        border: product === p.code ? '4px solid #0e7fc0' : '1.5px solid rgba(255,255,255,0.15)',
+                        transition: 'all 0.12s' }}/>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#e5e7eb' }}>{p.name}</span>
+                      <span style={{ fontSize: 9, fontWeight: 700, background: 'rgba(14,127,192,0.2)',
+                        color: '#60a5fa', borderRadius: 3, padding: '2px 6px', letterSpacing: '0.3px' }}>{p.badge}</span>
                     </div>
-                    <div style={{ fontSize: 10, color: '#4b5563', marginLeft: 22 }}>
-                      DigiCert chain · 99.9% browser trust · ~5 min
-                    </div>
+                    <div style={{ fontSize: 10, color: '#4b5563', marginLeft: 22 }}>{p.sub}</div>
                   </div>
                 ))}
               </div>
@@ -352,12 +309,17 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                 <label style={{ fontSize: 11, fontWeight: 600, color: '#6b7280',
                   textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: 7 }}>
                   Domain name <span style={{ color: '#ef4444' }}>*</span>
+                  {PRODUCTS.find(p => p.code === product)?.wildcard && (
+                    <span style={{ color: '#60a5fa', fontWeight: 400, textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>
+                      · enter root domain, wildcard applied automatically
+                    </span>
+                  )}
                 </label>
                 <div style={{ position: 'relative' }}>
                   <Globe size={14} style={{ position: 'absolute', left: 12, top: '50%',
                     transform: 'translateY(-50%)', color: '#4b5563', pointerEvents: 'none' }}/>
                   <input value={domain} onChange={e => setD(e.target.value)}
-                    placeholder="yourdomain.com"
+                    placeholder={PRODUCTS.find(p => p.code === product)?.wildcard ? 'yourdomain.com' : 'yourdomain.com'}
                     style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)',
                       border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'white',
                       fontSize: 15, fontFamily: 'var(--v2-font-mono)', fontWeight: 500,
@@ -372,7 +334,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                   Validity period
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {[{y:1,label:'1 year',sub:'Standard validity'},{y:2,label:'2 years',sub:'Best value'}].map(({y,label,sub}) => (
+                  {[{y:1,label:'1 year',sub:'Standard'},{y:2,label:'2 years',sub:'Best value'}].map(({y,label,sub}) => (
                     <div key={y} onClick={() => setYears(y)}
                       style={{ padding: '10px 14px', borderRadius: 7, cursor: 'pointer',
                         border: years === y ? '1.5px solid #0e7fc0' : '0.5px solid rgba(255,255,255,0.08)',
@@ -390,13 +352,12 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
             </div>
           </div>
 
-          {/* Section: Contact */}
+          {/* Contact details */}
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.07)',
             borderRadius: 10, overflow: 'hidden' }}>
             <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#4b5563',
-                textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact details</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact details</span>
               <span style={{ fontSize: 10, color: '#374151' }}>Required by certificate authority</span>
             </div>
             <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -414,8 +375,10 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                   </div>
                 ))}
               </div>
-              {[{label:'Email address',val:em,set:setEm,ph:'you@example.com',type:'email',note:'Certificate delivery'},
-                {label:'Phone number',val:ph,set:setPh,ph:'+1 415 555 0100',type:'tel'}].map(f => (
+              {[
+                {label:'Email address', val:em, set:setEm, ph:'you@example.com', type:'email', note:'Certificate delivery'},
+                {label:'Phone number',  val:ph, set:setPh, ph:'+31 6 00 000000', type:'tel'},
+              ].map(f => (
                 <div key={f.label}>
                   <label style={{ fontSize: 11, fontWeight: 600, color: '#4b5563',
                     textTransform: 'uppercase', letterSpacing: '0.3px', display: 'block', marginBottom: 6 }}>
@@ -440,47 +403,29 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
           )}
         </div>
 
-        {/* RIGHT — live preview + order summary */}
+        {/* Right: preview + summary */}
         <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <CertPreview domain={clean(domain)} fn={fn} ln={ln} em={em} product={product} years={years}/>
 
-          {/* Order summary */}
           <div style={{ background: '#111827', border: '0.5px solid rgba(255,255,255,0.06)',
             borderRadius: 10, overflow: 'hidden' }}>
             <div style={{ padding: '12px 18px', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#4b5563',
                 textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Order summary</div>
               {[
-                { k: 'Certificate', v: PRODUCTS[0].name },
-                { k: 'Validity', v: `${years} year${years>1?'s':''}` },
+                { k: 'Certificate', v: PRODUCTS.find(p => p.code === product)?.name || 'RapidSSL DV' },
+                { k: 'Validity',    v: `${years} year${years>1?'s':''}` },
                 { k: 'Auto-renewal', v: 'Included', blue: true },
-                { k: 'DNS validation', v: 'Automatic', blue: true },
+                { k: 'DNS validation', v: 'Automatic (CNAME)', blue: true },
+                { k: 'Powered by', v: 'GoGetSSL · DigiCert' },
               ].map(({ k, v, blue }) => (
-                <div key={k} style={{ display: 'flex', justifyContent: 'space-between',
-                  fontSize: 12, marginBottom: 7 }}>
+                <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 7 }}>
                   <span style={{ color: '#4b5563' }}>{k}</span>
                   <span style={{ color: blue ? '#60a5fa' : '#9ca3af', fontWeight: blue ? 500 : 400 }}>{v}</span>
                 </div>
               ))}
             </div>
             <div style={{ padding: '12px 18px 16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <span style={{ fontSize: 11, color: '#4b5563', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Order</span>
-                <div style={{ textAlign: 'right' }}>
-                  {IS_SANDBOX
-                    ? <div style={{ background: 'rgba(52,211,153,0.1)', border: '0.5px solid rgba(52,211,153,0.2)', borderRadius: 6, padding: '6px 12px', textAlign: 'center' }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: '#34d399' }}>Sandbox Mode</div>
-                        <div style={{ fontSize: 10, color: '#4b5563', marginTop: 2 }}>No charge · test environment</div>
-                      </div>
-                    : <div>
-                        <span style={{ fontSize: 26, fontWeight: 800, color: 'white', letterSpacing: '-0.5px' }}>
-                          €{years === 1 ? '9.99' : '17.99'}
-                        </span>
-                        <div style={{ fontSize: 10, color: '#374151' }}>One-time, per year</div>
-                      </div>
-                  }
-                </div>
-              </div>
               <button onClick={place} disabled={busy}
                 style={{ width: '100%', background: busy ? '#1f2937' : 'linear-gradient(135deg,#0e7fc0,#1a56db)',
                   color: busy ? '#4b5563' : 'white', border: 'none', borderRadius: 8,
@@ -492,7 +437,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                   : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
               </button>
               <div style={{ marginTop: 10, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-                {['DigiCert trust', 'No subscription', '99.9% browser'].map(t => (
+                {['GoGetSSL partner', '99.9% browser trust', 'DigiCert chain'].map(t => (
                   <span key={t} style={{ fontSize: 10, color: '#374151', display: 'flex', alignItems: 'center', gap: 3 }}>
                     <Check size={9} style={{ color: '#0e7fc0' }}/> {t}
                   </span>
@@ -506,7 +451,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     </div>
   )
 
-  // ── STEP: DV ──────────────────────────────────────────────────────────────
+  // ── DV ──────────────────────────────────────────────────────────────────────
   if (step === 'dv' && ord) return (
     <div style={{ minHeight: '100vh', background: '#050a14' }}>
       <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
@@ -520,7 +465,6 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
         </div>
       </div>
 
-      {/* Progress */}
       <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
         padding: '0 32px', display: 'flex', alignItems: 'center', gap: 4, height: 40 }}>
         {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
@@ -539,47 +483,36 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
       </div>
 
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 32px' }}>
-        {/* Header */}
         <div style={{ marginBottom: 28, textAlign: 'center' }}>
           <div style={{ fontSize: 22, fontWeight: 800, color: 'white', letterSpacing: '-0.4px', marginBottom: 8 }}>
-            Add this DNS record to prove ownership
+            Add this CNAME record to prove ownership
           </div>
           <div style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.6 }}>
-            Add a <strong style={{ color: '#9ca3af' }}>{ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'} record</strong> to your DNS for{' '}
-            <strong style={{ color: '#0e7fc0', fontFamily: 'monospace' }}>{domain || ord.txt_name}</strong>
+            Add a <strong style={{ color: '#9ca3af' }}>CNAME record</strong> to your DNS for{' '}
+            <strong style={{ color: '#0e7fc0', fontFamily: 'monospace' }}>{ord.domain || clean(domain)}</strong>
           </div>
         </div>
 
-        {/* DNS record terminal */}
+        {/* DNS record card */}
         <div style={{ background: '#0a0f1a', border: '0.5px solid rgba(255,255,255,0.08)',
           borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
-          {/* Terminal header */}
           <div style={{ background: '#111827', padding: '10px 16px',
             display: 'flex', alignItems: 'center', gap: 6, borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
             {['#ff5f56','#ffbd2e','#27c93f'].map(c => (
               <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, display: 'block' }}/>
             ))}
-            <span style={{ fontSize: 11, color: '#4b5563', fontFamily: 'monospace', marginLeft: 8 }}>
-              DNS record · {ord.dv_type === 'CNAME' ? 'CNAME' : 'TXT'}
-            </span>
+            <span style={{ fontSize: 11, color: '#4b5563', fontFamily: 'monospace', marginLeft: 8 }}>DNS record · CNAME</span>
             <span style={{ marginLeft: 'auto', fontFamily: 'monospace', fontSize: 10, color: '#374151' }}>
-              Order #{ord.tss_order_id || '—'}
+              GGS #{ord.ggs_order_id || '—'}
             </span>
           </div>
-
-          {/* Record rows */}
           <div style={{ padding: '4px 0' }}>
-            {(ord.dv_type === 'CNAME' ? [
-              { k:'Name',  v: ord.cname_name || ord.txt_name || domain, copy: true },
-              { k:'Type',  v: 'CNAME', accent: true },
-              { k:'Value', v: ord.cname_value || ord.txt_value || null, copy: true, loading: !(ord.cname_value||ord.txt_value) },
-              { k:'TTL',   v: '300 seconds' },
-            ] : [
-              { k:'Name',  v: ord.txt_name || domain, copy: true },
-              { k:'Type',  v: 'TXT', accent: true },
-              { k:'Value', v: ord.txt_value || null, copy: true, loading: !ord.txt_value },
-              { k:'TTL',   v: '300 seconds' },
-            ]).map(({ k, v, copy, accent, loading }) => (
+            {[
+              { k: 'Name',  v: ord.dcv_cname_name,  copy: true, loading: !ord.dcv_cname_name },
+              { k: 'Type',  v: 'CNAME', accent: true },
+              { k: 'Value', v: ord.dcv_cname_value, copy: true, loading: !ord.dcv_cname_value },
+              { k: 'TTL',   v: '300 seconds' },
+            ].map(({ k, v, copy, accent, loading }) => (
               <div key={k} style={{ display: 'grid', gridTemplateColumns: '70px 1fr auto',
                 alignItems: 'center', padding: '10px 18px',
                 borderBottom: '0.5px solid rgba(255,255,255,0.04)' }}>
@@ -590,7 +523,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
                   wordBreak: 'break-all', lineHeight: 1.5 }}>
                   {loading
                     ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        <RefreshCw size={11} className="spin"/> Fetching…
+                        <RefreshCw size={11} className="spin"/> {polling ? 'Fetching from GoGetSSL…' : 'Waiting…'}
                       </span>
                     : v}
                 </span>
@@ -599,7 +532,6 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
             ))}
           </div>
 
-          {/* Feedback */}
           {res?.dns_auto && (
             <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
               background: res.dns_auto.ok ? 'rgba(52,211,153,0.06)' : 'rgba(220,38,38,0.06)',
@@ -614,24 +546,23 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
               </span>
             </div>
           )}
-          {res && res.status !== 'active' && !res.dns_auto && (
+          {res && res.ggs_status && res.ggs_status !== 'active' && !res.dns_auto && (
             <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
               background: 'rgba(245,158,11,0.06)', display: 'flex', gap: 8 }}>
               <AlertTriangle size={12} style={{ color: '#f59e0b', flexShrink: 0, marginTop: 1 }}/>
               <span style={{ fontSize: 11, color: '#fbbf24' }}>
-                Not validated yet — DNS may still be propagating. Try again in a minute.
+                Not validated yet ({res.ggs_status}) — DNS may still be propagating. Try again in a minute.
               </span>
             </div>
           )}
         </div>
 
-        {/* Actions */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
-          <button onClick={addDns} disabled={dns || !ord.txt_value}
+          <button onClick={addDns} disabled={dns || !ord.dcv_cname_value}
             style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#0e7fc0',
               color: 'white', border: 'none', borderRadius: 7, padding: '10px 18px',
-              fontSize: 13, fontWeight: 600, cursor: dns || !ord.txt_value ? 'not-allowed' : 'pointer',
-              opacity: !ord.txt_value ? 0.4 : 1, fontFamily: 'inherit' }}>
+              fontSize: 13, fontWeight: 600, cursor: dns || !ord.dcv_cname_value ? 'not-allowed' : 'pointer',
+              opacity: !ord.dcv_cname_value ? 0.4 : 1, fontFamily: 'inherit' }}>
             {dns ? <><RefreshCw size={13} className="spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS Record</>}
           </button>
           <button onClick={check} disabled={chk}
@@ -647,13 +578,13 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
           </button>
         </div>
 
-        {/* Auto note */}
         <div style={{ background: 'rgba(14,127,192,0.08)', border: '0.5px solid rgba(14,127,192,0.2)',
           borderRadius: 8, padding: '12px 16px', display: 'flex', gap: 10 }}>
           <Zap size={14} style={{ color: '#0e7fc0', flexShrink: 0, marginTop: 1 }}/>
           <div style={{ fontSize: 12, color: '#4b5563', lineHeight: 1.6 }}>
-            <strong style={{ color: '#9ca3af' }}>Fully automatic:</strong> SSLVault polls TheSSLStore every 5 minutes.
-            Once your DNS propagates, the certificate activates and installs itself — no action needed.
+            <strong style={{ color: '#9ca3af' }}>Fully automatic:</strong> If your DNS provider is connected under{' '}
+            <strong style={{ color: '#9ca3af' }}>More → DNS Providers</strong>, click{' '}
+            <strong style={{ color: '#9ca3af' }}>Auto-Add DNS Record</strong> and SSLVault handles validation end-to-end.
           </div>
         </div>
       </div>
@@ -665,7 +596,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
     </div>
   )
 
-  // ── STEP: DONE ────────────────────────────────────────────────────────────
+  // ── DONE ────────────────────────────────────────────────────────────────────
   return (
     <div style={{ minHeight: '100vh', background: '#050a14', display: 'flex',
       alignItems: 'center', justifyContent: 'center', padding: 32 }}>
@@ -678,11 +609,11 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
         <h2 style={{ fontSize: 28, fontWeight: 800, color: 'white', letterSpacing: '-0.6px', marginBottom: 8 }}>
           Certificate Issued
         </h2>
-        <div style={{ fontFamily: 'monospace', fontSize: 15, color: '#0e7fc0',
-          marginBottom: 8, fontWeight: 600 }}>{clean(domain)}</div>
+        <div style={{ fontFamily: 'monospace', fontSize: 15, color: '#0e7fc0', marginBottom: 8, fontWeight: 600 }}>
+          {clean(domain)}
+        </div>
         <p style={{ fontSize: 13, color: '#4b5563', marginBottom: 32, lineHeight: 1.6 }}>
-          DigiCert / RapidSSL certificate issued. Auto-renewal is active —
-          it will renew itself 14 days before expiry.
+          {PRODUCTS.find(p => p.code === product)?.name} issued via GoGetSSL. Auto-renewal is active.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
           <button onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}
@@ -690,24 +621,15 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother }) {
               background: 'linear-gradient(135deg,#0e7fc0,#1a56db)', color: 'white',
               border: 'none', borderRadius: 8, padding: '13px', fontSize: 14,
               fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
-            <Server size={15}/> Install on Server
+            <Server size={15}/> Go to Dashboard
           </button>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <button onClick={() => { if (onDashboard) onDashboard(); else nav('/dashboard') }}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                background: 'rgba(255,255,255,0.06)', color: '#9ca3af',
-                border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 8,
-                padding: '11px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
-              View Dashboard
-            </button>
-            <button onClick={reset}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                background: 'rgba(255,255,255,0.06)', color: '#9ca3af',
-                border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 8,
-                padding: '11px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
-              Issue Another
-            </button>
-          </div>
+          <button onClick={reset}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              background: 'rgba(255,255,255,0.06)', color: '#9ca3af',
+              border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 8,
+              padding: '11px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+            Issue Another Certificate
+          </button>
         </div>
       </div>
     </div>
