@@ -14,7 +14,6 @@ function adminDb() {
   )
 }
 
-// ── Read credentials from vault via SQL ───────────────────────────────
 async function getCredentials(): Promise<{ user: string; pass: string }> {
   const db = adminDb()
   const { data, error } = await db.rpc('get_ggs_credentials')
@@ -22,7 +21,6 @@ async function getCredentials(): Promise<{ user: string; pass: string }> {
   return data
 }
 
-// ── GoGetSSL auth ─────────────────────────────────────────────────────
 async function ggsAuth(): Promise<string> {
   const { user, pass } = await getCredentials()
   const res = await fetch(`${GGS_API}/auth/`, {
@@ -49,7 +47,6 @@ async function ggsGet(authKey: string, path: string) {
   return res.json()
 }
 
-// ── Product catalogue ─────────────────────────────────────────────────
 const PRODUCT_META: Record<string, { wildcard: boolean }> = {
   rapidssl:          { wildcard: false },
   rapidssl_wildcard: { wildcard: true  },
@@ -57,22 +54,151 @@ const PRODUCT_META: Record<string, { wildcard: boolean }> = {
 
 async function resolveProductId(authKey: string, code: string): Promise<{ id: number; name: string }> {
   const resp = await ggsGet(authKey, '/products/ssl/')
-  // Response is an object keyed by product_id
   const entries = typeof resp === 'object' && !Array.isArray(resp)
     ? Object.entries(resp).map(([id, p]: [string, any]) => ({ id: Number(id), ...p }))
     : (resp as any[])
-
   const isWildcard = PRODUCT_META[code]?.wildcard ?? false
   const match = entries.find((p: any) => {
     const name: string = (p.name || '').toLowerCase()
     return name.includes('rapidssl') && (isWildcard ? name.includes('wildcard') : !name.includes('wildcard'))
   })
-
   if (!match) {
     const names = entries.map((p: any) => p.name).join(', ')
     throw new Error(`Product '${code}' not found. Available: ${names}`)
   }
   return { id: Number(match.id || match.product_id), name: match.name }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// LOCAL KEY PAIR + CSR GENERATION
+//
+// SECURITY PRINCIPLE: The private key is generated entirely within this
+// Deno edge function using the Web Crypto API. Only the CSR (which
+// contains the PUBLIC key and subject DN) is ever transmitted to
+// GoGetSSL or any CA. The private key is stored exclusively in the
+// SSLVault Supabase database and is never sent to a third party.
+//
+// This complies with CA/Browser Forum Baseline Requirements §6.1.2:
+// "The CA SHALL NOT generate the Subscriber's Private Key on behalf of
+// the Subscriber."
+// ══════════════════════════════════════════════════════════════════════
+
+function u8ToBase64(buf: Uint8Array): string {
+  let bin = ''
+  for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i])
+  return btoa(bin)
+}
+
+function pemWrap(label: string, b64: string): string {
+  const lines = b64.match(/.{1,64}/g)?.join('\n') ?? b64
+  return `-----BEGIN ${label}-----\n${lines}\n-----END ${label}-----\n`
+}
+
+function derLen(n: number): Uint8Array {
+  if (n < 0x80) return new Uint8Array([n])
+  if (n < 0x100) return new Uint8Array([0x81, n])
+  return new Uint8Array([0x82, (n >> 8) & 0xff, n & 0xff])
+}
+
+function derTag(tag: number, content: Uint8Array): Uint8Array {
+  return new Uint8Array([tag, ...derLen(content.length), ...content])
+}
+
+const derSeq  = (c: Uint8Array) => derTag(0x30, c)
+const derSet  = (c: Uint8Array) => derTag(0x31, c)
+const derCtx0 = (c: Uint8Array) => derTag(0xa0, c)
+
+function derOidBytes(oid: number[]): Uint8Array {
+  return new Uint8Array([0x06, oid.length, ...oid])
+}
+
+function derUtf8(str: string): Uint8Array {
+  const enc = new TextEncoder().encode(str)
+  return derTag(0x0c, enc)
+}
+
+// Build a single RDN attribute: SET { SEQUENCE { OID, UTF8String } }
+function rdn(oidBytes: number[], value: string): Uint8Array {
+  return derSet(derSeq(new Uint8Array([...derOidBytes(oidBytes), ...derUtf8(value)])))
+}
+
+// DER Subject: SEQUENCE of RDNs
+// OID bytes (pre-encoded BER encoding of the arc after 0x06 tag):
+//   CN=2.5.4.3 → [0x55,0x04,0x03]
+//   O =2.5.4.10→ [0x55,0x04,0x0a]
+//   L =2.5.4.7 → [0x55,0x04,0x07]
+//   ST=2.5.4.8 → [0x55,0x04,0x08]
+//   C =2.5.4.6 → [0x55,0x04,0x06]
+function buildSubject(cn: string): Uint8Array {
+  const parts = new Uint8Array([
+    ...rdn([0x55,0x04,0x03], cn),
+    ...rdn([0x55,0x04,0x0a], 'SSLVault'),
+    ...rdn([0x55,0x04,0x07], 'Amsterdam'),
+    ...rdn([0x55,0x04,0x08], 'Noord-Holland'),
+    ...rdn([0x55,0x04,0x06], 'NL'),
+  ])
+  return derSeq(parts)
+}
+
+// sha256WithRSAEncryption OID sequence (fixed DER)
+const SHA256_WITH_RSA = new Uint8Array([
+  0x30, 0x0d,
+  0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b,
+  0x05, 0x00,
+])
+
+async function generateCSRAndKey(domain: string): Promise<{
+  csrPem: string
+  privateKeyPem: string
+}> {
+  // Step 1 — generate RSA-2048 key pair in Deno's Web Crypto runtime.
+  // exportable=true so we can persist the private key in our own DB.
+  const keyPair = await crypto.subtle.generateKey(
+    {
+      name: 'RSASSA-PKCS1-v1_5',
+      modulusLength: 2048,
+      publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+      hash: 'SHA-256',
+    },
+    true,
+    ['sign', 'verify']
+  )
+
+  // Step 2 — export private key as PKCS#8 for storage in SSLVault DB only
+  const pkcs8Der = new Uint8Array(await crypto.subtle.exportKey('pkcs8', keyPair.privateKey))
+  const privateKeyPem = pemWrap('PRIVATE KEY', u8ToBase64(pkcs8Der))
+
+  // Step 3 — export public key as SPKI (this goes into the CSR, NOT the private key)
+  const spkiDer = new Uint8Array(await crypto.subtle.exportKey('spki', keyPair.publicKey))
+
+  // Step 4 — build CertificationRequestInfo (tbsCSR)
+  const subject    = buildSubject(domain)
+  const version    = new Uint8Array([0x02, 0x01, 0x00])       // INTEGER v1
+  const attributes = derCtx0(new Uint8Array(0))               // [0] empty attributes
+  const tbsCSR = derSeq(new Uint8Array([
+    ...version,
+    ...subject,
+    ...spkiDer,   // SubjectPublicKeyInfo (public key only)
+    ...attributes,
+  ]))
+
+  // Step 5 — sign tbsCSR with our private key
+  const sigBuf = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', keyPair.privateKey, tbsCSR)
+  const sigBytes = new Uint8Array(sigBuf)
+
+  // Step 6 — wrap signature as BIT STRING (0x00 = zero unused bits)
+  const bitString = derTag(0x03, new Uint8Array([0x00, ...sigBytes]))
+
+  // Step 7 — assemble final PKCS#10 CSR
+  const csrDer = derSeq(new Uint8Array([
+    ...tbsCSR,
+    ...SHA256_WITH_RSA,
+    ...bitString,
+  ]))
+
+  const csrPem = pemWrap('CERTIFICATE REQUEST', u8ToBase64(csrDer))
+
+  return { csrPem, privateKeyPem }
 }
 
 // ── Main handler ──────────────────────────────────────────────────────
@@ -108,27 +234,16 @@ serve(async (req) => {
         ? (cleanDomain.startsWith('*.') ? cleanDomain : `*.${cleanDomain}`)
         : cleanDomain
 
-      // Generate CSR server-side
-      const csrRes = await ggsPost(authKey, '/tools/csr/generate/', {
-        domain:     csrDomain,
-        country:    'NL',
-        state:      'Noord-Holland',
-        city:       'Amsterdam',
-        org:        'SSLVault',
-        department: 'IT',
-        email:      adminEmail,
-      })
-      if (!csrRes.csr_code)
-        return json({ error: `CSR generation failed: ${JSON.stringify(csrRes)}` }, 500)
+      // ── Generate key pair + CSR locally — private key stays here ──
+      const { csrPem, privateKeyPem } = await generateCSRAndKey(csrDomain)
+      // csrPem  → sent to GoGetSSL (public key + subject only, safe to transmit)
+      // privateKeyPem → stored only in SSLVault DB, never sent to any CA
 
-      // Store private key for later use (agent install, manual download)
-      const privateKeyPem = csrRes.pkey_code || csrRes.private_key || null
-
-      // Place order with DNS DCV
+      // Place order with our locally-generated CSR
       const orderRes = await ggsPost(authKey, '/orders/add_ssl_order/', {
         product_id:       String(product.id),
         period:           String(period),
-        csr:              csrRes.csr_code,
+        csr:              csrPem,
         server_count:     '-1',
         dcv_method:       'dns',
         approver_email:   `admin@${cleanDomain}`,
@@ -145,7 +260,7 @@ serve(async (req) => {
       if (!orderRes.order_id)
         return json({ error: orderRes.description || orderRes.error || JSON.stringify(orderRes) }, 500)
 
-      // Save order to DB
+      // Save order to DB — private key stays in our DB only
       const { data: saved, error: dbErr } = await adminDb()
         .from('ssl_orders')
         .insert({
@@ -158,7 +273,7 @@ serve(async (req) => {
           status:           'dv_pending',
           ggs_order_id:     orderRes.order_id,
           ggs_invoice_id:   orderRes.invoice_id,
-          csr_code:         csrRes.csr_code,
+          csr_code:         csrPem,
           private_key_pem:  privateKeyPem,
           admin_email:      adminEmail,
           admin_first_name: firstName,
@@ -230,26 +345,14 @@ serve(async (req) => {
         upd.dcv_cname_value = d?.cname_value || d?.validation?.cname_value || ''
       }
 
-      // Certificate active
+      // Certificate active — mirror to certificates table
       if (statusRes.status === 'active' && statusRes.crt_code) {
-        upd.status    = 'active'
-        upd.crt_code  = statusRes.crt_code
-        upd.ca_code   = statusRes.ca_code
+        upd.status     = 'active'
+        upd.crt_code   = statusRes.crt_code
+        upd.ca_code    = statusRes.ca_code
         upd.valid_from = statusRes.valid_from
         upd.valid_till = statusRes.valid_till
 
-        // Parse serial + fingerprint from PEM cert
-        let serial_number: string | null = null
-        let fingerprint_sha1: string | null = null
-        let common_name: string | null = null
-        try {
-          // Extract serial from PEM header block if present in status response
-          if (statusRes.md5) fingerprint_sha1 = statusRes.md5
-          if (statusRes.serial_number) serial_number = statusRes.serial_number
-          if (statusRes.common_name)   common_name   = statusRes.common_name
-        } catch (_) {}
-
-        // Mirror to certificates table for dashboard with full details
         await adminDb().from('certificates').upsert({
           user_id:          user.id,
           domain:           order.domain,
@@ -262,10 +365,10 @@ serve(async (req) => {
           cert_type:        order.product_name || 'RapidSSL DV',
           source:           'gogetssl',
           ggs_order_id:     order.ggs_order_id,
-          serial_number:    serial_number,
-          fingerprint_sha1: fingerprint_sha1,
-          common_name:      common_name || order.domain,
-          private_key_pem:  order.private_key_pem || null,
+          serial_number:    statusRes.serial_number || null,
+          fingerprint_sha1: statusRes.md5           || null,
+          common_name:      statusRes.common_name   || order.domain,
+          private_key_pem:  order.private_key_pem   || null,
           dcv_method:       'dns',
           san:              order.domain,
           updated_at:       new Date().toISOString(),
