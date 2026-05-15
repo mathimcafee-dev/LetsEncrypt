@@ -335,6 +335,18 @@ serve(async (req) => {
 
       if (dbErr) return json({ error: dbErr.message }, 500)
 
+      // ── Auto-save / update domain profile ────────────────────────────
+      // Upsert contact details so the form auto-populates next time
+      await adminDb().from('domain_profiles').upsert({
+        user_id:    user.id,
+        domain:     cleanDomain,
+        first_name: firstName,
+        last_name:  lastName,
+        email:      adminEmail,
+        phone:      phone,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,domain' })
+
       // ── Hand the private key to KeyLocker for encrypted storage ──────
       // The raw privateKeyPem exists only in this function's memory.
       // KeyLocker will encrypt it with AES-256-GCM (envelope encryption),
@@ -485,6 +497,21 @@ serve(async (req) => {
       const entries = normaliseProducts(resp)
       const rapid   = entries.filter(({ name }) => name.toLowerCase().includes('rapidssl'))
       return json({ ok: true, products: rapid })
+    }
+
+    // ── get_profile ───────────────────────────────────────────────────
+    // Returns saved contact details for a domain (for form pre-fill)
+    if (action === 'get_profile') {
+      const { domain } = body
+      if (!domain) return json({ error: 'domain required' }, 400)
+      const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
+      const { data } = await adminDb()
+        .from('domain_profiles')
+        .select('first_name, last_name, email, phone, updated_at')
+        .eq('user_id', user.id)
+        .eq('domain', cleanDomain)
+        .single()
+      return json({ ok: true, profile: data || null })
     }
 
     return json({ error: `Unknown action: ${action}` }, 400)

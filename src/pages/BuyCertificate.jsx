@@ -122,6 +122,28 @@ export default function BuyCertificate({ nav, onDashboard }) {
   }, [])
   useEffect(() => { if (user) setEm(e => e || user.email || '') }, [user])
 
+  // Auto-populate contact details from saved domain profile
+  const [profileLoading, setProfileLoading] = useState(false)
+  useEffect(() => {
+    const d = clean(domain)
+    if (!d || !user) return
+    // Debounce — wait until user stops typing
+    const t = setTimeout(async () => {
+      setProfileLoading(true)
+      try {
+        const r = await call('get_profile', { domain: d })
+        if (r.profile) {
+          if (r.profile.first_name) setFn(r.profile.first_name)
+          if (r.profile.last_name)  setLn(r.profile.last_name)
+          if (r.profile.email)      setEm(r.profile.email)
+          if (r.profile.phone)      setPh(r.profile.phone)
+        }
+      } catch (_) {}
+      setProfileLoading(false)
+    }, 600)
+    return () => clearTimeout(t)
+  }, [domain, user])
+
   // Auto-poll for DCV value after order placed
   useEffect(() => {
     if (step !== 'dv' || !ord?.order_id || ord?.dcv_cname_value) return
@@ -318,6 +340,15 @@ export default function BuyCertificate({ nav, onDashboard }) {
                 <div style={{ position: 'relative' }}>
                   <Globe size={14} style={{ position: 'absolute', left: 12, top: '50%',
                     transform: 'translateY(-50%)', color: '#4b5563', pointerEvents: 'none' }}/>
+                  {profileLoading && (
+                    <div style={{ fontSize: 10, color: '#4b5563', display: 'flex', alignItems: 'center',
+                      gap: 4, marginBottom: 4 }}>
+                      <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
+                        border: '1.5px solid #4b5563', borderTopColor: 'transparent',
+                        animation: 'spin .7s linear infinite' }} />
+                      Looking up saved profile…
+                    </div>
+                  )}
                   <input value={domain} onChange={e => setD(e.target.value)}
                     placeholder={PRODUCTS.find(p => p.code === product)?.wildcard ? 'yourdomain.com' : 'yourdomain.com'}
                     style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)',
