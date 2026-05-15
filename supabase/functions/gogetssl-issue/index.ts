@@ -121,13 +121,13 @@ serve(async (req) => {
       if (!csrRes.csr_code)
         return json({ error: `CSR generation failed: ${JSON.stringify(csrRes)}` }, 500)
 
-      // Place order with DNS DCV
+      // Place order with DNS TXT DCV (RapidSSL only supports dns_txt)
       const orderRes = await ggsPost(authKey, '/orders/add_ssl_order/', {
         product_id:       String(product.id),
         period:           String(period),
         csr:              csrRes.csr_code,
         server_count:     '-1',
-        dcv_method:       'dns',
+        dcv_method:       'dns_txt',
         approver_email:   `admin@${cleanDomain}`,
         admin_email:      adminEmail,
         admin_phone:      phone,
@@ -173,8 +173,11 @@ serve(async (req) => {
       let dcvName = '', dcvValue = ''
       if (statusRes.domains) {
         const d = Object.values(statusRes.domains)[0] as any
-        dcvName  = d?.cname_name  || d?.validation?.cname_name  || ''
-        dcvValue = d?.cname_value || d?.validation?.cname_value || ''
+        // GoGetSSL returns dns_txt tokens under txt_name/txt_value
+        dcvName  = d?.txt_name   || d?.validation?.txt_name   ||
+                   d?.cname_name || d?.validation?.cname_name  || ''
+        dcvValue = d?.txt_value  || d?.validation?.txt_value  ||
+                   d?.cname_value|| d?.validation?.cname_value || ''
       }
 
       if (dcvName || dcvValue) {
@@ -192,8 +195,8 @@ serve(async (req) => {
         ggs_order_id:    orderRes.order_id,
         domain:          cleanDomain,
         product_name:    product.name,
-        dcv_cname_name:  dcvName,
-        dcv_cname_value: dcvValue,
+        dcv_txt_name:    dcvName,
+        dcv_txt_value:   dcvValue,
         status:          'dv_pending',
       })
     }
@@ -222,8 +225,10 @@ serve(async (req) => {
       // Pick up DCV info if missing
       if (!order.dcv_cname_value && statusRes.domains) {
         const d = Object.values(statusRes.domains)[0] as any
-        upd.dcv_cname_name  = d?.cname_name  || d?.validation?.cname_name  || ''
-        upd.dcv_cname_value = d?.cname_value || d?.validation?.cname_value || ''
+        upd.dcv_cname_name  = d?.txt_name   || d?.validation?.txt_name   ||
+                               d?.cname_name || d?.validation?.cname_name  || ''
+        upd.dcv_cname_value = d?.txt_value  || d?.validation?.txt_value  ||
+                               d?.cname_value|| d?.validation?.cname_value || ''
       }
 
       // Certificate active
@@ -254,8 +259,8 @@ serve(async (req) => {
         ok:              true,
         status:          upd.status || order.status,
         ggs_status:      statusRes.status,
-        dcv_cname_name:  upd.dcv_cname_name  || order.dcv_cname_name,
-        dcv_cname_value: upd.dcv_cname_value || order.dcv_cname_value,
+        dcv_txt_name:    upd.dcv_cname_name  || order.dcv_cname_name,
+        dcv_txt_value:   upd.dcv_cname_value || order.dcv_cname_value,
         crt_code:        statusRes.crt_code,
         ca_code:         statusRes.ca_code,
         valid_till:      statusRes.valid_till,

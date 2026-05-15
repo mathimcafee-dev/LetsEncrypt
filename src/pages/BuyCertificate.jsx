@@ -124,15 +124,15 @@ export default function BuyCertificate({ nav, onDashboard }) {
 
   // Auto-poll for DCV value after order placed
   useEffect(() => {
-    if (step !== 'dv' || !ord?.order_id || ord?.dcv_cname_value) return
+    if (step !== 'dv' || !ord?.order_id || ord?.dcv_txt_value) return
     setPoll(true)
     let n = 0
     const iv = setInterval(async () => {
       n++
       try {
         const s = await call('check_status', { order_id: ord.order_id })
-        if (s.dcv_cname_value) {
-          setOrd(p => ({ ...p, dcv_cname_name: s.dcv_cname_name, dcv_cname_value: s.dcv_cname_value }))
+        if (s.dcv_txt_value) {
+          setOrd(p => ({ ...p, dcv_txt_name: s.dcv_txt_name, dcv_txt_value: s.dcv_txt_value }))
           setPoll(false); clearInterval(iv)
         }
         if (s.status === 'active') { setStep('done'); setPoll(false); clearInterval(iv) }
@@ -177,7 +177,7 @@ export default function BuyCertificate({ nav, onDashboard }) {
     const r = await call('check_status', { order_id: ord.order_id })
     setChk(false); setRes(r)
     if (r.status === 'active') setStep('done')
-    if (r.dcv_cname_value) setOrd(p => ({ ...p, dcv_cname_name: r.dcv_cname_name, dcv_cname_value: r.dcv_cname_value }))
+    if (r.dcv_txt_value) setOrd(p => ({ ...p, dcv_txt_name: r.dcv_txt_name, dcv_txt_value: r.dcv_txt_value }))
   }
 
   const addDns = async () => {
@@ -188,9 +188,9 @@ export default function BuyCertificate({ nav, onDashboard }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({
-          domain: ord.domain || clean(domain),
-          cname_name: ord.dcv_cname_name,
-          cname_value: ord.dcv_cname_value,
+          domain:    ord.domain || clean(domain),
+          txt_name:  ord.dcv_txt_name,
+          txt_value: ord.dcv_txt_value,
         }),
       })
       setRes({ dns_auto: await r.json() })
@@ -416,7 +416,7 @@ export default function BuyCertificate({ nav, onDashboard }) {
                 { k: 'Certificate', v: PRODUCTS.find(p => p.code === product)?.name || 'RapidSSL DV' },
                 { k: 'Validity',    v: `${years} year${years>1?'s':''}` },
                 { k: 'Auto-renewal', v: 'Included', blue: true },
-                { k: 'DNS validation', v: 'Automatic (CNAME)', blue: true },
+                { k: 'DNS validation', v: 'Automatic (TXT)', blue: true },
                 { k: 'Powered by', v: 'GoGetSSL · DigiCert' },
               ].map(({ k, v, blue }) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 7 }}>
@@ -485,10 +485,10 @@ export default function BuyCertificate({ nav, onDashboard }) {
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 32px' }}>
         <div style={{ marginBottom: 28, textAlign: 'center' }}>
           <div style={{ fontSize: 22, fontWeight: 800, color: 'white', letterSpacing: '-0.4px', marginBottom: 8 }}>
-            Add this CNAME record to prove ownership
+            Add this TXT record to prove ownership
           </div>
           <div style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.6 }}>
-            Add a <strong style={{ color: '#9ca3af' }}>CNAME record</strong> to your DNS for{' '}
+            Add a <strong style={{ color: '#9ca3af' }}>TXT record</strong> to your DNS for{' '}
             <strong style={{ color: '#0e7fc0', fontFamily: 'monospace' }}>{ord.domain || clean(domain)}</strong>
           </div>
         </div>
@@ -501,16 +501,16 @@ export default function BuyCertificate({ nav, onDashboard }) {
             {['#ff5f56','#ffbd2e','#27c93f'].map(c => (
               <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, display: 'block' }}/>
             ))}
-            <span style={{ fontSize: 11, color: '#4b5563', fontFamily: 'monospace', marginLeft: 8 }}>DNS record · CNAME</span>
+            <span style={{ fontSize: 11, color: '#4b5563', fontFamily: 'monospace', marginLeft: 8 }}>DNS record · TXT</span>
             <span style={{ marginLeft: 'auto', fontFamily: 'monospace', fontSize: 10, color: '#374151' }}>
               GGS #{ord.ggs_order_id || '—'}
             </span>
           </div>
           <div style={{ padding: '4px 0' }}>
             {[
-              { k: 'Name',  v: ord.dcv_cname_name,  copy: true, loading: !ord.dcv_cname_name },
-              { k: 'Type',  v: 'CNAME', accent: true },
-              { k: 'Value', v: ord.dcv_cname_value, copy: true, loading: !ord.dcv_cname_value },
+              { k: 'Name',  v: ord.dcv_txt_name,  copy: true, loading: !ord.dcv_txt_name },
+              { k: 'Type',  v: 'TXT', accent: true },
+              { k: 'Value', v: ord.dcv_txt_value, copy: true, loading: !ord.dcv_txt_value },
               { k: 'TTL',   v: '300 seconds' },
             ].map(({ k, v, copy, accent, loading }) => (
               <div key={k} style={{ display: 'grid', gridTemplateColumns: '70px 1fr auto',
@@ -558,11 +558,11 @@ export default function BuyCertificate({ nav, onDashboard }) {
         </div>
 
         <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
-          <button onClick={addDns} disabled={dns || !ord.dcv_cname_value}
+          <button onClick={addDns} disabled={dns || !ord.dcv_txt_value}
             style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#0e7fc0',
               color: 'white', border: 'none', borderRadius: 7, padding: '10px 18px',
-              fontSize: 13, fontWeight: 600, cursor: dns || !ord.dcv_cname_value ? 'not-allowed' : 'pointer',
-              opacity: !ord.dcv_cname_value ? 0.4 : 1, fontFamily: 'inherit' }}>
+              fontSize: 13, fontWeight: 600, cursor: dns || !ord.dcv_txt_value ? 'not-allowed' : 'pointer',
+              opacity: !ord.dcv_txt_value ? 0.4 : 1, fontFamily: 'inherit' }}>
             {dns ? <><RefreshCw size={13} className="spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS Record</>}
           </button>
           <button onClick={check} disabled={chk}
