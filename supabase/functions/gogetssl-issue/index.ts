@@ -247,6 +247,9 @@ async function generateCSRAndKey(domain: string): Promise<{
   return { csrPem, privateKeyPem }
 }
 
+// GoGetSSL webserver type IDs — 2 = Apache+OpenSSL (universal, accepted for all DV certs)
+const WEBSERVER_TYPE = '2'
+
 // ── Main handler ──────────────────────────────────────────────────────
 // ── KeyLocker helper — delegate private key to the vault ──────────────
 // gogetssl-issue calls keylocker as the authenticated user (same JWT),
@@ -304,6 +307,7 @@ serve(async (req) => {
         period:           String(period),
         csr:              csrPem,
         server_count:     '-1',
+        webserver_type:   WEBSERVER_TYPE,
         dcv_method:       'dns',
         approver_email:   `admin@${cleanDomain}`,
         admin_email:      adminEmail,
