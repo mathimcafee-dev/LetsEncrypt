@@ -4,7 +4,6 @@ import { supabase } from './lib/supabase'
 import Nav from './components/Nav'
 import Home from './pages/Home'
 import CLMHome from './pages/CLMHome'
-import Import from './pages/Import'
 import Dashboard from './pages/Dashboard'
 import Auth from './pages/Auth'
 import SharedHostingGuide from './pages/SharedHostingGuide'
@@ -61,7 +60,6 @@ export default function App() {
     <div>
       {showPublicNav && <Nav nav={nav} page={page} />}
       {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} /> : <Home nav={nav} />)}
-      {page === '/import' && <Import nav={nav} />}
       {page === '/dashboard' && <Dashboard nav={nav} />}
       {page === '/dns-providers' && <DnsProviders nav={nav} />}
       {page === '/install' && <Install nav={nav} />}

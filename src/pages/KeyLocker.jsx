@@ -147,9 +147,6 @@ export default function KeyLocker({ nav }) {
   const [rotateSuccess, setRotateSuccess] = useState('')
   const [tab, setTab]           = useState('vault')
   const [rotateConfirm, setRotateConfirm] = useState(null)
-  const [importing, setImporting] = useState(false)
-  const [importProgress, setImportProgress] = useState('')
-  const [importDone, setImportDone] = useState(false)
 
   // ── Load vault keys and audit log ──────────────────────────────────
   useEffect(() => {
@@ -179,78 +176,6 @@ export default function KeyLocker({ nav }) {
     setKeys(data.keys || [])
     setAudit(data.audit || [])
     setLoading(false)
-  }
-
-  // ── Import existing certs to KeyLocker ───────────────────────────────
-  const handleImport = async () => {
-    setImporting(true)
-    setImportDone(false)
-    setImportProgress('Fetching certificates...')
-    try {
-      // Get all certs with plain private keys not yet in KeyLocker
-      const { data: certs } = await supabase
-        .from('certificates')
-        .select('id, domain, private_key_pem, expires_at')
-        .eq('user_id', user.id)
-        .not('private_key_pem', 'is', null)
-
-      if (!certs || certs.length === 0) {
-        setImportProgress('No certificates found to import.')
-        setImporting(false)
-        return
-      }
-
-      // Get already-imported domains to avoid duplicates
-      const { data: existing } = await supabase
-        .from('keylocker_keys')
-        .select('domain')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-
-      const existingDomains = new Set((existing || []).map(k => k.domain))
-      const toImport = certs.filter(c => !existingDomains.has(c.domain))
-
-      if (toImport.length === 0) {
-        setImportProgress('All certificates already in KeyLocker vault.')
-        setImporting(false)
-        setImportDone(true)
-        return
-      }
-
-      const { data: { session } } = await supabase.auth.getSession()
-      let imported = 0
-
-      for (const cert of toImport) {
-        setImportProgress(`Encrypting ${cert.domain} (${imported + 1} of ${toImport.length})...`)
-        try {
-          const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/keylocker', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session.access_token}`,
-            },
-            body: JSON.stringify({
-              action: 'store',
-              cert_id: cert.id,
-              domain: cert.domain,
-              private_key_pem: cert.private_key_pem,
-              expires_at: cert.expires_at,
-            }),
-          })
-          const result = await res.json()
-          if (result.ok) imported++
-        } catch (e) {
-          console.error('Import failed for', cert.domain, e)
-        }
-      }
-
-      setImportProgress(`✓ ${imported} of ${toImport.length} certificates imported to KeyLocker vault.`)
-      setImportDone(true)
-      await loadData()
-    } catch (e) {
-      setImportProgress('Import failed: ' + e.message)
-    }
-    setImporting(false)
   }
 
   // ── Key rotation ───────────────────────────────────────────────────
@@ -416,13 +341,7 @@ export default function KeyLocker({ nav }) {
             </div>
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            <button className="v2-btn v2-btn-sm" onClick={handleImport} disabled={importing}
-              style={{ fontSize:12, background:'linear-gradient(135deg,#7c3aed,#6d28d9)', color:'white', border:'none' }}>
-              {importing
-                ? <><RefreshCw size={11} className="spin" /> {importProgress}</>
-                : <><Lock size={11} /> Import certs to vault</>}
-            </button>
-            <button className="v2-btn v2-btn-sm" onClick={loadData} style={{ fontSize:12 }}>
+<button className="v2-btn v2-btn-sm" onClick={loadData} style={{ fontSize:12 }}>
               <RefreshCw size={11} /> Refresh
             </button>
           </div>
@@ -478,20 +397,6 @@ export default function KeyLocker({ nav }) {
           </div>
         )}
 
-        {/* Import progress */}
-        {importing && (
-          <div className="v2-callout info" style={{ marginBottom:16, display:'flex', alignItems:'center', gap:10 }}>
-            <RefreshCw size={13} className="spin" />
-            <span>{importProgress}</span>
-          </div>
-        )}
-        {importDone && !importing && importProgress && (
-          <div className="v2-callout" style={{ marginBottom:16, background:'var(--v2-green-bg)',
-            border:'0.5px solid var(--v2-green-border)', color:'var(--v2-green-text)' }}>
-            <div className="v2-callout-title">Import complete</div>
-            {importProgress} Original certificates remain in your inventory — no data was removed.
-          </div>
-        )}
 
         {/* Tabs */}
         <div className="v2-tablist" style={{ marginBottom:20 }}>

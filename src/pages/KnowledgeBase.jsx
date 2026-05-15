@@ -344,7 +344,7 @@ export default function KnowledgeBase({ nav }) {
             <p>Type any domain (e.g. <span className="v2-kbd">example.com</span>) and click <strong>Scan CT Logs</strong>. SSLVault queries <strong>crt.sh</strong> — the public CT log aggregator — and returns all certificates ever issued for that domain and its subdomains.</p>
             <Note type="info">CT logs are public. Anyone can query them. This is a transparency feature built into TLS — all trusted CA-issued certs are logged.</Note>
           </Step>
-          <Step n={3} title="Import discovered domains to your monitor">
+          <Step n={3} title="Add discovered domains to your monitor">
             <p>Click <strong>Add to Monitor</strong> next to any discovered domain to start tracking its expiry, issuer, and health in your inventory.</p>
           </Step>
           <Note type="tip">Use CT Discovery to audit your domain — you may find forgotten subdomains, staging environments, or certs issued by an unexpected CA.</Note>

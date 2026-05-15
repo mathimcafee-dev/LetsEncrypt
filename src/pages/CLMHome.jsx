@@ -11,7 +11,6 @@ import AboutInner from './AboutInner'
 import ContactInner from './ContactInner'
 import DeveloperInner from './DeveloperInner'
 import SettingsPage from './SettingsPage'
-import Import from './Import'
 import DnsProviders from './DnsProviders'
 import Install from './Install'
 import KnowledgeBase from './KnowledgeBase'
@@ -32,7 +31,6 @@ export default function CLMHome({ user, nav }) {
   const NAV_MAIN = [
     { id:'dashboard', label:'Dashboard', icon:Layout },
     { id:'issue', label:'Issue Certificate', icon:Plus },
-    { id:'import', label:'Import Certificate', icon:FileText },
   ]
 
   const NAV_MANAGE = [
@@ -55,7 +53,7 @@ export default function CLMHome({ user, nav }) {
 
   const SECTION_TITLES = {
     dashboard:'Dashboard', issue:'Issue Certificate',
-    import:'Import Certificate', dns:'DNS Providers', servers:'Servers',
+    dns:'DNS Providers', servers:'Servers',
     install:'Installation', kb:'Docs & Help', pricing:'Pricing',
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
   }
@@ -92,7 +90,6 @@ export default function CLMHome({ user, nav }) {
   const renderContent = () => {
     if (section === 'dashboard') return <CertInventory user={user} nav={nav} onIssue={() => navigate('issue')}/>
     if (section === 'issue') return <BuyCertificate nav={nav} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
-    if (section === 'import') return <Import nav={nav}/>
     if (section === 'dns') return <DnsProviders nav={nav}/>
     if (section === 'install') return <Install nav={nav}/>
     if (section === 'kb') return <KnowledgeBase nav={nav}/>
@@ -125,7 +122,7 @@ export default function CLMHome({ user, nav }) {
       </div>
 
       {/* MAIN LAYOUT */}
-      <div style={{ display:'flex', flex:1, background: ['issue','import'].includes(section) ? '#050a14' : '#f0f4f8' }}>
+      <div style={{ display:'flex', flex:1, background: ['issue'].includes(section) ? '#050a14' : '#f0f4f8' }}>
         {/* SIDEBAR */}
         <nav style={{ width:210, background:'#0d3c6e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto',
           boxShadow:'4px 0 24px rgba(0,0,0,0.18), 1px 0 0 rgba(255,255,255,0.06)' }}>
@@ -149,7 +146,7 @@ export default function CLMHome({ user, nav }) {
 
         {/* MAIN CONTENT */}
         <div style={{ flex:1, minWidth:0, display:'flex', flexDirection:'column' }}>
-          {!['issue','import','dashboard','dns'].includes(section) && (
+          {!['issue','dashboard','dns'].includes(section) && (
             <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
               <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
             </div>
