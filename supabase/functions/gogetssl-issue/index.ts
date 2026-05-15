@@ -312,12 +312,14 @@ serve(async (req) => {
         approver_email:   `admin@${cleanDomain}`,
         admin_email:      adminEmail,
         admin_phone:      phone,
-        admin_first_name: firstName,
-        admin_last_name:  lastName,
-        tech_email:       adminEmail,
-        tech_phone:       phone,
-        tech_first_name:  firstName,
-        tech_last_name:   lastName,
+        admin_firstname: firstName,
+        admin_lastname:  lastName,
+        admin_title:     'Mr',
+        tech_firstname:  firstName,
+        tech_lastname:   lastName,
+        tech_email:      adminEmail,
+        tech_phone:      phone,
+        tech_title:      'Mr',
       })
 
       if (!orderRes.order_id)
