@@ -98,7 +98,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
 
 const clean = v => v.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
 
-export default function BuyCertificate({ nav, onDashboard }) {
+export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embedded = false }) {
   const { user, loading: authLoading } = useAuth()
   const [step, setStep]       = useState('form')
   const [product, setProduct] = useState('rapidssl')
@@ -250,11 +250,11 @@ export default function BuyCertificate({ nav, onDashboard }) {
 
   // ── FORM ────────────────────────────────────────────────────────────────────
   if (step === 'form') return (
-    <div style={{ minHeight: '100vh', background: '#050a14' }}>
+    <div style={{ minHeight: embedded ? 'auto' : '100vh', background: '#050a14' }}>
 
-      {/* Top bar */}
+      {/* Top bar — hidden when embedded inside CLM */}
       <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
-        padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
+        padding: '0 32px', display: embedded ? 'none' : 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg,#0e7fc0,#1a56db)',
             borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -275,9 +275,9 @@ export default function BuyCertificate({ nav, onDashboard }) {
         </div>
       </div>
 
-      {/* Progress */}
+      {/* Progress — hidden when embedded */}
       <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
-        padding: '0 32px', display: 'flex', alignItems: 'center', gap: 4, height: 40 }}>
+        padding: '0 32px', display: embedded ? 'none' : 'flex', alignItems: 'center', gap: 4, height: 40 }}>
         {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
           <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 18, height: 18, borderRadius: '50%',
@@ -294,8 +294,8 @@ export default function BuyCertificate({ nav, onDashboard }) {
       </div>
 
       {/* Body */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 32px 80px',
-        display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32, alignItems: 'start' }}>
+      <div style={{ maxWidth: embedded ? '100%' : 1100, margin: '0 auto', padding: embedded ? '20px 20px 40px' : '40px 32px 80px',
+        display: 'grid', gridTemplateColumns: '1fr 360px', gap: embedded ? 20 : 32, alignItems: 'start' }}>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 

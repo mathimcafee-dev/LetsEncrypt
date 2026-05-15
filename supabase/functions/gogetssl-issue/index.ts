@@ -55,33 +55,42 @@ const PRODUCT_META: Record<string, { wildcard: boolean }> = {
 // Normalise the GoGetSSL /products/ssl/ response into a flat array.
 // The API returns: { products: [ {id, name, wildcard, ...}, ... ], success: true }
 // But some reseller accounts may get a legacy keyed object instead.
-function normaliseProducts(resp: any): Array<{ id: number; name: string; wildcard: string }> {
+function normaliseProducts(resp: any): Array<{ id: number; name: string; wildcard: boolean }> {
   if (!resp || typeof resp !== 'object') return []
 
-  // Standard response: { products: [...], success: true }
-  if (Array.isArray(resp.products)) {
-    return resp.products
-      .filter((p: any) => p && typeof p === 'object')
-      .map((p: any) => ({
-        id:       Number(p.id ?? p.product_id ?? 0),
-        name:     String(p.name ?? p.product_name ?? ''),
-        wildcard: String(p.wildcard ?? 'no'),
-      }))
-      .filter((p: any) => p.id && p.name)
+  // GoGetSSL actual response shape (from API docs + observed):
+  // { products: [{id, brand, product, wildcard_enabled:0|1, ...}], success: true }
+  // Older/legacy: { "123": {name, wildcard:"yes"|"no"}, success: true }
+
+  const getName = (p: any): string =>
+    String(p.product ?? p.name ?? p.product_name ?? p.title ?? '')
+
+  const getWildcard = (p: any): boolean => {
+    if (p.wildcard_enabled !== undefined) return Number(p.wildcard_enabled) === 1
+    if (p.wildcard !== undefined) return String(p.wildcard).toLowerCase() === 'yes'
+    return getName(p).toLowerCase().includes('wildcard')
   }
 
-  // Legacy keyed response: { "123": { name: "...", ... }, "456": {...}, success: true }
-  const entries: Array<{ id: number; name: string; wildcard: string }> = []
-  for (const [key, val] of Object.entries(resp)) {
-    if (key === 'success' || !val || typeof val !== 'object') continue
-    const v = val as any
-    const name = String(v.name ?? v.product_name ?? '')
-    const id   = Number(v.id ?? v.product_id ?? key)
-    if (name && !isNaN(id) && id > 0) {
-      entries.push({ id, name, wildcard: String(v.wildcard ?? 'no') })
+  let raw: any[] = []
+  if (Array.isArray(resp.products)) {
+    raw = resp.products
+  } else if (Array.isArray(resp)) {
+    raw = resp
+  } else {
+    for (const [key, val] of Object.entries(resp)) {
+      if (key === 'success' || !val || typeof val !== 'object') continue
+      raw.push({ id: Number(key), ...(val as object) })
     }
   }
-  return entries
+
+  return raw
+    .filter((p: any) => p && typeof p === 'object')
+    .map((p: any) => ({
+      id:       Number(p.id ?? p.product_id ?? 0),
+      name:     getName(p),
+      wildcard: getWildcard(p),
+    }))
+    .filter((p: any) => p.id > 0 && p.name)
 }
 
 async function resolveProductId(authKey: string, code: string): Promise<{ id: number; name: string }> {
@@ -95,12 +104,12 @@ async function resolveProductId(authKey: string, code: string): Promise<{ id: nu
   const isWildcard = PRODUCT_META[code]?.wildcard ?? false
   const match = entries.find(({ name, wildcard }) => {
     const n = name.toLowerCase()
-    const isWC = wildcard === 'yes' || n.includes('wildcard')
-    return n.includes('rapidssl') && (isWildcard ? isWC : !isWC)
+    // wildcard is now a boolean from normaliseProducts
+    return n.includes('rapidssl') && (isWildcard ? wildcard : !wildcard)
   })
 
   if (!match) {
-    const names = entries.map(e => `${e.id}:${e.name}`).join(', ')
+    const names = entries.map(e => `${e.id}:${e.name}(wc=${e.wildcard})`).join(', ')
     throw new Error(`RapidSSL${isWildcard ? ' Wildcard' : ''} not found. Available: ${names}`)
   }
   return { id: match.id, name: match.name }

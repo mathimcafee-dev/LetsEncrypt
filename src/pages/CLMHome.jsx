@@ -89,7 +89,7 @@ export default function CLMHome({ user, nav }) {
 
   const renderContent = () => {
     if (section === 'dashboard') return <CertInventory user={user} nav={nav} onIssue={() => navigate('issue')}/>
-    if (section === 'issue') return <BuyCertificate nav={nav} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
+    if (section === 'issue') return <BuyCertificate nav={nav} embedded={true} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
     if (section === 'dns') return <DnsProviders nav={nav}/>
     if (section === 'install') return <Install nav={nav}/>
     if (section === 'kb') return <KnowledgeBase nav={nav}/>
