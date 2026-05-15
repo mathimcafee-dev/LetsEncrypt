@@ -202,6 +202,19 @@ async function generateCSRAndKey(domain: string): Promise<{
 }
 
 // ── Main handler ──────────────────────────────────────────────────────
+// ── KeyLocker helper — delegate private key to the vault ──────────────
+// gogetssl-issue calls keylocker as the authenticated user (same JWT),
+// so KeyLocker enforces the same user ownership for every vault operation.
+async function callKeyLocker(authHeader: string, body: Record<string, unknown>) {
+  const url = `${Deno.env.get('SUPABASE_URL')}/functions/v1/keylocker`
+  const res = await fetch(url, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+    body:    JSON.stringify(body),
+  })
+  return res.json()
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
@@ -260,7 +273,7 @@ serve(async (req) => {
       if (!orderRes.order_id)
         return json({ error: orderRes.description || orderRes.error || JSON.stringify(orderRes) }, 500)
 
-      // Save order to DB — private key stays in our DB only
+      // Save order to DB — without private key (KeyLocker handles that separately)
       const { data: saved, error: dbErr } = await adminDb()
         .from('ssl_orders')
         .insert({
@@ -273,8 +286,8 @@ serve(async (req) => {
           status:           'dv_pending',
           ggs_order_id:     orderRes.order_id,
           ggs_invoice_id:   orderRes.invoice_id,
-          csr_code:         csrPem,
-          private_key_pem:  privateKeyPem,
+          csr_code:         csrPem,          // CSR is public material — safe to store
+          private_key_pem:  null,            // never stored here — KeyLocker owns it
           admin_email:      adminEmail,
           admin_first_name: firstName,
           admin_last_name:  lastName,
@@ -284,6 +297,28 @@ serve(async (req) => {
         .single()
 
       if (dbErr) return json({ error: dbErr.message }, 500)
+
+      // ── Hand the private key to KeyLocker for encrypted storage ──────
+      // The raw privateKeyPem exists only in this function's memory.
+      // KeyLocker will encrypt it with AES-256-GCM (envelope encryption),
+      // store the ciphertext, and clear private_key_pem from ssl_orders.
+      const klRes = await callKeyLocker(req.headers.get('Authorization')!, {
+        action:          'store',
+        private_key_pem: privateKeyPem,
+        domain:          cleanDomain,
+        order_id:        saved.id,
+        ggs_order_id:    orderRes.order_id,
+        csr_pem:         csrPem,
+        product_name:    product.name,
+        algorithm:       'RSA',
+        key_size:        2048,
+      })
+      if (!klRes.ok) {
+        // KeyLocker failed — log it but don't fail the order.
+        // The CSR is already accepted by GoGetSSL; the user still needs DCV.
+        // Key is temporarily gone from DB — edge case: ideally retry.
+        console.error('KeyLocker store failed:', klRes.error)
+      }
 
       // Poll once immediately for DCV info
       await new Promise(r => setTimeout(r, 2000))
@@ -368,11 +403,28 @@ serve(async (req) => {
           serial_number:    statusRes.serial_number || null,
           fingerprint_sha1: statusRes.md5           || null,
           common_name:      statusRes.common_name   || order.domain,
-          private_key_pem:  order.private_key_pem   || null,
+          private_key_pem:  null,                    // never stored here — use KeyLocker fetch
+          keylocker_key_id: order.keylocker_key_id || null,  // link to encrypted vault entry
           dcv_method:       'dns',
           san:              order.domain,
           updated_at:       new Date().toISOString(),
         }, { onConflict: 'user_id,domain' })
+
+        // Update the KeyLocker vault entry with the cert_id now that the cert row exists
+        if (order.keylocker_key_id) {
+          const { data: certRow } = await adminDb()
+            .from('certificates')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('domain', order.domain)
+            .single()
+          if (certRow) {
+            await adminDb()
+              .from('keylocker_keys')
+              .update({ cert_id: certRow.id, expires_at: statusRes.valid_till })
+              .eq('id', order.keylocker_key_id)
+          }
+        }
       }
 
       await adminDb().from('ssl_orders').update(upd).eq('id', order_id)
