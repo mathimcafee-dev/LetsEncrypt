@@ -50,7 +50,7 @@ export default function About({ nav }) {
             <p style={{ fontSize: 14, color: 'var(--v2-text-2)', lineHeight: 1.75 }}>
               Every certificate issued through SSLVault is a trusted <strong>RapidSSL DV certificate</strong> backed by the
               DigiCert trust chain, issued via TheSSLStore's reseller API. Browser compatibility is 99.9%.
-              Validity up to 2 years.
+              Validity up to 3 years.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>

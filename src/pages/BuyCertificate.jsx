@@ -333,8 +333,8 @@ export default function BuyCertificate({ nav, onDashboard }) {
                   textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: 7 }}>
                   Validity period
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {[{y:1,label:'1 year',sub:'Standard'},{y:2,label:'2 years',sub:'Best value'}].map(({y,label,sub}) => (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                  {[{y:1,label:'1 year',sub:'Standard'},{y:2,label:'2 years',sub:'Best value'},{y:3,label:'3 years',sub:'Max coverage'}].map(({y,label,sub}) => (
                     <div key={y} onClick={() => setYears(y)}
                       style={{ padding: '10px 14px', borderRadius: 7, cursor: 'pointer',
                         border: years === y ? '1.5px solid #0e7fc0' : '0.5px solid rgba(255,255,255,0.08)',

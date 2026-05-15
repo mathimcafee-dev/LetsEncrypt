@@ -24,7 +24,7 @@ export default function Pricing({ nav }) {
     'DV, OV, EV & Wildcard certificates',
     'Issued via GoGetSSL reseller API',
     '~5 minute DV issuance',
-    'Up to 2-year validity',
+    'Up to 3-year validity',
     '99.9% browser & OS compatibility',
     'Auto DNS validation (Cloudflare, Vercel)',
     'Zero-touch auto-renewal',
