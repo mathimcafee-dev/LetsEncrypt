@@ -132,7 +132,7 @@ export default function Install({ nav }) {
             Install your SSL certificate
           </h1>
           <p className="v2-subtitle" style={{ fontSize: 14, marginTop: 4, maxWidth: 560 }}>
-            Step-by-step commands for every web server and operating system. Personalise the domain below — every command updates automatically.
+            Step-by-step SSL installation commands for every web server and OS. Personalise the domain below — every command updates automatically.
           </p>
         </div>
 
@@ -144,7 +144,7 @@ export default function Install({ nav }) {
               <div className="v2-callout-title">Automate this entirely — skip the manual steps</div>
               <p style={{ margin: '4px 0 8px', fontSize: 12, lineHeight: 1.7 }}>
                 If your server is a Linux VPS, the <strong>SSLVault persistent agent</strong> handles installation automatically.
-                No file uploads, no SSH after setup, no manual renewal — ever.
+                No file uploads, no SSH after setup, no manual renewal — ever. Works with all GoGetSSL certificates.
               </p>
               <p style={{ margin: '0 0 8px', fontSize: 12, lineHeight: 1.7 }}>
                 <strong>How:</strong> Go to <strong>Dashboard</strong> → click your cert row → click <strong>Install</strong>.
@@ -459,14 +459,14 @@ export default function Install({ nav }) {
             Need an SSL certificate?
           </h3>
           <p style={{ color: 'var(--v2-text-2)', fontSize: 13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
-            Get a trusted RapidSSL DV certificate issued in minutes, or a free 90-day certificate — both fully managed in SSLVault.
+            Issue DV, OV, EV or Wildcard certificates via GoGetSSL — all fully managed in SSLVault.
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
-              <Shield size={13} strokeWidth={2.2} /> Buy RapidSSL <ArrowRight size={13} strokeWidth={2} />
+              <Shield size={13} strokeWidth={2.2} /> Issue Certificate <ArrowRight size={13} strokeWidth={2} />
             </button>
-            <button className="v2-btn" onClick={() => nav('/buy')}>
-              Free 90-day SSL
+            <button className="v2-btn" onClick={() => nav('/dashboard')}>
+              My Dashboard
             </button>
           </div>
         </div>
