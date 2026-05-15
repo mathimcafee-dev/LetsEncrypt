@@ -52,21 +52,58 @@ const PRODUCT_META: Record<string, { wildcard: boolean }> = {
   rapidssl_wildcard: { wildcard: true  },
 }
 
-async function resolveProductId(authKey: string, code: string): Promise<{ id: number; name: string }> {
-  const resp = await ggsGet(authKey, '/products/ssl/')
-  const entries = typeof resp === 'object' && !Array.isArray(resp)
-    ? Object.entries(resp).map(([id, p]: [string, any]) => ({ id: Number(id), ...p }))
-    : (resp as any[])
-  const isWildcard = PRODUCT_META[code]?.wildcard ?? false
-  const match = entries.find((p: any) => {
-    const name: string = String(p.name ?? p.product_name ?? '').toLowerCase()
-    return name.includes('rapidssl') && (isWildcard ? name.includes('wildcard') : !name.includes('wildcard'))
-  })
-  if (!match) {
-    const names = entries.map((p: any) => p.name).join(', ')
-    throw new Error(`Product '${code}' not found. Available: ${names}`)
+// Normalise the GoGetSSL /products/ssl/ response into a flat array.
+// The API returns: { products: [ {id, name, wildcard, ...}, ... ], success: true }
+// But some reseller accounts may get a legacy keyed object instead.
+function normaliseProducts(resp: any): Array<{ id: number; name: string; wildcard: string }> {
+  if (!resp || typeof resp !== 'object') return []
+
+  // Standard response: { products: [...], success: true }
+  if (Array.isArray(resp.products)) {
+    return resp.products
+      .filter((p: any) => p && typeof p === 'object')
+      .map((p: any) => ({
+        id:       Number(p.id ?? p.product_id ?? 0),
+        name:     String(p.name ?? p.product_name ?? ''),
+        wildcard: String(p.wildcard ?? 'no'),
+      }))
+      .filter((p: any) => p.id && p.name)
   }
-  return { id: Number(match.id || match.product_id), name: String(match.name ?? match.product_name ?? 'RapidSSL DV') }
+
+  // Legacy keyed response: { "123": { name: "...", ... }, "456": {...}, success: true }
+  const entries: Array<{ id: number; name: string; wildcard: string }> = []
+  for (const [key, val] of Object.entries(resp)) {
+    if (key === 'success' || !val || typeof val !== 'object') continue
+    const v = val as any
+    const name = String(v.name ?? v.product_name ?? '')
+    const id   = Number(v.id ?? v.product_id ?? key)
+    if (name && !isNaN(id) && id > 0) {
+      entries.push({ id, name, wildcard: String(v.wildcard ?? 'no') })
+    }
+  }
+  return entries
+}
+
+async function resolveProductId(authKey: string, code: string): Promise<{ id: number; name: string }> {
+  const resp    = await ggsGet(authKey, '/products/ssl/')
+  const entries = normaliseProducts(resp)
+
+  if (entries.length === 0) {
+    throw new Error(`GoGetSSL /products/ssl/ returned no usable products. Raw: ${JSON.stringify(resp).slice(0, 300)}`)
+  }
+
+  const isWildcard = PRODUCT_META[code]?.wildcard ?? false
+  const match = entries.find(({ name, wildcard }) => {
+    const n = name.toLowerCase()
+    const isWC = wildcard === 'yes' || n.includes('wildcard')
+    return n.includes('rapidssl') && (isWildcard ? isWC : !isWC)
+  })
+
+  if (!match) {
+    const names = entries.map(e => `${e.id}:${e.name}`).join(', ')
+    throw new Error(`RapidSSL${isWildcard ? ' Wildcard' : ''} not found. Available: ${names}`)
+  }
+  return { id: match.id, name: match.name }
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -445,19 +482,8 @@ serve(async (req) => {
     if (action === 'get_products') {
       const authKey = await ggsAuth()
       const resp    = await ggsGet(authKey, '/products/ssl/')
-      const entries: any[] = []
-      if (resp && typeof resp === 'object' && !Array.isArray(resp)) {
-        for (const [key, val] of Object.entries(resp)) {
-          if (!val || typeof val !== 'object') continue
-          const v = val as any
-          entries.push({ id: Number(v.id ?? v.product_id ?? key), name: String(v.name ?? v.product_name ?? ''), ...v })
-        }
-      } else if (Array.isArray(resp)) {
-        for (const v of resp as any[]) {
-          if (v && typeof v === 'object') entries.push(v)
-        }
-      }
-      const rapid = entries.filter(p => String(p.name ?? '').toLowerCase().includes('rapidssl'))
+      const entries = normaliseProducts(resp)
+      const rapid   = entries.filter(({ name }) => name.toLowerCase().includes('rapidssl'))
       return json({ ok: true, products: rapid })
     }
 
