@@ -59,14 +59,14 @@ async function resolveProductId(authKey: string, code: string): Promise<{ id: nu
     : (resp as any[])
   const isWildcard = PRODUCT_META[code]?.wildcard ?? false
   const match = entries.find((p: any) => {
-    const name: string = (p.name || '').toLowerCase()
+    const name: string = String(p.name ?? p.product_name ?? '').toLowerCase()
     return name.includes('rapidssl') && (isWildcard ? name.includes('wildcard') : !name.includes('wildcard'))
   })
   if (!match) {
     const names = entries.map((p: any) => p.name).join(', ')
     throw new Error(`Product '${code}' not found. Available: ${names}`)
   }
-  return { id: Number(match.id || match.product_id), name: match.name }
+  return { id: Number(match.id || match.product_id), name: String(match.name ?? match.product_name ?? 'RapidSSL DV') }
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -448,7 +448,7 @@ serve(async (req) => {
       const entries = typeof resp === 'object' && !Array.isArray(resp)
         ? Object.entries(resp).map(([id, p]: [string, any]) => ({ id: Number(id), ...p }))
         : (resp as any[])
-      const rapid = entries.filter((p: any) => (p.name||'').toLowerCase().includes('rapidssl'))
+      const rapid = entries.filter((p: any) => String(p.name ?? p.product_name ?? '').toLowerCase().includes('rapidssl'))
       return json({ ok: true, products: rapid })
     }
 
