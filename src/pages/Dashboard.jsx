@@ -3,7 +3,7 @@ import {
   Shield, Plus, RefreshCw, RotateCcw, Download, ExternalLink, X, Lock,
   AlertTriangle, CheckCircle, Globe, ChevronRight,
   Copy, Check, TrendingUp, Activity, Zap,
-  ArrowRight, Server, FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck
+  ArrowRight, Server, FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck, Clock
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -100,8 +100,11 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
   const [revoking, setRevoking]           = useState(false)
   const [revokeError, setRevokeError]     = useState('')
   const isTssCert = !!cert.tss_order_id
+  const isGgsCert = cert.source === 'gogetssl' || !!cert.ggs_order_id
   const isRevoked = cert.status === 'revoked' || cert.status === 'sandbox_revoked'
   // renewState: null | { phase: 'checking'|'issuing'|'verifying'|'finalizing'|'done'|'error', msg: string }
+  const [ggsRefreshState, setGgsRefreshState] = useState(null) // null | 'loading' | 'done' | 'error'
+  const [ggsRefreshMsg, setGgsRefreshMsg] = useState('')
 
   const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
   const hasAgentInstall = !!cert.agent_url
@@ -271,12 +274,20 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
       <div className="v2-section-label" style={{ marginBottom:10 }}>Certificate details</div>
       <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
         {[
-          { label:'Domain',  value: cert.domain },
-          { label:'Issued',  value: fmtDate(cert.issued_at || cert.created_at), isNew: justRotated && newPillVisible },
-          { label:'Expires', value: fmtDate(cert.expires_at), isNew: justRotated && newPillVisible },
-          { label:'Type',    value: cert.cert_type || 'SSL Certificate' },
-          { label:'Status',  value: cert.status || 'issued' },
-        ].map(({ label, value, isNew }) => (
+          { label:'Domain',     value: cert.domain },
+          { label:'Common name',value: cert.common_name || cert.domain },
+          { label:'Issued',     value: fmtDate(cert.issued_at || cert.created_at), isNew: justRotated && newPillVisible },
+          { label:'Expires',    value: fmtDate(cert.expires_at), isNew: justRotated && newPillVisible },
+          { label:'Type',       value: cert.cert_type || 'SSL Certificate' },
+          { label:'Issuer',     value: cert.issuer || '—' },
+          { label:'DCV method', value: cert.dcv_method || '—' },
+          { label:'Source',     value: cert.source || '—' },
+          cert.serial_number   ? { label:'Serial',      value: cert.serial_number }          : null,
+          cert.fingerprint_sha1? { label:'Fingerprint', value: cert.fingerprint_sha1 }       : null,
+          cert.ggs_order_id    ? { label:'Order ID',    value: String(cert.ggs_order_id) }   : null,
+          cert.san             ? { label:'SAN',         value: cert.san }                    : null,
+          { label:'Status',     value: cert.status || 'issued' },
+        ].filter(Boolean).map(({ label, value, isNew }) => (
           <div key={label} className="v2-metric-row" style={{ justifyContent:'space-between' }}>
             <span className="v2-metric-label">{label}</span>
             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
@@ -288,7 +299,7 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
                   animation:'pulse 2s ease-in-out infinite'
                 }}>NEW</span>
               )}
-              <span className="v2-metric-value v2-mono" style={{ fontSize:11 }}>{value}</span>
+              <span className="v2-metric-value v2-mono" style={{ fontSize:11, wordBreak:'break-all', maxWidth:200, textAlign:'right' }}>{value}</span>
             </div>
           </div>
         ))}
@@ -618,6 +629,58 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
               style={{ fontSize:11, borderColor:'#f97316', color:'#f97316' }}>
               Revoke
             </button>
+          </div>
+        )}
+
+        {/* GoGetSSL refresh action */}
+        {isGgsCert && !isRevoked && (
+          <div style={{ display:'flex', gap:6, paddingTop:6, borderTop:'0.5px solid var(--v2-border)', alignItems:'center' }}>
+            <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:500, marginRight:2 }}>GGS</span>
+            <button
+              className="v2-btn v2-btn-sm"
+              disabled={ggsRefreshState === 'loading'}
+              title="Re-fetch latest cert data from GoGetSSL API"
+              onClick={async () => {
+                setGgsRefreshState('loading'); setGgsRefreshMsg('')
+                try {
+                  const { data: { session } } = await supabase.auth.getSession()
+                  // Find the ssl_order for this cert to get the order_id
+                  const { data: orders } = await supabase
+                    .from('ssl_orders')
+                    .select('id,ggs_order_id')
+                    .eq('user_id', cert.user_id || '')
+                    .eq('domain', cert.domain)
+                    .order('updated_at', { ascending: false })
+                    .limit(1)
+                  const orderId = orders?.[0]?.id || cert.ssl_order_id
+                  if (!orderId) { setGgsRefreshState('error'); setGgsRefreshMsg('No linked GGS order found — re-fetch unavailable.'); return }
+                  const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/gogetssl-issue', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
+                    body: JSON.stringify({ action: 'check_status', order_id: orderId })
+                  })
+                  const data = await res.json()
+                  if (data.ok) {
+                    setGgsRefreshState('done')
+                    setGgsRefreshMsg(`Refreshed — status: ${data.ggs_status || data.status || 'active'}`)
+                    setTimeout(() => { setGgsRefreshState(null); setGgsRefreshMsg('') }, 4000)
+                  } else {
+                    setGgsRefreshState('error')
+                    setGgsRefreshMsg(data.error || 'Refresh failed')
+                  }
+                } catch(e) { setGgsRefreshState('error'); setGgsRefreshMsg(String(e)) }
+              }}>
+              {ggsRefreshState === 'loading'
+                ? <><RefreshCw size={11} style={{ animation:'spin 1s linear infinite' }}/> Refreshing…</>
+                : ggsRefreshState === 'done'
+                ? <><CheckCircle size={11}/> Refreshed</>
+                : <><RefreshCw size={11}/> Refresh from GGS</>}
+            </button>
+            {ggsRefreshMsg && (
+              <span style={{ fontSize:10, color: ggsRefreshState === 'error' ? '#dc2626' : 'var(--v2-green-text)' }}>
+                {ggsRefreshMsg}
+              </span>
+            )}
           </div>
         )}
       </div>

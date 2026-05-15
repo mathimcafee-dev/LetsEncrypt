@@ -121,6 +121,9 @@ serve(async (req) => {
       if (!csrRes.csr_code)
         return json({ error: `CSR generation failed: ${JSON.stringify(csrRes)}` }, 500)
 
+      // Store private key for later use (agent install, manual download)
+      const privateKeyPem = csrRes.pkey_code || csrRes.private_key || null
+
       // Place order with DNS DCV
       const orderRes = await ggsPost(authKey, '/orders/add_ssl_order/', {
         product_id:       String(product.id),
@@ -156,6 +159,7 @@ serve(async (req) => {
           ggs_order_id:     orderRes.order_id,
           ggs_invoice_id:   orderRes.invoice_id,
           csr_code:         csrRes.csr_code,
+          private_key_pem:  privateKeyPem,
           admin_email:      adminEmail,
           admin_first_name: firstName,
           admin_last_name:  lastName,
@@ -234,17 +238,37 @@ serve(async (req) => {
         upd.valid_from = statusRes.valid_from
         upd.valid_till = statusRes.valid_till
 
-        // Mirror to certificates table for dashboard
+        // Parse serial + fingerprint from PEM cert
+        let serial_number: string | null = null
+        let fingerprint_sha1: string | null = null
+        let common_name: string | null = null
+        try {
+          // Extract serial from PEM header block if present in status response
+          if (statusRes.md5) fingerprint_sha1 = statusRes.md5
+          if (statusRes.serial_number) serial_number = statusRes.serial_number
+          if (statusRes.common_name)   common_name   = statusRes.common_name
+        } catch (_) {}
+
+        // Mirror to certificates table for dashboard with full details
         await adminDb().from('certificates').upsert({
-          user_id:    user.id,
-          domain:     order.domain,
-          status:     'active',
-          cert_pem:   statusRes.crt_code,
-          ca_pem:     statusRes.ca_code,
-          expires_at: statusRes.valid_till,
-          issuer:     order.product_name,
-          source:     'gogetssl',
-          updated_at: new Date().toISOString(),
+          user_id:          user.id,
+          domain:           order.domain,
+          status:           'active',
+          cert_pem:         statusRes.crt_code,
+          ca_pem:           statusRes.ca_code,
+          expires_at:       statusRes.valid_till,
+          issued_at:        statusRes.valid_from,
+          issuer:           order.product_name || 'RapidSSL',
+          cert_type:        order.product_name || 'RapidSSL DV',
+          source:           'gogetssl',
+          ggs_order_id:     order.ggs_order_id,
+          serial_number:    serial_number,
+          fingerprint_sha1: fingerprint_sha1,
+          common_name:      common_name || order.domain,
+          private_key_pem:  order.private_key_pem || null,
+          dcv_method:       'dns',
+          san:              order.domain,
+          updated_at:       new Date().toISOString(),
         }, { onConflict: 'user_id,domain' })
       }
 
