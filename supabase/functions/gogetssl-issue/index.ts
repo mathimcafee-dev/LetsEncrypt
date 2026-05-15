@@ -445,10 +445,19 @@ serve(async (req) => {
     if (action === 'get_products') {
       const authKey = await ggsAuth()
       const resp    = await ggsGet(authKey, '/products/ssl/')
-      const entries = typeof resp === 'object' && !Array.isArray(resp)
-        ? Object.entries(resp).map(([id, p]: [string, any]) => ({ id: Number(id), ...p }))
-        : (resp as any[])
-      const rapid = entries.filter((p: any) => String(p.name ?? p.product_name ?? '').toLowerCase().includes('rapidssl'))
+      const entries: any[] = []
+      if (resp && typeof resp === 'object' && !Array.isArray(resp)) {
+        for (const [key, val] of Object.entries(resp)) {
+          if (!val || typeof val !== 'object') continue
+          const v = val as any
+          entries.push({ id: Number(v.id ?? v.product_id ?? key), name: String(v.name ?? v.product_name ?? ''), ...v })
+        }
+      } else if (Array.isArray(resp)) {
+        for (const v of resp as any[]) {
+          if (v && typeof v === 'object') entries.push(v)
+        }
+      }
+      const rapid = entries.filter(p => String(p.name ?? '').toLowerCase().includes('rapidssl'))
       return json({ ok: true, products: rapid })
     }
 
