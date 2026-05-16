@@ -219,15 +219,15 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     setDns(true); setRes(null)
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      const r = await fetch(`${SUPABASE_URL}/functions/v1/dns-auto-add`, {
+      const r = await fetch(`${SUPABASE_URL}/functions/v1/dns-provider`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({
-          domain: ord.domain || clean(domain),
-          txt_name:   ord.dcv_txt_name   || ord.dcv_cname_name,
-          txt_value:  ord.dcv_txt_value  || ord.dcv_cname_value,
-          cname_name: ord.dcv_cname_name,
-          cname_value: ord.dcv_cname_value,
+          action:    'auto_add',
+          user_id:   session.user.id,
+          domain:    ord.domain || clean(domain),
+          txt_name:  ord.dcv_txt_name  || ord.dcv_cname_name  || (ord.domain || clean(domain)),
+          txt_value: ord.dcv_txt_value || ord.dcv_cname_value,
         }),
       })
       setRes({ dns_auto: await r.json() })
