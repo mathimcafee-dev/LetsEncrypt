@@ -1,4 +1,4 @@
-// BUILD_TIMESTAMP: 1778951017445
+// BUILD_TIMESTAMP: 1778951306826
 import { useState, useEffect, useCallback } from 'react'
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
@@ -300,7 +300,7 @@ function CertHistory({ cert, session }) {
   )
 }
 
-function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefresh }) {
+function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefresh, session }) {
   const days = daysLeft(cert.expires_at)
   const [showKey, setShowKey]   = useState(false)
   const [delConfirm, setDel]    = useState(false)
@@ -729,7 +729,7 @@ function LoggedInDashboard({ user, nav }) {
               onDelete={handleDelete}
               onInstall={cert => { setAgentCert(cert) }}
               onCpanel={cert => { setCpanelCert(cert) }}
-              nav={nav} onRefresh={load}/>
+              nav={nav} onRefresh={load} session={session}/>
           )}
         </div>
 
@@ -813,6 +813,7 @@ function MarketingDashboard({ nav }) {
           </div>
         </div>
       </div>
+      <CertHistory cert={cert} session={session}/>
     </div>
   )
 }
