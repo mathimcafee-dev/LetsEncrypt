@@ -1,4 +1,4 @@
-// BUILD_TIMESTAMP: 1778951306826
+// BUILD_TIMESTAMP: 1778951644513
 import { useState, useEffect, useCallback } from 'react'
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
@@ -518,6 +518,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           {refreshMsg && <span style={{ fontSize:10, color:'var(--v2-text-2)' }}>{refreshMsg}</span>}
         </div>
       </div>
+      {session && <CertHistory cert={cert} session={session}/>}
     </div>
   )
 }
@@ -813,7 +814,6 @@ function MarketingDashboard({ nav }) {
           </div>
         </div>
       </div>
-      <CertHistory cert={cert} session={session}/>
     </div>
   )
 }
