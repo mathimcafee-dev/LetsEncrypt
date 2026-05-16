@@ -1,514 +1,351 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
-  Shield, Plus, RefreshCw, RotateCcw, Download, ExternalLink, X, Lock,
-  AlertTriangle, CheckCircle, Globe, ChevronRight,
-  Copy, Check, TrendingUp, Activity, Zap,
-  ArrowRight, Server, FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck, Clock
+  Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
+  Globe, ChevronRight, Copy, Check, Activity, Zap, ArrowRight, Server,
+  FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck, Clock, RotateCcw
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
-import { differenceInDays, format, formatDistanceToNow } from 'date-fns'
+import { differenceInDays, format } from 'date-fns'
 import '../styles/design-v2.css'
 import AgentInstall from '../components/AgentInstall'
 
-// ── Helpers ──────────────────────────────────────────────────────────
+const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
+
 function daysLeft(iso) {
   if (!iso) return null
   return differenceInDays(new Date(iso), new Date())
 }
-function statusOf(days, revoked, status) {
-  if (status === 'sandbox_revoked') return { cls: 'grey',  label: 'Sandbox revoked', dot: 'grey'  }
-  if (revoked)       return { cls: 'red',   label: 'Revoked',       dot: 'red'   }
-  if (days == null)  return { cls: 'grey',  label: 'Not scanned',   dot: 'grey'  }
-  if (days < 0)      return { cls: 'red',   label: 'Expired',       dot: 'red'   }
-  if (days < 14)     return { cls: 'amber', label: `${days}d left`, dot: 'amber' }
-  if (days < 30)     return { cls: 'amber', label: `${days}d left`, dot: 'amber' }
-  return               { cls: 'green', label: `${days}d left`, dot: 'green' }
+function statusOf(days, status) {
+  if (status === 'revoked') return { cls: 'red',   label: 'Revoked',       dot: 'red'   }
+  if (days == null)         return { cls: 'grey',  label: 'Pending',       dot: 'grey'  }
+  if (days < 0)             return { cls: 'red',   label: 'Expired',       dot: 'red'   }
+  if (days < 14)            return { cls: 'red',   label: days+'d left',   dot: 'red'   }
+  if (days < 30)            return { cls: 'amber', label: days+'d left',   dot: 'amber' }
+  return                           { cls: 'green', label: days+'d left',   dot: 'green' }
 }
 function fmtDate(iso) {
   if (!iso) return '—'
-  return format(new Date(iso), 'MMM d, yyyy')
-}
-function fmtDateLong(iso) {
-  if (!iso) return '—'
-  return format(new Date(iso), 'PPP')
+  try { return format(new Date(iso), 'MMM d, yyyy') } catch { return '—' }
 }
 function dl(text, filename) {
-  const blob = new Blob([text], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
-  a.href = url; a.download = filename; a.click()
-  URL.revokeObjectURL(url)
+  a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }))
+  a.download = filename; a.click()
 }
 
-// ── CopyBtn ──────────────────────────────────────────────────────────
 function CopyBtn({ text, label = 'Copy' }) {
   const [copied, setCopied] = useState(false)
-  const copy = () => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1800)
-  }
   return (
-    <button className="v2-btn v2-btn-sm" onClick={copy}>
-      {copied ? <Check size={10} /> : <Copy size={10} />}
+    <button className="v2-btn v2-btn-sm" onClick={() => {
+      navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1800)
+    }}>
+      {copied ? <Check size={10}/> : <Copy size={10}/>}
       {copied ? 'Copied' : label}
     </button>
   )
 }
 
-// ── StatusPill ───────────────────────────────────────────────────────
-function StatusPill({ days, revoked, status }) {
-  const s = statusOf(days, revoked, status)
+function StatusPill({ days, status }) {
+  const s = statusOf(days, status)
   const tone = s.cls === 'green' ? 'green' : s.cls === 'amber' ? 'amber' : 'grey'
   return (
-    <span className={`v2-status v2-status-${tone}`}>
-      <span className={`v2-dot v2-dot-${s.dot}`} />
+    <span className={'v2-status v2-status-'+tone}>
+      <span className={'v2-dot v2-dot-'+s.dot}/>
       {s.label}
     </span>
   )
 }
 
-// ── ProgressBar ──────────────────────────────────────────────────────
-function ProgressBar({ days, max = 90 }) {
+function ProgressBar({ days, max = 365 }) {
   const pct = days == null ? 0 : Math.max(0, Math.min(100, (days / max) * 100))
   const cls = days == null ? '' : days < 0 ? 'red' : days < 14 ? 'red' : days < 30 ? 'amber' : ''
   return (
     <div className="v2-bar">
-      <div className={`v2-bar-fill ${cls}`} style={{ width: `${pct}%` }} />
+      <div className={'v2-bar-fill '+cls} style={{ width: pct+'%' }}/>
     </div>
   )
 }
 
-// ── CertDetail panel ─────────────────────────────────────────────────
-function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall, nav, justRotated }) {
-  const days = daysLeft(cert.expires_at)
-  const s = statusOf(days, cert.status === 'revoked', cert.status)
-  const [showKey, setShowKey] = useState(false)
-  const [delConfirm, setDelConfirm] = useState(false)
-  const [keyDelConfirm, setKeyDelConfirm] = useState(false)
-  const [keyDeleted, setKeyDeleted] = useState(!cert.private_key_pem)
-  const [keyDeleting, setKeyDeleting] = useState(false)
-  const [keyChecks, setKeyChecks] = useState({ downloaded: false, installed: false, understand: false })
-  const [bannerVisible, setBannerVisible] = useState(true)
-  const [newPillVisible, setNewPillVisible] = useState(true)
-  const [renewState, setRenewState] = useState(null)
-  const [reissueState, setReissueState] = useState(null) // null | 'confirm' | 'loading' | 'done' | 'processing' | 'error'
-  const [reissueMsg, setReissueMsg] = useState('')
-  const [revokeConfirm, setRevokeConfirm] = useState(false)
-  const [revokeReason, setRevokeReason]   = useState('Unspecified')
-  const [revoking, setRevoking]           = useState(false)
-  const [revokeError, setRevokeError]     = useState('')
-  const isTssCert = !!cert.tss_order_id
-  const isGgsCert = cert.source === 'gogetssl' || !!cert.ggs_order_id
-  const isRevoked = cert.status === 'revoked' || cert.status === 'sandbox_revoked'
-  // renewState: null | { phase: 'checking'|'issuing'|'verifying'|'finalizing'|'done'|'error', msg: string }
-  const [ggsRefreshState, setGgsRefreshState] = useState(null) // null | 'loading' | 'done' | 'error'
-  const [ggsRefreshMsg, setGgsRefreshMsg] = useState('')
+// DV Pending card - shows ssl_orders waiting for DNS validation
+function DvPendingCard({ order, onRefresh }) {
+  const [checking, setChecking] = useState(false)
+  const [addingDns, setAddingDns] = useState(false)
+  const [msg, setMsg] = useState('')
 
-  const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
-  const hasAgentInstall = !!cert.agent_url
-
-  const doRevoke = async () => {
-    setRevoking(true); setRevokeError('')
+  const checkStatus = async () => {
+    setChecking(true); setMsg('')
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue', {
+      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
-        body: JSON.stringify({ action: 'revoke', cert_id: cert.id, revoke_reason: revokeReason })
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
+        body: JSON.stringify({ action: 'check_status', order_id: order.id })
       })
-      const data = await res.json()
-      if (!data.ok) { setRevokeError(data.error || 'Revocation failed'); setRevoking(false); return }
-      setRevokeConfirm(false); setRevoking(false)
-      onDelete(cert.id)
-    } catch (e) { setRevokeError(String(e)); setRevoking(false) }
+      const d = await r.json()
+      if (d.status === 'active' || d.ggs_status === 'active') {
+        setMsg('✅ Certificate issued! Refreshing...')
+        setTimeout(() => onRefresh(), 1500)
+      } else {
+        setMsg('Status: '+(d.ggs_status||'pending')+' — DNS may still be propagating')
+      }
+    } catch(e) { setMsg('Error: '+e.message) }
+    setChecking(false)
   }
 
-  // Auto-dismiss the NEW pill after 30s, banner after 8s
-  useEffect(() => {
-    if (!justRotated) return
-    setBannerVisible(true); setNewPillVisible(true)
-    const t1 = setTimeout(() => setBannerVisible(false), 8000)
-    const t2 = setTimeout(() => setNewPillVisible(false), 30000)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [justRotated])
-
-  // ── Smart renew: auto-issue if DNS creds exist, else send to Generate ──
-  const handleSmartRenew = () => {
-    // Renewal = place a new TSS order for the domain
-    sessionStorage.setItem('prefill_domain', cert.domain)
-    onClose()
-    nav('/buy')
-  }
-
-  // ── Reissue: fresh cert PEM on same order, same validity window ─────
-  const handleReissue = async () => {
-    if (reissueState === 'confirm') {
-      setReissueState('loading'); setReissueMsg('Generating new CSR and submitting reissue to TSS…')
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-        const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
-          body: JSON.stringify({ action: 'reissue', cert_id: cert.id })
+  const autoDns = async () => {
+    setAddingDns(true); setMsg('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const r = await fetch(SB_URL+'/functions/v1/dns-auto-add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
+        body: JSON.stringify({
+          domain: order.domain,
+          txt_name:  order.dcv_txt_name,
+          txt_value: order.dcv_txt_value,
         })
-        const data = await res.json()
-        if (data.ok && data.status === 'reissued') {
-          setReissueState('done')
-          setReissueMsg(data.message || 'Certificate reissued. New cert deployed to your servers.')
-        } else if (data.ok && data.status === 'processing') {
-          setReissueState('processing')
-          setReissueMsg(data.message || 'Reissue submitted — TSS is processing. Check back in a few minutes.')
-        } else {
-          setReissueState('error')
-          setReissueMsg(data.error || 'Reissue failed')
-        }
-      } catch(e) { setReissueState('error'); setReissueMsg(String(e)) }
-    } else {
-      setReissueState('confirm')
-    }
+      })
+      const d = await r.json()
+      setMsg(d.ok ? '✅ DNS added via '+d.provider+'. Check status in ~1 min.' : '❌ '+d.message)
+    } catch(e) { setMsg('Error: '+e.message) }
+    setAddingDns(false)
   }
+
+  const hasDcv = !!(order.dcv_txt_value || order.dcv_cname_value)
+  const dcvName  = order.dcv_txt_name  || order.dcv_cname_name  || '—'
+  const dcvValue = order.dcv_txt_value || order.dcv_cname_value || '—'
+
+  return (
+    <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:10, padding:'14px 16px', marginBottom:12 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
+        <Clock size={13} color="#f59e0b" style={{ flexShrink:0 }}/>
+        <span style={{ fontSize:12, fontWeight:700, color:'#92400e' }}>DNS Validation Pending</span>
+        <span style={{ fontFamily:'monospace', fontSize:11, color:'#92400e', marginLeft:'auto' }}>GGS #{order.ggs_order_id}</span>
+      </div>
+      <div style={{ fontSize:13, fontWeight:600, color:'#1e293b', marginBottom:10, fontFamily:'monospace' }}>{order.domain}</div>
+      <div style={{ background:'#0f172a', borderRadius:8, padding:'10px 14px', marginBottom:10, fontSize:11, fontFamily:'monospace' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'60px 1fr auto', gap:'6px 10px', alignItems:'center' }}>
+          <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Name</span>
+          <span style={{ color:'#94a3b8', wordBreak:'break-all' }}>
+            {hasDcv ? dcvName : <span style={{ color:'#475569' }}>⟳ Fetching...</span>}
+          </span>
+          {hasDcv && <CopyBtn text={dcvName}/>}
+
+          <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Type</span>
+          <span style={{ color:'#34d399' }}>TXT</span><span/>
+
+          <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Value</span>
+          <span style={{ color:'#fbbf24', wordBreak:'break-all' }}>
+            {hasDcv ? dcvValue : <span style={{ color:'#475569' }}>⟳ Fetching...</span>}
+          </span>
+          {hasDcv && <CopyBtn text={dcvValue}/>}
+
+          <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>TTL</span>
+          <span style={{ color:'#e2e8f0' }}>300</span><span/>
+        </div>
+      </div>
+      <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
+        <button onClick={autoDns} disabled={addingDns || !hasDcv}
+          style={{ display:'flex', alignItems:'center', gap:6, background:'#0e7fc0', color:'white',
+            border:'none', borderRadius:6, padding:'7px 14px', fontSize:11, fontWeight:600,
+            cursor: !hasDcv||addingDns ? 'not-allowed':'pointer', opacity: !hasDcv ? 0.4:1, fontFamily:'inherit' }}>
+          <Zap size={11}/> {addingDns ? 'Adding...' : 'Auto-Add DNS Record'}
+        </button>
+        <button onClick={checkStatus} disabled={checking}
+          style={{ display:'flex', alignItems:'center', gap:6, background:'white',
+            border:'1px solid #d1d9e0', color:'#374151', borderRadius:6,
+            padding:'7px 14px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+          <RefreshCw size={11} style={{ animation: checking ? 'spin 0.8s linear infinite':'none' }}/>
+          {checking ? 'Checking...' : 'Check Status'}
+        </button>
+        {msg && <span style={{ fontSize:11, color: msg.startsWith('✅') ? '#15803d' : msg.startsWith('❌') ? '#dc2626' : '#92400e' }}>{msg}</span>}
+      </div>
+    </div>
+  )
+}
+
+function CertDetail({ cert, onClose, onDelete, onInstall, nav, onRefresh }) {
+  const days = daysLeft(cert.expires_at)
+  const [showKey, setShowKey]   = useState(false)
+  const [delConfirm, setDel]    = useState(false)
+  const [keyDelConfirm, setKDC] = useState(false)
+  const [keyDeleting, setKDing] = useState(false)
+  const [keyChecks, setKC]      = useState({ downloaded:false, installed:false, understand:false })
+  const [keyDeleted, setKD]     = useState(!cert.private_key_pem)
+  const [refreshing, setRefreshing] = useState(false)
+  const [refreshMsg, setRefreshMsg] = useState('')
+  const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
 
   const doDeleteKey = async () => {
-    setKeyDeleting(true)
-    const { error } = await supabase
-      .from('certificates')
-      .update({ private_key_pem: null })
-      .eq('id', cert.id)
-    setKeyDeleting(false)
-    if (!error) {
-      setKeyDeleted(true)
-      setKeyDelConfirm(false)
-      if (onKeyDeleted) onKeyDeleted(cert.id)
-    }
+    setKDing(true)
+    await supabase.from('certificates').update({ private_key_pem: null }).eq('id', cert.id)
+    setKDing(false); setKD(true); setKDC(false)
   }
+
+  const doRefresh = async () => {
+    setRefreshing(true); setRefreshMsg('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const { data: order } = await supabase.from('ssl_orders')
+        .select('id').eq('domain', cert.domain).eq('user_id', cert.user_id)
+        .order('updated_at', { ascending: false }).limit(1).single()
+      if (!order) { setRefreshMsg('No linked order found'); setRefreshing(false); return }
+      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
+        body: JSON.stringify({ action: 'check_status', order_id: order.id })
+      })
+      const d = await r.json()
+      setRefreshMsg(d.ok ? 'Refreshed — '+(d.ggs_status||'active') : d.error||'Error')
+      if (d.ok) setTimeout(() => onRefresh(), 1000)
+    } catch(e) { setRefreshMsg(e.message) }
+    setRefreshing(false)
+  }
+
   return (
-    <div className="v2-detail" style={{
-      position: 'sticky', top: 20,
-      borderLeft: justRotated && newPillVisible ? '3px solid var(--v2-green)' : undefined,
-      transition: 'border-left 0.5s ease'
-    }}>
-      {/* Rotation success banner */}
-      {justRotated && bannerVisible && (
-        <div style={{
-          background: 'var(--v2-green-bg)', border: '0.5px solid var(--v2-green-border)',
-          borderRadius: 'var(--v2-r-md)', padding: '10px 12px', marginBottom: 14,
-          display: 'flex', alignItems: 'flex-start', gap: 10,
-          animation: 'fadeIn 0.3s ease'
-        }}>
-          <CheckCircle size={14} color="var(--v2-green)" style={{ flexShrink:0, marginTop:1 }} />
-          <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-green-text)', marginBottom:2 }}>
-              Certificate rotated successfully — new key active
-            </div>
-            <div style={{ fontSize:11, color:'var(--v2-green-text)', opacity:0.85 }}>
-              Old certificate archived for 30 days. Install the new certificate on your server.
-            </div>
-          </div>
-          <button onClick={() => setBannerVisible(false)}
-            style={{ background:'none', border:'none', cursor:'pointer', color:'var(--v2-green-text)',
-                      padding:'0 2px', lineHeight:1, flexShrink:0, fontSize:14 }}>✕</button>
-        </div>
-      )}
-      {/* Header */}
+    <div className="v2-detail" style={{ position:'sticky', top:20 }}>
       <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14, gap:12 }}>
         <div style={{ minWidth:0 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4, flexWrap:'wrap' }}>
-            <span className="v2-mono" style={{ fontSize:14, fontWeight:600, wordBreak:'break-all', color:'var(--v2-text)' }}>
-              {cert.domain}
-            </span>
-            <StatusPill days={days} revoked={cert.status === 'revoked'} status={cert.status} />
-            {cert.is_sandbox && (
-              <span style={{ fontSize:9, fontWeight:700, color:'#7c3aed', background:'#f5f3ff',
-                border:'0.5px solid #ddd6fe', borderRadius:3, padding:'1px 6px', letterSpacing:'0.3px' }}>
-                SANDBOX
-              </span>
-            )}
+            <span className="v2-mono" style={{ fontSize:14, fontWeight:600, wordBreak:'break-all', color:'var(--v2-text)' }}>{cert.domain}</span>
+            <StatusPill days={days} status={cert.status}/>
           </div>
-          <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
-            Issued {fmtDateLong(cert.issued_at || cert.created_at)}
-          </div>
+          <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>Issued {fmtDate(cert.issued_at||cert.created_at)}</div>
         </div>
-        <button className="v2-modal-close" onClick={onClose} style={{ flexShrink:0 }}>
-          <X size={14} />
-        </button>
+        <button className="v2-modal-close" onClick={onClose} style={{ flexShrink:0 }}><X size={14}/></button>
       </div>
 
-      {/* Status banner */}
-      {cert.status === 'sandbox_revoked' && (
-        <div className="v2-detail-banner" style={{ marginBottom:14, background:'#f5f3ff', border:'0.5px solid #ddd6fe', color:'#6d28d9' }}>
-          <RefreshCw size={13} />
-          This sandbox certificate was auto-revoked by TheSSLStore and has been replaced by a new certificate above.
+      {days != null && days < 30 && (
+        <div className={'v2-detail-banner'+(days<14?' red':' amber')} style={{ marginBottom:14 }}>
+          <AlertTriangle size={13}/>
+          {days < 0 ? 'Expired. Renew immediately.' : 'Expires in '+days+' days. Renew soon.'}
         </div>
       )}
-      {cert.status !== 'sandbox_revoked' && cert.is_sandbox && (
-        <div className="v2-detail-banner" style={{ marginBottom:14, background:'#f5f3ff', border:'0.5px solid #ddd6fe', color:'#6d28d9' }}>
-          <RefreshCw size={13} />
-          Sandbox mode — TSS will revoke this cert within 48 hours. SSLVault auto-renews it automatically.
-        </div>
-      )}
-      {cert.status !== 'sandbox_revoked' && days != null && days < 30 && (
-        <div className={`v2-detail-banner ${s.cls === 'amber' ? 'amber' : ''}`} style={{ marginBottom:14 }}>
-          <AlertTriangle size={13} />
-          {days < 0 ? 'This certificate has expired. Renew immediately.' : `Expires in ${days} days. Renew before it impacts your site.`}
-        </div>
-      )}
-      {cert.status !== 'sandbox_revoked' && days != null && days >= 30 && (
+      {days != null && days >= 30 && (
         <div className="v2-detail-banner" style={{ marginBottom:14 }}>
-          <CheckCircle size={13} />
-          Certificate is healthy — {days} days remaining.
+          <CheckCircle size={13}/> Certificate healthy — {days} days remaining.
         </div>
       )}
 
-      {/* Expiry bar */}
       <div style={{ marginBottom:16 }}>
         <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'var(--v2-text-3)', marginBottom:6 }}>
-          <span>Validity period</span>
-          <span>{fmtDate(cert.expires_at)}</span>
+          <span>Validity</span><span>{fmtDate(cert.expires_at)}</span>
         </div>
-        <ProgressBar days={days} />
+        <ProgressBar days={days}/>
       </div>
 
-      {/* Meta */}
       <div className="v2-section-label" style={{ marginBottom:10 }}>Certificate details</div>
       <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
         {[
-          { label:'Domain',     value: cert.domain },
-          { label:'Common name',value: cert.common_name || cert.domain },
-          { label:'Issued',     value: fmtDate(cert.issued_at || cert.created_at), isNew: justRotated && newPillVisible },
-          { label:'Expires',    value: fmtDate(cert.expires_at), isNew: justRotated && newPillVisible },
-          { label:'Type',       value: cert.cert_type || 'SSL Certificate' },
-          { label:'Issuer',     value: cert.issuer || '—' },
-          { label:'DCV method', value: cert.dcv_method || '—' },
-          { label:'Source',     value: cert.source || '—' },
-          cert.serial_number   ? { label:'Serial',      value: cert.serial_number }          : null,
-          cert.fingerprint_sha1? { label:'Fingerprint', value: cert.fingerprint_sha1 }       : null,
-          cert.ggs_order_id    ? { label:'Order ID',    value: String(cert.ggs_order_id) }   : null,
-          cert.san             ? { label:'SAN',         value: cert.san }                    : null,
-          { label:'Status',     value: cert.status || 'issued' },
-        ].filter(Boolean).map(({ label, value, isNew }) => (
+          { label:'Domain',   value: cert.domain },
+          { label:'Issued',   value: fmtDate(cert.issued_at||cert.created_at) },
+          { label:'Expires',  value: fmtDate(cert.expires_at) },
+          { label:'Type',     value: cert.cert_type||'DV SSL' },
+          { label:'Issuer',   value: cert.issuer||'RapidSSL' },
+          { label:'Source',   value: 'GoGetSSL' },
+          cert.ggs_order_id ? { label:'Order ID', value: String(cert.ggs_order_id) } : null,
+        ].filter(Boolean).map(({ label, value }) => (
           <div key={label} className="v2-metric-row" style={{ justifyContent:'space-between' }}>
             <span className="v2-metric-label">{label}</span>
-            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              {isNew && (
-                <span style={{
-                  fontSize:8, fontWeight:700, color:'var(--v2-green)', background:'var(--v2-green-bg)',
-                  border:'0.5px solid var(--v2-green-border)', borderRadius:3, padding:'1px 5px',
-                  textTransform:'uppercase', letterSpacing:'0.4px',
-                  animation:'pulse 2s ease-in-out infinite'
-                }}>NEW</span>
-              )}
-              <span className="v2-metric-value v2-mono" style={{ fontSize:11, wordBreak:'break-all', maxWidth:200, textAlign:'right' }}>{value}</span>
-            </div>
+            <span className="v2-metric-value v2-mono" style={{ fontSize:11, wordBreak:'break-all', maxWidth:220, textAlign:'right' }}>{value}</span>
           </div>
         ))}
-
-        {/* Install status row */}
-        {(cert.install_method || cert.last_install_status) && (
-          <div className="v2-metric-row" style={{ justifyContent:'space-between' }}>
-            <span className="v2-metric-label">Install</span>
-            <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-              {cert.install_method && (
-                <span style={{ fontSize:9, fontWeight:600, color:'#94a3b8', background:'#f3f4f6',
-                  border:'0.5px solid #1e293b', borderRadius:3, padding:'1px 5px', textTransform:'uppercase' }}>
-                  {cert.install_method}
-                </span>
-              )}
-              {(cert.install_status === 'success' || cert.last_install_status === 'success') && (
-                <span style={{ fontSize:10, color:'#15803d', fontWeight:600 }}>✓ Installed</span>
-              )}
-              {(cert.install_status === 'failed' || cert.last_install_status === 'failed') && (
-                <span style={{ fontSize:10, color:'#dc2626', fontWeight:600 }}>✗ Failed</span>
-              )}
-              {cert.last_install_server && (
-                <span className="v2-mono" style={{ fontSize:10, color:'var(--v2-text-3)' }}>
-                  · {cert.last_install_server}
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Fingerprint row */}
-
-        {/* Serial row */}
       </div>
 
-      {/* Rotation verification block */}
-      {justRotated && (
-        <div style={{
-          background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-green-border)',
-          borderRadius:'var(--v2-r-md)', padding:'12px 14px', marginBottom:16
-        }}>
-          <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-green-text)', marginBottom:10,
-                         display:'flex', alignItems:'center', gap:6 }}>
-            <CheckCircle size={12} color="var(--v2-green)" /> Rotation verified
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr auto 1fr', gap:8, alignItems:'center' }}>
-            <div>
-              <div style={{ fontSize:9, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
-                             letterSpacing:'0.4px', marginBottom:4 }}>Previous cert</div>
-              <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
-                Expired {fmtDate(justRotated.oldExpires)}
-              </div>
-            </div>
-            <ArrowRight size={12} color="var(--v2-green)" style={{ flexShrink:0 }} />
-            <div>
-              <div style={{ fontSize:9, fontWeight:600, color:'var(--v2-green-text)', textTransform:'uppercase',
-                             letterSpacing:'0.4px', marginBottom:4 }}>Current cert</div>
-              <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>
-                Expires {fmtDate(cert.expires_at)}
-              </div>
-            </div>
-          </div>
-          <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:8, borderTop:'0.5px solid var(--v2-border)', paddingTop:8 }}>
-            Rotated {formatDistanceToNow(new Date(justRotated.at), { addSuffix: true })} · Old cert archived for 30 days
-          </div>
-        </div>
-      )}
-
-      <style>{`
-        @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.55 } }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(-4px) } to { opacity:1; transform:none } }
-      `}</style>
-
-      {/* Key security banner */}
       {cert.private_key_pem && !keyDeleted && !keyDelConfirm && (
         <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:'var(--v2-r-md)',
-                      padding:'10px 12px', marginBottom:14, display:'flex', gap:10, alignItems:'flex-start' }}>
-          <ShieldOff size={13} color="#b45309" style={{ flexShrink:0, marginTop:1 }} />
-          <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ fontSize:12, fontWeight:600, color:'#92400e', marginBottom:2 }}>
-              Private key stored server-side
-            </div>
-            <div style={{ fontSize:11, color:'#b45309', lineHeight:1.5 }}>
-              After agent installation is complete, delete the server-side copy to reduce exposure.
-            </div>
+          padding:'10px 12px', marginBottom:14, display:'flex', gap:10, alignItems:'flex-start' }}>
+          <ShieldOff size={13} color="#b45309" style={{ flexShrink:0, marginTop:1 }}/>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:12, fontWeight:600, color:'#92400e', marginBottom:2 }}>Private key stored server-side</div>
+            <div style={{ fontSize:11, color:'#b45309' }}>Delete after installing on your server.</div>
           </div>
-          <button className="v2-btn v2-btn-sm" onClick={() => setKeyDelConfirm(true)}
-            style={{ fontSize:10, whiteSpace:'nowrap', flexShrink:0, borderColor:'#fcd34d', color:'#92400e' }}>
-            <Trash2 size={9} /> Delete key
+          <button className="v2-btn v2-btn-sm" onClick={() => setKDC(true)}
+            style={{ fontSize:10, borderColor:'#fcd34d', color:'#92400e', flexShrink:0 }}>
+            <Trash2 size={9}/> Delete key
           </button>
         </div>
       )}
-
-      {/* Key deleted confirmation badge */}
       {keyDeleted && (
         <div style={{ background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
-                      borderRadius:'var(--v2-r-md)', padding:'10px 12px', marginBottom:14,
-                      display:'flex', gap:8, alignItems:'center' }}>
-          <ShieldCheck size={13} color="var(--v2-green)" />
-          <div style={{ fontSize:12, color:'var(--v2-green-text)', fontWeight:500 }}>
-            Private key deleted from SSLVault servers — only your local copy remains.
-          </div>
+          borderRadius:'var(--v2-r-md)', padding:'10px 12px', marginBottom:14, display:'flex', gap:8, alignItems:'center' }}>
+          <ShieldCheck size={13} color="var(--v2-green)"/>
+          <span style={{ fontSize:12, color:'var(--v2-green-text)', fontWeight:500 }}>Private key deleted from SSLVault servers.</span>
         </div>
       )}
 
-      {/* Delete key confirmation modal */}
       {keyDelConfirm && (
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-amber-border)',
-                      borderRadius:'var(--v2-r-lg)', padding:'16px', marginBottom:14 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
-            <AlertTriangle size={14} color="var(--v2-amber)" />
-            <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>
-              Delete private key from servers
-            </span>
+          borderRadius:'var(--v2-r-lg)', padding:16, marginBottom:14 }}>
+          <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:10 }}>
+            <AlertTriangle size={14} color="var(--v2-amber)"/>
+            <span style={{ fontSize:13, fontWeight:600 }}>Delete private key</span>
           </div>
-
-          {/* Interlock warning if no install recorded */}
-          {!hasAgentInstall && (
-            <div className="v2-callout error" style={{ marginBottom:12, fontSize:11 }}>
-              <div className="v2-callout-title" style={{ fontSize:11 }}>No agent install recorded</div>
-              If you plan to use the SSLVault agent or cPanel agent to install this certificate,
-              do NOT delete the key yet — the agent requires the server-side copy.
-              Only proceed if you have already installed manually.
-            </div>
-          )}
-
-          <div style={{ fontSize:11, color:'var(--v2-text-2)', marginBottom:12, lineHeight:1.6 }}>
-            This permanently removes the private key from SSLVault servers.
-            This action cannot be undone. Confirm all three before proceeding:
-          </div>
-
           {[
             { key:'downloaded', label:'I have downloaded key.pem to a safe local location' },
             { key:'installed',  label:'My server has the certificate installed and working' },
-            { key:'understand', label:'I understand this is irreversible and the key will be gone from SSLVault' },
+            { key:'understand', label:'I understand this is irreversible' },
           ].map(({ key, label }) => (
-            <label key={key} style={{ display:'flex', alignItems:'flex-start', gap:8, marginBottom:8,
-                                       cursor:'pointer', fontSize:12, color:'var(--v2-text-2)', lineHeight:1.5 }}>
-              <input type="checkbox" checked={keyChecks[key]}
-                onChange={e => setKeyChecks(prev => ({ ...prev, [key]: e.target.checked }))}
-                style={{ marginTop:2, width:'auto', flexShrink:0 }} />
+            <label key={key} style={{ display:'flex', gap:8, alignItems:'flex-start', marginBottom:8, cursor:'pointer', fontSize:12, color:'var(--v2-text-2)', lineHeight:1.5 }}>
+              <input type="checkbox" checked={keyChecks[key]} onChange={e => setKC(p => ({ ...p, [key]: e.target.checked }))} style={{ marginTop:2, flexShrink:0 }}/>
               {label}
             </label>
           ))}
-
           <div style={{ display:'flex', gap:8, marginTop:12 }}>
-            <button className="v2-btn v2-btn-sm" onClick={() => { setKeyDelConfirm(false); setKeyChecks({ downloaded:false, installed:false, understand:false }) }}
-              style={{ fontSize:11 }}>
-              Cancel
-            </button>
-            <button onClick={doDeleteKey} disabled={!allChecked || keyDeleting}
+            <button className="v2-btn v2-btn-sm" onClick={() => { setKDC(false); setKC({downloaded:false,installed:false,understand:false}) }}>Cancel</button>
+            <button onClick={doDeleteKey} disabled={!allChecked||keyDeleting}
               style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
-                        background: allChecked ? 'var(--v2-red)' : 'var(--v2-surface-3)',
-                        color: allChecked ? 'white' : 'var(--v2-text-3)',
-                        border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 10px',
-                        cursor: allChecked ? 'pointer' : 'not-allowed', fontFamily:'inherit', fontWeight:500 }}>
-              <Trash2 size={10} />
-              {keyDeleting ? 'Deleting…' : 'Permanently delete key'}
+                background: allChecked ? 'var(--v2-red)':'var(--v2-surface-3)',
+                color: allChecked ? 'white':'var(--v2-text-3)',
+                border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 10px',
+                cursor: allChecked ? 'pointer':'not-allowed', fontFamily:'inherit', fontWeight:500 }}>
+              <Trash2 size={10}/> {keyDeleting ? 'Deleting...' : 'Permanently delete key'}
             </button>
           </div>
         </div>
       )}
 
-      {/* Files */}
       {(cert.cert_pem || cert.private_key_pem) && (
         <>
           <div className="v2-section-label" style={{ marginBottom:10 }}>Certificate files</div>
           <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
             {cert.cert_pem && (
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                            background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
-                            borderRadius:'var(--v2-r-md)', padding:'8px 12px' }}>
+                background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)', borderRadius:'var(--v2-r-md)', padding:'8px 12px' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <FileText size={12} color="var(--v2-text-3)" />
+                  <FileText size={12} color="var(--v2-text-3)"/>
                   <span style={{ fontSize:12, fontWeight:500 }}>cert.pem</span>
                 </div>
                 <div style={{ display:'flex', gap:6 }}>
-                  <CopyBtn text={cert.cert_pem} label="Copy" />
-                  <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.cert_pem, `${cert.domain}-cert.pem`)}>
-                    <Download size={10} /> Save
+                  <CopyBtn text={cert.cert_pem}/>
+                  <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.cert_pem, cert.domain+'-cert.pem')}>
+                    <Download size={10}/> Save
                   </button>
                 </div>
               </div>
             )}
             {cert.private_key_pem && (
-              <div style={{ background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
-                            borderRadius:'var(--v2-r-md)', padding:'8px 12px' }}>
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                              marginBottom: showKey ? 10 : 0 }}>
+              <div style={{ background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)', borderRadius:'var(--v2-r-md)', padding:'8px 12px' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: showKey ? 10:0 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <Lock size={12} color="var(--v2-text-3)" />
+                    <Lock size={12} color="var(--v2-text-3)"/>
                     <span style={{ fontSize:12, fontWeight:500 }}>private key</span>
                     <span className="v2-chip" style={{ fontSize:9 }}>SENSITIVE</span>
                   </div>
                   <div style={{ display:'flex', gap:6 }}>
                     <button className="v2-btn v2-btn-sm" onClick={() => setShowKey(v => !v)}>
-                      {showKey ? <EyeOff size={10} /> : <Eye size={10} />}
-                      {showKey ? 'Hide' : 'Reveal'}
+                      {showKey ? <EyeOff size={10}/> : <Eye size={10}/>} {showKey ? 'Hide':'Reveal'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.private_key_pem, `${cert.domain}-key.pem`)}>
-                      <Download size={10} /> Save
+                    <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.private_key_pem, cert.domain+'-key.pem')}>
+                      <Download size={10}/> Save
                     </button>
                   </div>
                 </div>
                 {showKey && (
                   <div style={{ marginTop:8, background:'#0a0a0a', borderRadius:'var(--v2-r-sm)',
-                                padding:'8px 10px', fontSize:10, fontFamily:'var(--mono, monospace)',
-                                color:'#e5e5e5', whiteSpace:'pre-wrap', wordBreak:'break-all',
-                                maxHeight:120, overflowY:'auto', lineHeight:1.5 }}>
+                    padding:'8px 10px', fontSize:10, fontFamily:'monospace', color:'#e5e5e5',
+                    whiteSpace:'pre-wrap', wordBreak:'break-all', maxHeight:120, overflowY:'auto' }}>
                     {cert.private_key_pem}
                   </div>
                 )}
@@ -518,824 +355,246 @@ function CertDetail({ cert, onClose, onRenew, onDelete, onKeyDeleted, onInstall,
         </>
       )}
 
-      {/* Smart renew progress */}
-      {renewState && (
-        <div style={{
-          background: renewState.phase === 'done' ? 'var(--v2-green-bg)'
-            : renewState.phase === 'error' ? '#fef2f2'
-            : 'var(--v2-surface-3)',
-          border: `0.5px solid ${renewState.phase === 'done' ? 'var(--v2-green-border)'
-            : renewState.phase === 'error' ? '#fecaca' : 'var(--v2-border)'}`,
-          borderRadius: 'var(--v2-r-md)', padding: '12px 14px', marginBottom: 12,
-          display: 'flex', alignItems: 'flex-start', gap: 10
-        }}>
-          {renewState.phase === 'done'
-            ? <CheckCircle size={14} color="var(--v2-green)" style={{ flexShrink:0, marginTop:1 }} />
-            : renewState.phase === 'error'
-            ? <AlertTriangle size={14} color="#dc2626" style={{ flexShrink:0, marginTop:1 }} />
-            : <RefreshCw size={14} color="var(--v2-text-3)" style={{ flexShrink:0, marginTop:1, animation:'spin 1s linear infinite' }} />}
-          <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ fontSize:12, fontWeight:600, marginBottom:2,
-              color: renewState.phase === 'done' ? 'var(--v2-green-text)'
-                : renewState.phase === 'error' ? '#dc2626' : 'var(--v2-text)' }}>
-              {renewState.phase === 'done' ? 'Renewed' : renewState.phase === 'error' ? 'Renewal failed' : 'Renewing…'}
-            </div>
-            <div style={{ fontSize:11, color: renewState.phase === 'error' ? '#dc2626' : 'var(--v2-text-2)', lineHeight:1.5 }}>
-              {renewState.msg}
-            </div>
-          </div>
-          {renewState.phase === 'error' && (
-            <button onClick={() => setRenewState(null)}
-              style={{ background:'none', border:'none', cursor:'pointer', color:'#dc2626', fontSize:14, flexShrink:0 }}>✕</button>
-          )}
-        </div>
-      )}
-
-      {/* Reissue state feedback */}
-      {reissueState && reissueState !== 'confirm' && (
-        <div style={{
-          background: reissueState === 'done' ? 'var(--v2-green-bg)'
-            : reissueState === 'error' ? '#fef2f2' : 'var(--v2-surface-3)',
-          border: `0.5px solid ${reissueState === 'done' ? 'var(--v2-green-border)'
-            : reissueState === 'error' ? '#fecaca' : 'var(--v2-border)'}`,
-          borderRadius: 'var(--v2-r-md)', padding: '10px 12px', marginBottom: 10,
-          display: 'flex', alignItems: 'flex-start', gap: 10
-        }}>
-          {reissueState === 'done'
-            ? <CheckCircle size={14} color="var(--v2-green)" style={{ flexShrink:0, marginTop:1 }}/>
-            : reissueState === 'error'
-            ? <AlertTriangle size={14} color="#dc2626" style={{ flexShrink:0, marginTop:1 }}/>
-            : <RefreshCw size={14} color="var(--v2-text-3)" style={{ flexShrink:0, marginTop:1,
-                animation: reissueState === 'loading' ? 'spin 1s linear infinite' : 'none' }}/>}
-          <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ fontSize:12, fontWeight:600, marginBottom:2,
-              color: reissueState === 'done' ? 'var(--v2-green-text)'
-                : reissueState === 'error' ? '#dc2626' : 'var(--v2-text)' }}>
-              {reissueState === 'done' ? 'Reissued successfully'
-                : reissueState === 'error' ? 'Reissue failed'
-                : reissueState === 'processing' ? 'Processing at TSS' : 'Reissuing...'}
-            </div>
-            <div style={{ fontSize:11, color: reissueState === 'error' ? '#dc2626' : 'var(--v2-text-2)', lineHeight:1.5 }}>
-              {reissueMsg}
-            </div>
-          </div>
-          {(reissueState === 'error' || reissueState === 'done' || reissueState === 'processing') && (
-            <button onClick={() => { setReissueState(null); setReissueMsg('') }}
-              style={{ background:'none', border:'none', cursor:'pointer', color:'var(--v2-text-3)', fontSize:14, flexShrink:0 }}>x</button>
-          )}
-        </div>
-      )}
-
-      {/* Actions */}
       <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-        {/* Primary action row */}
         <div style={{ display:'flex', gap:8 }}>
           <button className="v2-btn v2-btn-primary" style={{ flex:1, justifyContent:'center' }}
-            onClick={handleSmartRenew}
-            disabled={!!renewState && renewState.phase !== 'error'}>
+            onClick={() => { sessionStorage.setItem('prefill_domain', cert.domain); onClose(); nav('/buy') }}>
             <RotateCcw size={12}/> Renew Certificate
           </button>
-          <button className="v2-btn v2-btn-sm" onClick={() => onInstall(cert)}>
-            <Server size={11}/> Install
-          </button>
+          <button className="v2-btn v2-btn-sm" onClick={() => onInstall(cert)}><Server size={11}/> Install</button>
           {!delConfirm
-            ? <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => { setDelConfirm(true); setRevokeConfirm(false) }}><X size={11}/> Delete</button>
+            ? <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => setDel(true)}><X size={11}/> Delete</button>
             : <button className="v2-btn v2-btn-danger" onClick={() => onDelete(cert.id)}>Confirm delete</button>
           }
         </div>
-
-        {/* TSS-only advanced actions */}
-        {isTssCert && !isRevoked && (
-          <div style={{ display:'flex', gap:6, paddingTop:6, borderTop:'0.5px solid var(--v2-border)', alignItems:'center' }}>
-            <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:500, marginRight:2 }}>TSS</span>
-            <button
-              className={`v2-btn v2-btn-sm${reissueState === 'confirm' ? ' v2-btn-primary' : ''}`}
-              onClick={handleReissue}
-              disabled={reissueState === 'loading'}
-              title="Same TSS order — new CSR + PEM, same expiry window, no charge">
-              {reissueState === 'confirm'
-                ? <><AlertTriangle size={11}/> Confirm reissue?</>
-                : reissueState === 'loading'
-                ? <><RefreshCw size={11} style={{ animation:'spin 1s linear infinite' }}/> Reissuing…</>
-                : <><RefreshCw size={11}/> Reissue</>}
-            </button>
-            {reissueState === 'confirm' && (
-              <button className="v2-btn v2-btn-sm" onClick={() => setReissueState(null)}>Cancel</button>
-            )}
-            <div style={{ flex:1 }}/>
-            <button
-              className="v2-btn v2-btn-sm"
-              onClick={() => { setRevokeConfirm(v => !v); setDelConfirm(false); setRevokeError('') }}
-              style={{ fontSize:11, borderColor:'#f97316', color:'#f97316' }}>
-              Revoke
-            </button>
-          </div>
-        )}
-
-        {/* GoGetSSL refresh action */}
-        {isGgsCert && !isRevoked && (
-          <div style={{ display:'flex', gap:6, paddingTop:6, borderTop:'0.5px solid var(--v2-border)', alignItems:'center' }}>
-            <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:500, marginRight:2 }}>GGS</span>
-            <button
-              className="v2-btn v2-btn-sm"
-              disabled={ggsRefreshState === 'loading'}
-              title="Re-fetch latest cert data from GoGetSSL API"
-              onClick={async () => {
-                setGgsRefreshState('loading'); setGgsRefreshMsg('')
-                try {
-                  const { data: { session } } = await supabase.auth.getSession()
-                  // Find the ssl_order for this cert to get the order_id
-                  const { data: orders } = await supabase
-                    .from('ssl_orders')
-                    .select('id,ggs_order_id')
-                    .eq('user_id', cert.user_id || '')
-                    .eq('domain', cert.domain)
-                    .order('updated_at', { ascending: false })
-                    .limit(1)
-                  const orderId = orders?.[0]?.id || cert.ssl_order_id
-                  if (!orderId) { setGgsRefreshState('error'); setGgsRefreshMsg('No linked GGS order found — re-fetch unavailable.'); return }
-                  const res = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/gogetssl-issue', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
-                    body: JSON.stringify({ action: 'check_status', order_id: orderId })
-                  })
-                  const data = await res.json()
-                  if (data.ok) {
-                    setGgsRefreshState('done')
-                    setGgsRefreshMsg(`Refreshed — status: ${data.ggs_status || data.status || 'active'}`)
-                    setTimeout(() => { setGgsRefreshState(null); setGgsRefreshMsg('') }, 4000)
-                  } else {
-                    setGgsRefreshState('error')
-                    setGgsRefreshMsg(data.error || 'Refresh failed')
-                  }
-                } catch(e) { setGgsRefreshState('error'); setGgsRefreshMsg(String(e)) }
-              }}>
-              {ggsRefreshState === 'loading'
-                ? <><RefreshCw size={11} style={{ animation:'spin 1s linear infinite' }}/> Refreshing…</>
-                : ggsRefreshState === 'done'
-                ? <><CheckCircle size={11}/> Refreshed</>
-                : <><RefreshCw size={11}/> Refresh from GGS</>}
-            </button>
-            {ggsRefreshMsg && (
-              <span style={{ fontSize:10, color: ggsRefreshState === 'error' ? '#dc2626' : 'var(--v2-green-text)' }}>
-                {ggsRefreshMsg}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Revoke confirmation panel */}
-      {revokeConfirm && (
-        <div style={{ marginTop:12, background:'#fff7ed', border:'1px solid #fed7aa',
-          borderRadius:'var(--v2-r-md)', padding:'14px' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
-            <span style={{ fontSize:16 }}>⚠️</span>
-            <span style={{ fontWeight:700, fontSize:13, color:'#9a3412' }}>Revoke this certificate?</span>
-          </div>
-          <p style={{ fontSize:12, color:'#92400e', marginBottom:12, lineHeight:1.6 }}>
-            This will permanently revoke <strong>{cert.domain}</strong> via TheSSLStore API.
-            Browsers will reject the certificate immediately. This cannot be undone.
-          </p>
-          <div style={{ marginBottom:12 }}>
-            <label style={{ fontSize:11, fontWeight:700, color:'#92400e', display:'block', marginBottom:5 }}>
-              Reason for revocation
-            </label>
-            <select
-              value={revokeReason}
-              onChange={e => setRevokeReason(e.target.value)}
-              style={{ width:'100%', fontSize:12, padding:'7px 10px', borderRadius:6,
-                border:'1px solid #fed7aa', background:'white', color:'#1c1917',
-                fontFamily:'inherit', cursor:'pointer' }}>
-              <option value="Unspecified">Unspecified</option>
-              <option value="KeyCompromise">Key Compromise — private key was exposed</option>
-              <option value="AffiliationChanged">Affiliation Changed — org details changed</option>
-              <option value="Superseded">Superseded — replaced by a new certificate</option>
-              <option value="CessationOfOperation">Cessation of Operation — domain no longer in use</option>
-              <option value="PrivilegeWithdrawn">Privilege Withdrawn</option>
-            </select>
-          </div>
-          {revokeError && (
-            <div style={{ fontSize:12, color:'#dc2626', background:'#fef2f2', border:'1px solid #fecaca',
-              borderRadius:6, padding:'8px 10px', marginBottom:10 }}>
-              {revokeError}
-            </div>
-          )}
-          <div style={{ display:'flex', gap:8 }}>
-            <button className="v2-btn v2-btn-sm" onClick={() => { setRevokeConfirm(false); setRevokeError('') }}
-              style={{ fontSize:11 }}>
-              Cancel
-            </button>
-            <button
-              onClick={doRevoke}
-              disabled={revoking}
-              style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
-                background: revoking ? '#d97706' : '#ea580c', color:'white',
-                border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 12px',
-                cursor: revoking ? 'not-allowed' : 'pointer', fontFamily:'inherit', fontWeight:600 }}>
-              {revoking ? '🔄 Revoking…' : '🚫 Confirm Revoke'}
-            </button>
-          </div>
+        <div style={{ display:'flex', gap:6, paddingTop:6, borderTop:'0.5px solid var(--v2-border)', alignItems:'center' }}>
+          <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:500 }}>GoGetSSL</span>
+          <button className="v2-btn v2-btn-sm" disabled={refreshing} onClick={doRefresh}>
+            <RefreshCw size={11} style={{ animation: refreshing ? 'spin 0.8s linear infinite':'none' }}/>
+            {refreshing ? 'Refreshing...' : 'Refresh Status'}
+          </button>
+          {refreshMsg && <span style={{ fontSize:10, color:'var(--v2-text-2)' }}>{refreshMsg}</span>}
         </div>
-      )}
+      </div>
     </div>
   )
 }
 
-// ── CertRow ──────────────────────────────────────────────────────────
 function CertRow({ cert, selected, onClick }) {
   const days = daysLeft(cert.expires_at)
-  const isSandboxRevoked = cert.status === 'sandbox_revoked'
-  const s = statusOf(days, cert.status === 'revoked', cert.status)
-  const initials = cert.domain.replace(/^www\./, '').slice(0, 2).toUpperCase()
+  const s    = statusOf(days, cert.status)
+  const initials = cert.domain.replace(/^www./, '').slice(0,2).toUpperCase()
   const colors = { green:'#0e7fc0', amber:'#f59e0b', red:'#dc2626', grey:'#d4d4d4' }
   return (
-    <div className={`v2-list-row status-${s.dot} ${selected ? 'selected' : ''}`}
-      onClick={onClick}
-      style={isSandboxRevoked ? { opacity: 0.45, pointerEvents: 'none', cursor: 'default' } : {}}>
+    <div className={'v2-list-row status-'+s.dot+(selected?' selected':'')} onClick={onClick}>
       <div className="v2-row-icon" style={{ background: colors[s.dot] }}>{initials}</div>
       <div className="v2-row-body">
         <div className="v2-row-title-line">
           <span className="v2-row-title v2-mono">{cert.domain}</span>
-          <StatusPill days={days} revoked={cert.status === 'revoked'} status={cert.status} />
-          {cert.is_sandbox && !isSandboxRevoked && (
-            <span title="Sandbox certificate — auto-renews every ~40 hours" style={{ display:'inline-flex', alignItems:'center',
-              gap:3, fontSize:9, fontWeight:600, color:'#7c3aed', background:'#f5f3ff',
-              border:'0.5px solid #ddd6fe', borderRadius:3, padding:'1px 5px', letterSpacing:'0.2px' }}>
-              SANDBOX
-            </span>
-          )}
-          {cert.private_key_pem && !isSandboxRevoked && (
-            <span title="Private key stored server-side" style={{ display:'inline-flex', alignItems:'center',
-              gap:3, fontSize:9, fontWeight:600, color:'#92400e', background:'#fffbeb',
-              border:'0.5px solid #fde68a', borderRadius:3, padding:'1px 5px', letterSpacing:'0.2px' }}>
-              <ShieldOff size={8} /> KEY STORED
+          <StatusPill days={days} status={cert.status}/>
+          {cert.private_key_pem && (
+            <span style={{ display:'inline-flex', alignItems:'center', gap:3, fontSize:9, fontWeight:600,
+              color:'#92400e', background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:3, padding:'1px 5px' }}>
+              <ShieldOff size={8}/> KEY STORED
             </span>
           )}
         </div>
         <div className="v2-row-meta">
-          {isSandboxRevoked
-            ? <span>Sandbox cert — replaced by renewed certificate above</span>
-            : <>
-                <span>Expires {fmtDate(cert.expires_at)}</span>
-                <span className="v2-row-meta-sep">·</span>
-                {cert.cert_type === 'RapidSSL DV'
-                  ? <span style={{ fontSize:9, fontWeight:700, color:'#185FA5', background:'#E6F1FB',
-                                    border:'0.5px solid #B5D4F4', borderRadius:3, padding:'1px 5px' }}>RapidSSL</span>
-                  : <span>{cert.cert_type || 'SSL Certificate'}</span>}
-                {cert.issued_at && <><span className="v2-row-meta-sep">·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
-              </>
-          }
+          <span>Expires {fmtDate(cert.expires_at)}</span>
+          <span className="v2-row-meta-sep">·</span>
+          <span style={{ fontSize:9, fontWeight:700, color:'#185FA5', background:'#E6F1FB',
+            border:'0.5px solid #B5D4F4', borderRadius:3, padding:'1px 5px' }}>
+            {cert.cert_type||'RapidSSL DV'}
+          </span>
+          {cert.issued_at && <><span className="v2-row-meta-sep">·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
         </div>
-        {!isSandboxRevoked && days != null && days <= 90 && <div style={{ marginTop:6 }}><ProgressBar days={days} /></div>}
+        {days != null && days <= 365 && <div style={{ marginTop:6 }}><ProgressBar days={days}/></div>}
       </div>
-      {!isSandboxRevoked && <ChevronRight size={14} color="var(--v2-text-3)" style={{ flexShrink:0 }} />}
+      <ChevronRight size={14} color="var(--v2-text-3)" style={{ flexShrink:0 }}/>
     </div>
   )
 }
 
-// ── RenewModal ───────────────────────────────────────────────────────
-function RenewModal({ domain, onClose, nav }) {
-  return (
-    <div className="v2-modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="v2-modal">
-        <div className="v2-modal-head">
-          <div>
-            <div className="v2-modal-title">Renew certificate</div>
-            <div className="v2-modal-subtitle v2-mono">{domain}</div>
-          </div>
-          <button className="v2-modal-close" onClick={onClose}><X size={14} /></button>
-        </div>
-        <div className="v2-modal-body">
-          <div className="v2-callout tip" style={{ marginBottom:16 }}>
-            <div className="v2-callout-title">Domain pre-filled for you</div>
-            Clicking Renew will open Issue Certificate with <strong>{domain}</strong> already entered.
-            Complete the DNS challenge to get a fresh 90-day certificate.
-          </div>
-          <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6 }}>
-            This places a new RapidSSL order via TheSSLStore — same process as the first time.
-            Your old certificate stays active until you install the new one.
-          </div>
-        </div>
-        <div className="v2-modal-foot">
-          <button className="v2-btn" onClick={onClose}>Cancel</button>
-          <button className="v2-btn v2-btn-primary" onClick={() => {
-            sessionStorage.setItem('prefill_domain', domain)
-            onClose()
-            nav('/buy')
-          }}>
-            <Shield size={13} /> Renew certificate
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// LOGGED-IN DASHBOARD
-// ══════════════════════════════════════════════════════════════════════
 function LoggedInDashboard({ user, nav }) {
-  const [certs, setCerts]         = useState([])
-  const [monitored, setMon]       = useState([])
-  const [loading, setLoading]     = useState(true)
-  const [selected, setSelected]   = useState(null)
-  const [filter, setFilter]       = useState('all')
-  const [search, setSearch]       = useState('')
+  const [certs,   setCerts]  = useState([])
+  const [orders,  setOrders] = useState([])
+  const [loading, setLoading]= useState(true)
+  const [selected,setSelected]= useState(null)
+  const [filter,  setFilter] = useState('all')
+  const [search,  setSearch] = useState('')
   const [agentCert, setAgentCert] = useState(null)
-  const [showRotated, setShowRotated]       = useState(false)
-  const [justRotated, setJustRotated]       = useState(null)
-  const [pendingOrders, setPendingOrders]   = useState([])
-  const [showPendingOrders, setShowPendingOrders] = useState(true)
-  const [deletingOrder, setDeletingOrder]   = useState(null)
-  const selectedRef = useRef(null)
-  selectedRef.current = selected
 
-  const loadCerts = useCallback(async () => {
+  const load = useCallback(async () => {
     if (!user) return
     setLoading(true)
-    const [{ data: certsData }, { data: ordersData }, { data: monData }, { data: tssOrdersData }] = await Promise.all([
-      supabase.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending: false }),
-      supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'issued').order('updated_at', { ascending: false }),
-      supabase.from('monitored_domains').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
-      supabase.from('tss_orders').select('id,domain,tss_order_id,status,major_status,minor_status,is_sandbox,product_code,created_at,updated_at')
-        .eq('user_id', user.id).in('status', ['dv_pending', 'failed', 'expired']).order('created_at', { ascending: false }),
+    const [{ data: certsData }, { data: ordersData }] = await Promise.all([
+      supabase.from('certificates').select('*').eq('user_id', user.id).eq('status', 'active').order('expires_at', { ascending:true }),
+      supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'dv_pending').order('created_at', { ascending:false }),
     ])
-    const all = [...(certsData || [])]
-    for (const o of (ordersData || [])) {
-      if (!all.find(c => c.domain === o.domain)) all.push({ ...o, from_order: true })
-    }
-    all.sort((a, b) => {
-      const da = daysLeft(a.expires_at), db = daysLeft(b.expires_at)
-      if (da == null) return 1; if (db == null) return -1; return da - db
-    })
-    setCerts(all); setMon(monData || []); setPendingOrders(tssOrdersData || []); setLoading(false)
-
-    // Auto-switch: if current selected cert is now 'rotating', jump to the new one
-    const curSelected = selectedRef.current
-    if (curSelected) {
-      const oldCert = all.find(c => c.id === curSelected)
-      if (oldCert && oldCert.status === 'rotating') {
-        const newCert = all
-          .filter(c => c.domain === oldCert.domain && c.status !== 'rotating')
-          .sort((a, b) => new Date(b.issued_at || b.created_at) - new Date(a.issued_at || a.created_at))[0]
-        if (newCert) {
-          setSelected(newCert.id)
-          setJustRotated({
-            domain: oldCert.domain,
-            oldExpires: oldCert.expires_at,
-            oldIssued: oldCert.issued_at,
-            at: Date.now(),
-          })
-        }
-      }
-    }
+    setCerts(certsData||[]); setOrders(ordersData||[]); setLoading(false)
   }, [user])
 
-  // Initial load
-  useEffect(() => { loadCerts() }, [loadCerts])
-
-  // Auto-open install modal when arriving from BuyCertificate "Install on server" button
+  useEffect(() => { load() }, [load])
   useEffect(() => {
-    const domain = sessionStorage.getItem('install_domain')
-    if (!domain || !certs.length) return
+    const fn = () => { if (document.visibilityState === 'visible') load() }
+    document.addEventListener('visibilitychange', fn)
+    return () => document.removeEventListener('visibilitychange', fn)
+  }, [load])
+  useEffect(() => {
+    const d = sessionStorage.getItem('install_domain')
+    if (!d || !certs.length) return
     sessionStorage.removeItem('install_domain')
-    const cert = certs.find(c => c.domain === domain && c.private_key_pem)
-    if (cert) {
-      setSelected(cert.id)
-      setAgentCert(cert)
-    }
+    const c = certs.find(c => c.domain === d && c.private_key_pem)
+    if (c) { setSelected(c.id); setAgentCert(c) }
   }, [certs])
-
-  // Refresh on tab focus
-  useEffect(() => {
-    const onFocus = () => { if (document.visibilityState === 'visible') loadCerts() }
-    window.addEventListener('focus', onFocus)
-    document.addEventListener('visibilitychange', onFocus)
-    return () => {
-      window.removeEventListener('focus', onFocus)
-      document.removeEventListener('visibilitychange', onFocus)
-    }
-  }, [loadCerts])
 
   const handleDelete = async (id) => {
     await supabase.from('certificates').delete().eq('id', id)
-    setCerts(prev => prev.filter(c => c.id !== id))
-    setSelected(null)
-    setJustRotated(null)
+    setCerts(p => p.filter(c => c.id !== id)); setSelected(null)
   }
 
-  const handleDeleteOrder = async (orderId) => {
-    setDeletingOrder(orderId)
-    await supabase.from('tss_orders').delete().eq('id', orderId).eq('user_id', user.id)
-    setPendingOrders(prev => prev.filter(o => o.id !== orderId))
-    setDeletingOrder(null)
-  }
-
-  const handleKeyDeleted = (id) => {
-    setCerts(prev => prev.map(c => c.id === id ? { ...c, private_key_pem: null } : c))
-  }
-
-  const activeCerts = certs.filter(c => c.status !== 'rotating' && c.status !== 'sandbox_revoked')
-  const total    = activeCerts.length
-  const healthy  = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 }).length
-  const expiring = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 }).length
-  const expired  = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 }).length
-
-  // Sandbox certs that are currently active
-  const sandboxActiveDomains = [...new Set(
-    certs.filter(c => c.is_sandbox && c.status === 'active').map(c => c.domain)
-  )]
-
-  // Certs with status 'rotating' are hidden from the list
-  // They are kept in DB for 30-day rollback but not shown to user
-  const rotatingDomains = certs
-    .filter(c => c.status === 'rotating')
-    .map(c => c.domain)
-
-  // sandbox_revoked certs — shown greyed out, grouped below active certs
-  const sandboxRevokedDomains = [...new Set(
-    certs.filter(c => c.status === 'sandbox_revoked').map(c => c.domain)
-  )]
+  const total    = certs.length
+  const healthy  = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 }).length
+  const expiring = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 }).length
+  const expired  = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 }).length
 
   const visible = certs.filter(c => {
-    if (c.status === 'rotating') return false  // hide rotating (old) certs
-    // sandbox_revoked: only show in 'all' filter, not in health filters
-    if (c.status === 'sandbox_revoked') {
-      if (filter !== 'all') return false
-      if (search && !c.domain.toLowerCase().includes(search.toLowerCase())) return false
-      return true
-    }
-    const d = daysLeft(c.expires_at)
-    const s = statusOf(d, c.status === 'revoked', c.status)
-    if (filter === 'healthy'  && s.cls !== 'green')  return false
-    if (filter === 'expiring' && s.cls !== 'amber')  return false
-    if (filter === 'expired'  && s.cls !== 'red')    return false
+    const d = daysLeft(c.expires_at); const s = statusOf(d, c.status)
+    if (filter === 'healthy'  && s.cls !== 'green') return false
+    if (filter === 'expiring' && s.cls !== 'amber') return false
+    if (filter === 'expired'  && s.cls !== 'red')   return false
     if (search && !c.domain.toLowerCase().includes(search.toLowerCase())) return false
     return true
   })
 
-  // Unique domains that have been rotated (new cert issued, old hidden)
-  // Only show banner for domains where new cert exists alongside rotating old one
-  const newlyRotated = [...new Set(
-    certs
-      .filter(c => c.status !== 'rotating') // new certs
-      .filter(c => rotatingDomains.includes(c.domain)) // that have a rotating counterpart
-      .map(c => c.domain)
-  )]
-
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
   return (
-    <div style={{ background: '#f0f4f8', minHeight: '100vh' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 80px' }}>
+    <div style={{ background:'#f0f4f8', minHeight:'100vh' }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:'32px 28px 80px' }}>
 
-        {/* Page hero */}
-        <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.4px', marginBottom: 4 }}>
-            Dashboard
-          </h1>
-          <p style={{ fontSize: 12, color: '#64748b' }}>
-            {user.email} · {total} certificate{total !== 1 ? 's' : ''} · {monitored.length} monitored
-          </p>
+        <div style={{ marginBottom:24 }}>
+          <h1 style={{ fontSize:22, fontWeight:800, color:'#0f172a', letterSpacing:'-0.4px', marginBottom:4 }}>Dashboard</h1>
+          <p style={{ fontSize:12, color:'#64748b' }}>{user.email} · {total} certificate{total!==1?'s':''}</p>
         </div>
 
-        {/* Stats — dark cards matching Pricing */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:24 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:20 }}>
           {[
-            { label:'Total',        value: total,    accent:'#e2e8f0', sub: 'certificates' },
-            { label:'Healthy',      value: healthy,  accent:'#1a56db', sub: healthy > 0 ? 'All valid' : 'None active' },
-            { label:'Expiring',     value: expiring, accent: expiring > 0 ? '#f59e0b' : '#f1f5f9', sub: expiring > 0 ? 'Renew soon' : 'None' },
-            { label:'Expired',      value: expired,  accent: expired > 0 ? '#dc2626' : '#f1f5f9', sub: expired > 0 ? 'Action needed' : 'None' },
+            { label:'Total',   value:total,   accent:'#e2e8f0', sub:'certificates' },
+            { label:'Healthy', value:healthy, accent:'#1a56db', sub:healthy>0?'All valid':'None' },
+            { label:'Expiring',value:expiring,accent:expiring>0?'#f59e0b':'#f1f5f9', sub:expiring>0?'Renew soon':'None' },
+            { label:'Expired', value:expired, accent:expired>0?'#dc2626':'#f1f5f9',  sub:expired>0?'Action needed':'None' },
           ].map(s => (
-            <div key={s.label} style={{ background: '#ffffff', border: '0.5px solid #f1f5f9',
-              borderRadius: 8, padding: '16px 18px', borderTop: `2px solid ${s.accent}` }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b',
-                textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>{s.label}</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px',
-                lineHeight: 1, marginBottom: 4 }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: '#64748b' }}>{s.sub}</div>
+            <div key={s.label} style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:8, padding:'16px 18px', borderTop:'2px solid '+s.accent }}>
+              <div style={{ fontSize:10, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:6 }}>{s.label}</div>
+              <div style={{ fontSize:28, fontWeight:800, color:'#0f172a', letterSpacing:'-0.5px', lineHeight:1, marginBottom:4 }}>{s.value}</div>
+              <div style={{ fontSize:11, color:'#64748b' }}>{s.sub}</div>
             </div>
           ))}
         </div>
 
-        {/* Sandbox banner */}
-        {sandboxActiveDomains.length > 0 && (
-          <div style={{ background: 'rgba(124,58,237,0.1)', border: '0.5px solid rgba(124,58,237,0.25)',
-            borderRadius: 8, padding: '12px 16px', marginBottom: 16,
-            display: 'flex', alignItems: 'center', gap: 12 }}>
-            <RefreshCw size={14} color="#a78bfa" style={{ flexShrink: 0 }}/>
-            <span style={{ fontSize: 12, color: '#a78bfa', lineHeight: 1.5 }}>
-              <strong>Sandbox active —</strong> TSS sandbox certs auto-revoke within 48h. SSLVault renews them automatically.
-            </span>
-          </div>
-        )}
-
-        {/* Alerts */}
         {expired > 0 && (
-          <div style={{ background: 'rgba(220,38,38,0.1)', border: '0.5px solid rgba(220,38,38,0.3)',
-            borderRadius: 8, padding: '12px 16px', marginBottom: 16,
-            display: 'flex', alignItems: 'center', gap: 12 }}>
-            <AlertTriangle size={14} color="#f87171" style={{ flexShrink: 0 }}/>
-            <span style={{ fontSize: 12, color: '#f87171' }}>
-              <strong>{expired} expired certificate{expired !== 1 ? 's' : ''}</strong> — your site may show SSL warnings. Select and renew immediately.
-            </span>
+          <div style={{ background:'rgba(220,38,38,0.1)', border:'0.5px solid rgba(220,38,38,0.3)', borderRadius:8, padding:'12px 16px', marginBottom:14, display:'flex', alignItems:'center', gap:12 }}>
+            <AlertTriangle size={14} color="#f87171" style={{ flexShrink:0 }}/>
+            <span style={{ fontSize:12, color:'#f87171' }}><strong>{expired} expired certificate{expired!==1?'s':''}</strong> — renew immediately.</span>
           </div>
         )}
         {expiring > 0 && expired === 0 && (
-          <div style={{ background: 'rgba(245,158,11,0.08)', border: '0.5px solid rgba(245,158,11,0.25)',
-            borderRadius: 8, padding: '12px 16px', marginBottom: 16,
-            display: 'flex', alignItems: 'center', gap: 12 }}>
-            <AlertTriangle size={14} color="#fbbf24" style={{ flexShrink: 0 }}/>
-            <span style={{ fontSize: 12, color: '#fbbf24' }}>
-              <strong>{expiring} certificate{expiring !== 1 ? 's' : ''} expiring within 30 days</strong> — renew early to avoid downtime.
-            </span>
+          <div style={{ background:'rgba(245,158,11,0.08)', border:'0.5px solid rgba(245,158,11,0.25)', borderRadius:8, padding:'12px 16px', marginBottom:14, display:'flex', alignItems:'center', gap:12 }}>
+            <AlertTriangle size={14} color="#fbbf24" style={{ flexShrink:0 }}/>
+            <span style={{ fontSize:12, color:'#fbbf24' }}><strong>{expiring} expiring within 30 days</strong></span>
           </div>
         )}
 
-        {/* Rotation banner */}
-        {newlyRotated.length > 0 && (
-          <div style={{ background: 'rgba(245,158,11,0.08)', border: '0.5px solid rgba(245,158,11,0.25)',
-            borderRadius: 8, padding: '14px 18px', marginBottom: 16,
-            display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <RefreshCw size={14} color="#fbbf24" style={{ flexShrink: 0, marginTop: 1 }}/>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24', marginBottom: 4 }}>
-                New certificate{newlyRotated.length > 1 ? 's' : ''} issued — install on your server
-              </div>
-              <div style={{ fontSize: 12, color: '#64748b' }}>
-                {newlyRotated.map(d => (
-                  <span key={d} style={{ fontFamily: 'monospace', background: '#f1f5f9',
-                    borderRadius: 3, padding: '1px 6px', marginRight: 6, fontSize: 11, color: '#64748b' }}>{d}</span>
-                ))}
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-              <button onClick={() => {
-                const cert = certs.find(c => newlyRotated.includes(c.domain) && c.status !== 'rotating' && c.private_key_pem)
-                if (cert) { setSelected(cert.id); setAgentCert(cert) }
-              }} style={{ background: '#0e7fc0', color: 'white', border: 'none', borderRadius: 6,
-                padding: '7px 14px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-                Install now
-              </button>
-              <button onClick={() => nav('/install')}
-                style={{ background: '#f1f5f9', color: '#64748b',
-                  border: '0.5px solid #e2e8f0', borderRadius: 6,
-                  padding: '7px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}>
-                Guide
-              </button>
-            </div>
+        {orders.length > 0 && (
+          <div style={{ marginBottom:16 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>DNS Validation Pending ({orders.length})</div>
+            {orders.map(o => <DvPendingCard key={o.id} order={o} onRefresh={load}/>)}
           </div>
         )}
 
-        {/* Split layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: selectedCert ? '1fr 380px' : '1fr', gap: 16, alignItems: 'start' }}>
-
-          {/* Certificate list — dark card */}
-          <div style={{ background: '#ffffff', border: '0.5px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
-
-            {/* Toolbar */}
-            <div style={{ padding: '12px 16px', borderBottom: '0.5px solid #f1f5f9',
-              display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', gap: 4 }}>
+        <div style={{ display:'grid', gridTemplateColumns: selectedCert ? '1fr 380px':'1fr', gap:16, alignItems:'start' }}>
+          <div style={{ background:'white', border:'0.5px solid #e2e8f0', borderRadius:10, overflow:'hidden' }}>
+            <div style={{ padding:'12px 16px', borderBottom:'0.5px solid #f1f5f9', display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
+              <div style={{ display:'flex', gap:4 }}>
                 {[
-                  { key:'all',      label:'All',      count: total },
-                  { key:'healthy',  label:'Healthy',  count: healthy },
-                  { key:'expiring', label:'Expiring', count: expiring },
-                  { key:'expired',  label:'Expired',  count: expired },
+                  { key:'all',      label:'All',      count:total },
+                  { key:'healthy',  label:'Healthy',  count:healthy },
+                  { key:'expiring', label:'Expiring', count:expiring },
+                  { key:'expired',  label:'Expired',  count:expired },
                 ].map(f => (
                   <button key={f.key} onClick={() => setFilter(f.key)}
-                    style={{ padding: '4px 10px', borderRadius: 5, fontSize: 11, fontWeight: 500,
-                      cursor: 'pointer', fontFamily: 'inherit',
-                      background: filter === f.key ? '#0e7fc0' : '#f8fafc',
-                      color: filter === f.key ? 'white' : '#64748b',
-                      border: filter === f.key ? '0.5px solid #0e7fc0' : '0.5px solid #e2e8f0' }}>
-                    {f.label} <span style={{ opacity: 0.7 }}>{f.count}</span>
+                    style={{ padding:'4px 10px', borderRadius:5, fontSize:11, fontWeight:500, cursor:'pointer', fontFamily:'inherit',
+                      background: filter===f.key ? '#0e7fc0':'#f8fafc',
+                      color: filter===f.key ? 'white':'#64748b',
+                      border: filter===f.key ? '0.5px solid #0e7fc0':'0.5px solid #e2e8f0' }}>
+                    {f.label} <span style={{ opacity:0.7 }}>{f.count}</span>
                   </button>
                 ))}
               </div>
-              <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-                <div style={{ position: 'relative' }}>
-                  <input value={search} onChange={e => setSearch(e.target.value)}
-                    placeholder="Search domains…"
-                    style={{ background: '#f8fafc', border: '0.5px solid #e2e8f0',
-                      borderRadius: 6, color: 'white', fontSize: 12, padding: '5px 10px 5px 28px',
-                      width: 180, outline: 'none', fontFamily: 'inherit' }}/>
-                  <Globe size={12} style={{ position: 'absolute', left: 9, top: '50%',
-                    transform: 'translateY(-50%)', color: '#94a3b8', pointerEvents: 'none' }}/>
+              <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
+                <div style={{ position:'relative' }}>
+                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search domains..."
+                    style={{ background:'#f8fafc', border:'0.5px solid #e2e8f0', borderRadius:6, color:'#1e293b',
+                      fontSize:12, padding:'5px 10px 5px 28px', width:180, outline:'none', fontFamily:'inherit' }}/>
+                  <Globe size={12} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:'#94a3b8', pointerEvents:'none' }}/>
                 </div>
                 <button onClick={() => nav('/buy')}
-                  style={{ display: 'flex', alignItems: 'center', gap: 5,
-                    background: '#0e7fc0', color: 'white', border: 'none', borderRadius: 6,
-                    padding: '6px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  style={{ display:'flex', alignItems:'center', gap:5, background:'#0e7fc0', color:'white',
+                    border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
                   <Plus size={11}/> Issue certificate
                 </button>
               </div>
             </div>
 
-            {/* Rows */}
             {loading ? (
-              <div style={{ padding: '48px 16px', textAlign: 'center' }}>
-                <RefreshCw size={20} className="spin" style={{ color: '#94a3b8' }}/>
-                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>Loading…</div>
+              <div style={{ padding:'48px 16px', textAlign:'center' }}>
+                <RefreshCw size={20} style={{ color:'#94a3b8', animation:'spin 1s linear infinite' }}/>
+                <div style={{ fontSize:12, color:'#94a3b8', marginTop:10 }}>Loading...</div>
               </div>
-            ) : visible.length === 0 && pendingOrders.length === 0 ? (
-              <div style={{ padding: '48px 16px', textAlign: 'center' }}>
-                <Shield size={24} style={{ color: '#f8fafc', marginBottom: 12 }}/>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>
-                  {total === 0 ? 'No certificates yet' : 'No results'}
-                </div>
-                <div style={{ fontSize: 12, color: '#f8fafc', marginBottom: 16 }}>
-                  {total === 0 ? 'Issue your first SSL certificate to get started.' : 'Try a different filter.'}
-                </div>
-                {total === 0 && (
+            ) : visible.length === 0 ? (
+              <div style={{ padding:'48px 16px', textAlign:'center' }}>
+                <Shield size={24} style={{ color:'#e2e8f0', marginBottom:12 }}/>
+                <div style={{ fontSize:13, fontWeight:600, color:'#94a3b8', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
+                <div style={{ fontSize:12, color:'#94a3b8', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
+                {total===0 && (
                   <button onClick={() => nav('/buy')}
-                    style={{ background: '#0e7fc0', color: 'white', border: 'none', borderRadius: 7,
-                      padding: '9px 18px', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    style={{ background:'#0e7fc0', color:'white', border:'none', borderRadius:7,
+                      padding:'9px 18px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
                     Issue your first certificate
                   </button>
                 )}
               </div>
             ) : (
-              <>
-                {/* Pending orders — merged inline, no separate section */}
-                {pendingOrders.map(order => {
-                  const ageHours = Math.floor((Date.now() - new Date(order.created_at)) / 3600000)
-                  return (
-                    <div key={order.id} style={{ display: 'flex', alignItems: 'center', gap: 12,
-                      padding: '11px 16px', borderBottom: '0.5px solid #f1f5f9',
-                      background: 'rgba(245,158,11,0.04)' }}>
-                      <div style={{ width: 30, height: 30, borderRadius: 7, flexShrink: 0,
-                        background: 'rgba(245,158,11,0.1)', border: '0.5px solid rgba(245,158,11,0.25)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Clock size={13} color="#f59e0b"/>
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2 }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#1e293b',
-                            fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {order.domain}
-                          </span>
-                          <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
-                            background: 'rgba(245,158,11,0.15)', color: '#f59e0b',
-                            border: '0.5px solid rgba(245,158,11,0.3)', textTransform: 'uppercase',
-                            letterSpacing: '0.3px', flexShrink: 0 }}>
-                            {order.status === 'failed' ? 'Failed' : order.status === 'expired' ? 'Expired' : 'Pending DNS'}
-                          </span>
-                          {order.is_sandbox && (
-                            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
-                              background: 'rgba(124,58,237,0.15)', color: '#a78bfa',
-                              border: '0.5px solid rgba(124,58,237,0.3)', textTransform: 'uppercase',
-                              letterSpacing: '0.3px', flexShrink: 0 }}>Sandbox</span>
-                          )}
-                        </div>
-                        <div style={{ fontSize: 10, color: '#94a3b8' }}>
-                          #{order.tss_order_id} · {ageHours < 1 ? 'just now' : `${ageHours}h ago`}
-                          {order.status === 'dv_pending' && (
-                            <span style={{ color: '#d97706' }}> · DNS validation in progress</span>
-                          )}
-                        </div>
-                      </div>
-                      <button onClick={() => handleDeleteOrder(order.id)} disabled={deletingOrder === order.id}
-                        title="Remove order"
-                        style={{ width: 26, height: 26, borderRadius: 5, background: 'none',
-                          border: '0.5px solid #e2e8f0', cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          color: '#94a3b8', flexShrink: 0 }}>
-                        {deletingOrder === order.id ? '…' : <X size={11}/>}
-                      </button>
-                    </div>
-                  )
-                })}
-
-                {/* Active cert rows */}
-                {visible.map(cert => (
-                  <CertRow key={cert.id} cert={cert}
-                    selected={selected === cert.id}
-                    onClick={() => setSelected(selected === cert.id ? null : cert.id)}/>
-                ))}
-
-                {/* Rotated certs toggle */}
-                {rotatingDomains.length > 0 && (
-                  <div>
-                    <button onClick={() => setShowRotated(v => !v)}
-                      style={{ width: '100%', padding: '10px 16px', background: 'none',
-                        border: 'none', borderTop: '0.5px solid #f1f5f9',
-                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        gap: 6, fontSize: 12, color: '#94a3b8', fontFamily: 'inherit', fontWeight: 500 }}>
-                      <RefreshCw size={11}/>
-                      {showRotated ? 'Hide rotated certificates' : `Show ${rotatingDomains.length} rotated`}
-                    </button>
-                    {showRotated && (
-                      <div style={{ borderTop: '0.5px solid #f1f5f9', background: 'rgba(255,255,255,0.01)' }}>
-                        {certs.filter(c => c.status === 'rotating').map(cert => {
-                          const days = daysLeft(cert.expires_at)
-                          return (
-                            <div key={cert.id} style={{ display: 'flex', alignItems: 'center', gap: 12,
-                              padding: '10px 16px', opacity: 0.4,
-                              borderBottom: '0.5px solid #f8fafc' }}>
-                              <div style={{ width: 28, height: 28, borderRadius: 6,
-                                background: '#f8fafc', border: '0.5px solid #f1f5f9',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: 9, fontWeight: 700, color: '#94a3b8', flexShrink: 0 }}>
-                                {cert.domain.replace(/^www\./, '').slice(0,2).toUpperCase()}
-                              </div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                  <span style={{ fontSize: 12, color: '#64748b', fontFamily: 'monospace', fontWeight: 500 }}>
-                                    {cert.domain}
-                                  </span>
-                                  <span style={{ fontSize: 9, fontWeight: 600, color: '#94a3b8',
-                                    background: '#f8fafc', border: '0.5px solid #f1f5f9',
-                                    borderRadius: 3, padding: '1px 6px', textTransform: 'uppercase' }}>Rotated</span>
-                                </div>
-                                <div style={{ fontSize: 11, color: '#f8fafc', marginTop: 2 }}>
-                                  Expires {fmtDate(cert.expires_at)} · Archived for 30 days
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </>
+              visible.map(cert => (
+                <CertRow key={cert.id} cert={cert} selected={selected===cert.id}
+                  onClick={() => setSelected(selected===cert.id ? null : cert.id)}/>
+              ))
             )}
           </div>
 
-          {/* Detail panel */}
           {selectedCert && (
-            <CertDetail cert={selectedCert} onClose={() => { setSelected(null); setJustRotated(null) }}
-              onDelete={handleDelete} onKeyDeleted={handleKeyDeleted}
-              onInstall={setAgentCert} nav={nav}
-              justRotated={justRotated?.domain === selectedCert.domain ? justRotated : null}/>
+            <CertDetail cert={selectedCert} onClose={() => setSelected(null)}
+              onDelete={handleDelete} onInstall={setAgentCert} nav={nav} onRefresh={load}/>
           )}
         </div>
 
-        {/* Monitored domains */}
-        {monitored.length > 0 && (
-          <div style={{ marginTop: 24 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', letterSpacing: '-0.2px' }}>Monitored domains</div>
-                <div style={{ fontSize: 12, color: '#64748b' }}>{monitored.length} domain{monitored.length !== 1 ? 's' : ''} tracked via SSL Monitor</div>
-              </div>
-              <button onClick={() => nav('/dns-providers')}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f8fafc',
-                  color: '#64748b', border: '0.5px solid #e2e8f0', borderRadius: 6,
-                  padding: '6px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}>
-                <Activity size={11}/> DNS Providers <ArrowRight size={10}/>
-              </button>
-            </div>
-            <div style={{ background: '#ffffff', border: '0.5px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
-              {monitored.map(m => {
-                const days = m.cert_expiry ? differenceInDays(new Date(m.cert_expiry), new Date()) : null
-                const s = statusOf(days, false, null)
-                return (
-                  <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '11px 16px', borderBottom: '0.5px solid #f1f5f9', cursor: 'default' }}>
-                    <Globe size={13} color="#94a3b8" style={{ flexShrink: 0 }}/>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize: 12, color: '#1e293b', fontFamily: 'monospace', fontWeight: 500 }}>{m.domain}</span>
-                        <StatusPill days={days} revoked={false}/>
-                      </div>
-                      <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
-                        {m.cert_expiry ? `Expires ${fmtDate(m.cert_expiry)}` : 'Not scanned yet'}
-                      </div>
-                    </div>
-                    <button onClick={() => nav('/dns-providers')}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}>
-                      <ExternalLink size={11}/>
-                    </button>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Quick actions */}
-        <div style={{ marginTop: 24 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase',
-            letterSpacing: '0.5px', marginBottom: 12 }}>Quick actions</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
+        <div style={{ marginTop:24 }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:12 }}>Quick actions</div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
             {[
-              { icon:<Shield size={15}/>,   label:'Issue Certificate', desc:'RapidSSL DV · DigiCert chain · ~5 min', action:() => nav('/buy') },
-              { icon:<Download size={15}/>, label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step',   action:() => nav('/install') },
-              { icon:<Activity size={15}/>, label:'DNS & Servers',     desc:'Cloudflare, Vercel, agent credentials', action:() => nav('/dns-providers') },
-              { icon:<Zap size={15}/>,      label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',         action:() => nav('/knowledge-base') },
+              { icon:<Shield size={15}/>,   label:'Issue Certificate', desc:'RapidSSL DV · GoGetSSL · ~5 min',    action:() => nav('/buy') },
+              { icon:<Download size={15}/>, label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step',           action:() => nav('/install') },
+              { icon:<Activity size={15}/>, label:'DNS & Servers',     desc:'Cloudflare, Vercel, agent credentials',          action:() => nav('/dns-providers') },
+              { icon:<Zap size={15}/>,      label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',                  action:() => nav('/knowledge-base') },
             ].map(({ icon, label, desc, action }) => (
               <button key={label} onClick={action}
-                style={{ background: '#ffffff', border: '0.5px solid #f1f5f9',
-                  borderRadius: 8, padding: '14px 16px', textAlign: 'left',
-                  cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.12s' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-                onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}>
-                <div style={{ color: '#0e7fc0', marginBottom: 8 }}>{icon}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#1e293b', marginBottom: 4 }}>{label}</div>
-                <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.5 }}>{desc}</div>
+                style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:8, padding:'14px 16px', textAlign:'left', cursor:'pointer', fontFamily:'inherit' }}
+                onMouseEnter={e => e.currentTarget.style.background='#f8fafc'}
+                onMouseLeave={e => e.currentTarget.style.background='white'}>
+                <div style={{ color:'#0e7fc0', marginBottom:8 }}>{icon}</div>
+                <div style={{ fontSize:12, fontWeight:600, color:'#1e293b', marginBottom:4 }}>{label}</div>
+                <div style={{ fontSize:11, color:'#94a3b8', lineHeight:1.5 }}>{desc}</div>
               </button>
             ))}
           </div>
@@ -1343,168 +602,51 @@ function LoggedInDashboard({ user, nav }) {
       </div>
 
       {agentCert && <AgentInstall cert={agentCert} userId={user.id} onClose={() => setAgentCert(null)}/>}
-
-      <style>{`
-        .spin { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
+      <style>{'@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}'}</style>
     </div>
   )
-
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// MARKETING (LOGGED-OUT)
-// ══════════════════════════════════════════════════════════════════════
 function MarketingDashboard({ nav }) {
-  const features = [
-    { icon:<Shield size={18} />,   color:'#0e7fc0', title:'Free SSL Certificates', desc:'Issue trusted RapidSSL DV certificates via TheSSLStore. Fast issuance, globally trusted.' },
-    { icon:<Activity size={18} />, color:'#2563eb', title:'Expiry Monitoring',     desc:'Track SSL health across all your domains. Get alerted before certificates expire.' },
-    { icon:<Server size={18} />,   color:'#7c3aed', title:'Agent Auto-Renewal',   desc:'Install the SSLVault agent on your VPS for fully automated renewal — no manual steps.' },
-    { icon:<Globe size={18} />,    color:'#f59e0b', title:'DNS Provider Integration', desc:'Connect Cloudflare, Vercel, GoDaddy or DigitalOcean for seamless DNS validation.' },
-    { icon:<Zap size={18} />,      color:'#ec4899', title:'One-click Issuance',   desc:'Issue, download, and install certificates in minutes — even on shared hosting via cPanel.' },
-    { icon:<TrendingUp size={18} />,color:'#0ea5e9',title:'Certificate Inventory', desc:'All your certificates in one place — expiry timeline, download links, and renewal history.' },
-  ]
-  const mockCerts = [
-    { domain:'yourbrand.com',     days:72, status:'green' },
-    { domain:'api.yourbrand.com', days:18, status:'amber' },
-    { domain:'shop.yourbrand.com',days:6,  status:'amber' },
-    { domain:'blog.yourbrand.com',days:-3, status:'red'   },
-  ]
-  const colors = { green:'#0e7fc0', amber:'#f59e0b', red:'#dc2626' }
-  const labels = (c) => c.status === 'red' ? 'Expired' : `${c.days}d left`
-
   return (
     <div className="v2-page">
       <div className="v2-container">
-
-        {/* Hero */}
         <div style={{ textAlign:'center', padding:'56px 0 48px' }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8,
-                        background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
-                        borderRadius:100, padding:'4px 14px', marginBottom:20 }}>
-            <span className="v2-pulse" />
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'var(--v2-green-bg)',
+            border:'0.5px solid var(--v2-green-border)', borderRadius:100, padding:'4px 14px', marginBottom:20 }}>
+            <span className="v2-pulse"/>
             <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-green-text)' }}>Free · Open · Trusted</span>
           </div>
           <h1 style={{ fontSize:38, fontWeight:700, color:'var(--v2-text)', letterSpacing:'-0.8px',
-                        lineHeight:1.15, margin:'0 0 14px', maxWidth:560, marginLeft:'auto', marginRight:'auto' }}>
-            Your SSL certificates,<br />
+            lineHeight:1.15, margin:'0 0 14px', maxWidth:560, marginLeft:'auto', marginRight:'auto' }}>
+            Your SSL certificates,<br/>
             <span style={{ color:'var(--v2-green)' }}>always under control</span>
           </h1>
           <p style={{ fontSize:16, color:'var(--v2-text-2)', maxWidth:480, margin:'0 auto 32px', lineHeight:1.65 }}>
-            Issue free SSL certificates, monitor expiry, automate renewal — all from one clean dashboard built for developers, sysadmins, and PKI professionals.
+            Issue free SSL certificates, monitor expiry, automate renewal — all from one clean dashboard.
           </p>
           <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
             <button className="v2-btn v2-btn-primary" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => nav('/auth')}>
-              <Shield size={14} /> Get started free
+              <Shield size={14}/> Get started free
             </button>
             <button className="v2-btn" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => nav('/buy')}>
-              <Activity size={14} /> Buy SSL certificate
+              Issue SSL Certificate
             </button>
           </div>
         </div>
-
-        {/* Mock dashboard preview */}
-        <div style={{ marginBottom:56 }}>
-          <div className="v2-section-label" style={{ textAlign:'center', marginBottom:16 }}>Dashboard preview</div>
-          <div className="v2-card" style={{ overflow:'hidden' }}>
-            {/* Mock stats bar */}
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', borderBottom:'0.5px solid var(--v2-border)' }}>
-              {[
-                { label:'Total certs',   value:'4', accent:'var(--v2-border-strong)' },
-                { label:'Healthy',       value:'1', accent:'var(--v2-green)' },
-                { label:'Expiring soon', value:'2', accent:'var(--v2-amber)' },
-                { label:'Expired',       value:'1', accent:'var(--v2-red)' },
-              ].map((s, i) => (
-                <div key={s.label} style={{ padding:'16px 20px', borderRight: i < 3 ? '0.5px solid var(--v2-border)' : 'none', borderTop:`2px solid ${s.accent}` }}>
-                  <div className="v2-stat-label">{s.label}</div>
-                  <div className="v2-stat-value">{s.value}</div>
-                </div>
-              ))}
-            </div>
-            {/* Mock rows */}
-            {mockCerts.map((c, i) => (
-              <div key={c.domain} style={{ position:'relative', display:'flex', alignItems:'center', gap:12,
-                                           padding:'13px 16px 13px 18px',
-                                           borderBottom: i < mockCerts.length - 1 ? '0.5px solid var(--v2-border)' : 'none' }}>
-                <div style={{ position:'absolute', left:0, top:0, bottom:0, width:2, background:colors[c.status] }} />
-                <div style={{ width:30, height:30, borderRadius:6, background:colors[c.status],
-                              display:'flex', alignItems:'center', justifyContent:'center',
-                              fontSize:11, fontWeight:700, color:'white', flexShrink:0 }}>
-                  {c.domain.replace(/^www\./, '').slice(0,2).toUpperCase()}
-                </div>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:13, fontWeight:500, fontFamily:'monospace', marginBottom:2 }}>{c.domain}</div>
-                  <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
-                    {c.status === 'red' ? 'Expired — renew immediately' : `Expires in ${c.days} days · RapidSSL`}
-                  </div>
-                </div>
-                <span style={{ fontSize:11, fontWeight:500, color: c.status === 'green' ? 'var(--v2-green-text)' : c.status === 'amber' ? 'var(--v2-amber-text)' : 'var(--v2-red-text)',
-                                display:'flex', alignItems:'center', gap:4 }}>
-                  <span style={{ width:6, height:6, borderRadius:'50%', background:colors[c.status], display:'inline-block' }} />
-                  {labels(c)}
-                </span>
-              </div>
-            ))}
-
-          </div>
-        </div>
-
-        {/* Feature grid */}
-        <div style={{ marginBottom:56 }}>
-          <div className="v2-section-label" style={{ textAlign:'center', marginBottom:20 }}>Everything you need</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12 }}>
-            {features.map(f => (
-              <div key={f.title} className="v2-card" style={{ padding:'20px 20px 18px' }}>
-                <div style={{ width:36, height:36, borderRadius:'var(--v2-r-md)',
-                              background:`${f.color}18`, border:`0.5px solid ${f.color}30`,
-                              display:'flex', alignItems:'center', justifyContent:'center',
-                              color:f.color, marginBottom:12 }}>
-                  {f.icon}
-                </div>
-                <div style={{ fontSize:14, fontWeight:600, color:'var(--v2-text)', marginBottom:6 }}>{f.title}</div>
-                <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6 }}>{f.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* About Mathi */}
-        <div style={{ marginBottom:56 }}>
-          <div className="v2-callout info" style={{ textAlign:'center', padding:'28px 32px', maxWidth:560, margin:'0 auto' }}>
-            <div className="v2-callout-title" style={{ fontSize:14, marginBottom:8 }}>Built by a PKI specialist</div>
-            SSLVault is a passion project by Mathi — Certified PKI Specialist &amp; Partner Account Manager at DigiCert, built to give indie developers, sysadmins, and non-profits the same SSL management tools that enterprise teams enjoy.
-            <div style={{ marginTop:14 }}>
-              <button className="v2-btn" style={{ fontSize:12 }} onClick={() => nav('/developer')}>
-                Meet the developer <ArrowRight size={11} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-
-
       </div>
     </div>
   )
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// ROOT EXPORT
-// ══════════════════════════════════════════════════════════════════════
 export default function Dashboard({ nav }) {
   const { user, loading } = useAuth()
-  if (loading) {
-    return (
-      <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>
-        <div style={{ textAlign:'center' }}>
-          <div className="v2-empty-icon" style={{ margin:'0 auto 12px' }}><RefreshCw size={20} className="spin" /></div>
-          <div style={{ fontSize:13, color:'var(--v2-text-3)' }}>Loading…</div>
-        </div>
-        <style>{`.spin{animation:spin 1s linear infinite}@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
-      </div>
-    )
-  }
-  if (!user) return <MarketingDashboard nav={nav} />
-  return <LoggedInDashboard user={user} nav={nav} />
+  if (loading) return (
+    <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>
+      <RefreshCw size={20} style={{ color:'var(--v2-text-3)', animation:'spin 1s linear infinite' }}/>
+      <style>{'@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}'}</style>
+    </div>
+  )
+  if (!user) return <MarketingDashboard nav={nav}/>
+  return <LoggedInDashboard user={user} nav={nav}/>
 }
