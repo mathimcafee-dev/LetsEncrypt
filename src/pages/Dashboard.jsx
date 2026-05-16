@@ -97,13 +97,15 @@ function DvPendingCard({ order, onRefresh }) {
     setAddingDns(true); setMsg('')
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      const r = await fetch(SB_URL+'/functions/v1/dns-auto-add', {
+      const r = await fetch(SB_URL+'/functions/v1/dns-provider', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({
-          domain: order.domain,
-          txt_name:  order.dcv_txt_name,
-          txt_value: order.dcv_txt_value,
+          action:    'auto_add',
+          user_id:   session.user.id,
+          domain:    order.domain,
+          txt_name:  order.dcv_txt_name  || order.dcv_cname_name  || order.domain,
+          txt_value: order.dcv_txt_value || order.dcv_cname_value,
         })
       })
       const d = await r.json()
