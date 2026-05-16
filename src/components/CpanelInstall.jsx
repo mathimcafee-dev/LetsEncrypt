@@ -213,7 +213,6 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
     setSteps({ creds: 'done', install: 'done', verify: 'done' })
     setPhase('done')
     setBusy(false)
-    if (onSuccess) onSuccess()
   }
 
   const Label = ({ children, required }) => (
@@ -307,7 +306,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess, inline
                 )}
               </div>
 
-              <button onClick={onClose} style={{ background: '#0e7fc0', color: 'white', border: 'none',
+              <button onClick={() => { if (onSuccess) onSuccess(); onClose(); }} style={{ background: '#0e7fc0', color: 'white', border: 'none',
                 borderRadius: 6, padding: '9px 24px', fontSize: 13, fontWeight: 500,
                 cursor: 'pointer', fontFamily: 'inherit' }}>Done</button>
             </div>
