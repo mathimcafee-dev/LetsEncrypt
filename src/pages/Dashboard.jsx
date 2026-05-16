@@ -1,4 +1,4 @@
-// BUILD_TIMESTAMP: 1778940529700
+// BUILD_TIMESTAMP: 1778951017445
 import { useState, useEffect, useCallback } from 'react'
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
@@ -212,6 +212,90 @@ function ValidityTimeline({ issuedAt, expiresAt }) {
       <style>{`
         @keyframes stripe-move { from { background-position: 0 0; } to { background-position: 40px 0; } }
       `}</style>
+    </div>
+  )
+}
+
+function CertHistory({ cert, session }) {
+  const [history, setHistory] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState('')
+  const [tab, setTab] = useState('reissues')
+  useEffect(() => { loadHistory() }, [cert.id])
+  const loadHistory = async () => {
+    try {
+      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
+        body: JSON.stringify({ action: 'get_history', cert_id: cert.id })
+      })
+      const d = await r.json()
+      if (d.ok) setHistory(d)
+    } catch {}
+  }
+  const callAction = async (action, extra, confirmMsg) => {
+    if (!confirm(confirmMsg)) return
+    setBusy(true); setMsg('')
+    try {
+      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
+        body: JSON.stringify({ action, cert_id: cert.id, triggered_by: 'manual', ...extra })
+      })
+      const d = await r.json()
+      if (d.ok && d.status === 'active') { setMsg(action==='reissue'?' Reissued & installed!':('Renewed! New cert: '+d.new_cert_id)); loadHistory() }
+      else if (d.ok) { setMsg('Order placed — DNS validation in progress...'); loadHistory() }
+      else setMsg('Error: '+(d.error||'Unknown'))
+    } catch(e) { setMsg('Error: '+e.message) }
+    setBusy(false)
+  }
+  const reissues = history?.reissues || []
+  const renewals = history?.renewals || []
+  const statusStyle = (s) => ({
+    fontSize:10, fontWeight:500, padding:'2px 7px', borderRadius:4,
+    background: (s==='issued'||s==='installed'||s==='active') ? '#dcfce7' : s==='failed' ? '#fee2e2' : '#f1f5f9',
+    color: (s==='issued'||s==='installed'||s==='active') ? '#16a34a' : s==='failed' ? '#dc2626' : '#64748b'
+  })
+  return (
+    <div style={{ marginTop:18, borderTop:'1px solid var(--v2-border)', paddingTop:14 }}>
+      <div style={{ display:'flex', gap:8, marginBottom:14, flexWrap:'wrap' }}>
+        <button className="v2-btn" onClick={()=>callAction('reissue',{},'Reissue this certificate? A fresh cert will be issued and auto-installed.')} disabled={busy} style={{ fontSize:12, gap:5 }}>
+          <RotateCcw size={12}/> {busy?'Processing...':'Reissue Certificate'}
+        </button>
+        <button className="v2-btn" onClick={()=>callAction('renew',{period:12},'Renew for another year? A new certificate record will be created.')} disabled={busy} style={{ fontSize:12, gap:5, background:'var(--v2-bg-2)', color:'var(--v2-text-2)' }}>
+          <RefreshCw size={12}/> Renew Certificate
+        </button>
+      </div>
+      {msg && <div style={{ fontSize:12, padding:'8px 10px', borderRadius:6, marginBottom:12, background:msg.includes('Error')?' #fef2f2':'#f0fdf4', color:msg.includes('Error')?' #dc2626':'#16a34a', border:'1px solid '+(msg.includes('Error')?' #fecaca':'#bbf7d0') }}>{msg}</div>}
+      <div style={{ display:'flex', borderBottom:'1px solid var(--v2-border)', marginBottom:12 }}>
+        {[['reissues','Reissue History'],['renewals','Renewals']].map(([k,l]) => (
+          <button key={k} onClick={()=>setTab(k)} style={{ fontSize:11, fontWeight:500, padding:'5px 12px', border:'none', background:'none', cursor:'pointer', fontFamily:'inherit', color:tab===k?'var(--v2-green)':'var(--v2-text-3)', borderBottom:tab===k?'2px solid var(--v2-green)':'2px solid transparent', marginBottom:-1 }}>
+            {l}{k==='reissues'&&reissues.length>0?' ('+reissues.length+')':k==='renewals'&&renewals.length>0?' ('+renewals.length+')':''}</button>
+        ))}
+      </div>
+      {tab==='reissues' && <div>
+        {reissues.length===0 ? <div style={{ fontSize:12, color:'var(--v2-text-3)', padding:'8px 0' }}>No reissues yet.</div>
+          : reissues.map((r,i) => (
+          <div key={r.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'7px 10px', borderRadius:6, marginBottom:4, background:'var(--v2-bg-2)', border:'1px solid var(--v2-border)' }}>
+            <div style={{ fontSize:12 }}>
+              <span style={{ fontWeight:600 }}>v{i+2}</span>
+              <span style={{ color:'var(--v2-text-3)', marginLeft:8 }}>{fmtDate(r.created_at)}</span>
+              <span style={{ color:'var(--v2-text-3)', marginLeft:8 }}>· {r.triggered_by||' manual'}</span>
+            </div>
+            <span style={statusStyle(r.install_status||r.status)}>{r.install_status||r.status}</span>
+          </div>
+        ))}
+      </div>}
+      {tab==='renewals' && <div>
+        {renewals.length===0 ? <div style={{ fontSize:12, color:'var(--v2-text-3)', padding:'8px 0' }}>No renewals yet.</div>
+          : renewals.map(r => (
+          <div key={r.id} style={{ padding:'8px 10px', borderRadius:6, marginBottom:6, background:'var(--v2-bg-2)', border:'1px solid var(--v2-border)' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <div style={{ fontSize:12 }}><span style={{ fontWeight:600, color:'var(--v2-green)' }}>Renewed</span><span style={{ color:'var(--v2-text-3)', marginLeft:8 }}>{fmtDate(r.created_at)}</span></div>
+              <span style={statusStyle(r.status)}>{r.status}</span>
+            </div>
+            <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:3 }}>Valid until {fmtDate(r.expires_at)}</div>
+          </div>
+        ))}
+      </div>}
     </div>
   )
 }
