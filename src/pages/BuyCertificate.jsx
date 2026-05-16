@@ -199,7 +199,12 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       dcv_txt_name:  r.dcv_txt_name  || r.dcv_cname_name,
       dcv_txt_value: r.dcv_txt_value || r.dcv_cname_value,
     })
-    setStep('dv')
+    // If DNS provider auto-issued the cert, skip DCV step and show success
+    if (r.auto_issued || r.status === 'active') {
+      setStep('done')
+    } else {
+      setStep('dv')
+    }
   }
 
   const check = async () => {
