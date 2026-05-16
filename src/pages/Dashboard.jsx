@@ -240,13 +240,22 @@ function CertDetail({ cert, onClose, onDelete, onInstall, nav, onRefresh }) {
       <div className="v2-section-label" style={{ marginBottom:10 }}>Certificate details</div>
       <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
         {[
-          { label:'Domain',   value: cert.domain },
-          { label:'Issued',   value: fmtDate(cert.issued_at||cert.created_at) },
-          { label:'Expires',  value: fmtDate(cert.expires_at) },
-          { label:'Type',     value: cert.cert_type||'DV SSL' },
-          { label:'Issuer',   value: cert.issuer||'RapidSSL' },
-          { label:'Source',   value: 'GoGetSSL' },
-          cert.ggs_order_id ? { label:'Order ID', value: String(cert.ggs_order_id) } : null,
+          { label:'Domain',     value: cert.common_name || cert.domain },
+          { label:'Status',     value: 'Active' },
+          { label:'Product',    value: cert._order?.product_name || cert.cert_type || 'RapidSSL Standard' },
+          { label:'Validity',   value: cert._order?.period ? (cert._order.period===12?'1 year':cert._order.period===24?'2 years':'3 years') : '1 year' },
+          { label:'Issued',     value: fmtDate(cert.issued_at||cert.created_at) },
+          { label:'Expires',    value: fmtDate(cert.expires_at) },
+          { label:'Issuer',     value: cert.issuer || 'RapidSSL' },
+          { label:'DCV',        value: (cert.dcv_method||'dns').toUpperCase() },
+          { label:'Source',     value: 'GoGetSSL' },
+          cert.ggs_order_id ? { label:'GGS Order',  value: String(cert.ggs_order_id) } : null,
+          cert._order?.ggs_invoice_id ? { label:'Invoice', value: String(cert._order.ggs_invoice_id) } : null,
+          cert._order?.admin_first_name ? { label:'Contact', value: [cert._order.admin_first_name,cert._order.admin_last_name].filter(Boolean).join(' ') } : null,
+          cert._order?.admin_email ? { label:'Email', value: cert._order.admin_email } : null,
+          cert._order?.admin_phone ? { label:'Phone', value: cert._order.admin_phone } : null,
+          cert.serial_number ? { label:'Serial', value: cert.serial_number } : null,
+          cert.fingerprint_sha1 ? { label:'MD5', value: cert.fingerprint_sha1 } : null,
         ].filter(Boolean).map(({ label, value }) => (
           <div key={label} className="v2-metric-row" style={{ justifyContent:'space-between' }}>
             <span className="v2-metric-label">{label}</span>
@@ -433,7 +442,16 @@ function LoggedInDashboard({ user, nav }) {
       supabase.from('certificates').select('*').eq('user_id', user.id).eq('status', 'active').order('expires_at', { ascending:true }),
       supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'dv_pending').order('created_at', { ascending:false }),
     ])
-    setCerts(certsData||[]); setOrders(ordersData||[]); setLoading(false)
+    // Enrich certs with linked ssl_order contact/product data
+    const enriched = await Promise.all((certsData||[]).map(async cert => {
+      if (!cert.ggs_order_id) return cert
+      const { data: ord } = await supabase.from('ssl_orders')
+        .select('product_name,product_code,period,ggs_invoice_id,admin_email,admin_first_name,admin_last_name,admin_phone')
+        .eq('ggs_order_id', cert.ggs_order_id).eq('user_id', user.id)
+        .order('created_at', { ascending: false }).limit(1).single()
+      return ord ? { ...cert, _order: ord } : cert
+    }))
+    setCerts(enriched); setOrders(ordersData||[]); setLoading(false)
   }, [user])
 
   useEffect(() => { load() }, [load])
