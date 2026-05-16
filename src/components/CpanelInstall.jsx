@@ -1,1 +1,248 @@
-aW1wb3J0IHsgdXNlU3RhdGUsIHVzZUVmZmVjdCB9IGZyb20gJ3JlYWN0JwppbXBvcnQgeyBzdXBhYmFzZSB9IGZyb20gJy4uL2xpYi9zdXBhYmFzZScKaW1wb3J0IHsgQ2hlY2tDaXJjbGUsIFhDaXJjbGUsIFNlcnZlciwgU2hpZWxkLCBDaGV2cm9uUmlnaHQsIEFsZXJ0VHJpYW5nbGUsIEV5ZSwgRXllT2ZmLCBMb2FkZXIsIFgsIENoZWNrIH0gZnJvbSAnbHVjaWRlLXJlYWN0JwoKY29uc3QgRk4gPSAnaHR0cHM6Ly9mcnRoY3drbnRjaWFha3FzcHBzcy5zdXBhYmFzZS5jby9mdW5jdGlvbnMvdjEvY3BhbmVsLWluc3RhbGwnCmNvbnN0IGNhbGwgPSBhc3luYyAoYWN0aW9uLCBib2R5LCB0b2spID0+IHsKICBjb25zdCByID0gYXdhaXQgZmV0Y2goRk4sIHsgbWV0aG9kOidQT1NUJywgaGVhZGVyczp7J0NvbnRlbnQtVHlwZSc6J2FwcGxpY2F0aW9uL2pzb24nLCdBdXRob3JpemF0aW9uJzonQmVhcmVyICcrdG9rfSwgYm9keTpKU09OLnN0cmluZ2lmeSh7YWN0aW9uLC4uLmJvZHl9KSB9KQogIHJldHVybiByLmpzb24oKQp9CgpmdW5jdGlvbiBQaWxsKHsgc3RhdGUgfSkgewogIGNvbnN0IG1hcCA9IHsgcGVuZGluZzp7YmM6JyNmMWY1ZjknLGNvbG9yOicjNjQ3NDhiJyxsYWJlbDonUGVuZGluZyd9LCBydW5uaW5nOntiZzonI2VmZjZmZicsY29sb3I6JyMyNTYzZWInLGxhYmVsOidJbiBwcm9ncmVzcy4uLid9LCBkb25lOntiZzonI2YwZmRmNCcsY29sb3I6JyMxNmEzNGEnLGxhYmVsOidEb25lJ30sIGVycm9yOntiZzonI2ZlZjJmMicsY29sb3I6JyNkYzI2MjYnLGxhYmVsOidGYWlsZWQnfSwgc2tpcHBlZDp7Ymc6JyNmMWY1ZjknLGNvbG9yOicjOTRhM2I4JyxsYWJlbDonU2tpcHBlZCd9IH0KICBjb25zdCBzID0gbWFwW3N0YXRlXXx8bWFwLnBlbmRpbmcKICByZXR1cm4gPHNwYW4gc3R5bGU9e3tmb250U2l6ZToxMCxmb250V2VpZ2h0OjYwMCxwYWRkaW5nOicycHggOHB4Jyxib3JkZXJSYWRpdXM6MjAsYmFja2dyb3VuZDpzLmJnLGNvbG9yOnMuY29sb3J9fT57cy5sYWJlbH08L3NwYW4+Cn0KCmZ1bmN0aW9uIFN0ZXBSb3coe3N0ZXAsdGl0bGUsc3VidGl0bGUsc3RhdGV9KSB7CiAgY29uc3QgaWNvbnMgPSB7CiAgICBwZW5kaW5nOjxzcGFuIHN0eWxlPXt7d2lkdGg6MjIsaGVpZ2h0OjIyLGJvcmRlclJhZGl1czonNTAlJyxiYWNrZ3JvdW5kOicjZTJlOGYwJyxkaXNwbGF5OidpbmxpbmUtZmxleCcsYWxpZ25JdGVtczonY2VudGVyJyxqdXN0aWZ5Q29udGVudDonY2VudGVyJyxmb250U2l6ZToxMSxjb2xvcjonIzk0YTNiOCcsZm9udFdlaWdodDo3MDB9fT57c3RlcH08L3NwYW4+LAogICAgcnVubmluZzo8TG9hZGVyIHNpemU9ezE4fSBjb2xvcj0nIzI1NjNlYicgc3R5bGU9e3thbmltYXRpb246J3NwaW4gMXMgbGluZWFyIGluZmluaXRlJ319Lz4sCiAgICBkb25lOjxDaGVja0NpcmNsZSBzaXplPXsyMH0gY29sb3I9JyMxNmEzNGEnLz4sCiAgICBlcnJvcjo8WENpcmNsZSBzaXplPXsyMH0gY29sb3I9JyNkYzI2MjYnLz4sCiAgICBza2lwcGVkOjxzcGFuIHN0eWxlPXt7d2lkdGg6MjIsaGVpZ2h0OjIyLGJvcmRlclJhZGl1czonNTAlJyxiYWNrZ3JvdW5kOicjZTJlOGYwJyxkaXNwbGF5OidpbmxpbmUtZmxleCcsYWxpZ25JdGVtczonY2VudGVyJyxqdXN0aWZ5Q29udGVudDonY2VudGVyJyxmb250U2l6ZToxMSxjb2xvcjonIzk0YTNiOCd9fT4uPC9zcGFuPiwKICB9CiAgcmV0dXJuKDxkaXYgc3R5bGU9e3tkaXNwbGF5OidmbGV4JyxnYXA6MTQscGFkZGluZzonMTRweCAwJyxib3JkZXJCb3R0b206JzFweCBzb2xpZCAjZjFmNWY5J319PjxkaXYgc3R5bGU9e3twYWRkaW5nVG9wOjIsZmxleFNocmluazowfX0+e2ljb25zW3N0YXRlXXx8aWNvbnMucGVuZGluZ308L2Rpdj48ZGl2IHN0eWxlPXt7ZmxleDoxLG1pbldpZHRoOjB9fT48ZGl2IHN0eWxlPXt7ZGlzcGxheTonZmxleCcsYWxpZ25JdGVtczonY2VudGVyJyxnYXA6OCxtYXJnaW5Cb3R0b206Mn19PjxzcGFuIHN0eWxlPXt7Zm9udFNpemU6MTMsZm9udFdlaWdodDo2MDAsY29sb3I6c3RhdGU9PT0nZXJyb3InPycjZGMyNjI2JzpzdGF0ZT09PSdkb25lJz8nIzExMTgyNyc6JyMxZTI5M2InfX0+e3RpdGxlfTwvc3Bhbj48UGlsbCBzdGF0ZT17c3RhdGV9Lz48L2Rpdj57c3VidGl0bGUmJjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMSxjb2xvcjonIzk0YTNiOCcsbWFyZ2luVG9wOjJ9fT57c3VidGl0bGV9PC9kaXY+fTwvZGl2PjwvZGl2PikKfQoKZnVuY3Rpb24gRmllbGQoe2xhYmVsLGhpbnQscmVxdWlyZWQsY2hpbGRyZW59KSB7CiAgcmV0dXJuKDxkaXYgc3R5bGU9e3ttYXJnaW5Cb3R0b206MTR9fT48bGFiZWwgc3R5bGU9e3tkaXNwbGF5OidibG9jaycsZm9udFNpemU6MTEsZm9udFdlaWdodDo2MDAsY29sb3I6JyMzNzQxNTEnLG1hcmdpbkJvdHRvbTo1LHRleHRUcmFuc2Zvcm06J3VwcGVyY2FzZScsbGV0dGVyU3BhY2luZzonMC40cHgnfX0+e2xhYmVsfXtyZXF1aXJlZCYmPHNwYW4gc3R5bGU9e3tjb2xvcjonI2VmNDQ0NCcsbWFyZ2luTGVmdDozfX0+Kjwvc3Bhbj59PC9sYWJlbD57Y2hpbGRyZW59e2hpbnQmJjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMSxjb2xvcjonIzljYTNhZicsbWFyZ2luVG9wOjR9fT57aGludH08L2Rpdj59PC9kaXY+KQp9CmNvbnN0IGlucD17d2lkdGg6JzEwMCUnLGJveFNpemluZzonYm9yZGVyLWJveCcscGFkZGluZzonOXB4IDEycHgnLGJvcmRlclJhZGl1czo3LGJvcmRlcjonMXB4IHNvbGlkICNlMmU4ZjAnLGZvbnRTaXplOjEzLGZvbnRGYW1pbHk6J2luaGVyaXQnLG91dGxpbmU6J25vbmUnLGNvbG9yOicjMTExODI3JyxiYWNrZ3JvdW5kOid3aGl0ZSd9CgpmdW5jdGlvbiBTZXJ2ZXJUeXBlQ2FyZCh7aWNvbix0aXRsZSxkZXNjcmlwdGlvbixzZWxlY3RlZCxvbkNsaWNrfSkgewogIHJldHVybig8YnV0dG9uIG9uQ2xpY2s9e29uQ2xpY2t9IHN0eWxlPXt7ZmxleDoxLHRleHRBbGlnbjonbGVmdCcscGFkZGluZzonMTJweCAxNHB4Jyxib3JkZXJSYWRpdXM6OCxjdXJzb3I6J3BvaW50ZXInLGZvbnRGYW1pbHk6J2luaGVyaXQnLGJvcmRlcjpzZWxlY3RlZD8nMnB4IHNvbGlkICMyNTYzZWInOicxLjVweCBzb2xpZCAjZTJlOGYwJyxiYWNrZ3JvdW5kOnNlbGVjdGVkPycjZWZmNmZmJzond2hpdGUnLHRyYW5zaXRpb246J2FsbCAwLjE1cyd9fT48ZGl2IHN0eWxlPXt7ZGlzcGxheTonZmxleCcsYWxpZ25JdGVtczonY2VudGVyJyxnYXA6OCxtYXJnaW5Cb3R0b206NH19PjxzcGFuIHN0eWxlPXt7Zm9udFNpemU6MTh9fT57aWNvbn08L3NwYW4+PHNwYW4gc3R5bGU9e3tmb250U2l6ZToxMyxmb250V2VpZ2h0OjcwMCxjb2xvcjpzZWxlY3RlZD8nIzFkNGVkOCc6JyMxMTE4MjcnfX0+e3RpdGxlfTwvc3Bhbj57c2VsZWN0ZWQmJjxDaGVjayBzaXplPXsxNH0gY29sb3I9JyMyNTYzZWInIHN0eWxlPXt7bWFyZ2luTGVmdDonYXV0byd9fS8+fTwvZGl2PjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMSxjb2xvcjonIzZiNzI4MCcsbGluZUhlaWdodDoxLjV9fT57ZGVzY3JpcHRpb259PC9kaXY+PC9idXR0b24+KQp9CgpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBDcGFuZWxJbnN0YWxsKHtjZXJ0LHVzZXJJZCxvbkNsb3NlLG9uU3VjY2Vzc30pIHsKICBjb25zdCBbdG9rLHNldFRva109dXNlU3RhdGUoJycpCiAgY29uc3QgW3BoYXNlLHNldFBoYXNlXT11c2VTdGF0ZSgnc2VsZWN0X3R5cGUnKQogIGNvbnN0IFtzZXJ2ZXJUeXBlLHNldFNlcnZlclR5cGVdPXVzZVN0YXRlKCdjcGFuZWwnKQogIGNvbnN0IFtzYXZlZFNlcnZlcnMsc2V0U2F2ZWRTZXJ2ZXJzXT11c2VTdGF0ZShbXSkKICBjb25zdCBbc2VsZWN0ZWRTZXJ2ZXIsc2V0U2VsZWN0ZWRTZXJ2ZXJdPXVzZVN0YXRlKG51bGwpCiAgY29uc3QgW3VzZU5ldyxzZXRVc2VOZXddPXVzZVN0YXRlKGZhbHNlKQogIGNvbnN0IFtob3N0bmFtZSxzZXRIb3N0bmFtZV09dXNlU3RhdGUoJycpCiAgY29uc3QgW2NwYW5lbFVzZXIsc2V0Q3BhbmVsVXNlcl09dXNlU3RhdGUoJycpCiAgY29uc3QgW2FwaVRva2VuLHNldEFwaVRva2VuXT11c2VTdGF0ZSgnJykKICBjb25zdCBbdG9rZW5WaXMsc2V0VG9rZW5WaXNdPXVzZVN0YXRlKGZhbHNlKQogIGNvbnN0IFtsYWJlbCxzZXRMYWJlbF09dXNlU3RhdGUoJycpCiAgY29uc3QgW3NhdmVTZXJ2ZXIsc2V0U2F2ZVNlcnZlcl09dXNlU3RhdGUodHJ1ZSkKICBjb25zdCBbYXV0b0luc3RhbGxGdXR1cmUsc2V0QXV0b0luc3RhbGxGdXR1cmVdPXVzZVN0YXRlKHRydWUpCiAgY29uc3QgW3N0ZXBzLHNldFN0ZXBzXT11c2VTdGF0ZSh7ZGV0ZWN0Om51bGwsdmVyaWZ5Om51bGwsa2V5Om51bGwsaW5zdGFsbDpudWxsLHZlcmlmeV9zc2w6bnVsbH0pCiAgY29uc3QgW3N0ZXBNc2dzLHNldFN0ZXBNc2dzXT11c2VTdGF0ZSh7fSkKICBjb25zdCBbZXJyTXNnLHNldEVyck1zZ109dXNlU3RhdGUoJycpCiAgY29uc3QgW2J1c3ksc2V0QnVzeV09dXNlU3RhdGUoZmFsc2UpCgogIGNvbnN0IHNldFN0ZXA9KGssdixtc2c9JycpPT57c2V0U3RlcHMocD0+KHsuLi5wLFtrXTp2fSkpO2lmKG1zZylzZXRTdGVwTXNncyhwPT4oey4uLnAsW2tdOm1zZ30pKX0KCiAgdXNlRWZmZWN0KCgpPT57Oyhhc3luYygpPT57CiAgICBjb25zdCB7ZGF0YTp7c2Vzc2lvbn19PWF3YWl0IHN1cGFiYXNlLmF1dGguZ2V0U2Vzc2lvbigpCiAgICBpZighc2Vzc2lvbilyZXR1cm4KICAgIHNldFRvayhzZXNzaW9uLmFjY2Vzc190b2tlbikKICAgIGNvbnN0IHJlcz1hd2FpdCBjYWxsKCdsaXN0X2FsbF9jcGFuZWxfc2VydmVycycse30sc2Vzc2lvbi5hY2Nlc3NfdG9rZW4pCiAgICBpZihyZXMub2smJnJlcy5jcmVkZW50aWFscz8ubGVuZ3RoKXtzZXRTYXZlZFNlcnZlcnMocmVzLmNyZWRlbnRpYWxzKTtjb25zdCBtPXJlcy5jcmVkZW50aWFscy5maW5kKGM9PmMuZG9tYWlucz8uaW5jbHVkZXMoY2VydC5kb21haW4pKXx8cmVzLmNyZWRlbnRpYWxzWzBdO3NldFNlbGVjdGVkU2VydmVyKG0uaWQpO3NldFVzZU5ldyhmYWxzZSl9ZWxzZSBzZXRVc2VOZXcodHJ1ZSkKICB9KSgpfSxbXSkKCiAgdXNlRWZmZWN0KCgpPT57aWYoIWxhYmVsJiZob3N0bmFtZSYmY3BhbmVsVXNlcilzZXRMYWJlbChjcGFuZWxVc2VyKydAJytob3N0bmFtZSl9LFtob3N0bmFtZSxjcGFuZWxVc2VyXSkKCiAgY29uc3Qgc2VsU2F2ZWQ9c2F2ZWRTZXJ2ZXJzLmZpbmQocz0+cy5pZD09PXNlbGVjdGVkU2VydmVyKQoKICBjb25zdCBoYW5kbGVJbnN0YWxsPWFzeW5jKCk9PnsKICAgIGlmKCF0b2spe3NldEVyck1zZygnU2Vzc2lvbiBleHBpcmVkLicpO3JldHVyfQogICAgc2V0QnVzeSh0cnVlKTtzZXRQaGFzZSgncnVubmluZycpO3NldEVyck1zZygnJyk7c2V0U3RlcHMoe2RldGVjdDpudWxsLHZlcmlmeTpudWxsLGtleTpudWxsLGluc3RhbGw6bnVsbCx2ZXJpZnlfc3NsOm51bGx9KTtzZXRTdGVwTXNncyh7fSkKICAgIGxldCBjcmVkSWQ9c2VsZWN0ZWRTZXJ2ZXIsbGV0IGNyZWRTcmM9dXNlTmV3PyduZXcnOihzZWxTYXZlZD8uc291cmNlfHwnc2VydmVyX2NyZWRlbnRpYWxzJykKICAgIHNldFN0ZXAoJ2RldGVjdCcsJ3J1bm5pbmcnLCdBdXRvLWRldGVjdGluZyBjUGFuZWwgc2VydmVyLi4uJykKICAgIHRyeXsKICAgICAgaWYodXNlTmV3fHwhc2VsZWN0ZWRTZXJ2ZXIpewogICAgICAgIGlmKCFob3N0bmFtZXx8IWNwYW5lbFVzZXJ8fCFhcGlUb2tlbil7c2V0U3RlcCgnZGV0ZWN0JywnZXJyb3InLCdGaWxsIGFsbCByZXF1aXJlZCBmaWVsZHMnKTtzZXRFcnJNc2coJ0hvc3RuYW1lLCB1c2VybmFtZSBhbmQgQVBJIHRva2VuIHJlcXVpcmVkJyk7c2V0QnVzeShmYWxzZSk7c2V0UGhhc2UoJ2NvbmZpZ3VyZScpO3JldHVybn0KICAgICAgICBjb25zdCB2cj1hd2FpdCBjYWxsKCd2ZXJpZnlfYW5kX2RldGVjdCcse2RvbWFpbjpob3N0bmFtZSxjcGFuZWxfdXNlcjpjcGFuZWxVc2VyLGFwaV90b2tlbjphcGlUb2tlbn0sdG9rKQogICAgICAgIGlmKCF2ci5vayl7c2V0U3RlcCgnZGV0ZWN0JywnZXJyb3InLHZyLmVycm9yKTtzZXRFcnJNc2codnIuZXJyb3J8fCdDYW5ub3QgY29ubmVjdCB0byBjUGFuZWwnKTtzZXRCdXN5KGZhbHNlKTtzZXRQaGFzZSgnZXJyb3InKTtyZXR1cm59CiAgICAgICAgc2V0U3RlcCgnZGV0ZWN0JywnZG9uZScsJ0Nvbm5lY3RlZCB0byAnKyh2ci5kZXRlY3RlZF9ob3N0fHxob3N0bmFtZSkrJzonKyh2ci5kZXRlY3RlZF9wb3J0fHwyMDgzKSsodnIuYXV0b19kZXRlY3RlZD8nIChhdXRvLWRldGVjdGVkKSc6JycpKQogICAgICAgIHNldFN0ZXAoJ3ZlcmlmeScsJ2RvbmUnLCdDcmVkZW50aWFscyB2ZXJpZmllZCcpCiAgICAgICAgaWYoc2F2ZVNlcnZlcil7Y29uc3Qgc3I9YXdhaXQgY2FsbCgnc2F2ZV9jcmVkZW50aWFscycse2hvc3RuYW1lLHBvcnQ6MjA4MyxjcGFuZWxfdXNlcjpjcGFuZWxVc2VyLGFwaV90b2tlbjphcGlUb2tlbixsYWJlbDpsYWJlbHx8Y3BhbmVsVXNlcignQCcpK2hvc3RuYW1lLGRvbWFpbnM6W2NlcnQuZG9tYWluXX0sdG9rKTtpZihzci5vayl7Y3JlZElkPXNyLmNyZWRlbnRpYWw/LmlkO2NyZWRTcmM9J2NwYW5lbF9jcmVkZW50aWFscyc7c2V0U2F2ZWRTZXJ2ZXJzKHA9Pltzci5jcmVkZW50aWFsLC4uLnBdKTtpZihhdXRvSW5zdGFsbEZ1dHVyZSYmY3JlZElkKWF3YWl0IHN1cGFiYXNlLmZyb20oJ2NlcnRpZmljYXRlcycpLnVwZGF0ZSh7aW5zdGFsbF9zZXJ2ZXJfaWQ6Y3JlZElkfSkuZXEoJ2lkJyxjZXJ0LmlkKX19CiAgICAgIH1lbHNlewogICAgICAgIHNldFN0ZXAoJ2RldGVjdCcsJ2RvbmUnLCdVc2luZyBzYXZlZDogJysoc2VsU2F2ZWQ/Lmhvc3RuYW1lfHxzZWxTYXZlZD8ubGFiZWx8fCcnKSkKICAgICAgICBzZXRTdGVwKCd2ZXJpZnknLCdkb25lJywnVXNpbmcgc2F2ZWQgY3JlZGVudGlhbHMnKQogICAgICB9CiAgICB9Y2F0Y2goZSl7c2V0U3RlcCgnZGV0ZWN0JywnZXJyb3InLGUubWVzc2FnZSk7c2V0RXJyTXNnKGUubWVzc2FnZSk7c2V0QnVzeShmYWxzZSk7c2V0UGhhc2UoJ2Vycm9yJyk7cmV0dXJufQogICAgc2V0U3RlcCgna2V5JywncnVubmluZycsJ1JldHJpZXZpbmcgcHJpdmF0ZSBrZXkgZnJvbSBLZXlMb2NrZXIuLi4nKQogICAgYXdhaXQgbmV3IFByb21pc2Uocj0+c2V0VGltZW91dChyLDQwMCkpCiAgICBzZXRTdGVwKCdrZXknLCdkb25lJywnUHJpdmF0ZSBrZXkgcmV0cmlldmVkJykKICAgIHNldFN0ZXAoJ2luc3RhbGwnLCdydW5uaW5nJywnUHVzaGluZyBjZXJ0aWZpY2F0ZSArIGNoYWluIHRvIGNQYW5lbCBVQVBJLi4uJykKICAgIHRyeXsKICAgICAgY29uc3QgcGw9e2NlcnRfaWQ6Y2VydC5pZCxkb21haW46Y2VydC5kb21haW59CiAgICAgIGlmKGNyZWRJZCYmY3JlZFNyYyE9PSduZXcnKXtwbC5jcmVkZW50aWFsX2lkPWNyZWRJZDtwbC5jcmVkZW50aWFsX3NvdXJjZT1jcmVkU3JjfWVsc2V7cGwuaG9zdG5hbWU9aG9zdG5hbWU7cGwucG9ydD0yMDgzO3BsLmNwYW5lbF91c2VyPWNwYW5lbFVzZXI7cGwuYXBpX3Rva2VuPWFwaVRva2VufQogICAgICBjb25zdCBpcj1hd2FpdCBjYWxsKCdpbnN0YWxsJyxwbCx0b2spCiAgICAgIGlmKCFpci5vayl7c2V0U3RlcCgnaW5zdGFsbCcsJ2Vycm9yJyxpci5lcnJvcik7c2V0RXJyTXNnKGlyLmVycm9yfHwnSW5zdGFsbGF0aW9uIGZhaWxlZCcpO3NldEJ1c3koZmFsc2UpO3NldFBoYXNlKCdlcnJvcicpO3JldHVybn0KICAgICAgc2V0U3RlcCgnaW5zdGFsbCcsJ2RvbmUnLCdDZXJ0aWZpY2F0ZSBpbnN0YWxsZWQgLSBhY3RpdmF0aW5nIFNTTCBhY3Jvc3MgYWxsIHNlcnZpY2VzJykKICAgIH1jYXRjaChlKXtzZXRTdGVwKCdpbnN0YWxsJywnZXJyb3InLGUubWVzc2FnZSk7c2V0RXJyTXNnKGUubWVzc2FnZSk7c2V0QnVzeShmYWxzZSk7c2V0UGhhc2UoJ2Vycm9yJyk7cmV0dXJufQogICAgc2V0U3RlcCgndmVyaWZ5X3NzbCcsJ3J1bm5pbmcnLCdWZXJpZnlpbmcgSFRUUFMgb24gJytjZXJ0LmRvbWFpbignLi4uJykpCiAgICBsZXQgdmVyaWZpZWQ9ZmFsc2UKICAgIGZvcihsZXQgaT0wO2k8MztpKyspe2F3YWl0IG5ldyBQcm9taXNlKHI9PnNldFRpbWVvdXQociwgNTAwMCkpO3RyeXtjb25zdCByZXM9YXdhaXQgZmV0Y2goJ2h0dHBzOi8vJytjZXJ0LmRvbWFpbix7bWV0aG9kOidIRUFEJyxyZWRpcmVjdDonZm9sbG93J30pO2lmKHJlcy5zdGF0dXM8NTAwKXt2ZXJpZmllZD10cnVlO2JyZWFrfX1jYXRjaHt9fQogICAgc2V0U3RlcCgndmVyaWZ5X3NzbCcsdmVyaWZpZWQ/J2RvbmUnOidza2lwcGVkJyx2ZXJpZmllZD8nSFRUUFMgdmVyaWZpZWQnOidDZXJ0aWZpY2F0ZSBpbnN0YWxsZWQgLSBETlMgcHJvcGFnYXRpb24gbWF5IHRha2UgYSBmZXcgbWludXRlcycpCiAgICBzZXRCdXN5KGZhbHNlKTtzZXRQaGFzZSgnZG9uZScpCiAgfQoKICBjb25zdCBleHBTdHI9Y2VydC5leHBpcmVzX2F0P25ldyBEYXRlKGNlcnQuZXhwaXJlc19hdCkudG9Mb2NhbGVEYXRlU3RyaW5nKCdlbi1HQicse2RheTonbnVtZXJpYycsbW9udGg6J3Nob3J0Jyx5ZWFyOidudW1lcmljJ30pOidOL0EnCgogIHJldHVybig8ZGl2IHN0eWxlPXt7cG9zaXRpb246J2ZpeGVkJyxpbnNldDosekluZGV4OjEwMDAsZGlzcGxheTonZmxleCcsYWxpZ25JdGVtczonY2VudGVyJyxqdXN0aWZ5Q29udGVudDonY2VudGVyJyxwYWRkaW5nOjIwLGJhY2tncm91bmQ6J3JnYmEoMTUsMjMsNDIsMC41KScsYmFja2Ryb3BGaWx0ZXI6J2JsdXIoNHB4KSd9fT4KICAgIDxkaXYgc3R5bGU9e3tiYWNrZ3JvdW5kOid3aGl0ZScsYm9yZGVyUmFkaXVzOjE0LHdpZHRoOicxMDAlJyxtYXhXaWR0aDo1MjAsbWF4SGVpZ2h0OicjOTB2aCcsb3ZlcmZsb3dZOidhdXRvJyxib3hTaGFkb3c6JzAgMjRweCA2NHB4IHJnYmEoMCwwLDAsMC4xOCknfX0+CiAgICAgIDxkaXYgc3R5bGU9e3twYWRkaW5nOicyMHB4IDI0cHggMTZweCcsYm9yZGVyQm90dG9tOicxcHggc29saWQgI2YxZjVmOScsZGlzcGxheTonZmxleCcsYWxpZ25JdGVtczonY2VudGVyJyxqdXN0aWZ5Q29udGVudDonc3BhY2UtYmV0d2VlbicscG9zaXRpb246J3N0aWNreScsb3ZlcmZsb3dZOjAsYmFja2dyb3VuZDond2hpdGUnLHpJbmRleDoxMCxib3JkZXJSYWRpdXM6JzE0cHggMTRweCAwIDAnfX0+PGRpdj48ZGl2IHN0eWxlPXt7ZGlzcGxheTonZmxleCcsYWxpZ25JdGVtczonY2VudGVyJyxnYXA6OH19PjxTaGllbGQgc2l6ZT17MTZ9IGNvbG9yPScjMjU2M2ViJy8+PHNwYW4gc3R5bGU9e3tmb250U2l6ZToxNSxmb250V2VpZ2h0OjcwMCxjb2xvcjonIzExMTgyNyd9fT5TU0wgSW5zdGFsbGF0aW9uIFdpemFyZDwvc3Bhbj48L2Rpdj48ZGl2IHN0eWxlPXt7Zm9udFNpemU6MTEsY29sb3I6JyM5NGEzYjgnLG1hcmdpblRvcDoyLGZvbnRGYW1pbHk6J21vbm9zcGFjZSd9fT57Y2VydC5kb21haW59PC9kaXY+PC9kaXY+PGJ1dHRvbiBvbkNsaWNrPXtvbkNsb3NlfSBzdHlsZT17e2JhY2tncm91bmQ6J25vbmUnLGJvcmRlcjonbm9uZScsY3Vyc29yOidwb2ludGVyJyxjb2xvcjonIzk0YTNiOCcscGFkZGluZzo0fX0+PFggc2l6ZT17MTZ9Lz48L2J1dHRvbj48L2Rpdj4KICAgICAgPGRpdiBzdHlsZT17e3BhZGRpbmc6JzIwcHggMjRweCAyNHB4J319PgogICAgICAgIDxkaXYgc3R5bGU9e3tiYWNrZ3JvdW5kOicjZjhmYWZjJyxib3JkZXI6JzFweCBzb2xpZCAjZTJlOGYwJyxib3JkZXJSYWRpdXM6OCxwYWRkaW5nOicxMHB4IDE0cHgnLG1hcmdpbkJvdHRvbToyMCxkaXNwbGF5OidmbGV4JyxhbGlnbkl0ZW1zOidjZW50ZXInLGdhcDoxMn19PjxDaGVja0NpcmNsZSBzaXplPXsxNH0gY29sb3I9JyMxNmEzNGEnLz48ZGl2PjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMixmb250V2VpZ2h0OjYwMCxjb2xvcjonIzExMTgyNyd9fT5BY3RpdmUgUGFpZCBTU0wgQ2VydGlmaWNhdGU8L2Rpdj48ZGl2IHN0eWxlPXt7Zm9udFNpemU6MTEsY29sb3I6JyM2YjcyODAnfX0+RnVsbGNoYWluIHJlYWR5IHx8IFByaXZhdGUga2V5IGluIEtleUxvY2tlciB8fCBFeHBpcmVzIHtleHBTdHJ9PC9kaXY+PC9kaXY+PC9kaXY+CiAgICAgICAge3BoYXNlPT09J3NlbGVjdF90eXBlJyYmKDw+PGRpdiBzdHlsZT17e2ZvbnRTaXplOjExLGZvbnRXZWlnaHQ6NzAwLGNvbG9yOicjMzc0MTUxJyx0ZXh0VHJhbnNmb3JtOid1cHBlcmNhc2UnLGxldHRlclNwYWNpbmc6JzAuNXB4JyxtYXJnaW5Cb3R0b206MTJ9fT5TZWxlY3QgU2VydmVyIFR5cGU8L2Rpdj48ZGl2IHN0eWxlPXt7ZGlzcGxheTonZmxleCcsZ2FwOjEwLG1hcmdpbkJvdHRvbToyMH19PjxTZXJ2ZXJUeXBlQ2FyZCBpY29uPSdbU10nIHRpdGxlPSdTaGFyZWQgLyBjUGFuZWwnIGRlc2NyaXB0aW9uPSdNYW5hZ2VkIGhvc3RpbmcgdmlhIGNQYW5lbCBBUEkuIENyZWRlbnRpYWxzIHNhdmVkIG9uY2UgLSBhdXRvLWluc3RhbGxzIG9uIGV2ZXJ5IHJlaXNzdWUgYW5kIHJlbmV3YWwuJyBzZWxlY3RlZD17c2VydmVyVHlwZT09PSdjcGFuZWwnfSBvbkNsaWNrPXsoKT0+c2V0U2VydmVyVHlwZSgnY3BhbmVsJyl9Lz48U2VydmVyVHlwZUNhcmQgaWNvbj0nW1ZdJyB0aXRsZT0nVlBTIC8gRGVkaWNhdGVkJyBkZXNjcmlwdGlvbj0nRGlyZWN0IHNlcnZlciBhY2Nlc3MgdmlhIFNTTFZhdWx0IGFnZW50LiBBdXRvbWF0aWNhbGx5IHBvbGxzIGFuZCBhcHBsaWVzIGNlcnRzLicgc2VsZWN0ZWQ9e3NlcnZlclR5cGU9PT0ndnBzJ30gb25DbGljaz17KCk9PnNldFNlcnZlclR5cGUoJ3ZwcycpfS8+PC9kaXY+e3NlcnZlclR5cGU9PT0ndnBzJyYmPGRpdiBzdHlsZT17e2JhY2tncm91bmQ6JyNmZmZiZWInLGJvcmRlcjonMXB4IHNvbGlkICNmZGU2OGEnLGJvcmRlclJhZGl1czo4LHBhZGRpbmc6JzEycHggMTRweCcsbWFyZ2luQm90dG9tOjE2fX0+PEFsZXJ0VHJpYW5nbGUgc2l6ZT17MTN9IGNvbG9yPScjZDk3NzA2JyBzdHlsZT17e21hcmdpblRvcDoxLGZsZXhTaHJpbms6MH19Lz48ZGl2PjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMixmb250V2VpZ2h0OjYwMCxjb2xvcjonIzkyNDAwZSd9fT5TU0xWYXVsdCBBZ2VudCBSZXF1aXJlZDwvZGl2PjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMSxjb2xvcjonI2I0NTMwOScsbWFyZ2luVG9wOjIsbGluZUhlaWdodDoxLjV9fT5HbyB0byBETlMgJmFtcDsgU2VydmVycyAmIzgyMTA7IFNlcnZlcnMgdGFiICYjODIxMDsgSW5zdGFsbCBBZ2VudC4gT25jZSBydW5uaW5nIGl0IGF1dG9tYXRpY2FsbHkgcG9sbHMgYW5kIGluc3RhbGxzIGNlcnRpZmljYXRlcy48L2Rpdj48L2Rpdj48L2Rpdj59PGJ1dHRvbiBvbkNsaWNrPXsoKT0+c2V0UGhhc2UoJ2NvbmZpZ3VyZScpfSBzdHlsZT17e3dpZHRoOicxMDAlJyxwYWRkaW5nOicxMXB4JyxiYWNrZ3JvdW5kOicjMWQ0ZWQ4Jyxjb2xvcjond2hpdGUnLGJvcmRlcjonbm9uZScsYm9yZGVyUmFkaXVzOjgsZm9udFNpemU6MTMsZm9udFdlaWdodDo2MDAsY3Vyc29yOidwb2ludGVyJyxmb250RmFtaWx5Oidpbmhlcml0JyxkaXNwbGF5OidmbGV4JyxhbGlnbkl0ZW1zOidjZW50ZXInLGp1c3RpZnlDb250ZW50OidjZW50ZXInLGdhcDo2fX0+Q29udGludWUgPENoZXZyb25SaWdodCBzaXplPXsxNH0vPjwvYnV0dG9uPjwvPil9CiAgICAgICAge3BoYXNlPT09J2NvbmZpZ3VyZScmJnNlcnZlclR5cGU9PT0nY3BhbmVsJyYmKDw+PGRpdiBzdHlsZT17e2ZvbnRTaXplOjExLGZvbnRXZWlnaHQ6NzAwLGNvbG9yOicjMzc0MTUxJyx0ZXh0VHJhbnNmb3JtOid1cHBlcmNhc2UnLGxldHRlclNwYWNpbmc6JzAuNXB4JyxtYXJnaW5Cb3R0b206MTR9fT5Db25maWd1cmUgY1BhbmVsIFNlcnZlcjwvZGl2PntzYXZlZFNlcnZlcnMubGVuZ3RoPjAmJjxkaXYgc3R5bGU9e3ttYXJnaW5Cb3R0b206MTR9fT48bGFiZWwgc3R5bGU9e3tkaXNwbGF5OidibG9jaycsZm9udFNpemU6MTEsZm9udFdlaWdodDo2MDAsY29sb3I6JyMzNzQxNTEnLG1hcmdpbkJvdHRvbTo1LHRleHRUcmFuc2Zvcm06J3VwcGVyY2FzZScsbGV0dGVyU3BhY2luZzonMC40cHgnfX0+U2F2ZWQgU2VydmVyczwvbGFiZWw+PGRpdiBzdHlsZT17e2Rpc3BsYXk6J2ZsZXgnLGZsZXhEaXJlY3Rpb246J2NvbHVtbicsZ2FwOjZ9fT57c2F2ZWRTZXJ2ZXJzLm1hcChzPT4oPGJ1dHRvbiBrZXk9e3MuaWR9IG9uQ2xpY2s9eygpPT57c2V0U2VsZWN0ZWRTZXJ2ZXIocy5pZCk7c2V0VXNlTmV3KGZhbHNlKX19IHN0eWxlPXt7dGV4dEFsaWduOidsZWZ0JyxwYWRkaW5nOicxMHB4IDEycHgnLGJvcmRlclJhZGl1czo3LGN1cnNvcjoncG9pbnRlcicsZm9udEZhbWlseTonaW5oZXJpdCcsYm9yZGVyOnNlbGVjdGVkU2VydmVyPT09cy5pZCYmIXVzZU5ldz8nMnB4IHNvbGlkICMyNTYzZWInOicxcHggc29saWQgI2UyZThmMCcsYmFja2dyb3VuZDpzZWxlY3RlZFNlcnZlcj09PXMuaWQmJiF1c2VOZXc/JyNlZmY2ZmYnOid3aGl0ZSd9fT48ZGl2IHN0eWxlPXt7ZGlzcGxheTonZmxleCcsYWxpZ25JdGVtczonY2VudGVyJyxnYXA6OH19PjxTZXJ2ZXIgc2l6ZT17MTN9IGNvbG9yPXtzZWxlY3RlZFNlcnZlcj09PXMuaWQmJiF1c2VOZXc/JyMyNTYzZWInOicjNmI3MjgwJ30vPjxzcGFuIHN0eWxlPXt7Zm9udFNpemU6MTIsZm9udFdlaWdodDo2MDAsY29sb3I6JyMxMTE4MjcnfX0+e3MubGFiZWx8fHMuY3BhbmVsX3VzZXIrJ0AnK3MuaG9zdG5hbWV9PC9zcGFuPntzZWxlY3RlZFNlcnZlcj09PXMuaWQmJiF1c2VOZXcmJjxDaGVjayBzaXplPXsxM30gY29sb3I9JyMyNTYzZWInIHN0eWxlPXt7bWFyZ2luTGVmdDonYXV0byd9fS8+fTwvZGl2PjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMSxjb2xvcjonIzZiNzI4MCcsbWFyZ2luTGVmdDoyMX19PntzLmhvc3RuYW1lfTp7cy5wb3J0fTwvZGl2PjwvYnV0dG9uPikpfTxidXR0b24gb25DbGljaz17KCk9PntzZXRVc2VOZXcodHJ1ZSk7c2V0U2VsZWN0ZWRTZXJ2ZXIobnVsbCl9fSBzdHlsZT17e3RleHRBbGlnbjonbGVmdCcscGFkZGluZzonMTBweCAxMnB4Jyxib3JkZXJSYWRpdXM6NyxjdXJzb3I6J3BvaW50ZXInLGZvbnRGYW1pbHk6J2luaGVyaXQnLGJvcmRlcjp1c2VOZXc/JzJweCBzb2xpZCAjMjU2M2ViJzonMXB4IGRhc2hlZCAjY2JkNWUxJyxiYWNrZ3JvdW5kOnVzZU5ldz8nI2VmZjZmZic6JyNmOGZhZmMnLGNvbG9yOicjMzc0MTUxJyxmb250U2l6ZToxMixmb250V2VpZ2h0OjUwMH19PisgQWRkIG5ldyBzZXJ2ZXI8L2J1dHRvbj48L2Rpdj48L2Rpdj59ewordXNlTmV3fHxzYXZlZFNlcnZlcnMubGVuZ3RoPT09MCkmJjxkaXYgc3R5bGU9e3tiYWNrZ3JvdW5kOicjZjhmYWZjJyxib3JkZXI6JzFweCBzb2xpZCAjZTJlOGYwJyxib3JkZXJSYWRpdXM6OCxwYWRkaW5nOicxNnB4JyxtYXJnaW5Ub3A6NH19PjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMSxmb250V2VpZ2h0OjcwMCxjb2xvcjonIzM3NDE1MScsb3ZlcmZsb3dZOjE0LHRleHRUcmFuc2Zvcm06J3VwcGVyY2FzZScsbGV0dGVyU3BhY2luZzonMC40cHgnfX0+TmV3IGNQYW5lbCBTZXJ2ZXI8L2Rpdj48RmllbGQgbGFiZWw9J0RvbWFpbiBvciBIb3N0bmFtZScgcmVxdWlyZWQgaGludD0nRW50ZXIgeW91ciBkb21haW4gb3IgY1BhbmVsIGhvc3RuYW1lLiBTU0xWYXVsdCBhdXRvLWRldGVjdHMgdGhlIGNvcnJlY3Qgc2VydmVyLic+PGlucHV0IHZhbHVlPXtob3N0bmFtZX0gb25DaGFuZ2U9e2U9PnNldEhvc3RuYW1lKGUudGFyZ2V0LnZhbHVlKX0gcGxhY2Vob2xkZXI9J2ZyZWVjZXJ0cy5zaXRlIG9yIHNlcnZlcjExLmhvc3QuY29tJyBzdHlsZT17aW5wfS8+PC9GaWVsZD48RmllbGQgbGFiZWw9J2NQYW5lbCBVc2VybmFtZScgcmVxdWlyZWQ+PGlucHV0IHZhbHVlPXtjcGFuZWxVc2VyfSBvbkNoYW5nZT17ZT0+c2V0Q3BhbmVsVXNlcihlLnRhcmdldC52YWx1ZSl9IHBsYWNlaG9sZGVyPSdmcmVlY2VydCcgc3R5bGU9e2lucH0vPjwvRmllbGQ+PEZpZWxkIGxhYmVsPSdjUGFuZWwgQVBJIFRva2VuJyByZXF1aXJlZCBoaW50PSdDcmVhdGUgaW4gY1BhbmVsIFNlY3VyaXR5ID4gTWFuYWdlIEFQSSBUb2tlbnMuIE5ldmVyIGV4cGlyZXMuJz48ZGl2IHN0eWxlPXt7cG9zaXRpb246J3JlbGF0aXZlJ319PjxpbnB1dCB0eXBlPXt0b2tlblZpcz8ndGV4dCc6J3Bhc3N3b3JkJ30gdmFsdWU9e2FwaVRva2VufSBvbkNoYW5nZT17ZT0+c2V0QXBpVG9rZW4oZS50YXJnZXQudmFsdWUpfSBwbGFjZWhvbGRlcj0nUGFzdGUgeW91ciBBUEkgdG9rZW4gaGVyZScgc3R5bGU9e3suLi5pbnAscGFkZGluZ1JpZ2h0OjQwfX0vPjxidXR0b24gb25DbGljaz17KCk9PnNldFRva2VuVmlzKHY9PiF2KX0gc3R5bGU9e3twb3NpdGlvbjonYWJzb2x1dGUnLHJpZ2h0OjEwLHRvcDonNTAlJyx0cmFuc2Zvcm06J3RyYW5zbGF0ZVkoLTUwJSknLGJhY2tncm91bmQ6J25vbmUnLGJvcmRlcjonbm9uZScsY3Vyc29yOidwb2ludGVyJyxjb2xvcjonIzljYTNhZicscGFkZGluZzowfX0+e3Rva2VuVmlzPzxFeWVPZmYgc2l6ZT17MTR9Lz46PEV5ZSBzaXplPXsxNH0vPn08L2J1dHRvbj48L2Rpdj48L0ZpZWxkPjxGaWVsZCBsYWJlbD0nTmlja25hbWUgKG9wdGlvbmFsKSc+PGlucHV0IHZhbHVlPXtsYWJlbH0gb25DaGFuZ2U9e2U9PnNldExhYmVsKGUudGFyZ2V0LnZhbHVlKX0gcGxhY2Vob2xkZXI9e2NwYW5lbFVzZXImJmhvc3RuYW1lP2NwYW5lbFVzZXIrJ0AiK2hvc3RuYW1lOidNeSBjUGFuZWwgc2VydmVyJ30gc3R5bGU9e2lucH0vPjwvRmllbGQ+PGRpdiBzdHlsZT17e2Rpc3BsYXk6J2ZsZXgnLGZsZXhEaXJlY3Rpb246J2NvbHVtbicsZ2FwOjEwLG1hcmdpblRvcDo0fX0+PGxhYmVsIHN0eWxlPXt7ZGlzcGxheTonZmxleCcsYWxpZ25JdGVtczonZmxleC1zdGFydCcsZ2FwOjgsY3Vyc29yOidwb2ludGVyJ319PjxpbnB1dCB0eXBlPSdjaGVja2JveCcgY2hlY2tlZD17c2F2ZVNlcnZlcn0gb25DaGFuZ2U9e2U9PnNldFNhdmVTZXJ2ZXIoZS50YXJnZXQuY2hlY2tlZCl9IHN0eWxlPXt7bWFyZ2luVG9wOjJ9fS8+PHNwYW4gc3R5bGU9e3tmb250U2l6ZToxMixjb2xvcjonIzM3NDE1MScsb3ZlcmZsb3dZOjEuNX19PlNhdmUgdGhpcyBzZXJ2ZXIgZm9yIGZ1dHVyZSBvbmUtY2xpY2sgaW5zdGFsbHM8L3NwYW4+PC9sYWJlbD48bGFiZWwgc3R5bGU9e3tkaXNwbGF5OidmbGV4JyxhbGlnbkl0ZW1zOidmbGV4LXN0YXJ0JyxnYXA6OCxjdXJzb3I6J3BvaW50ZXInfX0+PGlucHV0IHR5cGU9J2NoZWNrYm94JyBjaGVja2VkPXthdXRvSW5zdGFsbEZ1dHVyZX0gb25DaGFuZ2U9e2U9PnNldEF1dG9JbnN0YWxsRnV0dXJlKGUudGFyZ2V0LmNoZWNrZWQpfSBzdHlsZT17e21hcmdpblRvcDozfX0vPjxzcGFuIHN0eWxlPXt7Zm9udFNpemU6MTIsY29sb3I6JyMzNzQxNTEnLG92ZXJmbG93WToxLjV9fT5BdXRvLWluc3RhbGwgd2hlbiBjZXJ0IGlzIHJlaXNzdWVkIG9yIHJlbmV3ZWQ8L3NwYW4+PC9sYWJlbD48L2Rpdj48L2Rpdj59PGRpdiBzdHlsZT17e21hcmdpblRvcDoxNixtYXJnaW5Cb3R0b206MjAsYmFja2dyb3VuZDonI2YwZmRmNCcsYm9yZGVyOicxcHggc29saWQgI2JiZjdkMCcsYm9yZGVyUmFkaXVzOjgscGFkZGluZzonMTJweCAxNHB4J319PjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMSxmb250V2VpZ2h0OjcwMCxjb2xvcjonIzE1ODAzZCcsbWFyZ2luQm90dG9tOjh9fT5XaGF0IGhhcHBlbnMgZHVyaW5nIGluc3RhbGxhdGlvbjwvZGl2PnhbJ1NTTFZhdWx0IGNvbm5lY3RzIHRvIHlvdXIgY1BhbmVsIHNlcnZlciBvdmVyIEhUVFBTIC0gbm8gU1NIIG5lZWRlZCcsJ1VwbG9hZHMgdGhlIDMtYmxvY2sgZnVsbGNoYWluIFBFTSAtIGVuZC1lbnRpdHkgKyBpbnRlcm1lZGlhdGUgKyByb290IENBJ3xbJ0NhbGxzIGNQYW5lbCByZWJ1aWxkX21haWxfc25pIHRvIGFjdGl2YXRlIFNTTCBhY3Jvc3MgYWxsIHNlcnZpY2VzJywnRW5hYmxlcyBhdXRvbWF0aWMgSFRUUCB0byBIVFRQUyByZWRpcmVjdCcsJ1ZlcmlmaWVzIHRoZSBsaXZlIGRvbWFpbiBpcyBzZXJ2aW5nIHlvdXIgbmV3IGNlcnRpZmljYXRlJ10ubWFwKCh0LGkpPT4oPGRpdiBrZXk9e2l9IHN0eWxlPXt7ZGlzcGxheTonZmxleCcsZ2FwOjYsbWFyZ2luQm90dG9tOjQsZm9udFNpemU6MTEsY29sb3I6JyMxNjY1MzQnfX0+PHNwYW4gc3R5bGU9e3tjb2xvcjonIzE2YTM0YScsZmxleFNocmluazowfX0+PC9zcGFuPnt0fTwvZGl2PikpfTwvZGl2PjxkaXYgc3R5bGU9e3tkaXNwbGF5OidmbGV4JyxnYXA6OH19PjxidXR0b24gb25DbGljaz17KCk9PnNldFBoYXNlKCdzZWxlY3RfdHlwZScpfSBzdHlsZT17e3BhZGRpbmc6JzEwcHggMTZweCcsYm9yZGVyUmFkaXVzOjgsYm9yZGVyOicxcHggc29saWQgI2UyZThmMCcsYmFja2dyb3VuZDond2hpdGUnLGN1cnNvcjoncG9pbnRlcicsZm9udEZhbWlseTonaW5oZXJpdCcsZm9udFNpemU6MTMsY29sb3I6JyMzNzQxNTEnfX0+QmFjazwvYnV0dG9uPjxidXR0b24gb25DbGljaz17aGFuZGxlSW5zdGFsbH0gZGlzYWJsZWQ9e2J1c3l9IHN0eWxlPXt7ZmxleDoxLHBhZGRpbmc6JzExcHgnLGJhY2tncm91bmQ6YnVzeT8nIzkzYzVmZCc6JyMxZDRlZDgnLGNvbG9yOid3aGl0ZScsYm9yZGVyOidub25lJyxib3JkZXJSYWRpdXM6OCxmb250U2l6ZToxMyxmb250V2VpZ2h0OjYwMCxjdXJzb3I6YnVzeT8nd2FpdCc6J3BvaW50ZXInLGZvbnRGYW1pbHk6J2luaGVyaXQnfX0+e2J1c3k/J0luc3RhbGxpbmcuLi4nOidJbnN0YWxsIENlcnRpZmljYXRlJ308L2J1dHRvbj48L2Rpdj48Lz4pfXsocGhhc2U9PT0ncnVubmluZyd8fHBoYXNlPT09J2RvbmUnfHxwaGFzZT09PSdlcnJvcicpJiYoPD48ZGl2IHN0eWxlPXt7Zm9udFNpemU6MTEsZm9udFdlaWdodDo3MDAsY29sb3I6JyMzNzQxNTEnLHRleHRUcmFuc2Zvcm06J3VwcGVyY2FzZScsbGV0dGVyU3BhY2luZzonMC41cHgnLG1hcmdpbkJvdHRvbTo0fX0+SW5zdGFsbGF0aW9uIFByb2dyZXNzPC9kaXY+PGRpdj48U3RlcFJvdyBzdGVwPXsxfSB0aXRsZT0nRGV0ZWN0ICYgQ29ubmVjdCcgc3VidGl0bGU9e3N0ZXBNc2dzLmRldGVjdH0gc3RhdGU9e3N0ZXBzLmRldGVjdHx8J3BlbmRpbmcnfS8+PFN0ZXBSb3cgc3RlcD17Mn0gdGl0bGU9J1ZlcmlmeSBDcmVkZW50aWFscycgc3VidGl0bGU9e3N0ZXBNc2dzLnZlcmlmeX0gc3RhdGU9e3N0ZXBzLnZlcmlmeXx8J3BlbmRpbmcnfS8+PFN0ZXBSb3cgc3RlcD17M30gdGl0bGU9J1JldHJpZXZlIFByaXZhdGUgS2V5JyBzdWJ0aXRsZT17c3RlcE1zZ3Mua2V5fSBzdGF0ZT17c3RlcHMua2V5fHwncGVuZGluZyd9Lz48U3RlcFJvdyBzdGVwPXs0fSB0aXRsZT0nSW5zdGFsbCBDZXJ0aWZpY2F0ZScgc3VidGl0bGU9e3N0ZXBNc2dzLmluc3RhbGx9IHN0YXRlPXtzdGVwcy5pbnN0YWxsfHwncGVuZGluZyd9Lz48U3RlcFJvdyBzdGVwPXs1fSB0aXRsZT0nVmVyaWZ5IEhUVFBTJyBzdWJ0aXRsZT17c3RlcE1zZ3MudmVyaWZ5X3NzbH0gc3RhdGU9e3N0ZXBzLnZlcmlmeV9zc2x8fCdwZW5kaW5nJ30vPjwvZGl2PntlcnJNc2cmJjxkaXYgc3R5bGU9e3ttYXJnaW5Ub3A6MTYsYmFja2dyb3VuZDonI2ZlZjJmMicsYm9yZGVyOicxcHggc29saWQgI2ZlY2FjYScsYm9yZGVyUmFkaXVzOjgscGFkZGluZzonMTJweCAxNHB4J319PjxYQ2lyY2xlIHNpemU9e3sxNH19IGNvbG9yPScjZGMyNjI2JyBzdHlsZT17e2ZsZXhTaHJpbms6MCxtYXJnaW5Ub3A6MX19Lz48ZGl2PjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMixmb250V2VpZ2h0OjYwMCxjb2xvcjonIzk5MWIxYid9fT5JbnN0YWxsYXRpb24gZmFpbGVkPC9kaXY+PGRpdiBzdHlsZT17e2ZvbnRTaXplOjExLGNvbG9yOicjYjkxYzFjJyxtYXJnaW5Ub3A6MyxsaW5lSGVpZ2h0OjEuNX19PntlcnJNc2d9PC9kaXY+PC9kaXY+PC9kaXY+fXtwaGFzZT09PSdkb25lJyYmPGRpdiBzdHlsZT17e21hcmdpblRvcDoxNixiYWNrZ3JvdW5kOicjZjBmZGY0Jyxib3JkZXI6JzFweCBzb2xpZCAjYmJmN2QwJyxib3JkZXJSYWRpdXM6OCxwYWRkaW5nOicxNHB4J319PjxkaXYgc3R5bGU9e3tkaXNwbGF5OidmbGV4JyxnYXA6OCxhbGlnbkl0ZW1zOidjZW50ZXInLG1hcmdpbkJvdHRvbTo4fX0+PENoZWNrQ2lyY2xlIHNpemU9e3sxNn19IGNvbG9yPScjMTZhMzRhJy8+PHNwYW4gc3R5bGU9e3tmb250U2l6ZToxMyxmb250V2VpZ2h0OjcwMCxjb2xvcjonIzE1ODAzZCd9fT5DZXJ0aWZpY2F0ZSBpbnN0YWxsZWQgc3VjY2Vzc2Z1bGx5PC9zcGFuPjwvZGl2PjxkaXYgc3R5bGU9e3tmb250U2l6ZToxMSxjb2xvcjonIzE2NjUzNCcsbGluZUhlaWdodDoxLjZ9fT5Zb3VyIFNTTCBjZXJ0aWZpY2F0ZSBmb3IgPHN0cm9uZz57Y2VydC5kb21haW59PC9zdHJvbmc+IGlzIG5vdyBhY3RpdmUue2F1dG9JbnN0YWxsRnV0dXJlJiYnIEZ1dHVyZSByZWlzc3VlcyBhbmQgcmVuZXdhbHMgd2lsbCBiZSBpbnN0YWxsZWQgYXV0b21hdGljYWxseS4nfTwvZGl2PjwvZGl2Pn08ZGl2IHN0eWxlPXt7ZGlzcGxheTonZmxleCcsZ2FwOjgsbWFyZ2luVG9wOjE2fX0+e3BoYXNlPT09J2Vycm9yJyYmPGJ1dHRvbiBvbkNsaWNrPXsoKT0+e3NldFBoYXNlKCdjb25maWd1cmUnKTtzZXRCdXN5KGZhbHNlKX19IHN0eWxlPXt7ZmxleDoxLHBhZGRpbmc6JzEwcHgnLGJvcmRlcjonMXB4IHNvbGlkICNlMmU4ZjAnLGJvcmRlclJhZGl1czo4LGJhY2tncm91bmQ6J3doaXRlJyxjdXJzb3I6J3BvaW50ZXInLGZvbnRGYW1pbHk6J2luaGVyaXQnLGZvbnRTaXplOjEzLGNvbG9yOicjMzc0MTUxJ319PlRyeSBhZ2Fpbjwvc3Ryb25nPjwvYnV0dG9uPn08YnV0dG9uIG9uQ2xpY2s9eygpPT57aWYocGhhc2U9PT0nZG9uZScmJm9uU3VjY2Vzcylvblh1Y2Nlc3MoKTtvbkNsb3NlKCk7fX0gc3R5bGU9e3tmbGV4OjEscGFkZGluZzonMTBweCcsYmFja2dyb3VuZDpwaGFzZT09PSdkb25lJz8nIzE2YTM0YSc6JyNlMmU4ZjAnLGNvbG9yOnBoYXNlPT09J2RvbmUnPyd3aGl0ZSc6JyMzNzQxNTEnLGJvcmRlcjonbm9uZScsYm9yZGVyUmFkaXVzOjgsY3Vyc29yOidwb2ludGVyJyxmb250RmFtaWx5Oidpbmhlcml0Jyxmb250U2l6ZToxMyxmb250V2VpZ2h0OjYwMH19Pntwb2ludGVyPT09J2RvbmUnPydEb25lJzonQ2xvc2UnfTwvYnV0dG9uPjwvZGl2PjwvPil9PC9kaXY+PC9kaXY+PHN0eWxlPnsnQGtleWZyYW1lcyBzcGlue2Zyb217dHJhbnNmb3JtOnJvdGF0ZSgwKX10b3t0cmFuc2Zvcm06cm90YXRlKDM2MGRlZyl9fSd9PC9zdHlsZT48L2Rpdj4pCn0K
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+import { CheckCircle, XCircle, Server, Shield, ChevronRight, AlertTriangle, Eye, EyeOff, Loader, X, Check } from 'lucide-react'
+
+const FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/cpanel-install'
+const call = async (action, body, tok) => {
+  const r = await fetch(FN, { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok}, body:JSON.stringify({action,...body}) })
+  return r.json()
+}
+
+function Pill({ state }) {
+  const map = { pending:{bg:'#f1f5f9',color:'#64748b',label:'Pending'}, running:{bg:'#eff6ff',color:'#2563eb',label:'In progress...'}, done:{bg:'#f0fdf4',color:'#16a34a',label:'Done'}, error:{bg:'#fef2f2',color:'#dc2626',label:'Failed'}, skipped:{bg:'#f1f5f9',color:'#94a3b8',label:'Skipped'} }
+  const s = map[state]||map.pending
+  return <span style={{fontSize:10,fontWeight:600,padding:'2px 8px',borderRadius:20,background:s.bg,color:s.color}}>{s.label}</span>
+}
+
+function StepRow({step,title,subtitle,state}) {
+  const icons = {
+    pending:<span style={{width:22,height:22,borderRadius:'50%',background:'#e2e8f0',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#94a3b8',fontWeight:700}}>{step}</span>,
+    running:<Loader size={18} color='#2563eb' style={{animation:'spin 1s linear infinite'}}/>,
+    done:<CheckCircle size={20} color='#16a34a'/>,
+    error:<XCircle size={20} color='#dc2626'/>,
+    skipped:<span style={{width:22,height:22,borderRadius:'50%',background:'#e2e8f0',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#94a3b8'}}>.</span>,
+  }
+  return (
+    <div style={{display:'flex',gap:14,padding:'14px 0',borderBottom:'1px solid #f1f5f9'}}>
+      <div style={{paddingTop:2,flexShrink:0}}>{icons[state]||icons.pending}</div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>
+          <span style={{fontSize:13,fontWeight:600,color:state==='error'?'#dc2626':state==='done'?'#111827':'#1e293b'}}>{title}</span>
+          <Pill state={state}/>
+        </div>
+        {subtitle && <div style={{fontSize:11,color:'#94a3b8',marginTop:2}}>{subtitle}</div>}
+      </div>
+    </div>
+  )
+}
+
+function Field({label,hint,required,children}) {
+  return (
+    <div style={{marginBottom:14}}>
+      <label style={{display:'block',fontSize:11,fontWeight:600,color:'#374151',marginBottom:5,textTransform:'uppercase',letterSpacing:'0.4px'}}>
+        {label}{required && <span style={{color:'#ef4444',marginLeft:3}}>*</span>}
+      </label>
+      {children}
+      {hint && <div style={{fontSize:11,color:'#9ca3af',marginTop:4}}>{hint}</div>}
+    </div>
+  )
+}
+const inp = {width:'100%',boxSizing:'border-box',padding:'9px 12px',borderRadius:7,border:'1px solid #e2e8f0',fontSize:13,fontFamily:'inherit',outline:'none',color:'#111827',background:'white'}
+
+function ServerTypeCard({icon,title,description,selected,onClick}) {
+  return (
+    <button onClick={onClick} style={{flex:1,textAlign:'left',padding:'12px 14px',borderRadius:8,cursor:'pointer',fontFamily:'inherit',border:selected?'2px solid #2563eb':'1.5px solid #e2e8f0',background:selected?'#eff6ff':'white',transition:'all 0.15s'}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+        <span style={{fontSize:18}}>{icon}</span>
+        <span style={{fontSize:13,fontWeight:700,color:selected?'#1d4ed8':'#111827'}}>{title}</span>
+        {selected && <Check size={14} color='#2563eb' style={{marginLeft:'auto'}}/>}
+      </div>
+      <div style={{fontSize:11,color:'#6b7280',lineHeight:1.5}}>{description}</div>
+    </button>
+  )
+}
+
+export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
+  const [tok,setTok] = useState('')
+  const [phase,setPhase] = useState('select_type')
+  const [serverType,setServerType] = useState('cpanel')
+  const [savedServers,setSavedServers] = useState([])
+  const [selectedServer,setSelectedServer] = useState(null)
+  const [useNew,setUseNew] = useState(false)
+  const [hostname,setHostname] = useState('')
+  const [cpanelUser,setCpanelUser] = useState('')
+  const [apiToken,setApiToken] = useState('')
+  const [tokenVis,setTokenVis] = useState(false)
+  const [label,setLabel] = useState('')
+  const [saveServer,setSaveServer] = useState(true)
+  const [autoInstallFuture,setAutoInstallFuture] = useState(true)
+  const [steps,setSteps] = useState({detect:null,verify:null,key:null,install:null,verify_ssl:null})
+  const [stepMsgs,setStepMsgs] = useState({})
+  const [errMsg,setErrMsg] = useState('')
+  const [busy,setBusy] = useState(false)
+
+  const setStep = (k,v,msg='') => {
+    setSteps(p=>({...p,[k]:v}))
+    if(msg) setStepMsgs(p=>({...p,[k]:msg}))
+  }
+
+  useEffect(()=>{
+    ;(async()=>{
+      const {data:{session}} = await supabase.auth.getSession()
+      if(!session) return
+      setTok(session.access_token)
+      const res = await call('list_all_cpanel_servers',{},session.access_token)
+      if(res.ok && res.credentials?.length){
+        setSavedServers(res.credentials)
+        const m = res.credentials.find(c=>c.domains?.includes(cert.domain))||res.credentials[0]
+        setSelectedServer(m.id); setUseNew(false)
+      } else setUseNew(true)
+    })()
+  },[])
+
+  useEffect(()=>{
+    if(!label && hostname && cpanelUser) setLabel(cpanelUser+'@'+hostname)
+  },[hostname,cpanelUser])
+
+  const selSaved = savedServers.find(s=>s.id===selectedServer)
+
+  const handleInstall = async () => {
+    if(!tok){setErrMsg('Session expired.');return}
+    setBusy(true);setPhase('running');setErrMsg('')
+    setSteps({detect:null,verify:null,key:null,install:null,verify_ssl:null});setStepMsgs({})
+    let credId = selectedServer
+    let credSrc = useNew?'new':(selSaved?.source||'server_credentials')
+    setStep('detect','running','Auto-detecting cPanel server hostname...')
+    try {
+      if(useNew||!selectedServer){
+        if(!hostname||!cpanelUser||!apiToken){setStep('detect','error','Fill all required fields');setErrMsg('Hostname, username and API token required');setBusy(false);setPhase('configure');return}
+        const vr = await call('verify_and_detect',{domain:hostname,cpanel_user:cpanelUser,api_token:apiToken},tok)
+        if(!vr.ok){setStep('detect','error',vr.error);setErrMsg(vr.error||'Cannot connect to cPanel');setBusy(false);setPhase('error');return}
+        setStep('detect','done','Connected to '+(vr.detected_host||hostname)+':'+(vr.detected_port||2083)+(vr.auto_detected?' (auto-detected)':''))
+        setStep('verify','done','Credentials verified')
+        if(saveServer){
+          const sr = await call('save_credentials',{hostname,port:2083,cpanel_user:cpanelUser,api_token:apiToken,label:label||cpanelUser+'@'+hostname,domains:[cert.domain]},tok)
+          if(sr.ok){credId=sr.credential?.id;credSrc='cpanel_credentials';setSavedServers(p=>[sr.credential,...p]);if(autoInstallFuture&&credId)await supabase.from('certificates').update({install_server_id:credId}).eq('id',cert.id)}
+        }
+      } else {
+        setStep('detect','done','Using saved: '+(selSaved?.hostname||selSaved?.label||''))
+        setStep('verify','done','Using saved credentials')
+      }
+    } catch(e){setStep('detect','error',e.message);setErrMsg(e.message);setBusy(false);setPhase('error');return}
+    setStep('key','running','Retrieving private key from KeyLocker...')
+    await new Promise(r=>setTimeout(r,400))
+    setStep('key','done','Private key retrieved')
+    setStep('install','running','Pushing certificate + chain to cPanel UAPI...')
+    try {
+      const pl = {cert_id:cert.id,domain:cert.domain}
+      if(credId&&credSrc!=='new'){pl.credential_id=credId;pl.credential_source=credSrc}else{pl.hostname=hostname;pl.port=2083;pl.cpanel_user=cpanelUser;pl.api_token=apiToken}
+      const ir = await call('install',pl,tok)
+      if(!ir.ok){setStep('install','error',ir.error);setErrMsg(ir.error||'Installation failed');setBusy(false);setPhase('error');return}
+      setStep('install','done','Certificate installed - activating SSL across all services')
+    } catch(e){setStep('install','error',e.message);setErrMsg(e.message);setBusy(false);setPhase('error');return}
+    setStep('verify_ssl','running','Verifying HTTPS on '+cert.domain+'...')
+    let verified=false
+    for(let i=0;i<3;i++){await new Promise(r=>setTimeout(r,5000));try{const res=await fetch('https://'+cert.domain,{method:'HEAD',redirect:'follow'});if(res.status<500){verified=true;break}}catch{}}
+    setStep('verify_ssl',verified?'done':'skipped',verified?'HTTPS verified - certificate is live':'Certificate installed - DNS propagation may take a few minutes')
+    setBusy(false);setPhase('done')
+  }
+
+  const expStr = cert.expires_at?new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'N/A'
+
+  return (
+    <div style={{position:'fixed',inset:0,zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:20,background:'rgba(15,23,42,0.5)',backdropFilter:'blur(4px)'}}>
+      <div style={{background:'white',borderRadius:14,width:'100%',maxWidth:520,maxHeight:'90vh',overflowY:'auto',boxShadow:'0 24px 64px rgba(0,0,0,0.18)'}}>
+        <div style={{padding:'20px 24px 16px',borderBottom:'1px solid #f1f5f9',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,background:'white',zIndex:10,borderRadius:'14px 14px 0 0'}}>
+          <div>
+            <div style={{display:'flex',alignItems:'center',gap:8}}><Shield size={16} color='#2563eb'/><span style={{fontSize:15,fontWeight:700,color:'#111827'}}>SSL Installation Wizard</span></div>
+            <div style={{fontSize:11,color:'#94a3b8',marginTop:2,fontFamily:'monospace'}}>{cert.domain}</div>
+          </div>
+          <button onClick={onClose} style={{background:'none',border:'none',cursor:'pointer',color:'#94a3b8',padding:4}}><X size={16}/></button>
+        </div>
+        <div style={{padding:'20px 24px 24px'}}>
+          <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'10px 14px',marginBottom:20,display:'flex',alignItems:'center',gap:12}}>
+            <CheckCircle size={14} color='#16a34a'/>
+            <div><div style={{fontSize:12,fontWeight:600,color:'#111827'}}>Active Paid SSL Certificate</div><div style={{fontSize:11,color:'#6b7280'}}>Fullchain ready | Private key in KeyLocker | Expires {expStr}</div></div>
+          </div>
+
+          {phase==='select_type' && (<>
+            <div style={{fontSize:11,fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:12}}>Select Server Type</div>
+            <div style={{display:'flex',gap:10,marginBottom:20}}>
+              <ServerTypeCard icon='[S]' title='Shared / cPanel' description='Managed hosting via cPanel API. Credentials saved once - auto-installs on every reissue and renewal.' selected={serverType==='cpanel'} onClick={()=>setServerType('cpanel')}/>
+              <ServerTypeCard icon='[V]' title='VPS / Dedicated' description='Direct server access via SSLVault agent. Automatically polls and applies certs.' selected={serverType==='vps'} onClick={()=>setServerType('vps')}/>
+            </div>
+            {serverType==='vps' && <div style={{background:'#fffbeb',border:'1px solid #fde68a',borderRadius:8,padding:'12px 14px',marginBottom:16,display:'flex',gap:8,alignItems:'flex-start'}}>
+              <AlertTriangle size={13} color='#d97706' style={{marginTop:1,flexShrink:0}}/>
+              <div><div style={{fontSize:12,fontWeight:600,color:'#92400e'}}>SSLVault Agent Required</div><div style={{fontSize:11,color:'#b45309',marginTop:2,lineHeight:1.5}}>Go to DNS &amp; Servers &#8210; Servers tab &#8210; Install Agent. Once running it automatically polls and installs certificates.</div></div>
+            </div>}
+            <button onClick={()=>setPhase('configure')} style={{width:'100%',padding:'11px',background:'#1d4ed8',color:'white',border:'none',borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>Continue <ChevronRight size={14}/></button>
+          </>)}
+
+          {phase==='configure' && serverType==='cpanel' && (<>
+            <div style={{fontSize:11,fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:14}}>Configure cPanel Server</div>
+            {savedServers.length>0 && <div style={{marginBottom:14}}>
+              <label style={{display:'block',fontSize:11,fontWeight:600,color:'#374151',marginBottom:5,textTransform:'uppercase',letterSpacing:'0.4px'}}>Saved Servers</label>
+              <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                {savedServers.map(s=>(<button key={s.id} onClick={()=>{setSelectedServer(s.id);setUseNew(false)}} style={{textAlign:'left',padding:'10px 12px',borderRadius:7,cursor:'pointer',fontFamily:'inherit',border:selectedServer===s.id&&!useNew?'2px solid #2563eb':'1px solid #e2e8f0',background:selectedServer===s.id&&!useNew?'#eff6ff':'white'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}><Server size={13} color={selectedServer===s.id&&!useNew?'#2563eb':'#6b7280'}/><span style={{fontSize:12,fontWeight:600,color:'#111827'}}>{s.label||s.cpanel_user+'@'+s.hostname}</span>{selectedServer===s.id&&!useNew&&<Check size={13} color='#2563eb' style={{marginLeft:'auto'}}/>}</div>
+                  <div style={{fontSize:11,color:'#6b7280',marginLeft:21}}>{s.hostname}:{s.port}</div>
+                </button>))}
+                <button onClick={()=>{setUseNew(true);setSelectedServer(null)}} style={{textAlign:'left',padding:'10px 12px',borderRadius:7,cursor:'pointer',fontFamily:'inherit',border:useNew?'2px solid #2563eb':'1px dashed #cbd5e1',background:useNew?'#eff6ff':'#f8fafc',color:'#374151',fontSize:12,fontWeight:500}}>+ Add new server</button>
+              </div>
+            </div>}
+            {(useNew||savedServers.length===0) && <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'16px',marginTop:4}}>
+              <div style={{fontSize:11,fontWeight:700,color:'#374151',marginBottom:14,textTransform:'uppercase',letterSpacing:'0.4px'}}>New cPanel Server</div>
+              <Field label='Domain or Hostname' required hint='Enter your domain or cPanel hostname. SSLVault auto-detects the correct server.'>
+                <input value={hostname} onChange={e=>setHostname(e.target.value)} placeholder='freecerts.site or server11.host.com' style={inp}/>
+              </Field>
+              <Field label='cPanel Username' required><input value={cpanelUser} onChange={e=>setCpanelUser(e.target.value)} placeholder='freecert' style={inp}/></Field>
+              <Field label='cPanel API Token' required hint='Create in cPanel Security > Manage API Tokens. Never expires.'>
+                <div style={{position:'relative'}}>
+                  <input type={tokenVis?'text':'password'} value={apiToken} onChange={e=>setApiToken(e.target.value)} placeholder='Paste your API token here' style={{...inp,paddingRight:40}}/>
+                  <button onClick={()=>setTokenVis(v=>!v)} style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:'#9ca3af',padding:0}}>{tokenVis?<EyeOff size={14}/>:<Eye size={14}/>}</button>
+                </div>
+              </Field>
+              <Field label='Nickname (optional)'><input value={label} onChange={e=>setLabel(e.target.value)} placeholder={cpanelUser&&hostname?cpanelUser+'@'+hostname:'My cPanel server'} style={inp}/></Field>
+              <div style={{display:'flex',flexDirection:'column',gap:10,marginTop:4}}>
+                <label style={{display:'flex',alignItems:'flex-start',gap:8,cursor:'pointer'}}><input type='checkbox' checked={saveServer} onChange={e=>setSaveServer(e.target.checked)} style={{marginTop:2}}/><span style={{fontSize:12,color:'#374151',lineHeight:1.5}}>Save this server for future one-click installs</span></label>
+                <label style={{display:'flex',alignItems:'flex-start',gap:8,cursor:'pointer'}}><input type='checkbox' checked={autoInstallFuture} onChange={e=>setAutoInstallFuture(e.target.checked)} style={{marginTop:2}}/><span style={{fontSize:12,color:'#374151',lineHeight:1.5}}>Auto-install when cert is reissued or renewed</span></label>
+              </div>
+            </div>}
+            <div style={{marginTop:16,marginBottom:20,background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:8,padding:'12px 14px'}}>
+              <div style={{fontSize:11,fontWeight:700,color:'#15803d',marginBottom:8}}>What happens during installation</div>
+              {['SSLVault connects to your cPanel server over HTTPS (no SSH needed)','Uploads the 3-block fullchain PEM - end-entity + intermediate + root CA','Calls cPanel rebuild_mail_sni to activate SSL across all services','Enables automatic HTTP to HTTPS redirect','Verifies the live domain is serving your new certificate'].map((t,i)=>(<div key={i} style={{display:'flex',gap:6,marginBottom:4,fontSize:11,color:'#166534'}}><span style={{color:'#16a34a',flexShrink:0}}>&#10004;</span>{t}</div>))}
+            </div>
+            <div style={{display:'flex',gap:8}}>
+              <button onClick={()=>setPhase('select_type')} style={{padding:'10px 16px',borderRadius:8,border:'1px solid #e2e8f0',background:'white',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#374151'}}>Back</button>
+              <button onClick={handleInstall} disabled={busy} style={{flex:1,padding:'11px',background:busy?'#93c5fd':'#1d4ed8',color:'white',border:'none',borderRadius:8,fontSize:13,fontWeight:600,cursor:busy?'wait':'pointer',fontFamily:'inherit'}}>{busy?'Installing...':'Install Certificate'}</button>
+            </div>
+          </>)}
+
+          {(phase==='running'||phase==='done'||phase==='error') && (<>
+            <div style={{fontSize:11,fontWeight:700,color:'#374151',textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:4}}>Installation Progress</div>
+            <div>
+              <StepRow step={1} title='Detect &amp; Connect' subtitle={stepMsgs.detect} state={steps.detect||'pending'}/>
+              <StepRow step={2} title='Verify Credentials' subtitle={stepMsgs.verify} state={steps.verify||'pending'}/>
+              <StepRow step={3} title='Retrieve Private Key' subtitle={stepMsgs.key} state={steps.key||'pending'}/>
+              <StepRow step={4} title='Install Certificate' subtitle={stepMsgs.install} state={steps.install||'pending'}/>
+              <StepRow step={5} title='Verify HTTPS' subtitle={stepMsgs.verify_ssl} state={steps.verify_ssl||'pending'}/>
+            </div>
+            {errMsg && <div style={{marginTop:16,background:'#fef2f2',border:'1px solid #fecaca',borderRadius:8,padding:'12px 14px',display:'flex',gap:8,alignItems:'flex-start'}}>
+              <XCircle size={14} color='#dc2626' style={{flexShrink:0,marginTop:1}}/>
+              <div><div style={{fontSize:12,fontWeight:600,color:'#991b1b'}}>Installation failed</div><div style={{fontSize:11,color:'#b91c1c',marginTop:3,lineHeight:1.5}}>{errMsg}</div></div>
+            </div>}
+            {phase==='done' && <div style={{marginTop:16,background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:8,padding:'14px'}}>
+              <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:8}}><CheckCircle size={16} color='#16a34a'/><span style={{fontSize:13,fontWeight:700,color:'#15803d'}}>Certificate installed successfully</span></div>
+              <div style={{fontSize:11,color:'#166534',lineHeight:1.6}}>Your SSL certificate for <strong>{cert.domain}</strong> is now active on your cPanel server.{autoInstallFuture&&' Future reissues (199 days before expiry) and renewals (on order expiry) will be installed automatically.'}</div>
+            </div>}
+            <div style={{display:'flex',gap:8,marginTop:16}}>
+              {phase==='error' && <button onClick={()=>{setPhase('configure');setBusy(false)}} style={{flex:1,padding:'10px',border:'1px solid #e2e8f0',borderRadius:8,background:'white',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#374151'}}>Try again</button>}
+              <button onClick={()=>{if(phase==='done'&&onSuccess)onSuccess();onClose();}} style={{flex:1,padding:'10px',background:phase==='done'?'#16a34a':'#e2e8f0',color:phase==='done'?'white':'#374151',border:'none',borderRadius:8,cursor:'pointer',fontFamily:'inherit',fontSize:13,fontWeight:600}}>{phase==='done'?'Done':'Close'}</button>
+            </div>
+          </>)}
+        </div>
+      </div>
+      <style>{'@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}'}</style>
+    </div>
+  )
+}
