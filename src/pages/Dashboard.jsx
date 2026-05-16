@@ -167,6 +167,113 @@ function DvPendingCard({ order, onRefresh }) {
   )
 }
 
+
+// ValidityTimeline - animated progress bar matching GGS portal style
+function ValidityTimeline({ issuedAt, expiresAt }) {
+  const now   = new Date()
+  const start = new Date(issuedAt)
+  const end   = new Date(expiresAt)
+  // Extend view to 1 year past expiry (shows renewal window)
+  const viewEnd = new Date(end.getTime() + 365 * 86400000)
+  const total   = viewEnd - start
+  const elapsed = now - start
+  const remaining = end - now
+  const pctNow    = Math.max(0, Math.min(100, (elapsed / total) * 100))
+  const pctCert   = Math.max(0, Math.min(100, ((end - start) / total) * 100))
+  const daysLeft  = Math.max(0, Math.ceil(remaining / 86400000))
+  const daysTotal = Math.ceil((end - start) / 86400000)
+  const isExpired = remaining <= 0
+  const isWarning = daysLeft > 0 && daysLeft < 30
+
+  const barColor = isExpired ? '#ef4444' : isWarning ? '#f59e0b' : '#84cc16'
+  const stripeColor = isExpired ? 'rgba(239,68,68,0.35)' : isWarning ? 'rgba(245,158,11,0.35)' : 'rgba(132,204,22,0.35)'
+
+  const fmt = d => { try { return new Date(d).toISOString().slice(0,10) } catch { return '—' } }
+  const fmtFull = d => { try { return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) } catch { return '—' } }
+  const reissueDate = fmt(end)
+
+  return (
+    <div style={{ marginBottom:20 }}>
+      {/* Header */}
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>      
+        <span style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Validity Timeline</span>
+        <span style={{ fontSize:11, fontWeight:700, color: isExpired ? '#ef4444' : isWarning ? '#f59e0b' : barColor }}>
+          {isExpired ? 'Expired' : `Next reissue in ${daysLeft} days`}
+        </span>
+      </div>
+
+      {/* Track */}
+      <div style={{ position:'relative', height:28, borderRadius:6, overflow:'hidden',
+        background:'#1a1a2e', border:'1px solid rgba(255,255,255,0.07)' }}>
+
+        {/* Cert validity bar (animated stripes) */}
+        <div style={{
+          position:'absolute', left:0, top:0, bottom:0,
+          width: pctCert+'%',
+          background: `repeating-linear-gradient(60deg, ${barColor} 0px, ${barColor} 18px, ${stripeColor} 18px, ${stripeColor} 28px)`,
+          backgroundSize:'40px 100%',
+          animation:'stripe-move 1.2s linear infinite',
+          borderRight:'2px solid rgba(255,255,255,0.25)',
+        }}/>
+
+        {/* Current position marker */}
+        <div style={{
+          position:'absolute', top:0, bottom:0,
+          left: pctNow+'%',
+          width:2, background:'white',
+          boxShadow:'0 0 8px 2px rgba(255,255,255,0.6)',
+          zIndex:3,
+        }}/>
+
+        {/* "Current" label on bar */}
+        {pctNow > 5 && pctNow < pctCert - 5 && (
+          <div style={{
+            position:'absolute', left:'50%', top:'50%',
+            transform:'translate(-50%,-50%)',
+            fontSize:10, fontWeight:700, color:'rgba(0,0,0,0.7)',
+            letterSpacing:'0.5px', pointerEvents:'none', zIndex:4,
+            textShadow:'none'
+          }}>CURRENT</div>
+        )}
+
+        {/* Available / Renewal zone */}
+        <div style={{
+          position:'absolute', left:pctCert+'%', top:0, bottom:0, right:0,
+          display:'flex', alignItems:'center', justifyContent:'center',
+          background:'rgba(255,255,255,0.04)',
+        }}>
+          <span style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.35)', letterSpacing:'1px' }}>RENEWAL WINDOW</span>
+        </div>
+      </div>
+
+      {/* Date labels */}
+      <div style={{ display:'flex', justifyContent:'space-between', marginTop:6 }}>
+        <div>
+          <div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(issuedAt)}</div>
+          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>SSL Valid from</div>
+        </div>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'white', fontFamily:'monospace' }}>{fmt(expiresAt)}</div>
+          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>SSL Valid till</div>
+        </div>
+        <div style={{ textAlign:'right' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', fontFamily:'monospace' }}>
+            {fmt(new Date(end.getTime() + 365*86400000))}
+          </div>
+          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>Renewal by</div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes stripe-move {
+          from { background-position: 0 0; }
+          to   { background-position: 40px 0; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
 function CertDetail({ cert, onClose, onDelete, onInstall, nav, onRefresh }) {
   const days = daysLeft(cert.expires_at)
   const [showKey, setShowKey]   = useState(false)
@@ -230,12 +337,9 @@ function CertDetail({ cert, onClose, onDelete, onInstall, nav, onRefresh }) {
         </div>
       )}
 
-      <div style={{ marginBottom:16 }}>
-        <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'var(--v2-text-3)', marginBottom:6 }}>
-          <span>Validity</span><span>{fmtDate(cert.expires_at)}</span>
-        </div>
-        <ProgressBar days={days}/>
-      </div>
+      {cert.issued_at && cert.expires_at && (
+        <ValidityTimeline issuedAt={cert.issued_at} expiresAt={cert.expires_at}/>
+      )}
 
       <div className="v2-section-label" style={{ marginBottom:10 }}>Certificate details</div>
       <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
