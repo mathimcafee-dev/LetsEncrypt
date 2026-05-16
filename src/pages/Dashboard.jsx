@@ -249,13 +249,28 @@ function CertDetail({ cert, onClose, onDelete, onInstall, nav, onRefresh }) {
           { label:'Issuer',     value: cert.issuer || 'RapidSSL' },
           { label:'DCV',        value: (cert.dcv_method||'dns').toUpperCase() },
           { label:'Source',     value: 'GoGetSSL' },
-          cert.ggs_order_id ? { label:'GGS Order',  value: String(cert.ggs_order_id) } : null,
-          cert._order?.ggs_invoice_id ? { label:'Invoice', value: String(cert._order.ggs_invoice_id) } : null,
-          cert._order?.admin_first_name ? { label:'Contact', value: [cert._order.admin_first_name,cert._order.admin_last_name].filter(Boolean).join(' ') } : null,
-          cert._order?.admin_email ? { label:'Email', value: cert._order.admin_email } : null,
-          cert._order?.admin_phone ? { label:'Phone', value: cert._order.admin_phone } : null,
-          cert.serial_number ? { label:'Serial', value: cert.serial_number } : null,
-          cert.fingerprint_sha1 ? { label:'MD5', value: cert.fingerprint_sha1 } : null,
+          // Order IDs
+          cert.ggs_order_id ? { label:'API Order ID',      value: String(cert.ggs_order_id) } : null,
+          cert._order?.partner_order_id ? { label:'Vendor Order ID',   value: cert._order.partner_order_id } : null,
+          cert._order?.ggs_invoice_id   ? { label:'Invoice ID',        value: String(cert._order.ggs_invoice_id) } : null,
+          cert._order?.order_type       ? { label:'Order Type',        value: cert._order.order_type } : null,
+          // Subscription dates
+          cert._order?.subscription_start ? { label:'Valid From', value: cert._order.subscription_start } : null,
+          cert._order?.subscription_end   ? { label:'Valid Till', value: cert._order.subscription_end  } : null,
+          // Admin contact
+          cert._order?.admin_first_name ? { label:'Admin Name',    value: [cert._order.admin_first_name, cert._order.admin_last_name].filter(Boolean).join(' ') } : null,
+          cert._order?.admin_title      ? { label:'Admin Title',   value: cert._order.admin_title   } : null,
+          cert._order?.admin_email      ? { label:'Admin Email',   value: cert._order.admin_email   } : null,
+          cert._order?.admin_phone      ? { label:'Admin Phone',   value: cert._order.admin_phone   } : null,
+          cert._order?.admin_city       ? { label:'City',          value: cert._order.admin_city    } : null,
+          cert._order?.admin_country    ? { label:'Country',       value: cert._order.admin_country } : null,
+          // Tech contact (show only if different from admin)
+          (cert._order?.tech_email && cert._order.tech_email !== cert._order.admin_email) ? { label:'Tech Name',  value: [cert._order.tech_first_name, cert._order.tech_last_name].filter(Boolean).join(' ') } : null,
+          (cert._order?.tech_email && cert._order.tech_email !== cert._order.admin_email) ? { label:'Tech Email', value: cert._order.tech_email } : null,
+          (cert._order?.tech_phone && cert._order.tech_phone !== cert._order.admin_phone) ? { label:'Tech Phone', value: cert._order.tech_phone } : null,
+          // Cert fingerprints
+          (cert._order?.serial_number || cert.serial_number) ? { label:'Serial', value: cert._order?.serial_number || cert.serial_number } : null,
+          (cert._order?.cert_md5 || cert.fingerprint_sha1)   ? { label:'MD5',    value: cert._order?.cert_md5 || cert.fingerprint_sha1 }    : null,
         ].filter(Boolean).map(({ label, value }) => (
           <div key={label} className="v2-metric-row" style={{ justifyContent:'space-between' }}>
             <span className="v2-metric-label">{label}</span>
@@ -446,7 +461,7 @@ function LoggedInDashboard({ user, nav }) {
     const enriched = await Promise.all((certsData||[]).map(async cert => {
       if (!cert.ggs_order_id) return cert
       const { data: ord } = await supabase.from('ssl_orders')
-        .select('product_name,product_code,period,ggs_invoice_id,admin_email,admin_first_name,admin_last_name,admin_phone')
+        .select('product_name,product_code,period,ggs_invoice_id,ggs_order_id,partner_order_id,vendor_order_id,order_type,subscription_start,subscription_end,admin_email,admin_first_name,admin_last_name,admin_phone,admin_title,admin_city,admin_country,tech_first_name,tech_last_name,tech_email,tech_phone,serial_number,cert_md5')
         .eq('ggs_order_id', cert.ggs_order_id).eq('user_id', user.id)
         .order('created_at', { ascending: false }).limit(1).single()
       return ord ? { ...cert, _order: ord } : cert
