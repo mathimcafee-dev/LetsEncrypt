@@ -171,6 +171,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   const call = async (action, extra = {}) => {
     const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.access_token) throw new Error('Session expired — please sign in again')
     const r = await fetch(`${SUPABASE_URL}/functions/v1/gogetssl-issue`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
@@ -187,6 +188,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     if (!em.trim()) { setErr('Email required'); return }
     if (!ph.trim()) { setErr('Phone required'); return }
     setErr(''); setBusy(true)
+    try {
     const r = await call('place_order', {
       domain: d, years, product_code: product,
       firstName: fn.trim(), lastName: ln.trim(),
@@ -200,6 +202,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       dcv_txt_value: r.dcv_txt_value || r.dcv_cname_value,
     })
     setStep('dv')
+    } catch (e) { setBusy(false); setErr(e.message || 'Unexpected error — please try again') }
   }
 
   const check = async () => {
@@ -219,6 +222,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     setDns(true); setRes(null)
     try {
       const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.access_token) throw new Error('Session expired — please sign in again')
       const r = await fetch(`${SUPABASE_URL}/functions/v1/dns-auto-add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
