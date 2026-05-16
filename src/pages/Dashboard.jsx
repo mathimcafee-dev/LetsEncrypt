@@ -1,5 +1,5 @@
-// BUILD_TIMESTAMP: 1778952209946
-import { useState, useEffect, useCallback } from 'react'
+// BUILD_TIMESTAMP: 1778952426531
+import { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
   Globe, ChevronRight, Copy, Check, Activity, Zap, ArrowRight, Server,
@@ -216,7 +216,7 @@ function ValidityTimeline({ issuedAt, expiresAt }) {
   )
 }
 
-function CertHistory({ cert, session }) {
+const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
   const [history, setHistory] = useState(null)
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
@@ -249,21 +249,23 @@ function CertHistory({ cert, session }) {
   }
   const reissues = history?.reissues || []
   const renewals = history?.renewals || []
+  useImperativeHandle(ref, () => ({
+    doAction: (action) => {
+      const msgs = {
+        reissue: 'Reissue this certificate? A fresh cert will be issued and auto-installed.',
+        renew:   'Renew for another year? A new certificate record will be created.',
+      }
+      callAction(action, action==='renew'?{period:12}:{}, msgs[action]||'Confirm?')
+    }
+  }), [busy])
   const statusStyle = (s) => ({
     fontSize:10, fontWeight:500, padding:'2px 7px', borderRadius:4,
     background: (s==='issued'||s==='installed'||s==='active') ? '#dcfce7' : s==='failed' ? '#fee2e2' : '#f1f5f9',
     color: (s==='issued'||s==='installed'||s==='active') ? '#16a34a' : s==='failed' ? '#dc2626' : '#64748b'
   })
   return (
-    <div style={{ marginTop:18, borderTop:'1px solid var(--v2-border)', paddingTop:14 }}>
-      <div style={{ display:'flex', gap:8, marginBottom:14, flexWrap:'wrap' }}>
-        <button className="v2-btn" onClick={()=>callAction('reissue',{},'Reissue this certificate? A fresh cert will be issued and auto-installed.')} disabled={busy} style={{ fontSize:12, gap:5 }}>
-          <RotateCcw size={12}/> {busy?'Processing...':'Reissue Certificate'}
-        </button>
-        <button className="v2-btn" onClick={()=>callAction('renew',{period:12},'Renew for another year? A new certificate record will be created.')} disabled={busy} style={{ fontSize:12, gap:5, background:'var(--v2-bg-2)', color:'var(--v2-text-2)' }}>
-          <RefreshCw size={12}/> Renew Certificate
-        </button>
-      </div>
+    <div style={{ marginTop:4 }}>
+
       {msg && <div style={{ fontSize:12, padding:'8px 10px', borderRadius:6, marginBottom:12, background:msg.includes('Error')?' #fef2f2':'#f0fdf4', color:msg.includes('Error')?' #dc2626':'#16a34a', border:'1px solid '+(msg.includes('Error')?' #fecaca':'#bbf7d0') }}>{msg}</div>}
       <div style={{ display:'flex', borderBottom:'1px solid var(--v2-border)', marginBottom:12 }}>
         {[['reissues','Reissue History'],['renewals','Renewals']].map(([k,l]) => (
@@ -298,7 +300,7 @@ function CertHistory({ cert, session }) {
       </div>}
     </div>
   )
-}
+})
 
 function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefresh, session }) {
   const days = daysLeft(cert.expires_at)
@@ -311,6 +313,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const [refreshing, setRefreshing] = useState(false)
   const [refreshMsg, setRefreshMsg] = useState('')
   const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
+  const certHistoryRef = useRef(null)
 
   const doDeleteKey = async () => {
     setKDing(true)
@@ -497,28 +500,87 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         </>
       )}
 
-      <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-        <div style={{ display:'flex', gap:8 }}>
-          <button className="v2-btn v2-btn-primary" style={{ flex:1, justifyContent:'center' }}
-            onClick={() => { sessionStorage.setItem('prefill_domain', cert.domain); onClose(); nav('/buy') }}>
-            <RotateCcw size={12}/> Renew Certificate
+      {/* ── Certificate Actions ────────────────────────────────── */}
+      <div style={{ marginTop:4, borderTop:'1px solid var(--v2-border)', paddingTop:16 }}>
+        <div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Certificate Actions</div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:12 }}>
+          {/* Reissue */}
+          <button onClick={session ? ()=>certHistoryRef.current?.doAction('reissue') : undefined}
+            style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:3,
+              padding:'10px 12px', borderRadius:8, border:'1px solid var(--v2-border)',
+              background:'var(--v2-bg)', cursor:'pointer', fontFamily:'inherit',
+              transition:'border-color 0.15s, background 0.15s' }}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--v2-green)';e.currentTarget.style.background='var(--v2-green-bg)'}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--v2-border)';e.currentTarget.style.background='var(--v2-bg)'}}>
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <RotateCcw size={13} color='var(--v2-green)'/>
+              <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>Reissue</span>
+            </div>
+            <span style={{ fontSize:10, color:'var(--v2-text-3)', lineHeight:1.4 }}>New cert, same order</span>
           </button>
-          <button className="v2-btn v2-btn-sm" onClick={() => onInstall(cert)}><Server size={11}/> Install</button>
+          {/* Renew */}
+          <button onClick={session ? ()=>certHistoryRef.current?.doAction('renew') : undefined}
+            style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:3,
+              padding:'10px 12px', borderRadius:8, border:'1px solid var(--v2-border)',
+              background:'var(--v2-bg)', cursor:'pointer', fontFamily:'inherit',
+              transition:'border-color 0.15s, background 0.15s' }}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor='#0e7fc0';e.currentTarget.style.background='#f0f7ff'}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--v2-border)';e.currentTarget.style.background='var(--v2-bg)'}}>
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <RefreshCw size={13} color='#0e7fc0'/>
+              <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>Renew</span>
+            </div>
+            <span style={{ fontSize:10, color:'var(--v2-text-3)', lineHeight:1.4 }}>New year, new cert</span>
+          </button>
+          {/* Install */}
+          <button onClick={() => onInstall(cert)}
+            style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:3,
+              padding:'10px 12px', borderRadius:8, border:'1px solid var(--v2-border)',
+              background:'var(--v2-bg)', cursor:'pointer', fontFamily:'inherit',
+              transition:'border-color 0.15s, background 0.15s' }}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor='#7c3aed';e.currentTarget.style.background='#f5f3ff'}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--v2-border)';e.currentTarget.style.background='var(--v2-bg)'}}>
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <Server size={13} color='#7c3aed'/>
+              <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>Install</span>
+            </div>
+            <span style={{ fontSize:10, color:'var(--v2-text-3)', lineHeight:1.4 }}>Push to server</span>
+          </button>
+          {/* Refresh */}
+          <button onClick={doRefresh} disabled={refreshing}
+            style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:3,
+              padding:'10px 12px', borderRadius:8, border:'1px solid var(--v2-border)',
+              background:'var(--v2-bg)', cursor: refreshing?'not-allowed':'pointer', fontFamily:'inherit',
+              opacity: refreshing?0.6:1, transition:'border-color 0.15s, background 0.15s' }}
+            onMouseEnter={e=>{if(!refreshing){e.currentTarget.style.borderColor='#f59e0b';e.currentTarget.style.background='#fffbeb'}}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--v2-border)';e.currentTarget.style.background='var(--v2-bg)'}}>
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <RefreshCw size={13} color='#f59e0b' style={{ animation: refreshing?'spin 0.8s linear infinite':'none' }}/>
+              <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>{refreshing?'Refreshing...':'Sync Status'}</span>
+            </div>
+            <span style={{ fontSize:10, color:'var(--v2-text-3)', lineHeight:1.4 }}>{refreshMsg||'Sync from GoGetSSL'}</span>
+          </button>
+        </div>
+        {/* Danger zone */}
+        <div style={{ display:'flex', justifyContent:'flex-end' }}>
           {!delConfirm
-            ? <button className="v2-btn v2-btn-danger v2-btn-sm" onClick={() => setDel(true)}><X size={11}/> Delete</button>
-            : <button className="v2-btn v2-btn-danger" onClick={() => onDelete(cert.id)}>Confirm delete</button>
+            ? <button onClick={() => setDel(true)}
+                style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'#94a3b8',
+                  background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', padding:'2px 4px' }}
+                onMouseEnter={e=>e.currentTarget.style.color='#ef4444'}
+                onMouseLeave={e=>e.currentTarget.style.color='#94a3b8'}>
+                <X size={11}/> Delete certificate
+              </button>
+            : <button onClick={() => onDelete(cert.id)}
+                style={{ fontSize:11, color:'white', background:'#ef4444', border:'none',
+                  borderRadius:6, padding:'4px 10px', cursor:'pointer', fontFamily:'inherit', fontWeight:500 }}>
+                Confirm delete
+              </button>
           }
         </div>
-        <div style={{ display:'flex', gap:6, paddingTop:6, borderTop:'0.5px solid var(--v2-border)', alignItems:'center' }}>
-          <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:500 }}>GoGetSSL</span>
-          <button className="v2-btn v2-btn-sm" disabled={refreshing} onClick={doRefresh}>
-            <RefreshCw size={11} style={{ animation: refreshing ? 'spin 0.8s linear infinite':'none' }}/>
-            {refreshing ? 'Refreshing...' : 'Refresh Status'}
-          </button>
-          {refreshMsg && <span style={{ fontSize:10, color:'var(--v2-text-2)' }}>{refreshMsg}</span>}
-        </div>
       </div>
-      {session && <CertHistory cert={cert} session={session}/>}
+      {/* ── History ─────────────────────────────────────────────── */}
+      {session && <CertHistory ref={certHistoryRef} cert={cert} session={session}/>}
     </div>
   )
 }
