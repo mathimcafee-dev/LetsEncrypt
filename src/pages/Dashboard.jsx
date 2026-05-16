@@ -1,4 +1,4 @@
-// BUILD_TIMESTAMP: 1778936953118
+// BUILD_TIMESTAMP: 1778940529700
 import { useState, useEffect, useCallback } from 'react'
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
@@ -10,6 +10,7 @@ import { useAuth } from '../hooks/useAuth'
 import { differenceInDays, format } from 'date-fns'
 import '../styles/design-v2.css'
 import AgentInstall from '../components/AgentInstall'
+import CpanelInstall from '../components/CpanelInstall'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -68,7 +69,6 @@ function ProgressBar({ days, max = 365 }) {
   )
 }
 
-// DV Pending card - shows ssl_orders waiting for DNS validation
 function DvPendingCard({ order, onRefresh }) {
   const [checking, setChecking] = useState(false)
   const [addingDns, setAddingDns] = useState(false)
@@ -134,16 +134,13 @@ function DvPendingCard({ order, onRefresh }) {
             {hasDcv ? dcvName : <span style={{ color:'#475569' }}>⟳ Fetching...</span>}
           </span>
           {hasDcv && <CopyBtn text={dcvName}/>}
-
           <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Type</span>
           <span style={{ color:'#34d399' }}>TXT</span><span/>
-
           <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Value</span>
           <span style={{ color:'#fbbf24', wordBreak:'break-all' }}>
             {hasDcv ? dcvValue : <span style={{ color:'#475569' }}>⟳ Fetching...</span>}
           </span>
           {hasDcv && <CopyBtn text={dcvValue}/>}
-
           <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>TTL</span>
           <span style={{ color:'#e2e8f0' }}>300</span><span/>
         </div>
@@ -168,114 +165,58 @@ function DvPendingCard({ order, onRefresh }) {
   )
 }
 
-
-// ValidityTimeline - animated progress bar matching GGS portal style
 function ValidityTimeline({ issuedAt, expiresAt }) {
   const now   = new Date()
   const start = new Date(issuedAt)
   const end   = new Date(expiresAt)
-  // Extend view to 1 year past expiry (shows renewal window)
   const viewEnd = new Date(end.getTime() + 365 * 86400000)
   const total   = viewEnd - start
   const elapsed = now - start
   const remaining = end - now
   const pctNow    = Math.max(0, Math.min(100, (elapsed / total) * 100))
   const pctCert   = Math.max(0, Math.min(100, ((end - start) / total) * 100))
-  const daysLeft  = Math.max(0, Math.ceil(remaining / 86400000))
-  const daysTotal = Math.ceil((end - start) / 86400000)
+  const dLeft     = Math.max(0, Math.ceil(remaining / 86400000))
   const isExpired = remaining <= 0
-  const isWarning = daysLeft > 0 && daysLeft < 30
-
-  const barColor = isExpired ? '#ef4444' : isWarning ? '#f59e0b' : '#84cc16'
+  const isWarning = dLeft > 0 && dLeft < 30
+  const barColor    = isExpired ? '#ef4444' : isWarning ? '#f59e0b' : '#84cc16'
   const stripeColor = isExpired ? 'rgba(239,68,68,0.35)' : isWarning ? 'rgba(245,158,11,0.35)' : 'rgba(132,204,22,0.35)'
-
   const fmt = d => { try { return new Date(d).toISOString().slice(0,10) } catch { return '—' } }
-  const fmtFull = d => { try { return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) } catch { return '—' } }
-  const reissueDate = fmt(end)
-
   return (
     <div style={{ marginBottom:20 }}>
-      {/* Header */}
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>      
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
         <span style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Validity Timeline</span>
         <span style={{ fontSize:11, fontWeight:700, color: isExpired ? '#ef4444' : isWarning ? '#f59e0b' : barColor }}>
-          {isExpired ? 'Expired' : `Next reissue in ${daysLeft} days`}
+          {isExpired ? 'Expired' : `Next reissue in ${dLeft} days`}
         </span>
       </div>
-
-      {/* Track */}
-      <div style={{ position:'relative', height:28, borderRadius:6, overflow:'hidden',
-        background:'#1a1a2e', border:'1px solid rgba(255,255,255,0.07)' }}>
-
-        {/* Cert validity bar (animated stripes) */}
-        <div style={{
-          position:'absolute', left:0, top:0, bottom:0,
-          width: pctCert+'%',
+      <div style={{ position:'relative', height:28, borderRadius:6, overflow:'hidden', background:'#1a1a2e', border:'1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ position:'absolute', left:0, top:0, bottom:0, width: pctCert+'%',
           background: `repeating-linear-gradient(60deg, ${barColor} 0px, ${barColor} 18px, ${stripeColor} 18px, ${stripeColor} 28px)`,
-          backgroundSize:'40px 100%',
-          animation:'stripe-move 1.2s linear infinite',
-          borderRight:'2px solid rgba(255,255,255,0.25)',
-        }}/>
-
-        {/* Current position marker */}
-        <div style={{
-          position:'absolute', top:0, bottom:0,
-          left: pctNow+'%',
-          width:2, background:'white',
-          boxShadow:'0 0 8px 2px rgba(255,255,255,0.6)',
-          zIndex:3,
-        }}/>
-
-        {/* "Current" label on bar */}
+          backgroundSize:'40px 100%', animation:'stripe-move 1.2s linear infinite',
+          borderRight:'2px solid rgba(255,255,255,0.25)' }}/>
+        <div style={{ position:'absolute', top:0, bottom:0, left: pctNow+'%', width:2, background:'white', boxShadow:'0 0 8px 2px rgba(255,255,255,0.6)', zIndex:3 }}/>
         {pctNow > 5 && pctNow < pctCert - 5 && (
-          <div style={{
-            position:'absolute', left:'50%', top:'50%',
-            transform:'translate(-50%,-50%)',
-            fontSize:10, fontWeight:700, color:'rgba(0,0,0,0.7)',
-            letterSpacing:'0.5px', pointerEvents:'none', zIndex:4,
-            textShadow:'none'
-          }}>CURRENT</div>
+          <div style={{ position:'absolute', left:'50%', top:'50%', transform:'translate(-50%,-50%)',
+            fontSize:10, fontWeight:700, color:'rgba(0,0,0,0.7)', letterSpacing:'0.5px', pointerEvents:'none', zIndex:4 }}>CURRENT</div>
         )}
-
-        {/* Available / Renewal zone */}
-        <div style={{
-          position:'absolute', left:pctCert+'%', top:0, bottom:0, right:0,
-          display:'flex', alignItems:'center', justifyContent:'center',
-          background:'rgba(255,255,255,0.04)',
-        }}>
+        <div style={{ position:'absolute', left:pctCert+'%', top:0, bottom:0, right:0,
+          display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,0.04)' }}>
           <span style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.35)', letterSpacing:'1px' }}>RENEWAL WINDOW</span>
         </div>
       </div>
-
-      {/* Date labels */}
       <div style={{ display:'flex', justifyContent:'space-between', marginTop:6 }}>
-        <div>
-          <div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(issuedAt)}</div>
-          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>SSL Valid from</div>
-        </div>
-        <div style={{ textAlign:'center' }}>
-          <div style={{ fontSize:10, fontWeight:700, color:'white', fontFamily:'monospace' }}>{fmt(expiresAt)}</div>
-          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>SSL Valid till</div>
-        </div>
-        <div style={{ textAlign:'right' }}>
-          <div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', fontFamily:'monospace' }}>
-            {fmt(new Date(end.getTime() + 365*86400000))}
-          </div>
-          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>Renewal by</div>
-        </div>
+        <div><div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(issuedAt)}</div><div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>SSL Valid from</div></div>
+        <div style={{ textAlign:'center' }}><div style={{ fontSize:10, fontWeight:700, color:'white', fontFamily:'monospace' }}>{fmt(expiresAt)}</div><div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>SSL Valid till</div></div>
+        <div style={{ textAlign:'right' }}><div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(new Date(end.getTime() + 365*86400000))}</div><div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>Renewal by</div></div>
       </div>
-
       <style>{`
-        @keyframes stripe-move {
-          from { background-position: 0 0; }
-          to   { background-position: 40px 0; }
-        }
+        @keyframes stripe-move { from { background-position: 0 0; } to { background-position: 40px 0; } }
       `}</style>
     </div>
   )
 }
 
-function CertDetail({ cert, onClose, onDelete, onInstall, nav, onRefresh }) {
+function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefresh }) {
   const days = daysLeft(cert.expires_at)
   const [showKey, setShowKey]   = useState(false)
   const [delConfirm, setDel]    = useState(false)
@@ -354,28 +295,14 @@ function CertDetail({ cert, onClose, onDelete, onInstall, nav, onRefresh }) {
           { label:'Issuer',     value: cert.issuer || 'RapidSSL' },
           { label:'DCV',        value: (cert.dcv_method||'dns').toUpperCase() },
           { label:'Source',     value: 'GoGetSSL' },
-          // Order IDs
-          cert.ggs_order_id ? { label:'API Order ID',      value: String(cert.ggs_order_id) } : null,
-          cert._order?.partner_order_id ? { label:'Vendor Order ID',   value: cert._order.partner_order_id } : null,
-          cert._order?.ggs_invoice_id   ? { label:'Invoice ID',        value: String(cert._order.ggs_invoice_id) } : null,
-          cert._order?.order_type       ? { label:'Order Type',        value: cert._order.order_type } : null,
-          // Subscription dates
+          cert.ggs_order_id ? { label:'API Order ID',    value: String(cert.ggs_order_id) } : null,
+          cert._order?.partner_order_id ? { label:'Vendor Order ID', value: cert._order.partner_order_id } : null,
+          cert._order?.ggs_invoice_id   ? { label:'Invoice ID',      value: String(cert._order.ggs_invoice_id) } : null,
           cert._order?.subscription_start ? { label:'Valid From', value: cert._order.subscription_start } : null,
           cert._order?.subscription_end   ? { label:'Valid Till', value: cert._order.subscription_end  } : null,
-          // Admin contact
-          cert._order?.admin_first_name ? { label:'Admin Name',    value: [cert._order.admin_first_name, cert._order.admin_last_name].filter(Boolean).join(' ') } : null,
-          cert._order?.admin_title      ? { label:'Admin Title',   value: cert._order.admin_title   } : null,
-          cert._order?.admin_email      ? { label:'Admin Email',   value: cert._order.admin_email   } : null,
-          cert._order?.admin_phone      ? { label:'Admin Phone',   value: cert._order.admin_phone   } : null,
-          cert._order?.admin_city       ? { label:'City',          value: cert._order.admin_city    } : null,
-          cert._order?.admin_country    ? { label:'Country',       value: cert._order.admin_country } : null,
-          // Tech contact (show only if different from admin)
-          (cert._order?.tech_email && cert._order.tech_email !== cert._order.admin_email) ? { label:'Tech Name',  value: [cert._order.tech_first_name, cert._order.tech_last_name].filter(Boolean).join(' ') } : null,
-          (cert._order?.tech_email && cert._order.tech_email !== cert._order.admin_email) ? { label:'Tech Email', value: cert._order.tech_email } : null,
-          (cert._order?.tech_phone && cert._order.tech_phone !== cert._order.admin_phone) ? { label:'Tech Phone', value: cert._order.tech_phone } : null,
-          // Cert fingerprints
-          (cert._order?.serial_number || cert.serial_number) ? { label:'Serial', value: cert._order?.serial_number || cert.serial_number } : null,
-          (cert._order?.cert_md5 || cert.fingerprint_sha1)   ? { label:'MD5',    value: cert._order?.cert_md5 || cert.fingerprint_sha1 }    : null,
+          cert._order?.admin_first_name ? { label:'Admin Name',  value: [cert._order.admin_first_name, cert._order.admin_last_name].filter(Boolean).join(' ') } : null,
+          cert._order?.admin_email      ? { label:'Admin Email', value: cert._order.admin_email } : null,
+          cert._order?.admin_phone      ? { label:'Admin Phone', value: cert._order.admin_phone } : null,
         ].filter(Boolean).map(({ label, value }) => (
           <div key={label} className="v2-metric-row" style={{ justifyContent:'space-between' }}>
             <span className="v2-metric-label">{label}</span>
@@ -553,7 +480,8 @@ function LoggedInDashboard({ user, nav }) {
   const [selected,setSelected]= useState(null)
   const [filter,  setFilter] = useState('all')
   const [search,  setSearch] = useState('')
-  const [agentCert, setAgentCert] = useState(null)
+  const [agentCert,  setAgentCert]  = useState(null)   // VPS agent install modal
+  const [cpanelCert, setCpanelCert] = useState(null)   // cPanel install modal
 
   const load = useCallback(async () => {
     if (!user) return
@@ -562,7 +490,6 @@ function LoggedInDashboard({ user, nav }) {
       supabase.from('certificates').select('*').eq('user_id', user.id).eq('status', 'active').order('expires_at', { ascending:true }),
       supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'dv_pending').order('created_at', { ascending:false }),
     ])
-    // Enrich certs with linked ssl_order contact/product data
     const enriched = await Promise.all((certsData||[]).map(async cert => {
       if (!cert.ggs_order_id) return cert
       const { data: ord } = await supabase.from('ssl_orders')
@@ -620,10 +547,10 @@ function LoggedInDashboard({ user, nav }) {
 
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:20 }}>
           {[
-            { label:'Total',   value:total,   accent:'#e2e8f0', sub:'certificates' },
-            { label:'Healthy', value:healthy, accent:'#1a56db', sub:healthy>0?'All valid':'None' },
-            { label:'Expiring',value:expiring,accent:expiring>0?'#f59e0b':'#f1f5f9', sub:expiring>0?'Renew soon':'None' },
-            { label:'Expired', value:expired, accent:expired>0?'#dc2626':'#f1f5f9',  sub:expired>0?'Action needed':'None' },
+            { label:'Total',    value:total,   accent:'#e2e8f0', sub:'certificates' },
+            { label:'Healthy',  value:healthy,  accent:'#1a56db', sub:healthy>0?'All valid':'None' },
+            { label:'Expiring', value:expiring, accent:expiring>0?'#f59e0b':'#f1f5f9', sub:expiring>0?'Renew soon':'None' },
+            { label:'Expired',  value:expired,  accent:expired>0?'#dc2626':'#f1f5f9',  sub:expired>0?'Action needed':'None' },
           ].map(s => (
             <div key={s.label} style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:8, padding:'16px 18px', borderTop:'2px solid '+s.accent }}>
               <div style={{ fontSize:10, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:6 }}>{s.label}</div>
@@ -715,7 +642,10 @@ function LoggedInDashboard({ user, nav }) {
 
           {selectedCert && (
             <CertDetail cert={selectedCert} onClose={() => setSelected(null)}
-              onDelete={handleDelete} onInstall={setAgentCert} nav={nav} onRefresh={load}/>
+              onDelete={handleDelete}
+              onInstall={cert => { setAgentCert(cert) }}
+              onCpanel={cert => { setCpanelCert(cert) }}
+              nav={nav} onRefresh={load}/>
           )}
         </div>
 
@@ -723,10 +653,10 @@ function LoggedInDashboard({ user, nav }) {
           <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:12 }}>Quick actions</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
             {[
-              { icon:<Shield size={15}/>,   label:'Issue Certificate', desc:'RapidSSL DV · GoGetSSL · ~5 min',    action:() => nav('/buy') },
-              { icon:<Download size={15}/>, label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step',           action:() => nav('/install') },
-              { icon:<Activity size={15}/>, label:'DNS & Servers',     desc:'Cloudflare, Vercel, agent credentials',          action:() => nav('/dns-providers') },
-              { icon:<Zap size={15}/>,      label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',                  action:() => nav('/knowledge-base') },
+              { icon:<Shield size={15}/>,   label:'Issue Certificate', desc:'RapidSSL DV · GoGetSSL · ~5 min',   action:() => nav('/buy') },
+              { icon:<Download size={15}/>, label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step',         action:() => nav('/install') },
+              { icon:<Activity size={15}/>, label:'DNS & Servers',     desc:'Cloudflare, Vercel, agent credentials',       action:() => nav('/dns-providers') },
+              { icon:<Zap size={15}/>,      label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',              action:() => nav('/knowledge-base') },
             ].map(({ icon, label, desc, action }) => (
               <button key={label} onClick={action}
                 style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:8, padding:'14px 16px', textAlign:'left', cursor:'pointer', fontFamily:'inherit' }}
@@ -741,7 +671,31 @@ function LoggedInDashboard({ user, nav }) {
         </div>
       </div>
 
-      {agentCert && <AgentInstall cert={agentCert} userId={user.id} onClose={() => setAgentCert(null)}/>}
+      {/* VPS agent install modal */}
+      {agentCert && (
+        <AgentInstall
+          cert={agentCert}
+          userId={user.id}
+          onClose={() => setAgentCert(null)}
+          onOpenCpanel={() => {
+            // Switch from VPS modal to cPanel modal for the same cert
+            const cert = agentCert
+            setAgentCert(null)
+            setCpanelCert(cert)
+          }}
+        />
+      )}
+
+      {/* cPanel install modal */}
+      {cpanelCert && (
+        <CpanelInstall
+          cert={cpanelCert}
+          userId={user.id}
+          onClose={() => setCpanelCert(null)}
+          onSuccess={() => { setCpanelCert(null); load() }}
+        />
+      )}
+
       <style>{'@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}'}</style>
     </div>
   )
