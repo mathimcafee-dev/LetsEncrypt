@@ -1,4 +1,4 @@
-// BUILD_TIMESTAMP: 1778951644513
+// BUILD_TIMESTAMP: 1778951930966
 import { useState, useEffect, useCallback } from 'react'
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
@@ -321,14 +321,14 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const doRefresh = async () => {
     setRefreshing(true); setRefreshMsg('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session: sess } } = await supabase.auth.getSession()
       const { data: order } = await supabase.from('ssl_orders')
         .select('id').eq('domain', cert.domain).eq('user_id', cert.user_id)
         .order('updated_at', { ascending: false }).limit(1).single()
       if (!order) { setRefreshMsg('No linked order found'); setRefreshing(false); return }
       const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+sess.access_token },
         body: JSON.stringify({ action: 'check_status', order_id: order.id })
       })
       const d = await r.json()
