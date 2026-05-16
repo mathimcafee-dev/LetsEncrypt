@@ -1,4 +1,4 @@
-// BUILD_TIMESTAMP: 1778951930966
+// BUILD_TIMESTAMP: 1778952209946
 import { useState, useEffect, useCallback } from 'react'
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
@@ -567,10 +567,13 @@ function LoggedInDashboard({ user, nav }) {
   const [search,  setSearch] = useState('')
   const [agentCert,  setAgentCert]  = useState(null)   // VPS agent install modal
   const [cpanelCert, setCpanelCert] = useState(null)   // cPanel install modal
+  const [session,    setSession]    = useState(null)
 
   const load = useCallback(async () => {
     if (!user) return
     setLoading(true)
+    const { data: { session: s } } = await supabase.auth.getSession()
+    setSession(s)
     const [{ data: certsData }, { data: ordersData }] = await Promise.all([
       supabase.from('certificates').select('*').eq('user_id', user.id).eq('status', 'active').order('expires_at', { ascending:true }),
       supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'dv_pending').order('created_at', { ascending:false }),
