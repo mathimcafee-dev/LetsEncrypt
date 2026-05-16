@@ -170,7 +170,11 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
   }, [step, ord?.order_id])
 
   const call = async (action, extra = {}) => {
-    const { data: { session } } = await supabase.auth.getSession()
+    let session = null
+    try {
+      const { data } = await supabase.auth.getSession()
+      session = data?.session
+    } catch (_) {}
     if (!session?.access_token) throw new Error('Session expired — please sign in again')
     const r = await fetch(`${SUPABASE_URL}/functions/v1/gogetssl-issue`, {
       method: 'POST',
@@ -221,7 +225,11 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
   const addDns = async () => {
     setDns(true); setRes(null)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      let session = null
+      try {
+        const { data } = await supabase.auth.getSession()
+        session = data?.session
+      } catch (_) {}
       if (!session?.access_token) throw new Error('Session expired — please sign in again')
       const r = await fetch(`${SUPABASE_URL}/functions/v1/dns-auto-add`, {
         method: 'POST',
