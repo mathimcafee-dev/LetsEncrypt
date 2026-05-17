@@ -1,499 +1,524 @@
 // Home.jsx — SSLVault landing page
-// Aesthetic: refined dark-industrial / authoritative PKI
-// Font: DM Sans (headlines) + JetBrains Mono (code/technical)
+// Aesthetic: Professional PKI SaaS — light, authoritative, trustworthy
+// Reference: DigiCert / Keyfactor / Entrust visual language
+// Palette: white bg · deep navy #0f2545 · teal accent #0891b2 · soft greys
+// Font: Plus Jakarta Sans (clean, modern, professional)
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
-// ── Animated counter ──────────────────────────────────────────────────
-function useCounter(target, duration = 1200) {
-  const [val, setVal] = useState(0)
-  useEffect(() => {
-    if (!target) return
-    let start = 0; const step = target / (duration / 16)
-    const iv = setInterval(() => {
-      start = Math.min(start + step, target)
-      setVal(Math.floor(start))
-      if (start >= target) clearInterval(iv)
-    }, 16)
-    return () => clearInterval(iv)
-  }, [target])
-  return val
+const FONT = "'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif"
+const MONO = "'JetBrains Mono', 'Fira Code', 'Courier New', monospace"
+
+// Colours
+const C = {
+  navy:    '#0f2545',
+  navyMid: '#1a3a6b',
+  teal:    '#0891b2',
+  tealDk:  '#0e7490',
+  tealLt:  '#e0f7fa',
+  green:   '#059669',
+  amber:   '#d97706',
+  slate:   '#475569',
+  slateL:  '#64748b',
+  border:  '#e2e8f0',
+  bg:      '#f8fafc',
+  white:   '#ffffff',
 }
 
-// ── Intersection observer hook ────────────────────────────────────────
-function useVisible(threshold = 0.15) {
+function useVisible(threshold = 0.1) {
   const ref = useRef(null)
-  const [visible, setVisible] = useState(false)
+  const [v, setV] = useState(false)
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold })
-    if (ref.current) obs.observe(ref.current)
-    return () => obs.disconnect()
+    const o = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setV(true); o.disconnect() } }, { threshold })
+    if (ref.current) o.observe(ref.current)
+    return () => o.disconnect()
   }, [])
-  return [ref, visible]
+  return [ref, v]
 }
 
-function Section({ children, style = {} }) {
-  const [ref, visible] = useVisible()
+function Reveal({ children, delay = 0 }) {
+  const [ref, v] = useVisible()
   return (
-    <div ref={ref} style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(28px)',
-      transition: 'opacity 0.7s ease, transform 0.7s ease', ...style }}>
+    <div ref={ref} style={{ opacity: v ? 1 : 0, transform: v ? 'none' : 'translateY(20px)',
+      transition: `opacity .6s ease ${delay}ms, transform .6s ease ${delay}ms` }}>
       {children}
     </div>
   )
 }
 
-// ── Feature pill ──────────────────────────────────────────────────────
-function FeaturePill({ text, color = '#00a3e0' }) {
+function Label({ children, color = C.teal }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11,
-      fontWeight: 600, padding: '4px 11px', borderRadius: 4,
-      background: color + '14', color, border: `1px solid ${color}28`,
-      fontFamily: "'DM Sans', sans-serif", letterSpacing: '0.2px' }}>
-      {text}
-    </span>
-  )
-}
-
-// ── Stat card ─────────────────────────────────────────────────────────
-function StatCard({ value, label, sub, color = '#00a3e0', animate = false }) {
-  const num = animate ? useCounter(parseInt(value) || 0) : null
-  return (
-    <div style={{ borderLeft: `2px solid ${color}`, paddingLeft: 18 }}>
-      <div style={{ fontSize: 32, fontWeight: 800, color, letterSpacing: '-1.5px', lineHeight: 1,
-        fontFamily: "'JetBrains Mono', 'Courier New', monospace" }}>
-        {animate && num !== null ? num + '+' : value}
-      </div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginTop: 4 }}>{label}</div>
-      {sub && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{sub}</div>}
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 14,
+      fontSize: 11, fontWeight: 700, color, letterSpacing: '1px',
+      textTransform: 'uppercase', fontFamily: MONO }}>
+      <span style={{ width: 16, height: 2, background: color, borderRadius: 1 }}/>
+      {children}
     </div>
   )
 }
 
-// ── Feature row ───────────────────────────────────────────────────────
+function Btn({ children, onClick, primary, small }) {
+  const [hov, setHov] = useState(false)
+  const base = {
+    display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer',
+    fontFamily: FONT, fontWeight: 700, borderRadius: 8, border: 'none',
+    transition: 'all .18s', fontSize: small ? 13 : 15,
+    padding: small ? '9px 18px' : '13px 26px',
+  }
+  if (primary) return (
+    <button onClick={onClick}
+      style={{ ...base, background: hov ? C.tealDk : C.teal, color: 'white',
+        boxShadow: hov ? `0 8px 24px ${C.teal}44` : `0 4px 14px ${C.teal}33` }}
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+      {children}
+    </button>
+  )
+  return (
+    <button onClick={onClick}
+      style={{ ...base, background: hov ? '#f1f5f9' : 'white',
+        color: C.navy, border: `1.5px solid ${hov ? C.teal : '#cbd5e1'}` }}
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+      {children}
+    </button>
+  )
+}
+
+// ── Feature definitions ───────────────────────────────────────────────
 const FEATURES = [
   {
-    cat: 'ISSUANCE',
-    color: '#00a3e0',
-    items: [
-      { title: 'GoGetSSL API', desc: 'DV, OV, EV, Wildcard, SAN. DigiCert trust chain. ~5 min issuance.' },
-      { title: 'Auto DNS Validation', desc: 'Connect Cloudflare, Vercel, GoDaddy or DigitalOcean. DCV records created automatically.' },
-      { title: 'CA Connectors', desc: 'Import from DigiCert, Sectigo, SSL.com. Paste any PEM. Unified inventory.' },
-    ]
+    icon: '⚡', color: C.teal, bg: C.tealLt,
+    title: 'Zero-touch Certificate Lifecycle',
+    desc: 'Issue, validate, renew and deploy DV, OV and EV certificates automatically. Agents poll every 5 min. Cert installed before expiry — no human in the loop.'
   },
   {
-    cat: 'AUTOMATION',
-    color: '#22c55e',
-    items: [
-      { title: 'Zero-touch Renewal', desc: '1 day before cert expiry — fresh cert issued, validated, pushed to agents.' },
-      { title: 'VPS Agent', desc: 'Bash daemon polls every 5 min. Nginx/Apache restart. Atomic rollback on failure.' },
-      { title: 'cPanel Auto-install', desc: '4-step: install cert, update vhosts, enable HSTS, rebuild mail SNI.' },
-    ]
+    icon: '🔗', color: C.navyMid, bg: '#e8eef8',
+    title: 'CA-Agnostic Connectors',
+    desc: 'Connect DigiCert CertCentral, Sectigo SCM, SSL.com and GoGetSSL in one place. Unified inventory, unified expiry timeline, unified PQC risk scoring.'
   },
   {
-    cat: 'INTELLIGENCE',
-    color: '#a78bfa',
-    items: [
-      { title: 'Cross-CA Expiry Timeline', desc: 'Every cert from every CA, unified by urgency. No-renewal-path flags.' },
-      { title: 'Shadow IT Scanner', desc: 'DigiCert API vs SSLVault DB diff. Finds certs outside your CLM inventory.' },
-      { title: 'Consolidation Advisor', desc: 'DigiCert DV at $218/yr → GoGetSSL at $14/yr. Savings shown per cert.' },
-    ]
+    icon: '🔍', color: C.green, bg: '#d1fae5',
+    title: 'Shadow IT Discovery',
+    desc: 'Scan your DigiCert portfolio against SSLVault\'s database. Find certificates issued outside your CLM — before they expire silently and cause an outage.'
   },
   {
-    cat: 'SECURITY',
-    color: '#f59e0b',
-    items: [
-      { title: 'PQC Readiness Scanner', desc: 'RSA-2048 flagged High risk. NIST 2030 deadline. Portfolio migration plan.' },
-      { title: 'TLS Posture Grading', desc: 'A–F grade per domain. HSTS, redirect, cert chain, security headers.' },
-      { title: 'Private Key Vault', desc: 'AES-256-GCM at rest. Immutable audit log. 30-second timed reveal.' },
-    ]
+    icon: '🛡', color: '#7c3aed', bg: '#ede9fe',
+    title: 'PQC Readiness Scanner',
+    desc: 'Every RSA-2048 cert in your portfolio flagged High risk. NIST 2030 deadline. Generate a migration plan and estimated timeline per domain.'
   },
   {
-    cat: 'PLATFORM',
-    color: '#f87171',
-    items: [
-      { title: '3-tier Reseller', desc: 'Master admin → Sub-reseller → End customer. Invite flows, Excel exports.' },
-      { title: 'DigiCert Lab', desc: 'Revoke & replace, zero-touch OV/EV reissue, portfolio CSV export. API sandbox.' },
-      { title: 'Agent Health Monitor', desc: 'CPU, RAM, disk, uptime per VPS. Offline alert at 2 missed polls.' },
-    ]
+    icon: '💡', color: C.amber, bg: '#fef3c7',
+    title: 'Consolidation Advisor',
+    desc: 'Identifies DigiCert DV certs at $218/yr that can move to GoGetSSL RapidSSL at $14/yr — same DigiCert trust chain. Estimated annual savings shown per cert.'
+  },
+  {
+    icon: '🏗', color: '#0f766e', bg: '#ccfbf1',
+    title: '3-tier Reseller Platform',
+    desc: 'Master admin → Sub-reseller → End customer. Invite flows, magic link auth, per-customer portals, Excel exports and approval email notifications.'
   },
 ]
 
-// ── Comparison table ──────────────────────────────────────────────────
+// ── Workflow steps ────────────────────────────────────────────────────
+const STEPS = [
+  { n: '01', title: 'Connect', color: C.teal,
+    desc: 'Link your DNS provider (Cloudflare, Vercel, GoDaddy) and server credentials once. SSLVault handles everything from here.' },
+  { n: '02', title: 'Issue', color: C.green,
+    desc: 'Order DV, OV or EV certificates via GoGetSSL. Auto DNS challenge resolved in seconds. Certificate issued in ~5 minutes.' },
+  { n: '03', title: 'Monitor', color: '#7c3aed',
+    desc: 'Unified expiry timeline across all CAs. TLS grading. PQC risk scores. No-renewal-path alerts. Shadow IT findings.' },
+  { n: '04', title: 'Deploy', color: C.amber,
+    desc: 'VPS agent or cPanel push. Nginx/Apache auto-restart. Atomic rollback on failure. Reported back to dashboard instantly.' },
+]
+
+// ── Social proof logos (text-based) ──────────────────────────────────
+const INTEGRATIONS = [
+  'DigiCert', 'Sectigo', 'GoGetSSL', 'SSL.com', 'Cloudflare',
+  'Vercel', 'GoDaddy', 'DigitalOcean', 'Nginx', 'Apache', 'cPanel', 'Plesk'
+]
+
+// ── Comparison ────────────────────────────────────────────────────────
 const COMPARE = [
-  { feature: 'Certificate issuance',        sslvault: true,  venafi: true,  keyfactor: true  },
-  { feature: 'Auto DNS validation',          sslvault: true,  venafi: true,  keyfactor: true  },
-  { feature: 'VPS agent install',            sslvault: true,  venafi: true,  keyfactor: true  },
-  { feature: 'cPanel auto-install',          sslvault: true,  venafi: false, keyfactor: false },
-  { feature: 'Cross-CA expiry timeline',     sslvault: true,  venafi: true,  keyfactor: true  },
-  { feature: 'Shadow IT scanner',            sslvault: true,  venafi: true,  keyfactor: false },
-  { feature: 'CA consolidation advisor',     sslvault: true,  venafi: false, keyfactor: false },
-  { feature: 'PQC readiness scanner',        sslvault: true,  venafi: true,  keyfactor: true  },
-  { feature: 'DigiCert OV/EV automation',   sslvault: true,  venafi: true,  keyfactor: true  },
-  { feature: '3-tier reseller platform',     sslvault: true,  venafi: false, keyfactor: false },
-  { feature: 'Starting price (USD/yr)',      sslvault: '$0',  venafi: '$250k', keyfactor: '$75k' },
+  { feat: 'DV / OV / EV issuance',       sv: true,  v: true,  k: true  },
+  { feat: 'Auto DNS validation',          sv: true,  v: true,  k: true  },
+  { feat: 'VPS agent deployment',         sv: true,  v: true,  k: true  },
+  { feat: 'cPanel auto-install',          sv: true,  v: false, k: false },
+  { feat: 'Shadow IT scanner',            sv: true,  v: true,  k: false },
+  { feat: 'CA consolidation advisor',     sv: true,  v: false, k: false },
+  { feat: 'PQC readiness scanner',        sv: true,  v: true,  k: true  },
+  { feat: '3-tier reseller platform',     sv: true,  v: false, k: false },
+  { feat: 'DigiCert OV/EV automation',   sv: true,  v: true,  k: true  },
+  { feat: 'Starting price / yr',          sv: '$0',  v: '$250k', k: '$75k' },
 ]
 
 export default function Home({ nav }) {
   const [certCount, setCertCount] = useState(null)
-  const liveCount = useCounter(certCount || 0)
-  const [heroVisible, setHeroVisible] = useState(false)
+  const [count, setCount] = useState(0)
 
   useEffect(() => {
     supabase.from('certificates').select('id', { count: 'exact', head: true })
-      .eq('status', 'active').then(({ count }) => { if (count) setCertCount(count) })
-    setTimeout(() => setHeroVisible(true), 80)
+      .eq('status', 'active').then(({ count: c }) => { if (c) setCertCount(c) })
   }, [])
 
-  const S = { fontFamily: "'DM Sans', sans-serif" }
-  const mono = { fontFamily: "'JetBrains Mono', 'Courier New', monospace" }
+  useEffect(() => {
+    if (!certCount) return
+    let n = 0
+    const step = Math.ceil(certCount / 40)
+    const iv = setInterval(() => {
+      n = Math.min(n + step, certCount)
+      setCount(n)
+      if (n >= certCount) clearInterval(iv)
+    }, 30)
+    return () => clearInterval(iv)
+  }, [certCount])
 
   return (
-    <div style={{ background: '#04090f', minHeight: '100vh', color: 'white', ...S }}>
-      <link rel="preconnect" href="https://fonts.googleapis.com"/>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <div style={{ fontFamily: FONT, background: C.white, color: C.navy, overflowX: 'hidden' }}>
+      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet"/>
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0}
-        ::selection{background:#00a3e022;color:#00a3e0}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-        @keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
-        .hero-word{display:inline-block;animation:fadeUp .6s ease both}
+        ::selection{background:#0891b222;color:#0891b2}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+        @keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
       `}</style>
 
-      {/* ── NAV ──────────────────────────────────────────────────────── */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(4,9,15,0.92)', backdropFilter: 'blur(12px)', padding: '0 32px', height: 56,
+      {/* ── NAV ────────────────────────────────────────────────────── */}
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100,
+        background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)',
+        borderBottom: `1px solid ${C.border}`, padding: '0 40px', height: 60,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 6, background: '#00a3e0',
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 30, height: 30, borderRadius: 7, background: C.navy,
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
           </div>
-          <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.3px' }}>SSLVault</span>
-          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', letterSpacing: '1.5px',
-            textTransform: 'uppercase', marginLeft: 4 }}>CLM Platform</span>
+          <span style={{ fontSize: 16, fontWeight: 800, color: C.navy, letterSpacing: '-0.3px' }}>SSLVault</span>
+          <span style={{ fontSize: 10, color: C.slateL, letterSpacing: '1px', textTransform: 'uppercase',
+            background: C.bg, border: `1px solid ${C.border}`, borderRadius: 4,
+            padding: '2px 7px', fontFamily: MONO }}>CLM</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          {['Features','Pricing','About'].map(l => (
-            <button key={l} onClick={() => nav(l === 'Pricing' ? '/pricing' : l === 'About' ? '/about' : '/#features')}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.55)',
-                fontSize: 13, fontWeight: 500, ...S, transition: 'color .15s' }}
-              onMouseEnter={e => e.target.style.color = 'white'}
-              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.55)'}>
-              {l}
-            </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          {[['Features', '#features'], ['Pricing', '/pricing'], ['About', '/about']].map(([l, p]) => (
+            <button key={l} onClick={() => p.startsWith('/') ? nav(p) : document.querySelector(p)?.scrollIntoView({ behavior: 'smooth' })}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14,
+                fontWeight: 500, color: C.slate, fontFamily: FONT, transition: 'color .15s' }}
+              onMouseEnter={e => e.target.style.color = C.navy}
+              onMouseLeave={e => e.target.style.color = C.slate}>{l}</button>
           ))}
-          <button onClick={() => nav('/auth')}
-            style={{ background: '#00a3e0', border: 'none', borderRadius: 6, color: 'white',
-              fontSize: 12, fontWeight: 700, padding: '7px 16px', cursor: 'pointer', ...S,
-              boxShadow: '0 0 20px rgba(0,163,224,0.25)' }}>
-            Sign in →
-          </button>
+          <Btn onClick={() => nav('/auth')} primary small>Get Started Free</Btn>
         </div>
       </nav>
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
-      <div style={{ position: 'relative', overflow: 'hidden', padding: '100px 32px 80px', maxWidth: 1200, margin: '0 auto' }}>
-        {/* Grid overlay */}
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
-          backgroundImage: `linear-gradient(rgba(0,163,224,0.04) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(0,163,224,0.04) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px' }}/>
-        {/* Glow */}
-        <div style={{ position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
-          width: 600, height: 400, borderRadius: '50%',
-          background: 'radial-gradient(ellipse, rgba(0,163,224,0.12) 0%, transparent 70%)',
+      <div style={{ background: `linear-gradient(160deg, ${C.navy} 0%, #1e3a5f 100%)`,
+        padding: '90px 40px 80px', position: 'relative', overflow: 'hidden' }}>
+        {/* Subtle dot grid */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+          backgroundSize: '36px 36px' }}/>
+        {/* Right-side decorative shape */}
+        <div style={{ position: 'absolute', right: -80, top: -60, width: 480, height: 480,
+          borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(8,145,178,0.18) 0%, transparent 65%)',
           pointerEvents: 'none' }}/>
 
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          {/* Badge */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8,
-            border: '1px solid rgba(0,163,224,0.25)', borderRadius: 4, padding: '5px 12px',
-            marginBottom: 32, background: 'rgba(0,163,224,0.06)' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00a3e0',
-              animation: 'pulse 2s ease infinite' }}/>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#00a3e0', letterSpacing: '1.5px',
-              textTransform: 'uppercase', ...mono }}>
-              CA-Agnostic Certificate Lifecycle Management
-            </span>
-          </div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative',
+          display: 'grid', gridTemplateColumns: '1fr 420px', gap: 60, alignItems: 'center' }}>
 
-          {/* Headline */}
-          <h1 style={{ fontSize: 'clamp(40px, 6vw, 72px)', fontWeight: 900, lineHeight: 1.02,
-            letterSpacing: '-2.5px', marginBottom: 6, maxWidth: 800 }}>
-            {'SSL certificates.'.split(' ').map((w, i) => (
-              <span key={w} className="hero-word" style={{ animationDelay: `${i * 80}ms`, marginRight: '0.28em' }}>{w}</span>
-            ))}
-          </h1>
-          <h1 style={{ fontSize: 'clamp(40px, 6vw, 72px)', fontWeight: 900, lineHeight: 1.02,
-            letterSpacing: '-2.5px', marginBottom: 6, color: '#00a3e0' }}>
-            {'Fully automated.'.split(' ').map((w, i) => (
-              <span key={w} className="hero-word" style={{ animationDelay: `${(i + 2) * 80}ms`, marginRight: '0.28em' }}>{w}</span>
-            ))}
-          </h1>
-          <h1 style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 900, lineHeight: 1.05,
-            letterSpacing: '-1.8px', marginBottom: 28, color: 'rgba(255,255,255,0.35)' }}>
-            {'At a fraction of the cost.'.split(' ').map((w, i) => (
-              <span key={w} className="hero-word" style={{ animationDelay: `${(i + 4) * 80}ms`, marginRight: '0.28em' }}>{w}</span>
-            ))}
-          </h1>
-
-          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75,
-            maxWidth: 520, marginBottom: 40, fontWeight: 400,
-            animation: 'fadeUp .7s ease .6s both' }}>
-            Built by a <strong style={{ color: 'rgba(255,255,255,0.75)' }}>Certified PKI Specialist</strong> to
-            replace Venafi ($250k/yr) and Keyfactor ($75k/yr) for indie devs, SMBs, MSPs, and resellers.
-          </p>
-
-          {/* CTAs */}
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 60,
-            animation: 'fadeUp .7s ease .75s both' }}>
-            <button onClick={() => nav('/auth')}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#00a3e0',
-                border: 'none', borderRadius: 6, color: 'white', fontSize: 14, fontWeight: 700,
-                padding: '13px 26px', cursor: 'pointer', ...S,
-                boxShadow: '0 0 30px rgba(0,163,224,0.3)', transition: 'all .2s' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,163,224,0.45)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 0 30px rgba(0,163,224,0.3)' }}>
-              Get Started Free →
-            </button>
-            <button onClick={() => nav('/pricing')}
-              style={{ display: 'flex', alignItems: 'center', gap: 8,
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: 6, color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600,
-                padding: '13px 22px', cursor: 'pointer', ...S, transition: 'all .2s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'white' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)' }}>
-              View Pricing
-            </button>
-          </div>
-
-          {/* Stats */}
-          <div style={{ display: 'flex', gap: 48, flexWrap: 'wrap', animation: 'fadeUp .7s ease .9s both' }}>
-            <StatCard value={certCount || 0} label="Active certificates" sub="Across all connected CAs" color="#00a3e0" animate={!!certCount}/>
-            <StatCard value="~5 min" label="DV issuance time" sub="GoGetSSL · DigiCert chain" color="#22c55e"/>
-            <StatCard value="$0" label="Free to start" sub="No credit card required" color="#a78bfa"/>
-            <StatCard value="94%" label="vs Venafi cost" sub="Same core CLM features" color="#f59e0b"/>
-          </div>
-        </div>
-      </div>
-
-      {/* ── TICKER STRIP ─────────────────────────────────────────────── */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(255,255,255,0.02)', overflow: 'hidden', padding: '12px 0' }}>
-        <div style={{ display: 'flex', gap: 48, alignItems: 'center', flexWrap: 'wrap',
-          justifyContent: 'center', padding: '0 32px' }}>
-          {['Nginx', 'Apache', 'cPanel', 'Plesk', 'Cloudflare', 'Vercel', 'GoDaddy', 'DigitalOcean',
-            'DigiCert', 'Sectigo', 'SSL.com', 'GoGetSSL', 'Ubuntu', 'Debian'].map(p => (
-            <span key={p} style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.25)',
-              letterSpacing: '0.5px', textTransform: 'uppercase', whiteSpace: 'nowrap', ...mono }}>
-              {p}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* ── FEATURES GRID ────────────────────────────────────────────── */}
-      <div id="features" style={{ maxWidth: 1200, margin: '0 auto', padding: '100px 32px' }}>
-        <Section>
-          <div style={{ textAlign: 'center', marginBottom: 64 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#00a3e0', letterSpacing: '2px',
-              textTransform: 'uppercase', marginBottom: 14, ...mono }}>
-              Platform capabilities
+          {/* Left */}
+          <div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginBottom: 24,
+              background: 'rgba(8,145,178,0.15)', border: '1px solid rgba(8,145,178,0.3)',
+              borderRadius: 20, padding: '5px 14px 5px 8px' }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#34d399',
+                boxShadow: '0 0 0 3px rgba(52,211,153,0.2)', animation: 'pulse 2s ease infinite' }}/>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#7dd3fc', letterSpacing: '0.3px' }}>
+                CA-Agnostic Certificate Lifecycle Management
+              </span>
             </div>
-            <h2 style={{ fontSize: 'clamp(28px,4vw,48px)', fontWeight: 900, letterSpacing: '-1.5px', marginBottom: 14 }}>
-              Everything a PKI team needs.
-            </h2>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>
-              15 features that make SSLVault a complete CLM platform — not just a cert issuance tool.
+
+            <h1 style={{ fontSize: 'clamp(36px,4.5vw,58px)', fontWeight: 900, color: 'white',
+              lineHeight: 1.06, letterSpacing: '-1.5px', marginBottom: 10,
+              animation: 'fadeUp .6s ease .1s both' }}>
+              SSL certificates.
+            </h1>
+            <h1 style={{ fontSize: 'clamp(36px,4.5vw,58px)', fontWeight: 900,
+              color: '#38bdf8', lineHeight: 1.06, letterSpacing: '-1.5px', marginBottom: 10,
+              animation: 'fadeUp .6s ease .2s both' }}>
+              Fully automated.
+            </h1>
+            <h1 style={{ fontSize: 'clamp(26px,3vw,42px)', fontWeight: 800,
+              color: 'rgba(255,255,255,0.45)', lineHeight: 1.1, letterSpacing: '-1px', marginBottom: 28,
+              animation: 'fadeUp .6s ease .3s both' }}>
+              At a fraction of the cost.
+            </h1>
+
+            <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.6)', lineHeight: 1.8,
+              maxWidth: 500, marginBottom: 36, fontWeight: 400,
+              animation: 'fadeUp .6s ease .4s both' }}>
+              Built by a <strong style={{ color: 'rgba(255,255,255,0.88)', fontWeight: 700 }}>Certified PKI Specialist</strong> to
+              replace Venafi and Keyfactor for indie developers, MSPs, and resellers — at $0 to start.
             </p>
-          </div>
-        </Section>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {FEATURES.map((group, gi) => (
-            <Section key={group.cat} style={{ transitionDelay: `${gi * 80}ms` }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 0,
-                borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                {/* Category label */}
-                <div style={{ padding: '28px 24px 28px 0', display: 'flex', alignItems: 'flex-start', paddingTop: 32 }}>
-                  <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '2px',
-                    textTransform: 'uppercase', color: group.color, ...mono }}>
-                    {group.cat}
-                  </span>
-                </div>
-                {/* Feature cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, padding: '20px 0' }}>
-                  {group.items.map((item, ii) => (
-                    <div key={item.title}
-                      style={{ padding: '20px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)',
-                        background: 'rgba(255,255,255,0.02)', transition: 'all .2s', cursor: 'default' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = `${group.color}0a`; e.currentTarget.style.borderColor = `${group.color}30` }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)' }}>
-                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: group.color, marginBottom: 12 }}/>
-                      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{item.title}</div>
-                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.65 }}>{item.desc}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Section>
-          ))}
-        </div>
-      </div>
-
-      {/* ── COMPARISON TABLE ──────────────────────────────────────────── */}
-      <Section>
-        <div style={{ background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.06)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '80px 32px' }}>
-          <div style={{ maxWidth: 900, margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#00a3e0', letterSpacing: '2px',
-                textTransform: 'uppercase', marginBottom: 14, ...mono }}>vs Enterprise CLM</div>
-              <h2 style={{ fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 900, letterSpacing: '-1.2px' }}>
-                Enterprise power. Startup price.
-              </h2>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 48,
+              animation: 'fadeUp .6s ease .5s both' }}>
+              <Btn onClick={() => nav('/auth')} primary>Get Started Free →</Btn>
+              <Btn onClick={() => nav('/pricing')}>View Pricing</Btn>
             </div>
 
-            <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, overflow: 'hidden' }}>
-              {/* Header */}
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-                background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                <div style={{ padding: '14px 20px', fontSize: 11, color: 'rgba(255,255,255,0.3)',
-                  fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', ...mono }}>Feature</div>
-                {[['SSLVault', '#00a3e0'], ['Venafi', 'rgba(255,255,255,0.3)'], ['Keyfactor', 'rgba(255,255,255,0.3)']].map(([name, color]) => (
-                  <div key={name} style={{ padding: '14px 20px', textAlign: 'center' }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color, ...mono }}>{name}</span>
-                  </div>
-                ))}
-              </div>
-              {/* Rows */}
-              {COMPARE.map((row, i) => (
-                <div key={row.feature} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-                  borderBottom: i < COMPARE.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                  background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
-                  transition: 'background .15s' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,163,224,0.04)'}
-                  onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)'}>
-                  <div style={{ padding: '12px 20px', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>{row.feature}</div>
-                  {[row.sslvault, row.venafi, row.keyfactor].map((val, ci) => (
-                    <div key={ci} style={{ padding: '12px 20px', textAlign: 'center', display: 'flex',
-                      alignItems: 'center', justifyContent: 'center' }}>
-                      {typeof val === 'boolean' ? (
-                        val
-                          ? <span style={{ color: ci === 0 ? '#22c55e' : 'rgba(255,255,255,0.3)', fontSize: 14 }}>✓</span>
-                          : <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: 14 }}>—</span>
-                      ) : (
-                        <span style={{ fontSize: 12, fontWeight: 800, ...mono,
-                          color: ci === 0 ? '#00a3e0' : '#ef4444' }}>{val}</span>
-                      )}
-                    </div>
-                  ))}
+            {/* Stats row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24,
+              animation: 'fadeUp .6s ease .6s both' }}>
+              {[
+                { val: certCount ? `${count}+` : '—', label: 'Active certs', sub: 'across all CAs' },
+                { val: '~5 min', label: 'DV issuance', sub: 'GoGetSSL · DigiCert chain' },
+                { val: '94%', label: 'Cost saving', sub: 'vs Venafi $250k/yr' },
+              ].map(({ val, label, sub }) => (
+                <div key={label} style={{ borderTop: `2px solid rgba(56,189,248,0.4)`, paddingTop: 14 }}>
+                  <div style={{ fontSize: 26, fontWeight: 800, color: 'white', letterSpacing: '-0.8px',
+                    lineHeight: 1, marginBottom: 4, fontFamily: MONO }}>{val}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>{label}</div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{sub}</div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </Section>
 
-      {/* ── HOW IT WORKS ─────────────────────────────────────────────── */}
-      <Section>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '80px 32px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#00a3e0', letterSpacing: '2px',
-              textTransform: 'uppercase', marginBottom: 14, ...mono }}>Four steps</div>
-            <h2 style={{ fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 900, letterSpacing: '-1.2px' }}>
-              Issue. Monitor. Renew. Deploy.
-            </h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 2 }}>
+          {/* Right — feature card panel */}
+          <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 16, padding: '24px 22px', backdropFilter: 'blur(8px)',
+            animation: 'fadeUp .7s ease .3s both' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)',
+              letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 18, fontFamily: MONO }}>
+              Full CLM stack
+            </div>
             {[
-              { n: '01', label: 'Issue', color: '#00a3e0', desc: 'Order DV, OV, EV or Wildcard. Auto DNS challenge via Cloudflare, Vercel, GoDaddy.' },
-              { n: '02', label: 'Monitor', color: '#22c55e', desc: 'Track expiry across every CA, domain, customer. TLS grading. PQC risk scoring.' },
-              { n: '03', label: 'Renew', color: '#a78bfa', desc: '1 day before expiry. New cert issued, validated, installed. Zero touch.' },
-              { n: '04', label: 'Deploy', color: '#f59e0b', desc: 'VPS agent or cPanel push. Nginx/Apache restart. Job queued, installed, reported.' },
-            ].map(({ n, label, color, desc }, i) => (
-              <div key={n}
-                style={{ padding: '32px 24px', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none',
-                  transition: 'background .2s' }}
-                onMouseEnter={e => e.currentTarget.style.background = `${color}08`}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                <div style={{ fontSize: 11, color: color, fontWeight: 700, ...mono, marginBottom: 12 }}>{n}</div>
-                <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 12 }}>{label}</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>{desc}</div>
+              { dot: '#38bdf8', label: 'Certificate issuance',    sub: 'DV · OV · EV · Wildcard · SAN' },
+              { dot: '#34d399', label: 'Auto DNS validation',     sub: 'Cloudflare · Vercel · GoDaddy · DO' },
+              { dot: '#a78bfa', label: 'Zero-touch renewal',      sub: '1 day before expiry · agents + cPanel' },
+              { dot: '#fbbf24', label: 'CA connectors',           sub: 'DigiCert · Sectigo · SSL.com · GoGetSSL' },
+              { dot: '#f87171', label: 'CA Intelligence Suite',   sub: 'Expiry timeline · Shadow IT · Advisor' },
+              { dot: '#34d399', label: 'PQC readiness scanner',   sub: 'NIST 2030 deadline · RSA-2048 flagged' },
+              { dot: '#a78bfa', label: 'TLS posture grading',     sub: 'A–F per domain · HSTS · headers' },
+              { dot: '#38bdf8', label: '3-tier reseller platform',sub: 'Master → reseller → customer' },
+              { dot: '#fbbf24', label: 'DigiCert Lab',            sub: 'OV/EV automation · revoke & replace' },
+            ].map(({ dot, label, sub }) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12,
+                padding: '9px 0', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: dot, flexShrink: 0 }}/>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'white', marginBottom: 1 }}>{label}</div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: MONO }}>{sub}</div>
+                </div>
+                <span style={{ fontSize: 14, color: '#34d399', flexShrink: 0 }}>✓</span>
               </div>
             ))}
           </div>
         </div>
-      </Section>
+      </div>
 
-      {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <Section>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 32px 100px' }}>
-          <div style={{ border: '1px solid rgba(0,163,224,0.2)', borderRadius: 12, padding: '64px 48px',
-            textAlign: 'center', position: 'relative', overflow: 'hidden',
-            background: 'radial-gradient(ellipse at 50% 0%, rgba(0,163,224,0.08) 0%, transparent 60%)' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#00a3e0', letterSpacing: '2px',
-              textTransform: 'uppercase', marginBottom: 20, ...mono }}>
-              Start today
-            </div>
-            <h2 style={{ fontSize: 'clamp(28px,4vw,52px)', fontWeight: 900, letterSpacing: '-1.5px',
-              marginBottom: 14, lineHeight: 1.05 }}>
-              Beat Venafi at a fraction<br/>of the price.
-            </h2>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.4)', maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.7 }}>
-              Full CLM platform — issuance, monitoring, zero-touch renewal, VPS agent, cPanel push,
-              PQC scanner, CA connectors, consolidation advisor. Start free.
+      {/* ── INTEGRATIONS STRIP ──────────────────────────────────────── */}
+      <div style={{ background: C.bg, borderBottom: `1px solid ${C.border}`, padding: '16px 40px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 32,
+          flexWrap: 'wrap', justifyContent: 'center' }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: C.slateL, textTransform: 'uppercase',
+            letterSpacing: '1px', flexShrink: 0 }}>Works with</span>
+          {INTEGRATIONS.map(p => (
+            <span key={p} style={{ fontSize: 12, fontWeight: 600, color: C.slateL, whiteSpace: 'nowrap' }}>{p}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── FEATURES ─────────────────────────────────────────────────── */}
+      <div id="features" style={{ maxWidth: 1200, margin: '0 auto', padding: '96px 40px' }}>
+        <Reveal>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <Label>Platform capabilities</Label>
+            <h2 style={{ fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 900, letterSpacing: '-1.2px',
+              color: C.navy, marginBottom: 16 }}>Everything a PKI team needs</h2>
+            <p style={{ fontSize: 16, color: C.slateL, maxWidth: 480, margin: '0 auto', lineHeight: 1.75 }}>
+              15 features that replace Venafi at a fraction of the cost — built for developers, MSPs, and resellers.
             </p>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-              <button onClick={() => nav('/auth')}
-                style={{ background: '#00a3e0', border: 'none', borderRadius: 6, color: 'white',
-                  fontSize: 14, fontWeight: 700, padding: '13px 28px', cursor: 'pointer', ...S,
-                  boxShadow: '0 0 40px rgba(0,163,224,0.4)', transition: 'all .2s' }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 40px rgba(0,163,224,0.5)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 0 40px rgba(0,163,224,0.4)' }}>
-                Get Started Free →
-              </button>
-              <button onClick={() => nav('/pricing')}
-                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.15)',
-                  borderRadius: 6, color: 'rgba(255,255,255,0.7)', fontSize: 14, fontWeight: 600,
-                  padding: '13px 22px', cursor: 'pointer', ...S, transition: 'all .2s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; e.currentTarget.style.color = 'white' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}>
-                View Pricing
-              </button>
+          </div>
+        </Reveal>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+          {FEATURES.map((f, i) => (
+            <Reveal key={f.title} delay={i * 60}>
+              <div style={{ border: `1px solid ${C.border}`, borderRadius: 14, padding: '28px 24px',
+                background: C.white, transition: 'all .2s', cursor: 'default', height: '100%' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = f.color; e.currentTarget.style.boxShadow = `0 8px 28px ${f.color}18`; e.currentTarget.style.transform = 'translateY(-3px)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: f.bg,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 22, marginBottom: 18 }}>{f.icon}</div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: C.navy, marginBottom: 10,
+                  letterSpacing: '-0.2px' }}>{f.title}</h3>
+                <p style={{ fontSize: 13.5, color: C.slateL, lineHeight: 1.7 }}>{f.desc}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+
+      {/* ── HOW IT WORKS ──────────────────────────────────────────────── */}
+      <div style={{ background: C.bg, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
+        padding: '80px 40px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <Reveal>
+            <div style={{ textAlign: 'center', marginBottom: 56 }}>
+              <Label>Workflow</Label>
+              <h2 style={{ fontSize: 'clamp(26px,3vw,40px)', fontWeight: 900,
+                letterSpacing: '-1px', color: C.navy }}>
+                Issue. Monitor. Renew. Deploy.
+              </h2>
+            </div>
+          </Reveal>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
+            {STEPS.map(({ n, title, color, desc }, i) => (
+              <Reveal key={n} delay={i * 80}>
+                <div style={{ padding: '32px 28px', borderLeft: i > 0 ? `1px solid ${C.border}` : 'none' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color, fontFamily: MONO,
+                    marginBottom: 10, letterSpacing: '1px' }}>{n}</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: C.navy,
+                    marginBottom: 12, letterSpacing: '-0.3px' }}>{title}</div>
+                  <div style={{ fontSize: 13.5, color: C.slateL, lineHeight: 1.7 }}>{desc}</div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── COMPARISON ────────────────────────────────────────────────── */}
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '96px 40px' }}>
+        <Reveal>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <Label>vs Enterprise CLM</Label>
+            <h2 style={{ fontSize: 'clamp(26px,3vw,40px)', fontWeight: 900,
+              letterSpacing: '-1px', color: C.navy, marginBottom: 12 }}>
+              Enterprise power. Startup price.
+            </h2>
+            <p style={{ fontSize: 15, color: C.slateL, maxWidth: 420, margin: '0 auto' }}>
+              Same core CLM capabilities as Venafi and Keyfactor. Built for teams that can't justify $75k–$250k/yr.
+            </p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={100}>
+          <div style={{ border: `1px solid ${C.border}`, borderRadius: 14, overflow: 'hidden',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
+            {/* Header */}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
+              background: C.navy, padding: '14px 20px' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)',
+                textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: MONO }}>Feature</div>
+              {[['SSLVault', '#38bdf8'], ['Venafi', 'rgba(255,255,255,0.4)'], ['Keyfactor', 'rgba(255,255,255,0.4)']].map(([name, col]) => (
+                <div key={name} style={{ textAlign: 'center', fontSize: 12, fontWeight: 700,
+                  color: col, fontFamily: MONO }}>{name}</div>
+              ))}
+            </div>
+            {COMPARE.map((row, i) => (
+              <div key={row.feat} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
+                padding: '12px 20px', alignItems: 'center',
+                borderBottom: i < COMPARE.length - 1 ? `1px solid ${C.border}` : 'none',
+                background: i % 2 === 0 ? C.white : C.bg, transition: 'background .12s' }}
+                onMouseEnter={e => e.currentTarget.style.background = C.tealLt}
+                onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? C.white : C.bg}>
+                <div style={{ fontSize: 13, color: C.navy, fontWeight: 500 }}>{row.feat}</div>
+                {[row.sv, row.v, row.k].map((val, ci) => (
+                  <div key={ci} style={{ textAlign: 'center' }}>
+                    {typeof val === 'boolean'
+                      ? val
+                        ? <span style={{ color: ci === 0 ? C.green : C.slateL, fontSize: 16, fontWeight: 700 }}>✓</span>
+                        : <span style={{ color: '#cbd5e1', fontSize: 14 }}>—</span>
+                      : <span style={{ fontSize: 13, fontWeight: 800, fontFamily: MONO,
+                          color: ci === 0 ? C.teal : '#ef4444' }}>{val}</span>}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </div>
+
+      {/* ── TRUST STRIP ───────────────────────────────────────────────── */}
+      <div style={{ background: C.navy, padding: '56px 40px' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto', display: 'grid',
+          gridTemplateColumns: 'repeat(3,1fr)', gap: 40 }}>
+          {[
+            { n: '99.9%', label: 'Browser compatibility', sub: 'DigiCert/Sectigo trusted chain' },
+            { n: 'AES-256', label: 'Key encryption at rest', sub: 'Immutable audit log on every access' },
+            { n: 'ISO', label: 'PKI Specialist built', sub: 'DigiCert Certified Partner — APAC' },
+          ].map(({ n, label, sub }) => (
+            <div key={label} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 30, fontWeight: 800, color: '#38bdf8', letterSpacing: '-0.8px',
+                marginBottom: 8, fontFamily: MONO }}>{n}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 4 }}>{label}</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{sub}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── CTA ───────────────────────────────────────────────────────── */}
+      <Reveal>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '80px 40px' }}>
+          <div style={{ background: `linear-gradient(135deg, ${C.navy} 0%, #1e4d8c 100%)`,
+            borderRadius: 20, padding: '72px 60px', textAlign: 'center',
+            position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: -60, right: -60, width: 300, height: 300,
+              borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(8,145,178,0.2) 0%, transparent 60%)',
+              pointerEvents: 'none' }}/>
+            <div style={{ position: 'relative' }}>
+              <Label color="#38bdf8">Start today</Label>
+              <h2 style={{ fontSize: 'clamp(28px,3.5vw,48px)', fontWeight: 900, color: 'white',
+                letterSpacing: '-1.5px', marginBottom: 16, lineHeight: 1.1 }}>
+                Beat Venafi at a fraction of the price.
+              </h2>
+              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 500,
+                margin: '0 auto 36px', lineHeight: 1.75 }}>
+                Full CLM platform — issuance, monitoring, zero-touch renewal, VPS agent, cPanel push,
+                PQC scanner, CA connectors, consolidation advisor. Start free. No credit card.
+              </p>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Btn onClick={() => nav('/auth')} primary>Get Started Free →</Btn>
+                <button onClick={() => nav('/pricing')}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8,
+                    background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: 8, color: 'rgba(255,255,255,0.85)', fontSize: 15, fontWeight: 600,
+                    padding: '13px 22px', cursor: 'pointer', fontFamily: FONT, transition: 'all .18s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.18)'; e.currentTarget.style.color = 'white' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)' }}>
+                  View Pricing
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </Section>
+      </Reveal>
 
-      {/* ── FOOTER ───────────────────────────────────────────────────── */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '32px',
+      {/* ── FOOTER ────────────────────────────────────────────────────── */}
+      <footer style={{ borderTop: `1px solid ${C.border}`, padding: '28px 40px',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        flexWrap: 'wrap', gap: 12, maxWidth: 1200, margin: '0 auto' }}>
+        flexWrap: 'wrap', gap: 12, background: C.bg }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 22, height: 22, borderRadius: 5, background: '#00a3e0',
+          <div style={{ width: 24, height: 24, borderRadius: 6, background: C.navy,
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
           </div>
-          <span style={{ fontSize: 12, fontWeight: 700 }}>SSLVault</span>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', ...mono }}>
-            · PKI-first CLM · Made with ♥ in the Netherlands
-          </span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>SSLVault</span>
+          <span style={{ fontSize: 11, color: C.slateL }}>· PKI-first CLM · Made with ♥ in the Netherlands</span>
         </div>
-        <div style={{ display: 'flex', gap: 20 }}>
+        <div style={{ display: 'flex', gap: 24 }}>
           {[['Privacy', '/privacy'], ['Terms', '/terms'], ['About', '/about'], ['Pricing', '/pricing']].map(([l, p]) => (
             <button key={l} onClick={() => nav(p)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: 11, color: 'rgba(255,255,255,0.3)', ...S, transition: 'color .15s' }}
-              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.7)'}
-              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.3)'}>
-              {l}
-            </button>
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12,
+                color: C.slateL, fontFamily: FONT, transition: 'color .15s' }}
+              onMouseEnter={e => e.target.style.color = C.navy}
+              onMouseLeave={e => e.target.style.color = C.slateL}>{l}</button>
           ))}
         </div>
       </footer>
