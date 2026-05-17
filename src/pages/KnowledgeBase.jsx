@@ -106,6 +106,8 @@ const QUICK_LINKS = [
   { icon: Search,     title: 'CT Log Discovery',      desc: 'Find all certs for your domains',         anchor: 'ct-discovery' },
   { icon: Activity,   title: 'SSL Monitor',           desc: 'Track expiry for any domain',             anchor: 'monitor' },
   { icon: Bug,        title: 'Troubleshooting',       desc: 'Common errors and fixes',                 anchor: 'troubleshooting' },
+  { icon: Key,        title: 'KeyLocker',             desc: 'Encrypted private key vault',             anchor: 'keylocker' },
+  { icon: FileDown,   title: 'Import Certificates',   desc: 'Add existing certs to inventory',         anchor: 'import' },
 ]
 
 export default function KnowledgeBase({ nav }) {
@@ -423,6 +425,49 @@ export default function KnowledgeBase({ nav }) {
           <Note type="tip">The <strong>Details</strong> button opens a panel with one-click copy of the full PEM — useful when pasting into cPanel's SSL fields.</Note>
         </Section>
 
+
+        {/* SECTION 8b — KEYLOCKER */}
+        <Divider label="08b · KEYLOCKER" title="KeyLocker — encrypted private key vault" />
+        <Section anchor="keylocker"
+                 title="KeyLocker"
+                 subtitle="AES-256-GCM encrypted key storage with audit log and timed reveal"
+                 icon={Key}>
+          <p>KeyLocker stores your private keys encrypted at rest. Access is opt-in — keys are only stored if you click <strong>Save to KeyLocker</strong> after issuance.</p>
+          <table className="v2-table" style={{ marginBottom: 12 }}>
+            <tbody>
+              <tr><td style={{ fontWeight: 600, width: 180 }}>Encryption</td><td>AES-256-GCM per-key with unique IVs. Keys are never logged or transmitted in plaintext.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>Reveal</td><td>Copy-only. Private key is displayed for 30 seconds maximum — prevents screen-share leaks. No download button.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>Audit log</td><td>Every reveal is logged: timestamp, user, IP address. Visible in the KeyLocker audit panel.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>Access control</td><td>Row-Level Security — only your account can access your keys. Master admin can access keys for their tenant.</td></tr>
+            </tbody>
+          </table>
+          <Note type="warn">If you prefer keys to never leave your server, use the persistent agent to generate keys on-server — SSLVault never sees them.</Note>
+        </Section>
+
+        {/* SECTION 8c — IMPORT */}
+        <Divider label="08c · IMPORT" title="Import existing certificates" />
+        <Section anchor="import"
+                 title="Import certificates"
+                 subtitle="Add existing certs to your inventory — any CA, any issuer"
+                 icon={FileDown}>
+          <Step n={1} title="Go to Dashboard → Import tab">
+            <p>In Dashboard, select the <strong>Import</strong> tab. Click <strong>Import Certificate</strong>.</p>
+          </Step>
+          <Step n={2} title="Paste PEM files">
+            <p>Paste your <span className="v2-kbd">fullchain.pem</span> and <span className="v2-kbd">privkey.pem</span> content. SSLVault parses the chain and extracts:</p>
+            <ul>
+              <li>Domain / Subject Alternative Names</li>
+              <li>Expiry date and days remaining</li>
+              <li>Issuer and CA chain details</li>
+              <li>TLS protocol and cipher compatibility</li>
+            </ul>
+          </Step>
+          <Step n={3} title="Certificate added to inventory">
+            <p>The imported cert appears in your Dashboard inventory alongside GoGetSSL-issued certs. Expiry monitoring and email alerts work immediately. Auto-renewal is not available for imported certs (they weren't ordered through SSLVault).</p>
+          </Step>
+          <Note type="tip">Use Import to track existing certificates from any CA — DigiCert, Sectigo, Let's Encrypt, or any other — in a single inventory with unified expiry alerts.</Note>
+        </Section>
+
         {/* SECTION 9 — TROUBLESHOOTING */}
         <Divider label="09 · TROUBLESHOOTING" title="Common issues, fixed fast" />
         <div id="troubleshooting" style={{ scrollMarginTop: 80 }}>
@@ -487,6 +532,12 @@ export default function KnowledgeBase({ nav }) {
              a="The certificate is renewed and stored in SSLVault. When your agent next comes online and polls (every 5 minutes), it picks up the pending install job and deploys automatically." />
         <FAQ q="What web servers get automatic config updates?"
              a="Nginx and Apache2/httpd get full automatic config updates and reloads. Caddy, Node.js, and other servers get cert files written to /etc/ssl/sslvault/ — you update their config once manually." />
+        <FAQ q="How does the 3-tier reseller platform work?"
+             a="The Reseller plan provides a 3-tier hierarchy: master_admin (you) → sub_resellers (your partners, invited via magic link) → end_customers (their clients). Sub-resellers get their own portal. You manage approval, view all orders across the tree, and export Excel reports. Sub-reseller approval emails are sent on invitation." />
+        <FAQ q="Can I import certificates I didn't issue through SSLVault?"
+             a="Yes. Dashboard → Import tab. Paste any PEM certificate and SSLVault parses the chain, extracts expiry, issuer, and SAN details, and adds it to your inventory for monitoring and alerting. Auto-renewal is not available for imported certs." />
+        <FAQ q="Is there sandbox/test mode?"
+             a="Yes. GoGetSSL sandbox mode allows testing the full issuance flow without real cost. Sandbox certificates are clearly marked in the dashboard. DigiCert Lab also has a sandbox mode for reissue — it shows the API call preview without executing." />
 
         {/* CTA */}
         <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>

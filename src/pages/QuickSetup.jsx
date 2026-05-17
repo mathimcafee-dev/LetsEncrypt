@@ -1,108 +1,113 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, Loader, Copy, Check, Download, ArrowRight, RotateCcw } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import '../styles/design-v2.css'
 
-const ACME = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/acme-ssl'
-const DNS_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider'
+const ISSUE_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue'
+const DNS_FN   = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider'
 
 const PROVIDERS = {
-  cloudflare:    { name:'Cloudflare',    fields:[{k:'apiToken',l:'API Token',p:'cf-api-token'}] },
-  godaddy:       { name:'GoDaddy',       fields:[{k:'apiKey',l:'API Key',p:'key'},{k:'apiSecret',l:'API Secret',p:'secret'}] },
-  vercel:        { name:'Vercel',        fields:[{k:'apiToken',l:'API Token',p:'vercel-token'},{k:'teamId',l:'Team ID (optional)',p:'team_xxx'}] },
-  digitalocean:  { name:'DigitalOcean',  fields:[{k:'apiToken',l:'API Token',p:'do-token'}] },
-  manual:        { name:'Manual DNS',    fields:[] },
+  cloudflare:   { name: 'Cloudflare',   fields: [{ k: 'apiToken',  l: 'API Token',  p: 'Zone:DNS:Edit token' }] },
+  godaddy:      { name: 'GoDaddy',      fields: [{ k: 'apiKey',    l: 'API Key',    p: 'key' }, { k: 'apiSecret', l: 'API Secret', p: 'secret' }] },
+  vercel:       { name: 'Vercel',       fields: [{ k: 'apiToken',  l: 'API Token',  p: 'vercel-token' }, { k: 'teamId', l: 'Team ID (optional)', p: 'team_xxx' }] },
+  digitalocean: { name: 'DigitalOcean', fields: [{ k: 'apiToken',  l: 'API Token',  p: 'do-token' }] },
+  manual:       { name: 'Manual DNS',   fields: [] },
 }
 
 function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
   const copy = () => { try { navigator.clipboard.writeText(text) } catch(e) {}; setOk(true); setTimeout(() => setOk(false), 2000) }
   return (
-    <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:5, background:ok?'var(--green-light)':'var(--accent-light)', border:'1px solid '+(ok?'#86efac':'var(--accent-border)'), color:ok?'var(--green)':'var(--accent)', borderRadius:6, padding:'5px 12px', fontSize:12, fontWeight:600, cursor:'pointer' }}>
-      {ok ? <><Check size={12}/>Copied</> : <><Copy size={12}/>Copy</>}
+    <button onClick={copy} className="v2-btn" style={{ fontSize: 12 }}>
+      {ok ? <><Check size={12}/> Copied</> : <><Copy size={12}/> Copy</>}
     </button>
   )
 }
 
+function Note({ type = 'info', children }) {
+  const v = type === 'warn' ? 'warning' : type === 'success' ? 'tip' : type === 'error' ? 'error' : 'info'
+  return <div className={`v2-callout ${v}`} style={{ marginBottom: 10 }}>{children}</div>
+}
+
 export default function QuickSetup({ nav }) {
   const { user } = useAuth()
-  const [step, setStep] = useState(1)
-  const [domain, setDomain] = useState('')
+  const [step, setStep]         = useState(1)
+  const [domain, setDomain]     = useState('')
   const [provider, setProvider] = useState('cloudflare')
-  const [creds, setCreds] = useState({})
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [sessionId] = useState(() => Math.random().toString(36).slice(2) + Date.now().toString(36))
+  const [creds, setCreds]       = useState({})
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState('')
   const [savedCred, setSavedCred] = useState(null)
-  const [txtValue, setTxtValue] = useState('')
-  const [autoAdded, setAutoAdded] = useState(false)
+  const [dcvInfo, setDcvInfo]   = useState(null)  // { type, host, value, autoAdded }
   const [certData, setCertData] = useState(null)
+  const [orderId, setOrderId]   = useState(null)
 
-  const d = domain.trim().replace(/^https?:\/\//,'').replace(/\/.*/,'').toLowerCase()
+  const d = domain.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
 
-  // Auto-load saved credentials for selected provider
+  // Auto-load saved credentials
   useEffect(() => {
     if (!user || provider === 'manual') return
-    fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'list', user_id:user.id })
-    }).then(r=>r.json()).then(data => {
+    fetch(DNS_FN, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'list', user_id: user.id })
+    }).then(r => r.json()).then(data => {
       if (!data.credentials) return
       const match = data.credentials.find(c => c.provider === provider)
-      if (match) setSavedCred(match)
-      else setSavedCred(null)
-    }).catch(()=>{})
+      setSavedCred(match || null)
+    }).catch(() => {})
   }, [provider, user])
 
-  const startCert = async () => {
+  const handleStart = async () => {
     if (!d) { setError('Enter a domain name'); return }
-    if (d.includes('@')) { setError('Please enter a domain name (e.g. example.com), not an email address'); return }
-    if (!d.includes('.')) { setError('Please enter a valid domain name (e.g. example.com)'); return }
+    if (!d.includes('.')) { setError('Enter a valid domain (e.g. example.com)'); return }
     setError(''); setLoading(true)
     try {
+      // Save/validate DNS credentials if new ones entered
       if (provider !== 'manual' && user) {
-        // Only save new credentials if user entered them manually
         const hasManualCreds = Object.values(creds).some(v => v)
         if (hasManualCreds) {
           const vRes = await fetch(DNS_FN, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ action:'save', user_id:user.id, provider, domain_pattern:d, credentials:creds, label:d })
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'save', user_id: user.id, provider, domain_pattern: d, credentials: creds, label: d })
           })
           const vData = await vRes.json()
-          if (vData.error) { setError('DNS credentials error: '+vData.error); setLoading(false); return }
+          if (vData.error) { setError('DNS credential error: ' + vData.error); setLoading(false); return }
         } else if (!savedCred) {
-          setError('Please enter DNS provider credentials or save them in DNS Providers first')
+          setError('Enter DNS provider credentials or save them in More → DNS Providers first')
           setLoading(false); return
         }
       }
-      const res = await fetch(ACME, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'start', domain:d, sessionId, user_id:user?.id })
+      // Request certificate issuance via GoGetSSL (TSS)
+      const { data: session } = await supabase.auth.getSession()
+      const token = session?.session?.access_token
+      const res = await fetch(ISSUE_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ action: 'start_quick', domain: d, provider: provider !== 'manual' ? provider : null, user_id: user?.id })
       })
       const data = await res.json()
       if (data.error) { setError(data.error); setLoading(false); return }
-      setTxtValue(data.txtValue)
-      setAutoAdded(!!data.autoAdded)
+      setDcvInfo(data.dcv)
+      setOrderId(data.order_id)
       setStep(2)
     } catch(e) { setError(e.message) }
     setLoading(false)
   }
 
-  const verifyCert = async () => {
+  const handleVerify = async () => {
     setError(''); setLoading(true)
     try {
-      const vRes = await fetch(ACME, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'verify', sessionId, domain:d })
+      const { data: session } = await supabase.auth.getSession()
+      const token = session?.session?.access_token
+      const res = await fetch(ISSUE_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ action: 'verify_quick', domain: d, order_id: orderId, user_id: user?.id })
       })
-      const vData = await vRes.json()
-      if (!vData.verified) { setError(vData.message || 'DNS not ready. Wait 1-2 min and try again.'); setLoading(false); return }
-      const fRes = await fetch(ACME, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'finalize', sessionId, domain:d, user_id:user?.id })
-      })
-      const fData = await fRes.json()
-      if (!fData.ok) { setError(fData.error || 'Failed to issue certificate'); setLoading(false); return }
-      setCertData(fData)
+      const data = await res.json()
+      if (!data.ok) { setError(data.error || data.message || 'DNS not ready yet — wait 1–2 min and try again.'); setLoading(false); return }
+      setCertData(data.cert)
       setStep(3)
     } catch(e) { setError(e.message) }
     setLoading(false)
@@ -111,175 +116,181 @@ export default function QuickSetup({ nav }) {
   const dl = (content, filename) => {
     if (!content) return
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(new Blob([content], {type:'text/plain'}))
+    a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' }))
     a.download = filename; a.click()
   }
 
-  const steps = ['Domain & DNS','Verify & Issue','Install']
+  const STEPS = ['Domain & DNS', 'Verify & Issue', 'Download & Install']
 
   return (
-    <div style={{ background:'var(--bg)', minHeight:'calc(100vh - 60px)', padding:'40px 0 80px' }}>
-      <div className="container" style={{ maxWidth:680 }}>
+    <div className="v2-page">
+      <div className="v2-container" style={{ maxWidth: 660 }}>
 
-        <div style={{ textAlign:'center', marginBottom:36 }}>
-          <h1 style={{ fontSize:30, fontWeight:900, letterSpacing:'-0.5px', color:'var(--text)', marginBottom:8 }}>
-            Quick Setup ⚡
-          </h1>
-          <p style={{ fontSize:14, color:'var(--text2)' }}>Enter domain, configure DNS, get certificate and install — in one flow</p>
+        {/* HERO */}
+        <div style={{ textAlign: 'center', padding: '8px 0 28px' }}>
+          <h1 className="v2-h1" style={{ fontSize: 26, letterSpacing: '-0.5px' }}>Quick Setup</h1>
+          <p className="v2-subtitle" style={{ fontSize: 13, marginTop: 4 }}>
+            Domain → DNS validation → Certificate issued — in one flow
+          </p>
         </div>
 
-        {/* Progress bar */}
-        <div style={{ display:'flex', alignItems:'center', background:'white', border:'1px solid var(--border)', borderRadius:12, padding:'14px 20px', marginBottom:28, boxShadow:'var(--shadow)', gap:0 }}>
-          {steps.map((s, i) => (
-            <div key={s} style={{ flex:1, display:'flex', alignItems:'center' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                <div style={{ width:28, height:28, borderRadius:'50%', background:step>i+1?'var(--green)':step===i+1?'var(--accent)':'var(--bg2)', color:step>=i+1?'white':'var(--text3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, flexShrink:0 }}>
-                  {step>i+1 ? <CheckCircle size={14}/> : i+1}
+        {/* PROGRESS */}
+        <div className="v2-card v2-card-pad" style={{ display: 'flex', alignItems: 'center', marginBottom: 24, padding: '12px 20px', gap: 0 }}>
+          {STEPS.map((s, i) => (
+            <div key={s} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{
+                  width: 26, height: 26, borderRadius: '50%',
+                  background: step > i + 1 ? 'var(--v2-green)' : step === i + 1 ? 'var(--v2-text)' : 'var(--v2-surface-3)',
+                  color: step >= i + 1 ? 'white' : 'var(--v2-text-3)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 11, fontWeight: 700, flexShrink: 0
+                }}>
+                  {step > i + 1 ? <CheckCircle size={13}/> : i + 1}
                 </div>
-                <span style={{ fontSize:12, fontWeight:600, color:step>=i+1?'var(--text)':'var(--text3)' }}>{s}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: step >= i + 1 ? 'var(--v2-text)' : 'var(--v2-text-3)', whiteSpace: 'nowrap' }}>{s}</span>
               </div>
-              {i < steps.length-1 && <div style={{ flex:1, height:2, background:step>i+1?'var(--green)':'var(--border)', margin:'0 10px', borderRadius:1 }}/>}
+              {i < STEPS.length - 1 && (
+                <div style={{ flex: 1, height: 1.5, background: step > i + 1 ? 'var(--v2-green)' : 'var(--v2-border)', margin: '0 10px', borderRadius: 1 }}/>
+              )}
             </div>
           ))}
         </div>
 
-        {/* Step 1 */}
+        {/* STEP 1 */}
         {step === 1 && (
-          <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:14, padding:28, boxShadow:'var(--shadow)' }}>
-            <h2 style={{ fontWeight:800, fontSize:18, marginBottom:4, color:'var(--text)' }}>Enter your domain</h2>
-            <p style={{ fontSize:13, color:'var(--text2)', marginBottom:20 }}>We'll verify ownership and issue your free SSL certificate</p>
+          <div className="v2-card v2-card-pad">
+            <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Enter your domain</h2>
+            <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 20 }}>We'll issue your GoGetSSL certificate and handle DNS validation.</p>
 
-            <label>Domain Name</label>
-            <input value={domain} onChange={e=>setDomain(e.target.value)} placeholder="example.com" style={{ fontSize:15, marginBottom:20 }} autoComplete="off" />
+            <label className="v2-label">Domain Name</label>
+            <input className="v2-input" value={domain} onChange={e => setDomain(e.target.value)}
+                   placeholder="example.com" style={{ marginBottom: 20 }} autoComplete="off"/>
 
-            <label>DNS Provider</label>
-            <select value={provider} onChange={e=>{setProvider(e.target.value);setCreds({})}} style={{ marginBottom:8 }}>
-              {Object.entries(PROVIDERS).map(([k,v]) => <option key={k} value={k}>{v.name}</option>)}
+            <label className="v2-label">DNS Provider (for automatic validation)</label>
+            <select className="v2-input" value={provider} onChange={e => { setProvider(e.target.value); setCreds({}) }} style={{ marginBottom: 8 }}>
+              {Object.entries(PROVIDERS).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
             </select>
-            <p style={{ fontSize:12, color:'var(--text3)', marginBottom:16 }}>
-              {provider==='manual' ? 'You will add the DNS TXT record manually' : 'We will automatically add the DNS verification record for you'}
+            <p className="v2-label-help" style={{ marginBottom: 16 }}>
+              {provider === 'manual' ? 'You will add the DNS validation record manually' : 'SSLVault will add the DNS validation record automatically'}
             </p>
 
             {provider !== 'manual' && savedCred && (
-              <div className="alert alert-success" style={{ marginBottom:16, fontSize:12, display:'flex', alignItems:'center', gap:8 }}>
-                <CheckCircle size={14} color="var(--green)"/>
-                <span>Using saved <strong>{PROVIDERS[provider]?.name}</strong> credentials from DNS Providers. Fields pre-filled.</span>
-              </div>
+              <Note type="success"><CheckCircle size={13} style={{ flexShrink: 0 }}/> Using saved <strong>{PROVIDERS[provider]?.name}</strong> credentials.</Note>
             )}
             {provider !== 'manual' && !savedCred && (
-              <div className="alert alert-warning" style={{ marginBottom:12, fontSize:12 }}>
-                No saved credentials for {PROVIDERS[provider]?.name}. Enter below or save them in <button onClick={()=>nav('/integrations')} style={{background:'none',border:'none',color:'var(--accent)',cursor:'pointer',fontWeight:600,padding:0,fontSize:12}}>Integrations</button> first.
-              </div>
+              <Note type="warn">No saved credentials for {PROVIDERS[provider]?.name}. Enter below or save them in <button onClick={() => nav('/integrations')} className="v2-btn" style={{ padding: '0', border: 'none', background: 'none', color: 'var(--v2-green)', fontSize: 12, cursor: 'pointer', display: 'inline', fontWeight: 600 }}>More → DNS Providers</button>.</Note>
             )}
             {provider !== 'manual' && !savedCred && PROVIDERS[provider].fields.map(f => (
-              <div key={f.k} style={{ marginBottom:14 }}>
-                <label>{f.l}</label>
-                <input type="password" placeholder={f.p} value={creds[f.k]||''} onChange={e=>setCreds(c=>({...c,[f.k]:e.target.value}))} autoComplete="new-password"/>
+              <div key={f.k} style={{ marginBottom: 14 }}>
+                <label className="v2-label">{f.l}</label>
+                <input className="v2-input" type="password" placeholder={f.p}
+                       value={creds[f.k] || ''} onChange={e => setCreds(c => ({ ...c, [f.k]: e.target.value }))}
+                       autoComplete="new-password"/>
               </div>
             ))}
 
             {provider !== 'manual' && (
-              <div className="alert alert-info" style={{ fontSize:12, marginBottom:16 }}>
-                🔒 Credentials encrypted with AES-256 and saved for future auto-renewals
-              </div>
+              <Note type="info">Credentials are AES-256-GCM encrypted and saved for future auto-renewals.</Note>
             )}
 
-            {error && <div className="alert alert-error" style={{ marginBottom:16, fontSize:12 }}>{error}</div>}
+            {error && <Note type="error">{error}</Note>}
 
-            <button onClick={startCert} disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px' }}>
-              {loading ? <><span className="spinner"/> Processing...</> : <>Generate Certificate <ArrowRight size={15}/></>}
+            <button className="v2-btn v2-btn-primary" onClick={handleStart} disabled={loading}
+                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '11px' }}>
+              {loading ? <><Loader size={14} className="spin"/> Processing...</> : <>Issue Certificate <ArrowRight size={14}/></>}
             </button>
           </div>
         )}
 
-        {/* Step 2 */}
-        {step === 2 && (
-          <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:14, padding:28, boxShadow:'var(--shadow)' }}>
-            {autoAdded ? (
+        {/* STEP 2 */}
+        {step === 2 && dcvInfo && (
+          <div className="v2-card v2-card-pad">
+            {dcvInfo.autoAdded ? (
               <>
-                <div className="alert alert-success" style={{ marginBottom:20, display:'flex', alignItems:'center', gap:10 }}>
-                  <CheckCircle size={16} color="var(--green)"/>
-                  <span><strong>DNS record added automatically</strong> via {PROVIDERS[provider]?.name}!</span>
-                </div>
-                <h2 style={{ fontWeight:800, fontSize:18, marginBottom:4, color:'var(--text)' }}>Issue your certificate</h2>
-                <p style={{ fontSize:13, color:'var(--text2)', marginBottom:20 }}>DNS is ready. Click below to issue your certificate now.</p>
+                <Note type="success"><CheckCircle size={13}/> DNS validation record added automatically via {PROVIDERS[provider]?.name}.</Note>
+                <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Issue your certificate</h2>
+                <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 20 }}>DNS is ready. Click below to complete issuance.</p>
               </>
             ) : (
               <>
-                <h2 style={{ fontWeight:800, fontSize:18, marginBottom:4, color:'var(--text)' }}>Add DNS TXT record</h2>
-                <p style={{ fontSize:13, color:'var(--text2)', marginBottom:16 }}>Add this record to your DNS provider, then click Verify</p>
-                <div style={{ background:'#0f172a', borderRadius:10, padding:16, marginBottom:12 }}>
-                  <div style={{ display:'grid', gridTemplateColumns:'80px 1fr', gap:'8px 16px', fontFamily:'monospace', fontSize:13 }}>
-                    <span style={{ color:'#64748b', fontWeight:600 }}>TYPE</span><span style={{ color:'#3b82f6' }}>TXT</span>
-                    <span style={{ color:'#64748b', fontWeight:600 }}>NAME</span><span style={{ color:'#38bdf8' }}>_acme-challenge</span>
-                    <span style={{ color:'#64748b', fontWeight:600 }}>VALUE</span><span style={{ color:'#fbbf24', wordBreak:'break-all' }}>{txtValue}</span>
-                    <span style={{ color:'#64748b', fontWeight:600 }}>TTL</span><span style={{ color:'#e2e8f0' }}>300</span>
+                <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Add DNS validation record</h2>
+                <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16 }}>Add this record to your DNS provider, then click Verify.</p>
+                <div className="v2-code" style={{ marginBottom: 12 }}>
+                  <div className="v2-code-head">
+                    <div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#f59e0b' }}/><span style={{ background: '#0e7fc0' }}/></div>
                   </div>
+                  <pre>{`TYPE    ${dcvInfo.type || 'CNAME'}
+NAME    ${dcvInfo.host || '_acme-challenge'}
+VALUE   ${dcvInfo.value || ''}
+TTL     300`}</pre>
                 </div>
-                <div style={{ marginBottom:16 }}><CopyBtn text={txtValue}/></div>
-                <div className="alert alert-warning" style={{ fontSize:12, marginBottom:16 }}>
-                  ⚠ Enter only <strong>_acme-challenge</strong> in the Name field
-                </div>
+                <div style={{ marginBottom: 16 }}><CopyBtn text={dcvInfo.value || ''}/></div>
+                <Note type="warn">Enter only <strong>{dcvInfo.host || '_acme-challenge'}</strong> in the Name field — your DNS provider adds the domain automatically.</Note>
               </>
             )}
 
-            {error && <div className="alert alert-error" style={{ marginBottom:16, fontSize:12 }}>{error}</div>}
+            {error && <Note type="error">{error}</Note>}
 
-            <button onClick={verifyCert} disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', fontSize:15, padding:'12px' }}>
-              {loading ? <><span className="spinner"/> Verifying & Issuing...</> : <>{autoAdded ? 'Issue Certificate' : 'Verify DNS & Issue'} <ArrowRight size={15}/></>}
+            <button className="v2-btn v2-btn-primary" onClick={handleVerify} disabled={loading}
+                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '11px' }}>
+              {loading ? <><Loader size={14} className="spin"/> Verifying...</>
+                       : <>{dcvInfo.autoAdded ? 'Issue Certificate' : 'Verify DNS & Issue'} <ArrowRight size={14}/></>}
             </button>
           </div>
         )}
 
-        {/* Step 3 */}
-        {step === 3 && certData && (
-          <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-            <div style={{ background:'white', border:'2px solid var(--green)', borderRadius:14, padding:28, boxShadow:'var(--shadow)' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
-                <div style={{ width:48, height:48, borderRadius:'50%', background:'var(--green-light)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <CheckCircle size={28} color="var(--green)"/>
+        {/* STEP 3 */}
+        {step === 3 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div className="v2-card v2-card-pad" style={{ border: '1.5px solid var(--v2-green)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <CheckCircle size={24} color="var(--v2-green)"/>
                 </div>
                 <div>
-                  <h2 style={{ fontWeight:800, fontSize:20, color:'var(--green)' }}>Certificate Issued!</h2>
-                  <p style={{ fontSize:13, color:'var(--text3)' }}>Valid 90 days · {d}</p>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--v2-green)', marginBottom: 2 }}>Certificate Issued</h2>
+                  <p style={{ fontSize: 12, color: 'var(--v2-text-3)', margin: 0 }}>{d}</p>
                 </div>
               </div>
-              <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-                <button onClick={() => dl(certData.fullchain, d+'-fullchain.pem')} className="btn btn-primary btn-sm">
-                  <Download size={13}/> fullchain.pem
-                </button>
-                <button onClick={() => dl(certData.privateKey, d+'-key.pem')} className="btn btn-secondary btn-sm">
-                  <Download size={13}/> key.pem
-                </button>
-                <button onClick={() => { dl(certData.fullchain, d+'-fullchain.pem'); setTimeout(()=>dl(certData.privateKey, d+'-key.pem'),300) }} className="btn btn-secondary btn-sm">
-                  <Download size={13}/> All Files
-                </button>
+              <p style={{ fontSize: 12, color: 'var(--v2-text-2)', marginBottom: 14, lineHeight: 1.7 }}>
+                Your certificate is saved in <strong>Dashboard</strong>. Download the files below or install directly from the cert row.
+              </p>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {certData?.fullchain && (
+                  <button className="v2-btn v2-btn-primary" onClick={() => dl(certData.fullchain, d + '-fullchain.pem')} style={{ fontSize: 12 }}>
+                    <Download size={12}/> fullchain.pem
+                  </button>
+                )}
+                {certData?.privateKey && (
+                  <button className="v2-btn" onClick={() => dl(certData.privateKey, d + '-key.pem')} style={{ fontSize: 12 }}>
+                    <Download size={12}/> key.pem
+                  </button>
+                )}
               </div>
             </div>
 
-            <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:14, padding:24, boxShadow:'var(--shadow)' }}>
-              <h3 style={{ fontWeight:700, fontSize:16, marginBottom:12, color:'var(--text)' }}>Install on your server</h3>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                <div onClick={() => nav('/dashboard')} style={{ border:'2px solid var(--accent-border)', borderRadius:10, padding:16, cursor:'pointer', background:'var(--accent-light)' }}>
-                  <div style={{ fontSize:22, marginBottom:6 }}>🖥️</div>
-                  <div style={{ fontWeight:700, fontSize:13, color:'var(--accent)', marginBottom:3 }}>VPS / Cloud Server</div>
-                  <div style={{ fontSize:11, color:'var(--text3)' }}>One command auto-install</div>
+            <div className="v2-card v2-card-pad">
+              <h3 style={{ fontWeight: 600, fontSize: 14, color: 'var(--v2-text)', marginBottom: 12 }}>Install on your server</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                <div className="v2-card v2-card-pad" style={{ cursor: 'pointer', background: 'var(--v2-surface-2)' }} onClick={() => nav('/dashboard')}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 3 }}>VPS / Cloud</div>
+                  <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>Persistent agent — one click deploy</div>
                 </div>
-                <div onClick={() => nav('/dashboard')} style={{ border:'2px solid #86efac', borderRadius:10, padding:16, cursor:'pointer', background:'var(--green-light)' }}>
-                  <div style={{ fontSize:22, marginBottom:6 }}>🌐</div>
-                  <div style={{ fontWeight:700, fontSize:13, color:'var(--green)', marginBottom:3 }}>Shared Hosting</div>
-                  <div style={{ fontSize:11, color:'var(--text3)' }}>PHP agent cPanel auto-install</div>
+                <div className="v2-card v2-card-pad" style={{ cursor: 'pointer', background: 'var(--v2-surface-2)' }} onClick={() => nav('/shared-hosting')}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 3 }}>cPanel / Shared</div>
+                  <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>PHP agent — no SSH needed</div>
                 </div>
               </div>
-              <p style={{ fontSize:12, color:'var(--text3)', marginTop:12 }}>Go to My Certificates → {d} → Install on Server</p>
+              <p style={{ fontSize: 11, color: 'var(--v2-text-3)', margin: 0 }}>Go to Dashboard → {d} → Install</p>
             </div>
 
-            <div style={{ display:'flex', gap:10 }}>
-              <button onClick={() => nav('/dashboard')} className="btn btn-primary" style={{ flex:1, justifyContent:'center' }}>
-                <Shield size={15}/> My Certificates
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button className="v2-btn v2-btn-primary" onClick={() => nav('/dashboard')} style={{ flex: 1, justifyContent: 'center', fontSize: 13 }}>
+                <Shield size={13}/> My Dashboard
               </button>
-              <button onClick={() => { setStep(1); setDomain(''); setCertData(null); setError(''); setCreds({}) }} className="btn btn-secondary">
-                <RotateCcw size={14}/> New Certificate
+              <button className="v2-btn" onClick={() => { setStep(1); setDomain(''); setCertData(null); setError(''); setCreds({}); setDcvInfo(null) }} style={{ fontSize: 13 }}>
+                <RotateCcw size={13}/> New Certificate
               </button>
             </div>
           </div>

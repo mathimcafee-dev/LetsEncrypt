@@ -1,24 +1,49 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, ExternalLink, Shield, CheckCircle, ArrowRight, Play, Monitor, Server, Globe, Lock, AlertTriangle, Copy, Check } from 'lucide-react'
+import {
+  ChevronDown, ChevronUp, Shield, ArrowRight, Server, Globe,
+  Copy, Check, ExternalLink, Zap, Bot, Cloud, Network, RefreshCw
+} from 'lucide-react'
+import '../styles/design-v2.css'
 
 function CopyBtn({ text, label }) {
   const [ok, setOk] = useState(false)
   const copy = () => { try { navigator.clipboard.writeText(text) } catch(e) {}; setOk(true); setTimeout(() => setOk(false), 2000) }
   return (
-    <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:6, background:ok?'var(--green-light)':'var(--accent-light)', border:'1px solid '+(ok?'#86efac':'var(--accent-border)'), color:ok?'var(--green)':'var(--accent)', borderRadius:7, padding:'7px 14px', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.2s' }}>
-      {ok ? <><Check size={13}/> Copied!</> : <><Copy size={13}/> {label || 'Copy'}</>}
+    <button onClick={copy} className={`v2-btn ${ok ? '' : 'v2-btn-primary'}`} style={{ fontSize: 12 }}>
+      {ok ? <><Check size={12}/> Copied!</> : <><Copy size={12}/> {label || 'Copy'}</>}
     </button>
   )
 }
 
-function Card({ icon, title, desc, color }) {
+function Note({ type = 'info', children }) {
+  const variant = type === 'warn' ? 'warning' : type === 'success' ? 'tip' : type === 'error' ? 'error' : 'info'
+  return <div className={`v2-callout ${variant}`} style={{ marginBottom: 10 }}>{children}</div>
+}
+
+function Step({ n, title, children }) {
   return (
-    <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:14, padding:24, boxShadow:'var(--shadow)', display:'flex', gap:16, alignItems:'flex-start' }}>
-      <div style={{ width:48, height:48, borderRadius:12, background:color+'15', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, fontSize:24 }}>{icon}</div>
-      <div>
-        <h3 style={{ fontWeight:700, fontSize:15, marginBottom:6, color:'var(--text)' }}>{title}</h3>
-        <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.7 }}>{desc}</p>
+    <div className="v2-step">
+      <div className="v2-step-num">{n}</div>
+      <div className="v2-step-body">
+        <div className="v2-step-title">{title}</div>
+        {children}
       </div>
+    </div>
+  )
+}
+
+function Accordion({ title, subtitle, defaultOpen = false, children }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className={`v2-accordion ${open ? 'open' : ''}`} style={{ marginBottom: 8 }}>
+      <button className="v2-accordion-head" onClick={() => setOpen(o => !o)}>
+        <span style={{ flex: 1 }}>
+          <div className="v2-accordion-title">{title}</div>
+          {subtitle && <div className="v2-accordion-subtitle">{subtitle}</div>}
+        </span>
+        <ChevronDown size={14} strokeWidth={1.8} className="v2-accordion-chev" />
+      </button>
+      {open && <div className="v2-accordion-body" style={{ paddingTop: 12 }}>{children}</div>}
     </div>
   )
 }
@@ -26,48 +51,24 @@ function Card({ icon, title, desc, color }) {
 function FAQ({ q, a }) {
   const [open, setOpen] = useState(false)
   return (
-    <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:10, overflow:'hidden', marginBottom:8, boxShadow:'var(--shadow)' }}>
-      <div onClick={() => setOpen(o=>!o)} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 20px', cursor:'pointer', background:open?'var(--accent-light)':'white' }}>
-        <span style={{ fontWeight:600, fontSize:14, color:'var(--text)' }}>{q}</span>
-        {open ? <ChevronUp size={15} color="var(--text3)"/> : <ChevronDown size={15} color="var(--text3)"/>}
-      </div>
-      {open && <div style={{ padding:'14px 20px', borderTop:'1px solid var(--border)', fontSize:13, color:'var(--text2)', lineHeight:1.8 }}>{a}</div>}
+    <div className={`v2-accordion ${open ? 'open' : ''}`} style={{ marginBottom: 6 }}>
+      <button className="v2-accordion-head" onClick={() => setOpen(o => !o)}>
+        <span className="v2-accordion-title" style={{ flex: 1 }}>{q}</span>
+        {open ? <ChevronUp size={14} strokeWidth={1.8}/> : <ChevronDown size={14} strokeWidth={1.8}/>}
+      </button>
+      {open && <div className="v2-accordion-body" style={{ paddingTop: 10 }}><p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: 'var(--v2-text-2)' }}>{a}</p></div>}
     </div>
   )
 }
 
-function Step({ n, emoji, title, children, highlight }) {
+function Divider({ label, title }) {
   return (
-    <div style={{ display:'flex', gap:20, marginBottom:40 }}>
-      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', flexShrink:0 }}>
-        <div style={{ width:48, height:48, borderRadius:'50%', background:highlight?'linear-gradient(135deg,#2563eb,#1d4ed8)':'var(--bg2)', color:highlight?'white':'var(--text3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:800, boxShadow:highlight?'0 4px 14px rgba(37,99,235,0.3)':'none' }}>{n}</div>
-        <div style={{ width:2, flex:1, background:'var(--border)', margin:'8px 0', minHeight:24 }}/>
+    <div style={{ margin: '32px 0 14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+        <span className="v2-section-label">{label}</span>
+        <div style={{ flex: 1, height: 1, background: 'var(--v2-border)' }} />
       </div>
-      <div style={{ flex:1, paddingTop:8 }}>
-        <div style={{ fontSize:22, marginBottom:4 }}>{emoji}</div>
-        <h3 style={{ fontWeight:800, fontSize:18, marginBottom:10, color:'var(--text)' }}>{title}</h3>
-        {children}
-      </div>
-    </div>
-  )
-}
-
-function Terminal({ lines }) {
-  return (
-    <div style={{ background:'#0f172a', borderRadius:12, overflow:'hidden', marginBottom:16 }}>
-      <div style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.07)', background:'#1e293b' }}>
-        <div style={{ width:12, height:12, borderRadius:'50%', background:'#ef4444' }}/>
-        <div style={{ width:12, height:12, borderRadius:'50%', background:'#f59e0b' }}/>
-        <div style={{ width:12, height:12, borderRadius:'50%', background:'#0e7fc0' }}/>
-        <span style={{ fontSize:11, color:'#475569', marginLeft:8, fontFamily:'monospace' }}>Terminal</span>
-      </div>
-      <div style={{ padding:'16px 18px' }}>
-        {lines.map((line, i) => (
-          <div key={i} style={{ fontFamily:'monospace', fontSize:13, lineHeight:1.9, color: line.startsWith('#') ? '#64748b' : line.startsWith('[✓]') ? '#3b82f6' : line.startsWith('[!]') ? '#fbbf24' : line.startsWith('[✗]') ? '#f87171' : line.startsWith('$') ? '#38bdf8' : '#e2e8f0' }}>
-            {line}
-          </div>
-        ))}
-      </div>
+      <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--v2-text)', letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
     </div>
   )
 }
@@ -76,377 +77,308 @@ export default function GetStarted({ nav }) {
   const [path, setPath] = useState(null)
 
   return (
-    <div style={{ background:'var(--bg)', minHeight:'calc(100vh - 60px)', padding:'48px 0 100px' }}>
-      <div className="container" style={{ maxWidth:800 }}>
+    <div className="v2-page">
+      <div className="v2-container" style={{ maxWidth: 820 }}>
 
-        {/* Hero */}
-        <div style={{ textAlign:'center', marginBottom:52 }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:100, padding:'6px 16px', fontSize:12, fontWeight:700, color:'var(--accent)', marginBottom:20 }}>
-            <Play size={11}/> BEGINNER FRIENDLY GUIDE
-          </div>
-          <h1 style={{ fontSize:40, fontWeight:900, letterSpacing:'-1px', color:'var(--text)', marginBottom:16, lineHeight:1.15 }}>
-            SSL Certificates Made Simple 🔒
-          </h1>
-          <p style={{ fontSize:17, color:'var(--text2)', lineHeight:1.8, maxWidth:580, margin:'0 auto 32px' }}>
-            Never heard of SSL? No problem. This guide explains everything in plain English — what it is, why you need it, and how to get it free in under 5 minutes.
+        {/* HERO */}
+        <div style={{ padding: '8px 0 28px' }}>
+          <h1 className="v2-h1" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>SSL Certificates — Plain English Guide</h1>
+          <p className="v2-subtitle" style={{ fontSize: 14, marginTop: 6, maxWidth: 560 }}>
+            New to SSL? Start here. What it is, why you need it, and how SSLVault gets you from zero to HTTPS in minutes.
           </p>
-          <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
-            <button onClick={() => document.getElementById('what-is-ssl').scrollIntoView({behavior:'smooth'})}
-              className="btn btn-primary btn-lg">
-              Start Learning <ArrowRight size={16}/>
+          <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
+            <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
+              <Shield size={13} strokeWidth={2.2}/> Issue Certificate <ArrowRight size={13}/>
             </button>
-            <button onClick={() => nav('/buy')} className="btn btn-secondary btn-lg">
-              Skip — Generate SSL Now
+            <button className="v2-btn" onClick={() => nav('/dashboard')}>
+              My Dashboard
             </button>
           </div>
         </div>
 
-        {/* What is SSL */}
-        <div id="what-is-ssl" style={{ scrollMarginTop:80, marginBottom:52 }}>
-          <div style={{ background:'white', border:'1px solid var(--border)', borderRadius:16, padding:32, boxShadow:'var(--shadow)' }}>
-            <h2 style={{ fontSize:26, fontWeight:800, marginBottom:8, color:'var(--text)' }}>🤔 What is SSL?</h2>
-            <p style={{ fontSize:15, color:'var(--text2)', lineHeight:1.9, marginBottom:20 }}>
-              SSL stands for <strong>Secure Sockets Layer</strong>. Think of it like a <strong>sealed envelope</strong> for your website traffic.
-            </p>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:24 }}>
-              <div style={{ background:'var(--red-light)', border:'1px solid var(--red-border)', borderRadius:12, padding:20 }}>
-                <div style={{ fontSize:28, marginBottom:10 }}>😨</div>
-                <h4 style={{ fontWeight:700, color:'var(--red)', marginBottom:8 }}>Without SSL (HTTP)</h4>
-                <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.7 }}>
-                  Your website shows a red "Not Secure" warning. Passwords and data sent by visitors can be read by hackers. Google ranks you lower in search results.
-                </p>
-              </div>
-              <div style={{ background:'var(--green-light)', border:'1px solid #86efac', borderRadius:12, padding:20 }}>
-                <div style={{ fontSize:28, marginBottom:10 }}>😌</div>
-                <h4 style={{ fontWeight:700, color:'var(--green)', marginBottom:8 }}>With SSL (HTTPS)</h4>
-                <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.7 }}>
-                  Green padlock in browser. All data is encrypted. Visitors trust your site. Google ranks you higher. Required for accepting payments.
-                </p>
-              </div>
+        {/* WHAT IS SSL */}
+        <Divider label="BASICS" title="What is SSL?" />
+        <div className="v2-card v2-card-pad" style={{ marginBottom: 8 }}>
+          <p style={{ fontSize: 14, color: 'var(--v2-text-2)', lineHeight: 1.8, marginBottom: 16 }}>
+            SSL (Secure Sockets Layer) encrypts the connection between your website and your visitors.
+            When it's active, your browser shows <strong>https://</strong> and a padlock. Without it — a red "Not Secure" warning.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 16 }}>
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#dc2626', marginBottom: 6 }}>Without SSL (HTTP)</div>
+              <p style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
+                Red "Not Secure" warning. Visitor data exposed. Lower Google ranking. Payments blocked.
+              </p>
             </div>
-            <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:16, display:'flex', gap:14, alignItems:'flex-start' }}>
-              <Globe size={22} color="var(--accent)" style={{ flexShrink:0, marginTop:2 }}/>
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#16a34a', marginBottom: 6 }}>With SSL (HTTPS)</div>
+              <p style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
+                Green padlock. All traffic encrypted. Trust signals for visitors and Google. Required for payments.
+              </p>
+            </div>
+          </div>
+          <Note type="info">
+            The <strong>"s"</strong> in <strong>https://</strong> means SSL is active. SSLVault gives you that "s" — backed by globally trusted certificate authorities via GoGetSSL.
+          </Note>
+        </div>
+
+        {/* DO I NEED IT */}
+        <Divider label="ELIGIBILITY" title="Do you need SSL?" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
+          {[
+            ['Yes', 'You have a website', 'Any public website benefits from SSL — trust signals and SEO ranking.'],
+            ['Yes', 'You run an online shop', 'SSL is mandatory for accepting payments online.'],
+            ['Yes', 'You collect user data', 'Login pages, contact forms, email signups — all require SSL.'],
+            ['Yes', 'You have a blog or portfolio', 'Google ranks HTTPS sites higher. More traffic, no extra cost.'],
+            ['Maybe', 'Local or dev environment only', 'If no public traffic, SSL is optional — but still good practice.'],
+          ].map(([badge, title, desc]) => (
+            <div key={title} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+              <span className={`v2-badge ${badge === 'Yes' ? 'v2-badge-green' : 'v2-badge-amber'}`} style={{ flexShrink: 0, marginTop: 2 }}>{badge}</span>
               <div>
-                <p style={{ fontWeight:700, fontSize:14, color:'var(--text)', marginBottom:4 }}>Easy way to remember</p>
-                <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.7 }}>
-                  See the difference between <strong>http://</strong> and <strong>https://</strong> in your browser? The <strong>"s"</strong> stands for Secure. SSLVault gives you that "s" — completely free.
-                </p>
+                <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--v2-text)', marginBottom: 2 }}>{title}</div>
+                <div style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{desc}</div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
 
-        {/* Do I need it */}
-        <div style={{ marginBottom:52 }}>
-          <h2 style={{ fontSize:26, fontWeight:800, marginBottom:20, color:'var(--text)' }}>🙋 Do I need SSL?</h2>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:12 }}>
-            {[
-              ['✅ YES', 'You have a website', 'Any website benefits from SSL. It builds trust with visitors and is required by modern browsers.', '#0e7fc0'],
-              ['✅ YES', 'You run an online shop', 'SSL is mandatory for accepting payments. No SSL = no credit cards accepted.', '#0e7fc0'],
-              ['✅ YES', 'You have a blog or portfolio', 'Google gives higher rankings to HTTPS sites. More traffic, free.', '#0e7fc0'],
-              ['✅ YES', 'You collect any user data', 'Email signups, contact forms, login pages — all require SSL to be safe.', '#0e7fc0'],
-              ['⚠️ MAYBE', 'It\'s just a local test site', 'If nobody else visits it, you might not need it yet. But it\'s still good practice.', '#f59e0b'],
-            ].map(([badge, title, desc, color]) => (
-              <div key={title} style={{ background:'white', border:'1px solid var(--border)', borderRadius:12, padding:'16px 20px', display:'flex', gap:16, alignItems:'flex-start', boxShadow:'var(--shadow)' }}>
-                <span style={{ fontSize:20, flexShrink:0 }}>{badge.split(' ')[0]}</span>
-                <div>
-                  <span style={{ fontWeight:700, fontSize:14, color, marginRight:8 }}>{badge.split(' ').slice(1).join(' ')}</span>
-                  <span style={{ fontWeight:700, fontSize:14, color:'var(--text)' }}>{title}</span>
-                  <p style={{ fontSize:13, color:'var(--text2)', marginTop:4, lineHeight:1.6 }}>{desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* CERTIFICATE TYPES */}
+        <Divider label="CERT TYPES" title="Which certificate type do you need?" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 8, marginBottom: 8 }}>
+          {[
+            { type: 'DV (Domain Validated)', time: '~5 minutes', use: 'Blogs, APIs, personal sites, SaaS', color: 'var(--v2-green)' },
+            { type: 'OV (Org Validated)', time: '1–3 business days', use: 'Business websites, portals', color: 'var(--v2-text-2)' },
+            { type: 'EV (Extended Validation)', time: '2–7 business days', use: 'E-commerce, banks, high trust', color: 'var(--v2-text-2)' },
+            { type: 'Wildcard DV', time: '~5 minutes', use: '*.yourdomain.com — all subdomains', color: 'var(--v2-green)' },
+          ].map(({ type, time, use, color }) => (
+            <div key={type} className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>{type}</div>
+              <div style={{ fontSize: 11, color, marginBottom: 3, fontWeight: 500 }}>{time}</div>
+              <div style={{ fontSize: 11, color: 'var(--v2-text-3)', lineHeight: 1.55 }}>{use}</div>
+            </div>
+          ))}
         </div>
+        <Note type="info">
+          All certificates are issued via <strong>GoGetSSL</strong> — a trusted reseller covering DigiCert, Sectigo, RapidSSL, GeoTrust, and Thawte chains. DV certificates are the most common — issued automatically in minutes via DNS validation.
+        </Note>
 
-        {/* Choose your path */}
-        <div style={{ marginBottom:52 }}>
-          <h2 style={{ fontSize:26, fontWeight:800, marginBottom:8, color:'var(--text)' }}>🛤️ Choose Your Path</h2>
-          <p style={{ color:'var(--text2)', fontSize:15, marginBottom:24, lineHeight:1.7 }}>
-            Everyone's situation is different. Pick the one that matches yours:
-          </p>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:12 }}>
-            {[
-              { id:'managed', emoji:'🖥️', title:'I use cPanel, GoDaddy Hosting, Bluehost, or similar', desc:'You have a hosting control panel. No command line needed. Install takes 2 minutes by pasting text.', badge:'Easiest', color:'#0e7fc0' },
-              { id:'vps', emoji:'🖧', title:'I have a VPS or Cloud Server (DigitalOcean, AWS, Linode)', desc:'You have full server access via SSH. The auto-install agent handles everything in one command.', badge:'Automatic', color:'#2563eb' },
-              { id:'vercel', emoji:'▲', title:'My site is on Vercel, Netlify or similar', desc:'These platforms often handle SSL automatically. But if your custom domain needs a cert, we cover it.', badge:'Usually Auto', color:'#7c3aed' },
-              { id:'noserver', emoji:'🌐', title:'I just own a domain name, no hosting yet', desc:'Get your SSL certificate ready first, then choose a hosting provider. We explain what to look for.', badge:'Beginner', color:'#f59e0b' },
-            ].map(p => (
-              <div key={p.id} onClick={() => setPath(path===p.id?null:p.id)}
-                style={{ background:'white', border:`2px solid ${path===p.id?p.color:'var(--border)'}`, borderRadius:14, padding:'18px 22px', cursor:'pointer', boxShadow:'var(--shadow)', transition:'all 0.2s', background:path===p.id?p.color+'08':'white' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:14 }}>
-                  <span style={{ fontSize:28, flexShrink:0 }}>{p.emoji}</span>
-                  <div style={{ flex:1 }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4, flexWrap:'wrap' }}>
-                      <span style={{ fontWeight:700, fontSize:14, color:'var(--text)' }}>{p.title}</span>
-                      <span style={{ fontSize:11, fontWeight:700, background:p.color+'20', color:p.color, padding:'2px 8px', borderRadius:100 }}>{p.badge}</span>
+        {/* CHOOSE YOUR PATH */}
+        <Divider label="YOUR SITUATION" title="Choose your setup path" />
+        <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 14, lineHeight: 1.7 }}>Pick the one that matches your hosting setup:</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 }}>
+          {[
+            { id: 'vps', icon: Server, title: 'VPS or cloud server (DigitalOcean, AWS, Hetzner, Linode)', desc: 'SSH access available. Install the persistent agent once — all future installs and renewals are fully automatic.', badge: 'Recommended' },
+            { id: 'cpanel', icon: Cloud, title: 'Shared hosting with cPanel (GoDaddy, Bluehost, Hostinger, SiteGround)', desc: 'No SSH needed. Upload a PHP file and paste certificate files into cPanel SSL Manager.', badge: 'No SSH' },
+            { id: 'platform', icon: Globe, title: 'Vercel, Netlify, or similar deployment platforms', desc: 'These platforms usually provision SSL automatically on custom domains. If you need a cert for a backend or external server, use SSLVault.', badge: 'Usually auto' },
+            { id: 'domain', icon: Network, title: 'I just own a domain — no hosting yet', desc: "Generate your certificate now and have it ready. You'll install it once you set up hosting.", badge: 'Beginner' },
+          ].map(p => (
+            <div key={p.id}>
+              <div className="v2-card v2-card-pad" style={{ cursor: 'pointer', border: path === p.id ? '1.5px solid var(--v2-border-strong)' : undefined }}
+                   onClick={() => setPath(path === p.id ? null : p.id)}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <p.icon size={15} strokeWidth={1.8} style={{ color: 'var(--v2-text-2)', flexShrink: 0 }}/>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 2 }}>
+                      <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--v2-text)' }}>{p.title}</span>
+                      <span className="v2-badge v2-badge-green">{p.badge}</span>
                     </div>
-                    <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.6, margin:0 }}>{p.desc}</p>
+                    <p style={{ fontSize: 12, color: 'var(--v2-text-2)', margin: 0, lineHeight: 1.6 }}>{p.desc}</p>
                   </div>
-                  {path===p.id ? <ChevronUp size={18} color={p.color}/> : <ChevronDown size={18} color="var(--text3)"/>}
+                  {path === p.id ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
                 </div>
-
-                {/* Expanded instructions */}
-                {path === p.id && (
-                  <div style={{ marginTop:20, paddingTop:20, borderTop:'1px solid var(--border)' }}>
-                    {p.id === 'managed' && (
-                      <>
-                        <h4 style={{ fontWeight:700, fontSize:15, marginBottom:16, color:'var(--text)' }}>📋 Step-by-step for cPanel hosting:</h4>
-                        {[
-                          ['1️⃣', 'Generate your certificate', 'Click "Generate SSL" in the navigation above. Enter your domain name and follow the steps. Download the 3 files when done.'],
-                          ['2️⃣', 'Login to your hosting control panel', 'Go to your hosting provider (GoDaddy, Bluehost, Hostgator, etc.) and login to cPanel.'],
-                          ['3️⃣', 'Find SSL/TLS', 'In cPanel, search for "SSL" or look under Security. Click SSL/TLS → Manage SSL Sites.'],
-                          ['4️⃣', 'Paste your certificate', 'You\'ll see 3 boxes. Open the downloaded files in Notepad and paste: fullchain.pem → Certificate box, key.pem → Private Key box. Leave CA Bundle blank.'],
-                          ['5️⃣', 'Click Install', 'Hit "Install Certificate". Done! Your site now has HTTPS.'],
-                        ].map(([n,t,d]) => (
-                          <div key={t} style={{ display:'flex', gap:14, marginBottom:16 }}>
-                            <span style={{ fontSize:20, flexShrink:0 }}>{n}</span>
-                            <div>
-                              <p style={{ fontWeight:700, fontSize:13, marginBottom:4, color:'var(--text)' }}>{t}</p>
-                              <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.6, margin:0 }}>{d}</p>
-                            </div>
-                          </div>
-                        ))}
-                        <button onClick={() => nav('/buy')} className="btn btn-primary" style={{ marginTop:8 }}>
-                          <Shield size={15}/> Generate My Certificate Now
-                        </button>
-                      </>
-                    )}
-                    {p.id === 'vps' && (
-                      <>
-                        <h4 style={{ fontWeight:700, fontSize:15, marginBottom:16, color:'var(--text)' }}>🚀 Automatic install on your VPS:</h4>
-                        {[
-                          ['1️⃣', 'Generate your SSL certificate first', 'Click Generate SSL, complete DNS verification. Your cert appears in My Certificates.'],
-                          ['2️⃣', 'Click "Install on Server"', 'In My Certificates, expand your domain panel and click the blue "Install on Server" button.'],
-                          ['3️⃣', 'Generate a secure token', 'Click "Generate Install Token". Copy the command shown.'],
-                          ['4️⃣', 'SSH into your server and run the command', 'Open a terminal (Mac: Terminal app, Windows: PuTTY or PowerShell), connect to your server, paste the command.'],
-                          ['5️⃣', 'Watch it install automatically', 'The agent detects your OS and web server, installs the cert, and reports back to the dashboard.'],
-                        ].map(([n,t,d]) => (
-                          <div key={t} style={{ display:'flex', gap:14, marginBottom:16 }}>
-                            <span style={{ fontSize:20, flexShrink:0 }}>{n}</span>
-                            <div>
-                              <p style={{ fontWeight:700, fontSize:13, marginBottom:4, color:'var(--text)' }}>{t}</p>
-                              <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.6, margin:0 }}>{d}</p>
-                            </div>
-                          </div>
-                        ))}
-                        <Terminal lines={[
-                          '# What you\'ll see in your terminal:',
-                          '[SSLVault] Detecting operating system...',
-                          '[✓] Detected: Ubuntu 22.04 LTS',
-                          '[SSLVault] Detecting web server...',
-                          '[✓] Found: Nginx',
-                          '[SSLVault] Connecting to SSLVault...',
-                          '[✓] Got certificate for: yourdomain.com',
-                          '[SSLVault] Writing certificate files...',
-                          '[✓] Nginx configured and reloaded',
-                          '✅  Installation Complete!',
-                        ]}/>
-                        <button onClick={() => nav('/dashboard')} className="btn btn-primary" style={{ marginTop:4 }}>
-                          <Server size={15}/> Go to My Certificates
-                        </button>
-                      </>
-                    )}
-                    {p.id === 'vercel' && (
-                      <>
-                        <h4 style={{ fontWeight:700, fontSize:15, marginBottom:16, color:'var(--text)' }}>▲ Vercel / Netlify SSL:</h4>
-                        <div style={{ background:'var(--green-light)', border:'1px solid #86efac', borderRadius:10, padding:16, marginBottom:16 }}>
-                          <p style={{ fontSize:14, fontWeight:600, color:'var(--green)', marginBottom:6 }}>✅ Good news!</p>
-                          <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.7, margin:0 }}>Vercel and Netlify automatically provision free SSL for your domains. You usually don't need to do anything. Just add your custom domain in their settings and SSL is added automatically.</p>
-                        </div>
-                        <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.7, marginBottom:12 }}>
-                          However, if you need a certificate for something Vercel/Netlify doesn't manage (like a backend API server), use SSLVault to generate one and install it manually.
-                        </p>
-                        <button onClick={() => nav('/buy')} className="btn btn-secondary">Generate Certificate Anyway</button>
-                      </>
-                    )}
-                    {p.id === 'noserver' && (
-                      <>
-                        <h4 style={{ fontWeight:700, fontSize:15, marginBottom:16, color:'var(--text)' }}>🌱 Starting from scratch:</h4>
-                        {[
-                          ['💡', 'Get a domain name first', 'If you don\'t have one, buy from GoDaddy, Namecheap, or Google Domains. Costs about $10-15/year.'],
-                          ['🏠', 'Choose hosting', 'For beginners: Netlify (free), Vercel (free), or Hostinger ($2/month) are great starting points. They include free SSL automatically.'],
-                          ['🔐', 'Generate your SSL', 'Once you have hosting, come back here and generate your certificate. The whole process takes under 5 minutes.'],
-                          ['📧', 'Need help?', 'Check our Knowledge Base or email support. We\'re happy to guide you through the whole process.'],
-                        ].map(([icon,t,d]) => (
-                          <div key={t} style={{ display:'flex', gap:14, marginBottom:16 }}>
-                            <span style={{ fontSize:24, flexShrink:0 }}>{icon}</span>
-                            <div>
-                              <p style={{ fontWeight:700, fontSize:13, marginBottom:4, color:'var(--text)' }}>{t}</p>
-                              <p style={{ fontSize:13, color:'var(--text2)', lineHeight:1.6, margin:0 }}>{d}</p>
-                            </div>
-                          </div>
-                        ))}
-                        <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginTop:8 }}>
-                          <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm"><ExternalLink size={13}/> Netlify (Free)</a>
-                          <a href="https://www.vercel.com" target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm"><ExternalLink size={13}/> Vercel (Free)</a>
-                          <a href="https://www.hostinger.com" target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm"><ExternalLink size={13}/> Hostinger ($2/mo)</a>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
               </div>
-            ))}
-          </div>
+              {path === p.id && (
+                <div className="v2-card v2-card-pad" style={{ borderTop: 'none', borderRadius: '0 0 var(--v2-r-lg) var(--v2-r-lg)', background: 'var(--v2-surface-2)' }}>
+                  {p.id === 'vps' && (
+                    <>
+                      <div className="v2-callout v2-callout-green" style={{ marginBottom: 12 }}>
+                        <Zap size={13} style={{ color: 'var(--v2-green)', flexShrink: 0 }}/>
+                        <div><span className="v2-callout-title">Fully automated with the persistent agent</span><br/>
+                        <span style={{ fontSize: 12 }}>Install the agent once via SSH. All future certificate installs and auto-renewals happen automatically — zero touch.</span></div>
+                      </div>
+                      <Step n={1} title="Issue your certificate"><p>Click <strong>Issue Certificate</strong> in the nav. Enter your domain, select cert type, choose DNS validation provider (Cloudflare, GoDaddy, Vercel, DigitalOcean supported). Click Issue.</p></Step>
+                      <Step n={2} title="Go to Dashboard → expand cert → Install"><p>Click the <strong>Install</strong> button on your certificate row. If no agent is connected, the modal shows a one-line install command.</p></Step>
+                      <Step n={3} title="Run the agent install on your server (one time only)">
+                        <div className="v2-code" style={{ marginBottom: 8 }}>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#f59e0b' }}/><span style={{ background: '#0e7fc0' }}/></div></div>
+                          <pre>curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash</pre>
+                        </div>
+                        <p>The agent registers with SSLVault. Your server appears as Online in <strong>Dashboard → Servers</strong>.</p>
+                      </Step>
+                      <Step n={4} title="Dispatch the install"><p>Back in the Install modal, click <strong>Deploy</strong>. The agent writes certificate files, updates your Nginx/Apache config, tests it, and reloads — all automatically. Reports back within seconds.</p></Step>
+                      <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')} style={{ marginTop: 8 }}>
+                        <Shield size={13}/> Issue Certificate <ArrowRight size={13}/>
+                      </button>
+                    </>
+                  )}
+                  {p.id === 'cpanel' && (
+                    <>
+                      <Step n={1} title="Issue your certificate"><p>Click <strong>Issue Certificate</strong> in the nav. Enter your domain and complete DNS validation (manual or auto with a connected provider).</p></Step>
+                      <Step n={2} title="Dashboard → expand cert → Install → cPanel"><p>In Dashboard, expand your cert row, click <strong>Install</strong>, choose <strong>cPanel / Shared Hosting</strong>. Enter your cPanel username and API token.</p></Step>
+                      <Step n={3} title="Download and upload the PHP agent"><p>Click <strong>Download PHP Agent</strong>. Upload the file to your <code className="v2-kbd">public_html</code> directory via cPanel File Manager.</p></Step>
+                      <Step n={4} title="Visit the agent URL to activate">
+                        <div className="v2-code" style={{ marginBottom: 8 }}>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#f59e0b' }}/><span style={{ background: '#0e7fc0' }}/></div></div>
+                          <pre>https://yourdomain.com/sslvault-agent.php</pre>
+                        </div>
+                        <p>The script installs your certificate via cPanel's UAPI. <strong>Delete the file immediately after.</strong></p>
+                      </Step>
+                      <button className="v2-btn v2-btn-primary" onClick={() => nav('/shared-hosting')} style={{ marginTop: 8 }}>
+                        Full cPanel Guide <ArrowRight size={13}/>
+                      </button>
+                    </>
+                  )}
+                  {p.id === 'platform' && (
+                    <>
+                      <div className="v2-callout tip" style={{ marginBottom: 12 }}>
+                        <span className="v2-callout-title">Good news — Vercel and Netlify handle SSL automatically</span><br/>
+                        <span style={{ fontSize: 12 }}>Just add your custom domain in their project settings and SSL is provisioned automatically.</span>
+                      </div>
+                      <p style={{ fontSize: 13, color: 'var(--v2-text-2)', lineHeight: 1.7 }}>
+                        If you have a <strong>backend server, API, or external domain</strong> that these platforms don't manage, issue a certificate via SSLVault and install it on that server using the persistent agent or manual steps.
+                      </p>
+                      <button className="v2-btn" onClick={() => nav('/buy')} style={{ marginTop: 4, fontSize: 12 }}>
+                        Issue Certificate Anyway <ArrowRight size={13}/>
+                      </button>
+                    </>
+                  )}
+                  {p.id === 'domain' && (
+                    <>
+                      <Step n={1} title="Get hosting first">
+                        <p>Choose a hosting provider. Beginner-friendly options: <a href="https://netlify.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--v2-green)' }}>Netlify</a> (free), <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--v2-green)' }}>Vercel</a> (free), Hostinger (~$2/mo). Most include free SSL automatically.</p>
+                      </Step>
+                      <Step n={2} title="Generate your certificate now"><p>You can issue your certificate now and have it ready. Come back to install it once hosting is set up.</p></Step>
+                      <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')} style={{ marginTop: 4 }}>
+                        <Shield size={13}/> Issue Certificate <ArrowRight size={13}/>
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* Full beginner walkthrough */}
-        <div style={{ marginBottom:52 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
-            <div style={{ width:40, height:40, borderRadius:10, background:'linear-gradient(135deg,#2563eb,#1d4ed8)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Play size={18} color="white"/>
-            </div>
-            <div>
-              <h2 style={{ fontSize:26, fontWeight:800, color:'var(--text)' }}>Complete Beginner Walkthrough</h2>
-              <p style={{ fontSize:13, color:'var(--text3)' }}>From zero to HTTPS in 5 minutes</p>
+        {/* FULL WALKTHROUGH */}
+        <Divider label="WALKTHROUGH" title="Complete beginner walkthrough — zero to HTTPS" />
+
+        <Step n={1} title="Create your SSLVault account">
+          <p>Click <strong>Sign In</strong> in the navigation. Enter your email and set a password. You'll receive a confirmation email — click the link to activate. Done.</p>
+          <button className="v2-btn v2-btn-primary" style={{ fontSize: 12, marginTop: 4 }} onClick={() => nav('/auth')}>
+            Create Account <ArrowRight size={13}/>
+          </button>
+        </Step>
+
+        <Step n={2} title="Issue your certificate">
+          <p>Click <strong>Issue Certificate</strong> in the nav. Enter your domain (e.g. <span className="v2-kbd">example.com</span> or <span className="v2-kbd">*.example.com</span> for wildcard). Select certificate type and DNS validation method. Click <strong>Issue</strong>.</p>
+          <Note type="tip">Connect a DNS provider under <strong>More → DNS Providers</strong> first — validation becomes fully automatic, no copy-pasting records.</Note>
+        </Step>
+
+        <Step n={3} title="Complete domain validation (DCV)">
+          <p>SSLVault (via GoGetSSL) verifies you own the domain before issuing. Three methods:</p>
+          <table className="v2-table" style={{ marginBottom: 10 }}>
+            <tbody>
+              <tr><td style={{ fontWeight: 600, width: 120 }}>DNS CNAME</td><td>Add a CNAME record — recommended. Auto-added if a DNS provider is connected.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>DNS TXT</td><td>Add a TXT record — similar, preferred by some registrars.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>Email</td><td>Click a link sent to admin@, webmaster@, or hostmaster@ for your domain.</td></tr>
+            </tbody>
+          </table>
+          <div style={{ background: '#0f172a', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '6px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12 }}>
+              <span style={{ color: '#64748b', fontWeight: 600 }}>TYPE</span><span style={{ color: '#3b82f6' }}>CNAME</span>
+              <span style={{ color: '#64748b', fontWeight: 600 }}>NAME</span><span style={{ color: '#38bdf8' }}>_acme-challenge</span>
+              <span style={{ color: '#64748b', fontWeight: 600 }}>VALUE</span><span style={{ color: '#fbbf24', wordBreak: 'break-all' }}>abc123def456.comodoca.com</span>
             </div>
           </div>
+          <Note type="warn">In the Name field, enter <strong>only</strong> <code className="v2-kbd">_acme-challenge</code> — your DNS provider appends the domain automatically. Entering the full hostname will fail.</Note>
+        </Step>
 
-          <Step n="1" emoji="🌐" title="Create a free account" highlight>
-            <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.8, marginBottom:16 }}>
-              Click <strong>Sign In</strong> in the top right corner. Enter your email and a password. Check your email for a confirmation link and click it. That's it — you're in!
-            </p>
-            <button onClick={() => nav('/auth')} className="btn btn-primary btn-sm">Create Free Account →</button>
-          </Step>
+        <Step n={4} title="Certificate appears in Dashboard">
+          <p>Once issued, your certificate row appears in <strong>Dashboard</strong> — click to expand and see expiry date, issuer details, full PEM files, and the Install button.</p>
+        </Step>
 
-          <Step n="2" emoji="🔑" title="Enter your domain name" highlight>
-            <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.8, marginBottom:16 }}>
-              Click <strong>Generate SSL</strong> in the navigation. Type your domain name (just the domain, like <code style={{ background:'var(--bg2)', padding:'2px 8px', borderRadius:5, fontFamily:'monospace', fontSize:13 }}>example.com</code> — no http:// needed). Tick the agreement box and click <strong>Generate Free SSL</strong>.
-            </p>
-            <div style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:10, padding:14, display:'flex', gap:10, alignItems:'center', marginBottom:12 }}>
-              <div style={{ width:10, height:10, borderRadius:'50%', background:'var(--green)', flexShrink:0 }}/>
-              <p style={{ fontSize:13, color:'var(--text2)', margin:0, lineHeight:1.6 }}>
-                <strong>Wildcard certificate tip:</strong> Enter <code style={{ fontFamily:'monospace', background:'var(--bg2)', padding:'1px 5px', borderRadius:4 }}>*.example.com</code> to protect ALL subdomains (www.example.com, blog.example.com, shop.example.com) with one certificate.
-              </p>
-            </div>
-          </Step>
-
-          <Step n="3" emoji="📝" title="Add a DNS TXT record" highlight>
-            <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.8, marginBottom:12 }}>
-              This step proves you own the domain. You'll see a record like this — you need to add it to wherever your domain's DNS is managed (usually your domain registrar like GoDaddy, Namecheap, or Cloudflare).
-            </p>
-            <div style={{ background:'#0f172a', borderRadius:10, padding:16, marginBottom:16 }}>
-              <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:'6px 16px', fontFamily:'monospace', fontSize:13 }}>
-                <span style={{ color:'#64748b', fontWeight:600 }}>TYPE</span><span style={{ color:'#3b82f6' }}>TXT</span>
-                <span style={{ color:'#64748b', fontWeight:600 }}>NAME</span><span style={{ color:'#38bdf8' }}>_acme-challenge</span>
-                <span style={{ color:'#64748b', fontWeight:600 }}>VALUE</span><span style={{ color:'#fbbf24', wordBreak:'break-all' }}>abc123def456ghi789jkl012mno345pqr678</span>
-                <span style={{ color:'#64748b', fontWeight:600 }}>TTL</span><span style={{ color:'#e2e8f0' }}>300</span>
-              </div>
-            </div>
-            <div style={{ background:'var(--yellow-light)', border:'1px solid var(--yellow-border)', borderRadius:10, padding:14, marginBottom:12 }}>
-              <p style={{ fontWeight:700, fontSize:13, marginBottom:6, color:'var(--text)' }}>⚠️ Important — easy mistake to avoid:</p>
-              <p style={{ fontSize:13, color:'var(--text2)', margin:0, lineHeight:1.7 }}>
-                In the Name field, type <strong>only</strong> <code style={{ fontFamily:'monospace', background:'white', padding:'1px 5px', borderRadius:4 }}>_acme-challenge</code> — your DNS provider will automatically add your domain name to it. If you type the full name including your domain, it will double up and fail.
-              </p>
-            </div>
-            <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-              <a href="https://dash.cloudflare.com" target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm"><ExternalLink size={12}/> Open Cloudflare</a>
-              <a href="https://dcc.godaddy.com" target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm"><ExternalLink size={12}/> Open GoDaddy DNS</a>
-              <a href="https://ap.www.namecheap.com" target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm"><ExternalLink size={12}/> Open Namecheap</a>
-            </div>
-          </Step>
-
-          <Step n="4" emoji="✅" title="Verify DNS and issue certificate" highlight>
-            <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.8, marginBottom:12 }}>
-              After adding the DNS record, wait 1-2 minutes for it to propagate. Then click <strong>Verify DNS & Continue</strong>. If it's found, you'll move to the next step. If not, wait another minute and try again.
-            </p>
-            <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:14 }}>
-              <p style={{ fontSize:13, color:'var(--text)', fontWeight:600, marginBottom:4 }}>💡 Pro tip — Save and come back later</p>
-              <p style={{ fontSize:13, color:'var(--text2)', margin:0, lineHeight:1.7 }}>Not ready to verify right now? Click <strong>"Go to Dashboard — Verify Later"</strong>. Your request is saved. Come back whenever the DNS is ready and click <strong>"Check DNS & Issue"</strong> from the dashboard.</p>
-            </div>
-          </Step>
-
-          <Step n="5" emoji="📦" title="Download your certificate files" highlight>
-            <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.8, marginBottom:16 }}>
-              Once issued, you'll see three files. Click <strong>Download All Files</strong> to save them all at once.
-            </p>
-            <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:16 }}>
-              {[
-                ['fullchain.pem', '✅ Use this one on your server', '#0e7fc0'],
-                ['key.pem', '🔑 Private key — keep secret!', '#ef4444'],
-                ['cert.pem', '(Not usually needed)', '#94a3b8'],
-              ].map(([name, note, color]) => (
-                <div key={name} style={{ background:'white', border:'1px solid var(--border)', borderRadius:10, padding:'12px 16px', minWidth:160 }}>
-                  <p style={{ fontFamily:'monospace', fontSize:13, fontWeight:700, color, marginBottom:4 }}>{name}</p>
-                  <p style={{ fontSize:11, color:'var(--text3)', margin:0 }}>{note}</p>
-                </div>
-              ))}
-            </div>
-          </Step>
-
-          <Step n="6" emoji="🚀" title="Install on your server" highlight>
-            <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.8, marginBottom:16 }}>
-              Choose your method based on your hosting type:
-            </p>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:16 }}>
-              <div style={{ background:'var(--accent-light)', border:'1px solid var(--accent-border)', borderRadius:10, padding:16, cursor:'pointer' }} onClick={() => setPath('vps')}>
-                <div style={{ fontSize:24, marginBottom:8 }}>⚡</div>
-                <p style={{ fontWeight:700, fontSize:13, color:'var(--accent)', marginBottom:4 }}>Auto-Install Agent</p>
-                <p style={{ fontSize:12, color:'var(--text2)', margin:0 }}>VPS/Cloud server — one command installs everything automatically</p>
-              </div>
-              <div style={{ background:'var(--bg)', border:'1px solid var(--border)', borderRadius:10, padding:16, cursor:'pointer' }} onClick={() => setPath('managed')}>
-                <div style={{ fontSize:24, marginBottom:8 }}>🖥️</div>
-                <p style={{ fontWeight:700, fontSize:13, color:'var(--text)', marginBottom:4 }}>Paste in cPanel</p>
-                <p style={{ fontSize:12, color:'var(--text2)', margin:0 }}>Shared hosting — paste files in your control panel</p>
-              </div>
-            </div>
-            <button onClick={() => nav('/install')} className="btn btn-secondary btn-sm">View Full Install Guide →</button>
-          </Step>
-        </div>
-
-        {/* Glossary */}
-        <div style={{ marginBottom:52 }}>
-          <h2 style={{ fontSize:26, fontWeight:800, marginBottom:8, color:'var(--text)' }}>📖 Glossary</h2>
-          <p style={{ color:'var(--text2)', fontSize:14, marginBottom:20 }}>Common terms explained in plain English:</p>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:8 }}>
+        <Step n={5} title="Install on your server">
+          <p>Click <strong>Install</strong>. Three paths:</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginTop: 8 }}>
             {[
-              ['SSL / TLS', 'Secure Sockets Layer / Transport Layer Security. Both mean the same thing in practice — encryption for your website. TLS is the newer version.'],
-              ['HTTPS', 'The secure version of HTTP. The "S" means SSL is active. Your browser shows a padlock icon when HTTPS is working.'],
-              ['Certificate', 'A digital file that proves your website is who it says it is. Like a passport for your website.'],
-              ['Private Key', 'A secret file that pairs with your certificate. Keep it safe — never share it with anyone. Like the PIN to your passport.'],
-              ['fullchain.pem', 'The certificate file you upload to your server. It includes your cert plus the chain of trust back to the certificate authority.'],
-              ['Let\'s Encrypt', 'The free certificate authority (CA) that issues our SSL certificates. Trusted by all browsers. Backed by Mozilla, Cisco, Google.'],
-              ['DNS', 'Domain Name System. Like a phone book for the internet — converts domain names to IP addresses.'],
-              ['TXT Record', 'A special DNS record used to prove you own a domain. SSLVault uses this to verify your domain before issuing a certificate.'],
-              ['Wildcard Certificate', 'A certificate for *.domain.com that covers ALL subdomains — www, blog, shop, api, etc. with just one certificate.'],
-              ['Port 443', 'The network port used for HTTPS. Port 80 is HTTP. SSL/TLS works on 443.'],
-              ['Certificate Expiry', 'SSL certificates expire after 90 days (Let\'s Encrypt). SSLVault reminds you and makes renewal a one-click process.'],
-            ].map(([term, def]) => (
-              <div key={term} style={{ background:'white', border:'1px solid var(--border)', borderRadius:10, padding:'12px 18px', display:'flex', gap:16, boxShadow:'var(--shadow)' }}>
-                <span style={{ fontFamily:'monospace', fontSize:13, fontWeight:700, color:'var(--accent)', minWidth:160, flexShrink:0 }}>{term}</span>
-                <span style={{ fontSize:13, color:'var(--text2)', lineHeight:1.6 }}>{def}</span>
+              { icon: Bot, label: 'Persistent Agent', desc: 'VPS — dispatches to your connected server automatically', color: 'var(--v2-green)' },
+              { icon: Cloud, label: 'cPanel / Shared', desc: 'PHP agent install via cPanel UAPI — no SSH', color: 'var(--v2-text-2)' },
+              { icon: Server, label: 'Manual', desc: 'Download PEM files and follow the server install guide', color: 'var(--v2-text-2)' },
+            ].map(({ icon: Icon, label, desc, color }) => (
+              <div key={label} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 10 }}>
+                <Icon size={14} strokeWidth={1.8} style={{ color, flexShrink: 0, marginTop: 2 }}/>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--v2-text)', marginBottom: 2 }}>{label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--v2-text-2)', lineHeight: 1.55 }}>{desc}</div>
+                </div>
               </div>
             ))}
           </div>
+        </Step>
+
+        <Step n={6} title="Enable auto-renewal">
+          <p>In <strong>Dashboard → Renewal Schedule</strong>, toggle <strong>Auto-Renew</strong> on for your certificate. SSLVault renews 30 days before expiry — automatically issues, validates (via DNS provider), and deploys (via agent). Your certificates never expire.</p>
+          <Note type="tip">Auto-renewal works fully hands-free when you have both a DNS provider connected and a persistent agent installed.</Note>
+        </Step>
+
+        {/* GLOSSARY */}
+        <Divider label="GLOSSARY" title="Common terms explained" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
+          {[
+            ['SSL / TLS', 'Both mean website encryption. TLS is the current standard; SSL is the legacy name. Used interchangeably.'],
+            ['HTTPS', 'The secure version of HTTP. The "s" confirms SSL/TLS is active.'],
+            ['DV / OV / EV', 'Validation levels. DV = domain ownership only (5 min). OV = organisation verified (1–3 days). EV = full legal verification (2–7 days).'],
+            ['Certificate', 'A digital file proving your website\'s identity, issued by a trusted Certificate Authority (CA).'],
+            ['Private Key', 'The secret counterpart to your certificate. Never share it. Permissions should always be 600.'],
+            ['fullchain.pem', 'Your certificate including the full chain of trust. Use this on all server configs — not cert.pem alone.'],
+            ['GoGetSSL', 'The CA reseller SSLVault uses to issue DV, OV, EV and Wildcard certificates from DigiCert, Sectigo, RapidSSL chains.'],
+            ['DCV', 'Domain Control Validation — how the CA verifies you own a domain before issuing. Done via DNS CNAME, TXT record, or email.'],
+            ['Wildcard', '*.example.com — covers all single-level subdomains with one certificate. Requires DNS-01 validation.'],
+            ['Persistent Agent', 'SSLVault\'s bash daemon for Linux VPS servers. Polls every 5 minutes, auto-installs and auto-renews certificates.'],
+            ['Auto-Renewal', 'SSLVault automatically reorders and redeploys certificates before expiry — no action needed from you.'],
+          ].map(([term, def]) => (
+            <div key={term} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 16 }}>
+              <span className="v2-mono" style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-green)', minWidth: 160, flexShrink: 0 }}>{term}</span>
+              <span style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{def}</span>
+            </div>
+          ))}
         </div>
 
         {/* FAQ */}
-        <div style={{ marginBottom:52 }}>
-          <h2 style={{ fontSize:26, fontWeight:800, marginBottom:20, color:'var(--text)' }}>❓ Frequently Asked Questions</h2>
-          <FAQ q="Is SSLVault really free?" a="Yes, completely free. SSL certificates from Let's Encrypt are free, and SSLVault makes them easy to get. There are no hidden fees, no credit card required." />
-          <FAQ q="How long does an SSL certificate last?" a="90 days. This is Let's Encrypt's standard validity period. SSLVault shows you exactly when your certificate expires and lets you renew in one click. Set a reminder 2 weeks before expiry." />
-          <FAQ q="Will my website go down when I install SSL?" a="No. Installing SSL doesn't affect your website's availability. You're just adding a security layer. The process takes seconds and your site stays live throughout." />
-          <FAQ q="I got an error when verifying DNS — what do I do?" a="DNS takes time to propagate (spread across the internet). After adding the TXT record, wait 2-5 minutes before clicking Verify. Use dnschecker.org to see if it's propagated yet. If it still fails, double-check that you typed only _acme-challenge in the Name field (not the full domain)." />
-          <FAQ q="What is the difference between cert.pem, key.pem and fullchain.pem?" a="fullchain.pem is your certificate — use this on your server. key.pem is your private key — keep it secret and never share. cert.pem is just the certificate without the chain — most servers want fullchain.pem instead. When in doubt, use fullchain.pem." />
-          <FAQ q="Can I use one certificate for multiple domains?" a="Each certificate covers one domain or use wildcard (*.domain.com) for all subdomains of one domain. For completely different domains (example.com AND mysite.com) you need two separate certificates — both free." />
-          <FAQ q="My certificate expired — what happens?" a="Visitors will see a scary security warning and your site traffic will drop drastically. Don't panic — just go to My Certificates, click Request Renewal, and follow the same steps as before. Takes about 3 minutes." />
-          <FAQ q="I'm on GoDaddy — do I need the auto-install agent?" a="No. If you're on GoDaddy shared hosting with cPanel, just use the paste method (Path 1 above). The agent is for VPS/cloud servers where you have SSH access. GoDaddy shared hosting uses cPanel, which is much simpler." />
-        </div>
+        <Divider label="FAQ" title="Frequently asked questions" />
+        <FAQ q="Is SSLVault really free to use?"
+             a="The SSLVault platform is free — agents, monitoring, DNS connectors, auto-renewal, CA connectors, CA intelligence. You pay only for certificates at GoGetSSL reseller rates (from $8/yr for DV). No platform subscription required." />
+        <FAQ q="How long does a certificate last?"
+             a="Validity varies by type and CA. RapidSSL DV certificates have ~6-month cert validity with 1-year order subscriptions. SSLVault tracks both expiry dates separately and handles auto-reissue and auto-renewal automatically." />
+        <FAQ q="Will my website go down during SSL installation?"
+             a="No. Installing SSL doesn't affect uptime. The persistent agent tests config before reloading your web server — if the test fails, the original config is automatically restored." />
+        <FAQ q="Can I use one wildcard for multiple subdomains?"
+             a="Yes. *.example.com covers all single-level subdomains — www, blog, api, shop, etc. — with one certificate. Wildcards require DNS-01 validation (connect a DNS provider for automatic handling)." />
+        <FAQ q="What happens when the certificate expires?"
+             a="With auto-renewal enabled and a DNS provider connected, SSLVault renews automatically 30 days before expiry. If auto-renewal is off, you'll receive email alerts. Renew from Dashboard with one click." />
+        <FAQ q="I'm on GoDaddy shared hosting — do I need the agent?"
+             a="No. The persistent agent is for Linux VPS/cloud servers with SSH access. For cPanel shared hosting (GoDaddy, Bluehost, Hostinger), use the cPanel install path — no SSH or agent needed." />
+        <FAQ q="Does SSLVault store my private keys?"
+             a="Only if you opt in to KeyLocker. Keys are AES-256-GCM encrypted at rest with a full audit log. Every reveal is copy-only with a 30-second timed display. You can also generate keys server-side — SSLVault never sees them." />
 
-        {/* Final CTA */}
-        <div style={{ background:'linear-gradient(135deg,#0369a1,#2563eb)', borderRadius:20, padding:'40px 36px', textAlign:'center', boxShadow:'0 20px 60px rgba(37,99,235,0.3)' }}>
-          <div style={{ fontSize:48, marginBottom:16 }}>🔒</div>
-          <h2 style={{ fontSize:28, fontWeight:900, color:'white', marginBottom:12, letterSpacing:'-0.5px' }}>Ready to secure your website?</h2>
-          <p style={{ color:'rgba(255,255,255,0.85)', fontSize:16, marginBottom:28, lineHeight:1.7, maxWidth:500, margin:'0 auto 28px' }}>
-            It's completely free. Takes under 5 minutes. Your visitors deserve a secure experience.
+        {/* CTA */}
+        <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--v2-text)',
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+            <Shield size={18} color="white" strokeWidth={2}/>
+          </div>
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6, letterSpacing: '-0.3px' }}>
+            Ready to secure your domains?
+          </h3>
+          <p style={{ color: 'var(--v2-text-2)', fontSize: 13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
+            Issue DV, OV, EV or Wildcard certificates via GoGetSSL. Auto-renew. Deploy with one command.
           </p>
-          <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
-            <button onClick={() => nav('/buy')} style={{ background:'white', color:'var(--accent)', border:'none', padding:'14px 28px', borderRadius:10, fontSize:16, fontWeight:800, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:8, boxShadow:'0 4px 14px rgba(0,0,0,0.15)' }}>
-              <Shield size={18}/> Generate Free SSL
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
+              <Shield size={13} strokeWidth={2.2}/> Issue Certificate <ArrowRight size={13}/>
             </button>
-            <button onClick={() => nav('/knowledge-base')} style={{ background:'rgba(255,255,255,0.15)', color:'white', border:'1px solid rgba(255,255,255,0.3)', padding:'14px 28px', borderRadius:10, fontSize:16, fontWeight:700, cursor:'pointer' }}>
-              Read Full Guide
+            <button className="v2-btn" onClick={() => nav('/knowledge-base')}>
+              Knowledge Base
             </button>
           </div>
         </div>
