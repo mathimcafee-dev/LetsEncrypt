@@ -108,6 +108,8 @@ export default function CAConnectors({ nav }) {
   const [delConn,      setDelConn]      = useState(null)
   const [delCerts,     setDelCerts]     = useState(true)   // also delete certs when removing connection
   const [renewModal,   setRenewModal]   = useState(null)   // cert object for renew-choice modal
+  const [delAllModal,  setDelAllModal]  = useState(false)  // confirm delete all certs
+  const [deletingAll,  setDeletingAll]  = useState(false)  // deleting in progress
 
   // Add connection modal
   const [showAdd,      setShowAdd]      = useState(false)
@@ -218,6 +220,15 @@ export default function CAConnectors({ nav }) {
     if (cert.domain) sessionStorage.setItem('prefill_domain', cert.domain)
     setRenewModal(null)
     nav('/buy')
+  }
+
+  const doDeleteAll = async () => {
+    setDeletingAll(true)
+    const r = await callCA(tok, { action: 'delete_all_certs' })
+    setDeletingAll(false)
+    setDelAllModal(false)
+    if (r.ok) await load()
+    else alert(r.error || 'Delete failed')
   }
 
   const doImport = async () => {
@@ -406,8 +417,22 @@ export default function CAConnectors({ nav }) {
         </div>
 
         {/* Cert table */}
-        <div className="v2-section-label" style={{ marginBottom: 10 }}>
-          Tracked certificates ({certs.length})
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+          <div className="v2-section-label" style={{ margin:0 }}>
+            Tracked certificates ({certs.length})
+          </div>
+          {certs.length > 0 && (
+            <button
+              onClick={() => setDelAllModal(true)}
+              style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
+                fontWeight:600, padding:'5px 12px', borderRadius:7, cursor:'pointer',
+                background:'#fef2f2', color:'#dc2626', border:'0.5px solid #fecaca',
+                fontFamily:'inherit', transition:'all .15s' }}
+              onMouseEnter={e=>{e.currentTarget.style.background='#dc2626';e.currentTarget.style.color='white'}}
+              onMouseLeave={e=>{e.currentTarget.style.background='#fef2f2';e.currentTarget.style.color='#dc2626'}}>
+              <Trash2 size={11}/> Delete all {certs.length} certs
+            </button>
+          )}
         </div>
         <div className="v2-card" style={{ overflow: 'hidden', padding: 0 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
@@ -870,6 +895,76 @@ export default function CAConnectors({ nav }) {
             </div>
           )
         })()}
+
+
+        {/* ── Delete all certs confirm modal ── */}
+        {delAllModal && (
+          <div style={{ position:'fixed', inset:0, zIndex:1002, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.55)', backdropFilter:'blur(4px)' }}
+            onClick={e => e.target===e.currentTarget && !deletingAll && setDelAllModal(false)}>
+            <div style={{ background:'white', borderRadius:16, width:'100%', maxWidth:400,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid #e2e8f0', overflow:'hidden' }}>
+
+              {/* Header */}
+              <div style={{ padding:'18px 20px 14px', borderBottom:'0.5px solid #f1f5f9',
+                display:'flex', alignItems:'center', gap:12 }}>
+                <div style={{ width:36, height:36, borderRadius:9, background:'#fef2f2', flexShrink:0,
+                  display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Trash2 size={16} color="#dc2626"/>
+                </div>
+                <div>
+                  <div style={{ fontSize:14, fontWeight:700, color:'#0f172a' }}>Delete all tracked certificates?</div>
+                  <div style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>{certs.length} certificate{certs.length!==1?'s':''} will be permanently removed</div>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div style={{ padding:'16px 20px' }}>
+                <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:9,
+                  padding:'12px 14px', marginBottom:16, fontSize:12, color:'#b91c1c', lineHeight:1.6 }}>
+                  This will <strong>permanently delete</strong> all {certs.length} tracked certificates
+                  and remove every reference from the database. CA connections are kept — you can re-sync anytime.
+                  This cannot be undone.
+                </div>
+
+                {/* Cert summary */}
+                <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:16 }}>
+                  {['digicert','sectigo','sslcom','imported'].map(src => {
+                    const count = certs.filter(c => c.source===src||c.imported_from===src).length
+                    if (!count) return null
+                    const colors = {digicert:['#fef2f2','#dc2626'],sectigo:['#f5f3ff','#7c3aed'],sslcom:['#e0f2fe','#0369a1'],imported:['#f8fafc','#64748b']}
+                    const [bg,color] = colors[src]||['#f8fafc','#64748b']
+                    const labels = {digicert:'DigiCert',sectigo:'Sectigo',sslcom:'SSL.com',imported:'Manual'}
+                    return (
+                      <div key={src} style={{ fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:20,
+                        background:bg, color, border:`0.5px solid ${color}44` }}>
+                        {labels[src]}: {count}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div style={{ display:'flex', gap:8 }}>
+                  <button onClick={() => setDelAllModal(false)} disabled={deletingAll}
+                    style={{ flex:1, padding:'9px', border:'0.5px solid #e2e8f0', borderRadius:8,
+                      background:'white', cursor:'pointer', fontFamily:'inherit', fontSize:12, fontWeight:600 }}>
+                    Cancel
+                  </button>
+                  <button onClick={doDeleteAll} disabled={deletingAll}
+                    style={{ flex:2, padding:'9px', background: deletingAll?'#94a3b8':'#dc2626',
+                      color:'white', border:'none', borderRadius:8, fontSize:12, fontWeight:700,
+                      cursor: deletingAll?'wait':'pointer', fontFamily:'inherit',
+                      display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                    {deletingAll
+                      ? <><RefreshCw size={12} style={{animation:'spin .8s linear infinite'}}/> Deleting…</>
+                      : <><Trash2 size={12}/> Delete all {certs.length} certificates</>}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
