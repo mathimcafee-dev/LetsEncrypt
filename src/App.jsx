@@ -59,7 +59,8 @@ export default function App() {
     return null
   }
 
-  const showPublicNav = !authLoading && !user
+  // Home page has its own nav built-in — exclude it to avoid duplicate
+  const showPublicNav = !authLoading && !user && page !== '/'
 
   return (
     <div>

@@ -146,7 +146,7 @@ const COMPARE = [
   { feat: 'PQC readiness scanner',        sv: true,  v: true,  k: true  },
   { feat: '3-tier reseller platform',     sv: true,  v: false, k: false },
   { feat: 'DigiCert OV/EV automation',   sv: true,  v: true,  k: true  },
-  { feat: 'Starting price / yr',          sv: '$0',  v: '$250k', k: '$75k' },
+  { feat: 'Starting price',                sv: '$0',  v: 'Enterprise', k: 'Enterprise' },
 ]
 
 export default function Home({ nav }) {
@@ -257,7 +257,7 @@ export default function Home({ nav }) {
               maxWidth: 500, marginBottom: 36, fontWeight: 400,
               animation: 'fadeUp .6s ease .4s both' }}>
               Built by a <strong style={{ color: 'rgba(255,255,255,0.88)', fontWeight: 700 }}>Certified PKI Specialist</strong> to
-              replace Venafi and Keyfactor for indie developers, MSPs, and resellers — at $0 to start.
+              give developers, MSPs, and resellers a complete CLM platform — without the enterprise price tag.
             </p>
 
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 48,
@@ -272,7 +272,7 @@ export default function Home({ nav }) {
               {[
                 { val: certCount ? `${count}+` : '—', label: 'Active certs', sub: 'across all CAs' },
                 { val: '~5 min', label: 'DV issuance', sub: 'GoGetSSL · DigiCert chain' },
-                { val: '94%', label: 'Cost saving', sub: 'vs Venafi $250k/yr' },
+                { val: '$0', label: 'Free to start', sub: 'No credit card · no per-seat fee' },
               ].map(({ val, label, sub }) => (
                 <div key={label} style={{ borderTop: `2px solid rgba(56,189,248,0.4)`, paddingTop: 14 }}>
                   <div style={{ fontSize: 26, fontWeight: 800, color: 'white', letterSpacing: '-0.8px',
@@ -337,7 +337,7 @@ export default function Home({ nav }) {
             <h2 style={{ fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 900, letterSpacing: '-1.2px',
               color: C.navy, marginBottom: 16 }}>Everything a PKI team needs</h2>
             <p style={{ fontSize: 16, color: C.slateL, maxWidth: 480, margin: '0 auto', lineHeight: 1.75 }}>
-              15 features that replace Venafi at a fraction of the cost — built for developers, MSPs, and resellers.
+              15 features that cover the full certificate lifecycle — built for developers, MSPs, and resellers.
             </p>
           </div>
         </Reveal>
@@ -394,13 +394,13 @@ export default function Home({ nav }) {
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '96px 40px' }}>
         <Reveal>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <Label>vs Enterprise CLM</Label>
+            <Label>How SSLVault compares</Label>
             <h2 style={{ fontSize: 'clamp(26px,3vw,40px)', fontWeight: 900,
               letterSpacing: '-1px', color: C.navy, marginBottom: 12 }}>
-              Enterprise power. Startup price.
+              Complete CLM. Accessible pricing.
             </h2>
             <p style={{ fontSize: 15, color: C.slateL, maxWidth: 420, margin: '0 auto' }}>
-              Same core CLM capabilities as Venafi and Keyfactor. Built for teams that can't justify $75k–$250k/yr.
+              Everything you need to manage, automate and secure certificates across every CA and every server — at a price that works for everyone.
             </p>
           </div>
         </Reveal>
@@ -474,12 +474,12 @@ export default function Home({ nav }) {
               <Label color="#38bdf8">Start today</Label>
               <h2 style={{ fontSize: 'clamp(28px,3.5vw,48px)', fontWeight: 900, color: 'white',
                 letterSpacing: '-1.5px', marginBottom: 16, lineHeight: 1.1 }}>
-                Beat Venafi at a fraction of the price.
+                The complete CLM platform. Built for everyone.
               </h2>
               <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 500,
                 margin: '0 auto 36px', lineHeight: 1.75 }}>
-                Full CLM platform — issuance, monitoring, zero-touch renewal, VPS agent, cPanel push,
-                PQC scanner, CA connectors, consolidation advisor. Start free. No credit card.
+                Issue, monitor, renew and deploy SSL certificates automatically — across every CA, every server,
+                every customer. Start free. No credit card required. No credit card.
               </p>
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Btn onClick={() => nav('/auth')} primary>Get Started Free →</Btn>
