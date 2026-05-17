@@ -60,11 +60,15 @@ function StatusPill({ days, status }) {
 }
 
 function ProgressBar({ days, max = 365 }) {
+  const [animated, setAnimated] = useState(false)
+  useEffect(() => { const t = setTimeout(()=>setAnimated(true), 50); return ()=>clearTimeout(t) }, [])
   const pct = days == null ? 0 : Math.max(0, Math.min(100, (days / max) * 100))
-  const cls = days == null ? '' : days < 0 ? 'red' : days < 14 ? 'red' : days < 30 ? 'amber' : ''
+  const color = days == null ? '#e2e8f0' : days < 0 ? '#ef4444' : days < 14 ? '#ef4444' : days < 30 ? '#f59e0b' : '#0e7fc0'
   return (
-    <div className="v2-bar">
-      <div className={'v2-bar-fill '+cls} style={{ width: pct+'%' }}/>
+    <div style={{ height:4, borderRadius:999, background:'#f1f5f9', overflow:'hidden' }}>
+      <div style={{ height:'100%', borderRadius:999, background:color,
+        width: animated ? pct+'%' : '0%',
+        transition:'width 0.8s cubic-bezier(0.16,1,0.3,1)' }}/>
     </div>
   )
 }
@@ -805,58 +809,65 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const periodLabel = period ? (period === 12 ? '1 year' : period === 24 ? '2 years' : '3 years') : '1 year'
 
   return (
-    <div className="v2-detail" style={{ position:'sticky', top:20, padding:0, overflow:'hidden' }}>
+    <div style={{ background:'white', border:'0.5px solid #e2e8f0', borderRadius:14,
+      overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.07)',
+      position:'sticky', top:20, animation:'fadeSlideUp 0.3s ease both' }}>
 
-      {/* ── Hero header with ring gauge ─────────────────────────────────── */}
-      <div style={{ padding:'18px 18px 14px', background:'var(--v2-bg)',
-        borderBottom:'0.5px solid var(--v2-border)', display:'grid',
-        gridTemplateColumns:'auto 1fr', gap:16, alignItems:'center' }}>
-        <RingGauge days={days}/>
-        <div>
-          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:4 }}>
-            <span className="v2-mono" style={{ fontSize:14, fontWeight:500, wordBreak:'break-all',
-              color:'var(--v2-text)' }}>{cert.domain}</span>
-            <button className="v2-modal-close" onClick={onClose} style={{ flexShrink:0, marginLeft:8 }}>
-              <X size={14}/>
-            </button>
-          </div>
-          <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:8 }}>
-            Issued {fmtDate(cert.issued_at || cert.created_at)}
-          </div>
-          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:10, fontWeight:500,
-              padding:'3px 9px', borderRadius:20, background:statusBg,
-              border:'0.5px solid '+statusBorder, color:statusColor }}>
-              <span style={{ width:5, height:5, borderRadius:'50%', background:statusColor,
-                animation: !isExpired && !isWarn ? 'v3pulse 2s ease infinite' : 'none' }}/>
-              {statusLabel}
-            </span>
-            <span style={{ display:'inline-flex', alignItems:'center', fontSize:10, fontWeight:500,
-              padding:'3px 9px', borderRadius:20, background:'var(--v2-surface-3)',
-              border:'0.5px solid var(--v2-border)', color:'var(--v2-text-2)' }}>
-              GoGetSSL
-            </span>
-            <span style={{ display:'inline-flex', alignItems:'center', fontSize:10, fontWeight:500,
-              padding:'3px 9px', borderRadius:20, background:'var(--v2-surface-3)',
-              border:'0.5px solid var(--v2-border)', color:'var(--v2-text-2)' }}>
-              {cert._order?.product_name || cert.cert_type || 'RapidSSL'}
-            </span>
+      {/* ── Hero header ─── */}
+      <div style={{ padding:'20px 20px 16px', background:'linear-gradient(135deg, #f8fafc 0%, white 100%)',
+        borderBottom:'0.5px solid #f1f5f9' }}>
+        <div style={{ display:'flex', alignItems:'flex-start', gap:16 }}>
+          <RingGauge days={days}/>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
+              <span style={{ fontSize:14, fontWeight:700, wordBreak:'break-all',
+                color:'#0f172a', fontFamily:'monospace', lineHeight:1.3 }}>{cert.domain}</span>
+              <button onClick={onClose}
+                style={{ background:'#f8fafc', border:'0.5px solid #e2e8f0', cursor:'pointer',
+                  color:'#94a3b8', padding:'5px', borderRadius:7, display:'flex', flexShrink:0,
+                  marginLeft:8, transition:'all .15s' }}
+                onMouseEnter={e=>{e.currentTarget.style.background='#fee2e2';e.currentTarget.style.color='#dc2626';e.currentTarget.style.borderColor='#fecaca'}}
+                onMouseLeave={e=>{e.currentTarget.style.background='#f8fafc';e.currentTarget.style.color='#94a3b8';e.currentTarget.style.borderColor='#e2e8f0'}}>
+                <X size={13} strokeWidth={2}/>
+              </button>
+            </div>
+            <div style={{ fontSize:11, color:'#94a3b8', marginBottom:10 }}>
+              Issued {fmtDate(cert.issued_at || cert.created_at)}
+            </div>
+            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+              <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:10, fontWeight:700,
+                padding:'3px 10px', borderRadius:20, background:statusBg,
+                border:'0.5px solid '+statusBorder, color:statusColor }}>
+                <span style={{ width:6, height:6, borderRadius:'50%', background:statusColor,
+                  animation: !isExpired && !isWarn ? 'v3pulse 2s ease infinite' : 'none',
+                  boxShadow: !isExpired && !isWarn ? '0 0 0 2px rgba(22,163,74,0.25)' : 'none' }}/>
+                {statusLabel}
+              </span>
+              <span style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20,
+                background:'#eff6ff', color:'#185FA5', border:'0.5px solid #B5D4F4' }}>
+                GoGetSSL
+              </span>
+              <span style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20,
+                background:'#f8fafc', color:'#475569', border:'0.5px solid #e2e8f0' }}>
+                {cert._order?.product_name || cert.cert_type || 'RapidSSL'}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── Metric strip ────────────────────────────────────────────────── */}
+      {/* ── Metric strip ─── */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)',
-        borderBottom:'0.5px solid var(--v2-border)' }}>
+        borderBottom:'0.5px solid #f1f5f9', background:'#fafbfc' }}>
         {[
           { val: Math.max(0, days ?? 0), label:'Days left', color: statusColor },
-          { val: 365, label:'Total days', color:'var(--v2-text)' },
+          { val: 365,                    label:'Total days', color:'#0f172a' },
           { val: Math.max(0, (days ?? 0) - 166), label:'Reissue in', color:'#d97706' },
         ].map(({ val, label, color }, i) => (
-          <div key={i} style={{ padding:'10px 14px',
-            borderRight: i < 2 ? '0.5px solid var(--v2-border)' : 'none' }}>
-            <div style={{ fontSize:15, fontWeight:500, color, fontFamily:'monospace' }}>{val}</div>
-            <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:3 }}>{label}</div>
+          <div key={i} style={{ padding:'12px 16px',
+            borderRight: i < 2 ? '0.5px solid #f1f5f9' : 'none' }}>
+            <div style={{ fontSize:20, fontWeight:800, color, fontFamily:'monospace', letterSpacing:'-0.5px' }}>{val}</div>
+            <div style={{ fontSize:10, color:'#94a3b8', marginTop:3, textTransform:'uppercase', letterSpacing:'0.3px' }}>{label}</div>
           </div>
         ))}
       </div>
@@ -866,15 +877,16 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         <ValidityTimeline issuedAt={cert.issued_at} expiresAt={cert.expires_at}/>
       )}
 
-      {/* ── Tabs ─────────────────────────────────────────────────────────── */}
-      <div style={{ display:'flex', padding:'0 18px', borderBottom:'0.5px solid var(--v2-border)', gap:2 }}>
+      {/* ── Tabs ─── */}
+      <div style={{ display:'flex', padding:'0 16px', borderBottom:'0.5px solid #f1f5f9', gap:0 }}>
         {['details','actions','files','history'].map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            style={{ fontSize:12, fontWeight:500, padding:'10px 0', marginRight:16,
+            style={{ fontSize:11, fontWeight:700, padding:'11px 14px',
               background:'none', border:'none', cursor:'pointer', fontFamily:'inherit',
-              color: activeTab===t ? '#16a34a' : 'var(--v2-text-3)',
-              borderBottom:'2px solid '+(activeTab===t ? '#16a34a' : 'transparent'),
-              marginBottom:-0.5, transition:'all 0.15s', textTransform:'capitalize' }}>
+              color: activeTab===t ? '#0e7fc0' : '#94a3b8',
+              borderBottom:'2px solid '+(activeTab===t ? '#0e7fc0' : 'transparent'),
+              marginBottom:-1, transition:'all 0.15s', textTransform:'capitalize',
+              letterSpacing:'0.3px' }}>
             {t}
           </button>
         ))}
@@ -1111,49 +1123,71 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 function CertRow({ cert, selected, onClick }) {
   const days = daysLeft(cert.expires_at)
   const s    = statusOf(days, cert.status)
-  const initials = cert.domain.replace(/^www./, '').slice(0,2).toUpperCase()
-  const colors = { green:'#0e7fc0', amber:'#f59e0b', red:'#dc2626', grey:'#d4d4d4' }
+  const initials = cert.domain.replace(/^www\./, '').slice(0,2).toUpperCase()
+  const dotColor = s.dot==='green'?'#16a34a':s.dot==='amber'?'#f59e0b':s.dot==='red'?'#dc2626':'#d4d4d4'
+  const iconBg   = s.dot==='green'?'#0e7fc0':s.dot==='amber'?'#d97706':s.dot==='red'?'#dc2626':'#64748b'
   return (
-    <div className={'v2-list-row status-'+s.dot+(selected?' selected':'')} onClick={onClick}>
-      <div className="v2-row-icon" style={{ background: colors[s.dot] }}>{initials}</div>
-      <div className="v2-row-body">
-        <div className="v2-row-title-line">
-          <span className="v2-row-title v2-mono">{cert.domain}</span>
+    <div onClick={onClick}
+      style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
+        cursor:'pointer', transition:'all .15s',
+        background: selected ? '#f0f7ff' : 'white',
+        borderLeft: selected ? '3px solid #0e7fc0' : '3px solid transparent',
+        borderBottom:'0.5px solid #f1f5f9' }}
+      onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='#f8fafc';e.currentTarget.style.borderLeftColor='#bfdbfe'}}}
+      onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='white';e.currentTarget.style.borderLeftColor='transparent'}}}>
+      {/* Avatar with status dot */}
+      <div style={{ position:'relative', flexShrink:0 }}>
+        <div style={{ width:38, height:38, borderRadius:10, background:iconBg,
+          display:'flex', alignItems:'center', justifyContent:'center',
+          fontSize:12, fontWeight:700, color:'white', letterSpacing:'0.5px' }}>
+          {initials}
+        </div>
+        <span style={{ position:'absolute', bottom:-2, right:-2, width:10, height:10,
+          borderRadius:'50%', background:dotColor, border:'2px solid white',
+          boxShadow: s.dot==='green'?'0 0 0 2px rgba(22,163,74,0.2)':
+                     s.dot==='amber'?'0 0 0 2px rgba(245,158,11,0.2)':'none' }}/>
+      </div>
+      {/* Body */}
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
+          <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace',
+            color:'#0f172a', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+            {cert.domain}
+          </span>
           <StatusPill days={days} status={cert.status}/>
           {cert.tls_grade && (
-            <span style={{ fontSize:9, fontWeight:700, color: cert.tls_grade==='A'?'#16a34a':cert.tls_grade==='B'?'#65a30d':cert.tls_grade==='C'?'#d97706':'#dc2626',
+            <span style={{ fontSize:9, fontWeight:700, padding:'2px 5px', borderRadius:4,
+              color: cert.tls_grade==='A'?'#16a34a':cert.tls_grade==='B'?'#65a30d':cert.tls_grade==='C'?'#d97706':'#dc2626',
               background: cert.tls_grade==='A'?'#f0fdf4':cert.tls_grade==='B'?'#f7fee7':cert.tls_grade==='C'?'#fffbeb':'#fef2f2',
-              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.8 }}>
-              {cert.tls_grade}
+              border:'0.5px solid currentColor' }}>
+              TLS {cert.tls_grade}
             </span>
           )}
           {cert.pqc_risk && (
-            <span title={cert.key_algorithm || 'PQC check'} style={{ fontSize:9, fontWeight:700,
+            <span title={cert.key_algorithm||'PQC'} style={{ fontSize:9, fontWeight:700, padding:'2px 5px', borderRadius:4,
               color: cert.pqc_risk==='ready'?'#16a34a':cert.pqc_risk==='low'?'#2563eb':cert.pqc_risk==='medium'?'#d97706':'#dc2626',
               background: cert.pqc_risk==='ready'?'#f0fdf4':cert.pqc_risk==='low'?'#eff6ff':cert.pqc_risk==='medium'?'#fffbeb':'#fef2f2',
-              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.85 }}>
+              border:'0.5px solid currentColor' }}>
               {cert.pqc_risk==='ready'?'PQC✓':cert.pqc_risk==='low'?'PQC~':cert.pqc_risk==='medium'?'PQC!':'PQC✗'}
             </span>
           )}
-          {cert.private_key_pem && (
-            <span style={{ display:'inline-flex', alignItems:'center', gap:3, fontSize:9, fontWeight:600,
-              color:'#92400e', background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:3, padding:'1px 5px' }}>
-              <ShieldOff size={8}/> KEY STORED
-            </span>
-          )}
         </div>
-        <div className="v2-row-meta">
+        <div style={{ display:'flex', gap:8, alignItems:'center', fontSize:11, color:'#94a3b8' }}>
           <span>Expires {fmtDate(cert.expires_at)}</span>
-          <span className="v2-row-meta-sep">·</span>
-          <span style={{ fontSize:9, fontWeight:700, color:'#185FA5', background:'#E6F1FB',
-            border:'0.5px solid #B5D4F4', borderRadius:3, padding:'1px 5px' }}>
+          <span>·</span>
+          <span style={{ fontWeight:600, color:'#185FA5', background:'#E6F1FB',
+            fontSize:9, padding:'2px 6px', borderRadius:4, border:'0.5px solid #B5D4F4' }}>
             {cert.cert_type||'RapidSSL DV'}
           </span>
-          {cert.issued_at && <><span className="v2-row-meta-sep">·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
+          {cert.issued_at && <><span>·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
         </div>
-        {days != null && days <= 365 && <div style={{ marginTop:6 }}><ProgressBar days={days}/></div>}
+        {days != null && days <= 365 && (
+          <div style={{ marginTop:6 }}>
+            <ProgressBar days={days}/>
+          </div>
+        )}
       </div>
-      <ChevronRight size={14} color="var(--v2-text-3)" style={{ flexShrink:0 }}/>
+      <ChevronRight size={14} color="#cbd5e1" style={{ flexShrink:0 }}/>
     </div>
   )
 }
@@ -1225,26 +1259,49 @@ function LoggedInDashboard({ user, nav }) {
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
   return (
-    <div style={{ background:'#f0f4f8', minHeight:'100vh' }}>
+    <div style={{ background:'linear-gradient(160deg, #f0f4f8 0%, #f8fafc 100%)', minHeight:'100vh' }}>
       <div style={{ maxWidth:1200, margin:'0 auto', padding:'32px 28px 80px' }}>
 
-        <div style={{ marginBottom:24 }}>
-          <h1 style={{ fontSize:22, fontWeight:800, color:'#0f172a', letterSpacing:'-0.4px', marginBottom:4 }}>Dashboard</h1>
-          <p style={{ fontSize:12, color:'#64748b' }}>{user.email} · {total} certificate{total!==1?'s':''}</p>
+        <div style={{ marginBottom:24, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+          <div>
+            <h1 style={{ fontSize:22, fontWeight:800, color:'#0f172a', letterSpacing:'-0.5px', marginBottom:3, display:'flex', alignItems:'center', gap:10 }}>
+              Certificate Dashboard
+              {healthy === total && total > 0 && (
+                <span style={{ fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:20,
+                  background:'#f0fdf4', color:'#16a34a', border:'0.5px solid #bbf7d0',
+                  animation:'fadeIn 0.5s ease' }}>
+                  All healthy ✓
+                </span>
+              )}
+            </h1>
+            <p style={{ fontSize:12, color:'#94a3b8' }}>{user.email} · {total} certificate{total!==1?'s':''}</p>
+          </div>
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:20 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:20 }}>
           {[
-            { label:'Total',    value:total,   accent:'#e2e8f0', sub:'certificates' },
-            { label:'Healthy',  value:healthy,  accent:'#1a56db', sub:healthy>0?'All valid':'None' },
-            { label:'Expiring', value:expiring, accent:expiring>0?'#f59e0b':'#f1f5f9', sub:expiring>0?'Renew soon':'None' },
-            { label:'PQC High risk', value:certs.filter(c=>c.pqc_risk==='high').length, accent:certs.filter(c=>c.pqc_risk==='high').length>0?'#dc2626':'#f1f5f9', sub:certs.filter(c=>c.pqc_risk==='high').length>0?'Migrate by 2030':'None checked' },
-            { label:'Expired',  value:expired,  accent:expired>0?'#dc2626':'#f1f5f9',  sub:expired>0?'Action needed':'None' },
-          ].map(s => (
-            <div key={s.label} style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:8, padding:'16px 18px', borderTop:'2px solid '+s.accent }}>
-              <div style={{ fontSize:10, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:6 }}>{s.label}</div>
-              <div style={{ fontSize:28, fontWeight:800, color:'#0f172a', letterSpacing:'-0.5px', lineHeight:1, marginBottom:4 }}>{s.value}</div>
-              <div style={{ fontSize:11, color:'#64748b' }}>{s.sub}</div>
+            { label:'Total',        value:total,    color:'#0e7fc0', bg:'#eff6ff', icon:'▦', sub:'certificates' },
+            { label:'Healthy',      value:healthy,  color:'#16a34a', bg:'#f0fdf4', icon:'✓', sub:healthy>0?'All valid':'None' },
+            { label:'Expiring',     value:expiring, color:expiring>0?'#d97706':'#94a3b8', bg:expiring>0?'#fffbeb':'#f8fafc', icon:'⏱', sub:expiring>0?'Renew soon':'None' },
+            { label:'PQC risk',     value:certs.filter(c=>c.pqc_risk==='high').length, color:certs.filter(c=>c.pqc_risk==='high').length>0?'#7c3aed':'#94a3b8', bg:certs.filter(c=>c.pqc_risk==='high').length>0?'#f5f3ff':'#f8fafc', icon:'⚛', sub:certs.filter(c=>c.pqc_risk==='high').length>0?'Migrate by 2030':'None checked' },
+            { label:'Expired',      value:expired,  color:expired>0?'#dc2626':'#94a3b8', bg:expired>0?'#fef2f2':'#f8fafc', icon:'✗', sub:expired>0?'Action needed':'None' },
+          ].map((s,i) => (
+            <div key={s.label}
+              style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:12,
+                padding:'16px 18px', position:'relative', overflow:'hidden',
+                boxShadow:'0 1px 3px rgba(0,0,0,0.04)',
+                animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}>
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:s.color, borderRadius:'12px 12px 0 0', opacity: s.value > 0 ? 1 : 0.2 }}/>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                <div style={{ fontSize:10, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px' }}>{s.label}</div>
+                <div style={{ width:28, height:28, borderRadius:7, background:s.bg,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  fontSize:12, color:s.color, fontWeight:700 }}>{s.icon}</div>
+              </div>
+              <div style={{ fontSize:32, fontWeight:800, color: s.value>0 ? s.color : '#0f172a',
+                letterSpacing:'-1px', lineHeight:1, marginBottom:4,
+                transition:'color 0.3s' }}>{s.value}</div>
+              <div style={{ fontSize:11, color:'#94a3b8' }}>{s.sub}</div>
             </div>
           ))}
         </div>
@@ -1269,10 +1326,14 @@ function LoggedInDashboard({ user, nav }) {
           </div>
         )}
 
-        <div style={{ display:'grid', gridTemplateColumns: selectedCert ? '1fr 380px':'1fr', gap:16, alignItems:'start' }}>
-          <div style={{ background:'white', border:'0.5px solid #e2e8f0', borderRadius:10, overflow:'hidden' }}>
-            <div style={{ padding:'12px 16px', borderBottom:'0.5px solid #f1f5f9', display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
-              <div style={{ display:'flex', gap:4 }}>
+        <div style={{ display:'grid', gridTemplateColumns: selectedCert ? '1fr 400px':'1fr', gap:16, alignItems:'start' }}>
+          <div style={{ background:'white', border:'0.5px solid #e2e8f0', borderRadius:14,
+            overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
+            <div style={{ padding:'14px 16px', borderBottom:'0.5px solid #f1f5f9',
+              display:'flex', alignItems:'center', gap:8, flexWrap:'wrap',
+              background:'linear-gradient(to bottom, white, #fafbfc)' }}>
+              {/* Filter tabs */}
+              <div style={{ display:'flex', gap:2, background:'#f1f5f9', borderRadius:8, padding:3 }}>
                 {[
                   { key:'all',      label:'All',      count:total },
                   { key:'healthy',  label:'Healthy',  count:healthy },
@@ -1280,25 +1341,38 @@ function LoggedInDashboard({ user, nav }) {
                   { key:'expired',  label:'Expired',  count:expired },
                 ].map(f => (
                   <button key={f.key} onClick={() => setFilter(f.key)}
-                    style={{ padding:'4px 10px', borderRadius:5, fontSize:11, fontWeight:500, cursor:'pointer', fontFamily:'inherit',
-                      background: filter===f.key ? '#0e7fc0':'#f8fafc',
-                      color: filter===f.key ? 'white':'#64748b',
-                      border: filter===f.key ? '0.5px solid #0e7fc0':'0.5px solid #e2e8f0' }}>
-                    {f.label} <span style={{ opacity:0.7 }}>{f.count}</span>
+                    style={{ padding:'5px 12px', borderRadius:6, fontSize:11, fontWeight:600,
+                      cursor:'pointer', fontFamily:'inherit', border:'none', transition:'all .15s',
+                      background: filter===f.key ? 'white' : 'transparent',
+                      color: filter===f.key ? '#0f172a' : '#64748b',
+                      boxShadow: filter===f.key ? '0 1px 3px rgba(0,0,0,0.08)' : 'none' }}>
+                    {f.label}
+                    <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
+                      background: filter===f.key ? '#0e7fc0' : '#e2e8f0',
+                      color: filter===f.key ? 'white' : '#64748b', transition:'all .15s' }}>
+                      {f.count}
+                    </span>
                   </button>
                 ))}
               </div>
               <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
                 <div style={{ position:'relative' }}>
                   <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search domains..."
-                    style={{ background:'#f8fafc', border:'0.5px solid #e2e8f0', borderRadius:6, color:'#1e293b',
-                      fontSize:12, padding:'5px 10px 5px 28px', width:180, outline:'none', fontFamily:'inherit' }}/>
-                  <Globe size={12} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:'#94a3b8', pointerEvents:'none' }}/>
+                    style={{ background:'#f8fafc', border:'0.5px solid #e2e8f0', borderRadius:8, color:'#1e293b',
+                      fontSize:12, padding:'6px 10px 6px 30px', width:190, outline:'none', fontFamily:'inherit',
+                      transition:'border-color .15s' }}
+                    onFocus={e=>e.target.style.borderColor='#0e7fc0'}
+                    onBlur={e=>e.target.style.borderColor='#e2e8f0'}/>
+                  <Globe size={12} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'#94a3b8', pointerEvents:'none' }}/>
                 </div>
                 <ScanPqcButton onDone={load}/>
                 <button onClick={() => nav('/buy')}
                   style={{ display:'flex', alignItems:'center', gap:5, background:'#0e7fc0', color:'white',
-                    border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+                    border:'none', borderRadius:8, padding:'7px 14px', fontSize:11, fontWeight:700,
+                    cursor:'pointer', fontFamily:'inherit', boxShadow:'0 2px 6px rgba(14,127,192,0.3)',
+                    transition:'all .15s' }}
+                  onMouseEnter={e=>{e.currentTarget.style.background='#0369a1';e.currentTarget.style.boxShadow='0 4px 12px rgba(14,127,192,0.4)'}}
+                  onMouseLeave={e=>{e.currentTarget.style.background='#0e7fc0';e.currentTarget.style.boxShadow='0 2px 6px rgba(14,127,192,0.3)'}}>
                   <Plus size={11}/> Issue certificate
                 </button>
               </div>
@@ -1339,21 +1413,27 @@ function LoggedInDashboard({ user, nav }) {
           )}
         </div>
 
-        <div style={{ marginTop:24 }}>
-          <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:12 }}>Quick actions</div>
+        <div style={{ marginTop:28 }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Quick actions</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
             {[
-              { icon:<Shield size={15}/>,   label:'Issue Certificate', desc:'RapidSSL DV · GoGetSSL · ~5 min',   action:() => nav('/buy') },
-              { icon:<Download size={15}/>, label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step',         action:() => nav('/install') },
-              { icon:<Activity size={15}/>, label:'DNS & Servers',     desc:'Cloudflare, Vercel, agent credentials',       action:() => nav('/dns-providers') },
-              { icon:<Zap size={15}/>,      label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',              action:() => nav('/knowledge-base') },
-            ].map(({ icon, label, desc, action }) => (
+              { icon:Shield,    color:'#0e7fc0', bg:'#eff6ff', label:'Issue Certificate', desc:'RapidSSL DV · GoGetSSL · ~5 min',    action:() => nav('/buy') },
+              { icon:Download,  color:'#16a34a', bg:'#f0fdf4', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
+              { icon:Activity,  color:'#7c3aed', bg:'#f5f3ff', label:'DNS & Servers',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/dns-providers') },
+              { icon:Zap,       color:'#d97706', bg:'#fffbeb', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
+            ].map(({ icon:Icon, color, bg, label, desc, action }, i) => (
               <button key={label} onClick={action}
-                style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:8, padding:'14px 16px', textAlign:'left', cursor:'pointer', fontFamily:'inherit' }}
-                onMouseEnter={e => e.currentTarget.style.background='#f8fafc'}
-                onMouseLeave={e => e.currentTarget.style.background='white'}>
-                <div style={{ color:'#0e7fc0', marginBottom:8 }}>{icon}</div>
-                <div style={{ fontSize:12, fontWeight:600, color:'#1e293b', marginBottom:4 }}>{label}</div>
+                style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:12, padding:'16px',
+                  textAlign:'left', cursor:'pointer', fontFamily:'inherit', transition:'all .2s',
+                  boxShadow:'0 1px 3px rgba(0,0,0,0.04)',
+                  animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow=`0 6px 20px ${color}20`;e.currentTarget.style.borderColor=color+'44'}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)';e.currentTarget.style.borderColor='#f1f5f9'}}>
+                <div style={{ width:36, height:36, borderRadius:9, background:bg,
+                  display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
+                  <Icon size={16} color={color} strokeWidth={1.8}/>
+                </div>
+                <div style={{ fontSize:12, fontWeight:700, color:'#1e293b', marginBottom:4 }}>{label}</div>
                 <div style={{ fontSize:11, color:'#94a3b8', lineHeight:1.5 }}>{desc}</div>
               </button>
             ))}
@@ -1386,7 +1466,12 @@ function LoggedInDashboard({ user, nav }) {
         />
       )}
 
-      <style>{'@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}'}</style>
+      <style>{`
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+`}</style>
     </div>
   )
 }
@@ -1428,7 +1513,12 @@ export default function Dashboard({ nav }) {
   if (loading) return (
     <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>
       <RefreshCw size={20} style={{ color:'var(--v2-text-3)', animation:'spin 1s linear infinite' }}/>
-      <style>{'@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}'}</style>
+      <style>{`
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+`}</style>
     </div>
   )
   if (!user) return <MarketingDashboard nav={nav}/>
