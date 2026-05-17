@@ -1,24 +1,19 @@
 #!/bin/bash
-# SSLVault Persistent Agent Daemon v2.2
+# SSLVault Persistent Agent Daemon v2.3
 # Zero-touch certificate renewal for VPS servers.
 # Polls SSLVault every 5 minutes for jobs (install, renew, scan).
 # On renewal: atomically replaces cert files and reloads web server.
 #
-# v2.2 fixes vs v2.1:
-#   - Removed bash "local" usage outside functions (was a fatal error in
-#     `uninstall` and `status` CLI commands — uninstall failed before
-#     deregistering, leaving phantom rows in the SSLVault DB)
-#   - report_result now retries 3x with backoff before giving up. Previously
-#     a single transient network blip could leave a job stuck in 'claimed'
-#     forever even though the install succeeded
-#   - find_vhost_file skips its own .sslvault.bak files and node_modules dirs
-#     so backup files don't get re-discovered as the active vhost
-#   - Skip the new-vhost path if the domain already has cert files but no
-#     web server (avoids overwriting user-managed configs)
+# v2.3 changes vs v2.2:
+#   - Collect CPU, RAM, disk, uptime metrics on every poll + heartbeat
+#   - Send metrics to agent-daemon so Agent Health page shows live data
+#   - collect_metrics() works on Linux (proc) + macOS (sysctl/df) + BSD
+#   - certs_managed count sent on each poll
+#   - Version bumped so health page shows correct agent version
 
 # NOTE: intentionally NOT using set -e so the daemon never dies on a
 # single job failure. Each job is isolated — one bad job doesn't stop
-# the loop. Errors are logged and reported back to SSLVault.
+# the loop.
 
 # ── Config ────────────────────────────────────────────────────────────
 DAEMON_API="https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon"
@@ -26,7 +21,7 @@ AGENT_TOKEN_FILE="/etc/sslvault/agent.token"
 POLL_INTERVAL=300
 LOG_FILE="/var/log/sslvault-agent.log"
 CERT_BASE="/etc/ssl/sslvault"
-VERSION="2.2"
+VERSION="2.3"
 
 # ── Logging ───────────────────────────────────────────────────────────
 log()  { echo "$(date '+%Y-%m-%d %H:%M:%S') [SSLVault] $1" | tee -a "$LOG_FILE"; }
@@ -35,8 +30,6 @@ warn() { echo "$(date '+%Y-%m-%d %H:%M:%S') [WARN] $1"     | tee -a "$LOG_FILE";
 fail() { echo "$(date '+%Y-%m-%d %H:%M:%S') [FAIL] $1"     | tee -a "$LOG_FILE"; }
 
 # ── Read stored token ─────────────────────────────────────────────────
-# Token is only required for the daemon loop. Uninstall command reads
-# it on its own further down so we can handle the missing-file case.
 if [ "${1:-daemon}" = "daemon" ]; then
   if [ ! -f "$AGENT_TOKEN_FILE" ]; then
     fail "Agent token not found at $AGENT_TOKEN_FILE. Run agent-install.sh first."
@@ -48,6 +41,84 @@ if [ "${1:-daemon}" = "daemon" ]; then
     exit 1
   fi
 fi
+
+# ── Collect system health metrics ─────────────────────────────────────
+# Returns: CPU_PCT MEM_PCT DISK_PCT UPTIME_SECS
+# Works on Linux, macOS, and most BSDs. Gracefully falls back if
+# a command is unavailable — never crashes the daemon.
+collect_metrics() {
+  CPU_PCT=""
+  MEM_PCT=""
+  DISK_PCT=""
+  UPTIME_SECS=""
+
+  # ── CPU usage (1-second sample) ──
+  if [ -f /proc/stat ]; then
+    # Linux: read two snapshots 1s apart, compute idle delta
+    read -r cpu1 < /proc/stat
+    sleep 1
+    read -r cpu2 < /proc/stat
+    set -- $cpu1
+    shift           # drop "cpu" label
+    u1=$1 n1=$2 s1=$3 i1=$4 w1=${5:-0} x1=${6:-0} y1=${7:-0}
+    set -- $cpu2
+    shift
+    u2=$1 n2=$2 s2=$3 i2=$4 w2=${5:-0} x2=${6:-0} y2=${7:-0}
+    total1=$((u1+n1+s1+i1+w1+x1+y1))
+    total2=$((u2+n2+s2+i2+w2+x2+y2))
+    dtotal=$((total2-total1))
+    didle=$((i2-i1))
+    if [ "$dtotal" -gt 0 ]; then
+      CPU_PCT=$(( (dtotal - didle) * 100 / dtotal ))
+    fi
+  elif command -v top &>/dev/null; then
+    # macOS / BSD
+    CPU_PCT=$(top -l 1 -s 0 2>/dev/null | awk '/CPU usage/{gsub(/%/,""); print 100-$NF}' | head -1) || CPU_PCT=""
+  fi
+
+  # ── Memory usage ──
+  if [ -f /proc/meminfo ]; then
+    MEM_TOTAL=$(awk '/MemTotal:/{print $2}' /proc/meminfo)
+    MEM_AVAIL=$(awk '/MemAvailable:/{print $2}' /proc/meminfo)
+    if [ -n "$MEM_TOTAL" ] && [ "$MEM_TOTAL" -gt 0 ]; then
+      MEM_PCT=$(( (MEM_TOTAL - MEM_AVAIL) * 100 / MEM_TOTAL ))
+    fi
+  elif command -v vm_stat &>/dev/null; then
+    # macOS
+    PAGE=$(vm_stat 2>/dev/null | awk '/page size/{print $8}')
+    FREE=$(vm_stat 2>/dev/null | awk '/Pages free:/{gsub(/\./,""); print $3}')
+    SPEC=$(vm_stat 2>/dev/null | awk '/Pages speculative:/{gsub(/\./,""); print $3}')
+    WIRE=$(vm_stat 2>/dev/null | awk '/Pages wired down:/{gsub(/\./,""); print $4}')
+    INAC=$(vm_stat 2>/dev/null | awk '/Pages inactive:/{gsub(/\./,""); print $3}')
+    ACTI=$(vm_stat 2>/dev/null | awk '/Pages active:/{gsub(/\./,""); print $3}')
+    PAGE=${PAGE:-4096}; FREE=${FREE:-0}; SPEC=${SPEC:-0}
+    WIRE=${WIRE:-0}; INAC=${INAC:-0}; ACTI=${ACTI:-0}
+    TOTAL_PAGES=$((FREE+SPEC+WIRE+INAC+ACTI))
+    USED_PAGES=$((WIRE+ACTI+INAC))
+    if [ "$TOTAL_PAGES" -gt 0 ]; then
+      MEM_PCT=$((USED_PAGES * 100 / TOTAL_PAGES))
+    fi
+  fi
+
+  # ── Disk usage (root filesystem) ──
+  DISK_PCT=$(df / 2>/dev/null | awk 'NR==2{gsub(/%/,""); print $5}') || DISK_PCT=""
+
+  # ── Uptime in seconds ──
+  if [ -f /proc/uptime ]; then
+    UPTIME_SECS=$(awk '{print int($1)}' /proc/uptime)
+  elif command -v sysctl &>/dev/null; then
+    BOOT=$(sysctl -n kern.boottime 2>/dev/null | awk '{print $4}' | tr -d ',')
+    NOW=$(date +%s)
+    if [ -n "$BOOT" ] && [ -n "$NOW" ]; then
+      UPTIME_SECS=$((NOW - BOOT))
+    fi
+  fi
+}
+
+# ── Count certs managed by this agent ────────────────────────────────
+count_certs() {
+  find "$CERT_BASE" -name "fullchain.pem" 2>/dev/null | wc -l | tr -d ' '
+}
 
 # ── Detect web server ─────────────────────────────────────────────────
 detect_web_server() {
@@ -155,8 +226,6 @@ write_cert_files() {
 }
 
 # ── Find existing vhost file for a domain ─────────────────────────────
-# v2.2: skips .sslvault.bak files so old backups aren't selected as the
-# active config (would cause patches to land in a backup instead of live).
 find_vhost_file() {
   local domain="$1"
   local ws="$2"
@@ -178,14 +247,12 @@ find_vhost_file() {
     )
   fi
   for f in "${candidates[@]}"; do
-    # Skip our own backup files
     case "$f" in *.sslvault.bak) continue ;; esac
     if [ -f "$f" ] && grep -q "$domain" "$f" 2>/dev/null; then
       echo "$f"
       return 0
     fi
   done
-  # Broader search as fallback — exclude our backups
   if [ "$ws" = "nginx" ]; then
     grep -rl --exclude='*.sslvault.bak' "server_name.*$domain" /etc/nginx/ 2>/dev/null | head -1
   else
@@ -193,7 +260,7 @@ find_vhost_file() {
   fi
 }
 
-# ── Patch cert paths in an existing vhost ─────────────────────────────
+# ── Patch cert paths in existing vhost ────────────────────────────────
 patch_cert_paths() {
   local conf="$1"
   local ws="$2"
@@ -204,13 +271,13 @@ patch_cert_paths() {
       -e "s|ssl_certificate[^_].*|ssl_certificate     $cert_dir/fullchain.pem;|g" \
       -e "s|ssl_certificate_key.*|ssl_certificate_key $cert_dir/privkey.pem;|g" \
       "$conf"
-    ok "Patched SSL cert paths in existing nginx vhost: $conf"
+    ok "Patched SSL cert paths in nginx vhost: $conf"
   else
     sed -i \
       -e "s|SSLCertificateFile.*|SSLCertificateFile  $cert_dir/fullchain.pem|g" \
       -e "s|SSLCertificateKeyFile.*|SSLCertificateKeyFile $cert_dir/privkey.pem|g" \
       "$conf"
-    ok "Patched SSL cert paths in existing apache vhost: $conf"
+    ok "Patched SSL cert paths in apache vhost: $conf"
   fi
 }
 
@@ -221,7 +288,7 @@ configure_web_server() {
   local cert_dir="$CERT_BASE/$domain"
 
   if [ "$ws" = "none" ]; then
-    warn "No web server detected — cert files written to $cert_dir. Configure your server to use them."
+    warn "No web server detected — cert files written to $cert_dir"
     return 0
   fi
 
@@ -253,7 +320,7 @@ server {
     ssl_prefer_server_ciphers off;
 }
 NGINX_SSL
-        ok "Added SSL server block to existing nginx vhost"
+        ok "Added SSL server block to nginx vhost"
       else
         cat >> "$existing_conf" << APACHE_SSL
 
@@ -266,11 +333,11 @@ NGINX_SSL
     SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
 </VirtualHost>
 APACHE_SSL
-        ok "Added SSL VirtualHost to existing apache vhost"
+        ok "Added SSL VirtualHost to apache vhost"
       fi
     fi
   else
-    log "No existing vhost found for $domain — creating new config"
+    log "No existing vhost for $domain — creating new config"
     if [ "$ws" = "nginx" ]; then
       local conf
       if [ -d /etc/nginx/sites-available ]; then
@@ -333,12 +400,10 @@ APACHE_NEW
   fi
 }
 
-# ── Report job result back to SSLVault ────────────────────────────────
-# v2.2: retries up to 3 times with backoff. A failed report previously
-# meant the job sat in 'claimed' forever — even if the install succeeded.
+# ── Report job result (3 retries with backoff) ────────────────────────
 report_result() {
   local job_id="$1"
-  local success="$2"   # literal true or false (no quotes in JSON)
+  local success="$2"
   local error_msg="$3"
   local ws="$4"
   local hostname_val
@@ -354,14 +419,14 @@ report_result() {
       > /dev/null 2>&1; then
       return 0
     fi
-    warn "Could not report result for job $job_id (attempt $attempt of 3) — retrying in $((attempt * 5))s"
+    warn "Could not report result for job $job_id (attempt $attempt/3)"
     sleep $((attempt * 5))
   done
-  warn "Giving up on report for job $job_id after 3 attempts — janitor will requeue if needed"
+  warn "Giving up on report for job $job_id after 3 attempts"
   return 1
 }
 
-# ── Process one job (isolated — errors don't kill the daemon) ─────────
+# ── Process one job ────────────────────────────────────────────────────
 process_job() {
   local job_id="$1"
   local job_type="$2"
@@ -395,7 +460,7 @@ process_job() {
     fi
 
     if ! reload_web_server "$ws"; then
-      report_result "$job_id" "false" "Web server reload failed — cert files are updated but reload unsuccessful" "$ws"
+      report_result "$job_id" "false" "Web server reload failed" "$ws"
       return 0
     fi
 
@@ -437,7 +502,7 @@ process_job() {
         ok "Scan job $job_id complete"
         return 0
       fi
-      warn "Could not report scan result for job $job_id (attempt $scan_attempt of 3)"
+      warn "Could not report scan result (attempt $scan_attempt/3)"
       sleep $((scan_attempt * 5))
     done
 
@@ -449,7 +514,7 @@ process_job() {
   return 0
 }
 
-# ── CLI commands (uninstall / status) ────────────────────────────────
+# ── CLI commands ──────────────────────────────────────────────────────
 CMD="${1:-daemon}"
 
 if [ "$CMD" = "uninstall" ]; then
@@ -458,9 +523,6 @@ if [ "$CMD" = "uninstall" ]; then
   systemctl disable sslvault-agent 2>/dev/null || true
   rm -f /etc/systemd/system/sslvault-agent.service
   systemctl daemon-reload 2>/dev/null || true
-  # Deregister from SSLVault API (BUG 20 fix: was `local tok` which is a
-  # bash error outside a function and aborted the entire uninstall.
-  # Now uses a plain variable so the deregister call actually fires.)
   if [ -f "$AGENT_TOKEN_FILE" ]; then
     UNINSTALL_TOK=$(cat "$AGENT_TOKEN_FILE" | tr -d '\n')
     if [ -n "$UNINSTALL_TOK" ]; then
@@ -472,7 +534,7 @@ if [ "$CMD" = "uninstall" ]; then
   fi
   rm -rf /etc/sslvault
   rm -f /usr/local/bin/sslvault-agent
-  echo "[SSLVault] Agent removed. Cert files preserved at $CERT_BASE (delete manually if needed)."
+  echo "[SSLVault] Agent removed. Cert files preserved at $CERT_BASE"
   exit 0
 fi
 
@@ -490,10 +552,15 @@ if [ "$CMD" = "status" ]; then
   echo "  Web server: $(detect_web_server)"
   echo "  Cert dir:   $CERT_BASE"
   if [ -d "$CERT_BASE" ]; then
-    # BUG 20 fix: was `local count`. Now plain variable.
     STATUS_COUNT=$(find "$CERT_BASE" -name "fullchain.pem" 2>/dev/null | wc -l | tr -d ' ')
     echo "  Certs:      $STATUS_COUNT domain(s) installed"
   fi
+  # Show live metrics
+  collect_metrics
+  [ -n "$CPU_PCT"     ] && echo "  CPU:        ${CPU_PCT}%"
+  [ -n "$MEM_PCT"     ] && echo "  RAM:        ${MEM_PCT}%"
+  [ -n "$DISK_PCT"    ] && echo "  Disk (/):   ${DISK_PCT}%"
+  [ -n "$UPTIME_SECS" ] && echo "  Uptime:     $((UPTIME_SECS/3600))h $((UPTIME_SECS%3600/60))m"
   echo "  Log:        $LOG_FILE"
   echo "  Last 5 log lines:"
   tail -5 "$LOG_FILE" 2>/dev/null | sed 's/^/    /'
@@ -501,14 +568,27 @@ if [ "$CMD" = "status" ]; then
   exit 0
 fi
 
-# ── Main poll loop ────────────────────────────────────────────────────
+# ── Main poll loop ─────────────────────────────────────────────────────
 log "SSLVault Agent v$VERSION started — polling every ${POLL_INTERVAL}s"
 
 while true; do
+
+  # Collect system metrics before every poll
+  collect_metrics
+  CERTS_MANAGED=$(count_certs)
+
+  # Build metrics JSON fields (only include fields we have data for)
+  METRICS_JSON=""
+  [ -n "$CPU_PCT"     ] && METRICS_JSON="${METRICS_JSON},\"cpu_pct\":$CPU_PCT"
+  [ -n "$MEM_PCT"     ] && METRICS_JSON="${METRICS_JSON},\"mem_pct\":$MEM_PCT"
+  [ -n "$DISK_PCT"    ] && METRICS_JSON="${METRICS_JSON},\"disk_pct\":$DISK_PCT"
+  [ -n "$UPTIME_SECS" ] && METRICS_JSON="${METRICS_JSON},\"uptime_seconds\":$UPTIME_SECS"
+  METRICS_JSON="${METRICS_JSON},\"certs_managed\":$CERTS_MANAGED"
+
   RESPONSE=""
   RESPONSE=$(curl -sf --max-time 15 -X POST "$DAEMON_API" \
     -H "Content-Type: application/json" \
-    -d "{\"action\":\"poll\",\"agent_token\":\"$AGENT_TOKEN\",\"agent_version\":\"$VERSION\"}" \
+    -d "{\"action\":\"poll\",\"agent_token\":\"$AGENT_TOKEN\",\"agent_version\":\"$VERSION\"${METRICS_JSON}}" \
     2>/dev/null) || {
       warn "Poll request failed — will retry in ${POLL_INTERVAL}s"
       sleep "$POLL_INTERVAL"
