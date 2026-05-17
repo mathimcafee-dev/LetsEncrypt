@@ -1295,7 +1295,7 @@ function LoggedInDashboard({ user, nav }) {
                       fontSize:12, padding:'5px 10px 5px 28px', width:180, outline:'none', fontFamily:'inherit' }}/>
                   <Globe size={12} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:'#94a3b8', pointerEvents:'none' }}/>
                 </div>
-                <ScanPqcButton onDone={loadCerts}/>
+                <ScanPqcButton onDone={load}/>
                 <button onClick={() => nav('/buy')}
                   style={{ display:'flex', alignItems:'center', gap:5, background:'#0e7fc0', color:'white',
                     border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
