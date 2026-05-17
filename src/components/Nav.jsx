@@ -43,6 +43,7 @@ export default function Nav({ nav, page }) {
     { path:'/install',         label:'Install Guide',   icon:BookOpen },
     { path:'/knowledge-base',  label:'Knowledge Base',  icon:FileText },
     { path:'/developer',       label:'Developer',       icon:Code },
+    { path:'/digicert-lab',    label:'DigiCert Lab ↗',  icon:Shield },
   ]
 
   return (
