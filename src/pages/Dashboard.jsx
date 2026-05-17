@@ -282,7 +282,7 @@ function RingGauge({ days, total, expiresAt, issuedAt }) {
 }
 
 // ── Slim progress bar for timeline ────────────────────────────────────────────
-function ValidityTimeline({ issuedAt, expiresAt }) {
+function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
   const [animated, setAnimated] = useState(false)
   const now   = new Date()
   const start = new Date(issuedAt)
@@ -307,8 +307,8 @@ function ValidityTimeline({ issuedAt, expiresAt }) {
           {isExpired
             ? 'Certificate expired'
             : dLeft <= 30
-            ? `⚠ Expires in ${dLeft} day${dLeft!==1?'s':''}`
-            : `${dLeft} days left · reissues ${new Date(end.getTime()-86400000).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}`}
+            ? `⚠ Expires in ${dLeft} day${dLeft!==1?'s':''} — reissue overdue`
+            : `Reissues ${new Date(end.getTime()-86400000).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`}
         </span>
       </div>
       <div style={{ position:'relative', height:8, borderRadius:999, background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)', overflow:'hidden' }}>
@@ -333,10 +333,10 @@ function ValidityTimeline({ issuedAt, expiresAt }) {
           <div style={{ fontSize:9, color:'#94a3b8', marginTop:1 }}>Cert expires</div>
         </div>
         <div style={{ textAlign:'right' }}>
-          <div style={{ fontSize:10, fontWeight:600, color:'#d97706', fontFamily:'monospace' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'#d97706', fontFamily:'monospace' }}>
             {fmt(new Date(end.getTime() - 86400000))}
           </div>
-          <div style={{ fontSize:9, color:'#94a3b8', marginTop:1 }}>Auto-reissue</div>
+          <div style={{ fontSize:9, color:'#94a3b8', marginTop:1 }}>Reissue on</div>
         </div>
       </div>
     </div>
@@ -930,35 +930,45 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)',
         borderBottom:'0.5px solid #f1f5f9', background:'#fafbfc' }}>
         {(() => {
-          // ── Date logic ───────────────────────────────────────────────────
-          // cert.expires_at         = certificate expiry (DV cert, ~6 months)
-          // cert._order?.valid_till = order/subscription expiry (annual)
+          // ── Date logic ─────────────────────────────────────────────────
           //
-          // AUTO-REISSUE  = 1 day before cert expires_at
-          //   A fresh DV cert is issued from GoGetSSL. Agents install it
-          //   before the current cert expires the next day.
+          // CERTIFICATE (DV cert, ~6 months):
+          //   issued_at  → expires_at (e.g. May 16 → Nov 30 2026)
+          //   Auto-REISSUE = 1 day before cert.expires_at = Nov 29 2026
+          //   Fresh DV cert issued, agents install it before old one dies.
           //
-          // AUTO-RENEWAL  = 1 day before order valid_till
-          //   A brand new annual order is placed. Completely new cert record.
-          //   If order_expires == cert_expires (standard GoGetSSL DV), dates match.
-          //   After a reissue, cert_expires changes but order_expires stays the same,
-          //   so they can differ — which is why we track them separately.
+          // ORDER/SUBSCRIPTION (12 months):
+          //   Order placed on issued_at, runs for `period` months.
+          //   Order expires = issued_at + period months = May 16 2027
+          //   Auto-RENEWAL = 1 day before that = May 15 2027
+          //   Brand new order placed, completely new cert record.
+          //
+          // cert._order.valid_till is NOT order expiry — GoGetSSL sets it
+          // to cert expiry. Real order expiry = issued_at + period months.
 
           const daysLeftVal = Math.max(0, days ?? 0)
-          const certExpires  = cert.expires_at ? new Date(cert.expires_at) : null
-          const orderExpires = cert._order?.valid_till
-            ? new Date(cert._order.valid_till)
-            : certExpires  // fallback: use cert expiry when no separate order expiry
+          const certExpires = cert.expires_at ? new Date(cert.expires_at) : null
 
-          const fmt      = d => d ? d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—'
-          const fmtShort = d => d ? d.toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : '—'
+          // Order expires = issued_at + period (months). Never use valid_till.
+          const orderPeriodMonths = cert._order?.period || 12
+          const orderExpires = cert.issued_at
+            ? (() => {
+                const d = new Date(cert.issued_at)
+                d.setMonth(d.getMonth() + orderPeriodMonths)
+                return d
+              })()
+            : null
 
-          // Reissue fires 1 day before cert expires
+          const fmt = d => d
+            ? d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+            : '—'
+
+          // Reissue = 1 day before cert.expires_at
           const reissueDate    = certExpires  ? new Date(certExpires.getTime()  - 86400000) : null
           const daysToReissue  = reissueDate  ? Math.ceil((reissueDate.getTime()  - Date.now()) / 86400000) : null
           const reissueOverdue = daysToReissue !== null && daysToReissue <= 0
 
-          // Renewal fires 1 day before order expires
+          // Renewal = 1 day before order expires (issued_at + period months)
           const renewalDate    = orderExpires ? new Date(orderExpires.getTime() - 86400000) : null
           const daysToRenewal  = renewalDate  ? Math.ceil((renewalDate.getTime()  - Date.now()) / 86400000) : null
           const renewalOverdue = daysToRenewal !== null && daysToRenewal <= 0
@@ -972,30 +982,30 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               tip:    null,
             },
             {
-              top:    reissueOverdue ? 'Overdue' : fmtShort(reissueDate),
+              top:    reissueOverdue ? 'Overdue' : fmt(reissueDate),
               bottom: 'Auto-reissue',
               color:  reissueOverdue ? '#dc2626' : '#d97706',
               mono:   false,
               tip:    reissueDate
-                ? `Fires on ${fmt(reissueDate)} — 1 day before your certificate expires (${fmt(certExpires)}). A fresh DV cert is issued automatically and installed by your agents. Your site stays live.`
+                ? `Fires ${fmt(reissueDate)} — 1 day before cert expires (${fmt(certExpires)}). Fresh DV cert issued automatically, pushed to all agents.`
                 : '',
             },
             {
-              top:    renewalOverdue ? 'Overdue' : fmtShort(renewalDate),
+              top:    renewalOverdue ? 'Overdue' : fmt(renewalDate),
               bottom: 'Auto-renewal',
               color:  renewalOverdue ? '#dc2626' : '#0e7fc0',
               mono:   false,
               tip:    renewalDate
-                ? `Fires on ${fmt(renewalDate)} — 1 day before your order expires (${fmt(orderExpires)}). A brand new annual order is placed automatically. Completely new cert record.`
+                ? `Fires ${fmt(renewalDate)} — 1 day before your ${orderPeriodMonths}-month order expires (${fmt(orderExpires)}). New annual order placed automatically.`
                 : '',
             },
           ].map(({ top, bottom, color, mono, tip }, i) => (
             <div key={i} title={tip||''} style={{ padding:'12px 16px',
               borderRight: i < 2 ? '0.5px solid #f1f5f9' : 'none',
               cursor: tip ? 'help' : 'default' }}>
-              <div style={{ fontSize: i===0 ? 20 : 14, fontWeight:800, color,
+              <div style={{ fontSize: i===0 ? 20 : 13, fontWeight:800, color,
                 fontFamily: mono ? 'monospace' : 'inherit',
-                letterSpacing: i===0 ? '-0.5px' : '-0.3px', lineHeight:1.2 }}>
+                letterSpacing: i===0 ? '-0.5px' : '-0.2px', lineHeight:1.2 }}>
                 {top}
               </div>
               <div style={{ display:'flex', alignItems:'center', gap:3, marginTop:4 }}>
@@ -1009,7 +1019,11 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
       {/* ── Timeline ─────────────────────────────────────────────────────── */}
       {cert.issued_at && cert.expires_at && (
-        <ValidityTimeline issuedAt={cert.issued_at} expiresAt={cert.expires_at}/>
+        <ValidityTimeline
+          issuedAt={cert.issued_at}
+          expiresAt={cert.expires_at}
+          orderPeriodMonths={cert._order?.period || 12}
+        />
       )}
 
       {/* ── Tabs ─── */}
