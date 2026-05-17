@@ -165,53 +165,106 @@ function DvPendingCard({ order, onRefresh }) {
   )
 }
 
+// ── Ring gauge that animates on mount ────────────────────────────────────────
+function RingGauge({ days, total = 365 }) {
+  const [animated, setAnimated] = useState(false)
+  const [count, setCount] = useState(0)
+  const d = Math.max(0, days ?? 0)
+  const pct = Math.min(1, d / total)
+  const r = 30, circ = 2 * Math.PI * r
+  const offset = circ - pct * circ
+  const isExpired = (days ?? 0) < 0
+  const isWarn    = (days ?? 0) >= 0 && (days ?? 0) < 30
+  const color     = isExpired ? '#ef4444' : isWarn ? '#f59e0b' : '#16a34a'
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setAnimated(true), 80)
+    if (!isExpired) {
+      let n = 0
+      const target = d
+      const step = Math.max(1, Math.ceil(target / 40))
+      const iv = setInterval(() => {
+        n = Math.min(n + step, target)
+        setCount(n)
+        if (n >= target) clearInterval(iv)
+      }, 18)
+      return () => { clearTimeout(t1); clearInterval(iv) }
+    }
+    return () => clearTimeout(t1)
+  }, [d])
+
+  return (
+    <div style={{ position:'relative', width:76, height:76, flexShrink:0 }}>
+      <svg width="76" height="76" viewBox="0 0 76 76" style={{ transform:'rotate(-90deg)' }}>
+        <circle cx="38" cy="38" r={r} fill="none" stroke="var(--v2-border)" strokeWidth="7"/>
+        <circle cx="38" cy="38" r={r} fill="none" stroke={color} strokeWidth="7"
+          strokeLinecap="round"
+          strokeDasharray={circ}
+          strokeDashoffset={animated ? offset : circ}
+          style={{ transition:'stroke-dashoffset 1.4s cubic-bezier(0.16,1,0.3,1)' }}/>
+      </svg>
+      <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ fontSize:16, fontWeight:500, color:'var(--v2-text)', fontFamily:'monospace', lineHeight:1 }}>
+          {isExpired ? '!' : count}
+        </div>
+        <div style={{ fontSize:9, color:'var(--v2-text-3)', marginTop:2, letterSpacing:'0.2px' }}>days left</div>
+      </div>
+    </div>
+  )
+}
+
+// ── Slim progress bar for timeline ────────────────────────────────────────────
 function ValidityTimeline({ issuedAt, expiresAt }) {
+  const [animated, setAnimated] = useState(false)
   const now   = new Date()
   const start = new Date(issuedAt)
   const end   = new Date(expiresAt)
-  const viewEnd = new Date(end.getTime() + 365 * 86400000)
-  const total   = viewEnd - start
-  const elapsed = now - start
   const remaining = end - now
-  const pctNow    = Math.max(0, Math.min(100, (elapsed / total) * 100))
-  const pctCert   = Math.max(0, Math.min(100, ((end - start) / total) * 100))
+  const elapsed   = now - start
+  const total     = end - start
   const dLeft     = Math.max(0, Math.ceil(remaining / 86400000))
+  const pct       = Math.max(0, Math.min(100, (elapsed / total) * 100))
   const isExpired = remaining <= 0
-  const isWarning = dLeft > 0 && dLeft < 30
-  const barColor    = isExpired ? '#ef4444' : isWarning ? '#f59e0b' : '#84cc16'
-  const stripeColor = isExpired ? 'rgba(239,68,68,0.35)' : isWarning ? 'rgba(245,158,11,0.35)' : 'rgba(132,204,22,0.35)'
-  const fmt = d => { try { return new Date(d).toISOString().slice(0,10) } catch { return '—' } }
+  const isWarn    = dLeft > 0 && dLeft < 30
+  const color     = isExpired ? '#ef4444' : isWarn ? '#f59e0b' : '#16a34a'
+  const fmt = d => { try { return format(new Date(d), 'MMM d, yyyy') } catch { return '—' } }
+
+  useEffect(() => { const t = setTimeout(() => setAnimated(true), 100); return () => clearTimeout(t) }, [])
+
   return (
-    <div style={{ marginBottom:20 }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
-        <span style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Validity Timeline</span>
-        <span style={{ fontSize:11, fontWeight:700, color: isExpired ? '#ef4444' : isWarning ? '#f59e0b' : barColor }}>
+    <div style={{ padding:'14px 18px', borderBottom:'0.5px solid var(--v2-border)' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
+        <span style={{ fontSize:11, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Validity timeline</span>
+        <span style={{ fontSize:11, fontWeight:500, color }}>
           {isExpired ? 'Expired' : `Next reissue in ${dLeft} days`}
         </span>
       </div>
-      <div style={{ position:'relative', height:28, borderRadius:6, overflow:'hidden', background:'#1a1a2e', border:'1px solid rgba(255,255,255,0.07)' }}>
-        <div style={{ position:'absolute', left:0, top:0, bottom:0, width: pctCert+'%',
-          background: `repeating-linear-gradient(60deg, ${barColor} 0px, ${barColor} 18px, ${stripeColor} 18px, ${stripeColor} 28px)`,
-          backgroundSize:'40px 100%', animation:'stripe-move 1.2s linear infinite',
-          borderRight:'2px solid rgba(255,255,255,0.25)' }}/>
-        <div style={{ position:'absolute', top:0, bottom:0, left: pctNow+'%', width:2, background:'white', boxShadow:'0 0 8px 2px rgba(255,255,255,0.6)', zIndex:3 }}/>
-        {pctNow > 5 && pctNow < pctCert - 5 && (
-          <div style={{ position:'absolute', left:'50%', top:'50%', transform:'translate(-50%,-50%)',
-            fontSize:10, fontWeight:700, color:'rgba(0,0,0,0.7)', letterSpacing:'0.5px', pointerEvents:'none', zIndex:4 }}>CURRENT</div>
-        )}
-        <div style={{ position:'absolute', left:pctCert+'%', top:0, bottom:0, right:0,
-          display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,0.04)' }}>
-          <span style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.35)', letterSpacing:'1px' }}>RENEWAL WINDOW</span>
+      <div style={{ position:'relative', height:8, borderRadius:999, background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)', overflow:'hidden' }}>
+        <div style={{ position:'absolute', left:0, top:0, bottom:0, borderRadius:999,
+          background:color, width: animated ? pct+'%' : '0%',
+          transition:'width 1.3s cubic-bezier(0.16,1,0.3,1)' }}/>
+      </div>
+      <div style={{ position:'relative', height:0 }}>
+        <div style={{ position:'absolute', top:-4, width:3, height:14, borderRadius:2,
+          background:'var(--v2-text)', left: animated ? pct+'%' : '0%',
+          transform:'translateX(-50%)',
+          transition:'left 1.3s cubic-bezier(0.16,1,0.3,1)',
+          boxShadow:'0 1px 4px rgba(0,0,0,0.15)', zIndex:3 }}/>
+      </div>
+      <div style={{ display:'flex', justifyContent:'space-between', marginTop:10 }}>
+        <div>
+          <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(issuedAt)}</div>
+          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6, marginTop:1 }}>SSL valid from</div>
+        </div>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text)', fontFamily:'monospace' }}>{fmt(expiresAt)}</div>
+          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6, marginTop:1 }}>SSL valid till</div>
+        </div>
+        <div style={{ textAlign:'right' }}>
+          <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(new Date(end.getTime() + 365*86400000))}</div>
+          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6, marginTop:1 }}>Renewal by</div>
         </div>
       </div>
-      <div style={{ display:'flex', justifyContent:'space-between', marginTop:6 }}>
-        <div><div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(issuedAt)}</div><div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>SSL Valid from</div></div>
-        <div style={{ textAlign:'center' }}><div style={{ fontSize:10, fontWeight:700, color:'white', fontFamily:'monospace' }}>{fmt(expiresAt)}</div><div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>SSL Valid till</div></div>
-        <div style={{ textAlign:'right' }}><div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(new Date(end.getTime() + 365*86400000))}</div><div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6 }}>Renewal by</div></div>
-      </div>
-      <style>{`
-        @keyframes stripe-move { from { background-position: 0 0; } to { background-position: 40px 0; } }
-      `}</style>
     </div>
   )
 }
@@ -304,23 +357,30 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
 function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefresh, session }) {
   const days = daysLeft(cert.expires_at)
-  const [showKey, setShowKey]   = useState(false)
-  const [delConfirm, setDel]    = useState(false)
-  const [keyDelConfirm, setKDC] = useState(false)
-  const [keyDeleting, setKDing] = useState(false)
-  const [keyChecks, setKC]      = useState({ downloaded:false, installed:false, understand:false })
-  const [keyDeleted, setKD]     = useState(!cert.private_key_pem)
-  const [refreshing, setRefreshing] = useState(false)
-  const [refreshMsg, setRefreshMsg] = useState('')
+  const [activeTab, setActiveTab] = useState('details')
+  const [showKey,    setShowKey]   = useState(false)
+  const [delConfirm, setDel]       = useState(false)
+  const [keyDelConfirm, setKDC]    = useState(false)
+  const [keyDeleting, setKDing]    = useState(false)
+  const [keyChecks, setKC]         = useState({ downloaded:false, installed:false, understand:false })
+  const [keyDeleted, setKD]        = useState(!cert.private_key_pem)
+  const [refreshing, setRefreshing]= useState(false)
+  const [refreshMsg, setRefreshMsg]= useState('')
   const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
   const certHistoryRef = useRef(null)
+
+  const isExpired = (days ?? 0) < 0
+  const isWarn    = (days ?? 0) >= 0 && (days ?? 0) < 30
+  const statusColor = isExpired ? '#ef4444' : isWarn ? '#f59e0b' : '#16a34a'
+  const statusBg    = isExpired ? '#fef2f2' : isWarn ? '#fffbeb' : '#f0fdf4'
+  const statusBorder= isExpired ? '#fecaca' : isWarn ? '#fde68a' : '#bbf7d0'
+  const statusLabel = isExpired ? 'Expired' : isWarn ? days+'d left' : 'Active'
 
   const doDeleteKey = async () => {
     setKDing(true)
     await supabase.from('certificates').update({ private_key_pem: null }).eq('id', cert.id)
     setKDing(false); setKD(true); setKDC(false)
   }
-
   const doRefresh = async () => {
     setRefreshing(true); setRefreshMsg('')
     try {
@@ -335,256 +395,372 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         body: JSON.stringify({ action: 'check_status', order_id: order.id })
       })
       const d = await r.json()
-      setRefreshMsg(d.ok ? 'Refreshed — '+(d.ggs_status||'active') : d.error||'Error')
+      setRefreshMsg(d.ok ? 'Synced — '+(d.ggs_status||'active') : d.error||'Error')
       if (d.ok) setTimeout(() => onRefresh(), 1000)
     } catch(e) { setRefreshMsg(e.message) }
     setRefreshing(false)
   }
 
-  return (
-    <div className="v2-detail" style={{ position:'sticky', top:20 }}>
-      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14, gap:12 }}>
-        <div style={{ minWidth:0 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4, flexWrap:'wrap' }}>
-            <span className="v2-mono" style={{ fontSize:14, fontWeight:600, wordBreak:'break-all', color:'var(--v2-text)' }}>{cert.domain}</span>
-            <StatusPill days={days} status={cert.status}/>
-          </div>
-          <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>Issued {fmtDate(cert.issued_at||cert.created_at)}</div>
+  // ── Inline copy button ────────────────────────────────────────────────────
+  function InlineCopy({ text }) {
+    const [ok, setOk] = useState(false)
+    return (
+      <button onClick={() => { try { navigator.clipboard.writeText(text) } catch(e) {} setOk(true); setTimeout(() => setOk(false), 1800) }}
+        style={{ background:'none', border:'0.5px solid var(--v2-border)', borderRadius:4, cursor:'pointer',
+          padding:'2px 6px', fontSize:10, color: ok ? '#16a34a' : 'var(--v2-text-3)',
+          fontFamily:'inherit', transition:'all 0.12s', display:'inline-flex', alignItems:'center', gap:3,
+          ...(ok ? { borderColor:'#bbf7d0', background:'#f0fdf4' } : {}) }}>
+        {ok ? <><Check size={9}/></> : <><Copy size={9}/></>}
+      </button>
+    )
+  }
+
+  // ── Field row ─────────────────────────────────────────────────────────────
+  function FieldRow({ label, value, copyable, accent }) {
+    if (!value) return null
+    return (
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'5px 0',
+        borderBottom:'0.5px solid var(--v2-border)' }}>
+        <span style={{ fontSize:12, color:'var(--v2-text-2)' }}>{label}</span>
+        <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+          <span style={{ fontSize:12, fontFamily:'monospace', color: accent ? statusColor : 'var(--v2-text)',
+            textAlign:'right', wordBreak:'break-all', maxWidth:200 }}>{value}</span>
+          {copyable && <InlineCopy text={value}/>}
         </div>
-        <button className="v2-modal-close" onClick={onClose} style={{ flexShrink:0 }}><X size={14}/></button>
+      </div>
+    )
+  }
+
+  // ── Field group ───────────────────────────────────────────────────────────
+  function FieldGroup({ title, children }) {
+    return (
+      <div style={{ marginBottom:14 }}>
+        <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase',
+          letterSpacing:'0.5px', marginBottom:8, paddingBottom:6, borderBottom:'0.5px solid var(--v2-border)' }}>
+          {title}
+        </div>
+        {children}
+      </div>
+    )
+  }
+
+  // ── Action row ────────────────────────────────────────────────────────────
+  function ActionRow({ icon: Icon, iconColor, iconBg, hoverBorder, hoverBg, title, subtitle, onClick, disabled }) {
+    const [hov, setHov] = useState(false)
+    return (
+      <div onClick={disabled ? undefined : onClick}
+        onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+        style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+          padding:'11px 14px', borderRadius:10, cursor: disabled ? 'not-allowed' : 'pointer',
+          border:'0.5px solid '+(hov && !disabled ? hoverBorder : 'var(--v2-border)'),
+          background: hov && !disabled ? hoverBg : 'var(--v2-bg)',
+          transition:'all 0.15s', opacity: disabled ? 0.5 : 1, marginBottom:6 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <div style={{ width:34, height:34, borderRadius:8, background:iconBg,
+            display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <Icon size={16} color={iconColor}/>
+          </div>
+          <div>
+            <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)' }}>{title}</div>
+            <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1, lineHeight:1.4 }}>{subtitle}</div>
+          </div>
+        </div>
+        <ChevronRight size={15} color="var(--v2-text-3)"
+          style={{ transition:'transform 0.15s', transform: hov && !disabled ? 'translateX(3px)' : 'none' }}/>
+      </div>
+    )
+  }
+
+  const period = cert._order?.period
+  const periodLabel = period ? (period === 12 ? '1 year' : period === 24 ? '2 years' : '3 years') : '1 year'
+
+  return (
+    <div className="v2-detail" style={{ position:'sticky', top:20, padding:0, overflow:'hidden' }}>
+
+      {/* ── Hero header with ring gauge ─────────────────────────────────── */}
+      <div style={{ padding:'18px 18px 14px', background:'var(--v2-bg)',
+        borderBottom:'0.5px solid var(--v2-border)', display:'grid',
+        gridTemplateColumns:'auto 1fr', gap:16, alignItems:'center' }}>
+        <RingGauge days={days}/>
+        <div>
+          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:4 }}>
+            <span className="v2-mono" style={{ fontSize:14, fontWeight:500, wordBreak:'break-all',
+              color:'var(--v2-text)' }}>{cert.domain}</span>
+            <button className="v2-modal-close" onClick={onClose} style={{ flexShrink:0, marginLeft:8 }}>
+              <X size={14}/>
+            </button>
+          </div>
+          <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:8 }}>
+            Issued {fmtDate(cert.issued_at || cert.created_at)}
+          </div>
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:10, fontWeight:500,
+              padding:'3px 9px', borderRadius:20, background:statusBg,
+              border:'0.5px solid '+statusBorder, color:statusColor }}>
+              <span style={{ width:5, height:5, borderRadius:'50%', background:statusColor,
+                animation: !isExpired && !isWarn ? 'v3pulse 2s ease infinite' : 'none' }}/>
+              {statusLabel}
+            </span>
+            <span style={{ display:'inline-flex', alignItems:'center', fontSize:10, fontWeight:500,
+              padding:'3px 9px', borderRadius:20, background:'var(--v2-surface-3)',
+              border:'0.5px solid var(--v2-border)', color:'var(--v2-text-2)' }}>
+              GoGetSSL
+            </span>
+            <span style={{ display:'inline-flex', alignItems:'center', fontSize:10, fontWeight:500,
+              padding:'3px 9px', borderRadius:20, background:'var(--v2-surface-3)',
+              border:'0.5px solid var(--v2-border)', color:'var(--v2-text-2)' }}>
+              {cert._order?.product_name || cert.cert_type || 'RapidSSL'}
+            </span>
+          </div>
+        </div>
       </div>
 
-      {days != null && days < 30 && (
-        <div className={'v2-detail-banner'+(days<14?' red':' amber')} style={{ marginBottom:14 }}>
-          <AlertTriangle size={13}/>
-          {days < 0 ? 'Expired. Renew immediately.' : 'Expires in '+days+' days. Renew soon.'}
-        </div>
-      )}
-      {days != null && days >= 30 && (
-        <div className="v2-detail-banner" style={{ marginBottom:14 }}>
-          <CheckCircle size={13}/> Certificate healthy — {days} days remaining.
-        </div>
-      )}
-
-      {cert.issued_at && cert.expires_at && (
-        <ValidityTimeline issuedAt={cert.issued_at} expiresAt={cert.expires_at}/>
-      )}
-
-      <div className="v2-section-label" style={{ marginBottom:10 }}>Certificate details</div>
-      <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
+      {/* ── Metric strip ────────────────────────────────────────────────── */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)',
+        borderBottom:'0.5px solid var(--v2-border)' }}>
         {[
-          { label:'Domain',     value: cert.common_name || cert.domain },
-          { label:'Status',     value: 'Active' },
-          { label:'Product',    value: cert._order?.product_name || cert.cert_type || 'RapidSSL Standard' },
-          { label:'Validity',   value: cert._order?.period ? (cert._order.period===12?'1 year':cert._order.period===24?'2 years':'3 years') : '1 year' },
-          { label:'Issued',     value: fmtDate(cert.issued_at||cert.created_at) },
-          { label:'Expires',    value: fmtDate(cert.expires_at) },
-          { label:'Issuer',     value: cert.issuer || 'RapidSSL' },
-          { label:'DCV',        value: (cert.dcv_method||'dns').toUpperCase() },
-          { label:'Source',     value: 'GoGetSSL' },
-          cert.ggs_order_id ? { label:'API Order ID',    value: String(cert.ggs_order_id) } : null,
-          cert._order?.partner_order_id ? { label:'Vendor Order ID', value: cert._order.partner_order_id } : null,
-          cert._order?.ggs_invoice_id   ? { label:'Invoice ID',      value: String(cert._order.ggs_invoice_id) } : null,
-          cert._order?.subscription_start ? { label:'Valid From', value: cert._order.subscription_start } : null,
-          cert._order?.subscription_end   ? { label:'Valid Till', value: cert._order.subscription_end  } : null,
-          cert._order?.admin_first_name ? { label:'Admin Name',  value: [cert._order.admin_first_name, cert._order.admin_last_name].filter(Boolean).join(' ') } : null,
-          cert._order?.admin_email      ? { label:'Admin Email', value: cert._order.admin_email } : null,
-          cert._order?.admin_phone      ? { label:'Admin Phone', value: cert._order.admin_phone } : null,
-        ].filter(Boolean).map(({ label, value }) => (
-          <div key={label} className="v2-metric-row" style={{ justifyContent:'space-between' }}>
-            <span className="v2-metric-label">{label}</span>
-            <span className="v2-metric-value v2-mono" style={{ fontSize:11, wordBreak:'break-all', maxWidth:220, textAlign:'right' }}>{value}</span>
+          { val: Math.max(0, days ?? 0), label:'Days left', color: statusColor },
+          { val: 365, label:'Total days', color:'var(--v2-text)' },
+          { val: Math.max(0, (days ?? 0) - 166), label:'Reissue in', color:'#d97706' },
+        ].map(({ val, label, color }, i) => (
+          <div key={i} style={{ padding:'10px 14px',
+            borderRight: i < 2 ? '0.5px solid var(--v2-border)' : 'none' }}>
+            <div style={{ fontSize:15, fontWeight:500, color, fontFamily:'monospace' }}>{val}</div>
+            <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:3 }}>{label}</div>
           </div>
         ))}
       </div>
 
-      {cert.private_key_pem && !keyDeleted && !keyDelConfirm && (
-        <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:'var(--v2-r-md)',
-          padding:'10px 12px', marginBottom:14, display:'flex', gap:10, alignItems:'flex-start' }}>
-          <ShieldOff size={13} color="#b45309" style={{ flexShrink:0, marginTop:1 }}/>
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:12, fontWeight:600, color:'#92400e', marginBottom:2 }}>Private key stored server-side</div>
-            <div style={{ fontSize:11, color:'#b45309' }}>Delete after installing on your server.</div>
-          </div>
-          <button className="v2-btn v2-btn-sm" onClick={() => setKDC(true)}
-            style={{ fontSize:10, borderColor:'#fcd34d', color:'#92400e', flexShrink:0 }}>
-            <Trash2 size={9}/> Delete key
+      {/* ── Timeline ─────────────────────────────────────────────────────── */}
+      {cert.issued_at && cert.expires_at && (
+        <ValidityTimeline issuedAt={cert.issued_at} expiresAt={cert.expires_at}/>
+      )}
+
+      {/* ── Tabs ─────────────────────────────────────────────────────────── */}
+      <div style={{ display:'flex', padding:'0 18px', borderBottom:'0.5px solid var(--v2-border)', gap:2 }}>
+        {['details','actions','files','history'].map(t => (
+          <button key={t} onClick={() => setActiveTab(t)}
+            style={{ fontSize:12, fontWeight:500, padding:'10px 0', marginRight:16,
+              background:'none', border:'none', cursor:'pointer', fontFamily:'inherit',
+              color: activeTab===t ? '#16a34a' : 'var(--v2-text-3)',
+              borderBottom:'2px solid '+(activeTab===t ? '#16a34a' : 'transparent'),
+              marginBottom:-0.5, transition:'all 0.15s', textTransform:'capitalize' }}>
+            {t}
           </button>
-        </div>
-      )}
-      {keyDeleted && (
-        <div style={{ background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
-          borderRadius:'var(--v2-r-md)', padding:'10px 12px', marginBottom:14, display:'flex', gap:8, alignItems:'center' }}>
-          <ShieldCheck size={13} color="var(--v2-green)"/>
-          <span style={{ fontSize:12, color:'var(--v2-green-text)', fontWeight:500 }}>Private key deleted from SSLVault servers.</span>
+        ))}
+      </div>
+
+      {/* ── Tab: Details ─────────────────────────────────────────────────── */}
+      {activeTab === 'details' && (
+        <div style={{ padding:'14px 18px' }}>
+          <FieldGroup title="Certificate">
+            <FieldRow label="Domain"  value={cert.common_name || cert.domain} copyable/>
+            <FieldRow label="Status"  value={statusLabel} accent/>
+            <FieldRow label="Product" value={cert._order?.product_name || cert.cert_type || 'RapidSSL Standard'}/>
+            <FieldRow label="Validity" value={periodLabel}/>
+            <FieldRow label="DCV method" value={(cert.dcv_method || 'dns').toUpperCase()}/>
+          </FieldGroup>
+          <FieldGroup title="Dates">
+            <FieldRow label="Issued"  value={fmtDate(cert.issued_at || cert.created_at)}/>
+            <FieldRow label="Expires" value={fmtDate(cert.expires_at)}/>
+          </FieldGroup>
+          <FieldGroup title="Order">
+            <FieldRow label="API order ID" value={cert.ggs_order_id ? String(cert.ggs_order_id) : null} copyable/>
+            {cert._order?.ggs_invoice_id && <FieldRow label="Invoice ID" value={String(cert._order.ggs_invoice_id)}/>}
+            <FieldRow label="Admin name"  value={cert._order ? [cert._order.admin_first_name, cert._order.admin_last_name].filter(Boolean).join(' ') : null}/>
+            <FieldRow label="Admin email" value={cert._order?.admin_email} copyable/>
+            <FieldRow label="Admin phone" value={cert._order?.admin_phone}/>
+          </FieldGroup>
         </div>
       )}
 
-      {keyDelConfirm && (
-        <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-amber-border)',
-          borderRadius:'var(--v2-r-lg)', padding:16, marginBottom:14 }}>
-          <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:10 }}>
-            <AlertTriangle size={14} color="var(--v2-amber)"/>
-            <span style={{ fontSize:13, fontWeight:600 }}>Delete private key</span>
-          </div>
-          {[
-            { key:'downloaded', label:'I have downloaded key.pem to a safe local location' },
-            { key:'installed',  label:'My server has the certificate installed and working' },
-            { key:'understand', label:'I understand this is irreversible' },
-          ].map(({ key, label }) => (
-            <label key={key} style={{ display:'flex', gap:8, alignItems:'flex-start', marginBottom:8, cursor:'pointer', fontSize:12, color:'var(--v2-text-2)', lineHeight:1.5 }}>
-              <input type="checkbox" checked={keyChecks[key]} onChange={e => setKC(p => ({ ...p, [key]: e.target.checked }))} style={{ marginTop:2, flexShrink:0 }}/>
-              {label}
-            </label>
-          ))}
-          <div style={{ display:'flex', gap:8, marginTop:12 }}>
-            <button className="v2-btn v2-btn-sm" onClick={() => { setKDC(false); setKC({downloaded:false,installed:false,understand:false}) }}>Cancel</button>
-            <button onClick={doDeleteKey} disabled={!allChecked||keyDeleting}
-              style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
-                background: allChecked ? 'var(--v2-red)':'var(--v2-surface-3)',
-                color: allChecked ? 'white':'var(--v2-text-3)',
-                border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 10px',
-                cursor: allChecked ? 'pointer':'not-allowed', fontFamily:'inherit', fontWeight:500 }}>
-              <Trash2 size={10}/> {keyDeleting ? 'Deleting...' : 'Permanently delete key'}
-            </button>
+      {/* ── Tab: Actions ─────────────────────────────────────────────────── */}
+      {activeTab === 'actions' && (
+        <div style={{ padding:'14px 18px' }}>
+          {refreshMsg && (
+            <div style={{ fontSize:12, padding:'8px 10px', borderRadius:6, marginBottom:12,
+              background: refreshMsg.includes('Error') ? '#fef2f2' : '#f0fdf4',
+              color: refreshMsg.includes('Error') ? '#dc2626' : '#16a34a',
+              border:'0.5px solid '+(refreshMsg.includes('Error') ? '#fecaca' : '#bbf7d0') }}>
+              {refreshMsg}
+            </div>
+          )}
+          <ActionRow icon={RotateCcw} iconColor="#16a34a" iconBg="#f0fdf4"
+            hoverBorder="#bbf7d0" hoverBg="#f0fdf4"
+            title="Reissue certificate" subtitle="New cert, same order period · auto DNS"
+            onClick={() => certHistoryRef.current?.doAction('reissue')}
+            disabled={!session}/>
+          <ActionRow icon={RefreshCw} iconColor="#2563eb" iconBg="#eff6ff"
+            hoverBorder="#bfdbfe" hoverBg="#eff6ff"
+            title="Renew for another year" subtitle="New GGS order · new cert row"
+            onClick={() => certHistoryRef.current?.doAction('renew')}
+            disabled={!session}/>
+          <ActionRow icon={Server} iconColor="#7c3aed" iconBg="#f5f3ff"
+            hoverBorder="#ddd6fe" hoverBg="#f5f3ff"
+            title="Install on server" subtitle="VPS agent or cPanel wizard"
+            onClick={() => onInstall(cert)}/>
+          <ActionRow icon={RefreshCw} iconColor="#d97706" iconBg="#fffbeb"
+            hoverBorder="#fde68a" hoverBg="#fffbeb"
+            title={refreshing ? 'Syncing...' : 'Sync from GoGetSSL'}
+            subtitle={refreshing ? 'Checking status...' : 'Pull latest order status'}
+            onClick={doRefresh} disabled={refreshing}/>
+          <div style={{ display:'flex', justifyContent:'flex-end', marginTop:4 }}>
+            {!delConfirm
+              ? <button onClick={() => setDel(true)}
+                  style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'var(--v2-text-3)',
+                    background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', padding:'2px 4px' }}
+                  onMouseEnter={e => e.currentTarget.style.color='#ef4444'}
+                  onMouseLeave={e => e.currentTarget.style.color='var(--v2-text-3)'}>
+                  <X size={11}/> Delete certificate
+                </button>
+              : <button onClick={() => onDelete(cert.id)}
+                  style={{ fontSize:11, color:'white', background:'#ef4444', border:'none',
+                    borderRadius:6, padding:'4px 12px', cursor:'pointer', fontFamily:'inherit', fontWeight:500 }}>
+                  Confirm delete
+                </button>
+            }
           </div>
         </div>
       )}
 
-      {(cert.cert_pem || cert.private_key_pem) && (
-        <>
-          <div className="v2-section-label" style={{ marginBottom:10 }}>Certificate files</div>
-          <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
-            {cert.cert_pem && (
+      {/* ── Tab: Files ───────────────────────────────────────────────────── */}
+      {activeTab === 'files' && (
+        <div style={{ padding:'14px 18px' }}>
+          {/* cert.pem */}
+          {cert.cert_pem && (
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+              padding:'10px 12px', borderRadius:8, border:'0.5px solid var(--v2-border)',
+              background:'var(--v2-surface-3)', marginBottom:8 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:9 }}>
+                <div style={{ width:30, height:30, borderRadius:7, background:'#eff6ff',
+                  display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <FileText size={14} color="#2563eb"/>
+                </div>
+                <div>
+                  <div style={{ fontSize:12, fontWeight:500, fontFamily:'monospace', color:'var(--v2-text)' }}>cert.pem</div>
+                  <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>Fullchain · 3 blocks</div>
+                </div>
+              </div>
+              <div style={{ display:'flex', gap:6 }}>
+                <CopyBtn text={cert.cert_pem}/>
+                <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.cert_pem, cert.domain+'-cert.pem')}>
+                  <Download size={10}/> Save
+                </button>
+              </div>
+            </div>
+          )}
+          {/* private key */}
+          {cert.private_key_pem && (
+            <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8,
+              background:'var(--v2-surface-3)', marginBottom:8 }}>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)', borderRadius:'var(--v2-r-md)', padding:'8px 12px' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <FileText size={12} color="var(--v2-text-3)"/>
-                  <span style={{ fontSize:12, fontWeight:500 }}>cert.pem</span>
+                padding:'10px 12px' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:9 }}>
+                  <div style={{ width:30, height:30, borderRadius:7, background:'#fef2f2',
+                    display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <Lock size={14} color="#dc2626"/>
+                  </div>
+                  <div>
+                    <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                      <span style={{ fontSize:12, fontWeight:500, fontFamily:'monospace', color:'var(--v2-text)' }}>private key</span>
+                      <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:3,
+                        background:'#fee2e2', color:'#b91c1c', letterSpacing:'0.3px' }}>SENSITIVE</span>
+                    </div>
+                    <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>RSA 2048-bit</div>
+                  </div>
                 </div>
                 <div style={{ display:'flex', gap:6 }}>
-                  <CopyBtn text={cert.cert_pem}/>
-                  <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.cert_pem, cert.domain+'-cert.pem')}>
+                  <button className="v2-btn v2-btn-sm" onClick={() => setShowKey(v => !v)}>
+                    {showKey ? <><EyeOff size={10}/> Hide</> : <><Eye size={10}/> Reveal</>}
+                  </button>
+                  <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.private_key_pem, cert.domain+'-key.pem')}>
                     <Download size={10}/> Save
                   </button>
                 </div>
               </div>
-            )}
-            {cert.private_key_pem && (
-              <div style={{ background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)', borderRadius:'var(--v2-r-md)', padding:'8px 12px' }}>
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: showKey ? 10:0 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <Lock size={12} color="var(--v2-text-3)"/>
-                    <span style={{ fontSize:12, fontWeight:500 }}>private key</span>
-                    <span className="v2-chip" style={{ fontSize:9 }}>SENSITIVE</span>
-                  </div>
-                  <div style={{ display:'flex', gap:6 }}>
-                    <button className="v2-btn v2-btn-sm" onClick={() => setShowKey(v => !v)}>
-                      {showKey ? <EyeOff size={10}/> : <Eye size={10}/>} {showKey ? 'Hide':'Reveal'}
-                    </button>
-                    <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.private_key_pem, cert.domain+'-key.pem')}>
-                      <Download size={10}/> Save
-                    </button>
-                  </div>
+              {showKey && (
+                <div style={{ margin:'0 12px 10px', background:'#0a0a0a', borderRadius:6,
+                  padding:'8px 10px', fontSize:10, fontFamily:'monospace', color:'#a3e635',
+                  whiteSpace:'pre-wrap', wordBreak:'break-all', maxHeight:120, overflowY:'auto' }}>
+                  {cert.private_key_pem}
                 </div>
-                {showKey && (
-                  <div style={{ marginTop:8, background:'#0a0a0a', borderRadius:'var(--v2-r-sm)',
-                    padding:'8px 10px', fontSize:10, fontFamily:'monospace', color:'#e5e5e5',
-                    whiteSpace:'pre-wrap', wordBreak:'break-all', maxHeight:120, overflowY:'auto' }}>
-                    {cert.private_key_pem}
-                  </div>
-                )}
+              )}
+            </div>
+          )}
+          {/* Key warning / deleted state */}
+          {cert.private_key_pem && !keyDeleted && !keyDelConfirm && (
+            <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:8,
+              padding:'10px 12px', marginBottom:10, display:'flex', gap:10, alignItems:'flex-start' }}>
+              <ShieldOff size={13} color="#b45309" style={{ flexShrink:0, marginTop:1 }}/>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:12, fontWeight:500, color:'#92400e', marginBottom:2 }}>Private key stored server-side</div>
+                <div style={{ fontSize:11, color:'#b45309' }}>Download and delete from SSLVault after installing.</div>
               </div>
-            )}
-          </div>
-        </>
+              <button className="v2-btn v2-btn-sm" onClick={() => setKDC(true)}
+                style={{ fontSize:10, borderColor:'#fcd34d', color:'#92400e', flexShrink:0 }}>
+                <Trash2 size={9}/> Delete
+              </button>
+            </div>
+          )}
+          {keyDeleted && (
+            <div style={{ background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
+              borderRadius:8, padding:'10px 12px', marginBottom:10, display:'flex', gap:8, alignItems:'center' }}>
+              <ShieldCheck size={13} color="var(--v2-green)"/>
+              <span style={{ fontSize:12, color:'var(--v2-green-text)', fontWeight:500 }}>Private key deleted from SSLVault servers.</span>
+            </div>
+          )}
+          {keyDelConfirm && (
+            <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-amber-border)',
+              borderRadius:8, padding:14, marginBottom:10 }}>
+              <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:10 }}>
+                <AlertTriangle size={14} color="var(--v2-amber)"/>
+                <span style={{ fontSize:13, fontWeight:500 }}>Delete private key</span>
+              </div>
+              {[
+                { key:'downloaded', label:'I have downloaded key.pem to a safe local location' },
+                { key:'installed',  label:'My server has the certificate installed and working' },
+                { key:'understand', label:'I understand this is irreversible' },
+              ].map(({ key, label }) => (
+                <label key={key} style={{ display:'flex', gap:8, alignItems:'flex-start', marginBottom:8,
+                  cursor:'pointer', fontSize:12, color:'var(--v2-text-2)', lineHeight:1.5 }}>
+                  <input type="checkbox" checked={keyChecks[key]}
+                    onChange={e => setKC(p => ({ ...p, [key]: e.target.checked }))}
+                    style={{ marginTop:2, flexShrink:0 }}/>
+                  {label}
+                </label>
+              ))}
+              <div style={{ display:'flex', gap:8, marginTop:12 }}>
+                <button className="v2-btn v2-btn-sm" onClick={() => { setKDC(false); setKC({downloaded:false,installed:false,understand:false}) }}>Cancel</button>
+                <button onClick={doDeleteKey} disabled={!allChecked || keyDeleting}
+                  style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
+                    background: allChecked ? 'var(--v2-red)' : 'var(--v2-surface-3)',
+                    color: allChecked ? 'white' : 'var(--v2-text-3)',
+                    border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 12px',
+                    cursor: allChecked ? 'pointer' : 'not-allowed', fontFamily:'inherit', fontWeight:500 }}>
+                  <Trash2 size={10}/> {keyDeleting ? 'Deleting...' : 'Permanently delete key'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
-      {/* ── Certificate Actions ────────────────────────────────── */}
-      <div style={{ marginTop:4, borderTop:'1px solid var(--v2-border)', paddingTop:16 }}>
-        <div style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Certificate Actions</div>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:12 }}>
-          {/* Reissue */}
-          <button onClick={session ? ()=>certHistoryRef.current?.doAction('reissue') : undefined}
-            style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:3,
-              padding:'10px 12px', borderRadius:8, border:'1px solid var(--v2-border)',
-              background:'var(--v2-bg)', cursor:'pointer', fontFamily:'inherit',
-              transition:'border-color 0.15s, background 0.15s' }}
-            onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--v2-green)';e.currentTarget.style.background='var(--v2-green-bg)'}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--v2-border)';e.currentTarget.style.background='var(--v2-bg)'}}>
-            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              <RotateCcw size={13} color='var(--v2-green)'/>
-              <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>Reissue</span>
-            </div>
-            <span style={{ fontSize:10, color:'var(--v2-text-3)', lineHeight:1.4 }}>New cert, same order</span>
-          </button>
-          {/* Renew */}
-          <button onClick={session ? ()=>certHistoryRef.current?.doAction('renew') : undefined}
-            style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:3,
-              padding:'10px 12px', borderRadius:8, border:'1px solid var(--v2-border)',
-              background:'var(--v2-bg)', cursor:'pointer', fontFamily:'inherit',
-              transition:'border-color 0.15s, background 0.15s' }}
-            onMouseEnter={e=>{e.currentTarget.style.borderColor='#0e7fc0';e.currentTarget.style.background='#f0f7ff'}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--v2-border)';e.currentTarget.style.background='var(--v2-bg)'}}>
-            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              <RefreshCw size={13} color='#0e7fc0'/>
-              <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>Renew</span>
-            </div>
-            <span style={{ fontSize:10, color:'var(--v2-text-3)', lineHeight:1.4 }}>New year, new cert</span>
-          </button>
-          {/* Install */}
-          <button onClick={() => onInstall(cert)}
-            style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:3,
-              padding:'10px 12px', borderRadius:8, border:'1px solid var(--v2-border)',
-              background:'var(--v2-bg)', cursor:'pointer', fontFamily:'inherit',
-              transition:'border-color 0.15s, background 0.15s' }}
-            onMouseEnter={e=>{e.currentTarget.style.borderColor='#7c3aed';e.currentTarget.style.background='#f5f3ff'}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--v2-border)';e.currentTarget.style.background='var(--v2-bg)'}}>
-            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              <Server size={13} color='#7c3aed'/>
-              <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>Install</span>
-            </div>
-            <span style={{ fontSize:10, color:'var(--v2-text-3)', lineHeight:1.4 }}>Push to server</span>
-          </button>
-          {/* Refresh */}
-          <button onClick={doRefresh} disabled={refreshing}
-            style={{ display:'flex', flexDirection:'column', alignItems:'flex-start', gap:3,
-              padding:'10px 12px', borderRadius:8, border:'1px solid var(--v2-border)',
-              background:'var(--v2-bg)', cursor: refreshing?'not-allowed':'pointer', fontFamily:'inherit',
-              opacity: refreshing?0.6:1, transition:'border-color 0.15s, background 0.15s' }}
-            onMouseEnter={e=>{if(!refreshing){e.currentTarget.style.borderColor='#f59e0b';e.currentTarget.style.background='#fffbeb'}}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--v2-border)';e.currentTarget.style.background='var(--v2-bg)'}}>
-            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              <RefreshCw size={13} color='#f59e0b' style={{ animation: refreshing?'spin 0.8s linear infinite':'none' }}/>
-              <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>{refreshing?'Refreshing...':'Sync Status'}</span>
-            </div>
-            <span style={{ fontSize:10, color:'var(--v2-text-3)', lineHeight:1.4 }}>{refreshMsg||'Sync from GoGetSSL'}</span>
-          </button>
+      {/* ── Tab: History ─────────────────────────────────────────────────── */}
+      {activeTab === 'history' && session && (
+        <div style={{ padding:'14px 18px' }}>
+          <CertHistory ref={certHistoryRef} cert={cert} session={session}/>
         </div>
-        {/* Danger zone */}
-        <div style={{ display:'flex', justifyContent:'flex-end' }}>
-          {!delConfirm
-            ? <button onClick={() => setDel(true)}
-                style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'#94a3b8',
-                  background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', padding:'2px 4px' }}
-                onMouseEnter={e=>e.currentTarget.style.color='#ef4444'}
-                onMouseLeave={e=>e.currentTarget.style.color='#94a3b8'}>
-                <X size={11}/> Delete certificate
-              </button>
-            : <button onClick={() => onDelete(cert.id)}
-                style={{ fontSize:11, color:'white', background:'#ef4444', border:'none',
-                  borderRadius:6, padding:'4px 10px', cursor:'pointer', fontFamily:'inherit', fontWeight:500 }}>
-                Confirm delete
-              </button>
-          }
-        </div>
-      </div>
-      {/* ── History ─────────────────────────────────────────────── */}
-      {session && <CertHistory ref={certHistoryRef} cert={cert} session={session}/>}
+      )}
+      {activeTab === 'history' && !session && (
+        <div style={{ padding:'14px 18px', fontSize:12, color:'var(--v2-text-3)' }}>Sign in to view history.</div>
+      )}
+
+      <style>{`
+        @keyframes v3pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+      `}</style>
     </div>
   )
 }
-
 function CertRow({ cert, selected, onClick }) {
   const days = daysLeft(cert.expires_at)
   const s    = statusOf(days, cert.status)
