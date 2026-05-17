@@ -449,7 +449,7 @@ export default function Home({ nav }) {
           {[
             { n: '99.9%', label: 'Browser compatibility', sub: 'DigiCert/Sectigo trusted chain' },
             { n: 'AES-256', label: 'Key encryption at rest', sub: 'Immutable audit log on every access' },
-            { n: 'ISO', label: 'PKI Specialist built', sub: 'DigiCert Certified Partner — APAC' },
+            { n: 'PKI', label: 'PKI Specialist built', sub: 'Certificate lifecycle specialist' },
           ].map(({ n, label, sub }) => (
             <div key={label} style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 30, fontWeight: 800, color: '#38bdf8', letterSpacing: '-0.8px',

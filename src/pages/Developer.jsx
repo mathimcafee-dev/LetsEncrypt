@@ -33,7 +33,7 @@ export default function Developer({ nav }) {
               <span style={{ color:'var(--v2-green)' }}>Kathirvel.</span>
             </h1>
             <div style={{ fontSize:15, color:'var(--v2-text-2)', fontWeight:500, marginBottom:16 }}>
-              Certified PKI Specialist · Builder &amp; Open-source Contributor
+              PKI · CLM · Digital Trust &amp; Open-source Contributor
             </div>
             <p style={{ fontSize:14, color:'var(--v2-text-2)', lineHeight:1.75, marginBottom:20, maxWidth:580 }}>
               I'm passionate about PKI, digital trust, and the cryptographic infrastructure
@@ -83,7 +83,7 @@ export default function Developer({ nav }) {
                             pointerEvents:'none' }} />
               <div style={{ position:'absolute', left:16, bottom:14, color:'white' }}>
                 <div style={{ fontSize:10, fontWeight:500, opacity:0.7, marginBottom:2 }}>
-                  PKI Specialist · Builder
+                  PKI · CLM · Digital Trust
                 </div>
                 <div style={{ fontSize:16, fontWeight:600 }}>Mathivanan</div>
               </div>
@@ -100,7 +100,7 @@ export default function Developer({ nav }) {
                 <Award size={13} color='var(--v2-green)' />
               </div>
               <div>
-                <div style={{ fontSize:9, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Certified</div>
+                <div style={{ fontSize:9, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Specialty</div>
                 <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text)' }}>PKI Specialist</div>
               </div>
             </div>
@@ -111,7 +111,7 @@ export default function Developer({ nav }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:32 }}>
           {[
             { icon:Award,    label:'Education',     value:'MSc Computer Science',    color:'#2563eb', bg:'#dbeafe' },
-            { icon:Shield,   label:'Certification', value:'Certified PKI Specialist', color:'#059669', bg:'#d1fae5' },
+            { icon:Shield,   label:'Specialty',     value:'PKI · CLM · Digital Trust', color:'#059669', bg:'#d1fae5' },
             { icon:MapPin,   label:'Based in',      value:'Netherlands',             color:'#d97706', bg:'#fef3c7' },
             { icon:Code2,    label:'Specialty',     value:'PKI · CLM · Digital Trust',color:'#7c3aed', bg:'#ede9fe' },
           ].map(({ icon:Icon, label, value, color, bg }) => (
@@ -153,7 +153,7 @@ export default function Developer({ nav }) {
             </p>
             <p style={{ margin:0 }}>
               SSLVault is my small contribution to closing that gap. A free, open CLM platform
-              that takes the principles I work with professionally — automated discovery, scheduled
+              that takes the principles that make enterprise CLM work — automated discovery, scheduled
               renewal, agent-based deployment, full visibility into every certificate — and makes
               them accessible to anyone with a domain, no matter their budget. Built in public,
               runs on open standards, stays free.

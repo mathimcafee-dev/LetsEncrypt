@@ -1,5 +1,5 @@
 import {
-  Award, Briefcase, MapPin,
+  Award, MapPin,
   Mail, Shield
 } from 'lucide-react'
 import portrait from '../assets/mathi-portrait.jpg'
@@ -15,8 +15,7 @@ function Github({ size=14, color='currentColor' }) {
 const SKILLS = ['PKI / SSL/TLS', 'Channel Partnerships', 'React / Vite', 'Node.js', 'Supabase', 'PostgreSQL', 'Bash scripting', 'Linux / cPanel', 'Cloudflare', 'Vercel']
 
 const CERTS = [
-  'DigiCert Certified PKI Specialist',
-  'Partner Account Manager — APAC',
+  'Certified PKI Specialist',
   'MSc — Kongu Engineering College',
 ]
 
@@ -33,15 +32,11 @@ export default function DeveloperInner({ nav }) {
             <div style={{ fontSize:18, fontWeight:500, color:'#0a0a0a', letterSpacing:'-.3px', marginBottom:4 }}>Mathivanan Kathirvel</div>
             <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:10 }}>
               <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11, color:'#525252' }}>
-                <Briefcase size={11} color="#a3a3a3"/> Partner Account Manager, APAC · DigiCert
-              </span>
-              <span style={{ color:'#d4d4d4' }}>·</span>
-              <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11, color:'#525252' }}>
                 <MapPin size={11} color="#a3a3a3"/> Netherlands
               </span>
             </div>
             <p style={{ fontSize:12, color:'#525252', lineHeight:1.7, margin:'0 0 14px', maxWidth:580 }}>
-              PKI specialist and channel partner manager at DigiCert by day. SSLVault is a personal project — a way to give back to the indie and non-profit community using the same certificate infrastructure I work with professionally.
+              PKI specialist with a deep interest in digital trust and certificate lifecycle management. SSLVault is a personal project — a way to give back to the indie and non-profit community who need enterprise-grade CLM without the enterprise price tag.
             </p>
             <div style={{ display:'flex', gap:8 }}>
               <a href="mailto:mathimcafee@gmail.com" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0e7fc0', color:'white', textDecoration:'none', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
