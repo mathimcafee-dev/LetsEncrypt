@@ -356,6 +356,157 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 })
 
 
+
+// ── PQC Readiness row ─────────────────────────────────────────────────
+const PQC_RISK_MAP = {
+  ready:  { color:'#16a34a', bg:'#f0fdf4', border:'#bbf7d0', label:'PQC Ready',     icon:'✓' },
+  low:    { color:'#2563eb', bg:'#eff6ff', border:'#bfdbfe', label:'Low risk',       icon:'~' },
+  medium: { color:'#d97706', bg:'#fffbeb', border:'#fde68a', label:'Medium risk',    icon:'!' },
+  high:   { color:'#dc2626', bg:'#fef2f2', border:'#fecaca', label:'High risk',      icon:'✗' },
+}
+
+function PqcRow({ cert, onRefresh }) {
+  const [open,     setOpen]     = useState(false)
+  const [checking, setChecking] = useState(false)
+  const [result,   setResult]   = useState(null)
+
+  const risk = cert.pqc_risk
+  const rm = PQC_RISK_MAP[risk] || null
+
+  const runCheck = async (e) => {
+    e.stopPropagation()
+    if (!cert.cert_pem) return
+    setChecking(true)
+    const { data:{ session } } = await supabase.auth.getSession()
+    const r = await fetch(SB_URL+'/functions/v1/tls-posture', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body: JSON.stringify({ action:'pqc_check', cert_id:cert.id })
+    })
+    const d = await r.json()
+    if (d.ok) {
+      setResult(d)
+      setOpen(true)
+      setTimeout(()=>onRefresh(), 800)
+    }
+    setChecking(false)
+  }
+
+  const noPem = !cert.cert_pem
+
+  return (
+    <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:6 }}>
+      <div onClick={()=>risk&&setOpen(o=>!o)}
+        style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+          padding:'11px 14px', background:'var(--v2-bg)',
+          cursor: risk ? 'pointer' : 'default', transition:'background .15s' }}
+        onMouseEnter={e=>e.currentTarget.style.background='#f5f3ff'}
+        onMouseLeave={e=>e.currentTarget.style.background='var(--v2-bg)'}>
+        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <div style={{ width:34, height:34, borderRadius:8, background:'#f5f3ff',
+            display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <Shield size={16} color="#7c3aed"/>
+          </div>
+          <div>
+            <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)' }}>
+              Post-quantum readiness
+            </div>
+            <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1 }}>
+              {cert.key_algorithm
+                ? <span>Algorithm: <strong style={{color:'var(--v2-text)'}}>{cert.key_algorithm}</strong>{risk && <span> · click to {open?'collapse':'expand'}</span>}</span>
+                : noPem ? 'No cert PEM available — import or sync from CA first'
+                : 'Check what quantum threat this certificate faces'}
+            </div>
+          </div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+          {rm && (
+            <span style={{ fontSize:10, fontWeight:600, padding:'3px 9px', borderRadius:5,
+              background:rm.bg, color:rm.color, border:`0.5px solid ${rm.border}` }}>
+              {rm.label}
+            </span>
+          )}
+          {!noPem && (
+            <button onClick={runCheck} disabled={checking}
+              style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
+                color:'#7c3aed', background:'#f5f3ff', border:'0.5px solid #ddd6fe',
+                borderRadius:6, padding:'4px 10px', cursor:checking?'wait':'pointer',
+                fontFamily:'inherit', fontWeight:500, flexShrink:0 }}>
+              {checking
+                ? <><RefreshCw size={11} style={{animation:'spin .8s linear infinite'}}/> Checking…</>
+                : <><Shield size={11}/> {risk ? 'Re-check' : 'Check'}</>}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {open && (result || risk) && (
+        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-surface-3)', padding:'14px' }}>
+          {(() => {
+            const d = result || {
+              algorithm:cert.key_algorithm, bits:cert.key_size_bits,
+              risk:cert.pqc_risk, label:rm?.label,
+              reason:'', deadline:'', action:''
+            }
+            const riskDef = PQC_RISK_MAP[d.risk] || PQC_RISK_MAP.medium
+            return (
+              <div>
+                {/* Risk meter */}
+                <div style={{ display:'flex', gap:4, marginBottom:14 }}>
+                  {['ready','low','medium','high'].map(r=>{
+                    const def = PQC_RISK_MAP[r]
+                    const active = d.risk === r
+                    return (
+                      <div key={r} style={{ flex:1, height:6, borderRadius:3,
+                        background: active ? def.color : 'var(--v2-border)',
+                        transition:'background .3s' }}/>
+                    )
+                  })}
+                </div>
+
+                {/* Algorithm info */}
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:12 }}>
+                  {[
+                    ['Algorithm',  d.algorithm || '—'],
+                    ['Key size',   d.bits ? `${d.bits} bits` : '—'],
+                    ['Risk level', d.label || '—'],
+                    ['Deadline',   d.deadline || '—'],
+                  ].map(([k,v])=>(
+                    <div key={k} style={{ background:'var(--v2-bg)', borderRadius:7, padding:'9px 11px', border:'0.5px solid var(--v2-border)' }}>
+                      <div style={{ fontSize:10, color:'var(--v2-text-3)', marginBottom:3, textTransform:'uppercase', letterSpacing:'0.4px' }}>{k}</div>
+                      <div style={{ fontSize:12, fontWeight:500, color: k==='Risk level'?riskDef.color:'var(--v2-text)',
+                        fontFamily: k==='Algorithm'||k==='Key size' ? 'monospace' : 'inherit' }}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Reason + action */}
+                {d.reason && (
+                  <div style={{ background: riskDef.bg, border:`0.5px solid ${riskDef.border}`,
+                    borderRadius:8, padding:'10px 12px', marginBottom:8 }}>
+                    <div style={{ fontSize:12, fontWeight:500, color:riskDef.color, marginBottom:4 }}>{d.reason}</div>
+                    {d.action && <div style={{ fontSize:11, color:riskDef.color, opacity:0.85, lineHeight:1.6 }}>{d.action}</div>}
+                  </div>
+                )}
+
+                {/* NIST context */}
+                <div style={{ fontSize:11, color:'var(--v2-text-3)', lineHeight:1.6, borderTop:'0.5px solid var(--v2-border)', paddingTop:10, marginTop:4 }}>
+                  NIST finalized ML-DSA (CRYSTALS-Dilithium), SLH-DSA (SPHINCS+), and ML-KEM (CRYSTALS-Kyber) in August 2024.
+                  RSA and ECDSA will be deprecated for sensitive data by 2030–2035.{' '}
+                  <span style={{ color:'#7c3aed', cursor:'pointer' }}
+                    onClick={()=>window.open('https://csrc.nist.gov/projects/post-quantum-cryptography','_blank')}>
+                    NIST PQC standards ↗
+                  </span>
+                </div>
+              </div>
+            )
+          })()}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── TLS Posture inline row with expandable results ────────────────────────
 function TlsPostureRow({ cert, onRefresh }) {
   const [open,     setOpen]     = useState(false)
@@ -737,6 +888,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             subtitle={refreshing ? 'Checking status...' : 'Pull latest order status'}
             onClick={doRefresh} disabled={refreshing}/>
           <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
+          <PqcRow cert={cert} onRefresh={onRefresh}/>
           <div style={{ display:'flex', justifyContent:'flex-end', marginTop:4 }}>
             {!delConfirm
               ? <button onClick={() => setDel(true)}
@@ -788,6 +940,14 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               background: cert.tls_grade==='A'?'#f0fdf4':cert.tls_grade==='B'?'#f7fee7':cert.tls_grade==='C'?'#fffbeb':'#fef2f2',
               border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.8 }}>
               {cert.tls_grade}
+            </span>
+          )}
+          {cert.pqc_risk && (
+            <span title={cert.key_algorithm || 'PQC check'} style={{ fontSize:9, fontWeight:700,
+              color: cert.pqc_risk==='ready'?'#16a34a':cert.pqc_risk==='low'?'#2563eb':cert.pqc_risk==='medium'?'#d97706':'#dc2626',
+              background: cert.pqc_risk==='ready'?'#f0fdf4':cert.pqc_risk==='low'?'#eff6ff':cert.pqc_risk==='medium'?'#fffbeb':'#fef2f2',
+              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.85 }}>
+              {cert.pqc_risk==='ready'?'PQC✓':cert.pqc_risk==='low'?'PQC~':cert.pqc_risk==='medium'?'PQC!':'PQC✗'}
             </span>
           )}
           {cert.private_key_pem && (
@@ -920,6 +1080,14 @@ function CertRow({ cert, selected, onClick }) {
               {cert.tls_grade}
             </span>
           )}
+          {cert.pqc_risk && (
+            <span title={cert.key_algorithm || 'PQC check'} style={{ fontSize:9, fontWeight:700,
+              color: cert.pqc_risk==='ready'?'#16a34a':cert.pqc_risk==='low'?'#2563eb':cert.pqc_risk==='medium'?'#d97706':'#dc2626',
+              background: cert.pqc_risk==='ready'?'#f0fdf4':cert.pqc_risk==='low'?'#eff6ff':cert.pqc_risk==='medium'?'#fffbeb':'#fef2f2',
+              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.85 }}>
+              {cert.pqc_risk==='ready'?'PQC✓':cert.pqc_risk==='low'?'PQC~':cert.pqc_risk==='medium'?'PQC!':'PQC✗'}
+            </span>
+          )}
           {cert.private_key_pem && (
             <span style={{ display:'inline-flex', alignItems:'center', gap:3, fontSize:9, fontWeight:600,
               color:'#92400e', background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:3, padding:'1px 5px' }}>
@@ -1023,6 +1191,7 @@ function LoggedInDashboard({ user, nav }) {
             { label:'Total',    value:total,   accent:'#e2e8f0', sub:'certificates' },
             { label:'Healthy',  value:healthy,  accent:'#1a56db', sub:healthy>0?'All valid':'None' },
             { label:'Expiring', value:expiring, accent:expiring>0?'#f59e0b':'#f1f5f9', sub:expiring>0?'Renew soon':'None' },
+            { label:'PQC High risk', value:certs.filter(c=>c.pqc_risk==='high').length, accent:certs.filter(c=>c.pqc_risk==='high').length>0?'#dc2626':'#f1f5f9', sub:certs.filter(c=>c.pqc_risk==='high').length>0?'Migrate by 2030':'None checked' },
             { label:'Expired',  value:expired,  accent:expired>0?'#dc2626':'#f1f5f9',  sub:expired>0?'Action needed':'None' },
           ].map(s => (
             <div key={s.label} style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:8, padding:'16px 18px', borderTop:'2px solid '+s.accent }}>
@@ -1079,6 +1248,15 @@ function LoggedInDashboard({ user, nav }) {
                       fontSize:12, padding:'5px 10px 5px 28px', width:180, outline:'none', fontFamily:'inherit' }}/>
                   <Globe size={12} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:'#94a3b8', pointerEvents:'none' }}/>
                 </div>
+                <button onClick={async()=>{
+                    const{data:{session}}=await supabase.auth.getSession()
+                    if(!session)return
+                    fetch(SB_URL+'/functions/v1/tls-posture',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({action:'pqc_check_all'})}).then(()=>setTimeout(()=>window.location.reload(),1200))
+                  }}
+                  style={{ display:'flex', alignItems:'center', gap:5, background:'#7c3aed', color:'white',
+                    border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+                  <Shield size={11}/> Scan PQC
+                </button>
                 <button onClick={() => nav('/buy')}
                   style={{ display:'flex', alignItems:'center', gap:5, background:'#0e7fc0', color:'white',
                     border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
