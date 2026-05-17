@@ -66,7 +66,10 @@ const CA_DEFS = {
     color: '#dc2626', bg: '#fef2f2', border: '#fecaca',
     logo: 'DC',
     desc: 'Pull all issued certificates from your CertCentral account via API key.',
-    fields: [{ key: 'api_key', label: 'API Key', type: 'password', placeholder: 'Your CertCentral API key', required: true }],
+    fields: [
+      { key: 'api_key',    label: 'API Key',                   type: 'password', placeholder: 'Your CertCentral API key',              required: true  },
+      { key: 'account_id', label: 'Account ID (optional)',      type: 'text',     placeholder: 'e.g. 123456 — leave blank for default',  required: false },
+    ],
     docs: 'https://dev.digicert.com/en/certcentral-apis/creating-an-api-key.html',
   },
   sectigo: {
