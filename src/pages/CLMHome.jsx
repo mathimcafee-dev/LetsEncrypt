@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Shield, Plus, Globe, Server,
+  Shield, Plus, Globe, Server, Activity,
   Layout, Download, Settings,
   BookOpen, CreditCard, Info, User, Mail, LogOut
 } from 'lucide-react'
