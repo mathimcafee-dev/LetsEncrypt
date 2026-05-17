@@ -107,7 +107,7 @@ export default function CAConnectors({ nav }) {
   const [syncResult,   setSyncResult]   = useState({})
   const [delConn,      setDelConn]      = useState(null)
   const [delCerts,     setDelCerts]     = useState(true)   // also delete certs when removing connection
-  const [renewingId,   setRenewingId]   = useState(null)   // cert id being renewed
+  const [renewModal,   setRenewModal]   = useState(null)   // cert object for renew-choice modal
 
   // Add connection modal
   const [showAdd,      setShowAdd]      = useState(false)
@@ -187,20 +187,37 @@ export default function CAConnectors({ nav }) {
     await load()
   }
 
-  // For tracking-only certs, open the CA's renewal portal
-  // CA portal URLs for each source
+  // CA portal URLs per source
   const CA_RENEWAL_URLS = {
     digicert: 'https://www.digicert.com/account/login.php',
     sectigo:  'https://cert-manager.com/',
     sslcom:   'https://secure.ssl.com/users/login',
     imported: null,
   }
+  const CA_NAMES = {
+    digicert: 'DigiCert CertCentral',
+    sectigo:  'Sectigo SCM',
+    sslcom:   'SSL.com',
+    imported: 'Original CA',
+  }
 
-  const doRenew = (cert) => {
-    const url = CA_RENEWAL_URLS[cert.source] || CA_RENEWAL_URLS[cert.imported_from]
-    if (url) {
-      window.open(url, '_blank', 'noopener')
-    }
+  // Open the two-option renew modal
+  const openRenewModal = (cert) => setRenewModal(cert)
+
+  // Option A: Renew via external CA portal
+  const renewViaCa = (cert) => {
+    const src = cert.source || cert.imported_from
+    const url = CA_RENEWAL_URLS[src]
+    if (url) window.open(url, '_blank', 'noopener')
+    setRenewModal(null)
+  }
+
+  // Option B: Renew via SSLVault — navigate to /buy with domain pre-filled
+  const renewViaSSLVault = (cert) => {
+    // Store domain in sessionStorage so BuyCertificate page can pre-fill it
+    if (cert.domain) sessionStorage.setItem('prefill_domain', cert.domain)
+    setRenewModal(null)
+    nav('/buy')
   }
 
   const doImport = async () => {
@@ -442,35 +459,17 @@ export default function CAConnectors({ nav }) {
               <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{fmtDate(cert.expires_at)}</div>
               <div><ExpiryBadge expiresAt={cert.expires_at}/></div>
               <div>
-                {(cert.source === 'digicert' || cert.source === 'sectigo' ||
-                  cert.source === 'sslcom' || cert.imported_from === 'digicert' ||
-                  cert.imported_from === 'sectigo' || cert.imported_from === 'sslcom') && (
-                  <button
-                    onClick={() => doRenew(cert)}
-                    title="Renew via CA portal"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 4,
-                      fontSize: 10, fontWeight: 600, padding: '4px 9px', borderRadius: 6,
-                      background: '#eff6ff', color: '#0e7fc0',
-                      border: '0.5px solid #bfdbfe', cursor: 'pointer',
-                      fontFamily: 'inherit', whiteSpace: 'nowrap',
-                      transition: 'all .15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#0e7fc0'; e.currentTarget.style.color = 'white' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.color = '#0e7fc0' }}>
-                    <RotateCcw size={10}/> Renew
-                  </button>
-                )}
-                {cert.source === 'imported' && (
-                  <button
-                    onClick={() => doRenew(cert)}
-                    title="Re-import renewed certificate"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 4,
-                      fontSize: 10, fontWeight: 600, padding: '4px 9px', borderRadius: 6,
-                      background: '#f8fafc', color: '#64748b',
-                      border: '0.5px solid #e2e8f0', cursor: 'pointer',
-                      fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
-                    <RotateCcw size={10}/> Re-import
-                  </button>
-                )}
+                <button
+                  onClick={() => openRenewModal(cert)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4,
+                    fontSize: 10, fontWeight: 600, padding: '4px 9px', borderRadius: 6,
+                    background: '#eff6ff', color: '#0e7fc0',
+                    border: '0.5px solid #bfdbfe', cursor: 'pointer',
+                    fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'all .15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background='#0e7fc0'; e.currentTarget.style.color='white' }}
+                  onMouseLeave={e => { e.currentTarget.style.background='#eff6ff'; e.currentTarget.style.color='#0e7fc0' }}>
+                  <RotateCcw size={10}/> Renew
+                </button>
               </div>
             </div>
           ))}
@@ -764,6 +763,114 @@ export default function CAConnectors({ nav }) {
         })()}
 
       </div>
+
+        {/* ── Renew choice modal ── */}
+        {renewModal && (() => {
+          const src = renewModal.source || renewModal.imported_from
+          const caName = CA_NAMES[src] || 'your CA'
+          const caUrl  = CA_RENEWAL_URLS[src]
+          return (
+            <div style={{ position:'fixed', inset:0, zIndex:1001, display:'flex',
+              alignItems:'center', justifyContent:'center', padding:20,
+              background:'rgba(15,23,42,0.55)', backdropFilter:'blur(4px)' }}
+              onClick={e => e.target===e.currentTarget && setRenewModal(null)}>
+              <div style={{ background:'white', borderRadius:16, width:'100%', maxWidth:420,
+                boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid #e2e8f0',
+                overflow:'hidden' }}>
+
+                {/* Header */}
+                <div style={{ padding:'18px 20px 14px', borderBottom:'0.5px solid #f1f5f9',
+                  display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <div>
+                    <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      <div style={{ width:28, height:28, borderRadius:7, background:'#eff6ff',
+                        display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        <RotateCcw size={13} color="#0e7fc0"/>
+                      </div>
+                      <span style={{ fontSize:14, fontWeight:700, color:'#0f172a' }}>Renew certificate</span>
+                    </div>
+                    <div style={{ fontSize:11, color:'#94a3b8', marginTop:4, marginLeft:36,
+                      fontFamily:'monospace' }}>{renewModal.domain}</div>
+                  </div>
+                  <button onClick={() => setRenewModal(null)}
+                    style={{ background:'#f8fafc', border:'0.5px solid #e2e8f0', borderRadius:7,
+                      cursor:'pointer', color:'#94a3b8', padding:'5px', display:'flex' }}>
+                    <X size={14}/>
+                  </button>
+                </div>
+
+                {/* Two options */}
+                <div style={{ padding:'16px 20px 20px', display:'flex', flexDirection:'column', gap:10 }}>
+                  <div style={{ fontSize:12, color:'#64748b', marginBottom:4 }}>
+                    How would you like to renew this certificate?
+                  </div>
+
+                  {/* Option A — Renew via CA */}
+                  <button onClick={() => renewViaCa(renewModal)}
+                    style={{ display:'flex', alignItems:'flex-start', gap:14, padding:'14px 16px',
+                      borderRadius:10, border:'1.5px solid #e2e8f0', background:'white',
+                      cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor='#0e7fc0'; e.currentTarget.style.background='#f0f9ff' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor='#e2e8f0'; e.currentTarget.style.background='white' }}>
+                    <div style={{ width:34, height:34, borderRadius:8, background:'#f1f5f9',
+                      display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <ExternalLink size={15} color="#475569"/>
+                    </div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ fontSize:13, fontWeight:700, color:'#0f172a', marginBottom:3 }}>
+                        Renew via {caName}
+                      </div>
+                      <div style={{ fontSize:11, color:'#64748b', lineHeight:1.5 }}>
+                        Log into {caUrl ? caName : 'your original CA'} and renew there.
+                        Once renewed, re-import or re-sync to update SSLVault.
+                      </div>
+                      {caUrl && (
+                        <div style={{ fontSize:10, color:'#94a3b8', marginTop:4, fontFamily:'monospace',
+                          overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{caUrl}</div>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Option B — Renew via SSLVault */}
+                  <button onClick={() => renewViaSSLVault(renewModal)}
+                    style={{ display:'flex', alignItems:'flex-start', gap:14, padding:'14px 16px',
+                      borderRadius:10, border:'1.5px solid #e2e8f0', background:'white',
+                      cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor='#16a34a'; e.currentTarget.style.background='#f0fdf4' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor='#e2e8f0'; e.currentTarget.style.background='white' }}>
+                    <div style={{ width:34, height:34, borderRadius:8, background:'#f0fdf4',
+                      display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <Shield size={15} color="#16a34a"/>
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:13, fontWeight:700, color:'#0f172a', marginBottom:3 }}>
+                        Renew via SSLVault
+                        <span style={{ marginLeft:7, fontSize:9, fontWeight:700, padding:'2px 7px',
+                          borderRadius:20, background:'#f0fdf4', color:'#16a34a',
+                          border:'0.5px solid #bbf7d0' }}>Recommended</span>
+                      </div>
+                      <div style={{ fontSize:11, color:'#64748b', lineHeight:1.5 }}>
+                        Issue a fresh RapidSSL DV certificate through SSLVault — GoGetSSL API,
+                        auto-DNS validation, auto-install on your servers. Domain pre-filled.
+                      </div>
+                      <div style={{ fontSize:10, color:'#16a34a', marginTop:5, fontWeight:600,
+                        display:'flex', alignItems:'center', gap:4 }}>
+                        <Check size={10}/> DigiCert trust chain · ~5 min · auto-installs
+                      </div>
+                    </div>
+                  </button>
+
+                  <button onClick={() => setRenewModal(null)}
+                    style={{ fontSize:12, color:'#94a3b8', background:'none', border:'none',
+                      cursor:'pointer', fontFamily:'inherit', padding:'6px 0', textAlign:'center' }}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
   )
