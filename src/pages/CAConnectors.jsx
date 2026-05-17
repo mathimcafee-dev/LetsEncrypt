@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase'
 import {
   Plus, RefreshCw, Trash2, Check, X, FileText,
   Shield, AlertTriangle, ChevronRight, ExternalLink,
-  Upload, Globe, Eye, EyeOff, Info
+  Upload, Globe, Eye, EyeOff, Info, RotateCcw
 } from 'lucide-react'
 import '../styles/design-v2.css'
 
@@ -106,6 +106,8 @@ export default function CAConnectors({ nav }) {
   const [syncing,      setSyncing]      = useState(null)
   const [syncResult,   setSyncResult]   = useState({})
   const [delConn,      setDelConn]      = useState(null)
+  const [delCerts,     setDelCerts]     = useState(true)   // also delete certs when removing connection
+  const [renewingId,   setRenewingId]   = useState(null)   // cert id being renewed
 
   // Add connection modal
   const [showAdd,      setShowAdd]      = useState(false)
@@ -180,9 +182,25 @@ export default function CAConnectors({ nav }) {
   }
 
   const deleteConn = async (connId) => {
-    await callCA(tok, { action: 'delete_connection', connection_id: connId })
+    await callCA(tok, { action: 'delete_connection', connection_id: connId, also_delete_certs: delCerts })
     setDelConn(null)
     await load()
+  }
+
+  // For tracking-only certs, open the CA's renewal portal
+  // CA portal URLs for each source
+  const CA_RENEWAL_URLS = {
+    digicert: 'https://www.digicert.com/account/login.php',
+    sectigo:  'https://cert-manager.com/',
+    sslcom:   'https://secure.ssl.com/users/login',
+    imported: null,
+  }
+
+  const doRenew = (cert) => {
+    const url = CA_RENEWAL_URLS[cert.source] || CA_RENEWAL_URLS[cert.imported_from]
+    if (url) {
+      window.open(url, '_blank', 'noopener')
+    }
   }
 
   const doImport = async () => {
@@ -378,7 +396,7 @@ export default function CAConnectors({ nav }) {
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
             padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)',
             background: 'var(--v2-surface-3)' }}>
-            {['Domain / SANs', 'CA source', 'Issuer', 'Expires', 'Status'].map(h => (
+            {['Domain / SANs', 'CA source', 'Issuer', 'Expires', 'Status', ''].map(h => (
               <div key={h} style={{ fontSize: 11, fontWeight: 500, color: 'var(--v2-text-3)',
                 textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
             ))}
@@ -423,6 +441,37 @@ export default function CAConnectors({ nav }) {
               </div>
               <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{fmtDate(cert.expires_at)}</div>
               <div><ExpiryBadge expiresAt={cert.expires_at}/></div>
+              <div>
+                {(cert.source === 'digicert' || cert.source === 'sectigo' ||
+                  cert.source === 'sslcom' || cert.imported_from === 'digicert' ||
+                  cert.imported_from === 'sectigo' || cert.imported_from === 'sslcom') && (
+                  <button
+                    onClick={() => doRenew(cert)}
+                    title="Renew via CA portal"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 4,
+                      fontSize: 10, fontWeight: 600, padding: '4px 9px', borderRadius: 6,
+                      background: '#eff6ff', color: '#0e7fc0',
+                      border: '0.5px solid #bfdbfe', cursor: 'pointer',
+                      fontFamily: 'inherit', whiteSpace: 'nowrap',
+                      transition: 'all .15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#0e7fc0'; e.currentTarget.style.color = 'white' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.color = '#0e7fc0' }}>
+                    <RotateCcw size={10}/> Renew
+                  </button>
+                )}
+                {cert.source === 'imported' && (
+                  <button
+                    onClick={() => doRenew(cert)}
+                    title="Re-import renewed certificate"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 4,
+                      fontSize: 10, fontWeight: 600, padding: '4px 9px', borderRadius: 6,
+                      background: '#f8fafc', color: '#64748b',
+                      border: '0.5px solid #e2e8f0', cursor: 'pointer',
+                      fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                    <RotateCcw size={10}/> Re-import
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -655,31 +704,64 @@ export default function CAConnectors({ nav }) {
         )}
 
         {/* ── Delete connection confirm ── */}
-        {delConn && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex',
-            alignItems: 'center', justifyContent: 'center', padding: 20,
-            background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}>
-            <div style={{ background: 'var(--v2-bg)', borderRadius: 14, width: '100%', maxWidth: 380,
-              padding: '24px', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '0.5px solid var(--v2-border)' }}>
-              <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 8 }}>Remove connection?</div>
-              <div style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 20, lineHeight: 1.6 }}>
-                The connection will be removed. Imported certificates will remain in your dashboard
-                but will no longer sync.
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="v2-btn" style={{ flex: 1, justifyContent: 'center' }}
-                  onClick={() => setDelConn(null)}>Cancel</button>
-                <button onClick={() => deleteConn(delConn)}
-                  style={{ flex: 1, background: '#dc2626', color: 'white', border: 'none',
-                    borderRadius: 8, padding: '9px', cursor: 'pointer', fontFamily: 'inherit',
-                    fontWeight: 500, fontSize: 13, display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', gap: 6 }}>
-                  <Trash2 size={13}/> Remove
-                </button>
+        {delConn && (() => {
+          const conn = connections.find(c => c.id === delConn)
+          const connCertCount = certs.filter(c => c.ca_connection_id === delConn).length
+          return (
+            <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex',
+              alignItems: 'center', justifyContent: 'center', padding: 20,
+              background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}>
+              <div style={{ background: 'var(--v2-bg)', borderRadius: 14, width: '100%', maxWidth: 400,
+                padding: '24px', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '0.5px solid var(--v2-border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: '#fef2f2',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Trash2 size={15} color="#dc2626"/>
+                  </div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--v2-text)' }}>
+                    Remove {conn?.label || 'connection'}?
+                  </div>
+                </div>
+                <div style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.6 }}>
+                  This CA connection will be disconnected and will no longer sync.
+                  {connCertCount > 0 && (
+                    <span style={{ color: '#d97706', fontWeight: 500 }}> {connCertCount} certificate{connCertCount !== 1 ? 's' : ''} are linked to this connection.</span>
+                  )}
+                </div>
+                {connCertCount > 0 && (
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
+                    padding: '10px 12px', borderRadius: 8, marginBottom: 16,
+                    background: delCerts ? '#fef2f2' : 'var(--v2-surface-3)',
+                    border: `0.5px solid ${delCerts ? '#fecaca' : 'var(--v2-border)'}`,
+                    transition: 'all .15s' }}>
+                    <input type="checkbox" checked={delCerts} onChange={e => setDelCerts(e.target.checked)}
+                      style={{ width: 14, height: 14, accentColor: '#dc2626', flexShrink: 0 }}/>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: delCerts ? '#dc2626' : 'var(--v2-text)' }}>
+                        Also delete {connCertCount} imported certificate{connCertCount !== 1 ? 's' : ''}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 1 }}>
+                        {delCerts ? 'Certificates will be removed from your inventory' : 'Certificates will remain but no longer sync'}
+                      </div>
+                    </div>
+                  </label>
+                )}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="v2-btn" style={{ flex: 1, justifyContent: 'center' }}
+                    onClick={() => { setDelConn(null); setDelCerts(true) }}>Cancel</button>
+                  <button onClick={() => deleteConn(delConn)}
+                    style={{ flex: 1, background: '#dc2626', color: 'white', border: 'none',
+                      borderRadius: 8, padding: '9px', cursor: 'pointer', fontFamily: 'inherit',
+                      fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', gap: 6 }}>
+                    <Trash2 size={13}/>
+                    {delCerts && connCertCount > 0 ? `Remove + delete ${connCertCount} certs` : 'Remove connection'}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )
+        })()}
 
       </div>
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
