@@ -10,7 +10,7 @@ import { supabase } from '../lib/supabase'
 import {
   Activity, AlertTriangle, Shield, TrendingDown, RefreshCw,
   ChevronRight, Check, X, ExternalLink, Zap, Search,
-  DollarSign, Copy, AlertCircle, Clock, Eye, EyeOff
+  DollarSign, Copy, AlertCircle, Clock, Eye, EyeOff, Trash2, Square, CheckSquare
 } from 'lucide-react'
 
 const FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/ca-intelligence'
@@ -90,13 +90,16 @@ function Spinner() {
 
 // ══ TAB 1 — EXPIRY TIMELINE ══════════════════════════════════════════
 function ExpiryTimeline({ tok }) {
-  const [data, setData]       = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [syncing, setSyncing] = useState(false)
-  const [filter, setFilter]   = useState('all')
-  const [search, setSearch]   = useState('')
-  const [connId, setConnId]   = useState(null)
-  const [conns, setConns]     = useState([])
+  const [data, setData]         = useState(null)
+  const [loading, setLoading]   = useState(false)
+  const [syncing, setSyncing]   = useState(false)
+  const [filter, setFilter]     = useState('all')
+  const [search, setSearch]     = useState('')
+  const [connId, setConnId]     = useState(null)
+  const [conns, setConns]       = useState([])
+  const [selected, setSelected] = useState(new Set())
+  const [deleting, setDeleting] = useState(false)
+  const [delConfirm, setDelConfirm] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -116,6 +119,32 @@ function ExpiryTimeline({ tok }) {
     setSyncing(true)
     await call(tok, { action: 'daily_sync', connection_id: connId || undefined })
     setSyncing(false)
+    await load()
+  }
+
+  const toggleSelect = (id) => setSelected(prev => {
+    const next = new Set(prev)
+    if (next.has(id)) next.delete(id)
+    else next.add(id)
+    return next
+  })
+
+  const toggleAll = () => {
+    if (selected.size === certs.length) setSelected(new Set())
+    else setSelected(new Set(certs.map(c => c.id)))
+  }
+
+  const doDelete = async () => {
+    setDeleting(true)
+    const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
+    await fetch(`${SB_URL}/functions/v1/ca-import`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tok}` },
+      body: JSON.stringify({ action: 'delete_certs_by_ids', cert_ids: [...selected] })
+    })
+    setSelected(new Set())
+    setDelConfirm(false)
+    setDeleting(false)
     await load()
   }
 
@@ -221,10 +250,39 @@ function ExpiryTimeline({ tok }) {
       </div>
       {last_sync && <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 10 }}>Last synced: {fmt(last_sync)}</div>}
 
+      {/* Batch delete toolbar — appears when items selected */}
+      {selected.size > 0 && (
+        <div style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', marginBottom:8,
+          background:'#fff7ed', border:'0.5px solid #fed7aa', borderRadius:10 }}>
+          <CheckSquare size={14} style={{ color:'#ea580c', flexShrink:0 }}/>
+          <span style={{ fontSize:12, fontWeight:600, color:'#9a3412', flex:1 }}>
+            {selected.size} certificate{selected.size !== 1 ? 's' : ''} selected
+          </span>
+          <button onClick={() => setSelected(new Set())}
+            style={{ fontSize:11, fontWeight:600, padding:'5px 10px', borderRadius:7,
+              border:'0.5px solid #fdba74', background:'white', color:'#9a3412',
+              cursor:'pointer', fontFamily:'inherit' }}>
+            Clear
+          </button>
+          <button onClick={() => setDelConfirm(true)}
+            style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, fontWeight:700,
+              padding:'5px 12px', borderRadius:7, border:'none',
+              background:'#dc2626', color:'white', cursor:'pointer', fontFamily:'inherit' }}>
+            <Trash2 size={11}/> Delete {selected.size}
+          </button>
+        </div>
+      )}
+
       {/* Cert table */}
       <Card>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-          padding: '9px 16px', borderBottom: '0.5px solid #f1f5f9', background: '#fafbfc' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '28px 2fr 1fr 1fr 1fr 1fr',
+          padding: '9px 16px', borderBottom: '0.5px solid #f1f5f9', background: '#fafbfc',
+          alignItems: 'center' }}>
+          <div style={{ display:'flex', alignItems:'center', cursor:'pointer' }} onClick={toggleAll}>
+            {selected.size > 0 && selected.size === certs.length
+              ? <CheckSquare size={13} style={{ color:'#0e7fc0' }}/>
+              : <Square size={13} style={{ color:'#cbd5e1' }}/>}
+          </div>
           {['Domain', 'CA source', 'Expires', 'Days left', 'Status'].map(h => (
             <div key={h} style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8',
               textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
@@ -237,14 +295,21 @@ function ExpiryTimeline({ tok }) {
         ) : certs.map((cert, i) => {
           const u = URGENCY[cert.urgency] || URGENCY.unknown
           const caColor = CA_COLORS[cert.ca_type] || '#94a3b8'
+          const isSelected = selected.has(cert.id)
           return (
-            <div key={cert.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
+            <div key={cert.id} style={{ display: 'grid', gridTemplateColumns: '28px 2fr 1fr 1fr 1fr 1fr',
               padding: '10px 16px', alignItems: 'center',
               borderBottom: i < certs.length - 1 ? '0.5px solid #f8fafc' : 'none',
-              background: cert.no_renewal_path ? '#fffbeb44' : 'transparent',
-              transition: 'background .12s' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-              onMouseLeave={e => e.currentTarget.style.background = cert.no_renewal_path ? '#fffbeb44' : 'transparent'}>
+              background: isSelected ? '#eff6ff' : cert.no_renewal_path ? '#fffbeb44' : 'transparent',
+              transition: 'background .12s', cursor: 'pointer' }}
+              onClick={() => toggleSelect(cert.id)}
+              onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#f8fafc' }}
+              onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#eff6ff' : cert.no_renewal_path ? '#fffbeb44' : 'transparent' }}>
+              <div style={{ display:'flex', alignItems:'center' }} onClick={e => { e.stopPropagation(); toggleSelect(cert.id) }}>
+                {isSelected
+                  ? <CheckSquare size={13} style={{ color:'#0e7fc0' }}/>
+                  : <Square size={13} style={{ color:'#cbd5e1' }}/>}
+              </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
                   <UrgencyDot urgency={cert.urgency}/>
@@ -269,9 +334,58 @@ function ExpiryTimeline({ tok }) {
         {certs.length > 0 && (
           <div style={{ padding: '8px 16px', fontSize: 11, color: '#94a3b8', borderTop: '0.5px solid #f1f5f9' }}>
             Showing {certs.length} of {total} certificates
+            {selected.size > 0 && <span style={{ color:'#0e7fc0', marginLeft:8 }}>· {selected.size} selected</span>}
           </div>
         )}
       </Card>
+
+      {/* ── Delete confirm modal ── */}
+      {delConfirm && (
+        <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+          alignItems:'center', justifyContent:'center', padding:20,
+          background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}
+          onClick={e => e.target===e.currentTarget && !deleting && setDelConfirm(false)}>
+          <div style={{ background:'white', borderRadius:14, width:'100%', maxWidth:400,
+            padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid #e2e8f0' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
+              <div style={{ width:36, height:36, borderRadius:9, background:'#fef2f2',
+                display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <Trash2 size={16} color="#dc2626"/>
+              </div>
+              <div>
+                <div style={{ fontSize:15, fontWeight:700, color:'#0f172a' }}>
+                  Delete {selected.size} certificate{selected.size !== 1 ? 's' : ''}?
+                </div>
+                <div style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>
+                  This removes them from SSLVault tracking only
+                </div>
+              </div>
+            </div>
+            <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:8,
+              padding:'10px 12px', marginBottom:16, fontSize:12, color:'#b91c1c', lineHeight:1.6 }}>
+              These certificates will be <strong>permanently removed</strong> from SSLVault.
+              The actual certificates on your servers and at your CA are not affected.
+              You can re-sync from your CA connection to restore them.
+            </div>
+            <div style={{ display:'flex', gap:8 }}>
+              <button onClick={() => setDelConfirm(false)} disabled={deleting}
+                style={{ flex:1, padding:'9px', border:'0.5px solid #e2e8f0', borderRadius:8,
+                  background:'white', cursor:'pointer', fontFamily:'inherit', fontSize:12, fontWeight:600 }}>
+                Cancel
+              </button>
+              <button onClick={doDelete} disabled={deleting}
+                style={{ flex:2, padding:'9px', background: deleting ? '#94a3b8' : '#dc2626',
+                  color:'white', border:'none', borderRadius:8, fontSize:12, fontWeight:700,
+                  cursor: deleting ? 'wait' : 'pointer', fontFamily:'inherit',
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                {deleting
+                  ? <><RefreshCw size={12} style={{ animation:'spin .8s linear infinite' }}/> Deleting…</>
+                  : <><Trash2 size={12}/> Delete {selected.size} certificate{selected.size !== 1 ? 's' : ''}</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
