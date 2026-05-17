@@ -379,7 +379,9 @@ export default function DigiCertLab({ nav }) {
                   color: 'white', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700,
                   cursor: connecting ? 'wait' : 'pointer', fontFamily: 'inherit',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                {connecting
+                {!tok
+                  ? 'Sign in to SSLVault first'
+                  : connecting
                   ? <><RefreshCw size={13} style={{ animation: 'spin .8s linear infinite' }}/> Connecting…</>
                   : <><Shield size={13}/> Connect to CertCentral</>}
               </button>
