@@ -15,10 +15,18 @@ import {
 const LAB_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/digicert-lab'
 
 async function callLab(tok, body) {
+  // Always get a fresh token in case the passed tok is stale or empty
+  let authTok = tok
+  if (!authTok) {
+    const { data: { session } } = await supabase.auth.getSession()
+    authTok = session?.access_token || ''
+  }
+  if (!authTok) return { error: 'Not logged in — please sign in to SSLVault first' }
   const r = await fetch(LAB_FN, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }
-  , body: JSON.stringify(body) })
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authTok },
+    body: JSON.stringify(body)
+  })
   return r.json()
 }
 
@@ -112,7 +120,12 @@ export default function DigiCertLab({ nav }) {
   const connect = async () => {
     if (!apiKey.trim()) return setConnError('Enter your CertCentral API key')
     setConnecting(true); setConnError('')
-    const r = await callLab(tok, { action: 'verify_connection', api_key: apiKey.trim(), account_id: accountId.trim() || null })
+    // Always fetch fresh session — tok state may be stale
+    const { data: { session: freshSession } } = await supabase.auth.getSession()
+    const freshTok = freshSession?.access_token || tok
+    if (!freshTok) { setConnError('Not logged in — sign in to SSLVault first'); setConnecting(false); return }
+    setTok(freshTok)
+    const r = await callLab(freshTok, { action: 'verify_connection', api_key: apiKey.trim(), account_id: accountId.trim() || null })
     if (r.ok) {
       setConnected(true)
       setConnInfo(r)
@@ -137,7 +150,10 @@ export default function DigiCertLab({ nav }) {
     const key = apiKey.trim() || sessionStorage.getItem('dc_lab_key') || ''
     if (!key) return
     setLoading(true); setLoadError('')
-    const r = await callLab(tok, {
+    const { data: { session: s } } = await supabase.auth.getSession()
+    const freshTok = s?.access_token || tok
+    if (freshTok) setTok(freshTok)
+    const r = await callLab(freshTok, {
       action: 'list_certificates',
       api_key: key,
       account_id: accountId.trim() || sessionStorage.getItem('dc_lab_acct') || null
