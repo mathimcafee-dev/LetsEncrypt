@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Shield, Plus, Globe, Server, Activity,
+  Shield, Plus, Globe, Server, Activity, TrendingUp,
   Layout, Download, Settings,
   BookOpen, CreditCard, Info, User, Mail, LogOut
 } from 'lucide-react'
@@ -16,6 +16,7 @@ import Install from './Install'
 import KnowledgeBase from './KnowledgeBase'
 import BuyCertificate from './BuyCertificate'
 import CAConnectors from './CAConnectors'
+import CertIntelligence from './CertIntelligence'
 import AdminAnalytics from './AdminAnalytics'
 import AgentHealth from './AgentHealth'
 import Pricing from './Pricing'
@@ -38,8 +39,9 @@ export default function CLMHome({ user, nav }) {
   const NAV_MANAGE = [
     { id:'dns',         label:'DNS Providers',  icon:Globe },
     { id:'servers',     label:'Servers',        icon:Server },
-    { id:'ca-connectors',  label:'CA Connectors',  icon:Shield },
-    { id:'agent-health',   label:'Agent Health',   icon:Activity },
+    { id:'ca-connectors',    label:'CA Connectors',    icon:Shield },
+    { id:'ca-intelligence', label:'CA Intelligence',  icon:TrendingUp },
+    { id:'agent-health',    label:'Agent Health',     icon:Activity },
   ]
   const NAV_RESOURCES = [
     { id:'install', label:'Installation', icon:Download },
@@ -54,7 +56,7 @@ export default function CLMHome({ user, nav }) {
     { id:'settings',  label:'Settings',  icon:Settings },
   ]
   const SECTION_TITLES = {
-    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-connectors':'CA Connectors', analytics:'Analytics',
+    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-connectors':'CA Connectors', 'ca-intelligence':'CA Intelligence', analytics:'Analytics',
     dns:'DNS Providers', servers:'Servers',
     install:'Installation', kb:'Docs & Help', pricing:'Pricing',
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
@@ -95,7 +97,8 @@ export default function CLMHome({ user, nav }) {
     if (section === 'pricing')    return <Pricing nav={nav}/>
     if (section === 'servers')    return <ServersPage user={user}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
-    if (section === 'ca-connectors') return <CAConnectors nav={nav}/>
+    if (section === 'ca-connectors')  return <CAConnectors nav={nav}/>
+    if (section === 'ca-intelligence') return <CertIntelligence nav={nav}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>
     if (section === 'agent-health')  return <AgentHealth user={user}/>
     return null
