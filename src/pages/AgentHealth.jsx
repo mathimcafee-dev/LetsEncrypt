@@ -69,7 +69,7 @@ function AgentCard({ agent, tok }) {
   const statusMap = {
     online:  { color: '#16a34a', bg: '#f0fdf4', label: 'Online',  dot: true  },
     offline: { color: '#dc2626', bg: '#fef2f2', label: 'Offline', dot: false },
-    never:   { color: '#94a3b8', bg: '#f8fafc', label: 'Never seen', dot: false },
+    never:   { color: 'var(--v2-text-3)', bg: '#f8fafc', label: 'Never seen', dot: false },
     unknown: { color: '#d97706', bg: '#fffbeb', label: 'Unknown', dot: false },
   }
   const s = statusMap[status] || statusMap.unknown

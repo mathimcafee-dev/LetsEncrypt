@@ -4,6 +4,7 @@ import {
   ArrowRight, Download, Upload, Server, Globe, Cloud, Settings,
   AlertCircle, Search, Wrench, Box, Code2, Wind, Zap
 } from 'lucide-react'
+import '../styles/design-v2.css'
 
 // ── Code block with copy button (uses v2-code) ───────────────────────
 function CopyBlock({ code, label = 'shell' }) {

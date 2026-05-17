@@ -1,12 +1,13 @@
 // SettingsPage.jsx — full alert preferences + alert log
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import '../styles/design-v2.css'
 import {
   User, Bell, Shield, Trash2, LogOut, Check, RefreshCw,
   Mail, Plus, X, Send, AlertTriangle, Clock, ChevronDown, ChevronUp
 } from 'lucide-react'
 
-const FONT = "system-ui,-apple-system,'Segoe UI',sans-serif"
+const FONT = "var(--v2-font, 'Segoe UI', system-ui, sans-serif)"
 
 // All configurable alert types
 const ALERT_TYPE_DEFS = [
@@ -41,7 +42,7 @@ function Toggle({ on, onClick, disabled }) {
     }}>
       <span style={{
         position: 'absolute', top: 2, left: on ? 18 : 2, width: 16, height: 16,
-        borderRadius: '50%', background: 'white', transition: 'left .18s',
+        borderRadius: '50%', background: 'var(--v2-bg)', transition: 'left .18s',
         boxShadow: '0 1px 3px rgba(0,0,0,.15)',
       }}/>
     </button>
@@ -51,10 +52,10 @@ function Toggle({ on, onClick, disabled }) {
 function Section({ title, icon: Icon, children, collapsible = false }) {
   const [open, setOpen] = useState(true)
   return (
-    <div style={{ background: 'white', border: '0.5px solid #e8edf2', borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
+    <div style={{ background: 'var(--v2-bg)', border: '0.5px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
       <div onClick={collapsible ? () => setOpen(v => !v) : undefined}
         style={{ padding: '11px 18px', borderBottom: open ? '0.5px solid #f1f5f9' : 'none',
-          fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase',
+          fontSize: 10, fontWeight: 700, color: 'var(--v2-text-2)', textTransform: 'uppercase',
           letterSpacing: '.6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           cursor: collapsible ? 'pointer' : 'default' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -73,8 +74,8 @@ function Row({ label, desc, children, last }) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
       padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid #f8fafc' }}>
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: 12, fontWeight: 500, color: '#0f172a', marginBottom: 1 }}>{label}</div>
-        {desc && <div style={{ fontSize: 11, color: '#94a3b8' }}>{desc}</div>}
+        <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 1 }}>{label}</div>
+        {desc && <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{desc}</div>}
       </div>
       {children}
     </div>
@@ -91,7 +92,7 @@ function LogRow({ log }) {
     pqc_risk: { icon: '⚛️', color: '#7c3aed' }, no_dns_warning: { icon: '⚠️', color: '#d97706' },
     weekly_digest: { icon: '📊', color: '#0f2545' },
   }
-  const m = meta[log.alert_type] || { icon: '📧', color: '#64748b' }
+  const m = meta[log.alert_type] || { icon: '📧', color: 'var(--v2-text-2)' }
   const ts = new Date(log.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
   const domain = log.metadata?.domain || '—'
   return (
@@ -99,15 +100,15 @@ function LogRow({ log }) {
       padding: '9px 0', borderBottom: '0.5px solid #f8fafc', alignItems: 'center', fontSize: 12 }}>
       <span style={{ fontSize: 14 }}>{m.icon}</span>
       <div>
-        <div style={{ fontWeight: 500, color: '#0f172a', fontSize: 12 }}>
+        <div style={{ fontWeight: 500, color: 'var(--v2-text)', fontSize: 12 }}>
           {log.alert_type.replace(/_/g, ' ')}
         </div>
-        <div style={{ fontSize: 10, color: '#94a3b8', fontFamily: 'monospace' }}>{domain}</div>
+        <div style={{ fontSize: 10, color: 'var(--v2-text-3)', fontFamily: 'monospace' }}>{domain}</div>
       </div>
-      <div style={{ color: '#64748b', fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <div style={{ color: 'var(--v2-text-2)', fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {log.recipient}
       </div>
-      <div style={{ fontSize: 10, color: '#94a3b8' }}>{ts}</div>
+      <div style={{ fontSize: 10, color: 'var(--v2-text-3)' }}>{ts}</div>
       <div>
         <span style={{
           fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,
@@ -276,14 +277,14 @@ export default function SettingsPage({ user }) {
   const handleSignOut = async () => { await supabase.auth.signOut() }
 
   if (loading) return (
-    <div style={{ padding: '48px 28px', display: 'flex', alignItems: 'center', gap: 8, color: '#94a3b8', fontSize: 13, fontFamily: FONT }}>
+    <div style={{ padding: '48px 28px', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--v2-text-3)', fontSize: 13, fontFamily: 'inherit' }}>
       <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }}/> Loading…
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 
   return (
-    <div style={{ padding: '0 0 60px', fontFamily: FONT, maxWidth: 680 }}>
+    <div style={{ padding: '0 0 60px', fontFamily: 'inherit', maxWidth: 680 }}>
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}.spin{animation:spin 1s linear infinite}`}</style>
 
       {/* Tab bar */}
@@ -292,7 +293,7 @@ export default function SettingsPage({ user }) {
           <button key={id} onClick={() => setActiveTab(id)}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
               borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600,
-              fontFamily: FONT, transition: 'all .15s',
+              fontFamily: 'inherit', transition: 'all .15s',
               background: activeTab === id ? 'white' : 'transparent',
               color: activeTab === id ? '#0f172a' : '#94a3b8',
               borderBottom: activeTab === id ? '2px solid #0891b2' : '2px solid transparent',
@@ -309,10 +310,10 @@ export default function SettingsPage({ user }) {
           {/* Account */}
           <Section title="Account" icon={User}>
             <Row label="Email address" desc="Your sign-in email">
-              <span style={{ fontSize: 12, color: '#64748b', fontFamily: 'monospace' }}>{email}</span>
+              <span style={{ fontSize: 12, color: 'var(--v2-text-2)', fontFamily: 'monospace' }}>{email}</span>
             </Row>
             <Row label="Member since">
-              <span style={{ fontSize: 12, color: '#64748b' }}>{createdAt}</span>
+              <span style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>{createdAt}</span>
             </Row>
             <Row label="Plan" desc="Free for personal and indie use" last>
               <span style={{ fontSize: 11, fontWeight: 600, color: '#0369a1', background: '#eff6ff',
@@ -326,7 +327,7 @@ export default function SettingsPage({ user }) {
               <Toggle on={emailAlerts} onClick={() => setEmailAlerts(v => !v)}/>
             </Row>
             <div style={{ paddingTop: 12 }}>
-              <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 10 }}>
+              <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 10 }}>
                 Choose which events trigger an email:
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -339,8 +340,8 @@ export default function SettingsPage({ user }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }}/>
                       <div>
-                        <div style={{ fontSize: 12, fontWeight: 500, color: '#0f172a' }}>{label}</div>
-                        <div style={{ fontSize: 10, color: '#94a3b8' }}>{desc}</div>
+                        <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-text)' }}>{label}</div>
+                        <div style={{ fontSize: 10, color: 'var(--v2-text-3)' }}>{desc}</div>
                       </div>
                     </div>
                     <Toggle on={alertTypes.includes(id)} onClick={() => toggleType(id)} disabled={!emailAlerts}/>
@@ -352,7 +353,7 @@ export default function SettingsPage({ user }) {
 
           {/* Expiry thresholds */}
           <Section title="Expiry alert thresholds" icon={Clock}>
-            <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 10 }}>
               Alert when a certificate is within this many days of expiry:
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -373,16 +374,16 @@ export default function SettingsPage({ user }) {
 
           {/* Additional recipients */}
           <Section title="Additional recipients" icon={Mail}>
-            <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 12 }}>
               Send all alerts to these email addresses in addition to your account email.
             </div>
             {extraEmails.map(e => (
               <div key={e} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '7px 10px', background: '#f8fafc', border: '1px solid #e2e8f0',
+                padding: '7px 10px', background: 'var(--v2-surface-3)', border: '1px solid #e2e8f0',
                 borderRadius: 7, marginBottom: 6 }}>
                 <span style={{ fontSize: 12, color: '#475569', fontFamily: 'monospace' }}>{e}</span>
                 <button onClick={() => removeExtraEmail(e)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: 2 }}>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', padding: 2 }}>
                   <X size={12}/>
                 </button>
               </div>
@@ -406,7 +407,7 @@ export default function SettingsPage({ user }) {
 
           {/* Slack */}
           <Section title="Slack webhook" collapsible>
-            <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 10 }}>
               Get all alerts in Slack. Paste an Incoming Webhook URL from your Slack workspace.
             </div>
             <input value={slackWebhook} onChange={e => setSlackWebhook(e.target.value)}
@@ -425,13 +426,13 @@ export default function SettingsPage({ user }) {
 
           {/* Test send */}
           <Section title="Test alert" icon={Send}>
-            <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 12 }}>
               Send a test email to verify your alert settings are working.
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
               <select value={testType} onChange={e => setTestType(e.target.value)}
                 style={{ flex: 1, minWidth: 180, padding: '7px 10px', border: '1px solid #e2e8f0',
-                  borderRadius: 7, fontSize: 12, fontFamily: 'inherit', outline: 'none', background: 'white' }}>
+                  borderRadius: 7, fontSize: 12, fontFamily: 'inherit', outline: 'none', background: 'var(--v2-bg)' }}>
                 {ALERT_TYPE_DEFS.map(({ id, label }) => (
                   <option key={id} value={id}>{TYPE_ICONS[id]} {label}</option>
                 ))}
@@ -457,7 +458,7 @@ export default function SettingsPage({ user }) {
           {/* Security */}
           <Section title="Security" icon={Shield}>
             <Row label="Authentication" desc="Managed via Supabase Auth">
-              <span style={{ fontSize: 11, color: '#64748b' }}>Magic link</span>
+              <span style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>Magic link</span>
             </Row>
             <Row label="Private key storage" desc="AES-256-GCM encrypted at rest" last>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 500, color: '#0369a1' }}>
@@ -470,14 +471,14 @@ export default function SettingsPage({ user }) {
           <Section title="Account actions" icon={User}>
             <Row label="Sign out" desc="Sign out on this device">
               <button onClick={handleSignOut}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'white',
-                  color: '#64748b', border: '0.5px solid #e2e8f0', borderRadius: 6,
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--v2-bg)',
+                  color: 'var(--v2-text-2)', border: '0.5px solid var(--v2-border)', borderRadius: 6,
                   padding: '6px 12px', fontSize: 11, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <LogOut size={11}/> Sign out
               </button>
             </Row>
             <Row label="Delete account" desc="Permanently delete your account and all data" last>
-              <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'white',
+              <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--v2-bg)',
                 color: '#dc2626', border: '0.5px solid #fecaca', borderRadius: 6,
                 padding: '6px 12px', fontSize: 11, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Trash2 size={11}/> Delete account
@@ -502,24 +503,24 @@ export default function SettingsPage({ user }) {
 
         {/* ── ALERT LOG TAB ───────────────────────────────────────────── */}
         {activeTab === 'log' && (
-          <div style={{ background: 'white', border: '0.5px solid #e8edf2', borderRadius: 10, overflow: 'hidden' }}>
+          <div style={{ background: 'var(--v2-bg)', border: '0.5px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden' }}>
             {/* Header */}
-            <div style={{ padding: '12px 18px', borderBottom: '0.5px solid #f1f5f9',
+            <div style={{ padding: '12px 18px', borderBottom: '0.5px solid var(--v2-border)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '.6px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-2)', textTransform: 'uppercase', letterSpacing: '.6px' }}>
                 Alert log {logsTotal > 0 && `(${logsTotal} total)`}
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <select value={logsTypeFilter} onChange={e => { setLogsTypeFilter(e.target.value); setLogsPage(0) }}
                   style={{ padding: '5px 8px', border: '1px solid #e2e8f0', borderRadius: 6,
-                    fontSize: 11, fontFamily: 'inherit', outline: 'none', background: 'white' }}>
+                    fontSize: 11, fontFamily: 'inherit', outline: 'none', background: 'var(--v2-bg)' }}>
                   <option value="">All types</option>
                   {ALERT_TYPE_DEFS.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}
                 </select>
                 <button onClick={() => loadLogs(logsPage, logsTypeFilter)}
                   style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px',
-                    background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6,
-                    fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', color: '#64748b' }}>
+                    background: 'var(--v2-surface-3)', border: '1px solid #e2e8f0', borderRadius: 6,
+                    fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', color: 'var(--v2-text-2)' }}>
                   <RefreshCw size={10}/> Refresh
                 </button>
               </div>
@@ -527,8 +528,8 @@ export default function SettingsPage({ user }) {
 
             {/* Column headers */}
             <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 80px 70px', gap: 12,
-              padding: '8px 18px', fontSize: 10, fontWeight: 700, color: '#94a3b8',
-              textTransform: 'uppercase', letterSpacing: '.5px', borderBottom: '0.5px solid #f1f5f9' }}>
+              padding: '8px 18px', fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
+              textTransform: 'uppercase', letterSpacing: '.5px', borderBottom: '0.5px solid var(--v2-border)' }}>
               <div/>
               <div>Type / Domain</div>
               <div>Recipient</div>
@@ -538,12 +539,12 @@ export default function SettingsPage({ user }) {
 
             <div style={{ padding: '0 18px' }}>
               {logsLoading ? (
-                <div style={{ padding: '24px 0', textAlign: 'center', color: '#94a3b8', fontSize: 12 }}>
+                <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 12 }}>
                   <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite', marginRight: 6 }}/>
                   Loading alert log…
                 </div>
               ) : logs.length === 0 ? (
-                <div style={{ padding: '32px 0', textAlign: 'center', color: '#94a3b8', fontSize: 12 }}>
+                <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 12 }}>
                   No alerts sent yet.{' '}
                   <button onClick={() => setActiveTab('preferences')}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0891b2',
@@ -560,7 +561,7 @@ export default function SettingsPage({ user }) {
             {logsTotal > 20 && (
               <div style={{ padding: '10px 18px', borderTop: '0.5px solid #f1f5f9',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, color: '#94a3b8' }}>
+                <span style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>
                   Showing {logsPage * 20 + 1}–{Math.min((logsPage + 1) * 20, logsTotal)} of {logsTotal}
                 </span>
                 <div style={{ display: 'flex', gap: 6 }}>

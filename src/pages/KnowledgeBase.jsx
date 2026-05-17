@@ -5,6 +5,7 @@ import {
   Copy, Check, Clock, Lock, Settings as SettingsIcon, FileDown,
   CircleHelp, Bug, Network, Bot
 } from 'lucide-react'
+import '../styles/design-v2.css'
 
 function CodeBlock({ code, label = 'shell' }) {
   const [ok, setOk] = useState(false)
@@ -471,7 +472,7 @@ export default function KnowledgeBase({ nav }) {
         {/* SECTION 10 — FAQ */}
         <Divider label="10 · FAQ" title="Frequently asked questions" />
         <FAQ q="What certificate types does SSLVault support?"
-             a="SSLVault issues certificates via the GoGetSSL reseller API, supporting DV (Domain Validated), OV (Organisation Validated), EV (Extended Validation), Wildcard, and multi-domain SAN certificates from DigiCert, Sectigo, RapidSSL, GeoTrust, and Thawte." />
+             a="SSLVault issues certificates via the GoGetSSL API, supporting DV (Domain Validated), OV (Organisation Validated), EV (Extended Validation), Wildcard, and multi-domain SAN certificates from DigiCert, Sectigo, RapidSSL, GeoTrust, and Thawte." />
         <FAQ q="How long does issuance take?"
              a="DV certificates issue in ~5 minutes once domain validation is complete. OV takes 1–3 business days (organisation verification required). EV takes 2–7 business days. Wildcards are DV so also ~5 minutes with DNS validation." />
         <FAQ q="Are my credentials safe?"

@@ -112,8 +112,8 @@ const FEATURES = [
   },
   {
     icon: '🏗', color: '#0f766e', bg: '#ccfbf1',
-    title: '3-tier Reseller Platform',
-    desc: 'Master admin → Sub-reseller → End customer. Invite flows, magic link auth, per-customer portals, Excel exports and approval email notifications.'
+    title: 'PQC Risk Scanner',
+    desc: 'Every RSA-2048 cert in your portfolio flagged with NIST 2030 deadline. Migration plan and estimated timeline per domain.'
   },
 ]
 
@@ -144,7 +144,7 @@ const COMPARE = [
   { feat: 'Shadow IT scanner',            sv: true,  v: true,  k: false },
   { feat: 'CA consolidation advisor',     sv: true,  v: false, k: false },
   { feat: 'PQC readiness scanner',        sv: true,  v: true,  k: true  },
-  { feat: '3-tier reseller platform',     sv: true,  v: false, k: false },
+  { feat: 'Free forever (platform)',       sv: true,  v: false, k: false },
   { feat: 'DigiCert OV/EV automation',   sv: true,  v: true,  k: true  },
   { feat: 'Starting price',                sv: '$0',  v: 'Enterprise', k: 'Enterprise' },
 ]
@@ -257,7 +257,7 @@ export default function Home({ nav }) {
               maxWidth: 500, marginBottom: 36, fontWeight: 400,
               animation: 'fadeUp .6s ease .4s both' }}>
               Built by a <strong style={{ color: 'rgba(255,255,255,0.88)', fontWeight: 700 }}>Certified PKI Specialist</strong> to
-              give developers, MSPs, and resellers a complete CLM platform — without the enterprise price tag.
+              give developers, SMBs, and non-profits a complete CLM platform — without the enterprise price tag.
             </p>
 
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 48,
@@ -300,7 +300,7 @@ export default function Home({ nav }) {
               { dot: '#f87171', label: 'CA Intelligence Suite',   sub: 'Expiry timeline · Shadow IT · Advisor' },
               { dot: '#34d399', label: 'PQC readiness scanner',   sub: 'NIST 2030 deadline · RSA-2048 flagged' },
               { dot: '#a78bfa', label: 'TLS posture grading',     sub: 'A–F per domain · HSTS · headers' },
-              { dot: '#38bdf8', label: '3-tier reseller platform',sub: 'Master → reseller → customer' },
+              { dot: '#38bdf8', label: 'PQC risk scanner',         sub: 'NIST 2030 · RSA-2048 flagged' },
               { dot: '#fbbf24', label: 'DigiCert Lab',            sub: 'OV/EV automation · revoke & replace' },
             ].map(({ dot, label, sub }) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12,
@@ -337,7 +337,7 @@ export default function Home({ nav }) {
             <h2 style={{ fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 900, letterSpacing: '-1.2px',
               color: C.navy, marginBottom: 16 }}>Everything a PKI team needs</h2>
             <p style={{ fontSize: 16, color: C.slateL, maxWidth: 480, margin: '0 auto', lineHeight: 1.75 }}>
-              15 features that cover the full certificate lifecycle — built for developers, MSPs, and resellers.
+              15 features that cover the full certificate lifecycle — built for developers, SMBs, and non-profits.
             </p>
           </div>
         </Reveal>

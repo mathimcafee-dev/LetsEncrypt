@@ -8,7 +8,6 @@ import { differenceInDays, format } from 'date-fns'
 import AgentInstall from '../components/AgentInstall'
 import CpanelInstall from '../components/CpanelInstall'
 
-const TSS_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue'
 
 function daysLeft(iso) {
   if (!iso) return null
@@ -161,7 +160,6 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
               <tbody>
                 <InfoRow label="Product Name"    value={productName(order?.product_code, cert.cert_type)}/>
                 <InfoRow label="Domain Name"     value={cert.domain} mono/>
-                <InfoRow label="Order ID"        value={cert.tss_order_id} mono copiable/>
                 <InfoRow label="Certificate Start"  value={fmtDate(cert.issued_at)}/>
                 <InfoRow label="Certificate Expiry" value={fmtDate(cert.expires_at)} color={days!=null&&days<30?'#b45309':undefined}/>
                 <InfoRow label="Certificate Validity" value={validityDays ? `${validityDays} Days` : '—'}/>
@@ -261,33 +259,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
             <ActionBtn icon={Download}  label="Download Certificate" onClick={downloadZip}/>
             <ActionBtn icon={RotateCcw} label="Renew Certificate"    onClick={() => { sessionStorage.setItem('prefill_domain',cert.domain); onIssue?.() }} disabled={isRevoked}/>
             <ActionBtn icon={Lock}      label="Install to Server"    onClick={() => onInstall?.(cert)} disabled={isRevoked||!cert.cert_pem}/>
-            {cert.tss_order_id && !isRevoked && (
-              <>
-                <div style={{ borderTop:'0.5px solid #e8edf2', margin:'4px 0', display:'flex', alignItems:'center', gap:6 }}>
-                  <span style={{ fontSize:9, color:'#a3a3a3', fontWeight:600, textTransform:'uppercase', letterSpacing:'.4px', padding:'2px 0' }}>TSS actions</span>
-                </div>
-                <ActionBtn icon={RefreshCw} label="Reissue — same order, fresh PEM, no charge" onClick={async () => {
-                  if (!window.confirm('Reissue this certificate? This generates a new CSR and PEM on the same TSS order — same expiry, no charge.')) return
-                  try {
-                    const { data: { session } } = await (await import('../lib/supabase')).supabase.auth.getSession()
-                    const r = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
-                      body: JSON.stringify({ action: 'reissue', cert_id: cert.id })
-                    })
-                    const d = await r.json()
-                    if (d.ok) { alert('Reissued successfully. Refreshing…'); onRefresh?.() }
-                    else alert('Reissue failed: ' + (d.error || 'unknown error'))
-                  } catch(e) { alert('Error: ' + String(e)) }
-                }} disabled={isRevoked}/>
-                <ActionBtn icon={X} label="Cancel / Revoke" onClick={() => setRevokeOpen(true)} color="#b91c1c"/>
-              </>
-            )}
-
-            {/* Purge — available for all certs including wrong-domain / test orders */}
-            <div style={{ borderTop:'0.5px solid #e8edf2', margin:'4px 0' }}/>
-            {!delConfirm ? (
-              <ActionBtn icon={Trash2} label="Purge all records permanently" onClick={() => setDelConfirm(true)} color="#b91c1c"/>
+ color="#b91c1c"/>
             ) : (
               <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:6, padding:'10px 12px' }}>
                 <div style={{ fontSize:11, fontWeight:600, color:'#991b1b', marginBottom:6 }}>
@@ -356,11 +328,10 @@ export default function CertInventory({ user, nav, onIssue }) {
     setLoading(true)
     const [{ data:certData }, { data:orderData }] = await Promise.all([
       supabase.from('certificates').select('*').eq('user_id',user.id).not('status','eq','rotating').order('created_at',{ascending:false}),
-      supabase.from('tss_orders').select('*').eq('user_id',user.id).order('created_at',{ascending:false})
+      Promise.resolve({ data: [] })
     ])
     setCerts(certData||[])
     const oMap = {}
-    for (const o of orderData||[]) oMap[o.tss_order_id] = o
     setOrders(oMap)
     setLoading(false)
   }, [user])
@@ -389,7 +360,7 @@ export default function CertInventory({ user, nav, onIssue }) {
         const orderEnd = order?.years ? new Date(new Date(order.created_at).getTime() + order.years*365*86400000).toISOString() : ''
         return [
           cert.domain,
-          cert.tss_order_id || '',
+          '',
           productName(order?.product_code, cert.cert_type),
           si.label,
           fmtDate(cert.issued_at),
@@ -421,7 +392,6 @@ export default function CertInventory({ user, nav, onIssue }) {
     // Delete TSS orders linked to this cert
     const cert = certs.find(c => c.id === id)
     if (cert?.domain) {
-      await supabase.from('tss_orders').delete()
         .eq('user_id', user.id).eq('domain', cert.domain)
     }
     await supabase.from('certificates').delete().eq('id', id)
@@ -604,13 +574,12 @@ export default function CertInventory({ user, nav, onIssue }) {
                 </div>
                 {/* Order ID */}
                 <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
-                  <span style={{ fontSize:11, color:'#3b82f6', fontFamily:"'SF Mono','Menlo',monospace", cursor:'pointer' }} onClick={e => { e.stopPropagation(); setExpanded(isExpanded?null:cert.id) }}>{cert.tss_order_id||'—'}</span>
-                  {cert.tss_order_id && <span style={{ fontSize:9, color:'#a3a3a3' }}>Quick View</span>}
+                  <span style={{ fontSize:11, color:'#3b82f6', fontFamily:"'SF Mono','Menlo',monospace", cursor:'pointer' }} onClick={e => { e.stopPropagation(); setExpanded(isExpanded?null:cert.id) }}>{cert.ggs_order_id||cert.external_order_id||'—'}</span>
                 </div>
                 {/* Product */}
                 <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
                   <span style={{ fontSize:12, color:'#0a0a0a', fontWeight:500 }}>{productName(order?.product_code, cert.cert_type)}</span>
-                  {order && <span style={{ fontSize:10, color:'#a3a3a3' }}>Transaction ID: {order.tss_order_id}</span>}
+
                 </div>
                 {/* Status */}
                 <div>

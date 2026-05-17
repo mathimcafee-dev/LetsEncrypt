@@ -6,14 +6,13 @@ import '../styles/design-v2.css'
 export default function AdminAnalytics({ user }) {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [resellers, setResellers] = useState([])
 
   const load = async () => {
     setLoading(true)
     const [certsRes, ordersRes, resellersRes] = await Promise.all([
       supabase.from('certificates').select('id,domain,status,expires_at,source,issued_at,tls_grade,install_status'),
       supabase.from('ssl_orders').select('id,domain,status,product_name,created_at,order_purpose'),
-      supabase.from('profiles').select('id,email,plan,created_at').eq('plan','reseller').limit(20),
+      Promise.resolve({ data: [] }),
     ])
     const certs  = certsRes.data  || []
     const orders = ordersRes.data || []
@@ -33,7 +32,6 @@ export default function AdminAnalytics({ user }) {
 
     setStats({ active:active.length, expiring30:expiring30.length, expiring7:expiring7.length,
       installed:installed.length, thisMonth:thisMonth.length, orders:orders.length, grades, bySource })
-    setResellers(resellersRes.data||[])
     setLoading(false)
   }
 
@@ -123,22 +121,6 @@ export default function AdminAnalytics({ user }) {
         )}
 
         {/* Resellers table */}
-        {resellers.length > 0 && (
-          <>
-            <div className="v2-section-label" style={{marginBottom:10}}>Sub-resellers</div>
-            <div className="v2-card" style={{overflow:'hidden',padding:0}}>
-              {resellers.map((r,i)=>(
-                <div key={r.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 16px',borderBottom:i<resellers.length-1?'0.5px solid var(--v2-border)':'none'}}>
-                  <div style={{fontSize:12,fontFamily:'monospace',color:'var(--v2-text)'}}>{r.email||r.id.slice(0,8)}</div>
-                  <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                    <span style={{fontSize:10,fontWeight:500,padding:'2px 7px',borderRadius:4,background:'#f0fdf4',color:'#16a34a'}}>reseller</span>
-                    <span style={{fontSize:11,color:'var(--v2-text-3)'}}>{new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
       </div>
     </div>
   )

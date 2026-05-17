@@ -133,12 +133,12 @@ const CERT_PRICES = [
 ]
 
 const FAQS = [
-  { q: 'Is the platform really free?', a: 'Yes. The SSLVault platform is free — issuance, monitoring, agents, auto-renewal, CA connectors, CA intelligence. You pay for certificates at GoGetSSL reseller rates (from $8/yr). Pro and Reseller plans are coming soon and will unlock OV/EV and the reseller platform.' },
-  { q: 'How does certificate pricing work?', a: 'Certificates are priced at GoGetSSL reseller rates, which are significantly below retail. You pay per certificate per year. The platform (agents, monitoring, DNS connectors, CA connectors, PQC scanner) is free. No per-seat fee, no per-domain fee.' },
+  { q: 'Is the platform really free?', a: 'Yes. The SSLVault platform is free — issuance, monitoring, agents, auto-renewal, CA connectors, CA intelligence. You pay only for certificates at GoGetSSL rates (from $8/yr). No platform subscription, no per-seat fee, no hidden charges.' },
+  { q: 'How does certificate pricing work?', a: 'You pay per certificate per year at GoGetSSL rates, which are significantly below retail. The platform — agents, monitoring, DNS connectors, CA connectors, PQC scanner — is always free.' },
   { q: 'What\'s the difference between cert expiry and order expiry?', a: 'Certificate expiry = when the DV cert itself expires (~6 months for RapidSSL DV). Order expiry = when your 12-month subscription ends (issued_at + 12 months). SSLVault tracks both. Auto-reissue fires 1 day before cert expiry. Auto-renewal fires 1 day before order expiry. These can be different dates.' },
   { q: 'Does SSLVault store my private keys?', a: 'Only if you opt in to KeyLocker. Keys are AES-256-GCM encrypted at rest. Every access is logged with a full audit trail. A 30-second timed reveal prevents screen-share leaks. You can also generate keys on your own server — SSLVault never sees them.' },
   { q: 'What DigiCert features are in DigiCert Lab?', a: 'DigiCert Lab is a sandboxed workspace for CertCentral automation. You connect your own CertCentral API key (never stored in our DB). Features: view your full portfolio, PQC risk scoring, expiry risk map, zero-touch OV/EV reissue (API call preview before executing), revoke & replace workflow, and full portfolio CSV export.' },
-  { q: 'Can I manage multiple customers as a reseller?', a: 'Yes — with the Reseller plan. 3-tier hierarchy: Master admin (you) → Sub-resellers → End customers. Each level gets a separate portal. Sub-resellers can be invited via magic link, manage their own customers, and issue certs through your platform. Excel exports for billing.' },
+  { q: 'Can I manage multiple domains and servers?', a: 'Yes — the platform supports unlimited domains and servers. Add as many DNS connectors, VPS agents, and CA connections as you need. All managed from one dashboard with no per-domain or per-server fees.' },
   { q: 'Is there sandbox / test mode?', a: 'Yes. GoGetSSL sandbox mode is available for testing the full issuance flow without real cost. DigiCert Lab has a sandbox mode for reissue (shows the API call without executing it). Sandbox certs are clearly marked in the dashboard.' },
 ]
 

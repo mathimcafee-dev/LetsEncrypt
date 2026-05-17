@@ -18,11 +18,11 @@ export default function About({ nav }) {
           <h1 style={{ fontSize: 'clamp(32px,5vw,52px)', fontWeight: 700, letterSpacing: '-1px',
                         lineHeight: 1.1, margin: '0 0 16px', color: 'var(--v2-text)' }}>
             SSL lifecycle management<br />
-            <span style={{ color: 'var(--v2-green)' }}>for resellers and their customers.</span>
+            <span style={{ color: 'var(--v2-green)' }}>for developers, SMBs, and non-profits.</span>
           </h1>
           <p style={{ fontSize: 16, color: 'var(--v2-text-2)', maxWidth: 580, margin: '0 auto 36px', lineHeight: 1.7 }}>
-            SSLVault is a Certificate Lifecycle Management platform built for SSL resellers.
-            Issue trusted RapidSSL DV certificates via TheSSLStore, manage multi-tier customer accounts,
+            SSLVault is a Certificate Lifecycle Management platform built for indie developers, SMBs, and non-profits.
+            Issue trusted DV certificates via GoGetSSL, monitor your full certificate estate,
             and automate renewal and deployment — all from one dashboard.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -40,16 +40,16 @@ export default function About({ nav }) {
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-green-text)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 12 }}>Why SSLVault</div>
             <h2 style={{ fontSize: 26, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.5px', margin: '0 0 16px' }}>
-              Built by a PKI specialist for the reseller market
+              Built by a PKI specialist, free for everyone
             </h2>
             <p style={{ fontSize: 14, color: 'var(--v2-text-2)', lineHeight: 1.75, marginBottom: 16 }}>
-              SSLVault was built out of first-hand experience working with SSL resellers and certificate authorities.
+              SSLVault was built out of first-hand experience working at a Certificate Authority, designed to give everyone access to enterprise-grade CLM.
               The complexity of managing certificates across multiple customers, handling DCV, and ensuring zero-downtime
               renewals is a real operational burden — SSLVault automates all of it.
             </p>
             <p style={{ fontSize: 14, color: 'var(--v2-text-2)', lineHeight: 1.75 }}>
               Every certificate issued through SSLVault is a trusted <strong>RapidSSL DV certificate</strong> backed by the
-              DigiCert trust chain, issued via TheSSLStore's reseller API. Browser compatibility is 99.9%.
+              DigiCert trust chain, issued via GoGetSSL API. Browser compatibility is 99.9%.
               Validity up to 2 years.
             </p>
           </div>
@@ -102,7 +102,7 @@ export default function About({ nav }) {
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 20, textAlign: 'center' }}>Technology</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
             {[
-              { label: 'TheSSLStore', sub: 'Reseller API · RapidSSL DV', color: '#0e7fc0' },
+              { label: 'GoGetSSL', sub: 'API · DV / OV / EV / Wildcard', color: '#0e7fc0' },
               { label: 'Supabase', sub: 'Auth · DB · Edge functions', color: '#15803d' },
               { label: 'React + Vite', sub: 'Frontend · Vercel deploy', color: '#7c3aed' },
               { label: 'DigiCert chain', sub: '99.9% browser trust', color: '#d97706' },
