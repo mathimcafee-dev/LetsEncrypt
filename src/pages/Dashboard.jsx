@@ -355,6 +355,138 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
   )
 })
 
+
+// ── TLS Posture inline row with expandable results ────────────────────────
+function TlsPostureRow({ cert, onRefresh }) {
+  const [open,     setOpen]     = useState(false)
+  const [checking, setChecking] = useState(false)
+  const [result,   setResult]   = useState(cert.tls_details || null)
+
+  const gradeColor = { A:'#16a34a', B:'#65a30d', C:'#d97706', D:'#ea580c', F:'#dc2626' }
+  const grade = cert.tls_grade
+  const score = cert.tls_score || 0
+  const color = gradeColor[grade] || '#64748b'
+
+  const runCheck = async (e) => {
+    e.stopPropagation()
+    setChecking(true)
+    const { data:{ session } } = await supabase.auth.getSession()
+    const r = await fetch(SB_URL+'/functions/v1/tls-posture', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body: JSON.stringify({ action:'check', domain:cert.domain, cert_id:cert.id })
+    })
+    const d = await r.json()
+    if (d.ok) {
+      setResult(d.checks)
+      setOpen(true)
+      setTimeout(() => onRefresh(), 800)
+    }
+    setChecking(false)
+  }
+
+  const checkLabels = {
+    https_accessible: 'HTTPS accessible',
+    hsts:             'HSTS header',
+    security_headers: 'Security headers',
+    https_redirect:   'HTTPS served',
+    cert_validity:    'Certificate validity',
+    trusted_ca:       'Trusted CA',
+  }
+
+  return (
+    <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:6 }}>
+      {/* Header row — always visible */}
+      <div onClick={() => grade && setOpen(o => !o)}
+        style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+          padding:'11px 14px', background:'var(--v2-bg)',
+          cursor: grade ? 'pointer' : 'default',
+          transition:'background .15s' }}
+        onMouseEnter={e => e.currentTarget.style.background='#f0f9ff'}
+        onMouseLeave={e => e.currentTarget.style.background='var(--v2-bg)'}>
+        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <div style={{ width:34, height:34, borderRadius:8, background:'#f0f9ff',
+            display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <Activity size={16} color="#0369a1"/>
+          </div>
+          <div>
+            <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)' }}>Check TLS posture</div>
+            <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1 }}>
+              {grade
+                ? <span>Last grade: <span style={{ color, fontWeight:600 }}>{grade}</span> · {score}% · click to {open?'collapse':'expand'}</span>
+                : 'Grade this domain A–F on HTTPS, HSTS, chain & more'}
+            </div>
+          </div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+          {grade && (
+            <span style={{ fontFamily:'monospace', fontSize:13, fontWeight:700,
+              color, background:color+'18', padding:'3px 8px', borderRadius:5,
+              border:`0.5px solid ${color}40` }}>{grade}</span>
+          )}
+          <button onClick={runCheck} disabled={checking}
+            style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
+              color:'#0369a1', background:'#eff6ff', border:'0.5px solid #bfdbfe',
+              borderRadius:6, padding:'4px 10px', cursor:checking?'wait':'pointer',
+              fontFamily:'inherit', fontWeight:500, flexShrink:0 }}>
+            {checking
+              ? <><RefreshCw size={11} style={{ animation:'spin .8s linear infinite' }}/> Checking…</>
+              : <><Activity size={11}/> {grade ? 'Re-check' : 'Run check'}</>}
+          </button>
+        </div>
+      </div>
+
+      {/* Expandable results */}
+      {open && result && (
+        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-surface-3)',
+          padding:'12px 14px' }}>
+          {/* Score bar */}
+          <div style={{ marginBottom:12 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+              <span style={{ fontSize:11, fontWeight:500, color:'var(--v2-text-2)' }}>Overall score</span>
+              <span style={{ fontSize:11, fontWeight:700, color }}>{score}%</span>
+            </div>
+            <div style={{ height:6, borderRadius:3, background:'var(--v2-border)', overflow:'hidden' }}>
+              <div style={{ height:'100%', borderRadius:3, background:color,
+                width:`${score}%`, transition:'width .6s cubic-bezier(.16,1,.3,1)' }}/>
+            </div>
+          </div>
+          {/* Individual checks */}
+          {Object.entries(result).map(([key, check]) => (
+            <div key={key} style={{ display:'flex', alignItems:'flex-start', gap:10,
+              padding:'7px 0', borderBottom:'0.5px solid var(--v2-border)' }}
+              className="tls-check-row">
+              <div style={{ width:18, height:18, borderRadius:'50%', flexShrink:0, marginTop:1,
+                background: check.pass ? '#f0fdf4' : '#fef2f2',
+                display:'flex', alignItems:'center', justifyContent:'center' }}>
+                {check.pass
+                  ? <Check size={10} color="#16a34a"/>
+                  : <X size={10} color="#dc2626"/>}
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:12, fontWeight:500,
+                  color: check.pass ? 'var(--v2-text)' : '#dc2626' }}>
+                  {checkLabels[key] || key.replace(/_/g,' ')}
+                  {check.points > 0 && (
+                    <span style={{ fontSize:10, fontWeight:400, color:'var(--v2-text-3)',
+                      marginLeft:6 }}>+{check.points}pts</span>
+                  )}
+                </div>
+                <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1, lineHeight:1.5 }}>
+                  {check.detail}
+                </div>
+              </div>
+            </div>
+          ))}
+          <div style={{ marginTop:8, fontSize:11, color:'var(--v2-text-3)', lineHeight:1.6 }}>
+            Checks: HTTPS accessibility, HSTS header strength, security headers, certificate validity, and trusted CA verification.
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefresh, session }) {
   const days = daysLeft(cert.expires_at)
   const [activeTab, setActiveTab] = useState('details')
@@ -604,15 +736,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             title={refreshing ? 'Syncing...' : 'Sync from GoGetSSL'}
             subtitle={refreshing ? 'Checking status...' : 'Pull latest order status'}
             onClick={doRefresh} disabled={refreshing}/>
-          <ActionRow icon={Activity} iconColor="#0369a1" iconBg="#f0f9ff"
-            hoverBorder="#bae6fd" hoverBg="#f0f9ff"
-            title="Check TLS posture"
-            subtitle={cert.tls_grade ? `Last grade: ${cert.tls_grade} · ${cert.tls_score||0}%` : 'Grade this certificate A–F'}
-            onClick={async () => {
-              const { data:{session} } = await supabase.auth.getSession()
-              await fetch(SB_URL+'/functions/v1/tls-posture',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({action:'check',domain:cert.domain,cert_id:cert.id})})
-              setTimeout(()=>onRefresh(),1000)
-            }}/>
+          <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
           <div style={{ display:'flex', justifyContent:'flex-end', marginTop:4 }}>
             {!delConfirm
               ? <button onClick={() => setDel(true)}

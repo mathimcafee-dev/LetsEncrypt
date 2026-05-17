@@ -17,6 +17,7 @@ import KnowledgeBase from './KnowledgeBase'
 import BuyCertificate from './BuyCertificate'
 import CAConnectors from './CAConnectors'
 import AdminAnalytics from './AdminAnalytics'
+import AgentHealth from './AgentHealth'
 import Pricing from './Pricing'
 
 export default function CLMHome({ user, nav }) {
@@ -37,7 +38,8 @@ export default function CLMHome({ user, nav }) {
   const NAV_MANAGE = [
     { id:'dns',         label:'DNS Providers',  icon:Globe },
     { id:'servers',     label:'Servers',        icon:Server },
-    { id:'ca-connectors', label:'CA Connectors', icon:Shield },
+    { id:'ca-connectors',  label:'CA Connectors',  icon:Shield },
+    { id:'agent-health',   label:'Agent Health',   icon:Activity },
   ]
   const NAV_RESOURCES = [
     { id:'install', label:'Installation', icon:Download },
@@ -95,6 +97,7 @@ export default function CLMHome({ user, nav }) {
     if (section === 'settings')      return <SettingsPage user={user}/>
     if (section === 'ca-connectors') return <CAConnectors nav={nav}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>
+    if (section === 'agent-health')  return <AgentHealth user={user}/>
     return null
   }
 
