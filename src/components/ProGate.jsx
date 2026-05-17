@@ -1,4 +1,4 @@
-import { Shield, Zap, ArrowRight, Lock } from 'lucide-react'
+
 import '../styles/design-v2.css'
 
 // ── ProGate ───────────────────────────────────────────────────────────

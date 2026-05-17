@@ -1,4 +1,7 @@
-import { Scale, AlertTriangle, Mail, ArrowRight, Shield, FileText } from 'lucide-react'
+import {
+  AlertTriangle, Mail, ArrowRight,
+  Shield
+} from 'lucide-react'
 
 export default function Terms({ nav }) {
   const bg = 'linear-gradient(160deg,#eef2ff,#eff6ff 35%,#fefce8 65%,#fdf4ff)'

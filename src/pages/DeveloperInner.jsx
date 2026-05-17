@@ -1,4 +1,7 @@
-import { Award, Briefcase, Code2, MapPin, Mail, ExternalLink, Shield } from 'lucide-react'
+import {
+  Award, Briefcase, MapPin,
+  Mail, Shield
+} from 'lucide-react'
 import portrait from '../assets/mathi-portrait.jpg'
 
 function Github({ size=14, color='currentColor' }) {

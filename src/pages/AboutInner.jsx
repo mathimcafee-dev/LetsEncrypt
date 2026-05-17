@@ -1,4 +1,8 @@
-import { Heart, Shield, RefreshCw, Globe, Code2, ArrowRight, Server, Lock } from 'lucide-react'
+import {
+  Heart, Shield, RefreshCw,
+  Globe, Code2, ArrowRight,
+  Lock
+} from 'lucide-react'
 
 const PILLARS = [
   { icon: Lock, title: 'Free issuance', body: 'DV certificates via GoGetSSL. RapidSSL certs issued in minutes, no credit card required.' },

@@ -1,4 +1,7 @@
-import { Shield, Lock, Database, Mail, ArrowRight, Eye, FileText } from 'lucide-react'
+import {
+  Lock, Database, Mail,
+  ArrowRight, Eye, FileText
+} from 'lucide-react'
 
 export default function Privacy({ nav }) {
   const bg = 'linear-gradient(160deg,#eef2ff,#eff6ff 35%,#fefce8 65%,#fdf4ff)'

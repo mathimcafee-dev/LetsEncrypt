@@ -1,5 +1,4 @@
-import { Mail, MapPin, ArrowRight, Award, Briefcase, Code2, Server,
-         Globe, BookOpen, ExternalLink, Shield, Star } from 'lucide-react'
+
 import portrait from '../assets/mathi-portrait.jpg'
 import '../styles/design-v2.css'
 

@@ -1,5 +1,4 @@
-import { Mail, ArrowRight, Globe, Clock, Shield, BookOpen, MessageSquare,
-         Wrench, Users, Zap } from 'lucide-react'
+
 import '../styles/design-v2.css'
 
 export default function Contact({ nav }) {

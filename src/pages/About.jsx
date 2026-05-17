@@ -1,5 +1,4 @@
-import { Shield, Lock, Globe, CheckCircle, ArrowRight, Server,
-         RefreshCw, Users, Activity, Code2 } from 'lucide-react'
+
 import '../styles/design-v2.css'
 
 export default function About({ nav }) {
