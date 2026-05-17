@@ -113,23 +113,36 @@ function Sparkline({ status = 'green' }) {
 // ── Page header ───────────────────────────────────────────────────────
 function PageHeader({ counts, tab, onAdd, onAddBoth }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
-                  marginBottom: 4, flexWrap: 'wrap', gap: 12 }}>
+    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
+      marginBottom:4, flexWrap:'wrap', gap:12 }}>
       <div>
-        <h1 className="v2-h1">DNS &amp; Servers</h1>
-        <p className="v2-subtitle">
-          {counts.dns} provider{counts.dns === 1 ? '' : 's'} ·{' '}
-          {counts.servers} server{counts.servers === 1 ? '' : 's'} ·{' '}
-          {counts.activeAgents} agent{counts.activeAgents === 1 ? '' : 's'} active
+        <h1 className="v2-h1" style={{ fontSize:22, letterSpacing:'-0.3px' }}>DNS &amp; Servers</h1>
+        <p style={{ fontSize:13, color:'var(--v2-text-3)', marginTop:4, display:'flex', gap:12 }}>
+          <span style={{ display:'flex', alignItems:'center', gap:5 }}>
+            <Globe size={12} style={{ color:'var(--v2-text-3)' }}/>
+            {counts.dns} provider{counts.dns === 1 ? '' : 's'}
+          </span>
+          <span style={{ display:'flex', alignItems:'center', gap:5 }}>
+            <Server size={12} style={{ color:'var(--v2-text-3)' }}/>
+            {counts.servers} server{counts.servers === 1 ? '' : 's'}
+          </span>
+          <span style={{ display:'flex', alignItems:'center', gap:5 }}>
+            <span style={{ width:7, height:7, borderRadius:'50%',
+              background: counts.activeAgents > 0 ? '#16a34a' : '#d1d5db',
+              boxShadow: counts.activeAgents > 0 ? '0 0 0 3px rgba(22,163,74,0.2)' : 'none' }}/>
+            {counts.activeAgents} agent{counts.activeAgents === 1 ? '' : 's'} active
+          </span>
         </p>
       </div>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <button className="v2-btn v2-btn-sm" onClick={onAdd}>
-          <Plus size={12} strokeWidth={2.2} />
+      <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+        <button className="v2-btn" onClick={onAdd}
+          style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:12, fontWeight:500 }}>
+          <Plus size={13} strokeWidth={2}/>
           {tab === 'dns' ? 'DNS only' : 'Server only'}
         </button>
-        <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={onAddBoth}>
-          <Zap size={12} strokeWidth={2.2} /> DNS + Server
+        <button className="v2-btn v2-btn-primary" onClick={onAddBoth}
+          style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:12, fontWeight:600 }}>
+          <Zap size={13} strokeWidth={2}/> DNS + Server
         </button>
       </div>
     </div>
@@ -139,15 +152,27 @@ function PageHeader({ counts, tab, onAdd, onAddBoth }) {
 // ── Tabs ──────────────────────────────────────────────────────────────
 function Tabs({ tab, setTab, counts }) {
   return (
-    <div className="v2-segmented" style={{ margin: '20px 0 18px' }}>
-      <button className={`v2-segmented-btn ${tab === 'dns' ? 'active' : ''}`} onClick={() => setTab('dns')}>
-        <Globe size={13} strokeWidth={2} /> DNS providers
-        <span className="v2-tab-count">{counts.dns}</span>
-      </button>
-      <button className={`v2-segmented-btn ${tab === 'servers' ? 'active' : ''}`} onClick={() => setTab('servers')}>
-        <Server size={13} strokeWidth={2} /> Servers
-        <span className="v2-tab-count">{counts.servers}</span>
-      </button>
+    <div style={{ display:'flex', gap:2, background:'var(--v2-surface-3)',
+      borderRadius:10, padding:3, margin:'20px 0 18px', border:'0.5px solid var(--v2-border)' }}>
+      {[
+        { key:'dns',     label:'DNS providers', icon:Globe,  count:counts.dns },
+        { key:'servers', label:'Servers',        icon:Server, count:counts.servers },
+      ].map(({ key, label, icon:Icon, count }) => (
+        <button key={key} onClick={() => setTab(key)}
+          style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:7,
+            padding:'8px 12px', border:'none', cursor:'pointer', fontFamily:'inherit',
+            fontSize:12, fontWeight: tab===key ? 600 : 500, borderRadius:8, transition:'all .15s',
+            background: tab===key ? 'var(--v2-bg)' : 'transparent',
+            color: tab===key ? 'var(--v2-text)' : 'var(--v2-text-3)',
+            boxShadow: tab===key ? '0 1px 3px rgba(0,0,0,0.08)' : 'none' }}>
+          <Icon size={13} strokeWidth={tab===key?2.2:1.8}/>
+          {label}
+          <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:10,
+            background: tab===key ? 'var(--v2-green)' : 'var(--v2-border)',
+            color: tab===key ? 'white' : 'var(--v2-text-3)',
+            transition:'all .15s' }}>{count}</span>
+        </button>
+      ))}
     </div>
   )
 }
@@ -178,55 +203,62 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
   const t = server ? (SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel) : null
   const TIcon = t?.Icon
 
+  const tagBg = hasBoth ? '#1d4ed8' : dnsOnly ? '#16a34a' : '#64748b'
+  const tagLabel = hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'
+  const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#0e7fc0)' : dnsOnly ? p?.color : t?.color || '#64748b'
+  const dotColor = rowDot==='green'?'#16a34a':rowDot==='amber'?'#f59e0b':'#d1d5db'
   return (
-    <div className={`v2-list-row status-${rowDot} ${selected ? 'selected' : ''}`}
-      onClick={() => onSelect(domain)}>
-      <div className="v2-row-icon" style={{
-        background: hasBoth ? '#0d3c6e' : dnsOnly ? (p?.color || '#475569') : (t?.color || '#475569'),
-        fontSize: 10
-      }}>
-        {hasBoth ? '✦' : dnsOnly ? p?.mono : (TIcon ? null : '?')}
-        {hasBoth ? '' : srvOnly && TIcon ? <TIcon size={13} color="white"/> : null}
+    <div onClick={() => onSelect(domain)}
+      style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
+        cursor:'pointer', borderRadius:10, marginBottom:4, transition:'all .15s',
+        background: selected ? 'var(--v2-surface-3)' : 'var(--v2-bg)',
+        border: selected ? '1px solid var(--v2-green)' : '0.5px solid var(--v2-border)',
+        boxShadow: selected ? '0 0 0 2px rgba(14,127,192,0.12)' : 'none' }}
+      onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='var(--v2-surface-3)';e.currentTarget.style.borderColor='var(--v2-border-2)'}}}
+      onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='var(--v2-bg)';e.currentTarget.style.borderColor='var(--v2-border)'}}}>
+      {/* Icon */}
+      <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
+        background:iconBg, display:'flex', alignItems:'center', justifyContent:'center',
+        fontSize:11, fontWeight:700, color:'white', position:'relative' }}>
+        {hasBoth ? <Zap size={16} color="white"/> : dnsOnly ? p?.mono : (TIcon ? <TIcon size={16} color="white"/> : '?')}
+        {/* Status dot */}
+        <span style={{ position:'absolute', bottom:-2, right:-2, width:10, height:10,
+          borderRadius:'50%', background:dotColor, border:'2px solid var(--v2-bg)',
+          boxShadow: rowDot==='green' ? '0 0 0 2px rgba(22,163,74,0.25)' : 'none' }}/>
       </div>
-      <div className="v2-row-body">
-        <div className="v2-row-title-line">
-          <span className="v2-row-title v2-mono">{domain}</span>
-          <span style={{
-            fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
-            textTransform: 'uppercase', letterSpacing: '0.3px',
-            background: hasBoth ? '#eff6ff' : dnsOnly ? '#eff6ff' : '#fafafa',
-            color: hasBoth ? '#1d4ed8' : dnsOnly ? '#15803d' : '#6b7280',
-            border: hasBoth ? '0.5px solid #bfdbfe' : dnsOnly ? '0.5px solid #bfdbfe' : '0.5px solid #1e293b',
-          }}>
-            {hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'}
+      {/* Body */}
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:3 }}>
+          <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace',
+            color:'var(--v2-text)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+            {domain}
+          </span>
+          <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
+            background:tagBg, color:'white', letterSpacing:'0.3px', flexShrink:0 }}>
+            {tagLabel}
           </span>
         </div>
-        <div className="v2-row-meta" style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display:'flex', gap:8, alignItems:'center' }}>
           {dns && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3,
-              fontSize: 10, color: 'var(--v2-text-3)' }}>
-              <span style={{ width: 12, height: 12, borderRadius: 2, background: p?.color,
-                color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 7, fontWeight: 700, flexShrink: 0 }}>{p?.mono}</span>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'var(--v2-text-3)' }}>
+              <span style={{ width:14, height:14, borderRadius:3, background:p?.color,
+                color:'white', display:'inline-flex', alignItems:'center', justifyContent:'center',
+                fontSize:7, fontWeight:700 }}>{p?.mono}</span>
               {p?.name}
             </span>
           )}
-          {dns && server && <span className="v2-row-meta-sep">·</span>}
+          {dns && server && <span style={{ color:'var(--v2-border-2)', fontSize:10 }}>·</span>}
           {server && TIcon && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3,
-              fontSize: 10, color: 'var(--v2-text-3)' }}>
-              <TIcon size={10} style={{ color: t?.color }}/>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'var(--v2-text-3)' }}>
+              <TIcon size={11} style={{ color:t?.color }}/>
               {t?.short}
-              {agent && (
-                <span style={{ width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
-                  background: agentActive ? '#0e7fc0' : '#d1d5db',
-                  display: 'inline-block', marginLeft: 2 }}/>
-              )}
+              {agent && <span style={{ width:6, height:6, borderRadius:'50%',
+                background:agentActive?'#16a34a':'#d1d5db', marginLeft:2 }}/>}
             </span>
           )}
         </div>
       </div>
-      <ChevronRight size={14} strokeWidth={1.8} style={{ color: 'var(--v2-text-3)', flexShrink: 0 }}/>
+      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'var(--v2-text-3)', flexShrink:0 }}/>
     </div>
   )
 }
@@ -235,37 +267,38 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
 function DnsRow({ cred, selected, onSelect, status }) {
   const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#475569' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
+  const dotColor = cls==='green'?'#16a34a':cls==='amber'?'#f59e0b':'#d1d5db'
+  const statusLabel = status === 'healthy' ? 'Healthy' : status === 'expired' ? 'Auth expired' : 'Untested'
   return (
-    <div className={`v2-list-row status-${cls} ${selected ? 'selected' : ''}`}
-         onClick={() => onSelect(cred.id)}>
-      <div className="v2-row-icon" style={{ background: p.color, fontSize: p.mono === '▲' ? 12 : 11 }}>
+    <div onClick={() => onSelect(cred.id)}
+      style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
+        cursor:'pointer', borderRadius:10, marginBottom:4, transition:'all .15s',
+        background: selected ? 'var(--v2-surface-3)' : 'var(--v2-bg)',
+        border: selected ? '1px solid var(--v2-green)' : '0.5px solid var(--v2-border)' }}
+      onMouseEnter={e=>{if(!selected)e.currentTarget.style.background='var(--v2-surface-3)'}}
+      onMouseLeave={e=>{if(!selected)e.currentTarget.style.background='var(--v2-bg)'}}>
+      <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
+        background:p.color, display:'flex', alignItems:'center', justifyContent:'center',
+        fontSize:p.mono==='▲'?14:11, fontWeight:700, color:'white', position:'relative' }}>
         {p.mono}
+        <span style={{ position:'absolute', bottom:-2, right:-2, width:10, height:10,
+          borderRadius:'50%', background:dotColor, border:'2px solid var(--v2-bg)' }}/>
       </div>
-      <div className="v2-row-body">
-        <div className="v2-row-title-line">
-          <span className="v2-row-title">{p.name}</span>
-          <span className={`v2-status v2-status-${cls}`}>
-            <span className={`v2-dot v2-dot-${cls}`} />
-            {status === 'healthy' ? 'Healthy' : status === 'expired' ? 'Auth expired' : 'Untested'}
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:3 }}>
+          <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>{p.name}</span>
+          <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20, letterSpacing:'0.3px',
+            background: cls==='green'?'#16a34a':cls==='amber'?'#f59e0b':'#94a3b8', color:'white', flexShrink:0 }}>
+            {statusLabel}
           </span>
-          {cred.tested_at && (
-            <span style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>
-              · tested {timeAgo(cred.tested_at)}
-            </span>
-          )}
+          {cred.tested_at && <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>{timeAgo(cred.tested_at)}</span>}
         </div>
-        <div className="v2-row-meta">
-          <span className="v2-mono" style={{ fontSize: 11 }}>{cred.domain_pattern}</span>
-          {cred.label && cred.label !== cred.domain_pattern && (
-            <>
-              <span className="v2-row-meta-sep">·</span>
-              <span style={{ fontSize: 11 }}>{cred.label}</span>
-            </>
-          )}
+        <div style={{ fontSize:11, color:'var(--v2-text-3)', fontFamily:'monospace' }}>
+          {cred.domain_pattern}
         </div>
       </div>
       <Sparkline status={cls} />
-      <ChevronRight size={14} strokeWidth={1.8} style={{ color: 'var(--v2-text-3)', flexShrink: 0 }} />
+      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'var(--v2-text-3)', flexShrink:0 }}/>
     </div>
   )
 }
@@ -276,9 +309,10 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
   const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#475569' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
   return (
-    <div className="v2-detail mobile-collapse open">
+    <div style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
+      borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <div className="v2-row-icon" style={{ width: 36, height: 36, background: p.color, borderRadius: 8 }}>
+        <div style={{ width:38, height:38, borderRadius:9, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, color:'white', flexShrink:0 }}>
           {p.mono}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -358,60 +392,67 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
     : null
   const agentActive = lastSeenMin !== null && lastSeenMin < 15
   const cls = agent ? (agentActive ? 'green' : 'amber') : 'grey'
+  const dotColor = cls==='green'?'#16a34a':cls==='amber'?'#f59e0b':'#d1d5db'
   return (
-    <div className={`v2-list-row status-${cls} ${selected ? 'selected' : ''}`}
-         onClick={() => onSelect(server.id)}>
-      <div style={{
-        width: 32, height: 32, borderRadius: 6,
-        background: t.bg, border: `0.5px solid ${t.border}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-      }}>
-        <Icon size={16} strokeWidth={1.8} color={t.color} />
+    <div onClick={() => onSelect(server.id)}
+      style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
+        cursor:'pointer', borderRadius:10, marginBottom:4, transition:'all .15s',
+        background: selected ? 'var(--v2-surface-3)' : 'var(--v2-bg)',
+        border: selected ? '1px solid var(--v2-green)' : '0.5px solid var(--v2-border)' }}
+      onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='var(--v2-surface-3)';}}}
+      onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='var(--v2-bg)';}}}>
+      <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
+        background:t.bg, border:`1px solid ${t.border}`,
+        display:'flex', alignItems:'center', justifyContent:'center', position:'relative' }}>
+        <Icon size={18} strokeWidth={1.8} color={t.color}/>
+        <span style={{ position:'absolute', bottom:-2, right:-2, width:10, height:10,
+          borderRadius:'50%', background:dotColor, border:'2px solid var(--v2-bg)' }}/>
       </div>
-      <div className="v2-row-body">
-        <div className="v2-row-title-line">
-          <span className="v2-row-title">{server.nickname}</span>
-          <span className="v2-chip">{t.short}</span>
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:3 }}>
+          <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)',
+            overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+            {server.nickname}
+          </span>
+          <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
+            background:t.color, color:'white', letterSpacing:'0.3px', flexShrink:0 }}>
+            {t.short}
+          </span>
           {agent ? (
-            <span className={`v2-status v2-status-${cls}`}>
-              {agentActive ? <span className="v2-pulse" /> : <span className={`v2-dot v2-dot-${cls}`} />}
-              {agentActive ? 'Agent active' : `Agent offline · ${lastSeenMin}m`}
+            <span style={{ fontSize:10, fontWeight:500, color:agentActive?'#16a34a':'#f59e0b',
+              display:'flex', alignItems:'center', gap:4, flexShrink:0 }}>
+              {agentActive
+                ? <span style={{ width:6,height:6,borderRadius:'50%',background:'#16a34a',
+                    boxShadow:'0 0 0 3px rgba(22,163,74,0.25)',animation:'v2-pulse 1.5s infinite' }}/>
+                : <span style={{ width:6,height:6,borderRadius:'50%',background:'#f59e0b' }}/>}
+              {agentActive ? 'Agent active' : `Offline · ${lastSeenMin}m`}
             </span>
           ) : (
-            <span className="v2-status v2-status-grey">
-              <span className="v2-dot v2-dot-grey" />
-              No agent
-            </span>
+            <span style={{ fontSize:10, color:'var(--v2-text-3)', flexShrink:0 }}>No agent</span>
           )}
         </div>
-        <div className="v2-row-meta">
-          <span className="v2-mono" style={{ fontSize: 11 }}>{server.username}@{server.host}</span>
-          {server.domains?.length > 0 && (
-            <>
-              <span className="v2-row-meta-sep">·</span>
-              <span style={{ fontSize: 11 }}>
-                <Lock size={10} strokeWidth={2} style={{ verticalAlign: -1, marginRight: 3 }} />
-                {server.domains.length} domain{server.domains.length === 1 ? '' : 's'}
-              </span>
-            </>
-          )}
-          <span className="v2-row-meta-sep">·</span>
-          <span style={{ fontSize: 11 }}>
-            {agent?.last_seen_at ? `seen ${timeAgo(agent.last_seen_at)}` : `added ${timeAgo(server.created_at)}`}
-          </span>
+        <div style={{ display:'flex', gap:8, alignItems:'center', fontSize:11, color:'var(--v2-text-3)' }}>
+          <span style={{ fontFamily:'monospace' }}>{server.username}@{server.host}</span>
+          {server.domains?.length > 0 && <>
+            <span>·</span>
+            <span style={{ display:'flex', alignItems:'center', gap:3 }}>
+              <Lock size={10} strokeWidth={2}/>{server.domains.length}d
+            </span>
+          </>}
+          <span>·</span>
+          <span>{agent?.last_seen_at ? `seen ${timeAgo(agent.last_seen_at)}` : `added ${timeAgo(server.created_at)}`}</span>
         </div>
       </div>
       {isVPS && !agent ? (
-        <button onClick={(e) => { e.stopPropagation(); onInstallAgent(server) }}
-          style={{
-            fontSize: 11, color: '#2563eb', background: 'transparent',
-            border: 'none', cursor: 'pointer', padding: '4px 6px',
-            fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: 4
-          }}>
-          Install agent <ChevronRight size={12} strokeWidth={2} />
+        <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
+          style={{ fontSize:11, color:'#2563eb', background:'#eff6ff',
+            border:'0.5px solid #bfdbfe', borderRadius:6, cursor:'pointer',
+            padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
+            fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>
+          Install agent <ChevronRight size={11} strokeWidth={2}/>
         </button>
       ) : (
-        <ChevronRight size={14} strokeWidth={1.8} style={{ color: 'var(--v2-text-3)', flexShrink: 0 }} />
+        <ChevronRight size={14} strokeWidth={1.6} style={{ color:'var(--v2-text-3)', flexShrink:0 }}/>
       )}
     </div>
   )
@@ -517,7 +558,8 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
     return `${Math.floor(m/60)}h ago`
   }
   return (
-    <div className="v2-detail mobile-collapse open">
+    <div style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
+      borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div style={{
           width: 36, height: 36, borderRadius: 8,
@@ -1260,7 +1302,7 @@ function LoggedOutView({ nav }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(190px,1fr))', gap: 10, marginBottom: 28 }}>
           {Object.entries(PROVIDERS).map(([key, p]) => (
             <div key={key} className="v2-card v2-card-pad" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div className="v2-row-icon" style={{ background: p.color }}>{p.mono}</div>
+              <div style={{ width:32, height:32, borderRadius:7, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontSize:10, fontWeight:700, flexShrink:0 }}>{p.mono}</div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)' }}>{p.name}</div>
                 <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>DNS provider</div>
@@ -1448,9 +1490,31 @@ export default function DnsProviders({ nav }) {
   const selSrv     = selGroup?.server || null
   const selSrvAgent = selSrv ? (agents.find(a => a.server_id === selSrv.id) || null) : null
 
+  // Section label component
+  const SectionLabel = ({ label, icon: Icon, color, count }) => (
+    <div style={{ display:'flex', alignItems:'center', gap:8, padding:'14px 16px 6px',
+      borderBottom:'0.5px solid var(--v2-border)' }}>
+      <div style={{ width:20, height:20, borderRadius:5, background:color,
+        display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+        <Icon size={11} color="white" strokeWidth={2.2}/>
+      </div>
+      <span style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-2)',
+        textTransform:'uppercase', letterSpacing:'0.5px', flex:1 }}>{label}</span>
+      <span style={{ fontSize:10, fontWeight:600, padding:'1px 7px', borderRadius:10,
+        background:'var(--v2-border)', color:'var(--v2-text-3)' }}>{count}</span>
+    </div>
+  )
+
+  const ListPanel = ({ children }) => (
+    <div style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
+      borderRadius:14, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
+      {children}
+    </div>
+  )
+
   return (
-    <div style={{ background: '#f0f4f8', minHeight: '100vh' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 24px 80px' }}>
+    <div style={{ background:'var(--v2-surface-3)', minHeight:'100vh' }}>
+      <div style={{ maxWidth:1140, margin:'0 auto', padding:'28px 24px 80px' }}>
         {showAddDns  && <UnifiedSetupModal userId={user?.id} defaultMode="dns"    onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddDns(false)} />}
         {showAddSrv  && <UnifiedSetupModal userId={user?.id} defaultMode="server" onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddSrv(false)} />}
         {showAddBoth && <UnifiedSetupModal userId={user?.id} defaultMode="both"   onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddBoth(false)} />}
@@ -1459,83 +1523,83 @@ export default function DnsProviders({ nav }) {
 
         <PageHeader counts={counts} tab={tab} onAdd={() => setShowAddDns(true)} onAddBoth={() => setShowAddBoth(true)} />
 
-        {/* Unified domain list */}
-        <div className="v2-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
-          <div style={{ background: '#ffffff', border: '0.5px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
+        {/* Main split layout */}
+        <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1.5fr) minmax(0,1fr)', gap:16, marginTop:4 }}>
+
+          {/* ── Left: Domain list ── */}
+          <div>
             {loading ? (
-              <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>Loading…</div>
+              <ListPanel>
+                <div style={{ padding:'48px 16px', textAlign:'center', fontSize:12, color:'var(--v2-text-3)' }}>
+                  <RefreshCw size={18} style={{ color:'var(--v2-text-3)', animation:'spin 1s linear infinite', marginBottom:10, display:'block', margin:'0 auto 10px' }}/>
+                  Loading domains…
+                </div>
+              </ListPanel>
             ) : domainGroups.length === 0 ? (
-              <EmptyState
-                icon={Globe}
-                title="No domains configured yet"
-                desc="Add a DNS provider, a server, or both to get started. SSLVault will handle cert issuance and installation automatically."
-                ctaLabel="Add DNS + Server"
-                onCta={() => setShowAddBoth(true)}
-              />
+              <ListPanel>
+                <EmptyState
+                  icon={Globe}
+                  title="No domains configured yet"
+                  desc="Add a DNS provider, a server, or both to get started. SSLVault will handle cert issuance and installation automatically."
+                  ctaLabel="Add DNS + Server"
+                  onCta={() => setShowAddBoth(true)}
+                />
+              </ListPanel>
             ) : (
-              <>
-                {/* Group: DNS + Server */}
+              <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                {/* DNS + Server group */}
                 {domainGroups.filter(g => g.dns && g.server).length > 0 && (
-                  <>
-                    <div style={{ padding: '10px 16px 4px', fontSize: 10, fontWeight: 700,
-                      color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px',
-                      borderBottom: '0.5px solid var(--v2-border)' }}>
-                      DNS + Server · full automation
+                  <ListPanel>
+                    <SectionLabel label="DNS + Server · Full automation" icon={Zap} color="#1d4ed8"
+                      count={domainGroups.filter(g=>g.dns&&g.server).length}/>
+                    <div style={{ padding:'8px 10px 10px' }}>
+                      {domainGroups.filter(g => g.dns && g.server).map(g => (
+                        <DomainRow key={g.domain} group={g}
+                          selected={selectedDomain === g.domain}
+                          onSelect={setSelectedDomain}
+                          credStatus={credStatus} agents={agents}/>
+                      ))}
                     </div>
-                    {domainGroups.filter(g => g.dns && g.server).map(g => (
-                      <DomainRow key={g.domain} group={g}
-                        selected={selectedDomain === g.domain}
-                        onSelect={setSelectedDomain}
-                        credStatus={credStatus}
-                        agents={agents} />
-                    ))}
-                  </>
+                  </ListPanel>
                 )}
-                {/* Group: DNS only */}
+                {/* DNS Only group */}
                 {domainGroups.filter(g => g.dns && !g.server).length > 0 && (
-                  <>
-                    <div style={{ padding: '10px 16px 4px', fontSize: 10, fontWeight: 700,
-                      color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px',
-                      borderBottom: '0.5px solid var(--v2-border)',
-                      borderTop: domainGroups.filter(g => g.dns && g.server).length > 0 ? '0.5px solid var(--v2-border)' : 'none',
-                      marginTop: domainGroups.filter(g => g.dns && g.server).length > 0 ? 4 : 0 }}>
-                      DNS only
+                  <ListPanel>
+                    <SectionLabel label="DNS Only" icon={Globe} color="#16a34a"
+                      count={domainGroups.filter(g=>g.dns&&!g.server).length}/>
+                    <div style={{ padding:'8px 10px 10px' }}>
+                      {domainGroups.filter(g => g.dns && !g.server).map(g => (
+                        <DomainRow key={g.domain} group={g}
+                          selected={selectedDomain === g.domain}
+                          onSelect={setSelectedDomain}
+                          credStatus={credStatus} agents={agents}/>
+                      ))}
                     </div>
-                    {domainGroups.filter(g => g.dns && !g.server).map(g => (
-                      <DomainRow key={g.domain} group={g}
-                        selected={selectedDomain === g.domain}
-                        onSelect={setSelectedDomain}
-                        credStatus={credStatus}
-                        agents={agents} />
-                    ))}
-                  </>
+                  </ListPanel>
                 )}
-                {/* Group: Server only */}
+                {/* Server Only group */}
                 {domainGroups.filter(g => !g.dns && g.server).length > 0 && (
-                  <>
-                    <div style={{ padding: '10px 16px 4px', fontSize: 10, fontWeight: 700,
-                      color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px',
-                      borderBottom: '0.5px solid var(--v2-border)',
-                      borderTop: '0.5px solid var(--v2-border)', marginTop: 4 }}>
-                      Server only
+                  <ListPanel>
+                    <SectionLabel label="Server Only" icon={Server} color="#d97706"
+                      count={domainGroups.filter(g=>!g.dns&&g.server).length}/>
+                    <div style={{ padding:'8px 10px 10px' }}>
+                      {domainGroups.filter(g => !g.dns && g.server).map(g => (
+                        <DomainRow key={g.domain} group={g}
+                          selected={selectedDomain === g.domain}
+                          onSelect={setSelectedDomain}
+                          credStatus={credStatus} agents={agents}/>
+                      ))}
                     </div>
-                    {domainGroups.filter(g => !g.dns && g.server).map(g => (
-                      <DomainRow key={g.domain} group={g}
-                        selected={selectedDomain === g.domain}
-                        onSelect={setSelectedDomain}
-                        credStatus={credStatus}
-                        agents={agents} />
-                    ))}
-                  </>
+                  </ListPanel>
                 )}
-              </>
+              </div>
             )}
           </div>
 
-          {/* Detail panel */}
+          {/* ── Right: Detail panel ── */}
           <div>
             {selGroup ? (
-              <div>
+              <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
                 {/* DNS section */}
                 {selDnsCred && (
                   <DnsDetail
@@ -1549,16 +1613,14 @@ export default function DnsProviders({ nav }) {
                 )}
                 {/* Server section */}
                 {selSrv && (
-                  <div style={{ marginTop: selDnsCred ? 12 : 0 }}>
-                    <ServerDetail
-                      server={selSrv}
-                      agent={selSrvAgent}
-                      onDelete={deleteServer}
-                      onEdit={setEditServer}
-                      onInstallAgent={setAgentServer}
-                      userId={user?.id}
-                    />
-                  </div>
+                  <ServerDetail
+                    server={selSrv}
+                    agent={selSrvAgent}
+                    onDelete={deleteServer}
+                    onEdit={setEditServer}
+                    onInstallAgent={setAgentServer}
+                    userId={user?.id}
+                  />
                 )}
                 {/* Add missing piece CTA */}
                 {selDnsCred && !selSrv && (
