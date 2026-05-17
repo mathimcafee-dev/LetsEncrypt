@@ -1,4 +1,4 @@
-import { LogIn, ChevronDown, ArrowRight, BookOpen, Code, FileText, Menu, X } from 'lucide-react'
+import { LogIn, ChevronDown, ArrowRight, BookOpen, Code, FileText, Menu, X, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 function useIsMobile(breakpoint = 760) {
