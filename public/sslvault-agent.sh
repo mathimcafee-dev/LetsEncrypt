@@ -4,6 +4,10 @@
 # Polls SSLVault every 5 minutes for jobs (install, renew, scan).
 # On renewal: atomically replaces cert files and reloads web server.
 #
+# v2.4 changes vs v2.3:
+#   - EC key verification uses openssl pkey (RSA-only check broke ECDSA renewals)
+#   - Falls back to openssl rsa modulus check for old openssl versions
+#
 # v2.3 changes vs v2.2:
 #   - Collect CPU, RAM, disk, uptime metrics on every poll + heartbeat
 #   - Send metrics to agent-daemon so Agent Health page shows live data
@@ -21,7 +25,7 @@ AGENT_TOKEN_FILE="/etc/sslvault/agent.token"
 POLL_INTERVAL=300
 LOG_FILE="/var/log/sslvault-agent.log"
 CERT_BASE="/etc/ssl/sslvault"
-VERSION="2.3"
+VERSION="2.4"
 
 # ── Logging ───────────────────────────────────────────────────────────
 log()  { echo "$(date '+%Y-%m-%d %H:%M:%S') [SSLVault] $1" | tee -a "$LOG_FILE"; }
@@ -202,9 +206,18 @@ write_cert_files() {
 
     if command -v openssl &>/dev/null; then
       local cert_hash key_hash
-      cert_hash=$(openssl x509 -noout -modulus -in "$cert_dir/fullchain.pem.new" 2>/dev/null | md5sum | cut -d' ' -f1)
-      key_hash=$(openssl rsa  -noout -modulus -in "$cert_dir/privkey.pem.new"  2>/dev/null | md5sum | cut -d' ' -f1)
-      if [ -z "$cert_hash" ] || [ "$cert_hash" != "$key_hash" ]; then
+      # Use openssl pkey (works for both RSA and EC keys)
+      # Fall back to openssl rsa for very old openssl versions
+      if openssl pkey -noout -pubout -in "$cert_dir/privkey.pem.new" -out /tmp/.sslvault_pub_key 2>/dev/null; then
+        key_hash=$(openssl pkey -noout -pubout -in "$cert_dir/privkey.pem.new" 2>/dev/null | md5sum | cut -d' ' -f1)
+        cert_hash=$(openssl x509 -noout -pubkey   -in "$cert_dir/fullchain.pem.new" 2>/dev/null | md5sum | cut -d' ' -f1)
+        rm -f /tmp/.sslvault_pub_key
+      else
+        # Fallback for old openssl: RSA modulus check only
+        cert_hash=$(openssl x509 -noout -modulus -in "$cert_dir/fullchain.pem.new" 2>/dev/null | md5sum | cut -d' ' -f1)
+        key_hash=$(openssl rsa  -noout -modulus -in "$cert_dir/privkey.pem.new"  2>/dev/null | md5sum | cut -d' ' -f1)
+      fi
+      if [ -z "$cert_hash" ] || [ -z "$key_hash" ] || [ "$cert_hash" != "$key_hash" ]; then
         rm -f "$cert_dir/fullchain.pem.new" "$cert_dir/privkey.pem.new"
         fail "Key/cert mismatch for $domain — renewal aborted, old cert preserved"
         return 1

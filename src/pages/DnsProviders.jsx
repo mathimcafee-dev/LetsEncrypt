@@ -1158,15 +1158,26 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
     let cancelled = false
     ;(async () => {
       try {
+        // Must use create_install_command — it generates a pre-authorized token
+        // server-side and embeds it in the install command. create_token requires
+        // a JWT which the modal doesn't have at this point.
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) { if (!cancelled) setTokenError('Session expired — please refresh'); return }
         const res = await fetch(DAEMON_FN, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'create_token', user_id: userId, server_id: server.id })
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+          body: JSON.stringify({
+            action: 'create_install_command',
+            user_id: userId,
+            server_id: server.id,
+            nickname: server.nickname || server.host || 'My Server'
+          })
         })
         const data = await res.json()
         if (cancelled) return
-        if (data.agent_token) setAgentToken(data.agent_token)
-        else setTokenError(data.error || 'Could not create token')
-      } catch (e) { if (!cancelled) setTokenError(e.message) }
+        if (data.ok && data.agent_token) setAgentToken(data.agent_token)
+        else setTokenError(data.error || 'Could not generate install token')
+      } catch (e) { if (!cancelled) setTokenError(String(e.message)) }
       if (!cancelled) setTokenLoading(false)
     })()
     return () => { cancelled = true }
