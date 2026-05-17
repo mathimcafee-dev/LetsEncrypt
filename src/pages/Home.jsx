@@ -1,901 +1,840 @@
-// Home.jsx — SSLVault landing page redesign
-// Colour model: same navy/teal/white system, richer layout
-// Sections: Nav · Hero · Trust bar · Mission · Features (visual) · How it works
-//           · CA-Agnostic visual · Competition comparison · Ethics · Pricing CTA · Footer
+// Home.jsx — SSLVault landing page
+// Direction: Editorial precision. Linear/Vercel/Stripe DNA.
+// Dark hero → light sections → dark mission → light CTA
+// No illustrations. No emoji. No competition bashing.
+// Typography does the heavy lifting.
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
-const FONT = "'Plus Jakarta Sans','DM Sans',system-ui,sans-serif"
-const MONO = "'JetBrains Mono','Fira Code','Courier New',monospace"
+const F = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
+const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
+// ── Palette ──────────────────────────────────────────────────────────
 const C = {
-  navy:   '#0f2545', navyMid:'#1a3a6b', navyLt:'#1e4d8c',
-  teal:   '#0891b2', tealDk:'#0e7490',  tealLt:'#e0f7fa', tealPale:'#f0f9ff',
-  green:  '#059669', greenLt:'#d1fae5',
-  amber:  '#d97706', amberLt:'#fef3c7',
-  purple: '#7c3aed', purpleLt:'#ede9fe',
-  slate:  '#475569', slateL:'#64748b', slateXL:'#94a3b8',
-  border: '#e2e8f0', borderLt:'#f1f5f9',
-  bg:     '#f8fafc', bgAlt:'#f1f5f9',
-  white:  '#ffffff',
-  red:    '#dc2626',
+  ink:     '#0a0e1a',   // near-black hero bg
+  inkMid:  '#111827',
+  inkLt:   '#1e293b',
+  navy:    '#0f2545',
+  teal:    '#0ea5e9',   // sky-500 — primary accent
+  tealDk:  '#0284c7',
+  tealXl:  '#e0f2fe',
+  green:   '#10b981',
+  amber:   '#f59e0b',
+  purple:  '#8b5cf6',
+  border:  '#e2e8f0',
+  borderDk:'rgba(255,255,255,0.08)',
+  text:    '#0f172a',
+  textMid: '#475569',
+  textLt:  '#94a3b8',
+  bg:      '#f8fafc',
+  white:   '#ffffff',
 }
 
-// ── Scroll-reveal ────────────────────────────────────────────────────
-function useVisible(threshold = 0.1) {
+// ── Scroll reveal ─────────────────────────────────────────────────────
+function useIn(threshold=0.12) {
   const ref = useRef(null)
   const [v, setV] = useState(false)
   useEffect(() => {
-    const o = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setV(true); o.disconnect() } }, { threshold })
-    if (ref.current) o.observe(ref.current)
-    return () => o.disconnect()
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setV(true); io.disconnect() }
+    }, { threshold })
+    if (ref.current) io.observe(ref.current)
+    return () => io.disconnect()
   }, [])
   return [ref, v]
 }
-function Reveal({ children, delay = 0, style = {} }) {
-  const [ref, v] = useVisible()
+
+function FadeUp({ children, delay=0, className='' }) {
+  const [ref, v] = useIn()
   return (
-    <div ref={ref} style={{ opacity: v?1:0, transform: v?'none':'translateY(22px)',
-      transition:`opacity .65s ease ${delay}ms, transform .65s ease ${delay}ms`, ...style }}>
+    <div ref={ref} className={className} style={{
+      opacity: v?1:0,
+      transform: v?'translateY(0)':'translateY(18px)',
+      transition: `opacity .6s cubic-bezier(.16,1,.3,1) ${delay}ms, transform .6s cubic-bezier(.16,1,.3,1) ${delay}ms`
+    }}>
       {children}
     </div>
   )
 }
 
-// ── Shared components ────────────────────────────────────────────────
-function Eyebrow({ children, color = C.teal }) {
+// ── Shared primitives ────────────────────────────────────────────────
+function Tag({ children, dark }) {
   return (
-    <div style={{ display:'inline-flex', alignItems:'center', gap:7, marginBottom:14,
-      fontSize:11, fontWeight:700, color, letterSpacing:'1.2px',
-      textTransform:'uppercase', fontFamily:MONO }}>
-      <span style={{ width:18, height:2, background:color, borderRadius:1, flexShrink:0 }}/>
+    <span style={{
+      display:'inline-flex', alignItems:'center', gap:6,
+      fontSize:11, fontWeight:600, letterSpacing:'0.06em',
+      textTransform:'uppercase', fontFamily:MONO,
+      color: dark?'rgba(255,255,255,0.45)':'#64748b',
+      borderBottom: `1px solid ${dark?'rgba(255,255,255,0.12)':'#e2e8f0'}`,
+      paddingBottom:2, marginBottom:20,
+    }}>
       {children}
+    </span>
+  )
+}
+
+function NavLink({ label, onClick }) {
+  const [h, setH] = useState(false)
+  return (
+    <button onClick={onClick}
+      onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+      style={{
+        background:'none', border:'none', cursor:'pointer',
+        fontFamily:F, fontSize:13.5, fontWeight:450,
+        color: h?C.text:'#64748b',
+        transition:'color .15s',
+      }}>{label}</button>
+  )
+}
+
+function CTA({ label, onClick, variant='primary', size='md' }) {
+  const [h, setH] = useState(false)
+  const px = size==='sm' ? '14px 20px' : '12px 22px'
+  const fs = size==='sm' ? 13 : 14
+
+  if (variant==='primary') return (
+    <button onClick={onClick}
+      onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+      style={{
+        display:'inline-flex', alignItems:'center', gap:7,
+        fontFamily:F, fontWeight:600, fontSize:fs, padding:px,
+        borderRadius:8, border:'none', cursor:'pointer',
+        background: h?C.tealDk:C.teal, color:'white',
+        boxShadow: h?`0 8px 24px ${C.teal}44`:`0 2px 8px ${C.teal}33`,
+        transition:'all .17s cubic-bezier(.16,1,.3,1)',
+      }}>
+      {label}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </button>
+  )
+
+  if (variant==='ghost-dark') return (
+    <button onClick={onClick}
+      onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+      style={{
+        display:'inline-flex', alignItems:'center', gap:7,
+        fontFamily:F, fontWeight:500, fontSize:fs, padding:px,
+        borderRadius:8, cursor:'pointer',
+        border:'1px solid rgba(255,255,255,0.15)',
+        background: h?'rgba(255,255,255,0.08)':'rgba(255,255,255,0.04)',
+        color: h?'white':'rgba(255,255,255,0.65)',
+        transition:'all .17s',
+      }}>
+      {label}
+    </button>
+  )
+
+  return (
+    <button onClick={onClick}
+      onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+      style={{
+        display:'inline-flex', alignItems:'center', gap:7,
+        fontFamily:F, fontWeight:500, fontSize:fs, padding:px,
+        borderRadius:8, cursor:'pointer',
+        border:`1px solid ${h?C.teal:C.border}`,
+        background: h?C.tealXl:C.white,
+        color: h?C.tealDk:C.text,
+        transition:'all .17s',
+      }}>
+      {label}
+    </button>
+  )
+}
+
+// ── Feature row — terminal card ──────────────────────────────────────
+function TerminalCard({ title, lines, accent='#10b981' }) {
+  return (
+    <div style={{
+      background:'#0f1117', border:'1px solid rgba(255,255,255,0.07)',
+      borderRadius:12, overflow:'hidden',
+      boxShadow:'0 24px 48px rgba(0,0,0,0.35)',
+    }}>
+      {/* window chrome */}
+      <div style={{ padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)',
+        display:'flex', alignItems:'center', gap:7 }}>
+        {['#ff5f57','#ffbd2e','#28ca41'].map(c=>(
+          <span key={c} style={{ width:10, height:10, borderRadius:'50%', background:c, opacity:.8 }}/>
+        ))}
+        <span style={{ marginLeft:8, fontSize:11, fontFamily:MONO, color:'rgba(255,255,255,0.25)' }}>{title}</span>
+      </div>
+      <div style={{ padding:'18px 20px', fontFamily:MONO, fontSize:12, lineHeight:2 }}>
+        {lines.map((l,i)=>(
+          <div key={i} style={{ color: l.c || 'rgba(255,255,255,0.55)' }}>
+            {l.prefix && <span style={{ color:'rgba(255,255,255,0.2)', userSelect:'none' }}>{l.prefix}</span>}
+            {l.t}
+            {l.val && <span style={{ color:accent, fontWeight:600 }}>{l.val}</span>}
+            {l.tail}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
 
-function PrimaryBtn({ children, onClick }) {
-  const [h, setH] = useState(false)
+// ── Metric tile ───────────────────────────────────────────────────────
+function Metric({ val, label, sub, accent=C.teal }) {
   return (
-    <button onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-      style={{ display:'inline-flex', alignItems:'center', gap:8, fontFamily:FONT,
-        fontWeight:700, fontSize:15, padding:'13px 26px', borderRadius:9, border:'none',
-        cursor:'pointer', transition:'all .18s',
-        background: h ? C.tealDk : C.teal, color:'white',
-        boxShadow: h ? `0 10px 30px ${C.teal}44` : `0 4px 16px ${C.teal}33` }}>
-      {children}
-    </button>
-  )
-}
-function SecondaryBtn({ children, onClick, light }) {
-  const [h, setH] = useState(false)
-  if (light) return (
-    <button onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-      style={{ display:'inline-flex', alignItems:'center', gap:8, fontFamily:FONT,
-        fontWeight:600, fontSize:15, padding:'12px 22px', borderRadius:9,
-        border:'1px solid rgba(255,255,255,0.22)', cursor:'pointer', transition:'all .18s',
-        background: h?'rgba(255,255,255,0.14)':'rgba(255,255,255,0.08)',
-        color: h?'white':'rgba(255,255,255,0.82)' }}>
-      {children}
-    </button>
-  )
-  return (
-    <button onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-      style={{ display:'inline-flex', alignItems:'center', gap:8, fontFamily:FONT,
-        fontWeight:600, fontSize:15, padding:'12px 22px', borderRadius:9,
-        border:`1.5px solid ${h?C.teal:'#cbd5e1'}`, cursor:'pointer', transition:'all .18s',
-        background: h?C.tealPale:C.white, color:C.navy }}>
-      {children}
-    </button>
+    <div style={{ borderTop:`2px solid ${accent}22`, paddingTop:20 }}>
+      <div style={{ fontSize:36, fontWeight:700, color:C.white,
+        letterSpacing:'-1.5px', lineHeight:1, marginBottom:6, fontFamily:MONO }}>{val}</div>
+      <div style={{ fontSize:13, fontWeight:500, color:'rgba(255,255,255,0.5)', marginBottom:3 }}>{label}</div>
+      <div style={{ fontSize:11, color:'rgba(255,255,255,0.25)', fontFamily:MONO }}>{sub}</div>
+    </div>
   )
 }
 
-// ── Tick / Cross icons ───────────────────────────────────────────────
-const Tick = ({ size=15, color=C.green }) => (
-  <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-    <circle cx="10" cy="10" r="10" fill={color} fillOpacity=".12"/>
-    <path d="M6 10.5l2.5 2.5 5.5-5.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-)
-const Cross = () => (
-  <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
-    <circle cx="10" cy="10" r="10" fill="#e2e8f0"/>
-    <path d="M7.5 7.5l5 5M12.5 7.5l-5 5" stroke="#94a3b8" strokeWidth="1.6" strokeLinecap="round"/>
-  </svg>
-)
-
-// ── Inline SVG illustrations ─────────────────────────────────────────
-function ShieldIllustration() {
+// ── Feature section ───────────────────────────────────────────────────
+function FeatureBlock({ tag, headline, body, items, card, reverse, accentColor=C.teal }) {
   return (
-    <svg viewBox="0 0 240 260" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%', maxWidth:240 }}>
-      <defs>
-        <linearGradient id="sg1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#0f2545"/>
-          <stop offset="100%" stopColor="#1a3a6b"/>
-        </linearGradient>
-      </defs>
-      {/* Shield body */}
-      <path d="M120 18 L200 52 L200 120 C200 168 120 240 120 240 C120 240 40 168 40 120 L40 52 Z"
-        fill="url(#sg1)" opacity=".95"/>
-      {/* Inner shield highlight */}
-      <path d="M120 38 L185 66 L185 120 C185 158 120 218 120 218 C120 218 55 158 55 120 L55 66 Z"
-        fill="none" stroke="rgba(8,145,178,0.4)" strokeWidth="1.5"/>
-      {/* Lock body */}
-      <rect x="102" y="118" width="36" height="28" rx="5" fill={C.teal} opacity=".9"/>
-      {/* Lock shackle */}
-      <path d="M109 118 L109 108 Q109 96 120 96 Q131 96 131 108 L131 118"
-        fill="none" stroke={C.teal} strokeWidth="5" strokeLinecap="round" opacity=".9"/>
-      {/* Keyhole */}
-      <circle cx="120" cy="130" r="4" fill="rgba(255,255,255,0.9)"/>
-      <rect x="118" y="130" width="4" height="8" rx="1" fill="rgba(255,255,255,0.9)"/>
-      {/* Orbiting dots */}
-      {[0,60,120,180,240,300].map((deg,i) => {
-        const r=88, rad=deg*Math.PI/180
-        const x=120+r*Math.cos(rad), y=130+r*Math.sin(rad)
-        const colors=[C.teal,'#34d399','#a78bfa','#fbbf24','#f87171',C.teal]
-        return <circle key={i} cx={x} cy={y} r="5" fill={colors[i]} opacity=".7"/>
-      })}
-      {/* Orbit ring */}
-      <ellipse cx="120" cy="130" rx="88" ry="88" fill="none"
-        stroke="rgba(8,145,178,0.15)" strokeWidth="1" strokeDasharray="4 6"/>
-    </svg>
+    <FadeUp>
+      <div style={{
+        display:'grid', gridTemplateColumns:'1fr 1fr',
+        gap:'80px', alignItems:'center', marginBottom:120,
+        ...(reverse ? { direction:'rtl' } : {}),
+      }}>
+        <div style={{ direction:'ltr' }}>
+          <Tag>{tag}</Tag>
+          <h3 style={{ fontSize:'clamp(22px,2.4vw,32px)', fontWeight:700,
+            letterSpacing:'-0.8px', lineHeight:1.2, color:C.text, marginBottom:20 }}>
+            {headline}
+          </h3>
+          <p style={{ fontSize:16, color:C.textMid, lineHeight:1.85, marginBottom:28 }}>
+            {body}
+          </p>
+          <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+            {items.map(it=>(
+              <div key={it} style={{ display:'flex', alignItems:'flex-start', gap:11 }}>
+                <span style={{
+                  width:18, height:18, borderRadius:'50%',
+                  background:accentColor+'18', border:`1px solid ${accentColor}30`,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  flexShrink:0, marginTop:2,
+                }}>
+                  <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6l2.8 3L10 3" stroke={accentColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+                <span style={{ fontSize:14, color:C.text, lineHeight:1.6 }}>{it}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ direction:'ltr' }}>
+          {card}
+        </div>
+      </div>
+    </FadeUp>
   )
 }
 
-function PipelineIllustration() {
-  const steps = [
-    { label:'DNS\nvalidation', color:C.teal,   icon:'🔗' },
-    { label:'Certificate\nissued',    color:C.green,  icon:'📜' },
-    { label:'Agent\ndeploy',          color:'#7c3aed',icon:'🚀' },
-    { label:'Live &\nmonitored',      color:C.amber,  icon:'✅' },
-  ]
-  return (
-    <svg viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%' }}>
-      {steps.map((s, i) => {
-        const x = 50 + i*130
-        return (
-          <g key={i}>
-            {i > 0 && (
-              <>
-                <line x1={x-80} y1="50" x2={x-10} y2="50" stroke={C.border} strokeWidth="2" strokeDasharray="4 3"/>
-                <polygon points={`${x-12},45 ${x-2},50 ${x-12},55`} fill={steps[i-1].color} opacity=".5"/>
-              </>
-            )}
-            <rect x={x-36} y={20} width={72} height={60} rx="10"
-              fill={s.color} fillOpacity=".1" stroke={s.color} strokeWidth="1.5" strokeOpacity=".4"/>
-            <text x={x} y="48" textAnchor="middle" fontSize="18">{s.icon}</text>
-            <text x={x} y="67" textAnchor="middle" fontSize="9" fill={C.slate}
-              fontFamily={FONT} fontWeight="600">
-              {s.label.split('\n').map((t,j) => (
-                <tspan key={j} x={x} dy={j===0?0:10}>{t}</tspan>
-              ))}
-            </text>
-          </g>
-        )
-      })}
-    </svg>
-  )
-}
-
-function CANetworkDiagram() {
-  const cas = [
-    { label:'DigiCert', x:80,  y:30,  color:'#dc2626' },
-    { label:'Sectigo',  x:200, y:20,  color:'#7c3aed' },
-    { label:'SSL.com',  x:320, y:30,  color:'#0369a1' },
-    { label:'GoGetSSL', x:200, y:120, color:C.green },
-    { label:"Let's\nEncrypt", x:80, y:120, color:'#0891b2' },
-  ]
-  return (
-    <svg viewBox="0 0 420 200" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%' }}>
-      {/* Centre hub — SSLVault */}
-      <circle cx="200" cy="90" r="38" fill={C.navy} opacity=".95"/>
-      <text x="200" y="86" textAnchor="middle" fill="white" fontSize="10"
-        fontFamily={FONT} fontWeight="700">SSL</text>
-      <text x="200" y="99" textAnchor="middle" fill={C.teal} fontSize="10"
-        fontFamily={FONT} fontWeight="700">Vault</text>
-      {/* Spokes */}
-      {cas.map((ca,i) => (
-        <g key={i}>
-          <line x1="200" y1="90" x2={ca.x} y2={ca.y}
-            stroke={ca.color} strokeWidth="1.5" strokeOpacity=".4" strokeDasharray="4 3"/>
-          <circle cx={ca.x} cy={ca.y} r="24" fill={ca.color} fillOpacity=".1"
-            stroke={ca.color} strokeWidth="1.5"/>
-          {ca.label.split('\n').map((t,j) => (
-            <text key={j} x={ca.x} y={ca.y + (ca.label.includes('\n') ? -3+j*11 : 4)}
-              textAnchor="middle" fontSize="8.5" fill={ca.color}
-              fontFamily={FONT} fontWeight="700">{t}</text>
-          ))}
-        </g>
-      ))}
-      {/* Right side — outputs */}
-      {[{label:'Nginx',y:40},{label:'Apache',y:70},{label:'cPanel',y:100},{label:'Plesk',y:130}].map((s,i)=>(
-        <g key={i}>
-          <line x1="238" y1="90" x2="345" y2={s.y} stroke={C.teal}
-            strokeWidth="1.5" strokeOpacity=".3" strokeDasharray="3 3"/>
-          <rect x="345" y={s.y-12} width="54" height="24" rx="6"
-            fill={C.tealPale} stroke={C.teal} strokeWidth="1" strokeOpacity=".5"/>
-          <text x="372" y={s.y+4.5} textAnchor="middle" fontSize="8.5"
-            fill={C.tealDk} fontFamily={FONT} fontWeight="600">{s.label}</text>
-        </g>
-      ))}
-      {/* Label */}
-      <text x="200" y="185" textAnchor="middle" fontSize="9" fill={C.slateXL}
-        fontFamily={FONT}>One platform · every CA · every server</text>
-    </svg>
-  )
-}
-
-function CertLifecycleArc() {
-  const pts = [
-    { label:'Issue',   angle:-140, color:C.teal,   icon:'📝' },
-    { label:'Validate',angle:-80,  color:C.green,  icon:'✔' },
-    { label:'Deploy',  angle:-20,  color:'#7c3aed',icon:'🚀' },
-    { label:'Monitor', angle:40,   color:C.amber,  icon:'👁' },
-    { label:'Renew',   angle:100,  color:C.teal,   icon:'🔄' },
-  ]
-  const cx=200, cy=200, r=140
-  return (
-    <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%' }}>
-      {/* Outer arc */}
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.border} strokeWidth="1.5" strokeDasharray="6 4"/>
-      {/* Centre label */}
-      <circle cx={cx} cy={cy} r="44" fill={C.navy} opacity=".96"/>
-      <text x={cx} y={cy-5} textAnchor="middle" fill="white" fontSize="11"
-        fontFamily={FONT} fontWeight="800">AUTO</text>
-      <text x={cx} y={cy+10} textAnchor="middle" fill={C.teal} fontSize="9"
-        fontFamily={FONT} fontWeight="700">LIFECYCLE</text>
-      {pts.map((p,i) => {
-        const rad = p.angle*Math.PI/180
-        const x=cx+r*Math.cos(rad), y=cy+r*Math.sin(rad)
-        return (
-          <g key={i}>
-            <line x1={cx} y1={cy} x2={x} y2={y}
-              stroke={p.color} strokeWidth="1.5" strokeOpacity=".25" strokeDasharray="4 3"/>
-            <circle cx={x} cy={y} r="26" fill={p.color} fillOpacity=".12"
-              stroke={p.color} strokeWidth="1.5"/>
-            <text x={x} y={y+1} textAnchor="middle" fontSize="14" dominantBaseline="middle">{p.icon}</text>
-            <text x={x} y={y+19} textAnchor="middle" fontSize="8.5" fill={p.color}
-              fontFamily={FONT} fontWeight="700">{p.label}</text>
-          </g>
-        )
-      })}
-      {/* "Always on" indicator */}
-      <text x={cx} y={cy+25} textAnchor="middle" fontSize="7.5" fill="rgba(255,255,255,0.4)"
-        fontFamily={MONO}>always-on</text>
-    </svg>
-  )
-}
-
-// ── Competition comparison data ──────────────────────────────────────
-const COMPARE_FEATURES = [
-  { feat:'Platform cost',          sv:'$0 free forever', v:'$250k+/yr', k:'$75k–200k/yr', dc:'Bundled w/ certs' },
-  { feat:'DV / OV / EV issuance',  sv:true, v:true, k:true, dc:true },
-  { feat:'CA-agnostic management', sv:true, v:true, k:true, dc:false },
-  { feat:'Auto DNS validation',    sv:true, v:true, k:true, dc:true  },
-  { feat:'VPS agent auto-deploy',  sv:true, v:true, k:true, dc:false },
-  { feat:'cPanel / Plesk install', sv:true, v:false,k:false,dc:false },
-  { feat:'Shadow IT scanner',      sv:true, v:true, k:false,dc:false },
-  { feat:'CA consolidation advisor',sv:true,v:false,k:false,dc:false },
-  { feat:'PQC readiness scanner',  sv:true, v:true, k:true, dc:true  },
-  { feat:'Private key vault',      sv:true, v:true, k:true, dc:false },
-  { feat:'Self-serve onboarding',  sv:true, v:false,k:false,dc:false },
-  { feat:'Implementation time',    sv:'5 min', v:'3–6 mo', k:'8–12 wk', dc:'2–4 mo' },
+// ── Data ──────────────────────────────────────────────────────────────
+const CAPABILITIES = [
+  'Certificate issuance — DV, OV, EV, Wildcard, SAN',
+  'Auto DNS validation via Cloudflare, Vercel, GoDaddy',
+  'VPS agent deployment — zero-touch renewal',
+  'cPanel and Plesk auto-install',
+  'CA connectors — DigiCert, Sectigo, SSL.com, GoGetSSL',
+  'Unified expiry timeline across all CAs',
+  'Shadow IT discovery — certs issued outside your CLM',
+  'PQC readiness scanner — NIST 2030 risk scoring',
+  'Private key vault — AES-256-GCM, full audit trail',
+  'TLS posture grading — A to F per domain',
+  'Email and Slack alerts — configurable thresholds',
+  'CA consolidation advisor — identify cost savings',
 ]
 
-// ── Feature detail cards ─────────────────────────────────────────────
-const FEATURES_DETAIL = [
-  {
-    tag:'Zero-touch lifecycle', color:C.teal, bg:C.tealPale, borderColor:`${C.teal}33`,
-    headline:'Issue, validate, deploy and renew — without lifting a finger.',
-    body:'Agents poll every 5 minutes. DNS challenges resolved automatically. Certificates installed on every server before expiry. Atomic rollback on failure. Confirmation sent to your inbox.',
-    pills:['DV · OV · EV · Wildcard · SAN','Auto DNS via Cloudflare / Vercel / GoDaddy','cPanel · Plesk · Nginx · Apache'],
-    illustration:<PipelineIllustration/>,
-  },
-  {
-    tag:'CA-agnostic intelligence', color:'#7c3aed', bg:'#faf5ff', borderColor:'#ddd6fe',
-    headline:'One dashboard for every certificate, every CA, every server.',
-    body:'Connect DigiCert CertCentral, Sectigo SCM, SSL.com, and GoGetSSL in minutes. Unified expiry timeline, unified PQC risk scoring, unified Shadow IT findings. No silos.',
-    pills:['DigiCert · Sectigo · SSL.com · GoGetSSL','Unified expiry timeline','Cross-CA Shadow IT detection'],
-    illustration:<CANetworkDiagram/>,
-  },
-  {
-    tag:'Post-quantum readiness', color:C.amber, bg:'#fffbeb', borderColor:'#fde68a',
-    headline:'NIST 2030 deadline is real. SSLVault flags every RSA-2048 cert today.',
-    body:'Every certificate in your portfolio is scored against the NIST PQC migration timeline. RSA-2048 is flagged High risk. A per-domain migration plan with estimated timeline is generated automatically.',
-    pills:['RSA-2048 → flagged High risk','NIST FIPS 203 / 204 / 205 aware','Per-domain migration timeline'],
-    illustration:<CertLifecycleArc/>,
-  },
-]
+const PLATFORMS = ['Cloudflare','Vercel','GoDaddy','DigitalOcean','Nginx','Apache','cPanel','Plesk','DigiCert','Sectigo','SSL.com','GoGetSSL']
 
-// ── Ethics / mission items ───────────────────────────────────────────
-const ETHICS = [
+const ETHICS_ITEMS = [
   {
-    icon:'🔓', color:C.teal, title:'Radically open pricing',
-    body:'The platform is free. Always. No paywall on agents, monitoring, CA connectors, or PQC scanning. You pay for certificates at GoGetSSL reseller rates — from $8/yr. That\'s it. No enterprise sales call, no procurement cycle.',
+    n:'01',
+    title:'The platform is free. Not "freemium". Not "free trial". Free.',
+    body:'Certificate issuance, monitoring, agents, auto-renewal, CA connectors, PQC scanning — all free. You pay for certificates at wholesale rates. Nothing else. No upgrade prompts. No feature walls. No per-seat fees that appear six months later.',
   },
   {
-    icon:'🔐', color:'#7c3aed', title:'Your keys stay yours',
-    body:'Private keys are never transmitted to SSLVault servers unless you explicitly opt in to KeyLocker. Even then, AES-256-GCM encrypted at rest, with a full immutable audit trail. Every access is logged. You can export and delete at any time.',
+    n:'02',
+    title:'Your private keys stay on your servers unless you choose otherwise.',
+    body:'SSLVault never requires access to your private keys. If you opt in to KeyLocker, keys are encrypted with AES-256-GCM before leaving your browser. Every access generates an immutable audit log entry. You can export and delete at any time.',
   },
   {
-    icon:'🌍', color:C.green, title:'Built for the long tail',
-    body:'The enterprise world already has Venafi and Keyfactor. SSLVault exists for the developer running 12 side projects, the non-profit on shared hosting, the small agency that can\'t justify $75k/yr. Everyone deserves the padlock to stay green.',
+    n:'03',
+    title:'No ads. No tracking beyond what the product requires. No selling data.',
+    body:"The product is the platform. You're not the product. We don't run ads, don't share your data with third parties, and don't build profiles for resale. The only data we store is what's required to issue, monitor and renew your certificates.",
   },
   {
-    icon:'📖', color:C.amber, title:'No dark patterns',
-    body:'No upgrade prompts. No "trial expired" banners. No per-seat fees that silently appear. No ads. No selling your data. SSLVault is ad-free by design — the product is the platform, not the user.',
+    n:'04',
+    title:'Built for the people the enterprise tools ignore.',
+    body:"Venafi and Keyfactor are excellent products. They're built for teams with $250k security budgets. SSLVault is built for the developer running 12 side projects, the SMB that can't afford enterprise procurement, the non-profit that just needs the padlock to stay green.",
   },
-  {
-    icon:'🛡', color:C.navyMid, title:'PKI-first security posture',
-    body:'Built by someone who works in PKI. Supabase RLS on every table. JWT-verified edge functions. Encrypted credential storage for all CA API keys. Audit logs on key access, cert issuance, and agent actions.',
-  },
-  {
-    icon:'⚡', color:'#0f766e', title:'47-day world, automated',
-    body:'CA/Browser Forum Ballot SC-081v3 is reducing max cert validity to 200 days in March 2026 and 100 days by March 2027. Manual renewal is mathematically impossible at that cadence. SSLVault was built for this world — full automation is the only answer.',
-  },
-]
-
-const INTEGRATIONS = [
-  'DigiCert','Sectigo','GoGetSSL','SSL.com',
-  'Cloudflare','Vercel','GoDaddy','DigitalOcean',
-  'Nginx','Apache','cPanel','Plesk','Let\'s Encrypt',
 ]
 
 export default function Home({ nav }) {
   const [certCount, setCertCount] = useState(null)
-  const [count, setCount] = useState(0)
+  const [displayCount, setDisplayCount] = useState(0)
 
   useEffect(() => {
-    supabase.from('certificates').select('id', { count:'exact', head:true })
-      .eq('status','active').then(({ count:c }) => { if (c) setCertCount(c) })
+    supabase.from('certificates')
+      .select('id', { count:'exact', head:true })
+      .eq('status','active')
+      .then(({ count:c }) => { if (c) setCertCount(c) })
   }, [])
 
   useEffect(() => {
     if (!certCount) return
     let n = 0
-    const step = Math.ceil(certCount / 40)
+    const step = Math.ceil(certCount / 50)
     const iv = setInterval(() => {
       n = Math.min(n + step, certCount)
-      setCount(n)
+      setDisplayCount(n)
       if (n >= certCount) clearInterval(iv)
-    }, 30)
+    }, 25)
     return () => clearInterval(iv)
   }, [certCount])
 
   return (
-    <div style={{ fontFamily:FONT, background:C.white, color:C.navy, overflowX:'hidden' }}>
-      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet"/>
+    <div style={{ fontFamily:F, background:C.white, color:C.text, overflowX:'hidden' }}>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
       <style>{`
-        *{box-sizing:border-box;margin:0;padding:0}
-        ::selection{background:#0891b222;color:#0891b2}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-        @keyframes spinSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-        @keyframes flowRight{from{stroke-dashoffset:200}to{stroke-dashoffset:0}}
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0 }
+        ::selection { background:#0ea5e922; color:#0284c7 }
+        @keyframes pulse2 { 0%,100%{opacity:1} 50%{opacity:.35} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
       `}</style>
 
       {/* ── NAV ─────────────────────────────────────────────────────── */}
-      <nav style={{ position:'sticky', top:0, zIndex:100,
-        background:'rgba(255,255,255,0.96)', backdropFilter:'blur(12px)',
-        borderBottom:`1px solid ${C.border}`, padding:'0 40px', height:60,
-        display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{ width:30, height:30, borderRadius:7, background:C.navy,
-            display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <header style={{
+        position:'sticky', top:0, zIndex:100,
+        background:'rgba(255,255,255,0.88)', backdropFilter:'blur(20px)',
+        borderBottom:'1px solid rgba(15,23,42,0.06)',
+        padding:'0 40px', height:56,
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+      }}>
+        {/* Logo */}
+        <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }}
+          onClick={()=>nav('/')}>
+          <div style={{
+            width:28, height:28, background:C.ink, borderRadius:7,
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
           </div>
-          <span style={{ fontSize:16, fontWeight:800, color:C.navy, letterSpacing:'-0.3px' }}>SSLVault</span>
-          <span style={{ fontSize:9, color:C.slateL, letterSpacing:'1.2px', textTransform:'uppercase',
-            background:C.bg, border:`1px solid ${C.border}`, borderRadius:4,
-            padding:'2px 7px', fontFamily:MONO }}>CLM</span>
+          <span style={{ fontSize:15, fontWeight:700, letterSpacing:'-0.3px', color:C.ink }}>SSLVault</span>
+          <span style={{ fontSize:10, fontFamily:MONO, color:'#94a3b8',
+            background:'#f1f5f9', border:'1px solid #e2e8f0',
+            borderRadius:4, padding:'2px 6px', letterSpacing:'0.04em' }}>CLM</span>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:28 }}>
-          {[['Features','#features'],['Mission','#mission'],['Pricing','/pricing'],['About','/about']].map(([l,p])=>(
-            <button key={l} onClick={()=>p.startsWith('/')? nav(p) : document.querySelector(p)?.scrollIntoView({behavior:'smooth'})}
-              style={{ background:'none', border:'none', cursor:'pointer', fontSize:14,
-                fontWeight:500, color:C.slate, fontFamily:FONT, transition:'color .15s' }}
-              onMouseEnter={e=>e.target.style.color=C.navy}
-              onMouseLeave={e=>e.target.style.color=C.slate}>{l}</button>
+
+        <nav style={{ display:'flex', alignItems:'center', gap:28 }}>
+          {[
+            ['Platform','#platform'],
+            ['How it works','#workflow'],
+            ['Mission','#mission'],
+            ['Pricing','/pricing'],
+          ].map(([l,h])=>(
+            <NavLink key={l} label={l} onClick={()=>{
+              if (h.startsWith('/')) nav(h)
+              else document.querySelector(h)?.scrollIntoView({ behavior:'smooth' })
+            }}/>
           ))}
-          <PrimaryBtn onClick={()=>nav('/auth')}>Get Started Free</PrimaryBtn>
+        </nav>
+
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <CTA label="Sign in" variant="ghost" onClick={()=>nav('/auth')} size="sm"/>
+          <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')} size="sm"/>
         </div>
-      </nav>
+      </header>
 
       {/* ── HERO ────────────────────────────────────────────────────── */}
-      <div style={{ background:`linear-gradient(150deg, ${C.navy} 0%, ${C.navyLt} 55%, #0e3d6e 100%)`,
-        padding:'100px 40px 90px', position:'relative', overflow:'hidden' }}>
-        {/* Grid texture */}
-        <div style={{ position:'absolute', inset:0, pointerEvents:'none',
-          backgroundImage:`radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)`,
-          backgroundSize:'38px 38px' }}/>
-        {/* Radial glow */}
-        <div style={{ position:'absolute', right:-120, top:-100, width:560, height:560,
-          borderRadius:'50%', background:`radial-gradient(ellipse, rgba(8,145,178,0.22) 0%, transparent 65%)`,
-          pointerEvents:'none' }}/>
-        <div style={{ position:'absolute', left:-80, bottom:-80, width:400, height:400,
-          borderRadius:'50%', background:`radial-gradient(ellipse, rgba(5,150,105,0.12) 0%, transparent 65%)`,
-          pointerEvents:'none' }}/>
+      <section style={{
+        background:C.ink,
+        padding:'120px 40px 100px',
+        position:'relative', overflow:'hidden',
+      }}>
+        {/* Noise texture overlay */}
+        <div style={{
+          position:'absolute', inset:0, pointerEvents:'none', opacity:0.025,
+          backgroundImage:`url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundSize:'200px 200px',
+        }}/>
+        {/* Radial gradient halo */}
+        <div style={{
+          position:'absolute', top:'50%', left:'50%',
+          transform:'translate(-50%,-60%)',
+          width:900, height:600, borderRadius:'50%',
+          background:`radial-gradient(ellipse, ${C.teal}18 0%, transparent 65%)`,
+          pointerEvents:'none',
+        }}/>
 
-        <div style={{ maxWidth:1200, margin:'0 auto', position:'relative',
-          display:'grid', gridTemplateColumns:'1fr 380px', gap:72, alignItems:'center' }}>
-
-          {/* Left text */}
-          <div>
-            {/* Live badge */}
-            <div style={{ display:'inline-flex', alignItems:'center', gap:7, marginBottom:28,
-              background:'rgba(8,145,178,0.15)', border:'1px solid rgba(8,145,178,0.3)',
-              borderRadius:20, padding:'5px 14px 5px 8px' }}>
-              <span style={{ width:7, height:7, borderRadius:'50%', background:'#34d399',
-                boxShadow:'0 0 0 3px rgba(52,211,153,0.25)', animation:'pulse 2s ease infinite' }}/>
-              <span style={{ fontSize:11, fontWeight:600, color:'#7dd3fc', letterSpacing:'0.3px' }}>
-                CA-Agnostic Certificate Lifecycle Management
-              </span>
-            </div>
-
-            <h1 style={{ fontSize:'clamp(38px,4.8vw,62px)', fontWeight:900, color:'white',
-              lineHeight:1.04, letterSpacing:'-1.8px', marginBottom:8, animation:'fadeUp .55s ease .1s both' }}>
-              SSL certificates.
-            </h1>
-            <h1 style={{ fontSize:'clamp(38px,4.8vw,62px)', fontWeight:900,
-              color:'#38bdf8', lineHeight:1.04, letterSpacing:'-1.8px', marginBottom:8, animation:'fadeUp .55s ease .2s both' }}>
-              Fully automated.
-            </h1>
-            <h1 style={{ fontSize:'clamp(28px,3.2vw,44px)', fontWeight:800,
-              color:'rgba(255,255,255,0.38)', lineHeight:1.1, letterSpacing:'-1.2px', marginBottom:32, animation:'fadeUp .55s ease .3s both' }}>
-              Zero enterprise price tag.
-            </h1>
-
-            <p style={{ fontSize:17, color:'rgba(255,255,255,0.62)', lineHeight:1.82,
-              maxWidth:520, marginBottom:38, fontWeight:400, animation:'fadeUp .55s ease .4s both' }}>
-              The complete CLM platform — issue, validate, deploy, monitor, and renew certificates
-              across <strong style={{ color:'rgba(255,255,255,0.9)', fontWeight:700 }}>every CA and every server</strong> — built for
-              developers, SMBs, and non-profits who can't justify Venafi's $250k/yr price tag.
-            </p>
-
-            <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:52, animation:'fadeUp .55s ease .5s both' }}>
-              <PrimaryBtn onClick={()=>nav('/auth')}>Get Started Free →</PrimaryBtn>
-              <SecondaryBtn onClick={()=>nav('/pricing')} light>View Pricing</SecondaryBtn>
-            </div>
-
-            {/* Live stats */}
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:28, animation:'fadeUp .55s ease .6s both' }}>
-              {[
-                { val: certCount ? `${count.toLocaleString()}+` : '—', label:'Active certs', sub:'tracked across all CAs' },
-                { val:'~5 min', label:'DV issuance', sub:'GoGetSSL · DigiCert trust chain' },
-                { val:'$0', label:'Platform cost', sub:'Free forever · certs from $8/yr' },
-              ].map(({val,label,sub})=>(
-                <div key={label} style={{ borderTop:'2px solid rgba(56,189,248,0.35)', paddingTop:16 }}>
-                  <div style={{ fontSize:28, fontWeight:800, color:'white', letterSpacing:'-0.8px',
-                    lineHeight:1, marginBottom:5, fontFamily:MONO }}>{val}</div>
-                  <div style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.55)', marginBottom:3 }}>{label}</div>
-                  <div style={{ fontSize:10, color:'rgba(255,255,255,0.28)', fontFamily:MONO }}>{sub}</div>
-                </div>
-              ))}
-            </div>
+        <div style={{ maxWidth:880, margin:'0 auto', position:'relative', textAlign:'center' }}>
+          {/* Eyebrow */}
+          <div style={{
+            display:'inline-flex', alignItems:'center', gap:8,
+            marginBottom:36, animation:'fadeIn .6s ease both',
+          }}>
+            <span style={{
+              width:7, height:7, borderRadius:'50%', background:'#34d399', flexShrink:0,
+              boxShadow:'0 0 0 4px rgba(52,211,153,0.15)',
+              animation:'pulse2 2.4s ease infinite',
+            }}/>
+            <span style={{ fontSize:12, fontFamily:MONO, color:'rgba(255,255,255,0.4)', letterSpacing:'0.06em' }}>
+              Certificate Lifecycle Management · Free forever
+            </span>
           </div>
 
-          {/* Right — shield + feature list */}
-          <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
-            {/* Shield */}
-            <div style={{ display:'flex', justifyContent:'center', animation:'fadeUp .7s ease .3s both' }}>
-              <ShieldIllustration/>
-            </div>
-            {/* CLM stack */}
-            <div style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)',
-              borderRadius:14, padding:'18px 20px', backdropFilter:'blur(8px)',
-              animation:'fadeUp .7s ease .45s both' }}>
-              <div style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.35)',
-                letterSpacing:'1.5px', textTransform:'uppercase', marginBottom:14, fontFamily:MONO }}>
-                Full CLM stack
-              </div>
-              {[
-                { dot:'#38bdf8', label:'Certificate issuance',  sub:'DV · OV · EV · Wildcard · SAN' },
-                { dot:'#34d399', label:'Auto DNS validation',   sub:'Cloudflare · Vercel · GoDaddy · DO' },
-                { dot:'#a78bfa', label:'Zero-touch renewal',    sub:'1 day before expiry · agent + cPanel' },
-                { dot:'#fbbf24', label:'CA connectors',         sub:'DigiCert · Sectigo · SSL.com · GoGetSSL' },
-                { dot:'#f87171', label:'Shadow IT scanner',     sub:'Finds unmanaged certs before they expire' },
-                { dot:'#34d399', label:'PQC readiness',         sub:'NIST 2030 · RSA-2048 risk scoring' },
-                { dot:'#a78bfa', label:'Private key vault',     sub:'AES-256-GCM · audit log · 30s reveal' },
-              ].map(({dot,label,sub})=>(
-                <div key={label} style={{ display:'flex', alignItems:'center', gap:11,
-                  padding:'8px 0', borderBottom:'0.5px solid rgba(255,255,255,0.06)' }}>
-                  <span style={{ width:7, height:7, borderRadius:'50%', background:dot, flexShrink:0 }}/>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontSize:12, fontWeight:600, color:'white', marginBottom:1 }}>{label}</div>
-                    <div style={{ fontSize:9.5, color:'rgba(255,255,255,0.32)', fontFamily:MONO }}>{sub}</div>
-                  </div>
-                  <Tick size={13} color={dot}/>
-                </div>
-              ))}
-            </div>
+          {/* Headline */}
+          <h1 style={{
+            fontSize:'clamp(44px,7vw,84px)', fontWeight:800,
+            letterSpacing:'-3px', lineHeight:1.0,
+            color:C.white, marginBottom:28,
+            animation:'fadeIn .7s ease .1s both',
+          }}>
+            SSL certificates.<br/>
+            <span style={{
+              background:`linear-gradient(90deg, ${C.teal}, #38bdf8)`,
+              WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+              backgroundClip:'text',
+            }}>Fully automated.</span>
+          </h1>
+
+          {/* Sub */}
+          <p style={{
+            fontSize:'clamp(16px,1.8vw,20px)', color:'rgba(255,255,255,0.45)',
+            lineHeight:1.8, maxWidth:600, margin:'0 auto 48px',
+            fontWeight:400, animation:'fadeIn .7s ease .2s both',
+          }}>
+            The complete CLM platform — issue, validate, deploy, monitor and renew
+            certificates across every CA and every server.
+            Built for developers, SMBs, and non-profits.
+          </p>
+
+          {/* CTAs */}
+          <div style={{
+            display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap',
+            marginBottom:72, animation:'fadeIn .7s ease .3s both',
+          }}>
+            <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')}/>
+            <CTA label="View pricing" variant="ghost-dark" onClick={()=>nav('/pricing')}/>
+          </div>
+
+          {/* Stats */}
+          <div style={{
+            display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:40,
+            maxWidth:600, margin:'0 auto',
+            animation:'fadeIn .7s ease .4s both',
+          }}>
+            <Metric
+              val={certCount ? `${displayCount.toLocaleString()}+` : '—'}
+              label="Active certificates"
+              sub="tracked across all CAs"
+              accent={C.teal}
+            />
+            <Metric val="~5 min" label="DV issuance time" sub="GoGetSSL · DigiCert chain" accent="#34d399"/>
+            <Metric val="$0" label="Platform cost" sub="certs from $8 / yr" accent={C.amber}/>
+          </div>
+        </div>
+      </section>
+
+      {/* ── PARTNERS TICKER ─────────────────────────────────────────── */}
+      <div style={{
+        borderTop:'1px solid rgba(15,23,42,0.06)',
+        borderBottom:'1px solid rgba(15,23,42,0.06)',
+        background:C.bg, overflow:'hidden', padding:'14px 0',
+      }}>
+        <div style={{ display:'flex', overflow:'hidden', maskImage:'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+          <div style={{ display:'flex', gap:56, flexShrink:0, animation:'ticker 28s linear infinite', whiteSpace:'nowrap' }}>
+            {[...PLATFORMS,...PLATFORMS].map((p,i)=>(
+              <span key={i} style={{ fontSize:12, fontWeight:600, color:'#94a3b8', letterSpacing:'0.02em' }}>{p}</span>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* ── INTEGRATIONS STRIP ──────────────────────────────────────── */}
-      <div style={{ background:C.bg, borderBottom:`1px solid ${C.border}`, padding:'14px 40px' }}>
-        <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', alignItems:'center',
-          gap:28, flexWrap:'wrap', justifyContent:'center' }}>
-          <span style={{ fontSize:10, fontWeight:700, color:C.slateL, textTransform:'uppercase',
-            letterSpacing:'1px', flexShrink:0 }}>Works with</span>
-          {INTEGRATIONS.map(p=>(
-            <span key={p} style={{ fontSize:12, fontWeight:600, color:C.slateL, whiteSpace:'nowrap' }}>{p}</span>
-          ))}
+      {/* ── CAPABILITY LIST ──────────────────────────────────────────── */}
+      <section id="platform" style={{ background:C.white, padding:'100px 40px' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <FadeUp>
+            <div style={{ marginBottom:60 }}>
+              <Tag>Platform</Tag>
+              <h2 style={{ fontSize:'clamp(28px,3.5vw,48px)', fontWeight:800,
+                letterSpacing:'-1.5px', lineHeight:1.08, color:C.text, maxWidth:640 }}>
+                Every tool a PKI team needs.<br/>
+                Without the enterprise procurement.
+              </h2>
+            </div>
+          </FadeUp>
+
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 80px' }}>
+            {CAPABILITIES.map((c,i)=>(
+              <FadeUp key={c} delay={i*30}>
+                <div style={{
+                  display:'flex', alignItems:'center', gap:14,
+                  padding:'16px 0',
+                  borderBottom:`1px solid ${C.border}`,
+                }}>
+                  <span style={{
+                    width:20, height:20, borderRadius:'50%',
+                    background:C.teal+'15', border:`1px solid ${C.teal}25`,
+                    display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0,
+                  }}>
+                    <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6l2.8 3L10 3" stroke={C.teal} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                  <span style={{ fontSize:14, color:C.text, fontWeight:450 }}>{c}</span>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* ── FEATURE DEEP-DIVES ───────────────────────────────────────── */}
-      <div id="features" style={{ maxWidth:1200, margin:'0 auto', padding:'100px 40px 60px' }}>
-        <Reveal>
-          <div style={{ textAlign:'center', marginBottom:72 }}>
-            <Eyebrow>Platform capabilities</Eyebrow>
-            <h2 style={{ fontSize:'clamp(28px,3.5vw,46px)', fontWeight:900, letterSpacing:'-1.3px',
-              color:C.navy, marginBottom:16, lineHeight:1.1 }}>
-              Everything a PKI team needs.<br/>
-              <span style={{ color:C.teal }}>At a price that isn't a team.</span>
-            </h2>
-            <p style={{ fontSize:16, color:C.slateL, maxWidth:500, margin:'0 auto', lineHeight:1.8 }}>
-              15 features spanning the full certificate lifecycle — built for people who deserve
-              enterprise-grade CLM without the enterprise sales cycle.
-            </p>
-          </div>
-        </Reveal>
+      <section style={{ background:C.bg, padding:'100px 40px 20px', borderTop:`1px solid ${C.border}` }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
 
-        {FEATURES_DETAIL.map((f, i) => (
-          <Reveal key={f.tag} delay={60}>
-            <div style={{ display:'grid', gridTemplateColumns: i%2===0 ? '1fr 1fr' : '1fr 1fr',
-              gap:60, alignItems:'center', marginBottom:96,
-              ...(i%2===1 ? { direction:'rtl' } : {}) }}>
-              <div style={{ ...(i%2===1 ? { direction:'ltr' } : {}) }}>
-                <div style={{ display:'inline-block', background:f.bg,
-                  border:`1px solid ${f.borderColor}`, borderRadius:20,
-                  padding:'4px 14px', marginBottom:16,
-                  fontSize:11, fontWeight:700, color:f.color, letterSpacing:'0.8px', textTransform:'uppercase' }}>
-                  {f.tag}
-                </div>
-                <h3 style={{ fontSize:'clamp(20px,2.4vw,30px)', fontWeight:800, color:C.navy,
-                  letterSpacing:'-0.6px', lineHeight:1.25, marginBottom:18 }}>
-                  {f.headline}
-                </h3>
-                <p style={{ fontSize:15, color:C.slateL, lineHeight:1.85, marginBottom:22 }}>
-                  {f.body}
-                </p>
-                <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-                  {f.pills.map(p=>(
-                    <div key={p} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                      <Tick color={f.color}/>
-                      <span style={{ fontSize:13, color:C.slate, fontWeight:500 }}>{p}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div style={{ ...(i%2===1 ? { direction:'ltr' } : {}),
-                background:f.bg, borderRadius:20, padding:'32px',
-                border:`1px solid ${f.borderColor}`, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                {f.illustration}
-              </div>
-            </div>
-          </Reveal>
-        ))}
-      </div>
+          {/* Feature 1 — Zero-touch lifecycle */}
+          <FeatureBlock
+            tag="Zero-touch lifecycle"
+            headline="Issue, validate, deploy and renew — without a single manual step."
+            body="Agents run on your servers as lightweight daemons, polling every 5 minutes for pending jobs. DNS challenges are resolved automatically via your connected provider. Certificates are installed before expiry. If anything fails, atomic rollback fires and you're notified immediately."
+            items={[
+              'DV, OV, EV, Wildcard and multi-domain SAN certificates',
+              'Automatic DNS-01 challenge via Cloudflare, Vercel, GoDaddy, DigitalOcean',
+              'VPS agent installs to Nginx and Apache — auto-restarts service after install',
+              'cPanel and Plesk one-click install for shared hosting',
+              'Renewal triggered 1 day before expiry — no human required',
+            ]}
+            accentColor={C.teal}
+            card={
+              <TerminalCard
+                title="agent · easysecurity.in"
+                accent="#34d399"
+                lines={[
+                  { t:'Polling for jobs...', c:'rgba(255,255,255,0.25)' },
+                  { prefix:'→ ', t:'Job received: ', val:'renew', tail:' cert for easysecurity.in', c:'rgba(255,255,255,0.6)' },
+                  { prefix:'→ ', t:'DNS provider: ', val:'Cloudflare', c:'rgba(255,255,255,0.6)' },
+                  { prefix:'→ ', t:'TXT record added in ', val:'1.2s', c:'rgba(255,255,255,0.6)' },
+                  { prefix:'→ ', t:'DCV validated. Cert issued.', c:'#34d399' },
+                  { prefix:'→ ', t:'Installing to nginx...', c:'rgba(255,255,255,0.4)' },
+                  { prefix:'→ ', t:'Service reloaded. ', val:'✓ Live', c:'#34d399' },
+                  { t:' ', c:'transparent' },
+                  { t:'Next check in 5 minutes.', c:'rgba(255,255,255,0.18)' },
+                ]}
+              />
+            }
+          />
+
+          {/* Feature 2 — CA intelligence */}
+          <FeatureBlock
+            reverse
+            tag="CA-agnostic intelligence"
+            headline="One view of your entire certificate estate — regardless of who issued them."
+            body="Connect DigiCert CertCentral, Sectigo SCM, SSL.com and GoGetSSL alongside certs issued directly through SSLVault. Unified expiry timeline with urgency buckets. Shadow IT scanner surfaces certificates issued outside your CLM before they expire silently."
+            items={[
+              'Connect DigiCert, Sectigo, SSL.com via API — read-only, no private keys needed',
+              'Unified expiry timeline: Expired · Critical · Warning · Upcoming · Healthy',
+              'Shadow IT scan compares your CA portfolio against your CLM inventory',
+              'CA consolidation advisor identifies cost-saving certificate migrations',
+              'PQC readiness — every RSA-2048 cert scored against NIST 2030 timeline',
+            ]}
+            accentColor={C.purple}
+            card={
+              <TerminalCard
+                title="ca-intelligence · expiry-timeline"
+                accent={C.purple}
+                lines={[
+                  { t:'Scanning connected CAs...', c:'rgba(255,255,255,0.25)' },
+                  { t:' ', c:'transparent' },
+                  { prefix:'✗ ', t:'2 certificates ', val:'EXPIRED', c:'#f87171' },
+                  { prefix:'! ', t:'5 certificates ', val:'expiring < 7 days', c:'#fbbf24' },
+                  { prefix:'~ ', t:'11 certificates ', val:'expiring < 30 days', c:'rgba(255,255,255,0.5)' },
+                  { prefix:'✓ ', t:'38 certificates ', val:'healthy', c:'#34d399' },
+                  { t:' ', c:'transparent' },
+                  { prefix:'⊕ ', t:'Shadow IT scan: ', val:'3 unmanaged certs', tail:' found', c:'#a78bfa' },
+                  { prefix:'⊕ ', t:'PQC risk: ', val:'14 RSA-2048 certs', tail:' flagged', c:'#a78bfa' },
+                ]}
+              />
+            }
+          />
+
+          {/* Feature 3 — Security posture */}
+          <FeatureBlock
+            tag="Security posture"
+            headline="Know the cryptographic health of every domain you own."
+            body="TLS grading across the full stack — cipher suites, protocol versions, HSTS headers, certificate chain correctness. PQC risk scanning flags every RSA-2048 cert against the NIST 2030 migration deadline. Private key vault stores sensitive material under AES-256-GCM with per-access audit logging."
+            items={[
+              'TLS grade A–F per domain — cipher, protocol, HSTS, OCSP stapling',
+              'PQC readiness scanner — RSA-2048 and ECDSA-256 risk assessed',
+              'Private key vault — AES-256-GCM, 30-second timed reveal, copy-only mode',
+              'Immutable audit log on every key access and cert issuance',
+              'Email and Slack alerts at configurable expiry thresholds',
+            ]}
+            accentColor={C.amber}
+            card={
+              <TerminalCard
+                title="tls-grade · api.easysecurity.in"
+                accent={C.amber}
+                lines={[
+                  { t:'TLS 1.3            ', val:'PASS', c:'rgba(255,255,255,0.55)' },
+                  { t:'TLS 1.2            ', val:'PASS', c:'rgba(255,255,255,0.55)' },
+                  { t:'TLS 1.0/1.1        ', val:'DISABLED', c:'#34d399' },
+                  { t:'HSTS               ', val:'ENABLED', c:'#34d399' },
+                  { t:'OCSP stapling      ', val:'ENABLED', c:'#34d399' },
+                  { t:'Chain validity     ', val:'VALID', c:'#34d399' },
+                  { t:'PQC risk           ', val:'LOW (ECDSA-384)', c:'#34d399' },
+                  { t:' ', c:'transparent' },
+                  { t:'Overall grade: ', val:'A', c:'rgba(255,255,255,0.6)' },
+                ]}
+              />
+            }
+          />
+        </div>
+      </section>
 
       {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
-      <div style={{ background:C.bg, borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`,
-        padding:'88px 40px' }}>
-        <div style={{ maxWidth:1200, margin:'0 auto' }}>
-          <Reveal>
-            <div style={{ textAlign:'center', marginBottom:60 }}>
-              <Eyebrow>Workflow</Eyebrow>
-              <h2 style={{ fontSize:'clamp(26px,3vw,42px)', fontWeight:900, letterSpacing:'-1.1px', color:C.navy }}>
-                From zero to fully automated in under 10 minutes.
+      <section id="workflow" style={{ background:C.white, padding:'100px 40px',
+        borderTop:`1px solid ${C.border}` }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <FadeUp>
+            <div style={{ marginBottom:64 }}>
+              <Tag>Workflow</Tag>
+              <h2 style={{ fontSize:'clamp(28px,3.5vw,48px)', fontWeight:800,
+                letterSpacing:'-1.5px', lineHeight:1.08, color:C.text }}>
+                From zero to automated<br/>in under ten minutes.
               </h2>
             </div>
-          </Reveal>
+          </FadeUp>
+
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
             {[
-              { n:'01', title:'Connect', color:C.teal,  icon:'🔌',
-                desc:'Link your DNS provider (Cloudflare, Vercel, GoDaddy) and server credentials once. SSLVault stores them encrypted — you never re-enter them.' },
-              { n:'02', title:'Issue', color:C.green,   icon:'📜',
-                desc:'Order DV, OV or EV via GoGetSSL. DNS challenge auto-resolved in seconds. Certificate issued in ~5 minutes. No manual steps.' },
-              { n:'03', title:'Monitor', color:'#7c3aed',icon:'📡',
-                desc:'Unified expiry timeline across all CAs. TLS grading. PQC risk scores. No-renewal-path alerts. Shadow IT findings. All in one view.' },
-              { n:'04', title:'Deploy', color:C.amber,  icon:'🚀',
-                desc:'VPS agent or cPanel push. Nginx/Apache auto-restart. Atomic rollback on failure. Reported back to dashboard within 5 minutes.' },
-            ].map(({n,title,color,icon,desc},i)=>(
-              <Reveal key={n} delay={i*70}>
-                <div style={{ padding:'36px 28px', borderLeft: i>0 ? `1px solid ${C.border}` : 'none',
-                  height:'100%' }}>
-                  <div style={{ fontSize:32, marginBottom:16 }}>{icon}</div>
-                  <div style={{ fontSize:11, fontWeight:700, color, fontFamily:MONO,
-                    marginBottom:8, letterSpacing:'1px' }}>{n}</div>
-                  <div style={{ fontSize:20, fontWeight:800, color:C.navy, marginBottom:14,
-                    letterSpacing:'-0.3px' }}>{title}</div>
-                  <div style={{ fontSize:13.5, color:C.slateL, lineHeight:1.75 }}>{desc}</div>
+              { n:'01', title:'Connect', color:C.teal,
+                desc:'Link DNS provider and server credentials once. Encrypted at rest. Never re-entered.' },
+              { n:'02', title:'Issue', color:'#34d399',
+                desc:'Order DV, OV or EV via GoGetSSL. DNS challenge resolved automatically. ~5 minutes to a live certificate.' },
+              { n:'03', title:'Monitor', color:C.purple,
+                desc:'Unified expiry timeline across all CAs. TLS grading. PQC scoring. Shadow IT detection.' },
+              { n:'04', title:'Deploy', color:C.amber,
+                desc:'Agent installs, restarts services, reports back. Atomic rollback on failure. Zero manual steps.' },
+            ].map(({n,title,color,desc},i)=>(
+              <FadeUp key={n} delay={i*60}>
+                <div style={{
+                  padding:'36px 28px',
+                  borderLeft: i>0 ? `1px solid ${C.border}` : 'none',
+                  height:'100%',
+                }}>
+                  <div style={{ fontSize:11, fontFamily:MONO, fontWeight:600,
+                    color, letterSpacing:'0.08em', marginBottom:16 }}>{n}</div>
+                  <div style={{ fontSize:22, fontWeight:700, color:C.text,
+                    letterSpacing:'-0.5px', marginBottom:14 }}>{title}</div>
+                  <div style={{ fontSize:14, color:C.textMid, lineHeight:1.75 }}>{desc}</div>
                 </div>
-              </Reveal>
+              </FadeUp>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ── COMPETITION COMPARISON ──────────────────────────────────── */}
-      <div style={{ maxWidth:1100, margin:'0 auto', padding:'100px 40px' }}>
-        <Reveal>
-          <div style={{ textAlign:'center', marginBottom:52 }}>
-            <Eyebrow>How SSLVault compares</Eyebrow>
-            <h2 style={{ fontSize:'clamp(26px,3vw,42px)', fontWeight:900, letterSpacing:'-1.1px',
-              color:C.navy, marginBottom:16, lineHeight:1.1 }}>
-              Complete CLM.<br/>
-              <span style={{ color:C.teal }}>Accessible to everyone.</span>
-            </h2>
-            <p style={{ fontSize:15, color:C.slateL, maxWidth:480, margin:'0 auto', lineHeight:1.75 }}>
-              Venafi starts at $250k/yr. Keyfactor at $75k. SSLVault is $0. Same core features — without the enterprise sales process.
-            </p>
-          </div>
-        </Reveal>
-
-        <Reveal delay={80}>
-          <div style={{ border:`1px solid ${C.border}`, borderRadius:16,
-            overflow:'hidden', boxShadow:'0 4px 32px rgba(0,0,0,0.07)' }}>
-            {/* Table header */}
-            <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr',
-              background:C.navy, padding:'16px 22px', gap:4 }}>
-              <div style={{ fontSize:10, fontWeight:600, color:'rgba(255,255,255,0.35)',
-                textTransform:'uppercase', letterSpacing:'0.6px', fontFamily:MONO }}>Feature</div>
+      {/* ── 47-DAY CONTEXT ──────────────────────────────────────────── */}
+      <section style={{
+        background:C.ink, padding:'80px 40px',
+        borderTop:'1px solid rgba(255,255,255,0.04)',
+      }}>
+        <div style={{ maxWidth:1100, margin:'0 auto',
+          display:'grid', gridTemplateColumns:'1fr 320px', gap:80, alignItems:'center' }}>
+          <FadeUp>
+            <div>
+              <span style={{
+                display:'inline-block', fontSize:10, fontFamily:MONO,
+                fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase',
+                color:C.amber, background:`${C.amber}18`, border:`1px solid ${C.amber}33`,
+                borderRadius:4, padding:'4px 10px', marginBottom:24,
+              }}>
+                CA/B Forum · SC-081v3 · In effect March 2026
+              </span>
+              <h2 style={{ fontSize:'clamp(24px,3vw,38px)', fontWeight:700,
+                letterSpacing:'-1px', lineHeight:1.15, color:C.white, marginBottom:18 }}>
+                Certificate validity is shrinking to 100 days.<br/>
+                Manual renewal is no longer viable.
+              </h2>
+              <p style={{ fontSize:15, color:'rgba(255,255,255,0.42)', lineHeight:1.82, maxWidth:520 }}>
+                CA/Browser Forum Ballot SC-081v3 mandates a phased reduction in maximum TLS
+                certificate validity. By March 2027 you'll need to renew every certificate
+                at least four times per year. At any meaningful scale, automation is the
+                only answer. SSLVault was built for this.
+              </p>
+            </div>
+          </FadeUp>
+          <FadeUp delay={80}>
+            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               {[
-                { name:'SSLVault', highlight:true },
-                { name:'Venafi',    highlight:false },
-                { name:'Keyfactor', highlight:false },
-                { name:'DigiCert TLM', highlight:false },
-              ].map(({name,highlight})=>(
-                <div key={name} style={{ textAlign:'center', fontSize:12, fontWeight:700,
-                  fontFamily:MONO, color: highlight ? '#38bdf8' : 'rgba(255,255,255,0.38)' }}>
-                  {name}
-                  {highlight && <div style={{ fontSize:8, color:'#34d399', marginTop:2,
-                    letterSpacing:'0.5px' }}>★ THIS IS US</div>}
+                { date:'Mar 2026', days:'200 days', live:true  },
+                { date:'Mar 2027', days:'100 days', live:false },
+                { date:'Mar 2029', days:' 47 days', live:false },
+              ].map(({date,days,live})=>(
+                <div key={date} style={{
+                  display:'flex', alignItems:'center', justifyContent:'space-between',
+                  padding:'14px 18px', borderRadius:10, fontFamily:MONO,
+                  border:`1px solid ${live ? C.amber+'44' : 'rgba(255,255,255,0.07)'}`,
+                  background: live ? `${C.amber}0c` : 'rgba(255,255,255,0.03)',
+                }}>
+                  <span style={{ fontSize:12, color:'rgba(255,255,255,0.35)' }}>{date}</span>
+                  <span style={{ fontSize:18, fontWeight:700,
+                    color: live ? C.amber : 'rgba(255,255,255,0.35)' }}>{days}</span>
+                  {live && <span style={{
+                    fontSize:9, fontWeight:700, letterSpacing:'0.08em', textTransform:'uppercase',
+                    background:C.amber, color:C.ink, borderRadius:3, padding:'2px 6px',
+                  }}>LIVE</span>}
+                  {!live && <span style={{ width:40 }}/>}
                 </div>
               ))}
             </div>
-
-            {COMPARE_FEATURES.map((row, i) => (
-              <div key={row.feat} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr',
-                padding:'13px 22px', alignItems:'center', gap:4,
-                borderBottom: i < COMPARE_FEATURES.length-1 ? `1px solid ${C.borderLt}` : 'none',
-                background: i%2===0 ? C.white : C.bg, transition:'background .12s' }}
-                onMouseEnter={e=>e.currentTarget.style.background=C.tealPale}
-                onMouseLeave={e=>e.currentTarget.style.background=i%2===0?C.white:C.bg}>
-                <div style={{ fontSize:13, color:C.navy, fontWeight:500 }}>{row.feat}</div>
-                {[row.sv, row.v, row.k, row.dc].map((val, ci)=>(
-                  <div key={ci} style={{ textAlign:'center', display:'flex', justifyContent:'center' }}>
-                    {typeof val === 'boolean'
-                      ? val ? <Tick size={16} color={ci===0?C.green:C.slateXL}/>
-                            : <Cross/>
-                      : <span style={{ fontSize:12, fontWeight:700, fontFamily:MONO,
-                          color: ci===0 ? C.teal : C.red, whiteSpace:'nowrap' }}>{val}</span>}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </Reveal>
-
-        {/* Pricing callout under table */}
-        <Reveal delay={120}>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginTop:20 }}>
-            {[
-              { name:'SSLVault',   price:'$0',        sub:'Platform free · certs from $8/yr', highlight:true },
-              { name:'Venafi',     price:'$250k+/yr',  sub:'Enterprise only · 3–6 mo onboarding', highlight:false },
-              { name:'Keyfactor',  price:'$75k–200k/yr',sub:'Mid-market · 8–12 wk onboarding', highlight:false },
-              { name:'DigiCert TLM',price:'Bundled',   sub:'DigiCert certs only', highlight:false },
-            ].map(({name,price,sub,highlight})=>(
-              <div key={name} style={{ padding:'16px 18px', borderRadius:12,
-                border: highlight ? `2px solid ${C.teal}` : `1px solid ${C.border}`,
-                background: highlight ? C.tealPale : C.bg, textAlign:'center' }}>
-                <div style={{ fontSize:11, fontWeight:700, color: highlight?C.teal:C.slateL,
-                  marginBottom:6 }}>{name}</div>
-                <div style={{ fontSize:20, fontWeight:900, fontFamily:MONO,
-                  color: highlight?C.navy:C.red, letterSpacing:'-0.5px', marginBottom:4 }}>{price}</div>
-                <div style={{ fontSize:10.5, color:C.slateL, lineHeight:1.5 }}>{sub}</div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
+          </FadeUp>
+        </div>
+      </section>
 
       {/* ── MISSION & ETHICS ────────────────────────────────────────── */}
-      <div id="mission" style={{ background:C.navy, padding:'100px 40px', position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', inset:0, pointerEvents:'none',
-          backgroundImage:`radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)`,
-          backgroundSize:'40px 40px' }}/>
-        <div style={{ position:'absolute', right:-80, top:-80, width:500, height:500,
-          borderRadius:'50%', background:`radial-gradient(ellipse, rgba(8,145,178,0.15) 0%, transparent 60%)`,
-          pointerEvents:'none' }}/>
-
-        <div style={{ maxWidth:1200, margin:'0 auto', position:'relative' }}>
-          <Reveal>
-            <div style={{ textAlign:'center', marginBottom:72 }}>
-              <Eyebrow color="#38bdf8">Mission &amp; ethics</Eyebrow>
-              <h2 style={{ fontSize:'clamp(28px,3.5vw,46px)', fontWeight:900, letterSpacing:'-1.3px',
-                color:'white', lineHeight:1.1, marginBottom:20 }}>
+      <section id="mission" style={{
+        background:C.bg, padding:'100px 40px',
+        borderTop:`1px solid ${C.border}`,
+      }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <FadeUp>
+            <div style={{ marginBottom:72 }}>
+              <Tag>Mission</Tag>
+              <h2 style={{ fontSize:'clamp(28px,3.5vw,52px)', fontWeight:800,
+                letterSpacing:'-1.8px', lineHeight:1.06, color:C.text, maxWidth:660 }}>
                 PKI for the 99%.<br/>
-                <span style={{ color:'#38bdf8' }}>No compromise on trust.</span>
+                No compromises on trust.
               </h2>
-              <p style={{ fontSize:16, color:'rgba(255,255,255,0.52)', maxWidth:560,
-                margin:'0 auto', lineHeight:1.82 }}>
-                The certificate lifecycle management category was built for enterprises with six-figure budgets.
-                SSLVault exists to close the gap — giving every developer, SMB, and non-profit the same
-                automated, secure, reliable CLM that the enterprise world takes for granted.
-              </p>
             </div>
-          </Reveal>
+          </FadeUp>
 
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20, marginBottom:60 }}>
-            {ETHICS.map((e,i)=>(
-              <Reveal key={e.title} delay={i*60}>
-                <div style={{ background:'rgba(255,255,255,0.05)',
-                  border:'1px solid rgba(255,255,255,0.1)',
-                  borderRadius:16, padding:'28px 24px', height:'100%',
-                  transition:'all .2s' }}
-                  onMouseEnter={ev=>{ev.currentTarget.style.background='rgba(255,255,255,0.09)'; ev.currentTarget.style.transform='translateY(-3px)'}}
-                  onMouseLeave={ev=>{ev.currentTarget.style.background='rgba(255,255,255,0.05)'; ev.currentTarget.style.transform='none'}}>
-                  <div style={{ fontSize:32, marginBottom:18 }}>{e.icon}</div>
-                  <h3 style={{ fontSize:16, fontWeight:700, color:'white', marginBottom:12,
-                    letterSpacing:'-0.2px' }}>{e.title}</h3>
-                  <p style={{ fontSize:13.5, color:'rgba(255,255,255,0.5)', lineHeight:1.78 }}>{e.body}</p>
+          {/* Pull quote */}
+          <FadeUp delay={40}>
+            <div style={{
+              borderLeft:`3px solid ${C.teal}`,
+              paddingLeft:28, marginBottom:80, maxWidth:660,
+            }}>
+              <p style={{ fontSize:'clamp(18px,2.2vw,26px)', fontWeight:500,
+                color:C.text, lineHeight:1.5, letterSpacing:'-0.4px', marginBottom:14 }}>
+                "Let's Encrypt made certificates free. SSLVault makes the lifecycle free too."
+              </p>
+              <span style={{ fontSize:12, fontFamily:MONO, color:C.textLt }}>
+                — SSLVault · built in the Netherlands · made with ♥
+              </span>
+            </div>
+          </FadeUp>
+
+          {/* Ethics items */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 80px' }}>
+            {ETHICS_ITEMS.map((e,i)=>(
+              <FadeUp key={e.n} delay={i*50}>
+                <div style={{
+                  padding:'32px 0',
+                  borderTop:`1px solid ${C.border}`,
+                }}>
+                  <div style={{ fontSize:11, fontFamily:MONO, fontWeight:600,
+                    color:C.textLt, letterSpacing:'0.06em', marginBottom:14 }}>{e.n}</div>
+                  <h3 style={{ fontSize:17, fontWeight:700, color:C.text,
+                    letterSpacing:'-0.3px', lineHeight:1.35, marginBottom:14 }}>
+                    {e.title}
+                  </h3>
+                  <p style={{ fontSize:14, color:C.textMid, lineHeight:1.8 }}>
+                    {e.body}
+                  </p>
                 </div>
-              </Reveal>
+              </FadeUp>
             ))}
           </div>
-
-          {/* Mission statement callout */}
-          <Reveal delay={100}>
-            <div style={{ background:'rgba(8,145,178,0.12)', border:'1px solid rgba(8,145,178,0.28)',
-              borderRadius:16, padding:'40px 48px', textAlign:'center' }}>
-              <div style={{ fontSize:22, fontWeight:800, color:'white', letterSpacing:'-0.5px',
-                lineHeight:1.5, maxWidth:700, margin:'0 auto 20px' }}>
-                "Let's Encrypt made certificates free.<br/>
-                <span style={{ color:'#38bdf8' }}>SSLVault makes the lifecycle around them free too.</span>"
-              </div>
-              <div style={{ fontSize:13, color:'rgba(255,255,255,0.38)', fontFamily:MONO }}>
-                — SSLVault mission statement
-              </div>
-            </div>
-          </Reveal>
         </div>
-      </div>
+      </section>
 
-      {/* ── 47-DAY WORLD BANNER ──────────────────────────────────────── */}
-      <div style={{ background:`linear-gradient(135deg, ${C.amber}15 0%, ${C.tealPale} 100%)`,
-        borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`,
-        padding:'56px 40px' }}>
-        <div style={{ maxWidth:1000, margin:'0 auto', display:'grid',
-          gridTemplateColumns:'1fr auto', gap:40, alignItems:'center' }}>
-          <Reveal>
-            <div>
-              <div style={{ display:'inline-flex', alignItems:'center', gap:7, marginBottom:14,
-                background:C.amberLt, border:`1px solid #fcd34d`, borderRadius:20, padding:'4px 14px' }}>
-                <span style={{ fontSize:14 }}>⚡</span>
-                <span style={{ fontSize:11, fontWeight:700, color:C.amber, letterSpacing:'0.5px' }}>
-                  CA/B Forum Ballot SC-081v3 — In effect now
-                </span>
-              </div>
-              <h3 style={{ fontSize:'clamp(20px,2.4vw,28px)', fontWeight:800, color:C.navy,
-                letterSpacing:'-0.5px', lineHeight:1.3, marginBottom:14 }}>
-                Max cert validity is dropping to 200 days in 2026.<br/>
-                100 days by March 2027. Automation isn't optional anymore.
-              </h3>
-              <p style={{ fontSize:14, color:C.slateL, lineHeight:1.75, maxWidth:560 }}>
-                At 100-day validity, every certificate needs renewing at least 4 times per year. Manual renewal
-                is mathematically impossible at scale. SSLVault was built for this world — zero-touch renewal
-                is the only viable answer.
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={80}>
-            <div style={{ display:'flex', flexDirection:'column', gap:12, flexShrink:0 }}>
+      {/* ── SECURITY TRUST STRIP ────────────────────────────────────── */}
+      <section style={{ background:C.white, padding:'72px 40px',
+        borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}` }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <FadeUp>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
               {[
-                { date:'March 2026', val:'200 days', status:'active' },
-                { date:'March 2027', val:'100 days', status:'upcoming' },
-                { date:'March 2029', val:'47 days',  status:'future' },
-              ].map(({date,val,status})=>(
-                <div key={date} style={{ display:'flex', alignItems:'center', gap:14,
-                  background: status==='active' ? C.amberLt : C.white,
-                  border: `1px solid ${status==='active'?'#fcd34d':C.border}`,
-                  borderRadius:10, padding:'12px 18px', minWidth:220 }}>
-                  <span style={{ fontSize:11, fontWeight:600, color:C.slateL,
-                    fontFamily:MONO, minWidth:90 }}>{date}</span>
-                  <span style={{ fontSize:16, fontWeight:800, fontFamily:MONO,
-                    color: status==='active'?C.amber:C.navy }}>{val}</span>
-                  {status==='active' && <span style={{ fontSize:9, fontWeight:700,
-                    background:C.amber, color:'white', borderRadius:4, padding:'2px 7px' }}>LIVE</span>}
+                { val:'AES-256-GCM', label:'Key encryption at rest',  sub:'Private keys never leave your control', c:C.teal   },
+                { val:'99.9%',       label:'Browser trust coverage',  sub:'DigiCert and Sectigo trust chains',    c:'#34d399' },
+                { val:'< 5 min',     label:'Agent polling interval',  sub:'Zero-touch renewal cadence',           c:C.purple  },
+                { val:'No ads',      label:'Ad-free forever',         sub:'No tracking. No reselling. No upsells.',c:C.amber  },
+              ].map(({val,label,sub,c},i)=>(
+                <div key={label} style={{
+                  padding:'28px 0 28px',
+                  borderLeft: i>0 ? `1px solid ${C.border}` : 'none',
+                  paddingLeft: i>0 ? 32 : 0,
+                }}>
+                  <div style={{ fontSize:28, fontWeight:800, color:c,
+                    fontFamily:MONO, letterSpacing:'-0.5px', marginBottom:8 }}>{val}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:C.text, marginBottom:5 }}>{label}</div>
+                  <div style={{ fontSize:12, color:C.textMid, lineHeight:1.5 }}>{sub}</div>
                 </div>
               ))}
             </div>
-          </Reveal>
+          </FadeUp>
         </div>
-      </div>
-
-      {/* ── TRUST / SECURITY STATS ──────────────────────────────────── */}
-      <div style={{ maxWidth:1100, margin:'0 auto', padding:'80px 40px' }}>
-        <Reveal>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16 }}>
-            {[
-              { val:'AES-256-GCM', label:'Key encryption',     sub:'Private keys encrypted at rest', color:C.teal    },
-              { val:'99.9%',       label:'Browser trust',      sub:'DigiCert / Sectigo trust chain', color:C.green   },
-              { val:'5 min',       label:'Agent polling',      sub:'Zero-touch renewal cadence',     color:'#7c3aed' },
-              { val:'0 ads',       label:'Ad-free forever',    sub:'No tracking, no upsells',        color:C.amber   },
-            ].map(({val,label,sub,color})=>(
-              <div key={label} style={{ background:C.white, border:`1px solid ${C.border}`,
-                borderRadius:14, padding:'24px 22px', borderTop:`3px solid ${color}` }}>
-                <div style={{ fontSize:24, fontWeight:800, color, letterSpacing:'-0.5px',
-                  fontFamily:MONO, marginBottom:8 }}>{val}</div>
-                <div style={{ fontSize:13, fontWeight:700, color:C.navy, marginBottom:5 }}>{label}</div>
-                <div style={{ fontSize:12, color:C.slateL, lineHeight:1.5 }}>{sub}</div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
+      </section>
 
       {/* ── CTA ─────────────────────────────────────────────────────── */}
-      <Reveal>
-        <div style={{ maxWidth:1200, margin:'0 auto', padding:'20px 40px 80px' }}>
-          <div style={{ background:`linear-gradient(140deg, ${C.navy} 0%, ${C.navyLt} 60%, ${C.tealDk} 100%)`,
-            borderRadius:24, padding:'80px 60px', textAlign:'center',
-            position:'relative', overflow:'hidden' }}>
-            <div style={{ position:'absolute', top:-80, right:-80, width:360, height:360,
-              borderRadius:'50%', background:`radial-gradient(ellipse, rgba(8,145,178,0.22) 0%, transparent 60%)`,
-              pointerEvents:'none' }}/>
-            <div style={{ position:'absolute', bottom:-60, left:-60, width:280, height:280,
-              borderRadius:'50%', background:`radial-gradient(ellipse, rgba(52,211,153,0.12) 0%, transparent 60%)`,
-              pointerEvents:'none' }}/>
-            <div style={{ position:'relative' }}>
-              <Eyebrow color="#38bdf8">Start today</Eyebrow>
-              <h2 style={{ fontSize:'clamp(28px,3.5vw,50px)', fontWeight:900, color:'white',
-                letterSpacing:'-1.6px', marginBottom:18, lineHeight:1.07 }}>
-                The complete CLM platform.<br/>Built for everyone.
-              </h2>
-              <p style={{ fontSize:16, color:'rgba(255,255,255,0.52)', maxWidth:520,
-                margin:'0 auto 40px', lineHeight:1.8 }}>
-                Issue, monitor, renew and deploy SSL certificates automatically across every CA,
-                every server. Start free in under 5 minutes. No credit card, no sales call.
-              </p>
-              <div style={{ display:'flex', gap:14, justifyContent:'center', flexWrap:'wrap' }}>
-                <PrimaryBtn onClick={()=>nav('/auth')}>Get Started Free →</PrimaryBtn>
-                <SecondaryBtn onClick={()=>nav('/pricing')} light>View Pricing</SecondaryBtn>
-                <SecondaryBtn onClick={()=>nav('/about')} light>Our Mission</SecondaryBtn>
-              </div>
+      <section style={{ background:C.ink, padding:'100px 40px' }}>
+        <div style={{ maxWidth:700, margin:'0 auto', textAlign:'center' }}>
+          <FadeUp>
+            <h2 style={{ fontSize:'clamp(32px,4.5vw,56px)', fontWeight:800,
+              letterSpacing:'-2px', lineHeight:1.0, color:C.white, marginBottom:22 }}>
+              Start in five minutes.<br/>
+              <span style={{
+                background:`linear-gradient(90deg, ${C.teal}, #38bdf8)`,
+                WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+                backgroundClip:'text',
+              }}>Stay free forever.</span>
+            </h2>
+            <p style={{ fontSize:17, color:'rgba(255,255,255,0.38)',
+              lineHeight:1.75, marginBottom:40, maxWidth:480, margin:'0 auto 40px' }}>
+              No credit card. No sales call. No enterprise procurement cycle.
+              Issue your first certificate in under five minutes.
+            </p>
+            <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
+              <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')}/>
+              <CTA label="View pricing" variant="ghost-dark" onClick={()=>nav('/pricing')}/>
+              <CTA label="Read our mission" variant="ghost-dark" onClick={()=>nav('/about')}/>
             </div>
-          </div>
+          </FadeUp>
         </div>
-      </Reveal>
+      </section>
 
       {/* ── FOOTER ──────────────────────────────────────────────────── */}
-      <footer style={{ borderTop:`1px solid ${C.border}`, background:C.bg,
-        padding:'32px 40px' }}>
-        <div style={{ maxWidth:1200, margin:'0 auto',
-          display:'flex', justifyContent:'space-between', alignItems:'center',
-          flexWrap:'wrap', gap:16 }}>
+      <footer style={{
+        borderTop:`1px solid ${C.border}`, background:C.bg, padding:'28px 40px',
+      }}>
+        <div style={{ maxWidth:1100, margin:'0 auto',
+          display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-            <div style={{ width:24, height:24, borderRadius:6, background:C.navy,
+            <div style={{ width:22, height:22, background:C.ink, borderRadius:6,
               display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <span style={{ fontSize:13, fontWeight:700, color:C.navy }}>SSLVault</span>
-            <span style={{ fontSize:11, color:C.slateL }}>· PKI-first CLM · Made with ♥ in the Netherlands · Ad-free forever</span>
+            <span style={{ fontSize:13, fontWeight:700, color:C.ink }}>SSLVault</span>
+            <span style={{ fontSize:11, color:'#94a3b8', marginLeft:4 }}>
+              · PKI-first CLM · Made with ♥ in the Netherlands · Ad-free
+            </span>
           </div>
           <div style={{ display:'flex', gap:24, flexWrap:'wrap' }}>
             {[['Privacy','/privacy'],['Terms','/terms'],['About','/about'],
               ['Developer','/developer'],['Pricing','/pricing'],['Contact','/contact']].map(([l,p])=>(
               <button key={l} onClick={()=>nav(p)}
-                style={{ background:'none', border:'none', cursor:'pointer', fontSize:12,
-                  color:C.slateL, fontFamily:FONT, transition:'color .15s' }}
-                onMouseEnter={e=>e.target.style.color=C.navy}
-                onMouseLeave={e=>e.target.style.color=C.slateL}>{l}</button>
+                style={{ background:'none', border:'none', cursor:'pointer',
+                  fontSize:12, color:'#94a3b8', fontFamily:F, transition:'color .15s' }}
+                onMouseEnter={e=>e.target.style.color=C.ink}
+                onMouseLeave={e=>e.target.style.color='#94a3b8'}>{l}</button>
             ))}
           </div>
         </div>
