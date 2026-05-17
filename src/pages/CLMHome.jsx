@@ -22,9 +22,15 @@ import AdminAnalytics from './AdminAnalytics'
 import AgentHealth from './AgentHealth'
 import Pricing from './Pricing'
 
+// Default collapsed state — Overview & Account open, rest start open too but user can close
+const DEFAULT_OPEN = { Overview: true, Infrastructure: true, 'CA Management': true, 'Pro Features': true, Resources: true, Account: true }
+
 export default function CLMHome({ user, nav }) {
   const [section, setSection] = useState('dashboard')
   const [animKey, setAnimKey] = useState(0)
+  const [openGroups, setOpenGroups] = useState(DEFAULT_OPEN)
+
+  const toggleGroup = (label) => setOpenGroups(prev => ({ ...prev, [label]: !prev[label] }))
 
   const navigate = (id) => {
     if (id === section) return
@@ -269,17 +275,46 @@ export default function CLMHome({ user, nav }) {
             { label:'Pro Features',   items: NAV_PRO,       pro: true },
             { label:'Resources',      items: NAV_RESOURCES },
             { label:'Account',        items: NAV_ACCOUNT },
-          ].map(({ label, items, pro }, i) => (
-            <div key={label} style={{ padding:'8px 0 2px', borderTop: i > 0 ? '0.5px solid rgba(255,255,255,0.1)' : 'none', marginTop: i > 0 ? 4 : 0 }}>
-              <div style={{ fontSize:10, fontWeight:700, letterSpacing:'0.6px', textTransform:'uppercase', padding:'6px 16px 4px',
-                color: pro ? '#fca5a5' : 'rgba(255,255,255,0.5)',
-                display:'flex', alignItems:'center', gap:5 }}>
-                {pro && <Lock size={8} color="#fca5a5"/>}
-                {label}
+          ].map(({ label, items, pro }, i) => {
+            const isOpen = openGroups[label] !== false
+            const hasActive = items.some(item => item.id === section)
+            return (
+              <div key={label} style={{ borderTop: i > 0 ? '0.5px solid rgba(255,255,255,0.08)' : 'none' }}>
+                <button
+                  onClick={() => toggleGroup(label)}
+                  style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
+                    padding:'9px 14px 7px', background:'none', border:'none', cursor:'pointer', fontFamily:'inherit' }}
+                >
+                  <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+                    {pro && <Lock size={8} color="#fca5a5"/>}
+                    <span style={{
+                      fontSize:10, fontWeight:700, letterSpacing:'0.6px', textTransform:'uppercase',
+                      color: pro ? '#fca5a5' : (hasActive && !isOpen) ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.45)',
+                      transition:'color 0.2s'
+                    }}>{label}</span>
+                    {!isOpen && hasActive && (
+                      <span style={{ width:5, height:5, borderRadius:'50%', background:'#00a3e0', display:'inline-block', marginLeft:2 }}/>
+                    )}
+                  </div>
+                  <span style={{
+                    color:'rgba(255,255,255,0.3)', fontSize:10,
+                    transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition:'transform 0.22s cubic-bezier(0.4,0,0.2,1)',
+                    display:'inline-block', lineHeight:1
+                  }}>▾</span>
+                </button>
+                <div style={{
+                  maxHeight: isOpen ? `${items.length * 40}px` : '0px',
+                  overflow:'hidden',
+                  transition:'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
+                }}>
+                  <div style={{ paddingBottom: isOpen ? 6 : 0 }}>
+                    {items.map(item => <NavItem key={item.id} {...item} pro={item.pro}/>)}
+                  </div>
+                </div>
               </div>
-              {items.map(item => <NavItem key={item.id} {...item} pro={item.pro}/>)}
-            </div>
-          ))}
+            )
+          })}
           <div style={{ marginTop:'auto', padding:'12px 16px', borderTop:'0.5px solid rgba(255,255,255,0.1)' }}>
             <div style={{ fontSize:9, color:'rgba(255,255,255,0.35)', marginBottom:2 }}>Signed in as</div>
             <div style={{ fontSize:10, color:'rgba(255,255,255,0.6)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{email}</div>
