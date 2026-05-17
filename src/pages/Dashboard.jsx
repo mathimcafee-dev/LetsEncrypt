@@ -283,60 +283,123 @@ function RingGauge({ days, total, expiresAt, issuedAt }) {
 
 // ── Slim progress bar for timeline ────────────────────────────────────────────
 function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
-  const [animated, setAnimated] = useState(false)
-  const now   = new Date()
-  const start = new Date(issuedAt)
-  const end   = new Date(expiresAt)
-  const remaining = end - now
-  const elapsed   = now - start
-  const total     = end - start
-  const dLeft     = Math.max(0, Math.ceil(remaining / 86400000))
-  const pct       = Math.max(0, Math.min(100, (elapsed / total) * 100))
-  const isExpired = remaining <= 0
-  const isWarn    = dLeft > 0 && dLeft < 30
-  const color     = isExpired ? '#ef4444' : isWarn ? '#f59e0b' : '#16a34a'
-  const fmt = d => { try { return format(new Date(d), 'MMM d, yyyy') } catch { return '—' } }
+  // Mirrors GoGetSSL's own timeline:
+  //   |====== Current cert ======|==== Available (reissue window) ====|
+  //   SSL Valid from        SSL Valid till                  Subscription ends
+  //   (issuedAt)            (expiresAt / cert end)         (issuedAt + period)
+  //
+  // The bar spans the full subscription period.
+  // Green segment = cert validity (issued → expires).
+  // Striped/muted segment = reissue window (cert end → subscription end).
+  // "Today" marker moves along the full bar.
 
-  useEffect(() => { const t = setTimeout(() => setAnimated(true), 100); return () => clearTimeout(t) }, [])
+  const [animated, setAnimated] = useState(false)
+  const now          = new Date()
+  const certStart    = new Date(issuedAt)
+  const certEnd      = new Date(expiresAt)
+  const subEnd       = (() => { const d = new Date(issuedAt); d.setMonth(d.getMonth() + orderPeriodMonths); return d })()
+
+  const totalMs      = subEnd - certStart
+  const certPct      = Math.min(100, ((certEnd - certStart) / totalMs) * 100)   // where cert ends on bar
+  const todayPct     = Math.max(0, Math.min(100, ((now - certStart) / totalMs) * 100)) // today marker
+  const certElapsedPct = Math.max(0, Math.min(certPct, ((now - certStart) / totalMs) * 100)) // green fill
+
+  const dLeft     = Math.max(0, Math.ceil((certEnd - now) / 86400000))
+  const isExpired = certEnd <= now
+  const isWarn    = dLeft > 0 && dLeft < 30
+  const certColor = isExpired ? '#ef4444' : isWarn ? '#f59e0b' : '#16a34a'
+
+  const fmt = d => d ? new Date(d).toLocaleDateString('en-GB', { year:'numeric', month:'short', day:'numeric' }) : '—'
+  const fmtShort = d => d ? new Date(d).toLocaleDateString('en-GB', { month:'short', day:'numeric', year:'numeric' }) : '—'
+
+  useEffect(() => { const t = setTimeout(() => setAnimated(true), 120); return () => clearTimeout(t) }, [])
 
   return (
-    <div style={{ padding:'14px 18px', borderBottom:'0.5px solid #f1f5f9' }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
-        <span style={{ fontSize:11, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Validity timeline</span>
-        <span style={{ fontSize:11, fontWeight:600, color }}>
+    <div style={{ padding:'16px 18px', borderBottom:'0.5px solid #f1f5f9' }}>
+      {/* Header */}
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
+        <span style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px' }}>
+          Validity timeline
+        </span>
+        <span style={{ fontSize:11, fontWeight:600,
+          color: isExpired ? '#dc2626' : isWarn ? '#d97706' : '#16a34a' }}>
           {isExpired
-            ? 'Certificate expired'
-            : dLeft <= 30
-            ? `⚠ Expires in ${dLeft} day${dLeft!==1?'s':''} — reissue overdue`
-            : `Reissues ${new Date(end.getTime()-86400000).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`}
+            ? '⚠ Certificate expired'
+            : isWarn
+            ? `⚠ Expires in ${dLeft} day${dLeft!==1?'s':''}`
+            : `Next reissue in ${dLeft} days`}
         </span>
       </div>
-      <div style={{ position:'relative', height:8, borderRadius:999, background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)', overflow:'hidden' }}>
-        <div style={{ position:'absolute', left:0, top:0, bottom:0, borderRadius:999,
-          background:color, width: animated ? pct+'%' : '0%',
-          transition:'width 1.3s cubic-bezier(0.16,1,0.3,1)' }}/>
+
+      {/* Bar — full subscription width */}
+      <div style={{ position:'relative', height:20, borderRadius:6, overflow:'hidden',
+        background:'#f1f5f9', border:'0.5px solid #e2e8f0' }}>
+
+        {/* Green "Current" cert segment */}
+        <div style={{ position:'absolute', left:0, top:0, bottom:0,
+          width: animated ? certPct+'%' : '0%',
+          background: certColor,
+          borderRadius:'6px 0 0 6px',
+          transition:'width 1.4s cubic-bezier(0.16,1,0.3,1)',
+          display:'flex', alignItems:'center', justifyContent:'center' }}>
+          {certPct > 20 && (
+            <span style={{ fontSize:9, fontWeight:700, color:'white',
+              letterSpacing:'0.5px', textShadow:'0 1px 2px rgba(0,0,0,0.2)' }}>
+              CURRENT
+            </span>
+          )}
+        </div>
+
+        {/* Striped "Available" reissue window segment */}
+        <div style={{ position:'absolute', top:0, bottom:0,
+          left: animated ? certPct+'%' : certPct+'%',
+          right:0,
+          backgroundImage:`repeating-linear-gradient(
+            45deg,
+            rgba(14,127,192,0.12) 0px,
+            rgba(14,127,192,0.12) 6px,
+            transparent 6px,
+            transparent 12px
+          )`,
+          borderLeft: '2px solid '+certColor,
+          display:'flex', alignItems:'center', justifyContent:'center' }}>
+          {(100 - certPct) > 15 && (
+            <span style={{ fontSize:9, fontWeight:700, color:'#0e7fc0',
+              letterSpacing:'0.5px' }}>
+              AVAILABLE
+            </span>
+          )}
+        </div>
+
+        {/* Today marker */}
+        <div style={{ position:'absolute', top:0, bottom:0, width:3,
+          left: animated ? `calc(${todayPct}% - 1.5px)` : '0%',
+          background:'#0f172a', borderRadius:2, zIndex:5,
+          boxShadow:'0 0 0 1.5px white, 0 1px 4px rgba(0,0,0,0.3)',
+          transition:'left 1.4s cubic-bezier(0.16,1,0.3,1)' }}/>
       </div>
-      <div style={{ position:'relative', height:0 }}>
-        <div style={{ position:'absolute', top:-4, width:3, height:14, borderRadius:2,
-          background:'var(--v2-text)', left: animated ? pct+'%' : '0%',
-          transform:'translateX(-50%)',
-          transition:'left 1.3s cubic-bezier(0.16,1,0.3,1)',
-          boxShadow:'0 1px 4px rgba(0,0,0,0.15)', zIndex:3 }}/>
-      </div>
-      <div style={{ display:'flex', justifyContent:'space-between', marginTop:10 }}>
+
+      {/* Three date labels below bar */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', marginTop:8 }}>
         <div>
-          <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(issuedAt)}</div>
-          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6, marginTop:1 }}>SSL valid from</div>
+          <div style={{ fontSize:10, fontWeight:600, color:'#64748b', fontFamily:'monospace' }}>
+            {fmtShort(issuedAt)}
+          </div>
+          <div style={{ fontSize:9, color:'#94a3b8', marginTop:2 }}>SSL valid from</div>
         </div>
         <div style={{ textAlign:'center' }}>
-          <div style={{ fontSize:10, fontWeight:700, color: isWarn ? '#d97706' : isExpired ? '#ef4444' : '#0f172a', fontFamily:'monospace' }}>{fmt(expiresAt)}</div>
-          <div style={{ fontSize:9, color:'#94a3b8', marginTop:1 }}>Cert expires</div>
+          <div style={{ fontSize:10, fontWeight:700,
+            color: isWarn ? '#d97706' : isExpired ? '#ef4444' : '#0f172a',
+            fontFamily:'monospace' }}>
+            {fmtShort(expiresAt)}
+          </div>
+          <div style={{ fontSize:9, color:'#94a3b8', marginTop:2 }}>SSL valid till</div>
         </div>
         <div style={{ textAlign:'right' }}>
-          <div style={{ fontSize:10, fontWeight:700, color:'#d97706', fontFamily:'monospace' }}>
-            {fmt(new Date(end.getTime() - 86400000))}
+          <div style={{ fontSize:10, fontWeight:700, color:'#0e7fc0', fontFamily:'monospace' }}>
+            {fmtShort(subEnd)}
           </div>
-          <div style={{ fontSize:9, color:'#94a3b8', marginTop:1 }}>Reissue on</div>
+          <div style={{ fontSize:9, color:'#94a3b8', marginTop:2 }}>Subscription ends</div>
         </div>
       </div>
     </div>
