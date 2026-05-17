@@ -609,13 +609,23 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         </div>
 
         <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
-          <button onClick={addDns} disabled={dns || !(ord.dcv_txt_value || ord.dcv_cname_value)}
-            style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#0e7fc0',
-              color: 'white', border: 'none', borderRadius: 7, padding: '10px 18px',
-              fontSize: 13, fontWeight: 600, cursor: dns || !(ord.dcv_txt_value || ord.dcv_cname_value) ? 'not-allowed' : 'pointer',
-              opacity: !(ord.dcv_txt_value || ord.dcv_cname_value) ? 0.4 : 1, fontFamily: 'inherit' }}>
-            {dns ? <><RefreshCw size={13} className="spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS Record</>}
-          </button>
+          {ord?.dns_auto_added
+            ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(52,211,153,0.1)',
+                border: '0.5px solid rgba(52,211,153,0.3)', borderRadius: 7, padding: '10px 18px',
+                fontSize: 13, color: '#34d399', fontWeight: 500 }}>
+                <Check size={13}/> DNS auto-added via {ord.dns_provider || 'provider'} — validating…
+              </div>
+            ) : (
+              <button onClick={addDns} disabled={dns || !(ord.dcv_txt_value || ord.dcv_cname_value)}
+                style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#0e7fc0',
+                  color: 'white', border: 'none', borderRadius: 7, padding: '10px 18px',
+                  fontSize: 13, fontWeight: 600, cursor: dns || !(ord.dcv_txt_value || ord.dcv_cname_value) ? 'not-allowed' : 'pointer',
+                  opacity: !(ord.dcv_txt_value || ord.dcv_cname_value) ? 0.4 : 1, fontFamily: 'inherit' }}>
+                {dns ? <><RefreshCw size={13} className="spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS Record</>}
+              </button>
+            )
+          }
           <button onClick={check} disabled={chk}
             style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.06)',
               color: '#e5e7eb', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7,

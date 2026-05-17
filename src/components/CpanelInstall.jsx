@@ -96,6 +96,8 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
         setSavedServers(res.credentials)
         const m = res.credentials.find(c=>c.domains?.includes(cert.domain))||res.credentials[0]
         setSelectedServer(m.id); setUseNew(false)
+        // Skip server-type selection — go straight to configure with saved server pre-selected
+        setPhase('configure')
       } else setUseNew(true)
     })()
   },[])
