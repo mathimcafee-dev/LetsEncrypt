@@ -170,9 +170,12 @@ function DvPendingCard({ order, onRefresh }) {
 }
 
 // ── Ring gauge that animates on mount ────────────────────────────────────────
-function RingGauge({ days, total = 365 }) {
+// Live countdown: days + hours + minutes + seconds ticking every second
+function RingGauge({ days, total = 365, expiresAt }) {
   const [animated, setAnimated] = useState(false)
-  const [count, setCount] = useState(0)
+  const [timeLeft, setTimeLeft] = useState({ d:0, h:0, m:0, s:0 })
+  const [entryDone, setEntryDone] = useState(false)  // entry count-up complete
+
   const d = Math.max(0, days ?? 0)
   const pct = Math.min(1, d / total)
   const r = 30, circ = 2 * Math.PI * r
@@ -181,38 +184,95 @@ function RingGauge({ days, total = 365 }) {
   const isWarn    = (days ?? 0) >= 0 && (days ?? 0) < 30
   const color     = isExpired ? '#ef4444' : isWarn ? '#f59e0b' : '#16a34a'
 
+  // Compute live time remaining from expiresAt
+  const getRemaining = () => {
+    if (!expiresAt) return { d, h:0, m:0, s:0 }
+    const ms = new Date(expiresAt).getTime() - Date.now()
+    if (ms <= 0) return { d:0, h:0, m:0, s:0 }
+    const totalSecs = Math.floor(ms / 1000)
+    const dd = Math.floor(totalSecs / 86400)
+    const hh = Math.floor((totalSecs % 86400) / 3600)
+    const mm = Math.floor((totalSecs % 3600) / 60)
+    const ss = totalSecs % 60
+    return { d:dd, h:hh, m:mm, s:ss }
+  }
+
   useEffect(() => {
+    // Animate ring draw
     const t1 = setTimeout(() => setAnimated(true), 80)
-    if (!isExpired) {
-      let n = 0
-      const target = d
-      const step = Math.max(1, Math.ceil(target / 40))
-      const iv = setInterval(() => {
-        n = Math.min(n + step, target)
-        setCount(n)
-        if (n >= target) clearInterval(iv)
-      }, 18)
-      return () => { clearTimeout(t1); clearInterval(iv) }
-    }
-    return () => clearTimeout(t1)
-  }, [d])
+
+    // Entry animation: count days up from 0 then start live tick
+    let n = 0
+    const target = d
+    const step = Math.max(1, Math.ceil(target / 35))
+    const entry = setInterval(() => {
+      n = Math.min(n + step, target)
+      setTimeLeft({ d:n, h:0, m:0, s:0 })
+      if (n >= target) {
+        clearInterval(entry)
+        setEntryDone(true)
+        // Start live countdown after entry animation
+        setTimeLeft(getRemaining())
+        const tick = setInterval(() => setTimeLeft(getRemaining()), 1000)
+        return () => clearInterval(tick)
+      }
+    }, 20)
+
+    return () => { clearTimeout(t1); clearInterval(entry) }
+  }, [d, expiresAt])
+
+  // Once entry done, keep ticking
+  useEffect(() => {
+    if (!entryDone || !expiresAt) return
+    const tick = setInterval(() => setTimeLeft(getRemaining()), 1000)
+    return () => clearInterval(tick)
+  }, [entryDone, expiresAt])
+
+  const pad = n => String(n).padStart(2, '0')
 
   return (
-    <div style={{ position:'relative', width:76, height:76, flexShrink:0 }}>
-      <svg width="76" height="76" viewBox="0 0 76 76" style={{ transform:'rotate(-90deg)' }}>
-        <circle cx="38" cy="38" r={r} fill="none" stroke="var(--v2-border)" strokeWidth="7"/>
-        <circle cx="38" cy="38" r={r} fill="none" stroke={color} strokeWidth="7"
-          strokeLinecap="round"
-          strokeDasharray={circ}
-          strokeDashoffset={animated ? offset : circ}
-          style={{ transition:'stroke-dashoffset 1.4s cubic-bezier(0.16,1,0.3,1)' }}/>
-      </svg>
-      <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
-        <div style={{ fontSize:16, fontWeight:500, color:'var(--v2-text)', fontFamily:'monospace', lineHeight:1 }}>
-          {isExpired ? '!' : count}
+    <div style={{ flexShrink:0 }}>
+      {/* Ring */}
+      <div style={{ position:'relative', width:82, height:82 }}>
+        <svg width="82" height="82" viewBox="0 0 82 82" style={{ transform:'rotate(-90deg)' }}>
+          <circle cx="41" cy="41" r={r} fill="none" stroke="#f1f5f9" strokeWidth="8"/>
+          <circle cx="41" cy="41" r={r} fill="none" stroke={color} strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={circ}
+            strokeDashoffset={animated ? offset : circ}
+            style={{ transition:'stroke-dashoffset 1.5s cubic-bezier(0.16,1,0.3,1)',
+              filter: !isExpired && !isWarn ? 'drop-shadow(0 0 4px rgba(22,163,74,0.35))' : 'none' }}/>
+        </svg>
+        <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column',
+          alignItems:'center', justifyContent:'center' }}>
+          <div style={{ fontSize:18, fontWeight:800, color: isExpired?'#ef4444':color,
+            fontFamily:'monospace', lineHeight:1, letterSpacing:'-0.5px',
+            transition:'all 0.3s' }}>
+            {isExpired ? '!' : timeLeft.d}
+          </div>
+          <div style={{ fontSize:8, color:'#94a3b8', marginTop:2, letterSpacing:'0.4px', textTransform:'uppercase' }}>
+            days
+          </div>
         </div>
-        <div style={{ fontSize:9, color:'var(--v2-text-3)', marginTop:2, letterSpacing:'0.2px' }}>days left</div>
       </div>
+      {/* Live H:M:S ticker below ring — only shown after entry animation */}
+      {!isExpired && entryDone && (
+        <div style={{ display:'flex', justifyContent:'center', gap:2, marginTop:5 }}>
+          {[
+            { val: pad(timeLeft.h), label:'h' },
+            { val: pad(timeLeft.m), label:'m' },
+            { val: pad(timeLeft.s), label:'s' },
+          ].map(({ val, label }) => (
+            <div key={label} style={{ display:'flex', flexDirection:'column', alignItems:'center',
+              background:'#f8fafc', borderRadius:5, padding:'2px 5px', minWidth:28 }}>
+              <span style={{ fontSize:11, fontWeight:800, fontFamily:'monospace',
+                color: isWarn ? '#d97706' : '#0e7fc0', lineHeight:1,
+                transition:'all 0.3s' }}>{val}</span>
+              <span style={{ fontSize:7, color:'#cbd5e1', letterSpacing:'0.3px' }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -817,7 +877,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       <div style={{ padding:'20px 20px 16px', background:'linear-gradient(135deg, #f8fafc 0%, white 100%)',
         borderBottom:'0.5px solid #f1f5f9' }}>
         <div style={{ display:'flex', alignItems:'flex-start', gap:16 }}>
-          <RingGauge days={days}/>
+          <RingGauge days={days} expiresAt={cert.expires_at}/>
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
               <span style={{ fontSize:14, fontWeight:700, wordBreak:'break-all',
@@ -859,17 +919,31 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       {/* ── Metric strip ─── */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)',
         borderBottom:'0.5px solid #f1f5f9', background:'#fafbfc' }}>
-        {[
-          { val: Math.max(0, days ?? 0), label:'Days left', color: statusColor },
-          { val: 365,                    label:'Total days', color:'#0f172a' },
-          { val: Math.max(0, (days ?? 0) - 166), label:'Reissue in', color:'#d97706' },
-        ].map(({ val, label, color }, i) => (
-          <div key={i} style={{ padding:'12px 16px',
-            borderRight: i < 2 ? '0.5px solid #f1f5f9' : 'none' }}>
-            <div style={{ fontSize:20, fontWeight:800, color, fontFamily:'monospace', letterSpacing:'-0.5px' }}>{val}</div>
-            <div style={{ fontSize:10, color:'#94a3b8', marginTop:3, textTransform:'uppercase', letterSpacing:'0.3px' }}>{label}</div>
-          </div>
-        ))}
+        {(() => {
+          const daysLeftVal = Math.max(0, days ?? 0)
+          // Auto-reissue fires at 199 days after issue (when 166 days remain)
+          // Days until that happens = daysLeft - 166
+          const daysToReissue = Math.max(0, (days ?? 0) - 166)
+          const reissueLabel = daysToReissue > 0
+            ? `In ${daysToReissue}d`
+            : (days ?? 0) > 0 ? 'Ready now' : 'Expired'
+          return [
+            { top: String(daysLeftVal), bottom:'Days left',   color: statusColor,  tip: null },
+            { top: '365',              bottom:'Total days',   color:'#0f172a',     tip: null },
+            { top: reissueLabel,       bottom:'Auto-reissue', color:'#d97706',
+              tip:'GoGetSSL auto-reissues when 166 days remain (~199 days after issue). Your cert stays live.' },
+          ].map(({ top, bottom, color, tip }, i) => (
+            <div key={i} title={tip||''} style={{ padding:'12px 16px',
+              borderRight: i < 2 ? '0.5px solid #f1f5f9' : 'none',
+              cursor: tip ? 'help' : 'default' }}>
+              <div style={{ fontSize:18, fontWeight:800, color, fontFamily:'monospace', letterSpacing:'-0.5px' }}>{top}</div>
+              <div style={{ display:'flex', alignItems:'center', gap:3, marginTop:3 }}>
+                <span style={{ fontSize:10, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.3px' }}>{bottom}</span>
+                {tip && <span style={{ fontSize:10, color:'#cbd5e1' }}>ⓘ</span>}
+              </div>
+            </div>
+          ))
+        })()}
       </div>
 
       {/* ── Timeline ─────────────────────────────────────────────────────── */}
