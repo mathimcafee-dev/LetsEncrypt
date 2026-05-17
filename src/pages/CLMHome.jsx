@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Shield, Plus, Globe, Server, Activity, TrendingUp, Zap, Lock,
   Layout, Download, Settings,
-  BookOpen, CreditCard, Info, User, Mail, LogOut
+  BookOpen, CreditCard, Info, User, Mail, LogOut, Bell
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import Dashboard from './Dashboard'
@@ -32,6 +32,48 @@ export default function CLMHome({ user, nav }) {
     setAnimKey(k => k + 1)
   }
   const email = user?.email || ''
+
+  // ── Notification bell ──────────────────────────────────────────────
+  const [notifs, setNotifs]         = useState([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [bellOpen, setBellOpen]     = useState(false)
+  const [bellLoading, setBellLoading] = useState(false)
+  const bellRef = useRef(null)
+
+  const loadNotifs = async () => {
+    if (!user) return
+    setBellLoading(true)
+    const { data, error } = await supabase.functions.invoke('send-alert', {
+      body: { action: 'get_notifications', user_id: user.id, limit: 10 }
+    })
+    if (!error && data?.ok) {
+      setNotifs(data.notifications || [])
+      setUnreadCount(data.unread_count || 0)
+    }
+    setBellLoading(false)
+  }
+
+  const markAllRead = async () => {
+    await supabase.functions.invoke('send-alert', {
+      body: { action: 'mark_read', user_id: user.id, all: true }
+    })
+    setNotifs(prev => prev.map(n => ({ ...n, read: true })))
+    setUnreadCount(0)
+  }
+
+  // Load on mount + every 60s
+  useEffect(() => {
+    loadNotifs()
+    const iv = setInterval(loadNotifs, 60000)
+    return () => clearInterval(iv)
+  }, [user])
+
+  // Close bell on outside click
+  useEffect(() => {
+    const handler = (e) => { if (bellRef.current && !bellRef.current.contains(e.target)) setBellOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   const NAV_OVERVIEW = [
     { id:'dashboard', label:'Dashboard',         icon:Layout },
@@ -123,7 +165,94 @@ export default function CLMHome({ user, nav }) {
           <span style={{ fontSize:13, fontWeight:700, color:'white' }}>SSLVault</span>
           <span style={{ fontSize:10, color:'rgba(255,255,255,0.4)', marginLeft:2 }}>CLM PLATFORM</span>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+          {/* ── Notification Bell ── */}
+          <div ref={bellRef} style={{ position:'relative' }}>
+            <button onClick={() => { setBellOpen(v => !v); if (!bellOpen) loadNotifs() }}
+              style={{ position:'relative', background:'none', border:'none', cursor:'pointer',
+                color:'rgba(255,255,255,0.6)', padding:4, display:'flex', alignItems:'center',
+                borderRadius:6, transition:'color .15s' }}
+              onMouseEnter={e => e.currentTarget.style.color='white'}
+              onMouseLeave={e => e.currentTarget.style.color='rgba(255,255,255,0.6)'}>
+              <Bell size={15}/>
+              {unreadCount > 0 && (
+                <span style={{ position:'absolute', top:-1, right:-1, width:14, height:14,
+                  borderRadius:'50%', background:'#ef4444', border:'1.5px solid #0d3c6e',
+                  fontSize:8, fontWeight:800, color:'white', display:'flex',
+                  alignItems:'center', justifyContent:'center', lineHeight:1 }}>
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+            {/* Dropdown */}
+            {bellOpen && (
+              <div style={{ position:'absolute', top:'calc(100% + 8px)', right:0, width:320,
+                background:'white', border:'1px solid #e2e8f0', borderRadius:12,
+                boxShadow:'0 8px 32px rgba(0,0,0,0.15)', zIndex:200, overflow:'hidden' }}>
+                {/* Header */}
+                <div style={{ padding:'12px 16px', borderBottom:'1px solid #f1f5f9',
+                  display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <span style={{ fontSize:12, fontWeight:700, color:'#0f172a' }}>Notifications</span>
+                  {unreadCount > 0 && (
+                    <button onClick={markAllRead}
+                      style={{ background:'none', border:'none', cursor:'pointer', fontSize:11,
+                        color:'#0891b2', fontFamily:'inherit', padding:0 }}>
+                      Mark all read
+                    </button>
+                  )}
+                </div>
+                {/* Items */}
+                <div style={{ maxHeight:360, overflowY:'auto' }}>
+                  {bellLoading && notifs.length === 0 ? (
+                    <div style={{ padding:'24px', textAlign:'center', color:'#94a3b8', fontSize:12 }}>
+                      Loading…
+                    </div>
+                  ) : notifs.length === 0 ? (
+                    <div style={{ padding:'32px 16px', textAlign:'center', color:'#94a3b8', fontSize:12 }}>
+                      🔔 No notifications yet
+                    </div>
+                  ) : notifs.map(n => (
+                    <div key={n.id}
+                      onClick={async () => {
+                        await supabase.functions.invoke('send-alert', { body:{ action:'mark_read', user_id:user.id, notification_id:n.id }})
+                        setNotifs(prev => prev.map(x => x.id===n.id ? {...x,read:true} : x))
+                        setUnreadCount(c => Math.max(0, c-1))
+                        if (n.action_url) { const section = n.action_url.replace('/',''); navigate(section||'dashboard') }
+                        setBellOpen(false)
+                      }}
+                      style={{ padding:'10px 16px', borderBottom:'0.5px solid #f8fafc', cursor:'pointer',
+                        background: n.read ? 'white' : '#f0f9ff', transition:'background .15s',
+                        display:'flex', gap:10, alignItems:'flex-start' }}
+                      onMouseEnter={e => e.currentTarget.style.background=n.read?'#f8fafc':'#e0f7fa'}
+                      onMouseLeave={e => e.currentTarget.style.background=n.read?'white':'#f0f9ff'}>
+                      <span style={{ width:7, height:7, borderRadius:'50%', background:n.color||'#0891b2',
+                        marginTop:4, flexShrink:0 }}/>
+                      <div style={{ minWidth:0, flex:1 }}>
+                        <div style={{ fontSize:12, fontWeight:n.read?500:700, color:'#0f172a',
+                          marginBottom:2, lineHeight:1.3 }}>{n.title}</div>
+                        <div style={{ fontSize:11, color:'#64748b', lineHeight:1.4,
+                          overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{n.body}</div>
+                        <div style={{ fontSize:10, color:'#94a3b8', marginTop:3 }}>
+                          {new Date(n.created_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+                        </div>
+                      </div>
+                      {!n.read && <span style={{ width:6, height:6, borderRadius:'50%',
+                        background:'#0891b2', flexShrink:0, marginTop:5 }}/>}
+                    </div>
+                  ))}
+                </div>
+                {/* Footer */}
+                <div style={{ padding:'10px 16px', borderTop:'1px solid #f1f5f9', textAlign:'center' }}>
+                  <button onClick={() => { navigate('settings'); setBellOpen(false) }}
+                    style={{ background:'none', border:'none', cursor:'pointer', fontSize:11,
+                      color:'#0891b2', fontFamily:'inherit' }}>
+                    Manage alert settings →
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <span style={{ fontSize:11, color:'rgba(255,255,255,0.5)' }}>{email}</span>
           <button onClick={() => supabase.auth.signOut()} style={{ display:'flex', alignItems:'center', gap:5, background:'none', border:'none', cursor:'pointer', color:'rgba(255,255,255,0.5)', fontSize:11, fontFamily:'inherit', padding:0 }}>
             <LogOut size={13}/> Sign out
