@@ -171,13 +171,17 @@ function DvPendingCard({ order, onRefresh }) {
 
 // ── Ring gauge that animates on mount ────────────────────────────────────────
 // Live countdown: days + hours + minutes + seconds ticking every second
-function RingGauge({ days, total = 365, expiresAt }) {
+function RingGauge({ days, total, expiresAt, issuedAt }) {
   const [animated, setAnimated] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ d:0, h:0, m:0, s:0 })
   const [entryDone, setEntryDone] = useState(false)  // entry count-up complete
 
   const d = Math.max(0, days ?? 0)
-  const pct = Math.min(1, d / total)
+  // Real total = cert duration in days (issued → expires), fallback 365
+  const realTotal = (issuedAt && expiresAt)
+    ? Math.ceil((new Date(expiresAt).getTime() - new Date(issuedAt).getTime()) / 86400000)
+    : (total ?? 365)
+  const pct = Math.min(1, d / (realTotal || 365))
   const r = 30, circ = 2 * Math.PI * r
   const offset = circ - pct * circ
   const isExpired = (days ?? 0) < 0
@@ -296,11 +300,11 @@ function ValidityTimeline({ issuedAt, expiresAt }) {
   useEffect(() => { const t = setTimeout(() => setAnimated(true), 100); return () => clearTimeout(t) }, [])
 
   return (
-    <div style={{ padding:'14px 18px', borderBottom:'0.5px solid var(--v2-border)' }}>
+    <div style={{ padding:'14px 18px', borderBottom:'0.5px solid #f1f5f9' }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
         <span style={{ fontSize:11, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Validity timeline</span>
-        <span style={{ fontSize:11, fontWeight:500, color }}>
-          {isExpired ? 'Expired' : `Next reissue in ${dLeft} days`}
+        <span style={{ fontSize:11, fontWeight:600, color }}>
+          {isExpired ? 'Certificate expired' : dLeft <= 30 ? `⚠ Expires in ${dLeft} days` : `${dLeft} days remaining`}
         </span>
       </div>
       <div style={{ position:'relative', height:8, borderRadius:999, background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)', overflow:'hidden' }}>
@@ -321,12 +325,12 @@ function ValidityTimeline({ issuedAt, expiresAt }) {
           <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6, marginTop:1 }}>SSL valid from</div>
         </div>
         <div style={{ textAlign:'center' }}>
-          <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text)', fontFamily:'monospace' }}>{fmt(expiresAt)}</div>
-          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6, marginTop:1 }}>SSL valid till</div>
+          <div style={{ fontSize:10, fontWeight:700, color: isWarn ? '#d97706' : isExpired ? '#ef4444' : '#0f172a', fontFamily:'monospace' }}>{fmt(expiresAt)}</div>
+          <div style={{ fontSize:9, color:'#94a3b8', marginTop:1 }}>Cert expires</div>
         </div>
         <div style={{ textAlign:'right' }}>
-          <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', fontFamily:'monospace' }}>{fmt(new Date(end.getTime() + 365*86400000))}</div>
-          <div style={{ fontSize:9, color:'var(--v2-text-3)', opacity:0.6, marginTop:1 }}>Renewal by</div>
+          <div style={{ fontSize:10, fontWeight:600, color:'#0e7fc0', fontFamily:'monospace' }}>{fmt(expiresAt)}</div>
+          <div style={{ fontSize:9, color:'#94a3b8', marginTop:1 }}>Auto-renews on</div>
         </div>
       </div>
     </div>
@@ -877,7 +881,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       <div style={{ padding:'20px 20px 16px', background:'linear-gradient(135deg, #f8fafc 0%, white 100%)',
         borderBottom:'0.5px solid #f1f5f9' }}>
         <div style={{ display:'flex', alignItems:'flex-start', gap:16 }}>
-          <RingGauge days={days} expiresAt={cert.expires_at}/>
+          <RingGauge days={days} expiresAt={cert.expires_at} issuedAt={cert.issued_at}/>
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
               <span style={{ fontSize:14, fontWeight:700, wordBreak:'break-all',
@@ -920,26 +924,72 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)',
         borderBottom:'0.5px solid #f1f5f9', background:'#fafbfc' }}>
         {(() => {
+          // ── Correct date logic ───────────────────────────────────────────
+          // issued_at  = cert start date
+          // expires_at = cert end date (DV certs: ~6 months from issue)
+          // AUTO-REISSUE: cron fires a fresh DV cert 199 days before expires_at.
+          //   For a 6-month cert: reissue triggers ~shortly before expiry.
+          //   Show: exact date cron will reissue, or "today" if already due.
+          // AUTO-RENEWAL (new order): fires when ssl_orders.valid_till passes
+          //   = same as cert expires_at for GoGetSSL DV orders.
+          //   Show: expires_at = the renewal trigger date.
+
           const daysLeftVal = Math.max(0, days ?? 0)
-          // Auto-reissue fires at 199 days after issue (when 166 days remain)
-          // Days until that happens = daysLeft - 166
-          const daysToReissue = Math.max(0, (days ?? 0) - 166)
-          const reissueLabel = daysToReissue > 0
-            ? `In ${daysToReissue}d`
-            : (days ?? 0) > 0 ? 'Ready now' : 'Expired'
+          const expiresDate = cert.expires_at ? new Date(cert.expires_at) : null
+          const issuedDate  = cert.issued_at  ? new Date(cert.issued_at)  : null
+
+          // Total cert duration in days
+          const totalDays = (issuedDate && expiresDate)
+            ? Math.ceil((expiresDate - issuedDate) / 86400000)
+            : 365
+
+          // Auto-reissue = 30 days before cert expiry
+          // Gives agents 30 days to install the fresh cert before the old one expires
+          const REISSUE_DAYS = 30
+          const reissueDate = expiresDate
+            ? new Date(expiresDate.getTime() - REISSUE_DAYS * 86400000)
+            : null
+          const daysToReissue = reissueDate
+            ? Math.ceil((reissueDate.getTime() - Date.now()) / 86400000)
+            : null
+          const reissueStr = reissueDate
+            ? (daysToReissue !== null && daysToReissue <= 0)
+              ? 'Due now'
+              : reissueDate.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+            : '—'
+          const reissueTip = reissueDate
+            ? `Auto-reissue fires on ${reissueDate.toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})} — 30 days before expiry. A fresh cert is issued and pushed to your agents automatically. No action needed.`
+            : ''
+
+          // Renewal date = expires_at (when the ORDER expires, a new order is placed)
+          const renewalStr = expiresDate
+            ? expiresDate.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+            : '—'
+          const renewalTip = `Order renewal triggers on ${renewalStr} — a brand new 1-year order is placed automatically. Your cert stays live.`
+
           return [
-            { top: String(daysLeftVal), bottom:'Days left',   color: statusColor,  tip: null },
-            { top: '365',              bottom:'Total days',   color:'#0f172a',     tip: null },
-            { top: reissueLabel,       bottom:'Auto-reissue', color:'#d97706',
-              tip:'GoGetSSL auto-reissues when 166 days remain (~199 days after issue). Your cert stays live.' },
+            { top: String(daysLeftVal),
+              bottom: 'Days left',
+              color: statusColor,
+              tip: null },
+            { top: reissueStr,
+              bottom: 'Auto-reissue',
+              color: (daysToReissue !== null && daysToReissue <= 0) ? '#dc2626' : '#d97706',
+              tip: reissueTip },
+            { top: renewalStr,
+              bottom: 'Renews on',
+              color: '#0e7fc0',
+              tip: renewalTip },
           ].map(({ top, bottom, color, tip }, i) => (
             <div key={i} title={tip||''} style={{ padding:'12px 16px',
               borderRight: i < 2 ? '0.5px solid #f1f5f9' : 'none',
               cursor: tip ? 'help' : 'default' }}>
-              <div style={{ fontSize:18, fontWeight:800, color, fontFamily:'monospace', letterSpacing:'-0.5px' }}>{top}</div>
-              <div style={{ display:'flex', alignItems:'center', gap:3, marginTop:3 }}>
-                <span style={{ fontSize:10, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.3px' }}>{bottom}</span>
-                {tip && <span style={{ fontSize:10, color:'#cbd5e1' }}>ⓘ</span>}
+              <div style={{ fontSize: i===0 ? 20 : 14, fontWeight:800, color,
+                fontFamily: i===0 ? 'monospace' : 'inherit', letterSpacing: i===0 ? '-0.5px' : '-0.2px',
+                lineHeight:1.2 }}>{top}</div>
+              <div style={{ display:'flex', alignItems:'center', gap:3, marginTop:4 }}>
+                <span style={{ fontSize:10, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.4px' }}>{bottom}</span>
+                {tip && <span style={{ fontSize:11, color:'#cbd5e1', lineHeight:1 }}>ⓘ</span>}
               </div>
             </div>
           ))
