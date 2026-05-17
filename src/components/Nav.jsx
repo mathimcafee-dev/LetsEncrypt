@@ -1,4 +1,4 @@
-import { LogIn, ChevronDown, ArrowRight, BookOpen, Code, FileText, Menu, X, Shield } from 'lucide-react'
+import { LogIn, ChevronDown, ArrowRight, BookOpen, Code, FileText, Menu, X, Shield, Activity } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 function useIsMobile(breakpoint = 760) {
@@ -43,7 +43,8 @@ export default function Nav({ nav, page }) {
     { path:'/install',         label:'Install Guide',   icon:BookOpen },
     { path:'/knowledge-base',  label:'Knowledge Base',  icon:FileText },
     { path:'/developer',       label:'Developer',       icon:Code },
-    { path:'/digicert-lab',    label:'DigiCert Lab ↗',  icon:Shield },
+    { path:'/digicert-lab',    label:'DigiCert Lab',     icon:Shield },
+    { path:'/cert-intelligence', label:'CA Intelligence',   icon:Activity },
   ]
 
   return (

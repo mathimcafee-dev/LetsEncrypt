@@ -23,6 +23,7 @@ import CAConnectors from './pages/CAConnectors'
 import AdminAnalytics from './pages/AdminAnalytics'
 import AgentHealth from './pages/AgentHealth'
 import DigiCertLab from './pages/DigiCertLab'
+import CertIntelligence from './pages/CertIntelligence'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
@@ -83,6 +84,7 @@ export default function App() {
       {page === '/admin' && <AdminAnalytics nav={nav} />}
       {page === '/agent-health' && <AgentHealth nav={nav} />}
       {page === '/digicert-lab' && <DigiCertLab nav={nav} />}
+      {page === '/cert-intelligence' && <CertIntelligence nav={nav} />}
     </div>
   )
 }
