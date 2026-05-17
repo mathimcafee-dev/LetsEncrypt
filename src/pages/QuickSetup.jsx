@@ -168,7 +168,7 @@ export default function QuickSetup({ nav }) {
             )}
             {provider !== 'manual' && !savedCred && (
               <div className="alert alert-warning" style={{ marginBottom:12, fontSize:12 }}>
-                No saved credentials for {PROVIDERS[provider]?.name}. Enter below or save them in <button onClick={()=>nav('/dns-providers')} style={{background:'none',border:'none',color:'var(--accent)',cursor:'pointer',fontWeight:600,padding:0,fontSize:12}}>DNS Providers</button> first.
+                No saved credentials for {PROVIDERS[provider]?.name}. Enter below or save them in <button onClick={()=>nav('/integrations')} style={{background:'none',border:'none',color:'var(--accent)',cursor:'pointer',fontWeight:600,padding:0,fontSize:12}}>Integrations</button> first.
               </div>
             )}
             {provider !== 'manual' && !savedCred && PROVIDERS[provider].fields.map(f => (

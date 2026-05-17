@@ -302,7 +302,7 @@ export default function DigiCertLab({ nav }) {
               <X size={12}/> Disconnect
             </button>
           )}
-          <button onClick={() => nav('/ca-connectors')}
+          <button onClick={() => nav('/integrations')}
             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8,
               padding: '7px 10px', borderRadius: 7, border: 'none', cursor: 'pointer',
               background: 'transparent', color: '#6b7280', fontSize: 11,

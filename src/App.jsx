@@ -10,7 +10,7 @@ import SharedHostingGuide from './pages/SharedHostingGuide'
 import KnowledgeBase from './pages/KnowledgeBase'
 import GetStarted from './pages/GetStarted'
 import Install from './pages/Install'
-import DnsProviders from './pages/DnsProviders'
+import Integrations from './pages/Integrations'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Developer from './pages/Developer'
@@ -19,7 +19,6 @@ import Terms from './pages/Terms'
 import Pricing from './pages/Pricing'
 import KeyLocker from './pages/KeyLocker'
 import BuyCertificate from './pages/BuyCertificate'
-import CAConnectors from './pages/CAConnectors'
 import AdminAnalytics from './pages/AdminAnalytics'
 import AgentHealth from './pages/AgentHealth'
 import DigiCertLab from './pages/DigiCertLab'
@@ -67,7 +66,7 @@ export default function App() {
       {showPublicNav && <Nav nav={nav} page={page} />}
       {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} /> : <Home nav={nav} />)}
       {page === '/dashboard' && <Dashboard nav={nav} />}
-      {page === '/dns-providers' && <DnsProviders nav={nav} />}
+      {page === '/integrations' && <Integrations nav={nav} />}
       {page === '/install' && <Install nav={nav} />}
       {page === '/knowledge-base' && <KnowledgeBase nav={nav} />}
       {page === '/get-started' && <GetStarted nav={nav} />}
@@ -81,7 +80,7 @@ export default function App() {
       {page === '/pricing' && <Pricing nav={nav} />}
       {page === '/keylocker' && <KeyLocker nav={nav} />}
       {page === '/buy' && <BuyCertificate nav={nav} />}
-      {page === '/ca-connectors' && <CAConnectors nav={nav} />}
+      
       {page === '/admin' && <AdminAnalytics nav={nav} />}
       {page === '/agent-health' && <AgentHealth nav={nav} />}
       {page === '/digicert-lab' && <DigiCertLab nav={nav} />}

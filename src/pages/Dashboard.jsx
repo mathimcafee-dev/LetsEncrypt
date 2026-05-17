@@ -1631,7 +1631,7 @@ function LoggedInDashboard({ user, nav }) {
             {[
               { icon:Shield,    color:'#0e7fc0', bg:'#eff6ff', label:'Issue Certificate', desc:'RapidSSL DV · GoGetSSL · ~5 min',    action:() => nav('/buy') },
               { icon:Download,  color:'#16a34a', bg:'#f0fdf4', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
-              { icon:Activity,  color:'#7c3aed', bg:'#f5f3ff', label:'DNS & Servers',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/dns-providers') },
+              { icon:Activity,  color:'#7c3aed', bg:'#f5f3ff', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
               { icon:Zap,       color:'#d97706', bg:'#fffbeb', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
             ].map(({ icon:Icon, color, bg, label, desc, action }, i) => (
               <button key={label} onClick={action}

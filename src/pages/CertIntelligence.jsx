@@ -337,7 +337,7 @@ function ShadowScanner({ tok }) {
           <div style={{ fontSize: 13, color: '#94a3b8' }}>
             No active DigiCert connections found.{' '}
             <span style={{ color: '#0e7fc0', cursor: 'pointer', textDecoration: 'underline' }}
-              onClick={() => window.location.pathname = '/ca-connectors'}>
+              onClick={() => window.location.pathname = '/integrations'}>
               Connect DigiCert →
             </span>
           </div>

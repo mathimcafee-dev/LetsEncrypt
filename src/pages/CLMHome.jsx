@@ -11,11 +11,10 @@ import AboutInner from './AboutInner'
 import ContactInner from './ContactInner'
 import DeveloperInner from './DeveloperInner'
 import SettingsPage from './SettingsPage'
-import DnsProviders from './DnsProviders'
+import Integrations from './Integrations'
 import Install from './Install'
 import KnowledgeBase from './KnowledgeBase'
 import BuyCertificate from './BuyCertificate'
-import CAConnectors from './CAConnectors'
 import DigiCertLab from './DigiCertLab'
 import CertIntelligence from './CertIntelligence'
 import AdminAnalytics from './AdminAnalytics'
@@ -86,12 +85,10 @@ export default function CLMHome({ user, nav }) {
     { id:'issue',     label:'Issue Certificate', icon:Plus   },
   ]
   const NAV_INFRASTRUCTURE = [
-    { id:'dns',          label:'DNS Providers', icon:Globe    },
-    { id:'servers',      label:'Servers',       icon:Server   },
+    { id:'integrations', label:'Integrations',  icon:Globe    },
     { id:'agent-health', label:'Agent Health',  icon:Activity },
   ]
   const NAV_CA = [
-    { id:'ca-connectors',  label:'CA Connectors',  icon:Shield     },
     { id:'ca-intelligence',label:'CA Intelligence', icon:TrendingUp },
   ]
   const NAV_PRO = [
@@ -110,8 +107,8 @@ export default function CLMHome({ user, nav }) {
     { id:'contact',   label:'Contact',   icon:Mail     },
   ]
   const SECTION_TITLES = {
-    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-connectors':'CA Connectors', 'ca-intelligence':'CA Intelligence', 'digicert-lab':'DigiCert Lab', analytics:'Analytics',
-    dns:'DNS Providers', servers:'Servers',
+    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-intelligence':'CA Intelligence', 'digicert-lab':'DigiCert Lab', analytics:'Analytics',
+    integrations:'Integrations',
     install:'Installation', kb:'Docs & Help', pricing:'Pricing',
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
   }
@@ -144,7 +141,7 @@ export default function CLMHome({ user, nav }) {
     // Dashboard now uses the GGS-enriched LoggedInDashboard (ssl_orders join)
     if (section === 'dashboard')  return <Dashboard nav={nav}/>
     if (section === 'issue')      return <BuyCertificate nav={nav} embedded={true} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
-    if (section === 'dns')        return <DnsProviders nav={nav}/>
+    if (section === 'integrations') return <Integrations nav={nav}/>
     if (section === 'install')    return <Install nav={nav}/>
     if (section === 'kb')         return <KnowledgeBase nav={nav}/>
     if (section === 'about')      return <AboutInner nav={nav}/>
@@ -153,7 +150,6 @@ export default function CLMHome({ user, nav }) {
     if (section === 'pricing')    return <Pricing nav={nav}/>
     if (section === 'servers')    return <ServersPage user={user}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
-    if (section === 'ca-connectors')  return <CAConnectors nav={nav}/>
     if (section === 'ca-intelligence') return <CertIntelligence nav={nav}/>
     if (section === 'digicert-lab')    return <DigiCertLab nav={nav}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>
@@ -322,7 +318,7 @@ export default function CLMHome({ user, nav }) {
         </nav>
 
         <div style={{ flex:1, minWidth:0, display:'flex', flexDirection:'column' }}>
-          {!['issue','dashboard','dns'].includes(section) && (
+          {!['issue','dashboard','integrations'].includes(section) && (
             <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
               <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
             </div>
