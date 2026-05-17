@@ -357,6 +357,53 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
 
 
+
+// ── Scan PQC button with loading + result toast ───────────────────────
+function ScanPqcButton({ onDone }) {
+  const [scanning, setScanning] = useState(false)
+  const [result,   setResult]   = useState(null)  // {ok, scanned, results}
+
+  const run = async () => {
+    setScanning(true); setResult(null)
+    const { data:{ session } } = await supabase.auth.getSession()
+    if (!session) { setScanning(false); return }
+    try {
+      const r = await fetch(SB_URL+'/functions/v1/tls-posture', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+        body: JSON.stringify({ action:'pqc_check_all' })
+      })
+      const d = await r.json()
+      setResult(d)
+      if (d.ok) onDone()
+    } catch(e) {
+      setResult({ ok:false, error: e.message })
+    }
+    setScanning(false)
+  }
+
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+      <button onClick={run} disabled={scanning}
+        style={{ display:'flex', alignItems:'center', gap:5, background:'#7c3aed', color:'white',
+          border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600,
+          cursor:scanning?'wait':'pointer', fontFamily:'inherit', opacity:scanning?0.8:1 }}>
+        {scanning
+          ? <><RefreshCw size={11} style={{animation:'spin .8s linear infinite'}}/> Scanning…</>
+          : <><Shield size={11}/> Scan PQC</>}
+      </button>
+      {result && (
+        <span style={{ fontSize:11, color: result.ok ? '#16a34a' : '#dc2626',
+          background: result.ok ? '#f0fdf4' : '#fef2f2',
+          border: `0.5px solid ${result.ok ? '#bbf7d0' : '#fecaca'}`,
+          borderRadius:5, padding:'3px 8px' }}>
+          {result.ok ? `✓ ${result.scanned} cert${result.scanned!==1?'s':''} scanned` : `✗ ${result.error||'Failed'}`}
+        </span>
+      )}
+    </div>
+  )
+}
+
 // ── PQC Readiness row ─────────────────────────────────────────────────
 const PQC_RISK_MAP = {
   ready:  { color:'#16a34a', bg:'#f0fdf4', border:'#bbf7d0', label:'PQC Ready',     icon:'✓' },
@@ -1248,15 +1295,7 @@ function LoggedInDashboard({ user, nav }) {
                       fontSize:12, padding:'5px 10px 5px 28px', width:180, outline:'none', fontFamily:'inherit' }}/>
                   <Globe size={12} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:'#94a3b8', pointerEvents:'none' }}/>
                 </div>
-                <button onClick={async()=>{
-                    const{data:{session}}=await supabase.auth.getSession()
-                    if(!session)return
-                    fetch(SB_URL+'/functions/v1/tls-posture',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({action:'pqc_check_all'})}).then(()=>setTimeout(()=>window.location.reload(),1200))
-                  }}
-                  style={{ display:'flex', alignItems:'center', gap:5, background:'#7c3aed', color:'white',
-                    border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
-                  <Shield size={11}/> Scan PQC
-                </button>
+                <ScanPqcButton onDone={loadCerts}/>
                 <button onClick={() => nav('/buy')}
                   style={{ display:'flex', alignItems:'center', gap:5, background:'#0e7fc0', color:'white',
                     border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
