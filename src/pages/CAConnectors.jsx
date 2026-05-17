@@ -45,11 +45,12 @@ function ExpiryBadge({ expiresAt }) {
 
 function SourceBadge({ source }) {
   const map = {
-    digicert:  { label: 'DigiCert',  color: '#dc2626', bg: '#fef2f2' },
-    sectigo:   { label: 'Sectigo',   color: '#7c3aed', bg: '#f5f3ff' },
-    imported:  { label: 'Manual',    color: '#64748b', bg: '#f8fafc' },
-    gogetssl:  { label: 'GoGetSSL',  color: '#16a34a', bg: '#f0fdf4' },
-    letsencrypt:{ label: "Let's Encrypt", color: '#2563eb', bg: '#eff6ff' },
+    digicert:   { label: 'DigiCert',       color: '#dc2626', bg: '#fef2f2' },
+    sectigo:    { label: 'Sectigo',        color: '#7c3aed', bg: '#f5f3ff' },
+    sslcom:     { label: 'SSL.com',        color: '#0369a1', bg: '#e0f2fe' },
+    imported:   { label: 'Manual',         color: '#64748b', bg: '#f8fafc' },
+    gogetssl:   { label: 'GoGetSSL',       color: '#16a34a', bg: '#f0fdf4' },
+    letsencrypt:{ label: "Let's Encrypt",  color: '#2563eb', bg: '#eff6ff' },
   }
   const s = map[source] || { label: source || 'Unknown', color: '#64748b', bg: '#f8fafc' }
   return (
@@ -65,10 +66,10 @@ const CA_DEFS = {
     name: 'DigiCert CertCentral',
     color: '#dc2626', bg: '#fef2f2', border: '#fecaca',
     logo: 'DC',
-    desc: 'Pull all issued certificates from your CertCentral account via API key.',
+    desc: 'Pull all issued certificates from your CertCentral account. Monitoring only — no private keys needed.',
     fields: [
-      { key: 'api_key',    label: 'API Key',                   type: 'password', placeholder: 'Your CertCentral API key',              required: true  },
-      { key: 'account_id', label: 'Account ID (optional)',      type: 'text',     placeholder: 'e.g. 123456 — leave blank for default',  required: false },
+      { key: 'api_key',    label: 'API Key',             type: 'password', placeholder: 'Your CertCentral API key',             required: true  },
+      { key: 'account_id', label: 'Account ID (optional)', type: 'text',   placeholder: 'Division / sub-account ID (optional)', required: false },
     ],
     docs: 'https://dev.digicert.com/en/certcentral-apis/creating-an-api-key.html',
   },
@@ -76,13 +77,24 @@ const CA_DEFS = {
     name: 'Sectigo SCM',
     color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe',
     logo: 'SC',
-    desc: 'Pull all certificates from Sectigo Certificate Manager.',
+    desc: 'Pull all certificates from Sectigo Certificate Manager. Monitoring only — no private keys needed.',
     fields: [
-      { key: 'customer_uri', label: 'Customer URI',  type: 'text',     placeholder: 'your-company',         required: true },
-      { key: 'login',        label: 'Login',          type: 'text',     placeholder: 'admin@yourcompany.com', required: true },
-      { key: 'password',     label: 'Password',       type: 'password', placeholder: '••••••••',              required: true },
+      { key: 'customer_uri', label: 'Customer URI',  type: 'text',     placeholder: 'your-company',          required: true },
+      { key: 'login',        label: 'Login',         type: 'text',     placeholder: 'admin@yourcompany.com', required: true },
+      { key: 'password',     label: 'Password',      type: 'password', placeholder: '••••••••',              required: true },
     ],
     docs: 'https://sectigo.com/knowledge-base/detail/Sectigo-Certificate-Manager-API/kA01N000000bvOx',
+  },
+  sslcom: {
+    name: 'SSL.com',
+    color: '#0369a1', bg: '#e0f2fe', border: '#bae6fd',
+    logo: 'SL',
+    desc: 'Pull all issued certificates from your SSL.com reseller account. Monitoring only — no private keys needed.',
+    fields: [
+      { key: 'account_key', label: 'Account Key', type: 'password', placeholder: 'Your SSL.com account key', required: true },
+      { key: 'secret_key',  label: 'Secret Key',  type: 'password', placeholder: 'Your SSL.com secret key',  required: true },
+    ],
+    docs: 'https://www.ssl.com/restful_api',
   },
 }
 
@@ -195,7 +207,7 @@ export default function CAConnectors({ nav }) {
           <div>
             <h1 className="v2-h1" style={{ fontSize: 22, letterSpacing: '-0.3px' }}>CA connectors</h1>
             <p style={{ fontSize: 13, color: 'var(--v2-text-3)', marginTop: 4 }}>
-              Import and monitor certificates from DigiCert, Sectigo, or any CA. Track expiry, no private key needed.
+              Import and monitor certificates from DigiCert, Sectigo, SSL.com, or paste any PEM. Track expiry — no private keys needed.
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -319,6 +331,16 @@ export default function CAConnectors({ nav }) {
           )}
 
           {/* Add Sectigo */}
+          {!connections.find(c => c.ca_type === 'sslcom') && (
+            <button className="v2-card v2-card-hover"
+              style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 14px', cursor:'pointer', border:'none', textAlign:'left', fontFamily:'inherit' }}
+              onClick={() => openAdd('sslcom')}>
+              <div style={{ width:32, height:32, borderRadius:8, background: CA_DEFS.sslcom.bg,
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:10, fontWeight:700, color: CA_DEFS.sslcom.color, flexShrink:0 }}>SL</div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text-2)' }}>Connect SSL.com</div>
+            </button>
+          )}
           {!connections.find(c => c.ca_type === 'sectigo') && (
             <div className="v2-card" style={{ borderStyle: 'dashed', display: 'flex',
               alignItems: 'center', justifyContent: 'center', minHeight: 120, cursor: 'pointer' }}
