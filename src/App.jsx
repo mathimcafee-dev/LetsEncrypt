@@ -19,6 +19,8 @@ import Terms from './pages/Terms'
 import Pricing from './pages/Pricing'
 import KeyLocker from './pages/KeyLocker'
 import BuyCertificate from './pages/BuyCertificate'
+import CAConnectors from './pages/CAConnectors'
+import AdminAnalytics from './pages/AdminAnalytics'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
@@ -75,6 +77,8 @@ export default function App() {
       {page === '/pricing' && <Pricing nav={nav} />}
       {page === '/keylocker' && <KeyLocker nav={nav} />}
       {page === '/buy' && <BuyCertificate nav={nav} />}
+      {page === '/ca-connectors' && <CAConnectors nav={nav} />}
+      {page === '/admin' && <AdminAnalytics nav={nav} />}
     </div>
   )
 }

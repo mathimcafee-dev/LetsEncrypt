@@ -15,6 +15,8 @@ import DnsProviders from './DnsProviders'
 import Install from './Install'
 import KnowledgeBase from './KnowledgeBase'
 import BuyCertificate from './BuyCertificate'
+import CAConnectors from './CAConnectors'
+import AdminAnalytics from './AdminAnalytics'
 import Pricing from './Pricing'
 
 export default function CLMHome({ user, nav }) {
@@ -33,8 +35,9 @@ export default function CLMHome({ user, nav }) {
     { id:'issue',     label:'Issue Certificate', icon:Plus },
   ]
   const NAV_MANAGE = [
-    { id:'dns',     label:'DNS Providers', icon:Globe },
-    { id:'servers', label:'Servers',       icon:Server },
+    { id:'dns',         label:'DNS Providers',  icon:Globe },
+    { id:'servers',     label:'Servers',        icon:Server },
+    { id:'ca-connectors', label:'CA Connectors', icon:Shield },
   ]
   const NAV_RESOURCES = [
     { id:'install', label:'Installation', icon:Download },
@@ -42,13 +45,14 @@ export default function CLMHome({ user, nav }) {
   ]
   const NAV_MORE = [
     { id:'pricing',   label:'Pricing',   icon:CreditCard },
+    { id:'analytics', label:'Analytics', icon:Layout },
     { id:'about',     label:'About',     icon:Info },
     { id:'developer', label:'Developer', icon:User },
     { id:'contact',   label:'Contact',   icon:Mail },
     { id:'settings',  label:'Settings',  icon:Settings },
   ]
   const SECTION_TITLES = {
-    dashboard:'Dashboard', issue:'Issue Certificate',
+    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-connectors':'CA Connectors', analytics:'Analytics',
     dns:'DNS Providers', servers:'Servers',
     install:'Installation', kb:'Docs & Help', pricing:'Pricing',
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
@@ -88,7 +92,9 @@ export default function CLMHome({ user, nav }) {
     if (section === 'developer')  return <DeveloperInner nav={nav}/>
     if (section === 'pricing')    return <Pricing nav={nav}/>
     if (section === 'servers')    return <ServersPage user={user}/>
-    if (section === 'settings')   return <SettingsPage user={user}/>
+    if (section === 'settings')      return <SettingsPage user={user}/>
+    if (section === 'ca-connectors') return <CAConnectors nav={nav}/>
+    if (section === 'analytics')     return <AdminAnalytics user={user}/>
     return null
   }
 

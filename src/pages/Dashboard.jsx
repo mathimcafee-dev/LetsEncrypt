@@ -604,6 +604,15 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             title={refreshing ? 'Syncing...' : 'Sync from GoGetSSL'}
             subtitle={refreshing ? 'Checking status...' : 'Pull latest order status'}
             onClick={doRefresh} disabled={refreshing}/>
+          <ActionRow icon={Activity} iconColor="#0369a1" iconBg="#f0f9ff"
+            hoverBorder="#bae6fd" hoverBg="#f0f9ff"
+            title="Check TLS posture"
+            subtitle={cert.tls_grade ? `Last grade: ${cert.tls_grade} · ${cert.tls_score||0}%` : 'Grade this certificate A–F'}
+            onClick={async () => {
+              const { data:{session} } = await supabase.auth.getSession()
+              await fetch(SB_URL+'/functions/v1/tls-posture',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({action:'check',domain:cert.domain,cert_id:cert.id})})
+              setTimeout(()=>onRefresh(),1000)
+            }}/>
           <div style={{ display:'flex', justifyContent:'flex-end', marginTop:4 }}>
             {!delConfirm
               ? <button onClick={() => setDel(true)}
@@ -650,6 +659,13 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             </div>
           )}
           {/* private key */}
+          {cert.tls_grade && (
+            <span style={{ fontSize:9, fontWeight:700, color: cert.tls_grade==='A'?'#16a34a':cert.tls_grade==='B'?'#65a30d':cert.tls_grade==='C'?'#d97706':'#dc2626',
+              background: cert.tls_grade==='A'?'#f0fdf4':cert.tls_grade==='B'?'#f7fee7':cert.tls_grade==='C'?'#fffbeb':'#fef2f2',
+              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.8 }}>
+              {cert.tls_grade}
+            </span>
+          )}
           {cert.private_key_pem && (
             <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8,
               background:'var(--v2-surface-3)', marginBottom:8 }}>
@@ -773,6 +789,13 @@ function CertRow({ cert, selected, onClick }) {
         <div className="v2-row-title-line">
           <span className="v2-row-title v2-mono">{cert.domain}</span>
           <StatusPill days={days} status={cert.status}/>
+          {cert.tls_grade && (
+            <span style={{ fontSize:9, fontWeight:700, color: cert.tls_grade==='A'?'#16a34a':cert.tls_grade==='B'?'#65a30d':cert.tls_grade==='C'?'#d97706':'#dc2626',
+              background: cert.tls_grade==='A'?'#f0fdf4':cert.tls_grade==='B'?'#f7fee7':cert.tls_grade==='C'?'#fffbeb':'#fef2f2',
+              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.8 }}>
+              {cert.tls_grade}
+            </span>
+          )}
           {cert.private_key_pem && (
             <span style={{ display:'inline-flex', alignItems:'center', gap:3, fontSize:9, fontWeight:600,
               color:'#92400e', background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:3, padding:'1px 5px' }}>
