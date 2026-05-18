@@ -438,7 +438,7 @@ export default function KnowledgeBase({ nav }) {
               <tr><td style={{ fontWeight: 600, width: 180 }}>Encryption</td><td>AES-256-GCM per-key with unique IVs. Keys are never logged or transmitted in plaintext.</td></tr>
               <tr><td style={{ fontWeight: 600 }}>Reveal</td><td>Copy-only. Private key is displayed for 30 seconds maximum — prevents screen-share leaks. No download button.</td></tr>
               <tr><td style={{ fontWeight: 600 }}>Audit log</td><td>Every reveal is logged: timestamp, user, IP address. Visible in the KeyLocker audit panel.</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>Access control</td><td>Row-Level Security — only your account can access your keys. Master admin can access keys for their tenant.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>Access control</td><td>Row-Level Security — only your account can access your keys. Admin users can manage keys across their account.</td></tr>
             </tbody>
           </table>
           <Note type="warn">If you prefer keys to never leave your server, use the persistent agent to generate keys on-server — SSLVault never sees them.</Note>
@@ -532,8 +532,6 @@ export default function KnowledgeBase({ nav }) {
              a="The certificate is renewed and stored in SSLVault. When your agent next comes online and polls (every 5 minutes), it picks up the pending install job and deploys automatically." />
         <FAQ q="What web servers get automatic config updates?"
              a="Nginx and Apache2/httpd get full automatic config updates and reloads. Caddy, Node.js, and other servers get cert files written to /etc/ssl/sslvault/ — you update their config once manually." />
-        <FAQ q="How does the 3-tier reseller platform work?"
-             a="The Reseller plan provides a 3-tier hierarchy: master_admin (you) → sub_resellers (your partners, invited via magic link) → end_customers (their clients). Sub-resellers get their own portal. You manage approval, view all orders across the tree, and export Excel reports. Sub-reseller approval emails are sent on invitation." />
         <FAQ q="Can I import certificates I didn't issue through SSLVault?"
              a="Yes. Dashboard → Import tab. Paste any PEM certificate and SSLVault parses the chain, extracts expiry, issuer, and SAN details, and adds it to your inventory for monitoring and alerting. Auto-renewal is not available for imported certs." />
         <FAQ q="Is there sandbox/test mode?"

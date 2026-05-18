@@ -159,7 +159,7 @@ export default function GetStarted({ nav }) {
           ))}
         </div>
         <Note type="info">
-          All certificates are issued via <strong>GoGetSSL</strong> — a trusted reseller covering DigiCert, Sectigo, RapidSSL, GeoTrust, and Thawte chains. DV certificates are the most common — issued automatically in minutes via DNS validation.
+          All certificates are issued via <strong>GoGetSSL</strong> — a trusted CA partner covering DigiCert, Sectigo, RapidSSL, GeoTrust, and Thawte chains. DV certificates are the most common — issued automatically in minutes via DNS validation.
         </Note>
 
         {/* CHOOSE YOUR PATH */}
@@ -347,7 +347,7 @@ export default function GetStarted({ nav }) {
         {/* FAQ */}
         <Divider label="FAQ" title="Frequently asked questions" />
         <FAQ q="Is SSLVault really free to use?"
-             a="The SSLVault platform is free — agents, monitoring, DNS connectors, auto-renewal, CA connectors, CA intelligence. You pay only for certificates at GoGetSSL reseller rates (from $8/yr for DV). No platform subscription required." />
+             a="The SSLVault platform is free — agents, monitoring, DNS connectors, auto-renewal, CA connectors, CA intelligence. You pay only for certificates at GoGetSSL partner rates (from $8/yr for DV). No platform subscription required." />
         <FAQ q="How long does a certificate last?"
              a="Validity varies by type and CA. RapidSSL DV certificates have ~6-month cert validity with 1-year order subscriptions. SSLVault tracks both expiry dates separately and handles auto-reissue and auto-renewal automatically." />
         <FAQ q="Will my website go down during SSL installation?"

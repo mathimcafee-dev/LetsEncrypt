@@ -9,10 +9,9 @@ export default function AdminAnalytics({ user }) {
 
   const load = async () => {
     setLoading(true)
-    const [certsRes, ordersRes, resellersRes] = await Promise.all([
+    const [certsRes, ordersRes] = await Promise.all([
       supabase.from('certificates').select('id,domain,status,expires_at,source,issued_at,tls_grade,install_status'),
       supabase.from('ssl_orders').select('id,domain,status,product_name,created_at,order_purpose'),
-      Promise.resolve({ data: [] }),
     ])
     const certs  = certsRes.data  || []
     const orders = ordersRes.data || []
@@ -120,7 +119,6 @@ export default function AdminAnalytics({ user }) {
           </div>
         )}
 
-        {/* Resellers table */}
       </div>
     </div>
   )

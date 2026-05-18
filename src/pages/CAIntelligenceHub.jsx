@@ -418,6 +418,9 @@ function DigiCertTab({ tok }) {
     })
   }, [tok])
 
+  // Auto-load portfolio when API key becomes available
+  useEffect(() => { if (apiKey && tok) loadPf() }, [apiKey])
+
   const connect = async () => {
     if (!draftKey.trim()) { setError('API key required'); return }
     setSaving(true); setError('')
@@ -588,9 +591,23 @@ function SectigoTab({ tok }) {
     setSaving(false)
   }
 
+  const [inventory, setInventory] = useState([])
+  const [syncing,   setSyncing]   = useState(false)
+  const [syncError, setSyncError] = useState('')
+
   const disconnect = () => {
     callImport(tok, { action: 'delete_connection', ca_type: 'sectigo' })
-    setCreds(null)
+    setCreds(null); setInventory([])
+  }
+
+  const syncInventory = async () => {
+    setSyncing(true); setSyncError('')
+    try {
+      const r = await callCA(tok, { action: 'sectigo_proxy', path: '/certificates', method: 'GET', creds })
+      if (r.error) { setSyncError(r.error); setSyncing(false); return }
+      setInventory(r.result || r.certs || r.certificates || [])
+    } catch (e) { setSyncError(String(e)) }
+    setSyncing(false)
   }
 
   if (!creds) return (
@@ -654,25 +671,54 @@ function SectigoTab({ tok }) {
         ))}
       </div>
 
-      {/* Inventory placeholder — Sectigo API pull */}
+      {/* Sectigo live inventory */}
       <div className="v2-card">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '10px 16px', borderBottom: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)' }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
             Certificate inventory
           </span>
-        </div>
-        <div style={{ padding: '40px 24px', textAlign: 'center' }}>
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 6 }}>
-            Sectigo SCM connected
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--v2-text-3)', marginBottom: 16, maxWidth: 320, margin: '0 auto 16px' }}>
-            Certificate inventory pull from Sectigo SCM API is available. Sync to load your portfolio into SSLVault for unified expiry tracking.
-          </div>
-          <button className="v2-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <RefreshCw size={12}/> Sync Sectigo inventory
+          <button className="v2-btn v2-btn-sm" onClick={syncInventory} disabled={syncing}
+            style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            {syncing ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync from Sectigo</>}
           </button>
         </div>
+        {syncError && <div className="v2-alert v2-alert-error" style={{ margin: 12 }}>{syncError}</div>}
+        {inventory.length === 0 ? (
+          <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 6 }}>Sectigo SCM connected</div>
+            <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>Click "Sync from Sectigo" to load your certificate inventory.</div>
+          </div>
+        ) : (
+          <>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px',
+              padding: '8px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
+              {['Domain', 'Type', 'Expires', 'Status'].map(h => (
+                <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
+                  textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
+              ))}
+            </div>
+            <div className="v2-list-scroll">
+              {inventory.map((c, i) => {
+                const expiry = c.expires || c.notAfter
+                const d = dLeft(expiry)
+                const s = d === null ? 'grey' : d <= 0 ? 'red' : d <= 30 ? 'amber' : 'green'
+                return (
+                  <div key={i} className={'v2-list-row status-' + s}
+                    style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', padding: '10px 16px', cursor: 'default' }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: 'var(--v2-text)',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignSelf: 'center' }}>
+                      {c.commonName || c.cn || '—'}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{c.type || c.certType || 'SSL'}</div>
+                    <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{fmt(expiry)}</div>
+                    <div style={{ alignSelf: 'center' }}><ExpiryBadge iso={expiry}/></div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

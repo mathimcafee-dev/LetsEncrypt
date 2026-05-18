@@ -12,7 +12,7 @@ export default function About({ nav }) {
                         background: 'var(--v2-green-bg)', border: '0.5px solid var(--v2-green-border)',
                         borderRadius: 100, padding: '4px 14px', marginBottom: 20 }}>
             <span className="v2-pulse" />
-            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-green-text)' }}>SSL Reseller Platform</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-green-text)' }}>Certificate Lifecycle Management</span>
           </div>
           <h1 style={{ fontSize: 'clamp(32px,5vw,52px)', fontWeight: 700, letterSpacing: '-1px',
                         lineHeight: 1.1, margin: '0 0 16px', color: 'var(--v2-text)' }}>
@@ -55,7 +55,7 @@ export default function About({ nav }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {[
               { Icon: Shield,    color: '#0e7fc0', bg: '#eff6ff', label: 'RapidSSL DV',        sub: 'DigiCert trust chain' },
-              { Icon: Users,     color: '#15803d', bg: '#f0fdf4', label: 'Multi-tier',          sub: 'Reseller → Customer' },
+              { Icon: Users,     color: '#15803d', bg: '#f0fdf4', label: 'Multi-user',           sub: 'Team & access control' },
               { Icon: RefreshCw, color: '#7c3aed', bg: '#faf5ff', label: 'Auto-renewal',        sub: 'Zero manual work' },
               { Icon: Server,    color: '#d97706', bg: '#fffbeb', label: 'Auto-install',        sub: 'Agent + cPanel + SSH' },
               { Icon: Globe,     color: '#0369a1', bg: '#eff6ff', label: 'Auto DNS DCV',        sub: 'Cloudflare · Vercel' },
@@ -70,15 +70,15 @@ export default function About({ nav }) {
           </div>
         </div>
 
-        {/* THE RESELLER MODEL */}
+        {/* CLM LIFECYCLE */}
         <div style={{ background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)', borderRadius: 14, padding: '36px 32px', marginBottom: 48 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-green-text)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>The reseller model</div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.4px', margin: '0 0 20px' }}>Three tiers. Full isolation.</h2>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-green-text)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>Certificate lifecycle</div>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.4px', margin: '0 0 20px' }}>Issue. Monitor. Auto-renew.</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
             {[
-              { num: '1', title: 'Master Admin (You)', color: '#0e7fc0', items: ['Approve sub-resellers', 'See all orders platform-wide', 'Impersonate any account', 'Download billing reports'] },
-              { num: '2', title: 'Sub-Resellers', color: '#15803d', items: ['Manage their end customers', 'Invite customers by email', 'See orders under their account', 'Download per-customer reports'] },
-              { num: '3', title: 'End Customers', color: '#7c3aed', items: ['Issue SSL certificates', 'Save DNS credentials', 'Connect servers for auto-install', 'Manage their own certs'] },
+              { num: '1', title: 'Issue', color: '#0e7fc0', items: ['DV, OV, EV & Wildcard certs', 'GoGetSSL API — minutes to issue', 'DNS validation auto-configured', 'Private key stored in KeyLocker'] },
+              { num: '2', title: 'Monitor', color: '#15803d', items: ['Expiry alerts at 30/14/7 days', 'Cross-CA inventory (DigiCert, Sectigo)', 'CT log shadow IT scanner', 'TLS posture grading'] },
+              { num: '3', title: 'Auto-renew', color: '#7c3aed', items: ['Persistent agent on your server', 'cPanel one-click auto-install', 'DNS auto-validation on renewal', 'Zero-touch lifecycle end-to-end'] },
             ].map(({ num, title, color, items }) => (
               <div key={num}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>

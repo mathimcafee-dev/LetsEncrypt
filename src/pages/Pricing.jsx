@@ -60,7 +60,6 @@ const PLANS = [
       { t: 'GoGetSSL sandbox mode', y: true },
       { t: 'OV / EV certificates', y: false },
       { t: 'Wildcard & SAN certificates', y: false },
-      { t: 'Multi-tenant reseller platform', y: false },
     ],
   },
   {
@@ -73,7 +72,7 @@ const PLANS = [
     highlight: true,
     badge: 'Most Popular',
     cta: 'Start Pro',
-    certNote: 'All cert types at GoGetSSL reseller rates',
+    certNote: 'All cert types at GoGetSSL partner rates',
     features: [
       { t: 'Everything in Starter', y: true },
       { t: 'OV & EV certificates', y: true },
@@ -84,7 +83,6 @@ const PLANS = [
       { t: 'CA Consolidation advisor', y: true },
       { t: 'API access (REST)', y: true },
       { t: 'Priority email support', y: true },
-      { t: 'Multi-tenant reseller platform', y: false },
     ],
   },
   {
@@ -125,11 +123,10 @@ const CERT_PRICES = [
 ]
 
 const FAQS = [
-  { q: 'Is the platform really free?', a: 'Yes. The SSLVault CLM platform is free — issuance workflow, persistent agent, cPanel installer, DNS connectors, CT log discovery, monitoring, auto-renewal, KeyLocker, CA intelligence. You pay only for certificates at GoGetSSL reseller rates (from $8/yr). No platform fee, no per-domain fee, no per-seat fee.' },
+  { q: 'Is the platform really free?', a: 'Yes. The SSLVault CLM platform is free — issuance workflow, persistent agent, cPanel installer, DNS connectors, CT log discovery, monitoring, auto-renewal, KeyLocker, CA intelligence. You pay only for certificates at GoGetSSL partner rates (from $8/yr). No platform fee, no per-domain fee, no per-seat fee.' },
   { q: 'What is the difference between cert expiry and order expiry?', a: 'Certificate expiry: when the TLS cert itself expires (e.g. ~6 months for RapidSSL DV). Order expiry: when your 12-month subscription to that cert ends. SSLVault tracks both separately. Auto-reissue fires before cert expiry; auto-renewal fires before order expiry.' },
   { q: 'How does the persistent agent work?', a: 'The agent is a bash daemon running as a systemd service on your Linux VPS. It polls SSLVault every 5 minutes for pending jobs. It makes outbound-only HTTPS connections — no inbound ports needed. It detects your OS and web server (Nginx/Apache), writes cert files, updates config, tests, and reloads automatically.' },
   { q: 'Does SSLVault store my private keys?', a: 'Only if you opt into KeyLocker. Keys are AES-256-GCM encrypted at rest. Every access is logged. The reveal UI is copy-only with a 30-second timed display to prevent screen-share leaks. You can also generate keys on your own server via the agent — SSLVault never sees them.' },
-  { q: 'What is the multi-tenant reseller platform?', a: 'A 3-tier hierarchy: master_admin (you) → sub_resellers (your partners) → end_customers (their clients). Sub-resellers are invited via magic link, set their own password, and get a dedicated portal. You manage approval, view all orders, and export Excel reports across the whole tree.' },
   { q: 'Can I import certificates I already have?', a: 'Yes. Dashboard → Import. Paste existing PEM files and SSLVault parses the chain, extracts expiry and issuer details, and adds them to your inventory for monitoring and renewal tracking.' },
   { q: 'Is there a sandbox / test mode?', a: 'Yes. GoGetSSL sandbox mode is available for testing the full issuance flow without real cost. Sandbox certs are clearly marked in the dashboard.' },
 ]
@@ -156,7 +153,7 @@ export default function Pricing({ nav }) {
           </h1>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.42)', maxWidth: 480, margin: '0 auto', lineHeight: 1.75 }}>
             The entire CLM platform — agents, monitoring, auto-renewal, DNS connectors, CT discovery, CA intelligence — is always free.
-            You pay only for certificates at GoGetSSL reseller rates.
+            You pay only for certificates at GoGetSSL partner rates.
           </p>
         </div>
 
@@ -223,7 +220,7 @@ export default function Pricing({ nav }) {
             <div style={{ fontSize: 9, fontWeight: 700, color: '#10b981', letterSpacing: '2px',
               textTransform: 'uppercase', marginBottom: 12, ...Mo }}>Certificate pricing</div>
             <h2 style={{ fontSize: 'clamp(22px,3vw,36px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 10 }}>
-              GoGetSSL reseller rates
+              GoGetSSL partner rates
             </h2>
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', maxWidth: 440, margin: '0 auto', lineHeight: 1.7 }}>
               These are your actual cert costs. The platform is always free on top.
@@ -262,7 +259,7 @@ export default function Pricing({ nav }) {
             ))}
           </div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', marginTop: 12, textAlign: 'center', ...Mo }}>
-            All prices in USD. GoGetSSL reseller rates — subject to change. Platform features always free.
+            All prices in USD. GoGetSSL partner rates — subject to change. Platform features always free.
           </div>
         </div>
 
@@ -272,7 +269,7 @@ export default function Pricing({ nav }) {
           gridTemplateColumns: '1fr 1fr 1fr', gap: 0 }}>
           {[
             { name: 'SSLVault', price: '$0–$99', sub: '/month platform + cert costs', color: '#10b981', note: 'Full CLM. CA-agnostic. Free to start.' },
-            { name: 'Venafi TLS Protect', price: '$250k+', sub: '/year', color: 'rgba(255,255,255,0.28)', note: 'Enterprise only. No reseller model.' },
+            { name: 'Venafi TLS Protect', price: '$250k+', sub: '/year', color: 'rgba(255,255,255,0.28)', note: 'Enterprise only. SMB & developer focused.' },
             { name: 'Keyfactor Command', price: '$75–200k', sub: '/year', color: 'rgba(255,255,255,0.28)', note: 'Mid-market. No cPanel. No free tier.' },
           ].map((item, i) => (
             <div key={item.name} style={{ padding: '24px', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none', textAlign: 'center' }}>
