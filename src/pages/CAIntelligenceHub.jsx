@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase'
 import {
   TrendingUp, Shield, Activity, BarChart2, RefreshCw, ChevronRight,
   FileText, Building, Zap, RotateCcw, Ban, Search, Download, Archive,
-  Clock, Globe, Eye, EyeOff, Lock
+  Clock, Globe, Eye, EyeOff, Lock, AlertTriangle, DollarSign, Check, X, AlertCircle
 } from 'lucide-react'
 import '../styles/design-v2.css'
 
@@ -666,6 +666,441 @@ function SectigoTab({ tok }) {
   )
 }
 
+
+// ══════════════════════════════════════════════════════════════════════
+// TAB 5 — SHADOW IT SCANNER
+// ══════════════════════════════════════════════════════════════════════
+const URGENCY_MAP = {
+  expired:  { label: 'Expired',  color: '#dc2626', bg: '#fef2f2' },
+  critical: { label: 'Critical', color: '#dc2626', bg: '#fef2f2' },
+  warning:  { label: 'Warning',  color: '#d97706', bg: '#fffbeb' },
+  upcoming: { label: 'Upcoming', color: '#0369a1', bg: '#eff6ff' },
+  healthy:  { label: 'Healthy',  color: '#16a34a', bg: '#f0fdf4' },
+  unknown:  { label: 'Unknown',  color: '#64748b', bg: '#f8fafc' },
+}
+
+function ShadowITTab({ tok, nav }) {
+  const [conns,        setConns]        = useState([])
+  const [selectedConn, setSelectedConn] = useState(null)
+  const [scanning,     setScanning]     = useState(false)
+  const [result,       setResult]       = useState(null)
+  const [shadows,      setShadows]      = useState([])
+  const [loading,      setLoading]      = useState(true)
+  const [dismissing,   setDismissing]   = useState(null)
+
+  const loadShadows = useCallback(async () => {
+    setLoading(true)
+    const r = await callCA(tok, { action: 'get_shadow_certs' })
+    if (r.ok) setShadows(r.shadows || [])
+    setLoading(false)
+  }, [tok])
+
+  useEffect(() => {
+    if (!tok) return
+    supabase.from('ca_connections').select('id,ca_name,ca_type,label,status')
+      .then(({ data }) => {
+        const dc = (data || []).filter(c => c.ca_type === 'digicert' && c.status === 'active')
+        setConns(dc)
+        if (dc.length === 1) setSelectedConn(dc[0].id)
+      })
+    loadShadows()
+  }, [tok, loadShadows])
+
+  const doScan = async () => {
+    if (!selectedConn) return
+    setScanning(true); setResult(null)
+    const r = await callCA(tok, { action: 'shadow_scan', connection_id: selectedConn })
+    setResult(r)
+    setScanning(false)
+    if (r.ok) await loadShadows()
+  }
+
+  const dismiss = async (id) => {
+    setDismissing(id)
+    await callCA(tok, { action: 'dismiss_shadow', shadow_id: id })
+    setShadows(s => s.filter(x => x.id !== id))
+    setDismissing(null)
+  }
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 20 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: '#7c3aed14',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Search size={17} strokeWidth={2} color="#7c3aed"/>
+        </div>
+        <div>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--v2-text)', margin: 0, letterSpacing: '-0.2px' }}>
+            Shadow IT Scanner
+          </h2>
+          <p style={{ fontSize: 12, color: 'var(--v2-text-3)', margin: '3px 0 0', lineHeight: 1.5 }}>
+            Compares your DigiCert portfolio against SSLVault inventory. Finds certs issued outside your CLM — compliance risk, expiry blindspot.
+          </p>
+        </div>
+      </div>
+
+      {/* Scan panel */}
+      <SectionCard style={{ marginBottom: 16 }}>
+        <div className="v2-section-label" style={{ marginBottom: 12 }}>Run shadow scan</div>
+        {conns.length === 0 ? (
+          <div style={{ fontSize: 13, color: 'var(--v2-text-3)' }}>
+            No active DigiCert connections found.{' '}
+            <button onClick={() => nav('/')} style={{ background: 'none', border: 'none', cursor: 'pointer',
+              color: 'var(--v2-green)', fontSize: 13, padding: 0, textDecoration: 'underline', fontFamily: 'inherit' }}>
+              Connect DigiCert in Integrations →
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            {conns.length > 1 && (
+              <select value={selectedConn || ''} onChange={e => setSelectedConn(e.target.value)}
+                className="v2-select" style={{ fontSize: 12 }}>
+                <option value="">Select connection…</option>
+                {conns.map(c => <option key={c.id} value={c.id}>{c.label || c.ca_name}</option>)}
+              </select>
+            )}
+            {conns.length === 1 && (
+              <div style={{ fontSize: 12, color: 'var(--v2-text)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#16a34a' }}/>
+                {conns[0].label || conns[0].ca_name}
+              </div>
+            )}
+            <button className="v2-btn" onClick={doScan} disabled={scanning || !selectedConn}
+              style={{ background: scanning || !selectedConn ? undefined : '#7c3aed',
+                color: scanning || !selectedConn ? undefined : 'white',
+                borderColor: scanning || !selectedConn ? undefined : '#7c3aed',
+                display: 'flex', alignItems: 'center', gap: 6 }}>
+              {scanning ? <><Spinner/> Scanning DigiCert…</> : <><Search size={12}/> Run Shadow Scan</>}
+            </button>
+            <span style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>
+              Compares your entire DigiCert order history vs SSLVault DB
+            </span>
+          </div>
+        )}
+
+        {result && (
+          <div style={{ marginTop: 14, padding: '12px 14px', borderRadius: 8,
+            background: result.ok ? '#f0fdf4' : '#fef2f2',
+            border: `0.5px solid ${result.ok ? '#bbf7d0' : '#fecaca'}` }}>
+            {result.ok ? (
+              <div style={{ display: 'flex', gap: 20, fontSize: 12, color: '#166534', flexWrap: 'wrap' }}>
+                <span><strong>{result.total_in_ca}</strong> total in DigiCert</span>
+                <span><strong>{result.total_in_sslvault}</strong> in SSLVault</span>
+                <span style={{ fontWeight: 700, color: result.shadow_count > 0 ? '#dc2626' : '#16a34a' }}>
+                  <strong>{result.shadow_count}</strong> shadow certs found
+                </span>
+              </div>
+            ) : (
+              <span style={{ fontSize: 12, color: '#b91c1c' }}>{result.error}</span>
+            )}
+          </div>
+        )}
+      </SectionCard>
+
+      {/* Shadow cert table */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)' }}>
+          Shadow certificates
+          {!loading && <span style={{ fontSize: 11, color: 'var(--v2-text-3)', marginLeft: 6,
+            background: shadows.length > 0 ? '#fef2f2' : 'var(--v2-hover)',
+            color: shadows.length > 0 ? '#dc2626' : 'var(--v2-text-3)',
+            padding: '1px 7px', borderRadius: 20, border: shadows.length > 0 ? '0.5px solid #fecaca' : '0.5px solid var(--v2-border)' }}>
+            {shadows.length}
+          </span>}
+        </div>
+        <button className="v2-btn v2-btn-sm" onClick={loadShadows} disabled={loading}
+          style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <RefreshCw size={11} style={{ animation: loading ? 'spin .8s linear infinite' : 'none' }}/> Refresh
+        </button>
+      </div>
+
+      <div className="v2-card">
+        {/* Table header */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 80px',
+          padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)',
+          background: 'var(--v2-surface-2)' }}>
+          {['Domain', 'Product', 'Ordered by', 'Expires', 'Urgency', ''].map(h => (
+            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
+              textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
+          ))}
+        </div>
+
+        {loading ? (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
+            <Spinner/><span style={{ marginLeft: 8 }}>Loading shadow findings…</span>
+          </div>
+        ) : shadows.length === 0 ? (
+          <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--v2-surface-3)',
+              border: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', margin: '0 auto 12px' }}>
+              <Shield size={20} color="var(--v2-text-3)"/>
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>
+              {result?.ok ? 'No shadow certs found — portfolio is fully accounted for.' : 'Run a scan to find shadow certificates.'}
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>
+              {result?.ok ? 'Your DigiCert portfolio matches SSLVault exactly.' : 'Connect DigiCert and run a shadow scan above.'}
+            </div>
+          </div>
+        ) : shadows.map((s, i) => {
+          const u = URGENCY_MAP[s.urgency] || URGENCY_MAP.unknown
+          return (
+            <div key={s.id} className={`v2-list-row status-${s.urgency === 'expired' || s.urgency === 'critical' ? 'red' : s.urgency === 'warning' ? 'amber' : 'green'}`}
+              style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 80px', padding: '10px 16px',
+                borderBottom: i < shadows.length - 1 ? '0.5px solid var(--v2-border)' : 'none', cursor: 'default' }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace',
+                  color: 'var(--v2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {s.domain}
+                </div>
+                {s.org_name && <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 2 }}>{s.org_name}</div>}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{s.product || '—'}</div>
+              <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.ordered_by || '—'}</div>
+              <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{fmt(s.expires_at)}</div>
+              <div style={{ alignSelf: 'center' }}>
+                <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
+                  background: u.bg, color: u.color, border: `0.5px solid ${u.color}44` }}>{u.label}</span>
+              </div>
+              <div style={{ display: 'flex', gap: 4, alignSelf: 'center' }}>
+                <button className="v2-btn v2-btn-sm"
+                  onClick={() => { sessionStorage.setItem('prefill_domain', s.domain); nav('/buy') }}
+                  style={{ fontSize: 10, padding: '3px 8px' }}>
+                  Import
+                </button>
+                <button className="v2-btn v2-btn-sm v2-btn-danger"
+                  onClick={() => dismiss(s.id)} disabled={dismissing === s.id}
+                  style={{ fontSize: 10, padding: '3px 8px' }}>
+                  {dismissing === s.id ? <Spinner/> : 'Dismiss'}
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// TAB 6 — CONSOLIDATION ADVISOR
+// ══════════════════════════════════════════════════════════════════════
+const CA_COLORS_HUB = {
+  digicert: '#dc2626', sectigo: '#7c3aed', sslcom: '#0369a1',
+  gogetssl: '#16a34a', imported: '#64748b', unknown: '#94a3b8'
+}
+
+function ConsolidationTab({ tok, nav }) {
+  const [opps,       setOpps]     = useState([])
+  const [totalSaving, setTS]      = useState(0)
+  const [loading,    setLoading]  = useState(true)
+  const [running,    setRunning]  = useState(false)
+  const [result,     setResult]   = useState(null)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    const r = await callCA(tok, { action: 'get_opportunities' })
+    if (r.ok) { setOpps(r.opportunities || []); setTS(r.total_saving_usd || 0) }
+    setLoading(false)
+  }, [tok])
+
+  useEffect(() => { if (tok) load() }, [tok, load])
+
+  const runAnalysis = async () => {
+    setRunning(true); setResult(null)
+    const r = await callCA(tok, { action: 'consolidation_report' })
+    setResult(r); setRunning(false)
+    if (r.ok) { setOpps(r.opportunities || []); setTS(r.total_saving_usd || 0) }
+  }
+
+  const dismiss = (idx) => setOpps(prev => prev.filter((_, i) => i !== idx))
+
+  const consolidation = opps.filter(o => o.type === 'ca_consolidation')
+  const duplicates    = opps.filter(o => o.type === 'duplicate')
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 20 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: '#16a34a14',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <DollarSign size={17} strokeWidth={2} color="#16a34a"/>
+        </div>
+        <div>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--v2-text)', margin: 0, letterSpacing: '-0.2px' }}>
+            Consolidation Advisor
+          </h2>
+          <p style={{ fontSize: 12, color: 'var(--v2-text-3)', margin: '3px 0 0', lineHeight: 1.5 }}>
+            Finds DV certificates at premium CAs that can be moved to GoGetSSL to cut costs. Surfaces duplicate domains across CAs.
+          </p>
+        </div>
+      </div>
+
+      {/* Run analysis */}
+      <SectionCard style={{ marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+          <div>
+            <div className="v2-section-label" style={{ marginBottom: 4 }}>Cost analysis</div>
+            <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>
+              Analyses your cross-CA portfolio for consolidation opportunities and duplicate certs.
+            </div>
+          </div>
+          <button className="v2-btn" onClick={runAnalysis} disabled={running}
+            style={{ display: 'flex', alignItems: 'center', gap: 6,
+              background: running ? undefined : '#16a34a', color: running ? undefined : 'white',
+              borderColor: running ? undefined : '#16a34a' }}>
+            {running ? <><Spinner/> Analysing…</> : <><DollarSign size={12}/> Run Analysis</>}
+          </button>
+        </div>
+
+        {result && (
+          <div style={{ marginTop: 14, padding: '12px 14px', borderRadius: 8,
+            background: result.ok ? '#f0fdf4' : '#fef2f2',
+            border: `0.5px solid ${result.ok ? '#bbf7d0' : '#fecaca'}` }}>
+            {result.ok ? (
+              <div style={{ fontSize: 12, color: '#166534' }}>
+                Found <strong>{result.opportunities?.length || 0}</strong> opportunities ·{' '}
+                <strong>${(result.total_saving_usd || 0).toFixed(0)}</strong>/yr potential savings
+              </div>
+            ) : (
+              <span style={{ fontSize: 12, color: '#b91c1c' }}>{result.error || 'Analysis failed'}</span>
+            )}
+          </div>
+        )}
+      </SectionCard>
+
+      {/* Savings summary */}
+      {totalSaving > 0 && (
+        <div style={{ background: '#f0fdf4', border: '0.5px solid #bbf7d0', borderRadius: 10,
+          padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 9, background: '#dcfce7',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <DollarSign size={18} color="#16a34a"/>
+          </div>
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#166534', letterSpacing: '-0.3px' }}>
+              ${totalSaving.toFixed(0)}<span style={{ fontSize: 13, fontWeight: 500, marginLeft: 4 }}>/yr</span>
+            </div>
+            <div style={{ fontSize: 12, color: '#16a34a', marginTop: 2 }}>
+              potential annual savings by consolidating to GoGetSSL
+            </div>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
+          <Spinner/><span style={{ marginLeft: 8 }}>Loading opportunities…</span>
+        </div>
+      ) : opps.length === 0 ? (
+        <div className="v2-card" style={{ padding: '40px 24px', textAlign: 'center' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--v2-surface-3)',
+            border: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', margin: '0 auto 12px' }}>
+            <Check size={20} color="var(--v2-text-3)"/>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>
+            {result?.ok ? 'Portfolio already optimally consolidated.' : 'Run analysis to find cost-saving opportunities.'}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>
+            {result?.ok ? 'No cheaper alternatives found for your current certificates.' : 'Click "Run Analysis" above to scan your cross-CA portfolio.'}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* CA Consolidation table */}
+          {consolidation.length > 0 && (
+            <>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 10 }}>
+                CA Consolidation — move DV certs to GoGetSSL
+                <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--v2-text-3)', marginLeft: 8 }}>
+                  {consolidation.length} opportunity{consolidation.length !== 1 ? 'ies' : 'y'}
+                </span>
+              </div>
+              <div className="v2-card" style={{ marginBottom: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px 80px',
+                  padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)',
+                  background: 'var(--v2-surface-2)' }}>
+                  {['Domain', 'Current CA', 'Product', 'Expires', 'Saving/yr', ''].map(h => (
+                    <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
+                      textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
+                  ))}
+                </div>
+                {consolidation.map((opp, i) => (
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px 80px',
+                    padding: '11px 16px', alignItems: 'center',
+                    borderBottom: i < consolidation.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
+                    transition: 'background .12s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-hover)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace',
+                        color: 'var(--v2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {opp.domain}
+                      </div>
+                      <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 2 }}>{opp.reason}</div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
+                        background: (CA_COLORS_HUB[opp.current_ca] || '#64748b') + '18',
+                        color: CA_COLORS_HUB[opp.current_ca] || '#64748b',
+                        border: `0.5px solid ${CA_COLORS_HUB[opp.current_ca] || '#64748b'}44` }}>
+                        {opp.current_ca}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{opp.current_product || '—'}</div>
+                    <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{fmt(opp.expires_at)}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#16a34a' }}>
+                      ${(opp.estimated_saving_usd || 0).toFixed(0)}
+                    </div>
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <button className="v2-btn v2-btn-sm"
+                        onClick={() => { sessionStorage.setItem('prefill_domain', opp.domain); nav('/buy') }}
+                        style={{ fontSize: 10, padding: '3px 8px', background: '#f0fdf4',
+                          color: '#16a34a', borderColor: '#bbf7d0',
+                          display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <Zap size={9}/> Migrate
+                      </button>
+                      <button className="v2-btn v2-btn-sm" onClick={() => dismiss(opps.indexOf(opp))}
+                        style={{ fontSize: 10, padding: '3px 7px' }}>✕</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Duplicates */}
+          {duplicates.length > 0 && (
+            <>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 10 }}>
+                Duplicate domains across CAs
+              </div>
+              <div className="v2-card">
+                {duplicates.map((opp, i) => (
+                  <div key={i} style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12,
+                    borderBottom: i < duplicates.length - 1 ? '0.5px solid var(--v2-border)' : 'none' }}>
+                    <AlertTriangle size={14} color="#d97706" style={{ flexShrink: 0 }}/>
+                    <div style={{ flex: 1 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace',
+                        color: 'var(--v2-text)' }}>{opp.domain}</span>
+                      <span style={{ fontSize: 11, color: 'var(--v2-text-3)', marginLeft: 8 }}>{opp.reason}</span>
+                    </div>
+                    <button className="v2-btn v2-btn-sm" onClick={() => dismiss(opps.indexOf(opp))}>Dismiss</button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
 // ══════════════════════════════════════════════════════════════════════
 // MAIN EXPORT — Hub shell
 // ══════════════════════════════════════════════════════════════════════
@@ -684,10 +1119,12 @@ export default function CAIntelligenceHub({ nav }) {
   }, [])
 
   const TABS = [
-    { id: 'overview', label: 'Overview',  dot: null      },
-    { id: 'gogetssl', label: 'GoGetSSL',  dot: '#10b981' },
-    { id: 'digicert', label: 'DigiCert',  dot: '#dc2626' },
-    { id: 'sectigo',  label: 'Sectigo',   dot: '#7c3aed' },
+    { id: 'overview',       label: 'Overview',       dot: null      },
+    { id: 'gogetssl',       label: 'GoGetSSL',       dot: '#10b981' },
+    { id: 'digicert',       label: 'DigiCert',       dot: '#dc2626' },
+    { id: 'sectigo',        label: 'Sectigo',        dot: '#7c3aed' },
+    { id: 'shadow',         label: 'Shadow IT',      dot: '#7c3aed', divider: true },
+    { id: 'consolidation',  label: 'Cost savings',   dot: '#16a34a' },
   ]
 
   return (
@@ -713,19 +1150,25 @@ export default function CAIntelligenceHub({ nav }) {
           </div>
 
           {/* Tab bar — white underline on navy */}
-          <div style={{ display: 'flex' }}>
-            {TABS.map(({ id, label, dot }) => (
-              <button key={id} onClick={() => setTab(id)}
-                style={{ display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '9px 18px 10px', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  borderBottom: tab === id ? '2px solid white' : '2px solid transparent',
-                  color: tab === id ? 'white' : 'rgba(255,255,255,0.5)',
-                  transition: 'color 0.12s, border-color 0.12s',
-                  marginBottom: -1 }}>
-                {dot && <span style={{ width: 7, height: 7, borderRadius: '50%', background: dot, flexShrink: 0 }}/>}
-                {label}
-              </button>
+          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            {TABS.map(({ id, label, dot, divider }) => (
+              <div key={id} style={{ display: 'flex', alignItems: 'flex-end' }}>
+                {divider && (
+                  <div style={{ width: 1, height: 28, background: 'rgba(255,255,255,0.15)',
+                    marginBottom: 1, marginRight: 2 }}/>
+                )}
+                <button onClick={() => setTab(id)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '9px 16px 10px', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    borderBottom: tab === id ? '2px solid white' : '2px solid transparent',
+                    color: tab === id ? 'white' : 'rgba(255,255,255,0.5)',
+                    transition: 'color 0.12s, border-color 0.12s',
+                    marginBottom: -1 }}>
+                  {dot && <span style={{ width: 7, height: 7, borderRadius: '50%', background: dot, flexShrink: 0 }}/>}
+                  {label}
+                </button>
+              </div>
             ))}
           </div>
         </div>
