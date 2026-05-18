@@ -537,7 +537,7 @@ export default function KnowledgeBase({ nav }) {
         <FAQ q="Can I import certificates I didn't issue through SSLVault?"
              a="Yes. Dashboard → Import tab. Paste any PEM certificate and SSLVault parses the chain, extracts expiry, issuer, and SAN details, and adds it to your inventory for monitoring and alerting. Auto-renewal is not available for imported certs." />
         <FAQ q="Is there sandbox/test mode?"
-             a="Yes. GoGetSSL sandbox mode allows testing the full issuance flow without real cost. Sandbox certificates are clearly marked in the dashboard. DigiCert Lab also has a sandbox mode for reissue — it shows the API call preview without executing." />
+             a="Yes. GoGetSSL sandbox mode allows testing the full issuance flow without real cost. Sandbox certificates are clearly marked in the dashboard." />
 
         {/* CTA */}
         <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>

@@ -15,7 +15,6 @@ import Integrations from './Integrations'
 import Install from './Install'
 import KnowledgeBase from './KnowledgeBase'
 import BuyCertificate from './BuyCertificate'
-import DigiCertLab from './DigiCertLab'
 import CertIntelligence from './CertIntelligence'
 import AdminAnalytics from './AdminAnalytics'
 import AgentHealth from './AgentHealth'
@@ -92,7 +91,6 @@ export default function CLMHome({ user, nav }) {
     { id:'ca-intelligence',label:'CA Intelligence', icon:TrendingUp },
   ]
   const NAV_PRO = [
-    { id:'digicert-lab', label:'DigiCert Lab', icon:Zap, pro:true },
   ]
   const NAV_RESOURCES = [
     { id:'install',  label:'Install Guide', icon:Download  },
@@ -107,7 +105,7 @@ export default function CLMHome({ user, nav }) {
     { id:'contact',   label:'Contact',   icon:Mail     },
   ]
   const SECTION_TITLES = {
-    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-intelligence':'CA Intelligence', 'digicert-lab':'DigiCert Lab', analytics:'Analytics',
+    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-intelligence':'CA Intelligence', analytics:'Analytics',
     integrations:'Integrations',
     install:'Installation', kb:'Docs & Help', pricing:'Pricing',
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
@@ -151,7 +149,6 @@ export default function CLMHome({ user, nav }) {
     if (section === 'servers')    return <ServersPage user={user}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
     if (section === 'ca-intelligence') return <CertIntelligence nav={nav}/>
-    if (section === 'digicert-lab')    return <DigiCertLab nav={nav}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>
     if (section === 'agent-health')  return <AgentHealth user={user}/>
     return null

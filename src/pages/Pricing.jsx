@@ -60,7 +60,6 @@ const PLANS = [
       { t: 'GoGetSSL sandbox mode', y: true },
       { t: 'OV / EV certificates', y: false },
       { t: 'Wildcard & SAN certificates', y: false },
-      { t: 'DigiCert Lab (OV/EV automation)', y: false },
       { t: 'Multi-tenant reseller platform', y: false },
     ],
   },
@@ -70,7 +69,7 @@ const PLANS = [
     per: '/month · billed annually',
     color: '#6366f1',
     border: 'rgba(99,102,241,0.3)',
-    desc: 'OV, EV, Wildcard and DigiCert automation for agencies and power users.',
+    desc: 'OV, EV, Wildcard and advanced automation for agencies and power users.',
     highlight: true,
     badge: 'Most Popular',
     cta: 'Start Pro',
@@ -80,8 +79,6 @@ const PLANS = [
       { t: 'OV & EV certificates', y: true },
       { t: 'Wildcard certificates (all subdomains)', y: true },
       { t: 'Multi-domain SAN certificates', y: true },
-      { t: 'DigiCert Lab (OV/EV reissue automation via CertCentral)', y: true },
-      { t: 'DigiCert revoke & replace workflow', y: true },
       { t: 'Portfolio CSV / Excel report export', y: true },
       { t: 'Full CT log history scan (shadow IT)', y: true },
       { t: 'CA Consolidation advisor', y: true },
@@ -132,10 +129,9 @@ const FAQS = [
   { q: 'What is the difference between cert expiry and order expiry?', a: 'Certificate expiry: when the TLS cert itself expires (e.g. ~6 months for RapidSSL DV). Order expiry: when your 12-month subscription to that cert ends. SSLVault tracks both separately. Auto-reissue fires before cert expiry; auto-renewal fires before order expiry.' },
   { q: 'How does the persistent agent work?', a: 'The agent is a bash daemon running as a systemd service on your Linux VPS. It polls SSLVault every 5 minutes for pending jobs. It makes outbound-only HTTPS connections — no inbound ports needed. It detects your OS and web server (Nginx/Apache), writes cert files, updates config, tests, and reloads automatically.' },
   { q: 'Does SSLVault store my private keys?', a: 'Only if you opt into KeyLocker. Keys are AES-256-GCM encrypted at rest. Every access is logged. The reveal UI is copy-only with a 30-second timed display to prevent screen-share leaks. You can also generate keys on your own server via the agent — SSLVault never sees them.' },
-  { q: 'What is DigiCert Lab?', a: 'DigiCert Lab is an automation workspace for your CertCentral portfolio. You connect your own CertCentral API key (not stored in SSLVault DB). Features: view full portfolio, PQC risk scoring, expiry risk map, zero-touch OV/EV reissue (API call preview before executing), revoke & replace workflow, CSV export. Sandbox mode available.' },
   { q: 'What is the multi-tenant reseller platform?', a: 'A 3-tier hierarchy: master_admin (you) → sub_resellers (your partners) → end_customers (their clients). Sub-resellers are invited via magic link, set their own password, and get a dedicated portal. You manage approval, view all orders, and export Excel reports across the whole tree.' },
   { q: 'Can I import certificates I already have?', a: 'Yes. Dashboard → Import. Paste existing PEM files and SSLVault parses the chain, extracts expiry and issuer details, and adds them to your inventory for monitoring and renewal tracking.' },
-  { q: 'Is there a sandbox / test mode?', a: 'Yes. GoGetSSL sandbox mode is available for testing the full issuance flow without real cost. DigiCert Lab has a sandbox mode for reissue — shows the API call preview without executing. Sandbox certs are clearly marked in the dashboard.' },
+  { q: 'Is there a sandbox / test mode?', a: 'Yes. GoGetSSL sandbox mode is available for testing the full issuance flow without real cost. Sandbox certs are clearly marked in the dashboard.' },
 ]
 
 export default function Pricing({ nav }) {

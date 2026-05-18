@@ -21,7 +21,6 @@ import KeyLocker from './pages/KeyLocker'
 import BuyCertificate from './pages/BuyCertificate'
 import AdminAnalytics from './pages/AdminAnalytics'
 import AgentHealth from './pages/AgentHealth'
-import DigiCertLab from './pages/DigiCertLab'
 import CertIntelligence from './pages/CertIntelligence'
 import CAIntelligenceHub from './pages/CAIntelligenceHub'
 import DigiCertIntelligence from './pages/DigiCertIntelligence'
@@ -87,7 +86,6 @@ export default function App() {
       
       {page === '/admin' && <AdminAnalytics nav={nav} />}
       {page === '/agent-health' && <AgentHealth nav={nav} />}
-      {page === '/digicert-lab' && <DigiCertLab nav={nav} />}
       {page === '/cert-intelligence' && <CertIntelligence nav={nav} />}
       {page === '/ca-intelligence' && <CAIntelligenceHub nav={nav} />}
       {page === '/ca-intelligence/digicert' && <DigiCertIntelligence nav={nav} />}
