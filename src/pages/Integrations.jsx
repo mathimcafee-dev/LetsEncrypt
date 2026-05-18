@@ -1480,7 +1480,7 @@ export default function Integrations({ nav }) {
   const saveConnection = async () => {
     setAddSaving(true); setAddError('')
     const def = CA_DEFS[addCa]
-    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, fields: addFields }
+    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
     const r = await callCA(caTok, payload)
     setAddSaving(false)
     if (r.ok) { setShowAdd(false); setAddCa(null); await loadCA() }
