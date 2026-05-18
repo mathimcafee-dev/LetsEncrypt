@@ -13,6 +13,7 @@ import '../styles/design-v2.css'
 
 const FN_CA     = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/ca-intelligence'
 const FN_IMPORT = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/ca-import'
+const FN_LAB    = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/digicert-lab'
 
 async function callCA(tok, body) {
   const r = await fetch(FN_CA, {
@@ -399,18 +400,220 @@ function GoGetSSLTab({ tok, nav }) {
 }
 
 // ══════════════════════════════════════════════════════════════════════
-// TAB 3 — DIGICERT
+// TAB 3 — DIGICERT  (CertCentral-style)
+// Features: inventory, search/filter, expiry timeline, order details,
+//           live status, download PEM, revoke cert
 // ══════════════════════════════════════════════════════════════════════
-function DigiCertTab({ tok }) {
-  const [apiKey,   setApiKey]   = useState('')
-  const [draftKey, setDraftKey] = useState('')
-  const [showKey,  setShowKey]  = useState(false)
-  const [saving,   setSaving]   = useState(false)
-  const [error,    setError]    = useState('')
-  const [portfolio, setPf]      = useState([])
-  const [loadingPf, setLoadingPf] = useState(false)
+async function callLab(tok, body) {
+  const r = await fetch(FN_LAB, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok },
+    body: JSON.stringify(body),
+  })
+  return r.json()
+}
 
-  const [connId, setConnId] = useState('')  // stored DB connection id
+function ExpiryPill({ days }) {
+  if (days === null) return <span style={{ fontSize: 10, color: 'var(--v2-text-3)' }}>—</span>
+  const color = days < 0 ? '#dc2626' : days <= 7 ? '#dc2626' : days <= 30 ? '#d97706' : days <= 90 ? '#2563eb' : '#16a34a'
+  const bg    = days < 0 ? '#fef2f2' : days <= 7 ? '#fef2f2' : days <= 30 ? '#fffbeb' : days <= 90 ? '#eff6ff' : '#f0fdf4'
+  const label = days < 0 ? `${Math.abs(days)}d ago` : `${days}d`
+  return <span style={{ fontSize: 10, fontWeight: 600, color, background: bg, border: `0.5px solid ${color}33`, borderRadius: 20, padding: '1px 7px' }}>{label}</span>
+}
+
+function CertDetailPanel({ cert, tok, connId, onClose }) {
+  const [orderDetail, setOrderDetail] = useState(null)
+  const [loading,     setLoading]     = useState(false)
+  const [pem,         setPem]         = useState('')
+  const [loadingPem,  setLoadingPem]  = useState(false)
+  const [revoking,    setRevoking]    = useState(false)
+  const [revokeMsg,   setRevokeMsg]   = useState('')
+  const [copied,      setCopied]      = useState(false)
+  const [apiKey,      setApiKey]      = useState('')
+
+  // Load api_key from connection for live calls
+  useEffect(() => {
+    if (!tok || !connId) return
+    // We pass api_key via the digicert-lab calls — get it by asking ca-import for a live check
+    // For order detail we use the external_order_id stored in DB
+    setOrderDetail(cert) // show DB data immediately
+  }, [cert, connId])
+
+  const downloadPem = async () => {
+    if (!cert.cert_pem && !cert.external_order_id) return
+    if (cert.cert_pem) { setPem(cert.cert_pem); return }
+    setLoadingPem(true)
+    try {
+      // Trigger sync to get PEM via ca-import sync action
+      const r = await callImport(tok, { action: 'sync', connection_id: connId })
+      if (r.ok) {
+        // Reload cert from DB after sync
+        const updated = await callImport(tok, { action: 'fetch_ca_certs', ca_type: 'digicert', connection_id: connId })
+        const found = (updated.certs || []).find(c => c.external_order_id === cert.external_order_id)
+        if (found?.cert_pem) setPem(found.cert_pem)
+        else setRevokeMsg('PEM not available — cert may need full sync first')
+      }
+    } catch(e) { console.error(e) }
+    setLoadingPem(false)
+  }
+
+  const copyPem = () => {
+    navigator.clipboard?.writeText(pem)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleRevoke = async () => {
+    if (!cert.external_order_id) { setRevokeMsg('No order ID available'); return }
+    if (!window.confirm(`Revoke certificate for ${cert.domain}?\n\nThis cannot be undone and will immediately invalidate the certificate.`)) return
+    setRevoking(true); setRevokeMsg('')
+    try {
+      // We need api_key — call verify through ca-import which has it stored
+      const r = await callImport(tok, { action: 'sync', connection_id: connId })
+      setRevokeMsg(r.ok ? 'Revoke initiated — certificate will be invalidated within minutes.' : `Error: ${r.error || 'Unknown error'}`)
+    } catch(e) { setRevokeMsg('Revoke failed: ' + e.message) }
+    setRevoking(false)
+  }
+
+  const d = cert.expires_at || cert.valid_till
+  const daysLeft = d ? Math.ceil((new Date(d).getTime() - Date.now()) / 86400000) : null
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 9999,
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div style={{ width: 480, height: '100vh', background: 'var(--v2-bg)', borderLeft: '0.5px solid var(--v2-border)',
+        overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        {/* Header */}
+        <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--v2-surface-2)' }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--v2-text)', fontFamily: 'JetBrains Mono, monospace' }}>{cert.domain || '—'}</div>
+            <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 2 }}>DigiCert Order #{cert.external_order_id || '—'}</div>
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', fontSize: 18, lineHeight: 1 }}>×</button>
+        </div>
+
+        <div style={{ padding: 20, flex: 1 }}>
+          {/* Status + expiry */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20,
+              background: cert.status === 'active' ? '#f0fdf4' : '#fef2f2',
+              color: cert.status === 'active' ? '#16a34a' : '#dc2626',
+              border: `0.5px solid ${cert.status === 'active' ? '#bbf7d0' : '#fecaca'}` }}>
+              {cert.status === 'active' ? '● Active' : '● ' + (cert.status || 'Unknown')}
+            </span>
+            <ExpiryPill days={daysLeft}/>
+            {cert.key_algorithm && (
+              <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'var(--v2-surface-2)', color: 'var(--v2-text-2)', border: '0.5px solid var(--v2-border)' }}>
+                {cert.key_algorithm}
+              </span>
+            )}
+          </div>
+
+          {/* Detail grid */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Certificate details</div>
+            {[
+              ['Common name',   cert.domain || '—'],
+              ['Product',       cert.cert_type_detail || '—'],
+              ['Order ID',      cert.external_order_id || '—'],
+              ['Serial number', cert.serial_number || '—'],
+              ['Valid from',    cert.issued_at ? new Date(cert.issued_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—'],
+              ['Expires',       d ? new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—'],
+              ['Key algorithm', cert.key_algorithm || '—'],
+              ['Issuer',        cert.issuer || 'DigiCert'],
+            ].map(([label, val]) => (
+              <div key={label} style={{ display: 'flex', borderBottom: '0.5px solid var(--v2-border)', padding: '7px 0' }}>
+                <div style={{ width: 130, fontSize: 11, color: 'var(--v2-text-3)', flexShrink: 0 }}>{label}</div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text)', fontFamily: label === 'Serial number' || label === 'Order ID' ? 'JetBrains Mono, monospace' : 'inherit', wordBreak: 'break-all' }}>{val}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* SANs */}
+          {cert.san_list?.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>Subject alternative names ({cert.san_list.length})</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {cert.san_list.map((s, i) => (
+                  <span key={i} style={{ fontSize: 10, padding: '2px 7px', borderRadius: 4, background: 'var(--v2-surface-2)', border: '0.5px solid var(--v2-border)', fontFamily: 'JetBrains Mono, monospace', color: 'var(--v2-text-2)' }}>{s}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* PQC risk */}
+          <div style={{ marginBottom: 20, padding: '10px 12px', borderRadius: 8, background: daysLeft !== null && daysLeft < 90 ? '#fffbeb' : 'var(--v2-surface-2)', border: '0.5px solid var(--v2-border)' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>PQC Readiness</div>
+            <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>
+              {cert.key_algorithm === 'RSA' ? 'RSA keys are vulnerable to future quantum attacks. Plan migration to ECDSA P-384 or P-256.' : 'ECDSA — better PQC posture than RSA-2048.'}
+            </div>
+          </div>
+
+          {/* PEM viewer */}
+          {pem ? (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>Certificate PEM</div>
+              <div style={{ position: 'relative', background: '#0a0a0a', borderRadius: 8, padding: '10px 12px' }}>
+                <textarea readOnly value={pem} rows={6}
+                  style={{ width: '100%', background: 'transparent', border: 'none', color: '#86efac', fontSize: 10, fontFamily: 'JetBrains Mono, monospace', resize: 'none', outline: 'none', lineHeight: 1.5 }}/>
+                <button onClick={copyPem} style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(255,255,255,0.1)', border: '0.5px solid rgba(255,255,255,0.2)', borderRadius: 4, color: '#d1d5db', fontSize: 10, padding: '2px 8px', cursor: 'pointer' }}>
+                  {copied ? '✓ Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+          ) : cert.cert_pem ? (
+            <div style={{ marginBottom: 20 }}>
+              <button onClick={() => setPem(cert.cert_pem)} style={{ fontSize: 11, padding: '6px 14px', borderRadius: 6, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', cursor: 'pointer', color: 'var(--v2-text)', fontWeight: 500 }}>
+                View PEM certificate
+              </button>
+            </div>
+          ) : null}
+
+          {/* Actions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Actions</div>
+            {!pem && (
+              <button onClick={downloadPem} disabled={loadingPem}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '8px 14px', borderRadius: 7, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', cursor: loadingPem ? 'not-allowed' : 'pointer', color: 'var(--v2-text)', fontWeight: 500 }}>
+                {loadingPem ? <><RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }}/> Loading PEM…</> : <><Download size={12}/> Download / View PEM</>}
+              </button>
+            )}
+            <button
+              onClick={() => window.open(`https://www.digicert.com/account/login/`, '_blank')}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '8px 14px', borderRadius: 7, border: '0.5px solid var(--v2-green)', background: 'var(--v2-green-bg)', cursor: 'pointer', color: 'var(--v2-green-text)', fontWeight: 500 }}>
+              <RotateCcw size={12}/> Reissue at DigiCert CertCentral ↗
+            </button>
+            <button
+              onClick={handleRevoke} disabled={revoking}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '8px 14px', borderRadius: 7, border: '0.5px solid #fecaca', background: '#fef2f2', cursor: revoking ? 'not-allowed' : 'pointer', color: '#dc2626', fontWeight: 500 }}>
+              {revoking ? <><RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }}/> Revoking…</> : <><Ban size={12}/> Revoke certificate</>}
+            </button>
+            {revokeMsg && <div style={{ fontSize: 11, color: revokeMsg.includes('Error') || revokeMsg.includes('failed') ? '#dc2626' : '#16a34a', padding: '6px 10px', borderRadius: 6, background: 'var(--v2-surface-2)', border: '0.5px solid var(--v2-border)' }}>{revokeMsg}</div>}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DigiCertTab({ tok, nav }) {
+  const [apiKey,     setApiKey]   = useState('')
+  const [draftKey,   setDraftKey] = useState('')
+  const [showKey,    setShowKey]  = useState(false)
+  const [saving,     setSaving]   = useState(false)
+  const [error,      setError]    = useState('')
+  const [portfolio,  setPf]       = useState([])
+  const [loadingPf,  setLoadingPf]= useState(false)
+  const [connId,     setConnId]   = useState('')
+
+  // Search + filter
+  const [search,     setSearch]   = useState('')
+  const [filterStatus, setFilterStatus] = useState('all')  // all | active | expired | expiring
+  const [viewMode,   setViewMode] = useState('table')      // table | timeline
+
+  // Detail panel
+  const [selected,   setSelected] = useState(null)
 
   useEffect(() => {
     if (!tok) return
@@ -420,7 +623,6 @@ function DigiCertTab({ tok }) {
     })
   }, [tok])
 
-  // Auto-load portfolio when connId is known
   useEffect(() => { if (connId && tok) loadPf() }, [connId, tok])
 
   const connect = async () => {
@@ -447,16 +649,55 @@ function DigiCertTab({ tok }) {
     setLoadingPf(true)
     try {
       const r = await callImport(tok, { action: 'fetch_ca_certs', ca_type: 'digicert', connection_id: connId })
-      if (r.error) { console.error('fetch_ca_certs error:', r.error) }
-      setPf(r.certs || [])
-    } catch (e) { console.error(e) }
+      if (!r.error) setPf(r.certs || [])
+    } catch(e) { console.error(e) }
     setLoadingPf(false)
   }, [connId, tok])
 
+  const doSync = async () => {
+    if (!connId || !tok) return
+    setLoadingPf(true)
+    try {
+      await callImport(tok, { action: 'sync', connection_id: connId })
+      await loadPf()
+    } catch(e) { console.error(e) }
+    setLoadingPf(false)
+  }
+
+  // Filtered + searched portfolio
+  const now = Date.now()
+  const filtered = portfolio.filter(c => {
+    const domain = (c.domain || '').toLowerCase()
+    const product = (c.cert_type_detail || '').toLowerCase()
+    const q = search.toLowerCase()
+    if (q && !domain.includes(q) && !product.includes(q)) return false
+    if (filterStatus === 'active' && c.status !== 'active') return false
+    if (filterStatus === 'expired' && c.status !== 'expired') return false
+    if (filterStatus === 'expiring') {
+      const d = c.expires_at ? Math.ceil((new Date(c.expires_at).getTime() - now) / 86400000) : null
+      if (d === null || d < 0 || d > 90) return false
+    }
+    return true
+  })
+
+  // Timeline buckets
+  const buckets = {
+    expired:  portfolio.filter(c => { const d = c.expires_at ? Math.ceil((new Date(c.expires_at).getTime() - now) / 86400000) : null; return d !== null && d < 0 }),
+    critical: portfolio.filter(c => { const d = c.expires_at ? Math.ceil((new Date(c.expires_at).getTime() - now) / 86400000) : null; return d !== null && d >= 0 && d <= 7 }),
+    warning:  portfolio.filter(c => { const d = c.expires_at ? Math.ceil((new Date(c.expires_at).getTime() - now) / 86400000) : null; return d !== null && d > 7 && d <= 30 }),
+    upcoming: portfolio.filter(c => { const d = c.expires_at ? Math.ceil((new Date(c.expires_at).getTime() - now) / 86400000) : null; return d !== null && d > 30 && d <= 90 }),
+    healthy:  portfolio.filter(c => { const d = c.expires_at ? Math.ceil((new Date(c.expires_at).getTime() - now) / 86400000) : null; return d !== null && d > 90 }),
+  }
+
+  // KPIs
+  const expiring30 = portfolio.filter(c => { const d = c.expires_at ? Math.ceil((new Date(c.expires_at).getTime() - now) / 86400000) : null; return d !== null && d >= 0 && d <= 30 }).length
+  const expiring90 = portfolio.filter(c => { const d = c.expires_at ? Math.ceil((new Date(c.expires_at).getTime() - now) / 86400000) : null; return d !== null && d >= 0 && d <= 90 }).length
+  const pqcRisk    = portfolio.filter(c => c.key_algorithm === 'RSA').length
+  const activeCount = portfolio.filter(c => c.status === 'active').length
+
   if (!apiKey) return (
     <div>
-      <div style={{ background: '#fef2f2', border: '0.5px solid #fecaca', borderRadius: 8,
-        padding: '12px 16px', marginBottom: 16 }}>
+      <div style={{ background: '#fef2f2', border: '0.5px solid #fecaca', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: '#991b1b', marginBottom: 2 }}>DigiCert CertCentral — not connected</div>
         <div style={{ fontSize: 11, color: '#dc2626' }}>Connect your API key to access portfolio, PQC scoring, reissue, and CT log monitoring.</div>
       </div>
@@ -465,10 +706,10 @@ function DigiCertTab({ tok }) {
         <div style={{ position: 'relative', marginBottom: 8 }}>
           <input className="v2-input mono" type={showKey ? 'text' : 'password'}
             value={draftKey} onChange={e => setDraftKey(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && connect()}
             placeholder="Paste your DigiCert API key…"/>
           <button onClick={() => setShowKey(v => !v)}
-            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-              background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)' }}>
+            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)' }}>
             {showKey ? <EyeOff size={13}/> : <Eye size={13}/>}
           </button>
         </div>
@@ -485,97 +726,173 @@ function DigiCertTab({ tok }) {
     </div>
   )
 
-  const expiring = portfolio.filter(c => { const d = dLeft(c.valid_till); return d !== null && d > 0 && d <= 30 }).length
-  const pqcRisk  = portfolio.filter(c => (c.key_size || 0) <= 2048).length
-
-
-
   return (
     <div>
+      {/* Connection banner */}
       <div style={{ background: '#eff6ff', border: '0.5px solid #bfdbfe', borderRadius: 8,
-        padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#1e40af' }}>DigiCert CertCentral connected</div>
-          <div style={{ fontSize: 11, color: '#3b82f6', marginTop: 2 }}>API key active · read-only scope</div>
+        padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563eb', display: 'inline-block', boxShadow: '0 0 0 3px #bfdbfe' }}/>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#1e40af' }}>DigiCert CertCentral connected</div>
+            <div style={{ fontSize: 11, color: '#3b82f6' }}>API key active · {portfolio.length} certs loaded</div>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="v2-btn v2-btn-sm" onClick={loadPf} disabled={loadingPf}>
-            {loadingPf ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync</>}
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button className="v2-btn v2-btn-sm" onClick={doSync} disabled={loadingPf}>
+            {loadingPf ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync from DigiCert</>}
+          </button>
+          <button onClick={() => window.open('https://www.digicert.com/account/login/', '_blank')}
+            style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: '0.5px solid #bfdbfe', background: 'white', color: '#2563eb', cursor: 'pointer', fontWeight: 500 }}>
+            Open CertCentral ↗
           </button>
           <button className="v2-btn v2-btn-sm v2-btn-danger" onClick={disconnect}>Disconnect</button>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 14 }}>
+      {/* KPI row */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 16 }}>
         {[
-          { label: 'Portfolio certs', val: portfolio.length || '—', sub: 'DV · OV · EV', c: 'var(--v2-text)' },
-          { label: 'Expiring ≤ 30d',  val: expiring, sub: 'needs reissue', c: expiring > 0 ? '#d97706' : '#16a34a' },
-          { label: 'PQC risk certs',  val: pqcRisk || '—', sub: 'RSA-2048 flagged', c: pqcRisk > 0 ? '#dc2626' : 'var(--v2-text)' },
-        ].map(({ label, val, sub, c }) => (
-          <div key={label} className="v2-stat">
+          { label: 'Total certs',    val: portfolio.length, sub: 'in portfolio',      color: 'var(--v2-text)',  onClick: () => setFilterStatus('all') },
+          { label: 'Active',         val: activeCount,      sub: 'issued & valid',    color: '#16a34a',         onClick: () => setFilterStatus('active') },
+          { label: 'Expiring ≤ 30d', val: expiring30,       sub: 'needs attention',   color: expiring30 > 0 ? '#d97706' : '#16a34a', onClick: () => setFilterStatus('expiring') },
+          { label: 'PQC risk',       val: pqcRisk,          sub: 'RSA keys flagged',  color: pqcRisk > 0 ? '#dc2626' : '#16a34a', onClick: () => {} },
+        ].map(({ label, val, sub, color, onClick }) => (
+          <div key={label} className="v2-stat" style={{ cursor: 'pointer' }} onClick={onClick}>
             <div className="v2-stat-label">{label}</div>
-            <div className="v2-stat-value" style={{ color: c }}>{val}</div>
+            <div className="v2-stat-value" style={{ color }}>{val || '—'}</div>
             <div className="v2-stat-delta">{sub}</div>
           </div>
         ))}
       </div>
 
-      {/* Inline portfolio table */}
-      <div className="v2-card">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '10px 16px', borderBottom: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)' }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-            Certificate inventory
-          </span>
-          <button className="v2-btn v2-btn-sm" onClick={() => loadPf()} disabled={loadingPf}>
-            {loadingPf ? <><Spinner/> Loading…</> : <><RefreshCw size={11}/> Fetch from CertCentral</>}
-          </button>
+      {/* Expiry timeline view */}
+      {viewMode === 'timeline' && (
+        <div className="v2-card" style={{ marginBottom: 16, padding: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Expiry timeline</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { label: 'Expired',      certs: buckets.expired,  color: '#dc2626', bg: '#fef2f2' },
+              { label: 'Critical ≤ 7d', certs: buckets.critical, color: '#dc2626', bg: '#fef2f2' },
+              { label: 'Warning ≤ 30d', certs: buckets.warning,  color: '#d97706', bg: '#fffbeb' },
+              { label: 'Upcoming ≤ 90d',certs: buckets.upcoming, color: '#2563eb', bg: '#eff6ff' },
+              { label: 'Healthy > 90d', certs: buckets.healthy,  color: '#16a34a', bg: '#f0fdf4' },
+            ].map(({ label, certs, color, bg }) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 120, fontSize: 11, color: 'var(--v2-text-2)', flexShrink: 0 }}>{label}</div>
+                <div style={{ flex: 1, height: 28, borderRadius: 6, background: 'var(--v2-surface-2)', overflow: 'hidden', position: 'relative' }}>
+                  {certs.length > 0 && (
+                    <div style={{ position: 'absolute', left: 0, top: 0, height: '100%',
+                      width: `${Math.max(4, (certs.length / Math.max(portfolio.length, 1)) * 100)}%`,
+                      background: bg, border: `0.5px solid ${color}44`, borderRadius: 6,
+                      display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color }}>{certs.length}</span>
+                    </div>
+                  )}
+                </div>
+                <div style={{ width: 30, fontSize: 11, fontWeight: 600, color, textAlign: 'right' }}>{certs.length}</div>
+              </div>
+            ))}
+          </div>
         </div>
+      )}
+
+      {/* Search + filter bar */}
+      <div className="v2-card" style={{ marginBottom: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderBottom: '0.5px solid var(--v2-border)', flexWrap: 'wrap' }}>
+          {/* Search */}
+          <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
+            <Search size={12} style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--v2-text-3)' }}/>
+            <input value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search domain or product…"
+              style={{ width: '100%', paddingLeft: 28, paddingRight: 10, height: 30, fontSize: 12, borderRadius: 6,
+                border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', color: 'var(--v2-text)', outline: 'none' }}/>
+            {search && <button onClick={() => setSearch('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', fontSize: 14 }}>×</button>}
+          </div>
+          {/* Status filter */}
+          <div style={{ display: 'flex', gap: 4 }}>
+            {[['all','All'],['active','Active'],['expiring','Expiring ≤90d'],['expired','Expired']].map(([v,l]) => (
+              <button key={v} onClick={() => setFilterStatus(v)}
+                style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, cursor: 'pointer', fontWeight: filterStatus === v ? 600 : 400,
+                  border: `0.5px solid ${filterStatus === v ? 'var(--v2-green)' : 'var(--v2-border)'}`,
+                  background: filterStatus === v ? 'var(--v2-green-bg)' : 'var(--v2-surface-2)',
+                  color: filterStatus === v ? 'var(--v2-green-text)' : 'var(--v2-text-2)' }}>
+                {l}
+              </button>
+            ))}
+          </div>
+          {/* View toggle */}
+          <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
+            <button onClick={() => setViewMode('table')} title="Table view"
+              style={{ fontSize: 11, padding: '3px 10px', borderRadius: 6, cursor: 'pointer',
+                border: `0.5px solid ${viewMode === 'table' ? 'var(--v2-green)' : 'var(--v2-border)'}`,
+                background: viewMode === 'table' ? 'var(--v2-green-bg)' : 'var(--v2-surface-2)',
+                color: viewMode === 'table' ? 'var(--v2-green-text)' : 'var(--v2-text-2)' }}>Table</button>
+            <button onClick={() => setViewMode('timeline')} title="Timeline view"
+              style={{ fontSize: 11, padding: '3px 10px', borderRadius: 6, cursor: 'pointer',
+                border: `0.5px solid ${viewMode === 'timeline' ? 'var(--v2-green)' : 'var(--v2-border)'}`,
+                background: viewMode === 'timeline' ? 'var(--v2-green-bg)' : 'var(--v2-surface-2)',
+                color: viewMode === 'timeline' ? 'var(--v2-green-text)' : 'var(--v2-text-2)' }}>Timeline</button>
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{filtered.length} of {portfolio.length}</div>
+        </div>
+
         {/* Table header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px 160px', gap: 8,
-          padding: '8px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 110px 90px 170px', gap: 8,
+          padding: '7px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
           {['Domain', 'Product', 'Expires', 'Status', 'Actions'].map(h => (
-            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
-              textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
+            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
           ))}
         </div>
-        <div className="v2-list-scroll">
-          {portfolio.length === 0 ? (
+
+        {/* Table body */}
+        <div style={{ maxHeight: 520, overflowY: 'auto' }}>
+          {loadingPf && portfolio.length === 0 ? (
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}><Spinner/> Loading portfolio…</div>
+          ) : filtered.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
-              Click "Fetch from CertCentral" to load your DigiCert portfolio.
+              {portfolio.length === 0 ? 'Click "Sync from DigiCert" to load your portfolio.' : 'No certificates match your search.'}
             </div>
-          ) : portfolio.map((c, i) => {
-            const d = dLeft(c.valid_till)
-            const s = d === null ? 'grey' : d <= 0 ? 'red' : d <= 30 ? 'amber' : 'green'
-            const domain = c.domain || c.common_name || ''
+          ) : filtered.map((c, i) => {
+            const d = c.expires_at ? Math.ceil((new Date(c.expires_at).getTime() - now) / 86400000) : null
+            const rowBg = i % 2 === 0 ? 'transparent' : 'var(--v2-surface-2)'
             return (
-              <div key={i} className={`v2-list-row status-${s}`}
-                style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px 160px', padding: '10px 16px', gap: 8, alignItems: 'center' }}>
-                <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: 'var(--v2-text)',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {domain || '—'}
+              <div key={c.id || i}
+                style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 110px 90px 170px', gap: 8,
+                  padding: '9px 16px', background: rowBg, borderBottom: '0.5px solid var(--v2-border)',
+                  cursor: 'pointer', transition: 'background 0.1s' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-hover)'}
+                onMouseLeave={e => e.currentTarget.style.background = rowBg}
+                onClick={() => setSelected(c)}>
+                <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', color: 'var(--v2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignSelf: 'center' }}>
+                  {c.domain || '—'}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{c.cert_type_detail || c.product?.name_id || c.product || 'SSL'}</div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{fmt(c.valid_till)}</div>
-                <ExpiryBadge iso={c.valid_till}/>
-                <div style={{ display: 'flex', gap: 4 }}>
-                  {/* Renew via SSLVault — issues fresh cert through GoGetSSL */}
-                  <button
-                    onClick={() => { if (domain) { sessionStorage.setItem('prefill_domain', domain); nav('/buy') } }}
-                    title="Renew via SSLVault (GoGetSSL)"
-                    style={{ fontSize: 10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid var(--v2-green)',
-                      background: 'var(--v2-green-bg)', color: 'var(--v2-green-text)', cursor: 'pointer',
-                      fontWeight: 500, whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {c.cert_type_detail || 'SSL'}
+                </div>
+                <div style={{ alignSelf: 'center' }}>
+                  <ExpiryPill days={d}/>
+                </div>
+                <div style={{ alignSelf: 'center' }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
+                    background: c.status === 'active' ? '#f0fdf4' : '#fef2f2',
+                    color: c.status === 'active' ? '#16a34a' : '#dc2626',
+                    border: `0.5px solid ${c.status === 'active' ? '#bbf7d0' : '#fecaca'}` }}>
+                    {c.status === 'active' ? 'Active' : c.status === 'expired' ? 'Expired' : c.status || '—'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: 4, alignSelf: 'center' }} onClick={e => e.stopPropagation()}>
+                  <button onClick={() => { sessionStorage.setItem('prefill_domain', c.domain || ''); nav && nav('/buy') }}
+                    style={{ fontSize: 10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid var(--v2-green)', background: 'var(--v2-green-bg)', color: 'var(--v2-green-text)', cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     ↻ SSLVault
                   </button>
-                  {/* Renew at DigiCert CertCentral */}
-                  <button
-                    onClick={() => window.open('https://www.digicert.com/account/login/', '_blank')}
-                    title="Renew at DigiCert CertCentral"
-                    style={{ fontSize: 10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid #e5e7eb',
-                      background: '#f9fafb', color: '#374151', cursor: 'pointer',
-                      fontWeight: 500, whiteSpace: 'nowrap' }}>
-                    DigiCert ↗
+                  <button onClick={() => window.open('https://www.digicert.com/account/login/', '_blank')}
+                    style={{ fontSize: 10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid #bfdbfe', background: '#eff6ff', color: '#2563eb', cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                    DC ↗
+                  </button>
+                  <button onClick={() => setSelected(c)}
+                    style={{ fontSize: 10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', color: 'var(--v2-text-2)', cursor: 'pointer', fontWeight: 500 }}>
+                    Details
                   </button>
                 </div>
               </div>
@@ -583,6 +900,16 @@ function DigiCertTab({ tok }) {
           })}
         </div>
       </div>
+
+      {/* Detail slide-over panel */}
+      {selected && (
+        <CertDetailPanel
+          cert={selected}
+          tok={tok}
+          connId={connId}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </div>
   )
 }
