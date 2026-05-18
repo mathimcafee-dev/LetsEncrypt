@@ -339,13 +339,24 @@ function GoGetSSLTab({ tok, nav }) {
     )
   }
 
+  // Inline cert table — show directly, no launcher
+  const filtered = orders.filter(c => {
+    if (filter === 'all') return true
+    const d = dLeft(c.expiry_date)
+    if (filter === 'expiring') return d !== null && d > 0 && d <= 30
+    if (filter === 'expired')  return d !== null && d <= 0
+    if (filter === 'healthy')  return d !== null && d > 30
+    return true
+  })
+
   return (
     <div>
+      {/* Connection banner */}
       <div style={{ background: '#ecfdf5', border: '0.5px solid #6ee7b7', borderRadius: 8,
         padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#065f46' }}>GoGetSSL — SSLVault native CA</div>
-          <div style={{ fontSize: 11, color: '#10b981', marginTop: 2 }}>Live API · {orders.length} orders · sandbox available</div>
+          <div style={{ fontSize: 11, color: '#10b981', marginTop: 2 }}>Live API · {orders.length} active orders</div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="v2-btn v2-btn-sm" onClick={load} disabled={loading}>
@@ -356,12 +367,13 @@ function GoGetSSLTab({ tok, nav }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 14 }}>
+      {/* KPIs */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 16 }}>
         {[
-          { label: 'Active orders',  val: loading ? '…' : orders.length, sub: 'DV · OV · EV · Wildcard', c: 'var(--v2-text)' },
-          { label: 'Auto-renewing', val: loading ? '…' : autoRenew, sub: 'agent enabled', c: '#10b981' },
-          { label: 'Expiring ≤30d', val: loading ? '…' : expiring,  sub: 'needs action', c: expiring > 0 ? '#d97706' : '#16a34a' },
-          { label: 'Expired',       val: loading ? '…' : expired,   sub: expired > 0 ? 'act now' : 'all clear', c: expired > 0 ? '#dc2626' : '#16a34a' },
+          { label: 'Total certs',    val: loading ? '…' : orders.length, sub: 'DV · OV · EV · Wildcard', c: 'var(--v2-text)' },
+          { label: 'Auto-renewing', val: loading ? '…' : autoRenew,      sub: 'agent active',             c: '#10b981' },
+          { label: 'Expiring ≤30d', val: loading ? '…' : expiring,       sub: 'needs action',             c: expiring > 0 ? '#d97706' : '#16a34a' },
+          { label: 'Expired',       val: loading ? '…' : expired,        sub: expired > 0 ? 'act now' : 'all clear', c: expired > 0 ? '#dc2626' : '#16a34a' },
         ].map(({ label, val, sub, c }) => (
           <div key={label} className="v2-stat">
             <div className="v2-stat-label">{label}</div>
@@ -371,24 +383,54 @@ function GoGetSSLTab({ tok, nav }) {
         ))}
       </div>
 
-      <SectionCard title="Workspaces">
-        <WorkspaceRow icon={FileText}  iconBg="#ecfdf5" iconColor="#10b981"
-          label="All orders — inventory & status"
-          badge={expired > 0 ? `${expired} expired` : expiring > 0 ? `${expiring} expiring` : null}
-          badgeColor={expired > 0 ? '#dc2626' : '#d97706'} badgeBg={expired > 0 ? '#fef2f2' : '#fffbeb'}
-          onOpen={() => setWs('orders')}/>
-        <WorkspaceRow icon={RefreshCw} iconBg="#ecfdf5" iconColor="#10b981"
-          label="Auto-renewal manager"
-          badge={autoRenew > 0 ? `${autoRenew} active` : null} badgeColor="#16a34a" badgeBg="#f0fdf4"
-          onOpen={() => nav('/')}/>
-        <WorkspaceRow icon={Globe}     iconBg="#ecfdf5" iconColor="#10b981" label="Agent deployment & health" onOpen={() => nav('/')}/>
-        <WorkspaceRow icon={Clock}     iconBg="#fffbeb" iconColor="#d97706"
-          label="Expiry timeline"
-          badge={expiring > 0 ? `${expiring} urgent` : null} badgeColor="#d97706" badgeBg="#fffbeb"
-          onOpen={() => nav('/')}/>
-        <WorkspaceRow icon={Archive}   iconBg="#eff6ff" iconColor="#0e7fc0" label="Sandbox test orders" onOpen={() => nav('/')}/>
-        <WorkspaceRow icon={Download}  iconBg="#f8fafc" iconColor="#64748b" label="Export portfolio CSV" onOpen={() => {}} openLabel="Export" last/>
-      </SectionCard>
+      {/* Certificate table */}
+      <div className="v2-card">
+        <div className="v2-filter-bar">
+          {[['all','All'],['expiring','Expiring ≤30d'],['expired','Expired'],['healthy','Healthy']].map(([id, lbl]) => (
+            <button key={id} className={`v2-filter-chip ${filter===id?'active':''}`}
+              onClick={() => setFilter(id)}>{lbl}</button>
+          ))}
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--v2-text-3)' }}>{filtered.length} certs</span>
+        </div>
+        {/* Table header */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px',
+          padding: '8px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
+          {['Domain', 'Product', 'Expires', 'Status'].map(h => (
+            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
+              textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
+          ))}
+        </div>
+        <div className="v2-list-scroll">
+          {loading ? (
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
+              <Spinner/><span style={{ marginLeft: 8 }}>Loading certificates…</span>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
+              {orders.length === 0 ? 'No GoGetSSL certificates found. Issue your first certificate.' : 'No certificates match this filter.'}
+            </div>
+          ) : filtered.map((c, i) => {
+            const d = dLeft(c.expiry_date)
+            const color = expiryColor(d)
+            const s = d === null ? 'grey' : d <= 0 ? 'red' : d <= 30 ? 'amber' : 'green'
+            return (
+              <div key={i} className={`v2-list-row status-${s}`}
+                style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', padding: '10px 16px', cursor: 'default' }}>
+                <div className="v2-row-body" style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: 'var(--v2-text)',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {c.common_name || c.domain || '—'}
+                  </div>
+                  {c.auto_renew && <div style={{ fontSize: 10, color: '#10b981', marginTop: 2 }}>Auto-renew enabled</div>}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{c.product_name || 'SSL Certificate'}</div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{fmt(c.expiry_date)}</div>
+                <div style={{ alignSelf: 'center' }}><ExpiryBadge iso={c.expiry_date}/></div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }
@@ -402,7 +444,6 @@ function DigiCertTab({ tok }) {
   const [showKey,  setShowKey]  = useState(false)
   const [saving,   setSaving]   = useState(false)
   const [error,    setError]    = useState('')
-  const [ws,       setWs]       = useState(null)
   const [portfolio, setPf]      = useState([])
   const [loadingPf, setLoadingPf] = useState(false)
 
@@ -475,45 +516,7 @@ function DigiCertTab({ tok }) {
   const expiring = portfolio.filter(c => { const d = dLeft(c.valid_till); return d !== null && d > 0 && d <= 30 }).length
   const pqcRisk  = portfolio.filter(c => (c.key_size || 0) <= 2048).length
 
-  if (ws === 'portfolio') return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-        <button className="v2-btn v2-btn-sm" onClick={() => setWs(null)}>← Back</button>
-        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--v2-text)' }}>DigiCert — Portfolio</span>
-        <button className="v2-btn v2-btn-sm" onClick={loadPf} disabled={loadingPf}>
-          {loadingPf ? <><Spinner/> Loading…</> : <><RefreshCw size={11}/> Fetch from CertCentral</>}
-        </button>
-      </div>
-      {portfolio.length === 0 && !loadingPf
-        ? <div style={{ textAlign: 'center', padding: 40, color: 'var(--v2-text-3)', fontSize: 13 }}>
-            Click "Fetch from CertCentral" to load your DigiCert portfolio.
-          </div>
-        : <div className="v2-card">
-            <div className="v2-list-scroll">
-              {portfolio.map((c, i) => {
-                const d = dLeft(c.valid_till)
-                const s = d === null ? 'grey' : d <= 0 ? 'red' : d <= 30 ? 'amber' : 'green'
-                return (
-                  <div key={i} className={`v2-list-row status-${s}`}>
-                    <div className="v2-row-body">
-                      <div className="v2-row-title-line">
-                        <span className="v2-row-title">{c.common_name || '—'}</span>
-                        <ExpiryBadge iso={c.valid_till}/>
-                      </div>
-                      <div className="v2-row-meta">
-                        <span>{c.product?.name_id || 'SSL'}</span>
-                        <span className="v2-row-meta-sep">·</span>
-                        <span>Expires {fmt(c.valid_till)}</span>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-      }
-    </div>
-  )
+
 
   return (
     <div>
@@ -545,17 +548,48 @@ function DigiCertTab({ tok }) {
         ))}
       </div>
 
-      <SectionCard title="Workspaces">
-        <WorkspaceRow icon={FileText}  iconBg="#eff6ff" iconColor="#1d4ed8" label="Portfolio — full cert inventory"
-          onOpen={() => { setWs('portfolio'); loadPf() }}/>
-        <WorkspaceRow icon={Building}  iconBg="#fefce8" iconColor="#a16207" label="Organisation validation status" onOpen={() => {}}/>
-        <WorkspaceRow icon={Zap}       iconBg="#fdf4ff" iconColor="#7e22ce" label="PQC risk scoring"
-          badge={pqcRisk > 0 ? `${pqcRisk} at risk` : null} badgeColor="#d97706" badgeBg="#fffbeb"
-          onOpen={() => {}}/>
-        <WorkspaceRow icon={RotateCcw} iconBg="#f0fdf4" iconColor="#16a34a" label="Zero-touch reissue" onOpen={() => {}}/>
-        <WorkspaceRow icon={Ban}       iconBg="#fef2f2" iconColor="#dc2626" label="Revoke & replace"    onOpen={() => {}}/>
-        <WorkspaceRow icon={Search}    iconBg="#f0f9ff" iconColor="#0369a1" label="CT log monitor"      onOpen={() => {}} last/>
-      </SectionCard>
+      {/* Inline portfolio table */}
+      <div className="v2-card">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '10px 16px', borderBottom: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+            Certificate inventory
+          </span>
+          <button className="v2-btn v2-btn-sm" onClick={() => { setWs('portfolio'); loadPf() }} disabled={loadingPf}>
+            {loadingPf ? <><Spinner/> Loading…</> : <><RefreshCw size={11}/> Fetch from CertCentral</>}
+          </button>
+        </div>
+        {/* Table header */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px',
+          padding: '8px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
+          {['Domain', 'Product', 'Expires', 'Status'].map(h => (
+            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
+              textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
+          ))}
+        </div>
+        <div className="v2-list-scroll">
+          {portfolio.length === 0 ? (
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
+              Click "Fetch from CertCentral" to load your DigiCert portfolio.
+            </div>
+          ) : portfolio.map((c, i) => {
+            const d = dLeft(c.valid_till)
+            const s = d === null ? 'grey' : d <= 0 ? 'red' : d <= 30 ? 'amber' : 'green'
+            return (
+              <div key={i} className={`v2-list-row status-${s}`}
+                style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', padding: '10px 16px', cursor: 'default' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: 'var(--v2-text)',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignSelf: 'center' }}>
+                  {c.common_name || '—'}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{c.product?.name_id || 'SSL'}</div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{fmt(c.valid_till)}</div>
+                <div style={{ alignSelf: 'center' }}><ExpiryBadge iso={c.valid_till}/></div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }
@@ -657,11 +691,26 @@ function SectigoTab({ tok }) {
         ))}
       </div>
 
-      <SectionCard title="Workspaces">
-        <WorkspaceRow icon={FileText}   iconBg="#faf5ff" iconColor="#7c3aed" label="Cert inventory"       onOpen={() => {}}/>
-        <WorkspaceRow icon={Building}   iconBg="#fefce8" iconColor="#a16207" label="Organisation status"  onOpen={() => {}}/>
-        <WorkspaceRow icon={BarChart2}  iconBg="#f0fdf4" iconColor="#16a34a" label="Portfolio analytics"  onOpen={() => {}} last/>
-      </SectionCard>
+      {/* Inventory placeholder — Sectigo API pull */}
+      <div className="v2-card">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '10px 16px', borderBottom: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+            Certificate inventory
+          </span>
+        </div>
+        <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 6 }}>
+            Sectigo SCM connected
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--v2-text-3)', marginBottom: 16, maxWidth: 320, margin: '0 auto 16px' }}>
+            Certificate inventory pull from Sectigo SCM API is available. Sync to load your portfolio into SSLVault for unified expiry tracking.
+          </div>
+          <button className="v2-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <RefreshCw size={12}/> Sync Sectigo inventory
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
