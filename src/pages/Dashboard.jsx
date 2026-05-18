@@ -1013,6 +1013,9 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const days = daysLeft(cert.expires_at)
   const [activeTab, setActiveTab] = useState('details')
   const [showKey,    setShowKey]   = useState(false)
+  const [keyTimer,   setKeyTimer]  = useState(0)     // countdown seconds remaining
+  const [keyCopied,  setKeyCopied] = useState(false)
+  const [keyTimerRef, setKeyTimerRef] = useState(null)
   const [delConfirm, setDel]       = useState(false)
   const [keyDelConfirm, setKDC]    = useState(false)
   const [keyDeleting, setKDing]    = useState(false)
@@ -1428,19 +1431,68 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                   </div>
                 </div>
                 <div style={{ display:'flex', gap:6 }}>
-                  <button className="v2-btn v2-btn-sm" onClick={() => setShowKey(v => !v)}>
-                    {showKey ? <><EyeOff size={10}/> Hide</> : <><Eye size={10}/> Reveal</>}
+                  <button className="v2-btn v2-btn-sm" onClick={async () => {
+                    if (showKey) {
+                      // Hide: clear timer
+                      setShowKey(false); setKeyTimer(0); setKeyCopied(false)
+                      if (keyTimerRef) { clearInterval(keyTimerRef); setKeyTimerRef(null) }
+                      return
+                    }
+                    // Reveal: log access + start 30s timer
+                    setShowKey(true); setKeyTimer(30); setKeyCopied(false)
+                    // Audit log
+                    try {
+                      const { data: { session: s } } = await supabase.auth.getSession()
+                      await supabase.from('audit_log').insert({
+                        user_id: cert.user_id, cert_id: cert.id,
+                        action: 'private_key_revealed',
+                        actor_email: s?.user?.email || '',
+                        metadata: { domain: cert.domain, ip: 'browser' }
+                      })
+                    } catch(e) { console.error('audit log failed', e) }
+                    // 30s countdown
+                    let secs = 30
+                    const iv = setInterval(() => {
+                      secs -= 1
+                      setKeyTimer(secs)
+                      if (secs <= 0) {
+                        clearInterval(iv)
+                        setShowKey(false); setKeyTimer(0); setKeyTimerRef(null)
+                      }
+                    }, 1000)
+                    setKeyTimerRef(iv)
+                  }} style={{ minWidth: 72 }}>
+                    {showKey
+                      ? <><EyeOff size={10}/> Hide {keyTimer > 0 ? `(${keyTimer}s)` : ''}</>
+                      : <><Eye size={10}/> Reveal</>}
                   </button>
-                  <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.private_key_pem, cert.domain+'-key.pem')}>
-                    <Download size={10}/> Save
+                  <button className="v2-btn v2-btn-sm" onClick={() => {
+                    navigator.clipboard?.writeText(cert.private_key_pem)
+                    setKeyCopied(true)
+                    setTimeout(() => setKeyCopied(false), 2000)
+                  }}>
+                    {keyCopied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy</>}
                   </button>
                 </div>
               </div>
               {showKey && (
-                <div style={{ margin:'0 12px 10px', background:'#0a0a0a', borderRadius:6,
-                  padding:'8px 10px', fontSize:10, fontFamily:'monospace', color:'#a3e635',
-                  whiteSpace:'pre-wrap', wordBreak:'break-all', maxHeight:120, overflowY:'auto' }}>
-                  {cert.private_key_pem}
+                <div style={{ margin:'0 12px 10px' }}>
+                  <div style={{ background:'#0a0a0a', borderRadius:6, padding:'8px 10px',
+                    fontSize:10, fontFamily:'monospace', color:'#a3e635',
+                    userSelect:'none', WebkitUserSelect:'none', MozUserSelect:'none',
+                    whiteSpace:'pre-wrap', wordBreak:'break-all', maxHeight:120, overflowY:'auto',
+                    filter: showKey ? 'none' : 'blur(4px)', transition:'filter 0.3s' }}>
+                    {'•'.repeat(Math.min(cert.private_key_pem.length, 200))}
+                  </div>
+                  <div style={{ marginTop:6, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                    <span style={{ fontSize:10, color:'#dc2626', fontWeight:500 }}>
+                      ⚠ Auto-hides in {keyTimer}s · Copy only — download disabled for security
+                    </span>
+                    <div style={{ height:3, width:120, background:'#fee2e2', borderRadius:3, overflow:'hidden' }}>
+                      <div style={{ height:'100%', background:'#dc2626', borderRadius:3,
+                        width: `${(keyTimer/30)*100}%`, transition:'width 1s linear' }}/>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
