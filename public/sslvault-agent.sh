@@ -452,7 +452,7 @@ process_job() {
   local ws
   ws=$(detect_web_server)
 
-  if [ "$job_type" = "install" ] || [ "$job_type" = "renew" ]; then
+  if [ "$job_type" = "install" ] || [ "$job_type" = "renew" ] || [ "$job_type" = "reissue" ]; then
 
     if [ -z "$cert_pem" ] || [ -z "$key_pem" ]; then
       fail "Job $job_id: empty cert_pem or key_pem — skipping"
@@ -468,6 +468,8 @@ process_job() {
       return 0
     fi
 
+    # install: first time — configure web server vhost
+    # reissue/renew: cert already configured — just write new files and reload
     if [ "$job_type" = "install" ]; then
       configure_web_server "$domain" "$ws"
     fi
