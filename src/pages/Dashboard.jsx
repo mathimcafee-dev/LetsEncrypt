@@ -123,6 +123,22 @@ function DvPendingCard({ order, onRefresh }) {
   const dcvName  = order.dcv_txt_name  || order.dcv_cname_name  || '—'
   const dcvValue = order.dcv_txt_value || order.dcv_cname_value || '—'
 
+  const [dismissing, setDismissing] = useState(false)
+  const [confirmDismiss, setConfirmDismiss] = useState(false)
+
+  const dismissOrder = async () => {
+    setDismissing(true)
+    try {
+      // Delete cert_reissues rows linked to this order
+      await supabase.from('cert_reissues').delete().eq('user_id', (await supabase.auth.getUser()).data.user.id).or(`ggs_order_id.eq.${order.ggs_order_id},new_ggs_order_id.eq.${order.ggs_order_id}`)
+      // Delete the ssl_order itself
+      await supabase.from('ssl_orders').delete().eq('id', order.id)
+      onRefresh()
+    } catch(e) { setMsg('❌ '+e.message) }
+    setDismissing(false)
+    setConfirmDismiss(false)
+  }
+
   return (
     <div style={{ background:'#fffbeb', border:'1px solid #fde68a', borderRadius:10, padding:'14px 16px', marginBottom:12 }}>
       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
@@ -163,6 +179,28 @@ function DvPendingCard({ order, onRefresh }) {
           <RefreshCw size={11} style={{ animation: checking ? 'spin 0.8s linear infinite':'none' }}/>
           {checking ? 'Checking...' : 'Check Status'}
         </button>
+        {!confirmDismiss ? (
+          <button onClick={() => setConfirmDismiss(true)}
+            style={{ display:'flex', alignItems:'center', gap:5, background:'white',
+              border:'1px solid #fca5a5', color:'#dc2626', borderRadius:6,
+              padding:'7px 14px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit', marginLeft:'auto' }}>
+            <X size={11}/> Dismiss
+          </button>
+        ) : (
+          <div style={{ display:'flex', gap:6, alignItems:'center', marginLeft:'auto' }}>
+            <span style={{ fontSize:11, color:'#92400e' }}>Remove from dashboard?</span>
+            <button onClick={dismissOrder} disabled={dismissing}
+              style={{ background:'#dc2626', color:'white', border:'none', borderRadius:6,
+                padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+              {dismissing ? 'Removing...' : 'Yes, remove'}
+            </button>
+            <button onClick={() => setConfirmDismiss(false)}
+              style={{ background:'white', color:'#374151', border:'1px solid #d1d9e0', borderRadius:6,
+                padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+              Cancel
+            </button>
+          </div>
+        )}
         {msg && <span style={{ fontSize:11, color: msg.startsWith('✅') ? '#15803d' : msg.startsWith('❌') ? '#dc2626' : '#92400e' }}>{msg}</span>}
       </div>
     </div>
