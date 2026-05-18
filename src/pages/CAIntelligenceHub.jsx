@@ -402,25 +402,26 @@ function GoGetSSLTab({ tok, nav }) {
 // TAB 3 — DIGICERT
 // ══════════════════════════════════════════════════════════════════════
 function DigiCertTab({ tok }) {
-  const [connId,    setConnId]    = useState('')   // DB connection id (set when saved)
-  const [draftKey,  setDraftKey]  = useState('')
-  const [showKey,   setShowKey]   = useState(false)
-  const [saving,    setSaving]    = useState(false)
-  const [error,     setError]     = useState('')
-  const [portfolio, setPf]        = useState([])
+  const [apiKey,   setApiKey]   = useState('')
+  const [draftKey, setDraftKey] = useState('')
+  const [showKey,  setShowKey]  = useState(false)
+  const [saving,   setSaving]   = useState(false)
+  const [error,    setError]    = useState('')
+  const [portfolio, setPf]      = useState([])
   const [loadingPf, setLoadingPf] = useState(false)
 
-  // On mount: check if a saved connection already exists
+  const [connId, setConnId] = useState('')  // stored DB connection id
+
   useEffect(() => {
     if (!tok) return
     callImport(tok, { action: 'list_connections' }).then(r => {
       const dc = (r.connections || []).find(c => c.ca_type === 'digicert' && c.status === 'active')
-      if (dc?.id) setConnId(dc.id)
+      if (dc?.id) { setConnId(dc.id); setApiKey('__connected__') }
     })
   }, [tok])
 
-  // Auto-load portfolio when connection id is known
-  useEffect(() => { if (connId && tok) loadPf() }, [connId])
+  // Auto-load portfolio when connected
+  useEffect(() => { if (apiKey && tok) loadPf() }, [apiKey])
 
   const connect = async () => {
     if (!draftKey.trim()) { setError('API key required'); return }
@@ -430,6 +431,7 @@ function DigiCertTab({ tok }) {
       if (r.error) { setError(r.error); setSaving(false); return }
       const cid = r.connection?.id
       if (cid) setConnId(cid)
+      setApiKey(draftKey.trim())
       setDraftKey('')
     } catch { setError('Connection failed') }
     setSaving(false)
@@ -437,22 +439,22 @@ function DigiCertTab({ tok }) {
 
   const disconnect = async () => {
     await callImport(tok, { action: 'delete_connection', ca_type: 'digicert' })
-    setConnId(''); setPf([])
+    setApiKey(''); setConnId(''); setPf([])
   }
 
   const loadPf = useCallback(async () => {
-    if (!connId || !tok) return
+    if (!apiKey || !tok) return
     setLoadingPf(true)
     try {
-      // fetch_ca_certs with connection_id — server decrypts key and fetches live portfolio
-      const r = await callImport(tok, { action: 'fetch_ca_certs', ca_type: 'digicert', connection_id: connId })
+      // Pass both api_key (when freshly connected) and connId (for server-side decrypt on reload)
+      const body = connId
+        ? { action: 'fetch_ca_certs', ca_type: 'digicert', connection_id: connId }
+        : { action: 'fetch_ca_certs', ca_type: 'digicert', api_key: apiKey }
+      const r = await callImport(tok, body)
       setPf(r.certs || [])
     } catch (e) { console.error(e) }
     setLoadingPf(false)
-  }, [connId, tok])
-
-  // apiKey alias drives the if(!apiKey) gate that shows connect form vs connected view
-  const apiKey = connId ? '__connected__' : ''
+  }, [apiKey, connId, tok])
 
   if (!apiKey) return (
     <div>
