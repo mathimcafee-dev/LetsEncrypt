@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import Dashboard from './Dashboard'
+import ServersPage from './Servers'
 import AboutInner from './AboutInner'
 import ContactInner from './ContactInner'
 import DeveloperInner from './DeveloperInner'
@@ -20,7 +21,7 @@ import AgentHealth from './AgentHealth'
 import Pricing from './Pricing'
 
 // Default collapsed state — Overview & Account open, rest start open too but user can close
-const DEFAULT_OPEN = { Overview: true, Infrastructure: true, 'CA Management': true, Help: true, Account: true }
+const DEFAULT_OPEN = { Overview: true, Infrastructure: true, 'CA Management': true, Resources: true, Account: true }
 
 export default function CLMHome({ user, nav }) {
   const [section, setSection] = useState('dashboard')
@@ -84,6 +85,7 @@ export default function CLMHome({ user, nav }) {
   ]
   const NAV_INFRASTRUCTURE = [
     { id:'integrations', label:'Integrations',  icon:Globe    },
+    { id:'agent-health', label:'Agent Health',  icon:Activity },
   ]
   const NAV_CA = [
     { id:'ca-intelligence',label:'CA Intelligence', icon:TrendingUp },
@@ -91,13 +93,20 @@ export default function CLMHome({ user, nav }) {
   const NAV_RESOURCES = [
     { id:'install',  label:'Install Guide', icon:Download  },
     { id:'kb',       label:'Docs & Help',   icon:BookOpen  },
+    { id:'pricing',  label:'Pricing',       icon:CreditCard},
   ]
   const NAV_ACCOUNT = [
+    { id:'analytics', label:'Analytics', icon:Layout   },
     { id:'settings',  label:'Settings',  icon:Settings },
+    { id:'about',     label:'About',     icon:Info     },
+    { id:'developer', label:'Developer', icon:User     },
+    { id:'contact',   label:'Contact',   icon:Mail     },
   ]
   const SECTION_TITLES = {
-    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-intelligence':'CA Intelligence',
-    integrations:'Integrations', install:'Installation', kb:'Docs & Help', settings:'Settings',
+    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-intelligence':'CA Intelligence', analytics:'Analytics',
+    integrations:'Integrations',
+    install:'Installation', kb:'Docs & Help', pricing:'Pricing',
+    about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
   }
 
   const NavItem = ({ id, label, icon:Icon, pro }) => {
@@ -135,8 +144,11 @@ export default function CLMHome({ user, nav }) {
     if (section === 'contact')    return <ContactInner nav={nav}/>
     if (section === 'developer')  return <DeveloperInner nav={nav}/>
     if (section === 'pricing')    return <Pricing nav={nav}/>
+    if (section === 'servers')    return <ServersPage user={user}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
     if (section === 'ca-intelligence') return <CAIntelligenceHub nav={nav}/>
+    if (section === 'analytics')     return <AdminAnalytics user={user}/>
+    if (section === 'agent-health')  return <AgentHealth user={user}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>
     if (section === 'agent-health')  return <AgentHealth user={user}/>
     return null
@@ -253,7 +265,7 @@ export default function CLMHome({ user, nav }) {
             { label:'Overview',       items: NAV_OVERVIEW },
             { label:'Infrastructure', items: NAV_INFRASTRUCTURE },
             { label:'CA Management',  items: NAV_CA },
-            { label:'Help',           items: NAV_RESOURCES },
+            { label:'Resources',      items: NAV_RESOURCES },
             { label:'Account',        items: NAV_ACCOUNT },
           ].map(({ label, items, pro }, i) => {
             const isOpen = openGroups[label] !== false
