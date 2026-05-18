@@ -580,7 +580,7 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
               </button>
             )}
             <button
-              onClick={() => window.open(`https://www.digicert.com/account/login/`, '_blank')}
+              onClick={() => window.open(`https://accounts.digicert.com/`, '_blank')}
               style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '8px 14px', borderRadius: 7, border: '0.5px solid var(--v2-green)', background: 'var(--v2-green-bg)', cursor: 'pointer', color: 'var(--v2-green-text)', fontWeight: 500 }}>
               <RotateCcw size={12}/> Reissue at DigiCert CertCentral ↗
             </button>
@@ -742,7 +742,7 @@ function DigiCertTab({ tok, nav }) {
           <button className="v2-btn v2-btn-sm" onClick={doSync} disabled={loadingPf}>
             {loadingPf ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync from DigiCert</>}
           </button>
-          <button onClick={() => window.open('https://www.digicert.com/account/login/', '_blank')}
+          <button onClick={() => window.open('https://accounts.digicert.com/', '_blank')}
             style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: '0.5px solid #bfdbfe', background: 'white', color: '#2563eb', cursor: 'pointer', fontWeight: 500 }}>
             Open CertCentral ↗
           </button>
@@ -886,7 +886,7 @@ function DigiCertTab({ tok, nav }) {
                     style={{ fontSize: 10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid var(--v2-green)', background: 'var(--v2-green-bg)', color: 'var(--v2-green-text)', cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     ↻ SSLVault
                   </button>
-                  <button onClick={() => window.open('https://www.digicert.com/account/login/', '_blank')}
+                  <button onClick={() => window.open('https://accounts.digicert.com/', '_blank')}
                     style={{ fontSize: 10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid #bfdbfe', background: '#eff6ff', color: '#2563eb', cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     DC ↗
                   </button>

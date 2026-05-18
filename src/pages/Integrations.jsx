@@ -1468,7 +1468,7 @@ export default function Integrations({ nav }) {
     setCaTok(tok)
     if (!tok) return
     setCaLoading(true)
-    const r = await callCA(tok, { action: 'list' })
+    const r = await callCA(tok, { action: 'list_connections' })
     if (r.connections) setConnections(r.connections)
     if (r.total_certs !== undefined) setCertCount(r.total_certs)
     else if (r.certs) setCertCount(r.certs.length)
@@ -1479,9 +1479,12 @@ export default function Integrations({ nav }) {
 
   const saveConnection = async () => {
     setAddSaving(true); setAddError('')
+    // Always refresh token before saving to avoid stale caTok
+    const { data: { session } } = await sbClient.auth.getSession()
+    const freshTok = session?.access_token || caTok
     const def = CA_DEFS[addCa]
     const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
-    const r = await callCA(caTok, payload)
+    const r = await callCA(freshTok, payload)
     setAddSaving(false)
     if (r.ok) { setShowAdd(false); setAddCa(null); await loadCA() }
     else setAddError(r.error || 'Connection failed')
