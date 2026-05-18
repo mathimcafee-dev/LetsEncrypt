@@ -69,6 +69,13 @@ esac
 OS_FULL="${PRETTY_NAME:-$OS_ID $OS_VERSION}"
 ARCH=$(uname -m)
 HOSTNAME_VAL=$(hostname -f 2>/dev/null || hostname)
+# Deduplicate hostname segments (e.g. domain.com.domain.com → domain.com)
+_h="$HOSTNAME_VAL"
+_short=$(hostname -s 2>/dev/null || echo "$_h" | cut -d. -f1)
+# If short hostname appears twice, use the raw hostname without FQDN lookup
+if echo "$_h" | grep -qE "^[^.]+\.[^.]+\.[^.]+$" && [ "$(echo "$_h" | cut -d. -f1)" = "$(echo "$_h" | cut -d. -f2)" ]; then
+  HOSTNAME_VAL=$(hostname 2>/dev/null || echo "$_h")
+fi
 IP_ADDR=$(curl -fsSL --max-time 5 https://api.ipify.org 2>/dev/null || echo "unknown")
 
 success "Detected: $OS_FULL ($ARCH)"
