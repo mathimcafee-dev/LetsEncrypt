@@ -403,6 +403,7 @@ function GoGetSSLTab({ tok, nav }) {
 // ══════════════════════════════════════════════════════════════════════
 function DigiCertTab({ tok }) {
   const [apiKey,   setApiKey]   = useState('')
+  const [connId,   setConnId]   = useState('')   // actual DB connection id
   const [draftKey, setDraftKey] = useState('')
   const [showKey,  setShowKey]  = useState(false)
   const [saving,   setSaving]   = useState(false)
@@ -414,12 +415,12 @@ function DigiCertTab({ tok }) {
     if (!tok) return
     callImport(tok, { action: 'list_connections' }).then(r => {
       const dc = (r.connections || []).find(c => c.ca_type === 'digicert' && c.status === 'active')
-      if (dc?.api_key) setApiKey(dc.api_key)
+      if (dc?.id) { setConnId(dc.id); setApiKey('connected') }
     })
   }, [tok])
 
-  // Auto-load portfolio when API key becomes available
-  useEffect(() => { if (apiKey && tok) loadPf() }, [apiKey])
+  // Auto-load portfolio when connection becomes available
+  useEffect(() => { if (connId && tok) loadPf() }, [connId])
 
   const connect = async () => {
     if (!draftKey.trim()) { setError('API key required'); return }
@@ -427,25 +428,31 @@ function DigiCertTab({ tok }) {
     try {
       const r = await callImport(tok, { action: 'save_connection', ca_type: 'digicert', label: 'DigiCert CertCentral', api_key: draftKey.trim() })
       if (r.error) { setError(r.error); setSaving(false); return }
-      setApiKey(draftKey.trim())
+      // Store connection id for subsequent sync calls
+      const cid = r.connection?.id
+      if (cid) { setConnId(cid); setApiKey('connected') }
     } catch { setError('Connection failed') }
     setSaving(false)
   }
 
   const disconnect = async () => {
-    await callImport(tok, { action: 'delete_connection', ca_type: 'digicert' })
-    setApiKey(''); setPf([])
+    if (connId) await callImport(tok, { action: 'delete_connection', connection_id: connId })
+    setApiKey(''); setConnId(''); setPf([])
   }
 
   const loadPf = useCallback(async () => {
-    if (!apiKey || !tok) return
+    if (!connId || !tok) return
     setLoadingPf(true)
     try {
-      const r = await callImport(tok, { action: 'fetch_ca_certs', ca_type: 'digicert', api_key: apiKey })
-      setPf(r.certs || [])
+      // Use 'sync' action with connection_id — this pulls certs from DigiCert and upserts to DB
+      const r = await callImport(tok, { action: 'sync', connection_id: connId })
+      if (r.error) { console.error('DigiCert sync:', r.error) }
+      // Then load the imported certs from DB
+      const listed = await callImport(tok, { action: 'list_imported' })
+      setPf((listed.certs || []).filter(c => c.source === 'digicert' || c.imported_from === 'digicert'))
     } catch (e) { console.error(e) }
     setLoadingPf(false)
-  }, [apiKey, tok])
+  }, [connId, tok])
 
   if (!apiKey) return (
     <div>

@@ -477,8 +477,26 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
   const [installDomain, setInstallDomain] = useState(server.domains?.[0] || '')
   const [dispatching, setDispatching] = useState(false)
   const [dispatchResult, setDispatchResult] = useState(null)
+  const [showRemoveAgent, setShowRemoveAgent] = useState(false)
+  const [removingAgent, setRemovingAgent] = useState(false)
+  const [removeAgentDone, setRemoveAgentDone] = useState(false)
 
   const AGENT_URL = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon'
+
+  const handleRemoveAgent = async () => {
+    if (!agent?.id || !userId) return
+    setRemovingAgent(true)
+    try {
+      await fetch(AGENT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'deregister', user_id: userId, agent_id: agent.id })
+      })
+      setRemoveAgentDone(true)
+      setTimeout(() => { setShowRemoveAgent(false); setRemoveAgentDone(false); window.location.reload() }, 2000)
+    } catch(e) {}
+    setRemovingAgent(false)
+  }
 
   const loadJobs = async () => {
     if (!agent?.id || !userId) return
@@ -723,13 +741,94 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
         <button className="v2-btn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => onEdit(server)}>
           <Edit3 size={11} strokeWidth={2} /> Edit
         </button>
+        {agent && (
+          <button className="v2-btn" style={{ color: '#dc2626', borderColor: '#fca5a5' }}
+            onClick={() => setShowRemoveAgent(true)} title="Remove agent from this server">
+            <WifiOff size={11} strokeWidth={2} /> Remove agent
+          </button>
+        )}
         <button className="v2-btn v2-btn-danger" onClick={() => onDelete(server.id)}>
           <Trash2 size={11} strokeWidth={2} />
         </button>
       </div>
-    </div>
-  )
-}
+
+      {/* Remove Agent Modal */}
+      {showRemoveAgent && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16
+        }}>
+          <div style={{
+            background: 'var(--v2-bg)', borderRadius: 14, padding: 24, maxWidth: 480, width: '100%',
+            border: '0.5px solid var(--v2-border)', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: '#fef2f2',
+                border: '0.5px solid #fca5a5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <WifiOff size={18} strokeWidth={1.8} color="#dc2626" />
+              </div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--v2-text)' }}>Remove agent from server</div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{server.nickname} · {server.host}</div>
+              </div>
+            </div>
+
+            {/* Step 1 — server command */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--v2-text-2)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Step 1 — Run on your server
+              </div>
+              <div style={{ background: '#0a0a0a', borderRadius: 8, padding: '10px 14px', position: 'relative' }}>
+                <code style={{ fontSize: 12, color: '#86efac', fontFamily: 'JetBrains Mono, monospace', userSelect: 'all', display: 'block', lineHeight: 1.6 }}>
+                  sudo bash /usr/local/bin/sslvault-agent uninstall
+                </code>
+                <button
+                  onClick={() => navigator.clipboard?.writeText('sudo bash /usr/local/bin/sslvault-agent uninstall')}
+                  style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(255,255,255,0.1)',
+                    border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: 5, padding: '2px 8px',
+                    color: '#d1d5db', fontSize: 10, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  Copy
+                </button>
+              </div>
+              <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 5 }}>
+                This stops the agent service, removes the binary, and cleans up <code style={{ fontFamily: 'JetBrains Mono, monospace' }}>/etc/sslvault/</code>. Cert files in <code style={{ fontFamily: 'JetBrains Mono, monospace' }}>/etc/ssl/sslvault/</code> are preserved.
+              </div>
+            </div>
+
+            {/* Step 2 — deregister from DB */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--v2-text-2)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Step 2 — Remove from SSLVault
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.5 }}>
+                Click below to deregister this agent from the platform. All job history will be removed and cert auto-install will stop.
+              </div>
+            </div>
+
+            {removeAgentDone ? (
+              <div style={{ textAlign: 'center', padding: '10px 0', color: 'var(--v2-green-text)', fontSize: 13, fontWeight: 500 }}>
+                ✓ Agent deregistered successfully
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="v2-btn" style={{ flex: 1, justifyContent: 'center' }}
+                  onClick={() => setShowRemoveAgent(false)}>
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRemoveAgent}
+                  disabled={removingAgent}
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    background: '#dc2626', color: '#fff', border: 'none', borderRadius: 8,
+                    padding: '8px 16px', fontSize: 12, fontWeight: 500, cursor: removingAgent ? 'not-allowed' : 'pointer',
+                    opacity: removingAgent ? 0.7 : 1 }}>
+                  {removingAgent ? <><RefreshCw size={11} className="spin"/> Removing…</> : <><Trash2 size={11}/> Deregister agent</>}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
 // ── Empty state ───────────────────────────────────────────────────────
 function EmptyState({ icon: Icon, title, desc, ctaLabel, onCta }) {
