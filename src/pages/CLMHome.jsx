@@ -15,7 +15,7 @@ import Integrations from './Integrations'
 import Install from './Install'
 import KnowledgeBase from './KnowledgeBase'
 import BuyCertificate from './BuyCertificate'
-import CertIntelligence from './CertIntelligence'
+import CAIntelligenceHub from './CAIntelligenceHub'
 import AdminAnalytics from './AdminAnalytics'
 import AgentHealth from './AgentHealth'
 import Pricing from './Pricing'
@@ -146,7 +146,7 @@ export default function CLMHome({ user, nav }) {
     if (section === 'pricing')    return <Pricing nav={nav}/>
     if (section === 'servers')    return <ServersPage user={user}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
-    if (section === 'ca-intelligence') return <CertIntelligence nav={nav}/>
+    if (section === 'ca-intelligence') return <CAIntelligenceHub nav={nav}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>
     if (section === 'agent-health')  return <AgentHealth user={user}/>
     return null
