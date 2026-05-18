@@ -552,9 +552,9 @@ function DigiCertTab({ tok }) {
                 style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', padding: '10px 16px', cursor: 'default' }}>
                 <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: 'var(--v2-text)',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignSelf: 'center' }}>
-                  {c.common_name || '—'}
+                  {c.domain || c.common_name || '—'}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{c.product?.name_id || 'SSL'}</div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{c.cert_type_detail || c.product?.name_id || c.product || 'SSL'}</div>
                 <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{fmt(c.valid_till)}</div>
                 <div style={{ alignSelf: 'center' }}><ExpiryBadge iso={c.valid_till}/></div>
               </div>
