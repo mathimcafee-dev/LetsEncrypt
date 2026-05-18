@@ -356,9 +356,9 @@ function GoGetSSLTab({ tok, nav }) {
           <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--v2-text-3)' }}>{filtered.length} certs</span>
         </div>
         {/* Table header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px',
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px 160px', gap: 8,
           padding: '8px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
-          {['Domain', 'Product', 'Expires', 'Status'].map(h => (
+          {['Domain', 'Product', 'Expires', 'Status', 'Actions'].map(h => (
             <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
               textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
           ))}
@@ -532,9 +532,9 @@ function DigiCertTab({ tok }) {
           </button>
         </div>
         {/* Table header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px',
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px 160px', gap: 8,
           padding: '8px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
-          {['Domain', 'Product', 'Expires', 'Status'].map(h => (
+          {['Domain', 'Product', 'Expires', 'Status', 'Actions'].map(h => (
             <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
               textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
           ))}
@@ -547,16 +547,37 @@ function DigiCertTab({ tok }) {
           ) : portfolio.map((c, i) => {
             const d = dLeft(c.valid_till)
             const s = d === null ? 'grey' : d <= 0 ? 'red' : d <= 30 ? 'amber' : 'green'
+            const domain = c.domain || c.common_name || ''
             return (
               <div key={i} className={`v2-list-row status-${s}`}
-                style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', padding: '10px 16px', cursor: 'default' }}>
+                style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px 160px', padding: '10px 16px', gap: 8, alignItems: 'center' }}>
                 <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: 'var(--v2-text)',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignSelf: 'center' }}>
-                  {c.domain || c.common_name || '—'}
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {domain || '—'}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{c.cert_type_detail || c.product?.name_id || c.product || 'SSL'}</div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{fmt(c.valid_till)}</div>
-                <div style={{ alignSelf: 'center' }}><ExpiryBadge iso={c.valid_till}/></div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{c.cert_type_detail || c.product?.name_id || c.product || 'SSL'}</div>
+                <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{fmt(c.valid_till)}</div>
+                <ExpiryBadge iso={c.valid_till}/>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {/* Renew via SSLVault — issues fresh cert through GoGetSSL */}
+                  <button
+                    onClick={() => { if (domain) { sessionStorage.setItem('prefill_domain', domain); nav('/buy') } }}
+                    title="Renew via SSLVault (GoGetSSL)"
+                    style={{ fontSize: 10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid var(--v2-green)',
+                      background: 'var(--v2-green-bg)', color: 'var(--v2-green-text)', cursor: 'pointer',
+                      fontWeight: 500, whiteSpace: 'nowrap' }}>
+                    ↻ SSLVault
+                  </button>
+                  {/* Renew at DigiCert CertCentral */}
+                  <button
+                    onClick={() => window.open('https://www.digicert.com/account/login/', '_blank')}
+                    title="Renew at DigiCert CertCentral"
+                    style={{ fontSize: 10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid #e5e7eb',
+                      background: '#f9fafb', color: '#374151', cursor: 'pointer',
+                      fontWeight: 500, whiteSpace: 'nowrap' }}>
+                    DigiCert ↗
+                  </button>
+                </div>
               </div>
             )
           })}
