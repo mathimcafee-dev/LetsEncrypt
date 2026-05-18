@@ -1266,10 +1266,12 @@ export default function CAIntelligenceHub({ nav }) {
               <Spinner/><span style={{ marginLeft: 8 }}>Loading session…</span>
             </div>
           : <>
-              {tab === 'overview' && <OverviewTab tok={tok} nav={nav} onSwitchCA={setTab}/>}
-              {tab === 'gogetssl' && <GoGetSSLTab tok={tok} nav={nav}/>}
-              {tab === 'digicert' && <DigiCertTab tok={tok}/>}
-              {tab === 'sectigo'  && <SectigoTab  tok={tok}/>}
+              {tab === 'overview'       && <OverviewTab       tok={tok} nav={nav} onSwitchCA={setTab}/>}
+              {tab === 'gogetssl'       && <GoGetSSLTab       tok={tok} nav={nav}/>}
+              {tab === 'digicert'       && <DigiCertTab       tok={tok} nav={nav}/>}
+              {tab === 'sectigo'        && <SectigoTab        tok={tok}/>}
+              {tab === 'shadow'         && <ShadowITTab       tok={tok} nav={nav}/>}
+              {tab === 'consolidation'  && <ConsolidationTab  tok={tok} nav={nav}/>}
             </>
         }
       </div>
