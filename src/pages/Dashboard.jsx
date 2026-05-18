@@ -447,9 +447,12 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
 const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
   const [history, setHistory] = useState(null)
   const [busy, setBusy] = useState(false)
-  const [msg, setMsg] = useState('')
-  const [tab, setTab] = useState('reissues')
+  const [msg, setMsg]   = useState('')
+  const [tab, setTab]   = useState('reissues')
+  const [expanded, setExpanded] = useState({})
+
   useEffect(() => { loadHistory() }, [cert.id])
+
   const loadHistory = async () => {
     try {
       const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
@@ -460,6 +463,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       if (d.ok) setHistory(d)
     } catch {}
   }
+
   const callAction = async (action, extra, confirmMsg) => {
     if (!confirm(confirmMsg)) return
     setBusy(true); setMsg('')
@@ -469,63 +473,208 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         body: JSON.stringify({ action, cert_id: cert.id, triggered_by: 'manual', ...extra })
       })
       const d = await r.json()
-      if (d.ok && d.status === 'active') { setMsg(action==='reissue'?' Reissued & installed!':('Renewed! New cert: '+d.new_cert_id)); loadHistory() }
-      else if (d.ok) { setMsg('Order placed — DNS validation in progress...'); loadHistory() }
-      else setMsg('Error: '+(d.error||'Unknown'))
-    } catch(e) { setMsg('Error: '+e.message) }
+      if (d.ok && d.status === 'active') { setMsg(action==='reissue'?'✅ Reissued & active!':('✅ Renewed! New cert created.')); loadHistory() }
+      else if (d.ok) { setMsg('⏳ Submitted — DNS validation in progress...'); loadHistory() }
+      else setMsg('❌ '+(d.error||'Unknown error'))
+    } catch(e) { setMsg('❌ '+e.message) }
     setBusy(false)
   }
+
   const reissues = history?.reissues || []
   const renewals = history?.renewals || []
+
   useImperativeHandle(ref, () => ({
     doAction: (action) => {
       const msgs = {
-        reissue: 'Reissue this certificate? A fresh cert will be issued and auto-installed.',
-        renew:   'Renew for another year? A new certificate record will be created.',
+        reissue: 'Reissue this certificate? A new cert will be issued on the existing GGS order and auto-installed.',
+        renew:   'Renew for another year? A brand new GGS order will be placed for a new 12-month period.',
       }
       callAction(action, action==='renew'?{period:12}:{}, msgs[action]||'Confirm?')
     }
   }), [busy])
-  const statusStyle = (s) => ({
-    fontSize:10, fontWeight:500, padding:'2px 7px', borderRadius:4,
-    background: (s==='issued'||s==='installed'||s==='active') ? '#dcfce7' : s==='failed' ? '#fee2e2' : '#f1f5f9',
-    color: (s==='issued'||s==='installed'||s==='active') ? '#16a34a' : s==='failed' ? '#dc2626' : '#64748b'
-  })
+
+  const statusBadge = (s) => {
+    const map = {
+      issued:   { bg:'#dcfce7', color:'#16a34a', label:'Issued' },
+      active:   { bg:'#dcfce7', color:'#16a34a', label:'Active' },
+      installed:{ bg:'#dcfce7', color:'#16a34a', label:'Installed' },
+      pending:  { bg:'#fef9c3', color:'#854d0e', label:'Pending DV' },
+      pending_validation: { bg:'#fef9c3', color:'#854d0e', label:'Pending DV' },
+      failed:   { bg:'#fee2e2', color:'#dc2626', label:'Failed' },
+    }
+    const t = map[s] || { bg:'#f1f5f9', color:'#64748b', label: s||'—' }
+    return <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4, background:t.bg, color:t.color }}>{t.label}</span>
+  }
+
+  const triggeredLabel = (t) => {
+    if (!t) return 'Manual'
+    if (t.includes('cron')) return '🤖 Auto (cron)'
+    if (t.includes('auto')) return '🤖 Auto'
+    return '👤 Manual'
+  }
+
+  const toggleExpand = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
+
   return (
     <div style={{ marginTop:4 }}>
+      {msg && (
+        <div style={{ fontSize:12, padding:'8px 12px', borderRadius:6, marginBottom:12,
+          background: msg.startsWith('✅') ? '#f0fdf4' : msg.startsWith('⏳') ? '#fefce8' : '#fef2f2',
+          color: msg.startsWith('✅') ? '#16a34a' : msg.startsWith('⏳') ? '#854d0e' : '#dc2626',
+          border: '1px solid '+(msg.startsWith('✅') ? '#bbf7d0' : msg.startsWith('⏳') ? '#fde68a' : '#fecaca') }}>
+          {msg}
+        </div>
+      )}
 
-      {msg && <div style={{ fontSize:12, padding:'8px 10px', borderRadius:6, marginBottom:12, background:msg.includes('Error')?' #fef2f2':'#f0fdf4', color:msg.includes('Error')?' #dc2626':'#16a34a', border:'1px solid '+(msg.includes('Error')?' #fecaca':'#bbf7d0') }}>{msg}</div>}
-      <div style={{ display:'flex', borderBottom:'1px solid var(--v2-border)', marginBottom:12 }}>
-        {[['reissues','Reissue History'],['renewals','Renewals']].map(([k,l]) => (
-          <button key={k} onClick={()=>setTab(k)} style={{ fontSize:11, fontWeight:500, padding:'5px 12px', border:'none', background:'none', cursor:'pointer', fontFamily:'inherit', color:tab===k?'var(--v2-green)':'var(--v2-text-3)', borderBottom:tab===k?'2px solid var(--v2-green)':'2px solid transparent', marginBottom:-1 }}>
-            {l}{k==='reissues'&&reissues.length>0?' ('+reissues.length+')':k==='renewals'&&renewals.length>0?' ('+renewals.length+')':''}</button>
+      {/* Tab bar */}
+      <div style={{ display:'flex', borderBottom:'1px solid var(--v2-border)', marginBottom:14 }}>
+        {[['reissues','Reissue History'], ['renewals','Renewals']].map(([k,l]) => (
+          <button key={k} onClick={() => setTab(k)} style={{
+            fontSize:11, fontWeight:500, padding:'5px 14px', border:'none', background:'none',
+            cursor:'pointer', fontFamily:'inherit',
+            color: tab===k ? '#0e7fc0' : 'var(--v2-text-3)',
+            borderBottom: tab===k ? '2px solid #0e7fc0' : '2px solid transparent',
+            marginBottom:-1
+          }}>
+            {l}
+            {k==='reissues' && reissues.length > 0 && (
+              <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
+                background: tab===k ? '#0e7fc0' : '#e2e8f0', color: tab===k ? 'white' : '#64748b' }}>
+                {reissues.length}
+              </span>
+            )}
+            {k==='renewals' && renewals.length > 0 && (
+              <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
+                background: tab===k ? '#0e7fc0' : '#e2e8f0', color: tab===k ? 'white' : '#64748b' }}>
+                {renewals.length}
+              </span>
+            )}
+          </button>
         ))}
       </div>
-      {tab==='reissues' && <div>
-        {reissues.length===0 ? <div style={{ fontSize:12, color:'var(--v2-text-3)', padding:'8px 0' }}>No reissues yet.</div>
-          : reissues.map((r,i) => (
-          <div key={r.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'7px 10px', borderRadius:6, marginBottom:4, background:'var(--v2-bg-2)', border:'1px solid var(--v2-border)' }}>
-            <div style={{ fontSize:12 }}>
-              <span style={{ fontWeight:600 }}>v{i+2}</span>
-              <span style={{ color:'var(--v2-text-3)', marginLeft:8 }}>{fmtDate(r.created_at)}</span>
-              <span style={{ color:'var(--v2-text-3)', marginLeft:8 }}>· {r.triggered_by||' manual'}</span>
+
+      {/* ── REISSUE HISTORY ── */}
+      {tab==='reissues' && (
+        <div>
+          {reissues.length === 0 ? (
+            <div style={{ fontSize:12, color:'var(--v2-text-3)', padding:'12px 0', textAlign:'center' }}>
+              No reissues yet. Use the Reissue button above to regenerate this certificate.
             </div>
-            <span style={statusStyle(r.install_status||r.status)}>{r.install_status||r.status}</span>
-          </div>
-        ))}
-      </div>}
-      {tab==='renewals' && <div>
-        {renewals.length===0 ? <div style={{ fontSize:12, color:'var(--v2-text-3)', padding:'8px 0' }}>No renewals yet.</div>
-          : renewals.map(r => (
-          <div key={r.id} style={{ padding:'8px 10px', borderRadius:6, marginBottom:6, background:'var(--v2-bg-2)', border:'1px solid var(--v2-border)' }}>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-              <div style={{ fontSize:12 }}><span style={{ fontWeight:600, color:'var(--v2-green)' }}>Renewed</span><span style={{ color:'var(--v2-text-3)', marginLeft:8 }}>{fmtDate(r.created_at)}</span></div>
-              <span style={statusStyle(r.status)}>{r.status}</span>
+          ) : reissues.map((r, i) => (
+            <div key={r.id} style={{ border:'1px solid var(--v2-border)', borderRadius:8, marginBottom:8, overflow:'hidden' }}>
+              {/* Row header — always visible */}
+              <div onClick={() => toggleExpand(r.id)}
+                style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px',
+                  background: expanded[r.id] ? 'var(--v2-surface-2)' : 'white',
+                  cursor:'pointer', userSelect:'none' }}>
+                {/* Reissue number badge */}
+                <div style={{ width:26, height:26, borderRadius:6, background:'#eff6ff',
+                  display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:'#0e7fc0' }}>R{i+1}</span>
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)', display:'flex', alignItems:'center', gap:8 }}>
+                    Reissue #{r.reissue_number||i+1}
+                    {statusBadge(r.status)}
+                  </div>
+                  <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>
+                    {fmtDate(r.created_at)} · {triggeredLabel(r.triggered_by)}
+                    {r.expires_at && <span> · Expires {fmtDate(r.expires_at)}</span>}
+                  </div>
+                </div>
+                <ChevronRight size={14} color="var(--v2-text-3)"
+                  style={{ transform: expanded[r.id] ? 'rotate(90deg)' : 'none', transition:'transform .15s', flexShrink:0 }}/>
+              </div>
+
+              {/* Expanded details */}
+              {expanded[r.id] && (
+                <div style={{ borderTop:'1px solid var(--v2-border)', padding:'12px 14px', background:'var(--v2-surface)' }}>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px 16px', marginBottom:12 }}>
+                    {[
+                      ['Reissue #',     r.reissue_number||i+1],
+                      ['Triggered by',  triggeredLabel(r.triggered_by)],
+                      ['Status',        r.status||'—'],
+                      ['Date',          fmtDate(r.created_at)],
+                      ['GGS Order',     r.ggs_order_id ? '#'+r.ggs_order_id : '—'],
+                      ['Install status', r.install_status||'—'],
+                      ['Install method', r.install_method||'—'],
+                      ['Installed at',   r.installed_at ? fmtDate(r.installed_at) : '—'],
+                      ['Valid from',     r.issued_at  ? fmtDate(r.issued_at)  : '—'],
+                      ['Valid until',    r.expires_at ? fmtDate(r.expires_at) : '—'],
+                    ].map(([label, val]) => (
+                      <div key={label}>
+                        <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:2 }}>{label}</div>
+                        <div style={{ fontSize:12, color:'var(--v2-text)', fontFamily: label==='GGS Order' ? 'monospace' : 'inherit' }}>{String(val)}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Cert PEM preview */}
+                  {r.cert_pem && (
+                    <div>
+                      <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:6 }}>Reissued Certificate PEM</div>
+                      <div style={{ background:'#0f172a', borderRadius:6, padding:'10px 12px', position:'relative' }}>
+                        <pre style={{ fontSize:10, color:'#94a3b8', margin:0, overflow:'hidden', maxHeight:80, fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all' }}>
+                          {r.cert_pem.slice(0,300)}...
+                        </pre>
+                        <CopyBtn text={r.cert_pem} label="Copy PEM"/>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Auto-install details */}
+                  {(r.auto_install_status || r.auto_install_error) && (
+                    <div style={{ marginTop:10, padding:'8px 10px', borderRadius:6,
+                      background: r.auto_install_status==='success' ? '#f0fdf4' : '#fef2f2',
+                      border: '1px solid '+(r.auto_install_status==='success' ? '#bbf7d0' : '#fecaca') }}>
+                      <div style={{ fontSize:11, fontWeight:600, color: r.auto_install_status==='success' ? '#16a34a' : '#dc2626' }}>
+                        Auto-install: {r.auto_install_status}
+                      </div>
+                      {r.auto_install_error && <div style={{ fontSize:11, color:'#dc2626', marginTop:2 }}>{r.auto_install_error}</div>}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:3 }}>Valid until {fmtDate(r.expires_at)}</div>
-          </div>
-        ))}
-      </div>}
+          ))}
+        </div>
+      )}
+
+      {/* ── RENEWALS ── */}
+      {tab==='renewals' && (
+        <div>
+          {renewals.length === 0 ? (
+            <div style={{ fontSize:12, color:'var(--v2-text-3)', padding:'12px 0', textAlign:'center' }}>
+              No renewals yet. Use the Renew button to place a new 12-month order.
+            </div>
+          ) : renewals.map(r => (
+            <div key={r.id} style={{ padding:'10px 14px', borderRadius:8, marginBottom:8,
+              background:'var(--v2-surface)', border:'1px solid var(--v2-border)' }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
+                <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>
+                  Renewal · GGS #{r.ggs_order_id||'—'}
+                </div>
+                <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4,
+                  background: r.status==='active' ? '#dcfce7' : '#f1f5f9',
+                  color: r.status==='active' ? '#16a34a' : '#64748b' }}>{r.status}</span>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'4px 12px' }}>
+                {[
+                  ['Created',    fmtDate(r.created_at)],
+                  ['Valid from', r.issued_at  ? fmtDate(r.issued_at)  : '—'],
+                  ['Expires',    r.expires_at ? fmtDate(r.expires_at) : '—'],
+                  ['Version',    'v'+(r.cert_version||'—')],
+                ].map(([l,v]) => (
+                  <div key={l}>
+                    <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>{l}: </span>
+                    <span style={{ fontSize:11, fontWeight:500, color:'var(--v2-text)' }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 })
