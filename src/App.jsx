@@ -23,6 +23,10 @@ import AdminAnalytics from './pages/AdminAnalytics'
 import AgentHealth from './pages/AgentHealth'
 import DigiCertLab from './pages/DigiCertLab'
 import CertIntelligence from './pages/CertIntelligence'
+import CAIntelligenceHub from './pages/CAIntelligenceHub'
+import DigiCertIntelligence from './pages/DigiCertIntelligence'
+import SectigoIntelligence from './pages/SectigoIntelligence'
+import CAConnectors from './pages/CAConnectors'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
@@ -85,6 +89,10 @@ export default function App() {
       {page === '/agent-health' && <AgentHealth nav={nav} />}
       {page === '/digicert-lab' && <DigiCertLab nav={nav} />}
       {page === '/cert-intelligence' && <CertIntelligence nav={nav} />}
+      {page === '/ca-intelligence' && <CAIntelligenceHub nav={nav} />}
+      {page === '/ca-intelligence/digicert' && <DigiCertIntelligence nav={nav} />}
+      {page === '/ca-intelligence/sectigo' && <SectigoIntelligence nav={nav} />}
+      {page === '/ca-connectors' && <CAConnectors nav={nav} />}
     </div>
   )
 }
