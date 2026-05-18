@@ -204,48 +204,105 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
           {hostType === 'server' && (
             <div>
               {isDispatched ? (
-                <div style={{ textAlign:'center', padding:'20px 0' }}>
-                  {jobStatus === 'success' ? (
-                    <>
-                      <CheckCircle size={40} color="#0e7fc0" style={{ marginBottom:12 }}/>
-                      <div style={{ fontSize:15, fontWeight:600, color:'#0a0a0a', marginBottom:6 }}>Certificate installed</div>
-                      <div style={{ fontSize:12, color:'#525252', marginBottom:20 }}>
-                        Agent has installed the certificate and reloaded the web server.
+                <div style={{ padding:'8px 0' }}>
+                  {/* Step-by-step install progress */}
+                  <div style={{ marginBottom:16 }}>
+                    {[
+                      {
+                        label: 'Job dispatched to agent',
+                        sub: 'Cert + private key queued securely',
+                        done: true, active: false
+                      },
+                      {
+                        label: 'Agent polling for job',
+                        sub: jobStatus === 'claimed' || jobStatus === 'success' ? 'Job received' : 'Checking every 5 minutes…',
+                        done: jobStatus === 'claimed' || jobStatus === 'success',
+                        active: jobStatus === 'queued'
+                      },
+                      {
+                        label: 'Writing cert files to server',
+                        sub: jobStatus === 'success'
+                          ? 'Written to /etc/ssl/sslvault/' + cert.domain
+                          : jobStatus === 'claimed' ? 'Running on server…'
+                          : '/etc/ssl/sslvault/' + cert.domain + '/{fullchain,privkey}.pem',
+                        done: jobStatus === 'success',
+                        active: jobStatus === 'claimed'
+                      },
+                      {
+                        label: 'Reloading web server',
+                        sub: jobStatus === 'success' ? 'nginx/apache reloaded — SSL active' : 'nginx -t && systemctl reload nginx',
+                        done: jobStatus === 'success',
+                        active: jobStatus === 'claimed'
+                      },
+                    ].map((step, i) => (
+                      <div key={i} style={{ display:'flex', gap:12, marginBottom:12, alignItems:'flex-start' }}>
+                        <div style={{ flexShrink:0, marginTop:2 }}>
+                          {step.done ? (
+                            <div style={{ width:20, height:20, borderRadius:'50%', background:'#0e7fc0',
+                              display:'flex', alignItems:'center', justifyContent:'center' }}>
+                              <CheckCircle size={12} color="white" strokeWidth={3}/>
+                            </div>
+                          ) : step.active ? (
+                            <div style={{ width:20, height:20, borderRadius:'50%', background:'#eff6ff',
+                              border:'2px solid #3b82f6', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                              <RefreshCw size={10} color="#3b82f6" style={{ animation:'spin 1s linear infinite' }}/>
+                            </div>
+                          ) : (
+                            <div style={{ width:20, height:20, borderRadius:'50%', background:'#f1f5f9',
+                              border:'1.5px solid #e2e8f0', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                              <span style={{ fontSize:9, fontWeight:700, color:'#94a3b8' }}>{i+1}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <div style={{ fontSize:13, fontWeight: step.done || step.active ? 600 : 400,
+                            color: step.done ? '#0a0a0a' : step.active ? '#1d4ed8' : '#94a3b8' }}>
+                            {step.label}
+                          </div>
+                          <div style={{ fontSize:11, color:'#94a3b8', fontFamily:'monospace', marginTop:2 }}>
+                            {step.sub}
+                          </div>
+                        </div>
                       </div>
-                      <button onClick={onClose} style={{ background:'#0e7fc0', color:'white', border:'none',
-                        borderRadius:7, padding:'9px 24px', fontSize:13, cursor:'pointer', fontFamily:'inherit' }}>
-                        Done
-                      </button>
-                    </>
-                  ) : jobStatus === 'failed' ? (
-                    <>
-                      <div style={{ fontSize:15, fontWeight:600, color:'#dc2626', marginBottom:6 }}>Install failed</div>
-                      <div style={{ fontSize:12, color:'#525252', background:'#fef2f2', border:'1px solid #fecaca',
-                        borderRadius:6, padding:'10px 14px', marginBottom:20, textAlign:'left' }}>
-                        {jobError || 'Unknown error — check server logs: journalctl -u sslvault-agent -n 20'}
+                    ))}
+                  </div>
+
+                  {jobStatus === 'success' && (
+                    <div style={{ background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:8,
+                      padding:'14px', marginBottom:16 }}>
+                      <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:8 }}>
+                        <CheckCircle size={16} color="#16a34a"/>
+                        <span style={{ fontSize:13, fontWeight:700, color:'#15803d' }}>Certificate installed successfully</span>
                       </div>
-                      <button onClick={onClose} style={{ background:'#e5e7eb', color:'#374151', border:'none',
-                        borderRadius:7, padding:'9px 24px', fontSize:13, cursor:'pointer', fontFamily:'inherit' }}>
-                        Close
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw size={32} color="#3b82f6" style={{ marginBottom:12, animation:'spin 1s linear infinite' }}/>
-                      <div style={{ fontSize:15, fontWeight:600, color:'#0a0a0a', marginBottom:6 }}>
-                        {jobStatus === 'claimed' ? 'Installing…' : 'Job queued'}
+                      <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:'3px 12px', fontSize:11, color:'#166534', lineHeight:1.8 }}>
+                        <span style={{ fontWeight:600 }}>Domain</span><span style={{ fontFamily:'monospace' }}>{cert.domain}</span>
+                        {cert.expires_at && <><span style={{ fontWeight:600 }}>Expires</span><span>{new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span></>}
+                        <span style={{ fontWeight:600 }}>Installed by</span><span>SSLVault persistent agent</span>
+                        <span style={{ fontWeight:600 }}>Auto-renew</span><span>✓ Enabled — next renewal is fully automatic</span>
                       </div>
-                      <div style={{ fontSize:12, color:'#525252', marginBottom:20 }}>
-                        {jobStatus === 'claimed'
-                          ? 'Agent is writing cert files and reloading the web server.'
-                          : 'Agent will pick up the job within 5 minutes.'}
-                      </div>
-                      <button onClick={onClose} style={{ background:'#f1f5f9', color:'#374151', border:'none',
-                        borderRadius:7, padding:'9px 24px', fontSize:13, cursor:'pointer', fontFamily:'inherit' }}>
-                        Close (job continues in background)
-                      </button>
-                    </>
+                    </div>
                   )}
+
+                  {jobStatus === 'failed' && (
+                    <div style={{ background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8,
+                      padding:'12px 14px', marginBottom:16 }}>
+                      <div style={{ fontSize:13, fontWeight:600, color:'#dc2626', marginBottom:4 }}>Installation failed</div>
+                      <div style={{ fontSize:12, color:'#7f1d1d', marginBottom:8 }}>
+                        {jobError || 'Unknown error'}
+                      </div>
+                      <div style={{ fontSize:11, fontFamily:'monospace', color:'#94a3b8' }}>
+                        Check logs: journalctl -u sslvault-agent -n 30
+                      </div>
+                    </div>
+                  )}
+
+                  <button onClick={onClose}
+                    style={{ width:'100%', padding:'10px', fontSize:13, fontWeight:500, borderRadius:7,
+                      border:'none', cursor:'pointer', fontFamily:'inherit',
+                      background: jobStatus === 'success' ? '#0e7fc0' : '#f1f5f9',
+                      color: jobStatus === 'success' ? 'white' : '#374151' }}>
+                    {jobStatus === 'success' ? 'Done' : jobStatus === 'failed' ? 'Close' : 'Close (job continues in background)'}
+                  </button>
                 </div>
               ) : agents.length > 0 ? (
                 <div>
