@@ -420,8 +420,8 @@ function DigiCertTab({ tok }) {
     })
   }, [tok])
 
-  // Auto-load portfolio when connected
-  useEffect(() => { if (apiKey && tok) loadPf() }, [apiKey])
+  // Auto-load portfolio when connId is known
+  useEffect(() => { if (connId && tok) loadPf() }, [connId, tok])
 
   const connect = async () => {
     if (!draftKey.trim()) { setError('API key required'); return }
@@ -443,18 +443,15 @@ function DigiCertTab({ tok }) {
   }
 
   const loadPf = useCallback(async () => {
-    if (!apiKey || !tok) return
+    if (!connId || !tok) return
     setLoadingPf(true)
     try {
-      // Pass both api_key (when freshly connected) and connId (for server-side decrypt on reload)
-      const body = connId
-        ? { action: 'fetch_ca_certs', ca_type: 'digicert', connection_id: connId }
-        : { action: 'fetch_ca_certs', ca_type: 'digicert', api_key: apiKey }
-      const r = await callImport(tok, body)
+      const r = await callImport(tok, { action: 'fetch_ca_certs', ca_type: 'digicert', connection_id: connId })
+      if (r.error) { console.error('fetch_ca_certs error:', r.error) }
       setPf(r.certs || [])
     } catch (e) { console.error(e) }
     setLoadingPf(false)
-  }, [apiKey, connId, tok])
+  }, [connId, tok])
 
   if (!apiKey) return (
     <div>
