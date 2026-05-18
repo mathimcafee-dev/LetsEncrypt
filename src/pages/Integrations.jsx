@@ -1234,8 +1234,9 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
     if (!agentToken) return
     const i = setInterval(async () => {
       try {
+        const { data: { session: _s } } = await sbClient.auth.getSession()
         const res = await fetch(DAEMON_FN, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (_s?.access_token || '') },
           body: JSON.stringify({ action: 'list_agents', user_id: userId })
         })
         const data = await res.json()
@@ -1537,8 +1538,10 @@ export default function Integrations({ nav }) {
 
   const loadAgents = async () => {
     try {
+      const { data: { session } } = await sbClient.auth.getSession()
+      const tok = session?.access_token || ''
       const res = await fetch(DAEMON_FN, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
         body: JSON.stringify({ action: 'list_agents', user_id: user.id })
       })
       const data = await res.json()
