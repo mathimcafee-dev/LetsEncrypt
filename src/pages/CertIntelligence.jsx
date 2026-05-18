@@ -10,7 +10,7 @@ import { supabase } from '../lib/supabase'
 import {
   Activity, AlertTriangle, Shield, TrendingDown, RefreshCw,
   ChevronRight, Check, X, ExternalLink, Zap, Search,
-  DollarSign, Copy, AlertCircle, Clock, Eye, EyeOff, Trash2, Square, CheckSquare
+  DollarSign, Copy, AlertCircle, Clock, Eye, EyeOff, Trash2, Square, CheckSquare, RotateCcw
 } from 'lucide-react'
 
 const FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/ca-intelligence'
@@ -100,6 +100,7 @@ function ExpiryTimeline({ tok }) {
   const [selected, setSelected] = useState(new Set())
   const [deleting, setDeleting] = useState(false)
   const [delConfirm, setDelConfirm] = useState(false)
+  const [renewModal, setRenewModal]   = useState(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -275,7 +276,7 @@ function ExpiryTimeline({ tok }) {
 
       {/* Cert table */}
       <Card>
-        <div style={{ display: 'grid', gridTemplateColumns: '28px 2fr 1fr 1fr 1fr 1fr',
+        <div style={{ display: 'grid', gridTemplateColumns: '28px 2fr 1fr 1fr 1fr 1fr 80px',
           padding: '9px 16px', borderBottom: '0.5px solid #f1f5f9', background: '#fafbfc',
           alignItems: 'center' }}>
           <div style={{ display:'flex', alignItems:'center', cursor:'pointer' }} onClick={toggleAll}>
@@ -283,7 +284,7 @@ function ExpiryTimeline({ tok }) {
               ? <CheckSquare size={13} style={{ color:'#0e7fc0' }}/>
               : <Square size={13} style={{ color:'#cbd5e1' }}/>}
           </div>
-          {['Domain', 'CA source', 'Expires', 'Days left', 'Status'].map(h => (
+          {['Domain', 'CA source', 'Expires', 'Days left', 'Status', ''].map(h => (
             <div key={h} style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8',
               textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
           ))}
@@ -297,7 +298,7 @@ function ExpiryTimeline({ tok }) {
           const caColor = CA_COLORS[cert.ca_type] || '#94a3b8'
           const isSelected = selected.has(cert.id)
           return (
-            <div key={cert.id} style={{ display: 'grid', gridTemplateColumns: '28px 2fr 1fr 1fr 1fr 1fr',
+            <div key={cert.id} style={{ display: 'grid', gridTemplateColumns: '28px 2fr 1fr 1fr 1fr 1fr 80px',
               padding: '10px 16px', alignItems: 'center',
               borderBottom: i < certs.length - 1 ? '0.5px solid #f8fafc' : 'none',
               background: isSelected ? '#eff6ff' : cert.no_renewal_path ? '#fffbeb44' : 'transparent',
@@ -328,6 +329,19 @@ function ExpiryTimeline({ tok }) {
                 {cert.days_left === null ? '—' : cert.days_left < 0 ? 'Expired' : `${cert.days_left}d`}
               </div>
               <div><Tag text={u.label} color={u.color} bg={u.bg}/></div>
+              <div onClick={e => e.stopPropagation()}>
+                <button
+                  onClick={() => setRenewModal(cert)}
+                  style={{ display:'inline-flex', alignItems:'center', gap:4,
+                    fontSize:10, fontWeight:600, padding:'4px 9px', borderRadius:6,
+                    background:'#eff6ff', color:'#0e7fc0',
+                    border:'0.5px solid #bfdbfe', cursor:'pointer',
+                    fontFamily:'inherit', whiteSpace:'nowrap', transition:'all .15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background='#0e7fc0'; e.currentTarget.style.color='white' }}
+                  onMouseLeave={e => { e.currentTarget.style.background='#eff6ff'; e.currentTarget.style.color='#0e7fc0' }}>
+                  <RotateCcw size={10}/> Renew
+                </button>
+              </div>
             </div>
           )
         })}
@@ -338,6 +352,114 @@ function ExpiryTimeline({ tok }) {
           </div>
         )}
       </Card>
+
+      {/* Renew modal */}
+      {renewModal && (() => {
+        const src = renewModal.ca_type || renewModal.source || 'unknown'
+        const CA_URLS = {
+          digicert: 'https://www.digicert.com/account/login.php',
+          sectigo:  'https://cert-manager.com/',
+          sslcom:   'https://secure.ssl.com/users/login',
+          gogetssl: null,
+        }
+        const CA_NAMES = {
+          digicert: 'DigiCert CertCentral',
+          sectigo:  'Sectigo SCM',
+          sslcom:   'SSL.com',
+          gogetssl: 'GoGetSSL',
+        }
+        const caUrl  = CA_URLS[src]
+        const caName = CA_NAMES[src] || 'your CA'
+        return (
+          <div style={{ position:'fixed', inset:0, zIndex:1001, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.55)', backdropFilter:'blur(4px)' }}
+            onClick={e => e.target===e.currentTarget && setRenewModal(null)}>
+            <div style={{ background:'white', borderRadius:16, width:'100%', maxWidth:420,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid #e2e8f0', overflow:'hidden' }}>
+              <div style={{ padding:'18px 20px 14px', borderBottom:'0.5px solid #f1f5f9',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <div style={{ width:28, height:28, borderRadius:7, background:'#eff6ff',
+                      display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <RotateCcw size={13} color="#0e7fc0"/>
+                    </div>
+                    <span style={{ fontSize:14, fontWeight:700, color:'#0f172a' }}>Renew certificate</span>
+                  </div>
+                  <div style={{ fontSize:11, color:'#94a3b8', marginTop:4, marginLeft:36,
+                    fontFamily:'monospace' }}>{renewModal.domain}</div>
+                </div>
+                <button onClick={() => setRenewModal(null)}
+                  style={{ background:'#f8fafc', border:'0.5px solid #e2e8f0', borderRadius:7,
+                    cursor:'pointer', color:'#94a3b8', padding:'5px', display:'flex' }}>
+                  <X size={14}/>
+                </button>
+              </div>
+              <div style={{ padding:'16px 20px 20px', display:'flex', flexDirection:'column', gap:10 }}>
+                <div style={{ fontSize:12, color:'#64748b', marginBottom:4 }}>
+                  How would you like to renew this certificate?
+                </div>
+                {caUrl && (
+                  <button onClick={() => { window.open(caUrl, '_blank', 'noopener'); setRenewModal(null) }}
+                    style={{ display:'flex', alignItems:'flex-start', gap:14, padding:'14px 16px',
+                      borderRadius:10, border:'1.5px solid #e2e8f0', background:'white',
+                      cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor='#0e7fc0'; e.currentTarget.style.background='#f0f9ff' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor='#e2e8f0'; e.currentTarget.style.background='white' }}>
+                    <div style={{ width:34, height:34, borderRadius:8, background:'#f1f5f9',
+                      display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <ExternalLink size={15} color="#475569"/>
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:13, fontWeight:700, color:'#0f172a', marginBottom:3 }}>Renew via {caName}</div>
+                      <div style={{ fontSize:11, color:'#64748b', lineHeight:1.5 }}>
+                        Log into {caName} and renew there. Re-sync SSLVault after to update this view.
+                      </div>
+                      <div style={{ fontSize:10, color:'#94a3b8', marginTop:4, fontFamily:'monospace' }}>{caUrl}</div>
+                    </div>
+                  </button>
+                )}
+                <button onClick={() => {
+                    if (renewModal.domain) sessionStorage.setItem('prefill_domain', renewModal.domain)
+                    setRenewModal(null)
+                    nav('/buy')
+                  }}
+                  style={{ display:'flex', alignItems:'flex-start', gap:14, padding:'14px 16px',
+                    borderRadius:10, border:'1.5px solid #e2e8f0', background:'white',
+                    cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor='#16a34a'; e.currentTarget.style.background='#f0fdf4' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor='#e2e8f0'; e.currentTarget.style.background='white' }}>
+                  <div style={{ width:34, height:34, borderRadius:8, background:'#f0fdf4',
+                    display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <Shield size={15} color="#16a34a"/>
+                  </div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:13, fontWeight:700, color:'#0f172a', marginBottom:3 }}>
+                      Renew via SSLVault
+                      <span style={{ marginLeft:7, fontSize:9, fontWeight:700, padding:'2px 7px',
+                        borderRadius:20, background:'#f0fdf4', color:'#16a34a',
+                        border:'0.5px solid #bbf7d0' }}>Recommended</span>
+                    </div>
+                    <div style={{ fontSize:11, color:'#64748b', lineHeight:1.5 }}>
+                      Issue a fresh certificate via GoGetSSL with auto-DNS validation and auto-install. Domain pre-filled.
+                    </div>
+                    <div style={{ fontSize:10, color:'#16a34a', marginTop:5, fontWeight:600,
+                      display:'flex', alignItems:'center', gap:4 }}>
+                      <Check size={10}/> DigiCert trust chain · ~5 min · auto-installs
+                    </div>
+                  </div>
+                </button>
+                <button onClick={() => setRenewModal(null)}
+                  style={{ fontSize:12, color:'#94a3b8', background:'none', border:'none',
+                    cursor:'pointer', fontFamily:'inherit', padding:'6px 0', textAlign:'center' }}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ── Delete confirm modal ── */}
       {delConfirm && (
