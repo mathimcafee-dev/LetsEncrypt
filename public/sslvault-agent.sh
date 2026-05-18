@@ -461,7 +461,9 @@ process_job() {
     fi
 
     local is_renewal="false"
-    [ "$job_type" = "renew" ] && is_renewal="true"
+    # Both 'renew' and 'reissue' replace the cert with a new key pair.
+    # Always use atomic write + openssl verification to prevent cert/key mismatch on disk.
+    if [ "$job_type" = "renew" ] || [ "$job_type" = "reissue" ]; then is_renewal="true"; fi
 
     if ! write_cert_files "$domain" "$cert_pem" "$key_pem" "$is_renewal"; then
       report_result "$job_id" "false" "Failed to write cert files" "$ws"
