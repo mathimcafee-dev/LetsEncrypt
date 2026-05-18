@@ -264,17 +264,30 @@ function GoGetSSLTab({ tok, nav }) {
   const [orders,  setOrders]  = useState([])
   const [loading, setLoading] = useState(true)
   const [filter,  setFilter]  = useState('all')
-  const [ws,      setWs]      = useState(null)
 
   const load = useCallback(async () => {
     if (!tok) return
     setLoading(true)
     try {
-      const res = await callCA(tok, { action: 'expiry_timeline' })
-      const certs = (res.certs || []).filter(c =>
-        ['gogetssl', 'rapidssl', 'geotrust', 'thawte'].includes((c.ca_source || '').toLowerCase())
-      )
-      setOrders(certs)
+      // ssl_orders is the native GoGetSSL orders table
+      const { data, error } = await supabase
+        .from('ssl_orders')
+        .select('id,domain,product_name,product_code,status,ggs_status,valid_from,valid_till,created_at,order_type,ca_code')
+        .order('valid_till', { ascending: true })
+      if (!error && data) {
+        // Normalise to common shape
+        const normalised = data.map(o => ({
+          id:           o.id,
+          common_name:  o.domain,
+          domain:       o.domain,
+          product_name: o.product_name,
+          expiry_date:  o.valid_till,
+          status:       o.status,
+          ca_source:    'gogetssl',
+          auto_renew:   false,
+        }))
+        setOrders(normalised)
+      }
     } catch (e) { console.error(e) }
     setLoading(false)
   }, [tok])
