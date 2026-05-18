@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import {
-  Shield, Plus, Globe, Server, Activity, TrendingUp, Zap, Lock,
+  Shield, Plus, Globe, Server, Activity, TrendingUp,
   Layout, Download, Settings,
   BookOpen, CreditCard, Info, User, Mail, LogOut, Bell
 } from 'lucide-react'
@@ -21,7 +21,7 @@ import AgentHealth from './AgentHealth'
 import Pricing from './Pricing'
 
 // Default collapsed state — Overview & Account open, rest start open too but user can close
-const DEFAULT_OPEN = { Overview: true, Infrastructure: true, 'CA Management': true, 'Pro Features': true, Resources: true, Account: true }
+const DEFAULT_OPEN = { Overview: true, Infrastructure: true, 'CA Management': true, Resources: true, Account: true }
 
 export default function CLMHome({ user, nav }) {
   const [section, setSection] = useState('dashboard')
@@ -89,8 +89,6 @@ export default function CLMHome({ user, nav }) {
   ]
   const NAV_CA = [
     { id:'ca-intelligence',label:'CA Intelligence', icon:TrendingUp },
-  ]
-  const NAV_PRO = [
   ]
   const NAV_RESOURCES = [
     { id:'install',  label:'Install Guide', icon:Download  },
@@ -265,7 +263,6 @@ export default function CLMHome({ user, nav }) {
             { label:'Overview',       items: NAV_OVERVIEW },
             { label:'Infrastructure', items: NAV_INFRASTRUCTURE },
             { label:'CA Management',  items: NAV_CA },
-            { label:'Pro Features',   items: NAV_PRO,       pro: true },
             { label:'Resources',      items: NAV_RESOURCES },
             { label:'Account',        items: NAV_ACCOUNT },
           ].map(({ label, items, pro }, i) => {
