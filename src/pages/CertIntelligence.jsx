@@ -513,7 +513,7 @@ function ExpiryTimeline({ tok }) {
 }
 
 // ══ TAB 2 — SHADOW IT SCANNER ════════════════════════════════════════
-function ShadowScanner({ tok }) {
+function ShadowScanner({ tok, nav }) {
   const [conns, setConns]       = useState([])
   const [selectedConn, setSelectedConn] = useState(null)
   const [scanning, setScanning] = useState(false)
@@ -573,7 +573,7 @@ function ShadowScanner({ tok }) {
           <div style={{ fontSize: 13, color: '#94a3b8' }}>
             No active DigiCert connections found.{' '}
             <span style={{ color: '#0e7fc0', cursor: 'pointer', textDecoration: 'underline' }}
-              onClick={() => window.location.pathname = '/integrations'}>
+              onClick={() => nav('/integrations')}>
               Connect DigiCert →
             </span>
           </div>
@@ -678,7 +678,7 @@ function ShadowScanner({ tok }) {
               <div style={{ fontSize: 11, color: '#64748b' }}>{fmt(s.expires_at)}</div>
               <div><Tag text={u.label} color={u.color} bg={u.bg}/></div>
               <div style={{ display: 'flex', gap: 4 }}>
-                <button onClick={() => { sessionStorage.setItem('prefill_domain', s.domain); window.location.pathname = '/buy' }}
+                <button onClick={() => { sessionStorage.setItem('prefill_domain', s.domain); nav('/buy') }}
                   title="Import via SSLVault"
                   style={{ fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 5,
                     background: '#f0fdf4', color: '#16a34a', border: '0.5px solid #bbf7d0',
@@ -951,7 +951,7 @@ export default function CertIntelligence({ nav }) {
         ) : (
           <>
             {tab === 'timeline'      && <ExpiryTimeline tok={tok}/>}
-            {tab === 'shadow'        && <ShadowScanner tok={tok}/>}
+            {tab === 'shadow'        && <ShadowScanner tok={tok} nav={nav}/>}
             {tab === 'consolidation' && <ConsolidationAdvisor tok={tok} nav={nav}/>}
           </>
         )}

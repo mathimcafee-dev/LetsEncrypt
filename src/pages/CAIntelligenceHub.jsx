@@ -128,19 +128,23 @@ function OverviewTab({ tok, onSwitchCA }) {
     if (!tok) return
     setLoading(true)
     try {
-      const [tlRes, connRes] = await Promise.all([
+      const [tlRes, connRes, ordersRes] = await Promise.all([
         callCA(tok, { action: 'expiry_timeline' }),
         callImport(tok, { action: 'list_connections' }),
+        supabase.from('ssl_orders').select('id,valid_till,status').eq('status', 'active'),
       ])
-      const certs   = tlRes.certs || []
-      const expired = certs.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d <= 0 }).length
-      const exp7    = certs.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d > 0 && d <= 7 }).length
-      const exp30   = certs.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d > 0 && d <= 30 }).length
-      const exp90   = certs.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d > 0 && d <= 90 }).length
-      const healthy = certs.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d > 90 }).length
+      // Combine imported CA certs + native GoGetSSL ssl_orders
+      const importedCerts = (tlRes.certs || []).map(c => ({ expiry_date: c.expiry_date, ca_source: c.ca_source }))
+      const ggsCerts = (ordersRes.data || []).map(o => ({ expiry_date: o.valid_till, ca_source: 'gogetssl' }))
+      const allCerts = [...importedCerts, ...ggsCerts]
+      const expired = allCerts.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d <= 0 }).length
+      const exp7    = allCerts.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d > 0 && d <= 7 }).length
+      const exp30   = allCerts.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d > 0 && d <= 30 }).length
+      const exp90   = allCerts.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d > 0 && d <= 90 }).length
+      const healthy = allCerts.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d > 90 }).length
       const byCa    = {}
-      certs.forEach(c => { const k = c.ca_source || 'unknown'; byCa[k] = (byCa[k] || 0) + 1 })
-      setStats({ total: certs.length, expired, exp7, exp30, exp90, healthy, byCa })
+      allCerts.forEach(c => { const k = c.ca_source || 'unknown'; byCa[k] = (byCa[k] || 0) + 1 })
+      setStats({ total: allCerts.length, expired, exp7, exp30, exp90, healthy, byCa })
       setConns(connRes.connections || [])
     } catch (e) { console.error(e) }
     setLoading(false)
@@ -754,7 +758,7 @@ function ShadowITTab({ tok, nav }) {
         {conns.length === 0 ? (
           <div style={{ fontSize: 13, color: 'var(--v2-text-3)' }}>
             No active DigiCert connections found.{' '}
-            <button onClick={() => nav('/')} style={{ background: 'none', border: 'none', cursor: 'pointer',
+            <button onClick={() => nav('/integrations')} style={{ background: 'none', border: 'none', cursor: 'pointer',
               color: 'var(--v2-green)', fontSize: 13, padding: 0, textDecoration: 'underline', fontFamily: 'inherit' }}>
               Connect DigiCert in Integrations →
             </button>

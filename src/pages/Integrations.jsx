@@ -1553,7 +1553,6 @@ export default function Integrations({ nav }) {
       body: JSON.stringify({ action: 'delete', user_id: user.id, id })
     })
     setCredentials(c => c.filter(x => x.id !== id))
-    if (selectedDns === id) setSelectedDns(null)
   }
 
   const deleteServer = async (id) => {
@@ -1563,7 +1562,6 @@ export default function Integrations({ nav }) {
       body: JSON.stringify({ action: 'delete', user_id: user.id, id })
     })
     setServers(s => s.filter(x => x.id !== id))
-    if (selectedServer === id) setSelectedServer(null)
   }
 
   const testCred = async (cred) => {
