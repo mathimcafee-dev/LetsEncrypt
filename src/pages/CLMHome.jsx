@@ -133,22 +133,27 @@ export default function CLMHome({ user, nav }) {
     )
   }
 
+  // Sidebar-aware navigation — switches sections instead of URL routing
+  const sideNav = (path) => {
+    const map = { '/buy': 'issue', '/dashboard': 'dashboard', '/integrations': 'integrations',
+      '/keylocker': 'kb', '/install': 'install', '/': 'dashboard' }
+    const mapped = map[path]
+    if (mapped) { navigate(mapped) } else { nav(path) }
+  }
+
   const renderContent = () => {
-    // Dashboard now uses the GGS-enriched LoggedInDashboard (ssl_orders join)
-    if (section === 'dashboard')  return <Dashboard nav={nav}/>
-    if (section === 'issue')      return <BuyCertificate nav={nav} embedded={true} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
-    if (section === 'integrations') return <Integrations nav={nav}/>
-    if (section === 'install')    return <Install nav={nav}/>
-    if (section === 'kb')         return <KnowledgeBase nav={nav}/>
-    if (section === 'about')      return <AboutInner nav={nav}/>
-    if (section === 'contact')    return <ContactInner nav={nav}/>
-    if (section === 'developer')  return <DeveloperInner nav={nav}/>
-    if (section === 'pricing')    return <Pricing nav={nav}/>
+    if (section === 'dashboard')  return <Dashboard nav={sideNav} onIssue={() => navigate('issue')}/>
+    if (section === 'issue')      return <BuyCertificate nav={sideNav} embedded={true} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
+    if (section === 'integrations') return <Integrations nav={sideNav}/>
+    if (section === 'install')    return <Install nav={sideNav}/>
+    if (section === 'kb')         return <KnowledgeBase nav={sideNav}/>
+    if (section === 'about')      return <AboutInner nav={sideNav}/>
+    if (section === 'contact')    return <ContactInner nav={sideNav}/>
+    if (section === 'developer')  return <DeveloperInner nav={sideNav}/>
+    if (section === 'pricing')    return <Pricing nav={sideNav}/>
     if (section === 'servers')    return <ServersPage user={user}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
-    if (section === 'ca-intelligence') return <CAIntelligenceHub nav={nav}/>
-    if (section === 'analytics')     return <AdminAnalytics user={user}/>
-    if (section === 'agent-health')  return <AgentHealth user={user}/>
+    if (section === 'ca-intelligence') return <CAIntelligenceHub nav={sideNav}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>
     if (section === 'agent-health')  return <AgentHealth user={user}/>
     return null

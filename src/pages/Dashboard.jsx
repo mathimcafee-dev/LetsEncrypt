@@ -1404,7 +1404,7 @@ function CertRow({ cert, selected, onClick }) {
   )
 }
 
-function LoggedInDashboard({ user, nav }) {
+function LoggedInDashboard({ user, nav, onIssue }) {
   const [certs,   setCerts]  = useState([])
   const [orders,  setOrders] = useState([])
   const [loading, setLoading]= useState(true)
@@ -1578,7 +1578,7 @@ function LoggedInDashboard({ user, nav }) {
                   <Globe size={12} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'#94a3b8', pointerEvents:'none' }}/>
                 </div>
                 <ScanPqcButton onDone={load}/>
-                <button onClick={() => nav('/buy')}
+                <button onClick={() => onIssue ? onIssue() : nav('/buy')}
                   style={{ display:'flex', alignItems:'center', gap:5, background:'#0e7fc0', color:'white',
                     border:'none', borderRadius:8, padding:'7px 14px', fontSize:11, fontWeight:700,
                     cursor:'pointer', fontFamily:'inherit', boxShadow:'0 2px 6px rgba(14,127,192,0.3)',
@@ -1601,7 +1601,7 @@ function LoggedInDashboard({ user, nav }) {
                 <div style={{ fontSize:13, fontWeight:600, color:'#94a3b8', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
                 <div style={{ fontSize:12, color:'#94a3b8', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
                 {total===0 && (
-                  <button onClick={() => nav('/buy')}
+                  <button onClick={() => onIssue ? onIssue() : nav('/buy')}
                     style={{ background:'#0e7fc0', color:'white', border:'none', borderRadius:7,
                       padding:'9px 18px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
                     Issue your first certificate
@@ -1629,7 +1629,7 @@ function LoggedInDashboard({ user, nav }) {
           <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Quick actions</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
             {[
-              { icon:Shield,    color:'#0e7fc0', bg:'#eff6ff', label:'Issue Certificate', desc:'RapidSSL DV · GoGetSSL · ~5 min',    action:() => nav('/buy') },
+              { icon:Shield,    color:'#0e7fc0', bg:'#eff6ff', label:'Issue Certificate', desc:'RapidSSL DV · GoGetSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
               { icon:Download,  color:'#16a34a', bg:'#f0fdf4', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
               { icon:Activity,  color:'#7c3aed', bg:'#f5f3ff', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
               { icon:Zap,       color:'#d97706', bg:'#fffbeb', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
@@ -1710,7 +1710,7 @@ function MarketingDashboard({ nav }) {
             <button className="v2-btn v2-btn-primary" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => nav('/auth')}>
               <Shield size={14}/> Get started free
             </button>
-            <button className="v2-btn" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => nav('/buy')}>
+            <button className="v2-btn" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => onIssue ? onIssue() : nav('/buy')}>
               Issue SSL Certificate
             </button>
           </div>
@@ -1720,7 +1720,7 @@ function MarketingDashboard({ nav }) {
   )
 }
 
-export default function Dashboard({ nav }) {
+export default function Dashboard({ nav, onIssue }) {
   const { user, loading } = useAuth()
   if (loading) return (
     <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>
@@ -1734,5 +1734,5 @@ export default function Dashboard({ nav }) {
     </div>
   )
   if (!user) return <MarketingDashboard nav={nav}/>
-  return <LoggedInDashboard user={user} nav={nav}/>
+  return <LoggedInDashboard user={user} nav={nav} onIssue={onIssue}/>
 }
