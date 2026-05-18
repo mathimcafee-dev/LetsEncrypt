@@ -298,61 +298,7 @@ function GoGetSSLTab({ tok, nav }) {
   const expired   = orders.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d <= 0 }).length
   const autoRenew = orders.filter(c => c.auto_renew).length
 
-  if (ws === 'orders') {
-    const filtered = orders.filter(c => {
-      if (filter === 'all') return true
-      const d = dLeft(c.expiry_date)
-      if (filter === 'expiring') return d !== null && d > 0 && d <= 30
-      if (filter === 'expired')  return d !== null && d <= 0
-      if (filter === 'healthy')  return d !== null && d > 30
-      return true
-    })
-    return (
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <button className="v2-btn v2-btn-sm" onClick={() => setWs(null)}>← Back</button>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--v2-text)' }}>GoGetSSL — All orders</span>
-          <span style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{orders.length} certs</span>
-        </div>
-        <div className="v2-card">
-          <div className="v2-filter-bar">
-            {[['all','All'],['expiring','Expiring ≤30d'],['expired','Expired'],['healthy','Healthy']].map(([id, lbl]) => (
-              <button key={id} className={`v2-filter-chip ${filter===id?'active':''}`}
-                onClick={() => setFilter(id)}>{lbl}</button>
-            ))}
-            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--v2-text-3)' }}>{filtered.length} shown</span>
-          </div>
-          <div className="v2-list-scroll">
-            {filtered.length === 0
-              ? <div style={{ textAlign: 'center', padding: 40, color: 'var(--v2-text-3)', fontSize: 13 }}>No certs match this filter.</div>
-              : filtered.map((c, i) => {
-                  const d = dLeft(c.expiry_date)
-                  const s = d === null ? 'grey' : d <= 0 ? 'red' : d <= 30 ? 'amber' : 'green'
-                  return (
-                    <div key={i} className={`v2-list-row status-${s}`}>
-                      <div className="v2-row-body">
-                        <div className="v2-row-title-line">
-                          <span className="v2-row-title">{c.common_name || c.domain || '—'}</span>
-                          <ExpiryBadge iso={c.expiry_date}/>
-                        </div>
-                        <div className="v2-row-meta">
-                          <span>{c.product_name || 'SSL Certificate'}</span>
-                          <span className="v2-row-meta-sep">·</span>
-                          <span>Expires {fmt(c.expiry_date)}</span>
-                          {c.auto_renew && <><span className="v2-row-meta-sep">·</span><span style={{ color: '#10b981' }}>Auto-renew</span></>}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })
-            }
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Inline cert table — show directly, no launcher
+  // Inline cert table
   const filtered = orders.filter(c => {
     if (filter === 'all') return true
     const d = dLeft(c.expiry_date)
@@ -481,7 +427,7 @@ function DigiCertTab({ tok }) {
 
   const disconnect = async () => {
     await callImport(tok, { action: 'delete_connection', ca_type: 'digicert' })
-    setApiKey(''); setWs(null); setPf([])
+    setApiKey(''); setPf([])
   }
 
   const loadPf = useCallback(async () => {
@@ -568,7 +514,7 @@ function DigiCertTab({ tok }) {
           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
             Certificate inventory
           </span>
-          <button className="v2-btn v2-btn-sm" onClick={() => { setWs('portfolio'); loadPf() }} disabled={loadingPf}>
+          <button className="v2-btn v2-btn-sm" onClick={() => loadPf()} disabled={loadingPf}>
             {loadingPf ? <><Spinner/> Loading…</> : <><RefreshCw size={11}/> Fetch from CertCentral</>}
           </button>
         </div>
