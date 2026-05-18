@@ -85,29 +85,6 @@ const PLANS = [
       { t: 'Priority email support', y: true },
     ],
   },
-  {
-    name: 'Reseller',
-    price: '$99',
-    per: '/month · billed annually',
-    color: '#a78bfa',
-    border: 'rgba(167,139,250,0.28)',
-    desc: 'Full 3-tier reseller platform. Manage sub-resellers and end customers at scale.',
-    highlight: false,
-    cta: 'Start Reseller',
-    certNote: 'Volume pricing on request',
-    features: [
-      { t: 'Everything in Pro', y: true },
-      { t: '3-tier: Master Admin → Sub-reseller → End Customer', y: true },
-      { t: 'Sub-reseller invite, approval & management', y: true },
-      { t: 'Per-reseller portal with custom branding', y: true },
-      { t: 'Excel export of all reseller orders', y: true },
-      { t: 'Approval email notifications to sub-resellers', y: true },
-      { t: 'Magic link invite → set-password auth flow', y: true },
-      { t: 'Volume certificate pricing (GoGetSSL)', y: true },
-      { t: 'Dedicated account manager', y: true },
-      { t: 'SLA support', y: true },
-    ],
-  },
 ]
 
 const CERT_PRICES = [
