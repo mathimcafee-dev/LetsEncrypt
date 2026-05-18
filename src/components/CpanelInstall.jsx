@@ -65,6 +65,7 @@ function ServerTypeCard({icon,title,description,selected,onClick}) {
 export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
   const [tok,setTok] = useState('')
   const [phase,setPhase] = useState('select_type')
+  const [installResult,setInstallResult] = useState(null)
   const [serverType,setServerType] = useState('cpanel')
   const [savedServers,setSavedServers] = useState([])
   const [selectedServer,setSelectedServer] = useState(null)
