@@ -171,18 +171,21 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   // Auto-poll for active status when DNS was auto-added — no manual click needed
   useEffect(() => {
-    if (step !== 'dv' || !ord?.order_id || !ord?.dns_auto_added) return
+    if (step !== 'dv' || !ord?.order_id) return
     let n = 0
     const iv = setInterval(async () => {
       n++
       try {
         const s = await call('check_status', { order_id: ord.order_id })
-        if (s.status === 'active') { setStep('done'); clearInterval(iv) }
+        // check_status returns live GGS data — accept active from either field
+        if (s.status === 'active' || s.ggs_status === 'active') {
+          setStep('done'); clearInterval(iv)
+        }
       } catch {}
-      if (n >= 24) clearInterval(iv) // stop after 2 min
+      if (n >= 120) clearInterval(iv) // stop after 10 min max
     }, 5000)
     return () => clearInterval(iv)
-  }, [step, ord?.order_id, ord?.dns_auto_added])
+  }, [step, ord?.order_id])
 
   const call = async (action, extra = {}) => {
     const { data: { session } } = await supabase.auth.getSession()
