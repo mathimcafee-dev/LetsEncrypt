@@ -3,9 +3,23 @@ import { supabase } from '../lib/supabase'
 import { Shield, TrendingUp, Users, Activity, RefreshCw, Award, AlertTriangle, CheckCircle } from 'lucide-react'
 import '../styles/design-v2.css'
 
+const APPROVAL_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/user-approval'
+
+async function callApproval(tok, body) {
+  const r = await fetch(APPROVAL_FN, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok },
+    body: JSON.stringify(body),
+  })
+  return r.json()
+}
+
 export default function AdminAnalytics({ user }) {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [requests, setRequests] = useState([])
+  const [reqLoading, setReqLoading] = useState(false)
+  const [actionMsg, setActionMsg] = useState('')
 
   const load = async () => {
     setLoading(true)
@@ -34,7 +48,32 @@ export default function AdminAnalytics({ user }) {
     setLoading(false)
   }
 
-  useEffect(()=>{if(user)load()},[user])
+  const loadRequests = async () => {
+    setReqLoading(true)
+    const { data: { session } } = await supabase.auth.getSession()
+    const tok = session?.access_token || ''
+    const r = await callApproval(tok, { action: 'list_pending' })
+    if (r.ok) setRequests(r.requests || [])
+    setReqLoading(false)
+  }
+
+  const handleApprove = async (userId) => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const r = await callApproval(session.access_token, { action: 'approve', user_id: userId })
+    if (r.ok) { setActionMsg('Approved — user notified by email'); loadRequests() }
+    else setActionMsg('Error: ' + r.error)
+  }
+
+  const handleReject = async (userId, email) => {
+    const reason = window.prompt(`Reject ${email}?\nEnter reason (optional):`, 'Access not granted at this time.')
+    if (reason === null) return // cancelled
+    const { data: { session } } = await supabase.auth.getSession()
+    const r = await callApproval(session.access_token, { action: 'reject', user_id: userId, reason })
+    if (r.ok) { setActionMsg('Rejected — user notified by email'); loadRequests() }
+    else setActionMsg('Error: ' + r.error)
+  }
+
+  useEffect(()=>{if(user){ load(); loadRequests() }},[user])
 
   if (loading) return <div className="v2-page"><div className="v2-container" style={{paddingTop:40,textAlign:'center',color:'var(--v2-text-3)'}}>Loading analytics…</div></div>
 
@@ -49,6 +88,82 @@ export default function AdminAnalytics({ user }) {
             <p className="v2-subtitle" style={{fontSize:13,marginTop:4}}>Live platform metrics — certificate portfolio health and operational status</p>
           </div>
           <button className="v2-btn" onClick={load}><RefreshCw size={13}/> Refresh</button>
+        </div>
+
+        {/* Signup requests */}
+        <div style={{marginBottom:24}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+            <div>
+              <div style={{fontSize:15,fontWeight:700,color:'var(--v2-text)'}}>Signup requests</div>
+              <div style={{fontSize:12,color:'var(--v2-text-3)',marginTop:2}}>New users waiting for your approval</div>
+            </div>
+            <button className="v2-btn v2-btn-sm" onClick={loadRequests} disabled={reqLoading}>
+              <RefreshCw size={11}/> Refresh
+            </button>
+          </div>
+          {actionMsg && (
+            <div style={{padding:'8px 12px',borderRadius:6,background:actionMsg.startsWith('Error')?'#fef2f2':'#f0fdf4',
+              border:`0.5px solid ${actionMsg.startsWith('Error')?'#fecaca':'#bbf7d0'}`,
+              color:actionMsg.startsWith('Error')?'#dc2626':'#16a34a',fontSize:12,marginBottom:10,
+              display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              {actionMsg}
+              <button onClick={()=>setActionMsg('')} style={{background:'none',border:'none',cursor:'pointer',fontSize:14,lineHeight:1}}>×</button>
+            </div>
+          )}
+          {reqLoading ? (
+            <div style={{padding:'20px',textAlign:'center',color:'var(--v2-text-3)',fontSize:13}}>Loading…</div>
+          ) : requests.filter(r=>r.status==='pending').length === 0 ? (
+            <div style={{padding:'16px',background:'var(--v2-surface-2)',borderRadius:8,border:'0.5px solid var(--v2-border)',
+              textAlign:'center',color:'var(--v2-text-3)',fontSize:13}}>
+              No pending signup requests
+            </div>
+          ) : (
+            <div style={{border:'0.5px solid var(--v2-border)',borderRadius:8,overflow:'hidden'}}>
+              <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',padding:'8px 16px',
+                background:'var(--v2-surface-2)',borderBottom:'0.5px solid var(--v2-border)'}}>
+                {['Email','Status','Requested','Actions'].map(h=>(
+                  <div key={h} style={{fontSize:10,fontWeight:700,color:'var(--v2-text-3)',textTransform:'uppercase',letterSpacing:'0.4px'}}>{h}</div>
+                ))}
+              </div>
+              {requests.map((req,i)=>(
+                <div key={req.id} style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',
+                  padding:'10px 16px',borderBottom:i<requests.length-1?'0.5px solid var(--v2-border)':'none',
+                  background:i%2===0?'transparent':'var(--v2-surface-2)',alignItems:'center'}}>
+                  <div style={{fontSize:12,fontWeight:500,color:'var(--v2-text)'}}>{req.email}</div>
+                  <div>
+                    <span style={{fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:20,
+                      background:req.status==='pending'?'#fffbeb':req.status==='approved'?'#f0fdf4':'#fef2f2',
+                      color:req.status==='pending'?'#d97706':req.status==='approved'?'#16a34a':'#dc2626',
+                      border:`0.5px solid ${req.status==='pending'?'#fde68a':req.status==='approved'?'#bbf7d0':'#fecaca'}`}}>
+                      {req.status}
+                    </span>
+                  </div>
+                  <div style={{fontSize:11,color:'var(--v2-text-3)'}}>
+                    {new Date(req.requested_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+                  </div>
+                  <div style={{display:'flex',gap:6}}>
+                    {req.status==='pending' && (<>
+                      <button onClick={()=>handleApprove(req.user_id)}
+                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #bbf7d0',
+                          background:'#f0fdf4',color:'#16a34a',cursor:'pointer',fontWeight:600}}>
+                        ✓ Approve
+                      </button>
+                      <button onClick={()=>handleReject(req.user_id,req.email)}
+                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #fecaca',
+                          background:'#fef2f2',color:'#dc2626',cursor:'pointer',fontWeight:600}}>
+                        ✗ Reject
+                      </button>
+                    </>)}
+                    {req.status!=='pending' && (
+                      <span style={{fontSize:11,color:'var(--v2-text-3)'}}>
+                        {req.reviewed_at ? new Date(req.reviewed_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '—'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Primary metrics */}
