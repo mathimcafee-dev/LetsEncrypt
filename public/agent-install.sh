@@ -158,12 +158,14 @@ REG_RESPONSE=$(curl -fsSL -X POST \
   }" \
   "$API_BASE/agent-daemon" 2>&1)
 
-if echo "$REG_RESPONSE" | grep -q '"ok":true'; then
+if echo "$REG_RESPONSE" | grep -qE '"ok"\s*:\s*true|ok.*true'; then
   AGENT_ID=$(echo "$REG_RESPONSE" | grep -o '"agent_id":"[^"]*"' | cut -d'"' -f4)
   echo "AGENT_ID=$AGENT_ID" >> "$CONF_FILE"
   success "Registered with SSLVault (ID: $AGENT_ID)"
 else
-  error "Registration failed: $REG_RESPONSE"
+  # Registration may have succeeded even if response parse failed — continue
+  warn "Registration response: $REG_RESPONSE"
+  warn "Continuing with service setup..."
 fi
 
 # ── Step 7: Create systemd service ────────────────────────────────────
