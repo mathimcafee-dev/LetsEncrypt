@@ -24,6 +24,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
   const [agents, setAgents] = useState([])
   const [selectedAgent, setSelectedAgent] = useState(null)
   const [dispatching, setDispatching] = useState(false)
+  const [elapsed, setElapsed] = useState(0)
   const [dispatchedJobId, setDispatchedJobId] = useState(null)
   const [jobStatus, setJobStatus] = useState(null) // null | 'queued' | 'claimed' | 'success' | 'failed'
   const [jobError, setJobError] = useState('')
@@ -106,6 +107,14 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
     return () => clearInterval(iv)
     // eslint-disable-next-line
   }, [dispatchedJobId, jobStatus, userId])
+
+  // Elapsed time counter
+  useEffect(() => {
+    if (!dispatchedJobId || jobStatus === 'success' || jobStatus === 'failed') return
+    setElapsed(0)
+    const iv = setInterval(() => setElapsed(e => e + 1), 1000)
+    return () => clearInterval(iv)
+  }, [dispatchedJobId, jobStatus])
 
   // Also poll for new agents when in "no agents" state (so once user runs the install
   // command, this modal auto-detects the new server)
@@ -215,7 +224,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                       },
                       {
                         label: 'Agent polling for job',
-                        sub: jobStatus === 'claimed' || jobStatus === 'success' ? 'Job received' : 'Checking every 5 minutes…',
+                        sub: jobStatus === 'claimed' || jobStatus === 'success' ? 'Job received' : ,
                         done: jobStatus === 'claimed' || jobStatus === 'success',
                         active: jobStatus === 'queued'
                       },
