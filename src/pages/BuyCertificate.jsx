@@ -610,7 +610,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 : <AlertTriangle size={12} style={{ color: '#f87171', flexShrink: 0, marginTop: 1 }}/>}
               <span style={{ fontSize: 11, color: res.dns_auto.ok ? '#34d399' : '#f87171', lineHeight: 1.5 }}>
                 {res.dns_auto.ok
-                  ? `Record added via ${res.dns_auto.provider}. Wait 1–2 minutes, then click Check Status.`
+                  ? `Record added via ${res.dns_auto.provider}. Checking automatically every 5 seconds…`
                   : res.dns_auto.message}
               </span>
             </div>
@@ -632,7 +632,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(52,211,153,0.1)',
                 border: '0.5px solid rgba(52,211,153,0.3)', borderRadius: 7, padding: '10px 18px',
                 fontSize: 13, color: '#34d399', fontWeight: 500 }}>
-                <RefreshCw size={13} className="spin"/> DNS auto-added via {ord.dns_provider || 'provider'} — checking every 5s…
+                <RefreshCw size={13} className="spin"/> DNS validated via {ord.dns_provider || 'provider'} — auto-checking every 5s, certificate will appear automatically
               </div>
             ) : (
               <button onClick={addDns} disabled={dns || !(ord.dcv_txt_value || ord.dcv_cname_value)}

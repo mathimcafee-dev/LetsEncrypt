@@ -223,7 +223,7 @@ export default function GetStarted({ nav }) {
                         </div>
                         <p>The script installs your certificate via cPanel's UAPI. <strong>Delete the file immediately after.</strong></p>
                       </Step>
-                      <button className="v2-btn v2-btn-primary" onClick={() => nav('/shared-hosting')} style={{ marginTop: 8 }}>
+                      <button className="v2-btn v2-btn-primary" onClick={() => nav('/shared-hosting-guide')} style={{ marginTop: 8 }}>
                         Full cPanel Guide <ArrowRight size={13}/>
                       </button>
                     </>

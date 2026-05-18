@@ -1643,443 +1643,319 @@ export default function Integrations({ nav }) {
 
   return (
     <div style={{ background:'var(--v2-surface-3)', minHeight:'100vh' }}>
-      <div style={{ maxWidth:1140, margin:'0 auto', padding:'28px 24px 80px' }}>
+      <div style={{ maxWidth:980, margin:'0 auto', padding:'28px 24px 80px' }}>
+
+        {/* ── Modals ── */}
         {showAddDns  && <UnifiedSetupModal userId={user?.id} defaultMode="dns"    onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddDns(false)} />}
         {showAddSrv  && <UnifiedSetupModal userId={user?.id} defaultMode="server" onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddSrv(false)} />}
         {showAddBoth && <UnifiedSetupModal userId={user?.id} defaultMode="both"   onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddBoth(false)} />}
         {editServer  && <UnifiedSetupModal userId={user?.id} defaultMode="server" onSave={loadServers} onClose={() => setEditServer(null)} editServer={editServer} />}
         {agentServer && <InstallAgentModal server={agentServer} userId={user?.id} onClose={() => setAgentServer(null)} onRegistered={loadAgents} />}
 
-        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:4, flexWrap:'wrap', gap:12 }}>
-          <div>
-            <h1 className="v2-h1" style={{ fontSize:22, letterSpacing:'-0.3px' }}>Integrations</h1>
-            <p style={{ fontSize:13, color:'var(--v2-text-3)', marginTop:4 }}>
-              DNS credentials, server access &amp; CA connections — all in one place
-            </p>
-          </div>
-          {tab !== 'ca' && (
-            <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-              {/* View toggle */}
-              <div style={{ display:'flex', background:'var(--v2-surface-3)', borderRadius:8,
-                border:'0.5px solid var(--v2-border)', padding:3, gap:2 }}>
-                {[['table', Table2], ['list', LayoutList]].map(([mode, Icon]) => (
-                  <button key={mode} onClick={() => setViewMode(mode)}
-                    style={{ display:'flex', alignItems:'center', padding:'5px 8px', borderRadius:6,
-                      border:'none', cursor:'pointer', fontFamily:'inherit',
-                      background: viewMode===mode ? 'var(--v2-surface)' : 'transparent',
-                      color: viewMode===mode ? 'var(--v2-text)' : 'var(--v2-text-3)',
-                      boxShadow: viewMode===mode ? '0 1px 3px rgba(0,0,0,0.08)' : 'none' }}>
-                    <Icon size={13}/>
-                  </button>
-                ))}
-              </div>
-              <button className="v2-btn" onClick={() => setShowAddDns(true)}
-                style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:12, fontWeight:500 }}>
-                <Plus size={13} strokeWidth={2}/> {tab === 'dns' ? 'DNS only' : 'Server only'}
-              </button>
-              <button className="v2-btn v2-btn-primary" onClick={() => setShowAddBoth(true)}
-                style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:12, fontWeight:600 }}>
-                <Zap size={13} strokeWidth={2}/> DNS + Server
-              </button>
-            </div>
-          )}
-          {tab === 'ca' && (
-            <div style={{ display:'flex', gap:8 }}>
-              <button className="v2-btn" onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}>
-                <Upload size={13}/> Paste PEM
-              </button>
-              <button className="v2-btn v2-btn-primary" onClick={() => setShowAdd(true)}>
-                <Plus size={13}/> Connect CA
-              </button>
-            </div>
-          )}
+        {/* ── Header ── */}
+        <div style={{ marginBottom:24 }}>
+          <h1 className="v2-h1" style={{ fontSize:22, letterSpacing:'-0.3px', marginBottom:4 }}>Integrations</h1>
+          <p style={{ fontSize:13, color:'var(--v2-text-3)' }}>Connect DNS providers, servers, and external CAs for fully automated certificate lifecycle management</p>
         </div>
 
-        <Tabs tab={tab} setTab={setTab} counts={counts} />
+        {/* ── Tabs ── */}
+        <div style={{ display:'flex', gap:2, background:'var(--v2-surface-2)', borderRadius:10, padding:4, marginBottom:24, width:'fit-content',
+          border:'0.5px solid var(--v2-border)' }}>
+          {[
+            { id:'dns',     label:'DNS Providers', count:credentials.length,  icon:Globe  },
+            { id:'servers', label:'Servers',        count:servers.length,      icon:Server },
+            { id:'ca',      label:'CA Connections', count:connections.length,  icon:Shield },
+          ].map(({ id, label, count, icon:Icon }) => (
+            <button key={id} onClick={() => setTab(id)}
+              style={{ display:'flex', alignItems:'center', gap:7, padding:'8px 16px', borderRadius:7,
+                fontSize:13, fontWeight: tab===id ? 600 : 400, fontFamily:'inherit', border:'none', cursor:'pointer',
+                background: tab===id ? 'var(--v2-surface)' : 'transparent',
+                color: tab===id ? 'var(--v2-text)' : 'var(--v2-text-3)',
+                boxShadow: tab===id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                transition:'all .15s' }}>
+              <Icon size={14} strokeWidth={tab===id?2:1.8}/>
+              {label}
+              {count > 0 && <span style={{ fontSize:10, fontWeight:700, padding:'1px 6px', borderRadius:8,
+                background: tab===id ? 'var(--v2-green)' : 'var(--v2-border)',
+                color: tab===id ? 'white' : 'var(--v2-text-3)' }}>{count}</span>}
+            </button>
+          ))}
+        </div>
 
-        {/* DNS + Servers split layout */}
-        {tab !== 'ca' && <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1.5fr) minmax(0,1fr)', gap:14, marginTop:4, alignItems:'start' }}>
-
-          {/* ── Left: Domain list (table or card view) ── */}
+        {/* ══ DNS PROVIDERS TAB ══════════════════════════════════════════════════ */}
+        {tab === 'dns' && (
           <div>
-          {/* TABLE VIEW */}
-          {viewMode === 'table' && !loading && domainGroups.length > 0 && (
-            <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
-              borderRadius:12, overflow:'hidden' }}>
-              {/* Table header */}
-              <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 100px 80px',
-                padding:'8px 16px', background:'var(--v2-surface-2)',
-                borderBottom:'0.5px solid var(--v2-border)', alignItems:'center' }}>
-                {['Domain', 'DNS provider', 'Server', 'Type', 'Status'].map(h => (
-                  <div key={h} style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)',
-                    textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
-                ))}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <div>
+                <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>DNS Providers</div>
+                <div style={{ fontSize:12, color:'var(--v2-text-3)', marginTop:2 }}>Used for automatic DNS validation when issuing certificates</div>
               </div>
-              {domainGroups.map((g, i) => {
-                const { domain, dns, server } = g
-                const hasBoth = dns && server
-                const dnsOnly = dns && !server
-                const p = dns ? (PROVIDERS[dns.provider] || { name: dns.provider, mono:'?', color:'#475569' }) : null
-                const t = server ? (SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel) : null
-                const TIcon = t?.Icon
-                const dnsStatus = dns ? (credStatus[dns.id] || 'untested') : null
-                const agent = server ? agents.find(a => a.server_id === server.id) : null
-                const agentActive = agent?.last_seen_at
-                  ? (Date.now() - new Date(agent.last_seen_at).getTime()) / 60000 < 15 : false
-                const statusColor = hasBoth ? (dnsStatus==='healthy'&&agentActive?'#16a34a':'#d97706')
-                  : dnsOnly ? (dnsStatus==='healthy'?'#16a34a':dnsStatus==='expired'?'#dc2626':'#94a3b8')
-                  : (agentActive?'#16a34a':'#94a3b8')
-                const statusLabel = hasBoth ? (dnsStatus==='healthy'&&agentActive?'Ready':'Partial')
-                  : dnsOnly ? (dnsStatus==='healthy'?'Active':dnsStatus==='expired'?'Expired':'Untested')
-                  : (agentActive?'Agent live':'No agent')
-                const typeColor = hasBoth?'#1d4ed8':dnsOnly?'#16a34a':'#64748b'
-                const typeLabel = hasBoth?'DNS+Server':dnsOnly?'DNS only':'Server only'
-                return (
-                  <div key={domain}
-                    onClick={() => setSelectedDomain(selectedDomain===domain?null:domain)}
-                    style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 100px 80px',
-                      padding:'11px 16px', alignItems:'center', cursor:'pointer',
-                      borderBottom: i < domainGroups.length-1 ? '0.5px solid var(--v2-border)' : 'none',
-                      background: selectedDomain===domain ? 'var(--v2-surface-3)' : 'transparent',
-                      borderLeft: selectedDomain===domain ? '2px solid var(--v2-green)' : '2px solid transparent',
-                      transition:'all .12s' }}
-                    onMouseEnter={e => { if(selectedDomain!==domain) e.currentTarget.style.background='var(--v2-hover)' }}
-                    onMouseLeave={e => { e.currentTarget.style.background=selectedDomain===domain?'var(--v2-surface-3)':'transparent' }}>
-                    {/* Domain */}
-                    <div style={{ display:'flex', alignItems:'center', gap:10, minWidth:0 }}>
-                      <div style={{ width:30, height:30, borderRadius:7, flexShrink:0, overflow:'hidden',
-                        background: p?.color || t?.color || '#64748b',
-                        display:'flex', alignItems:'center', justifyContent:'center',
-                        fontSize:10, fontWeight:700, color:'white' }}>
-                        {p?.mono || (TIcon ? <TIcon size={14} color="white"/> : '?')}
-                      </div>
-                      <span style={{ fontSize:12, fontWeight:600, fontFamily:'monospace',
-                        color:'var(--v2-text)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                        {domain}
-                      </span>
-                    </div>
-                    {/* DNS */}
-                    <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>
-                      {p ? <span style={{ display:'flex', alignItems:'center', gap:4 }}>
-                        <span style={{ width:6, height:6, borderRadius:'50%', background:p.color, flexShrink:0 }}/>
-                        {p.name}
-                      </span> : <span style={{ color:'var(--v2-text-3)' }}>—</span>}
-                    </div>
-                    {/* Server */}
-                    <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>
-                      {t ? <span style={{ display:'flex', alignItems:'center', gap:4 }}>
-                        {TIcon && <TIcon size={11} color={t.color} style={{ flexShrink:0 }}/>}
-                        {t.short}
-                      </span> : <span style={{ color:'var(--v2-text-3)' }}>—</span>}
-                    </div>
-                    {/* Type badge */}
-                    <div>
-                      <span style={{ fontSize:9, fontWeight:700, padding:'2px 8px', borderRadius:20,
-                        background:typeColor+'18', color:typeColor, border:`0.5px solid ${typeColor}44` }}>
-                        {typeLabel}
-                      </span>
-                    </div>
-                    {/* Status */}
-                    <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-                      <span style={{ width:6, height:6, borderRadius:'50%', background:statusColor, flexShrink:0 }}/>
-                      <span style={{ fontSize:11, color:statusColor, fontWeight:500 }}>{statusLabel}</span>
-                    </div>
-                  </div>
-                )
-              })}
+              <button className="v2-btn v2-btn-primary" onClick={() => setShowAddDns(true)}
+                style={{ display:'flex', alignItems:'center', gap:6, padding:'9px 16px', fontSize:12, fontWeight:600 }}>
+                <Plus size={13}/> Add DNS Provider
+              </button>
             </div>
-          )}
-          {/* CARD VIEW (original) — only shown in list mode */}
-          {(viewMode === 'list' || loading || domainGroups.length === 0) && <div>
+
             {loading ? (
-              <ListPanel>
-                <div style={{ padding:'48px 16px', textAlign:'center', fontSize:12, color:'var(--v2-text-3)' }}>
-                  <RefreshCw size={18} style={{ color:'var(--v2-text-3)', animation:'spin 1s linear infinite', marginBottom:10, display:'block', margin:'0 auto 10px' }}/>
-                  Loading domains…
+              <div style={{ padding:'48px 0', textAlign:'center', color:'var(--v2-text-3)', fontSize:13 }}>
+                <RefreshCw size={18} className="spin" style={{ marginBottom:8, display:'block', margin:'0 auto 8px' }}/>
+                Loading…
+              </div>
+            ) : credentials.length === 0 ? (
+              <div style={{ background:'var(--v2-surface)', border:'1px dashed var(--v2-border)', borderRadius:12,
+                padding:'48px 24px', textAlign:'center' }}>
+                <Globe size={32} style={{ color:'var(--v2-text-3)', marginBottom:12 }}/>
+                <div style={{ fontSize:14, fontWeight:600, color:'var(--v2-text)', marginBottom:6 }}>No DNS providers connected</div>
+                <div style={{ fontSize:12, color:'var(--v2-text-3)', marginBottom:16, maxWidth:360, margin:'0 auto 16px' }}>
+                  Connect Cloudflare, Vercel, GoDaddy, or DigitalOcean to auto-validate DNS when issuing certs
                 </div>
-              </ListPanel>
-            ) : domainGroups.length === 0 ? (
-              <ListPanel>
-                <EmptyState
-                  icon={Globe}
-                  title="No domains configured yet"
-                  desc="Add a DNS provider, a server, or both to get started. SSLVault will handle cert issuance and installation automatically."
-                  ctaLabel="Add DNS + Server"
-                  onCta={() => setShowAddBoth(true)}
-                />
-              </ListPanel>
+                <button className="v2-btn v2-btn-primary" onClick={() => setShowAddDns(true)}>
+                  <Plus size={13}/> Connect DNS Provider
+                </button>
+              </div>
             ) : (
-              <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-                {/* DNS + Server group */}
-                {domainGroups.filter(g => g.dns && g.server).length > 0 && (
-                  <ListPanel>
-                    <SectionLabel label="DNS + Server · Full automation" icon={Zap} color="#1d4ed8"
-                      count={domainGroups.filter(g=>g.dns&&g.server).length}/>
-                    <div style={{ padding:'8px 10px 10px' }}>
-                      {domainGroups.filter(g => g.dns && g.server).map(g => (
-                        <DomainRow key={g.domain} group={g}
-                          selected={selectedDomain === g.domain}
-                          onSelect={setSelectedDomain}
-                          credStatus={credStatus} agents={agents}/>
-                      ))}
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(320px,1fr))', gap:12 }}>
+                {credentials.map(cred => {
+                  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono:'?', color:'#475569' }
+                  const st = credStatus[cred.id] || 'untested'
+                  const statusMap = { healthy:{color:'#16a34a',bg:'#f0fdf4',label:'Active'}, expired:{color:'#dc2626',bg:'#fef2f2',label:'Error'}, untested:{color:'#94a3b8',bg:'var(--v2-surface-2)',label:'Untested'} }
+                  const s = statusMap[st] || statusMap.untested
+                  return (
+                    <div key={cred.id} className="v2-card" style={{ padding:0, overflow:'hidden' }}>
+                      {/* Card header */}
+                      <div style={{ display:'flex', alignItems:'center', gap:12, padding:'14px 16px',
+                        borderBottom:'0.5px solid var(--v2-border)', background:'var(--v2-surface-2)' }}>
+                        <div style={{ width:36, height:36, borderRadius:9, background:p.color,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize:11, fontWeight:800, color:'white', flexShrink:0 }}>{p.mono}</div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>{p.name}</div>
+                          <div style={{ fontSize:11, fontFamily:'monospace', color:'var(--v2-text-3)',
+                            overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                            {cred.domain_pattern || 'All domains'}
+                          </div>
+                        </div>
+                        <span style={{ fontSize:10, fontWeight:700, padding:'3px 8px', borderRadius:20,
+                          background:s.bg, color:s.color, border:`0.5px solid ${s.color}30` }}>{s.label}</span>
+                      </div>
+                      {/* Actions */}
+                      <div style={{ display:'flex', gap:8, padding:'10px 14px', alignItems:'center' }}>
+                        <button className="v2-btn v2-btn-sm" onClick={() => testCred(cred)} disabled={testing===cred.id}
+                          style={{ flex:1 }}>
+                          {testing===cred.id ? <><RefreshCw size={11} className="spin"/> Testing…</> : <><Zap size={11}/> Test connection</>}
+                        </button>
+                        {testResult[cred.id] && (
+                          <span style={{ fontSize:10, color: testResult[cred.id].ok?'#16a34a':'#dc2626' }}>
+                            {testResult[cred.id].ok ? '✓ OK' : '✗ '+testResult[cred.id].message?.slice(0,30)}
+                          </span>
+                        )}
+                        <button className="v2-btn v2-btn-sm" onClick={() => deleteCred(cred.id)}
+                          style={{ color:'#dc2626', borderColor:'#fecaca' }}>
+                          <Trash2 size={11}/>
+                        </button>
+                      </div>
                     </div>
-                  </ListPanel>
-                )}
-                {/* DNS Only group */}
-                {domainGroups.filter(g => g.dns && !g.server).length > 0 && (
-                  <ListPanel>
-                    <SectionLabel label="DNS Only" icon={Globe} color="#16a34a"
-                      count={domainGroups.filter(g=>g.dns&&!g.server).length}/>
-                    <div style={{ padding:'8px 10px 10px' }}>
-                      {domainGroups.filter(g => g.dns && !g.server).map(g => (
-                        <DomainRow key={g.domain} group={g}
-                          selected={selectedDomain === g.domain}
-                          onSelect={setSelectedDomain}
-                          credStatus={credStatus} agents={agents}/>
-                      ))}
-                    </div>
-                  </ListPanel>
-                )}
-                {/* Server Only group */}
-                {domainGroups.filter(g => !g.dns && g.server).length > 0 && (
-                  <ListPanel>
-                    <SectionLabel label="Server Only" icon={Server} color="#d97706"
-                      count={domainGroups.filter(g=>!g.dns&&g.server).length}/>
-                    <div style={{ padding:'8px 10px 10px' }}>
-                      {domainGroups.filter(g => !g.dns && g.server).map(g => (
-                        <DomainRow key={g.domain} group={g}
-                          selected={selectedDomain === g.domain}
-                          onSelect={setSelectedDomain}
-                          credStatus={credStatus} agents={agents}/>
-                      ))}
-                    </div>
-                  </ListPanel>
-                )}
+                  )
+                })}
               </div>
             )}
-          </div>}
-          </div>  {/* end left column */}
-
-          {/* ── Center: Detail panel ── */}
-          <div>
-            {selGroup ? (
-              <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-                {/* DNS section */}
-                {selDnsCred && (
-                  <DnsDetail
-                    cred={selDnsCred}
-                    status={credStatus[selDnsCred.id] || 'untested'}
-                    testing={testing === selDnsCred.id}
-                    testResult={testResult[selDnsCred.id]}
-                    onTest={testCred}
-                    onDelete={deleteCred}
-                  />
-                )}
-                {/* Server section */}
-                {selSrv && (
-                  <ServerDetail
-                    server={selSrv}
-                    agent={selSrvAgent}
-                    onDelete={deleteServer}
-                    onEdit={setEditServer}
-                    onInstallAgent={setAgentServer}
-                    userId={user?.id}
-                  />
-                )}
-                {/* Add missing piece CTA */}
-                {selDnsCred && !selSrv && (
-                  <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--v2-surface-2)',
-                    border: '1px dashed var(--v2-border)', borderRadius: 8, textAlign: 'center' }}>
-                    <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 6 }}>
-                      No server saved for this domain
-                    </div>
-                    <button className="v2-btn v2-btn-sm v2-btn-primary"
-                      onClick={() => setShowAddSrv(true)}>
-                      <Plus size={11}/> Add server
-                    </button>
-                  </div>
-                )}
-                {!selDnsCred && selSrv && (
-                  <div style={{ padding: '10px 14px', background: 'var(--v2-surface-2)',
-                    border: '1px dashed var(--v2-border)', borderRadius: 8, textAlign: 'center',
-                    marginBottom: 12 }}>
-                    <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 6 }}>
-                      No DNS provider for this domain
-                    </div>
-                    <button className="v2-btn v2-btn-sm v2-btn-primary"
-                      onClick={() => setShowAddDns(true)}>
-                      <Plus size={11}/> Add DNS provider
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : domainGroups.length > 0 ? (
-              <div className="v2-detail" style={{ textAlign: 'center', padding: '40px 16px' }}>
-                <div style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>Select a domain to see details</div>
-              </div>
-            ) : null}
           </div>
+        )}
 
-        </div>}
+        {/* ══ SERVERS TAB ═══════════════════════════════════════════════════════ */}
+        {tab === 'servers' && (
+          <div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <div>
+                <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>Servers</div>
+                <div style={{ fontSize:12, color:'var(--v2-text-3)', marginTop:2 }}>cPanel, SSH, Plesk servers for automatic certificate installation</div>
+              </div>
+              <button className="v2-btn v2-btn-primary" onClick={() => setShowAddSrv(true)}
+                style={{ display:'flex', alignItems:'center', gap:6, padding:'9px 16px', fontSize:12, fontWeight:600 }}>
+                <Plus size={13}/> Add Server
+              </button>
+            </div>
 
-        {/* ── CA Connections tab ── */}
+            {loading ? (
+              <div style={{ padding:'48px 0', textAlign:'center', color:'var(--v2-text-3)', fontSize:13 }}>
+                <RefreshCw size={18} className="spin" style={{ display:'block', margin:'0 auto 8px' }}/>Loading…
+              </div>
+            ) : servers.length === 0 ? (
+              <div style={{ background:'var(--v2-surface)', border:'1px dashed var(--v2-border)', borderRadius:12,
+                padding:'48px 24px', textAlign:'center' }}>
+                <Server size={32} style={{ color:'var(--v2-text-3)', marginBottom:12 }}/>
+                <div style={{ fontSize:14, fontWeight:600, color:'var(--v2-text)', marginBottom:6 }}>No servers connected</div>
+                <div style={{ fontSize:12, color:'var(--v2-text-3)', marginBottom:16, maxWidth:360, margin:'0 auto 16px' }}>
+                  Add a cPanel, SSH, or Plesk server for one-click certificate installation
+                </div>
+                <button className="v2-btn v2-btn-primary" onClick={() => setShowAddSrv(true)}>
+                  <Plus size={13}/> Add Server
+                </button>
+              </div>
+            ) : (
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(320px,1fr))', gap:12 }}>
+                {servers.map(srv => {
+                  const t = SERVER_TYPES[srv.server_type] || SERVER_TYPES.cpanel
+                  const TIcon = t?.Icon
+                  const agent = agents.find(a => a.server_id === srv.id)
+                  const agentOnline = agent?.last_seen_at
+                    ? (Date.now() - new Date(agent.last_seen_at).getTime()) / 60000 < 15 : false
+                  const agentStatus = !agent ? 'none' : agentOnline ? 'online' : 'offline'
+                  const agentColors = { online:{c:'#16a34a',bg:'#f0fdf4',l:'Agent online'}, offline:{c:'#d97706',bg:'#fffbeb',l:'Agent offline'}, none:{c:'#94a3b8',bg:'var(--v2-surface-2)',l:'No agent'} }
+                  const ag = agentColors[agentStatus]
+                  return (
+                    <div key={srv.id} className="v2-card" style={{ padding:0, overflow:'hidden' }}>
+                      {/* Card header */}
+                      <div style={{ display:'flex', alignItems:'center', gap:12, padding:'14px 16px',
+                        borderBottom:'0.5px solid var(--v2-border)', background:'var(--v2-surface-2)' }}>
+                        <div style={{ width:36, height:36, borderRadius:9, background:t.color+'18',
+                          display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                          {TIcon && <TIcon size={17} color={t.color}/>}
+                        </div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>{srv.nickname || srv.host}</div>
+                          <div style={{ fontSize:11, fontFamily:'monospace', color:'var(--v2-text-3)',
+                            overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                            {t.name} · {srv.host}
+                          </div>
+                        </div>
+                        <span style={{ fontSize:10, fontWeight:700, padding:'3px 8px', borderRadius:20,
+                          background:ag.bg, color:ag.c, border:`0.5px solid ${ag.c}30` }}>{ag.l}</span>
+                      </div>
+                      {/* Domains */}
+                      {srv.domains?.length > 0 && (
+                        <div style={{ padding:'8px 14px', borderBottom:'0.5px solid var(--v2-border)',
+                          display:'flex', flexWrap:'wrap', gap:4 }}>
+                          {srv.domains.slice(0,4).map(d => (
+                            <span key={d} style={{ fontSize:10, fontFamily:'monospace', padding:'2px 7px',
+                              borderRadius:4, background:'var(--v2-surface-3)', color:'var(--v2-text-2)',
+                              border:'0.5px solid var(--v2-border)' }}>{d}</span>
+                          ))}
+                          {srv.domains.length > 4 && <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>+{srv.domains.length-4} more</span>}
+                        </div>
+                      )}
+                      {/* Actions */}
+                      <div style={{ display:'flex', gap:8, padding:'10px 14px', flexWrap:'wrap' }}>
+                        {agentStatus === 'none' && (
+                          <button className="v2-btn v2-btn-sm v2-btn-primary" onClick={() => setAgentServer(srv)}
+                            style={{ flex:1 }}>
+                            <Zap size={11}/> Install Agent
+                          </button>
+                        )}
+                        {agentStatus === 'offline' && (
+                          <button className="v2-btn v2-btn-sm" onClick={() => setAgentServer(srv)} style={{ flex:1 }}>
+                            <RefreshCw size={11}/> Reconnect Agent
+                          </button>
+                        )}
+                        {agentStatus === 'online' && (
+                          <span style={{ fontSize:11, color:'#16a34a', display:'flex', alignItems:'center',
+                            gap:5, flex:1 }}>
+                            <Check size={12}/> Auto-install enabled
+                          </span>
+                        )}
+                        <button className="v2-btn v2-btn-sm" onClick={() => setEditServer(srv)}>
+                          <Edit3 size={11}/>
+                        </button>
+                        <button className="v2-btn v2-btn-sm" onClick={() => deleteServer(srv.id)}
+                          style={{ color:'#dc2626', borderColor:'#fecaca' }}>
+                          <Trash2 size={11}/>
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══ CA CONNECTIONS TAB ═══════════════════════════════════════════════ */}
         {tab === 'ca' && (
-          <div style={{ marginTop: 4 }}>
-            {/* Stat strip */}
+          <div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <div>
+                <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>CA Connections</div>
+                <div style={{ fontSize:12, color:'var(--v2-text-3)', marginTop:2 }}>Import certificate inventory from DigiCert, Sectigo, and SSL.com</div>
+              </div>
+              <div style={{ display:'flex', gap:8 }}>
+                <button className="v2-btn" onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}>
+                  <Upload size={13}/> Paste PEM
+                </button>
+                <button className="v2-btn v2-btn-primary" onClick={() => setShowAdd(true)}>
+                  <Plus size={13}/> Connect CA
+                </button>
+              </div>
+            </div>
+
+            {/* KPI strip */}
             <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:20 }}>
               {[
-                { val: connections.length, label: 'CAs connected',  color: '#16a34a' },
-                { val: certCount,          label: 'Certs tracked',  color: 'var(--v2-text)' },
-                { val: connections.filter(c => c.status !== 'active').length, label: 'Connection errors', color: '#dc2626' },
+                { val:connections.length, label:'CAs connected', color:'#16a34a' },
+                { val:certCount, label:'Certs tracked', color:'var(--v2-text)' },
+                { val:connections.filter(c=>c.status!=='active').length, label:'Connection errors', color:'#dc2626' },
               ].map(({ val, label, color }) => (
-                <div key={label} className="v2-card" style={{ padding:'12px 14px' }}>
-                  <div style={{ fontSize:22, fontWeight:500, color, fontFamily:'monospace' }}>{val}</div>
-                  <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:3 }}>{label}</div>
+                <div key={label} className="v2-stat">
+                  <div className="v2-stat-value" style={{ color }}>{val}</div>
+                  <div className="v2-stat-label">{label}</div>
                 </div>
               ))}
             </div>
 
-            {/* Connected CA cards */}
-            <div className="v2-section-label" style={{ marginBottom:10 }}>Connected CAs</div>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:10, marginBottom:24 }}>
-              {connections.map(conn => {
-                const def = CA_DEFS[conn.ca_type] || {}
-                const res = syncResult[conn.id]
-                return (
-                  <div key={conn.id} className="v2-card" style={{ overflow:'hidden',
-                    borderColor: conn.status === 'active' ? `${def.color||'#64748b'}30` : '#fecaca' }}>
-                    <div style={{ padding:'13px 14px', borderBottom:'0.5px solid var(--v2-border)',
-                      display:'flex', alignItems:'center', gap:10 }}>
-                      <div style={{ width:36, height:36, borderRadius:8, background:def.bg||'#f8fafc',
-                        display:'flex', alignItems:'center', justifyContent:'center',
-                        fontWeight:700, fontSize:12, color:def.color||'#64748b', flexShrink:0 }}>
-                        {def.logo || conn.ca_name?.slice(0,2).toUpperCase() || '?'}
+            {connections.length === 0 ? (
+              <div style={{ background:'var(--v2-surface)', border:'1px dashed var(--v2-border)', borderRadius:12,
+                padding:'48px 24px', textAlign:'center' }}>
+                <Shield size={32} style={{ color:'var(--v2-text-3)', marginBottom:12 }}/>
+                <div style={{ fontSize:14, fontWeight:600, color:'var(--v2-text)', marginBottom:6 }}>No CA connections</div>
+                <div style={{ fontSize:12, color:'var(--v2-text-3)', marginBottom:16, maxWidth:360, margin:'0 auto 16px' }}>
+                  Connect DigiCert CertCentral or Sectigo SCM to import your full certificate portfolio
+                </div>
+                <button className="v2-btn v2-btn-primary" onClick={() => setShowAdd(true)}>
+                  <Plus size={13}/> Connect CA
+                </button>
+              </div>
+            ) : (
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:12 }}>
+                {connections.map(conn => {
+                  const def = CA_DEFS[conn.ca_type] || { name:conn.ca_type, color:'#64748b', bg:'var(--v2-surface-2)', border:'var(--v2-border)', logo:conn.ca_type?.slice(0,2).toUpperCase() }
+                  const res = syncResult[conn.id]
+                  return (
+                    <div key={conn.id} className="v2-card" style={{ padding:0, overflow:'hidden',
+                      borderColor: conn.status==='active' ? `${def.color}30` : '#fecaca' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:12, padding:'14px 16px',
+                        borderBottom:'0.5px solid var(--v2-border)', background: def.bg }}>
+                        <div style={{ width:36, height:36, borderRadius:9, background:def.color,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize:11, fontWeight:800, color:'white', flexShrink:0 }}>{def.logo}</div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>{conn.label || def.name}</div>
+                          <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1 }}>
+                            {conn.status==='active' ? <span style={{ color:'#16a34a' }}>● Connected</span> : <span style={{ color:'#dc2626' }}>● Error</span>}
+                            {conn.cert_count !== undefined && ` · ${conn.cert_count} certs`}
+                          </div>
+                        </div>
                       </div>
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)',
-                          overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                          {conn.label || conn.ca_name}
-                        </div>
-                        <div style={{ fontSize:11, color: conn.status==='active' ? '#16a34a' : '#dc2626', marginTop:2 }}>
-                          <span style={{ display:'inline-block', width:6, height:6, borderRadius:'50%',
-                            background:'currentColor', marginRight:5, verticalAlign:'middle' }}/>
-                          {conn.status==='active' ? `${conn.cert_count||0} certs tracked` : 'Error'}
-                        </div>
-                      </div>
-                      <button onClick={() => setDelConn(conn.id)} style={{ background:'none', border:'none',
-                        cursor:'pointer', color:'var(--v2-text-3)', padding:4, flexShrink:0 }}
-                        onMouseEnter={e => e.currentTarget.style.color='#ef4444'}
-                        onMouseLeave={e => e.currentTarget.style.color='var(--v2-text-3)'}>
-                        <Trash2 size={13}/>
-                      </button>
-                    </div>
-                    <div style={{ padding:'10px 14px' }}>
-                      {conn.error_message && (
-                        <div style={{ fontSize:11, color:'#dc2626', marginBottom:8,
-                          background:'#fef2f2', borderRadius:5, padding:'5px 8px' }}>
-                          {conn.error_message}
-                        </div>
-                      )}
-                      {res && (
-                        <div style={{ fontSize:11, marginBottom:8, padding:'5px 8px', borderRadius:5,
-                          background: res.ok ? '#f0fdf4' : '#fef2f2',
-                          color: res.ok ? '#166534' : '#dc2626' }}>
-                          {res.ok ? `✓ Synced — ${res.imported} imported, ${res.skipped||0} skipped` : `✗ ${res.error}`}
-                        </div>
-                      )}
-                      <div style={{ display:'flex', gap:6 }}>
-                        <div style={{ fontSize:11, color:'var(--v2-text-3)', flex:1, alignSelf:'center' }}>
-                          {conn.last_sync_at ? `Last sync ${fmtDate(conn.last_sync_at)}` : 'Never synced'}
-                        </div>
-                        <button className="v2-btn v2-btn-sm" onClick={() => doSync(conn.id)}
-                          disabled={syncing === conn.id}>
-                          <RefreshCw size={11} style={syncing===conn.id ? {animation:'v2-spin .8s linear infinite'} : {}}/>
-                          {syncing === conn.id ? ' Syncing…' : ' Sync now'}
+                      <div style={{ display:'flex', gap:8, padding:'10px 14px' }}>
+                        <button className="v2-btn v2-btn-sm" onClick={() => doSync(conn.id)} disabled={syncing===conn.id}
+                          style={{ flex:1 }}>
+                          {syncing===conn.id ? <><RefreshCw size={11} className="spin"/> Syncing…</> : <><RefreshCw size={11}/> Sync certs</>}
+                        </button>
+                        {res && <span style={{ fontSize:10, color: res.ok?'#16a34a':'#dc2626', alignSelf:'center' }}>
+                          {res.ok ? `✓ ${res.imported||0} imported` : '✗ '+res.error?.slice(0,25)}
+                        </span>}
+                        <button className="v2-btn v2-btn-sm" onClick={() => setDelConn(conn.id)}
+                          style={{ color:'#dc2626', borderColor:'#fecaca' }}>
+                          <Trash2 size={11}/>
                         </button>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
-
-              {/* Add CA placeholder cards */}
-              {!connections.find(c => c.ca_type==='digicert') && (
-                <div className="v2-card" style={{ borderStyle:'dashed', display:'flex',
-                  alignItems:'center', justifyContent:'center', minHeight:120, cursor:'pointer' }}
-                  onClick={() => { setShowAdd(true); openAdd('digicert') }}>
-                  <div style={{ textAlign:'center' }}>
-                    <div style={{ width:36, height:36, borderRadius:8, background:'#fef2f2',
-                      display:'flex', alignItems:'center', justifyContent:'center',
-                      fontWeight:700, fontSize:12, color:'#dc2626', margin:'0 auto 8px' }}>DC</div>
-                    <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text-2)' }}>Connect DigiCert</div>
-                    <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>CertCentral API</div>
-                  </div>
-                </div>
-              )}
-              {!connections.find(c => c.ca_type==='sectigo') && (
-                <div className="v2-card" style={{ borderStyle:'dashed', display:'flex',
-                  alignItems:'center', justifyContent:'center', minHeight:120, cursor:'pointer' }}
-                  onClick={() => { setShowAdd(true); openAdd('sectigo') }}>
-                  <div style={{ textAlign:'center' }}>
-                    <div style={{ width:36, height:36, borderRadius:8, background:'#f5f3ff',
-                      display:'flex', alignItems:'center', justifyContent:'center',
-                      fontWeight:700, fontSize:12, color:'#7c3aed', margin:'0 auto 8px' }}>SC</div>
-                    <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text-2)' }}>Connect Sectigo</div>
-                    <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>SCM API</div>
-                  </div>
-                </div>
-              )}
-              {!connections.find(c => c.ca_type==='sslcom') && (
-                <div className="v2-card" style={{ borderStyle:'dashed', display:'flex',
-                  alignItems:'center', justifyContent:'center', minHeight:120, cursor:'pointer' }}
-                  onClick={() => { setShowAdd(true); openAdd('sslcom') }}>
-                  <div style={{ textAlign:'center' }}>
-                    <div style={{ width:36, height:36, borderRadius:8, background:'#e0f2fe',
-                      display:'flex', alignItems:'center', justifyContent:'center',
-                      fontWeight:700, fontSize:12, color:'#0369a1', margin:'0 auto 8px' }}>SL</div>
-                    <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text-2)' }}>Connect SSL.com</div>
-                    <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>SWS API</div>
-                  </div>
-                </div>
-              )}
-              <div className="v2-card" style={{ borderStyle:'dashed', display:'flex',
-                alignItems:'center', justifyContent:'center', minHeight:120, cursor:'pointer' }}
-                onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}>
-                <div style={{ textAlign:'center' }}>
-                  <div style={{ width:36, height:36, borderRadius:8, background:'var(--v2-surface-3)',
-                    display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 8px' }}>
-                    <Upload size={15} style={{ color:'var(--v2-text-3)' }}/>
-                  </div>
-                  <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text-2)' }}>Paste PEM</div>
-                  <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>Any CA, any cert</div>
-                </div>
+                  )
+                })}
               </div>
-            </div>
+            )}
+          </div>
+        )}
 
-            {/* CA Intelligence banner */}
-            <div style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)', borderRadius:12,
-              padding:'16px 20px', display:'flex', alignItems:'center', gap:14 }}>
-              <div style={{ width:40, height:40, borderRadius:10, background:'#eff6ff', flexShrink:0,
-                display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <TrendingUp size={18} style={{ color:'#0e7fc0' }}/>
-              </div>
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)', marginBottom:3 }}>
-                  View expiry timeline &amp; certificate intelligence
-                </div>
-                <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>
-                  Urgency buckets, Shadow IT scanner, CA consolidation advisor — all your tracked certs in one place.
-                </div>
-              </div>
-              <button className="v2-btn v2-btn-primary"
-                style={{ flexShrink:0, display:'flex', alignItems:'center', gap:6 }}
-                onClick={() => nav && nav('/cert-intelligence')}>
-                <TrendingUp size={13}/> Open CA Intelligence
-              </button>
-            </div>
-
-            {/* ── Connect CA modal ── */}
-            {showAdd && (
+        {showAdd && (
               <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
                 alignItems:'center', justifyContent:'center', padding:20,
                 background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
@@ -2320,8 +2196,6 @@ export default function Integrations({ nav }) {
                 </div>
               )
             })()}
-          </div>
-        )}
 
       </div>
 

@@ -140,6 +140,7 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
       if(credId&&credSrc!=='new'){pl.credential_id=credId;pl.credential_source=credSrc}else{pl.hostname=hostname;pl.port=2083;pl.cpanel_user=cpanelUser;pl.api_token=apiToken}
       const ir = await call('install',pl,tok)
       if(!ir.ok){setStep('install','error',ir.error);setErrMsg(ir.error||'Installation failed');setBusy(false);setPhase('error');return}
+      setInstallResult(ir)
       setStep('install','done','Certificate installed - activating SSL across all services')
     } catch(e){setStep('install','error',e.message);setErrMsg(e.message);setBusy(false);setPhase('error');return}
     setStep('verify_ssl','running','Verifying HTTPS on '+cert.domain+'...')
@@ -234,8 +235,14 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
               <div><div style={{fontSize:12,fontWeight:600,color:'#991b1b'}}>Installation failed</div><div style={{fontSize:11,color:'#b91c1c',marginTop:3,lineHeight:1.5}}>{errMsg}</div></div>
             </div>}
             {phase==='done' && <div style={{marginTop:16,background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:8,padding:'14px'}}>
-              <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:8}}><CheckCircle size={16} color='#16a34a'/><span style={{fontSize:13,fontWeight:700,color:'#15803d'}}>Certificate installed successfully</span></div>
-              <div style={{fontSize:11,color:'#166534',lineHeight:1.6}}>Your SSL certificate for <strong>{cert.domain}</strong> is now active on your cPanel server.{autoInstallFuture&&' Future reissues (199 days before expiry) and renewals (on order expiry) will be installed automatically.'}</div>
+              <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:10}}><CheckCircle size={16} color='#16a34a'/><span style={{fontSize:13,fontWeight:700,color:'#15803d'}}>Certificate installed successfully</span></div>
+              <div style={{display:'grid',gridTemplateColumns:'auto 1fr',gap:'4px 12px',fontSize:11,color:'#166534',lineHeight:1.8,marginBottom:8}}>
+                <span style={{fontWeight:600}}>Domain</span><span style={{fontFamily:'monospace'}}>{cert.domain}</span>
+                {(installResult?.serial_number||cert?.serial_number)&&<><span style={{fontWeight:600}}>Serial</span><span style={{fontFamily:'monospace',wordBreak:'break-all'}}>{installResult?.serial_number||cert?.serial_number}</span></>}
+                {cert?.expires_at&&<><span style={{fontWeight:600}}>Expires</span><span>{new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span></>}
+                <span style={{fontWeight:600}}>Status</span><span style={{color:'#15803d',fontWeight:600}}>✓ Active on cPanel</span>
+              </div>
+              {autoInstallFuture&&<div style={{fontSize:10,color:'#166534',opacity:0.8}}>Future reissues and renewals will be installed automatically.</div>}
             </div>}
             <div style={{display:'flex',gap:8,marginTop:16}}>
               {phase==='error' && <button onClick={()=>{setPhase('configure');setBusy(false)}} style={{flex:1,padding:'10px',border:'1px solid #e2e8f0',borderRadius:8,background:'white',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#374151'}}>Try again</button>}
