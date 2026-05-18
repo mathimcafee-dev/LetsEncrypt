@@ -144,7 +144,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     return () => clearTimeout(t)
   }, [domain, user])
 
-  // Auto-poll for DCV value after order placed
+  // Auto-poll for DCV value when not yet received
   useEffect(() => {
     if (step !== 'dv' || !ord?.order_id || ord?.dcv_txt_value) return
     setPoll(true)
@@ -168,6 +168,21 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     }, 5000)
     return () => { clearInterval(iv); setPoll(false) }
   }, [step, ord?.order_id])
+
+  // Auto-poll for active status when DNS was auto-added — no manual click needed
+  useEffect(() => {
+    if (step !== 'dv' || !ord?.order_id || !ord?.dns_auto_added) return
+    let n = 0
+    const iv = setInterval(async () => {
+      n++
+      try {
+        const s = await call('check_status', { order_id: ord.order_id })
+        if (s.status === 'active') { setStep('done'); clearInterval(iv) }
+      } catch {}
+      if (n >= 24) clearInterval(iv) // stop after 2 min
+    }, 5000)
+    return () => clearInterval(iv)
+  }, [step, ord?.order_id, ord?.dns_auto_added])
 
   const call = async (action, extra = {}) => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -614,7 +629,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(52,211,153,0.1)',
                 border: '0.5px solid rgba(52,211,153,0.3)', borderRadius: 7, padding: '10px 18px',
                 fontSize: 13, color: '#34d399', fontWeight: 500 }}>
-                <Check size={13}/> DNS auto-added via {ord.dns_provider || 'provider'} — validating…
+                <RefreshCw size={13} className="spin"/> DNS auto-added via {ord.dns_provider || 'provider'} — checking every 5s…
               </div>
             ) : (
               <button onClick={addDns} disabled={dns || !(ord.dcv_txt_value || ord.dcv_cname_value)}
