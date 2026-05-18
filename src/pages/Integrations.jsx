@@ -3,7 +3,8 @@ import {
   Plus, Trash2, RefreshCw, Eye, EyeOff, Globe, Server, Cloud,
   ChevronRight, Check, X, Search, Settings, ExternalLink,
   Lock, AlertCircle, Wifi, WifiOff, Edit3, Zap,
-  Shield, AlertTriangle, Upload, Info, FileText, TrendingUp
+  Shield, AlertTriangle, Upload, Info, FileText, TrendingUp,
+  LayoutList, Table2
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase as sbClient } from '../lib/supabase'
@@ -1407,10 +1408,12 @@ function LoggedOutView({ nav }) {
   )
 }
 
+
 // ── Main page ─────────────────────────────────────────────────────────
 export default function Integrations({ nav }) {
   const { user, loading: authLoading } = useAuth()
   const [tab, setTab]                 = useState('dns') // kept for PageHeader compat
+  const [viewMode, setViewMode]        = useState('table') // table | list
   const [credentials, setCredentials] = useState([])
   const [servers, setServers]         = useState([])
   const [agents, setAgents]           = useState([])
@@ -1655,6 +1658,20 @@ export default function Integrations({ nav }) {
           </div>
           {tab !== 'ca' && (
             <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+              {/* View toggle */}
+              <div style={{ display:'flex', background:'var(--v2-surface-3)', borderRadius:8,
+                border:'0.5px solid var(--v2-border)', padding:3, gap:2 }}>
+                {[['table', Table2], ['list', LayoutList]].map(([mode, Icon]) => (
+                  <button key={mode} onClick={() => setViewMode(mode)}
+                    style={{ display:'flex', alignItems:'center', padding:'5px 8px', borderRadius:6,
+                      border:'none', cursor:'pointer', fontFamily:'inherit',
+                      background: viewMode===mode ? 'var(--v2-surface)' : 'transparent',
+                      color: viewMode===mode ? 'var(--v2-text)' : 'var(--v2-text-3)',
+                      boxShadow: viewMode===mode ? '0 1px 3px rgba(0,0,0,0.08)' : 'none' }}>
+                    <Icon size={13}/>
+                  </button>
+                ))}
+              </div>
               <button className="v2-btn" onClick={() => setShowAddDns(true)}
                 style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:12, fontWeight:500 }}>
                 <Plus size={13} strokeWidth={2}/> {tab === 'dns' ? 'DNS only' : 'Server only'}
@@ -1680,10 +1697,99 @@ export default function Integrations({ nav }) {
         <Tabs tab={tab} setTab={setTab} counts={counts} />
 
         {/* DNS + Servers split layout */}
-        {tab !== 'ca' && <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1.5fr) minmax(0,1fr)', gap:16, marginTop:4 }}>
+        {tab !== 'ca' && <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1.5fr) minmax(0,1fr)', gap:14, marginTop:4, alignItems:'start' }}>
 
-          {/* ── Left: Domain list ── */}
+          {/* ── Left: Domain list (table or card view) ── */}
           <div>
+          {/* TABLE VIEW */}
+          {viewMode === 'table' && !loading && domainGroups.length > 0 && (
+            <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
+              borderRadius:12, overflow:'hidden' }}>
+              {/* Table header */}
+              <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 100px 80px',
+                padding:'8px 16px', background:'var(--v2-surface-2)',
+                borderBottom:'0.5px solid var(--v2-border)', alignItems:'center' }}>
+                {['Domain', 'DNS provider', 'Server', 'Type', 'Status'].map(h => (
+                  <div key={h} style={{ fontSize:10, fontWeight:700, color:'var(--v2-text-3)',
+                    textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
+                ))}
+              </div>
+              {domainGroups.map((g, i) => {
+                const { domain, dns, server } = g
+                const hasBoth = dns && server
+                const dnsOnly = dns && !server
+                const p = dns ? (PROVIDERS[dns.provider] || { name: dns.provider, mono:'?', color:'#475569' }) : null
+                const t = server ? (SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel) : null
+                const TIcon = t?.Icon
+                const dnsStatus = dns ? (credStatus[dns.id] || 'untested') : null
+                const agent = server ? agents.find(a => a.server_id === server.id) : null
+                const agentActive = agent?.last_seen_at
+                  ? (Date.now() - new Date(agent.last_seen_at).getTime()) / 60000 < 15 : false
+                const statusColor = hasBoth ? (dnsStatus==='healthy'&&agentActive?'#16a34a':'#d97706')
+                  : dnsOnly ? (dnsStatus==='healthy'?'#16a34a':dnsStatus==='expired'?'#dc2626':'#94a3b8')
+                  : (agentActive?'#16a34a':'#94a3b8')
+                const statusLabel = hasBoth ? (dnsStatus==='healthy'&&agentActive?'Ready':'Partial')
+                  : dnsOnly ? (dnsStatus==='healthy'?'Active':dnsStatus==='expired'?'Expired':'Untested')
+                  : (agentActive?'Agent live':'No agent')
+                const typeColor = hasBoth?'#1d4ed8':dnsOnly?'#16a34a':'#64748b'
+                const typeLabel = hasBoth?'DNS+Server':dnsOnly?'DNS only':'Server only'
+                return (
+                  <div key={domain}
+                    onClick={() => setSelectedDomain(selectedDomain===domain?null:domain)}
+                    style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 100px 80px',
+                      padding:'11px 16px', alignItems:'center', cursor:'pointer',
+                      borderBottom: i < domainGroups.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                      background: selectedDomain===domain ? 'var(--v2-surface-3)' : 'transparent',
+                      borderLeft: selectedDomain===domain ? '2px solid var(--v2-green)' : '2px solid transparent',
+                      transition:'all .12s' }}
+                    onMouseEnter={e => { if(selectedDomain!==domain) e.currentTarget.style.background='var(--v2-hover)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background=selectedDomain===domain?'var(--v2-surface-3)':'transparent' }}>
+                    {/* Domain */}
+                    <div style={{ display:'flex', alignItems:'center', gap:10, minWidth:0 }}>
+                      <div style={{ width:30, height:30, borderRadius:7, flexShrink:0, overflow:'hidden',
+                        background: p?.color || t?.color || '#64748b',
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontSize:10, fontWeight:700, color:'white' }}>
+                        {p?.mono || (TIcon ? <TIcon size={14} color="white"/> : '?')}
+                      </div>
+                      <span style={{ fontSize:12, fontWeight:600, fontFamily:'monospace',
+                        color:'var(--v2-text)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                        {domain}
+                      </span>
+                    </div>
+                    {/* DNS */}
+                    <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>
+                      {p ? <span style={{ display:'flex', alignItems:'center', gap:4 }}>
+                        <span style={{ width:6, height:6, borderRadius:'50%', background:p.color, flexShrink:0 }}/>
+                        {p.name}
+                      </span> : <span style={{ color:'var(--v2-text-3)' }}>—</span>}
+                    </div>
+                    {/* Server */}
+                    <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>
+                      {t ? <span style={{ display:'flex', alignItems:'center', gap:4 }}>
+                        {TIcon && <TIcon size={11} color={t.color} style={{ flexShrink:0 }}/>}
+                        {t.short}
+                      </span> : <span style={{ color:'var(--v2-text-3)' }}>—</span>}
+                    </div>
+                    {/* Type badge */}
+                    <div>
+                      <span style={{ fontSize:9, fontWeight:700, padding:'2px 8px', borderRadius:20,
+                        background:typeColor+'18', color:typeColor, border:`0.5px solid ${typeColor}44` }}>
+                        {typeLabel}
+                      </span>
+                    </div>
+                    {/* Status */}
+                    <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+                      <span style={{ width:6, height:6, borderRadius:'50%', background:statusColor, flexShrink:0 }}/>
+                      <span style={{ fontSize:11, color:statusColor, fontWeight:500 }}>{statusLabel}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+          {/* CARD VIEW (original) — only shown in list mode */}
+          {(viewMode === 'list' || loading || domainGroups.length === 0) && <div>
             {loading ? (
               <ListPanel>
                 <div style={{ padding:'48px 16px', textAlign:'center', fontSize:12, color:'var(--v2-text-3)' }}>
@@ -1750,9 +1856,10 @@ export default function Integrations({ nav }) {
                 )}
               </div>
             )}
-          </div>
+          </div>}
+          </div>  {/* end left column */}
 
-          {/* ── Right: Detail panel ── */}
+          {/* ── Center: Detail panel ── */}
           <div>
             {selGroup ? (
               <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
@@ -1811,6 +1918,7 @@ export default function Integrations({ nav }) {
               </div>
             ) : null}
           </div>
+
         </div>}
 
         {/* ── CA Connections tab ── */}
