@@ -224,7 +224,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                       },
                       {
                         label: 'Agent polling for job',
-                        sub: jobStatus === 'claimed' || jobStatus === 'success' ? 'Job received' : ,
+                        sub: jobStatus === 'claimed' || jobStatus === 'success' ? 'Job received' : ('Checking every 5 min — ' + (elapsed < 60 ? elapsed + 's elapsed' : Math.floor(elapsed/60) + 'm ' + (elapsed%60) + 's elapsed')),
                         done: jobStatus === 'claimed' || jobStatus === 'success',
                         active: jobStatus === 'queued'
                       },
