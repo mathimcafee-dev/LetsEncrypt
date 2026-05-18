@@ -235,14 +235,18 @@ const CAPABILITIES = [
   'Auto DNS validation via Cloudflare, Vercel, GoDaddy',
   'VPS agent deployment — zero-touch renewal',
   'cPanel and Plesk auto-install',
-  'CA connectors — DigiCert, Sectigo, SSL.com, GoGetSSL',
-  'Unified expiry timeline across all CAs',
+  'CA connectors — DigiCert CertCentral, Sectigo, GoGetSSL',
+  'CertCentral-style portfolio — search, filter, expiry timeline',
+  'Order details panel — SANs, serial, PQC risk, revoke',
+  'Multi-tenant reseller platform — master admin · sub-reseller · end customer',
   'Shadow IT discovery — certs issued outside your CLM',
   'PQC readiness scanner — NIST 2030 risk scoring',
-  'Private key vault — AES-256-GCM, full audit trail',
+  'Private key vault — copy-only reveal, 30s timer, AES-256-GCM',
+  'Immutable audit log — every key access and cert action',
   'TLS posture grading — A to F per domain',
   'Email and Slack alerts — configurable thresholds',
   'CA consolidation advisor — identify cost savings',
+  'Admin signup approval — every new account reviewed before access',
 ]
 
 const PLATFORMS = ['Cloudflare','Vercel','GoDaddy','DigitalOcean','Nginx','Apache','cPanel','Plesk','DigiCert','Sectigo','SSL.com','GoGetSSL']
@@ -256,7 +260,7 @@ const ETHICS_ITEMS = [
   {
     n:'02',
     title:'Your private keys stay on your servers unless you choose otherwise.',
-    body:'SSLVault never requires access to your private keys. If you opt in to KeyLocker, keys are encrypted with AES-256-GCM before leaving your browser. Every access generates an immutable audit log entry. You can export and delete at any time.',
+    body:'SSLVault never requires access to your private keys. If you opt in to KeyLocker, keys are encrypted with AES-256-GCM before leaving your browser. Reveal is copy-only with a 30-second auto-hide timer. Every access generates an immutable audit log entry with user, domain, and timestamp. You can export and delete at any time.',
   },
   {
     n:'03',
@@ -266,7 +270,7 @@ const ETHICS_ITEMS = [
   {
     n:'04',
     title:'Built for the people the enterprise tools ignore.',
-    body:"Venafi and Keyfactor are excellent products. They're built for teams with $250k security budgets. SSLVault is built for the developer running 12 side projects, the SMB that can't afford enterprise procurement, the non-profit that just needs the padlock to stay green.",
+    body:"Venafi and Keyfactor are excellent products. They're built for teams with $250k security budgets. SSLVault is built for the developer running 12 side projects, the SMB that can't afford enterprise procurement, the non-profit that just needs the padlock to stay green — and the reseller who wants to offer CLM to their customers without building it from scratch.",
   },
 ]
 
@@ -534,13 +538,15 @@ export default function Home({ nav }) {
             reverse
             tag="CA-agnostic intelligence"
             headline="One view of your entire certificate estate — regardless of who issued them."
-            body="Connect DigiCert CertCentral, Sectigo SCM, SSL.com and GoGetSSL alongside certs issued directly through SSLVault. Unified expiry timeline with urgency buckets. Shadow IT scanner surfaces certificates issued outside your CLM before they expire silently."
+            body="Full CertCentral-style portfolio inside SSLVault — connect DigiCert, Sectigo and GoGetSSL via API. Search, filter, and click any certificate for a full details panel: SANs, serial number, key algorithm, PQC risk score. Renew via SSLVault or directly at the CA. Shadow IT scanner surfaces certs issued outside your CLM before they expire silently. Daily auto-sync keeps your portfolio current."
             items={[
-              'Connect DigiCert, Sectigo, SSL.com via API — read-only, no private keys needed',
+              'DigiCert CertCentral portfolio — search, filter, expiry timeline, order details',
+              'Click any cert → slide-over panel with SANs, serial, PQC risk, revoke',
+              'Renew via SSLVault (GoGetSSL) or open DigiCert directly — one click',
               'Unified expiry timeline: Expired · Critical · Warning · Upcoming · Healthy',
               'Shadow IT scan compares your CA portfolio against your CLM inventory',
+              'Daily auto-sync cron — portfolio always current without manual refresh',
               'CA consolidation advisor identifies cost-saving certificate migrations',
-              'PQC readiness — every RSA-2048 cert scored against NIST 2030 timeline',
             ]}
             accentColor={C.purple}
             card={
@@ -562,16 +568,51 @@ export default function Home({ nav }) {
             }
           />
 
+          {/* Feature 4 — Multi-tenant reseller */}
+          <FeatureBlock
+            reverse
+            tag="Multi-tenant reseller platform"
+            headline="White-label CLM for resellers. Issue, monitor and manage certs for all your customers from one place."
+            body="Three-tier architecture: master admin controls the platform, sub-resellers onboard their own customers, end customers manage their own certs through a branded portal. Every signup requires admin approval — no unauthorized access ever. Excel exports, custom portals, and invite-based onboarding included."
+            items={[
+              'Master admin → sub-reseller → end customer — full 3-tier hierarchy',
+              'Invite-only onboarding — every new account reviewed and approved by you',
+              'Reseller portal with customer list, cert inventory, and order history',
+              'Admin approval emails — Approve or Reject directly from your inbox',
+              'Excel export of full certificate portfolio and order data',
+              'End customer portal — clean, scoped view of their own certs only',
+            ]}
+            accentColor={C.green}
+            card={
+              <TerminalCard
+                title="account-manage · reseller-portal"
+                accent={C.green}
+                lines={[
+                  { t:'New signup request:', c:'rgba(255,255,255,0.25)' },
+                  { t:' ', c:'transparent' },
+                  { prefix:'→ ', t:'user@customer.com ', val:'pending review', c:'#fbbf24' },
+                  { t:' ', c:'transparent' },
+                  { prefix:'✓ ', t:'Approved by admin ', val:'2 min ago', c:'#34d399' },
+                  { prefix:'✓ ', t:'Welcome email ', val:'sent', c:'#34d399' },
+                  { t:' ', c:'transparent' },
+                  { prefix:'⊕ ', t:'Sub-resellers: ', val:'3 active', c:'rgba(255,255,255,0.5)' },
+                  { prefix:'⊕ ', t:'End customers: ', val:'12 active', c:'rgba(255,255,255,0.5)' },
+                ]}
+              />
+            }
+          />
+
           {/* Feature 3 — Security posture */}
           <FeatureBlock
             tag="Security posture"
             headline="Know the cryptographic health of every domain you own."
-            body="TLS grading across the full stack — cipher suites, protocol versions, HSTS headers, certificate chain correctness. PQC risk scanning flags every RSA-2048 cert against the NIST 2030 migration deadline. Private key vault stores sensitive material under AES-256-GCM with per-access audit logging."
+            body="TLS grading across the full stack — cipher suites, protocol versions, HSTS headers, certificate chain correctness. PQC risk scanning flags every RSA-2048 cert against the NIST 2030 migration deadline. Private keys are protected with a 30-second timed reveal window — copy-only, no download, every access logged to an immutable audit trail."
             items={[
               'TLS grade A–F per domain — cipher, protocol, HSTS, OCSP stapling',
               'PQC readiness scanner — RSA-2048 and ECDSA-256 risk assessed',
-              'Private key vault — AES-256-GCM, 30-second timed reveal, copy-only mode',
-              'Immutable audit log on every key access and cert issuance',
+              'Private key reveal — 30s countdown, copy-only, auto-hides, no screenshots',
+              'Every key access logged: user, domain, timestamp — tamper-proof audit trail',
+              'Admin signup approval — zero unauthorized access, every account reviewed',
               'Email and Slack alerts at configurable expiry thresholds',
             ]}
             accentColor={C.amber}
