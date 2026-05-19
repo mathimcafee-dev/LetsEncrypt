@@ -1,4 +1,4 @@
-// BUILD_TIME: 1747300000
+// BUILD_TIME: 1779207800
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import Nav from './components/Nav'
@@ -10,7 +10,7 @@ import SharedHostingGuide from './pages/SharedHostingGuide'
 import KnowledgeBase from './pages/KnowledgeBase'
 import GetStarted from './pages/GetStarted'
 import Install from './pages/Install'
-import Integrations from './pages/Integrations'
+import DnsProviders from './pages/DnsProviders'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Developer from './pages/Developer'
@@ -19,10 +19,8 @@ import Terms from './pages/Terms'
 import Pricing from './pages/Pricing'
 import KeyLocker from './pages/KeyLocker'
 import BuyCertificate from './pages/BuyCertificate'
-import AdminAnalytics from './pages/AdminAnalytics'
-import AgentHealth from './pages/AgentHealth'
-import CAIntelligenceHub from './pages/CAIntelligenceHub'
-import CAConnectors from './pages/CAConnectors'
+import AuditLog from './pages/AuditLog'
+import RenewalRules from './pages/RenewalRules'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
@@ -58,15 +56,14 @@ export default function App() {
     return null
   }
 
-  // Home page has its own nav built-in — exclude it to avoid duplicate
-  const showPublicNav = !authLoading && !user && page !== '/'
+  const showPublicNav = !authLoading && !user
 
   return (
     <div>
       {showPublicNav && <Nav nav={nav} page={page} />}
       {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} /> : <Home nav={nav} />)}
       {page === '/dashboard' && <Dashboard nav={nav} />}
-      {page === '/integrations' && <Integrations nav={nav} />}
+      {page === '/dns-providers' && <DnsProviders nav={nav} />}
       {page === '/install' && <Install nav={nav} />}
       {page === '/knowledge-base' && <KnowledgeBase nav={nav} />}
       {page === '/get-started' && <GetStarted nav={nav} />}
@@ -80,12 +77,8 @@ export default function App() {
       {page === '/pricing' && <Pricing nav={nav} />}
       {page === '/keylocker' && <KeyLocker nav={nav} />}
       {page === '/buy' && <BuyCertificate nav={nav} />}
-      
-      {page === '/admin' && <AdminAnalytics nav={nav} />}
-      {page === '/agent-health' && <AgentHealth nav={nav} />}
-      {page === '/cert-intelligence' && <CAIntelligenceHub nav={nav} />}
-      {page === '/ca-intelligence' && <CAIntelligenceHub nav={nav} />}
-      {page === '/ca-connectors' && <CAConnectors nav={nav} />}
+      {page === '/audit-log' && <AuditLog nav={nav} />}
+      {page === '/renewal-rules' && <RenewalRules nav={nav} />}
     </div>
   )
 }
