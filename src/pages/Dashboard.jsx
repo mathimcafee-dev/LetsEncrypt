@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHand
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
   Globe, ChevronRight, Copy, Check, Activity, Zap, ArrowRight, Server,
-  FileText, Eye, EyeOff, Trash2, ShieldOff, ShieldCheck, Clock, RotateCcw
+  FileText, Trash2, ShieldOff, ShieldCheck, Clock, RotateCcw
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -1012,7 +1012,7 @@ function TlsPostureRow({ cert, onRefresh }) {
 function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefresh, session }) {
   const days = daysLeft(cert.expires_at)
   const [activeTab, setActiveTab] = useState('details')
-  const [showKey,    setShowKey]   = useState(false)
+
   const [keyTimer,   setKeyTimer]  = useState(0)     // countdown seconds remaining
   const [keyCopied,  setKeyCopied] = useState(false)
   const [keyTimerRef, setKeyTimerRef] = useState(null)
@@ -1427,74 +1427,60 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                       <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:3,
                         background:'#fee2e2', color:'#b91c1c', letterSpacing:'0.3px' }}>SENSITIVE</span>
                     </div>
-                    <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>RSA 2048-bit</div>
+                    <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>
+                      {keyCopied && keyTimer > 0
+                        ? <span style={{ color:'#dc2626' }}>Copied — clears in {keyTimer}s</span>
+                        : 'Copy only · never displayed'}
+                    </div>
                   </div>
                 </div>
-                <div style={{ display:'flex', gap:6 }}>
+                <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+                  {keyCopied && keyTimer > 0 && (
+                    <div style={{ height:3, width:80, background:'#fee2e2', borderRadius:3, overflow:'hidden' }}>
+                      <div style={{ height:'100%', background:'#dc2626', borderRadius:3,
+                        width: `${(keyTimer/30)*100}%`, transition:'width 1s linear' }}/>
+                    </div>
+                  )}
                   <button className="v2-btn v2-btn-sm" onClick={async () => {
-                    if (showKey) {
-                      // Hide: clear timer
-                      setShowKey(false); setKeyTimer(0); setKeyCopied(false)
-                      if (keyTimerRef) { clearInterval(keyTimerRef); setKeyTimerRef(null) }
-                      return
+                    try {
+                      await navigator.clipboard.writeText(cert.private_key_pem)
+                    } catch(e) {
+                      // fallback for older browsers
+                      const ta = document.createElement('textarea')
+                      ta.value = cert.private_key_pem
+                      ta.style.position = 'fixed'; ta.style.opacity = '0'
+                      document.body.appendChild(ta); ta.select()
+                      document.execCommand('copy'); document.body.removeChild(ta)
                     }
-                    // Reveal: log access + start 30s timer
-                    setShowKey(true); setKeyTimer(30); setKeyCopied(false)
+                    setKeyCopied(true)
                     // Audit log
                     try {
                       const { data: { session: s } } = await supabase.auth.getSession()
                       await supabase.from('audit_log').insert({
                         user_id: cert.user_id, cert_id: cert.id,
-                        action: 'private_key_revealed',
+                        action: 'private_key_copied',
                         actor_email: s?.user?.email || '',
                         metadata: { domain: cert.domain, ip: 'browser' }
                       })
                     } catch(e) { console.error('audit log failed', e) }
-                    // 30s countdown
+                    // 30s countdown then reset copied state
+                    if (keyTimerRef) { clearInterval(keyTimerRef); setKeyTimerRef(null) }
+                    setKeyTimer(30)
                     let secs = 30
                     const iv = setInterval(() => {
                       secs -= 1
                       setKeyTimer(secs)
                       if (secs <= 0) {
                         clearInterval(iv)
-                        setShowKey(false); setKeyTimer(0); setKeyTimerRef(null)
+                        setKeyCopied(false); setKeyTimer(0); setKeyTimerRef(null)
                       }
                     }, 1000)
                     setKeyTimerRef(iv)
-                  }} style={{ minWidth: 72 }}>
-                    {showKey
-                      ? <><EyeOff size={10}/> Hide {keyTimer > 0 ? `(${keyTimer}s)` : ''}</>
-                      : <><Eye size={10}/> Reveal</>}
-                  </button>
-                  <button className="v2-btn v2-btn-sm" onClick={() => {
-                    navigator.clipboard?.writeText(cert.private_key_pem)
-                    setKeyCopied(true)
-                    setTimeout(() => setKeyCopied(false), 2000)
                   }}>
-                    {keyCopied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy</>}
+                    {keyCopied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy Key</>}
                   </button>
                 </div>
               </div>
-              {showKey && (
-                <div style={{ margin:'0 12px 10px' }}>
-                  <div style={{ background:'#0a0a0a', borderRadius:6, padding:'8px 10px',
-                    fontSize:10, fontFamily:'monospace', color:'#a3e635',
-                    userSelect:'none', WebkitUserSelect:'none', MozUserSelect:'none',
-                    whiteSpace:'pre-wrap', wordBreak:'break-all', maxHeight:120, overflowY:'auto',
-                    filter: showKey ? 'none' : 'blur(4px)', transition:'filter 0.3s' }}>
-                    {'•'.repeat(Math.min(cert.private_key_pem.length, 200))}
-                  </div>
-                  <div style={{ marginTop:6, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                    <span style={{ fontSize:10, color:'#dc2626', fontWeight:500 }}>
-                      ⚠ Auto-hides in {keyTimer}s · Copy only — download disabled for security
-                    </span>
-                    <div style={{ height:3, width:120, background:'#fee2e2', borderRadius:3, overflow:'hidden' }}>
-                      <div style={{ height:'100%', background:'#dc2626', borderRadius:3,
-                        width: `${(keyTimer/30)*100}%`, transition:'width 1s linear' }}/>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           )}
           {/* Key warning / deleted state */}
