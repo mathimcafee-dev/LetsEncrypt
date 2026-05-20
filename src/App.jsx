@@ -25,7 +25,8 @@ import BulkScanner from './pages/BulkScanner'
 import PublicStatus from './pages/PublicStatus'
 
 export default function App() {
-  const _build = 1779297041 // cache bust
+  const _build_ts = 1779297560 // 
+const _build = 1779297041 // cache bust
   const [page, setPage] = useState(window.location.pathname)
   const [user, setUser]   = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
