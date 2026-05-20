@@ -274,7 +274,7 @@ const ETHICS_ITEMS = [
   },
 ]
 
-// ── ShowcaseTabs — Owlish-inspired floating pill nav + app window ────
+// ── ShowcaseTabs — Owlish-style: 3D tilt entrance, sliding indicator, crossfade panels ──
 const TABS = [
   { id:'inventory',  label:'Inventory'        },
   { id:'readiness',  label:'47-day readiness' },
@@ -283,7 +283,37 @@ const TABS = [
 ]
 
 function ShowcaseTabs({ nav }) {
-  const [active, setActive] = useState('inventory')
+  const [active, setActive]     = useState('inventory')
+  const [prev,   setPrev]       = useState(null)
+  const [mounted, setMounted]   = useState(false)
+  const [indicatorStyle, setIndicatorStyle] = useState({})
+  const tabRefs  = useRef({})
+  const pillRef  = useRef(null)
+
+  // Entrance animation on mount
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 80)
+    return () => clearTimeout(t)
+  }, [])
+
+  // Slide indicator to active tab
+  useEffect(() => {
+    const el  = tabRefs.current[active]
+    const bar = pillRef.current
+    if (!el || !bar) return
+    const barRect = bar.getBoundingClientRect()
+    const elRect  = el.getBoundingClientRect()
+    setIndicatorStyle({
+      width:  elRect.width,
+      transform: `translateX(${elRect.left - barRect.left - 4}px)`,
+    })
+  }, [active])
+
+  const switchTab = (id) => {
+    if (id === active) return
+    setPrev(active)
+    setActive(id)
+  }
 
   const panels = {
     inventory: (
@@ -425,25 +455,41 @@ function ShowcaseTabs({ nav }) {
   }
 
   return (
-    <div>
-      {/* Pill tab nav — the Owlish element */}
+    <div style={{
+      transform: mounted ? 'translateY(0) scale(1)' : 'translateY(40px) scale(0.97)',
+      opacity:   mounted ? 1 : 0,
+      transition:'transform .7s cubic-bezier(.16,1,.3,1), opacity .6s ease',
+    }}>
+
+      {/* ── Floating pill tab nav ── */}
       <div style={{ display:'flex', justifyContent:'center', marginBottom:28 }}>
-        <div style={{
+        <div ref={pillRef} style={{
           display:'flex', background:'white',
           border:`1px solid ${C.border}`, borderRadius:40,
-          padding:4, gap:2,
-          boxShadow:'0 2px 12px rgba(15,23,42,0.07)',
+          padding:4, gap:0,
+          boxShadow:'0 2px 20px rgba(15,23,42,0.09)',
+          position:'relative',
         }}>
+          {/* Sliding background pill */}
+          <div style={{
+            position:'absolute', top:4, left:4, height:'calc(100% - 8px)',
+            background:C.ink, borderRadius:36,
+            transition:'transform .28s cubic-bezier(.16,1,.3,1), width .28s cubic-bezier(.16,1,.3,1)',
+            ...indicatorStyle,
+            pointerEvents:'none',
+          }}/>
           {TABS.map(t => (
-            <button key={t.id} onClick={() => setActive(t.id)}
+            <button key={t.id}
+              ref={el => tabRefs.current[t.id] = el}
+              onClick={() => switchTab(t.id)}
               style={{
-                fontSize:13, fontWeight: active===t.id ? 600 : 400,
-                padding:'8px 20px', borderRadius:36, cursor:'pointer',
-                fontFamily:F,
-                background: active===t.id ? C.ink : 'transparent',
-                color:       active===t.id ? 'white'  : C.textMid,
-                border:      'none',
-                transition:  'all .18s cubic-bezier(.16,1,.3,1)',
+                fontSize:13, fontWeight:500,
+                padding:'8px 22px', borderRadius:36, cursor:'pointer',
+                fontFamily:F, position:'relative', zIndex:1,
+                background:'transparent', border:'none',
+                color: active===t.id ? 'white' : C.textMid,
+                transition:'color .2s ease',
+                whiteSpace:'nowrap',
               }}>
               {t.label}
             </button>
@@ -451,72 +497,105 @@ function ShowcaseTabs({ nav }) {
         </div>
       </div>
 
-      {/* App window frame */}
+      {/* ── App window — 3D perspective tilt ── */}
       <div style={{
-        background:'white', borderRadius:16,
-        border:`1px solid ${C.border}`,
-        boxShadow:'0 32px 96px rgba(15,23,42,0.12), 0 4px 24px rgba(15,23,42,0.06)',
-        overflow:'hidden',
-        maxWidth:860, margin:'0 auto',
+        perspective:'1200px',
+        maxWidth:900, margin:'0 auto',
         position:'relative', zIndex:2,
       }}>
-        {/* Browser bar */}
         <div style={{
-          background:'#f8fafc', borderBottom:`1px solid ${C.border}`,
-          padding:'10px 16px', display:'flex', alignItems:'center', gap:10,
+          background:'white', borderRadius:14,
+          border:`1px solid ${C.border}`,
+          boxShadow:'0 40px 100px rgba(15,23,42,0.13), 0 8px 32px rgba(15,23,42,0.07)',
+          overflow:'hidden',
+          transform: mounted ? 'rotateX(1.5deg)' : 'rotateX(6deg)',
+          transformOrigin:'top center',
+          transition:'transform .8s cubic-bezier(.16,1,.3,1)',
         }}>
-          <div style={{ display:'flex', gap:6 }}>
-            {['#ff5f57','#ffbd2e','#28c840'].map(c => (
-              <div key={c} style={{ width:11, height:11, borderRadius:'50%', background:c }}/>
-            ))}
-          </div>
+          {/* Browser chrome bar */}
           <div style={{
-            flex:1, background:'white', border:`1px solid ${C.border}`,
-            borderRadius:7, padding:'5px 12px',
-            fontSize:11, color:'#94a3b8', fontFamily:MONO,
-            marginLeft:8, marginRight:8,
+            background:'#f1f5f9', borderBottom:`1px solid ${C.border}`,
+            padding:'9px 14px', display:'flex', alignItems:'center', gap:10,
           }}>
-            easysecurity.in · {TABS.find(t=>t.id===active)?.label}
+            <div style={{ display:'flex', gap:5 }}>
+              {['#ff5f57','#ffbd2e','#28c840'].map(c => (
+                <div key={c} style={{ width:10, height:10, borderRadius:'50%', background:c }}/>
+              ))}
+            </div>
+            {/* URL bar */}
+            <div style={{
+              flex:1, background:'white', border:`1px solid ${C.border}`,
+              borderRadius:6, padding:'4px 10px',
+              fontSize:11, color:'#94a3b8', fontFamily:MONO,
+              marginLeft:6, marginRight:6, display:'flex', alignItems:'center', gap:7,
+            }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              easysecurity.in
+              <span style={{ color:'#cbd5e1', margin:'0 2px' }}>·</span>
+              <span style={{ transition:'opacity .2s' }}>
+                {TABS.find(t=>t.id===active)?.label}
+              </span>
+            </div>
+            <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+              {/* Fake avatar + badge */}
+              <div style={{ width:22, height:22, borderRadius:'50%', background:'#0d3c6e',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:9, fontWeight:700, color:'white' }}>M</div>
+            </div>
           </div>
-          <div style={{ display:'flex', gap:8 }}>
-            {['#e2e8f0','#e2e8f0'].map((c,i)=>(
-              <div key={i} style={{ width:24, height:24, borderRadius:6, background:c }}/>
-            ))}
-          </div>
-        </div>
 
-        {/* Inner sidebar + content chrome */}
-        <div style={{ display:'flex', minHeight:360 }}>
-          {/* Mini sidebar */}
-          <div style={{ width:44, background:'#0d3c6e', display:'flex',
-            flexDirection:'column', alignItems:'center', paddingTop:16, gap:16 }}>
-            {[C.teal, '#64748b','#64748b','#64748b'].map((c,i)=>(
-              <div key={i} style={{ width:20, height:20, borderRadius:5,
-                background: i===0?`${c}33`:'transparent',
+          {/* App chrome — sidebar + content */}
+          <div style={{ display:'flex', minHeight:380 }}>
+            {/* SSLVault sidebar — matches real app */}
+            <div style={{ width:48, background:'#0d3c6e', display:'flex',
+              flexDirection:'column', alignItems:'center', paddingTop:14, gap:14, flexShrink:0 }}>
+              <div style={{ width:22, height:22, borderRadius:5, background:'#0e7fc0',
                 display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <div style={{ width:10, height:10, borderRadius:2, background:c, opacity:i===0?1:0.3 }}/>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </div>
-            ))}
-          </div>
+              {[
+                { active: active==='inventory'||active==='readiness', color:C.teal },
+                { active: false,                                       color:'#64748b' },
+                { active: active==='security',                         color:C.teal },
+                { active: active==='calendar',                         color:'#64748b' },
+              ].map((s,i)=>(
+                <div key={i} style={{ width:28, height:28, borderRadius:6,
+                  background: s.active ? 'rgba(14,127,192,0.25)' : 'transparent',
+                  borderLeft: s.active ? '2px solid #00a3e0' : '2px solid transparent',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  transition:'all .2s' }}>
+                  <div style={{ width:10, height:10, borderRadius:2,
+                    background: s.active ? s.color : '#475569', opacity: s.active?1:0.4 }}/>
+                </div>
+              ))}
+            </div>
 
-          {/* Content */}
-          <div style={{ flex:1, padding:'20px 24px', overflowX:'hidden' }}>
-            <div key={active} style={{ animation:'fadeIn .2s ease' }}>
-              {panels[active]}
+            {/* Content panel with crossfade */}
+            <div style={{ flex:1, padding:'18px 22px', overflowX:'hidden',
+              position:'relative', background:'white' }}>
+              <div
+                key={active}
+                style={{ animation:'owlishFade .28s cubic-bezier(.16,1,.3,1)' }}
+              >
+                {panels[active]}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* CTA below window */}
-      <div style={{ textAlign:'center', paddingTop:36, paddingBottom:80, position:'relative', zIndex:2 }}>
+      {/* ── CTA below ── */}
+      <div style={{ textAlign:'center', paddingTop:40, paddingBottom:80, position:'relative', zIndex:2 }}>
         <button onClick={()=>nav('/auth')} style={{
-          fontSize:14, fontWeight:600, padding:'12px 28px', borderRadius:9,
+          fontSize:14, fontWeight:600, padding:'13px 30px', borderRadius:9,
           background:C.ink, color:'white', border:'none', cursor:'pointer',
-          fontFamily:F, transition:'opacity .15s',
+          fontFamily:F, transition:'all .17s',
+          boxShadow:'0 4px 16px rgba(10,14,26,0.2)',
         }}
-          onMouseEnter={e=>e.currentTarget.style.opacity='0.85'}
-          onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
+          onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.boxShadow='0 8px 24px rgba(10,14,26,0.28)' }}
+          onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)';   e.currentTarget.style.boxShadow='0 4px 16px rgba(10,14,26,0.2)'  }}>
           Get started free →
         </button>
         <div style={{ fontSize:12, color:C.textLt, marginTop:10 }}>
@@ -559,6 +638,7 @@ export default function Home({ nav }) {
         @keyframes pulse2 { 0%,100%{opacity:1} 50%{opacity:.35} }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes owlishFade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
       `}</style>
 
       {/* ── NAV ─────────────────────────────────────────────────────── */}
