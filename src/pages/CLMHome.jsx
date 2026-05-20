@@ -68,9 +68,9 @@ export default function CLMHome({ user, nav }) {
   }
 
   const markAllRead = async () => {
-    await supabase.functions.invoke('send-alert', {
+    try { await supabase.functions.invoke('send-alert', {
       body: { action: 'mark_read', user_id: user.id, all: true }
-    })
+    }) } catch (_) {}
     setNotifs(prev => prev.map(n => ({ ...n, read: true })))
     setUnreadCount(0)
   }
@@ -251,7 +251,7 @@ export default function CLMHome({ user, nav }) {
                   ) : notifs.map(n => (
                     <div key={n.id}
                       onClick={async () => {
-                        await supabase.functions.invoke('send-alert', { body:{ action:'mark_read', user_id:user.id, notification_id:n.id }})
+                        try { await supabase.functions.invoke('send-alert', { body:{ action:'mark_read', user_id:user.id, notification_id:n.id }}) } catch(_){}
                         setNotifs(prev => prev.map(x => x.id===n.id ? {...x,read:true} : x))
                         setUnreadCount(c => Math.max(0, c-1))
                         if (n.action_url) { const section = n.action_url.replace('/',''); navigate(section||'dashboard') }
