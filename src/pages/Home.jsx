@@ -608,91 +608,126 @@ export default function Home({ nav }) {
 
       {/* ── HERO ────────────────────────────────────────────────────── */}
       <section style={{
-        background:C.ink,
-        padding:'120px 40px 100px',
+        background: C.white,
+        padding:'110px 40px 90px',
         position:'relative', overflow:'hidden',
+        borderBottom:`1px solid ${C.border}`,
       }}>
-        {/* Noise texture overlay */}
+        {/* Subtle dot grid — same vibe as the Platform section's clean white */}
         <div style={{
-          position:'absolute', inset:0, pointerEvents:'none', opacity:0.025,
-          backgroundImage:`url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundSize:'200px 200px',
-        }}/>
-        {/* Radial gradient halo */}
-        <div style={{
-          position:'absolute', top:'50%', left:'50%',
-          transform:'translate(-50%,-60%)',
-          width:900, height:600, borderRadius:'50%',
-          background:`radial-gradient(ellipse, ${C.teal}18 0%, transparent 65%)`,
-          pointerEvents:'none',
+          position:'absolute', inset:0, pointerEvents:'none',
+          backgroundImage:`radial-gradient(circle, ${C.teal}22 1px, transparent 1px)`,
+          backgroundSize:'32px 32px',
+          maskImage:'radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%)',
+          WebkitMaskImage:'radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%)',
+          opacity:0.5,
         }}/>
 
-        <div style={{ maxWidth:880, margin:'0 auto', position:'relative', textAlign:'center' }}>
+        {/* Floating cert status pills — scattered, very low opacity */}
+        {[
+          { t:'✓  easysecurity.in renewed', c:'#10b981', x:'8%',  y:'18%', r:'-6deg'  },
+          { t:'✓  Agent installed · Nginx',  c:'#0ea5e9', x:'72%', y:'12%', r:'5deg'   },
+          { t:'⚠  api.shop.com · 18d left',  c:'#f59e0b', x:'82%', y:'72%', r:'-4deg'  },
+          { t:'✓  TLS grade A+ · HSTS on',   c:'#8b5cf6', x:'4%',  y:'74%', r:'4deg'   },
+        ].map(({ t, c, x, y, r }) => (
+          <div key={t} style={{
+            position:'absolute', left:x, top:y,
+            transform:`rotate(${r})`,
+            display:'flex', alignItems:'center', gap:7,
+            background:'white',
+            border:`1px solid ${c}33`,
+            borderRadius:8, padding:'7px 12px',
+            fontSize:11, fontFamily:MONO, color:c,
+            fontWeight:600, whiteSpace:'nowrap',
+            opacity:0.22,
+            boxShadow:`0 2px 12px ${c}18`,
+            pointerEvents:'none',
+          }}>{t}</div>
+        ))}
+
+        <div style={{ maxWidth:860, margin:'0 auto', position:'relative', textAlign:'center' }}>
           {/* Eyebrow */}
-          <div style={{
-            display:'inline-flex', alignItems:'center', gap:8,
-            marginBottom:36, animation:'fadeIn .6s ease both',
-          }}>
-            <span style={{
-              width:7, height:7, borderRadius:'50%', background:'#34d399', flexShrink:0,
-              boxShadow:'0 0 0 4px rgba(52,211,153,0.15)',
-              animation:'pulse2 2.4s ease infinite',
-            }}/>
-            <span style={{ fontSize:12, fontFamily:MONO, color:'rgba(255,255,255,0.4)', letterSpacing:'0.06em' }}>
-              Certificate Lifecycle Management · Free forever
-            </span>
-          </div>
+          <FadeUp>
+            <div style={{
+              display:'inline-flex', alignItems:'center', gap:8,
+              marginBottom:28,
+              background:`${C.teal}0d`,
+              border:`1px solid ${C.teal}28`,
+              borderRadius:20, padding:'6px 14px',
+            }}>
+              <span style={{
+                width:6, height:6, borderRadius:'50%', background:'#34d399', flexShrink:0,
+                boxShadow:'0 0 0 3px rgba(52,211,153,0.18)',
+                animation:'pulse2 2.4s ease infinite',
+              }}/>
+              <span style={{ fontSize:12, fontFamily:MONO, color:C.teal, letterSpacing:'0.05em', fontWeight:500 }}>
+                Certificate Lifecycle Management · Free forever
+              </span>
+            </div>
+          </FadeUp>
 
           {/* Headline */}
-          <h1 style={{
-            fontSize:'clamp(44px,7vw,84px)', fontWeight:800,
-            letterSpacing:'-3px', lineHeight:1.0,
-            color:C.white, marginBottom:28,
-            animation:'fadeIn .7s ease .1s both',
-          }}>
-            SSL certificates.<br/>
-            <span style={{
-              background:`linear-gradient(90deg, ${C.teal}, #38bdf8)`,
-              WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-              backgroundClip:'text',
-            }}>Fully automated.</span>
-          </h1>
+          <FadeUp delay={60}>
+            <h1 style={{
+              fontSize:'clamp(44px,7vw,84px)', fontWeight:800,
+              letterSpacing:'-3px', lineHeight:1.0,
+              color:C.ink, marginBottom:24,
+            }}>
+              SSL certificates.<br/>
+              <span style={{ color:C.teal }}>Fully automated.</span>
+            </h1>
+          </FadeUp>
 
           {/* Sub */}
-          <p style={{
-            fontSize:'clamp(16px,1.8vw,20px)', color:'rgba(255,255,255,0.45)',
-            lineHeight:1.8, maxWidth:600, margin:'0 auto 48px',
-            fontWeight:400, animation:'fadeIn .7s ease .2s both',
-          }}>
-            The complete CLM platform — issue, validate, deploy, monitor and renew
-            certificates across every CA and every server.
-            Built for developers, SMBs, and non-profits.
-          </p>
+          <FadeUp delay={120}>
+            <p style={{
+              fontSize:'clamp(16px,1.8vw,19px)', color:C.textMid,
+              lineHeight:1.8, maxWidth:580, margin:'0 auto 44px',
+              fontWeight:400,
+            }}>
+              The complete CLM platform — issue, validate, deploy, monitor and renew
+              certificates across every CA and every server.
+              Built for developers, SMBs, and non-profits.
+            </p>
+          </FadeUp>
 
           {/* CTAs */}
-          <div style={{
-            display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap',
-            marginBottom:72, animation:'fadeIn .7s ease .3s both',
-          }}>
-            <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')}/>
-            <CTA label="View pricing" variant="ghost-dark" onClick={()=>nav('/pricing')}/>
-          </div>
+          <FadeUp delay={160}>
+            <div style={{
+              display:'flex', gap:12, justifyContent:'center',
+              flexWrap:'wrap', marginBottom:72,
+            }}>
+              <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')}/>
+              <CTA label="View pricing" onClick={()=>nav('/pricing')}/>
+            </div>
+          </FadeUp>
 
-          {/* Stats */}
-          <div style={{
-            display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:40,
-            maxWidth:600, margin:'0 auto',
-            animation:'fadeIn .7s ease .4s both',
-          }}>
-            <Metric
-              val={certCount ? `${displayCount.toLocaleString()}+` : '—'}
-              label="Active certificates"
-              sub="tracked across all CAs"
-              accent={C.teal}
-            />
-            <Metric val="~5 min" label="DV issuance time" sub="GoGetSSL · DigiCert chain" accent="#34d399"/>
-            <Metric val="$0" label="Platform cost" sub="certs from $8 / yr" accent={C.amber}/>
-          </div>
+          {/* Stats — light version */}
+          <FadeUp delay={200}>
+            <div style={{
+              display:'grid', gridTemplateColumns:'repeat(3,1fr)',
+              maxWidth:560, margin:'0 auto',
+              borderTop:`1px solid ${C.border}`,
+            }}>
+              {[
+                { val: certCount ? `${displayCount.toLocaleString()}+` : '—', label:'Active certificates', sub:'tracked across all CAs', accent:C.teal },
+                { val:'~5 min', label:'DV issuance time', sub:'GoGetSSL · DigiCert chain', accent:'#10b981' },
+                { val:'$0',     label:'Platform cost',    sub:'certs from $8 / yr',        accent:C.amber  },
+              ].map(({ val, label, sub, accent }, i) => (
+                <div key={label} style={{
+                  padding:'24px 0 0',
+                  borderLeft: i > 0 ? `1px solid ${C.border}` : 'none',
+                  paddingLeft: i > 0 ? 28 : 0,
+                  textAlign: 'left',
+                }}>
+                  <div style={{ fontSize:32, fontWeight:800, color:accent,
+                    letterSpacing:'-1px', lineHeight:1, marginBottom:6, fontFamily:MONO }}>{val}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:C.text, marginBottom:2 }}>{label}</div>
+                  <div style={{ fontSize:11, color:C.textLt, fontFamily:MONO }}>{sub}</div>
+                </div>
+              ))}
+            </div>
+          </FadeUp>
         </div>
       </section>
 
