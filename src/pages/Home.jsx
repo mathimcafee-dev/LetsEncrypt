@@ -202,12 +202,15 @@ function Metric({ val, label, sub, accent=C.teal }) {
 
 // ── Feature section ───────────────────────────────────────────────────
 function FeatureBlock({ tag, headline, body, items, card, reverse, accentColor=C.teal }) {
+  const { isMobile } = useIsMobile()
   return (
     <FadeUp>
       <div style={{
-        display:'grid', gridTemplateColumns:'1fr 1fr',
-        gap:'80px', alignItems:'center', marginBottom:120,
-        ...(reverse ? { direction:'rtl' } : {}),
+        display:'grid',
+        gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+        gap: isMobile ? '40px' : '80px',
+        alignItems:'center', marginBottom: isMobile ? 64 : 120,
+        ...(reverse && !isMobile ? { direction:'rtl' } : {}),
       }}>
         <div style={{ direction:'ltr' }}>
           <Tag>{tag}</Tag>
@@ -477,7 +480,7 @@ function ShowcaseTabs({ nav }) {
     }}>
 
       {/* ── Floating pill tab nav ── */}
-      <div style={{ display:'flex', justifyContent:'center', marginBottom:28 }}>
+      <div style={{ display:'flex', justifyContent:'center', marginBottom:28, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
         <div ref={pillRef} style={{
           display:'flex', background:'white',
           border:`1px solid ${C.border}`, borderRadius:40,
@@ -515,7 +518,7 @@ function ShowcaseTabs({ nav }) {
       {/* ── App window — 3D perspective tilt ── */}
       <div style={{
         perspective:'1200px',
-        maxWidth:900, margin:'0 auto',
+        maxWidth:900, margin:'0 auto', overflowX:'hidden',
         position:'relative', zIndex:2,
       }}>
         <div style={{
@@ -658,32 +661,49 @@ export default function Home({ nav }) {
 
         /* ── Mobile & tablet responsive ── */
         @media (max-width:767px) {
-          .home-hero-title { font-size:36px !important; letter-spacing:-1px !important; }
-          .home-hero-sub { font-size:15px !important; }
-          .home-hero-btns { flex-direction:column !important; align-items:stretch !important; }
-          .home-hero-btns button { width:100% !important; justify-content:center !important; }
-          .home-stats { grid-template-columns:1fr 1fr !important; gap:12px !important; }
-          .home-feature-grid { grid-template-columns:1fr !important; }
-          .home-section { padding:64px 20px !important; }
-          .home-section-inner { max-width:100% !important; padding:0 !important; }
-          .home-workflow-grid { grid-template-columns:1fr !important; }
-          .home-ca-grid { grid-template-columns:1fr 1fr !important; gap:8px !important; }
-          .home-showcase { padding:0 16px !important; }
-          .home-tabs { gap:4px !important; overflow-x:auto !important; }
-          .home-tabs button { font-size:11px !important; padding:7px 12px !important; white-space:nowrap !important; }
-          .home-app-window { border-radius:10px !important; }
-          .home-footer-grid { grid-template-columns:1fr 1fr !important; gap:28px !important; }
-          .home-nav-links { display:none !important; }
-          .home-mission-grid { grid-template-columns:1fr !important; }
+          .hero-pill { display:none !important; }
+          .hero-nav { display:none !important; }
+          .hero-get-started { display:none !important; }
+
+          /* Hero */
+          section[data-hero] { padding:70px 20px 60px !important; }
+
+          /* All sections get consistent mobile padding */
+          section { padding-left:20px !important; padding-right:20px !important; }
+
+          /* Grids collapse to single column */
+          [style*="grid-template-columns"] { grid-template-columns:1fr !important; }
+          [style*="gridTemplateColumns"] { grid-template-columns:1fr !important; }
+
+          /* Flex rows that should stack */
+          [style*="display:flex"][style*="gap:56"],
+          [style*="display:flex"][style*="gap:48"],
+          [style*="display:flex"][style*="gap:40"] {
+            flex-wrap:wrap !important;
+          }
+
+          /* Stats — 2 columns on mobile */
+          .home-stats { grid-template-columns:repeat(2,1fr) !important; }
+
+          /* Tabs — horizontal scroll */
+          .home-tabs { overflow-x:auto !important; -webkit-overflow-scrolling:touch !important; padding-bottom:4px !important; }
+
+          /* App window — no 3D tilt on mobile */
+          .home-app-window { transform:none !important; }
+
+          /* Footer grid */
+          .home-footer-cols { grid-template-columns:1fr 1fr !important; }
+
+          /* Nav header links hidden */
+          nav.home-top-nav { display:none !important; }
+          header .home-nav-cta { gap:6px !important; }
+          header .home-nav-cta button[data-size="sm"] { font-size:11px !important; padding:6px 12px !important; }
         }
         @media (min-width:768px) and (max-width:1023px) {
-          .home-hero-title { font-size:48px !important; }
-          .home-feature-grid { grid-template-columns:repeat(2,1fr) !important; }
-          .home-section { padding:80px 32px !important; }
-          .home-workflow-grid { grid-template-columns:repeat(2,1fr) !important; }
-          .home-footer-grid { grid-template-columns:repeat(2,1fr) !important; gap:32px !important; }
-          .home-showcase { padding:0 24px !important; }
-          .home-mission-grid { grid-template-columns:1fr !important; }
+          section { padding-left:32px !important; padding-right:32px !important; }
+          [style*="grid-template-columns: repeat(3"] { grid-template-columns:repeat(2,1fr) !important; }
+          [style*="gridTemplateColumns:'repeat(3"] { grid-template-columns:repeat(2,1fr) !important; }
+          .home-app-window { transform:rotateX(1deg) !important; }
         }
       `}</style>
 
@@ -735,7 +755,7 @@ export default function Home({ nav }) {
       {/* ── HERO ────────────────────────────────────────────────────── */}
       <section style={{
         background: C.white,
-        padding:'110px 40px 90px',
+        padding:'clamp(70px,10vw,110px) clamp(20px,5vw,40px) clamp(60px,8vw,90px)',
         position:'relative', overflow:'hidden',
         borderBottom:`1px solid ${C.border}`,
       }}>
@@ -771,7 +791,7 @@ export default function Home({ nav }) {
           }}>{t}</div>
         ))}
 
-        <div style={{ maxWidth:860, margin:'0 auto', position:'relative', textAlign:'center' }}>
+        <div style={{ maxWidth:860, margin:'0 auto', position:'relative', textAlign:'center', width:'100%' }}>
           {/* Eyebrow */}
           <FadeUp>
             <div style={{
@@ -831,7 +851,7 @@ export default function Home({ nav }) {
           {/* Stats — light version */}
           <FadeUp delay={200}>
             <div style={{
-              display:'grid', gridTemplateColumns:'repeat(3,1fr)',
+              display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',
               maxWidth:560, margin:'0 auto',
               borderTop:`1px solid ${C.border}`,
             }}>
@@ -947,7 +967,7 @@ export default function Home({ nav }) {
           viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="0.6">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%', boxSizing:'border-box' }}>
           <FadeUp>
             <div style={{ marginBottom:60 }}>
               <Tag>Platform</Tag>
@@ -985,8 +1005,8 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── FEATURE DEEP-DIVES ───────────────────────────────────────── */}
-      <section style={{ background:C.bg, padding:'100px 40px 20px', borderTop:`1px solid ${C.border}` }}>
-        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
+      <section style={{ background:C.bg, padding:'clamp(48px,7vw,100px) clamp(20px,4vw,40px) 20px', borderTop:`1px solid ${C.border}` }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%', boxSizing:'border-box' }}>
 
           {/* Feature 1 — Zero-touch lifecycle */}
           <FeatureBlock
@@ -1125,7 +1145,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
-      <section id="workflow" style={{ background:C.white, padding:'clamp(60px,8vw,100px) clamp(20px,5vw,40px)',
+      <section id="workflow" style={{ background:C.white, padding:'clamp(48px,6vw,100px) clamp(16px,4vw,40px)',
         borderTop:`1px solid ${C.border}`, position:'relative', overflow:'hidden' }}>
         {/* Watermark — huge "→" flow arrow */}
         <div style={{ position:'absolute', left:'50%', top:'50%',
@@ -1135,7 +1155,7 @@ export default function Home({ nav }) {
           fontFamily:"'Inter var','Inter',system-ui,sans-serif",
           letterSpacing:'-20px', whiteSpace:'nowrap',
         }}>→</div>
-        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%', boxSizing:'border-box' }}>
           <FadeUp>
             <div style={{ marginBottom:64 }}>
               <Tag>Workflow</Tag>
@@ -1235,7 +1255,7 @@ export default function Home({ nav }) {
 
       {/* ── MISSION & ETHICS ────────────────────────────────────────── */}
       <section id="mission" style={{
-        background:C.bg, padding:'clamp(60px,8vw,100px) clamp(20px,5vw,40px)',
+        background:C.bg, padding:'clamp(48px,6vw,100px) clamp(16px,4vw,40px)',
         borderTop:`1px solid ${C.border}`,
         position:'relative', overflow:'hidden',
       }}>
@@ -1246,7 +1266,7 @@ export default function Home({ nav }) {
           fontFamily:"'Inter var','Inter',system-ui,sans-serif",
           letterSpacing:'-12px',
         }}>PKI</div>
-        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%', boxSizing:'border-box' }}>
           <FadeUp>
             <div style={{ marginBottom:72 }}>
               <Tag>Mission</Tag>
@@ -1316,7 +1336,7 @@ export default function Home({ nav }) {
             </svg>
           ))}
         </div>
-        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%', boxSizing:'border-box' }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
               {[
