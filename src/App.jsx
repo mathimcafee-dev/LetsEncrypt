@@ -23,6 +23,8 @@ import AdminAnalytics from './pages/AdminAnalytics'
 import AgentHealth from './pages/AgentHealth'
 import CAIntelligenceHub from './pages/CAIntelligenceHub'
 import CAConnectors from './pages/CAConnectors'
+import BulkScanner from './pages/BulkScanner'
+import PublicStatus from './pages/PublicStatus'
 
 export default function App() {
   const [page, setPage] = useState(window.location.pathname)
@@ -86,6 +88,8 @@ export default function App() {
       {page === '/cert-intelligence' && <CAIntelligenceHub nav={nav} />}
       {page === '/ca-intelligence' && <CAIntelligenceHub nav={nav} />}
       {page === '/ca-connectors' && <CAConnectors nav={nav} />}
+      {page === '/scan' && <BulkScanner nav={nav} />}
+      {(page === '/status' || page.startsWith('/status/')) && <PublicStatus nav={nav} />}
     </div>
   )
 }

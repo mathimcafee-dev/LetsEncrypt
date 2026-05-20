@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import {
-  Shield, Plus, Globe, Server, Activity, TrendingUp, Trophy,
+  Shield, Plus, Globe, Server, Activity, TrendingUp, Trophy, History,
   Layout, Download, Settings,
   BookOpen, CreditCard, Info, User, Mail, LogOut, Bell
 } from 'lucide-react'
@@ -19,6 +19,7 @@ import CAIntelligenceHub from './CAIntelligenceHub'
 import AdminAnalytics from './AdminAnalytics'
 import AgentHealth from './AgentHealth'
 import SSLHealthScore from './SSLHealthScore'
+import CertChangelog from './CertChangelog'
 import Pricing from './Pricing'
 
 // Default collapsed state — Overview & Account open, rest start open too but user can close
@@ -89,8 +90,9 @@ export default function CLMHome({ user, nav }) {
     { id:'agent-health', label:'Agent Health',  icon:Activity },
   ]
   const NAV_CA = [
-    { id:'ca-intelligence',label:'CA Intelligence', icon:TrendingUp },
-    { id:'ssl-health',     label:'SSL Health Score', icon:Trophy     },
+    { id:'ca-intelligence', label:'CA Intelligence',   icon:TrendingUp },
+    { id:'ssl-health',      label:'SSL Health Score',  icon:Trophy     },
+    { id:'cert-changelog',  label:'Cert Changelog',    icon:History    },
   ]
   const NAV_RESOURCES = [
     { id:'install',  label:'Install Guide', icon:Download  },
@@ -106,7 +108,7 @@ export default function CLMHome({ user, nav }) {
   ]
   const SECTION_TITLES = {
     dashboard:'Dashboard', issue:'Issue Certificate', 'ca-intelligence':'CA Intelligence', analytics:'Analytics',
-    'ssl-health':'SSL Health Score',
+    'ssl-health':'SSL Health Score', 'cert-changelog':'Certificate Changelog',
     integrations:'Integrations',
     install:'Installation', kb:'Docs & Help', pricing:'Pricing',
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
@@ -160,6 +162,7 @@ export default function CLMHome({ user, nav }) {
     if (section === 'analytics')     return <AdminAnalytics user={user}/>
     if (section === 'agent-health')  return <AgentHealth user={user}/>
     if (section === 'ssl-health')    return <SSLHealthScore user={user}/>
+    if (section === 'cert-changelog') return <CertChangelog user={user}/>
     return null
   }
 

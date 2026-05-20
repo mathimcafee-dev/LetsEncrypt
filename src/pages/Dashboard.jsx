@@ -90,6 +90,14 @@ function DvPendingCard({ order, onRefresh }) {
       const d = await r.json()
       if (d.status === 'active' || d.ggs_status === 'active') {
         setMsg('✅ Certificate issued! Refreshing...')
+        // Log cert event
+        try {
+          const { data: { session: s } } = await supabase.auth.getSession()
+          if (s) await supabase.from('cert_events').insert({
+            user_id: s.user.id, cert_id: order.id, domain: order.domain,
+            event_type: 'issued', meta: { product: order.cert_type || 'DV', source: 'gogetssl' }
+          })
+        } catch (_) {}
         setTimeout(() => onRefresh(), 1500)
       } else {
         setMsg('Status: '+(d.ggs_status||'pending')+' — DNS may still be propagating')
@@ -473,7 +481,17 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         body: JSON.stringify({ action, cert_id: cert.id, triggered_by: 'manual', ...extra })
       })
       const d = await r.json()
-      if (d.ok && d.status === 'active') { setMsg(action==='reissue'?'✅ Reissued & active!':('✅ Renewed! New cert created.')); loadHistory() }
+      if (d.ok && d.status === 'active') {
+        setMsg(action==='reissue'?'✅ Reissued & active!':('✅ Renewed! New cert created.'))
+        try {
+          await supabase.from('cert_events').insert({
+            user_id: session.user.id, cert_id: cert.id, domain: cert.domain,
+            event_type: action === 'reissue' ? 'renewed' : 'renewed',
+            meta: { action, triggered_by: 'manual' }
+          })
+        } catch (_) {}
+        loadHistory()
+      }
       else if (d.ok) { setMsg('⏳ Submitted — DNS validation in progress...'); loadHistory() }
       else setMsg('❌ '+(d.error||'Unknown error'))
     } catch(e) { setMsg('❌ '+e.message) }
