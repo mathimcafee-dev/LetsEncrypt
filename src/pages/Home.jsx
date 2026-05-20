@@ -274,6 +274,67 @@ const ETHICS_ITEMS = [
   },
 ]
 
+// ── WatermarkGrid — tiled PKI symbols filling white sections ────────
+// symbols: shield, lock, certificate, key, refresh(renew), checkmark, globe
+const WM_SYMBOLS = [
+  // Shield
+  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
+  // Lock
+  <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
+  // Certificate / ribbon
+  <><circle cx="12" cy="8" r="5"/><path d="M9 13.5L12 22l3-8.5"/></>,
+  // Key
+  <><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5l3 3"/></>,
+  // Refresh / renew
+  <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>,
+  // Check circle
+  <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>,
+  // Globe / domain
+  <><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>,
+  // Server
+  <><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></>,
+]
+
+function WatermarkGrid({ color = '#0ea5e9', opacity = 0.045, spacing = 80, size = 22 }) {
+  const cols = Math.ceil(1400 / spacing) + 2
+  const rows = Math.ceil(600  / spacing) + 2
+  const total = cols * rows
+
+  return (
+    <div style={{
+      position:'absolute', inset:0, overflow:'hidden',
+      pointerEvents:'none', userSelect:'none',
+    }}>
+      <div style={{
+        display:'grid',
+        gridTemplateColumns:`repeat(${cols}, ${spacing}px)`,
+        gridTemplateRows:`repeat(${rows}, ${spacing}px)`,
+        width: cols * spacing,
+        height: rows * spacing,
+        opacity,
+        marginLeft:`-${Math.floor(spacing/2)}px`,
+        marginTop:`-${Math.floor(spacing/2)}px`,
+      }}>
+        {Array.from({ length: total }).map((_, i) => {
+          const sym = WM_SYMBOLS[i % WM_SYMBOLS.length]
+          const rotate = (i * 17) % 360
+          return (
+            <div key={i} style={{
+              display:'flex', alignItems:'center', justifyContent:'center',
+              transform:`rotate(${rotate}deg)`,
+            }}>
+              <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+                stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                {sym}
+              </svg>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 // ── ShowcaseTabs — Owlish-style: 3D tilt entrance, sliding indicator, crossfade panels ──
 const TABS = [
   { id:'inventory',  label:'Inventory'        },
@@ -895,13 +956,8 @@ export default function Home({ nav }) {
 
       {/* ── CAPABILITY LIST ──────────────────────────────────────────── */}
       <section id="platform" style={{ background:C.white, padding:'100px 40px', position:'relative', overflow:'hidden' }}>
-        {/* Watermark — giant shield outline */}
-        <svg style={{ position:'absolute', right:'2%', bottom:'4%', width:340, height:340,
-          opacity:0.07, pointerEvents:'none', userSelect:'none' }}
-          viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="0.6">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <WatermarkGrid color={C.teal} opacity={0.042} spacing={76} size={20}/>
+        <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
           <FadeUp>
             <div style={{ marginBottom:60 }}>
               <Tag>Platform</Tag>
@@ -939,8 +995,9 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── FEATURE DEEP-DIVES ───────────────────────────────────────── */}
-      <section style={{ background:C.bg, padding:'100px 40px 20px', borderTop:`1px solid ${C.border}` }}>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+      <section style={{ background:C.bg, padding:'100px 40px 20px', borderTop:`1px solid ${C.border}`, position:'relative', overflow:'hidden' }}>
+        <WatermarkGrid color="#0ea5e9" opacity={0.028} spacing={96} size={22}/>
+        <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
 
           {/* Feature 1 — Zero-touch lifecycle */}
           <FeatureBlock
@@ -1081,15 +1138,8 @@ export default function Home({ nav }) {
       {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
       <section id="workflow" style={{ background:C.white, padding:'100px 40px',
         borderTop:`1px solid ${C.border}`, position:'relative', overflow:'hidden' }}>
-        {/* Watermark — huge "→" flow arrow */}
-        <div style={{ position:'absolute', left:'50%', top:'50%',
-          transform:'translate(-50%,-50%)',
-          fontSize:320, fontWeight:900, color:C.teal, opacity:0.055,
-          pointerEvents:'none', userSelect:'none', lineHeight:1,
-          fontFamily:"'Inter var','Inter',system-ui,sans-serif",
-          letterSpacing:'-20px', whiteSpace:'nowrap',
-        }}>→</div>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <WatermarkGrid color="#10b981" opacity={0.038} spacing={88} size={18}/>
+        <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
           <FadeUp>
             <div style={{ marginBottom:64 }}>
               <Tag>Workflow</Tag>
@@ -1193,14 +1243,8 @@ export default function Home({ nav }) {
         borderTop:`1px solid ${C.border}`,
         position:'relative', overflow:'hidden',
       }}>
-        {/* Watermark — "PKI" monogram top right */}
-        <div style={{ position:'absolute', right:'1%', top:'4%',
-          fontSize:260, fontWeight:900, color:'#0f172a', opacity:0.065,
-          pointerEvents:'none', userSelect:'none', lineHeight:1,
-          fontFamily:"'Inter var','Inter',system-ui,sans-serif",
-          letterSpacing:'-12px',
-        }}>PKI</div>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <WatermarkGrid color="#0f172a" opacity={0.032} spacing={70} size={16}/>
+        <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
           <FadeUp>
             <div style={{ marginBottom:72 }}>
               <Tag>Mission</Tag>
@@ -1256,21 +1300,8 @@ export default function Home({ nav }) {
       <section style={{ background:C.white, padding:'72px 40px',
         borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`,
         position:'relative', overflow:'hidden' }}>
-        {/* Watermark — repeating lock icons row */}
-        <div style={{ position:'absolute', bottom:'8px', left:0, right:0,
-          display:'flex', gap:48, justifyContent:'center', alignItems:'center',
-          opacity:0.08, pointerEvents:'none', userSelect:'none', overflow:'hidden',
-          flexWrap:'nowrap',
-        }}>
-          {Array.from({length:12}).map((_,i) => (
-            <svg key={i} width="52" height="52" viewBox="0 0 24 24" fill="none"
-              stroke={C.teal} strokeWidth="1">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          ))}
-        </div>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <WatermarkGrid color={C.teal} opacity={0.05} spacing={64} size={16}/>
+        <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
               {[
