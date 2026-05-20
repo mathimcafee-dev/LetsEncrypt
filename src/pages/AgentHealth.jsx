@@ -4,9 +4,9 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import {
   Activity, Server, RefreshCw, Clock, Zap, ChevronDown,
-  AlertTriangle, Shield, Search, X, Filter, Play, Trash2,
-  CheckCircle, XCircle, AlertCircle, Terminal, RotateCcw,
-  ChevronRight, Copy, Check, Pause, WifiOff
+  AlertTriangle, Shield, Search, X, Filter, Trash2,
+  CheckCircle, XCircle, AlertCircle, Terminal,
+  ChevronRight, Copy, Check, Pause, Play, WifiOff
 } from 'lucide-react'
 import '../styles/design-v2.css'
 
@@ -118,12 +118,11 @@ function RenewalBadge({ days }) {
 }
 
 // ── Slide-out drawer (job history + health events + actions) ──────────
-function Drawer({ agent, tok, onClose, onRestart, onDelete }) {
+function Drawer({ agent, tok, onClose, onDelete }) {
   const [jobs,      setJobs]      = useState(null)
   const [events,    setEvents]    = useState(null)
   const [loading,   setLoading]   = useState(true)
   const [tab,       setTab]       = useState('jobs')
-  const [actioning, setActioning] = useState(null)
   const [copied,    setCopied]    = useState(false)
 
   useEffect(() => {
@@ -141,12 +140,6 @@ function Drawer({ agent, tok, onClose, onRestart, onDelete }) {
 
   const statusColor = { success: '#16a34a', failed: '#dc2626', queued: '#d97706', claimed: '#2563eb' }
   const eventIcon   = { online: '🟢', offline: '🔴', recovered: '✅', degraded: '🟡' }
-
-  const doRestart = async () => {
-    setActioning('restart')
-    await onRestart(agent)
-    setActioning(null)
-  }
 
   const copyCmd = () => {
     navigator.clipboard?.writeText(`systemctl restart sslvault-agent`)
@@ -231,12 +224,6 @@ function Drawer({ agent, tok, onClose, onRestart, onDelete }) {
         <div style={{ padding: '14px 20px', borderBottom: '0.5px solid var(--v2-border)' }}>
           <div className="v2-section-label" style={{ marginBottom: 10 }}>Actions</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button className="v2-btn v2-btn-sm" onClick={doRestart}
-              disabled={actioning === 'restart'}
-              style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <RotateCcw size={11} style={actioning === 'restart' ? { animation: 'spin .8s linear infinite' } : {}}/>
-              Restart agent
-            </button>
             <button className="v2-btn v2-btn-sm" onClick={copyCmd}
               style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               {copied ? <Check size={11}/> : <Copy size={11}/>}
@@ -249,6 +236,9 @@ function Drawer({ agent, tok, onClose, onRestart, onDelete }) {
               Delete agent
             </button>
           </div>
+          <p style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 8 }}>
+            SSH into your server and run the copied command to restart the agent.
+          </p>
         </div>
 
         {/* Tabs */}
@@ -436,11 +426,6 @@ export default function AgentHealth({ user }) {
     cntRef.current   = setInterval(() => setCountdown(c => c <= 1 ? 30 : c - 1), 1000)
     return () => { clearInterval(timerRef.current); clearInterval(cntRef.current) }
   }, [tok, paused, load])
-
-  const handleRestart = async (agent) => {
-    // Dispatch a restart-agent job
-    await callDaemon(tok, { action: 'dispatch_job', user_id: user?.id, agent_id: agent.id, job_type: 'restart_agent' })
-  }
 
   const handleDeleteDone = () => {
     setDelTarget(null)
@@ -690,7 +675,6 @@ export default function AgentHealth({ user }) {
           agent={{ ...drawer, user_id: user?.id }}
           tok={tok}
           onClose={() => setDrawer(null)}
-          onRestart={handleRestart}
           onDelete={(a) => { setDelTarget(a); setDrawer(null) }}
         />
       )}
