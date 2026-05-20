@@ -55,13 +55,15 @@ export default function CLMHome({ user, nav }) {
   const loadNotifs = async () => {
     if (!user) return
     setBellLoading(true)
-    const { data, error } = await supabase.functions.invoke('send-alert', {
-      body: { action: 'get_notifications', user_id: user.id, limit: 10 }
-    })
-    if (!error && data?.ok) {
-      setNotifs(data.notifications || [])
-      setUnreadCount(data.unread_count || 0)
-    }
+    try {
+      const { data, error } = await supabase.functions.invoke('send-alert', {
+        body: { action: 'get_notifications', user_id: user.id, limit: 10 }
+      })
+      if (!error && data?.ok) {
+        setNotifs(data.notifications || [])
+        setUnreadCount(data.unread_count || 0)
+      }
+    } catch (_) { /* CORS or network error — silently ignore, notifications are non-critical */ }
     setBellLoading(false)
   }
 
