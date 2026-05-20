@@ -306,8 +306,8 @@ function ArchDiagram({ isMobile }) {
     { label:'Your server', sub:'Nginx / Apache', icon:'⚡', color:C.amber },
   ]
   return (
-    <div style={{ background:C.bg, border:`1px solid ${C.border}`, borderRadius:12, padding:'24px 20px', textAlign:'center' }}>
-      <div style={{ fontSize:11, fontWeight:700, color:C.textLt, letterSpacing:'0.5px', textTransform:'uppercase', marginBottom:20 }}>Certificate lifecycle flow</div>
+    <div style={{ background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:12, padding:'24px 20px', textAlign:'center' }}>
+      <div style={{ fontSize:11, fontWeight:700, color:'#9ca3af', letterSpacing:'0.5px', textTransform:'uppercase', marginBottom:20 }}>Certificate lifecycle flow</div>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:isMobile?8:16, flexWrap:'wrap' }}>
         {nodes.map((n, i) => (
           <div key={n.label} style={{ display:'flex', alignItems:'center', gap:isMobile?8:16 }}>
@@ -315,8 +315,8 @@ function ArchDiagram({ isMobile }) {
               <div style={{ width:52, height:52, borderRadius:12, background:n.main?n.color:n.color+'15', border:`2px solid ${n.main?n.color:n.color+'44'}`, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 6px', fontSize:22, boxShadow:n.main?`0 4px 20px ${n.color}44`:'none' }}>
                 {n.icon}
               </div>
-              <div style={{ fontSize:11, fontWeight:600, color:n.main?n.color:C.text }}>{n.label}</div>
-              <div style={{ fontSize:10, color:C.textLt }}>{n.sub}</div>
+              <div style={{ fontSize:11, fontWeight:600, color:n.main?n.color:'#0a0a0a' }}>{n.label}</div>
+              <div style={{ fontSize:10, color:'#9ca3af' }}>{n.sub}</div>
             </div>
             {i < nodes.length-1 && (
               <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:2 }}>
@@ -333,7 +333,7 @@ function ArchDiagram({ isMobile }) {
       {/* Protocol labels */}
       <div style={{ display:'flex', gap:8, justifyContent:'center', flexWrap:'wrap', marginTop:20 }}>
         {['ACME RFC 8555','DNS-01 Challenge','AES-256-GCM','TLS 1.3 / 1.2','CT Log verified'].map(p=>(
-          <span key={p} style={{ fontSize:10, fontWeight:600, color:C.teal, background:`${C.teal}0d`, border:`1px solid ${C.teal}22`, borderRadius:4, padding:'3px 8px', fontFamily:MONO }}>{p}</span>
+          <span key={p} style={{ fontSize:10, fontWeight:600, color:C.teal, background:`${C.teal}08`, border:`1px solid ${C.teal}20`, borderRadius:4, padding:'3px 8px', fontFamily:MONO }}>{p}</span>
         ))}
       </div>
     </div>
@@ -370,7 +370,7 @@ export default function Home({ nav }) {
   }, [certCount])
 
   return (
-    <div style={{ fontFamily:F, background:C.white, color:C.text, overflowX:'hidden' }}>
+    <div style={{ fontFamily:F, background:'#ffffff', color:'#0a0a0a', overflowX:'hidden' }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
       <style>{`
         *, *::before, *::after { box-sizing:border-box; margin:0; padding:0 }
@@ -584,15 +584,15 @@ export default function Home({ nav }) {
       </div>
 
       {/* ── PLATFORM FEATURES ────────────────────────────────────────── */}
-      <section id="platform" style={{ background:C.white, padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)` }}>
+      <section id="platform" style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ marginBottom:56, maxWidth:600 }}>
               <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:12 }}>Platform capabilities</div>
-              <h2 style={{ fontSize:`clamp(26px,4vw,42px)`, fontWeight:800, color:C.text, letterSpacing:'-1px', lineHeight:1.15, marginBottom:16 }}>
+              <h2 style={{ fontSize:`clamp(26px,4vw,42px)`, fontWeight:700, color:'#0a0a0a', letterSpacing:'-1px', lineHeight:1.15, marginBottom:16 }}>
                 Every layer of the certificate lifecycle — automated.
               </h2>
-              <p style={{ fontSize:15, color:C.textMid, lineHeight:1.75 }}>
+              <p style={{ fontSize:15, color:'#4b5563', lineHeight:1.75 }}>
                 From initial issuance through DCV, installation, monitoring, and renewal — SSLVault handles the full PKI chain with zero manual steps.
               </p>
             </div>
@@ -614,11 +614,11 @@ export default function Home({ nav }) {
                 desc:'Grades every domain A+ to F against TLS reachability, HSTS presence and max-age, CAA record, expiry, and security headers. Live data from crt.sh CT logs.' },
             ].map(f=>(
               <FadeUp key={f.title}>
-                <div style={{ background:C.white, border:`1px solid ${C.border}`, borderTop:`3px solid ${f.color}`, borderRadius:10, padding:'22px 20px', height:'100%' }}>
+                <div style={{ background:'#ffffff', border:'1px solid #e5e7eb', borderTop:`3px solid ${f.color}`, borderRadius:10, padding:'22px 20px', height:'100%', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
                   <div style={{ fontSize:22, marginBottom:12 }}>{f.icon}</div>
                   <div style={{ fontSize:10, fontWeight:700, color:f.color, fontFamily:MONO, letterSpacing:'0.04em', marginBottom:6 }}>{f.spec}</div>
-                  <div style={{ fontSize:14, fontWeight:700, color:C.text, marginBottom:8 }}>{f.title}</div>
-                  <div style={{ fontSize:12.5, color:C.textMid, lineHeight:1.7 }}>{f.desc}</div>
+                  <div style={{ fontSize:14, fontWeight:600, color:'#0a0a0a', marginBottom:8 }}>{f.title}</div>
+                  <div style={{ fontSize:12.5, color:'#4b5563', lineHeight:1.7 }}>{f.desc}</div>
                 </div>
               </FadeUp>
             ))}
@@ -637,16 +637,16 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── ARCHITECTURE ─────────────────────────────────────────────── */}
-      <section id="arch" style={{ background:C.bg, padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:`1px solid ${C.border}` }}>
+      <section id="arch" style={{ background:'#f8fafc', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?40:60, alignItems:'start' }}>
               <div>
                 <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:12 }}>How it works</div>
-                <h2 style={{ fontSize:`clamp(24px,3.5vw,38px)`, fontWeight:800, color:C.text, letterSpacing:'-1px', lineHeight:1.2, marginBottom:20 }}>
+                <h2 style={{ fontSize:`clamp(24px,3.5vw,38px)`, fontWeight:700, color:'#0a0a0a', letterSpacing:'-1px', lineHeight:1.2, marginBottom:20 }}>
                   From CSR to live HTTPS — in one automated pipeline.
                 </h2>
-                <p style={{ fontSize:14, color:C.textMid, lineHeight:1.8, marginBottom:28 }}>
+                <p style={{ fontSize:14, color:'#4b5563', lineHeight:1.8, marginBottom:28 }}>
                   SSLVault orchestrates the full certificate lifecycle across ACME-compliant CAs, your DNS provider, and your web server — using open standards throughout.
                 </p>
                 <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
@@ -660,8 +660,8 @@ export default function Home({ nav }) {
                     <div key={s.step} style={{ display:'flex', gap:14, alignItems:'flex-start' }}>
                       <div style={{ width:28, height:28, borderRadius:7, background:`${C.teal}12`, border:`1px solid ${C.teal}25`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:800, color:C.teal, fontFamily:MONO, flexShrink:0 }}>{s.step}</div>
                       <div>
-                        <div style={{ fontSize:13, fontWeight:600, color:C.text, marginBottom:2 }}>{s.label}</div>
-                        <div style={{ fontSize:12, color:C.textMid, lineHeight:1.6 }}>{s.detail}</div>
+                        <div style={{ fontSize:13, fontWeight:600, color:'#0a0a0a', marginBottom:2 }}>{s.label}</div>
+                        <div style={{ fontSize:12, color:'#4b5563', lineHeight:1.6 }}>{s.detail}</div>
                       </div>
                     </div>
                   ))}
@@ -688,12 +688,12 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── KEYLOCKER + READINESS SCREENSHOTS ────────────────────────── */}
-      <section style={{ background:C.white, padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:`1px solid ${C.border}` }}>
+      <section style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ textAlign:'center', marginBottom:48 }}>
               <div style={{ fontSize:11, fontWeight:700, color:C.purple, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:12 }}>Security-grade tooling</div>
-              <h2 style={{ fontSize:`clamp(24px,3.5vw,38px)`, fontWeight:800, color:C.text, letterSpacing:'-1px', lineHeight:1.2, marginBottom:16 }}>
+              <h2 style={{ fontSize:`clamp(24px,3.5vw,38px)`, fontWeight:700, color:'#0a0a0a', letterSpacing:'-1px', lineHeight:1.2, marginBottom:16 }}>
                 Enterprise PKI controls. Built in.
               </h2>
               <p style={{ fontSize:15, color:C.textMid, maxWidth:520, margin:'0 auto', lineHeight:1.75 }}>
@@ -705,7 +705,7 @@ export default function Home({ nav }) {
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:24 }}>
             <FadeUp>
               <div>
-                <div style={{ fontSize:11, fontWeight:700, color:C.textLt, letterSpacing:'0.5px', textTransform:'uppercase', fontFamily:MONO, marginBottom:10 }}>
+                <div style={{ fontSize:11, fontWeight:700, color:'#9ca3af', letterSpacing:'0.5px', textTransform:'uppercase', fontFamily:MONO, marginBottom:10 }}>
                   🔐 KeyLocker — AES-256-GCM private key vault
                 </div>
                 <KeyLockerMockup/>
@@ -713,7 +713,7 @@ export default function Home({ nav }) {
             </FadeUp>
             <FadeUp delay={100}>
               <div>
-                <div style={{ fontSize:11, fontWeight:700, color:C.textLt, letterSpacing:'0.5px', textTransform:'uppercase', fontFamily:MONO, marginBottom:10 }}>
+                <div style={{ fontSize:11, fontWeight:700, color:'#9ca3af', letterSpacing:'0.5px', textTransform:'uppercase', fontFamily:MONO, marginBottom:10 }}>
                   📋 47-Day Readiness — CA/B Forum compliance
                 </div>
                 <ReadinessMockup/>
@@ -795,16 +795,16 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── DNS PROVIDERS + INTEGRATIONS ─────────────────────────────── */}
-      <section style={{ background:C.white, padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:`1px solid ${C.border}` }}>
+      <section style={{ background:'#f8fafc', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?40:80, alignItems:'center' }}>
             <FadeUp>
               <div>
                 <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:12 }}>DNS integration</div>
-                <h2 style={{ fontSize:`clamp(22px,3vw,36px)`, fontWeight:800, color:C.text, letterSpacing:'-1px', lineHeight:1.2, marginBottom:16 }}>
+                <h2 style={{ fontSize:`clamp(22px,3vw,36px)`, fontWeight:700, color:'#0a0a0a', letterSpacing:'-1px', lineHeight:1.2, marginBottom:16 }}>
                   Automated DNS-01 challenge across every major provider.
                 </h2>
-                <p style={{ fontSize:14, color:C.textMid, lineHeight:1.8, marginBottom:24 }}>
+                <p style={{ fontSize:14, color:'#64748b', lineHeight:1.8, marginBottom:24 }}>
                   SSLVault connects directly to your DNS provider via API. When issuing or renewing, it adds the ACME challenge record, polls for propagation, and cleans up automatically — no copy-pasting, no manual steps.
                 </p>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
@@ -818,11 +818,11 @@ export default function Home({ nav }) {
                     { name:'Plesk',         note:'XML API' },
                     { name:'+ more',        note:'Contact us' },
                   ].map(p=>(
-                    <div key={p.name} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 10px', background:C.bg, border:`1px solid ${C.border}`, borderRadius:7 }}>
+                    <div key={p.name} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 10px', background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:7, boxShadow:'0 1px 2px rgba(0,0,0,0.04)' }}>
                       <div style={{ width:6, height:6, borderRadius:'50%', background:C.teal, flexShrink:0 }}/>
                       <div>
-                        <div style={{ fontSize:12, fontWeight:600, color:C.text }}>{p.name}</div>
-                        <div style={{ fontSize:10, color:C.textLt, fontFamily:MONO }}>{p.note}</div>
+                        <div style={{ fontSize:12, fontWeight:600, color:'#0a0a0a' }}>{p.name}</div>
+                        <div style={{ fontSize:10, color:'#9ca3af', fontFamily:MONO }}>{p.note}</div>
                       </div>
                     </div>
                   ))}
@@ -848,17 +848,17 @@ export default function Home({ nav }) {
         </div>
       </section>
 
-      {/* ── MISSION — dark ───────────────────────────────────────────── */}
-      <section style={{ background:C.ink, padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+      {/* ── MISSION — white (Owlish style) ────────────────────────────── */}
+      <section style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?40:80, alignItems:'center' }}>
               <div>
                 <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:12 }}>Mission</div>
-                <h2 style={{ fontSize:`clamp(24px,3.5vw,42px)`, fontWeight:800, color:C.white, letterSpacing:'-1px', lineHeight:1.15, marginBottom:20 }}>
+                <h2 style={{ fontSize:`clamp(24px,3.5vw,42px)`, fontWeight:800, color:'#0f172a', letterSpacing:'-1px', lineHeight:1.15, marginBottom:20 }}>
                   PKI expertise shouldn't require a $250k CLM contract.
                 </h2>
-                <p style={{ fontSize:15, color:'rgba(255,255,255,0.5)', lineHeight:1.8, marginBottom:28 }}>
+                <p style={{ fontSize:15, color:'#64748b', lineHeight:1.8, marginBottom:28 }}>
                   SSLVault is built by a PKI specialist and DigiCert partner account manager. The same automation that enterprise teams pay for — available to every developer and SMB.
                 </p>
                 <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
@@ -867,12 +867,12 @@ export default function Home({ nav }) {
                     { spec:'Keyfactor Command',  price:'$75–200k/yr', note:'Mid-market · No cPanel · Complex setup' },
                     { spec:'SSLVault CLM',       price:'Partner rates', note:'Full CLM · Agent + cPanel + DNS · All cert types', highlight:true },
                   ].map(c=>(
-                    <div key={c.spec} style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 14px', background:c.highlight?`${C.teal}10`:'rgba(255,255,255,0.03)', border:`1px solid ${c.highlight?C.teal+'40':'rgba(255,255,255,0.06)'}`, borderRadius:8 }}>
+                    <div key={c.spec} style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 14px', background:c.highlight?`${C.teal}08`:'#f8fafc', border:`1px solid ${c.highlight?C.teal+'30':'#e5e7eb'}`, borderRadius:8 }}>
                       <div style={{ flex:1 }}>
-                        <div style={{ fontSize:12, fontWeight:700, color:c.highlight?C.teal:C.white, fontFamily:MONO }}>{c.spec}</div>
-                        <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', marginTop:2 }}>{c.note}</div>
+                        <div style={{ fontSize:12, fontWeight:700, color:c.highlight?C.teal:'#0f172a', fontFamily:MONO }}>{c.spec}</div>
+                        <div style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>{c.note}</div>
                       </div>
-                      <div style={{ fontSize:14, fontWeight:800, color:c.highlight?C.teal:'rgba(255,255,255,0.4)', fontFamily:MONO, whiteSpace:'nowrap' }}>{c.price}</div>
+                      <div style={{ fontSize:14, fontWeight:800, color:c.highlight?C.teal:'#94a3b8', fontFamily:MONO, whiteSpace:'nowrap' }}>{c.price}</div>
                     </div>
                   ))}
                 </div>
@@ -886,11 +886,11 @@ export default function Home({ nav }) {
                   { val:'No ads', label:'No advertising', sub:'No tracking, no data reselling' },
                   { val:'NL 🇳🇱', label:'Built in Netherlands', sub:'GDPR-first development' },
                 ].map(m=>(
-                  <div key={m.label} style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 16px', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:8 }}>
+                  <div key={m.label} style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 16px', background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:8 }}>
                     <div style={{ fontSize:16, fontWeight:800, color:C.teal, fontFamily:MONO, width:80, flexShrink:0 }}>{m.val}</div>
                     <div>
-                      <div style={{ fontSize:12, fontWeight:600, color:C.white }}>{m.label}</div>
-                      <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)' }}>{m.sub}</div>
+                      <div style={{ fontSize:12, fontWeight:600, color:'#0f172a' }}>{m.label}</div>
+                      <div style={{ fontSize:11, color:'#94a3b8' }}>{m.sub}</div>
                     </div>
                   </div>
                 ))}
@@ -901,17 +901,17 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background:C.white, padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:`1px solid ${C.border}` }}>
+      <section style={{ background:'#f8fafc', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
         <div style={{ maxWidth:700, margin:'0 auto', textAlign:'center' }}>
           <FadeUp>
             <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:`${C.teal}0d`, border:`1px solid ${C.teal}22`, borderRadius:100, padding:'5px 14px', marginBottom:24 }}>
               <span style={{ width:6, height:6, borderRadius:'50%', background:C.teal, animation:'blink 2.4s ease infinite' }}/>
               <span style={{ fontSize:11.5, fontWeight:600, color:C.teal, fontFamily:MONO }}>Production-ready · RFC 8555 compliant</span>
             </div>
-            <h2 style={{ fontSize:`clamp(28px,5vw,52px)`, fontWeight:900, color:C.text, letterSpacing:'-1.5px', lineHeight:1.1, marginBottom:20 }}>
+            <h2 style={{ fontSize:`clamp(28px,5vw,52px)`, fontWeight:700, color:'#0a0a0a', letterSpacing:'-1.5px', lineHeight:1.1, marginBottom:20 }}>
               Ready to automate your<br/>certificate lifecycle?
             </h2>
-            <p style={{ fontSize:15, color:C.textMid, lineHeight:1.75, marginBottom:36, maxWidth:480, margin:'0 auto 36px' }}>
+            <p style={{ fontSize:15, color:'#4b5563', lineHeight:1.75, marginBottom:36, maxWidth:480, margin:'0 auto 36px' }}>
               Issue, monitor, and auto-renew SSL certificates across every server and every CA — with enterprise-grade security tooling built in.
             </p>
             <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:24 }}>
@@ -920,7 +920,7 @@ export default function Home({ nav }) {
             </div>
             <div style={{ display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
               {['RapidSSL CA partner · DigiCert trust chain','RFC 8555 · AES-256-GCM','CA/B Forum 2026 compliant'].map(t=>(
-                <span key={t} style={{ fontSize:11.5, color:C.textLt, display:'flex', alignItems:'center', gap:6 }}>
+                <span key={t} style={{ fontSize:11.5, color:'#9ca3af', display:'flex', alignItems:'center', gap:6 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                   {t}
                 </span>
