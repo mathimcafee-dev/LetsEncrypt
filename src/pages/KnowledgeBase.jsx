@@ -141,6 +141,7 @@ const SECTIONS = [
   { id:'abuse',           icon:'🚨', title:'CT Abuse Monitor',         subtitle:'Detect unauthorised cert issuance',              badge:'Security',   badgeColor:C.red    },
   { id:'calendar',        icon:'📅', title:'Renewal Calendar',         subtitle:'Heatmap of upcoming renewals',                   badge:'Planning',   badgeColor:C.teal   },
   { id:'troubleshoot',    icon:'🔧', title:'Troubleshooting',          subtitle:'Common errors and fixes',                        badge:'Help',       badgeColor:C.muted  },
+  { id:'certbind',       icon:'🔗', title:'CertBind',                 subtitle:'Active certificate binding verification',         badge:'Unique',     badgeColor:C.teal   },
 ]
 
 export default function KnowledgeBase({ nav }) {
@@ -427,6 +428,55 @@ export default function KnowledgeBase({ nav }) {
                 </div>
               </div>
             ))}
+          </Section>
+        )}
+
+
+        {filtered.some(s=>s.id==='certbind') && (
+          <Section {...SECTIONS[12]}>
+            <p style={{ fontSize:13.5, color:C.body, lineHeight:1.8, marginBottom:18 }}>
+              CertBind is SSLVault's industry-first Active Certificate Binding Verification engine. It continuously proves — cryptographically — that the private key deployed on your server is mathematically paired with the certificate in your inventory, and that the certificate served over TLS matches what was issued. No other CLM vendor does this.
+            </p>
+
+            <div style={{ background:C.tealBg, border:`1px solid ${C.tealBd}`, borderRadius:9, padding:'14px 16px', marginBottom:18 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:C.tealDk, marginBottom:8 }}>Why this matters</div>
+              <div style={{ fontSize:13, color:C.body, lineHeight:1.75 }}>
+                A cert can be valid. The server can be running. HTTPS can work. And your organisation can still be operating with a key-cert mismatch — serving the wrong cert, or a cert from a rogue CA — and no traditional CLM will detect it. CertBind closes that gap.
+              </div>
+            </div>
+
+            <Step n={1} title="Four verification layers run on every check">
+              <Table headers={['Layer','What it verifies','Requires']} rows={[
+                ['1 — Key-Cert Binding Proof','Agent signs SSLVault nonce with deployed private key. We verify against cert public key. Proves key on disk is paired with issued cert without transmitting the key.','Persistent agent'],
+                ['2 — Live TLS Fingerprint','SHA-256 fingerprint of certificate served over TLS compared against fingerprint of issued cert. Detects silent cert swaps, wrong cert in LB pool, staging cert in production.','TLS probe (no agent)'],
+                ['3 — Chain Integrity','Full chain verified: leaf → intermediate → root. Unexpected intermediates flagged. Detects SSL inspection proxies (Palo Alto, Zscaler, Forcepoint) inserting their own certs.','Persistent agent'],
+                ['4 — Multi-Node Consistency','All IPs in load balancer pool checked independently. Partial deployments — cert updated on 3 of 7 nodes — flagged within 5 minutes.','Persistent agent'],
+              ]}/>
+            </Step>
+
+            <Step n={2} title="Understanding binding statuses">
+              <Table headers={['Status','Meaning','Action required']} rows={[
+                ['bound','Full cryptographic proof. Key ↔ cert ↔ TLS all verified.','None'],
+                ['key_mismatch','Private key on server does not match issued certificate. CRITICAL.','Re-install certificate immediately'],
+                ['cert_mismatch','Certificate served over TLS differs from certificate in inventory.','Check web server config; re-deploy cert'],
+                ['chain_anomaly','Unexpected intermediate CA in chain. Possible SSL inspection proxy.','Investigate proxy appliance; approve if known'],
+                ['partial_deploy','Some nodes in load balancer pool not updated.','Re-dispatch to all agents in pool'],
+                ['unreachable','TLS endpoint not responding on port 443.','Check server, firewall, or DNS'],
+                ['pending','Verification not yet run or in progress.','Click "Run check"'],
+              ]}/>
+            </Step>
+
+            <Step n={3} title="Navigate to Security → CertBind">
+              Click any certificate row to see the 4-layer breakdown. Click <strong>Run check</strong> for an immediate on-demand verification. Checks run automatically every 5 minutes when a persistent agent is connected.
+            </Step>
+
+            <Note type="danger">A <strong>key_mismatch</strong> means the private key stored on your server is from a different certificate issuance than the certificate currently installed. This is a critical security state. Re-install the certificate via SSLVault immediately.</Note>
+
+            <Note type="warning">CertBind Layer 1 (key-cert binding proof) requires the persistent agent. Layers 2 (TLS fingerprint) runs via TLS probe and does not require an agent. Install the agent to enable all 4 layers.</Note>
+
+            <Step n={4} title="Compliance relevance">
+              CertBind addresses specific requirements in PCI-DSS 4.0 (continuous cert monitoring in CDE), NIST SP 800-57 (key-cert binding verification), and ISO 27001:2022 Annex A.8.24 (cryptographic key management). Export the check history from Security → CertBind for audit evidence.
+            </Step>
           </Section>
         )}
 

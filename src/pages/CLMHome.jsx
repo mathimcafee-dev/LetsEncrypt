@@ -23,6 +23,7 @@ import CTAbuseMonitor from './CTAbuseMonitor'
 import ReadinessDashboard from './ReadinessDashboard'
 import Infrastructure from './Infrastructure'
 import CertVault from './CertVault'
+import CertBind from './CertBind'
 import Pricing from './Pricing'
 
 // Default collapsed state — Overview & Account open, rest start open too but user can close
@@ -97,6 +98,7 @@ export default function CLMHome({ user, nav }) {
     { id:'infrastructure', label:'Servers & agents',  icon:Server   },
     { id:'integrations',  label:'DNS providers',      icon:Globe    },
     { id:'certvault',     label:'CertVault',          icon:Lock     },
+    { id:'certbind',      label:'CertBind',           icon:Shield   },
   ]
   const NAV_SECURITY = [
     { id:'ssl-health',      label:'Health scores',    icon:Trophy     },
@@ -118,6 +120,7 @@ export default function CLMHome({ user, nav }) {
     readiness:'47-day readiness', 'renewal-calendar':'Renewal calendar',
     servers:'Servers & agents', integrations:'DNS providers',
     certvault:'CertVault',
+      certbind:'CertBind — Active Binding',
     'ssl-health':'Health scores', 'ct-monitor':'CT abuse monitor',
     'cert-changelog':'Audit log', 'agent-health':'Servers & agents', 'infrastructure':'Servers & agents',
     'ca-intelligence':'CA intelligence', 'bulk-scan':'Bulk scanner',
@@ -157,7 +160,8 @@ export default function CLMHome({ user, nav }) {
   // Sidebar-aware navigation — switches sections instead of URL routing
   const sideNav = (path) => {
     const map = { '/buy': 'issue', '/dashboard': 'dashboard', '/integrations': 'integrations',
-      '/certvault': 'certvault', '/install': 'kb', '/': 'dashboard' }
+      '/certvault': 'certvault',
+      '/certbind': 'certbind', '/install': 'kb', '/': 'dashboard' }
     const mapped = map[path]
     if (mapped) { navigate(mapped) } else { nav(path) }
   }
@@ -174,6 +178,7 @@ export default function CLMHome({ user, nav }) {
     if (section === 'servers')         return <Infrastructure user={user}/>
     if (section === 'agent-health')    return <Infrastructure user={user}/>
     if (section === 'certvault')  return <CertVault nav={sideNav}/>
+    if (section === 'certbind')   return <CertBind nav={sideNav}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
     if (section === 'ca-intelligence') return <CAIntelligenceHub nav={sideNav}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>

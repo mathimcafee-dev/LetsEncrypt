@@ -16,6 +16,7 @@ import Pricing from './pages/Pricing'
 import About from './pages/About'
 import Developer from './pages/Developer'
 import CertVault from './pages/CertVault'
+import CertBind from './pages/CertBind'
 import BuyCertificate from './pages/BuyCertificate'
 import AdminAnalytics from './pages/AdminAnalytics'
 import AgentHealth from './pages/AgentHealth'
@@ -67,7 +68,7 @@ const _build = 1779297041 // cache bust
   }
 
   // Home page has its own nav built-in — exclude it to avoid duplicate
-  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/developer', '/pricing', '/contact', '/privacy', '/terms']
+  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/developer', '/pricing', '/contact', '/privacy', '/terms', '/certbind']
   const showPublicNav = !authLoading && !user && !SELF_NAV_PAGES.includes(page)
 
   return (
@@ -96,6 +97,7 @@ const _build = 1779297041 // cache bust
       {page === '/about' && <About nav={nav} />}
       {page === '/developer' && <Developer nav={nav} />}
       {page === '/certvault' && <CertVault nav={nav} />}
+      {page === '/certbind' && <CertBind nav={nav} />}
       {page === '/buy' && <BuyCertificate nav={nav} />}
       
       {page === '/admin' && <AdminAnalytics nav={nav} />}
