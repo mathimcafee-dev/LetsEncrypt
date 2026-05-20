@@ -102,7 +102,7 @@ export default function CLMHome({ user, nav }) {
     { id:'ssl-health',      label:'Health scores',     icon:Trophy     },
     { id:'ct-monitor',      label:'CT abuse monitor',  icon:ShieldAlert  },
     { id:'cert-changelog',  label:'Audit log',         icon:History    },
-    { id:'agent-health',    label:'Agent management',  icon:Activity   },
+    { id:'agent-health',    label:'Agent health',     icon:Activity   },
   ]
   const NAV_INTELLIGENCE = [
     { id:'ca-intelligence', label:'CA intelligence',  icon:TrendingUp },
@@ -120,7 +120,7 @@ export default function CLMHome({ user, nav }) {
     servers:'Servers & agents', integrations:'DNS providers',
     keylocker:'KeyLocker',
     'ssl-health':'Health scores', 'ct-monitor':'CT abuse monitor',
-    'cert-changelog':'Audit log', 'agent-health':'Agent management',
+    'cert-changelog':'Audit log', 'agent-health':'Agent health',
     'ca-intelligence':'CA intelligence', 'bulk-scan':'Bulk scanner',
     analytics:'Analytics',
     kb:'Docs & help', settings:'Settings',
