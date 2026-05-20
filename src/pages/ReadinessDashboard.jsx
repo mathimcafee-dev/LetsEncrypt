@@ -99,81 +99,103 @@ function certMilestoneStatus(cert) {
 }
 
 // ── Single cert row ───────────────────────────────────────────────────
-function CertRow({ cert, hasAgent, hasDnsCreds, defaultOpen }) {
-  const [open, setOpen] = useState(defaultOpen || false)
+function CertRow({ cert, hasAgent, hasDnsCreds }) {
+  const [open, setOpen] = useState(false)   // always closed by default
   const { checks, score } = useMemo(
     () => computeChecklist(cert, hasAgent, hasDnsCreds),
     [cert, hasAgent, hasDnsCreds]
   )
-  const level     = readinessLevel(score)
-  const Icon      = level.icon
+  const level      = readinessLevel(score)
   const milestones = certMilestoneStatus(cert)
   const passCount  = checks.filter(c => c.ok).length
+  const failCount  = checks.filter(c => !c.ok).length
+
+  const ICONS = {
+    auto_renew:    RotateCcw,
+    dns_provider:  Globe,
+    install_method:Server,
+    validity_200:  ShieldCheck,
+    keylocker:     Key,
+  }
 
   return (
     <div style={{
-      border:`0.5px solid ${open ? level.color+'66' : 'var(--v2-border)'}`,
-      borderRadius:10, overflow:'hidden', marginBottom:8,
-      transition:'border-color .15s',
+      border:`0.5px solid ${open ? level.color+'55' : 'var(--v2-border)'}`,
+      borderRadius:12,
+      marginBottom:8,
+      overflow:'hidden',
+      transition:'border-color .2s, box-shadow .2s',
+      boxShadow: open ? `0 4px 20px ${level.color}14` : 'none',
     }}>
-      {/* Row header */}
+
+      {/* ── Collapsed header — always visible ── */}
       <div
         onClick={() => setOpen(v => !v)}
-        style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
-          background: open ? level.bg : 'var(--v2-surface)', cursor:'pointer',
-          transition:'background .15s' }}>
-
+        style={{
+          display:'flex', alignItems:'center', gap:14, padding:'14px 18px',
+          background: open ? level.bg : 'var(--v2-surface)',
+          cursor:'pointer', transition:'background .2s',
+          userSelect:'none',
+        }}
+        onMouseEnter={e => { if(!open) e.currentTarget.style.background='var(--v2-surface-3)' }}
+        onMouseLeave={e => { if(!open) e.currentTarget.style.background='var(--v2-surface)' }}
+      >
         {/* Score ring */}
-        <div style={{ position:'relative', width:44, height:44, flexShrink:0 }}>
-          <svg width="44" height="44" viewBox="0 0 44 44">
-            <circle cx="22" cy="22" r="18" fill="none" stroke="var(--v2-border)" strokeWidth="4"/>
-            <circle cx="22" cy="22" r="18" fill="none"
-              stroke={level.color} strokeWidth="4"
-              strokeDasharray={`${2*Math.PI*18}`}
-              strokeDashoffset={`${2*Math.PI*18*(1-score/100)}`}
+        <div style={{ position:'relative', width:46, height:46, flexShrink:0 }}>
+          <svg width="46" height="46" viewBox="0 0 46 46">
+            <circle cx="23" cy="23" r="19" fill="none" stroke="var(--v2-border)" strokeWidth="4.5"/>
+            <circle cx="23" cy="23" r="19" fill="none"
+              stroke={level.color} strokeWidth="4.5"
+              strokeDasharray={`${2*Math.PI*19}`}
+              strokeDashoffset={`${2*Math.PI*19*(1-score/100)}`}
               strokeLinecap="round"
-              transform="rotate(-90 22 22)"
-              style={{ transition:'stroke-dashoffset .6s cubic-bezier(.16,1,.3,1)' }}
+              transform="rotate(-90 23 23)"
+              style={{ transition:'stroke-dashoffset .7s cubic-bezier(.16,1,.3,1)' }}
             />
           </svg>
           <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center',
-            justifyContent:'center', fontSize:11, fontWeight:700, color:level.color }}>
+            justifyContent:'center', fontSize:12, fontWeight:700, color:level.color }}>
             {score}
           </div>
         </div>
 
-        {/* Domain + meta */}
+        {/* Domain + status row */}
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
-            <span style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)',
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+            <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)',
               overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
               {cert.domain}
             </span>
-            <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:10,
-              background:level.bg, color:level.color, border:`0.5px solid ${level.border}`,
-              flexShrink:0, whiteSpace:'nowrap' }}>
+            <span style={{ fontSize:10, fontWeight:700, padding:'2px 9px', borderRadius:10, flexShrink:0,
+              background:level.bg, color:level.color, border:`0.5px solid ${level.border}` }}>
               {level.label}
             </span>
           </div>
-          <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+          {/* Milestone dots + pass count */}
+          <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
             {milestones.map(m => (
-              <div key={m.label} style={{ display:'flex', alignItems:'center', gap:4 }}>
+              <div key={m.label} style={{ display:'flex', alignItems:'center', gap:3 }}>
                 {m.compliant
                   ? <CheckCircle size={10} color="#16a34a"/>
                   : <XCircle    size={10} color="#dc2626"/>}
-                <span style={{ fontSize:10, color: m.compliant ? '#16a34a' : '#dc2626', fontWeight:500 }}>
-                  {m.label}
-                </span>
+                <span style={{ fontSize:10, fontWeight:500,
+                  color: m.compliant ? '#16a34a' : '#dc2626' }}>{m.label}</span>
               </div>
             ))}
+            <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>·</span>
             <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>
-              {passCount}/{checks.length} checks passed
+              {passCount}/{checks.length} checks
             </span>
+            {failCount > 0 && (
+              <span style={{ fontSize:10, fontWeight:600, color:'#dc2626' }}>
+                · {failCount} action{failCount>1?'s':''} needed
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Expiry */}
-        <div style={{ textAlign:'right', flexShrink:0 }}>
+        {/* Right: expiry + chevron */}
+        <div style={{ textAlign:'right', flexShrink:0, marginRight:4 }}>
           <div style={{ fontSize:11, fontWeight:500, color:'var(--v2-text-2)' }}>
             {fmtDate(cert.expires_at)}
           </div>
@@ -182,43 +204,52 @@ function CertRow({ cert, hasAgent, hasDnsCreds, defaultOpen }) {
           </div>
         </div>
 
-        <div style={{ color:'var(--v2-text-3)', flexShrink:0 }}>
-          {open ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
+        {/* Animated chevron */}
+        <div style={{ color:'var(--v2-text-3)', flexShrink:0,
+          transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+          transition:'transform .25s cubic-bezier(.16,1,.3,1)' }}>
+          <ChevronDown size={15}/>
         </div>
       </div>
 
-      {/* Expanded checklist */}
-      {open && (
-        <div style={{ padding:'14px 16px',
+      {/* ── Expandable body — CSS max-height animation ── */}
+      <div style={{
+        maxHeight: open ? '900px' : '0px',
+        overflow: 'hidden',
+        transition: open
+          ? 'max-height .45s cubic-bezier(.16,1,.3,1)'
+          : 'max-height .28s cubic-bezier(.4,0,1,1)',
+      }}>
+        <div style={{
+          padding:'16px 18px 18px',
           borderTop:`0.5px solid ${level.border}`,
-          background:'var(--v2-surface)', animation:'slideDown .18s ease' }}>
+          background:'var(--v2-surface)',
+        }}>
 
-          {/* Milestone timeline */}
-          <div style={{ marginBottom:14 }}>
+          {/* Milestone timeline — horizontal */}
+          <div style={{ marginBottom:16 }}>
             <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
-              textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:8 }}>
-              CA/B Forum milestone compliance
+              textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>
+              CA/B Forum milestones
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
               {milestones.map(m => (
                 <div key={m.label} style={{
-                  padding:'10px 12px', borderRadius:8,
+                  padding:'10px 12px', borderRadius:9,
                   background: m.compliant ? '#f0fdf4' : '#fef2f2',
-                  border:`0.5px solid ${m.compliant ? '#bbf7d0' : '#fecaca'}`,
+                  border:`1px solid ${m.compliant ? '#bbf7d0' : '#fecaca'}`,
+                  transition:'all .2s',
                 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:4 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
                     {m.compliant
-                      ? <CheckCircle size={12} color="#16a34a"/>
-                      : <XCircle    size={12} color="#dc2626"/>}
-                    <span style={{ fontSize:11, fontWeight:600,
-                      color: m.compliant ? '#16a34a' : '#dc2626' }}>
-                      {m.label}
-                    </span>
+                      ? <CheckCircle size={13} color="#16a34a"/>
+                      : <XCircle    size={13} color="#dc2626"/>}
+                    <span style={{ fontSize:12, fontWeight:600,
+                      color: m.compliant ? '#16a34a' : '#dc2626' }}>{m.label}</span>
                   </div>
-                  <div style={{ fontSize:10, color: m.compliant ? '#15803d' : '#b91c1c' }}>
-                    {m.desc}
-                  </div>
-                  <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:3 }}>
+                  <div style={{ fontSize:11, color: m.compliant ? '#15803d' : '#b91c1c',
+                    marginBottom:3 }}>{m.desc}</div>
+                  <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>
                     {m.daysLeft > 0 ? `${m.daysLeft}d away` : 'In effect now'}
                   </div>
                 </div>
@@ -226,57 +257,57 @@ function CertRow({ cert, hasAgent, hasDnsCreds, defaultOpen }) {
             </div>
           </div>
 
-          {/* Automation checklist */}
+          {/* Automation checklist — compact table style */}
           <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
-            textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:8 }}>
+            textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>
             Automation checklist
           </div>
-          <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-            {checks.map(c => {
-              const CheckIcon = [
-                { id:'auto_renew',    icon:RotateCcw },
-                { id:'dns_provider',  icon:Globe     },
-                { id:'install_method',icon:Server    },
-                { id:'validity_200',  icon:ShieldCheck},
-                { id:'keylocker',     icon:Key       },
-              ].find(x=>x.id===c.id)?.icon || Zap
-
+          <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:9, overflow:'hidden' }}>
+            {checks.map((c, i) => {
+              const CheckIcon = ICONS[c.id] || Zap
               return (
                 <div key={c.id} style={{
-                  display:'flex', alignItems:'flex-start', gap:12, padding:'10px 12px',
-                  borderRadius:8,
-                  background: c.ok ? '#f0fdf4' : '#fef2f2',
-                  border:`0.5px solid ${c.ok ? '#bbf7d0' : '#fecaca'}`,
+                  display:'flex', alignItems:'center', gap:12, padding:'10px 14px',
+                  borderBottom: i < checks.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                  background: c.ok ? '#fafffe' : '#fffafa',
+                  transition:'background .15s',
                 }}>
-                  <div style={{ width:28, height:28, borderRadius:7, flexShrink:0,
+                  {/* Icon */}
+                  <div style={{ width:30, height:30, borderRadius:7, flexShrink:0,
                     background: c.ok ? '#dcfce7' : '#fee2e2',
                     display:'flex', alignItems:'center', justifyContent:'center' }}>
                     <CheckIcon size={13} color={c.ok ? '#16a34a' : '#dc2626'}/>
                   </div>
+
+                  {/* Label + description */}
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2 }}>
-                      <span style={{ fontSize:12, fontWeight:500,
-                        color: c.ok ? '#15803d' : '#b91c1c' }}>
-                        {c.label}
-                      </span>
-                      <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px',
-                        borderRadius:10, background: c.ok?'#16a34a':'#dc2626', color:'#fff' }}>
-                        {c.ok ? '✓ PASS' : '✗ FAIL'}
-                      </span>
-                      <span style={{ fontSize:9, color:'var(--v2-text-3)', marginLeft:'auto' }}>
-                        {c.weight}pt
-                      </span>
+                    <div style={{ fontSize:12, fontWeight:500,
+                      color: c.ok ? '#15803d' : '#b91c1c', marginBottom:1 }}>
+                      {c.label}
                     </div>
-                    <div style={{ fontSize:11, color:'var(--v2-text-3)', lineHeight:1.5 }}>
+                    <div style={{ fontSize:11, color:'var(--v2-text-3)', lineHeight:1.4 }}>
                       {c.ok ? c.desc : c.fix}
                     </div>
+                  </div>
+
+                  {/* Pass/Fail badge + weight */}
+                  <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+                    <span style={{ fontSize:9, fontWeight:700, padding:'2px 8px', borderRadius:8,
+                      background: c.ok ? '#16a34a' : '#fef2f2',
+                      color: c.ok ? 'white' : '#dc2626',
+                      border: c.ok ? 'none' : '0.5px solid #fecaca' }}>
+                      {c.ok ? '✓ PASS' : '✗ FAIL'}
+                    </span>
+                    <span style={{ fontSize:10, color:'var(--v2-text-3)', width:24, textAlign:'right' }}>
+                      {c.weight}pt
+                    </span>
                   </div>
                 </div>
               )
             })}
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -525,7 +556,7 @@ export default function ReadinessDashboard({ user }) {
                   cert={cert}
                   hasAgent={hasAgent}
                   hasDnsCreds={hasDnsCreds}
-                  defaultOpen={score < 60}
+
                 />
               ))
             )}
