@@ -956,7 +956,7 @@ export default function Home({ nav }) {
 
       {/* ── CAPABILITY LIST ──────────────────────────────────────────── */}
       <section id="platform" style={{ background:C.white, padding:'100px 40px', position:'relative', overflow:'hidden' }}>
-        <WatermarkGrid color={C.teal} opacity={0.042} spacing={76} size={20}/>
+        <WatermarkGrid color={C.teal} opacity={0.14} spacing={76} size={20}/>
         <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
           <FadeUp>
             <div style={{ marginBottom:60 }}>
@@ -996,7 +996,7 @@ export default function Home({ nav }) {
 
       {/* ── FEATURE DEEP-DIVES ───────────────────────────────────────── */}
       <section style={{ background:C.bg, padding:'100px 40px 20px', borderTop:`1px solid ${C.border}`, position:'relative', overflow:'hidden' }}>
-        <WatermarkGrid color="#0ea5e9" opacity={0.028} spacing={96} size={22}/>
+        <WatermarkGrid color="#0ea5e9" opacity={0.10} spacing={96} size={22}/>
         <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
 
           {/* Feature 1 — Zero-touch lifecycle */}
@@ -1138,7 +1138,7 @@ export default function Home({ nav }) {
       {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
       <section id="workflow" style={{ background:C.white, padding:'100px 40px',
         borderTop:`1px solid ${C.border}`, position:'relative', overflow:'hidden' }}>
-        <WatermarkGrid color="#10b981" opacity={0.038} spacing={88} size={18}/>
+        <WatermarkGrid color="#10b981" opacity={0.13} spacing={88} size={18}/>
         <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
           <FadeUp>
             <div style={{ marginBottom:64 }}>
@@ -1243,7 +1243,7 @@ export default function Home({ nav }) {
         borderTop:`1px solid ${C.border}`,
         position:'relative', overflow:'hidden',
       }}>
-        <WatermarkGrid color="#0f172a" opacity={0.032} spacing={70} size={16}/>
+        <WatermarkGrid color="#0f172a" opacity={0.11} spacing={70} size={16}/>
         <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
           <FadeUp>
             <div style={{ marginBottom:72 }}>
@@ -1300,7 +1300,7 @@ export default function Home({ nav }) {
       <section style={{ background:C.white, padding:'72px 40px',
         borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`,
         position:'relative', overflow:'hidden' }}>
-        <WatermarkGrid color={C.teal} opacity={0.05} spacing={64} size={16}/>
+        <WatermarkGrid color={C.teal} opacity={0.15} spacing={64} size={16}/>
         <div style={{ maxWidth:1100, margin:'0 auto', position:'relative', zIndex:1 }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
