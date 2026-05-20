@@ -274,62 +274,52 @@ const ETHICS_ITEMS = [
   },
 ]
 
-// ── WatermarkGrid — tiled PKI symbols filling white sections ────────
-// symbols: shield, lock, certificate, key, refresh(renew), checkmark, globe
-const WM_SYMBOLS = [
-  // Shield
-  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
-  // Lock
-  <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
-  // Certificate / ribbon
-  <><circle cx="12" cy="8" r="5"/><path d="M9 13.5L12 22l3-8.5"/></>,
-  // Key
-  <><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5l3 3"/></>,
-  // Refresh / renew
-  <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>,
-  // Check circle
-  <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>,
-  // Globe / domain
-  <><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>,
-  // Server
-  <><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></>,
+// ── WatermarkGrid — tiled PKI icon grid filling white sections ──────
+// Paths stored as strings to avoid JSX-at-module-level issues
+const WM_PATHS = [
+  { type:'single', d:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' },
+  { type:'double', d1:'M7 11V7a5 5 0 0 1 10 0v4', d2:'M3 11h18v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z' },
+  { type:'single', d:'M21 2l-9.6 9.6M15.5 7.5l3 3M7.5 21.5a6 6 0 1 0 0-12 6 6 0 0 0 0 12z' },
+  { type:'single', d:'M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15' },
+  { type:'single', d:'M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3' },
+  { type:'double', d1:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z', d2:'M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z' },
+  { type:'single', d:'M2 2h20v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zM2 14h20v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zM6 6h.01M6 18h.01' },
+  { type:'single', d:'M9 8h10M9 12h8M9 16h6M5 8h.01M5 12h.01M5 16h.01M3 4h18a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z' },
 ]
 
-function WatermarkGrid({ color = '#0ea5e9', opacity = 0.045, spacing = 80, size = 22 }) {
-  const cols = Math.ceil(1400 / spacing) + 2
-  const rows = Math.ceil(600  / spacing) + 2
-  const total = cols * rows
-
+function WmIcon({ pathDef, color, size }) {
   return (
-    <div style={{
-      position:'absolute', inset:0, overflow:'hidden',
-      pointerEvents:'none', userSelect:'none',
-    }}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      {pathDef.type === 'double'
+        ? <><path d={pathDef.d1}/><path d={pathDef.d2}/></>
+        : <path d={pathDef.d}/>}
+    </svg>
+  )
+}
+
+function WatermarkGrid({ color = '#0ea5e9', opacity = 0.12, spacing = 80, size = 20 }) {
+  const cols = Math.ceil(1500 / spacing) + 2
+  const rows = Math.ceil(900  / spacing) + 2
+  const total = cols * rows
+  return (
+    <div style={{ position:'absolute', inset:0, overflow:'hidden', pointerEvents:'none', userSelect:'none', opacity }}>
       <div style={{
         display:'grid',
         gridTemplateColumns:`repeat(${cols}, ${spacing}px)`,
-        gridTemplateRows:`repeat(${rows}, ${spacing}px)`,
         width: cols * spacing,
-        height: rows * spacing,
-        opacity,
-        marginLeft:`-${Math.floor(spacing/2)}px`,
-        marginTop:`-${Math.floor(spacing/2)}px`,
+        marginLeft: -Math.floor(spacing / 2),
+        marginTop:  -Math.floor(spacing / 2),
       }}>
-        {Array.from({ length: total }).map((_, i) => {
-          const sym = WM_SYMBOLS[i % WM_SYMBOLS.length]
-          const rotate = (i * 17) % 360
-          return (
-            <div key={i} style={{
-              display:'flex', alignItems:'center', justifyContent:'center',
-              transform:`rotate(${rotate}deg)`,
-            }}>
-              <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-                stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-                {sym}
-              </svg>
-            </div>
-          )
-        })}
+        {Array.from({ length: total }).map((_, i) => (
+          <div key={i} style={{
+            width: spacing, height: spacing,
+            display:'flex', alignItems:'center', justifyContent:'center',
+            transform:`rotate(${(i * 37) % 360}deg)`,
+          }}>
+            <WmIcon pathDef={WM_PATHS[i % WM_PATHS.length]} color={color} size={size}/>
+          </div>
+        ))}
       </div>
     </div>
   )
