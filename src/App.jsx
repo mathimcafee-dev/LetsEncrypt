@@ -1,3 +1,4 @@
+// BUILD_TIME: 1779289688
 // BUILD_TIME: 1747300000
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
@@ -27,6 +28,7 @@ import BulkScanner from './pages/BulkScanner'
 import PublicStatus from './pages/PublicStatus'
 
 export default function App() {
+  const _build = 1779289705 // cache bust
   const [page, setPage] = useState(window.location.pathname)
   const [user, setUser]   = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
