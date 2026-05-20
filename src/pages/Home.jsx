@@ -1345,9 +1345,11 @@ export default function Home({ nav }) {
               ['Developer','/developer'],['Pricing','/pricing'],['Contact','/contact']].map(([l,p])=>(
               <button key={l} onClick={()=>nav(p)}
                 style={{ background:'none', border:'none', cursor:'pointer',
-                  fontSize:12, color:'#94a3b8', fontFamily:F, transition:'color .15s' }}
-                onMouseEnter={e=>e.target.style.color=C.ink}
-                onMouseLeave={e=>e.target.style.color='#94a3b8'}>{l}</button>
+                  fontSize:12, color:'#64748b', fontFamily:F,
+                  padding:'2px 0', borderBottom:'1px solid transparent',
+                  transition:'color .15s, border-color .15s' }}
+                onMouseEnter={e=>{ e.currentTarget.style.color=C.ink; e.currentTarget.style.borderBottomColor=C.ink }}
+                onMouseLeave={e=>{ e.currentTarget.style.color='#64748b'; e.currentTarget.style.borderBottomColor='transparent' }}>{l}</button>
             ))}
           </div>
         </div>
