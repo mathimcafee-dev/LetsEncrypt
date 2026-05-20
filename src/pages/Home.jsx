@@ -584,7 +584,7 @@ export default function Home({ nav }) {
       </div>
 
       {/* ── PLATFORM FEATURES ────────────────────────────────────────── */}
-      <section id="platform" style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
+      <section id="platform" style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #e5e7eb' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ marginBottom:56, maxWidth:600 }}>
@@ -637,7 +637,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── ARCHITECTURE ─────────────────────────────────────────────── */}
-      <section id="arch" style={{ background:'#f8fafc', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
+      <section id="arch" style={{ background:'#f9fafb', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #e5e7eb' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?40:60, alignItems:'start' }}>
@@ -688,7 +688,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── KEYLOCKER + READINESS SCREENSHOTS ────────────────────────── */}
-      <section style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
+      <section style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #e5e7eb' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ textAlign:'center', marginBottom:48 }}>
@@ -795,7 +795,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── DNS PROVIDERS + INTEGRATIONS ─────────────────────────────── */}
-      <section style={{ background:'#f8fafc', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
+      <section style={{ background:'#f9fafb', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #e5e7eb' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?40:80, alignItems:'center' }}>
             <FadeUp>
@@ -849,7 +849,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── MISSION — white (Owlish style) ────────────────────────────── */}
-      <section style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
+      <section style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #e5e7eb' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?40:80, alignItems:'center' }}>
@@ -886,7 +886,7 @@ export default function Home({ nav }) {
                   { val:'No ads', label:'No advertising', sub:'No tracking, no data reselling' },
                   { val:'NL 🇳🇱', label:'Built in Netherlands', sub:'GDPR-first development' },
                 ].map(m=>(
-                  <div key={m.label} style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 16px', background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:8 }}>
+                  <div key={m.label} style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 16px', background:'#f9fafb', border:'1px solid #e5e7eb', borderRadius:8 }}>
                     <div style={{ fontSize:16, fontWeight:800, color:C.teal, fontFamily:MONO, width:80, flexShrink:0 }}>{m.val}</div>
                     <div>
                       <div style={{ fontSize:12, fontWeight:600, color:'#0f172a' }}>{m.label}</div>
@@ -901,7 +901,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section style={{ background:'#f8fafc', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f1f5f9' }}>
+      <section style={{ background:'#f9fafb', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #e5e7eb' }}>
         <div style={{ maxWidth:700, margin:'0 auto', textAlign:'center' }}>
           <FadeUp>
             <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:`${C.teal}0d`, border:`1px solid ${C.teal}22`, borderRadius:100, padding:'5px 14px', marginBottom:24 }}>
