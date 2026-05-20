@@ -24,10 +24,11 @@ import BulkScanner from './BulkScanner'
 import RenewalCalendar from './RenewalCalendar'
 import CTAbuseMonitor from './CTAbuseMonitor'
 import ReadinessDashboard from './ReadinessDashboard'
+import KeyLocker from './KeyLocker'
 import Pricing from './Pricing'
 
 // Default collapsed state — Overview & Account open, rest start open too but user can close
-const DEFAULT_OPEN = { Overview: true, Infrastructure: true, 'CA Management': true, Resources: true, Account: true }
+const DEFAULT_OPEN = { Certificates: true, Automation: true, Security: true, Intelligence: true }
 
 export default function CLMHome({ user, nav }) {
   const [section, setSection] = useState('dashboard')
@@ -85,43 +86,46 @@ export default function CLMHome({ user, nav }) {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  const NAV_OVERVIEW = [
-    { id:'dashboard',  label:'Dashboard',         icon:Layout    },
-    { id:'readiness',  label:'47-Day Readiness',  icon:ShieldCheck, pro: false, alert: true },
-    { id:'issue',      label:'Issue Certificate', icon:Plus      },
+  // ── Navigation structure ───────────────────────────────────────────
+  const NAV_CERTS = [
+    { id:'dashboard',         label:'Inventory',          icon:Layout      },
+    { id:'issue',             label:'Issue certificate',  icon:Plus        },
+    { id:'readiness',         label:'47-day readiness',   icon:ShieldCheck, alert:true },
+    { id:'renewal-calendar',  label:'Renewal calendar',   icon:CalendarDays},
   ]
-  const NAV_INFRASTRUCTURE = [
-    { id:'integrations', label:'Integrations',  icon:Globe    },
-    { id:'agent-health', label:'Agent Health',  icon:Activity },
+  const NAV_AUTOMATION = [
+    { id:'servers',      label:'Servers & agents',  icon:Server   },
+    { id:'integrations', label:'DNS providers',      icon:Globe    },
+    { id:'keylocker',    label:'KeyLocker',          icon:Lock     },
   ]
-  const NAV_CA = [
-    { id:'ca-intelligence',  label:'CA Intelligence',   icon:TrendingUp  },
-    { id:'ssl-health',       label:'SSL Health Score',  icon:Trophy      },
-    { id:'renewal-calendar', label:'Renewal Calendar',  icon:CalendarDays},
-    { id:'ct-monitor',       label:'CT Abuse Monitor',  icon:ShieldAlert },
-    { id:'cert-changelog',   label:'Cert Changelog',    icon:History     },
-    { id:'bulk-scan',        label:'Bulk Scanner',      icon:Scan        },
+  const NAV_SECURITY = [
+    { id:'ssl-health',      label:'Health scores',     icon:Trophy     },
+    { id:'ct-monitor',      label:'CT abuse monitor',  icon:ShieldAlert  },
+    { id:'cert-changelog',  label:'Audit log',         icon:History    },
+    { id:'agent-health',    label:'Agent management',  icon:Activity   },
   ]
-  const NAV_RESOURCES = [
-    { id:'install',  label:'Install Guide', icon:Download  },
-    { id:'kb',       label:'Docs & Help',   icon:BookOpen  },
-    { id:'pricing',  label:'Pricing',       icon:CreditCard},
+  const NAV_INTELLIGENCE = [
+    { id:'ca-intelligence', label:'CA intelligence',  icon:TrendingUp },
+    { id:'bulk-scan',       label:'Bulk scanner',     icon:Scan       },
+    { id:'analytics',       label:'Analytics',        icon:Layout     },
   ]
-  const NAV_ACCOUNT = [
-    { id:'analytics', label:'Analytics', icon:Layout   },
-    { id:'settings',  label:'Settings',  icon:Settings },
-    { id:'about',     label:'About',     icon:Info     },
-    { id:'developer', label:'Developer', icon:User     },
-    { id:'contact',   label:'Contact',   icon:Mail     },
+  const NAV_BOTTOM = [
+    { id:'kb',        label:'Docs & help',  icon:BookOpen  },
+    { id:'settings',  label:'Settings',     icon:Settings  },
   ]
+
   const SECTION_TITLES = {
-    dashboard:'Dashboard', issue:'Issue Certificate', 'ca-intelligence':'CA Intelligence', analytics:'Analytics',
-    'readiness':'47-Day Readiness',
-    'ssl-health':'SSL Health Score', 'cert-changelog':'Certificate Changelog', 'bulk-scan':'Bulk Scanner',
-    'renewal-calendar':'Renewal Calendar', 'ct-monitor':'CT Abuse Monitor',
-    integrations:'Integrations',
-    install:'Installation', kb:'Docs & Help', pricing:'Pricing',
-    about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
+    dashboard:'Certificate inventory', issue:'Issue certificate',
+    readiness:'47-day readiness', 'renewal-calendar':'Renewal calendar',
+    servers:'Servers & agents', integrations:'DNS providers',
+    keylocker:'KeyLocker',
+    'ssl-health':'Health scores', 'ct-monitor':'CT abuse monitor',
+    'cert-changelog':'Audit log', 'agent-health':'Agent management',
+    'ca-intelligence':'CA intelligence', 'bulk-scan':'Bulk scanner',
+    analytics:'Analytics',
+    kb:'Docs & help', settings:'Settings',
+    about:'About', developer:'Developer', contact:'Contact', pricing:'Pricing',
+    'ca-connectors':'CA connectors',
   }
 
   const NavItem = ({ id, label, icon:Icon, pro, alert }) => {
@@ -154,7 +158,7 @@ export default function CLMHome({ user, nav }) {
   // Sidebar-aware navigation — switches sections instead of URL routing
   const sideNav = (path) => {
     const map = { '/buy': 'issue', '/dashboard': 'dashboard', '/integrations': 'integrations',
-      '/keylocker': 'kb', '/install': 'install', '/': 'dashboard' }
+      '/keylocker': 'keylocker', '/install': 'kb', '/': 'dashboard' }
     const mapped = map[path]
     if (mapped) { navigate(mapped) } else { nav(path) }
   }
@@ -171,6 +175,7 @@ export default function CLMHome({ user, nav }) {
     if (section === 'developer')  return <DeveloperInner nav={sideNav}/>
     if (section === 'pricing')    return <Pricing nav={sideNav}/>
     if (section === 'servers')    return <ServersPage user={user}/>
+    if (section === 'keylocker')  return <KeyLocker nav={sideNav}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
     if (section === 'ca-intelligence') return <CAIntelligenceHub nav={sideNav}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>
@@ -291,12 +296,11 @@ export default function CLMHome({ user, nav }) {
       <div style={{ display:'flex', flex:1, background: ['issue'].includes(section) ? '#050a14' : '#f0f4f8' }}>
         <nav style={{ width:210, background:'#0d3c6e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto', boxShadow:'4px 0 24px rgba(0,0,0,0.18)' }}>
           {[
-            { label:'Overview',       items: NAV_OVERVIEW },
-            { label:'Infrastructure', items: NAV_INFRASTRUCTURE },
-            { label:'CA Management',  items: NAV_CA },
-            { label:'Resources',      items: NAV_RESOURCES },
-            { label:'Account',        items: NAV_ACCOUNT },
-          ].map(({ label, items, pro }, i) => {
+            { label:'Certificates',  items: NAV_CERTS       },
+            { label:'Automation',    items: NAV_AUTOMATION   },
+            { label:'Security',      items: NAV_SECURITY     },
+            { label:'Intelligence',  items: NAV_INTELLIGENCE },
+          ].map(({ label, items }, i) => {
             const isOpen = openGroups[label] !== false
             const hasActive = items.some(item => item.id === section)
             return (
@@ -307,10 +311,9 @@ export default function CLMHome({ user, nav }) {
                     padding:'9px 14px 7px', background:'none', border:'none', cursor:'pointer', fontFamily:'inherit' }}
                 >
                   <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-                    {pro && <Lock size={8} color="#fca5a5"/>}
                     <span style={{
                       fontSize:10, fontWeight:700, letterSpacing:'0.6px', textTransform:'uppercase',
-                      color: pro ? '#fca5a5' : (hasActive && !isOpen) ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.45)',
+                      color: (hasActive && !isOpen) ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)',
                       transition:'color 0.2s'
                     }}>{label}</span>
                     {!isOpen && hasActive && (
@@ -318,7 +321,7 @@ export default function CLMHome({ user, nav }) {
                     )}
                   </div>
                   <span style={{
-                    color:'rgba(255,255,255,0.3)', fontSize:10,
+                    color:'rgba(255,255,255,0.25)', fontSize:10,
                     transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition:'transform 0.22s cubic-bezier(0.4,0,0.2,1)',
                     display:'inline-block', lineHeight:1
@@ -330,20 +333,50 @@ export default function CLMHome({ user, nav }) {
                   transition:'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
                 }}>
                   <div style={{ paddingBottom: isOpen ? 6 : 0 }}>
-                    {items.map(item => <NavItem key={item.id} {...item} pro={item.pro}/>)}
+                    {items.map(item => <NavItem key={item.id} {...item}/>)}
                   </div>
                 </div>
               </div>
             )
           })}
-          <div style={{ marginTop:'auto', padding:'12px 16px', borderTop:'0.5px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize:9, color:'rgba(255,255,255,0.35)', marginBottom:2 }}>Signed in as</div>
-            <div style={{ fontSize:10, color:'rgba(255,255,255,0.6)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{email}</div>
+
+          <div style={{ flex:1 }}/>
+
+          <div style={{ borderTop:'0.5px solid rgba(255,255,255,0.08)', paddingTop:4, paddingBottom:4 }}>
+            {NAV_BOTTOM.map(item => <NavItem key={item.id} {...item}/>)}
+          </div>
+
+          <div style={{ borderTop:'0.5px solid rgba(255,255,255,0.08)', padding:'10px 12px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:9 }}>
+              <div style={{ width:28, height:28, borderRadius:'50%', background:'#0e7fc0',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:11, fontWeight:700, color:'white', flexShrink:0 }}>
+                {(email[0]||'U').toUpperCase()}
+              </div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.85)',
+                  overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                  {email.split('@')[0]}
+                </div>
+                <div style={{ fontSize:9, color:'rgba(255,255,255,0.35)', marginTop:1 }}>
+                  {email.split('@')[1] || 'easysecurity.in'}
+                </div>
+              </div>
+              <button onClick={() => supabase.auth.signOut()}
+                style={{ background:'none', border:'none', cursor:'pointer',
+                  color:'rgba(255,255,255,0.3)', padding:3, display:'flex',
+                  borderRadius:4, transition:'color .15s' }}
+                title="Sign out"
+                onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.7)'}
+                onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.3)'}>
+                <LogOut size={13}/>
+              </button>
+            </div>
           </div>
         </nav>
 
         <div style={{ flex:1, minWidth:0, display:'flex', flexDirection:'column' }}>
-          {!['issue','dashboard','integrations'].includes(section) && (
+          {!['issue','dashboard','integrations','ca-connectors'].includes(section) && (
             <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
               <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
             </div>
