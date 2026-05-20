@@ -511,8 +511,7 @@ export default function Home({ nav }) {
                 desc:'Every private key encrypted with envelope key hierarchy (DEK + KEK). Password re-auth before reveal. 30-second copy-only window. Immutable audit log. Key rotation with 30-day archive.' },
               { icon:'📊', title:'47-day readiness', color:C.amber, spec:'CA/B Forum 2026–2029',
                 desc:'Scores every certificate against the CA/B Forum mandate timeline — 200d (Mar 2026), 100d (Mar 2027), 47d (Mar 2029). Fleet-wide compliance checklist with per-cert action items.' },
-              { icon:'🔍', title:'CA intelligence', color:C.red, spec:'DigiCert · Sectigo · Shadow IT',
-                desc:'Connect DigiCert CertCentral or Sectigo SCM for cross-CA portfolio sync. CT log shadow IT detection surfaces certs issued by unknown CAs. Policy engine flags violations.' },
+
               { icon:'📈', title:'Health scoring', color:'#06b6d4', spec:'A+ to F · TLS · HSTS · CAA',
                 desc:'Grades every domain A+ to F against TLS reachability, HSTS presence and max-age, CAA record, expiry, and security headers. Live data from crt.sh CT logs.' },
             ].map(f=>(
@@ -839,7 +838,7 @@ export default function Home({ nav }) {
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4,1fr)', gap:32, marginBottom:40 }}>
             {[
               { title:'Product', links:[['Pricing',()=>nav('/pricing')],['Knowledge Base',()=>nav('/knowledge-base')],['Install Guide',()=>nav('/install')]] },
-              { title:'Security', links:[['KeyLocker','#security'],['CA Intelligence','#platform'],['47-Day Readiness','#security'],['CT Monitoring','#platform']] },
+              { title:'Security', links:[['KeyLocker','#security'],['47-Day Readiness','#security'],['CT Monitoring','#platform'],['SSL Health Score','#security']] },
               { title:'Protocol', links:[['RFC 8555 ACME','#arch'],['DNS-01 Challenge','#arch'],['AES-256-GCM','#security'],['CA/B Forum','#security']] },
               { title:'Company', links:[['About',()=>nav('/about')],['Developer',()=>nav('/developer')]] },
             ].map(col=>(
