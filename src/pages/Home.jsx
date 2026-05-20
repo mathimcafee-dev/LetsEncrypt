@@ -894,7 +894,13 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CAPABILITY LIST ──────────────────────────────────────────── */}
-      <section id="platform" style={{ background:C.white, padding:'100px 40px' }}>
+      <section id="platform" style={{ background:C.white, padding:'100px 40px', position:'relative', overflow:'hidden' }}>
+        {/* Watermark — giant shield outline */}
+        <svg style={{ position:'absolute', right:'-3%', bottom:'-8%', width:380, height:380,
+          opacity:0.035, pointerEvents:'none', userSelect:'none' }}
+          viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="0.6">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ marginBottom:60 }}>
@@ -1074,7 +1080,15 @@ export default function Home({ nav }) {
 
       {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
       <section id="workflow" style={{ background:C.white, padding:'100px 40px',
-        borderTop:`1px solid ${C.border}` }}>
+        borderTop:`1px solid ${C.border}`, position:'relative', overflow:'hidden' }}>
+        {/* Watermark — huge "→" flow arrow */}
+        <div style={{ position:'absolute', left:'50%', top:'50%',
+          transform:'translate(-50%,-50%)',
+          fontSize:320, fontWeight:900, color:C.teal, opacity:0.022,
+          pointerEvents:'none', userSelect:'none', lineHeight:1,
+          fontFamily:"'Inter var','Inter',system-ui,sans-serif",
+          letterSpacing:'-20px', whiteSpace:'nowrap',
+        }}>→</div>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ marginBottom:64 }}>
@@ -1177,7 +1191,15 @@ export default function Home({ nav }) {
       <section id="mission" style={{
         background:C.bg, padding:'100px 40px',
         borderTop:`1px solid ${C.border}`,
+        position:'relative', overflow:'hidden',
       }}>
+        {/* Watermark — "PKI" monogram top right */}
+        <div style={{ position:'absolute', right:'-1%', top:'-5%',
+          fontSize:260, fontWeight:900, color:'#0f172a', opacity:0.028,
+          pointerEvents:'none', userSelect:'none', lineHeight:1,
+          fontFamily:"'Inter var','Inter',system-ui,sans-serif",
+          letterSpacing:'-12px',
+        }}>PKI</div>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ marginBottom:72 }}>
@@ -1232,7 +1254,22 @@ export default function Home({ nav }) {
 
       {/* ── SECURITY TRUST STRIP ────────────────────────────────────── */}
       <section style={{ background:C.white, padding:'72px 40px',
-        borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}` }}>
+        borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`,
+        position:'relative', overflow:'hidden' }}>
+        {/* Watermark — repeating lock icons row */}
+        <div style={{ position:'absolute', bottom:'-10px', left:0, right:0,
+          display:'flex', gap:48, justifyContent:'center', alignItems:'center',
+          opacity:0.04, pointerEvents:'none', userSelect:'none', overflow:'hidden',
+          flexWrap:'nowrap',
+        }}>
+          {Array.from({length:12}).map((_,i) => (
+            <svg key={i} width="52" height="52" viewBox="0 0 24 24" fill="none"
+              stroke={C.teal} strokeWidth="1">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          ))}
+        </div>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
