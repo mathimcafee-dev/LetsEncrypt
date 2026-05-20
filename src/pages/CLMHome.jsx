@@ -24,6 +24,7 @@ import BulkScanner from './BulkScanner'
 import RenewalCalendar from './RenewalCalendar'
 import CTAbuseMonitor from './CTAbuseMonitor'
 import ReadinessDashboard from './ReadinessDashboard'
+import Infrastructure from './Infrastructure'
 import KeyLocker from './KeyLocker'
 import Pricing from './Pricing'
 
@@ -94,9 +95,9 @@ export default function CLMHome({ user, nav }) {
     { id:'renewal-calendar',  label:'Renewal calendar',   icon:CalendarDays},
   ]
   const NAV_AUTOMATION = [
-    { id:'servers',      label:'Servers & agents',  icon:Server   },
-    { id:'integrations', label:'DNS providers',      icon:Globe    },
-    { id:'keylocker',    label:'KeyLocker',          icon:Lock     },
+    { id:'infrastructure', label:'Servers & agents',  icon:Server   },
+    { id:'integrations',  label:'DNS providers',      icon:Globe    },
+    { id:'keylocker',     label:'KeyLocker',          icon:Lock     },
   ]
   const NAV_SECURITY = [
     { id:'ssl-health',      label:'Health scores',     icon:Trophy     },
@@ -120,7 +121,7 @@ export default function CLMHome({ user, nav }) {
     servers:'Servers & agents', integrations:'DNS providers',
     keylocker:'KeyLocker',
     'ssl-health':'Health scores', 'ct-monitor':'CT abuse monitor',
-    'cert-changelog':'Audit log', 'agent-health':'Agent health',
+    'cert-changelog':'Audit log', 'agent-health':'Servers & agents', 'infrastructure':'Servers & agents',
     'ca-intelligence':'CA intelligence', 'bulk-scan':'Bulk scanner',
     analytics:'Analytics',
     kb:'Docs & help', settings:'Settings',
@@ -174,7 +175,9 @@ export default function CLMHome({ user, nav }) {
     if (section === 'contact')    return <ContactInner nav={sideNav}/>
     if (section === 'developer')  return <DeveloperInner nav={sideNav}/>
     if (section === 'pricing')    return <Pricing nav={sideNav}/>
-    if (section === 'servers')    return <ServersPage user={user}/>
+    if (section === 'infrastructure') return <Infrastructure user={user}/>
+    if (section === 'servers')         return <Infrastructure user={user}/>
+    if (section === 'agent-health')    return <Infrastructure user={user}/>
     if (section === 'keylocker')  return <KeyLocker nav={sideNav}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
     if (section === 'ca-intelligence') return <CAIntelligenceHub nav={sideNav}/>
