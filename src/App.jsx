@@ -15,7 +15,7 @@ import Integrations from './pages/Integrations'
 import Pricing from './pages/Pricing'
 import About from './pages/About'
 import Developer from './pages/Developer'
-import KeyLocker from './pages/KeyLocker'
+import CertVault from './pages/CertVault'
 import BuyCertificate from './pages/BuyCertificate'
 import AdminAnalytics from './pages/AdminAnalytics'
 import AgentHealth from './pages/AgentHealth'
@@ -95,7 +95,7 @@ const _build = 1779297041 // cache bust
       {page === '/pricing' && <Pricing nav={nav} />}
       {page === '/about' && <About nav={nav} />}
       {page === '/developer' && <Developer nav={nav} />}
-      {page === '/keylocker' && <KeyLocker nav={nav} />}
+      {page === '/certvault' && <CertVault nav={nav} />}
       {page === '/buy' && <BuyCertificate nav={nav} />}
       
       {page === '/admin' && <AdminAnalytics nav={nav} />}

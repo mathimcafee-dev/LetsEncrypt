@@ -204,7 +204,7 @@ export default function Install({ nav }) {
                     '✓ Runs config syntax test',
                     '✓ Reloads service (not restart)',
                     '✓ Rolls back on failure',
-                    '✓ Encrypts key in KeyLocker',
+                    '✓ Encrypts key in CertVault',
                     '✓ Reports health metrics',
                   ].map(item => (
                     <div key={item} style={{ fontSize:12.5, color:C.body, display:'flex', alignItems:'center', gap:8 }}>

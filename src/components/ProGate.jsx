@@ -44,14 +44,14 @@ export default function ProGate({ isPro, nav, feature = 'This feature', compact 
         </div>
         <p style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.65,
                     maxWidth:340, margin:'0 auto 20px' }}>
-          Upgrade to KeyLocker Pro to access encrypted key storage, automatic rotation,
+          Upgrade to CertVault Pro to access encrypted key storage, automatic rotation,
           and full audit logging — from €9.99/month.
         </p>
         <button className="v2-btn" onClick={() => nav('/pricing')}
           style={{ background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
                    color:'white', border:'none', padding:'10px 22px', fontSize:13,
                    fontWeight:600, display:'inline-flex', alignItems:'center', gap:7 }}>
-          <Zap size={13} /> View KeyLocker plans <ArrowRight size={12} />
+          <Zap size={13} /> View CertVault plans <ArrowRight size={12} />
         </button>
       </div>
     </div>

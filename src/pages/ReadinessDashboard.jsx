@@ -69,11 +69,11 @@ function computeChecklist(cert, hasAgent, hasDnsCreds) {
       weight: 15,
     },
     {
-      id:   'keylocker',
-      label:'Private key secured in KeyLocker',
+      id:   'certvault',
+      label:'Private key secured in CertVault',
       desc: 'Private key is encrypted and stored securely — not exposed in plain text.',
       ok:   !!cert.keylocker_key_id,
-      fix:  'Rotate the key via KeyLocker to store it encrypted.',
+      fix:  'Rotate the key via CertVault to store it encrypted.',
       weight: 10,
     },
   ]

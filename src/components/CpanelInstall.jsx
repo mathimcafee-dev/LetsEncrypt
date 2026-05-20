@@ -132,7 +132,7 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
         setStep('verify','done','Using saved credentials')
       }
     } catch(e){setStep('detect','error',e.message);setErrMsg(e.message);setBusy(false);setPhase('error');return}
-    setStep('key','running','Retrieving private key from KeyLocker...')
+    setStep('key','running','Retrieving private key from CertVault...')
     await new Promise(r=>setTimeout(r,400))
     setStep('key','done','Private key retrieved')
     setStep('install','running','Pushing certificate + chain to cPanel UAPI...')
@@ -166,7 +166,7 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
         <div style={{padding:'20px 24px 24px'}}>
           <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'10px 14px',marginBottom:20,display:'flex',alignItems:'center',gap:12}}>
             <CheckCircle size={14} color='#16a34a'/>
-            <div><div style={{fontSize:12,fontWeight:600,color:'#111827'}}>Active Paid SSL Certificate</div><div style={{fontSize:11,color:'#6b7280'}}>Fullchain ready | Private key in KeyLocker | Expires {expStr}</div></div>
+            <div><div style={{fontSize:12,fontWeight:600,color:'#111827'}}>Active Paid SSL Certificate</div><div style={{fontSize:11,color:'#6b7280'}}>Fullchain ready | Private key in CertVault | Expires {expStr}</div></div>
           </div>
 
           {phase==='select_type' && (<>

@@ -359,7 +359,7 @@ export default function GetStarted({ nav }) {
         <FAQ q="I'm on GoDaddy shared hosting — do I need the agent?"
              a="No. The persistent agent is for Linux VPS/cloud servers with SSH access. For cPanel shared hosting (GoDaddy, Bluehost, Hostinger), use the cPanel install path — no SSH or agent needed." />
         <FAQ q="Does SSLVault store my private keys?"
-             a="Only if you opt in to KeyLocker. Keys are AES-256-GCM encrypted at rest with a full audit log. Every reveal is copy-only with a 30-second timed display. You can also generate keys server-side — SSLVault never sees them." />
+             a="Only if you opt in to CertVault. Keys are AES-256-GCM encrypted at rest with a full audit log. Every reveal is copy-only with a 30-second timed display. You can also generate keys server-side — SSLVault never sees them." />
 
         {/* CTA */}
         <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>

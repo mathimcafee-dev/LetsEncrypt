@@ -88,7 +88,7 @@ const FEATURES = [
   {
     section: 'Security',
     rows: [
-      { label: 'KeyLocker — AES-256-GCM key vault',     starter: true,  pro: true,  reseller: true  },
+      { label: 'CertVault — AES-256-GCM key vault',     starter: true,  pro: true,  reseller: true  },
       { label: 'Key reveal with password re-auth',      starter: true,  pro: true,  reseller: true  },
       { label: 'Key rotation with 30-day archive',      starter: true,  pro: true,  reseller: true  },
       { label: 'Immutable audit log + CSV export',      starter: true,  pro: true,  reseller: true  },
@@ -130,11 +130,11 @@ const CERT_PRICES = [
 ]
 
 const FAQS = [
-  { q: 'What does the Starter plan include?', a: 'The Starter plan includes: issuance workflow, persistent agent, cPanel installer, DNS connectors, CT log discovery, monitoring, auto-renewal, KeyLocker, 47-Day Readiness, Renewal Calendar, and SSL Health Score. Certificates are purchased at RapidSSL partner rates enterprise pricing.' },
+  { q: 'What does the Starter plan include?', a: 'The Starter plan includes: issuance workflow, persistent agent, cPanel installer, DNS connectors, CT log discovery, monitoring, auto-renewal, CertVault, 47-Day Readiness, Renewal Calendar, and SSL Health Score. Certificates are purchased at RapidSSL partner rates enterprise pricing.' },
   { q: 'What does Pro add over Starter?', a: 'Pro unlocks OV, EV, Wildcard and SAN certificates, plus CA Intelligence (DigiCert/Sectigo portfolio sync, shadow IT detection, policy engine), CT Abuse Monitor, REST API access, and portfolio CSV exports. Designed for agencies and teams managing certificates across multiple CAs.' },
   { q: 'What is the 47-Day Readiness Dashboard?', a: 'The CA/B Forum is mandating shorter certificate validity: 200 days by March 2026, 100 days by 2027, 47 days by 2029. The Readiness Dashboard scores each certificate 0–100 and shows a checklist of what to fix — auto-renew, DNS provider, agent installation, key storage. Available on all plans.' },
   { q: 'How does the persistent agent work?', a: 'The agent is a bash daemon running as a systemd service on your Linux VPS. It polls SSLVault every 5 minutes for pending jobs. Outbound-only HTTPS — no inbound ports. Detects Nginx/Apache, writes cert files, updates config, tests, and reloads automatically. CPU/RAM/disk stats reported back to SSLVault.' },
-  { q: 'Does SSLVault store my private keys?', a: 'Only if you opt into KeyLocker. Keys are AES-256-GCM encrypted with envelope encryption (DEK + KEK). Every reveal requires password re-authentication. The reveal UI is copy-only with a 30-second timed display. Every access is logged to an immutable audit trail. Available on all plans.' },
+  { q: 'Does SSLVault store my private keys?', a: 'Only if you opt into CertVault. Keys are AES-256-GCM encrypted with envelope encryption (DEK + KEK). Every reveal requires password re-authentication. The reveal UI is copy-only with a 30-second timed display. Every access is logged to an immutable audit trail. Available on all plans.' },
   { q: 'What is shadow IT detection?', a: 'SSLVault scans CT logs for certificates issued for your domains by CAs you did not authorise. These appear in the CA Intelligence → Shadow IT tab. You can approve known certs or dismiss false positives. Prevents silent certificate issuance by unknown parties.' },
   { q: 'What is the Reseller plan?', a: 'Reseller enables multi-tenant architecture: you can register sub-resellers, onboard end-customers via magic link invites, manage orders on their behalf, and export Excel reports. Designed for SSL resellers and MSPs. Contact us for pricing.' },
   { q: 'Can I import certificates I already have?', a: 'Yes. Dashboard → Import. Paste existing PEM files and SSLVault parses the chain, extracts expiry and issuer, and adds them to your inventory for monitoring, expiry alerts, and renewal tracking.' },
@@ -147,7 +147,7 @@ const PLANS = [
 ]
 
 const PLAN_HIGHLIGHTS = {
-  starter:  ['DV certificates (Sectigo / RapidSSL)', 'Persistent agent — Nginx / Apache', 'Auto DNS validation', 'Auto-renew (cert + order)', 'KeyLocker — AES-256-GCM vault', 'CT Log discovery', '47-Day Readiness Dashboard', 'Renewal Calendar', 'SSL Health Score A+ to F', 'Multi-server management'],
+  starter:  ['DV certificates (Sectigo / RapidSSL)', 'Persistent agent — Nginx / Apache', 'Auto DNS validation', 'Auto-renew (cert + order)', 'CertVault — AES-256-GCM vault', 'CT Log discovery', '47-Day Readiness Dashboard', 'Renewal Calendar', 'SSL Health Score A+ to F', 'Multi-server management'],
   pro:      ['Everything in Starter', 'OV, EV, Wildcard & SAN certificates', 'DigiCert & Sectigo portfolio sync', 'Shadow IT detection', 'Policy engine (fleet compliance)', 'CT Abuse Monitor', 'Portfolio CSV export', 'REST API access', 'Priority support'],
   reseller: ['Everything in Pro', 'Sub-reseller registration & approval', 'End-customer portal', 'Customer invite (magic link)', 'Order management for customers', 'Excel order export', 'White-label dashboard', 'Dedicated account manager', 'Volume cert pricing'],
 }
@@ -185,7 +185,7 @@ export default function Pricing({ nav }) {
             <span style={{ color: '#10b981' }}>Transparent cert pricing.</span>
           </h1>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 12px', lineHeight: 1.75 }}>
-            The complete CLM platform — agents, auto-renewal, DNS automation, CT monitoring, CA intelligence, KeyLocker, 47-day readiness. Certificates at RapidSSL partner rates.
+            The complete CLM platform — agents, auto-renewal, DNS automation, CT monitoring, CA intelligence, CertVault, 47-day readiness. Certificates at RapidSSL partner rates.
           </p>
         </div>
 
@@ -356,7 +356,7 @@ export default function Pricing({ nav }) {
           <div className="pricing-compare-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 1 }}>
             {[
               { name: 'SSLVault', price: 'Starter', sub: 'entry tier + cert costs', color: '#10b981',
-                points: ['Complete CLM platform', '47-day readiness built-in', 'CA-agnostic intelligence', 'KeyLocker included', 'cPanel + agent + DNS'] },
+                points: ['Complete CLM platform', '47-day readiness built-in', 'CA-agnostic intelligence', 'CertVault included', 'cPanel + agent + DNS'] },
               { name: 'Venafi TLS Protect', price: '$250k+', sub: 'per year', color: 'rgba(255,255,255,0.3)',
                 points: ['Enterprise only', 'No free tier', 'No cPanel support', 'No cert issuance', 'PKI team required'] },
               { name: 'Keyfactor Command', price: '$75–200k', sub: 'per year', color: 'rgba(255,255,255,0.3)',
@@ -396,7 +396,7 @@ export default function Pricing({ nav }) {
             Start today.
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)', maxWidth: 380, margin: '0 auto 28px', lineHeight: 1.7 }}>
-            Full CLM platform from day one — 47-day readiness, KeyLocker, agent automation, CA intelligence.
+            Full CLM platform from day one — 47-day readiness, CertVault, agent automation, CA intelligence.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={() => nav('/auth')}

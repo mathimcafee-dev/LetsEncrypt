@@ -134,7 +134,7 @@ const SECTIONS = [
   { id:'cpanel',          icon:'🏛', title:'cPanel / shared hosting',  subtitle:'No SSH needed — UAPI install',                   badge:'cPanel',     badgeColor:'#6366f1'},
   { id:'dns',             icon:'🌐', title:'DNS providers',            subtitle:'Auto DCV via Cloudflare, Vercel, Route53…',       badge:'DNS-01',     badgeColor:'#06b6d4'},
   { id:'autorenew',       icon:'🔄', title:'Auto-renewal',             subtitle:'Set once, renew forever',                        badge:'Automation', badgeColor:C.amber  },
-  { id:'keylocker',       icon:'🔐', title:'KeyLocker',                subtitle:'AES-256-GCM private key vault',                  badge:'Security',   badgeColor:C.purple },
+  { id:'certvault',       icon:'🔐', title:'CertVault',                subtitle:'AES-256-GCM private key vault',                  badge:'Security',   badgeColor:C.purple },
   { id:'readiness',       icon:'📋', title:'47-Day Readiness',         subtitle:'CA/B Forum 2026–2029 compliance',                badge:'CA/B Forum', badgeColor:C.red    },
   { id:'health',          icon:'📈', title:'SSL Health Score',         subtitle:'Grade A+ to F per domain',                       badge:'Monitoring', badgeColor:'#0891b2'},
   { id:'discovery',       icon:'🔍', title:'CT Log Discovery',         subtitle:'Find every cert ever issued for your domains',   badge:'CT Logs',    badgeColor:C.green  },
@@ -320,13 +320,13 @@ export default function KnowledgeBase({ nav }) {
           </Section>
         )}
 
-        {filtered.some(s=>s.id==='keylocker') && (
+        {filtered.some(s=>s.id==='certvault') && (
           <Section {...SECTIONS[5]}>
             <p style={{ fontSize:13.5, color:C.body, lineHeight:1.8, marginBottom:18 }}>
-              KeyLocker automatically stores the private key for every certificate issued. Keys are encrypted with AES-256-GCM using envelope encryption (DEK wrapped with KEK). Keys are never stored or transmitted in plaintext.
+              CertVault automatically stores the private key for every certificate issued. Keys are encrypted with AES-256-GCM using envelope encryption (DEK wrapped with KEK). Keys are never stored or transmitted in plaintext.
             </p>
             <Step n={1} title="Reveal a private key">
-              Go to <strong>Security → KeyLocker</strong>, click <strong>Reveal key</strong>. Re-enter your SSLVault password (re-authentication required). After verification, the key is shown masked for 30 seconds — copy-only, no download.
+              Go to <strong>Security → CertVault</strong>, click <strong>Reveal key</strong>. Re-enter your SSLVault password (re-authentication required). After verification, the key is shown masked for 30 seconds — copy-only, no download.
             </Step>
             <Step n={2} title="Rotate a key">
               Click <strong>Rotate key</strong> to generate a new certificate and private key. Old key archived for 30 days then permanently destroyed. Zero downtime.
@@ -352,7 +352,7 @@ export default function KnowledgeBase({ nav }) {
               Navigate to <strong>Security → 47-Day Readiness</strong>. Each cert gets a score 0–100 and a label: Ready / At Risk / Will Break. Click any row to expand the checklist.
             </Step>
             <Step n={2} title="The automation checklist">
-              Each cert is checked for: auto-renew enabled, DNS provider connected, agent/cPanel configured, validity within 200-day rule, private key in KeyLocker.
+              Each cert is checked for: auto-renew enabled, DNS provider connected, agent/cPanel configured, validity within 200-day rule, private key in CertVault.
             </Step>
             <Note type="danger">Certificates with validity over 200 days issued after March 15, 2026 will be rejected by browsers. Review your fleet now.</Note>
           </Section>
@@ -414,7 +414,7 @@ export default function KnowledgeBase({ nav }) {
               { q:'Agent not appearing after install', a:'Check logs: ', code:'sudo journalctl -u sslvault-agent -n 50', tip:'Common causes: firewall blocking outbound HTTPS to easysecurity.in, or install token expired (1-hour TTL). Generate a fresh token from Servers & agents.' },
               { q:'DCV failing — CNAME not found', a:'DNS changes can take up to 48 hours. Wait 10–15 min then retry. Verify with: ', code:'dig CNAME _your-validation-record.yourdomain.com', tip:'Connecting a DNS provider (Cloudflare, Vercel) eliminates this — SSLVault adds and verifies records automatically.' },
               { q:'Certificate installed but HTTPS not working', a:'Cert files are always written to disk even if web server config update fails. Check: ', code:'sudo nginx -t', tip:'If the config test failed, the agent restores the original config. Fix syntax errors then re-dispatch.' },
-              { q:'KeyLocker reveal — password not accepted', a:'KeyLocker requires your current SSLVault account password. After 3 failed attempts, reveal locks for 15 minutes.', code:null, tip:null },
+              { q:'CertVault reveal — password not accepted', a:'CertVault requires your current SSLVault account password. After 3 failed attempts, reveal locks for 15 minutes.', code:null, tip:null },
             ].map((item, i) => (
               <div key={i} style={{ marginBottom:i<3?24:0 }}>
                 <div style={{ display:'flex', alignItems:'flex-start', gap:10, marginBottom:8 }}>

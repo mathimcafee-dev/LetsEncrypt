@@ -22,7 +22,7 @@ import RenewalCalendar from './RenewalCalendar'
 import CTAbuseMonitor from './CTAbuseMonitor'
 import ReadinessDashboard from './ReadinessDashboard'
 import Infrastructure from './Infrastructure'
-import KeyLocker from './KeyLocker'
+import CertVault from './CertVault'
 import Pricing from './Pricing'
 
 // Default collapsed state — Overview & Account open, rest start open too but user can close
@@ -96,7 +96,7 @@ export default function CLMHome({ user, nav }) {
   const NAV_AUTOMATION = [
     { id:'infrastructure', label:'Servers & agents',  icon:Server   },
     { id:'integrations',  label:'DNS providers',      icon:Globe    },
-    { id:'keylocker',     label:'KeyLocker',          icon:Lock     },
+    { id:'certvault',     label:'CertVault',          icon:Lock     },
   ]
   const NAV_SECURITY = [
     { id:'ssl-health',      label:'Health scores',    icon:Trophy     },
@@ -117,7 +117,7 @@ export default function CLMHome({ user, nav }) {
     dashboard:'Certificate inventory', issue:'Issue certificate',
     readiness:'47-day readiness', 'renewal-calendar':'Renewal calendar',
     servers:'Servers & agents', integrations:'DNS providers',
-    keylocker:'KeyLocker',
+    certvault:'CertVault',
     'ssl-health':'Health scores', 'ct-monitor':'CT abuse monitor',
     'cert-changelog':'Audit log', 'agent-health':'Servers & agents', 'infrastructure':'Servers & agents',
     'ca-intelligence':'CA intelligence', 'bulk-scan':'Bulk scanner',
@@ -157,7 +157,7 @@ export default function CLMHome({ user, nav }) {
   // Sidebar-aware navigation — switches sections instead of URL routing
   const sideNav = (path) => {
     const map = { '/buy': 'issue', '/dashboard': 'dashboard', '/integrations': 'integrations',
-      '/keylocker': 'keylocker', '/install': 'kb', '/': 'dashboard' }
+      '/certvault': 'certvault', '/install': 'kb', '/': 'dashboard' }
     const mapped = map[path]
     if (mapped) { navigate(mapped) } else { nav(path) }
   }
@@ -173,7 +173,7 @@ export default function CLMHome({ user, nav }) {
     if (section === 'infrastructure') return <Infrastructure user={user}/>
     if (section === 'servers')         return <Infrastructure user={user}/>
     if (section === 'agent-health')    return <Infrastructure user={user}/>
-    if (section === 'keylocker')  return <KeyLocker nav={sideNav}/>
+    if (section === 'certvault')  return <CertVault nav={sideNav}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
     if (section === 'ca-intelligence') return <CAIntelligenceHub nav={sideNav}/>
     if (section === 'analytics')     return <AdminAnalytics user={user}/>

@@ -203,12 +203,12 @@ function InventoryMockup() {
   )
 }
 
-function KeyLockerMockup() {
+function CertVaultMockup() {
   return (
     <div style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, overflow:'hidden', boxShadow:'0 4px 24px rgba(0,0,0,0.08)' }}>
       <div style={{ background:W.bg2, padding:'10px 14px', display:'flex', alignItems:'center', gap:8, borderBottom:`1px solid ${W.border}` }}>
         <div style={{ display:'flex', gap:5 }}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{ width:8,height:8,borderRadius:'50%',background:c }}/>)}</div>
-        <span style={{ fontSize:11, color:W.muted, fontFamily:MONO, flex:1, textAlign:'center' }}>KeyLocker · Private key vault</span>
+        <span style={{ fontSize:11, color:W.muted, fontFamily:MONO, flex:1, textAlign:'center' }}>CertVault · Private key vault</span>
       </div>
       <div style={{ padding:'16px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', background:W.purpleBg, border:`1px solid ${W.purple}22`, borderRadius:8, marginBottom:14 }}>
@@ -285,7 +285,7 @@ function ReadinessMockup() {
 }
 
 // ── Ticker items ──────────────────────────────────────────────────────
-const TICKER = ['RFC 8555 · ACME v2','DigiCert Trust Chain','RapidSSL Partner','AES-256-GCM','TLS 1.3','DNS-01 Challenge','CT Log Monitor','CAA Records','HSTS Verified','SHA-256','CA/B Forum 2026','Zero-touch Renewal','KeyLocker Vault','47-Day Ready']
+const TICKER = ['RFC 8555 · ACME v2','DigiCert Trust Chain','RapidSSL Partner','AES-256-GCM','TLS 1.3','DNS-01 Challenge','CT Log Monitor','CAA Records','HSTS Verified','SHA-256','CA/B Forum 2026','Zero-touch Renewal','CertVault','47-Day Ready']
 
 // ── Main ──────────────────────────────────────────────────────────────
 export default function Home({ nav }) {
@@ -419,7 +419,7 @@ export default function Home({ nav }) {
                   { prompt:'›', text:'[21:05:16] Cert issued · RapidSSL TLS RSA CA 2022', c:'rgba(16,185,129,0.85)' },
                   { text:'↳ CN=easysecurity.in  valid 180d  grade A+', c:'rgba(255,255,255,0.28)', indent:true },
                   { prompt:'›', text:'[21:05:17] nginx -t OK · systemctl reload nginx ✓', c:'rgba(16,185,129,0.85)' },
-                  { prompt:'›', text:'[21:05:18] KeyLocker: AES-256-GCM encrypted ✓', c:'rgba(139,92,246,0.85)' },
+                  { prompt:'›', text:'[21:05:18] CertVault: AES-256-GCM encrypted ✓', c:'rgba(139,92,246,0.85)' },
                   { prompt:'›', text:'[21:05:18] ✓ Complete · next run: 21:10:18', c:'rgba(14,165,233,0.9)' },
                 ]}/>
                 {!isMobile && (
@@ -524,7 +524,7 @@ export default function Home({ nav }) {
                 badge:'UAPI',
               },
               {
-                icon:'🔐', color:W.purple, title:'KeyLocker vault',
+                icon:'🔐', color:W.purple, title:'CertVault',
                 specs:['AES-256-GCM · envelope encryption','Password re-auth before reveal','30-day rotation archive','Immutable audit log → CSV'],
                 badge:'AES-256',
               },
@@ -566,21 +566,21 @@ export default function Home({ nav }) {
         </div>
       </section>
 
-      {/* ── KEYLOCKER + READINESS ── */}
+      {/* ── CERTVAULT + READINESS ── */}
       <section style={{ background:W.bg, padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:`1px solid ${W.border}` }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ textAlign:'center', marginBottom:52 }}>
               <SectionLabel color={W.purple}>Security controls</SectionLabel>
               <H2 style={{ maxWidth:560, margin:'0 auto 14px' }}>Enterprise PKI controls. Not an afterthought.</H2>
-              <Body style={{ maxWidth:500, margin:'0 auto' }}>KeyLocker and 47-Day Readiness are built into every account — not a paid add-on.</Body>
+              <Body style={{ maxWidth:500, margin:'0 auto' }}>CertVault and 47-Day Readiness are built into every account — not a paid add-on.</Body>
             </div>
           </FadeUp>
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:24 }}>
             <FadeUp>
               <div>
                 <div style={{ fontSize:11, fontWeight:700, color:W.muted, letterSpacing:'0.05em', textTransform:'uppercase', fontFamily:MONO, marginBottom:10 }}>🔐 AES-256-GCM private key vault</div>
-                <KeyLockerMockup/>
+                <CertVaultMockup/>
               </div>
             </FadeUp>
             <FadeUp delay={80}>
@@ -726,7 +726,7 @@ export default function Home({ nav }) {
                 null,
                 { n:'02', icon:'🌐', title:'Auto DCV',        desc:'DNS provider API adds ACME challenge. Auto-validated.' },
                 null,
-                { n:'03', icon:'🏛', title:'CA issues cert',  desc:'RapidSSL signs cert. Stored encrypted in KeyLocker.' },
+                { n:'03', icon:'🏛', title:'CA issues cert',  desc:'RapidSSL signs cert. Stored encrypted in CertVault.' },
               ].map((s, i) => {
                 if (!s) return (
                   <div key={i} style={{ display:'flex', justifyContent:'center', alignItems:'center' }}>
@@ -837,7 +837,7 @@ export default function Home({ nav }) {
               Ready to automate your<br/>certificate lifecycle?
             </H2>
             <Body style={{ maxWidth:460, margin:'0 auto 36px' }}>
-              Issue, monitor, and auto-renew SSL certificates across every server with enterprise-grade PKI controls — KeyLocker, 47-day readiness, and CA intelligence included.
+              Issue, monitor, and auto-renew SSL certificates across every server with enterprise-grade PKI controls — CertVault, 47-day readiness, and CA intelligence included.
             </Body>
             <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:28 }}>
               <Btn label="Start managing certs" onClick={() => nav('/auth')} primary/>
@@ -861,7 +861,7 @@ export default function Home({ nav }) {
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4,1fr)', gap:32, marginBottom:48 }}>
             {[
               { title:'Product',   links:[['Pricing',()=>nav('/pricing')],['Knowledge Base',()=>nav('/knowledge-base')],['Install Guide',()=>nav('/install')],['Get started',()=>nav('/auth')]] },
-              { title:'Security',  links:[['KeyLocker','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']] },
+              { title:'Security',  links:[['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']] },
               { title:'Protocol',  links:[['RFC 8555 ACME','#security'],['DNS-01 Challenge','#security'],['AES-256-GCM','#security'],['CA/B Forum','#security']] },
               { title:'Company',   links:[['About',()=>nav('/about')],['Developer',()=>nav('/developer')]] },
             ].map(col => (

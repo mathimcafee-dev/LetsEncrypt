@@ -97,7 +97,7 @@ export default function About({ nav }) {
             Managing SSL/TLS certificates manually is error-prone and doesn't scale. Certificates expire silently, DCV records are forgotten, private keys are emailed around in plaintext, and renewal is always somebody's last-minute problem.
           </p>
           <p style={{ fontSize:16, color:C.body, lineHeight:1.85, maxWidth:660 }}>
-            SSLVault solves all of it. Issue certificates via RapidSSL in minutes. DNS challenges are automated through provider APIs. Certificates are deployed to servers via a persistent agent with zero SSH access after setup. Private keys are encrypted with AES-256-GCM and stored in KeyLocker. Everything renews automatically — 30 days before expiry — forever.
+            SSLVault solves all of it. Issue certificates via RapidSSL in minutes. DNS challenges are automated through provider APIs. Certificates are deployed to servers via a persistent agent with zero SSH access after setup. Private keys are encrypted with AES-256-GCM and stored in CertVault. Everything renews automatically — 30 days before expiry — forever.
           </p>
         </div>
 
@@ -119,7 +119,7 @@ export default function About({ nav }) {
                 items:['8+ providers: Cloudflare, Vercel, Route53…','Auto-add ACME challenge records','Poll for propagation, validate, clean up','Zero copy-paste, zero manual steps'],
               },
               {
-                icon:'🔐', color:C.purple, title:'KeyLocker vault',
+                icon:'🔐', color:C.purple, title:'CertVault',
                 items:['AES-256-GCM envelope encryption','DEK wrapped with KEK — never plaintext','Password re-auth before key reveal','Immutable audit log → CSV export'],
               },
               {
@@ -216,7 +216,7 @@ export default function About({ nav }) {
               {
                 n:'03', color:C.purple,
                 title:'Key security as a first-class concern',
-                body:'Private keys are the most sensitive component of PKI. KeyLocker encrypts every key with AES-256-GCM envelope encryption (DEK + KEK) before it touches the database. Reveal requires password re-authentication. Every access is logged. The 30-second copy-only window prevents screen-share leaks. These aren\'t optional settings — they\'re the defaults.'
+                body:'Private keys are the most sensitive component of PKI. CertVault encrypts every key with AES-256-GCM envelope encryption (DEK + KEK) before it touches the database. Reveal requires password re-authentication. Every access is logged. The 30-second copy-only window prevents screen-share leaks. These aren\'t optional settings — they\'re the defaults.'
               },
               {
                 n:'04', color:C.amber,
@@ -261,7 +261,7 @@ export default function About({ nav }) {
         <div style={{ background:C.tealBg, border:`1px solid ${C.tealBd}`, borderRadius:14, padding:'36px 32px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:20 }}>
           <div>
             <div style={{ fontSize:18, fontWeight:700, color:C.heading, marginBottom:8 }}>Ready to automate your certificate lifecycle?</div>
-            <div style={{ fontSize:14, color:C.body, maxWidth:440, lineHeight:1.7 }}>Enterprise-grade PKI controls — KeyLocker, 47-day readiness, CA intelligence — built in from day one.</div>
+            <div style={{ fontSize:14, color:C.body, maxWidth:440, lineHeight:1.7 }}>Enterprise-grade PKI controls — CertVault, 47-day readiness, CA intelligence — built in from day one.</div>
           </div>
           <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
             <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'white', padding:'10px 24px', borderRadius:100 }}>Get started →</button>
