@@ -7,9 +7,6 @@ import {
 import { supabase } from '../lib/supabase'
 import Dashboard from './Dashboard'
 import ServersPage from './Servers'
-import AboutInner from './AboutInner'
-import ContactInner from './ContactInner'
-import DeveloperInner from './DeveloperInner'
 import SettingsPage from './SettingsPage'
 import Integrations from './Integrations'
 import Install from './Install'
@@ -172,9 +169,6 @@ export default function CLMHome({ user, nav }) {
     if (section === 'integrations') return <Integrations nav={sideNav}/>
     if (section === 'install')    return <Install nav={sideNav}/>
     if (section === 'kb')         return <KnowledgeBase nav={sideNav}/>
-    if (section === 'about')      return <AboutInner nav={sideNav}/>
-    if (section === 'contact')    return <ContactInner nav={sideNav}/>
-    if (section === 'developer')  return <DeveloperInner nav={sideNav}/>
     if (section === 'pricing')    return <Pricing nav={sideNav}/>
     if (section === 'infrastructure') return <Infrastructure user={user}/>
     if (section === 'servers')         return <Infrastructure user={user}/>

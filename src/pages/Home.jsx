@@ -1341,8 +1341,7 @@ export default function Home({ nav }) {
             </span>
           </div>
           <div style={{ display:'flex', gap:24, flexWrap:'wrap' }}>
-            {[['Privacy','/privacy'],['Terms','/terms'],['About','/about'],
-              ['Developer','/developer'],['Pricing','/pricing'],['Contact','/contact']].map(([l,p])=>(
+            {[['Pricing','/pricing']].map(([l,p])=>(
               <button key={l} onClick={()=>nav(p)}
                 style={{ background:'none', border:'none', cursor:'pointer',
                   fontSize:12, color:'#64748b', fontFamily:F,
