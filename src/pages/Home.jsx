@@ -274,6 +274,338 @@ const ETHICS_ITEMS = [
   },
 ]
 
+// ── ShowcaseTabs — Owlish-style: 3D tilt entrance, sliding indicator, crossfade panels ──
+const TABS = [
+  { id:'inventory',  label:'Inventory'        },
+  { id:'readiness',  label:'47-day readiness' },
+  { id:'calendar',   label:'Renewal calendar' },
+  { id:'security',   label:'CT monitor'       },
+]
+
+function ShowcaseTabs({ nav }) {
+  const [active, setActive]     = useState('inventory')
+  const [prev,   setPrev]       = useState(null)
+  const [mounted, setMounted]   = useState(false)
+  const [indicatorStyle, setIndicatorStyle] = useState({})
+  const tabRefs  = useRef({})
+  const pillRef  = useRef(null)
+
+  // Entrance animation on mount
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 80)
+    return () => clearTimeout(t)
+  }, [])
+
+  // Slide indicator to active tab
+  useEffect(() => {
+    const el  = tabRefs.current[active]
+    const bar = pillRef.current
+    if (!el || !bar) return
+    const barRect = bar.getBoundingClientRect()
+    const elRect  = el.getBoundingClientRect()
+    setIndicatorStyle({
+      width:  elRect.width,
+      transform: `translateX(${elRect.left - barRect.left - 4}px)`,
+    })
+  }, [active])
+
+  const switchTab = (id) => {
+    if (id === active) return
+    setPrev(active)
+    setActive(id)
+  }
+
+  const panels = {
+    inventory: (
+      <div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:16 }}>
+          {[
+            { n:'12', l:'Active certs',    c:C.teal   },
+            { n:'10', l:'Auto-renewing',   c:'#34d399' },
+            { n:'2',  l:'Expiring ≤30d',   c:C.amber  },
+            { n:'A+', l:'Avg TLS grade',   c:C.purple },
+          ].map(({ n, l, c }) => (
+            <div key={l} style={{ background:C.bg, borderRadius:8, padding:'12px 14px',
+              border:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:22, fontWeight:800, color:c, fontFamily:MONO }}>{n}</div>
+              <div style={{ fontSize:10, color:C.textLt, marginTop:2 }}>{l}</div>
+            </div>
+          ))}
+        </div>
+        {[
+          { d:'easysecurity.in',   s:'Active · 196d',  sc:'#16a34a', sb:'#f0fdf4', i:'RapidSSL · Auto ✓'      },
+          { d:'freecerts.site',    s:'Active · 196d',  sc:'#16a34a', sb:'#f0fdf4', i:'RapidSSL · Auto ✓'      },
+          { d:'api.myshop.com',    s:'Expiring · 18d', sc:'#d97706', sb:'#fffbeb', i:"Let's Encrypt · Manual"  },
+          { d:'portal.client.com', s:'Issued today',   sc:'#2563eb', sb:'#eff6ff', i:'DigiCert · Agent ✓'     },
+        ].map(({ d, s, sc, sb, i }) => (
+          <div key={d} style={{ display:'flex', alignItems:'center', gap:14,
+            padding:'10px 12px', borderRadius:8, marginBottom:6,
+            background:C.bg, border:`1px solid ${C.border}` }}>
+            <span style={{ fontSize:13, fontWeight:600, color:C.ink, flex:1 }}>{d}</span>
+            <span style={{ fontSize:10, fontWeight:700, padding:'2px 9px',
+              borderRadius:10, background:sb, color:sc }}>{s}</span>
+            <span style={{ fontSize:11, color:C.textLt }}>{i}</span>
+          </div>
+        ))}
+      </div>
+    ),
+
+    readiness: (
+      <div>
+        <div style={{ background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8,
+          padding:'12px 14px', marginBottom:14, display:'flex', alignItems:'center', gap:10 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span style={{ fontSize:12, color:'#b91c1c' }}>
+            <strong>25 days</strong> until March 2026 — max cert validity drops to 200 days. 3 certs at risk.
+          </span>
+        </div>
+        {[
+          { score:95, d:'easysecurity.in',   st:'Ready',      sc:'#16a34a', sb:'#f0fdf4', sb2:'#dcfce7', checks:'✓ Auto-renew · ✓ DNS · ✓ Agent · ✓ 200d compliant' },
+          { score:65, d:'api.myshop.com',    st:'At risk',    sc:'#d97706', sb:'#fffbeb', sb2:'#fef9c3', checks:'✗ No agent · ✗ No DNS provider connected'           },
+          { score:30, d:'legacy.oldsite.com',st:'Will break', sc:'#dc2626', sb:'#fef2f2', sb2:'#fee2e2', checks:'✗ Manual renewal · ✗ 365d cert · ✗ No automation'    },
+        ].map(({ score, d, st, sc, sb, sb2, checks }) => (
+          <div key={d} style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 12px',
+            borderRadius:8, marginBottom:6, background:sb,
+            border:`0.5px solid ${sc}44` }}>
+            <div style={{ width:36, height:36, borderRadius:'50%', background:sb2, flexShrink:0,
+              display:'flex', alignItems:'center', justifyContent:'center',
+              fontSize:11, fontWeight:800, color:sc }}>{score}</div>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontSize:12, fontWeight:600, color:C.ink }}>{d}</div>
+              <div style={{ fontSize:10, color:sc, marginTop:2 }}>{checks}</div>
+            </div>
+            <span style={{ fontSize:10, fontWeight:700, padding:'2px 9px',
+              borderRadius:10, background:'white', color:sc, border:`1px solid ${sc}44`,
+              flexShrink:0 }}>{st}</span>
+          </div>
+        ))}
+      </div>
+    ),
+
+    calendar: (
+      <div>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
+          <div style={{ display:'flex', gap:6 }}>
+            {['Month','Week','Year'].map((v,i) => (
+              <span key={v} style={{ fontSize:11, padding:'5px 14px', borderRadius:20,
+                background:i===0?C.ink:'transparent', color:i===0?'white':'#64748b',
+                border:i===0?'none':'1px solid #e2e8f0', fontWeight:i===0?600:400,
+                cursor:'pointer' }}>{v}</span>
+            ))}
+          </div>
+          <span style={{ fontSize:13, fontWeight:700, color:C.ink }}>December 2026</span>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:2, marginBottom:2 }}>
+          {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>(
+            <div key={d} style={{ fontSize:9, fontWeight:600, textAlign:'center',
+              color:'#94a3b8', padding:'3px 0', textTransform:'uppercase' }}>{d}</div>
+          ))}
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:2 }}>
+          {[null,null].map((_,i)=>(
+            <div key={`e${i}`} style={{ height:52, borderRadius:5, background:'#f8fafc', opacity:0.4 }}/>
+          ))}
+          {Array.from({length:31},(_,i)=>{
+            const d=i+1
+            const certs={2:'#16a34a',3:'#16a34a',11:'#d97706',19:'#d97706',22:'#16a34a',28:'#16a34a'}
+            const c=certs[d], isT=d===20
+            return (
+              <div key={d} style={{ height:52, borderRadius:5, padding:'4px 3px',
+                background:c?`${c}14`:isT?'#eff6ff':'#f8fafc',
+                border:`0.5px solid ${c?`${c}44`:isT?'#93c5fd':'#f1f5f9'}` }}>
+                <div style={{ fontSize:9, fontWeight:600,
+                  color:c||isT?c||'#2563eb':'#94a3b8' }}>{d}</div>
+                {c && <div style={{ height:3, borderRadius:2, background:c, marginTop:3 }}/>}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    ),
+
+    security: (
+      <div>
+        <div style={{ background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8,
+          padding:'11px 14px', marginBottom:14, display:'flex', alignItems:'center', gap:10 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span style={{ fontSize:12, color:'#b91c1c' }}>
+            <strong>3 unauthorised certificates</strong> detected for your domains via CT logs
+          </span>
+        </div>
+        {[
+          { d:'freecerts.site',    ca:"Let's Encrypt — not issued by SSLVault", sc:'#dc2626', sb:'#fef2f2', st:'Unknown'    },
+          { d:'api.myshop.com',    ca:'Sectigo — CA not in your approved list',  sc:'#d97706', sb:'#fffbeb', st:'Suspicious' },
+          { d:'easysecurity.in',   ca:'RapidSSL — issued via SSLVault #10041',   sc:'#16a34a', sb:'#f0fdf4', st:'Known'      },
+          { d:'portal.client.com', ca:'DigiCert — verified CA connector',        sc:'#16a34a', sb:'#f0fdf4', st:'Known'      },
+        ].map(({ d, ca, sc, sb, st }) => (
+          <div key={d} style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 12px',
+            borderRadius:8, marginBottom:6, background:sb,
+            borderLeft:`3px solid ${sc}` }}>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontSize:12, fontWeight:600, color:C.ink }}>{d}</div>
+              <div style={{ fontSize:10, color:sc, marginTop:2 }}>{ca}</div>
+            </div>
+            <span style={{ fontSize:9, fontWeight:700, padding:'2px 8px',
+              borderRadius:10, background:'white', color:sc,
+              border:`1px solid ${sc}44`, flexShrink:0 }}>{st.toUpperCase()}</span>
+          </div>
+        ))}
+      </div>
+    ),
+  }
+
+  return (
+    <div style={{
+      transform: mounted ? 'translateY(0) scale(1)' : 'translateY(40px) scale(0.97)',
+      opacity:   mounted ? 1 : 0,
+      transition:'transform .7s cubic-bezier(.16,1,.3,1), opacity .6s ease',
+    }}>
+
+      {/* ── Floating pill tab nav ── */}
+      <div style={{ display:'flex', justifyContent:'center', marginBottom:28 }}>
+        <div ref={pillRef} style={{
+          display:'flex', background:'white',
+          border:`1px solid ${C.border}`, borderRadius:40,
+          padding:4, gap:0,
+          boxShadow:'0 2px 20px rgba(15,23,42,0.09)',
+          position:'relative',
+        }}>
+          {/* Sliding background pill */}
+          <div style={{
+            position:'absolute', top:4, left:4, height:'calc(100% - 8px)',
+            background:C.ink, borderRadius:36,
+            transition:'transform .28s cubic-bezier(.16,1,.3,1), width .28s cubic-bezier(.16,1,.3,1)',
+            ...indicatorStyle,
+            pointerEvents:'none',
+          }}/>
+          {TABS.map(t => (
+            <button key={t.id}
+              ref={el => tabRefs.current[t.id] = el}
+              onClick={() => switchTab(t.id)}
+              style={{
+                fontSize:13, fontWeight:500,
+                padding:'8px 22px', borderRadius:36, cursor:'pointer',
+                fontFamily:F, position:'relative', zIndex:1,
+                background:'transparent', border:'none',
+                color: active===t.id ? 'white' : C.textMid,
+                transition:'color .2s ease',
+                whiteSpace:'nowrap',
+              }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── App window — 3D perspective tilt ── */}
+      <div style={{
+        perspective:'1200px',
+        maxWidth:900, margin:'0 auto',
+        position:'relative', zIndex:2,
+      }}>
+        <div style={{
+          background:'white', borderRadius:14,
+          border:`1px solid ${C.border}`,
+          boxShadow:'0 40px 100px rgba(15,23,42,0.13), 0 8px 32px rgba(15,23,42,0.07)',
+          overflow:'hidden',
+          transform: mounted ? 'rotateX(1.5deg)' : 'rotateX(6deg)',
+          transformOrigin:'top center',
+          transition:'transform .8s cubic-bezier(.16,1,.3,1)',
+        }}>
+          {/* Browser chrome bar */}
+          <div style={{
+            background:'#f1f5f9', borderBottom:`1px solid ${C.border}`,
+            padding:'9px 14px', display:'flex', alignItems:'center', gap:10,
+          }}>
+            <div style={{ display:'flex', gap:5 }}>
+              {['#ff5f57','#ffbd2e','#28c840'].map(c => (
+                <div key={c} style={{ width:10, height:10, borderRadius:'50%', background:c }}/>
+              ))}
+            </div>
+            {/* URL bar */}
+            <div style={{
+              flex:1, background:'white', border:`1px solid ${C.border}`,
+              borderRadius:6, padding:'4px 10px',
+              fontSize:11, color:'#94a3b8', fontFamily:MONO,
+              marginLeft:6, marginRight:6, display:'flex', alignItems:'center', gap:7,
+            }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              easysecurity.in
+              <span style={{ color:'#cbd5e1', margin:'0 2px' }}>·</span>
+              <span style={{ transition:'opacity .2s' }}>
+                {TABS.find(t=>t.id===active)?.label}
+              </span>
+            </div>
+            <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+              {/* Fake avatar + badge */}
+              <div style={{ width:22, height:22, borderRadius:'50%', background:'#0d3c6e',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:9, fontWeight:700, color:'white' }}>M</div>
+            </div>
+          </div>
+
+          {/* App chrome — sidebar + content */}
+          <div style={{ display:'flex', minHeight:380 }}>
+            {/* SSLVault sidebar — matches real app */}
+            <div style={{ width:48, background:'#0d3c6e', display:'flex',
+              flexDirection:'column', alignItems:'center', paddingTop:14, gap:14, flexShrink:0 }}>
+              <div style={{ width:22, height:22, borderRadius:5, background:'#0e7fc0',
+                display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              {[
+                { active: active==='inventory'||active==='readiness', color:C.teal },
+                { active: false,                                       color:'#64748b' },
+                { active: active==='security',                         color:C.teal },
+                { active: active==='calendar',                         color:'#64748b' },
+              ].map((s,i)=>(
+                <div key={i} style={{ width:28, height:28, borderRadius:6,
+                  background: s.active ? 'rgba(14,127,192,0.25)' : 'transparent',
+                  borderLeft: s.active ? '2px solid #00a3e0' : '2px solid transparent',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  transition:'all .2s' }}>
+                  <div style={{ width:10, height:10, borderRadius:2,
+                    background: s.active ? s.color : '#475569', opacity: s.active?1:0.4 }}/>
+                </div>
+              ))}
+            </div>
+
+            {/* Content panel with crossfade */}
+            <div style={{ flex:1, padding:'18px 22px', overflowX:'hidden',
+              position:'relative', background:'white' }}>
+              <div
+                key={active}
+                style={{ animation:'owlishFade .28s cubic-bezier(.16,1,.3,1)' }}
+              >
+                {panels[active]}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── CTA below ── */}
+      <div style={{ textAlign:'center', paddingTop:40, paddingBottom:80, position:'relative', zIndex:2 }}>
+        <button onClick={()=>nav('/auth')} style={{
+          fontSize:14, fontWeight:600, padding:'13px 30px', borderRadius:9,
+          background:C.ink, color:'white', border:'none', cursor:'pointer',
+          fontFamily:F, transition:'all .17s',
+          boxShadow:'0 4px 16px rgba(10,14,26,0.2)',
+        }}
+          onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.boxShadow='0 8px 24px rgba(10,14,26,0.28)' }}
+          onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)';   e.currentTarget.style.boxShadow='0 4px 16px rgba(10,14,26,0.2)'  }}>
+          Get started free →
+        </button>
+        <div style={{ fontSize:12, color:C.textLt, marginTop:10 }}>
+          Free forever for indie, SMB &amp; non-profit · No credit card required
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Home({ nav }) {
   const [certCount, setCertCount] = useState(null)
   const [displayCount, setDisplayCount] = useState(0)
@@ -306,6 +638,7 @@ export default function Home({ nav }) {
         @keyframes pulse2 { 0%,100%{opacity:1} 50%{opacity:.35} }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes owlishFade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
       `}</style>
 
       {/* ── NAV ─────────────────────────────────────────────────────── */}
@@ -355,91 +688,126 @@ export default function Home({ nav }) {
 
       {/* ── HERO ────────────────────────────────────────────────────── */}
       <section style={{
-        background:C.ink,
-        padding:'120px 40px 100px',
+        background: C.white,
+        padding:'110px 40px 90px',
         position:'relative', overflow:'hidden',
+        borderBottom:`1px solid ${C.border}`,
       }}>
-        {/* Noise texture overlay */}
+        {/* Subtle dot grid — same vibe as the Platform section's clean white */}
         <div style={{
-          position:'absolute', inset:0, pointerEvents:'none', opacity:0.025,
-          backgroundImage:`url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundSize:'200px 200px',
-        }}/>
-        {/* Radial gradient halo */}
-        <div style={{
-          position:'absolute', top:'50%', left:'50%',
-          transform:'translate(-50%,-60%)',
-          width:900, height:600, borderRadius:'50%',
-          background:`radial-gradient(ellipse, ${C.teal}18 0%, transparent 65%)`,
-          pointerEvents:'none',
+          position:'absolute', inset:0, pointerEvents:'none',
+          backgroundImage:`radial-gradient(circle, ${C.teal}22 1px, transparent 1px)`,
+          backgroundSize:'32px 32px',
+          maskImage:'radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%)',
+          WebkitMaskImage:'radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%)',
+          opacity:0.5,
         }}/>
 
-        <div style={{ maxWidth:880, margin:'0 auto', position:'relative', textAlign:'center' }}>
+        {/* Floating cert status pills — scattered, very low opacity */}
+        {[
+          { t:'✓  easysecurity.in renewed', c:'#10b981', x:'8%',  y:'18%', r:'-6deg'  },
+          { t:'✓  Agent installed · Nginx',  c:'#0ea5e9', x:'72%', y:'12%', r:'5deg'   },
+          { t:'⚠  api.shop.com · 18d left',  c:'#f59e0b', x:'82%', y:'72%', r:'-4deg'  },
+          { t:'✓  TLS grade A+ · HSTS on',   c:'#8b5cf6', x:'4%',  y:'74%', r:'4deg'   },
+        ].map(({ t, c, x, y, r }) => (
+          <div key={t} style={{
+            position:'absolute', left:x, top:y,
+            transform:`rotate(${r})`,
+            display:'flex', alignItems:'center', gap:7,
+            background:'white',
+            border:`1px solid ${c}33`,
+            borderRadius:8, padding:'7px 12px',
+            fontSize:11, fontFamily:MONO, color:c,
+            fontWeight:600, whiteSpace:'nowrap',
+            opacity:0.22,
+            boxShadow:`0 2px 12px ${c}18`,
+            pointerEvents:'none',
+          }}>{t}</div>
+        ))}
+
+        <div style={{ maxWidth:860, margin:'0 auto', position:'relative', textAlign:'center' }}>
           {/* Eyebrow */}
-          <div style={{
-            display:'inline-flex', alignItems:'center', gap:8,
-            marginBottom:36, animation:'fadeIn .6s ease both',
-          }}>
-            <span style={{
-              width:7, height:7, borderRadius:'50%', background:'#34d399', flexShrink:0,
-              boxShadow:'0 0 0 4px rgba(52,211,153,0.15)',
-              animation:'pulse2 2.4s ease infinite',
-            }}/>
-            <span style={{ fontSize:12, fontFamily:MONO, color:'rgba(255,255,255,0.4)', letterSpacing:'0.06em' }}>
-              Certificate Lifecycle Management · Free forever
-            </span>
-          </div>
+          <FadeUp>
+            <div style={{
+              display:'inline-flex', alignItems:'center', gap:8,
+              marginBottom:28,
+              background:`${C.teal}0d`,
+              border:`1px solid ${C.teal}28`,
+              borderRadius:20, padding:'6px 14px',
+            }}>
+              <span style={{
+                width:6, height:6, borderRadius:'50%', background:'#34d399', flexShrink:0,
+                boxShadow:'0 0 0 3px rgba(52,211,153,0.18)',
+                animation:'pulse2 2.4s ease infinite',
+              }}/>
+              <span style={{ fontSize:12, fontFamily:MONO, color:C.teal, letterSpacing:'0.05em', fontWeight:500 }}>
+                Certificate Lifecycle Management · Free forever
+              </span>
+            </div>
+          </FadeUp>
 
           {/* Headline */}
-          <h1 style={{
-            fontSize:'clamp(44px,7vw,84px)', fontWeight:800,
-            letterSpacing:'-3px', lineHeight:1.0,
-            color:C.white, marginBottom:28,
-            animation:'fadeIn .7s ease .1s both',
-          }}>
-            SSL certificates.<br/>
-            <span style={{
-              background:`linear-gradient(90deg, ${C.teal}, #38bdf8)`,
-              WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-              backgroundClip:'text',
-            }}>Fully automated.</span>
-          </h1>
+          <FadeUp delay={60}>
+            <h1 style={{
+              fontSize:'clamp(44px,7vw,84px)', fontWeight:800,
+              letterSpacing:'-3px', lineHeight:1.0,
+              color:C.ink, marginBottom:24,
+            }}>
+              SSL certificates.<br/>
+              <span style={{ color:C.teal }}>Fully automated.</span>
+            </h1>
+          </FadeUp>
 
           {/* Sub */}
-          <p style={{
-            fontSize:'clamp(16px,1.8vw,20px)', color:'rgba(255,255,255,0.45)',
-            lineHeight:1.8, maxWidth:600, margin:'0 auto 48px',
-            fontWeight:400, animation:'fadeIn .7s ease .2s both',
-          }}>
-            The complete CLM platform — issue, validate, deploy, monitor and renew
-            certificates across every CA and every server.
-            Built for developers, SMBs, and non-profits.
-          </p>
+          <FadeUp delay={120}>
+            <p style={{
+              fontSize:'clamp(16px,1.8vw,19px)', color:C.textMid,
+              lineHeight:1.8, maxWidth:580, margin:'0 auto 44px',
+              fontWeight:400,
+            }}>
+              The complete CLM platform — issue, validate, deploy, monitor and renew
+              certificates across every CA and every server.
+              Built for developers, SMBs, and non-profits.
+            </p>
+          </FadeUp>
 
           {/* CTAs */}
-          <div style={{
-            display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap',
-            marginBottom:72, animation:'fadeIn .7s ease .3s both',
-          }}>
-            <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')}/>
-            <CTA label="View pricing" variant="ghost-dark" onClick={()=>nav('/pricing')}/>
-          </div>
+          <FadeUp delay={160}>
+            <div style={{
+              display:'flex', gap:12, justifyContent:'center',
+              flexWrap:'wrap', marginBottom:72,
+            }}>
+              <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')}/>
+              <CTA label="View pricing" onClick={()=>nav('/pricing')}/>
+            </div>
+          </FadeUp>
 
-          {/* Stats */}
-          <div style={{
-            display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:40,
-            maxWidth:600, margin:'0 auto',
-            animation:'fadeIn .7s ease .4s both',
-          }}>
-            <Metric
-              val={certCount ? `${displayCount.toLocaleString()}+` : '—'}
-              label="Active certificates"
-              sub="tracked across all CAs"
-              accent={C.teal}
-            />
-            <Metric val="~5 min" label="DV issuance time" sub="GoGetSSL · DigiCert chain" accent="#34d399"/>
-            <Metric val="$0" label="Platform cost" sub="certs from $8 / yr" accent={C.amber}/>
-          </div>
+          {/* Stats — light version */}
+          <FadeUp delay={200}>
+            <div style={{
+              display:'grid', gridTemplateColumns:'repeat(3,1fr)',
+              maxWidth:560, margin:'0 auto',
+              borderTop:`1px solid ${C.border}`,
+            }}>
+              {[
+                { val: certCount ? `${displayCount.toLocaleString()}+` : '—', label:'Active certificates', sub:'tracked across all CAs', accent:C.teal },
+                { val:'~5 min', label:'DV issuance time', sub:'GoGetSSL · DigiCert chain', accent:'#10b981' },
+                { val:'$0',     label:'Platform cost',    sub:'certs from $8 / yr',        accent:C.amber  },
+              ].map(({ val, label, sub, accent }, i) => (
+                <div key={label} style={{
+                  padding:'24px 0 0',
+                  borderLeft: i > 0 ? `1px solid ${C.border}` : 'none',
+                  paddingLeft: i > 0 ? 28 : 0,
+                  textAlign: 'left',
+                }}>
+                  <div style={{ fontSize:32, fontWeight:800, color:accent,
+                    letterSpacing:'-1px', lineHeight:1, marginBottom:6, fontFamily:MONO }}>{val}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:C.text, marginBottom:2 }}>{label}</div>
+                  <div style={{ fontSize:11, color:C.textLt, fontFamily:MONO }}>{sub}</div>
+                </div>
+              ))}
+            </div>
+          </FadeUp>
         </div>
       </section>
 
@@ -458,8 +826,81 @@ export default function Home({ nav }) {
         </div>
       </div>
 
+      {/* ── PRODUCT SHOWCASE — Owlish-inspired ──────────────────────── */}
+      <section style={{
+        background: '#f0f4f8',
+        padding: '100px 40px 0',
+        borderTop: `1px solid ${C.border}`,
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        {/* Misty mountain SVG background */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0,
+          height: '55%', pointerEvents: 'none', overflow: 'hidden',
+        }}>
+          <svg viewBox="0 0 1440 300" preserveAspectRatio="none"
+            style={{ width:'100%', height:'100%', display:'block' }}>
+            <defs>
+              <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#dde6f0" stopOpacity="0"/>
+                <stop offset="100%" stopColor="#c8d8e8" stopOpacity="0.6"/>
+              </linearGradient>
+            </defs>
+            {/* Far mountains */}
+            <path d="M0,220 L80,160 L160,195 L260,130 L360,170 L460,110 L560,150 L660,95 L760,140 L860,105 L960,145 L1060,90 L1160,135 L1260,100 L1360,140 L1440,115 L1440,300 L0,300 Z"
+              fill="#c5d5e5" opacity="0.5"/>
+            {/* Mid mountains */}
+            <path d="M0,250 L100,195 L200,220 L320,165 L440,200 L560,155 L680,190 L800,148 L920,182 L1040,150 L1160,180 L1280,158 L1380,185 L1440,170 L1440,300 L0,300 Z"
+              fill="#b0c4d8" opacity="0.55"/>
+            {/* Near mountains */}
+            <path d="M0,280 L120,235 L240,258 L380,210 L500,242 L640,205 L760,235 L900,210 L1020,240 L1160,215 L1300,245 L1440,225 L1440,300 L0,300 Z"
+              fill="#9ab4cc" opacity="0.6"/>
+            {/* Ground */}
+            <path d="M0,290 L1440,285 L1440,300 L0,300 Z"
+              fill="#8aaabf" opacity="0.4"/>
+          </svg>
+        </div>
+
+        <div style={{ maxWidth:1000, margin:'0 auto', position:'relative', zIndex:2 }}>
+          {/* Label */}
+          <FadeUp>
+            <div style={{ textAlign:'center', marginBottom:14 }}>
+              <span style={{
+                fontSize:11, fontFamily:MONO, fontWeight:600,
+                letterSpacing:'0.07em', textTransform:'uppercase',
+                color:'#64748b',
+              }}>Platform</span>
+            </div>
+            <h2 style={{
+              textAlign:'center', fontSize:'clamp(28px,3.5vw,46px)',
+              fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.08,
+              color:C.ink, marginBottom:10,
+            }}>
+              Everything PKI.<br/>Nothing unnecessary.
+            </h2>
+            <p style={{
+              textAlign:'center', fontSize:16, color:C.textMid,
+              maxWidth:480, margin:'0 auto 40px', lineHeight:1.7,
+            }}>
+              One platform for the full certificate lifecycle —
+              issue, install, monitor, comply.
+            </p>
+          </FadeUp>
+
+          {/* ── Floating pill tab nav (the Owlish element) ── */}
+          <ShowcaseTabs nav={nav}/>
+        </div>
+      </section>
+
       {/* ── CAPABILITY LIST ──────────────────────────────────────────── */}
-      <section id="platform" style={{ background:C.white, padding:'100px 40px' }}>
+      <section id="platform" style={{ background:C.white, padding:'100px 40px', position:'relative', overflow:'hidden' }}>
+        {/* Watermark — giant shield outline */}
+        <svg style={{ position:'absolute', right:'-3%', bottom:'-8%', width:380, height:380,
+          opacity:0.035, pointerEvents:'none', userSelect:'none' }}
+          viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="0.6">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ marginBottom:60 }}>
@@ -639,7 +1080,15 @@ export default function Home({ nav }) {
 
       {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
       <section id="workflow" style={{ background:C.white, padding:'100px 40px',
-        borderTop:`1px solid ${C.border}` }}>
+        borderTop:`1px solid ${C.border}`, position:'relative', overflow:'hidden' }}>
+        {/* Watermark — huge "→" flow arrow */}
+        <div style={{ position:'absolute', left:'50%', top:'50%',
+          transform:'translate(-50%,-50%)',
+          fontSize:320, fontWeight:900, color:C.teal, opacity:0.022,
+          pointerEvents:'none', userSelect:'none', lineHeight:1,
+          fontFamily:"'Inter var','Inter',system-ui,sans-serif",
+          letterSpacing:'-20px', whiteSpace:'nowrap',
+        }}>→</div>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ marginBottom:64 }}>
@@ -742,7 +1191,15 @@ export default function Home({ nav }) {
       <section id="mission" style={{
         background:C.bg, padding:'100px 40px',
         borderTop:`1px solid ${C.border}`,
+        position:'relative', overflow:'hidden',
       }}>
+        {/* Watermark — "PKI" monogram top right */}
+        <div style={{ position:'absolute', right:'-1%', top:'-5%',
+          fontSize:260, fontWeight:900, color:'#0f172a', opacity:0.028,
+          pointerEvents:'none', userSelect:'none', lineHeight:1,
+          fontFamily:"'Inter var','Inter',system-ui,sans-serif",
+          letterSpacing:'-12px',
+        }}>PKI</div>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ marginBottom:72 }}>
@@ -797,7 +1254,22 @@ export default function Home({ nav }) {
 
       {/* ── SECURITY TRUST STRIP ────────────────────────────────────── */}
       <section style={{ background:C.white, padding:'72px 40px',
-        borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}` }}>
+        borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`,
+        position:'relative', overflow:'hidden' }}>
+        {/* Watermark — repeating lock icons row */}
+        <div style={{ position:'absolute', bottom:'-10px', left:0, right:0,
+          display:'flex', gap:48, justifyContent:'center', alignItems:'center',
+          opacity:0.04, pointerEvents:'none', userSelect:'none', overflow:'hidden',
+          flexWrap:'nowrap',
+        }}>
+          {Array.from({length:12}).map((_,i) => (
+            <svg key={i} width="52" height="52" viewBox="0 0 24 24" fill="none"
+              stroke={C.teal} strokeWidth="1">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          ))}
+        </div>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
