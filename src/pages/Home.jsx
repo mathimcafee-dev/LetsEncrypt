@@ -769,6 +769,121 @@ export default function Home({ nav }) {
         </div>
       </section>
 
+
+      {/* ── CERTBIND — KILLER FEATURE ── */}
+      <section style={{ background:'#080c14', padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid rgba(255,255,255,0.06)', position:'relative', overflow:'hidden' }}>
+        {/* Ambient glow */}
+        <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:800, height:400, background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(14,165,233,0.07) 0%, transparent 100%)', pointerEvents:'none' }}/>
+
+        <div style={{ maxWidth:1100, margin:'0 auto', position:'relative' }}>
+          <FadeUp>
+            {/* Eyebrow */}
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20 }}>
+              <span style={{ fontSize:11, fontWeight:700, color:'rgba(220,38,38,0.9)', letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, background:'rgba(220,38,38,0.08)', border:'1px solid rgba(220,38,38,0.2)', borderRadius:4, padding:'3px 10px' }}>Industry first</span>
+              <span style={{ fontSize:11, color:'rgba(255,255,255,0.25)', letterSpacing:'0.06em', textTransform:'uppercase', fontFamily:MONO }}>No other CLM vendor has built this</span>
+            </div>
+
+            <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?40:80, alignItems:'center', marginBottom:56 }}>
+              <div>
+                <h2 style={{ fontSize:`clamp(28px,4.5vw,52px)`, fontWeight:700, letterSpacing:'-1.5px', lineHeight:1.08, color:'rgba(255,255,255,0.95)', marginBottom:20 }}>
+                  Every other CLM tells you what cert you issued.<br/>
+                  <span style={{ color:D.teal }}>SSLVault proves what's actually running.</span>
+                </h2>
+                <p style={{ fontSize:16, color:'rgba(255,255,255,0.42)', lineHeight:1.85, marginBottom:28, maxWidth:480 }}>
+                  A certificate can be valid. HTTPS can be green. Your CLM can show everything healthy. And your server can be serving a mismatched key, a rogue cert, or half a load balancer pool — and nobody knows.
+                </p>
+                <p style={{ fontSize:16, color:'rgba(255,255,255,0.42)', lineHeight:1.85, marginBottom:32, maxWidth:480 }}>
+                  CertBind closes that gap with continuous, cryptographic proof — every 5 minutes.
+                </p>
+                <div style={{ display:'flex', gap:10 }}>
+                  <Btn label="See CertBind" onClick={()=>nav('/auth')} primary/>
+                  <Btn label="Read how it works" onClick={()=>nav('/knowledge-base')} dark/>
+                </div>
+              </div>
+
+              {/* CertBind visual */}
+              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                {/* Status header */}
+                <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:12, padding:'14px 18px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                    <span style={{ fontSize:16 }}>🔗</span>
+                    <span style={{ fontSize:13, fontWeight:600, color:'rgba(255,255,255,0.85)', fontFamily:MONO }}>CertBind</span>
+                    <span style={{ fontSize:10, fontWeight:700, color:'rgba(14,165,233,0.9)', background:'rgba(14,165,233,0.1)', border:'1px solid rgba(14,165,233,0.2)', borderRadius:4, padding:'2px 8px', fontFamily:MONO }}>ACTIVE</span>
+                  </div>
+                  <span style={{ fontSize:11, color:'rgba(255,255,255,0.28)', fontFamily:MONO }}>4/4 domains bound</span>
+                </div>
+
+                {/* 4 verification layers */}
+                {[
+                  { n:'01', label:'Key-Cert Binding Proof',   status:'VERIFIED', color:'rgba(16,185,129,0.9)',  desc:'Agent signs nonce · key ↔ cert proven cryptographically' },
+                  { n:'02', label:'Live TLS Fingerprint',      status:'MATCH',    color:'rgba(16,185,129,0.9)',  desc:'SHA-256 of served cert matches issued cert on every poll' },
+                  { n:'03', label:'Chain Integrity',           status:'CLEAN',    color:'rgba(16,185,129,0.9)',  desc:'No unexpected intermediates · no SSL inspection proxy' },
+                  { n:'04', label:'Multi-Node Consistency',    status:'7/7 NODES', color:'rgba(16,185,129,0.9)', desc:'All load balancer nodes serving correct certificate' },
+                ].map(l => (
+                  <div key={l.n} style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:10, padding:'12px 16px', display:'flex', gap:12, alignItems:'flex-start' }}>
+                    <div style={{ width:24, height:24, borderRadius:6, background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:800, color:'rgba(16,185,129,0.8)', fontFamily:MONO, flexShrink:0 }}>{l.n}</div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:4 }}>
+                        <span style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.8)' }}>{l.label}</span>
+                        <span style={{ fontSize:10, fontWeight:700, color:l.color, fontFamily:MONO }}>{l.status}</span>
+                      </div>
+                      <div style={{ fontSize:11, color:'rgba(255,255,255,0.28)', fontFamily:MONO }}>{l.desc}</div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Alert example — mismatch scenario */}
+                <div style={{ background:'rgba(220,38,38,0.06)', border:'1px solid rgba(220,38,38,0.2)', borderRadius:10, padding:'12px 16px', display:'flex', gap:10, alignItems:'flex-start' }}>
+                  <span style={{ fontSize:14, flexShrink:0 }}>🚨</span>
+                  <div>
+                    <div style={{ fontSize:12, fontWeight:700, color:'rgba(220,38,38,0.9)', marginBottom:3 }}>What CertBind catches that others miss</div>
+                    <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', fontFamily:MONO, lineHeight:1.7 }}>
+                      key_mismatch · cert_mismatch · chain_anomaly · partial_deploy
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </FadeUp>
+
+          {/* Three real-world scenarios */}
+          <FadeUp delay={80}>
+            <div style={{ borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:40 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.3)', letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:24, textAlign:'center' }}>Real-world failures CertBind prevents</div>
+              <div style={{ display:'grid', gridTemplateColumns:`repeat(${isMobile?1:3},1fr)`, gap:16 }}>
+                {[
+                  {
+                    status:'key_mismatch', color:'rgba(220,38,38,0.9)', bg:'rgba(220,38,38,0.06)', bd:'rgba(220,38,38,0.2)',
+                    title:'The Zombie Certificate',
+                    scenario:'Nginx renewed cert automatically. But a config change six months ago redirected nginx to a backup key from a previous issuance. CLM shows green. Browser shows valid. The cert and key are from different issuances.',
+                    impact:'$11M average PKI outage cost · undetected for months in typical orgs',
+                  },
+                  {
+                    status:'partial_deploy', color:'rgba(217,119,6,0.9)', bg:'rgba(217,119,6,0.06)', bd:'rgba(217,119,6,0.2)',
+                    title:'The Phantom Install',
+                    scenario:'New cert deployed to 4 of 7 load balancer nodes. The other 3 are still running the cert that expires in 4 days. CLM shows the cert was issued and installed. It has no idea about the other 3 nodes.',
+                    impact:'#1 cause of PKI-related outages in enterprises · usually found by customers first',
+                  },
+                  {
+                    status:'chain_anomaly', color:'rgba(124,58,237,0.9)', bg:'rgba(124,58,237,0.06)', bd:'rgba(124,58,237,0.2)',
+                    title:'The Silent Swap',
+                    scenario:"Enterprise Palo Alto proxy is SSL-inspecting traffic to your API server. Every TLS connection is being decrypted, inspected, and re-encrypted with the proxy's internal CA. Your CLM doesn't know. Your monitoring doesn't know.",
+                    impact:'Affects every enterprise with SSL inspection · invisible to all other CLM tools',
+                  },
+                ].map(s => (
+                  <div key={s.title} style={{ background:s.bg, border:`1px solid ${s.bd}`, borderRadius:12, padding:'20px' }}>
+                    <div style={{ fontSize:10, fontWeight:800, color:s.color, fontFamily:MONO, letterSpacing:'0.5px', marginBottom:10 }}>{s.status.toUpperCase()}</div>
+                    <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.9)', marginBottom:10 }}>{s.title}</div>
+                    <div style={{ fontSize:12.5, color:'rgba(255,255,255,0.45)', lineHeight:1.75, marginBottom:12 }}>{s.scenario}</div>
+                    <div style={{ fontSize:11, fontWeight:600, color:s.color, lineHeight:1.5 }}>{s.impact}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+
       {/* ── MISSION ── */}
       <section style={{ background:W.bg, padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:`1px solid ${W.border}` }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>

@@ -89,6 +89,11 @@ const FEATURES = [
     section: 'Security',
     rows: [
       { label: 'CertVault — AES-256-GCM key vault',     starter: true,  pro: true,  reseller: true  },
+      { label: 'CertBind — Active Binding Verification',  starter: true,  pro: true,  reseller: true, highlight: true },
+      { label: 'Key-cert binding proof (cryptographic)',  starter: true,  pro: true,  reseller: true  },
+      { label: 'Live TLS fingerprint matching',           starter: true,  pro: true,  reseller: true  },
+      { label: 'SSL inspection proxy detection',          starter: false, pro: true,  reseller: true  },
+      { label: 'Multi-node load balancer consistency',    starter: false, pro: true,  reseller: true  },
       { label: 'Key reveal with password re-auth',      starter: true,  pro: true,  reseller: true  },
       { label: 'Key rotation with 30-day archive',      starter: true,  pro: true,  reseller: true  },
       { label: 'Immutable audit log + CSV export',      starter: true,  pro: true,  reseller: true  },
@@ -147,7 +152,7 @@ const PLANS = [
 ]
 
 const PLAN_HIGHLIGHTS = {
-  starter:  ['DV certificates (Sectigo / RapidSSL)', 'Persistent agent — Nginx / Apache', 'Auto DNS validation', 'Auto-renew (cert + order)', 'CertVault — AES-256-GCM vault', 'CT Log discovery', '47-Day Readiness Dashboard', 'Renewal Calendar', 'SSL Health Score A+ to F', 'Multi-server management'],
+  starter:  ['DV certificates (Sectigo / RapidSSL)', 'Persistent agent — Nginx / Apache', 'Auto DNS validation', 'Auto-renew (cert + order)', 'CertVault — AES-256-GCM vault', 'CertBind — key-cert binding proof', 'CT Log discovery', '47-Day Readiness Dashboard', 'Renewal Calendar', 'SSL Health Score A+ to F', 'Multi-server management'],
   pro:      ['Everything in Starter', 'OV, EV, Wildcard & SAN certificates', 'DigiCert & Sectigo portfolio sync', 'Shadow IT detection', 'Policy engine (fleet compliance)', 'CT Abuse Monitor', 'Portfolio CSV export', 'REST API access', 'Priority support'],
   reseller: ['Everything in Pro', 'Sub-reseller registration & approval', 'End-customer portal', 'Customer invite (magic link)', 'Order management for customers', 'Excel order export', 'White-label dashboard', 'Dedicated account manager', 'Volume cert pricing'],
 }
@@ -185,7 +190,7 @@ export default function Pricing({ nav }) {
             <span style={{ color: '#10b981' }}>Transparent cert pricing.</span>
           </h1>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 12px', lineHeight: 1.75 }}>
-            The complete CLM platform — agents, auto-renewal, DNS automation, CT monitoring, CA intelligence, CertVault, 47-day readiness. Certificates at RapidSSL partner rates.
+            The complete CLM platform — agents, auto-renewal, DNS automation, CertBind active binding verification, CA intelligence, CertVault, 47-day readiness. Certificates at RapidSSL partner rates.
           </p>
         </div>
 
