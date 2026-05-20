@@ -36,13 +36,11 @@ export default function Nav({ nav, page }) {
   const primary = [
     { label:'Features', onClick: goFeatures },
     { label:'Pricing',  onClick: () => { nav('/pricing'); setMobileOpen(false) },  path:'/pricing' },
-    { label:'About',    onClick: () => { nav('/about'); setMobileOpen(false) },    path:'/about' },
   ]
 
   const resources = [
     { path:'/install',         label:'Install Guide',   icon:BookOpen },
     { path:'/knowledge-base',  label:'Knowledge Base',  icon:FileText },
-    { path:'/developer',       label:'Developer',       icon:Code },
     { path:'/cert-intelligence', label:'CA Intelligence',   icon:Activity },
   ]
 
