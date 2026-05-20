@@ -245,50 +245,53 @@ function UnifiedInventory({ certs, shadowCerts, loading, onRefresh, onShadowActi
         ))}
       </div>
 
-      {/* Controls */}
-      <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:14, alignItems:'center' }}>
+      {/* Controls — single inline flex row */}
+      <div style={{ display:'flex', flexDirection:'row', gap:8, marginBottom:14,
+        alignItems:'center', flexWrap:'nowrap', overflowX:'auto' }}>
         {/* Search */}
-        <div style={{ position:'relative', flex:1, minWidth:200 }}>
-          <Search size={12} style={{ position:'absolute', left:10, top:'50%',
-            transform:'translateY(-50%)', color:'var(--v2-text-3)' }}/>
+        <div style={{ position:'relative', flex:'1 1 180px', minWidth:140 }}>
+          <Search size={12} style={{ position:'absolute', left:9, top:'50%',
+            transform:'translateY(-50%)', color:'var(--v2-text-3)', pointerEvents:'none' }}/>
           <input value={search} onChange={e=>setSearch(e.target.value)}
             placeholder="Search domains…"
-            style={{ width:'100%', paddingLeft:30, padding:'7px 12px 7px 30px',
+            style={{ width:'100%', padding:'7px 10px 7px 28px',
               fontSize:12, borderRadius:7, border:'0.5px solid var(--v2-border)',
               background:'var(--v2-surface)', color:'var(--v2-text)', fontFamily:'inherit',
               boxSizing:'border-box' }}/>
         </div>
 
-        {/* Filters */}
-        {[
-          { val:caFilter, set:setCaFilter, opts:[
-            {v:'all',label:'All CAs'},{v:'native',label:'GoGetSSL'},
-            {v:'digicert',label:'DigiCert'},{v:'sectigo',label:'Sectigo'},
-            {v:'acme',label:"Let's Encrypt"},
-          ]},
-          { val:statusFilter, set:setStatusFilter, opts:[
-            {v:'all',label:'All status'},{v:'active',label:'Active'},
-            {v:'expiring',label:'Expiring ≤30d'},{v:'expired',label:'Expired'},
-            {v:'shadow',label:'Shadow IT'},
-          ]},
-          { val:sortBy, set:setSortBy, opts:[
-            {v:'expiry',label:'Sort: Expiry'},{v:'domain',label:'Sort: Domain'},
-          ]},
-        ].map(({ val, set, opts }, i) => (
-          <select key={i} value={val} onChange={e=>set(e.target.value)}
-            style={{ fontSize:12, padding:'7px 10px', borderRadius:7,
-              border:'0.5px solid var(--v2-border)', background:'var(--v2-surface)',
-              color:'var(--v2-text)', fontFamily:'inherit', cursor:'pointer' }}>
-            {opts.map(o => <option key={o.v} value={o.v}>{o.label}</option>)}
-          </select>
-        ))}
+        <select value={caFilter} onChange={e=>setCaFilter(e.target.value)}
+          style={{ fontSize:12, padding:'7px 10px', borderRadius:7, flexShrink:0,
+            border:'0.5px solid var(--v2-border)', background:'var(--v2-surface)',
+            color:'var(--v2-text)', fontFamily:'inherit', cursor:'pointer' }}>
+          {[{v:'all',l:'All CAs'},{v:'native',l:'GoGetSSL'},{v:'digicert',l:'DigiCert'},
+            {v:'sectigo',l:'Sectigo'},{v:'acme',l:"Let's Encrypt"}]
+            .map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
+        </select>
+
+        <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}
+          style={{ fontSize:12, padding:'7px 10px', borderRadius:7, flexShrink:0,
+            border:'0.5px solid var(--v2-border)', background:'var(--v2-surface)',
+            color:'var(--v2-text)', fontFamily:'inherit', cursor:'pointer' }}>
+          {[{v:'all',l:'All status'},{v:'active',l:'Active'},
+            {v:'expiring',l:'Expiring ≤30d'},{v:'expired',l:'Expired'},{v:'shadow',l:'Shadow IT'}]
+            .map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
+        </select>
+
+        <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
+          style={{ fontSize:12, padding:'7px 10px', borderRadius:7, flexShrink:0,
+            border:'0.5px solid var(--v2-border)', background:'var(--v2-surface)',
+            color:'var(--v2-text)', fontFamily:'inherit', cursor:'pointer' }}>
+          {[{v:'expiry',l:'Sort: Expiry'},{v:'domain',l:'Sort: Domain'}]
+            .map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
+        </select>
 
         <button className="v2-btn v2-btn-sm" onClick={exportCSV}
-          style={{ display:'flex', alignItems:'center', gap:5 }}>
+          style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
           <Download size={11}/> Export CSV
         </button>
         <button className="v2-btn v2-btn-sm" onClick={onRefresh}
-          style={{ display:'flex', alignItems:'center', gap:5 }}>
+          style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
           <RefreshCw size={11}/> Refresh
         </button>
       </div>
@@ -1033,7 +1036,7 @@ export default function CAIntelligenceHub({ nav }) {
               </div>
             ) : (
               <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden' }}>
-                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 120px',
+                <div style={{ display:'grid', gridTemplateColumns:'minmax(160px,2fr) 100px 100px 90px 160px',
                   padding:'8px 14px', background:'var(--v2-surface-3)',
                   borderBottom:'0.5px solid var(--v2-border)' }}>
                   {['Domain','CA','Product','Expires','Actions'].map(h => (
@@ -1042,7 +1045,7 @@ export default function CAIntelligenceHub({ nav }) {
                   ))}
                 </div>
                 {shadowCerts.map(c => (
-                  <div key={c.id} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 120px',
+                  <div key={c.id} style={{ display:'grid', gridTemplateColumns:'minmax(160px,2fr) 100px 100px 90px 160px',
                     padding:'10px 14px', borderBottom:'0.5px solid var(--v2-border)',
                     background:'var(--v2-surface)', alignItems:'center' }}>
                     <div style={{ fontSize:12, fontWeight:500, color:'var(--v2-text)',
