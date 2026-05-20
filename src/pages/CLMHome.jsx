@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import {
-  Shield, Plus, Globe, Server, Activity, TrendingUp, Trophy, History,
+  Shield, Plus, Globe, Server, Activity, TrendingUp, Trophy, History, Scan,
   Layout, Download, Settings,
   BookOpen, CreditCard, Info, User, Mail, LogOut, Bell
 } from 'lucide-react'
@@ -20,6 +20,7 @@ import AdminAnalytics from './AdminAnalytics'
 import AgentHealth from './AgentHealth'
 import SSLHealthScore from './SSLHealthScore'
 import CertChangelog from './CertChangelog'
+import BulkScanner from './BulkScanner'
 import Pricing from './Pricing'
 
 // Default collapsed state — Overview & Account open, rest start open too but user can close
@@ -93,6 +94,7 @@ export default function CLMHome({ user, nav }) {
     { id:'ca-intelligence', label:'CA Intelligence',   icon:TrendingUp },
     { id:'ssl-health',      label:'SSL Health Score',  icon:Trophy     },
     { id:'cert-changelog',  label:'Cert Changelog',    icon:History    },
+    { id:'bulk-scan',       label:'Bulk Scanner',      icon:Scan       },
   ]
   const NAV_RESOURCES = [
     { id:'install',  label:'Install Guide', icon:Download  },
@@ -108,7 +110,7 @@ export default function CLMHome({ user, nav }) {
   ]
   const SECTION_TITLES = {
     dashboard:'Dashboard', issue:'Issue Certificate', 'ca-intelligence':'CA Intelligence', analytics:'Analytics',
-    'ssl-health':'SSL Health Score', 'cert-changelog':'Certificate Changelog',
+    'ssl-health':'SSL Health Score', 'cert-changelog':'Certificate Changelog', 'bulk-scan':'Bulk Scanner',
     integrations:'Integrations',
     install:'Installation', kb:'Docs & Help', pricing:'Pricing',
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
@@ -163,6 +165,7 @@ export default function CLMHome({ user, nav }) {
     if (section === 'agent-health')  return <AgentHealth user={user}/>
     if (section === 'ssl-health')    return <SSLHealthScore user={user}/>
     if (section === 'cert-changelog') return <CertChangelog user={user}/>
+    if (section === 'bulk-scan')      return <BulkScanner nav={sideNav}/>
     return null
   }
 

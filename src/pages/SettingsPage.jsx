@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import '../styles/design-v2.css'
 import {
   User, Bell, Shield, Trash2, LogOut, Check, RefreshCw,
-  Mail, Plus, X, Send, AlertTriangle, Clock, ChevronDown, ChevronUp
+  Mail, Plus, X, Send, AlertTriangle, Clock, ChevronDown, ChevronUp, Key, Copy
 } from 'lucide-react'
 
 const FONT = "var(--v2-font, 'Segoe UI', system-ui, sans-serif)"
@@ -115,6 +115,163 @@ function LogRow({ log }) {
           background: log.status === 'sent' ? '#d1fae5' : '#fef2f2',
           color: log.status === 'sent' ? '#065f46' : '#dc2626',
         }}>{log.status}</span>
+      </div>
+    </div>
+  )
+}
+
+// ── API Keys Panel ────────────────────────────────────────────────────
+function ApiKeysPanel({ user }) {
+  const [keys,      setKeys]      = useState([])
+  const [loading,   setLoading]   = useState(true)
+  const [label,     setLabel]     = useState('')
+  const [creating,  setCreating]  = useState(false)
+  const [newKey,    setNewKey]    = useState(null)  // shown once after creation
+  const [copied,    setCopied]    = useState(false)
+  const [revoking,  setRevoking]  = useState(null)
+
+  const load = async () => {
+    if (!user) return
+    const { data } = await supabase.from('api_keys')
+      .select('id, label, key_prefix, last_used_at, calls_today, created_at, revoked_at')
+      .eq('user_id', user.id)
+      .is('revoked_at', null)
+      .order('created_at', { ascending: false })
+    setKeys(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [user])
+
+  const createKey = async () => {
+    if (!label.trim()) return
+    setCreating(true)
+    // Generate a secure random key
+    const raw = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0')).join('')
+    const apiKey = `sv_live_${raw}`
+    const prefix = apiKey.slice(0, 14)
+    // Hash for storage (simple sha-256 via subtle crypto)
+    const msgBuffer = new TextEncoder().encode(apiKey)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+    const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('')
+
+    const { error } = await supabase.from('api_keys').insert({
+      user_id: user.id, label: label.trim(),
+      key_hash: hashHex, key_prefix: prefix,
+      calls_today: 0,
+    })
+    if (!error) {
+      setNewKey(apiKey)
+      setLabel('')
+      load()
+    }
+    setCreating(false)
+  }
+
+  const revoke = async (id) => {
+    if (!confirm('Revoke this API key? This cannot be undone.')) return
+    setRevoking(id)
+    await supabase.from('api_keys').update({ revoked_at: new Date().toISOString() }).eq('id', id)
+    setRevoking(null)
+    load()
+  }
+
+  const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—'
+
+  return (
+    <div style={{ padding: '16px 18px' }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>API Keys</div>
+      <div style={{ fontSize: 12, color: 'var(--v2-text-3)', marginBottom: 16, lineHeight: 1.6 }}>
+        Use API keys to integrate SSLVault into your own tools and pipelines. Each key is shown once — store it securely.
+      </div>
+
+      {/* New key revealed */}
+      {newKey && (
+        <div style={{ background: '#f0fdf4', border: '0.5px solid #bbf7d0', borderRadius: 8,
+          padding: '12px 14px', marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: '#15803d', marginBottom: 6 }}>
+            ✓ Key created — copy it now, it won't be shown again
+          </div>
+          <div style={{ background: '#0a0a0a', borderRadius: 6, padding: '8px 10px',
+            fontFamily: 'monospace', fontSize: 11, color: '#a3e635', wordBreak: 'break-all', marginBottom: 8 }}>
+            {newKey}
+          </div>
+          <button onClick={() => { navigator.clipboard?.writeText(newKey); setCopied(true); setTimeout(()=>setCopied(false),2000) }}
+            style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#16a34a',
+              border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 11,
+              color: 'white', cursor: 'pointer', fontFamily: 'inherit' }}>
+            {copied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy key</>}
+          </button>
+        </div>
+      )}
+
+      {/* Create new key */}
+      <div style={{ background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)',
+        borderRadius: 8, padding: '12px 14px', marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8 }}>Create new key</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input value={label} onChange={e => setLabel(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && createKey()}
+            placeholder="Key label (e.g. Deploy pipeline, Monitoring)"
+            style={{ flex: 1, fontSize: 12 }} />
+          <button onClick={createKey} disabled={creating || !label.trim()}
+            style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '0 14px',
+              background: creating || !label.trim() ? 'var(--v2-border)' : 'var(--v2-accent)',
+              border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 600,
+              color: creating || !label.trim() ? 'var(--v2-text-3)' : 'white',
+              cursor: creating || !label.trim() ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
+            {creating ? <RefreshCw size={11} style={{ animation: 'spin .8s linear infinite' }} /> : <Plus size={11} />}
+            Create
+          </button>
+        </div>
+      </div>
+
+      {/* Keys list */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--v2-text-3)', fontSize: 12 }}>
+          Loading…
+        </div>
+      ) : keys.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '24px 0' }}>
+          <Key size={24} style={{ color: 'var(--v2-text-3)', margin: '0 auto 8px', display: 'block' }} />
+          <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>No API keys yet.</div>
+        </div>
+      ) : (
+        <div style={{ border: '0.5px solid var(--v2-border)', borderRadius: 8, overflow: 'hidden' }}>
+          {keys.map((k, i) => (
+            <div key={k.id} style={{ display: 'flex', alignItems: 'center', gap: 12,
+              padding: '10px 14px', borderBottom: i < keys.length-1 ? '0.5px solid var(--v2-border)' : 'none' }}>
+              <div style={{ width: 32, height: 32, borderRadius: 7, background: 'var(--v2-surface-3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Key size={13} color="var(--v2-text-3)" />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 2 }}>{k.label}</div>
+                <div style={{ display: 'flex', gap: 10, fontSize: 10, color: 'var(--v2-text-3)' }}>
+                  <span style={{ fontFamily: 'monospace' }}>{k.key_prefix}…</span>
+                  <span>Created {fmtDate(k.created_at)}</span>
+                  {k.last_used_at && <span>Last used {fmtDate(k.last_used_at)}</span>}
+                  {k.calls_today > 0 && <span>{k.calls_today} calls today</span>}
+                </div>
+              </div>
+              <button onClick={() => revoke(k.id)} disabled={revoking === k.id}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none',
+                  border: '0.5px solid #fecaca', borderRadius: 6, padding: '5px 10px',
+                  fontSize: 11, color: '#dc2626', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
+                <Trash2 size={10} />
+                {revoking === k.id ? 'Revoking…' : 'Revoke'}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ marginTop: 14, padding: '10px 12px', background: 'var(--v2-surface-3)',
+        borderRadius: 7, fontSize: 11, color: 'var(--v2-text-3)', lineHeight: 1.6 }}>
+        Use your key in requests: <span style={{ fontFamily: 'monospace', color: 'var(--v2-text-2)' }}>
+          Authorization: Bearer sv_live_…
+        </span>
       </div>
     </div>
   )
@@ -289,7 +446,7 @@ export default function SettingsPage({ user }) {
 
       {/* Tab bar */}
       <div style={{ display: 'flex', gap: 4, padding: '16px 18px 0', marginBottom: 4 }}>
-        {[['preferences', 'Preferences', Bell], ['log', 'Alert Log', Clock]].map(([id, label, Icon]) => (
+        {[['preferences', 'Preferences', Bell], ['log', 'Alert Log', Clock], ['api', 'API Keys', Key]].map(([id, label, Icon]) => (
           <button key={id} onClick={() => setActiveTab(id)}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
               borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600,
@@ -584,6 +741,11 @@ export default function SettingsPage({ user }) {
               </div>
             )}
           </div>
+        )}
+
+        {/* ── API KEYS TAB ─────────────────────────────────────────────── */}
+        {activeTab === 'api' && (
+          <ApiKeysPanel user={user} />
         )}
       </div>
     </div>

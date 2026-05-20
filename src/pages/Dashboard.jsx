@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHand
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
   Globe, ChevronRight, Copy, Check, Activity, Zap, ArrowRight, Server,
-  FileText, Trash2, ShieldOff, ShieldCheck, Clock, RotateCcw
+  FileText, Trash2, ShieldOff, ShieldCheck, Clock, RotateCcw, Share2
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -1299,7 +1299,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
       {/* ── Tabs ─── */}
       <div style={{ display:'flex', padding:'0 16px', borderBottom:'0.5px solid #f1f5f9', gap:0 }}>
-        {['details','actions','files','history'].map(t => (
+        {['details','actions','files','history','embed'].map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
             style={{ fontSize:11, fontWeight:700, padding:'11px 14px',
               background:'none', border:'none', cursor:'pointer', fontFamily:'inherit',
@@ -1569,9 +1569,64 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         <div style={{ padding:'14px 18px', fontSize:12, color:'var(--v2-text-3)' }}>Sign in to view history.</div>
       )}
 
+      {/* ── Tab: Embed ─────────────────────────────────────────────────── */}
+      {activeTab === 'embed' && (
+        <EmbedTab cert={cert} />
+      )}
+
       <style>{`
         @keyframes v3pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
       `}</style>
+    </div>
+  )
+}
+
+function EmbedTab({ cert }) {
+  const domain = cert.domain
+  const widgetSnippet = `<script src="https://easysecurity.in/widget.js" data-domain="${domain}" async></script>`
+  const statusUrl = `${window.location.origin}/status/${(cert.admin_email||'').split('@')[0].replace(/[^a-z0-9]/gi,'') || 'user'}`
+  const [copiedW, setCopiedW] = useState(false)
+  const [copiedS, setCopiedS] = useState(false)
+  const copyWidget = () => { navigator.clipboard?.writeText(widgetSnippet); setCopiedW(true); setTimeout(()=>setCopiedW(false),2000) }
+  const copyStatus = () => { navigator.clipboard?.writeText(statusUrl); setCopiedS(true); setTimeout(()=>setCopiedS(false),2000) }
+  return (
+    <div style={{ padding:'16px' }}>
+      <div style={{ marginBottom:16 }}>
+        <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text)', marginBottom:4 }}>
+          Embeddable SSL badge
+        </div>
+        <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:8, lineHeight:1.5 }}>
+          Paste this on your website to show a live SSL status badge. Updates automatically.
+        </div>
+        <div style={{ background:'#0a0a0a', borderRadius:8, padding:'10px 12px',
+          fontFamily:'monospace', fontSize:11, color:'#a3e635', wordBreak:'break-all', marginBottom:8 }}>
+          {widgetSnippet}
+        </div>
+        <button onClick={copyWidget}
+          style={{ display:'flex', alignItems:'center', gap:5, background:'none',
+            border:'0.5px solid var(--v2-border)', borderRadius:6, padding:'6px 12px',
+            fontSize:11, cursor:'pointer', color:'var(--v2-text-2)', fontFamily:'inherit' }}>
+          {copiedW ? <><Check size={10} color="#16a34a"/> Copied!</> : <><Copy size={10}/> Copy snippet</>}
+        </button>
+      </div>
+      <div style={{ borderTop:'0.5px solid var(--v2-border)', paddingTop:14 }}>
+        <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text)', marginBottom:4 }}>
+          Public SSL status page
+        </div>
+        <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:8, lineHeight:1.5 }}>
+          Share this link with clients — shows all your SSL grades publicly, no login needed.
+        </div>
+        <div style={{ background:'var(--v2-surface-3)', borderRadius:8, padding:'10px 12px',
+          fontFamily:'monospace', fontSize:11, color:'var(--v2-text-2)', wordBreak:'break-all', marginBottom:8 }}>
+          {statusUrl}
+        </div>
+        <button onClick={copyStatus}
+          style={{ display:'flex', alignItems:'center', gap:5, background:'none',
+            border:'0.5px solid var(--v2-border)', borderRadius:6, padding:'6px 12px',
+            fontSize:11, cursor:'pointer', color:'var(--v2-text-2)', fontFamily:'inherit' }}>
+          {copiedS ? <><Check size={10} color="#16a34a"/> Copied!</> : <><Share2 size={10}/> Copy status link</>}
+        </button>
+      </div>
     </div>
   )
 }
@@ -1610,6 +1665,17 @@ function CertRow({ cert, selected, onClick }) {
             {cert.domain}
           </span>
           <StatusPill days={days} status={cert.status}/>
+          {cert._healthGrade && (() => {
+            const g = cert._healthGrade
+            const gc = g==='A+'||g==='A' ? '#16a34a' : g==='B' ? '#2563eb' : g==='C' ? '#ca8a04' : g==='D' ? '#d97706' : '#dc2626'
+            const gb = g==='A+'||g==='A' ? '#f0fdf4' : g==='B' ? '#eff6ff' : g==='C' ? '#fefce8' : g==='D' ? '#fffbeb' : '#fef2f2'
+            return (
+              <span title="SSL Health Score" style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:4,
+                color:gc, background:gb, border:'0.5px solid currentColor', fontFamily:'monospace', letterSpacing:'0.2px' }}>
+                {g}
+              </span>
+            )
+          })()}
           {cert.tls_grade && (
             <span style={{ fontSize:9, fontWeight:700, padding:'2px 5px', borderRadius:4,
               color: cert.tls_grade==='A'?'#16a34a':cert.tls_grade==='B'?'#65a30d':cert.tls_grade==='C'?'#d97706':'#dc2626',
@@ -1654,9 +1720,12 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   const [selected,setSelected]= useState(null)
   const [filter,  setFilter] = useState('all')
   const [search,  setSearch] = useState('')
-  const [agentCert,  setAgentCert]  = useState(null)   // VPS agent install modal
-  const [cpanelCert, setCpanelCert] = useState(null)   // cPanel install modal
+  const [agentCert,  setAgentCert]  = useState(null)
+  const [cpanelCert, setCpanelCert] = useState(null)
   const [session,    setSession]    = useState(null)
+  const [healthScores, setHealthScores] = useState({})  // domain → {grade, score}
+  const [recentEvents, setRecentEvents] = useState([])   // activity feed
+  const [shareMsg,   setShareMsg]   = useState('')        // share button feedback
 
   const load = useCallback(async () => {
     if (!user) return
@@ -1676,6 +1745,26 @@ function LoggedInDashboard({ user, nav, onIssue }) {
       return ord ? { ...cert, _order: ord } : cert
     }))
     setCerts(enriched); setOrders(ordersData||[]); setLoading(false)
+
+    // Load health scores for all domains (non-blocking)
+    supabase.from('ssl_health_scores')
+      .select('domain, grade, score, hsts, caa, expiry_days, scanned_at')
+      .eq('user_id', user.id)
+      .then(({ data: hs }) => {
+        if (hs) {
+          const map = {}
+          hs.forEach(h => { map[h.domain] = h })
+          setHealthScores(map)
+        }
+      })
+
+    // Load recent cert events (non-blocking)
+    supabase.from('cert_events')
+      .select('id, domain, event_type, meta, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(8)
+      .then(({ data: evts }) => { if (evts) setRecentEvents(evts) })
   }, [user])
 
   useEffect(() => { load() }, [load])
@@ -1711,7 +1800,10 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     return true
   })
 
-  const selectedCert = selected ? certs.find(c => c.id === selected) : null
+  const visibleWithHealth = visible.map(c => ({
+    ...c,
+    _healthGrade: healthScores[c.domain]?.grade || null,
+  }))
 
   return (
     <div style={{ background:'linear-gradient(160deg, #f0f4f8 0%, #f8fafc 100%)', minHeight:'100vh' }}>
@@ -1731,6 +1823,23 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             </h1>
             <p style={{ fontSize:12, color:'#94a3b8' }}>{user.email} · {total} certificate{total!==1?'s':''}</p>
           </div>
+          {/* Share SSL status button */}
+          <button
+            onClick={async () => {
+              const { data: { session: s } } = await supabase.auth.getSession()
+              if (!s) return
+              const username = s.user.email.split('@')[0].replace(/[^a-z0-9]/gi, '')
+              const url = `${window.location.origin}/status/${username}`
+              try { await navigator.clipboard.writeText(url) } catch(_) {}
+              setShareMsg('Link copied!')
+              setTimeout(() => setShareMsg(''), 2500)
+            }}
+            style={{ display:'flex', alignItems:'center', gap:6, background:'white',
+              border:'0.5px solid #e2e8f0', borderRadius:8, padding:'7px 14px',
+              fontSize:11, fontWeight:600, color:'#374151', cursor:'pointer', fontFamily:'inherit' }}>
+            <Share2 size={12} color="#10b981"/>
+            {shareMsg || 'Share SSL status'}
+          </button>
         </div>
 
         <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:20 }}>
@@ -1853,7 +1962,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               </div>
             ) : (
               visible.map(cert => (
-                <CertRow key={cert.id} cert={cert} selected={selected===cert.id}
+                <CertRow key={cert.id} cert={{...cert, _healthGrade: healthScores[cert.domain]?.grade || null}} selected={selected===cert.id}
                   onClick={() => setSelected(selected===cert.id ? null : cert.id)}/>
               ))
             )}
@@ -1894,6 +2003,42 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             ))}
           </div>
         </div>
+
+        {/* ── Recent activity feed ── */}
+        {recentEvents.length > 0 && (
+          <div style={{ marginTop:24 }}>
+            <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:10 }}>Recent activity</div>
+            <div style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:12,
+              overflow:'hidden', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
+              {recentEvents.map((ev, i) => {
+                const evColors = {
+                  issued:          { color:'#16a34a', bg:'#f0fdf4', dot:'#16a34a' },
+                  renewed:         { color:'#2563eb', bg:'#eff6ff', dot:'#2563eb' },
+                  revoked:         { color:'#dc2626', bg:'#fef2f2', dot:'#dc2626' },
+                  agent_installed: { color:'#7c3aed', bg:'#f5f3ff', dot:'#7c3aed' },
+                  private_key_copied: { color:'#d97706', bg:'#fffbeb', dot:'#d97706' },
+                }
+                const cfg = evColors[ev.event_type] || { color:'#64748b', bg:'#f8fafc', dot:'#94a3b8' }
+                const secs = Math.floor((Date.now() - new Date(ev.created_at)) / 1000)
+                const ago = secs < 60 ? `${secs}s ago` : secs < 3600 ? `${Math.floor(secs/60)}m ago`
+                          : secs < 86400 ? `${Math.floor(secs/3600)}h ago` : `${Math.floor(secs/86400)}d ago`
+                return (
+                  <div key={ev.id} style={{ display:'flex', alignItems:'center', gap:12,
+                    padding:'10px 16px', borderBottom: i < recentEvents.length-1 ? '0.5px solid #f8fafc' : 'none' }}>
+                    <div style={{ width:8, height:8, borderRadius:'50%', background:cfg.dot, flexShrink:0 }}/>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <span style={{ fontSize:12, color:'#374151', fontWeight:500 }}>
+                        {ev.event_type.replace(/_/g,' ')}
+                      </span>
+                      <span style={{ fontSize:12, color:'#94a3b8' }}> — {ev.domain}</span>
+                    </div>
+                    <span style={{ fontSize:11, color:'#94a3b8', flexShrink:0 }}>{ago}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* VPS agent install modal */}
