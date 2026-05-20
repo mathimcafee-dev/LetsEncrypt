@@ -22,7 +22,7 @@ export default function About({ nav }) {
           </h1>
           <p style={{ fontSize: 16, color: 'var(--v2-text-2)', maxWidth: 580, margin: '0 auto 36px', lineHeight: 1.7 }}>
             SSLVault is a Certificate Lifecycle Management platform built for indie developers, SMBs, and non-profits.
-            Issue trusted DV certificates via GoGetSSL, monitor your full certificate estate,
+            Issue trusted DV certificates via RapidSSL, monitor your full certificate estate,
             and automate renewal and deployment — all from one dashboard.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -49,7 +49,7 @@ export default function About({ nav }) {
             </p>
             <p style={{ fontSize: 14, color: 'var(--v2-text-2)', lineHeight: 1.75 }}>
               Every certificate issued through SSLVault is a trusted <strong>RapidSSL DV certificate</strong> backed by the
-              DigiCert trust chain, issued via GoGetSSL API. Browser compatibility is 99.9%.
+              DigiCert trust chain, issued via RapidSSL API. Browser compatibility is 99.9%.
               Validity up to 2 years.
             </p>
           </div>
@@ -77,7 +77,7 @@ export default function About({ nav }) {
           <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.4px', margin: '0 0 20px' }}>Issue. Monitor. Auto-renew.</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
             {[
-              { num: '1', title: 'Issue', color: '#0e7fc0', items: ['DV, OV, EV & Wildcard certs', 'GoGetSSL API — minutes to issue', 'DNS validation auto-configured', 'Private key stored in KeyLocker'] },
+              { num: '1', title: 'Issue', color: '#0e7fc0', items: ['DV, OV, EV & Wildcard certs', 'RapidSSL CA API — minutes to issue', 'DNS validation auto-configured', 'Private key stored in KeyLocker'] },
               { num: '2', title: 'Monitor', color: '#15803d', items: ['Expiry alerts at 30/14/7 days', 'Cross-CA inventory (DigiCert, Sectigo)', 'CT log shadow IT scanner', 'TLS posture grading'] },
               { num: '3', title: 'Auto-renew', color: '#7c3aed', items: ['Persistent agent on your server', 'cPanel one-click auto-install', 'DNS auto-validation on renewal', 'Zero-touch lifecycle end-to-end'] },
             ].map(({ num, title, color, items }) => (
@@ -102,7 +102,7 @@ export default function About({ nav }) {
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 20, textAlign: 'center' }}>Technology</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
             {[
-              { label: 'GoGetSSL', sub: 'API · DV / OV / EV / Wildcard', color: '#0e7fc0' },
+              { label: 'RapidSSL', sub: 'API · DV / OV / EV / Wildcard', color: '#0e7fc0' },
               { label: 'Supabase', sub: 'Auth · DB · Edge functions', color: '#15803d' },
               { label: 'React + Vite', sub: 'Frontend · Vercel deploy', color: '#7c3aed' },
               { label: 'DigiCert chain', sub: '99.9% browser trust', color: '#d97706' },

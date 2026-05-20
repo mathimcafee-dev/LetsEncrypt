@@ -189,7 +189,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   const call = async (action, extra = {}) => {
     const { data: { session } } = await supabase.auth.getSession()
-    const r = await fetch(`${SUPABASE_URL}/functions/v1/gogetssl-issue`, {
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/rapidssl-issue`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ action, ...extra }),
@@ -486,7 +486,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 { k: 'Validity',    v: `${years} year${years>1?'s':''}` },
                 { k: 'Auto-renewal', v: 'Included', blue: true },
                 { k: 'DNS validation', v: 'Automatic (CNAME)', blue: true },
-                { k: 'Powered by', v: 'GoGetSSL · DigiCert' },
+                { k: 'Powered by', v: 'RapidSSL · DigiCert' },
               ].map(({ k, v, blue }) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 7 }}>
                   <span style={{ color: '#4b5563' }}>{k}</span>
@@ -506,7 +506,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   : <><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
               </button>
               <div style={{ marginTop: 10, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-                {['GoGetSSL partner', '99.9% browser trust', 'DigiCert chain'].map(t => (
+                {['RapidSSL CA partner', '99.9% browser trust', 'DigiCert chain'].map(t => (
                   <span key={t} style={{ fontSize: 10, color: '#374151', display: 'flex', alignItems: 'center', gap: 3 }}>
                     <Check size={9} style={{ color: '#0e7fc0' }}/> {t}
                   </span>
@@ -592,7 +592,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   wordBreak: 'break-all', lineHeight: 1.5 }}>
                   {loading
                     ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        <RefreshCw size={11} className="spin"/> {polling ? 'Fetching from GoGetSSL…' : 'Waiting…'}
+                        <RefreshCw size={11} className="spin"/> {polling ? 'Fetching from RapidSSL…' : 'Waiting…'}
                       </span>
                     : v}
                 </span>
@@ -692,7 +692,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           {clean(domain)}
         </div>
         <p style={{ fontSize: 13, color: '#4b5563', marginBottom: 32, lineHeight: 1.6 }}>
-          {PRODUCTS.find(p => p.code === product)?.name} issued via GoGetSSL. Auto-renewal is active.
+          {PRODUCTS.find(p => p.code === product)?.name} issued via RapidSSL. Auto-renewal is active.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
           <button onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}

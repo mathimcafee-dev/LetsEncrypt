@@ -101,7 +101,7 @@ export default function Auth({ nav }) {
           </div>
           <div style={{ marginTop:36, paddingTop:24, borderTop:'0.5px solid var(--v2-border)',
                         fontSize:11, color:'var(--v2-text-3)', lineHeight:1.6 }}>
-            Powered by GoGetSSL · DigiCert trust chain · RFC 8555 ACME
+            Powered by RapidSSL · DigiCert trust chain · RFC 8555 ACME
           </div>
         </div>
 

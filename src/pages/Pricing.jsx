@@ -47,7 +47,7 @@ const FEATURES = [
       { label: 'OV & EV certificates',                  starter: false, pro: true,  reseller: true  },
       { label: 'Wildcard certificates',                 starter: false, pro: true,  reseller: true  },
       { label: 'Multi-domain SAN certificates',         starter: false, pro: true,  reseller: true  },
-      { label: 'GoGetSSL sandbox / test mode',          starter: true,  pro: true,  reseller: true  },
+      { label: 'RapidSSL sandbox / test mode',          starter: true,  pro: true,  reseller: true  },
     ],
   },
   {
@@ -118,7 +118,7 @@ const FEATURES = [
 ]
 
 const CERT_PRICES = [
-  { type: 'Sectigo PositiveSSL DV',      term: '1yr', price: '$8',      ca: 'Sectigo',        badge: 'Cheapest' },
+  { type: 'RapidSSL DV',      term: '1yr', price: '$8',      ca: 'Sectigo',        badge: 'Entry-level' },
   { type: 'RapidSSL Standard DV',        term: '1yr', price: '$14',     ca: 'DigiCert chain', badge: null },
   { type: 'RapidSSL Wildcard DV',        term: '1yr', price: '$72',     ca: 'DigiCert chain', badge: 'Popular' },
   { type: 'Sectigo OV',                  term: '1yr', price: '$49',     ca: 'Sectigo',        badge: null },
@@ -130,7 +130,7 @@ const CERT_PRICES = [
 ]
 
 const FAQS = [
-  { q: 'What does the Starter plan include?', a: 'The Starter plan includes: issuance workflow, persistent agent, cPanel installer, DNS connectors, CT log discovery, monitoring, auto-renewal, KeyLocker, 47-Day Readiness, Renewal Calendar, and SSL Health Score. Certificates are purchased at GoGetSSL partner rates from $8/yr.' },
+  { q: 'What does the Starter plan include?', a: 'The Starter plan includes: issuance workflow, persistent agent, cPanel installer, DNS connectors, CT log discovery, monitoring, auto-renewal, KeyLocker, 47-Day Readiness, Renewal Calendar, and SSL Health Score. Certificates are purchased at RapidSSL partner rates enterprise pricing.' },
   { q: 'What does Pro add over Starter?', a: 'Pro unlocks OV, EV, Wildcard and SAN certificates, plus CA Intelligence (DigiCert/Sectigo portfolio sync, shadow IT detection, policy engine), CT Abuse Monitor, REST API access, and portfolio CSV exports. Designed for agencies and teams managing certificates across multiple CAs.' },
   { q: 'What is the 47-Day Readiness Dashboard?', a: 'The CA/B Forum is mandating shorter certificate validity: 200 days by March 2026, 100 days by 2027, 47 days by 2029. The Readiness Dashboard scores each certificate 0–100 and shows a checklist of what to fix — auto-renew, DNS provider, agent installation, key storage. Available on all plans.' },
   { q: 'How does the persistent agent work?', a: 'The agent is a bash daemon running as a systemd service on your Linux VPS. It polls SSLVault every 5 minutes for pending jobs. Outbound-only HTTPS — no inbound ports. Detects Nginx/Apache, writes cert files, updates config, tests, and reloads automatically. CPU/RAM/disk stats reported back to SSLVault.' },
@@ -141,8 +141,8 @@ const FAQS = [
 ]
 
 const PLANS = [
-  { key: 'starter',  name: 'Starter',  price: 'Starter', per: 'entry tier',                    color: '#10b981', border: 'rgba(16,185,129,0.2)',  highlight: false, cta: 'Get started', badge: null,           certNote: 'Certs from $8/yr via GoGetSSL' },
-  { key: 'pro',      name: 'Pro',      price: '$29',  per: '/mo · billed annually',  color: '#6366f1', border: 'rgba(99,102,241,0.3)',  highlight: true,  cta: 'Start Pro',        badge: 'Most Popular', certNote: 'All cert types · GoGetSSL partner rates' },
+  { key: 'starter',  name: 'Starter',  price: 'Starter', per: 'entry tier',                    color: '#10b981', border: 'rgba(16,185,129,0.2)',  highlight: false, cta: 'Get started', badge: null,           certNote: 'Enterprise certificate pricing via RapidSSL' },
+  { key: 'pro',      name: 'Pro',      price: '$29',  per: '/mo · billed annually',  color: '#6366f1', border: 'rgba(99,102,241,0.3)',  highlight: true,  cta: 'Start Pro',        badge: 'Most Popular', certNote: 'All cert types · RapidSSL partner rates' },
   { key: 'reseller', name: 'Reseller', price: 'Custom', per: 'contact us',           color: '#f59e0b', border: 'rgba(245,158,11,0.2)',  highlight: false, cta: 'Contact us',       badge: null,           certNote: 'Volume pricing available' },
 ]
 
@@ -185,7 +185,7 @@ export default function Pricing({ nav }) {
             <span style={{ color: '#10b981' }}>Transparent cert pricing.</span>
           </h1>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 12px', lineHeight: 1.75 }}>
-            The complete CLM platform — agents, auto-renewal, DNS automation, CT monitoring, CA intelligence, KeyLocker, 47-day readiness. Certificates at GoGetSSL partner rates.
+            The complete CLM platform — agents, auto-renewal, DNS automation, CT monitoring, CA intelligence, KeyLocker, 47-day readiness. Certificates at RapidSSL partner rates.
           </p>
         </div>
 
@@ -302,7 +302,7 @@ export default function Pricing({ nav }) {
             <div style={{ fontSize: 9, fontWeight: 700, color: '#10b981', letterSpacing: '2px',
               textTransform: 'uppercase', marginBottom: 12, ...Mo }}>Certificate pricing</div>
             <h2 style={{ fontSize: 'clamp(22px,3vw,34px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 10 }}>
-              GoGetSSL partner rates
+              RapidSSL partner rates
             </h2>
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', maxWidth: 420, margin: '0 auto', lineHeight: 1.7 }}>
               DigiCert DV retail $218/yr vs. SSLVault $14/yr — same trust chain.
@@ -339,7 +339,7 @@ export default function Pricing({ nav }) {
             ))}
           </div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', marginTop: 12, textAlign: 'center', ...Mo }}>
-            All prices in USD · GoGetSSL partner rates · Subject to change
+            All prices in USD · RapidSSL partner rates · Subject to change
           </div>
         </div>
 

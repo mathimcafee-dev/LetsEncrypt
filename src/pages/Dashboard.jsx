@@ -82,7 +82,7 @@ function DvPendingCard({ order, onRefresh }) {
     setChecking(true); setMsg('')
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+      const r = await fetch(SB_URL+'/functions/v1/rapidssl-issue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({ action: 'check_status', order_id: order.id })
@@ -95,7 +95,7 @@ function DvPendingCard({ order, onRefresh }) {
           const { data: { session: s } } = await supabase.auth.getSession()
           if (s) await supabase.from('cert_events').insert({
             user_id: s.user.id, cert_id: order.id, domain: order.domain,
-            event_type: 'issued', meta: { product: order.cert_type || 'DV', source: 'gogetssl' }
+            event_type: 'issued', meta: { product: order.cert_type || 'DV', source: 'rapidssl' }
           })
         } catch (_) {}
         setTimeout(() => onRefresh(), 1500)
@@ -329,7 +329,7 @@ function RingGauge({ days, total, expiresAt, issuedAt }) {
 
 // ── Slim progress bar for timeline ────────────────────────────────────────────
 function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
-  // Mirrors GoGetSSL's own timeline:
+  // Mirrors RapidSSL's own timeline:
   //   |====== Current cert ======|==== Available (reissue window) ====|
   //   SSL Valid from        SSL Valid till                  Subscription ends
   //   (issuedAt)            (expiresAt / cert end)         (issuedAt + period)
@@ -463,7 +463,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
   const loadHistory = async () => {
     try {
-      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+      const r = await fetch(SB_URL+'/functions/v1/rapidssl-issue', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({ action: 'get_history', cert_id: cert.id })
       })
@@ -476,7 +476,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
     if (!confirm(confirmMsg)) return
     setBusy(true); setMsg('')
     try {
-      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+      const r = await fetch(SB_URL+'/functions/v1/rapidssl-issue', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({ action, cert_id: cert.id, triggered_by: 'manual', ...extra })
       })
@@ -1064,7 +1064,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         .select('id').eq('domain', cert.domain).eq('user_id', cert.user_id)
         .order('updated_at', { ascending: false }).limit(1).single()
       if (!order) { setRefreshMsg('No linked order found'); setRefreshing(false); return }
-      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+      const r = await fetch(SB_URL+'/functions/v1/rapidssl-issue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+sess.access_token },
         body: JSON.stringify({ action: 'check_status', order_id: order.id })
@@ -1186,7 +1186,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               </span>
               <span style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20,
                 background:'#eff6ff', color:'#185FA5', border:'0.5px solid #B5D4F4' }}>
-                GoGetSSL
+                RapidSSL
               </span>
               <span style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20,
                 background:'#f8fafc', color:'#475569', border:'0.5px solid #e2e8f0' }}>
@@ -1214,7 +1214,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           //   Auto-RENEWAL = 1 day before that = May 15 2027
           //   Brand new order placed, completely new cert record.
           //
-          // cert._order.valid_till is NOT order expiry — GoGetSSL sets it
+          // cert._order.valid_till is NOT order expiry — RapidSSL sets it
           // to cert expiry. Real order expiry = issued_at + period months.
 
           const daysLeftVal = Math.max(0, days ?? 0)
@@ -1363,7 +1363,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             onClick={() => onInstall(cert)}/>
           <ActionRow icon={RefreshCw} iconColor="#d97706" iconBg="#fffbeb"
             hoverBorder="#fde68a" hoverBg="#fffbeb"
-            title={refreshing ? 'Syncing...' : 'Sync from GoGetSSL'}
+            title={refreshing ? 'Syncing...' : 'Sync from RapidSSL'}
             subtitle={refreshing ? 'Checking status...' : 'Pull latest order status'}
             onClick={doRefresh} disabled={refreshing}/>
           <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
@@ -1983,7 +1983,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Quick actions</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
             {[
-              { icon:Shield,    color:'#0e7fc0', bg:'#eff6ff', label:'Issue Certificate', desc:'RapidSSL DV · GoGetSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
+              { icon:Shield,    color:'#0e7fc0', bg:'#eff6ff', label:'Issue Certificate', desc:'RapidSSL DV · RapidSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
               { icon:Download,  color:'#16a34a', bg:'#f0fdf4', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
               { icon:Activity,  color:'#7c3aed', bg:'#f5f3ff', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
               { icon:Zap,       color:'#d97706', bg:'#fffbeb', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },

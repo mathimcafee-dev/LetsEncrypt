@@ -1,6 +1,6 @@
 // DigiCertLab — isolated sandbox for DigiCert CertCentral automation experiments
 // Route: /digicert-lab
-// Zero dependency on existing GoGetSSL / agent / cron flows.
+// Zero dependency on existing RapidSSL / agent / cron flows.
 // Uses a dedicated edge function: digicert-lab (separate from ca-import).
 
 import { useState, useEffect, useCallback } from 'react'
@@ -323,7 +323,7 @@ export default function DigiCertLab({ nav }) {
                 DigiCert CertCentral Lab
               </h1>
               <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>
-                A sandboxed workspace to experiment with DigiCert API automation. Your existing GoGetSSL certs and agents are completely unaffected.
+                A sandboxed workspace to experiment with DigiCert API automation. Your existing RapidSSL certs and agents are completely unaffected.
               </p>
             </div>
 

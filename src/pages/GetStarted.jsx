@@ -118,7 +118,7 @@ export default function GetStarted({ nav }) {
             </div>
           </div>
           <Note type="info">
-            The <strong>"s"</strong> in <strong>https://</strong> means SSL is active. SSLVault gives you that "s" — backed by globally trusted certificate authorities via GoGetSSL.
+            The <strong>"s"</strong> in <strong>https://</strong> means SSL is active. SSLVault gives you that "s" — backed by globally trusted certificate authorities via RapidSSL.
           </Note>
         </div>
 
@@ -159,7 +159,7 @@ export default function GetStarted({ nav }) {
           ))}
         </div>
         <Note type="info">
-          All certificates are issued via <strong>GoGetSSL</strong> — a trusted CA partner covering DigiCert, Sectigo, RapidSSL, GeoTrust, and Thawte chains. DV certificates are the most common — issued automatically in minutes via DNS validation.
+          All certificates are issued via <strong>RapidSSL</strong> — a trusted CA partner covering DigiCert, Sectigo, RapidSSL, GeoTrust, and Thawte chains. DV certificates are the most common — issued automatically in minutes via DNS validation.
         </Note>
 
         {/* CHOOSE YOUR PATH */}
@@ -275,7 +275,7 @@ export default function GetStarted({ nav }) {
         </Step>
 
         <Step n={3} title="Complete domain validation (DCV)">
-          <p>SSLVault (via GoGetSSL) verifies you own the domain before issuing. Three methods:</p>
+          <p>SSLVault (via RapidSSL) verifies you own the domain before issuing. Three methods:</p>
           <table className="v2-table" style={{ marginBottom: 10 }}>
             <tbody>
               <tr><td style={{ fontWeight: 600, width: 120 }}>DNS CNAME</td><td>Add a CNAME record — recommended. Auto-added if a DNS provider is connected.</td></tr>
@@ -331,7 +331,7 @@ export default function GetStarted({ nav }) {
             ['Certificate', 'A digital file proving your website\'s identity, issued by a trusted Certificate Authority (CA).'],
             ['Private Key', 'The secret counterpart to your certificate. Never share it. Permissions should always be 600.'],
             ['fullchain.pem', 'Your certificate including the full chain of trust. Use this on all server configs — not cert.pem alone.'],
-            ['GoGetSSL', 'The CA reseller SSLVault uses to issue DV, OV, EV and Wildcard certificates from DigiCert, Sectigo, RapidSSL chains.'],
+            ['RapidSSL', 'The CA reseller SSLVault uses to issue DV, OV, EV and Wildcard certificates from DigiCert, Sectigo, RapidSSL chains.'],
             ['DCV', 'Domain Control Validation — how the CA verifies you own a domain before issuing. Done via DNS CNAME, TXT record, or email.'],
             ['Wildcard', '*.example.com — covers all single-level subdomains with one certificate. Requires DNS-01 validation.'],
             ['Persistent Agent', 'SSLVault\'s bash daemon for Linux VPS servers. Polls every 5 minutes, auto-installs and auto-renews certificates.'],
@@ -347,7 +347,7 @@ export default function GetStarted({ nav }) {
         {/* FAQ */}
         <Divider label="FAQ" title="Frequently asked questions" />
         <FAQ q="Is SSLVault really free to use?"
-             a="The SSLVault platform is free — agents, monitoring, DNS connectors, auto-renewal, CA connectors, CA intelligence. You pay only for certificates at GoGetSSL partner rates (from $8/yr for DV). No platform subscription required." />
+             a="The SSLVault platform is enterprise-grade — agents, monitoring, DNS connectors, auto-renewal, CA connectors, CA intelligence. You pay only for certificates at RapidSSL partner rates (enterprise pricing for DV). No platform subscription required." />
         <FAQ q="How long does a certificate last?"
              a="Validity varies by type and CA. RapidSSL DV certificates have ~6-month cert validity with 1-year order subscriptions. SSLVault tracks both expiry dates separately and handles auto-reissue and auto-renewal automatically." />
         <FAQ q="Will my website go down during SSL installation?"
@@ -371,7 +371,7 @@ export default function GetStarted({ nav }) {
             Ready to secure your domains?
           </h3>
           <p style={{ color: 'var(--v2-text-2)', fontSize: 13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
-            Issue DV, OV, EV or Wildcard certificates via GoGetSSL. Auto-renew. Deploy with one command.
+            Issue DV, OV, EV or Wildcard certificates via RapidSSL. Auto-renew. Deploy with one command.
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>

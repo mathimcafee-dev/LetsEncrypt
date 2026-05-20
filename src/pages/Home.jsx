@@ -278,7 +278,7 @@ function ArchDiagram({ isMobile }) {
   const nodes = [
     { label:'Your domain', sub:'DNS records', icon:'🌐', color:C.teal },
     { label:'SSLVault CLM', sub:'Platform', icon:'🔐', color:C.purple, main:true },
-    { label:'GoGetSSL CA', sub:'DigiCert chain', icon:'🏛', color:C.green },
+    { label:'RapidSSL CA', sub:'DigiCert chain', icon:'🏛', color:C.green },
     { label:'Your server', sub:'Nginx / Apache', icon:'⚡', color:C.amber },
   ]
   return (
@@ -318,7 +318,7 @@ function ArchDiagram({ isMobile }) {
 
 // ── Live ticker ───────────────────────────────────────────────────────
 const TRUST_ITEMS = [
-  'RFC 8555 · ACME v2','DigiCert Trust Chain','GoGetSSL Partner','AES-256-GCM',
+  'RFC 8555 · ACME v2','DigiCert Trust Chain','RapidSSL CA Partner','AES-256-GCM',
   'TLS 1.3 / 1.2','DNS-01 Challenge','CT Log Monitoring','CAA Records',
   'HSTS Preloading','SHA-256','CA/B Forum Compliant','Zero-touch Renewal',
 ]
@@ -454,7 +454,7 @@ export default function Home({ nav }) {
                 <TLine prompt="" cmd="  DNS provider: Cloudflare" color="rgba(255,255,255,0.45)" indent/>
                 <TLine prompt="" cmd="  Adding TXT _acme-challenge.easysecurity.in..." color="rgba(255,255,255,0.35)" indent/>
                 <TLine prompt="›" cmd="[21:05:15] DNS propagated · DCV validated ✓" color={C.green}/>
-                <TLine prompt="›" cmd="[21:05:16] CSR signed · cert issued by GoGetSSL" color={C.green}/>
+                <TLine prompt="›" cmd="[21:05:16] CSR signed · cert issued by RapidSSL" color={C.green}/>
                 <TLine prompt="" cmd="  Subject: CN=easysecurity.in" color="rgba(255,255,255,0.35)" indent/>
                 <TLine prompt="" cmd="  Issuer:  RapidSSL TLS RSA CA 2022" color="rgba(255,255,255,0.35)" indent/>
                 <TLine prompt="" cmd="  Valid:   2026-05-20 → 2026-11-16 (180d)" color="rgba(255,255,255,0.35)" indent/>
@@ -504,7 +504,7 @@ export default function Home({ nav }) {
           <div style={{ display:'grid', gridTemplateColumns:`repeat(${isMobile?1:isTablet?2:3},1fr)`, gap:16, marginBottom:64 }}>
             {[
               { icon:'⚡', title:'Zero-touch issuance', color:C.teal, spec:'ACME v2 · RFC 8555',
-                desc:'DV, OV, EV and Wildcard certificates via GoGetSSL API. Automated DNS-01 validation via Cloudflare, Vercel, Route53, and 8 more providers. Issued in under 5 minutes.' },
+                desc:'DV, OV, EV and Wildcard certificates via RapidSSL API. Automated DNS-01 validation via Cloudflare, Vercel, Route53, and 8 more providers. Issued in under 5 minutes.' },
               { icon:'🤖', title:'Persistent agent', color:C.green, spec:'systemd · Nginx / Apache',
                 desc:'Lightweight daemon on your VPS polls every 5 minutes. Detects web server, writes cert files, updates config, tests syntax, reloads service. SSH once, never again.' },
               { icon:'🔐', title:'KeyLocker vault', color:C.purple, spec:'AES-256-GCM · Envelope encryption',
@@ -553,7 +553,7 @@ export default function Home({ nav }) {
                 </p>
                 <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
                   {[
-                    { step:'01', label:'Issue request', detail:'You select domain + cert type. SSLVault generates CSR, submits order to GoGetSSL via ACME v2.' },
+                    { step:'01', label:'Issue request', detail:'You select domain + cert type. SSLVault generates CSR, submits order to RapidSSL via ACME v2.' },
                     { step:'02', label:'Auto-DCV',      detail:'SSLVault calls your DNS provider API to add the TXT/CNAME challenge record and polls for propagation.' },
                     { step:'03', label:'Cert delivery', detail:'CA verifies domain control, signs certificate. SSLVault stores cert + private key (AES-256-GCM encrypted).' },
                     { step:'04', label:'Auto-install',  detail:'Agent on your server receives the cert, updates Nginx/Apache config, tests, and reloads. Zero SSH required.' },
@@ -782,7 +782,7 @@ export default function Home({ nav }) {
               <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
                 {[
                   { val:'DigiCert', label:'Trust chain', sub:'99.9% browser compatibility' },
-                  { val:'GoGetSSL', label:'CA partner', sub:'Wholesale certificate pricing' },
+                  { val:'RapidSSL', label:'CA partner', sub:'Wholesale certificate pricing' },
                   { val:'RFC 8555', label:'ACME v2', sub:'Open standard, no lock-in' },
                   { val:'AES-256', label:'Encryption', sub:'Military-grade key storage' },
                   { val:'No ads', label:'No advertising', sub:'No tracking, no data reselling' },
@@ -821,7 +821,7 @@ export default function Home({ nav }) {
               <CTA label="View pricing" onClick={()=>nav('/pricing')}/>
             </div>
             <div style={{ display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
-              {['GoGetSSL partner · DigiCert trust chain','RFC 8555 · AES-256-GCM','CA/B Forum 2026 compliant'].map(t=>(
+              {['RapidSSL CA partner · DigiCert trust chain','RFC 8555 · AES-256-GCM','CA/B Forum 2026 compliant'].map(t=>(
                 <span key={t} style={{ fontSize:11.5, color:C.textLt, display:'flex', alignItems:'center', gap:6 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                   {t}

@@ -40,7 +40,7 @@ const URGENCY = {
 
 const CA_COLORS = {
   digicert: '#dc2626', sectigo: '#7c3aed', sslcom: '#0369a1',
-  gogetssl: '#16a34a', imported: '#64748b', unknown: '#94a3b8'
+  rapidssl: '#16a34a', imported: '#64748b', unknown: '#94a3b8'
 }
 
 function fmt(iso) {
@@ -201,7 +201,7 @@ function ExpiryTimeline({ tok }) {
           <AlertTriangle size={14} color="#d97706" style={{ flexShrink: 0 }}/>
           <span style={{ fontSize: 12, color: '#92400e' }}>
             <strong>{no_renewal_path_count} certificate{no_renewal_path_count !== 1 ? 's' : ''}</strong> have no renewal path —
-            no agent, no DNS connector, and not a GoGetSSL cert. These require manual renewal.
+            no agent, no DNS connector, and not a RapidSSL cert. These require manual renewal.
           </span>
         </div>
       )}
@@ -360,13 +360,13 @@ function ExpiryTimeline({ tok }) {
           digicert: 'https://www.digicert.com/account/login.php',
           sectigo:  'https://cert-manager.com/',
           sslcom:   'https://secure.ssl.com/users/login',
-          gogetssl: null,
+          rapidssl: null,
         }
         const CA_NAMES = {
           digicert: 'DigiCert CertCentral',
           sectigo:  'Sectigo SCM',
           sslcom:   'SSL.com',
-          gogetssl: 'GoGetSSL',
+          rapidssl: 'RapidSSL',
         }
         const caUrl  = CA_URLS[src]
         const caName = CA_NAMES[src] || 'your CA'
@@ -442,7 +442,7 @@ function ExpiryTimeline({ tok }) {
                         border:'0.5px solid #bbf7d0' }}>Recommended</span>
                     </div>
                     <div style={{ fontSize:11, color:'#64748b', lineHeight:1.5 }}>
-                      Issue a fresh certificate via GoGetSSL with auto-DNS validation and auto-install. Domain pre-filled.
+                      Issue a fresh certificate via RapidSSL with auto-DNS validation and auto-install. Domain pre-filled.
                     </div>
                     <div style={{ fontSize:10, color:'#16a34a', marginTop:5, fontWeight:600,
                       display:'flex', alignItems:'center', gap:4 }}>
@@ -751,7 +751,7 @@ function ConsolidationAdvisor({ tok, nav }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Portfolio cost analysis</div>
-            <div style={{ fontSize: 12, color: '#94a3b8' }}>Analyses all tracked certs for consolidation opportunities against GoGetSSL pricing</div>
+            <div style={{ fontSize: 12, color: '#94a3b8' }}>Analyses all tracked certs for consolidation opportunities against RapidSSL pricing</div>
           </div>
           <button onClick={runAnalysis} disabled={running}
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700,
@@ -791,7 +791,7 @@ function ConsolidationAdvisor({ tok, nav }) {
       {consolidation.length > 0 && (
         <>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 10 }}>
-            CA Consolidation — move DV certs to GoGetSSL
+            CA Consolidation — move DV certs to RapidSSL
           </div>
           <Card style={{ marginBottom: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto',

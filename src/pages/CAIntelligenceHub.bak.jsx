@@ -1,5 +1,5 @@
 // CAIntelligenceHub.jsx
-// Unified CA Intelligence Hub — Overview + RapidSSL + DigiCert + Sectigo
+// Unified CA Intelligence Hub — Overview + GoGetSSL + DigiCert + Sectigo
 // All CA workspaces live inside this single page, tab-switched at the top.
 
 import { useState, useEffect, useCallback } from 'react'
@@ -112,7 +112,7 @@ function SectionCard({ title, children, style = {} }) {
 
 // ── CA accent palette ─────────────────────────────────────────────────
 const CA_META = {
-  rapidssl: { label: 'GGS', bg: '#ecfdf5', color: '#065f46', accent: '#10b981' },
+  gogetssl: { label: 'GGS', bg: '#ecfdf5', color: '#065f46', accent: '#10b981' },
   digicert: { label: 'DC',  bg: '#fef2f2', color: '#991b1b', accent: '#dc2626' },
   sectigo:  { label: 'SC',  bg: '#f5f3ff', color: '#6b21a8', accent: '#7c3aed' },
 }
@@ -134,9 +134,9 @@ function OverviewTab({ tok, onSwitchCA }) {
         callImport(tok, { action: 'list_connections' }),
         supabase.from('ssl_orders').select('id,valid_till,status').eq('status', 'active'),
       ])
-      // Combine imported CA certs + native RapidSSL ssl_orders
+      // Combine imported CA certs + native GoGetSSL ssl_orders
       const importedCerts = (tlRes.certs || []).map(c => ({ expiry_date: c.expiry_date, ca_source: c.ca_source }))
-      const ggsCerts = (ordersRes.data || []).map(o => ({ expiry_date: o.valid_till, ca_source: 'rapidssl' }))
+      const ggsCerts = (ordersRes.data || []).map(o => ({ expiry_date: o.valid_till, ca_source: 'gogetssl' }))
       const allCerts = [...importedCerts, ...ggsCerts]
       const expired = allCerts.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d <= 0 }).length
       const exp7    = allCerts.filter(c => { const d = dLeft(c.expiry_date); return d !== null && d > 0 && d <= 7 }).length
@@ -162,7 +162,7 @@ function OverviewTab({ tok, onSwitchCA }) {
   const { total = 0, expired = 0, exp7 = 0, exp30 = 0, exp90 = 0, healthy = 0, byCa = {} } = stats || {}
   const dcConn  = conns.find(c => c.ca_type === 'digicert' && c.status === 'active')
   const scConn  = conns.find(c => c.ca_type === 'sectigo'  && c.status === 'active')
-  const ggsCount = byCa['rapidssl'] || byCa['rapidssl'] || 0
+  const ggsCount = byCa['gogetssl'] || byCa['rapidssl'] || 0
   const dcCount  = byCa['digicert'] || 0
   const scCount  = byCa['sectigo']  || 0
   const maxCount = Math.max(ggsCount, dcCount, scCount, 1)
@@ -189,7 +189,7 @@ function OverviewTab({ tok, onSwitchCA }) {
         {/* Portfolio by CA */}
         <SectionCard title="Portfolio by CA" style={{ marginBottom: 0 }}>
           {[
-            { ca: 'rapidssl', count: ggsCount, label: 'RapidSSL (native)' },
+            { ca: 'gogetssl', count: ggsCount, label: 'GoGetSSL (native)' },
             { ca: 'digicert', count: dcCount,  label: 'DigiCert' },
             { ca: 'sectigo',  count: scCount,  label: 'Sectigo' },
           ].map(({ ca, count, label }) => (
@@ -209,8 +209,8 @@ function OverviewTab({ tok, onSwitchCA }) {
               </div>
             </div>
           ))}
-          <button className="v2-btn v2-btn-sm" style={{ marginTop: 4 }} onClick={() => onSwitchCA('rapidssl')}>
-            View RapidSSL <ChevronRight size={11}/>
+          <button className="v2-btn v2-btn-sm" style={{ marginTop: 4 }} onClick={() => onSwitchCA('gogetssl')}>
+            View GoGetSSL <ChevronRight size={11}/>
           </button>
         </SectionCard>
 
@@ -239,7 +239,7 @@ function OverviewTab({ tok, onSwitchCA }) {
       <SectionCard title="CA connection status">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
           {[
-            { ca: 'rapidssl', label: 'RapidSSL', sub: 'Native CA · always active',  conn: true, onClick: () => onSwitchCA('rapidssl') },
+            { ca: 'gogetssl', label: 'GoGetSSL', sub: 'Native CA · always active',  conn: true, onClick: () => onSwitchCA('gogetssl') },
             { ca: 'digicert', label: 'DigiCert',  sub: dcConn ? 'API key active' : 'Not connected — click to connect', conn: !!dcConn, onClick: () => onSwitchCA('digicert') },
             { ca: 'sectigo',  label: 'Sectigo',   sub: scConn ? 'API credentials active' : 'Not connected — click to connect', conn: !!scConn, onClick: () => onSwitchCA('sectigo') },
           ].map(({ ca, label, sub, conn, onClick }) => (
@@ -265,7 +265,7 @@ function OverviewTab({ tok, onSwitchCA }) {
 // ══════════════════════════════════════════════════════════════════════
 // TAB 2 — GOGETSSL
 // ══════════════════════════════════════════════════════════════════════
-function RapidSSLTab({ tok, nav }) {
+function GoGetSSLTab({ tok, nav }) {
   const [orders,  setOrders]  = useState([])
   const [loading, setLoading] = useState(true)
   const [filter,  setFilter]  = useState('all')
@@ -274,7 +274,7 @@ function RapidSSLTab({ tok, nav }) {
     if (!tok) return
     setLoading(true)
     try {
-      // ssl_orders is the native RapidSSL orders table
+      // ssl_orders is the native GoGetSSL orders table
       const { data, error } = await supabase
         .from('ssl_orders')
         .select('id,domain,product_name,product_code,status,ggs_status,valid_from,valid_till,created_at,order_type,ca_code')
@@ -288,7 +288,7 @@ function RapidSSLTab({ tok, nav }) {
           product_name: o.product_name,
           expiry_date:  o.valid_till,
           status:       o.status,
-          ca_source:    'rapidssl',
+          ca_source:    'gogetssl',
           auto_renew:   false,
         }))
         setOrders(normalised)
@@ -319,7 +319,7 @@ function RapidSSLTab({ tok, nav }) {
       <div style={{ background: '#ecfdf5', border: '0.5px solid #6ee7b7', borderRadius: 8,
         padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#065f46' }}>RapidSSL — SSLVault native CA</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#065f46' }}>GoGetSSL — SSLVault native CA</div>
           <div style={{ fontSize: 11, color: '#10b981', marginTop: 2 }}>Live API · {orders.length} active orders</div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -371,7 +371,7 @@ function RapidSSLTab({ tok, nav }) {
             </div>
           ) : filtered.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
-              {orders.length === 0 ? 'No RapidSSL certificates found. Issue your first certificate.' : 'No certificates match this filter.'}
+              {orders.length === 0 ? 'No GoGetSSL certificates found. Issue your first certificate.' : 'No certificates match this filter.'}
             </div>
           ) : filtered.map((c, i) => {
             const d = dLeft(c.expiry_date)
@@ -1302,7 +1302,7 @@ function ShadowITTab({ tok, nav }) {
 // ══════════════════════════════════════════════════════════════════════
 const CA_COLORS_HUB = {
   digicert: '#dc2626', sectigo: '#7c3aed', sslcom: '#0369a1',
-  rapidssl: '#16a34a', imported: '#64748b', unknown: '#94a3b8'
+  gogetssl: '#16a34a', imported: '#64748b', unknown: '#94a3b8'
 }
 
 function ConsolidationTab({ tok, nav }) {
@@ -1346,7 +1346,7 @@ function ConsolidationTab({ tok, nav }) {
             Consolidation Advisor
           </h2>
           <p style={{ fontSize: 12, color: 'var(--v2-text-3)', margin: '3px 0 0', lineHeight: 1.5 }}>
-            Finds DV certificates at premium CAs that can be moved to RapidSSL to cut costs. Surfaces duplicate domains across CAs.
+            Finds DV certificates at premium CAs that can be moved to GoGetSSL to cut costs. Surfaces duplicate domains across CAs.
           </p>
         </div>
       </div>
@@ -1397,7 +1397,7 @@ function ConsolidationTab({ tok, nav }) {
               ${totalSaving.toFixed(0)}<span style={{ fontSize: 13, fontWeight: 500, marginLeft: 4 }}>/yr</span>
             </div>
             <div style={{ fontSize: 12, color: '#16a34a', marginTop: 2 }}>
-              potential annual savings by consolidating to RapidSSL
+              potential annual savings by consolidating to GoGetSSL
             </div>
           </div>
         </div>
@@ -1427,7 +1427,7 @@ function ConsolidationTab({ tok, nav }) {
           {consolidation.length > 0 && (
             <>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 10 }}>
-                CA Consolidation — move DV certs to RapidSSL
+                CA Consolidation — move DV certs to GoGetSSL
                 <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--v2-text-3)', marginLeft: 8 }}>
                   {consolidation.length} opportunity{consolidation.length !== 1 ? 'ies' : 'y'}
                 </span>
@@ -1532,7 +1532,7 @@ export default function CAIntelligenceHub({ nav }) {
 
   const TABS = [
     { id: 'overview',       label: 'Overview',       dot: null      },
-    { id: 'rapidssl',       label: 'RapidSSL',       dot: '#10b981' },
+    { id: 'gogetssl',       label: 'GoGetSSL',       dot: '#10b981' },
     { id: 'digicert',       label: 'DigiCert',       dot: '#dc2626' },
     { id: 'sectigo',        label: 'Sectigo',        dot: '#7c3aed' },
     { id: 'shadow',         label: 'Shadow IT',      dot: '#7c3aed', divider: true },
@@ -1556,7 +1556,7 @@ export default function CAIntelligenceHub({ nav }) {
                 CA Intelligence hub
               </h1>
               <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', margin: 0, marginTop: 1 }}>
-                Unified certificate visibility across RapidSSL, DigiCert &amp; Sectigo
+                Unified certificate visibility across GoGetSSL, DigiCert &amp; Sectigo
               </p>
             </div>
           </div>
@@ -1594,7 +1594,7 @@ export default function CAIntelligenceHub({ nav }) {
             </div>
           : <>
               {tab === 'overview'       && <OverviewTab       tok={tok} nav={nav} onSwitchCA={setTab}/>}
-              {tab === 'rapidssl'       && <RapidSSLTab       tok={tok} nav={nav}/>}
+              {tab === 'gogetssl'       && <GoGetSSLTab       tok={tok} nav={nav}/>}
               {tab === 'digicert'       && <DigiCertTab       tok={tok} nav={nav}/>}
               {tab === 'sectigo'        && <SectigoTab        tok={tok}/>}
               {tab === 'shadow'         && <ShadowITTab       tok={tok} nav={nav}/>}

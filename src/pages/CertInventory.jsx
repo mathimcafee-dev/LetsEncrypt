@@ -34,7 +34,7 @@ function statusInfo(days, status) {
 
 const PRODUCT_NAMES = {
   rapidssl: 'RapidSSL Standard DV SSL',
-  positivessl: 'Sectigo PositiveSSL DV',
+  positivessl: 'RapidSSL DV',
   rapidssl_wildcard: 'RapidSSL Wildcard DV SSL',
 }
 function productName(code, certType) {

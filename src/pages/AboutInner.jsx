@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 
 const PILLARS = [
-  { icon: Lock, title: 'Free issuance', body: 'DV certificates via GoGetSSL. RapidSSL certs issued in minutes, no credit card required.' },
+  { icon: Lock, title: 'Free issuance', body: 'DV certificates via RapidSSL. RapidSSL certs issued in minutes, no credit card required.' },
   { icon: RefreshCw, title: 'Auto-renewal', body: 'Persistent agents poll every 5 minutes. Certificates renew automatically before expiry — no cron jobs, no surprise outages.' },
   { icon: Shield, title: 'Lifecycle management', body: 'Full CLM: discover, issue, install, monitor, revoke. One dashboard for your entire certificate inventory.' },
   { icon: Globe, title: 'Any hosting', body: 'VPS with Nginx or Apache, cPanel shared hosting, or any server reachable by the agent. DNS validation via Cloudflare, Vercel, and more.' },
@@ -25,7 +25,7 @@ export default function AboutInner({ nav }) {
           The web should be encrypted by default — and managing that encryption should never be a barrier.
         </p>
         <p style={{ fontSize:13, color:'#525252', lineHeight:1.8, margin:'0 0 10px', maxWidth:720 }}>
-          SSLVault is a certificate lifecycle management platform built on GoGetSSL's API and designed for indie developers, SMBs, and non-profits who need enterprise-grade SSL management without enterprise pricing.
+          SSLVault is a certificate lifecycle management platform built on RapidSSL's API and designed for indie developers, SMBs, and non-profits who need enterprise-grade SSL management without enterprise pricing.
         </p>
         <p style={{ fontSize:13, color:'#525252', lineHeight:1.8, margin:0, maxWidth:720 }}>
           Enterprise CLM platforms solve this beautifully — but cost thousands per year and are built for security teams managing thousands of certificates. SSLVault brings that same capability to anyone running a site on a $5 VPS or shared hosting.
@@ -53,7 +53,7 @@ export default function AboutInner({ nav }) {
             ['Frontend', 'React 18 + Vite'],
             ['Database', 'Supabase (PostgreSQL)'],
             ['Hosting', 'Vercel'],
-            ['CA Partner', 'GoGetSSL · DigiCert trust chain'],
+            ['CA Partner', 'RapidSSL · DigiCert trust chain'],
             ['Agent', 'Bash daemon, systemd'],
             ['DNS', 'Cloudflare · Vercel · cPanel'],
           ].map(([k, v]) => (

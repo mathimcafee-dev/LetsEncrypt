@@ -78,7 +78,7 @@ export default function QuickSetup({ nav }) {
           setLoading(false); return
         }
       }
-      // Request certificate issuance via GoGetSSL (TSS)
+      // Request certificate issuance via RapidSSL (TSS)
       const { data: session } = await supabase.auth.getSession()
       const token = session?.session?.access_token
       const res = await fetch(ISSUE_FN, {
@@ -161,7 +161,7 @@ export default function QuickSetup({ nav }) {
         {step === 1 && (
           <div className="v2-card v2-card-pad">
             <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Enter your domain</h2>
-            <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 20 }}>We'll issue your GoGetSSL certificate and handle DNS validation.</p>
+            <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 20 }}>We'll issue your RapidSSL certificate and handle DNS validation.</p>
 
             <label className="v2-label">Domain Name</label>
             <input className="v2-input" value={domain} onChange={e => setDomain(e.target.value)}

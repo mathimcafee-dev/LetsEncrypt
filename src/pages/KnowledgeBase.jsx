@@ -153,7 +153,7 @@ export default function KnowledgeBase({ nav }) {
 
         {/* ── SECTION 1 — GETTING STARTED ── */}
         <Divider label="01 · Start" title="Issue your first certificate" />
-        <Section anchor="getting-started" title="Getting started" subtitle="DV, OV, EV & Wildcard via GoGetSSL — issued in minutes" icon={Zap} defaultOpen>
+        <Section anchor="getting-started" title="Getting started" subtitle="DV, OV, EV & Wildcard via RapidSSL — issued in minutes" icon={Zap} defaultOpen>
           <Step n={1} title="Go to Issue Certificate">
             <p>Click <strong>Issue Certificate</strong> in the sidebar. Enter your domain, select cert type and validity, then click Issue.</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 8, margin: '10px 0' }}>
@@ -301,7 +301,7 @@ export default function KnowledgeBase({ nav }) {
 
         {/* ── SECTION 8 — CA INTELLIGENCE ── */}
         <Divider label="08 · Intelligence" title="CA Intelligence — cross-CA visibility" />
-        <Section anchor="ca-intelligence" title="CA Intelligence Hub" subtitle="Unified inventory across GoGetSSL, DigiCert, Sectigo + shadow IT detection" icon={ShieldCheck}>
+        <Section anchor="ca-intelligence" title="CA Intelligence Hub" subtitle="Unified inventory across RapidSSL, DigiCert, Sectigo + shadow IT detection" icon={ShieldCheck}>
           <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.7 }}>
             If your organisation uses multiple CAs, CA Intelligence gives you a single pane of glass across all of them. Connect DigiCert CertCentral or Sectigo SCM to sync your certificate inventory into SSLVault.
           </p>

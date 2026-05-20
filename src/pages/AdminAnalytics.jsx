@@ -206,8 +206,8 @@ export default function AdminAnalytics({ user }) {
           <div className="v2-card" style={{padding:'16px 18px'}}>
             <div className="v2-section-label" style={{marginBottom:14}}>Certificates by CA</div>
             {Object.entries(stats.bySource).sort((a,b)=>b[1]-a[1]).map(([src,cnt])=>{
-              const labels = {gogetssl:'GoGetSSL',tss:'GoGetSSL',letsencrypt:"Let's Encrypt",zerossl:'ZeroSSL',buypass:'Buypass',acme:'ACME',unknown:'Unknown'}
-              const colors = {gogetssl:'#16a34a',tss:'#16a34a',letsencrypt:'#2563eb',zerossl:'#7c3aed',buypass:'#0369a1',acme:'#64748b',unknown:'#94a3b8'}
+              const labels = {rapidssl:'RapidSSL',tss:'RapidSSL',letsencrypt:"Let's Encrypt",zerossl:'ZeroSSL',buypass:'Buypass',acme:'ACME',unknown:'Unknown'}
+              const colors = {rapidssl:'#16a34a',tss:'#16a34a',letsencrypt:'#2563eb',zerossl:'#7c3aed',buypass:'#0369a1',acme:'#64748b',unknown:'#94a3b8'}
               return (
                 <div key={src} style={{marginBottom:10}}>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>

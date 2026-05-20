@@ -49,7 +49,7 @@ function SourceBadge({ source }) {
     sectigo:    { label: 'Sectigo',        color: '#7c3aed', bg: '#f5f3ff' },
     sslcom:     { label: 'SSL.com',        color: '#0369a1', bg: '#e0f2fe' },
     imported:   { label: 'Manual',         color: '#64748b', bg: '#f8fafc' },
-    gogetssl:   { label: 'GoGetSSL',       color: '#16a34a', bg: '#f0fdf4' },
+    rapidssl:   { label: 'RapidSSL',       color: '#16a34a', bg: '#f0fdf4' },
     letsencrypt:{ label: "Let's Encrypt",  color: '#2563eb', bg: '#eff6ff' },
   }
   const s = map[source] || { label: source || 'Unknown', color: '#64748b', bg: '#f8fafc' }
@@ -875,7 +875,7 @@ export default function CAConnectors({ nav }) {
                           border:'0.5px solid #bbf7d0' }}>Recommended</span>
                       </div>
                       <div style={{ fontSize:11, color:'#64748b', lineHeight:1.5 }}>
-                        Issue a fresh RapidSSL DV certificate through SSLVault — GoGetSSL API,
+                        Issue a fresh RapidSSL DV certificate through SSLVault — RapidSSL CA API,
                         auto-DNS validation, auto-install on your servers. Domain pre-filled.
                       </div>
                       <div style={{ fontSize:10, color:'#16a34a', marginTop:5, fontWeight:600,
