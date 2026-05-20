@@ -454,91 +454,118 @@ export default function Home({ nav }) {
         </div>
       </header>
 
-      {/* ── HERO — dark, technical ──────────────────────────────────── */}
-      <section style={{ background:C.ink, padding:`clamp(72px,10vw,120px) clamp(20px,5vw,48px) clamp(60px,8vw,100px)`, position:'relative', overflow:'hidden' }}>
-        {/* Grid overlay */}
-        <div style={{ position:'absolute', inset:0, backgroundImage:`linear-gradient(rgba(14,165,233,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.04) 1px, transparent 1px)`, backgroundSize:'48px 48px', pointerEvents:'none' }}/>
-        {/* Glow */}
-        <div style={{ position:'absolute', top:'20%', left:'50%', transform:'translateX(-50%)', width:600, height:300, background:`radial-gradient(ellipse, ${C.teal}18 0%, transparent 70%)`, pointerEvents:'none' }}/>
+      {/* ── HERO — Owlish DNA: refined, airy, authoritative ─────────── */}
+      <section style={{ background:'#080c14', padding:`clamp(80px,10vw,130px) clamp(20px,5vw,48px) clamp(70px,9vw,110px)`, position:'relative', overflow:'hidden' }}>
+
+        {/* Subtle noise texture via SVG filter */}
+        <svg style={{ position:'absolute', width:0, height:0 }}>
+          <filter id="noise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+            <feColorMatrix type="saturate" values="0"/>
+            <feBlend in="SourceGraphic" mode="overlay"/>
+          </filter>
+        </svg>
+        <div style={{ position:'absolute', inset:0, opacity:0.028, filter:'url(#noise)', pointerEvents:'none', background:'white' }}/>
+
+        {/* Radial glow — top center */}
+        <div style={{ position:'absolute', top:'-10%', left:'50%', transform:'translateX(-50%)', width:900, height:500, background:`radial-gradient(ellipse 60% 55% at 50% 0%, ${C.teal}14 0%, transparent 100%)`, pointerEvents:'none' }}/>
+
+        {/* Subtle grid — very faint */}
+        <div style={{ position:'absolute', inset:0, backgroundImage:`linear-gradient(rgba(14,165,233,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.025) 1px, transparent 1px)`, backgroundSize:'72px 72px', maskImage:'radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 100%)', WebkitMaskImage:'radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 100%)', pointerEvents:'none' }}/>
 
         <div style={{ maxWidth:1100, margin:'0 auto', position:'relative' }}>
-          <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?40:60, alignItems:'center' }}>
+          <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?48:80, alignItems:'center' }}>
 
-            {/* Left — copy */}
+            {/* ── Left — refined copy ── */}
             <div>
-              {/* Status badge */}
-              <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(16,185,129,0.08)', border:'1px solid rgba(16,185,129,0.2)', borderRadius:100, padding:'5px 14px', marginBottom:24 }}>
-                <span style={{ width:7, height:7, borderRadius:'50%', background:C.green, animation:'blink 2.4s ease infinite', flexShrink:0 }}/>
-                <span style={{ fontSize:11.5, fontWeight:600, color:C.green, fontFamily:MONO }}>RFC 8555 · CA/B Forum Compliant · AES-256-GCM</span>
+              {/* Status pill — Owlish style: minimal border, no fill */}
+              <div style={{ display:'inline-flex', alignItems:'center', gap:7, border:'1px solid rgba(255,255,255,0.1)', borderRadius:100, padding:'5px 14px', marginBottom:32, backdropFilter:'blur(8px)', background:'rgba(255,255,255,0.03)' }}>
+                <span style={{ width:6, height:6, borderRadius:'50%', background:C.green, boxShadow:`0 0 6px ${C.green}`, animation:'blink 2.4s ease infinite', flexShrink:0 }}/>
+                <span style={{ fontSize:11.5, fontWeight:500, color:'rgba(255,255,255,0.55)', fontFamily:MONO, letterSpacing:'0.02em' }}>
+                  RFC 8555 · CA/B Forum · AES-256-GCM
+                </span>
               </div>
 
-              <h1 style={{ fontSize:`clamp(32px,5.5vw,64px)`, fontWeight:900, letterSpacing:'-2px', lineHeight:1.05, color:C.white, marginBottom:20 }}>
+              {/* Headline — Owlish: lighter weight, tighter but not crushed */}
+              <h1 style={{ fontSize:`clamp(36px,5.5vw,68px)`, fontWeight:700, letterSpacing:'-1.5px', lineHeight:1.08, color:'rgba(255,255,255,0.96)', marginBottom:22 }}>
                 Certificate<br/>
-                <span style={{ color:C.teal }}>Lifecycle</span><br/>
-                Management.
+                <span style={{ color:C.teal, fontWeight:700 }}>lifecycle</span><br/>
+                management.
               </h1>
 
-              <p style={{ fontSize:16, color:'rgba(255,255,255,0.55)', lineHeight:1.8, marginBottom:32, maxWidth:440 }}>
-                Issue, validate, deploy and auto-renew SSL/TLS certificates across every CA and every server — with a persistent agent, DNS automation, and AES-256 key vault built in.
+              <p style={{ fontSize:16.5, color:'rgba(255,255,255,0.42)', lineHeight:1.82, marginBottom:36, maxWidth:420, fontWeight:400, letterSpacing:'-0.01em' }}>
+                Issue, validate, deploy and auto-renew SSL/TLS certificates — persistent agent, DNS automation, and AES-256 key vault included.
               </p>
 
-              {/* Tech specs row */}
-              <div style={{ display:'flex', gap:isMobile?12:20, flexWrap:'wrap', marginBottom:36 }}>
-                {[
-                  { label:'ACME v2', color:C.teal },
-                  { label:'AES-256-GCM', color:C.purple },
-                  { label:'RFC 8555', color:C.green },
-                  { label:'CT Logs', color:C.amber },
-                ].map(s=>(
-                  <span key={s.label} style={{ fontSize:11, fontWeight:700, color:s.color, background:`${s.color}12`, border:`1px solid ${s.color}25`, borderRadius:5, padding:'4px 10px', fontFamily:MONO }}>
-                    {s.label}
-                  </span>
-                ))}
-              </div>
-
-              <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+              {/* CTAs */}
+              <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:44 }}>
                 <CTA label="Start managing certs" variant="primary" onClick={()=>nav('/auth')}/>
                 <CTA label="View pricing" variant="ghost-dark" onClick={()=>nav('/pricing')}/>
               </div>
 
-              {/* Social proof counters */}
-              <div style={{ display:'flex', gap:28, marginTop:36, flexWrap:'wrap' }}>
+              {/* Metrics — Owlish style: subtle dividers, no bold numbers */}
+              <div style={{ display:'flex', gap:0, borderTop:'1px solid rgba(255,255,255,0.07)', paddingTop:28 }}>
                 {[
                   { val: certCount?`${displayCount.toLocaleString()}+`:'—', label:'Certs managed' },
-                  { val:'99.9%', label:'Renewal success rate' },
-                  { val:'< 5 min', label:'DV issuance time' },
-                ].map(m=>(
-                  <div key={m.label}>
-                    <div style={{ fontSize:22, fontWeight:800, color:C.white, fontFamily:MONO, letterSpacing:'-0.5px' }}>{m.val}</div>
-                    <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', marginTop:2 }}>{m.label}</div>
+                  { val:'99.9%', label:'Renewal success' },
+                  { val:'< 5 min', label:'DV issuance' },
+                ].map((m, i)=>(
+                  <div key={m.label} style={{ flex:1, paddingLeft:i>0?24:0, borderLeft:i>0?'1px solid rgba(255,255,255,0.07)':'none', marginLeft:i>0?24:0 }}>
+                    <div style={{ fontSize:20, fontWeight:600, color:'rgba(255,255,255,0.88)', fontFamily:MONO, letterSpacing:'-0.5px', marginBottom:4 }}>{m.val}</div>
+                    <div style={{ fontSize:11.5, color:'rgba(255,255,255,0.3)', fontWeight:400, letterSpacing:'0.01em' }}>{m.label}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Right — live terminal */}
-            <div>
-              <Terminal title="sslvault-agent · prod-server-01" accent={C.green}>
-                <TLine prompt="›" cmd="[2026-05-20 21:05:12] Agent started · polling interval: 5m" color="rgba(255,255,255,0.3)"/>
-                <TLine prompt="›" cmd="[21:05:12] Checking for pending jobs..." color="rgba(255,255,255,0.25)"/>
-                <TLine prompt="›" cmd="[21:05:13] Job received: renew · easysecurity.in" color={C.teal}/>
-                <TLine prompt="" cmd="  DNS provider: Cloudflare" color="rgba(255,255,255,0.45)" indent/>
-                <TLine prompt="" cmd="  Adding TXT _acme-challenge.easysecurity.in..." color="rgba(255,255,255,0.35)" indent/>
-                <TLine prompt="›" cmd="[21:05:15] DNS propagated · DCV validated ✓" color={C.green}/>
-                <TLine prompt="›" cmd="[21:05:16] CSR signed · cert issued by RapidSSL" color={C.green}/>
-                <TLine prompt="" cmd="  Subject: CN=easysecurity.in" color="rgba(255,255,255,0.35)" indent/>
-                <TLine prompt="" cmd="  Issuer:  RapidSSL TLS RSA CA 2022" color="rgba(255,255,255,0.35)" indent/>
-                <TLine prompt="" cmd="  Valid:   2026-05-20 → 2026-11-16 (180d)" color="rgba(255,255,255,0.35)" indent/>
-                <TLine prompt="›" cmd="[21:05:17] Writing cert to /etc/nginx/ssl/..." color="rgba(255,255,255,0.45)"/>
-                <TLine prompt="›" cmd="[21:05:17] nginx -t: configuration test OK" color={C.green}/>
-                <TLine prompt="›" cmd="[21:05:17] systemctl reload nginx ✓" color={C.green}/>
-                <TLine prompt="›" cmd="[21:05:18] KeyLocker: key encrypted AES-256-GCM ✓" color={C.purple}/>
-                <TLine prompt="›" cmd="[21:05:18] ✓ Renewal complete · next check: 21:10:18" color={C.green}/>
-                <div style={{ marginTop:10, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:10 }}>
-                  <TLine prompt="" cmd="█" color={C.teal}/>
+            {/* ── Right — terminal, refined dark styling ── */}
+            <div style={{ position:'relative' }}>
+              {/* Glow behind terminal */}
+              <div style={{ position:'absolute', inset:'-20px', background:`radial-gradient(ellipse 80% 60% at 50% 50%, ${C.teal}0a 0%, transparent 70%)`, pointerEvents:'none', borderRadius:20 }}/>
+
+              {/* Terminal — softer, more Owlish */}
+              <div style={{ position:'relative', background:'rgba(13,17,23,0.9)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, overflow:'hidden', boxShadow:'0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)', backdropFilter:'blur(4px)' }}>
+                {/* Chrome bar */}
+                <div style={{ background:'rgba(255,255,255,0.03)', padding:'11px 16px', display:'flex', alignItems:'center', gap:8, borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ display:'flex', gap:5 }}>
+                    {['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{ width:10,height:10,borderRadius:'50%',background:c,opacity:0.8 }}/>)}
+                  </div>
+                  <span style={{ fontSize:11, color:'rgba(255,255,255,0.22)', flex:1, textAlign:'center', fontFamily:MONO, letterSpacing:'0.02em' }}>sslvault-agent · prod-server-01</span>
                 </div>
-              </Terminal>
+
+                {/* Lines */}
+                <div style={{ padding:'18px 20px', fontSize:12, lineHeight:2.05, fontFamily:MONO }}>
+                  <TLine prompt="›" cmd="[21:05:12] Checking for pending jobs..." color="rgba(255,255,255,0.22)"/>
+                  <TLine prompt="›" cmd="[21:05:13] Job received: renew · easysecurity.in" color="rgba(14,165,233,0.9)"/>
+                  <TLine prompt="" cmd="  ↳ DNS provider: Cloudflare" color="rgba(255,255,255,0.32)" indent/>
+                  <TLine prompt="" cmd="  ↳ Adding TXT _acme-challenge..." color="rgba(255,255,255,0.28)" indent/>
+                  <TLine prompt="›" cmd="[21:05:15] DNS propagated · DCV validated ✓" color="rgba(16,185,129,0.85)"/>
+                  <TLine prompt="›" cmd="[21:05:16] Cert issued · RapidSSL TLS RSA CA 2022" color="rgba(16,185,129,0.85)"/>
+                  <TLine prompt="" cmd="  ↳ CN=easysecurity.in  valid 180d" color="rgba(255,255,255,0.28)" indent/>
+                  <TLine prompt="›" cmd="[21:05:17] nginx -t OK · reload ✓" color="rgba(16,185,129,0.85)"/>
+                  <TLine prompt="›" cmd="[21:05:18] KeyLocker: AES-256-GCM encrypted ✓" color="rgba(139,92,246,0.85)"/>
+                  <TLine prompt="›" cmd="[21:05:18] ✓ Complete · next run: 21:10:18" color="rgba(14,165,233,0.9)"/>
+                  {/* Cursor */}
+                  <div style={{ marginTop:14, display:'flex', alignItems:'center', gap:8 }}>
+                    <span style={{ color:'rgba(14,165,233,0.5)', fontSize:11 }}>›</span>
+                    <span style={{ display:'inline-block', width:7, height:14, background:C.teal, opacity:0.7, animation:'blink 1.2s step-end infinite', borderRadius:1 }}/>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating cert badge — bottom right of terminal */}
+              {!isMobile && (
+                <div style={{ position:'absolute', bottom:-16, right:-12, background:'rgba(13,17,23,0.95)', border:'1px solid rgba(16,185,129,0.25)', borderRadius:10, padding:'10px 14px', backdropFilter:'blur(12px)', boxShadow:'0 8px 32px rgba(0,0,0,0.4)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <div style={{ width:7, height:7, borderRadius:'50%', background:C.green, boxShadow:`0 0 6px ${C.green}` }}/>
+                    <span style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.7)', fontFamily:MONO }}>easysecurity.in</span>
+                    <span style={{ fontSize:10, fontWeight:700, color:C.green, background:'rgba(16,185,129,0.12)', border:'1px solid rgba(16,185,129,0.2)', borderRadius:4, padding:'1px 7px', fontFamily:MONO }}>A+</span>
+                  </div>
+                  <div style={{ fontSize:10, color:'rgba(255,255,255,0.28)', marginTop:3, fontFamily:MONO }}>cert valid · 196d · auto ✓</div>
+                </div>
+              )}
             </div>
+
           </div>
         </div>
       </section>
