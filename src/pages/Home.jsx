@@ -27,6 +27,24 @@ const C = {
   bg:'#f8fafc', white:'#ffffff',
 }
 
+// ── Active nav section tracker ───────────────────────────────────────
+function useActiveSection(ids) {
+  const [active, setActive] = useState(ids[0])
+  useEffect(() => {
+    const observers = ids.map(id => {
+      const el = document.getElementById(id)
+      if (!el) return null
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) setActive(id)
+      }, { threshold: 0.3 })
+      io.observe(el)
+      return io
+    })
+    return () => observers.forEach(o => o?.disconnect())
+  }, [])
+  return active
+}
+
 // ── Hooks ─────────────────────────────────────────────────────────────
 function useIn(threshold=0.1) {
   const ref = useRef(null)
@@ -331,6 +349,7 @@ const TRUST_ITEMS = [
 
 export default function Home({ nav }) {
   const { isMobile, isTablet } = useIsMobile()
+  const activeSection = useActiveSection(['platform','arch','security'])
   const [certCount, setCertCount] = useState(null)
   const [displayCount, setDisplayCount] = useState(0)
 
@@ -397,12 +416,14 @@ export default function Home({ nav }) {
           {[['Platform','#platform'],['Architecture','#arch'],['Security','#security'],['Pricing','/pricing']].map(([label,href])=>(
             <button key={label}
               onClick={()=> href.startsWith('/')? nav(href) : document.querySelector(href)?.scrollIntoView({behavior:'smooth'})}
-              style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F,
-                fontSize:13, fontWeight:400, color:'rgba(255,255,255,0.52)',
-                padding:'5px 16px', borderRadius:100, transition:'all .15s',
+              style={{ background: href.replace('/','') === activeSection ? 'rgba(14,165,233,0.12)' : 'none',
+                border:'none', cursor:'pointer', fontFamily:F,
+                fontSize:13, fontWeight: href.replace('/','') === activeSection ? 500 : 400,
+                color: href.replace('/','') === activeSection ? C.teal : 'rgba(255,255,255,0.52)',
+                padding:'5px 16px', borderRadius:100, transition:'all .2s',
                 letterSpacing:'-0.01em' }}
-              onMouseEnter={e=>{ e.currentTarget.style.color='rgba(255,255,255,0.92)'; e.currentTarget.style.background='rgba(255,255,255,0.08)' }}
-              onMouseLeave={e=>{ e.currentTarget.style.color='rgba(255,255,255,0.52)'; e.currentTarget.style.background='none' }}>
+              onMouseEnter={e=>{ if(href.replace('/','') !== activeSection){ e.currentTarget.style.color='rgba(255,255,255,0.92)'; e.currentTarget.style.background='rgba(255,255,255,0.08)' }}}
+              onMouseLeave={e=>{ if(href.replace('/','') !== activeSection){ e.currentTarget.style.color='rgba(255,255,255,0.52)'; e.currentTarget.style.background='none' }}}>
               {label}
             </button>
           ))}

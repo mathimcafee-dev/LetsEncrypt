@@ -29,6 +29,7 @@ export default function App() {
   const [page, setPage] = useState(window.location.pathname)
   const [user, setUser]   = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
+  const [transitioning, setTransitioning] = useState(false)
 
   useEffect(() => {
     const handler = () => setPage(window.location.pathname)
@@ -48,9 +49,14 @@ export default function App() {
   }, [])
 
   const nav = (to) => {
-    window.history.pushState({}, '', to)
-    setPage(to)
-    window.scrollTo(0, 0)
+    if (to === page) return
+    setTransitioning(true)
+    setTimeout(() => {
+      window.history.pushState({}, '', to)
+      setPage(to)
+      window.scrollTo({ top: 0, behavior: 'instant' })
+      setTransitioning(false)
+    }, 160)
   }
 
   // Legacy ACME routes → redirect to /buy
@@ -63,7 +69,13 @@ export default function App() {
   const showPublicNav = !authLoading && !user && page !== '/'
 
   return (
-    <div>
+    <div style={{
+      opacity: transitioning ? 0 : 1,
+      transform: transitioning ? 'translateY(6px)' : 'translateY(0)',
+      transition: transitioning
+        ? 'opacity 0.14s ease-in, transform 0.14s ease-in'
+        : 'opacity 0.22s cubic-bezier(.16,1,.3,1), transform 0.22s cubic-bezier(.16,1,.3,1)',
+    }}>
       {showPublicNav && <Nav nav={nav} page={page} />}
       {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} /> : <Home nav={nav} />)}
       {page === '/dashboard' && <Dashboard nav={nav} />}
