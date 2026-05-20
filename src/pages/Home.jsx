@@ -810,7 +810,7 @@ export default function Home({ nav }) {
                     ['RapidSSL','CA partner · wholesale pricing'],
                     ['RFC 8555','ACME v2 · no lock-in'],
                     ['AES-256','Military-grade key storage'],
-                    ['GDPR','Built in Netherlands 🇳🇱'],
+                    ['GDPR','Netherlands-based PKI engineer 🇳🇱'],
                     ['No ads','No tracking · no reselling'],
                   ].map(([val, sub]) => (
                     <div key={val} style={{ display:'flex', gap:10, padding:'10px 12px', background:W.bg2, border:`1px solid ${W.border}`, borderRadius:8, alignItems:'center' }}>
@@ -886,7 +886,7 @@ export default function Home({ nav }) {
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </div>
               <span style={{ fontSize:13, fontWeight:600, color:'rgba(255,255,255,0.8)' }}>SSLVault</span>
-              <span style={{ fontSize:11, color:D.lt, fontFamily:MONO }}>PKI-first CLM · Made with ♥ in the Netherlands</span>
+              <span style={{ fontSize:11, color:D.lt, fontFamily:MONO }}>PKI-first CLM · Made with ♥ towards PKI · Built by a real PKI engineer</span>
             </div>
             <span style={{ fontSize:12, color:D.lt }}>© 2026 SSLVault. All rights reserved.</span>
           </div>
