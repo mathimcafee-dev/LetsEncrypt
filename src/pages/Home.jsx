@@ -6,6 +6,21 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
+// Mobile breakpoint hook
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const [isTablet, setIsTablet] = useState(window.innerWidth < 1024)
+  useEffect(() => {
+    const fn = () => {
+      setIsMobile(window.innerWidth < 768)
+      setIsTablet(window.innerWidth < 1024)
+    }
+    window.addEventListener('resize', fn)
+    return () => window.removeEventListener('resize', fn)
+  }, [])
+  return { isMobile, isTablet }
+}
+
 const F = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
@@ -607,6 +622,7 @@ function ShowcaseTabs({ nav }) {
 }
 
 export default function Home({ nav }) {
+  const { isMobile, isTablet } = useIsMobile()
   const [certCount, setCertCount] = useState(null)
   const [displayCount, setDisplayCount] = useState(0)
 
@@ -639,6 +655,36 @@ export default function Home({ nav }) {
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes owlishFade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ── Mobile & tablet responsive ── */
+        @media (max-width:767px) {
+          .home-hero-title { font-size:36px !important; letter-spacing:-1px !important; }
+          .home-hero-sub { font-size:15px !important; }
+          .home-hero-btns { flex-direction:column !important; align-items:stretch !important; }
+          .home-hero-btns button { width:100% !important; justify-content:center !important; }
+          .home-stats { grid-template-columns:1fr 1fr !important; gap:12px !important; }
+          .home-feature-grid { grid-template-columns:1fr !important; }
+          .home-section { padding:64px 20px !important; }
+          .home-section-inner { max-width:100% !important; padding:0 !important; }
+          .home-workflow-grid { grid-template-columns:1fr !important; }
+          .home-ca-grid { grid-template-columns:1fr 1fr !important; gap:8px !important; }
+          .home-showcase { padding:0 16px !important; }
+          .home-tabs { gap:4px !important; overflow-x:auto !important; }
+          .home-tabs button { font-size:11px !important; padding:7px 12px !important; white-space:nowrap !important; }
+          .home-app-window { border-radius:10px !important; }
+          .home-footer-grid { grid-template-columns:1fr 1fr !important; gap:28px !important; }
+          .home-nav-links { display:none !important; }
+          .home-mission-grid { grid-template-columns:1fr !important; }
+        }
+        @media (min-width:768px) and (max-width:1023px) {
+          .home-hero-title { font-size:48px !important; }
+          .home-feature-grid { grid-template-columns:repeat(2,1fr) !important; }
+          .home-section { padding:80px 32px !important; }
+          .home-workflow-grid { grid-template-columns:repeat(2,1fr) !important; }
+          .home-footer-grid { grid-template-columns:repeat(2,1fr) !important; gap:32px !important; }
+          .home-showcase { padding:0 24px !important; }
+          .home-mission-grid { grid-template-columns:1fr !important; }
+        }
       `}</style>
 
       {/* ── NAV ─────────────────────────────────────────────────────── */}
@@ -894,14 +940,14 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CAPABILITY LIST ──────────────────────────────────────────── */}
-      <section id="platform" style={{ background:C.white, padding:'100px 40px', position:'relative', overflow:'hidden' }}>
+      <section id="platform" style={{ background:C.white, padding:'clamp(60px,8vw,100px) clamp(20px,5vw,40px)', position:'relative', overflow:'hidden' }}>
         {/* Watermark — giant shield outline */}
         <svg style={{ position:'absolute', right:'-3%', bottom:'-8%', width:380, height:380,
           opacity:0.035, pointerEvents:'none', userSelect:'none' }}
           viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="0.6">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
           <FadeUp>
             <div style={{ marginBottom:60 }}>
               <Tag>Platform</Tag>
@@ -940,7 +986,7 @@ export default function Home({ nav }) {
 
       {/* ── FEATURE DEEP-DIVES ───────────────────────────────────────── */}
       <section style={{ background:C.bg, padding:'100px 40px 20px', borderTop:`1px solid ${C.border}` }}>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
 
           {/* Feature 1 — Zero-touch lifecycle */}
           <FeatureBlock
@@ -1079,7 +1125,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
-      <section id="workflow" style={{ background:C.white, padding:'100px 40px',
+      <section id="workflow" style={{ background:C.white, padding:'clamp(60px,8vw,100px) clamp(20px,5vw,40px)',
         borderTop:`1px solid ${C.border}`, position:'relative', overflow:'hidden' }}>
         {/* Watermark — huge "→" flow arrow */}
         <div style={{ position:'absolute', left:'50%', top:'50%',
@@ -1089,7 +1135,7 @@ export default function Home({ nav }) {
           fontFamily:"'Inter var','Inter',system-ui,sans-serif",
           letterSpacing:'-20px', whiteSpace:'nowrap',
         }}>→</div>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
           <FadeUp>
             <div style={{ marginBottom:64 }}>
               <Tag>Workflow</Tag>
@@ -1189,7 +1235,7 @@ export default function Home({ nav }) {
 
       {/* ── MISSION & ETHICS ────────────────────────────────────────── */}
       <section id="mission" style={{
-        background:C.bg, padding:'100px 40px',
+        background:C.bg, padding:'clamp(60px,8vw,100px) clamp(20px,5vw,40px)',
         borderTop:`1px solid ${C.border}`,
         position:'relative', overflow:'hidden',
       }}>
@@ -1200,7 +1246,7 @@ export default function Home({ nav }) {
           fontFamily:"'Inter var','Inter',system-ui,sans-serif",
           letterSpacing:'-12px',
         }}>PKI</div>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
           <FadeUp>
             <div style={{ marginBottom:72 }}>
               <Tag>Mission</Tag>
@@ -1253,7 +1299,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── SECURITY TRUST STRIP ────────────────────────────────────── */}
-      <section style={{ background:C.white, padding:'72px 40px',
+      <section style={{ background:C.white, padding:'clamp(40px,6vw,72px) clamp(20px,5vw,40px)',
         borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`,
         position:'relative', overflow:'hidden' }}>
         {/* Watermark — repeating lock icons row */}
@@ -1270,7 +1316,7 @@ export default function Home({ nav }) {
             </svg>
           ))}
         </div>
-        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto', width:'100%' }}>
           <FadeUp>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
               {[

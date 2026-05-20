@@ -3,7 +3,7 @@ import {
   ChevronRight, ExternalLink, Shield, Server, BookOpen, Zap, Globe,
   Key, ArrowRight, RefreshCw, Search, Activity, Cloud, AlertCircle,
   Copy, Check, Clock, Lock, Settings as SettingsIcon, FileDown,
-  CircleHelp, Bug, Network, Bot
+  CircleHelp, Bug, Network, Bot, BarChart2, Eye, ShieldCheck, CalendarDays
 } from 'lucide-react'
 import '../styles/design-v2.css'
 
@@ -11,8 +11,7 @@ function CodeBlock({ code, label = 'shell' }) {
   const [ok, setOk] = useState(false)
   const doCopy = () => {
     try { navigator.clipboard.writeText(code) } catch (e) {}
-    setOk(true)
-    setTimeout(() => setOk(false), 1800)
+    setOk(true); setTimeout(() => setOk(false), 1800)
   }
   return (
     <div className="v2-code" style={{ marginBottom: 10 }}>
@@ -32,133 +31,139 @@ function CodeBlock({ code, label = 'shell' }) {
   )
 }
 
-function Step({ n, title, terminal, children }) {
+function Note({ type = 'tip', children }) {
+  const s = {
+    tip:     { bg: '#eff6ff', border: '#bfdbfe', color: '#1d4ed8', label: 'TIP' },
+    warning: { bg: '#fffbeb', border: '#fde68a', color: '#92400e', label: 'WARNING' },
+    info:    { bg: '#f0fdf4', border: '#bbf7d0', color: '#15803d', label: 'INFO' },
+  }[type]
   return (
-    <div className="v2-step">
-      <div className="v2-step-num">{n}</div>
-      <div className="v2-step-body">
-        <div className="v2-step-title">{title}</div>
-        {children}
-        {terminal && <CodeBlock code={terminal} label="terminal" />}
+    <div style={{ background: s.bg, border: `0.5px solid ${s.border}`, borderRadius: 8, padding: '10px 14px', margin: '10px 0', fontSize: 13, color: s.color, lineHeight: 1.6 }}>
+      <strong>{s.label}:</strong> {children}
+    </div>
+  )
+}
+
+function Step({ n, title, children }) {
+  return (
+    <div style={{ display: 'flex', gap: 14, marginBottom: 20 }}>
+      <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#0e7fc0', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>{n}</div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6 }}>{title}</div>
+        <div style={{ fontSize: 13, color: 'var(--v2-text-2)', lineHeight: 1.7 }}>{children}</div>
       </div>
-    </div>
-  )
-}
-
-function Note({ type = 'info', children }) {
-  const variant = type === 'warn' ? 'warning' : type === 'success' || type === 'tip' ? 'tip' : type === 'error' ? 'error' : 'info'
-  return (
-    <div className={`v2-callout ${variant}`} style={{ marginBottom: 10 }}>{children}</div>
-  )
-}
-
-function Section({ title, subtitle, icon: Icon, defaultOpen = false, anchor, children }) {
-  const [open, setOpen] = useState(defaultOpen)
-  return (
-    <div id={anchor} className={`v2-accordion ${open ? 'open' : ''}`} style={{ marginBottom: 8, scrollMarginTop: 80 }}>
-      <button className="v2-accordion-head" onClick={() => setOpen(o => !o)}>
-        <span className="v2-accordion-icon"><Icon size={15} strokeWidth={1.8} /></span>
-        <span style={{ flex: 1 }}>
-          <div className="v2-accordion-title">{title}</div>
-          {subtitle && <div className="v2-accordion-subtitle">{subtitle}</div>}
-        </span>
-        <ChevronRight size={14} strokeWidth={1.8} className="v2-accordion-chev" />
-      </button>
-      {open && <div className="v2-accordion-body" style={{ paddingTop: 12 }}>{children}</div>}
-    </div>
-  )
-}
-
-function FAQ({ q, a }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <div className={`v2-accordion ${open ? 'open' : ''}`} style={{ marginBottom: 6 }}>
-      <button className="v2-accordion-head" onClick={() => setOpen(o => !o)}>
-        <span className="v2-accordion-icon"><CircleHelp size={14} strokeWidth={1.8} /></span>
-        <span className="v2-accordion-title" style={{ flex: 1 }}>{q}</span>
-        <ChevronRight size={14} strokeWidth={1.8} className="v2-accordion-chev" />
-      </button>
-      {open && <div className="v2-accordion-body" style={{ paddingTop: 12 }}><p>{a}</p></div>}
     </div>
   )
 }
 
 function Divider({ label, title }) {
   return (
-    <div style={{ margin: '32px 0 14px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-        <span className="v2-section-label">{label}</span>
-        <div style={{ flex: 1, height: 1, background: 'var(--v2-border)' }} />
-      </div>
-      <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--v2-text)', letterSpacing: '-0.2px', margin: 0 }}>
-        {title}
-      </h2>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '28px 0 16px' }}>
+      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)', letterSpacing: '1px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{label}</span>
+      <div style={{ flex: 1, height: '0.5px', background: 'var(--v2-border)' }} />
+      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text-2)', whiteSpace: 'nowrap' }}>{title}</span>
     </div>
   )
 }
 
-const QUICK_LINKS = [
-  { icon: Zap,        title: 'Getting Started',       desc: 'Issue your first cert in minutes',        anchor: 'getting-started' },
-  { icon: Bot,        title: 'Persistent Agent',      desc: 'Zero-touch VPS installs and renewals',    anchor: 'persistent-agent' },
-  { icon: Cloud,      title: 'Shared Hosting',        desc: 'cPanel — no SSH needed',                  anchor: 'shared-hosting' },
-  { icon: RefreshCw,  title: 'Auto-Renewal',          desc: 'Set it once, renew forever',              anchor: 'auto-renewal' },
-  { icon: Network,    title: 'DNS Providers',         desc: 'Auto-add TXT/CNAME records',              anchor: 'dns-providers' },
-  { icon: Search,     title: 'CT Log Discovery',      desc: 'Find all certs for your domains',         anchor: 'ct-discovery' },
-  { icon: Activity,   title: 'SSL Monitor',           desc: 'Track expiry for any domain',             anchor: 'monitor' },
-  { icon: Bug,        title: 'Troubleshooting',       desc: 'Common errors and fixes',                 anchor: 'troubleshooting' },
-  { icon: Key,        title: 'KeyLocker',             desc: 'Encrypted private key vault',             anchor: 'keylocker' },
-  { icon: FileDown,   title: 'Import Certificates',   desc: 'Add existing certs to inventory',         anchor: 'import' },
+function Section({ title, subtitle, icon: Icon, defaultOpen = false, anchor, children }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div id={anchor} className="v2-card" style={{ marginBottom: 10, overflow: 'hidden' }}>
+      <div onClick={() => setOpen(v => !v)}
+        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', cursor: 'pointer',
+          background: open ? 'var(--v2-surface-3)' : 'var(--v2-surface)', transition: 'background .15s' }}>
+        {Icon && <Icon size={16} color="var(--v2-green)" />}
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--v2-text)' }}>{title}</div>
+          {subtitle && <div style={{ fontSize: 12, color: 'var(--v2-text-3)', marginTop: 2 }}>{subtitle}</div>}
+        </div>
+        <ChevronRight size={15} color="var(--v2-text-3)"
+          style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform .2s' }} />
+      </div>
+      {open && (
+        <div style={{ padding: '18px 20px', borderTop: '0.5px solid var(--v2-border)', animation: 'fadeIn .15s ease' }}>
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const SECTIONS = [
+  { icon: Zap,          title: 'Getting Started',         desc: 'Issue your first cert in minutes',         anchor: 'getting-started' },
+  { icon: Bot,          title: 'Persistent Agent',        desc: 'Zero-touch VPS installs and renewals',     anchor: 'persistent-agent' },
+  { icon: Cloud,        title: 'Shared Hosting / cPanel', desc: 'No SSH needed',                            anchor: 'shared-hosting' },
+  { icon: RefreshCw,    title: 'Auto-Renewal',            desc: 'Set it once, renew forever',               anchor: 'auto-renewal' },
+  { icon: Network,      title: 'DNS Providers',           desc: 'Cloudflare, Vercel, Route53 auto-DCV',     anchor: 'dns-providers' },
+  { icon: Lock,         title: 'KeyLocker',               desc: 'AES-256 encrypted private key vault',      anchor: 'keylocker' },
+  { icon: CalendarDays, title: '47-Day Readiness',        desc: 'CA/B Forum 2026–2029 compliance',          anchor: 'readiness' },
+  { icon: ShieldCheck,  title: 'CA Intelligence',         desc: 'DigiCert, Sectigo & shadow IT visibility', anchor: 'ca-intelligence' },
+  { icon: Activity,     title: 'SSL Health Score',        desc: 'Grade A–F per domain',                     anchor: 'ssl-health' },
+  { icon: Search,       title: 'CT Log Discovery',        desc: 'Find all certs for your domains',          anchor: 'ct-discovery' },
+  { icon: Eye,          title: 'CT Abuse Monitor',        desc: 'Detect suspicious certs in CT logs',       anchor: 'ct-abuse' },
+  { icon: CalendarDays, title: 'Renewal Calendar',        desc: 'Heatmap view of upcoming renewals',        anchor: 'renewal-calendar' },
+  { icon: Bug,          title: 'Troubleshooting',         desc: 'Common errors and fixes',                  anchor: 'troubleshooting' },
 ]
 
 export default function KnowledgeBase({ nav }) {
+  const [search, setSearch] = useState('')
+
+  const filtered = SECTIONS.filter(s =>
+    !search || s.title.toLowerCase().includes(search.toLowerCase()) || s.desc.toLowerCase().includes(search.toLowerCase())
+  )
+
   return (
     <div className="v2-page">
-      <div className="v2-container" style={{ maxWidth: 920 }}>
+      <div className="v2-container" style={{ maxWidth: 860, padding: '32px 24px 80px' }}>
 
-        {/* HERO */}
-        <div style={{ padding: '8px 0 24px' }}>
-          <h1 className="v2-h1" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>Knowledge Base</h1>
-          <p className="v2-subtitle" style={{ fontSize: 14, marginTop: 4, maxWidth: 560 }}>
-            Guides and reference docs for every SSLVault feature — agents, installation, DNS validation, auto-renewal, and more.
+        {/* Header */}
+        <div style={{ marginBottom: 28 }}>
+          <h1 className="v2-h1" style={{ fontSize: 24, marginBottom: 6 }}>Knowledge Base</h1>
+          <p style={{ fontSize: 13, color: 'var(--v2-text-3)', marginBottom: 16 }}>
+            SSLVault documentation — issue, monitor, auto-renew, and manage certificates.
           </p>
+          <div style={{ position: 'relative' }}>
+            <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--v2-text-3)' }} />
+            <input value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search docs…"
+              style={{ width: '100%', padding: '9px 12px 9px 34px', fontSize: 13, borderRadius: 8,
+                border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface)',
+                color: 'var(--v2-text)', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+          </div>
         </div>
 
-        {/* QUICK LINKS */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8, marginBottom: 24 }}>
-          {QUICK_LINKS.map(({ icon: Icon, title, desc, anchor }) => (
-            <a key={anchor}
-               href={`#${anchor}`}
-               onClick={e => { e.preventDefault(); document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth' }) }}
-               className="v2-card v2-card-pad"
-               style={{ textDecoration: 'none', color: 'inherit', display: 'block', cursor: 'pointer' }}
-               onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--v2-border-strong)' }}
-               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--v2-border)' }}>
-              <div className="v2-icontile" style={{ marginBottom: 10 }}>
-                <Icon size={15} strokeWidth={1.8} />
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 3, letterSpacing: '-0.1px' }}>{title}</div>
-              <div style={{ fontSize: 11, color: 'var(--v2-text-2)', lineHeight: 1.55 }}>{desc}</div>
-            </a>
-          ))}
-        </div>
+        {/* Quick nav */}
+        {!search && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 8, marginBottom: 28 }}>
+            {SECTIONS.map(s => (
+              <a key={s.anchor} href={`#${s.anchor}`}
+                onClick={e => { e.preventDefault(); document.getElementById(s.anchor)?.scrollIntoView({ behavior: 'smooth' }) }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 12px',
+                  background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)', borderRadius: 8,
+                  textDecoration: 'none', transition: 'border-color .15s, background .15s', cursor: 'pointer' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--v2-green)'; e.currentTarget.style.background = 'var(--v2-green-bg)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--v2-border)'; e.currentTarget.style.background = 'var(--v2-surface)' }}>
+                <s.icon size={13} color="var(--v2-green)" />
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-text-2)' }}>{s.title}</span>
+              </a>
+            ))}
+          </div>
+        )}
 
-        {/* SECTION 1 — GETTING STARTED */}
-        <Divider label="01 · BASICS" title="Issue your first SSL certificate" />
-        <Section anchor="getting-started"
-                 title="Getting started"
-                 subtitle="DV, OV, EV & Wildcard via GoGetSSL — issued in minutes"
-                 icon={Zap}
-                 defaultOpen>
+        {/* ── SECTION 1 — GETTING STARTED ── */}
+        <Divider label="01 · Start" title="Issue your first certificate" />
+        <Section anchor="getting-started" title="Getting started" subtitle="DV, OV, EV & Wildcard via GoGetSSL — issued in minutes" icon={Zap} defaultOpen>
           <Step n={1} title="Go to Issue Certificate">
-            <p>Click <strong>Issue Certificate</strong> in the sidebar. Enter your domain name (e.g. <span className="v2-kbd">example.com</span> or <span className="v2-kbd">*.example.com</span> for wildcard), select the certificate type and validity period, then click <strong>Issue Certificate</strong>.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8, margin: '10px 0' }}>
+            <p>Click <strong>Issue Certificate</strong> in the sidebar. Enter your domain, select cert type and validity, then click Issue.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 8, margin: '10px 0' }}>
               {[
-                { type: 'DV (Domain Validated)', time: '~5 minutes', use: 'Blogs, personal sites, APIs' },
+                { type: 'DV (Domain Validated)', time: '~5 min', use: 'Blogs, APIs, personal sites' },
                 { type: 'OV (Org Validated)', time: '1–3 days', use: 'Business websites' },
                 { type: 'EV (Extended Validation)', time: '2–7 days', use: 'E-commerce, banks' },
-                { type: 'Wildcard DV', time: '~5 minutes', use: '*.yourdomain.com — all subdomains' },
+                { type: 'Wildcard DV', time: '~5 min', use: '*.domain.com — all subdomains' },
               ].map(({ type, time, use }) => (
-                <div key={type} style={{ background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)', borderRadius: 'var(--v2-r-md)', padding: '10px 12px' }}>
+                <div key={type} style={{ background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)', borderRadius: 8, padding: '10px 12px' }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 3 }}>{type}</div>
                   <div style={{ fontSize: 11, color: 'var(--v2-green-text)', marginBottom: 2 }}>⏱ {time}</div>
                   <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{use}</div>
@@ -167,578 +172,250 @@ export default function KnowledgeBase({ nav }) {
             </div>
           </Step>
           <Step n={2} title="Complete domain control validation (DCV)">
-            <p>GoGetSSL verifies you own the domain before issuing. Three methods available:</p>
-            <table className="v2-table">
-              <tbody>
-                <tr><td style={{ fontWeight: 600, width: 100 }}>DNS CNAME</td><td>Add a CNAME record to your DNS — recommended. SSLVault does this automatically if a DNS provider is connected.</td></tr>
-                <tr><td style={{ fontWeight: 600 }}>DNS TXT</td><td>Add a TXT record — similar to CNAME but some registrars prefer it.</td></tr>
-                <tr><td style={{ fontWeight: 600 }}>Email</td><td>Approval email sent to admin@, webmaster@, or hostmaster@ — you click a link.</td></tr>
-              </tbody>
-            </table>
-            <Note type="tip">Connect a DNS provider under <strong>More → DNS Providers</strong> and DCV is handled fully automatically — no copy-pasting records.</Note>
+            <p>SSLVault verifies you own the domain. Three methods:</p>
+            <table className="v2-table"><tbody>
+              <tr><td style={{ fontWeight: 600, width: 100 }}>DNS CNAME</td><td>Recommended. Add a CNAME record. <strong>Automatic if DNS provider connected.</strong></td></tr>
+              <tr><td style={{ fontWeight: 600 }}>DNS TXT</td><td>Add a TXT record. Also automatable via DNS provider.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>Email</td><td>Click approval link sent to admin@, webmaster@, or hostmaster@.</td></tr>
+            </tbody></table>
+            <Note type="tip">Connect Cloudflare, Vercel, or Route53 under <strong>DNS Providers</strong> and DCV is fully automatic — no copy-pasting records.</Note>
           </Step>
-          <Step n={3} title="Certificate appears in Dashboard">
-            <p>Once issued, your certificate appears in the <strong>Dashboard</strong>. Click any row to expand — you'll see expiry date, issuer, full PEM files, and the Install button.</p>
+          <Step n={3} title="Certificate appears in Inventory">
+            Once issued, your certificate appears in <strong>Inventory &amp; Monitor</strong>. Click any row to expand — expiry, issuer, PEM files, install button, and private key reveal.
           </Step>
           <Step n={4} title="Install on your server">
-            <p>Click <strong>Install</strong> on the cert row. Three paths:</p>
-            <ul>
-              <li><strong>Persistent agent (VPS)</strong> — cert dispatched automatically to your connected server. No SSH needed.</li>
-              <li><strong>Install agent first</strong> — no agent yet? The modal shows a one-line install command. Run it, then dispatch.</li>
-              <li><strong>cPanel / shared hosting</strong> — enter cPanel username + API token. SSLVault installs via UAPI. No agent or SSH required.</li>
-            </ul>
+            Three paths: <strong>Persistent agent (VPS)</strong> — cert dispatched automatically. <strong>cPanel</strong> — enter API token, no SSH. <strong>Manual download</strong> — copy PEM files directly.
           </Step>
-          <Note type="tip">The agent can be installed before or after issuing a certificate — the Install modal handles both flows.</Note>
         </Section>
 
-        {/* SECTION 2 — AGENT */}
+        {/* ── SECTION 2 — AGENT ── */}
         <Divider label="02 · VPS" title="Persistent agent — SSH once, never again" />
-        <Section anchor="persistent-agent"
-                 title="Install the agent on your VPS"
-                 subtitle="One curl command — zero-touch installs and renewals forever"
-                 icon={Bot}>
-          <Step n={1} title="Go to Manage → Servers">
-            <p>In the sidebar under <strong>Manage</strong>, click <strong>Servers</strong>. Click <strong>Add Server</strong> — a modal appears with a one-time install token and command.</p>
+        <Section anchor="persistent-agent" title="Install the persistent agent" subtitle="One curl command — zero-touch installs and renewals forever" icon={Bot}>
+          <Step n={1} title="Go to Servers & agents">
+            Navigate to <strong>Automation → Servers &amp; agents</strong>. Click <strong>Install agent</strong> to get your personalised install command.
           </Step>
-          <Step n={2} title="Run the install command on your server"
-                terminal={`curl -fsSL https://easysecurity.in/agent-install.sh | bash`}>
-            <p>SSH into your server once and run the command. The installer automatically:</p>
-            <ul>
-              <li>Detects your OS (Ubuntu / Debian / CentOS / Amazon Linux / RHEL)</li>
-              <li>Detects your web server (Nginx or Apache)</li>
-              <li>Installs the agent daemon as a systemd service</li>
-              <li>Registers with SSLVault — server appears online within 1–2 minutes</li>
-            </ul>
+          <Step n={2} title="Run on your server">
+            <CodeBlock code={`curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash`} />
+            The agent installs as a systemd service, registers with SSLVault, and appears in the Servers list within 1–2 minutes.
           </Step>
-          <Step n={3} title="Server shows Online in Servers page">
-            <p>Once registered, the server card shows a green <strong>Online</strong> dot, last-seen time, agent version, and recent job log.</p>
+          <Step n={3} title="Verify it's running">
+            <CodeBlock code={`sudo systemctl status sslvault-agent`} />
+            Status should show <strong>active (running)</strong>. The agent polls every 5 minutes for new jobs.
           </Step>
-          <Step n={4} title="Dispatch a certificate install">
-            <p><strong>Dashboard</strong> → expand cert row → <strong>Install</strong> → modal detects your agent → click <strong>Deploy</strong>. The agent:</p>
-            <ul>
-              <li>Writes <span className="v2-kbd">fullchain.pem</span> and <span className="v2-kbd">privkey.pem</span> to <span className="v2-kbd">/etc/ssl/sslvault/yourdomain/</span></li>
-              <li>Updates Nginx or Apache config with correct SSL paths</li>
-              <li>Tests config (<span className="v2-kbd">nginx -t</span> or <span className="v2-kbd">apache2ctl configtest</span>)</li>
-              <li>Reloads the web server</li>
-              <li>Reports result back to SSLVault within seconds</li>
-            </ul>
+          <Step n={4} title="Dispatch a certificate">
+            In <strong>Inventory</strong>, click Install on a cert row, select your server, and click Dispatch. The agent installs the cert and reloads Nginx/Apache automatically.
           </Step>
-          <Step n={5} title="Auto-renewal installs automatically">
-            <p>When a certificate auto-renews, the agent picks up the new cert on its next poll (every 5 minutes) and installs it — no action needed from you.</p>
-          </Step>
-          <Note type="tip">
-            <span className="v2-callout-title">Agent before or after — both work</span>
-            You can install the agent before or after issuing a cert. The Install modal handles both flows.
-          </Note>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, margin: '14px 0 10px' }}>
-            <div className="v2-card v2-card-pad">
-              <div className="v2-section-label" style={{ marginBottom: 8 }}>Supported OS</div>
-              <ul style={{ paddingLeft: 16, margin: 0, fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.85 }}>
-                <li>Ubuntu 20 / 22 / 24</li>
-                <li>Debian 10 / 11 / 12</li>
-                <li>CentOS 7 / 8 / 9</li>
-                <li>Amazon Linux 2 / 2023</li>
-                <li>RHEL 8 / 9</li>
-                <li style={{ color: 'var(--v2-text-3)' }}>Other Linux (best-effort)</li>
-                <li style={{ color: 'var(--v2-text-3)' }}>Windows — not supported</li>
-              </ul>
-            </div>
-            <div className="v2-card v2-card-pad">
-              <div className="v2-section-label" style={{ marginBottom: 8 }}>Web server support</div>
-              <ul style={{ paddingLeft: 16, margin: 0, fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.85 }}>
-                <li>Nginx — auto-config + reload ✓</li>
-                <li>Apache2 / httpd — auto-config + reload ✓</li>
-                <li style={{ color: 'var(--v2-text-3)' }}>Caddy — cert files written only</li>
-                <li style={{ color: 'var(--v2-text-3)' }}>Node.js — cert files written only</li>
-                <li style={{ color: 'var(--v2-text-3)' }}>No web server — files only</li>
-              </ul>
-            </div>
-            <div className="v2-card v2-card-pad">
-              <div className="v2-section-label" style={{ marginBottom: 8 }}>Quick reference</div>
-              <ul style={{ paddingLeft: 16, margin: 0, fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.85 }}>
-                <li><span className="v2-mono">systemctl status sslvault-agent</span></li>
-                <li><span className="v2-mono">journalctl -u sslvault-agent -f</span></li>
-                <li><span className="v2-mono">systemctl restart sslvault-agent</span></li>
-                <li><span className="v2-mono">systemctl stop sslvault-agent</span></li>
-                <li><span className="v2-mono">sslvault-agent uninstall</span></li>
-              </ul>
-            </div>
-          </div>
-
-          <Note type="info">
-            <span className="v2-callout-title">How the agent works</span>
-            The agent is a pure bash daemon running as a systemd service. It polls SSLVault every 5 minutes for pending jobs (installs, renewals). It makes <strong>outbound-only</strong> HTTPS connections — no inbound ports needed.
-          </Note>
-
-          {/* ── AGENT COMMANDS REFERENCE ── */}
-          <div className="v2-section-label" style={{ margin: '20px 0 10px' }}>Agent status &amp; control</div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 10, marginBottom: 14 }}>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Activity size={13} color="var(--v2-green)" /> Check agent status
-              </div>
-              <CodeBlock code={`# Is the daemon running?
-systemctl status sslvault-agent
-
-# One-liner — shows active/inactive/failed
-systemctl is-active sslvault-agent
-
-# Agent self-report (version + last poll time)
-sslvault-agent status`} label="bash" />
-              <p style={{ fontSize: 11, color: 'var(--v2-text-3)', margin: 0 }}>Look for <span className="v2-mono">Active: active (running)</span> in the output. If it says <span className="v2-mono">failed</span> or <span className="v2-mono">inactive</span>, see troubleshooting below.</p>
-            </div>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <RefreshCw size={13} color="#f59e0b" /> Start / stop / restart
-              </div>
-              <CodeBlock code={`# Start the agent
-systemctl start sslvault-agent
-
-# Stop the agent (persists across reboot until re-started)
-systemctl stop sslvault-agent
-
-# Restart (use after config changes)
-systemctl restart sslvault-agent
-
-# Disable auto-start on boot
-systemctl disable sslvault-agent
-
-# Re-enable auto-start on boot
-systemctl enable sslvault-agent`} label="bash" />
-            </div>
-          </div>
-
-          <div className="v2-section-label" style={{ margin: '16px 0 10px' }}>View logs</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 10, marginBottom: 14 }}>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8 }}>Live log stream</div>
-              <CodeBlock code={`# Follow logs in real-time (Ctrl+C to exit)
-journalctl -u sslvault-agent -f
-
-# Last 50 lines
-journalctl -u sslvault-agent -n 50
-
-# Last 30 minutes
-journalctl -u sslvault-agent --since "30 min ago"
-
-# All logs since install
-journalctl -u sslvault-agent --no-pager`} label="bash" />
-            </div>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8 }}>Log file (if journald unavailable)</div>
-              <CodeBlock code={`# Tail the flat log file
-tail -f /var/log/sslvault-agent.log
-
-# Last 100 lines
-tail -n 100 /var/log/sslvault-agent.log
-
-# Search for errors
-grep -i "error\|fail\|fatal" /var/log/sslvault-agent.log`} label="bash" />
-            </div>
-          </div>
-
-          <div className="v2-section-label" style={{ margin: '16px 0 10px' }}>Remove / delete the agent</div>
-          <Note type="warn">
-            Uninstalling removes the daemon and registration. The server card in SSLVault will show Offline. Delete the server card from the Servers page after uninstalling.
-          </Note>
-          <CodeBlock code={`# Full uninstall (stops service, removes files, de-registers)
-sslvault-agent uninstall
-
-# Manual removal if the uninstall command is unavailable
-systemctl stop sslvault-agent
-systemctl disable sslvault-agent
-rm -f /etc/systemd/system/sslvault-agent.service
-rm -f /usr/local/bin/sslvault-agent
-rm -f /etc/sslvault/agent.conf
-rm -rf /var/lib/sslvault-agent
-systemctl daemon-reload`} label="bash" />
-
-          <div className="v2-section-label" style={{ margin: '20px 0 10px' }}>Troubleshooting</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 10, marginBottom: 8 }}>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Agent shows Offline in SSLVault</div>
-              <CodeBlock code={`# Check if service is running
-systemctl status sslvault-agent
-
-# Check outbound connectivity to SSLVault
-curl -I https://easysecurity.in/functions/v1/agent-daemon
-
-# Restart and watch logs
-systemctl restart sslvault-agent
-journalctl -u sslvault-agent -f`} label="bash" />
-              <p style={{ fontSize: 11, color: 'var(--v2-text-3)', margin: 0 }}>The agent needs outbound HTTPS (port 443) to <span className="v2-mono">easysecurity.in</span>. Check your firewall/UFW rules.</p>
-            </div>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Service fails to start</div>
-              <CodeBlock code={`# See exact failure reason
-journalctl -u sslvault-agent -n 20 --no-pager
-
-# Check if binary exists and is executable
-ls -la /usr/local/bin/sslvault-agent
-
-# Check config file
-cat /etc/sslvault/agent.conf
-
-# Re-run the installer to repair
-curl -fsSL https://easysecurity.in/agent-install.sh | bash`} label="bash" />
-            </div>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Job stuck / cert not installing</div>
-              <CodeBlock code={`# Check agent is polling (look for "Checking for jobs")
-journalctl -u sslvault-agent -f
-
-# Force an immediate poll cycle
-systemctl restart sslvault-agent
-
-# Verify cert files were written
-ls -la /etc/ssl/sslvault/
-
-# Check web server config was updated
-nginx -t
-# or
-apache2ctl configtest`} label="bash" />
-            </div>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Firewall / UFW blocking agent</div>
-              <CodeBlock code={`# Allow outbound HTTPS (UFW)
-ufw allow out 443/tcp
-
-# Allow outbound HTTPS (iptables)
-iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
-
-# Verify connectivity
-curl -v https://easysecurity.in 2>&1 | grep "< HTTP"
-
-# Check current UFW status
-ufw status verbose`} label="bash" />
-            </div>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Web server reload failed after install</div>
-              <CodeBlock code={`# Test nginx config
-nginx -t
-
-# Test apache config
-apache2ctl configtest
-# or on CentOS/RHEL:
-httpd -t
-
-# Manually reload after fixing config errors
-systemctl reload nginx
-# or
-systemctl reload apache2
-
-# Check which web server the agent detected
-cat /etc/sslvault/agent.conf | grep WEB_SERVER`} label="bash" />
-            </div>
-            <div className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Check agent version &amp; update</div>
-              <CodeBlock code={`# Current version
-sslvault-agent --version
-
-# Update to latest (re-run installer — safe on existing installs)
-curl -fsSL https://easysecurity.in/agent-install.sh | bash
-
-# Confirm update
-sslvault-agent --version`} label="bash" />
-            </div>
-          </div>
-
-          <Note type="tip">
-            <span className="v2-callout-title">Still stuck?</span>
-            Run <span className="v2-mono">journalctl -u sslvault-agent -n 50 --no-pager</span> and paste the output to <strong>Contact → Support</strong>. Include your OS and web server type.
-          </Note>
-        </Section>
-
-        {/* SECTION 3 — SHARED HOSTING */}
-        <Divider label="03 · SHARED HOSTING" title="cPanel auto-install — no SSH needed" />
-        <Section anchor="shared-hosting"
-                 title="cPanel installer (PHP agent)"
-                 subtitle="GoDaddy, Bluehost, Hostinger, SiteGround"
-                 icon={Cloud}>
-          <Step n={1} title="Dashboard → expand cert row → Install → cPanel">
-            <p>In <strong>Dashboard</strong>, expand your cert row, click <strong>Install</strong>, and choose <strong>cPanel / Shared Hosting</strong>.</p>
-          </Step>
-          <Step n={2} title="Enter cPanel credentials">
-            <p>Enter your cPanel username and API token. Credentials are saved encrypted for future installs.</p>
-            <Note type="tip">Your cPanel username is your short login name (not email). Find it in your hosting welcome email or at <em>yourdomain.com/cpanel</em> → top-right corner.</Note>
-            <Note type="info">Create a cPanel API token: cPanel → <em>Manage API Tokens</em> → Create token → enable SSL permissions → copy.</Note>
-          </Step>
-          <Step n={3} title="Download and upload the PHP agent"
-                terminal={`# No terminal needed — done through your browser:
-# 1. Click "Download PHP Agent" — saves sslvault-agent.php
-# 2. cPanel → File Manager → public_html
-# 3. Upload sslvault-agent.php`}>
-            <p>A PHP file is generated with your credentials pre-embedded. Upload it to <span className="v2-kbd">public_html</span> via cPanel File Manager.</p>
-          </Step>
-          <Step n={4} title="Visit the agent URL to activate">
-            <p>Open a new tab and go to:</p>
-            <CodeBlock code="https://yourdomain.com/sslvault-agent.php" label="url" />
-            <p>The script calls cPanel's UAPI directly and activates SSL in seconds.</p>
-          </Step>
-          <Step n={5} title="Delete the PHP file immediately">
-            <p>The PHP file contains your API token. Delete it from File Manager right after use. Your SSL certificate stays active.</p>
-          </Step>
-          <Note type="warn">Every renewal requires repeating steps 1–5 for shared hosting. For zero-touch renewals, move to a VPS with the persistent agent.</Note>
-        </Section>
-
-        {/* SECTION 4 — AUTO-RENEWAL */}
-        <Divider label="04 · AUTOMATION" title="Set it once, renew forever" />
-        <Section anchor="auto-renewal"
-                 title="Auto-renewal"
-                 subtitle="Renews 30 days before expiry — certificates never expire"
-                 icon={RefreshCw}>
-          <Step n={1} title="Requirement: connect a DNS provider">
-            <p>Auto-renewal uses DNS-01 validation. You need a DNS provider connected so SSLVault can auto-create the CNAME/TXT challenge record.</p>
-            <Note type="info">Go to <strong>More → DNS Providers</strong> to connect Cloudflare, GoDaddy, Vercel, or DigitalOcean.</Note>
-          </Step>
-          <Step n={2} title="Enable auto-renewal on a certificate">
-            <p>In <strong>Dashboard → Renewal Schedule</strong> tab, find your certificate and toggle <strong>Auto-Renew</strong> on.</p>
-          </Step>
-          <Step n={3} title="SSLVault renews automatically">
-            <p>The renewal engine runs daily. When your cert is within 30 days of expiry:</p>
-            <ul>
-              <li>Orders a new certificate via GoGetSSL API</li>
-              <li>Auto-creates DCV record via your DNS provider</li>
-              <li>Downloads and stores the new certificate</li>
-              <li>If persistent agent connected: installs cert on your server automatically</li>
-              <li>Sends email confirmation when done</li>
-              <li>Retry schedule on failure: 0h → 6h → 24h → 3 days → 7 days</li>
-            </ul>
-          </Step>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10, marginTop: 12 }}>
-            <Note type="success">
-              <span className="v2-callout-title">Fully automated when you have:</span>
-              DNS provider connected · Persistent agent installed · Auto-renewal toggled on
-            </Note>
-            <Note type="warn">
-              <span className="v2-callout-title">Still needs manual steps if:</span>
-              Shared hosting (no persistent agent) · No DNS provider connected
-            </Note>
-          </div>
-        </Section>
-
-        {/* SECTION 5 — DNS */}
-        <Divider label="05 · INTEGRATIONS" title="Connect your DNS provider" />
-        <Section anchor="dns-providers"
-                 title="DNS providers"
-                 subtitle="Auto-add CNAME/TXT records for domain validation"
-                 icon={Network}>
-          <Step n={1} title="Go to More → DNS Providers">
-            <p>Click <strong>More → DNS Providers</strong> in the navigation. Click <strong>Add Provider</strong>.</p>
-          </Step>
-          <Step n={2} title="Select your provider and enter credentials">
-            <table className="v2-table">
-              <tbody>
-                <tr><td style={{ fontWeight: 500, width: 130 }}>Cloudflare</td><td>Zone:DNS:Edit API Token — Dashboard → My Profile → API Tokens</td></tr>
-                <tr><td style={{ fontWeight: 500 }}>GoDaddy</td><td>API Key + Secret from developer.godaddy.com/keys</td></tr>
-                <tr><td style={{ fontWeight: 500 }}>Vercel</td><td>API Token from vercel.com/account/tokens</td></tr>
-                <tr><td style={{ fontWeight: 500 }}>DigitalOcean</td><td>Personal Access Token with Write scope</td></tr>
-              </tbody>
-            </table>
-            <Note type="info">Credentials are encrypted with AES-256-GCM before storage. Only you can access them via Row-Level Security.</Note>
-          </Step>
-          <Step n={3} title="Enter the root domain this provider manages">
-            <p>Enter e.g. <span className="v2-kbd">example.com</span>. SSLVault uses this provider for all certificates under that domain — subdomains and wildcards included.</p>
-          </Step>
-          <Step n={4} title="DCV is now fully automatic">
-            <p>When you issue or renew a certificate, SSLVault auto-creates the <span className="v2-kbd">_acme-challenge</span> CNAME/TXT record, waits for propagation, verifies, then removes it — no manual steps.</p>
-          </Step>
-          <Note type="tip">Don't see your provider? Use the manual DCV method and paste the record into your registrar's DNS panel. Most propagate within 1–5 minutes.</Note>
-        </Section>
-
-        {/* SECTION 6 — CT DISCOVERY */}
-        <Divider label="06 · DISCOVERY" title="Find every cert issued for your domains" />
-        <Section anchor="ct-discovery"
-                 title="CT Log Discovery"
-                 subtitle="Audit certificates via Certificate Transparency logs"
-                 icon={Search}>
-          <Step n={1} title="Go to Dashboard → Discovery tab">
-            <p>In the dashboard, select the <strong>Discovery</strong> tab at the top.</p>
-          </Step>
-          <Step n={2} title="Enter a domain and scan">
-            <p>Type any domain (e.g. <span className="v2-kbd">example.com</span>) and click <strong>Scan CT Logs</strong>. SSLVault queries <strong>crt.sh</strong> — the public CT log aggregator — and returns all certificates ever issued for that domain and its subdomains.</p>
-            <Note type="info">CT logs are public. All CA-issued certs are logged by design — this is a TLS transparency requirement.</Note>
-          </Step>
-          <Step n={3} title="Add discovered domains to your monitor">
-            <p>Click <strong>Add to Monitor</strong> next to any discovered domain to start tracking its expiry, issuer, and health.</p>
-          </Step>
-          <Note type="tip">Use CT Discovery to audit your estate — you may find forgotten subdomains, staging certs, or certificates issued by an unexpected CA.</Note>
-        </Section>
-
-        {/* SECTION 7 — MONITOR */}
-        <Divider label="07 · MONITORING" title="Track any domain — no login required" />
-        <Section anchor="monitor"
-                 title="SSL Monitor"
-                 subtitle="Public scanner + personal inventory tracking"
-                 icon={Activity}>
-          <Step n={1} title="Open Dashboard → Monitor tab">
-            <p>The Monitor tab shows your full certificate inventory with expiry countdown, status, and issuer for every domain.</p>
-          </Step>
-          <Step n={2} title="Scan any domain">
-            <p>Type any domain and click <strong>Scan</strong>. Results show: expiry date, days remaining, issuer, valid/expired/revoked status, and TLS protocol version.</p>
-          </Step>
-          <Step n={3} title="Add to inventory for ongoing tracking">
-            <p>Click <strong>Add to Monitor</strong> to save the domain. SSLVault tracks it alongside your issued certificates and alerts you before it expires.</p>
+          <Note type="info">The agent reports CPU, RAM, and disk usage back to SSLVault. View live health stats in <strong>Servers &amp; agents</strong> — each server card shows health bars and the certificates it protects.</Note>
+          <Step n={5} title="Auto-renewal via agent">
+            When a cert is within 30 days of expiry and auto-renew is enabled, SSLVault issues a new cert and dispatches a renew job to the agent automatically. Zero manual steps.
           </Step>
         </Section>
 
-        {/* SECTION 8 — CERT FILES */}
-        <Divider label="08 · CERT FILES" title="Download and use your certificate files" />
-        <Section anchor="cert-details"
-                 title="Certificate files"
-                 subtitle="fullchain.pem · privkey.pem — where to get them and how to use them"
-                 icon={FileDown}>
-          <p>Expand any domain row in <strong>Dashboard</strong>. From the cert panel:</p>
-          <table className="v2-table" style={{ marginBottom: 12 }}>
-            <tbody>
-              <tr><td style={{ fontWeight: 600, width: 180 }}>fullchain.pem</td><td>Certificate + intermediate chain. Use this for all web server configs (Nginx, Apache, Caddy etc.)</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>privkey.pem</td><td>Your private key. Keep this secret. Never share it. Set permissions to 600.</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>cert.pem</td><td>End-entity cert only (no chain). Rarely needed — prefer fullchain.pem.</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>Download all</td><td>Downloads all three files as a zip.</td></tr>
-            </tbody>
-          </table>
-          <Note type="warn">Always use <strong>fullchain.pem</strong> — using cert.pem alone causes "certificate not trusted" errors on some browsers and clients.</Note>
-          <Note type="tip">The <strong>Details</strong> button opens a panel with one-click copy of the full PEM — useful when pasting into cPanel's SSL fields.</Note>
+        {/* ── SECTION 3 — CPANEL ── */}
+        <Divider label="03 · cPanel" title="Shared hosting — no SSH, no agent" />
+        <Section anchor="shared-hosting" title="cPanel / shared hosting install" subtitle="Install via cPanel UAPI — no SSH or agent required" icon={Cloud}>
+          <Step n={1} title="Get your cPanel API token">
+            In cPanel → Security → Manage API Tokens → Create token. Give it a name like <code>SSLVault</code>.
+          </Step>
+          <Step n={2} title="Enter credentials in SSLVault">
+            In Inventory, click Install on the cert row → select <strong>cPanel</strong> tab → enter your hostname, username, and API token.
+          </Step>
+          <Step n={3} title="SSLVault installs the certificate">
+            SSLVault calls cPanel's UAPI to install the certificate and private key directly. No SSH access required.
+          </Step>
+          <Note type="tip">cPanel installations also auto-renew. SSLVault re-issues the cert and re-installs via UAPI on the renewal date.</Note>
         </Section>
 
-
-        {/* SECTION 8b — KEYLOCKER */}
-        <Divider label="08b · KEYLOCKER" title="KeyLocker — encrypted private key vault" />
-        <Section anchor="keylocker"
-                 title="KeyLocker"
-                 subtitle="AES-256-GCM encrypted key storage with audit log and timed reveal"
-                 icon={Key}>
-          <p>KeyLocker stores your private keys encrypted at rest. Access is opt-in — keys are only stored if you click <strong>Save to KeyLocker</strong> after issuance.</p>
-          <table className="v2-table" style={{ marginBottom: 12 }}>
-            <tbody>
-              <tr><td style={{ fontWeight: 600, width: 180 }}>Encryption</td><td>AES-256-GCM per-key with unique IVs. Keys are never logged or transmitted in plaintext.</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>Reveal</td><td>Copy-only. Private key is displayed for 30 seconds maximum — prevents screen-share leaks. No download button.</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>Audit log</td><td>Every reveal is logged: timestamp, user, IP address. Visible in the KeyLocker audit panel.</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>Access control</td><td>Row-Level Security — only your account can access your keys. Admin users can manage keys across their account.</td></tr>
-            </tbody>
-          </table>
-          <Note type="warn">If you prefer keys to never leave your server, use the persistent agent to generate keys on-server — SSLVault never sees them.</Note>
+        {/* ── SECTION 4 — AUTO-RENEWAL ── */}
+        <Divider label="04 · Renewal" title="Auto-renewal — set and forget" />
+        <Section anchor="auto-renewal" title="Auto-renewal" subtitle="Enable once, renew forever with zero manual steps" icon={RefreshCw}>
+          <Step n={1} title="Enable auto-renew on a certificate">
+            In Inventory, expand a cert row. Toggle <strong>Auto-renew</strong> to ON. SSLVault will automatically renew 30 days before expiry.
+          </Step>
+          <Step n={2} title="Requirements">
+            For fully automatic renewal: DNS provider connected (for auto-DCV) + agent installed (for auto-install) or cPanel credentials saved. Without these, SSLVault renews the cert but you install manually.
+          </Step>
+          <Step n={3} title="Renewal notifications">
+            SSLVault sends email alerts at 30, 14, and 7 days before expiry. After renewal, you receive a confirmation email with the new expiry date.
+          </Step>
+          <Note type="info">The <strong>Renewal Calendar</strong> in the Intelligence section shows a GitHub-style heatmap of all upcoming renewals. Red = expiring soon, green = healthy.</Note>
         </Section>
 
-        {/* SECTION 8c — IMPORT */}
-        <Divider label="08c · IMPORT" title="Import existing certificates" />
-        <Section anchor="import"
-                 title="Import certificates"
-                 subtitle="Add existing certs to your inventory — any CA, any issuer"
-                 icon={FileDown}>
-          <Step n={1} title="Go to Dashboard → Import tab">
-            <p>In Dashboard, select the <strong>Import</strong> tab. Click <strong>Import Certificate</strong>.</p>
+        {/* ── SECTION 5 — DNS PROVIDERS ── */}
+        <Divider label="05 · DNS" title="DNS providers — automatic DCV" />
+        <Section anchor="dns-providers" title="Connect a DNS provider" subtitle="Cloudflare, Vercel, Route53, Namecheap, GoDaddy and more" icon={Network}>
+          <Step n={1} title="Go to DNS Providers">
+            Navigate to <strong>Automation → DNS Providers</strong>. Click <strong>Add provider</strong> and select your DNS host.
           </Step>
-          <Step n={2} title="Paste PEM files">
-            <p>Paste your <span className="v2-kbd">fullchain.pem</span> and <span className="v2-kbd">privkey.pem</span> content. SSLVault parses the chain and extracts:</p>
-            <ul>
-              <li>Domain / Subject Alternative Names</li>
-              <li>Expiry date and days remaining</li>
-              <li>Issuer and CA chain details</li>
-              <li>TLS protocol and cipher compatibility</li>
-            </ul>
+          <Step n={2} title="Enter API credentials">
+            <table className="v2-table"><tbody>
+              <tr><td style={{ fontWeight: 600, width: 120 }}>Cloudflare</td><td>API Token with Zone:DNS:Edit permission for your domain.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>Vercel</td><td>Vercel API token from Settings → Tokens.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>Route53</td><td>AWS Access Key ID + Secret with Route53 write permission.</td></tr>
+              <tr><td style={{ fontWeight: 600 }}>Namecheap</td><td>API key from Namecheap dashboard + whitelist your IP.</td></tr>
+            </tbody></table>
           </Step>
-          <Step n={3} title="Certificate added to inventory">
-            <p>The imported cert appears in your Dashboard inventory alongside GoGetSSL-issued certs. Expiry monitoring and email alerts work immediately. Auto-renewal is not available for imported certs (they weren't ordered through SSLVault).</p>
+          <Step n={3} title="How it works">
+            When issuing or renewing, SSLVault uses your DNS provider API to automatically add the CNAME/TXT validation record, waits for propagation, completes DCV, then cleans up the record. Fully automatic.
           </Step>
-          <Note type="tip">Use Import to track existing certificates from any CA — DigiCert, Sectigo, Let's Encrypt, or any other — in a single inventory with unified expiry alerts.</Note>
+          <Note type="tip">You can connect multiple DNS providers for different domains. SSLVault matches each domain to the right provider automatically.</Note>
         </Section>
 
-        {/* SECTION 9 — TROUBLESHOOTING */}
-        <Divider label="09 · TROUBLESHOOTING" title="Common issues, fixed fast" />
-        <div id="troubleshooting" style={{ scrollMarginTop: 80 }}>
-
-          <Section title="Agent install token expired" subtitle="Tokens are 1-hour TTL" icon={Clock}>
-            <p>Agent install tokens expire after 1 hour. Go to <strong>Servers</strong> → <strong>Add Server</strong> → generate a fresh token → re-run the install command.</p>
-          </Section>
-
-          <Section title="Permission denied during agent install" subtitle="Always run with sudo" icon={Lock}>
-            <p>The agent writes to <span className="v2-kbd">/etc/ssl/sslvault/</span> and modifies web server configs — root is required. Always prefix with <span className="v2-kbd">sudo</span>:</p>
-            <CodeBlock code={'curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash'} label="install" />
-          </Section>
-
-          <Section title="Nginx config test failed after agent ran" subtitle="Original config is auto-restored" icon={SettingsIcon}>
-            <p>The agent backs up your config before modifying it. If the test fails, the original is restored automatically. Diagnose with:</p>
-            <CodeBlock label="nginx-debug" code={'# Check Nginx error\nnginx -t\n\n# View backup\nls /etc/nginx/sites-available/*.sslvault-bak\n\n# Restore manually if needed\nsudo cp /etc/nginx/sites-available/yourdomain.conf.sslvault-bak \\\n  /etc/nginx/sites-available/yourdomain.conf'} />
-          </Section>
-
-          <Section title="Certificate saved but HTTPS not working" subtitle="Cert files always written even if config fails" icon={FileDown}>
-            <p>Certificate files are always written even if web server config fails. Find them at:</p>
-            <CodeBlock label="paths" code={'/etc/ssl/sslvault/yourdomain.com/fullchain.pem\n/etc/ssl/sslvault/yourdomain.com/privkey.pem'} />
-            <p>Point your Nginx/Apache config at these paths manually. See <strong>More → Install Guide</strong> for server-specific config.</p>
-          </Section>
-
-          <Section title="DCV validation pending — cert not issuing" subtitle="Check DNS propagation" icon={Globe}>
-            <p>If you're doing manual DCV, the record may not have propagated yet. Check at <a href="https://dnschecker.org" target="_blank" rel="noopener noreferrer">dnschecker.org</a>. If you have a DNS provider connected, SSLVault retries automatically.</p>
-            <Note type="info">GoGetSSL DCV typically validates within 1–5 minutes once the DNS record is visible globally.</Note>
-          </Section>
-
-          <Section title="cPanel agent shows success but SSL not active" subtitle="Verify domain match and token permissions" icon={Cloud}>
-            <p>Check: (1) domain in the PHP file matches your actual domain exactly, (2) cPanel API token has SSL/TLS permissions, (3) your hosting plan supports custom SSL certificates. Try clicking <strong>Test SSL</strong> from the success screen.</p>
-          </Section>
-
-          <Section title="curl: command not found" subtitle="Install curl first" icon={Bug}>
-            <CodeBlock label="install-curl" code={'# Ubuntu / Debian\nsudo apt install curl -y\n\n# CentOS / RHEL\nsudo yum install curl -y\n\n# Alpine\nsudo apk add curl'} />
-          </Section>
-
-          <Section title="Auto-renewal failed — what happens?" subtitle="Backoff retries + email notifications" icon={RefreshCw}>
-            <p>SSLVault retries on a backoff schedule: immediately → 6h → 24h → 3 days → 7 days. After 5 failed attempts it stops and emails you. You'll receive an email on every failure with the error and days remaining on the current cert.</p>
-          </Section>
-
-          <Section title="Agent shows offline on server card" subtitle="Last seen >15 minutes ago" icon={Bot}>
-            <CodeBlock label="agent-debug" code={'# Check service status\nsystemctl status sslvault-agent\n\n# View recent logs\njournalctl -u sslvault-agent -n 50\n\n# Restart if stopped\nsudo systemctl restart sslvault-agent'} />
-          </Section>
-        </div>
-
-        {/* SECTION 10 — FAQ */}
-        <Divider label="10 · FAQ" title="Frequently asked questions" />
-        <FAQ q="What certificate types does SSLVault support?"
-             a="SSLVault issues certificates via the GoGetSSL API, supporting DV (Domain Validated), OV (Organisation Validated), EV (Extended Validation), Wildcard, and multi-domain SAN certificates from DigiCert, Sectigo, RapidSSL, GeoTrust, and Thawte." />
-        <FAQ q="How long does issuance take?"
-             a="DV certificates issue in ~5 minutes once domain validation is complete. OV takes 1–3 business days (organisation verification required). EV takes 2–7 business days. Wildcards are DV so also ~5 minutes with DNS validation." />
-        <FAQ q="Are my credentials safe?"
-             a="Yes. DNS provider and server credentials are encrypted with AES-256-GCM before storage. Private keys are never logged or transmitted unencrypted. Row-Level Security ensures only you can read your data." />
-        <FAQ q="Can I use SSLVault for wildcard certificates?"
-             a="Yes. Enter *.example.com when issuing. Wildcards require DNS-01 validation, so you must have a DNS provider connected. A wildcard cert covers all single-level subdomains — shop.example.com, blog.example.com, etc." />
-        <FAQ q="Can I install the same cert on multiple servers?"
-             a='Yes. Click "Install" on the cert row and dispatch to as many connected agents as you like. Each install is a separate agent job.' />
-        <FAQ q="Does the agent need inbound firewall ports?"
-             a="No. The agent only makes outbound HTTPS connections to SSLVault (port 443). No inbound ports need to be opened." />
-        <FAQ q="What happens if my VPS is offline when renewal runs?"
-             a="The certificate is renewed and stored in SSLVault. When your agent next comes online and polls (every 5 minutes), it picks up the pending install job and deploys automatically." />
-        <FAQ q="What web servers get automatic config updates?"
-             a="Nginx and Apache2/httpd get full automatic config updates and reloads. Caddy, Node.js, and other servers get cert files written to /etc/ssl/sslvault/ — you update their config once manually." />
-        <FAQ q="Can I import certificates I didn't issue through SSLVault?"
-             a="Yes. Dashboard → Import tab. Paste any PEM certificate and SSLVault parses the chain, extracts expiry, issuer, and SAN details, and adds it to your inventory for monitoring and alerting. Auto-renewal is not available for imported certs." />
-        <FAQ q="Is there sandbox/test mode?"
-             a="Yes. GoGetSSL sandbox mode allows testing the full issuance flow without real cost. Sandbox certificates are clearly marked in the dashboard." />
-
-        {/* CTA */}
-        <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--v2-text)',
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-            <Shield size={18} color="white" strokeWidth={2} />
-          </div>
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6, letterSpacing: '-0.3px' }}>
-            Ready to secure your domains?
-          </h3>
-          <p style={{ color: 'var(--v2-text-2)', fontSize: 13, maxWidth: 380, margin: '0 auto 16px', lineHeight: 1.6 }}>
-            Issue SSL certificates via GoGetSSL, auto-renew, and deploy with one command.
+        {/* ── SECTION 6 — KEYLOCKER ── */}
+        <Divider label="06 · Security" title="KeyLocker — encrypted private key vault" />
+        <Section anchor="keylocker" title="KeyLocker" subtitle="AES-256-GCM envelope encryption — keys never stored in plaintext" icon={Lock}>
+          <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.7 }}>
+            KeyLocker automatically stores the private key for every certificate issued through SSLVault. Keys are encrypted with AES-256-GCM before storage using envelope encryption (DEK wrapped with KEK). Keys are never stored or transmitted in plaintext.
           </p>
-          <div style={{ display: 'inline-flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
-              <Shield size={13} strokeWidth={2.2} /> Issue Certificate <ArrowRight size={13} strokeWidth={2} />
-            </button>
-            <button className="v2-btn" onClick={() => nav('/dashboard')}>
-              View my Dashboard
-            </button>
+          <Step n={1} title="Reveal a private key">
+            In <strong>Security → KeyLocker</strong>, click <strong>Reveal key</strong>. You'll be asked to re-enter your SSLVault password (re-authentication). After verification, the key is decrypted and shown masked for 30 seconds. Copy-only — you cannot download directly.
+          </Step>
+          <Step n={2} title="Rotate a key">
+            Click <strong>Rotate key</strong> to generate a new certificate and private key. The old key is archived for 30 days (rollback window) then permanently destroyed. Zero downtime — new cert installs before old key is archived.
+          </Step>
+          <Step n={3} title="Audit log">
+            Every key access (reveal, copy, rotate, archive) is logged with timestamp and user. Export as CSV from the Audit Log tab for SOC 2 or ISO 27001 compliance.
+          </Step>
+          <Note type="warning">The 30-second reveal window and copy-only design are intentional security controls. Every access is logged and cannot be disabled.</Note>
+        </Section>
+
+        {/* ── SECTION 7 — 47-DAY READINESS ── */}
+        <Divider label="07 · Compliance" title="47-day readiness — CA/B Forum 2026–2029" />
+        <Section anchor="readiness" title="47-Day Readiness Dashboard" subtitle="Prepare for CA/B Forum maximum validity changes" icon={CalendarDays}>
+          <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.7 }}>
+            The CA/B Forum is reducing maximum certificate validity in three phases. SSLVault's Readiness Dashboard scores each certificate against these milestones and shows exactly what needs to change.
+          </p>
+          <table className="v2-table"><tbody>
+            <tr><td style={{ fontWeight: 600, width: 120 }}>Mar 15, 2026</td><td>Maximum 200-day validity. Certificates issued with longer validity will break.</td></tr>
+            <tr><td style={{ fontWeight: 600 }}>Mar 15, 2027</td><td>Maximum 100-day validity.</td></tr>
+            <tr><td style={{ fontWeight: 600 }}>Mar 15, 2029</td><td>Maximum 47-day validity. Full automation required.</td></tr>
+          </tbody></table>
+          <Step n={1} title="Check your fleet readiness">
+            Navigate to <strong>Security → 47-Day Readiness</strong>. Each cert gets a score 0–100 and a label (Ready / At Risk / Will Break). Click any row to expand the full checklist.
+          </Step>
+          <Step n={2} title="Automation checklist">
+            Each cert is checked for: auto-renew enabled, DNS provider connected, agent/cPanel install configured, validity within 200-day rule, and private key stored in KeyLocker.
+          </Step>
+          <Note type="warning">Certificates with validity over 200 days issued after March 15, 2026 will be rejected by browsers. Review your fleet now.</Note>
+        </Section>
+
+        {/* ── SECTION 8 — CA INTELLIGENCE ── */}
+        <Divider label="08 · Intelligence" title="CA Intelligence — cross-CA visibility" />
+        <Section anchor="ca-intelligence" title="CA Intelligence Hub" subtitle="Unified inventory across GoGetSSL, DigiCert, Sectigo + shadow IT detection" icon={ShieldCheck}>
+          <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.7 }}>
+            If your organisation uses multiple CAs, CA Intelligence gives you a single pane of glass across all of them. Connect DigiCert CertCentral or Sectigo SCM to sync your certificate inventory into SSLVault.
+          </p>
+          <Step n={1} title="Connect DigiCert">
+            Go to <strong>Intelligence → CA Intelligence → CA Connectors</strong>. Select DigiCert, paste your CertCentral API key, click Test Connection then Connect. SSLVault syncs your full order history.
+          </Step>
+          <Step n={2} title="Connect Sectigo">
+            Select Sectigo, enter your Customer URI, login, and password. Click Test Connection then Connect.
+          </Step>
+          <Step n={3} title="Shadow IT detection">
+            SSLVault scans CT logs for certificates issued for your domains by unknown CAs. These appear in <strong>Shadow IT</strong> tab. Approve known certs or dismiss false positives.
+          </Step>
+          <Step n={4} title="Policy engine">
+            Set fleet-wide rules: max validity 200 days, auto-renew required, KeyLocker required. SSLVault scans your entire fleet and flags violations.
+          </Step>
+        </Section>
+
+        {/* ── SECTION 9 — SSL HEALTH SCORE ── */}
+        <Divider label="09 · Health" title="SSL Health Score — grade A to F" />
+        <Section anchor="ssl-health" title="SSL Health Score" subtitle="TLS reachability, HSTS, CAA records, expiry — graded A+ to F" icon={Activity}>
+          <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.7 }}>
+            Navigate to <strong>Security → Health Scores</strong>. Enter any domain and click Scan. SSLVault checks TLS reachability, HSTS header presence and max-age, CAA DNS record, expiry, and security headers.
+          </p>
+          <table className="v2-table"><tbody>
+            <tr><td style={{ fontWeight: 600, width: 80 }}>A+ / A</td><td>90–100 pts. TLS valid, HSTS with long max-age, CAA record present, expiry &gt;30 days.</td></tr>
+            <tr><td style={{ fontWeight: 600 }}>B</td><td>70–89 pts. Good but missing HSTS or CAA.</td></tr>
+            <tr><td style={{ fontWeight: 600 }}>C / D</td><td>50–69 pts. Expiring soon or missing security headers.</td></tr>
+            <tr><td style={{ fontWeight: 600 }}>F</td><td>Under 50 pts. Certificate expired, TLS unreachable, or no cert found.</td></tr>
+          </tbody></table>
+          <Note type="tip">Scores are pulled from crt.sh (CT logs) for real issuer and expiry data, then supplemented with live HTTP header checks.</Note>
+        </Section>
+
+        {/* ── SECTION 10 — CT DISCOVERY ── */}
+        <Divider label="10 · Discovery" title="CT log discovery" />
+        <Section anchor="ct-discovery" title="CT Log Discovery" subtitle="Find every certificate ever issued for your domains" icon={Search}>
+          <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.7 }}>
+            Navigate to <strong>Inventory → Discovery</strong>. Three scan modes:
+          </p>
+          <table className="v2-table"><tbody>
+            <tr><td style={{ fontWeight: 600, width: 140 }}>CT Logs</td><td>Queries crt.sh for all certificates ever issued for a domain. Shows issuer, expiry, SANs.</td></tr>
+            <tr><td style={{ fontWeight: 600 }}>Connect DNS</td><td>Scans all DNS records for a domain and checks TLS on each hostname found.</td></tr>
+            <tr><td style={{ fontWeight: 600 }}>Scan a Server</td><td>Enter an IP/hostname and port — connects directly to check the served certificate.</td></tr>
+          </tbody></table>
+        </Section>
+
+        {/* ── SECTION 11 — CT ABUSE MONITOR ── */}
+        <Divider label="11 · Security" title="CT Abuse Monitor" />
+        <Section anchor="ct-abuse" title="CT Abuse Monitor" subtitle="Detect suspicious or fraudulent certificates in CT logs" icon={Eye}>
+          <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.7 }}>
+            Navigate to <strong>Security → CT Abuse Monitor</strong>. SSLVault watches CT logs for new certificates issued for your watched domains. Any certificate not issued by you triggers a Flagged alert.
+          </p>
+          <Step n={1} title="Add a domain to watch">
+            Click <strong>Add domain</strong> in the Watched domains panel. SSLVault starts monitoring CT logs for any new certificate issuance for that domain.
+          </Step>
+          <Step n={2} title="Reviewing alerts">
+            Flagged certs appear at the top with details — issuer, issue date, SANs, and CT source. You can mark them as Known (legitimate) or Suspicious (possible abuse).
+          </Step>
+          <Note type="warning">If you see a certificate issued by an unknown CA for your domain, it may indicate domain hijacking or a misconfigured CAA record. Review immediately.</Note>
+        </Section>
+
+        {/* ── SECTION 12 — RENEWAL CALENDAR ── */}
+        <Divider label="12 · Calendar" title="Renewal Calendar" />
+        <Section anchor="renewal-calendar" title="Renewal Calendar" subtitle="GitHub heatmap of all your upcoming renewals" icon={CalendarDays}>
+          <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.7 }}>
+            Navigate to <strong>Intelligence → Renewal Calendar</strong>. Certificates are shown as coloured day cells across month, week, or year views.
+          </p>
+          <table className="v2-table"><tbody>
+            <tr><td style={{ fontWeight: 600, width: 80 }}>Red</td><td>Expiring within 7 days — urgent action required.</td></tr>
+            <tr><td style={{ fontWeight: 600 }}>Amber</td><td>Expiring within 30 days — renewal recommended.</td></tr>
+            <tr><td style={{ fontWeight: 600 }}>Green</td><td>Healthy — more than 30 days remaining.</td></tr>
+          </tbody></table>
+          <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginTop: 12, lineHeight: 1.7 }}>
+            The <strong>Upcoming renewals strip</strong> below the calendar shows the next 90 days as progress bars, giving you a quick overview of what's coming up.
+          </p>
+        </Section>
+
+        {/* ── SECTION 13 — TROUBLESHOOTING ── */}
+        <Divider label="13 · Help" title="Troubleshooting" />
+        <Section anchor="troubleshooting" title="Troubleshooting" subtitle="Common errors and how to fix them" icon={Bug}>
+          <Section title="Agent not appearing after install" subtitle="Firewall or token issue" icon={Server}>
+            <p>Check the agent log: <code>sudo journalctl -u sslvault-agent -n 50</code></p>
+            <p>Common causes: firewall blocking outbound HTTPS to <code>easysecurity.in</code>, or install token expired (tokens are 1-hour TTL — generate a fresh one from Servers &amp; agents).</p>
+          </Section>
+          <Section title="DCV failing — CNAME not found" subtitle="DNS propagation delay" icon={Network}>
+            <p>DNS changes can take up to 48 hours to propagate globally. Wait 10–15 minutes after adding the record, then retry. Use <code>dig CNAME _your-validation-record.yourdomain.com</code> to verify the record is live.</p>
+            <Note type="tip">Connecting a DNS provider (Cloudflare, Vercel) eliminates this issue — SSLVault adds and verifies the record automatically.</Note>
+          </Section>
+          <Section title="Certificate issued but HTTPS not working" subtitle="Cert installed, server not reloaded" icon={Globe}>
+            <p>The cert files are always written to disk even if the web server config update fails. Check if Nginx/Apache was reloaded: <code>sudo systemctl status nginx</code>. If the config test failed, the agent restores the original config — check <code>sudo nginx -t</code> for syntax errors.</p>
+          </Section>
+          <Section title="Rotate failing — Let's Encrypt rate limit" subtitle="5 certificates per domain per week" icon={RefreshCw}>
+            <p>Let's Encrypt limits to 5 certificates per registered domain per week. If you've issued/renewed multiple times, wait until the rate limit window resets (check <code>crt.sh</code> for recent issuances).</p>
+          </Section>
+          <Section title="KeyLocker reveal — password not accepted" subtitle="Re-authentication required" icon={Lock}>
+            <p>KeyLocker requires your current SSLVault account password. If you've recently reset your password, use the new one. After 3 failed attempts, the reveal is locked — wait 15 minutes before retrying.</p>
+          </Section>
+        </Section>
+
+        {/* Footer CTA */}
+        <div style={{ marginTop: 32, padding: '20px 24px', background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Still stuck?</div>
+            <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>Contact support — we reply within 24 hours.</div>
           </div>
+          <button onClick={() => nav('/contact')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px',
+              background: 'var(--v2-green)', color: 'white', border: 'none', borderRadius: 8,
+              fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+            Contact support <ArrowRight size={13} />
+          </button>
         </div>
 
       </div>
+      <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}}`}</style>
     </div>
   )
 }
