@@ -255,12 +255,12 @@ export default function KnowledgeBase({ nav }) {
               </ul>
             </div>
             <div className="v2-card v2-card-pad">
-              <div className="v2-section-label" style={{ marginBottom: 8 }}>Useful commands</div>
+              <div className="v2-section-label" style={{ marginBottom: 8 }}>Quick reference</div>
               <ul style={{ paddingLeft: 16, margin: 0, fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.85 }}>
                 <li><span className="v2-mono">systemctl status sslvault-agent</span></li>
                 <li><span className="v2-mono">journalctl -u sslvault-agent -f</span></li>
                 <li><span className="v2-mono">systemctl restart sslvault-agent</span></li>
-                <li><span className="v2-mono">sslvault-agent status</span></li>
+                <li><span className="v2-mono">systemctl stop sslvault-agent</span></li>
                 <li><span className="v2-mono">sslvault-agent uninstall</span></li>
               </ul>
             </div>
@@ -269,6 +269,185 @@ export default function KnowledgeBase({ nav }) {
           <Note type="info">
             <span className="v2-callout-title">How the agent works</span>
             The agent is a pure bash daemon running as a systemd service. It polls SSLVault every 5 minutes for pending jobs (installs, renewals). It makes <strong>outbound-only</strong> HTTPS connections — no inbound ports needed.
+          </Note>
+
+          {/* ── AGENT COMMANDS REFERENCE ── */}
+          <div className="v2-section-label" style={{ margin: '20px 0 10px' }}>Agent status &amp; control</div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 10, marginBottom: 14 }}>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Activity size={13} color="var(--v2-green)" /> Check agent status
+              </div>
+              <CodeBlock code={`# Is the daemon running?
+systemctl status sslvault-agent
+
+# One-liner — shows active/inactive/failed
+systemctl is-active sslvault-agent
+
+# Agent self-report (version + last poll time)
+sslvault-agent status`} label="bash" />
+              <p style={{ fontSize: 11, color: 'var(--v2-text-3)', margin: 0 }}>Look for <span className="v2-mono">Active: active (running)</span> in the output. If it says <span className="v2-mono">failed</span> or <span className="v2-mono">inactive</span>, see troubleshooting below.</p>
+            </div>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <RefreshCw size={13} color="#f59e0b" /> Start / stop / restart
+              </div>
+              <CodeBlock code={`# Start the agent
+systemctl start sslvault-agent
+
+# Stop the agent (persists across reboot until re-started)
+systemctl stop sslvault-agent
+
+# Restart (use after config changes)
+systemctl restart sslvault-agent
+
+# Disable auto-start on boot
+systemctl disable sslvault-agent
+
+# Re-enable auto-start on boot
+systemctl enable sslvault-agent`} label="bash" />
+            </div>
+          </div>
+
+          <div className="v2-section-label" style={{ margin: '16px 0 10px' }}>View logs</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 10, marginBottom: 14 }}>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8 }}>Live log stream</div>
+              <CodeBlock code={`# Follow logs in real-time (Ctrl+C to exit)
+journalctl -u sslvault-agent -f
+
+# Last 50 lines
+journalctl -u sslvault-agent -n 50
+
+# Last 30 minutes
+journalctl -u sslvault-agent --since "30 min ago"
+
+# All logs since install
+journalctl -u sslvault-agent --no-pager`} label="bash" />
+            </div>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8 }}>Log file (if journald unavailable)</div>
+              <CodeBlock code={`# Tail the flat log file
+tail -f /var/log/sslvault-agent.log
+
+# Last 100 lines
+tail -n 100 /var/log/sslvault-agent.log
+
+# Search for errors
+grep -i "error\|fail\|fatal" /var/log/sslvault-agent.log`} label="bash" />
+            </div>
+          </div>
+
+          <div className="v2-section-label" style={{ margin: '16px 0 10px' }}>Remove / delete the agent</div>
+          <Note type="warn">
+            Uninstalling removes the daemon and registration. The server card in SSLVault will show Offline. Delete the server card from the Servers page after uninstalling.
+          </Note>
+          <CodeBlock code={`# Full uninstall (stops service, removes files, de-registers)
+sslvault-agent uninstall
+
+# Manual removal if the uninstall command is unavailable
+systemctl stop sslvault-agent
+systemctl disable sslvault-agent
+rm -f /etc/systemd/system/sslvault-agent.service
+rm -f /usr/local/bin/sslvault-agent
+rm -f /etc/sslvault/agent.conf
+rm -rf /var/lib/sslvault-agent
+systemctl daemon-reload`} label="bash" />
+
+          <div className="v2-section-label" style={{ margin: '20px 0 10px' }}>Troubleshooting</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 10, marginBottom: 8 }}>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Agent shows Offline in SSLVault</div>
+              <CodeBlock code={`# Check if service is running
+systemctl status sslvault-agent
+
+# Check outbound connectivity to SSLVault
+curl -I https://easysecurity.in/functions/v1/agent-daemon
+
+# Restart and watch logs
+systemctl restart sslvault-agent
+journalctl -u sslvault-agent -f`} label="bash" />
+              <p style={{ fontSize: 11, color: 'var(--v2-text-3)', margin: 0 }}>The agent needs outbound HTTPS (port 443) to <span className="v2-mono">easysecurity.in</span>. Check your firewall/UFW rules.</p>
+            </div>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Service fails to start</div>
+              <CodeBlock code={`# See exact failure reason
+journalctl -u sslvault-agent -n 20 --no-pager
+
+# Check if binary exists and is executable
+ls -la /usr/local/bin/sslvault-agent
+
+# Check config file
+cat /etc/sslvault/agent.conf
+
+# Re-run the installer to repair
+curl -fsSL https://easysecurity.in/agent-install.sh | bash`} label="bash" />
+            </div>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Job stuck / cert not installing</div>
+              <CodeBlock code={`# Check agent is polling (look for "Checking for jobs")
+journalctl -u sslvault-agent -f
+
+# Force an immediate poll cycle
+systemctl restart sslvault-agent
+
+# Verify cert files were written
+ls -la /etc/ssl/sslvault/
+
+# Check web server config was updated
+nginx -t
+# or
+apache2ctl configtest`} label="bash" />
+            </div>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Firewall / UFW blocking agent</div>
+              <CodeBlock code={`# Allow outbound HTTPS (UFW)
+ufw allow out 443/tcp
+
+# Allow outbound HTTPS (iptables)
+iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+
+# Verify connectivity
+curl -v https://easysecurity.in 2>&1 | grep "< HTTP"
+
+# Check current UFW status
+ufw status verbose`} label="bash" />
+            </div>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Web server reload failed after install</div>
+              <CodeBlock code={`# Test nginx config
+nginx -t
+
+# Test apache config
+apache2ctl configtest
+# or on CentOS/RHEL:
+httpd -t
+
+# Manually reload after fixing config errors
+systemctl reload nginx
+# or
+systemctl reload apache2
+
+# Check which web server the agent detected
+cat /etc/sslvault/agent.conf | grep WEB_SERVER`} label="bash" />
+            </div>
+            <div className="v2-card v2-card-pad">
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#b91c1c', marginBottom: 8 }}>Check agent version &amp; update</div>
+              <CodeBlock code={`# Current version
+sslvault-agent --version
+
+# Update to latest (re-run installer — safe on existing installs)
+curl -fsSL https://easysecurity.in/agent-install.sh | bash
+
+# Confirm update
+sslvault-agent --version`} label="bash" />
+            </div>
+          </div>
+
+          <Note type="tip">
+            <span className="v2-callout-title">Still stuck?</span>
+            Run <span className="v2-mono">journalctl -u sslvault-agent -n 50 --no-pager</span> and paste the output to <strong>Contact → Support</strong>. Include your OS and web server type.
           </Note>
         </Section>
 
