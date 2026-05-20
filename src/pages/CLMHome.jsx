@@ -100,10 +100,9 @@ export default function CLMHome({ user, nav }) {
     { id:'keylocker',     label:'KeyLocker',          icon:Lock     },
   ]
   const NAV_SECURITY = [
-    { id:'ssl-health',      label:'Health scores',     icon:Trophy     },
-    { id:'ct-monitor',      label:'CT abuse monitor',  icon:ShieldAlert  },
-    { id:'cert-changelog',  label:'Audit log',         icon:History    },
-    { id:'agent-health',    label:'Agent health',     icon:Activity   },
+    { id:'ssl-health',      label:'Health scores',    icon:Trophy     },
+    { id:'ct-monitor',      label:'CT abuse monitor', icon:ShieldAlert },
+    { id:'cert-changelog',  label:'Audit log',        icon:History    },
   ]
   const NAV_INTELLIGENCE = [
     { id:'ca-intelligence', label:'CA intelligence',  icon:TrendingUp },
