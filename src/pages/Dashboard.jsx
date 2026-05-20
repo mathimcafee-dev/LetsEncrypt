@@ -1805,6 +1805,8 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     _healthGrade: healthScores[c.domain]?.grade || null,
   }))
 
+  const selectedCert = selected ? certs.find(c => c.id === selected) : null
+
   return (
     <div style={{ background:'linear-gradient(160deg, #f0f4f8 0%, #f8fafc 100%)', minHeight:'100vh' }}>
       <div style={{ maxWidth:1200, margin:'0 auto', padding:'32px 28px 80px' }}>
