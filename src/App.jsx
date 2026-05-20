@@ -13,6 +13,8 @@ import GetStarted from './pages/GetStarted'
 import Install from './pages/Install'
 import Integrations from './pages/Integrations'
 import Pricing from './pages/Pricing'
+import About from './pages/About'
+import Developer from './pages/Developer'
 import KeyLocker from './pages/KeyLocker'
 import BuyCertificate from './pages/BuyCertificate'
 import AdminAnalytics from './pages/AdminAnalytics'
@@ -77,6 +79,8 @@ export default function App() {
       
       
       {page === '/pricing' && <Pricing nav={nav} />}
+      {page === '/about' && <About nav={nav} />}
+      {page === '/developer' && <Developer nav={nav} />}
       {page === '/keylocker' && <KeyLocker nav={nav} />}
       {page === '/buy' && <BuyCertificate nav={nav} />}
       

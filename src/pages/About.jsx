@@ -1,134 +1,91 @@
-
-import { Shield, ArrowRight, CheckCircle, Users, RefreshCw, Server, Globe, Lock } from 'lucide-react'
-import '../styles/design-v2.css'
+// About.jsx — SSLVault company page
+const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
+const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
+const C    = { ink:'#0a0e1a', teal:'#0ea5e9', tealDk:'#0284c7', green:'#10b981', border:'rgba(255,255,255,0.07)', text:'rgba(255,255,255,0.85)', textMid:'rgba(255,255,255,0.5)', textLt:'rgba(255,255,255,0.28)' }
 
 export default function About({ nav }) {
   return (
-    <div className="v2-page">
-      <div className="v2-container" style={{ maxWidth: 1000, padding: '40px 24px 80px' }}>
+    <div style={{ minHeight:'100vh', background:C.ink, fontFamily:F, color:C.text }}>
+      <style>{`*{box-sizing:border-box;margin:0;padding:0}`}</style>
 
-        {/* HERO */}
-        <div style={{ textAlign: 'center', padding: '48px 0 56px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8,
-                        background: 'var(--v2-green-bg)', border: '0.5px solid var(--v2-green-border)',
-                        borderRadius: 100, padding: '4px 14px', marginBottom: 20 }}>
-            <span className="v2-pulse" />
-            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-green-text)' }}>Certificate Lifecycle Management</span>
+      {/* Nav */}
+      <header style={{ borderBottom:`1px solid ${C.border}`, padding:'0 clamp(20px,5vw,48px)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }} onClick={()=>nav('/')}>
+          <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <h1 style={{ fontSize: 'clamp(32px,5vw,52px)', fontWeight: 700, letterSpacing: '-1px',
-                        lineHeight: 1.1, margin: '0 0 16px', color: 'var(--v2-text)' }}>
-            SSL lifecycle management<br />
-            <span style={{ color: 'var(--v2-green)' }}>for developers, SMBs, and non-profits.</span>
-          </h1>
-          <p style={{ fontSize: 16, color: 'var(--v2-text-2)', maxWidth: 580, margin: '0 auto 36px', lineHeight: 1.7 }}>
-            SSLVault is a Certificate Lifecycle Management platform built for indie developers, SMBs, and non-profits.
-            Issue trusted DV certificates via RapidSSL, monitor your full certificate estate,
-            and automate renewal and deployment — all from one dashboard.
-          </p>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="v2-btn v2-btn-primary" style={{ padding: '11px 22px', fontSize: 14 }} onClick={() => nav('/auth')}>
-              <Shield size={14} /> Get Started
-            </button>
-            <button className="v2-btn" style={{ padding: '11px 22px', fontSize: 14 }} onClick={() => nav('/auth')}>
-              Sign In <ArrowRight size={13} />
-            </button>
-          </div>
+          <span style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.92)' }}>SSLVault</span>
+        </div>
+        <button onClick={()=>nav('/auth')}
+          style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'white', padding:'7px 20px', borderRadius:100 }}>
+          Get started
+        </button>
+      </header>
+
+      <div style={{ maxWidth:860, margin:'0 auto', padding:'72px clamp(20px,5vw,48px) 100px' }}>
+
+        {/* Eyebrow */}
+        <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:16 }}>About SSLVault</div>
+
+        <h1 style={{ fontSize:'clamp(32px,5vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.1, marginBottom:24, color:'rgba(255,255,255,0.95)' }}>
+          Enterprise PKI for every<br/>organisation.
+        </h1>
+
+        <p style={{ fontSize:17, color:C.textMid, lineHeight:1.85, maxWidth:600, marginBottom:64 }}>
+          SSLVault is a Certificate Lifecycle Management platform built for developers, SMBs, and non-profits.
+          Issue, monitor, and auto-renew SSL/TLS certificates across every CA and every server — with enterprise-grade
+          security controls built in from day one.
+        </p>
+
+        {/* Mission block */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:12, marginBottom:64 }}>
+          {[
+            { n:'01', title:'Built by PKI specialists', body:'Designed by a Certified PKI Specialist with first-hand Certificate Authority experience. The same tooling enterprise teams pay hundreds of thousands for — available to every organisation.' },
+            { n:'02', title:'Open standards throughout', body:'RFC 8555 ACME v2, AES-256-GCM envelope encryption, CT log monitoring, CAA record checking. No proprietary black boxes — every layer is auditable and standards-compliant.' },
+            { n:'03', title:'CA/B Forum ready', body:'As certificate validity mandates tighten (200d → 100d → 47d between 2026–2029), SSLVault\'s automation layer is the only sustainable answer. We\'re built for what\'s coming.' },
+          ].map(item=>(
+            <div key={item.n} style={{ background:'rgba(255,255,255,0.03)', border:`1px solid ${C.border}`, borderTop:`2px solid ${C.teal}`, borderRadius:10, padding:'22px 20px' }}>
+              <div style={{ fontSize:10, fontWeight:800, color:C.teal, fontFamily:MONO, letterSpacing:'0.06em', marginBottom:10 }}>{item.n}</div>
+              <div style={{ fontSize:14, fontWeight:600, color:'rgba(255,255,255,0.9)', marginBottom:8 }}>{item.title}</div>
+              <div style={{ fontSize:13, color:C.textMid, lineHeight:1.7 }}>{item.body}</div>
+            </div>
+          ))}
         </div>
 
-        {/* THE STORY */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, marginBottom: 64, alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-green-text)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 12 }}>Why SSLVault</div>
-            <h2 style={{ fontSize: 26, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.5px', margin: '0 0 16px' }}>
-              Built by a PKI specialist, for professionals
-            </h2>
-            <p style={{ fontSize: 14, color: 'var(--v2-text-2)', lineHeight: 1.75, marginBottom: 16 }}>
-              SSLVault was built out of first-hand experience working at a Certificate Authority, designed to give everyone access to enterprise-grade CLM.
-              The complexity of managing certificates across multiple customers, handling DCV, and ensuring zero-downtime
-              renewals is a real operational burden — SSLVault automates all of it.
-            </p>
-            <p style={{ fontSize: 14, color: 'var(--v2-text-2)', lineHeight: 1.75 }}>
-              Every certificate issued through SSLVault is a trusted <strong>RapidSSL DV certificate</strong> backed by the
-              DigiCert trust chain, issued via RapidSSL API. Browser compatibility is 99.9%.
-              Validity up to 2 years.
-            </p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            {[
-              { Icon: Shield,    color: '#0e7fc0', bg: '#eff6ff', label: 'RapidSSL DV',        sub: 'DigiCert trust chain' },
-              { Icon: Users,     color: '#15803d', bg: '#f0fdf4', label: 'Multi-user',           sub: 'Team & access control' },
-              { Icon: RefreshCw, color: '#7c3aed', bg: '#faf5ff', label: 'Auto-renewal',        sub: 'Zero manual work' },
-              { Icon: Server,    color: '#d97706', bg: '#fffbeb', label: 'Auto-install',        sub: 'Agent + cPanel + SSH' },
-              { Icon: Globe,     color: '#0369a1', bg: '#eff6ff', label: 'Auto DNS DCV',        sub: 'Cloudflare · Vercel' },
-              { Icon: Lock,      color: '#b45309', bg: '#fffbeb', label: 'Encrypted keys',      sub: 'AES-256 at rest' },
-            ].map(({ Icon, color, bg, label, sub }) => (
-              <div key={label} style={{ background: bg, borderRadius: 10, padding: '16px 16px', border: `0.5px solid ${color}22` }}>
-                <Icon size={18} color={color} style={{ marginBottom: 8 }} />
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)' }}>{label}</div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 2 }}>{sub}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CLM LIFECYCLE */}
-        <div style={{ background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)', borderRadius: 14, padding: '36px 32px', marginBottom: 48 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-green-text)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>Certificate lifecycle</div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.4px', margin: '0 0 20px' }}>Issue. Monitor. Auto-renew.</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
-            {[
-              { num: '1', title: 'Issue', color: '#0e7fc0', items: ['DV, OV, EV & Wildcard certs', 'RapidSSL CA API — minutes to issue', 'DNS validation auto-configured', 'Private key stored in KeyLocker'] },
-              { num: '2', title: 'Monitor', color: '#15803d', items: ['Expiry alerts at 30/14/7 days', 'Cross-CA inventory (DigiCert, Sectigo)', 'CT log shadow IT scanner', 'TLS posture grading'] },
-              { num: '3', title: 'Auto-renew', color: '#7c3aed', items: ['Persistent agent on your server', 'cPanel one-click auto-install', 'DNS auto-validation on renewal', 'Zero-touch lifecycle end-to-end'] },
-            ].map(({ num, title, color, items }) => (
-              <div key={num}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: 'white', flexShrink: 0 }}>{num}</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--v2-text)' }}>{title}</div>
-                </div>
-                {items.map(item => (
-                  <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 7 }}>
-                    <CheckCircle size={12} color={color} />
-                    <span style={{ fontSize: 13, color: 'var(--v2-text-2)' }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* TECH STACK */}
-        <div style={{ marginBottom: 48 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 20, textAlign: 'center' }}>Technology</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
-            {[
-              { label: 'RapidSSL', sub: 'API · DV / OV / EV / Wildcard', color: '#0e7fc0' },
-              { label: 'Supabase', sub: 'Auth · DB · Edge functions', color: '#15803d' },
-              { label: 'React + Vite', sub: 'Frontend · Vercel deploy', color: '#7c3aed' },
-              { label: 'DigiCert chain', sub: '99.9% browser trust', color: '#d97706' },
-            ].map(({ label, sub, color }) => (
-              <div key={label} className="v2-card" style={{ padding: '16px 18px', textAlign: 'center' }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color, marginBottom: 4 }}>{label}</div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{sub}</div>
-              </div>
+        {/* Tech stack */}
+        <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:48, marginBottom:48 }}>
+          <div style={{ fontSize:11, fontWeight:700, color:C.textLt, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:20 }}>Technology</div>
+          <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+            {['RapidSSL CA Partner','DigiCert Trust Chain','ACME v2 · RFC 8555','AES-256-GCM','React + Vite','Supabase Edge Functions','Vercel CDN','CA/B Forum Compliant'].map(t=>(
+              <span key={t} style={{ fontSize:12, fontWeight:600, color:C.teal, background:'rgba(14,165,233,0.08)', border:'1px solid rgba(14,165,233,0.18)', borderRadius:6, padding:'5px 12px', fontFamily:MONO }}>
+                {t}
+              </span>
             ))}
           </div>
         </div>
 
         {/* CTA */}
-        <div style={{ background: '#0d3c6e', borderRadius: 14, padding: '36px 32px', textAlign: 'center' }}>
-          <h3 style={{ fontSize: 22, fontWeight: 700, color: 'white', letterSpacing: '-0.4px', margin: '0 0 10px' }}>Ready to get started?</h3>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: '0 0 24px', lineHeight: 1.6 }}>
-            Sign in and start managing your SSL certificates with full automation.
-          </p>
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-            <button className="v2-btn v2-btn-primary" style={{ fontSize: 13 }} onClick={() => nav('/auth')}>
-              <Shield size={13} /> Sign In
-            </button>
-            <button className="v2-btn" style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)' }} onClick={() => nav('/contact')}>
-              Contact us
-            </button>
+        <div style={{ background:'rgba(14,165,233,0.06)', border:'1px solid rgba(14,165,233,0.15)', borderRadius:12, padding:'32px 28px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:20 }}>
+          <div>
+            <div style={{ fontSize:16, fontWeight:700, color:'rgba(255,255,255,0.92)', marginBottom:6 }}>Ready to automate your certificate lifecycle?</div>
+            <div style={{ fontSize:13, color:C.textMid }}>Issue, monitor and auto-renew across every server with enterprise-grade PKI controls.</div>
           </div>
+          <button onClick={()=>nav('/auth')}
+            style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'white', padding:'10px 24px', borderRadius:100, whiteSpace:'nowrap' }}>
+            Get started →
+          </button>
+        </div>
+
+        {/* Footer row */}
+        <div style={{ marginTop:48, paddingTop:24, borderTop:`1px solid ${C.border}`, display:'flex', gap:20, flexWrap:'wrap' }}>
+          {[['← Back home','/'],['Pricing','/pricing'],['Knowledge Base','/knowledge-base'],['Developer','/developer']].map(([l,p])=>(
+            <button key={l} onClick={()=>nav(p)}
+              style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, color:C.textMid, padding:0, transition:'color .15s' }}
+              onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.8)'}
+              onMouseLeave={e=>e.currentTarget.style.color=C.textMid}>
+              {l}
+            </button>
+          ))}
         </div>
 
       </div>
