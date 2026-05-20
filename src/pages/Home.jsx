@@ -695,9 +695,9 @@ export default function Home({ nav }) {
           .home-footer-cols { grid-template-columns:1fr 1fr !important; }
 
           /* Nav header links hidden */
-          nav.home-top-nav { display:none !important; }
-          header .home-nav-cta { gap:6px !important; }
-          header .home-nav-cta button[data-size="sm"] { font-size:11px !important; padding:6px 12px !important; }
+          .home-top-nav { display:none !important; }
+          .home-nav-cta .sign-in-btn { display:none !important; }
+          .hero-floating-pills { display:none !important; }
         }
         @media (min-width:768px) and (max-width:1023px) {
           section { padding-left:32px !important; padding-right:32px !important; }
@@ -712,7 +712,7 @@ export default function Home({ nav }) {
         position:'sticky', top:0, zIndex:100,
         background:'rgba(255,255,255,0.88)', backdropFilter:'blur(20px)',
         borderBottom:'1px solid rgba(15,23,42,0.06)',
-        padding:'0 40px', height:56,
+        padding:'0 clamp(16px,4vw,40px)', height:56,
         display:'flex', alignItems:'center', justifyContent:'space-between',
       }}>
         {/* Logo */}
@@ -732,7 +732,7 @@ export default function Home({ nav }) {
             borderRadius:4, padding:'2px 6px', letterSpacing:'0.04em' }}>CLM</span>
         </div>
 
-        <nav style={{ display:'flex', alignItems:'center', gap:28 }}>
+        <nav className="home-top-nav" style={{ display: isMobile ? 'none' : 'flex', alignItems:'center', gap:28 }}>
           {[
             ['Platform','#platform'],
             ['How it works','#workflow'],
@@ -746,8 +746,8 @@ export default function Home({ nav }) {
           ))}
         </nav>
 
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <CTA label="Sign in" variant="ghost" onClick={()=>nav('/auth')} size="sm"/>
+        <div className="home-nav-cta" style={{ display:'flex', alignItems:'center', gap:10 }}>
+          {!isMobile && <CTA label="Sign in" variant="ghost" onClick={()=>nav('/auth')} size="sm"/>}
           <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')} size="sm"/>
         </div>
       </header>
@@ -769,8 +769,8 @@ export default function Home({ nav }) {
           opacity:0.5,
         }}/>
 
-        {/* Floating cert status pills — scattered, very low opacity */}
-        {[
+        {/* Floating cert status pills — hidden on mobile */}
+        {!isMobile && [
           { t:'✓  easysecurity.in renewed', c:'#10b981', x:'8%',  y:'18%', r:'-6deg'  },
           { t:'✓  Agent installed · Nginx',  c:'#0ea5e9', x:'72%', y:'12%', r:'5deg'   },
           { t:'⚠  api.shop.com · 18d left',  c:'#f59e0b', x:'82%', y:'72%', r:'-4deg'  },
@@ -851,9 +851,11 @@ export default function Home({ nav }) {
           {/* Stats — light version */}
           <FadeUp delay={200}>
             <div style={{
-              display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',
+              display:'grid',
+              gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3,1fr)',
               maxWidth:560, margin:'0 auto',
               borderTop:`1px solid ${C.border}`,
+              gap: isMobile ? '0' : '0',
             }}>
               {[
                 { val: certCount ? `${displayCount.toLocaleString()}+` : '—', label:'Active certificates', sub:'tracked across all CAs', accent:C.teal },
