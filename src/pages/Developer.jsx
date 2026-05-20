@@ -36,7 +36,7 @@ export default function Developer({ nav }) {
               Mathi (Spartan)
             </h1>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:12 }}>
-              {['Certified PKI Specialist','Partner Account Manager · DigiCert','Netherlands 🇳🇱'].map(t=>(
+              {['Certified PKI Specialist','PKI Industry Professional','Netherlands 🇳🇱'].map(t=>(
                 <span key={t} style={{ fontSize:11, fontWeight:600, color:C.teal, background:'rgba(14,165,233,0.08)', border:'1px solid rgba(14,165,233,0.18)', borderRadius:6, padding:'3px 10px', fontFamily:MONO }}>{t}</span>
               ))}
             </div>
@@ -61,7 +61,7 @@ export default function Developer({ nav }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:10, marginBottom:48 }}>
           {[
             { spec:'PKI / X.509', color:C.teal,   desc:'Certificate lifecycle, CA/B Forum standards, DCV methods, trust chain architecture' },
-            { spec:'RapidSSL / DigiCert', color:C.green,  desc:'Partner-level knowledge of certificate products, issuance pipelines, and CA operations' },
+            { spec:'RapidSSL / PKI', color:C.green,  desc:'Deep knowledge of certificate products, CA issuance pipelines, and PKI operations' },
             { spec:'ACME · RFC 8555', color:C.purple, desc:'Protocol implementation, DNS-01 challenge automation, certificate transparency' },
             { spec:'Security automation', color:C.teal,   desc:'AES-256-GCM, key vault design, audit logging, zero-trust certificate deployment' },
           ].map(e=>(

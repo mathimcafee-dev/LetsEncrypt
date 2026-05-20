@@ -183,12 +183,12 @@ export default function About({ nav }) {
             <div>
               <h2 style={{ fontSize:'clamp(20px,3vw,28px)', fontWeight:700, color:C.heading, letterSpacing:'-0.5px', marginBottom:8 }}>Mathi — Certified PKI Specialist</h2>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:16 }}>
-                <Badge color={C.teal} bg={C.tealBg} bd={C.tealBd}>DigiCert Partner Account Manager</Badge>
+                <Badge color={C.teal} bg={C.tealBg} bd={C.tealBd}>PKI Industry Professional</Badge>
                 <Badge color={C.purple} bg={C.purpleBg} bd={C.purpleBd}>Certified PKI Specialist</Badge>
                 <Badge color={C.green} bg={C.greenBg} bd={C.greenBd}>Netherlands 🇳🇱</Badge>
               </div>
               <p style={{ fontSize:15, color:C.body, lineHeight:1.85, marginBottom:14 }}>
-                SSLVault is built by Mathi — a PKI specialist working at DigiCert as a Partner Account Manager in the APAC region. MSc from Kongu Engineering College. Deep expertise in certificate lifecycle management, CA/B Forum standards, DCV methods, and PKI automation.
+                SSLVault is built by Mathi — a Certified PKI Specialist with hands-on experience in the CA industry. MSc from Kongu Engineering College. Deep expertise in certificate lifecycle management, CA/B Forum standards, DCV methods, and PKI automation.
               </p>
               <p style={{ fontSize:15, color:C.body, lineHeight:1.85 }}>
                 The motivation is simple: the enterprise CLM tools (Venafi at $250k+/yr, Keyfactor at $75–200k/yr) are priced out of reach for the vast majority of organisations that need them. SSLVault delivers the same automation — issuer-agnostic, fully auditable, built on open standards — without the procurement cycle.

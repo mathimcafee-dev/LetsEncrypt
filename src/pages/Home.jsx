@@ -777,7 +777,7 @@ export default function Home({ nav }) {
               <div>
                 <SectionLabel>Why we built this</SectionLabel>
                 <H2 style={{ marginBottom:16 }}>PKI expertise shouldn't require a $250k contract.</H2>
-                <Body style={{ marginBottom:24 }}>SSLVault is built by a Certified PKI Specialist and DigiCert Partner Account Manager. The same automation enterprise teams pay hundreds of thousands for — available without the procurement cycle.</Body>
+                <Body style={{ marginBottom:24 }}>SSLVault is built by a Certified PKI Specialist with deep CA industry experience. The same automation enterprise teams pay hundreds of thousands for — available without the procurement cycle.</Body>
                 <Body style={{ marginBottom:32 }}>As CA/B Forum mandates tighten (200d → 100d → 47d between 2026–2029), full automation becomes non-negotiable. SSLVault is built for what's coming.</Body>
                 <div style={{ display:'flex', gap:10 }}>
                   <Btn label="Get started" onClick={() => nav('/auth')} primary/>
