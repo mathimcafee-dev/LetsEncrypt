@@ -1,41 +1,201 @@
-import { useState, useEffect } from 'react'
-import { Lock, Shield, RefreshCw, Eye, EyeOff, Download, FileText,
-         CheckCircle, AlertTriangle, Clock, Zap, ArrowRight,
-         Activity, Trash2, RotateCcw, ChevronRight, Bell } from 'lucide-react'
+// KeyLocker.jsx — Fixed & complete: reveal key, working rotate, view audit per domain, export CSV
+import { useState, useEffect, useRef, useCallback } from 'react'
+import {
+  Lock, RefreshCw, Eye, EyeOff, Copy, Check, Activity,
+  RotateCcw, Clock, Trash2, Shield, AlertTriangle,
+  CheckCircle, ChevronDown, ChevronUp, Download, Zap, ArrowRight, Bell
+} from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { usePlan } from '../hooks/usePlan'
-import ProGate from '../components/ProGate'
 import { format, formatDistanceToNow, differenceInDays } from 'date-fns'
 import '../styles/design-v2.css'
 
-// ── Helpers ───────────────────────────────────────────────────────────
+const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
+
 const fmtDate = (iso) => iso ? format(new Date(iso), 'MMM d, yyyy') : '—'
 const fmtAgo  = (iso) => iso ? formatDistanceToNow(new Date(iso), { addSuffix: true }) : '—'
 
-function statusColor(status) {
-  return { active:'var(--v2-green)', archived:'var(--v2-amber)', revoked:'var(--v2-red)' }[status] || 'var(--v2-text-3)'
+function statusColor(s) {
+  return { active:'#7c3aed', archived:'#d97706', revoked:'#dc2626' }[s] || '#94a3b8'
+}
+
+// ── callKeyLocker helper ──────────────────────────────────────────────
+async function callKeyLocker(action, extra = {}) {
+  const { data: { session } } = await supabase.auth.getSession()
+  const res = await fetch(`${SB_URL}/functions/v1/keylocker`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ action, ...extra }),
+  })
+  return res.json()
+}
+
+// ── Reveal Key Modal — 30s countdown, copy-only, audit logged ─────────
+function RevealModal({ keyEntry, onClose }) {
+  const [pem,       setPem]       = useState(null)
+  const [loading,   setLoading]   = useState(true)
+  const [error,     setError]     = useState('')
+  const [countdown, setCountdown] = useState(30)
+  const [copied,    setCopied]    = useState(false)
+  const timerRef = useRef(null)
+
+  useEffect(() => {
+    let mounted = true
+    callKeyLocker('fetch', { key_id: keyEntry.id, triggered_by: 'user_reveal' })
+      .then(res => {
+        if (!mounted) return
+        if (res.error) { setError(res.error); setLoading(false); return }
+        setPem(res.private_key_pem)
+        setLoading(false)
+        // Start 30s countdown
+        timerRef.current = setInterval(() => {
+          setCountdown(c => {
+            if (c <= 1) { clearInterval(timerRef.current); onClose(); return 0 }
+            return c - 1
+          })
+        }, 1000)
+      })
+    return () => { mounted = false; clearInterval(timerRef.current) }
+  }, [keyEntry.id])
+
+  const copy = async () => {
+    if (!pem) return
+    try {
+      await navigator.clipboard.writeText(pem)
+    } catch {
+      const ta = document.createElement('textarea')
+      ta.value = pem; document.body.appendChild(ta); ta.select()
+      document.execCommand('copy'); document.body.removeChild(ta)
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  // Mask the PEM — only show first/last lines
+  const masked = pem ? [
+    '-----BEGIN PRIVATE KEY-----',
+    '••••••••••••••••••••••••••••••••••••••',
+    '••••••••••••••••••••••••••••••••••••••',
+    '••••••••••••••••••••••••••••••••••••••',
+    '-----END PRIVATE KEY-----',
+  ].join('\n') : ''
+
+  const pct = (countdown / 30) * 100
+
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:300,
+      display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+      <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%', maxWidth:520,
+        boxShadow:'0 24px 64px rgba(0,0,0,0.3)', overflow:'hidden' }}>
+
+        {/* Header */}
+        <div style={{ padding:'16px 20px', borderBottom:'0.5px solid var(--v2-border)',
+          display:'flex', alignItems:'center', gap:10 }}>
+          <div style={{ width:32, height:32, borderRadius:8, background:'rgba(124,58,237,0.1)',
+            display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <Eye size={15} color="#7c3aed"/>
+          </div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)' }}>
+              Private key — {keyEntry.domain}
+            </div>
+            <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1 }}>
+              Copy only · Auto-hides in {countdown}s · Logged to audit trail
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background:'none', border:'none',
+            cursor:'pointer', color:'var(--v2-text-3)', fontSize:18, lineHeight:1 }}>×</button>
+        </div>
+
+        {/* Countdown bar */}
+        <div style={{ height:3, background:'var(--v2-surface-3)' }}>
+          <div style={{ height:'100%', background:'#7c3aed', borderRadius:0,
+            width:`${pct}%`, transition:'width 1s linear' }}/>
+        </div>
+
+        <div style={{ padding:'18px 20px' }}>
+          {loading ? (
+            <div style={{ textAlign:'center', padding:'24px 0', color:'var(--v2-text-3)' }}>
+              <RefreshCw size={20} style={{ animation:'spin .8s linear infinite', margin:'0 auto 8px', display:'block' }}/>
+              Decrypting from vault…
+            </div>
+          ) : error ? (
+            <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:8,
+              padding:'12px 14px', fontSize:12, color:'#dc2626' }}>
+              <AlertTriangle size={12} style={{ verticalAlign:'-1px', marginRight:6 }}/>
+              {error}
+            </div>
+          ) : (
+            <>
+              {/* Security warning */}
+              <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:8,
+                padding:'10px 12px', marginBottom:14, fontSize:11, color:'#92400e' }}>
+                <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
+                Never share this key. Do not save to disk unencrypted. This access is being logged.
+              </div>
+
+              {/* Masked key display */}
+              <div style={{ background:'#0a0e1a', borderRadius:8, padding:'14px 16px',
+                marginBottom:12, fontFamily:'monospace', fontSize:11, color:'#94a3b8',
+                lineHeight:1.7, whiteSpace:'pre' }}>
+                {masked}
+              </div>
+
+              {/* Copy button */}
+              <button onClick={copy} style={{
+                width:'100%', padding:'10px', borderRadius:8, cursor:'pointer',
+                background: copied ? '#f0fdf4' : '#7c3aed', fontFamily:'inherit',
+                color: copied ? '#16a34a' : 'white', border: copied ? '1px solid #bbf7d0' : 'none',
+                fontSize:13, fontWeight:600, display:'flex', alignItems:'center',
+                justifyContent:'center', gap:8, transition:'all .2s',
+              }}>
+                {copied
+                  ? <><Check size={14}/> Copied to clipboard</>
+                  : <><Copy size={14}/> Copy private key to clipboard</>}
+              </button>
+
+              <div style={{ fontSize:10, color:'var(--v2-text-3)', textAlign:'center', marginTop:8 }}>
+                The actual key is copied — the masked display above is intentional for security.
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+    </div>
+  )
 }
 
 // ── AuditRow ──────────────────────────────────────────────────────────
 function AuditRow({ entry }) {
   const icons = {
-    created: <Shield size={12} color='var(--v2-green)' />,
-    fetched: <Eye size={12} color='#2563eb' />,
-    rotated: <RotateCcw size={12} color='#d97706' />,
-    archived:<Clock size={12} color='var(--v2-text-3)' />,
-    deleted: <Trash2 size={12} color='var(--v2-red)' />,
-    viewed:  <Eye size={12} color='var(--v2-text-3)' />,
+    created:  <Shield size={12} color="#7c3aed"/>,
+    fetched:  <Eye size={12} color="#2563eb"/>,
+    rotated:  <RotateCcw size={12} color="#d97706"/>,
+    archived: <Clock size={12} color="#94a3b8"/>,
+    deleted:  <Trash2 size={12} color="#dc2626"/>,
+    viewed:   <Eye size={12} color="#94a3b8"/>,
+  }
+  const actionColors = {
+    created:'#7c3aed', fetched:'#2563eb', rotated:'#d97706',
+    archived:'#94a3b8', deleted:'#dc2626', viewed:'#94a3b8',
   }
   return (
-    <div style={{ display:'flex', alignItems:'center', gap:10,
-                  padding:'10px 16px', borderBottom:'0.5px solid var(--v2-border)',
-                  fontSize:12 }}>
-      <div style={{ flexShrink:0 }}>{icons[entry.action] || <Activity size={12} />}</div>
+    <div style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px',
+      borderBottom:'0.5px solid var(--v2-border)', fontSize:12 }}>
+      <div style={{ width:28, height:28, borderRadius:6, flexShrink:0,
+        background:`${actionColors[entry.action] || '#94a3b8'}12`,
+        display:'flex', alignItems:'center', justifyContent:'center' }}>
+        {icons[entry.action] || <Activity size={12}/>}
+      </div>
       <div style={{ flex:1, minWidth:0 }}>
         <span style={{ fontWeight:500, color:'var(--v2-text)' }}>{entry.domain}</span>
         <span style={{ color:'var(--v2-text-3)', marginLeft:8 }}>
-          {entry.action} · {entry.triggered_by}
+          {entry.action} · via {entry.triggered_by}
         </span>
       </div>
       <div style={{ fontSize:11, color:'var(--v2-text-3)', flexShrink:0 }}>
@@ -45,86 +205,117 @@ function AuditRow({ entry }) {
   )
 }
 
-// ── KeyCard ────────────────────────────────────────────────────────────
-function KeyCard({ keyEntry, onRotate, rotating }) {
-  const days = keyEntry.expires_at ? differenceInDays(new Date(keyEntry.expires_at), new Date()) : null
+// ── KeyCard — fixed with reveal + working view audit ──────────────────
+function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
+  const days           = keyEntry.expires_at
+    ? differenceInDays(new Date(keyEntry.expires_at), new Date()) : null
   const isExpiringSoon = days !== null && days < 30
 
   return (
-    <div className="v2-card" style={{ overflow:'hidden' }}>
-      {/* Status bar */}
-      <div style={{ height:2, background: statusColor(keyEntry.status) }} />
+    <div style={{ border:`0.5px solid var(--v2-border)`, borderRadius:10, overflow:'hidden',
+      borderTop:`2px solid ${statusColor(keyEntry.status)}` }}>
+
       <div style={{ padding:'16px 18px' }}>
-        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:12, marginBottom:12 }}>
+        {/* Domain header */}
+        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
+          gap:12, marginBottom:12 }}>
           <div style={{ minWidth:0 }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4, flexWrap:'wrap' }}>
-              <span className="v2-mono" style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>
+              <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)', fontFamily:'monospace' }}>
                 {keyEntry.domain}
               </span>
-              <span style={{ fontSize:10, fontWeight:600, textTransform:'uppercase', letterSpacing:'0.3px',
-                              color: statusColor(keyEntry.status),
-                              background: keyEntry.status === 'active' ? 'var(--v2-green-bg)' : 'var(--v2-surface-3)',
-                              border:`0.5px solid ${statusColor(keyEntry.status)}30`,
-                              borderRadius:3, padding:'1px 6px' }}>
+              <span style={{ fontSize:9, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.3px',
+                color: statusColor(keyEntry.status),
+                background: `${statusColor(keyEntry.status)}12`,
+                border:`0.5px solid ${statusColor(keyEntry.status)}30`,
+                borderRadius:4, padding:'1px 7px' }}>
                 {keyEntry.status}
               </span>
               {keyEntry.status === 'active' && (
-                <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:10,
-                                color:'#7c3aed', background:'rgba(124,58,237,0.06)',
-                                border:'0.5px solid rgba(124,58,237,0.2)', borderRadius:3, padding:'1px 6px',
-                                fontWeight:600 }}>
-                  <Lock size={8} /> VAULT SECURED
+                <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:9,
+                  color:'#7c3aed', background:'rgba(124,58,237,0.07)',
+                  border:'0.5px solid rgba(124,58,237,0.2)', borderRadius:4, padding:'1px 7px', fontWeight:700 }}>
+                  <Lock size={8}/> VAULT SECURED
                 </span>
               )}
             </div>
             <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
-              {keyEntry.algorithm || 'RSA 2048'} · Created {fmtDate(keyEntry.created_at)}
+              {keyEntry.algorithm || 'RSA'} · {keyEntry.key_size || 2048}-bit ·
+              Created {fmtDate(keyEntry.created_at)}
               {keyEntry.expires_at && ` · Expires ${fmtDate(keyEntry.expires_at)}`}
             </div>
           </div>
         </div>
 
+        {/* Expiry warning */}
         {isExpiringSoon && keyEntry.status === 'active' && (
-          <div className="v2-callout warning" style={{ marginBottom:12, fontSize:11 }}>
-            <div className="v2-callout-title" style={{ fontSize:11 }}>Expiring in {days} days</div>
-            Rotate now to avoid any disruption.
+          <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:8,
+            padding:'10px 12px', marginBottom:12, fontSize:11, color:'#92400e' }}>
+            <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
+            <strong>Expiring in {days} days</strong> — rotate now to avoid disruption.
           </div>
         )}
 
-        {/* Metrics row */}
+        {/* Metrics */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:14 }}>
           {[
             { label:'Last accessed', value: keyEntry.last_accessed_at ? fmtAgo(keyEntry.last_accessed_at) : 'Never' },
             { label:'Rotations',     value: keyEntry.rotation_count ?? 0 },
-            { label:'Key size',      value: keyEntry.key_size ? `${keyEntry.key_size} bit` : 'RSA 2048' },
+            { label:'Key size',      value: `${keyEntry.key_size || 2048} bit` },
           ].map(({ label, value }) => (
-            <div key={label} style={{ background:'var(--v2-surface-3)', borderRadius:'var(--v2-r-md)',
-                                       padding:'8px 10px', border:'0.5px solid var(--v2-border)' }}>
-              <div className="v2-section-label" style={{ marginBottom:3 }}>{label}</div>
+            <div key={label} style={{ background:'var(--v2-surface-3)', borderRadius:7,
+              padding:'8px 10px', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ fontSize:9, fontWeight:600, color:'var(--v2-text-3)',
+                textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:3 }}>{label}</div>
               <div style={{ fontSize:12, fontWeight:500, color:'var(--v2-text)' }}>{String(value)}</div>
             </div>
           ))}
         </div>
 
-        {/* Actions */}
+        {/* Actions — active key */}
         {keyEntry.status === 'active' && (
-          <div style={{ display:'flex', gap:7 }}>
-            <button className="v2-btn v2-btn-sm"
-              onClick={() => onRotate(keyEntry)}
-              disabled={rotating === keyEntry.id}
-              style={{ fontSize:11 }}>
-              {rotating === keyEntry.id
-                ? <><RefreshCw size={10} className="spin" /> Rotating…</>
-                : <><RotateCcw size={10} /> Rotate key</>}
+          <div style={{ display:'flex', gap:7, flexWrap:'wrap' }}>
+            {/* Reveal key — main security action */}
+            <button onClick={() => onReveal(keyEntry)}
+              style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 12px',
+                fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
+                background:'rgba(124,58,237,0.08)', color:'#7c3aed',
+                border:'0.5px solid rgba(124,58,237,0.25)', transition:'all .15s' }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(124,58,237,0.14)'}
+              onMouseLeave={e=>e.currentTarget.style.background='rgba(124,58,237,0.08)'}>
+              <Eye size={11}/> Reveal key
             </button>
-            <button className="v2-btn v2-btn-sm" style={{ fontSize:11, color:'var(--v2-text-3)' }}>
-              <Activity size={10} /> View audit
+
+            {/* Rotate */}
+            <button className="v2-btn v2-btn-sm" onClick={() => onRotate(keyEntry)}
+              disabled={rotating === keyEntry.id}
+              style={{ display:'flex', alignItems:'center', gap:5, fontSize:11 }}>
+              {rotating === keyEntry.id
+                ? <><RefreshCw size={10} style={{ animation:'spin .8s linear infinite' }}/> Rotating…</>
+                : <><RotateCcw size={10}/> Rotate key</>}
+            </button>
+
+            {/* View audit — now wired up */}
+            <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
+              style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
+                color:'var(--v2-text-3)' }}>
+              <Activity size={10}/> View audit
             </button>
           </div>
         )}
+
+        {/* Archived key info */}
         {keyEntry.status === 'archived' && (
-          <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
-            Archived {fmtAgo(keyEntry.archived_at)} · Auto-deleted in 30 days
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <div style={{ fontSize:11, color:'var(--v2-text-3)', flex:1 }}>
+              <Clock size={11} style={{ verticalAlign:'-1px', marginRight:4 }}/>
+              Archived {fmtAgo(keyEntry.archived_at)} · Auto-deleted 30 days after archiving
+            </div>
+            <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
+              style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
+                color:'var(--v2-text-3)' }}>
+              <Activity size={10}/> View audit
+            </button>
           </div>
         )}
       </div>
@@ -132,403 +323,465 @@ function KeyCard({ keyEntry, onRotate, rotating }) {
   )
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// MAIN KeyLocker PAGE
-// ══════════════════════════════════════════════════════════════════════
+// ══ MAIN KeyLocker PAGE ════════════════════════════════════════════════
 export default function KeyLocker({ nav }) {
   const { user, loading: authLoading } = useAuth()
-  const { plan, isPro, loading: planLoading } = usePlan(user)
+  const { isPro, loading: planLoading } = usePlan(user)
 
-  const [keys, setKeys]         = useState([])
-  const [audit, setAudit]       = useState([])
-  const [loading, setLoading]   = useState(true)
-  const [rotating, setRotating] = useState(null)
-  const [rotateError, setRotateError] = useState('')
-  const [rotateSuccess, setRotateSuccess] = useState('')
-  const [tab, setTab]           = useState('vault')
+  const [keys,          setKeys]          = useState([])
+  const [audit,         setAudit]         = useState([])
+  const [loading,       setLoading]       = useState(true)
+  const [rotating,      setRotating]      = useState(null)
   const [rotateConfirm, setRotateConfirm] = useState(null)
+  const [rotateError,   setRotateError]   = useState('')
+  const [rotateSuccess, setRotateSuccess] = useState('')
+  const [tab,           setTab]           = useState('vault')
+  const [auditFilter,   setAuditFilter]   = useState(null) // domain filter for audit tab
+  const [revealKey,     setRevealKey]     = useState(null) // keyEntry to reveal
 
-  // ── Load vault keys and audit log ──────────────────────────────────
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    const data = await callKeyLocker('list')
+    setKeys(data.keys   || [])
+    setAudit(data.audit || [])
+    setLoading(false)
+  }, [])
+
   useEffect(() => {
     if (!user || !isPro || planLoading) return
     loadData()
-  }, [user?.id, isPro, planLoading])
+  }, [user?.id, isPro, planLoading, loadData])
 
-  const callKeyLocker = async (action, extra = {}) => {
-    const { data: { session } } = await supabase.auth.getSession()
-    const res = await fetch(
-      'https://frthcwkntciaakqsppss.supabase.co/functions/v1/keylocker',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ action, ...extra }),
-      }
-    )
-    return res.json()
-  }
-
-  const loadData = async () => {
-    setLoading(true)
-    const data = await callKeyLocker('list')
-    setKeys(data.keys || [])
-    setAudit(data.audit || [])
-    setLoading(false)
-  }
-
-  // ── Key rotation ───────────────────────────────────────────────────
+  // ── Rotate — proper flow: calls auto-renew which re-issues cert + stores new key ──
   const handleRotate = async (keyEntry) => {
     setRotateConfirm(null)
     setRotateError('')
     setRotateSuccess('')
     setRotating(keyEntry.id)
     try {
-      const result = await callKeyLocker('rotate', { key_id: keyEntry.id })
-      if (result.manual_required) {
-        setRotateError('Auto-rotation requires a connected DNS provider. Please use the Issue Certificate page to renew manually.')
-        setRotating(null)
+      // Find the cert linked to this key
+      const { data: cert } = await supabase
+        .from('certificates')
+        .select('id, domain, dns_provider_id, install_method')
+        .eq('keylocker_key_id', keyEntry.id)
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      if (!cert) {
+        // Fallback: just archive the old key directly
+        const res = await callKeyLocker('archive', { key_id: keyEntry.id })
+        if (res.error) throw new Error(res.error)
+        setRotateSuccess(`Key for ${keyEntry.domain} archived. Issue a new certificate to replace it.`)
+        await loadData()
         return
       }
-      if (result.error) throw new Error(result.error)
-      setRotateSuccess(`Certificate rotated for ${keyEntry.domain}. New cert issued and stored in vault. Old key archived for 30 days.`)
+
+      // Trigger auto-renew via agent-daemon edge function which handles full rotation
+      const { data: { session } } = await supabase.auth.getSession()
+      const renewRes = await fetch(`${SB_URL}/functions/v1/agent-daemon`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          action:   'dispatch_job',
+          job_type: 'renew',
+          cert_id:  cert.id,
+          domain:   cert.domain,
+          user_id:  user.id,
+          force:    true,
+        }),
+      })
+      const renewData = await renewRes.json()
+
+      if (renewData.error) throw new Error(renewData.error)
+
+      setRotateSuccess(
+        `Rotation job dispatched for ${keyEntry.domain}. ` +
+        `A new certificate will be issued and the private key replaced in the vault. ` +
+        `Old key archived for 30-day rollback.`
+      )
       await loadData()
     } catch (err) {
       const msg = err.message || ''
-      const isRateLimit = msg.toLowerCase().includes('rate') || msg.toLowerCase().includes('too many') || msg.toLowerCase().includes('rateLimited')
-      if (isRateLimit) {
+      if (msg.toLowerCase().includes('rate') || msg.toLowerCase().includes('too many')) {
         setRotateError(
-          `Let's Encrypt rate limit reached for ${keyEntry.domain}. LE allows 5 certificates per domain per week. ` +
-          `Please wait a few days before rotating again. This is a Let's Encrypt policy, not an SSLVault limitation.`
+          `Rate limit reached for ${keyEntry.domain}. ` +
+          `Let's Encrypt allows 5 certs per domain per week. Please try again in a few days.`
         )
       } else {
-        setRotateError('Rotation failed: ' + msg)
+        setRotateError(`Rotation failed: ${msg}`)
       }
     }
     setRotating(null)
   }
 
-  // ── Auth guards ────────────────────────────────────────────────────
-  if (authLoading || planLoading) {
-    return (
-      <div className="v2-page" style={{ display:'flex', alignItems:'center',
-                                         justifyContent:'center', minHeight:'60vh' }}>
-        <RefreshCw size={20} className="spin" color='var(--v2-text-3)' />
-        <style>{`.spin{animation:spin 1s linear infinite}@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
-      </div>
-    )
+  // ── View audit for a specific domain ─────────────────────────────
+  const handleViewAudit = (domain) => {
+    setAuditFilter(domain)
+    setTab('audit')
   }
 
-  if (!user) {
-    return (
-      <div className="v2-page" style={{ display:'flex', alignItems:'center',
-                                         justifyContent:'center', minHeight:'60vh' }}>
-        <div style={{ textAlign:'center', maxWidth:380 }}>
-          <div style={{ width:48, height:48, background:'#0a0a0a', borderRadius:'var(--v2-r-xl)',
-                         display:'flex', alignItems:'center', justifyContent:'center',
-                         margin:'0 auto 16px' }}>
-            <Lock size={22} color='white' />
+  // ── Export audit log as CSV ───────────────────────────────────────
+  const exportCSV = () => {
+    const rows = [['Domain','Action','Triggered by','Date']]
+    const filtered = auditFilter
+      ? audit.filter(e => e.domain === auditFilter)
+      : audit
+    filtered.forEach(e => rows.push([
+      e.domain, e.action, e.triggered_by,
+      e.created_at ? format(new Date(e.created_at), 'yyyy-MM-dd HH:mm') : ''
+    ]))
+    const csv  = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type:'text/csv' })
+    const url  = URL.createObjectURL(blob)
+    const a    = document.createElement('a')
+    a.href = url; a.download = `keylocker-audit-${Date.now()}.csv`
+    a.click(); URL.revokeObjectURL(url)
+  }
+
+  // ── Auth guards ───────────────────────────────────────────────────
+  if (authLoading || planLoading) return (
+    <div className="v2-page" style={{ display:'flex', alignItems:'center',
+      justifyContent:'center', minHeight:'60vh' }}>
+      <RefreshCw size={20} style={{ animation:'spin .8s linear infinite' }} color="var(--v2-text-3)"/>
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+    </div>
+  )
+
+  if (!user) return (
+    <div className="v2-page" style={{ display:'flex', alignItems:'center',
+      justifyContent:'center', minHeight:'60vh' }}>
+      <div style={{ textAlign:'center', maxWidth:380 }}>
+        <div style={{ width:48, height:48, background:'#0a0a0a', borderRadius:12,
+          display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
+          <Lock size={22} color="white"/>
+        </div>
+        <div style={{ fontSize:18, fontWeight:700, color:'var(--v2-text)', marginBottom:8 }}>
+          Sign in to access KeyLocker
+        </div>
+        <button className="v2-btn v2-btn-primary" style={{ padding:'10px 22px', fontSize:14 }}
+          onClick={() => nav('/auth')}>
+          Sign in <ArrowRight size={13}/>
+        </button>
+      </div>
+    </div>
+  )
+
+  if (!isPro) return (
+    <div className="v2-page">
+      <div className="v2-container" style={{ maxWidth:800, padding:'60px 24px 80px' }}>
+        <div style={{ textAlign:'center', marginBottom:40 }}>
+          <div style={{ width:64, height:64, borderRadius:16, margin:'0 auto 20px',
+            background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            boxShadow:'0 0 0 8px rgba(124,58,237,0.08)' }}>
+            <Lock size={28} color="white"/>
           </div>
-          <div style={{ fontSize:18, fontWeight:700, color:'var(--v2-text)', marginBottom:8 }}>
-            Sign in to access KeyLocker
-          </div>
-          <button className="v2-btn v2-btn-primary" style={{ padding:'10px 22px', fontSize:14 }}
-            onClick={() => nav('/auth')}>
-            Sign in <ArrowRight size={13} />
+          <h1 style={{ fontSize:28, fontWeight:700, letterSpacing:'-0.6px',
+            marginBottom:10, color:'var(--v2-text)' }}>KeyLocker Vault</h1>
+          <p style={{ fontSize:15, color:'var(--v2-text-2)', lineHeight:1.65,
+            maxWidth:440, margin:'0 auto 28px' }}>
+            Encrypted key storage, automatic rotation, and full audit logging —
+            built for teams who need compliance-grade PKI.
+          </p>
+          <button onClick={() => nav('/pricing')}
+            style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'12px 24px',
+              background:'linear-gradient(135deg,#7c3aed,#6d28d9)', color:'white',
+              border:'none', borderRadius:8, fontSize:14, fontWeight:600,
+              cursor:'pointer', fontFamily:'inherit' }}>
+            <Zap size={14}/> View KeyLocker plans <ArrowRight size={13}/>
           </button>
         </div>
-      </div>
-    )
-  }
-
-  // ── Non-pro users: show upgrade prompt ────────────────────────────
-  if (!isPro) {
-    return (
-      <div className="v2-page">
-        <div className="v2-container" style={{ maxWidth:800, padding:'60px 24px 80px' }}>
-          <div style={{ textAlign:'center', marginBottom:40 }}>
-            <div style={{ width:64, height:64, borderRadius:'var(--v2-r-xl)', margin:'0 auto 20px',
-                           background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
-                           display:'flex', alignItems:'center', justifyContent:'center',
-                           boxShadow:'0 0 0 8px rgba(124,58,237,0.08)' }}>
-              <Lock size={28} color='white' />
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10 }}>
+          {[
+            { icon:<Lock size={16}/>, color:'#7c3aed', title:'Envelope encryption',
+              desc:'AES-256-GCM per certificate. DEK wrapped with your personal KEK.' },
+            { icon:<RotateCcw size={16}/>, color:'#2563eb', title:'Zero-downtime rotation',
+              desc:'New cert issued and deployed before old key is archived. 30-day rollback.' },
+            { icon:<Activity size={16}/>, color:'#059669', title:'Immutable audit log',
+              desc:'Every key access logged. Export for SOC 2 or ISO 27001 audits.' },
+            { icon:<Bell size={16}/>, color:'#d97706', title:'Access alerts',
+              desc:'Know every time your private key is fetched or copied.' },
+          ].map(({ icon, color, title, desc }) => (
+            <div key={title} className="v2-card" style={{ padding:'20px 22px' }}>
+              <div style={{ width:34, height:34, borderRadius:8, display:'flex',
+                alignItems:'center', justifyContent:'center',
+                background:`${color}12`, border:`0.5px solid ${color}20`,
+                color, marginBottom:12 }}>{icon}</div>
+              <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)', marginBottom:6 }}>{title}</div>
+              <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.65 }}>{desc}</div>
             </div>
-            <h1 style={{ fontSize:28, fontWeight:700, letterSpacing:'-0.6px',
-                          marginBottom:10, color:'var(--v2-text)' }}>
-              KeyLocker Vault
-            </h1>
-            <p style={{ fontSize:15, color:'var(--v2-text-2)', lineHeight:1.65,
-                         maxWidth:440, margin:'0 auto 28px' }}>
-              Encrypted key storage, automatic rotation, and full audit logging —
-              built for teams and businesses who need compliance-grade PKI.
-            </p>
-            <button onClick={() => nav('/pricing')}
-              style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'12px 24px',
-                        background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
-                        color:'white', border:'none', borderRadius:'var(--v2-r-md)',
-                        fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
-              <Zap size={14} /> View KeyLocker plans <ArrowRight size={13} />
-            </button>
-            <div style={{ marginTop:12, fontSize:11, color:'var(--v2-text-3)' }}>
-              From €6.58/month · 14-day money-back guarantee
-            </div>
-          </div>
-
-          {/* Feature preview */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10 }}>
-            {[
-              { icon:<Lock size={16} />,       color:'#7c3aed', title:'Envelope encryption',
-                desc:'AES-256-GCM per certificate. DEK wrapped with your personal KEK. Supabase breach alone cannot expose your keys.' },
-              { icon:<RotateCcw size={16} />,  color:'#2563eb', title:'Zero-downtime rotation',
-                desc:'Issue new cert, archive old key, deploy automatically. Your site stays live throughout. 30-day rollback window.' },
-              { icon:<Activity size={16} />,   color:'#059669', title:'Immutable audit log',
-                desc:'Every key access logged with who, when, and why. Append-only via RLS. Export for SOC 2 or ISO 27001 audits.' },
-              { icon:<Bell size={16} />,       color:'#d97706', title:'Access alerts',
-                desc:'Instant email when your key is fetched by an agent or accessed from a new location. Know everything, always.' },
-            ].map(({ icon, color, title, desc }) => (
-              <div key={title} className="v2-card" style={{ padding:'20px 22px' }}>
-                <div style={{ width:34, height:34, borderRadius:'var(--v2-r-md)',
-                               display:'flex', alignItems:'center', justifyContent:'center',
-                               background:`${color}12`, border:`0.5px solid ${color}20`,
-                               color, marginBottom:12 }}>
-                  {icon}
-                </div>
-                <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)', marginBottom:6 }}>{title}</div>
-                <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.65 }}>{desc}</div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
-        <style>{`.spin{animation:spin 1s linear infinite}@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
       </div>
-    )
-  }
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+    </div>
+  )
 
-  // ── Pro user: full vault UI ────────────────────────────────────────
+  // ── Pro vault UI ──────────────────────────────────────────────────
   const activeKeys   = keys.filter(k => k.status === 'active')
   const archivedKeys = keys.filter(k => k.status === 'archived')
+  const filteredAudit = auditFilter
+    ? audit.filter(e => e.domain === auditFilter)
+    : audit
 
   return (
     <div className="v2-page">
+      {/* Reveal modal */}
+      {revealKey && (
+        <RevealModal keyEntry={revealKey} onClose={() => { setRevealKey(null); loadData() }}/>
+      )}
+
       <div className="v2-container" style={{ maxWidth:960, padding:'40px 24px 80px' }}>
 
         {/* Header */}
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
-                      marginBottom:24, flexWrap:'wrap', gap:12 }}>
+          marginBottom:24, flexWrap:'wrap', gap:12 }}>
           <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <div style={{ width:40, height:40, borderRadius:'var(--v2-r-lg)',
-                           background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
-                           display:'flex', alignItems:'center', justifyContent:'center',
-                           boxShadow:'0 0 0 4px rgba(124,58,237,0.1)' }}>
-              <Lock size={18} color='white' />
+            <div style={{ width:40, height:40, borderRadius:10,
+              background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              boxShadow:'0 0 0 4px rgba(124,58,237,0.1)' }}>
+              <Lock size={18} color="white"/>
             </div>
             <div>
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <h1 className="v2-h1">KeyLocker Vault</h1>
                 <span style={{ fontSize:9, fontWeight:700, color:'#7c3aed',
-                                background:'rgba(124,58,237,0.08)',
-                                border:'0.5px solid rgba(124,58,237,0.2)',
-                                borderRadius:3, padding:'2px 7px', textTransform:'uppercase',
-                                letterSpacing:'0.4px' }}>
-                  PRO
-                </span>
+                  background:'rgba(124,58,237,0.08)', border:'0.5px solid rgba(124,58,237,0.2)',
+                  borderRadius:4, padding:'2px 7px', textTransform:'uppercase',
+                  letterSpacing:'0.4px' }}>PRO</span>
               </div>
-              <p className="v2-subtitle">
+              <p style={{ fontSize:12, color:'var(--v2-text-3)', marginTop:2 }}>
                 {user.email} · {activeKeys.length} active key{activeKeys.length !== 1 ? 's' : ''}
                 {archivedKeys.length > 0 && ` · ${archivedKeys.length} archived`}
               </p>
             </div>
           </div>
-          <div style={{ display:'flex', gap:8 }}>
-<button className="v2-btn v2-btn-sm" onClick={loadData} style={{ fontSize:12 }}>
-              <RefreshCw size={11} /> Refresh
-            </button>
-          </div>
+          <button className="v2-btn v2-btn-sm" onClick={loadData}
+            style={{ display:'flex', alignItems:'center', gap:5 }}>
+            <RefreshCw size={11}/> Refresh
+          </button>
         </div>
 
-        {/* Security statement */}
-        <div className="v2-card" style={{ padding:'14px 18px', marginBottom:16,
-          borderLeft:'3px solid #7c3aed', display:'flex', alignItems:'center', gap:12 }}>
-          <div style={{ width:32, height:32, borderRadius:'var(--v2-r-md)', flexShrink:0,
-            background:'rgba(124,58,237,0.08)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <Lock size={15} color='#7c3aed' />
-          </div>
-          <div>
-            <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)', marginBottom:2 }}>
-              AES-256-GCM encrypted · Envelope key hierarchy · Immutable audit log
-            </div>
-            <div style={{ fontSize:11, color:'var(--v2-text-3)', lineHeight:1.5 }}>
-              Private keys are encrypted before storage using industry-standard envelope encryption.
-              Your keys are never stored in plaintext. Built on open cryptographic standards with a
-              clear roadmap toward zero-knowledge architecture.
-            </div>
+        {/* Security strip */}
+        <div style={{ background:'rgba(124,58,237,0.05)', border:'0.5px solid rgba(124,58,237,0.18)',
+          borderRadius:9, padding:'12px 16px', marginBottom:20,
+          display:'flex', alignItems:'center', gap:10 }}>
+          <Lock size={13} color="#7c3aed" style={{ flexShrink:0 }}/>
+          <div style={{ fontSize:11, color:'#6d28d9', fontWeight:500 }}>
+            AES-256-GCM encrypted · Envelope key hierarchy · Immutable audit log ·
+            Keys never stored in plaintext
           </div>
         </div>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:24 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:20 }}>
           {[
-            { label:'Active keys',    value: activeKeys.length,   accent:'#7c3aed' },
-            { label:'Archived',       value: archivedKeys.length, accent:'var(--v2-amber)' },
-            { label:'Audit events',   value: audit.length,        accent:'var(--v2-text)' },
-            { label:'Encryption',     value: 'AES-256',           accent:'var(--v2-green)' },
-          ].map(s => (
-            <div key={s.label} className="v2-stat" style={{ borderTop:`2px solid ${s.accent}` }}>
-              <div className="v2-stat-value" style={{ fontSize:22 }}>{s.value}</div>
-              <div className="v2-stat-label" style={{ marginTop:4 }}>{s.label}</div>
+            { label:'Active keys',  val:activeKeys.length,   color:'#7c3aed' },
+            { label:'Archived',     val:archivedKeys.length, color:'#d97706' },
+            { label:'Audit events', val:audit.length,        color:'var(--v2-text)' },
+            { label:'Encryption',   val:'AES-256',           color:'#16a34a' },
+          ].map(({ label, val, color }) => (
+            <div key={label} className="v2-card" style={{ padding:'12px 14px' }}>
+              <div style={{ fontSize:22, fontWeight:500, color, fontFamily:'monospace' }}>{val}</div>
+              <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:3 }}>{label}</div>
             </div>
           ))}
         </div>
 
-        {/* Rotate result banners */}
+        {/* Banners */}
         {rotateError && (
-          <div className="v2-alert v2-alert-error" style={{ marginBottom:12 }}>
-            <AlertTriangle size={13} /> {rotateError}
-            <button onClick={() => setRotateError('')} style={{ marginLeft:'auto', background:'none', border:'none', cursor:'pointer', color:'inherit' }}>✕</button>
+          <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:8,
+            padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center',
+            gap:8, fontSize:12, color:'#b91c1c' }}>
+            <AlertTriangle size={13} style={{ flexShrink:0 }}/>
+            <span style={{ flex:1 }}>{rotateError}</span>
+            <button onClick={() => setRotateError('')}
+              style={{ background:'none', border:'none', cursor:'pointer',
+                color:'#b91c1c', fontSize:16, lineHeight:1 }}>×</button>
           </div>
         )}
         {rotateSuccess && (
-          <div style={{ background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
-            borderRadius:'var(--v2-r-md)', padding:'10px 14px', marginBottom:12,
-            display:'flex', alignItems:'center', gap:8, fontSize:12, color:'var(--v2-green-text)' }}>
-            <CheckCircle size={13} /> {rotateSuccess}
-            <button onClick={() => setRotateSuccess('')} style={{ marginLeft:'auto', background:'none', border:'none', cursor:'pointer', color:'inherit' }}>✕</button>
+          <div style={{ background:'#f0fdf4', border:'0.5px solid #bbf7d0', borderRadius:8,
+            padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center',
+            gap:8, fontSize:12, color:'#15803d' }}>
+            <CheckCircle size={13} style={{ flexShrink:0 }}/>
+            <span style={{ flex:1 }}>{rotateSuccess}</span>
+            <button onClick={() => setRotateSuccess('')}
+              style={{ background:'none', border:'none', cursor:'pointer',
+                color:'#15803d', fontSize:16, lineHeight:1 }}>×</button>
           </div>
         )}
 
-
         {/* Tabs */}
-        <div className="v2-tablist" style={{ marginBottom:20 }}>
+        <div style={{ display:'flex', gap:1, borderBottom:'0.5px solid var(--v2-border)',
+          marginBottom:20 }}>
           {[
-            { key:'vault', label:'Vault', count: activeKeys.length },
-            { key:'archived', label:'Archive', count: archivedKeys.length },
-            { key:'audit', label:'Audit Log', count: audit.length },
+            { key:'vault',    label:'Vault',     count:activeKeys.length   },
+            { key:'archived', label:'Archive',   count:archivedKeys.length },
+            { key:'audit',    label:'Audit log', count:audit.length        },
           ].map(t => (
-            <button key={t.key} className={`v2-tablist-btn ${tab === t.key ? 'active' : ''}`}
-              onClick={() => setTab(t.key)}>
+            <button key={t.key} onClick={() => {
+              setTab(t.key)
+              if (t.key !== 'audit') setAuditFilter(null)
+            }}
+              style={{ padding:'8px 14px', fontSize:12, fontWeight:tab===t.key?500:400,
+                cursor:'pointer', fontFamily:'inherit', background:'none', border:'none',
+                borderBottom:tab===t.key?'2px solid #0e7fc0':'2px solid transparent',
+                color:tab===t.key?'#0e7fc0':'var(--v2-text-3)', marginBottom:'-0.5px',
+                display:'flex', alignItems:'center', gap:6 }}>
               {t.label}
-              <span className="v2-tab-count">{t.count}</span>
+              <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:8,
+                background:tab===t.key?'#eff6ff':'var(--v2-surface-3)',
+                color:tab===t.key?'#0e7fc0':'var(--v2-text-3)' }}>
+                {t.count}
+              </span>
             </button>
           ))}
         </div>
 
         {/* Loading */}
         {loading ? (
-          <div className="v2-empty">
-            <div className="v2-empty-icon"><RefreshCw size={20} className="spin" /></div>
-            <div className="v2-empty-title">Loading vault…</div>
+          <div style={{ textAlign:'center', padding:'48px 0', color:'var(--v2-text-3)' }}>
+            <RefreshCw size={22} style={{ animation:'spin .8s linear infinite',
+              margin:'0 auto 10px', display:'block' }}/>
+            Loading vault…
           </div>
         ) : (
           <>
-            {/* Vault tab */}
+            {/* VAULT TAB */}
             {tab === 'vault' && (
-              <>
-                {activeKeys.length === 0 ? (
-                  <div className="v2-empty">
-                    <div className="v2-empty-icon"><Lock size={22} /></div>
-                    <div className="v2-empty-title">Vault is empty</div>
-                    <div className="v2-empty-desc">
-                      Issue a certificate to automatically add its key to the KeyLocker vault.
-                      New certificates issued while on Pro are stored here automatically.
-                    </div>
-                    <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
-                      Issue certificate
-                    </button>
+              activeKeys.length === 0 ? (
+                <div style={{ textAlign:'center', padding:'48px 0' }}>
+                  <Lock size={32} color="var(--v2-text-3)" style={{ margin:'0 auto 12px', display:'block' }}/>
+                  <div style={{ fontSize:14, fontWeight:500, color:'var(--v2-text-2)', marginBottom:6 }}>
+                    Vault is empty
                   </div>
-                ) : (
-                  <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                    {activeKeys.map(k => (
-                      <KeyCard key={k.id} keyEntry={k}
-                        onRotate={(k) => setRotateConfirm(k)}
-                        rotating={rotating} />
-                    ))}
+                  <div style={{ fontSize:12, color:'var(--v2-text-3)', maxWidth:360,
+                    margin:'0 auto 20px', lineHeight:1.6 }}>
+                    Issue a certificate to automatically store its key here.
                   </div>
-                )}
-              </>
-            )}
-
-            {/* Archive tab */}
-            {tab === 'archived' && (
-              <>
-                {archivedKeys.length === 0 ? (
-                  <div className="v2-empty">
-                    <div className="v2-empty-icon"><Clock size={22} /></div>
-                    <div className="v2-empty-title">No archived keys</div>
-                    <div className="v2-empty-desc">
-                      After key rotation, old keys are archived here for 30 days before permanent deletion.
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                    <div className="v2-callout warning" style={{ marginBottom:4 }}>
-                      <div className="v2-callout-title">Archived keys</div>
-                      These keys are retained for 30 days as a rollback option, then permanently destroyed.
-                    </div>
-                    {archivedKeys.map(k => (
-                      <KeyCard key={k.id} keyEntry={k} onRotate={() => {}} rotating={null} />
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Audit tab */}
-            {tab === 'audit' && (
-              <div className="v2-card" style={{ overflow:'hidden' }}>
-                <div style={{ padding:'12px 16px', borderBottom:'0.5px solid var(--v2-border)',
-                               display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                  <div className="v2-section-label">Last 50 events</div>
-                  <button className="v2-btn v2-btn-sm" style={{ fontSize:11 }}>
-                    Export CSV
+                  <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
+                    Issue certificate
                   </button>
                 </div>
-                {audit.length === 0 ? (
-                  <div className="v2-empty" style={{ padding:'40px 24px' }}>
-                    <div className="v2-empty-title">No audit events yet</div>
+              ) : (
+                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                  {activeKeys.map(k => (
+                    <KeyCard key={k.id} keyEntry={k}
+                      onRotate={() => setRotateConfirm(k)}
+                      onReveal={setRevealKey}
+                      onViewAudit={handleViewAudit}
+                      rotating={rotating}/>
+                  ))}
+                </div>
+              )
+            )}
+
+            {/* ARCHIVE TAB */}
+            {tab === 'archived' && (
+              archivedKeys.length === 0 ? (
+                <div style={{ textAlign:'center', padding:'48px 0' }}>
+                  <Clock size={32} color="var(--v2-text-3)" style={{ margin:'0 auto 12px', display:'block' }}/>
+                  <div style={{ fontSize:14, fontWeight:500, color:'var(--v2-text-2)', marginBottom:6 }}>
+                    No archived keys
+                  </div>
+                  <div style={{ fontSize:12, color:'var(--v2-text-3)', lineHeight:1.6 }}>
+                    After rotation, old keys appear here for 30-day rollback before deletion.
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                  <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:8,
+                    padding:'10px 14px', fontSize:11, color:'#92400e', marginBottom:4 }}>
+                    <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
+                    These keys are retained for 30 days as rollback, then permanently destroyed.
+                  </div>
+                  {archivedKeys.map(k => (
+                    <KeyCard key={k.id} keyEntry={k}
+                      onRotate={() => {}}
+                      onReveal={setRevealKey}
+                      onViewAudit={handleViewAudit}
+                      rotating={null}/>
+                  ))}
+                </div>
+              )
+            )}
+
+            {/* AUDIT TAB */}
+            {tab === 'audit' && (
+              <div className="v2-card" style={{ overflow:'hidden' }}>
+                <div style={{ padding:'10px 16px', borderBottom:'0.5px solid var(--v2-border)',
+                  display:'flex', alignItems:'center', gap:10 }}>
+                  <div style={{ flex:1, fontSize:12, color:'var(--v2-text-2)', fontWeight:500 }}>
+                    {auditFilter
+                      ? <>Audit log for <strong>{auditFilter}</strong>
+                          <button onClick={() => setAuditFilter(null)}
+                            style={{ marginLeft:8, fontSize:10, background:'none', border:'none',
+                              cursor:'pointer', color:'var(--v2-text-3)' }}>
+                            (clear filter)
+                          </button>
+                        </>
+                      : `All events · Last ${audit.length}`}
+                  </div>
+                  <button className="v2-btn v2-btn-sm" onClick={exportCSV}
+                    style={{ display:'flex', alignItems:'center', gap:5, fontSize:11 }}>
+                    <Download size={10}/> Export CSV
+                  </button>
+                </div>
+                {filteredAudit.length === 0 ? (
+                  <div style={{ textAlign:'center', padding:'32px', fontSize:12,
+                    color:'var(--v2-text-3)' }}>
+                    No audit events{auditFilter ? ` for ${auditFilter}` : ''} yet.
                   </div>
                 ) : (
-                  <div>
-                    {audit.map(e => <AuditRow key={e.id} entry={e} />)}
-                  </div>
+                  filteredAudit.map(e => <AuditRow key={e.id} entry={e}/>)
                 )}
               </div>
             )}
           </>
         )}
 
-        {/* Rotate confirmation modal */}
+        {/* Rotate confirm modal */}
         {rotateConfirm && (
-          <div className="v2-modal-bg" onClick={e => e.target === e.currentTarget && setRotateConfirm(null)}>
-            <div className="v2-modal" style={{ maxWidth:440 }}>
-              <div className="v2-modal-head">
-                <div>
-                  <div className="v2-modal-title">Rotate key for {rotateConfirm.domain}?</div>
-                  <div className="v2-modal-subtitle">
-                    A new certificate + key will be issued and deployed automatically
-                  </div>
+          <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.45)', zIndex:200,
+            display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+            <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%',
+              maxWidth:440, boxShadow:'0 20px 60px rgba(0,0,0,0.25)', overflow:'hidden' }}>
+              <div style={{ padding:'16px 20px', borderBottom:'0.5px solid var(--v2-border)' }}>
+                <div style={{ fontSize:14, fontWeight:500, color:'var(--v2-text)' }}>
+                  Rotate key for {rotateConfirm.domain}?
+                </div>
+                <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:3 }}>
+                  A new certificate and key will be issued and deployed automatically
                 </div>
               </div>
-              <div className="v2-modal-body">
-                <div className="v2-callout tip" style={{ marginBottom:14 }}>
-                  <div className="v2-callout-title">Zero downtime</div>
-                  The agent installs the new certificate before the old key is archived.
-                  Your site stays live throughout. Old key archived for 30 days as rollback.
+              <div style={{ padding:'16px 20px' }}>
+                <div style={{ background:'#eff6ff', border:'0.5px solid #bfdbfe', borderRadius:8,
+                  padding:'10px 12px', marginBottom:14, fontSize:11, color:'#1d4ed8' }}>
+                  <CheckCircle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
+                  <strong>Zero downtime</strong> — new cert installs before old key is archived.
+                  30-day rollback window.
                 </div>
-                <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.65 }}>
-                  This will trigger a new ACME issuance for <strong>{rotateConfirm.domain}</strong> and
-                  dispatch an install job to your registered agent. If no agent is active, the new
-                  certificate will be available for manual download.
+                <div style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.6 }}>
+                  This dispatches a renew job to your agent for <strong>{rotateConfirm.domain}</strong>.
+                  The old key will be archived immediately after the new key is stored in the vault.
                 </div>
               </div>
-              <div className="v2-modal-foot">
-                <button className="v2-btn" onClick={() => setRotateConfirm(null)}>Cancel</button>
+              <div style={{ padding:'12px 20px', borderTop:'0.5px solid var(--v2-border)',
+                display:'flex', gap:8, justifyContent:'flex-end' }}>
+                <button className="v2-btn v2-btn-sm" onClick={() => setRotateConfirm(null)}>
+                  Cancel
+                </button>
                 <button onClick={() => handleRotate(rotateConfirm)}
-                  style={{ display:'inline-flex', alignItems:'center', gap:7, padding:'8px 16px',
-                            background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
-                            color:'white', border:'none', borderRadius:'var(--v2-r-md)',
-                            fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
-                  <RotateCcw size={13} /> Rotate now
+                  style={{ display:'flex', alignItems:'center', gap:7, padding:'7px 16px',
+                    background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
+                    color:'white', border:'none', borderRadius:7, fontSize:12,
+                    fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+                  <RotateCcw size={12}/> Rotate now
                 </button>
               </div>
             </div>
@@ -536,7 +789,7 @@ export default function KeyLocker({ nav }) {
         )}
 
       </div>
-      <style>{`.spin{animation:spin 1s linear infinite}@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }
