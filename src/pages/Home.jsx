@@ -571,12 +571,12 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── TRUST TICKER ────────────────────────────────────────────── */}
-      <div style={{ background:C.inkMid, borderTop:'1px solid rgba(255,255,255,0.06)', borderBottom:'1px solid rgba(255,255,255,0.06)', overflow:'hidden', padding:'11px 0' }}>
+      <div style={{ background:'#f3f4f6', borderTop:'1px solid #e5e7eb', borderBottom:'1px solid #e5e7eb', overflow:'hidden', padding:'11px 0' }}>
         <div style={{ display:'flex', overflow:'hidden', maskImage:'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
           <div style={{ display:'flex', gap:48, flexShrink:0, animation:'ticker 32s linear infinite', whiteSpace:'nowrap' }}>
             {[...TRUST_ITEMS,...TRUST_ITEMS].map((p,i)=>(
-              <span key={i} style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.3)', letterSpacing:'0.06em', fontFamily:MONO }}>
-                <span style={{ color:C.teal, marginRight:8 }}>◆</span>{p}
+              <span key={i} style={{ fontSize:11, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', fontFamily:MONO }}>
+                <span style={{ color:'#d1d5db', marginRight:8 }}>◆</span>{p}
               </span>
             ))}
           </div>
@@ -658,7 +658,7 @@ export default function Home({ nav }) {
                     { step:'05', label:'Lifecycle',     detail:'SSLVault monitors expiry, sends alerts, and automatically repeats steps 1–4 before expiry.' },
                   ].map(s=>(
                     <div key={s.step} style={{ display:'flex', gap:14, alignItems:'flex-start' }}>
-                      <div style={{ width:28, height:28, borderRadius:7, background:`${C.teal}12`, border:`1px solid ${C.teal}25`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:800, color:C.teal, fontFamily:MONO, flexShrink:0 }}>{s.step}</div>
+                      <div style={{ width:28, height:28, borderRadius:7, background:`${C.teal}10`, border:`1px solid ${C.teal}20`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:800, color:C.teal, fontFamily:MONO, flexShrink:0 }}>{s.step}</div>
                       <div>
                         <div style={{ fontSize:13, fontWeight:600, color:'#0a0a0a', marginBottom:2 }}>{s.label}</div>
                         <div style={{ fontSize:12, color:'#4b5563', lineHeight:1.6 }}>{s.detail}</div>
@@ -724,12 +724,12 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── SECURITY SPECS ───────────────────────────────────────────── */}
-      <section id="security" style={{ background:C.ink, padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)` }}>
+      <section id="security" style={{ background:'#ffffff', padding:`clamp(60px,8vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid #f3f4f6' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ marginBottom:48 }}>
               <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:12 }}>Security specifications</div>
-              <h2 style={{ fontSize:`clamp(24px,3.5vw,42px)`, fontWeight:800, color:C.white, letterSpacing:'-1px', lineHeight:1.15, marginBottom:16 }}>
+              <h2 style={{ fontSize:`clamp(24px,3.5vw,42px)`, fontWeight:800, color:'#0a0a0a', letterSpacing:'-1px', lineHeight:1.15, marginBottom:16 }}>
                 Built on open standards.<br/>
                 <span style={{ color:C.teal }}>No proprietary black boxes.</span>
               </h2>
@@ -758,11 +758,11 @@ export default function Home({ nav }) {
                 desc:'Every key access, rotation, cert issuance, and agent job logged with timestamp and user. Append-only. Export as CSV for SOC 2 or ISO 27001 audit evidence.' },
             ].map(s=>(
               <FadeUp key={s.title}>
-                <div style={{ background:'rgba(255,255,255,0.03)', border:`1px solid rgba(255,255,255,0.07)`, borderTop:`2px solid ${s.color}`, borderRadius:10, padding:'20px 18px', height:'100%' }}>
+                <div style={{ background:'#f9fafb', border:'1px solid #e5e7eb', borderTop:`2px solid ${s.color}`, borderRadius:10, padding:'20px 18px', height:'100%', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
                   <div style={{ width:32, height:32, borderRadius:8, background:`${s.color}15`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>{s.icon}</div>
                   <div style={{ fontSize:10, fontWeight:700, color:s.color, fontFamily:MONO, letterSpacing:'0.06em', marginBottom:6 }}>{s.spec}</div>
-                  <div style={{ fontSize:14, fontWeight:600, color:C.white, marginBottom:8 }}>{s.title}</div>
-                  <div style={{ fontSize:12, color:'rgba(255,255,255,0.45)', lineHeight:1.7 }}>{s.desc}</div>
+                  <div style={{ fontSize:14, fontWeight:600, color:'#0a0a0a', marginBottom:8 }}>{s.title}</div>
+                  <div style={{ fontSize:12, color:'#4b5563', lineHeight:1.7 }}>{s.desc}</div>
                 </div>
               </FadeUp>
             ))}
@@ -770,10 +770,10 @@ export default function Home({ nav }) {
 
           {/* CA/B Forum timeline */}
           <FadeUp>
-            <div style={{ marginTop:48, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:12, padding:'28px 28px' }}>
+            <div style={{ marginTop:48, background:'#f9fafb', border:'1px solid #e5e7eb', borderRadius:12, padding:'28px 28px' }}>
               <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:24 }}>
                 <div style={{ width:8, height:8, borderRadius:'50%', background:C.red, animation:'blink 2s ease infinite' }}/>
-                <span style={{ fontSize:12, fontWeight:700, color:'rgba(255,255,255,0.7)', fontFamily:MONO }}>CA/B Forum maximum validity mandate — action required</span>
+                <span style={{ fontSize:12, fontWeight:700, color:'#0a0a0a', fontFamily:MONO }}>CA/B Forum maximum validity mandate — action required</span>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:`repeat(${isMobile?1:3},1fr)`, gap:isMobile?20:0 }}>
                 {[
@@ -781,11 +781,11 @@ export default function Home({ nav }) {
                   { date:'March 15, 2027', limit:'100 days', status:'UPCOMING', color:C.amber,   action:'Automation becomes mandatory. Manual renewal every 100 days is operationally unsustainable.' },
                   { date:'March 15, 2029', limit:'47 days',  status:'PLANNED',  color:C.teal,    action:'Full automation required. SSLVault\'s agent + DNS automation handles this end-to-end.' },
                 ].map((m, i)=>(
-                  <div key={m.date} style={{ padding:isMobile?'16px 0':'0 24px', borderLeft:(!isMobile&&i>0)?'1px solid rgba(255,255,255,0.06)':'none' }}>
+                  <div key={m.date} style={{ padding:isMobile?'16px 0':'0 24px', borderLeft:(!isMobile&&i>0)?'1px solid #e5e7eb':'none' }}>
                     <div style={{ fontSize:9, fontWeight:800, color:m.color, fontFamily:MONO, letterSpacing:'1px', marginBottom:8 }}>{m.status}</div>
-                    <div style={{ fontSize:11, color:'rgba(255,255,255,0.4)', fontFamily:MONO, marginBottom:4 }}>{m.date}</div>
+                    <div style={{ fontSize:11, color:'#9ca3af', fontFamily:MONO, marginBottom:4 }}>{m.date}</div>
                     <div style={{ fontSize:26, fontWeight:900, color:m.color, fontFamily:MONO, letterSpacing:'-1px', marginBottom:8 }}>{m.limit}</div>
-                    <div style={{ fontSize:12, color:'rgba(255,255,255,0.45)', lineHeight:1.65 }}>{m.action}</div>
+                    <div style={{ fontSize:12, color:'#4b5563', lineHeight:1.65 }}>{m.action}</div>
                   </div>
                 ))}
               </div>
