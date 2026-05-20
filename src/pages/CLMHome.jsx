@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   Shield, Plus, Globe, Server, Activity, TrendingUp, Trophy, History, Scan, CalendarDays, ShieldAlert, ShieldCheck,
-  Layout, Download, Settings,
+  Layout, Download, Settings, Lock,
   BookOpen, CreditCard, Info, User, Mail, LogOut, Bell
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
