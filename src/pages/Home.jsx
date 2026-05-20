@@ -896,8 +896,8 @@ export default function Home({ nav }) {
       {/* ── CAPABILITY LIST ──────────────────────────────────────────── */}
       <section id="platform" style={{ background:C.white, padding:'100px 40px', position:'relative', overflow:'hidden' }}>
         {/* Watermark — giant shield outline */}
-        <svg style={{ position:'absolute', right:'-3%', bottom:'-8%', width:380, height:380,
-          opacity:0.035, pointerEvents:'none', userSelect:'none' }}
+        <svg style={{ position:'absolute', right:'2%', bottom:'4%', width:340, height:340,
+          opacity:0.07, pointerEvents:'none', userSelect:'none' }}
           viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="0.6">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
@@ -1084,7 +1084,7 @@ export default function Home({ nav }) {
         {/* Watermark — huge "→" flow arrow */}
         <div style={{ position:'absolute', left:'50%', top:'50%',
           transform:'translate(-50%,-50%)',
-          fontSize:320, fontWeight:900, color:C.teal, opacity:0.022,
+          fontSize:320, fontWeight:900, color:C.teal, opacity:0.055,
           pointerEvents:'none', userSelect:'none', lineHeight:1,
           fontFamily:"'Inter var','Inter',system-ui,sans-serif",
           letterSpacing:'-20px', whiteSpace:'nowrap',
@@ -1194,8 +1194,8 @@ export default function Home({ nav }) {
         position:'relative', overflow:'hidden',
       }}>
         {/* Watermark — "PKI" monogram top right */}
-        <div style={{ position:'absolute', right:'-1%', top:'-5%',
-          fontSize:260, fontWeight:900, color:'#0f172a', opacity:0.028,
+        <div style={{ position:'absolute', right:'1%', top:'4%',
+          fontSize:260, fontWeight:900, color:'#0f172a', opacity:0.065,
           pointerEvents:'none', userSelect:'none', lineHeight:1,
           fontFamily:"'Inter var','Inter',system-ui,sans-serif",
           letterSpacing:'-12px',
@@ -1257,9 +1257,9 @@ export default function Home({ nav }) {
         borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`,
         position:'relative', overflow:'hidden' }}>
         {/* Watermark — repeating lock icons row */}
-        <div style={{ position:'absolute', bottom:'-10px', left:0, right:0,
+        <div style={{ position:'absolute', bottom:'8px', left:0, right:0,
           display:'flex', gap:48, justifyContent:'center', alignItems:'center',
-          opacity:0.04, pointerEvents:'none', userSelect:'none', overflow:'hidden',
+          opacity:0.08, pointerEvents:'none', userSelect:'none', overflow:'hidden',
           flexWrap:'nowrap',
         }}>
           {Array.from({length:12}).map((_,i) => (
