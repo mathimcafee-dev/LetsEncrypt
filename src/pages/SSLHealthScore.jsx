@@ -130,14 +130,14 @@ function DomainRow({ score, onRescan, scanning }) {
         <div style={{ padding: '12px 14px', borderTop: `0.5px solid ${gs.border}`,
           background: 'var(--v2-surface-3)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px,1fr))', gap: 10 }}>
           {[
-            { label: 'Grade', val: score.grade || 'F' },
-            { label: 'Score', val: `${Math.round(score.score || 0)} / 100` },
-            { label: 'HSTS', val: score.hsts ? 'Enabled ✓' : 'Missing ✗' },
-            { label: 'CAA record', val: score.caa ? 'Present ✓' : 'Missing ✗' },
+            { label: 'Grade',         val: score.grade || 'F' },
+            { label: 'Score',         val: `${Math.round(score.score || 0)} / 100` },
+            { label: 'Issuer',        val: score.issuer || '—' },
+            { label: 'Expiry',        val: score.expiry_days != null ? (score.expiry_days <= 0 ? 'Expired' : `${score.expiry_days} days`) : '—' },
             { label: 'TLS reachable', val: score.cert_valid ? 'Yes ✓' : 'No ✗' },
-            { label: 'Expiry', val: score.expiry_days != null ? (score.expiry_days <= 0 ? 'Expired' : `${score.expiry_days} days`) : '—' },
-            { label: 'Issuer', val: score.issuer || '—' },
-            { label: 'Last scanned', val: timeAgo(score.scanned_at) },
+            { label: 'HSTS',          val: score.hsts ? 'Enabled ✓' : 'Missing ✗' },
+            { label: 'CAA record',    val: score.caa ? 'Present ✓' : 'Missing ✗' },
+            { label: 'Last scanned',  val: timeAgo(score.scanned_at) },
           ].map(({ label, val }) => (
             <div key={label}>
               <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginBottom: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{label}</div>
