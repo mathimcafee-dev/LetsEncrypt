@@ -53,7 +53,13 @@ function NavLink({ label, onClick }) {
   const [h, setH] = useState(false)
   return (
     <button onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-      style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13.5, fontWeight:450, color:h?C.text:'#64748b', transition:'color .15s' }}>
+      style={{
+        background:'none', border:'none', cursor:'pointer', fontFamily:F,
+        fontSize:13, fontWeight:h?500:400,
+        color: h?'rgba(255,255,255,0.95)':'rgba(255,255,255,0.5)',
+        transition:'color .15s, font-weight .15s',
+        letterSpacing:'-0.01em', padding:'4px 0',
+      }}>
       {label}
     </button>
   )
@@ -361,25 +367,69 @@ export default function Home({ nav }) {
         }
       `}</style>
 
-      {/* ── NAV ───────────────────────────────────────────────────────── */}
-      <header style={{ position:'sticky', top:0, zIndex:100, background:'rgba(10,14,26,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.07)', padding:`0 clamp(16px,4vw,40px)`, height:56, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }} onClick={()=>nav('/')}>
-          <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      {/* ── NAV — Owlish-style floating pill nav ──────────────────────── */}
+      <header style={{
+        position:'sticky', top:0, zIndex:100,
+        background:'rgba(10,14,26,0.72)',
+        backdropFilter:'blur(28px)',
+        WebkitBackdropFilter:'blur(28px)',
+        borderBottom:'1px solid rgba(255,255,255,0.05)',
+        padding:`0 clamp(16px,4vw,40px)`,
+        height:60,
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+      }}>
+        {/* Logo — clean, no badge */}
+        <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer', flexShrink:0 }} onClick={()=>nav('/')}>
+          <div style={{ width:30, height:30, background:C.teal, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{ fontSize:15, fontWeight:700, letterSpacing:'-0.3px', color:C.white }}>SSLVault</span>
-          <span style={{ fontSize:10, fontFamily:MONO, color:'rgba(255,255,255,0.35)', background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.12)', borderRadius:4, padding:'2px 6px' }}>CLM</span>
+          <span style={{ fontSize:15, fontWeight:600, letterSpacing:'-0.3px', color:'rgba(255,255,255,0.92)' }}>SSLVault</span>
         </div>
-        <nav className="home-nav-links" style={{ display:'flex', alignItems:'center', gap:28 }}>
-          {[['Platform','#platform'],['Architecture','#arch'],['Security','#security'],['Pricing','/pricing']].map(([l,h])=>(
-            <NavLink key={l} label={l} onClick={()=> h.startsWith('/')? nav(h) : document.querySelector(h)?.scrollIntoView({behavior:'smooth'})}/>
+
+        {/* Center pill — Owlish signature element */}
+        <nav className="home-nav-links" style={{
+          position:'absolute', left:'50%', transform:'translateX(-50%)',
+          display:'flex', alignItems:'center', gap:0,
+          background:'rgba(255,255,255,0.05)',
+          border:'1px solid rgba(255,255,255,0.08)',
+          borderRadius:100, padding:'4px 6px',
+        }}>
+          {[['Platform','#platform'],['Architecture','#arch'],['Security','#security'],['Pricing','/pricing']].map(([label,href])=>(
+            <button key={label}
+              onClick={()=> href.startsWith('/')? nav(href) : document.querySelector(href)?.scrollIntoView({behavior:'smooth'})}
+              style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F,
+                fontSize:13, fontWeight:400, color:'rgba(255,255,255,0.52)',
+                padding:'5px 16px', borderRadius:100, transition:'all .15s',
+                letterSpacing:'-0.01em' }}
+              onMouseEnter={e=>{ e.currentTarget.style.color='rgba(255,255,255,0.92)'; e.currentTarget.style.background='rgba(255,255,255,0.08)' }}
+              onMouseLeave={e=>{ e.currentTarget.style.color='rgba(255,255,255,0.52)'; e.currentTarget.style.background='none' }}>
+              {label}
+            </button>
           ))}
         </nav>
-        <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+
+        {/* Right CTAs */}
+        <div style={{ display:'flex', gap:4, alignItems:'center', flexShrink:0 }}>
           <span className="home-nav-signin">
-            <CTA label="Sign in" variant="ghost-dark" onClick={()=>nav('/auth')} size="sm"/>
+            <button onClick={()=>nav('/auth')}
+              style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F,
+                fontSize:13, fontWeight:400, color:'rgba(255,255,255,0.48)',
+                padding:'7px 16px', borderRadius:100, transition:'color .15s',
+                letterSpacing:'-0.01em' }}
+              onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.88)'}
+              onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.48)'}>
+              Sign in
+            </button>
           </span>
-          <CTA label="Get started" variant="primary" onClick={()=>nav('/auth')} size="sm"/>
+          <button onClick={()=>nav('/auth')}
+            style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F,
+              fontSize:13, fontWeight:500, color:'white',
+              padding:'7px 20px', borderRadius:100, transition:'all .15s',
+              letterSpacing:'-0.01em', lineHeight:1 }}
+            onMouseEnter={e=>{ e.currentTarget.style.background=C.tealDk; e.currentTarget.style.boxShadow=`0 4px 20px ${C.teal}40` }}
+            onMouseLeave={e=>{ e.currentTarget.style.background=C.teal; e.currentTarget.style.boxShadow='none' }}>
+            Get started
+          </button>
         </div>
       </header>
 
