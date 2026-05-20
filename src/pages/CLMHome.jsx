@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import {
-  Shield, Plus, Globe, Server, Activity, TrendingUp, Trophy, History, Scan, CalendarDays, ShieldAlert,
+  Shield, Plus, Globe, Server, Activity, TrendingUp, Trophy, History, Scan, CalendarDays, ShieldAlert, ShieldCheck,
   Layout, Download, Settings,
   BookOpen, CreditCard, Info, User, Mail, LogOut, Bell
 } from 'lucide-react'
@@ -23,6 +23,7 @@ import CertChangelog from './CertChangelog'
 import BulkScanner from './BulkScanner'
 import RenewalCalendar from './RenewalCalendar'
 import CTAbuseMonitor from './CTAbuseMonitor'
+import ReadinessDashboard from './ReadinessDashboard'
 import Pricing from './Pricing'
 
 // Default collapsed state — Overview & Account open, rest start open too but user can close
@@ -85,8 +86,9 @@ export default function CLMHome({ user, nav }) {
   }, [])
 
   const NAV_OVERVIEW = [
-    { id:'dashboard', label:'Dashboard',         icon:Layout },
-    { id:'issue',     label:'Issue Certificate', icon:Plus   },
+    { id:'dashboard',  label:'Dashboard',         icon:Layout    },
+    { id:'readiness',  label:'47-Day Readiness',  icon:ShieldCheck, pro: false, alert: true },
+    { id:'issue',      label:'Issue Certificate', icon:Plus      },
   ]
   const NAV_INFRASTRUCTURE = [
     { id:'integrations', label:'Integrations',  icon:Globe    },
@@ -114,6 +116,7 @@ export default function CLMHome({ user, nav }) {
   ]
   const SECTION_TITLES = {
     dashboard:'Dashboard', issue:'Issue Certificate', 'ca-intelligence':'CA Intelligence', analytics:'Analytics',
+    'readiness':'47-Day Readiness',
     'ssl-health':'SSL Health Score', 'cert-changelog':'Certificate Changelog', 'bulk-scan':'Bulk Scanner',
     'renewal-calendar':'Renewal Calendar', 'ct-monitor':'CT Abuse Monitor',
     integrations:'Integrations',
@@ -121,7 +124,7 @@ export default function CLMHome({ user, nav }) {
     about:'About', developer:'Developer', contact:'Contact', settings:'Settings',
   }
 
-  const NavItem = ({ id, label, icon:Icon, pro }) => {
+  const NavItem = ({ id, label, icon:Icon, pro, alert }) => {
     const isActive = section === id
     return (
       <button onClick={() => navigate(id)} style={{
@@ -139,6 +142,9 @@ export default function CLMHome({ user, nav }) {
       >
         <Icon size={14} strokeWidth={isActive ? 2 : 1.8} style={{ flexShrink:0 }}/>
         <span style={{ flex:1 }}>{label}</span>
+        {alert && !isActive && <span style={{ fontSize:8, fontWeight:700, padding:'1px 5px', borderRadius:10,
+          background:'rgba(251,191,36,0.25)', color:'#fbbf24', letterSpacing:'0.3px',
+          animation:'navpulse 2s ease infinite' }}>NEW</span>}
         {pro && !isActive && <span style={{ fontSize:8, fontWeight:700, padding:'1px 5px', borderRadius:10,
           background:'rgba(220,38,38,0.3)', color:'#fca5a5', letterSpacing:'0.3px' }}>PRO</span>}
       </button>
@@ -154,7 +160,8 @@ export default function CLMHome({ user, nav }) {
   }
 
   const renderContent = () => {
-    if (section === 'dashboard')  return <Dashboard nav={sideNav} onIssue={() => navigate('issue')}/>
+    if (section === 'dashboard')   return <Dashboard nav={sideNav} onIssue={() => navigate('issue')}/>
+    if (section === 'readiness')   return <ReadinessDashboard user={user}/>
     if (section === 'issue')      return <BuyCertificate nav={sideNav} embedded={true} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
     if (section === 'integrations') return <Integrations nav={sideNav}/>
     if (section === 'install')    return <Install nav={sideNav}/>
@@ -346,7 +353,7 @@ export default function CLMHome({ user, nav }) {
           </div>
         </div>
       </div>
-      <style>{`@keyframes clm-fadein{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <style>{`@keyframes clm-fadein{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}} @keyframes navpulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
     </div>
   )
 }
