@@ -145,10 +145,13 @@ function ServerCard({ agent, certs, onRefresh }) {
   const st = agentStatus(agent.last_seen_at, agent.status)
 
   // Certs linked to this agent (by install_server_id or agent_url match)
+  // Match certs to this agent by server ID, agent_url, or install_method='agent'
+  // (install_server_id is often null when agent installs but doesn't link back)
   const myCerts = certs.filter(c =>
     c.install_server_id === agent.id ||
     (agent.ip_address && c.agent_url?.includes(agent.ip_address)) ||
-    (agent.hostname && c.agent_url?.includes(agent.hostname))
+    (agent.hostname && c.agent_url?.includes(agent.hostname)) ||
+    c.install_method === 'agent'
   )
 
   const loadJobs = useCallback(async () => {
@@ -307,8 +310,8 @@ function ServerCard({ agent, certs, onRefresh }) {
                 ) : (
                   <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
                     {jobs.map(j => {
-                      const ok = j.status === 'completed'
-                      const fail = j.status === 'failed'
+                      const ok = j.status === 'completed' || j.status === 'success'
+                      const fail = j.status === 'failed' || j.status === 'error'
                       return (
                         <div key={j.id} style={{ display:'flex', alignItems:'center', gap:10,
                           padding:'7px 10px', borderRadius:7, background:'var(--v2-surface-3)' }}>
