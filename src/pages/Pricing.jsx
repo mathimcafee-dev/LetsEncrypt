@@ -130,7 +130,7 @@ const CERT_PRICES = [
 ]
 
 const FAQS = [
-  { q: 'Is the platform really free?', a: 'Yes. The SSLVault CLM platform is free on the Starter tier — issuance workflow, persistent agent, cPanel installer, DNS connectors, CT log discovery, monitoring, auto-renewal, KeyLocker, 47-Day Readiness, Renewal Calendar, SSL Health Score. You pay only for certificates at GoGetSSL partner rates (from $8/yr).' },
+  { q: 'What does the Starter plan include?', a: 'The Starter plan includes: issuance workflow, persistent agent, cPanel installer, DNS connectors, CT log discovery, monitoring, auto-renewal, KeyLocker, 47-Day Readiness, Renewal Calendar, and SSL Health Score. Certificates are purchased at GoGetSSL partner rates from $8/yr.' },
   { q: 'What does Pro add over Starter?', a: 'Pro unlocks OV, EV, Wildcard and SAN certificates, plus CA Intelligence (DigiCert/Sectigo portfolio sync, shadow IT detection, policy engine), CT Abuse Monitor, REST API access, and portfolio CSV exports. Designed for agencies and teams managing certificates across multiple CAs.' },
   { q: 'What is the 47-Day Readiness Dashboard?', a: 'The CA/B Forum is mandating shorter certificate validity: 200 days by March 2026, 100 days by 2027, 47 days by 2029. The Readiness Dashboard scores each certificate 0–100 and shows a checklist of what to fix — auto-renew, DNS provider, agent installation, key storage. Available on all plans.' },
   { q: 'How does the persistent agent work?', a: 'The agent is a bash daemon running as a systemd service on your Linux VPS. It polls SSLVault every 5 minutes for pending jobs. Outbound-only HTTPS — no inbound ports. Detects Nginx/Apache, writes cert files, updates config, tests, and reloads automatically. CPU/RAM/disk stats reported back to SSLVault.' },
@@ -141,7 +141,7 @@ const FAQS = [
 ]
 
 const PLANS = [
-  { key: 'starter',  name: 'Starter',  price: '$0',   per: 'forever free',           color: '#10b981', border: 'rgba(16,185,129,0.2)',  highlight: false, cta: 'Get started free', badge: null,           certNote: 'Certs from $8/yr via GoGetSSL' },
+  { key: 'starter',  name: 'Starter',  price: 'Starter', per: 'entry tier',                    color: '#10b981', border: 'rgba(16,185,129,0.2)',  highlight: false, cta: 'Get started', badge: null,           certNote: 'Certs from $8/yr via GoGetSSL' },
   { key: 'pro',      name: 'Pro',      price: '$29',  per: '/mo · billed annually',  color: '#6366f1', border: 'rgba(99,102,241,0.3)',  highlight: true,  cta: 'Start Pro',        badge: 'Most Popular', certNote: 'All cert types · GoGetSSL partner rates' },
   { key: 'reseller', name: 'Reseller', price: 'Custom', per: 'contact us',           color: '#f59e0b', border: 'rgba(245,158,11,0.2)',  highlight: false, cta: 'Contact us',       badge: null,           certNote: 'Volume pricing available' },
 ]
@@ -181,11 +181,11 @@ export default function Pricing({ nav }) {
           </div>
           <h1 style={{ fontSize: 'clamp(32px,5vw,56px)', fontWeight: 900, letterSpacing: '-2px',
             lineHeight: 1.05, marginBottom: 16 }}>
-            Platform free.<br/>
-            <span style={{ color: '#10b981' }}>Pay only for certs.</span>
+            Professional CLM.<br/>
+            <span style={{ color: '#10b981' }}>Transparent cert pricing.</span>
           </h1>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 12px', lineHeight: 1.75 }}>
-            The complete CLM platform — agents, auto-renewal, DNS automation, CT monitoring, CA intelligence, KeyLocker, 47-day readiness — always free. Pay only for certificates at GoGetSSL partner rates.
+            The complete CLM platform — agents, auto-renewal, DNS automation, CT monitoring, CA intelligence, KeyLocker, 47-day readiness. Certificates at GoGetSSL partner rates.
           </p>
         </div>
 
@@ -305,7 +305,7 @@ export default function Pricing({ nav }) {
               GoGetSSL partner rates
             </h2>
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', maxWidth: 420, margin: '0 auto', lineHeight: 1.7 }}>
-              Platform is always free on top. DigiCert DV retail $218/yr vs. SSLVault $14/yr — same trust chain.
+              DigiCert DV retail $218/yr vs. SSLVault $14/yr — same trust chain.
             </p>
           </div>
           <div className="cert-table" style={{ border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, overflow: 'hidden' }}>
@@ -339,7 +339,7 @@ export default function Pricing({ nav }) {
             ))}
           </div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', marginTop: 12, textAlign: 'center', ...Mo }}>
-            All prices in USD · GoGetSSL partner rates · Platform features always free
+            All prices in USD · GoGetSSL partner rates · Subject to change
           </div>
         </div>
 
@@ -355,8 +355,8 @@ export default function Pricing({ nav }) {
           </div>
           <div className="pricing-compare-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 1 }}>
             {[
-              { name: 'SSLVault', price: '$0', sub: 'platform · + cert costs', color: '#10b981',
-                points: ['Full CLM free forever', '47-day readiness built-in', 'CA-agnostic intelligence', 'KeyLocker included', 'cPanel + agent + DNS'] },
+              { name: 'SSLVault', price: 'Starter', sub: 'entry tier + cert costs', color: '#10b981',
+                points: ['Complete CLM platform', '47-day readiness built-in', 'CA-agnostic intelligence', 'KeyLocker included', 'cPanel + agent + DNS'] },
               { name: 'Venafi TLS Protect', price: '$250k+', sub: 'per year', color: 'rgba(255,255,255,0.3)',
                 points: ['Enterprise only', 'No free tier', 'No cPanel support', 'No cert issuance', 'PKI team required'] },
               { name: 'Keyfactor Command', price: '$75–200k', sub: 'per year', color: 'rgba(255,255,255,0.3)',
@@ -393,17 +393,17 @@ export default function Pricing({ nav }) {
         <div style={{ border: '1px solid rgba(16,185,129,0.18)', borderRadius: 12, padding: 'clamp(32px,5vw,48px) clamp(20px,4vw,40px)',
           textAlign: 'center', background: 'radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.07) 0%, transparent 60%)' }}>
           <h2 style={{ fontSize: 'clamp(22px,3vw,38px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 12 }}>
-            Start for free today.
+            Start today.
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)', maxWidth: 380, margin: '0 auto 28px', lineHeight: 1.7 }}>
-            No credit card. No time limit. Full CLM platform from day one — 47-day readiness, KeyLocker, agent automation, CA intelligence.
+            Full CLM platform from day one — 47-day readiness, KeyLocker, agent automation, CA intelligence.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={() => nav('/auth')}
               style={{ background: '#10b981', border: 'none', borderRadius: 7, color: 'white',
                 fontSize: 14, fontWeight: 700, padding: '13px 28px', cursor: 'pointer', ...S,
                 boxShadow: '0 0 30px rgba(16,185,129,0.25)' }}>
-              Get Started Free →
+              Get Started →
             </button>
             <button onClick={() => window.location.href = 'mailto:mathimcafee@gmail.com'}
               style={{ background: 'transparent', border: '1px solid rgba(245,158,11,0.4)', borderRadius: 7,

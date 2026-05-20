@@ -40,7 +40,7 @@ export default function About({ nav }) {
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-green-text)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 12 }}>Why SSLVault</div>
             <h2 style={{ fontSize: 26, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.5px', margin: '0 0 16px' }}>
-              Built by a PKI specialist, free for everyone
+              Built by a PKI specialist, for professionals
             </h2>
             <p style={{ fontSize: 14, color: 'var(--v2-text-2)', lineHeight: 1.75, marginBottom: 16 }}>
               SSLVault was built out of first-hand experience working at a Certificate Authority, designed to give everyone access to enterprise-grade CLM.

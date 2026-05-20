@@ -272,8 +272,8 @@ const PLATFORMS = ['Cloudflare','Vercel','GoDaddy','DigitalOcean','Nginx','Apach
 const ETHICS_ITEMS = [
   {
     n:'01',
-    title:'The platform is free. Not "freemium". Not "free trial". Free.',
-    body:'Certificate issuance, monitoring, agents, auto-renewal, CA connectors, PQC scanning — all free. You pay for certificates at wholesale rates. Nothing else. No upgrade prompts. No feature walls. No per-seat fees that appear six months later.',
+    title:'Built for professionals. Priced fairly.',
+    body:'Certificate issuance, monitoring, agents, auto-renewal, CA connectors, PQC scanning — included in your plan. You pay for certificates at wholesale rates. Transparent pricing. No upgrade prompts. No hidden feature walls. No per-seat fees added later.',
   },
   {
     n:'02',
@@ -614,10 +614,10 @@ function ShowcaseTabs({ nav }) {
         }}
           onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.boxShadow='0 8px 24px rgba(10,14,26,0.28)' }}
           onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)';   e.currentTarget.style.boxShadow='0 4px 16px rgba(10,14,26,0.2)'  }}>
-          Get started free →
+          Get started →
         </button>
         <div style={{ fontSize:12, color:C.textLt, marginTop:10 }}>
-          Free forever for indie, SMB &amp; non-profit · No credit card required
+          Built for developers, SMBs and non-profits · GoGetSSL partner rates
         </div>
       </div>
     </div>
@@ -748,7 +748,7 @@ export default function Home({ nav }) {
 
         <div className="home-nav-cta" style={{ display:'flex', alignItems:'center', gap:10 }}>
           {!isMobile && <CTA label="Sign in" variant="ghost" onClick={()=>nav('/auth')} size="sm"/>}
-          <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')} size="sm"/>
+          <CTA label="Get started" variant="primary" onClick={()=>nav('/auth')} size="sm"/>
         </div>
       </header>
 
@@ -807,7 +807,7 @@ export default function Home({ nav }) {
                 animation:'pulse2 2.4s ease infinite',
               }}/>
               <span style={{ fontSize:12, fontFamily:MONO, color:C.teal, letterSpacing:'0.05em', fontWeight:500 }}>
-                Certificate Lifecycle Management · Free forever
+                Certificate Lifecycle Management · Professional CLM
               </span>
             </div>
           </FadeUp>
@@ -843,7 +843,7 @@ export default function Home({ nav }) {
               display:'flex', gap:12, justifyContent:'center',
               flexWrap:'wrap', marginBottom:72,
             }}>
-              <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')}/>
+              <CTA label="Get started" variant="primary" onClick={()=>nav('/auth')}/>
               <CTA label="View pricing" onClick={()=>nav('/pricing')}/>
             </div>
           </FadeUp>
@@ -860,7 +860,7 @@ export default function Home({ nav }) {
               {[
                 { val: certCount ? `${displayCount.toLocaleString()}+` : '—', label:'Active certificates', sub:'tracked across all CAs', accent:C.teal },
                 { val:'~5 min', label:'DV issuance time', sub:'GoGetSSL · DigiCert chain', accent:'#10b981' },
-                { val:'$0',     label:'Platform cost',    sub:'certs from $8 / yr',        accent:C.amber  },
+                { val:'$8+',    label:'Cert cost / yr',   sub:'GoGetSSL partner rates',     accent:C.amber  },
               ].map(({ val, label, sub, accent }, i) => (
                 <div key={label} style={{
                   padding:'24px 0 0',
@@ -1288,7 +1288,7 @@ export default function Home({ nav }) {
             }}>
               <p style={{ fontSize:'clamp(18px,2.2vw,26px)', fontWeight:500,
                 color:C.text, lineHeight:1.5, letterSpacing:'-0.4px', marginBottom:14 }}>
-                "Let's Encrypt made certificates free. SSLVault makes the lifecycle free too."
+                "Let's Encrypt simplified issuance. SSLVault automates the entire lifecycle."
               </p>
               <span style={{ fontSize:12, fontFamily:MONO, color:C.textLt }}>
                 — SSLVault · built in the Netherlands · made with ♥
@@ -1345,7 +1345,7 @@ export default function Home({ nav }) {
                 { val:'AES-256-GCM', label:'Key encryption at rest',  sub:'Private keys never leave your control', c:C.teal   },
                 { val:'99.9%',       label:'Browser trust coverage',  sub:'DigiCert and Sectigo trust chains',    c:'#34d399' },
                 { val:'< 5 min',     label:'Agent polling interval',  sub:'Zero-touch renewal cadence',           c:C.purple  },
-                { val:'No ads',      label:'Ad-free forever',         sub:'No tracking. No reselling. No upsells.',c:C.amber  },
+                { val:'No ads',      label:'No advertising',          sub:'No tracking. No reselling. No upsells.',c:C.amber  },
               ].map(({val,label,sub,c},i)=>(
                 <div key={label} style={{
                   padding:'28px 0 28px',
@@ -1374,15 +1374,15 @@ export default function Home({ nav }) {
                 background:`linear-gradient(90deg, ${C.teal}, #38bdf8)`,
                 WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
                 backgroundClip:'text',
-              }}>Stay free forever.</span>
+              }}>Get started today.</span>
             </h2>
             <p style={{ fontSize:17, color:'rgba(255,255,255,0.38)',
               lineHeight:1.75, marginBottom:40, maxWidth:480, margin:'0 auto 40px' }}>
-              No credit card. No sales call. No enterprise procurement cycle.
+              Simple, transparent pricing. No enterprise procurement cycle.
               Issue your first certificate in under five minutes.
             </p>
             <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
-              <CTA label="Get started free" variant="primary" onClick={()=>nav('/auth')}/>
+              <CTA label="Get started" variant="primary" onClick={()=>nav('/auth')}/>
               <CTA label="View pricing" variant="ghost-dark" onClick={()=>nav('/pricing')}/>
               <CTA label="Read our mission" variant="ghost-dark" onClick={()=>nav('/about')}/>
             </div>
@@ -1405,7 +1405,7 @@ export default function Home({ nav }) {
             </div>
             <span style={{ fontSize:13, fontWeight:700, color:C.ink }}>SSLVault</span>
             <span style={{ fontSize:11, color:'#94a3b8', marginLeft:4 }}>
-              · PKI-first CLM · Made with ♥ in the Netherlands · Ad-free
+              · PKI-first CLM · Made with ♥ in the Netherlands
             </span>
           </div>
           <div style={{ display:'flex', gap:24, flexWrap:'wrap' }}>
