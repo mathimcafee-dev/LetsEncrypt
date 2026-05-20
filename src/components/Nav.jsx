@@ -47,23 +47,12 @@ export default function Nav({ nav, page }) {
   return (
     <nav style={{position:'sticky',top:0,zIndex:200,background:'#ffffff',borderBottom:'0.5px solid rgba(15,23,42,0.08)',boxShadow:'0 1px 3px rgba(15,23,42,0.04)'}}>
       <div className='container' style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:56,padding: isMobile ? '0 16px' : undefined}}>
-        {/* Logo — identical on both */}
-        <div onClick={()=>nav('/')} style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer',userSelect:'none'}}>
-          <div style={{position:'relative',width:36,height:36,flexShrink:0}}>
-            <div style={{width:36,height:36,background:'#0a0a0a',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <span style={{fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif",fontSize:22,fontWeight:800,color:'#0e7fc0',lineHeight:1,letterSpacing:'-1px',marginTop:1}}>S</span>
-            </div>
-            <div style={{position:'absolute',bottom:-3,right:-3,width:16,height:16,background:'#0e7fc0',borderRadius:4,border:'2px solid white',display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <svg width="8" height="9" viewBox="0 0 8 9" fill="none">
-                <rect x="1" y="4" width="6" height="5" rx="1" fill="white"/>
-                <path d="M2 4V3a2 2 0 0 1 4 0v1" stroke="white" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
-              </svg>
-            </div>
+        {/* Logo — consistent with landing page */}
+        <div onClick={()=>nav('/')} style={{display:'flex',alignItems:'center',gap:9,cursor:'pointer',userSelect:'none'}}>
+          <div style={{width:30,height:30,background:'#0ea5e9',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <div>
-            <div style={{fontWeight:700,fontSize:15,color:'#0a0a0a',letterSpacing:'-0.4px',lineHeight:1.15}}>SSL<span style={{color:'#0e7fc0'}}>Vault</span></div>
-            <div style={{fontSize:9,color:'#a3a3a3',fontWeight:500,textTransform:'uppercase',letterSpacing:'0.8px',lineHeight:1}}>CLM Platform</div>
-          </div>
+          <span style={{fontSize:15,fontWeight:600,color:'#0a0a0a',letterSpacing:'-0.3px'}}>SSLVault</span>
         </div>
 
         {/* Desktop center nav — hidden on mobile */}

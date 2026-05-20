@@ -67,7 +67,8 @@ const _build = 1779297041 // cache bust
   }
 
   // Home page has its own nav built-in — exclude it to avoid duplicate
-  const showPublicNav = !authLoading && !user && page !== '/'
+  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/developer', '/pricing', '/contact', '/privacy', '/terms']
+  const showPublicNav = !authLoading && !user && !SELF_NAV_PAGES.includes(page)
 
   return (
     <div style={{
