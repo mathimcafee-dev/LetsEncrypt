@@ -461,27 +461,37 @@ export default function RenewalCalendar({ user }) {
     if (view === 'year') {
       setViewYear(y => y + dir)
     } else if (view === 'month') {
-      setViewMonth(m => {
-        let nm = m + dir
-        if (nm > 11) { setViewYear(y=>y+1); return 0 }
-        if (nm < 0)  { setViewYear(y=>y-1); return 11 }
-        return nm
-      })
+      let nm = viewMonth + dir
+      let ny = viewYear
+      if (nm > 11) { nm = 0;  ny++ }
+      if (nm < 0)  { nm = 11; ny-- }
+      setViewMonth(nm)
+      setViewYear(ny)
     } else {
-      // week: advance by week
-      const weeksInMonth = Math.ceil((new Date(viewYear,viewMonth,1).getDay() + new Date(viewYear,viewMonth+1,0).getDate()) / 7)
-      setViewWeek(w => {
-        let nw = w + dir
-        if (nw >= weeksInMonth) {
-          setViewMonth(m => { let nm=m+1; if(nm>11){setViewYear(y=>y+1);return 0;}return nm })
-          return 0
-        }
-        if (nw < 0) {
-          setViewMonth(m => { let nm=m-1; if(nm<0){setViewYear(y=>y-1);return 11;}return nm })
-          return Math.ceil((new Date(viewYear,viewMonth-1<0?11:viewMonth-1,1).getDay() + new Date(viewYear,viewMonth<1?12:viewMonth,0).getDate())/7)-1
-        }
-        return nw
-      })
+      // week view: just advance/retreat by 1 week, let WeekView handle display
+      const weeksInMonth = Math.ceil(
+        (new Date(viewYear, viewMonth, 1).getDay() +
+         new Date(viewYear, viewMonth + 1, 0).getDate()) / 7
+      )
+      let nw = viewWeek + dir
+      let nm = viewMonth
+      let ny = viewYear
+      if (nw >= weeksInMonth) {
+        nw = 0
+        nm++
+        if (nm > 11) { nm = 0; ny++ }
+      }
+      if (nw < 0) {
+        nm--
+        if (nm < 0) { nm = 11; ny-- }
+        nw = Math.ceil(
+          (new Date(ny, nm, 1).getDay() +
+           new Date(ny, nm + 1, 0).getDate()) / 7
+        ) - 1
+      }
+      setViewWeek(nw)
+      setViewMonth(nm)
+      setViewYear(ny)
     }
   }
 
