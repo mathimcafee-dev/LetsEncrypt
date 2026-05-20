@@ -374,19 +374,6 @@ export default function CLMHome({ user, nav }) {
                 <LogOut size={13}/>
               </button>
             </div>
-            {/* Legal footer links */}
-            <div style={{ display:'flex', gap:10, marginTop:8, flexWrap:'wrap' }}>
-              {[['Privacy','privacy'],['Terms','terms'],['About','about']].map(([l,id])=>(
-                <button key={id} onClick={()=>sideNav(id)}
-                  style={{ background:'none', border:'none', cursor:'pointer', padding:0,
-                    fontSize:9, color:'rgba(255,255,255,0.25)', fontFamily:'inherit',
-                    transition:'color .15s' }}
-                  onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.6)'}
-                  onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.25)'}>
-                  {l}
-                </button>
-              ))}
-            </div>
           </div>
         </nav>
 
