@@ -35,137 +35,292 @@ async function callKeyLocker(action, extra = {}) {
 }
 
 // ── Reveal Key Modal — 30s countdown, copy-only, audit logged ─────────
-function RevealModal({ keyEntry, onClose }) {
+// ── RevealModal — Step 1: password gate → Step 2: key reveal ─────────
+function RevealModal({ keyEntry, userEmail, onClose }) {
+  // step: 'auth' | 'key'
+  const [step,      setStep]      = useState('auth')
+  const [password,  setPassword]  = useState('')
+  const [authError, setAuthError] = useState('')
+  const [verifying, setVerifying] = useState(false)
+  const [attempts,  setAttempts]  = useState(0)
+
+  // Key reveal state
   const [pem,       setPem]       = useState(null)
-  const [loading,   setLoading]   = useState(true)
-  const [error,     setError]     = useState('')
+  const [loading,   setLoading]   = useState(false)
+  const [fetchErr,  setFetchErr]  = useState('')
   const [countdown, setCountdown] = useState(30)
   const [copied,    setCopied]    = useState(false)
-  const timerRef = useRef(null)
+  const timerRef  = useRef(null)
+  const inputRef  = useRef(null)
 
+  // Focus password input on mount
   useEffect(() => {
-    let mounted = true
-    callKeyLocker('fetch', { key_id: keyEntry.id, triggered_by: 'user_reveal' })
-      .then(res => {
-        if (!mounted) return
-        if (res.error) { setError(res.error); setLoading(false); return }
-        setPem(res.private_key_pem)
-        setLoading(false)
-        // Start 30s countdown
-        timerRef.current = setInterval(() => {
-          setCountdown(c => {
-            if (c <= 1) { clearInterval(timerRef.current); onClose(); return 0 }
-            return c - 1
-          })
-        }, 1000)
-      })
-    return () => { mounted = false; clearInterval(timerRef.current) }
-  }, [keyEntry.id])
+    setTimeout(() => inputRef.current?.focus(), 80)
+  }, [])
 
+  // ── Step 1: verify password via Supabase re-auth ──────────────────
+  const verifyPassword = async (e) => {
+    e?.preventDefault()
+    if (!password.trim()) return
+    if (attempts >= 3) return  // locked after 3 fails
+
+    setVerifying(true)
+    setAuthError('')
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email:    userEmail,
+        password: password.trim(),
+      })
+      if (error) {
+        const next = attempts + 1
+        setAttempts(next)
+        if (next >= 3) {
+          setAuthError('Too many failed attempts. Access locked.')
+        } else {
+          setAuthError(`Incorrect password. ${3 - next} attempt${3 - next !== 1 ? 's' : ''} remaining.`)
+        }
+        setPassword('')
+        inputRef.current?.focus()
+        setVerifying(false)
+        return
+      }
+      // Password correct — fetch and decrypt key
+      setStep('key')
+      setLoading(true)
+      const res = await callKeyLocker('fetch', { key_id: keyEntry.id, triggered_by: 'user_reveal' })
+      if (res.error) { setFetchErr(res.error); setLoading(false); return }
+      setPem(res.private_key_pem)
+      setLoading(false)
+      // Start 30s countdown
+      timerRef.current = setInterval(() => {
+        setCountdown(c => {
+          if (c <= 1) { clearInterval(timerRef.current); onClose(); return 0 }
+          return c - 1
+        })
+      }, 1000)
+    } catch (err) {
+      setAuthError('Verification failed: ' + (err.message || 'unknown error'))
+      setVerifying(false)
+    }
+  }
+
+  useEffect(() => () => clearInterval(timerRef.current), [])
+
+  // ── Copy key ──────────────────────────────────────────────────────
   const copy = async () => {
     if (!pem) return
-    try {
-      await navigator.clipboard.writeText(pem)
-    } catch {
+    try { await navigator.clipboard.writeText(pem) }
+    catch {
       const ta = document.createElement('textarea')
       ta.value = pem; document.body.appendChild(ta); ta.select()
       document.execCommand('copy'); document.body.removeChild(ta)
     }
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => setCopied(false), 2500)
   }
 
-  // Mask the PEM — only show first/last lines
-  const masked = pem ? [
+  const masked = [
     '-----BEGIN PRIVATE KEY-----',
     '••••••••••••••••••••••••••••••••••••••',
     '••••••••••••••••••••••••••••••••••••••',
     '••••••••••••••••••••••••••••••••••••••',
     '-----END PRIVATE KEY-----',
-  ].join('\n') : ''
+  ].join('\n')
 
   const pct = (countdown / 30) * 100
+  const locked = attempts >= 3
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:300,
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', zIndex:300,
       display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
-      <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%', maxWidth:520,
-        boxShadow:'0 24px 64px rgba(0,0,0,0.3)', overflow:'hidden' }}>
+      <div style={{ background:'var(--v2-surface)', borderRadius:14, width:'100%', maxWidth:480,
+        boxShadow:'0 28px 72px rgba(0,0,0,0.35)', overflow:'hidden',
+        animation:'modalIn .2s cubic-bezier(.16,1,.3,1)' }}>
 
         {/* Header */}
         <div style={{ padding:'16px 20px', borderBottom:'0.5px solid var(--v2-border)',
           display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{ width:32, height:32, borderRadius:8, background:'rgba(124,58,237,0.1)',
+          <div style={{ width:34, height:34, borderRadius:9,
+            background: step==='auth' ? 'rgba(124,58,237,0.1)' : 'rgba(124,58,237,0.1)',
             display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-            <Eye size={15} color="#7c3aed"/>
+            {step === 'auth' ? <Lock size={15} color="#7c3aed"/> : <Eye size={15} color="#7c3aed"/>}
           </div>
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)' }}>
-              Private key — {keyEntry.domain}
+            <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>
+              {step === 'auth' ? 'Confirm your identity' : `Private key — ${keyEntry.domain}`}
             </div>
             <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1 }}>
-              Copy only · Auto-hides in {countdown}s · Logged to audit trail
+              {step === 'auth'
+                ? `Enter your password to access the private key for ${keyEntry.domain}`
+                : `Copy only · Auto-hides in ${countdown}s · Logged to audit trail`}
             </div>
           </div>
           <button onClick={onClose} style={{ background:'none', border:'none',
-            cursor:'pointer', color:'var(--v2-text-3)', fontSize:18, lineHeight:1 }}>×</button>
+            cursor:'pointer', color:'var(--v2-text-3)', fontSize:20, lineHeight:1, padding:'2px 4px' }}>
+            ×
+          </button>
         </div>
 
-        {/* Countdown bar */}
-        <div style={{ height:3, background:'var(--v2-surface-3)' }}>
-          <div style={{ height:'100%', background:'#7c3aed', borderRadius:0,
-            width:`${pct}%`, transition:'width 1s linear' }}/>
-        </div>
-
-        <div style={{ padding:'18px 20px' }}>
-          {loading ? (
-            <div style={{ textAlign:'center', padding:'24px 0', color:'var(--v2-text-3)' }}>
-              <RefreshCw size={20} style={{ animation:'spin .8s linear infinite', margin:'0 auto 8px', display:'block' }}/>
-              Decrypting from vault…
-            </div>
-          ) : error ? (
-            <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:8,
-              padding:'12px 14px', fontSize:12, color:'#dc2626' }}>
-              <AlertTriangle size={12} style={{ verticalAlign:'-1px', marginRight:6 }}/>
-              {error}
-            </div>
+        {/* Progress indicator */}
+        <div style={{ height:2, background:'var(--v2-surface-3)', display:'flex' }}>
+          {step === 'auth' ? (
+            <div style={{ width:'50%', background:'#7c3aed', transition:'width .3s' }}/>
           ) : (
+            <div style={{ width:`${pct}%`, background:'#7c3aed', transition:'width 1s linear' }}/>
+          )}
+        </div>
+
+        {/* Step pills */}
+        <div style={{ display:'flex', gap:6, padding:'12px 20px 0',
+          alignItems:'center', justifyContent:'center' }}>
+          {[
+            { n:1, label:'Verify identity', done: step==='key' },
+            { n:2, label:'Copy key',        done: false },
+          ].map(({ n, label, done }, i) => (
+            <div key={n} style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+                <div style={{ width:20, height:20, borderRadius:'50%', flexShrink:0,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  fontSize:10, fontWeight:700,
+                  background: done ? '#7c3aed' : (step==='auth'&&n===1)||(step==='key'&&n===2) ? '#7c3aed' : 'var(--v2-surface-3)',
+                  color: done||(step==='auth'&&n===1)||(step==='key'&&n===2) ? 'white' : 'var(--v2-text-3)',
+                }}>
+                  {done ? <Check size={10}/> : n}
+                </div>
+                <span style={{ fontSize:11, color: (step==='auth'&&n===1)||(step==='key'&&n===2) ? 'var(--v2-text)' : 'var(--v2-text-3)', fontWeight:500 }}>
+                  {label}
+                </span>
+              </div>
+              {i === 0 && <div style={{ width:28, height:1, background:'var(--v2-border)' }}/>}
+            </div>
+          ))}
+        </div>
+
+        <div style={{ padding:'16px 20px 20px' }}>
+
+          {/* ── STEP 1: Password gate ── */}
+          {step === 'auth' && (
+            <form onSubmit={verifyPassword}>
+              <div style={{ background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
+                borderRadius:9, padding:'12px 14px', marginBottom:14, fontSize:11,
+                color:'var(--v2-text-2)', lineHeight:1.6 }}>
+                <Lock size={11} style={{ verticalAlign:'-1px', marginRight:5, color:'#7c3aed' }}/>
+                This is a high-security action. Re-enter your SSLVault password to confirm you
+                are authorised to access this private key. This attempt will be logged.
+              </div>
+
+              <div style={{ marginBottom:12 }}>
+                <label style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-2)',
+                  display:'block', marginBottom:6 }}>
+                  Account password
+                  <span style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:400,
+                    marginLeft:6 }}>({userEmail})</span>
+                </label>
+                <input
+                  ref={inputRef}
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  disabled={locked || verifying}
+                  style={{ width:'100%', padding:'10px 12px', fontSize:13,
+                    borderRadius:8, border:`1px solid ${authError ? '#fca5a5' : 'var(--v2-border)'}`,
+                    background: locked ? 'var(--v2-surface-3)' : 'var(--v2-surface)',
+                    color:'var(--v2-text)', fontFamily:'inherit', outline:'none',
+                    boxSizing:'border-box',
+                    boxShadow: authError ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none' }}
+                />
+              </div>
+
+              {authError && (
+                <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:7,
+                  padding:'9px 12px', marginBottom:12, fontSize:11, color:'#b91c1c',
+                  display:'flex', alignItems:'center', gap:7 }}>
+                  <AlertTriangle size={12} style={{ flexShrink:0 }}/>
+                  {authError}
+                </div>
+              )}
+
+              {locked ? (
+                <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:7,
+                  padding:'10px 12px', fontSize:12, color:'#b91c1c', textAlign:'center' }}>
+                  Access locked after 3 failed attempts. Close and try again later.
+                </div>
+              ) : (
+                <button type="submit" disabled={verifying || !password.trim()}
+                  style={{ width:'100%', padding:'11px', borderRadius:8, cursor:'pointer',
+                    background: verifying||!password.trim() ? 'var(--v2-surface-3)' : '#7c3aed',
+                    color: verifying||!password.trim() ? 'var(--v2-text-3)' : 'white',
+                    border:'none', fontSize:13, fontWeight:600, fontFamily:'inherit',
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                    transition:'all .15s' }}>
+                  {verifying
+                    ? <><RefreshCw size={13} style={{ animation:'spin .7s linear infinite' }}/> Verifying…</>
+                    : <><Lock size={13}/> Confirm &amp; reveal key</>}
+                </button>
+              )}
+            </form>
+          )}
+
+          {/* ── STEP 2: Key reveal ── */}
+          {step === 'key' && (
             <>
-              {/* Security warning */}
-              <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:8,
-                padding:'10px 12px', marginBottom:14, fontSize:11, color:'#92400e' }}>
-                <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
-                Never share this key. Do not save to disk unencrypted. This access is being logged.
-              </div>
+              {loading ? (
+                <div style={{ textAlign:'center', padding:'28px 0', color:'var(--v2-text-3)' }}>
+                  <RefreshCw size={20} style={{ animation:'spin .8s linear infinite',
+                    margin:'0 auto 10px', display:'block' }}/>
+                  <div style={{ fontSize:12 }}>Decrypting from vault…</div>
+                </div>
+              ) : fetchErr ? (
+                <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:8,
+                  padding:'12px 14px', fontSize:12, color:'#dc2626' }}>
+                  <AlertTriangle size={12} style={{ verticalAlign:'-1px', marginRight:6 }}/>
+                  {fetchErr}
+                </div>
+              ) : (
+                <>
+                  <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:8,
+                    padding:'9px 12px', marginBottom:12, fontSize:11, color:'#92400e',
+                    display:'flex', alignItems:'center', gap:7 }}>
+                    <AlertTriangle size={11} style={{ flexShrink:0 }}/>
+                    Never share this key. Do not save unencrypted. This access is logged.
+                  </div>
 
-              {/* Masked key display */}
-              <div style={{ background:'#0a0e1a', borderRadius:8, padding:'14px 16px',
-                marginBottom:12, fontFamily:'monospace', fontSize:11, color:'#94a3b8',
-                lineHeight:1.7, whiteSpace:'pre' }}>
-                {masked}
-              </div>
+                  <div style={{ background:'#0a0e1a', borderRadius:9, padding:'14px 16px',
+                    marginBottom:12, fontFamily:'monospace', fontSize:11, color:'#94a3b8',
+                    lineHeight:1.8, whiteSpace:'pre', userSelect:'none' }}>
+                    {masked}
+                  </div>
 
-              {/* Copy button */}
-              <button onClick={copy} style={{
-                width:'100%', padding:'10px', borderRadius:8, cursor:'pointer',
-                background: copied ? '#f0fdf4' : '#7c3aed', fontFamily:'inherit',
-                color: copied ? '#16a34a' : 'white', border: copied ? '1px solid #bbf7d0' : 'none',
-                fontSize:13, fontWeight:600, display:'flex', alignItems:'center',
-                justifyContent:'center', gap:8, transition:'all .2s',
-              }}>
-                {copied
-                  ? <><Check size={14}/> Copied to clipboard</>
-                  : <><Copy size={14}/> Copy private key to clipboard</>}
-              </button>
+                  <button onClick={copy} style={{
+                    width:'100%', padding:'11px', borderRadius:8, cursor:'pointer',
+                    background: copied ? '#f0fdf4' : '#7c3aed', fontFamily:'inherit',
+                    color: copied ? '#16a34a' : 'white',
+                    border: copied ? '1px solid #bbf7d0' : 'none',
+                    fontSize:13, fontWeight:600,
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                    transition:'all .2s',
+                  }}>
+                    {copied
+                      ? <><Check size={14}/> Copied to clipboard!</>
+                      : <><Copy size={14}/> Copy private key to clipboard</>}
+                  </button>
 
-              <div style={{ fontSize:10, color:'var(--v2-text-3)', textAlign:'center', marginTop:8 }}>
-                The actual key is copied — the masked display above is intentional for security.
-              </div>
+                  <div style={{ fontSize:10, color:'var(--v2-text-3)', textAlign:'center', marginTop:8 }}>
+                    The real key is copied — masked display is intentional.
+                    Auto-closes in {countdown}s.
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>
       </div>
-      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+
+      <style>{`
+        @keyframes spin    { from{transform:rotate(0)}to{transform:rotate(360deg)} }
+        @keyframes modalIn { from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)} }
+      `}</style>
     </div>
   )
 }
@@ -531,7 +686,7 @@ export default function KeyLocker({ nav }) {
     <div className="v2-page">
       {/* Reveal modal */}
       {revealKey && (
-        <RevealModal keyEntry={revealKey} onClose={() => { setRevealKey(null); loadData() }}/>
+        <RevealModal keyEntry={revealKey} userEmail={user?.email} onClose={() => { setRevealKey(null); loadData() }}/>
       )}
 
       <div className="v2-container" style={{ maxWidth:960, padding:'40px 24px 80px' }}>
