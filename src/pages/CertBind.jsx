@@ -1,6 +1,6 @@
 // CertBind.jsx — Active Certificate Binding Verification
-// Industry-first: cryptographic proof that deployed key === issued cert, checked every 5 min
-import { useState, useEffect, useCallback } from 'react'
+// Industry-first: cryptographic proof that deployed key === issued cert
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
@@ -19,85 +19,89 @@ const C = {
   ink:'#080c14',
 }
 
-// Status config
 const STATUS = {
-  bound:          { label:'Bound',          color:C.green,  bg:C.greenBg,  bd:C.greenBd,  icon:'✓', desc:'Cryptographic proof confirmed. Key ↔ cert ↔ TLS all match.' },
-  key_mismatch:   { label:'Key Mismatch',   color:C.red,    bg:C.redBg,    bd:C.redBd,    icon:'⚠', desc:'Private key on server does not match issued certificate. Critical.' },
-  cert_mismatch:  { label:'Cert Mismatch',  color:C.red,    bg:C.redBg,    bd:C.redBd,    icon:'⚠', desc:'Certificate served over TLS differs from certificate in inventory.' },
-  chain_anomaly:  { label:'Chain Anomaly',  color:C.purple, bg:C.purpleBg, bd:C.purpleBd, icon:'⚠', desc:'Certificate chain contains unexpected intermediates. Possible SSL inspection proxy.' },
-  partial_deploy: { label:'Partial Deploy', color:C.amber,  bg:C.amberBg,  bd:C.amberBd,  icon:'◑', desc:'Some servers in load balancer pool have not received the new certificate.' },
-  unreachable:    { label:'Unreachable',    color:C.amber,  bg:C.amberBg,  bd:C.amberBd,  icon:'−', desc:'TLS endpoint not reachable. Server may be down or port 443 closed.' },
-  pending:        { label:'Pending',        color:C.teal,   bg:C.tealBg,   bd:C.tealBd,   icon:'○', desc:'Verification in progress.' },
+  bound:          { label:'Bound',           color:C.green,  bg:C.greenBg,  bd:C.greenBd,  dot:'#10b981', icon:'✓', desc:'Cryptographic binding proof confirmed. Private key ↔ certificate ↔ live TLS all verified.' },
+  key_mismatch:   { label:'Key Mismatch',    color:C.red,    bg:C.redBg,    bd:C.redBd,    dot:C.red,     icon:'✗', desc:'Private key on server does NOT match the issued certificate. Critical — re-install immediately.' },
+  cert_mismatch:  { label:'Cert Mismatch',   color:C.red,    bg:C.redBg,    bd:C.redBd,    dot:C.red,     icon:'✗', desc:'Certificate served over TLS differs from the certificate in inventory. Possible silent swap.' },
+  chain_anomaly:  { label:'Chain Anomaly',   color:C.purple, bg:C.purpleBg, bd:C.purpleBd, dot:C.purple,  icon:'⚠', desc:'Unexpected intermediate CA detected. Possible SSL inspection proxy (Palo Alto, Zscaler).' },
+  partial_deploy: { label:'Partial Deploy',  color:C.amber,  bg:C.amberBg,  bd:C.amberBd,  dot:C.amber,   icon:'◑', desc:'Some load balancer nodes have not received the updated certificate.' },
+  unreachable:    { label:'Unreachable',     color:C.amber,  bg:C.amberBg,  bd:C.amberBd,  dot:C.amber,   icon:'−', desc:'TLS endpoint not responding. Server may be down or port 443 closed.' },
+  pending:        { label:'Pending',         color:C.teal,   bg:C.tealBg,   bd:C.tealBd,   dot:C.teal,    icon:'○', desc:'Awaiting verification from persistent agent.' },
 }
 
-function StatusPill({ status }) {
+const LAYERS = [
+  { key:'keybind', n:'01', label:'Key-Cert Binding Proof',  color:C.teal,
+    desc:'Agent signs SSLVault nonce with deployed private key via HMAC-SHA256. Edge verifies against cert public key. Cryptographic proof without transmitting the key.',
+    requiresAgent: true },
+  { key:'tls',     n:'02', label:'Live TLS Fingerprint',    color:C.green,
+    desc:'Agent runs openssl s_client against port 443. SHA-256 of served certificate compared against fingerprint of issued cert. Detects silent swaps.',
+    requiresAgent: true },
+  { key:'chain',   n:'03', label:'Chain Integrity',         color:C.purple,
+    desc:'Full certificate chain verified leaf → intermediate → root. Unexpected intermediates flagged — detects SSL inspection proxies inserting their own CA.',
+    requiresAgent: true },
+  { key:'nodes',   n:'04', label:'Multi-Node Consistency',  color:C.amber,
+    desc:'All IPs in the load balancer pool checked independently. Partial deployments — the #1 cause of PKI outages — detected within 5 minutes.',
+    requiresAgent: true },
+]
+
+function Pill({ status }) {
   const s = STATUS[status] || STATUS.pending
   return (
     <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11, fontWeight:700,
-      color:s.color, background:s.bg, border:`1px solid ${s.bd}`, borderRadius:100,
-      padding:'3px 10px', fontFamily:MONO }}>
-      {s.icon} {s.label}
+      color:s.color, background:s.bg, border:`1px solid ${s.bd}`,
+      borderRadius:100, padding:'3px 11px', fontFamily:MONO, whiteSpace:'nowrap' }}>
+      <span style={{ width:5, height:5, borderRadius:'50%', background:s.color, flexShrink:0 }}/>
+      {s.label}
     </span>
   )
 }
 
-function LayerRow({ label, status, detail, expected, actual }) {
+function LayerBadge({ status }) {
   const pass = status === 'pass'
-  const skip = status === 'skip' || status === 'pending' || !status
-  const color = skip ? C.muted : pass ? C.green : C.red
-  const icon = skip ? '○' : pass ? '✓' : '✗'
+  const fail = status === 'fail'
+  const skip = !status || status === 'skip' || status === 'pending'
+  const color = pass ? C.green : fail ? C.red : C.muted
+  const bg = pass ? C.greenBg : fail ? C.redBg : C.bg3
+  const label = pass ? 'PASS' : fail ? 'FAIL' : status === 'pending' ? 'PENDING' : 'SKIP'
   return (
-    <div style={{ display:'flex', gap:12, padding:'12px 0', borderBottom:`1px solid ${C.border}` }}>
-      <div style={{ width:20, height:20, borderRadius:'50%', background:`${color}15`,
-        border:`1.5px solid ${color}40`, display:'flex', alignItems:'center', justifyContent:'center',
-        fontSize:11, fontWeight:700, color, flexShrink:0, marginTop:1 }}>{icon}</div>
-      <div style={{ flex:1 }}>
-        <div style={{ fontSize:13, fontWeight:600, color:C.heading, marginBottom:3 }}>{label}</div>
-        {detail && <div style={{ fontSize:12, color:C.body, marginBottom:4 }}>{detail}</div>}
-        {(expected || actual) && (
-          <div style={{ display:'flex', flexDirection:'column', gap:4, marginTop:6 }}>
-            {expected && (
-              <div style={{ display:'flex', gap:8, alignItems:'flex-start' }}>
-                <span style={{ fontSize:10, fontWeight:700, color:C.muted, width:60, flexShrink:0, marginTop:1 }}>EXPECTED</span>
-                <code style={{ fontSize:10.5, color:C.green, fontFamily:MONO, wordBreak:'break-all', lineHeight:1.6 }}>{expected}</code>
-              </div>
-            )}
-            {actual && (
-              <div style={{ display:'flex', gap:8, alignItems:'flex-start' }}>
-                <span style={{ fontSize:10, fontWeight:700, color:C.muted, width:60, flexShrink:0, marginTop:1 }}>ACTUAL</span>
-                <code style={{ fontSize:10.5, color:pass?C.green:C.red, fontFamily:MONO, wordBreak:'break-all', lineHeight:1.6 }}>{actual}</code>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      <div style={{ fontSize:11, fontWeight:600, color, fontFamily:MONO, flexShrink:0 }}>{skip?'—':status?.toUpperCase()}</div>
-    </div>
+    <span style={{ fontSize:9.5, fontWeight:800, color, background:bg,
+      border:`1px solid ${color}30`, borderRadius:4, padding:'2px 7px',
+      fontFamily:MONO, letterSpacing:'0.04em' }}>{label}</span>
+  )
+}
+
+function Spinner({ size = 16, color = C.teal }) {
+  return (
+    <span style={{ display:'inline-block', width:size, height:size,
+      border:`2px solid ${color}30`, borderTopColor:color,
+      borderRadius:'50%', animation:'spin .7s linear infinite', flexShrink:0 }}/>
   )
 }
 
 export default function CertBind({ nav }) {
-  const [user, setUser] = useState(null)
-  const [certs, setCerts] = useState([])
-  const [checks, setChecks] = useState({}) // cert_id -> latest check
+  const [user, setUser]       = useState(null)
+  const [certs, setCerts]     = useState([])
+  const [checks, setChecks]   = useState({})
+  const [agents, setAgents]   = useState({})
   const [selected, setSelected] = useState(null)
-  const [history, setHistory] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [history, setHistory]   = useState([])
+  const [loading, setLoading]   = useState(true)
   const [scanning, setScanning] = useState({})
-  const [agents, setAgents] = useState({}) // cert_id -> agent_id
+  const pollRef = useRef(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) { setUser(session.user); loadData(session.user) }
       else setLoading(false)
     })
+    return () => { if (pollRef.current) clearInterval(pollRef.current) }
   }, [])
 
   async function callCertbind(body) {
     const { data: { session } } = await supabase.auth.getSession()
     const res = await fetch(`${SB_URL}/functions/v1/certbind`, {
       method:'POST',
-      headers:{ 'Content-Type':'application/json','Authorization':`Bearer ${session?.access_token}` },
+      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.access_token}` },
       body: JSON.stringify(body),
     })
     return res.json()
@@ -106,9 +110,8 @@ export default function CertBind({ nav }) {
   async function loadData(u) {
     setLoading(true)
     const uid = u?.id || user?.id
-    if (!uid) return
+    if (!uid) { setLoading(false); return }
 
-    // Load active certificates with PEM
     const { data: certRows } = await supabase
       .from('certificates')
       .select('id,domain,status,expires_at,issuer,certbind_status,certbind_checked_at,certbind_fp_expected,certbind_fp_actual,certbind_mismatch_at,install_server_id')
@@ -118,313 +121,506 @@ export default function CertBind({ nav }) {
 
     setCerts(certRows || [])
 
-    // Load agents for each cert
     const agentMap = {}
     for (const c of (certRows || [])) {
       if (c.install_server_id) {
         const { data: srv } = await supabase
-          .from('server_credentials')
-          .select('agent_id')
-          .eq('id', c.install_server_id)
-          .single()
+          .from('server_credentials').select('agent_id')
+          .eq('id', c.install_server_id).single()
         if (srv?.agent_id) agentMap[c.id] = srv.agent_id
       }
     }
     setAgents(agentMap)
 
-    // Load latest certbind checks
-    const res = await callCertbind({ action:'get_status', user_id: uid })
-    if (res.checks) {
-      // Dedupe: latest check per cert
-      const latestMap = {}
-      for (const chk of res.checks) {
-        if (!latestMap[chk.cert_id] ||
-          new Date(chk.checked_at) > new Date(latestMap[chk.cert_id].checked_at)) {
-          latestMap[chk.cert_id] = chk
-        }
-      }
-      setChecks(latestMap)
-    }
+    await refreshChecks(uid)
     setLoading(false)
   }
 
-  async function triggerScan(certId) {
-    if (!user) return
+  async function refreshChecks(uid) {
+    const res = await callCertbind({ action:'get_status', user_id: uid || user?.id })
+    if (res.checks) {
+      const map = {}
+      for (const chk of res.checks) {
+        if (!map[chk.cert_id] || new Date(chk.checked_at) > new Date(map[chk.cert_id].checked_at))
+          map[chk.cert_id] = chk
+      }
+      setChecks(map)
+    }
+  }
+
+  async function triggerScan(certId, e) {
+    e?.stopPropagation()
+    if (!user || scanning[certId]) return
     setScanning(s => ({ ...s, [certId]: true }))
     try {
       await callCertbind({
-        action: 'request_bind_check',
+        action:'request_bind_check',
         user_id: user.id,
         cert_id: certId,
         agent_id: agents[certId] || null,
       })
-      // Poll for result after 3s
-      setTimeout(async () => {
+      // Poll 3 times at 3s, 6s, 12s for agent result
+      let attempt = 0
+      const poll = setInterval(async () => {
+        attempt++
         const res = await callCertbind({ action:'get_status', user_id:user.id, cert_id:certId })
         if (res.checks?.length > 0) {
-          setChecks(prev => ({ ...prev, [certId]: res.checks[0] }))
-          // Update cert status
+          const latest = res.checks[0]
+          setChecks(prev => ({ ...prev, [certId]: latest }))
           setCerts(prev => prev.map(c => c.id === certId
-            ? { ...c, certbind_status: res.checks[0].binding_status, certbind_checked_at: res.checks[0].checked_at }
-            : c
-          ))
+            ? { ...c, certbind_status: latest.binding_status, certbind_checked_at: latest.checked_at } : c))
+          if (selected === certId) setHistory(res.checks)
         }
-        setScanning(s => ({ ...s, [certId]: false }))
+        if (attempt >= 3) {
+          clearInterval(poll)
+          setScanning(s => ({ ...s, [certId]: false }))
+        }
       }, 4000)
     } catch {
       setScanning(s => ({ ...s, [certId]: false }))
     }
   }
 
-  async function loadHistory(certId) {
+  async function selectCert(certId) {
+    if (selected === certId) { setSelected(null); setHistory([]); return }
+    setSelected(certId)
     const res = await callCertbind({ action:'get_status', user_id:user.id, cert_id:certId })
     setHistory(res.checks || [])
-    setSelected(certId)
   }
 
-  const selectedCert = certs.find(c => c.id === selected)
-  const selectedCheck = checks[selected]
+  const selCert  = certs.find(c => c.id === selected)
+  const selCheck = checks[selected]
 
-  const bound = certs.filter(c => (checks[c.id]?.binding_status || c.certbind_status) === 'bound').length
-  const mismatch = certs.filter(c => ['key_mismatch','cert_mismatch','chain_anomaly'].includes(checks[c.id]?.binding_status || c.certbind_status)).length
-  const partial = certs.filter(c => (checks[c.id]?.binding_status || c.certbind_status) === 'partial_deploy').length
-  const pending = certs.filter(c => !checks[c.id] || (checks[c.id]?.binding_status || c.certbind_status) === 'pending').length
+  const stats = {
+    total:   certs.length,
+    bound:   certs.filter(c => (checks[c.id]?.binding_status||c.certbind_status) === 'bound').length,
+    issues:  certs.filter(c => ['key_mismatch','cert_mismatch','chain_anomaly'].includes(checks[c.id]?.binding_status||c.certbind_status)).length,
+    partial: certs.filter(c => (checks[c.id]?.binding_status||c.certbind_status) === 'partial_deploy').length,
+    pending: certs.filter(c => !checks[c.id] || ['pending','unreachable'].includes(checks[c.id]?.binding_status||c.certbind_status||'pending')).length,
+  }
 
   return (
     <div style={{ minHeight:'100vh', background:C.bg, fontFamily:F, color:C.heading }}>
-      <style>{`*{box-sizing:border-box;margin:0;padding:0} @keyframes spin{to{transform:rotate(360deg)}} @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>
+      <style>{`
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0 }
+        @keyframes spin { to { transform:rotate(360deg) } }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+        @keyframes slideIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+        .cb-cert-row:hover { border-color: ${C.teal} !important; background: ${C.tealBg} !important; }
+        .cb-run-btn:hover { background: ${C.tealDk||'#0284c7'} !important; }
+        .cb-refresh:hover { background: ${C.bg3} !important; }
+      `}</style>
 
       {loading && (
-        <div style={{ position:'fixed', inset:0, background:'rgba(255,255,255,0.9)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:999 }}>
-          <div style={{ width:28, height:28, border:`3px solid ${C.teal}`, borderTopColor:'transparent', borderRadius:'50%', animation:'spin 0.7s linear infinite' }}/>
+        <div style={{ position:'fixed', inset:0, background:'rgba(255,255,255,0.85)', backdropFilter:'blur(4px)',
+          display:'flex', alignItems:'center', justifyContent:'center', zIndex:999, flexDirection:'column', gap:12 }}>
+          <Spinner size={28}/>
+          <span style={{ fontSize:12, color:C.muted, fontFamily:MONO }}>Loading CertBind…</span>
         </div>
       )}
 
-      {/* The CertBind page renders inside CLMHome sidebar nav, no separate nav needed */}
-      <div style={{ padding:'clamp(24px,4vw,40px)' }}>
+      <div style={{ padding:'32px 32px 60px' }}>
 
-        {/* Header */}
-        <div style={{ marginBottom:28 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-            <div style={{ width:32, height:32, borderRadius:8, background:C.tealBg, border:`1px solid ${C.tealBd}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16 }}>🔗</div>
-            <div>
-              <h1 style={{ fontSize:18, fontWeight:700, color:C.heading, letterSpacing:'-0.3px' }}>CertBind</h1>
-              <div style={{ fontSize:11, color:C.muted, fontFamily:MONO }}>Active Certificate Binding Verification</div>
+        {/* ── PAGE HEADER ── */}
+        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:28, gap:20, flexWrap:'wrap' }}>
+          <div>
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+              <div style={{ width:36, height:36, borderRadius:9, background:'linear-gradient(135deg, #0ea5e920, #0ea5e908)', border:`1px solid ${C.tealBd}`,
+                display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="2" strokeLinecap="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="M9 12l2 2 4-4"/>
+                </svg>
+              </div>
+              <div>
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <h1 style={{ fontSize:17, fontWeight:700, color:C.heading, letterSpacing:'-0.3px' }}>CertBind</h1>
+                  <span style={{ fontSize:9.5, fontWeight:800, color:C.red, background:C.redBg,
+                    border:`1px solid ${C.redBd}`, borderRadius:4, padding:'2px 7px', fontFamily:MONO, letterSpacing:'0.05em' }}>
+                    INDUSTRY FIRST
+                  </span>
+                </div>
+                <div style={{ fontSize:11, color:C.muted, fontFamily:MONO, marginTop:1 }}>Active Certificate Binding Verification</div>
+              </div>
             </div>
+            <p style={{ fontSize:13, color:C.body, maxWidth:580, lineHeight:1.75 }}>
+              Cryptographic proof that the private key deployed on your server matches the certificate in inventory — and that the certificate served over TLS matches what was issued. Runs every 5 minutes via the persistent agent.
+            </p>
           </div>
-          <p style={{ fontSize:13.5, color:C.body, maxWidth:620, lineHeight:1.75, marginTop:10 }}>
-            Continuously verifies that the private key deployed on each server cryptographically matches the certificate in inventory — and that the certificate being served over TLS matches what was issued. Runs every 5 minutes via the persistent agent.
-          </p>
+          <button onClick={() => loadData(user)} className="cb-refresh"
+            style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px',
+              background:C.bg, border:`1px solid ${C.border}`, borderRadius:8,
+              cursor:'pointer', fontFamily:F, fontSize:12, color:C.body, transition:'background .15s' }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+            </svg>
+            Refresh
+          </button>
         </div>
 
-        {/* Stats strip */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:10, marginBottom:28 }}>
+        {/* ── STATS ROW ── */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:24 }}>
           {[
-            { val:certs.length, label:'Certs tracked',   color:C.teal   },
-            { val:bound,        label:'Fully bound',      color:C.green  },
-            { val:mismatch,     label:'Mismatches',       color:mismatch>0?C.red:C.muted  },
-            { val:partial,      label:'Partial deploy',   color:partial>0?C.amber:C.muted },
-            { val:pending,      label:'Not yet checked',  color:C.muted  },
+            { val:stats.total,   label:'Monitored',    color:C.teal,                         sub:'certificates' },
+            { val:stats.bound,   label:'Fully bound',  color:C.green,                         sub:'cryptographically proven' },
+            { val:stats.issues,  label:'Critical',     color:stats.issues>0?C.red:C.muted,   sub:'key or cert mismatch' },
+            { val:stats.partial, label:'Partial',      color:stats.partial>0?C.amber:C.muted, sub:'incomplete deployment' },
+            { val:stats.pending, label:'Pending',      color:C.muted,                         sub:'awaiting check' },
           ].map(s => (
-            <div key={s.label} style={{ background:C.bg, border:`1px solid ${C.border}`, borderTop:`2px solid ${s.color}`, borderRadius:9, padding:'14px 16px' }}>
-              <div style={{ fontSize:22, fontWeight:700, color:s.color, fontFamily:MONO, letterSpacing:'-0.5px' }}>{s.val}</div>
-              <div style={{ fontSize:11.5, color:C.muted, marginTop:3 }}>{s.label}</div>
+            <div key={s.label} style={{ background:C.bg, border:`1px solid ${C.border}`,
+              borderTop:`2.5px solid ${s.color}`, borderRadius:10, padding:'14px 16px' }}>
+              <div style={{ fontSize:26, fontWeight:700, color:s.color, fontFamily:MONO, letterSpacing:'-1px', lineHeight:1 }}>{s.val}</div>
+              <div style={{ fontSize:12, fontWeight:600, color:C.heading, marginTop:5 }}>{s.label}</div>
+              <div style={{ fontSize:10.5, color:C.muted, marginTop:2 }}>{s.sub}</div>
             </div>
           ))}
         </div>
 
-        {/* How it works banner */}
-        <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:10, padding:'16px 20px', marginBottom:24 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.06em', textTransform:'uppercase', fontFamily:MONO, marginBottom:10 }}>4-Layer Verification Protocol</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:12 }}>
-            {[
-              { n:'01', label:'Key-Cert Binding Proof', color:C.teal,   desc:'Agent signs SSLVault nonce using deployed private key. We verify against cert public key. Proves the key on disk is paired with the issued cert — without transmitting the key.' },
-              { n:'02', label:'Live TLS Fingerprint',   color:C.green,  desc:'SSLVault probes port 443 and computes SHA-256 of served certificate. Compared against fingerprint of issued cert. Detects silent cert swaps.' },
-              { n:'03', label:'Chain Integrity',        color:C.purple, desc:'Full chain verified: leaf → intermediate → root. Unexpected intermediates (e.g. SSL inspection proxies like Palo Alto, Zscaler) flagged immediately.' },
-              { n:'04', label:'Multi-Node Consistency', color:C.amber,  desc:'All IPs in the load balancer pool checked independently. Partial deployments — the #1 cause of PKI outages — detected within 5 minutes.' },
-            ].map(l => (
-              <div key={l.n} style={{ display:'flex', gap:10 }}>
-                <div style={{ fontSize:10, fontWeight:800, color:l.color, fontFamily:MONO, width:20, flexShrink:0, marginTop:1 }}>{l.n}</div>
-                <div>
-                  <div style={{ fontSize:12, fontWeight:600, color:C.heading, marginBottom:3 }}>{l.label}</div>
-                  <div style={{ fontSize:11.5, color:C.body, lineHeight:1.6 }}>{l.desc}</div>
+        {/* ── 4-LAYER PROTOCOL STRIP ── */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0,
+          border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden', marginBottom:24 }}>
+          {LAYERS.map((l, i) => (
+            <div key={l.key} style={{ padding:'14px 16px',
+              borderRight:i<3?`1px solid ${C.border}`:'none',
+              background:C.bg2 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:6 }}>
+                <div style={{ width:20, height:20, borderRadius:5, background:`${l.color}15`,
+                  border:`1px solid ${l.color}30`, display:'flex', alignItems:'center',
+                  justifyContent:'center', fontSize:9, fontWeight:800, color:l.color, fontFamily:MONO }}>
+                  {l.n}
                 </div>
+                <span style={{ fontSize:11.5, fontWeight:600, color:C.heading }}>{l.label}</span>
               </div>
-            ))}
-          </div>
+              <div style={{ fontSize:11, color:C.body, lineHeight:1.6 }}>{l.desc}</div>
+            </div>
+          ))}
         </div>
 
-        {certs.length === 0 && !loading && (
-          <div style={{ textAlign:'center', padding:'48px', color:C.muted }}>
-            <div style={{ fontSize:32, marginBottom:12 }}>🔗</div>
-            <div style={{ fontSize:15, fontWeight:600, marginBottom:6 }}>No active certificates</div>
-            <div style={{ fontSize:13 }}>Issue your first certificate to start binding verification.</div>
+        {/* ── MAIN PANEL ── */}
+        {certs.length === 0 && !loading ? (
+          <div style={{ textAlign:'center', padding:'64px 0', color:C.muted }}>
+            <div style={{ width:48, height:48, borderRadius:12, background:C.tealBg, border:`1px solid ${C.tealBd}`,
+              display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="2" strokeLinecap="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div style={{ fontSize:15, fontWeight:600, color:C.heading, marginBottom:6 }}>No active certificates</div>
+            <div style={{ fontSize:13 }}>Issue a certificate to start binding verification.</div>
           </div>
-        )}
+        ) : (
+          <div style={{ display:'grid', gridTemplateColumns:selected?'380px 1fr':'1fr', gap:16, alignItems:'start' }}>
 
-        {/* Two-panel layout */}
-        {certs.length > 0 && (
-          <div style={{ display:'grid', gridTemplateColumns: selected ? '1fr 1fr' : '1fr', gap:16 }}>
-
-            {/* Certificate list */}
+            {/* ── CERT LIST ── */}
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:C.muted, letterSpacing:'0.06em', textTransform:'uppercase', fontFamily:MONO, marginBottom:12 }}>
-                Certificates — {certs.length} monitored
+              <div style={{ fontSize:10, fontWeight:700, color:C.muted, letterSpacing:'0.08em',
+                textTransform:'uppercase', fontFamily:MONO, marginBottom:10 }}>
+                {certs.length} certificate{certs.length!==1?'s':''} monitored
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
                 {certs.map(cert => {
-                  const chk = checks[cert.id]
-                  const bs = chk?.binding_status || cert.certbind_status || 'pending'
-                  const st = STATUS[bs] || STATUS.pending
-                  const isSelected = selected === cert.id
-                  const hasAgent = !!agents[cert.id]
+                  const chk   = checks[cert.id]
+                  const bs    = chk?.binding_status || cert.certbind_status || 'pending'
+                  const st    = STATUS[bs] || STATUS.pending
+                  const isSel = selected === cert.id
+                  const hasAg = !!agents[cert.id]
+                  const isScan = !!scanning[cert.id]
+                  const isCritical = ['key_mismatch','cert_mismatch','chain_anomaly'].includes(bs)
 
                   return (
-                    <div key={cert.id}
-                      onClick={() => loadHistory(cert.id)}
-                      style={{ background:isSelected?C.tealBg:C.bg, border:`1.5px solid ${isSelected?C.teal:C.border}`,
-                        borderRadius:10, padding:'14px 16px', cursor:'pointer', transition:'all .15s' }}
-                      onMouseEnter={e => { if(!isSelected){ e.currentTarget.style.borderColor=C.teal; e.currentTarget.style.background=C.tealBg+'55' }}}
-                      onMouseLeave={e => { if(!isSelected){ e.currentTarget.style.borderColor=C.border; e.currentTarget.style.background=C.bg }}}>
+                    <div key={cert.id} className={isSel?'':'cb-cert-row'}
+                      onClick={() => selectCert(cert.id)}
+                      style={{ background:isSel?C.tealBg:C.bg,
+                        border:`1.5px solid ${isSel?C.teal:isCritical?C.redBd:C.border}`,
+                        borderRadius:10, padding:'14px 16px', cursor:'pointer',
+                        transition:'all .15s', animation:'slideIn .2s ease' }}>
 
-                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                          <span style={{ width:8, height:8, borderRadius:'50%', background:st.color, flexShrink:0,
-                            boxShadow:['key_mismatch','cert_mismatch','chain_anomaly'].includes(bs)?`0 0 6px ${st.color}`:'none',
-                            animation:bs==='pending'?'pulse 2s ease infinite':'none' }}/>
-                          <span style={{ fontSize:13, fontWeight:600, color:C.heading, fontFamily:MONO }}>{cert.domain}</span>
+                      {/* Top row */}
+                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:8, minWidth:0 }}>
+                          <span style={{ width:8, height:8, borderRadius:'50%', background:st.dot,
+                            flexShrink:0, boxShadow:isCritical?`0 0 0 3px ${st.dot}22`:'none',
+                            animation:bs==='pending'?'pulse 2s ease infinite':
+                              isCritical?'pulse .8s ease infinite':'none' }}/>
+                          <span style={{ fontSize:13, fontWeight:600, color:C.heading,
+                            fontFamily:MONO, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                            {cert.domain}
+                          </span>
                         </div>
-                        <StatusPill status={bs}/>
+                        <Pill status={bs}/>
                       </div>
 
-                      <div style={{ display:'flex', gap:16, fontSize:11, color:C.muted, flexWrap:'wrap' }}>
-                        {chk?.checked_at && (
-                          <span>Last checked: {new Date(chk.checked_at).toLocaleTimeString()}</span>
-                        )}
-                        <span style={{ color:hasAgent?C.green:C.muted }}>
-                          {hasAgent ? '● Agent connected' : '○ TLS probe only'}
+                      {/* Meta row */}
+                      <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:10 }}>
+                        <span style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
+                          color:hasAg?C.green:C.muted, fontFamily:MONO }}>
+                          <span style={{ width:5, height:5, borderRadius:'50%',
+                            background:hasAg?C.green:C.muted }}/>
+                          {hasAg ? 'Agent connected' : 'No agent'}
                         </span>
+                        {chk?.checked_at && (
+                          <span style={{ fontSize:11, color:C.muted, fontFamily:MONO }}>
+                            Checked {new Date(chk.checked_at).toLocaleTimeString()}
+                          </span>
+                        )}
                         {cert.certbind_fp_expected && (
-                          <span>FP: {cert.certbind_fp_expected.slice(0,17)}…</span>
+                          <span style={{ fontSize:10.5, color:C.muted, fontFamily:MONO }}>
+                            FP: {cert.certbind_fp_expected.slice(0,14)}…
+                          </span>
                         )}
                       </div>
 
-                      <div style={{ marginTop:10, display:'flex', gap:8 }}>
-                        <button
-                          onClick={e => { e.stopPropagation(); triggerScan(cert.id) }}
-                          disabled={!!scanning[cert.id]}
-                          style={{ background:scanning[cert.id]?C.bg2:C.teal, border:'none', cursor:scanning[cert.id]?'not-allowed':'pointer',
-                            fontFamily:F, fontSize:11, fontWeight:600, color:scanning[cert.id]?C.muted:'white',
-                            padding:'5px 12px', borderRadius:100, transition:'all .15s',
-                            display:'flex', alignItems:'center', gap:5 }}>
-                          {scanning[cert.id]
-                            ? <><span style={{ display:'inline-block', width:10, height:10, border:`1.5px solid ${C.muted}`, borderTopColor:'transparent', borderRadius:'50%', animation:'spin 0.7s linear infinite' }}/> Scanning…</>
-                            : '⟳ Run check'
-                          }
-                        </button>
-                      </div>
+                      {/* Layer status mini row */}
+                      {chk && (
+                        <div style={{ display:'flex', gap:4, marginBottom:10 }}>
+                          {[
+                            { k:'K', v:chk.keybind_status },
+                            { k:'T', v:chk.tls_status },
+                            { k:'C', v:chk.chain_status },
+                            { k:'N', v:chk.nodes_status },
+                          ].map(l => {
+                            const pass = l.v === 'pass'
+                            const fail = l.v === 'fail'
+                            const color = pass?C.green:fail?C.red:C.muted
+                            return (
+                              <div key={l.k} style={{ display:'flex', alignItems:'center', gap:3,
+                                padding:'3px 8px', background:`${color}10`,
+                                border:`1px solid ${color}25`, borderRadius:5 }}>
+                                <span style={{ fontSize:9, fontWeight:700, color, fontFamily:MONO }}>{l.k}</span>
+                                <span style={{ fontSize:9, color, fontFamily:MONO }}>
+                                  {pass?'✓':fail?'✗':'—'}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
+
+                      {/* Action */}
+                      <button className="cb-run-btn"
+                        onClick={e => triggerScan(cert.id, e)}
+                        disabled={isScan}
+                        style={{ display:'inline-flex', alignItems:'center', gap:6,
+                          background:isScan?C.bg3:C.teal, border:`1px solid ${isScan?C.border:'transparent'}`,
+                          cursor:isScan?'not-allowed':'pointer', fontFamily:F,
+                          fontSize:11.5, fontWeight:600, color:isScan?C.muted:'white',
+                          padding:'6px 14px', borderRadius:100, transition:'all .15s' }}>
+                        {isScan ? <><Spinner size={11} color={C.muted}/> Scanning…</> : '⟳ Run check'}
+                      </button>
                     </div>
                   )
                 })}
               </div>
             </div>
 
-            {/* Detail panel */}
-            {selected && selectedCert && (
-              <div>
+            {/* ── DETAIL PANEL ── */}
+            {selected && selCert && (
+              <div style={{ animation:'slideIn .2s ease' }}>
+
+                {/* Panel header */}
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-                  <div style={{ fontSize:11, fontWeight:700, color:C.muted, letterSpacing:'0.06em', textTransform:'uppercase', fontFamily:MONO }}>
-                    Verification detail — {selectedCert.domain}
+                  <div>
+                    <div style={{ fontSize:10, fontWeight:700, color:C.muted, letterSpacing:'0.08em',
+                      textTransform:'uppercase', fontFamily:MONO, marginBottom:2 }}>
+                      Verification detail
+                    </div>
+                    <div style={{ fontSize:14, fontWeight:600, color:C.heading, fontFamily:MONO }}>
+                      {selCert.domain}
+                    </div>
                   </div>
                   <button onClick={() => { setSelected(null); setHistory([]) }}
-                    style={{ background:'none', border:'none', cursor:'pointer', fontSize:16, color:C.muted, padding:'2px 6px' }}>×</button>
+                    style={{ width:28, height:28, borderRadius:6, background:C.bg2,
+                      border:`1px solid ${C.border}`, cursor:'pointer',
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      fontSize:14, color:C.muted, fontFamily:F }}>×</button>
                 </div>
 
-                {/* Overall status card */}
-                {selectedCheck && (
-                  <div style={{ background:STATUS[selectedCheck.binding_status]?.bg || C.bg2,
-                    border:`1px solid ${STATUS[selectedCheck.binding_status]?.bd || C.border}`,
-                    borderRadius:10, padding:'16px', marginBottom:12 }}>
-                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
-                      <StatusPill status={selectedCheck.binding_status}/>
-                      <span style={{ fontSize:11, color:C.muted, fontFamily:MONO }}>
-                        {new Date(selectedCheck.checked_at).toLocaleString()}
-                      </span>
-                    </div>
-                    <div style={{ fontSize:12.5, color:C.body, lineHeight:1.7 }}>
-                      {STATUS[selectedCheck.binding_status]?.desc}
-                    </div>
-                    {selectedCheck.binding_status === 'bound' && (
-                      <div style={{ marginTop:8, fontSize:12, color:C.green, fontWeight:600 }}>
-                        ✓ Cryptographic binding proof verified. This certificate is genuinely deployed and serving TLS.
+                {/* Overall status */}
+                {selCheck ? (
+                  <>
+                    <div style={{ background:STATUS[selCheck.binding_status]?.bg||C.bg2,
+                      border:`1px solid ${STATUS[selCheck.binding_status]?.bd||C.border}`,
+                      borderRadius:10, padding:'16px 18px', marginBottom:12 }}>
+                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
+                        <Pill status={selCheck.binding_status}/>
+                        <span style={{ fontSize:11, color:C.muted, fontFamily:MONO }}>
+                          {new Date(selCheck.checked_at).toLocaleString()}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                )}
-
-                {/* 4 verification layers */}
-                <div style={{ background:C.bg, border:`1px solid ${C.border}`, borderRadius:10, padding:'16px', marginBottom:12 }}>
-                  <div style={{ fontSize:12, fontWeight:700, color:C.heading, marginBottom:12 }}>Verification layers</div>
-                  {selectedCheck ? (
-                    <>
-                      <LayerRow
-                        label="Layer 1 — Key-Cert Binding Proof"
-                        status={selectedCheck.keybind_status}
-                        detail="Agent signs nonce with deployed private key. Verified against cert public key."
-                      />
-                      <LayerRow
-                        label="Layer 2 — Live TLS Fingerprint"
-                        status={selectedCheck.tls_status}
-                        detail={`Issuer on wire: ${selectedCheck.tls_served_issuer || '—'}`}
-                        expected={selectedCheck.tls_expected_fp}
-                        actual={selectedCheck.tls_actual_fp}
-                      />
-                      <LayerRow
-                        label="Layer 3 — Chain Integrity"
-                        status={selectedCheck.chain_status}
-                        detail={selectedCheck.chain_anomaly_detail || (
-                          selectedCheck.chain_status === 'pass' ? 'Full chain verified. No unexpected intermediates.' :
-                          selectedCheck.chain_status === 'skip' ? 'Chain check requires agent.' : null
-                        )}
-                      />
-                      <LayerRow
-                        label="Layer 4 — Multi-Node Consistency"
-                        status={selectedCheck.nodes_status}
-                        detail={
-                          selectedCheck.nodes_total > 0
-                            ? `${selectedCheck.nodes_bound}/${selectedCheck.nodes_total} nodes serving correct certificate`
-                            : 'Single server — no load balancer detected'
-                        }
-                      />
-                    </>
-                  ) : (
-                    <div style={{ fontSize:13, color:C.muted, padding:'12px 0' }}>
-                      No checks run yet. Click "Run check" to verify binding.
-                    </div>
-                  )}
-                </div>
-
-                {/* Check history */}
-                {history.length > 0 && (
-                  <div style={{ background:C.bg, border:`1px solid ${C.border}`, borderRadius:10, padding:'16px' }}>
-                    <div style={{ fontSize:12, fontWeight:700, color:C.heading, marginBottom:12 }}>Check history</div>
-                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                      {history.slice(0,10).map((h, i) => (
-                        <div key={h.id} style={{ display:'flex', alignItems:'center', gap:10,
-                          padding:'8px 10px', background:i===0?C.bg2:C.bg,
-                          border:`1px solid ${C.border}`, borderRadius:7 }}>
-                          <span style={{ fontSize:11, color:STATUS[h.binding_status]?.color || C.muted, fontWeight:700, fontFamily:MONO, width:90 }}>
-                            {STATUS[h.binding_status]?.icon} {STATUS[h.binding_status]?.label}
-                          </span>
-                          <span style={{ fontSize:10.5, color:C.body, fontFamily:MONO, flex:1 }}>
-                            K:{h.keybind_status||'—'} T:{h.tls_status||'—'} C:{h.chain_status||'—'} N:{h.nodes_status||'—'}
-                          </span>
-                          <span style={{ fontSize:10.5, color:C.muted, fontFamily:MONO }}>
-                            {new Date(h.checked_at).toLocaleString()}
+                      <div style={{ fontSize:13, color:C.body, lineHeight:1.7 }}>
+                        {STATUS[selCheck.binding_status]?.desc}
+                      </div>
+                      {selCheck.binding_status === 'bound' && (
+                        <div style={{ marginTop:10, display:'flex', alignItems:'center', gap:7,
+                          padding:'8px 12px', background:C.greenBg, border:`1px solid ${C.greenBd}`,
+                          borderRadius:7 }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                            stroke={C.green} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                          <span style={{ fontSize:12, color:C.green, fontWeight:600 }}>
+                            Full cryptographic binding proof verified — this certificate is genuinely deployed.
                           </span>
                         </div>
-                      ))}
+                      )}
+                      {selCheck.details?.note && (
+                        <div style={{ marginTop:10, padding:'8px 12px', background:C.amberBg,
+                          border:`1px solid ${C.amberBd}`, borderRadius:7,
+                          fontSize:12, color:C.amber, lineHeight:1.6 }}>
+                          ⚠ {selCheck.details.note}
+                        </div>
+                      )}
                     </div>
+
+                    {/* 4 layers */}
+                    <div style={{ background:C.bg, border:`1px solid ${C.border}`,
+                      borderRadius:10, overflow:'hidden', marginBottom:12 }}>
+                      <div style={{ padding:'12px 16px', borderBottom:`1px solid ${C.border}`,
+                        display:'flex', alignItems:'center', gap:8 }}>
+                        <div style={{ fontSize:11, fontWeight:700, color:C.heading }}>Verification layers</div>
+                        <div style={{ height:1, flex:1, background:C.border }}/>
+                        <span style={{ fontSize:10, color:C.muted, fontFamily:MONO }}>
+                          {selCheck.check_source === 'agent' ? '● Agent check' : '○ Edge probe'}
+                        </span>
+                      </div>
+                      {LAYERS.map((l, i) => {
+                        const statusKey = l.key === 'keybind' ? selCheck.keybind_status
+                          : l.key === 'tls' ? selCheck.tls_status
+                          : l.key === 'chain' ? selCheck.chain_status
+                          : selCheck.nodes_status
+                        const pass = statusKey === 'pass'
+                        const fail = statusKey === 'fail'
+                        const skip = !statusKey || statusKey === 'skip'
+                        const pend = statusKey === 'pending'
+                        const iconColor = pass?C.green:fail?C.red:C.muted
+
+                        // Detail text per layer
+                        let detail = ''
+                        let extra = null
+                        if (l.key === 'keybind') {
+                          detail = pass ? 'HMAC-SHA256 signature verified. Private key on server is cryptographically paired with issued cert.'
+                            : fail ? 'Signature mismatch — private key on server does NOT match issued certificate.'
+                            : skip ? 'Requires persistent agent installed on server.'
+                            : 'Awaiting agent response…'
+                        }
+                        if (l.key === 'tls') {
+                          detail = selCheck.tls_served_issuer ? `Issuer on wire: ${selCheck.tls_served_issuer}` : l.desc
+                          if (selCheck.tls_expected_fp || selCheck.tls_actual_fp) {
+                            extra = (
+                              <div style={{ marginTop:8, display:'flex', flexDirection:'column', gap:4 }}>
+                                {selCheck.tls_expected_fp && (
+                                  <div style={{ display:'flex', gap:8 }}>
+                                    <span style={{ fontSize:9.5, fontWeight:700, color:C.muted,
+                                      width:58, flexShrink:0, fontFamily:MONO, marginTop:1 }}>EXPECTED</span>
+                                    <code style={{ fontSize:10, color:C.green, fontFamily:MONO,
+                                      wordBreak:'break-all', lineHeight:1.7 }}>{selCheck.tls_expected_fp}</code>
+                                  </div>
+                                )}
+                                {selCheck.tls_actual_fp && (
+                                  <div style={{ display:'flex', gap:8 }}>
+                                    <span style={{ fontSize:9.5, fontWeight:700, color:C.muted,
+                                      width:58, flexShrink:0, fontFamily:MONO, marginTop:1 }}>ACTUAL</span>
+                                    <code style={{ fontSize:10, color:pass?C.green:C.red, fontFamily:MONO,
+                                      wordBreak:'break-all', lineHeight:1.7 }}>{selCheck.tls_actual_fp}</code>
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          }
+                        }
+                        if (l.key === 'chain') {
+                          detail = selCheck.chain_anomaly_detail || (
+                            pass ? 'Full chain verified. No unexpected intermediates detected.' :
+                            skip ? 'Requires persistent agent.' : 'Chain check pending.'
+                          )
+                        }
+                        if (l.key === 'nodes') {
+                          detail = selCheck.nodes_total > 0
+                            ? `${selCheck.nodes_bound}/${selCheck.nodes_total} nodes serving correct certificate`
+                            : skip ? 'Requires persistent agent.' : 'Single server — no load balancer.'
+                        }
+
+                        return (
+                          <div key={l.key} style={{ padding:'14px 16px',
+                            borderBottom:i<3?`1px solid ${C.border}`:'none',
+                            background:fail?`${C.red}04`:pass?`${C.green}02`:C.bg }}>
+                            <div style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
+                              {/* Layer icon */}
+                              <div style={{ width:26, height:26, borderRadius:6, flexShrink:0, marginTop:1,
+                                background:`${l.color}12`, border:`1.5px solid ${iconColor}30`,
+                                display:'flex', alignItems:'center', justifyContent:'center' }}>
+                                {pend ? <Spinner size={12} color={l.color}/> : (
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                    stroke={iconColor} strokeWidth="2.5" strokeLinecap="round">
+                                    {pass ? <path d="M20 6L9 17l-5-5"/> :
+                                     fail ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></> :
+                                     <circle cx="12" cy="12" r="4"/>}
+                                  </svg>
+                                )}
+                              </div>
+                              <div style={{ flex:1, minWidth:0 }}>
+                                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8, marginBottom:4 }}>
+                                  <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+                                    <span style={{ fontSize:9.5, fontWeight:700, color:l.color,
+                                      fontFamily:MONO }}>{l.n}</span>
+                                    <span style={{ fontSize:12.5, fontWeight:600, color:C.heading }}>{l.label}</span>
+                                  </div>
+                                  <LayerBadge status={statusKey}/>
+                                </div>
+                                <div style={{ fontSize:12, color:C.body, lineHeight:1.65 }}>{detail}</div>
+                                {extra}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Check history */}
+                    {history.length > 1 && (
+                      <div style={{ background:C.bg, border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden' }}>
+                        <div style={{ padding:'10px 16px', borderBottom:`1px solid ${C.border}`,
+                          fontSize:11, fontWeight:700, color:C.heading }}>
+                          Check history
+                        </div>
+                        <div style={{ maxHeight:200, overflowY:'auto' }}>
+                          {history.map((h, i) => {
+                            const hs = STATUS[h.binding_status] || STATUS.pending
+                            return (
+                              <div key={h.id} style={{ display:'grid',
+                                gridTemplateColumns:'auto 1fr auto', gap:12, alignItems:'center',
+                                padding:'9px 16px', borderBottom:i<history.length-1?`1px solid ${C.bg3}`:'none',
+                                background:i===0?`${C.bg2}`:C.bg }}>
+                                <Pill status={h.binding_status}/>
+                                <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                                  {[
+                                    ['K', h.keybind_status],
+                                    ['T', h.tls_status],
+                                    ['C', h.chain_status],
+                                    ['N', h.nodes_status],
+                                  ].map(([k, v]) => (
+                                    <span key={k} style={{ fontSize:10, color:v==='pass'?C.green:v==='fail'?C.red:C.muted, fontFamily:MONO }}>
+                                      {k}:{v==='pass'?'✓':v==='fail'?'✗':'—'}
+                                    </span>
+                                  ))}
+                                </div>
+                                <span style={{ fontSize:10.5, color:C.muted, fontFamily:MONO, whiteSpace:'nowrap' }}>
+                                  {new Date(h.checked_at).toLocaleString()}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div style={{ background:C.bg2, border:`1px dashed ${C.border}`, borderRadius:10,
+                    padding:'32px', textAlign:'center' }}>
+                    <div style={{ fontSize:13, color:C.muted, marginBottom:12 }}>No checks run yet</div>
+                    <button onClick={e => triggerScan(selected, e)}
+                      style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F,
+                        fontSize:12, fontWeight:600, color:'white', padding:'7px 18px', borderRadius:100 }}>
+                      Run first check
+                    </button>
                   </div>
                 )}
               </div>
@@ -432,22 +628,28 @@ export default function CertBind({ nav }) {
           </div>
         )}
 
-        {/* What makes this unique */}
-        <div style={{ marginTop:32, background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, padding:'24px' }}>
-          <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.06em', textTransform:'uppercase', fontFamily:MONO, marginBottom:14 }}>Why CertBind is unique</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:16 }}>
-            {[
-              { label:'No other CLM does this', body:'Venafi, Keyfactor, and CertCentral trust their own database. None continuously verify that what they issued is what your server is actually serving — cryptographically, every 5 minutes.' },
-              { label:'Partial deployments caught', body:'The #1 cause of PKI outages. When cert is updated on 3 of 7 load balancer nodes, CertBind flags partial_deploy within 5 minutes. No more silent failures.' },
-              { label:'SSL inspection detection', body:'Enterprise proxy appliances (Palo Alto, Zscaler, Forcepoint) silently replace your cert chain. CertBind detects unexpected intermediates and alerts your security team.' },
-              { label:'PCI-DSS 4.0 & NIST SP 800-57', body:'PCI-DSS 4.0 requires continuous cert monitoring in CDE environments. NIST SP 800-57 requires key-cert binding verification. CertBind is the only tool that does both automatically.' },
-            ].map(item => (
-              <div key={item.label}>
-                <div style={{ fontSize:13, fontWeight:600, color:C.heading, marginBottom:5 }}>{item.label}</div>
-                <div style={{ fontSize:12.5, color:C.body, lineHeight:1.7 }}>{item.body}</div>
-              </div>
-            ))}
+        {/* ── BOTTOM EXPLAINER ── */}
+        <div style={{ marginTop:32, display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',
+          gap:12, padding:'24px', background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12 }}>
+          <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.07em',
+            textTransform:'uppercase', fontFamily:MONO, gridColumn:'1/-1', marginBottom:4 }}>
+            Why CertBind is unique
           </div>
+          {[
+            { title:'No other CLM does this',
+              body:'Venafi, Keyfactor, CertCentral — all trust their own database. None cryptographically verify that what they issued is what your server is actually serving, every 5 minutes.' },
+            { title:'Catches what monitoring misses',
+              body:'A cert can be valid, HTTPS green, CLM showing healthy — and your server still serving a mismatched key or a cert from a previous issuance. CertBind catches it.' },
+            { title:'SSL inspection proxy detection',
+              body:'Palo Alto, Zscaler, Forcepoint silently replace your cert chain. CertBind detects unexpected intermediate CAs and alerts your security team immediately.' },
+            { title:'PCI-DSS 4.0 & NIST SP 800-57',
+              body:'PCI-DSS 4.0 requires continuous cert monitoring in CDE. NIST SP 800-57 requires key-cert binding verification. CertBind is the only CLM tool that does both automatically.' },
+          ].map(item => (
+            <div key={item.title}>
+              <div style={{ fontSize:12.5, fontWeight:600, color:C.heading, marginBottom:5 }}>{item.title}</div>
+              <div style={{ fontSize:12, color:C.body, lineHeight:1.7 }}>{item.body}</div>
+            </div>
+          ))}
         </div>
 
       </div>
