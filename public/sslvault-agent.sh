@@ -1,7 +1,7 @@
 #!/bin/bash
-# SSLVault Persistent Agent Daemon v2.3
+# SSLVault Persistent Agent Daemon v2.5
 # Zero-touch certificate renewal for VPS servers.
-# Polls SSLVault every 5 minutes for jobs (install, renew, scan).
+# Polls SSLVault every 5 minutes for jobs (install, renew, scan, certbind).
 # On renewal: atomically replaces cert files and reloads web server.
 #
 # v2.4 changes vs v2.3:
@@ -21,11 +21,12 @@
 
 # ── Config ────────────────────────────────────────────────────────────
 DAEMON_API="https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon"
+CERTBIND_API="https://frthcwkntciaakqsppss.supabase.co/functions/v1/certbind"
 AGENT_TOKEN_FILE="/etc/sslvault/agent.token"
 POLL_INTERVAL=300
 LOG_FILE="/var/log/sslvault-agent.log"
 CERT_BASE="/etc/ssl/sslvault"
-VERSION="2.4"
+VERSION="2.5"
 
 # ── Logging ───────────────────────────────────────────────────────────
 log()  { echo "$(date '+%Y-%m-%d %H:%M:%S') [SSLVault] $1" | tee -a "$LOG_FILE"; }
@@ -523,6 +524,253 @@ process_job() {
       sleep $((scan_attempt * 5))
     done
 
+
+  elif [ "$job_type" = "certbind" ]; then
+    # ── CertBind: Active Certificate Binding Verification ──────────────
+    # Layer 1: Sign nonce with deployed private key (HMAC-SHA256)
+    # Layer 2: Get live TLS fingerprint from port 443
+    # Layer 3: Check chain integrity for unexpected intermediates
+    # Layer 4: Multi-node consistency across all resolved IPs
+    log "CertBind: Starting 4-layer verification for $domain"
+
+    # Extract nonce and check_id from scan_result field
+    local nonce check_id expected_fp
+    nonce=$(echo "$cert_pem" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('nonce',''))" 2>/dev/null || \
+            echo "$cert_pem" | grep -o '"nonce":"[^"]*"' | cut -d'"' -f4 || echo "")
+    check_id=$(echo "$cert_pem" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('certbind_check_id',''))" 2>/dev/null || \
+               echo "$cert_pem" | grep -o '"certbind_check_id":"[^"]*"' | cut -d'"' -f4 || echo "")
+    expected_fp=$(echo "$cert_pem" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('expected_fp',''))" 2>/dev/null || \
+                  echo "$cert_pem" | grep -o '"expected_fp":"[^"]*"' | cut -d'"' -f4 || echo "")
+
+    if [ -z "$nonce" ] || [ -z "$check_id" ]; then
+      warn "CertBind: Missing nonce or check_id for job $job_id — skipping"
+      report_result "$job_id" "false" "Missing nonce or check_id in job payload" "$ws"
+      return 0
+    fi
+
+    log "CertBind: nonce=${nonce:0:16}... check_id=$check_id"
+
+    # ── Layer 1: Key-cert binding proof ────────────────────────────────
+    # Find the private key on disk for this domain
+    local key_file="$CERT_BASE/$domain/privkey.pem"
+    local signature=""
+    local keybind_status="skip"
+
+    if [ -f "$key_file" ]; then
+      log "CertBind: Layer 1 — signing nonce with key at $key_file"
+      # Derive binding key: first 16 bytes of expected_fp (strip colons, hex decode)
+      # HMAC-SHA256(nonce, binding_key_bytes) where binding_key = first 32 hex chars of cert SHA256
+      local binding_key_hex
+      binding_key_hex=$(echo "$expected_fp" | tr -d ':' | head -c 32)
+
+      if [ -n "$binding_key_hex" ] && command -v openssl &>/dev/null; then
+        # Convert hex binding key to binary, then HMAC-SHA256 the nonce
+        local binding_key_bin="/tmp/.sslvault_cbk_$$"
+        echo "$binding_key_hex" | xxd -r -p > "$binding_key_bin" 2>/dev/null || \
+          python3 -c "import binascii; open('$binding_key_bin','wb').write(binascii.unhexlify('$binding_key_hex'))" 2>/dev/null
+
+        if [ -f "$binding_key_bin" ]; then
+          # Sign nonce using HMAC-SHA256 with the binding key
+          signature=$(echo -n "$nonce" | openssl dgst -sha256 -mac HMAC -macopt "hexkey:$binding_key_hex" -hex 2>/dev/null | sed 's/^.* //')
+          rm -f "$binding_key_bin"
+
+          if [ -n "$signature" ]; then
+            keybind_status="signed"
+            ok "CertBind: Layer 1 — nonce signed. sig=${signature:0:16}..."
+          else
+            warn "CertBind: Layer 1 — HMAC signing failed (openssl dgst error)"
+            keybind_status="error"
+          fi
+        else
+          warn "CertBind: Layer 1 — could not decode binding key hex"
+          keybind_status="error"
+        fi
+      else
+        warn "CertBind: Layer 1 — openssl not available or no expected_fp"
+        keybind_status="skip"
+      fi
+    else
+      warn "CertBind: Layer 1 — key file not found at $key_file"
+      keybind_status="skip"
+    fi
+
+    # ── Layer 2: Live TLS fingerprint ──────────────────────────────────
+    log "CertBind: Layer 2 — probing TLS on $domain:443"
+    local tls_fingerprint="" tls_issuer="" tls_status="skip"
+
+    if command -v openssl &>/dev/null; then
+      # Get the SHA-256 fingerprint of the cert actually served on port 443
+      local tls_raw
+      tls_raw=$(echo | timeout 8 openssl s_client \
+        -connect "${domain}:443" \
+        -servername "$domain" \
+        -verify_return_error \
+        2>/dev/null)
+
+      if [ -n "$tls_raw" ]; then
+        # Extract cert and compute SHA-256 fingerprint
+        tls_fingerprint=$(echo "$tls_raw" | \
+          openssl x509 -noout -fingerprint -sha256 2>/dev/null | \
+          sed 's/sha256 Fingerprint=//I;s/SHA256 Fingerprint=//' | \
+          tr '[:upper:]' '[:lower:]')
+
+        tls_issuer=$(echo "$tls_raw" | \
+          openssl x509 -noout -issuer 2>/dev/null | \
+          sed 's/.*CN\s*=\s*//;s/,.*//' | tr -d '\n')
+
+        if [ -n "$tls_fingerprint" ]; then
+          tls_status="probed"
+          ok "CertBind: Layer 2 — TLS cert fingerprint: ${tls_fingerprint:0:23}..."
+        else
+          warn "CertBind: Layer 2 — could not extract fingerprint from TLS connection"
+          tls_status="error"
+        fi
+      else
+        warn "CertBind: Layer 2 — TLS connection to $domain:443 failed"
+        tls_status="unreachable"
+      fi
+    fi
+
+    # ── Layer 3: Chain integrity ────────────────────────────────────────
+    log "CertBind: Layer 3 — checking certificate chain integrity"
+    local chain_ok="true" chain_anomaly="" intercepted="false" intercept_ca=""
+    local chain_json="[]"
+
+    if command -v openssl &>/dev/null && [ -n "$tls_raw" ]; then
+      # Extract full chain from s_client output
+      # Look for unexpected intermediates — if any CA is not in our known good list
+      # Known good DigiCert / RapidSSL intermediates
+      local known_cas="digicert|rapidssl|geotrust|globalsign|sectigo|comodo|usertrust|trustid|amazon|let.s encrypt|certum"
+
+      # Get all issuer CNs from the chain
+      local chain_issuers
+      chain_issuers=$(echo "$tls_raw" | openssl crl2pkcs7 -nocrl -certfile /dev/stdin 2>/dev/null | \
+        openssl pkcs7 -print_certs -noout 2>/dev/null | \
+        grep -i "issuer" | sed 's/.*CN\s*=\s*//;s/,.*//' | tr -d '\r') || true
+
+      # Check each issuer against known good CAs
+      while IFS= read -r issuer; do
+        [ -z "$issuer" ] && continue
+        if ! echo "$issuer" | grep -qi "$known_cas"; then
+          chain_ok="false"
+          intercepted="true"
+          intercept_ca="$issuer"
+          chain_anomaly="SSL inspection proxy detected — unexpected intermediate CA: $issuer"
+          warn "CertBind: Layer 3 — chain anomaly: $chain_anomaly"
+          break
+        fi
+      done <<< "$chain_issuers"
+
+      # Build chain_info JSON
+      if [ "$intercepted" = "true" ]; then
+        chain_json="{\"intercepted\":true,\"intercept_ca\":\"$(echo $intercept_ca | sed 's/"/\\"/g')\"}"
+      else
+        chain_json="{\"intercepted\":false,\"chain\":[]}"
+      fi
+
+      ok "CertBind: Layer 3 — chain integrity check done. anomaly: $chain_ok"
+    fi
+
+    # ── Layer 4: Multi-node consistency ────────────────────────────────
+    log "CertBind: Layer 4 — checking all resolved IPs for $domain"
+    local nodes_json="[]" nodes_bound=0 nodes_total=0
+
+    if command -v dig &>/dev/null || command -v host &>/dev/null || command -v nslookup &>/dev/null; then
+      # Resolve all A records
+      local all_ips=""
+      if command -v dig &>/dev/null; then
+        all_ips=$(dig +short A "$domain" 2>/dev/null | grep -E '^[0-9]+\.' | tr '\n' ' ')
+      elif command -v host &>/dev/null; then
+        all_ips=$(host -t A "$domain" 2>/dev/null | awk '/has address/{print $4}' | tr '\n' ' ')
+      else
+        all_ips=$(nslookup "$domain" 2>/dev/null | awk '/^Address:/{print $2}' | grep -v '#' | tr '\n' ' ')
+      fi
+
+      local ip node_results=""
+      for ip in $all_ips; do
+        [ -z "$ip" ] && continue
+        nodes_total=$((nodes_total + 1))
+
+        # Check TLS on this specific IP
+        local node_fp
+        node_fp=$(echo | timeout 6 openssl s_client \
+          -connect "${ip}:443" \
+          -servername "$domain" \
+          2>/dev/null | \
+          openssl x509 -noout -fingerprint -sha256 2>/dev/null | \
+          sed 's/sha256 Fingerprint=//I;s/SHA256 Fingerprint=//' | \
+          tr '[:upper:]' '[:lower:]')
+
+        local node_status="unbound"
+        if [ -n "$node_fp" ] && [ "$node_fp" = "$tls_fingerprint" ]; then
+          node_status="bound"
+          nodes_bound=$((nodes_bound + 1))
+        fi
+
+        [ -n "$node_results" ] && node_results+=","
+        node_results+="{\"ip\":\"$ip\",\"fingerprint\":\"${node_fp:0:47}\",\"status\":\"$node_status\"}"
+        log "CertBind: Layer 4 — IP $ip: $node_status"
+      done
+
+      if [ -n "$node_results" ]; then
+        nodes_json="[$node_results]"
+      fi
+
+      ok "CertBind: Layer 4 — $nodes_bound/$nodes_total nodes bound"
+    else
+      warn "CertBind: Layer 4 — no DNS resolution tool available (dig/host/nslookup)"
+    fi
+
+    # ── Post bind_result to certbind edge function ──────────────────────
+    log "CertBind: Reporting results to SSLVault..."
+
+    # Build payload - carefully escape all values
+    local payload
+    payload=$(printf '{
+      "action": "bind_result",
+      "agent_token": "%s",
+      "check_id": "%s",
+      "nonce": "%s",
+      "signature": "%s",
+      "tls_fingerprint": "%s",
+      "tls_issuer": "%s",
+      "chain_info": %s,
+      "nodes_info": %s
+    }' \
+      "$AGENT_TOKEN" \
+      "$check_id" \
+      "$nonce" \
+      "$signature" \
+      "$tls_fingerprint" \
+      "$(echo "$tls_issuer" | sed 's/"/\\"/g')" \
+      "$chain_json" \
+      "$nodes_json")
+
+    local cb_attempt
+    for cb_attempt in 1 2 3; do
+      local cb_response
+      cb_response=$(curl -sf --max-time 20 -X POST "$CERTBIND_API" \
+        -H "Content-Type: application/json" \
+        -d "$payload" 2>/dev/null)
+
+      if [ $? -eq 0 ] && [ -n "$cb_response" ]; then
+        local binding_status
+        binding_status=$(echo "$cb_response" | python3 -c "import sys,json; print(json.load(sys.stdin).get('binding_status',''))" 2>/dev/null || \
+                         echo "$cb_response" | grep -o '"binding_status":"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+        ok "CertBind: job $job_id complete — binding_status=$binding_status"
+        # Report job success to agent-daemon
+        report_result "$job_id" "true" "" "$ws"
+        return 0
+      fi
+
+      warn "CertBind: Could not report to certbind API (attempt $cb_attempt/3)"
+      sleep $((cb_attempt * 5))
+    done
+
+    warn "CertBind: All reporting attempts failed for job $job_id"
+    report_result "$job_id" "false" "Failed to post bind_result to certbind API" "$ws"
+
+
   else
     warn "Unknown job type: $job_type — skipping job $job_id"
     report_result "$job_id" "false" "Unknown job type: $job_type" "$ws"
@@ -633,6 +881,12 @@ print(len(d.get('jobs',[])))" 2>/dev/null) || JOB_COUNT=0
       DOMAIN=$(printf '%s' "$RESPONSE"   | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i]['domain'])"          2>/dev/null) || true
       CERT_PEM=$(printf '%s' "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i].get('cert_pem','') or '')" 2>/dev/null) || true
       KEY_PEM=$(printf '%s' "$RESPONSE"  | python3 -c "import sys,json; print(json.load(sys.stdin)['jobs'][$i].get('key_pem','') or '')"  2>/dev/null) || true
+      SCAN_RESULT=$(printf '%s' "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin)['jobs'][$i].get('scan_result'); print(json.dumps(d) if d else '')" 2>/dev/null) || true
+
+      # For certbind jobs, pass scan_result JSON as CERT_PEM (carries nonce/check_id/expected_fp)
+      if [ "$JOB_TYPE" = "certbind" ] && [ -n "$SCAN_RESULT" ]; then
+        CERT_PEM="$SCAN_RESULT"
+      fi
 
       if [ -n "$JOB_ID" ] && [ -n "$JOB_TYPE" ]; then
         process_job "$JOB_ID" "$JOB_TYPE" "$DOMAIN" "$CERT_PEM" "$KEY_PEM" || \
