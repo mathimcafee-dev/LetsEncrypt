@@ -246,15 +246,16 @@ export default function VaultBrain() {
       {/* Floating button */}
       <button
         onClick={() => setOpen(o => !o)}
+        onTouchEnd={e => { e.preventDefault(); setOpen(o => !o) }}
         title="VaultBrain — SSLVault Expert"
         style={{
-          position:'fixed', bottom:24, right:24, zIndex:1000,
+          position:'fixed', bottom:24, right:24, zIndex:9999,
           width:50, height:50, borderRadius:'50%',
           background: open ? '#1a1a1a' : GREEN,
           border: '1.5px solid ' + (open ? 'rgba(255,255,255,0.1)' : GREEN),
           cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center',
           boxShadow: open ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 20px rgba(16,185,129,0.4)',
-          transition:'all 0.2s ease',
+          transition:'all 0.2s ease', WebkitTapHighlightColor:'transparent',
         }}>
         {open
           ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -265,7 +266,7 @@ export default function VaultBrain() {
       {/* Chat panel */}
       {open && (
         <div style={{
-          position:'fixed', bottom:84, right:24, zIndex:999,
+          position:'fixed', bottom:84, right:24, zIndex:9998,
           width:380, height:560, background:BG,
           border:'1px solid '+GBDR, borderRadius:16,
           display:'flex', flexDirection:'column', overflow:'hidden',
@@ -330,10 +331,10 @@ export default function VaultBrain() {
           {chipsShown && (
             <div style={{ padding:'0 10px 8px', display:'flex', flexWrap:'wrap', gap:5 }}>
               {CHIPS.map(c => (
-                <button key={c} onClick={() => ask(c)}
-                  style={{ fontSize:10.5, padding:'4px 10px', borderRadius:20, cursor:'pointer', background:SURF2, border:'0.5px solid '+BDR, color:MUTED, fontFamily:'inherit', transition:'all 0.12s' }}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor=GBDR;e.currentTarget.style.color=GREEN}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor=BDR;e.currentTarget.style.color=MUTED}}>
+                <button key={c}
+                  onClick={() => ask(c)}
+                  onTouchEnd={e => { e.preventDefault(); ask(c) }}
+                  style={{ fontSize:10.5, padding:'8px 12px', borderRadius:20, cursor:'pointer', background:SURF2, border:'0.5px solid '+BDR, color:MUTED, fontFamily:'inherit', WebkitTapHighlightColor:'transparent' }}>
                   {c}
                 </button>
               ))}
@@ -356,8 +357,9 @@ export default function VaultBrain() {
             />
             <button
               onClick={() => ask(input)}
+              onTouchEnd={e => { e.preventDefault(); ask(input) }}
               disabled={loading || !input.trim()}
-              style={{ width:36, height:36, borderRadius:8, background: loading||!input.trim() ? '#1a1a1a' : GREEN, border:'none', cursor: loading||!input.trim() ? 'not-allowed':'pointer', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'all 0.15s', opacity: loading||!input.trim() ? 0.5 : 1 }}>
+              style={{ width:36, height:36, borderRadius:8, background: loading||!input.trim() ? '#1a1a1a' : GREEN, border:'none', cursor: loading||!input.trim() ? 'not-allowed':'pointer', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'all 0.15s', opacity: loading||!input.trim() ? 0.5 : 1, WebkitTapHighlightColor:'transparent' }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
               </svg>
