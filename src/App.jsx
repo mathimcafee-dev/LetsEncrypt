@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import Nav from './components/Nav'
+import VaultBrain from './components/VaultBrain'
 import Home from './pages/Home'
 import CLMHome from './pages/CLMHome'
 import Dashboard from './pages/Dashboard'
@@ -107,6 +108,7 @@ const _build = 1779297041 // cache bust
       {page === '/ca-connectors' && <CAConnectors nav={nav} />}
       {page === '/scan' && <BulkScanner nav={nav} />}
       {(page === '/status' || page.startsWith('/status/')) && <PublicStatus nav={nav} />}
+      <VaultBrain />
     </div>
   )
 }
