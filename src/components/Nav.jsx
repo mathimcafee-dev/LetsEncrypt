@@ -1,5 +1,6 @@
 import { LogIn, ChevronDown, ArrowRight, BookOpen, Code, FileText, Menu, X, Shield, Activity } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import VaultBrain from './VaultBrain'
 
 function useIsMobile(breakpoint = 760) {
   const [isMobile, setIsMobile] = useState(
@@ -45,6 +46,7 @@ export default function Nav({ nav, page }) {
   ]
 
   return (
+    <>
     <nav style={{position:'sticky',top:0,zIndex:200,background:'#ffffff',borderBottom:'0.5px solid rgba(15,23,42,0.08)',boxShadow:'0 1px 3px rgba(15,23,42,0.04)'}}>
       <div className='container' style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:56,padding: isMobile ? '0 16px' : undefined}}>
         {/* Logo — consistent with landing page */}
@@ -168,5 +170,7 @@ export default function Nav({ nav, page }) {
         </div>
       )}
     </nav>
+    <VaultBrain />
+    </>
   )
 }
