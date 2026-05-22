@@ -11,6 +11,8 @@ import { differenceInDays, format } from 'date-fns'
 import '../styles/design-v2.css'
 import AgentInstall from '../components/AgentInstall'
 import CpanelInstall from '../components/CpanelInstall'
+import FleetWidget from '../components/FleetWidget'
+import VulnScanner from '../components/VulnScanner'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -1556,6 +1558,8 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               </div>
             </div>
           )}
+          {/* SSL Vulnerability Scanner */}
+          <VulnScanner domain={cert.domain} session={session} />
         </div>
       )}
 
@@ -1843,6 +1847,14 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             {shareMsg || 'Share SSL status'}
           </button>
         </div>
+
+        <FleetWidget
+          certs={certs}
+          agents={[]}
+          loading={loading}
+          nav={nav}
+          onRenew={null}
+        />
 
         <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:20 }}>
           {[

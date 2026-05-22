@@ -42,6 +42,7 @@ export default function Nav({ nav, page }) {
     { path:'/install',         label:'Install Guide',   icon:BookOpen },
     { path:'/knowledge-base',  label:'Knowledge Base',  icon:FileText },
     { path:'/cert-intelligence', label:'CA Intelligence',   icon:Activity },
+    { path:'/caa-check',       label:'CAA Checker',     icon:Shield },
   ]
 
   return (
