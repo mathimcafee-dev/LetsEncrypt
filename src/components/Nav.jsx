@@ -33,10 +33,7 @@ export default function Nav({ nav, page }) {
     setMobileOpen(false)
   }
 
-  const primary = [
-    { label:'Features', onClick: goFeatures },
-    { label:'Pricing',  onClick: () => { nav('/pricing'); setMobileOpen(false) },  path:'/pricing' },
-  ]
+  const primary = []
 
   const resources = [
     { path:'/install',         label:'Install Guide',   icon:BookOpen },

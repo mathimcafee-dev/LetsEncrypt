@@ -295,6 +295,7 @@ export default function CATrustExplorer({ nav }) {
   const [syncedAt, setSyncedAt] = useState(null)
   const [totalCount, setTotalCount] = useState(0)
   const [copied, setCopied] = useState(false)
+  const [popularCAs, setPopularCAs] = useState([])
   const searchRef = useRef(null)
 
   // ── Load data ──────────────────────────────────────────────────────
@@ -326,6 +327,14 @@ export default function CATrustExplorer({ nav }) {
       setCerts(data || [])
       setFiltered(data || [])
       if (data?.length) setSelected(data[0])
+
+      // Popular CAs — well-known trusted roots
+      const POPULAR_OWNERS = ['DigiCert', "Let's Encrypt", 'GlobalSign', 'Sectigo', 'Google Trust Services', 'Microsoft', 'Amazon', 'ISRG', 'Comodo', 'Entrust', 'GoDaddy', 'IdenTrust']
+      const popular = (data || []).filter(c =>
+        POPULAR_OWNERS.some(o => (c.ca_owner || '').toLowerCase().includes(o.toLowerCase())) &&
+        c.cert_type === 'Root CA' && c.status === 'Active'
+      ).slice(0, 12)
+      setPopularCAs(popular)
     } catch (e) {
       console.error('CATrustExplorer load:', e)
     } finally {
@@ -610,6 +619,44 @@ export default function CATrustExplorer({ nav }) {
           ))}
         </div>
 
+        {/* Popular CAs strip */}
+        {popularCAs.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 11, letterSpacing: '0.4px', color: 'var(--v2-text-3)', textTransform: 'uppercase', fontWeight: 500, marginBottom: 10 }}>
+              Popular CAs
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {popularCAs.map(c => {
+                const sc = computeScore(c)
+                const isSelected = selected?.id === c.id
+                return (
+                  <button key={c.id} onClick={() => setSelected(c)} style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '7px 12px', borderRadius: 'var(--v2-r-lg)',
+                    border: `0.5px solid ${isSelected ? 'var(--v2-green-border)' : 'var(--v2-border-strong)'}`,
+                    background: isSelected ? 'var(--v2-green-bg)' : 'var(--v2-surface)',
+                    cursor: 'pointer', fontFamily: 'inherit', transition: 'all .12s',
+                    boxShadow: 'var(--v2-shadow-sm)'
+                  }}>
+                    <div style={{
+                      width: 22, height: 22, borderRadius: 5, flexShrink: 0,
+                      background: avatarColor(c.ca_owner || ''),
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 9, fontWeight: 700, color: '#fff'
+                    }}>
+                      {initials(c.ca_owner || c.common_name || '?')}
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: isSelected ? 'var(--v2-green-text)' : 'var(--v2-text)', whiteSpace: 'nowrap' }}>
+                      {c.ca_owner?.replace('Inc.','').replace('nv-sa','').trim() || c.common_name}
+                    </span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: isSelected ? 'var(--v2-green-text)' : scoreColor(sc), fontVariantNumeric: 'tabular-nums' }}>{sc}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Split layout */}
         <div className="split">
 
@@ -683,8 +730,18 @@ export default function CATrustExplorer({ nav }) {
                     <button className="v2-btn v2-btn-sm" onClick={() => copyText(selected.sha256_fingerprint || '')} style={{ gap: 5 }}>
                       <Copy size={12} /> {copied ? 'Copied!' : 'SHA-256'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" style={{ gap: 5 }}>
-                      <FileDown size={12} /> PEM
+                    <button className="v2-btn v2-btn-sm" style={{ gap: 5 }} onClick={() => {
+                        if (!selected?.pem_info) return
+                        const pem = `-----BEGIN CERTIFICATE-----\n${selected.pem_info}\n-----END CERTIFICATE-----`
+                        const blob = new Blob([pem], { type: 'application/x-pem-file' })
+                        const url = URL.createObjectURL(blob)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = `${(selected.common_name || selected.ca_owner || 'certificate').replace(/[^a-z0-9]/gi, '_')}.pem`
+                        a.click()
+                        URL.revokeObjectURL(url)
+                      }}>
+                      <FileDown size={12} /> Download PEM
                     </button>
                     <button className="v2-btn v2-btn-sm" style={{ background: '#0a0a0a', color: '#fff', borderColor: '#0a0a0a', gap: 5 }}>
                       <ShieldCheck size={12} /> Verify chain
