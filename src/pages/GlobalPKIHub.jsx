@@ -54,6 +54,18 @@ const GLOBAL_TIMELINE = [
   { year:2026, org:'cabf', event:'SHA-1 fully prohibited in all certificates and CRLs', desc:'SC097 fully enforced. Every remaining SHA-1 use in certificate chains prohibited. Any Intermediate CA still signing with SHA-1 must be revoked immediately.', type:'enforcement', color:'#f59e0b' },
 ]
 
+// ── Deep dive routes for org cards ──────────────────────────────────
+const ORG_DEEP_DIVE = {
+  'cabf': '/cab-forum',
+  'etsi': '/pki-hub/etsi',
+  'nist': '/pki-hub/nist',
+  'ietf': '/pki-hub/ietf',
+  'apkic': '/pki-hub/apkic',
+  'eidas': '/pki-hub/eidas',
+  'pkic': '/pki-hub/pkic',
+  'csc': '/pki-hub/csc',
+}
+
 // ── Category filter chips ────────────────────────────────────────────
 const ORG_CATEGORIES = ['All','Governance','Standards Body','Government Agency','Regional Consortium','Regulation','Industry Consortium','Industry Alliance','Audit Framework','Infrastructure','Intergovernmental Body']
 
@@ -375,10 +387,16 @@ export default function GlobalPKIHub({ nav }) {
                     {org.key_outputs?.[0] && <><div className="om-k">Latest</div><div className="om-v">{org.key_outputs[0]}</div></>}
                     {org.category && <><div className="om-k">Type</div><div className="om-v">{org.category}</div></>}
                   </div>
-                  <div style={{ display:'flex', justifyContent:'flex-end' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                     <span style={{ fontSize:11, color:'var(--v2-text-3)', display:'flex', alignItems:'center', gap:3 }}>
                       {selectedOrg?.id===org.id ? 'Close' : 'Details'} <ChevronRight size={12}/>
                     </span>
+                    {ORG_DEEP_DIVE[org.id] && (
+                      <button onClick={(e)=>{ e.stopPropagation(); nav(ORG_DEEP_DIVE[org.id]) }}
+                        className="v2-btn v2-btn-sm" style={{ gap:4, fontSize:10 }}>
+                        Deep Dive <ChevronRight size={11}/>
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

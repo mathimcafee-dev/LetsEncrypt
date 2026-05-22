@@ -26,6 +26,13 @@ import CAConnectors from './pages/CAConnectors'
 import CATrustExplorer from './pages/CATrustExplorer'
 import CABForumNewsroom from './pages/CABForumNewsroom'
 import GlobalPKIHub from './pages/GlobalPKIHub'
+import ETSIIntelligence from './pages/ETSIIntelligence'
+import NISTIntelligence from './pages/NISTIntelligence'
+import IETFIntelligence from './pages/IETFIntelligence'
+import APKICIntelligence from './pages/APKICIntelligence'
+import eIDASIntelligence from './pages/eIDASIntelligence'
+import PKIConsortiumIntelligence from './pages/PKIConsortiumIntelligence'
+import CSCIntelligence from './pages/CSCIntelligence'
 import BulkScanner from './pages/BulkScanner'
 import PublicStatus from './pages/PublicStatus'
 import CAAChecker from './pages/CAAChecker'
@@ -116,6 +123,13 @@ const _build = 1779297041 // cache bust
       {page === '/ca-trust-explorer' && <CATrustExplorer nav={nav} />}
       {page === '/cab-forum' && <CABForumNewsroom nav={nav} />}
       {page === '/pki-hub' && <GlobalPKIHub nav={nav} />}
+      {page === '/pki-hub/etsi' && <ETSIIntelligence nav={nav} />}
+      {page === '/pki-hub/nist' && <NISTIntelligence nav={nav} />}
+      {page === '/pki-hub/ietf' && <IETFIntelligence nav={nav} />}
+      {page === '/pki-hub/apkic' && <APKICIntelligence nav={nav} />}
+      {page === '/pki-hub/eidas' && <eIDASIntelligence nav={nav} />}
+      {page === '/pki-hub/pkic' && <PKIConsortiumIntelligence nav={nav} />}
+      {page === '/pki-hub/csc' && <CSCIntelligence nav={nav} />}
       <VaultBrain />
     </div>
   )
