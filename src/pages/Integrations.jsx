@@ -1519,6 +1519,7 @@ export default function Integrations({ nav }) {
     const data = await res.json()
     const list = data.credentials || []
     setCredentials(list)
+    setTestResult({})  // clear stale test results on fresh load
     const status = {}
     for (const c of list) {
       if (c.tested_at) {
@@ -1576,7 +1577,7 @@ export default function Integrations({ nav }) {
     try {
       const res = await fetch(DNS_FN, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'test', user_id: user.id, domain: cred.domain_pattern.replace('*.', '') })
+        body: JSON.stringify({ action: 'test', user_id: user.id, id: cred.id, domain: cred.domain_pattern?.replace('*.', '') || '' })
       })
       const data = await res.json()
       setTestResult(t => ({ ...t, [cred.id]: data }))
