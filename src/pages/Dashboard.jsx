@@ -1299,35 +1299,25 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         />
       )}
 
-      {/* ── Tabs ─── */}
-      <div style={{ display:'flex', padding:'0 16px', borderBottom:'0.5px solid #f1f5f9', gap:0 }}>
-        {['details','actions','files','history','embed'].map(t => (
-          <button key={t} onClick={() => setActiveTab(t)}
-            style={{ fontSize:11, fontWeight:700, padding:'11px 14px',
-              background:'none', border:'none', cursor:'pointer', fontFamily:'inherit',
-              color: activeTab===t ? '#0e7fc0' : '#94a3b8',
-              borderBottom:'2px solid '+(activeTab===t ? '#0e7fc0' : 'transparent'),
-              marginBottom:-1, transition:'all 0.15s', textTransform:'capitalize',
-              letterSpacing:'0.3px' }}>
-            {t}
-          </button>
-        ))}
-      </div>
+      {/* ── Single-page two-column layout — no tabs ─────────────────── */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', borderTop:'0.5px solid rgba(15,23,42,.08)' }}>
 
-      {/* ── Tab: Details ─────────────────────────────────────────────────── */}
-      {activeTab === 'details' && (
-        <div style={{ padding:'14px 18px' }}>
+        {/* ── LEFT COL: Details + Order + Health ─────────────────────────── */}
+        <div style={{ padding:'14px 16px', borderRight:'0.5px solid rgba(15,23,42,.08)' }}>
+
           <FieldGroup title="Certificate">
-            <FieldRow label="Domain"  value={cert.common_name || cert.domain} copyable/>
-            <FieldRow label="Status"  value={statusLabel} accent/>
-            <FieldRow label="Product" value={cert._order?.product_name || cert.cert_type || 'RapidSSL Standard'}/>
-            <FieldRow label="Validity" value={periodLabel}/>
+            <FieldRow label="Domain"     value={cert.common_name || cert.domain} copyable/>
+            <FieldRow label="Status"     value={statusLabel} accent/>
+            <FieldRow label="Product"    value={cert._order?.product_name || cert.cert_type || 'RapidSSL Standard'}/>
+            <FieldRow label="Validity"   value={periodLabel}/>
             <FieldRow label="DCV method" value={(cert.dcv_method || 'dns').toUpperCase()}/>
           </FieldGroup>
+
           <FieldGroup title="Dates">
             <FieldRow label="Issued"  value={fmtDate(cert.issued_at || cert.created_at)}/>
             <FieldRow label="Expires" value={fmtDate(cert.expires_at)}/>
           </FieldGroup>
+
           <FieldGroup title="Order">
             <FieldRow label="API order ID" value={cert.ggs_order_id ? String(cert.ggs_order_id) : null} copyable/>
             {cert._order?.ggs_invoice_id && <FieldRow label="Invoice ID" value={String(cert._order.ggs_invoice_id)}/>}
@@ -1335,42 +1325,220 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             <FieldRow label="Admin email" value={cert._order?.admin_email} copyable/>
             <FieldRow label="Admin phone" value={cert._order?.admin_phone}/>
           </FieldGroup>
-        </div>
-      )}
 
-      {/* ── Tab: Actions ─────────────────────────────────────────────────── */}
-      {activeTab === 'actions' && (
-        <div style={{ padding:'14px 18px' }}>
-          {refreshMsg && (
-            <div style={{ fontSize:12, padding:'8px 10px', borderRadius:6, marginBottom:12,
-              background: refreshMsg.includes('Error') ? '#fef2f2' : '#f0fdf4',
-              color: refreshMsg.includes('Error') ? '#dc2626' : '#16a34a',
-              border:'0.5px solid '+(refreshMsg.includes('Error') ? '#fecaca' : '#bbf7d0') }}>
-              {refreshMsg}
+          <FieldGroup title="Security health">
+            {cert.tls_grade && (
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'5px 0', borderBottom:'0.5px solid var(--v2-border)' }}>
+                <span style={{ fontSize:12, color:'var(--v2-text-2)' }}>TLS grade</span>
+                <span style={{ fontSize:11, fontWeight:600, padding:'1px 8px', borderRadius:4,
+                  color: cert.tls_grade==='A'||cert.tls_grade==='A+'?'#16a34a':cert.tls_grade==='B'?'#65a30d':'#b45309',
+                  background: cert.tls_grade==='A'||cert.tls_grade==='A+'?'#f0fdf4':cert.tls_grade==='B'?'#f7fee7':'#fffbeb' }}>
+                  {cert.tls_grade}
+                </span>
+              </div>
+            )}
+            {cert.pqc_risk && (
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'5px 0', borderBottom:'0.5px solid var(--v2-border)' }}>
+                <span style={{ fontSize:12, color:'var(--v2-text-2)' }}>PQC readiness</span>
+                <span style={{ fontSize:11, fontWeight:600, padding:'1px 8px', borderRadius:4,
+                  color: cert.pqc_risk==='ready'?'#16a34a':cert.pqc_risk==='high'?'#b91c1c':'#b45309',
+                  background: cert.pqc_risk==='ready'?'#f0fdf4':cert.pqc_risk==='high'?'#fef2f2':'#fffbeb' }}>
+                  {cert.pqc_risk==='ready'?'Ready':cert.pqc_risk==='high'?'High risk':'Medium risk'}
+                </span>
+              </div>
+            )}
+            <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
+            <PqcRow cert={cert} onRefresh={onRefresh}/>
+          </FieldGroup>
+
+          {/* Embed section */}
+          <FieldGroup title="Share & embed">
+            <EmbedTab cert={cert}/>
+          </FieldGroup>
+
+        </div>
+
+        {/* ── RIGHT COL: Actions + Files + History ────────────────────────── */}
+        <div style={{ padding:'14px 16px' }}>
+
+          {/* Actions */}
+          <div style={{ marginBottom:16 }}>
+            <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase',
+              letterSpacing:'0.5px', marginBottom:8, paddingBottom:6, borderBottom:'0.5px solid rgba(15,23,42,.08)' }}>
+              Actions
             </div>
-          )}
-          <ActionRow icon={RotateCcw} iconColor="#16a34a" iconBg="#f0fdf4"
-            hoverBorder="#bbf7d0" hoverBg="#f0fdf4"
-            title="Reissue certificate" subtitle="New cert, same order period · auto DNS"
-            onClick={() => certHistoryRef.current?.doAction('reissue')}
-            disabled={!session}/>
-          <ActionRow icon={RefreshCw} iconColor="#2563eb" iconBg="#eff6ff"
-            hoverBorder="#bfdbfe" hoverBg="#eff6ff"
-            title="Renew for another year" subtitle="New GGS order · new cert row"
-            onClick={() => certHistoryRef.current?.doAction('renew')}
-            disabled={!session}/>
-          <ActionRow icon={Server} iconColor="#7c3aed" iconBg="#f5f3ff"
-            hoverBorder="#ddd6fe" hoverBg="#f5f3ff"
-            title="Install on server" subtitle="VPS agent or cPanel wizard"
-            onClick={() => onInstall(cert)}/>
-          <ActionRow icon={RefreshCw} iconColor="#d97706" iconBg="#fffbeb"
-            hoverBorder="#fde68a" hoverBg="#fffbeb"
-            title={refreshing ? 'Syncing...' : 'Sync from RapidSSL'}
-            subtitle={refreshing ? 'Checking status...' : 'Pull latest order status'}
-            onClick={doRefresh} disabled={refreshing}/>
-          <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
-          <PqcRow cert={cert} onRefresh={onRefresh}/>
-          <div style={{ display:'flex', justifyContent:'flex-end', marginTop:4 }}>
+            {refreshMsg && (
+              <div style={{ fontSize:12, padding:'7px 10px', borderRadius:6, marginBottom:8,
+                background: refreshMsg.includes('Error') ? '#fef2f2' : '#f0fdf4',
+                color: refreshMsg.includes('Error') ? '#dc2626' : '#16a34a',
+                border:'0.5px solid '+(refreshMsg.includes('Error') ? '#fecaca' : '#bbf7d0') }}>
+                {refreshMsg}
+              </div>
+            )}
+            <ActionRow icon={RotateCcw} iconColor="#16a34a" iconBg="#f0fdf4"
+              hoverBorder="#bbf7d0" hoverBg="#f0fdf4"
+              title="Reissue certificate" subtitle="New cert, same order period · auto DNS"
+              onClick={() => certHistoryRef.current?.doAction('reissue')}
+              disabled={!session}/>
+            <ActionRow icon={RefreshCw} iconColor="#2563eb" iconBg="#eff6ff"
+              hoverBorder="#bfdbfe" hoverBg="#eff6ff"
+              title="Renew for another year" subtitle="New GGS order · new cert row"
+              onClick={() => certHistoryRef.current?.doAction('renew')}
+              disabled={!session}/>
+            <ActionRow icon={Server} iconColor="#7c3aed" iconBg="#f5f3ff"
+              hoverBorder="#ddd6fe" hoverBg="#f5f3ff"
+              title="Install on server" subtitle="VPS agent or cPanel wizard"
+              onClick={() => onInstall(cert)}/>
+            <ActionRow icon={RefreshCw} iconColor="#d97706" iconBg="#fffbeb"
+              hoverBorder="#fde68a" hoverBg="#fffbeb"
+              title={refreshing ? 'Syncing...' : 'Sync from RapidSSL'}
+              subtitle={refreshing ? 'Checking status...' : 'Pull latest order status'}
+              onClick={doRefresh} disabled={refreshing}/>
+            <VulnScanner domain={cert.domain} session={session}/>
+          </div>
+
+          {/* Files */}
+          <div style={{ marginBottom:16 }}>
+            <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase',
+              letterSpacing:'0.5px', marginBottom:8, paddingBottom:6, borderBottom:'0.5px solid rgba(15,23,42,.08)' }}>
+              Certificate files
+            </div>
+            {cert.cert_pem && (
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+                padding:'10px 12px', borderRadius:8, border:'0.5px solid var(--v2-border)',
+                background:'var(--v2-surface-3)', marginBottom:8 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:9 }}>
+                  <div style={{ width:30, height:30, borderRadius:7, background:'#eff6ff',
+                    display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <FileText size={14} color="#2563eb"/>
+                  </div>
+                  <div>
+                    <div style={{ fontSize:12, fontWeight:500, fontFamily:'monospace', color:'var(--v2-text)' }}>cert.pem</div>
+                    <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>Fullchain · 3 blocks</div>
+                  </div>
+                </div>
+                <div style={{ display:'flex', gap:6 }}>
+                  <CopyBtn text={cert.cert_pem}/>
+                  <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.cert_pem, cert.domain+'-cert.pem')}>
+                    <Download size={10}/> Save
+                  </button>
+                </div>
+              </div>
+            )}
+            {cert.private_key_pem && (
+              <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8,
+                background:'var(--v2-surface-3)', marginBottom:8 }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 12px' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:9 }}>
+                    <div style={{ width:30, height:30, borderRadius:7, background:'#fef2f2',
+                      display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <Lock size={14} color="#dc2626"/>
+                    </div>
+                    <div>
+                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                        <span style={{ fontSize:12, fontWeight:500, fontFamily:'monospace', color:'var(--v2-text)' }}>private key</span>
+                        <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:3,
+                          background:'#fee2e2', color:'#b91c1c', letterSpacing:'0.3px' }}>SENSITIVE</span>
+                      </div>
+                      <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>
+                        {keyCopied && keyTimer > 0
+                          ? <span style={{ color:'#dc2626' }}>Copied — clears in {keyTimer}s</span>
+                          : 'Copy only · never displayed'}
+                      </div>
+                    </div>
+                  </div>
+                  <button className="v2-btn v2-btn-sm" onClick={async () => {
+                    try { await navigator.clipboard.writeText(cert.private_key_pem) } catch(e) {
+                      const ta = document.createElement('textarea'); ta.value = cert.private_key_pem
+                      ta.style.position='fixed'; ta.style.opacity='0'
+                      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta)
+                    }
+                    setKeyCopied(true)
+                    try {
+                      const { data: { session: s } } = await supabase.auth.getSession()
+                      await supabase.from('audit_log').insert({ user_id:cert.user_id, cert_id:cert.id,
+                        action:'private_key_copied', actor_email:s?.user?.email||'', metadata:{domain:cert.domain} })
+                    } catch(e) {}
+                    if (keyTimerRef) { clearInterval(keyTimerRef); setKeyTimerRef(null) }
+                    setKeyTimer(30); let secs=30
+                    const iv = setInterval(() => { secs-=1; setKeyTimer(secs); if(secs<=0){clearInterval(iv);setKeyCopied(false);setKeyTimer(0);setKeyTimerRef(null)} }, 1000)
+                    setKeyTimerRef(iv)
+                  }}>
+                    {keyCopied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy Key</>}
+                  </button>
+                </div>
+              </div>
+            )}
+            {cert.private_key_pem && !keyDeleted && !keyDelConfirm && (
+              <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:8,
+                padding:'10px 12px', marginBottom:8, display:'flex', gap:10, alignItems:'flex-start' }}>
+                <ShieldOff size={13} color="#b45309" style={{ flexShrink:0, marginTop:1 }}/>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:12, fontWeight:500, color:'#92400e', marginBottom:2 }}>Private key stored server-side</div>
+                  <div style={{ fontSize:11, color:'#b45309' }}>Download and delete from SSLVault after installing.</div>
+                </div>
+                <button className="v2-btn v2-btn-sm" onClick={() => setKDC(true)}
+                  style={{ fontSize:10, borderColor:'#fcd34d', color:'#92400e', flexShrink:0 }}>
+                  <Trash2 size={9}/> Delete
+                </button>
+              </div>
+            )}
+            {keyDeleted && (
+              <div style={{ background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
+                borderRadius:8, padding:'10px 12px', marginBottom:8, display:'flex', gap:8, alignItems:'center' }}>
+                <ShieldCheck size={13} color="var(--v2-green)"/>
+                <span style={{ fontSize:12, color:'var(--v2-green-text)', fontWeight:500 }}>Private key deleted from SSLVault servers.</span>
+              </div>
+            )}
+            {keyDelConfirm && (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-amber-border)',
+                borderRadius:8, padding:14, marginBottom:8 }}>
+                <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:10 }}>
+                  <AlertTriangle size={14} color="var(--v2-amber)"/>
+                  <span style={{ fontSize:13, fontWeight:500 }}>Delete private key</span>
+                </div>
+                {[
+                  { key:'downloaded', label:'I have downloaded key.pem to a safe local location' },
+                  { key:'installed',  label:'My server has the certificate installed and working' },
+                  { key:'understand', label:'I understand this is irreversible' },
+                ].map(({ key, label }) => (
+                  <label key={key} style={{ display:'flex', gap:8, alignItems:'flex-start', marginBottom:8,
+                    cursor:'pointer', fontSize:12, color:'var(--v2-text-2)', lineHeight:1.5 }}>
+                    <input type="checkbox" checked={keyChecks[key]}
+                      onChange={e => setKC(p => ({ ...p, [key]: e.target.checked }))}
+                      style={{ marginTop:2, flexShrink:0 }}/>
+                    {label}
+                  </label>
+                ))}
+                <div style={{ display:'flex', gap:8, marginTop:12 }}>
+                  <button className="v2-btn v2-btn-sm" onClick={() => { setKDC(false); setKC({downloaded:false,installed:false,understand:false}) }}>Cancel</button>
+                  <button onClick={doDeleteKey} disabled={!allChecked || keyDeleting}
+                    style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
+                      background: allChecked ? 'var(--v2-red)' : 'var(--v2-surface-3)',
+                      color: allChecked ? 'white' : 'var(--v2-text-3)',
+                      border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 12px',
+                      cursor: allChecked ? 'pointer' : 'not-allowed', fontFamily:'inherit', fontWeight:500 }}>
+                    <Trash2 size={10}/> {keyDeleting ? 'Deleting...' : 'Permanently delete key'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* History */}
+          <div style={{ marginBottom:16 }}>
+            <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase',
+              letterSpacing:'0.5px', marginBottom:8, paddingBottom:6, borderBottom:'0.5px solid rgba(15,23,42,.08)' }}>
+              History
+            </div>
+            {session
+              ? <CertHistory ref={certHistoryRef} cert={cert} session={session}/>
+              : <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>Sign in to view history.</div>
+            }
+          </div>
+
+          {/* Delete */}
+          <div style={{ display:'flex', justifyContent:'flex-end', paddingTop:8, borderTop:'0.5px solid rgba(15,23,42,.06)' }}>
             {!delConfirm
               ? <button onClick={() => setDel(true)}
                   style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'var(--v2-text-3)',
@@ -1386,197 +1554,9 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                 </button>
             }
           </div>
-          {/* SSL Vulnerability Scanner */}
-          <VulnScanner domain={cert.domain} session={session} />
-        </div>
-      )}
 
-      {/* ── Tab: Files ───────────────────────────────────────────────────── */}
-      {activeTab === 'files' && (
-        <div style={{ padding:'14px 18px' }}>
-          {/* cert.pem */}
-          {cert.cert_pem && (
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-              padding:'10px 12px', borderRadius:8, border:'0.5px solid var(--v2-border)',
-              background:'var(--v2-surface-3)', marginBottom:8 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-                <div style={{ width:30, height:30, borderRadius:7, background:'#eff6ff',
-                  display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <FileText size={14} color="#2563eb"/>
-                </div>
-                <div>
-                  <div style={{ fontSize:12, fontWeight:500, fontFamily:'monospace', color:'var(--v2-text)' }}>cert.pem</div>
-                  <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>Fullchain · 3 blocks</div>
-                </div>
-              </div>
-              <div style={{ display:'flex', gap:6 }}>
-                <CopyBtn text={cert.cert_pem}/>
-                <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.cert_pem, cert.domain+'-cert.pem')}>
-                  <Download size={10}/> Save
-                </button>
-              </div>
-            </div>
-          )}
-          {/* private key */}
-          {cert.tls_grade && (
-            <span style={{ fontSize:9, fontWeight:700, color: cert.tls_grade==='A'?'#16a34a':cert.tls_grade==='B'?'#65a30d':cert.tls_grade==='C'?'#d97706':'#dc2626',
-              background: cert.tls_grade==='A'?'#f0fdf4':cert.tls_grade==='B'?'#f7fee7':cert.tls_grade==='C'?'#fffbeb':'#fef2f2',
-              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.8 }}>
-              {cert.tls_grade}
-            </span>
-          )}
-          {cert.pqc_risk && (
-            <span title={cert.key_algorithm || 'PQC check'} style={{ fontSize:9, fontWeight:700,
-              color: cert.pqc_risk==='ready'?'#16a34a':cert.pqc_risk==='low'?'#2563eb':cert.pqc_risk==='medium'?'#d97706':'#dc2626',
-              background: cert.pqc_risk==='ready'?'#f0fdf4':cert.pqc_risk==='low'?'#eff6ff':cert.pqc_risk==='medium'?'#fffbeb':'#fef2f2',
-              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.85 }}>
-              {cert.pqc_risk==='ready'?'PQC✓':cert.pqc_risk==='low'?'PQC~':cert.pqc_risk==='medium'?'PQC!':'PQC✗'}
-            </span>
-          )}
-          {cert.private_key_pem && (
-            <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8,
-              background:'var(--v2-surface-3)', marginBottom:8 }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                padding:'10px 12px' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-                  <div style={{ width:30, height:30, borderRadius:7, background:'#fef2f2',
-                    display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <Lock size={14} color="#dc2626"/>
-                  </div>
-                  <div>
-                    <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                      <span style={{ fontSize:12, fontWeight:500, fontFamily:'monospace', color:'var(--v2-text)' }}>private key</span>
-                      <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:3,
-                        background:'#fee2e2', color:'#b91c1c', letterSpacing:'0.3px' }}>SENSITIVE</span>
-                    </div>
-                    <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>
-                      {keyCopied && keyTimer > 0
-                        ? <span style={{ color:'#dc2626' }}>Copied — clears in {keyTimer}s</span>
-                        : 'Copy only · never displayed'}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ display:'flex', gap:6, alignItems:'center' }}>
-                  {keyCopied && keyTimer > 0 && (
-                    <div style={{ height:3, width:80, background:'#fee2e2', borderRadius:3, overflow:'hidden' }}>
-                      <div style={{ height:'100%', background:'#dc2626', borderRadius:3,
-                        width: `${(keyTimer/30)*100}%`, transition:'width 1s linear' }}/>
-                    </div>
-                  )}
-                  <button className="v2-btn v2-btn-sm" onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(cert.private_key_pem)
-                    } catch(e) {
-                      // fallback for older browsers
-                      const ta = document.createElement('textarea')
-                      ta.value = cert.private_key_pem
-                      ta.style.position = 'fixed'; ta.style.opacity = '0'
-                      document.body.appendChild(ta); ta.select()
-                      document.execCommand('copy'); document.body.removeChild(ta)
-                    }
-                    setKeyCopied(true)
-                    // Audit log
-                    try {
-                      const { data: { session: s } } = await supabase.auth.getSession()
-                      await supabase.from('audit_log').insert({
-                        user_id: cert.user_id, cert_id: cert.id,
-                        action: 'private_key_copied',
-                        actor_email: s?.user?.email || '',
-                        metadata: { domain: cert.domain, ip: 'browser' }
-                      })
-                    } catch(e) { console.error('audit log failed', e) }
-                    // 30s countdown then reset copied state
-                    if (keyTimerRef) { clearInterval(keyTimerRef); setKeyTimerRef(null) }
-                    setKeyTimer(30)
-                    let secs = 30
-                    const iv = setInterval(() => {
-                      secs -= 1
-                      setKeyTimer(secs)
-                      if (secs <= 0) {
-                        clearInterval(iv)
-                        setKeyCopied(false); setKeyTimer(0); setKeyTimerRef(null)
-                      }
-                    }, 1000)
-                    setKeyTimerRef(iv)
-                  }}>
-                    {keyCopied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy Key</>}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-          {/* Key warning / deleted state */}
-          {cert.private_key_pem && !keyDeleted && !keyDelConfirm && (
-            <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:8,
-              padding:'10px 12px', marginBottom:10, display:'flex', gap:10, alignItems:'flex-start' }}>
-              <ShieldOff size={13} color="#b45309" style={{ flexShrink:0, marginTop:1 }}/>
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:12, fontWeight:500, color:'#92400e', marginBottom:2 }}>Private key stored server-side</div>
-                <div style={{ fontSize:11, color:'#b45309' }}>Download and delete from SSLVault after installing.</div>
-              </div>
-              <button className="v2-btn v2-btn-sm" onClick={() => setKDC(true)}
-                style={{ fontSize:10, borderColor:'#fcd34d', color:'#92400e', flexShrink:0 }}>
-                <Trash2 size={9}/> Delete
-              </button>
-            </div>
-          )}
-          {keyDeleted && (
-            <div style={{ background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
-              borderRadius:8, padding:'10px 12px', marginBottom:10, display:'flex', gap:8, alignItems:'center' }}>
-              <ShieldCheck size={13} color="var(--v2-green)"/>
-              <span style={{ fontSize:12, color:'var(--v2-green-text)', fontWeight:500 }}>Private key deleted from SSLVault servers.</span>
-            </div>
-          )}
-          {keyDelConfirm && (
-            <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-amber-border)',
-              borderRadius:8, padding:14, marginBottom:10 }}>
-              <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:10 }}>
-                <AlertTriangle size={14} color="var(--v2-amber)"/>
-                <span style={{ fontSize:13, fontWeight:500 }}>Delete private key</span>
-              </div>
-              {[
-                { key:'downloaded', label:'I have downloaded key.pem to a safe local location' },
-                { key:'installed',  label:'My server has the certificate installed and working' },
-                { key:'understand', label:'I understand this is irreversible' },
-              ].map(({ key, label }) => (
-                <label key={key} style={{ display:'flex', gap:8, alignItems:'flex-start', marginBottom:8,
-                  cursor:'pointer', fontSize:12, color:'var(--v2-text-2)', lineHeight:1.5 }}>
-                  <input type="checkbox" checked={keyChecks[key]}
-                    onChange={e => setKC(p => ({ ...p, [key]: e.target.checked }))}
-                    style={{ marginTop:2, flexShrink:0 }}/>
-                  {label}
-                </label>
-              ))}
-              <div style={{ display:'flex', gap:8, marginTop:12 }}>
-                <button className="v2-btn v2-btn-sm" onClick={() => { setKDC(false); setKC({downloaded:false,installed:false,understand:false}) }}>Cancel</button>
-                <button onClick={doDeleteKey} disabled={!allChecked || keyDeleting}
-                  style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
-                    background: allChecked ? 'var(--v2-red)' : 'var(--v2-surface-3)',
-                    color: allChecked ? 'white' : 'var(--v2-text-3)',
-                    border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 12px',
-                    cursor: allChecked ? 'pointer' : 'not-allowed', fontFamily:'inherit', fontWeight:500 }}>
-                  <Trash2 size={10}/> {keyDeleting ? 'Deleting...' : 'Permanently delete key'}
-                </button>
-              </div>
-            </div>
-          )}
         </div>
-      )}
-
-      {/* ── Tab: History ─────────────────────────────────────────────────── */}
-      {activeTab === 'history' && session && (
-        <div style={{ padding:'14px 18px' }}>
-          <CertHistory ref={certHistoryRef} cert={cert} session={session}/>
-        </div>
-      )}
-      {activeTab === 'history' && !session && (
-        <div style={{ padding:'14px 18px', fontSize:12, color:'var(--v2-text-3)' }}>Sign in to view history.</div>
-      )}
-
-      {/* ── Tab: Embed ─────────────────────────────────────────────────── */}
-      {activeTab === 'embed' && (
-        <EmbedTab cert={cert} />
-      )}
+      </div>
 
       <style>{`
         @keyframes v3pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
