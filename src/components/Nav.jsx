@@ -43,7 +43,6 @@ export default function Nav({ nav, page }) {
     { path:'/knowledge-base',  label:'Knowledge Base',  icon:FileText },
     { path:'/cert-intelligence', label:'CA Intelligence',   icon:Activity },
     { path:'/caa-check',       label:'CAA Checker',     icon:Shield },
-    { path:'/ca-trust-explorer', label:'CA Trust Explorer', icon:Globe },
   ]
 
   return (
