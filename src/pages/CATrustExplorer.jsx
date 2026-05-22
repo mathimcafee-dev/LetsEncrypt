@@ -295,6 +295,7 @@ export default function CATrustExplorer({ nav }) {
   const [syncedAt, setSyncedAt] = useState(null)
   const [totalCount, setTotalCount] = useState(0)
   const [copied, setCopied] = useState(false)
+  const [pemDownloading, setPemDownloading] = useState(false)
   const [popularCAs, setPopularCAs] = useState([])
   const searchRef = useRef(null)
 
@@ -328,18 +329,21 @@ export default function CATrustExplorer({ nav }) {
       setFiltered(data || [])
       if (data?.length) setSelected(data[0])
 
-      // Popular CAs — grouped by OS/platform trust, not score
-      // Priority: certs trusted by all 4 major stores, TLS capable, Root CA
-      const popular = (data || [])
-        .filter(c => c.cert_type === 'Root CA' && c.status === 'Active')
-        .sort((a, b) => {
-          // Score by number of stores trusted
-          const storesA = [a.chrome_trusted, a.mozilla_trusted, a.apple_trusted, a.microsoft_trusted].filter(Boolean).length
-          const storesB = [b.chrome_trusted, b.mozilla_trusted, b.apple_trusted, b.microsoft_trusted].filter(Boolean).length
-          return storesB - storesA
-        })
-        .slice(0, 16)
-      setPopularCAs(popular)
+      // Popular CAs — top operators by root count + all-4-store trust
+      // Group by ca_owner, pick 1 representative root per owner (the most trusted one)
+      const ownerMap = new Map()
+      for (const cert of (data || [])) {
+        if (cert.cert_type !== 'Root CA' || cert.status !== 'Active') continue
+        const owner = cert.ca_owner || ''
+        const stores = [cert.chrome_trusted, cert.mozilla_trusted, cert.apple_trusted, cert.microsoft_trusted].filter(Boolean).length
+        if (!ownerMap.has(owner) || stores > ownerMap.get(owner).stores) {
+          ownerMap.set(owner, { ...cert, stores })
+        }
+      }
+      const popularSorted = Array.from(ownerMap.values())
+        .sort((a, b) => b.stores - a.stores || a.ca_owner.localeCompare(b.ca_owner))
+        .slice(0, 18)
+      setPopularCAs(popularSorted)
     } catch (e) {
       console.error('CATrustExplorer load:', e)
     } finally {
@@ -357,9 +361,11 @@ export default function CATrustExplorer({ nav }) {
       if (q) qb = qb.or(`common_name.ilike.%${q}%,ca_owner.ilike.%${q}%,sha256_fingerprint.ilike.%${q}%`)
       if (tab === 'root') qb = qb.eq('cert_type', 'Root CA')
       else if (tab === 'inter') qb = qb.neq('cert_type', 'Root CA')
+      else if (tab === 'tls') qb = qb.eq('cert_type', 'Root CA').or('chrome_trusted.eq.true,mozilla_trusted.eq.true,apple_trusted.eq.true,microsoft_trusted.eq.true')
+      else if (tab === 'all4') qb = qb.eq('chrome_trusted', true).eq('mozilla_trusted', true).eq('apple_trusted', true).eq('microsoft_trusted', true)
+      else if (tab === 'ev') qb = qb.eq('ev_capable', true).eq('cert_type', 'Root CA')
+      else if (tab === 'expiring') qb = qb.eq('status', 'Expiring')
       else if (tab === 'distrust') qb = qb.eq('status', 'Distrusted')
-      else if (tab === 'expiring') qb = qb.in('status', ['Expiring'])
-      else if (tab === 'ev') qb = qb.eq('ev_capable', true)
       qb = qb.order('ca_owner', { ascending: true })
       const { data } = await qb
       setFiltered(data || [])
@@ -411,12 +417,16 @@ export default function CATrustExplorer({ nav }) {
 
   // ── Stat counts ────────────────────────────────────────────────────
   const counts = {
-    all:      certs.length,
-    root:     certs.filter(c => c.cert_type === 'Root CA').length,
-    inter:    certs.filter(c => c.cert_type !== 'Root CA').length,
-    distrust: certs.filter(c => c.status === 'Distrusted').length,
-    expiring: certs.filter(c => c.status === 'Expiring').length,
-    ev:       certs.filter(c => c.ev_capable).length,
+    all:       certs.length,
+    root:      certs.filter(c => c.cert_type === 'Root CA').length,
+    inter:     certs.filter(c => c.cert_type !== 'Root CA').length,
+    tls:       certs.filter(c => c.cert_type === 'Root CA' && (c.chrome_trusted || c.mozilla_trusted || c.apple_trusted || c.microsoft_trusted)).length,
+    smime:     certs.filter(c => c.cert_type === 'Root CA' && !c.chrome_trusted && !c.mozilla_trusted && c.microsoft_trusted).length,
+    ev:        certs.filter(c => c.ev_capable && c.cert_type === 'Root CA').length,
+    all4:      certs.filter(c => c.chrome_trusted && c.mozilla_trusted && c.apple_trusted && c.microsoft_trusted).length,
+    distrust:  certs.filter(c => c.status === 'Distrusted').length,
+    expiring:  certs.filter(c => c.status === 'Expiring').length,
+    revoked:   certs.filter(c => c.status === 'Revoked').length,
   }
 
   const score = selected ? computeScore(selected) : null
@@ -592,12 +602,12 @@ export default function CATrustExplorer({ nav }) {
         {/* Stat tiles */}
         <div className="stats-grid">
           {[
-            { key: 'all',      val: totalCount || counts.all, label: 'All certificates', color: 'var(--v2-green)' },
-            { key: 'root',     val: counts.root,     label: 'Root CAs',         color: 'var(--v2-green)' },
-            { key: 'inter',    val: counts.inter,    label: 'Intermediates',     color: 'var(--v2-grey-dot)' },
-            { key: 'distrust', val: counts.distrust, label: 'Distrusted',        color: 'var(--v2-red)',    valColor: 'var(--v2-red-text)' },
-            { key: 'expiring', val: counts.expiring, label: 'Expiring ≤ 1yr',   color: 'var(--v2-amber)', valColor: 'var(--v2-amber-text)' },
-            { key: 'ev',       val: counts.ev,       label: 'EV capable',        color: '#7c3aed',         valColor: '#6d28d9' },
+            { key: 'all',      val: totalCount || counts.all, label: 'Total certs',      color: 'var(--v2-green)' },
+            { key: 'root',     val: counts.root,              label: 'Root CAs',          color: 'var(--v2-green)' },
+            { key: 'inter',    val: counts.inter,             label: 'Intermediates',     color: 'var(--v2-grey-dot)' },
+            { key: 'all4',     val: counts.all4,              label: 'All 4 stores',      color: 'var(--v2-green)' },
+            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#7c3aed', valColor: '#6d28d9' },
+            { key: 'distrust', val: counts.distrust,          label: 'Distrusted',        color: 'var(--v2-red)', valColor: 'var(--v2-red-text)' },
           ].map(({ key, val, label, color, valColor }) => (
             <div key={key} className={`stat-tile${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
               <div className="stat-val" style={valColor && activeTab !== key ? { color: valColor } : {}}>{val}</div>
@@ -609,17 +619,20 @@ export default function CATrustExplorer({ nav }) {
           ))}
         </div>
 
-        {/* Tab bar */}
+        {/* Tab bar — by usage/capability */}
         <div className="v2-tablist">
           {[
-            { key: 'all',      label: 'All',           count: totalCount || counts.all },
-            { key: 'root',     label: 'Root CAs',      count: counts.root },
-            { key: 'inter',    label: 'Intermediates', count: counts.inter },
-            { key: 'distrust', label: 'Distrusted',    count: counts.distrust },
-            { key: 'expiring', label: 'Expiring',      count: counts.expiring },
-          ].map(({ key, label, count }) => (
+            { key: 'all',      label: 'All' },
+            { key: 'root',     label: 'Root CAs' },
+            { key: 'inter',    label: 'Intermediates' },
+            { key: 'tls',      label: 'TLS / HTTPS' },
+            { key: 'all4',     label: 'All 4 Stores' },
+            { key: 'ev',       label: 'EV Capable' },
+            { key: 'expiring', label: 'Expiring' },
+            { key: 'distrust', label: 'Distrusted' },
+          ].map(({ key, label }) => (
             <button key={key} className={`v2-tablist-btn${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
-              {label} <span className="v2-tab-count">{count}</span>
+              {label} <span className="v2-tab-count">{counts[key] ?? 0}</span>
             </button>
           ))}
         </div>
@@ -654,12 +667,13 @@ export default function CATrustExplorer({ nav }) {
                     <span style={{ fontSize: 12, fontWeight: 600, color: isSelected ? 'var(--v2-green-text)' : 'var(--v2-text)', whiteSpace: 'nowrap' }}>
                       {c.ca_owner?.replace('Inc.','').replace('nv-sa','').trim() || c.common_name}
                     </span>
-                    <span style={{ fontSize: 9, color: isSelected ? 'var(--v2-green-text)' : 'var(--v2-text-3)', display:'flex', gap:2 }}>
-                      {c.chrome_trusted && <span title="Chrome" style={{width:5,height:5,borderRadius:'50%',background:'#1d4ed8',display:'inline-block'}}/>}
-                      {c.mozilla_trusted && <span title="Mozilla" style={{width:5,height:5,borderRadius:'50%',background:'#ea580c',display:'inline-block'}}/>}
-                      {c.apple_trusted && <span title="Apple" style={{width:5,height:5,borderRadius:'50%',background:'#374151',display:'inline-block'}}/>}
-                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0369a1',display:'inline-block'}}/>}
+                    <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
+                      {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'#1d4ed8',display:'inline-block',flexShrink:0}}/>}
+                      {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#ea580c',display:'inline-block',flexShrink:0}}/>}
+                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#374151',display:'inline-block',flexShrink:0}}/>}
+                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0369a1',display:'inline-block',flexShrink:0}}/>}
                     </span>
+                    {c.ev_capable && <span style={{fontSize:9,color:'#6d28d9',fontWeight:600}}>EV</span>}
                   </button>
                 )
               })}
@@ -740,23 +754,24 @@ export default function CATrustExplorer({ nav }) {
                     <button className="v2-btn v2-btn-sm" onClick={() => copyText(selected.sha256_fingerprint || '')} style={{ gap: 5 }}>
                       <Copy size={12} /> {copied ? 'Copied!' : 'SHA-256'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" style={{ gap: 5 }} onClick={() => {
-                        const fname = (selected?.common_name || selected?.ca_owner || 'certificate').replace(/[^a-z0-9]/gi, '_')
-                        if (selected?.pem_info) {
-                          const pem = `-----BEGIN CERTIFICATE-----\n${selected.pem_info}\n-----END CERTIFICATE-----`
-                          const blob = new Blob([pem], { type: 'application/x-pem-file' })
-                          const url = URL.createObjectURL(blob)
-                          const a = document.createElement('a'); a.href = url; a.download = fname + '.pem'; a.click()
-                          URL.revokeObjectURL(url)
-                        } else if (selected?.sha256_fingerprint) {
-                          // Fallback: open CCADB record page
-                          const fp = selected.sha256_fingerprint
-                          const year = selected.valid_from ? new Date(selected.valid_from).getFullYear() : 2020
-                          const decade = Math.floor(year / 10) * 10
-                          window.open(`https://ccadb.my.salesforce-sites.com/ccadb/AllCertificatePEMsCSVFormat?NotBeforeDecade=${decade}`, '_blank')
-                        }
+                    <button className="v2-btn v2-btn-sm" style={{ gap: 5 }} disabled={pemDownloading} onClick={async () => {
+                        if (!selected?.sha256_fingerprint) return
+                        setPemDownloading(true)
+                        try {
+                          const fname = (selected.common_name || selected.ca_owner || 'certificate').replace(/[^a-z0-9]/gi, '_')
+                          const url = `https://frthcwkntciaakqsppss.supabase.co/functions/v1/ccadb-pem?fp=${selected.sha256_fingerprint}&name=${encodeURIComponent(fname)}`
+                          const res = await fetch(url)
+                          if (!res.ok) { alert('PEM not available in CCADB for this certificate'); return }
+                          const blob = await res.blob()
+                          const objUrl = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = objUrl; a.download = fname + '.pem'
+                          document.body.appendChild(a); a.click()
+                          document.body.removeChild(a); URL.revokeObjectURL(objUrl)
+                        } catch(e) { alert('Download failed: ' + e.message) }
+                        finally { setPemDownloading(false) }
                       }}>
-                      <FileDown size={12} /> Download PEM
+                      <FileDown size={12} /> {pemDownloading ? 'Fetching…' : 'Download PEM'}
                     </button>
                     <button className="v2-btn v2-btn-sm" style={{ background: '#0a0a0a', color: '#fff', borderColor: '#0a0a0a', gap: 5 }}>
                       <ShieldCheck size={12} /> Verify chain
