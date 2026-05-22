@@ -36,6 +36,7 @@ import CSCIntelligence from './pages/CSCIntelligence'
 import BulkScanner from './pages/BulkScanner'
 import PublicStatus from './pages/PublicStatus'
 import CAAChecker from './pages/CAAChecker'
+import TrustPassport from './pages/TrustPassport'
 
 export default function App() {
   const _build_ts = 1779297560 // 
@@ -80,7 +81,7 @@ const _build = 1779297041 // cache bust
   }
 
   // Home page has its own nav built-in — exclude it to avoid duplicate
-  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/developer', '/pricing', '/contact', '/privacy', '/terms', '/certbind']
+  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/developer', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/trust-passport']
   const showPublicNav = !authLoading && !user && !SELF_NAV_PAGES.includes(page)
 
   return (
@@ -120,6 +121,7 @@ const _build = 1779297041 // cache bust
       {page === '/scan' && <BulkScanner nav={nav} />}
       {(page === '/status' || page.startsWith('/status/')) && <PublicStatus nav={nav} />}
       {page === '/caa-check' && <CAAChecker nav={nav} />}
+      {page === '/trust-passport' && <TrustPassport nav={nav} />}
       {page === '/ca-trust-explorer' && <CATrustExplorer nav={nav} />}
       {page === '/cab-forum' && <CABForumNewsroom nav={nav} />}
       {page === '/pki-hub' && <GlobalPKIHub nav={nav} />}

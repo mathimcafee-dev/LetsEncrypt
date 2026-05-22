@@ -359,6 +359,7 @@ export default function Home({ nav }) {
                 { label:'CA Trust Store', path:'/ca-trust-explorer', desc:'6,200+ root & intermediate CAs' },
                 { label:'CAB Forum',       path:'/cab-forum',         desc:'Ballots, timelines & compliance' },
                 { label:'PKI Hub',         path:'/pki-hub',           desc:'Standards bodies & PQC tracker' },
+              { label:'Trust Passport',  path:'/trust-passport',    desc:'Is this site safe? Time-based trust' },
               ].map(item => (
                 <button key={item.path} onClick={() => nav(item.path)}
                   style={{ display:'block', width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', fontFamily:F, padding:'9px 12px', borderRadius:8, transition:'background .12s' }}
@@ -1109,7 +1110,7 @@ export default function Home({ nav }) {
             {[
               { title:'Product',          links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]] },
               { title:'Support Resources', links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CA Intelligence',()=>nav('/ca-intelligence')],['CAA Checker',()=>nav('/caa-check')]] },
-              { title:'Industry Intelligence', links:[['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum',()=>nav('/cab-forum')],['PKI Hub',()=>nav('/pki-hub')]] },
+              { title:'Industry Intelligence', links:[['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum',()=>nav('/cab-forum')],['PKI Hub',()=>nav('/pki-hub')],['Trust Passport',()=>nav('/trust-passport')]] },
               { title:'Security',          links:[['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']] },
               { title:'Protocol',          links:[['RFC 8555 ACME','#security'],['DNS-01 Challenge','#security'],['AES-256-GCM','#security']] },
               { title:'Company',           links:[['About',()=>nav('/about')],['Developer',()=>nav('/developer')]] },
