@@ -1386,6 +1386,8 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                 </button>
             }
           </div>
+          {/* SSL Vulnerability Scanner */}
+          <VulnScanner domain={cert.domain} session={session} />
         </div>
       )}
 
@@ -1558,8 +1560,6 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               </div>
             </div>
           )}
-          {/* SSL Vulnerability Scanner */}
-          <VulnScanner domain={cert.domain} session={session} />
         </div>
       )}
 
