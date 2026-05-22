@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 // ── Constants ─────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const SYNC_FN = `${SUPABASE_URL}/functions/v1/ccadb-sync`
-const PAGE_SIZE = 50
+const PAGE_SIZE = 10000
 
 const STORE_META = {
   Chrome:    { icon: '🌐', color: '#1d4ed8' },
@@ -319,7 +319,7 @@ export default function CATrustExplorer({ nav }) {
       // Load page
       const { data, error } = await supabase
         .from('ca_certificates')
-        .select('*')
+        .select('id,ca_owner,common_name,cert_type,status,key_algorithm,public_key_size,signature_hash_algorithm,valid_from,valid_to,sha256_fingerprint,country,mozilla_trusted,microsoft_trusted,apple_trusted,chrome_trusted,ev_capable,pem_info,ccadb_record_id')
         .order('ca_owner', { ascending: true })
         .limit(PAGE_SIZE)
       if (error) throw error
@@ -339,7 +339,7 @@ export default function CATrustExplorer({ nav }) {
   const applyFilter = useCallback(async (tab, q) => {
     setLoading(true)
     try {
-      let qb = supabase.from('ca_certificates').select('*').limit(PAGE_SIZE)
+      let qb = supabase.from('ca_certificates').select('id,ca_owner,common_name,cert_type,status,key_algorithm,public_key_size,signature_hash_algorithm,valid_from,valid_to,sha256_fingerprint,country,mozilla_trusted,microsoft_trusted,apple_trusted,chrome_trusted,ev_capable,pem_info,ccadb_record_id').limit(PAGE_SIZE)
       if (q) qb = qb.or(`common_name.ilike.%${q}%,ca_owner.ilike.%${q}%,sha256_fingerprint.ilike.%${q}%`)
       if (tab === 'root') qb = qb.eq('cert_type', 'Root CA')
       else if (tab === 'inter') qb = qb.neq('cert_type', 'Root CA')
