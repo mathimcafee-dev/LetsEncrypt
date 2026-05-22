@@ -29,9 +29,8 @@ export function usePlan(user) {
       setPlan(expired ? 'free' : (data.plan || 'free'))
       setProfile(data)
     } else {
-      // TESTING MODE: all authenticated users get Pro until payment gateway is live
-      // TODO: remove this override when payment is wired
-      setPlan('pro')
+      // No profile row = free tier
+      setPlan('free')
       setProfile(null)
     }
     setLoading(false)

@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import '../styles/design-v2.css'
 
-const ISSUE_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/tss-issue'
+const ISSUE_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/gogetssl-issue'
 const DNS_FN   = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider'
 
 const PROVIDERS = {

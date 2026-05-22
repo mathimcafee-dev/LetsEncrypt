@@ -259,8 +259,8 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
             <ActionBtn icon={Download}  label="Download Certificate" onClick={downloadZip}/>
             <ActionBtn icon={RotateCcw} label="Renew Certificate"    onClick={() => { sessionStorage.setItem('prefill_domain',cert.domain); onIssue?.() }} disabled={isRevoked}/>
             <ActionBtn icon={Lock}      label="Install to Server"    onClick={() => onInstall?.(cert)} disabled={isRevoked||!cert.cert_pem}/>
- color="#b91c1c"/>
-            ) : (
+            <ActionBtn icon={Trash2}    label="Delete Certificate"   onClick={() => setDelConfirm(true)} color="#b91c1c"/>
+            {delConfirm ? (
               <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:6, padding:'10px 12px' }}>
                 <div style={{ fontSize:11, fontWeight:600, color:'#991b1b', marginBottom:6 }}>
                   Permanently delete all records for <span style={{ fontFamily:'monospace' }}>{cert.domain}</span>?
@@ -276,7 +276,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                   </button>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
 
           {cert.is_sandbox && (
@@ -392,6 +392,7 @@ export default function CertInventory({ user, nav, onIssue }) {
     // Delete TSS orders linked to this cert
     const cert = certs.find(c => c.id === id)
     if (cert?.domain) {
+      await supabase.from('ssl_orders').delete()
         .eq('user_id', user.id).eq('domain', cert.domain)
     }
     await supabase.from('certificates').delete().eq('id', id)
