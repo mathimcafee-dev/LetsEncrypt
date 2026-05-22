@@ -25,6 +25,7 @@ import CAIntelligenceHub from './pages/CAIntelligenceHub'
 import CAConnectors from './pages/CAConnectors'
 import CATrustExplorer from './pages/CATrustExplorer'
 import CABForumNewsroom from './pages/CABForumNewsroom'
+import GlobalPKIHub from './pages/GlobalPKIHub'
 import BulkScanner from './pages/BulkScanner'
 import PublicStatus from './pages/PublicStatus'
 import CAAChecker from './pages/CAAChecker'
@@ -114,6 +115,7 @@ const _build = 1779297041 // cache bust
       {page === '/caa-check' && <CAAChecker nav={nav} />}
       {page === '/ca-trust-explorer' && <CATrustExplorer nav={nav} />}
       {page === '/cab-forum' && <CABForumNewsroom nav={nav} />}
+      {page === '/pki-hub' && <GlobalPKIHub nav={nav} />}
       <VaultBrain />
     </div>
   )
