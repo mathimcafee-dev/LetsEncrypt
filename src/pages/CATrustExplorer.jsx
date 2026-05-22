@@ -581,7 +581,22 @@ export default function CATrustExplorer({ nav }) {
           {syncMsg && <span style={{ color: 'var(--v2-amber-text)', fontWeight: 500 }}>{syncMsg}</span>}
         </div>
         <div style={{ display: 'flex', gap: 7 }}>
-          <button className="v2-btn v2-btn-sm" style={{ gap: 5 }}>
+          <button className="v2-btn v2-btn-sm" style={{ gap: 5 }}
+            onClick={() => {
+              if (!filtered.length) return
+              const headers = ['Common Name','Owner','Country','Status','Algorithm','Key Size','Valid From','Valid To','Trust Store']
+              const rows = filtered.map(c => [
+                c.common_name || '', c.owner_name || c.ca_owner || '',
+                c.country || '', c.status || '', c.key_algorithm || '',
+                c.key_size_bits || '', c.valid_from || '', c.valid_till || '',
+                c.trust_store || ''
+              ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','))
+              const csv = [headers.join(','), ...rows].join('\n')
+              const a = document.createElement('a')
+              a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv)
+              a.download = 'ca-trust-store.csv'
+              a.click()
+            }}>
             <Download size={13} /> Export CSV
           </button>
           <button className="v2-btn v2-btn-sm" onClick={triggerSync} disabled={syncing} style={{ gap: 5 }}>
@@ -773,7 +788,12 @@ export default function CATrustExplorer({ nav }) {
                       }}>
                       <FileDown size={12} /> {pemDownloading ? 'Fetching…' : 'Download PEM'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" style={{ background: '#0a0a0a', color: '#fff', borderColor: '#0a0a0a', gap: 5 }}>
+                    <button className="v2-btn v2-btn-sm" style={{ background: '#0a0a0a', color: '#fff', borderColor: '#0a0a0a', gap: 5 }}
+                      onClick={() => {
+                        const fp = selected?.sha256_fingerprint || selected?.fingerprint
+                        if (fp) window.open(`https://crt.sh/?q=${encodeURIComponent(fp)}`, '_blank')
+                        else window.open(`https://crt.sh/?q=${encodeURIComponent(selected?.common_name || '')}`, '_blank')
+                      }}>
                       <ShieldCheck size={12} /> Verify chain
                     </button>
                   </div>

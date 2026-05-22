@@ -135,9 +135,10 @@ function InstallModal({ onClose }) {
 }
 
 // ── Server card ───────────────────────────────────────────────────────
-function ServerCard({ agent, certs, onRefresh }) {
+function ServerCard({ agent, certs, onRefresh, onRemove }) {
   const [open, setOpen]     = useState(false)
   const [jobs, setJobs]     = useState([])
+  const [removing, setRemoving] = useState(false)
   const [loadingJobs, setLoadingJobs] = useState(false)
   const [copied, setCopied] = useState(false)
   const [tab, setTab]       = useState('certs') // certs | jobs | info
@@ -409,8 +410,16 @@ function ServerCard({ agent, certs, onRefresh }) {
             <div style={{ flex:1 }}/>
             <button className="v2-btn v2-btn-sm"
               style={{ display:'flex', alignItems:'center', gap:5,
-                borderColor:'#fecaca', color:'#dc2626' }}>
-              <Trash2 size={11}/> Remove
+                borderColor:'#fecaca', color:'#dc2626' }}
+              disabled={removing}
+              onClick={async () => {
+                if (!window.confirm(`Remove "${agent.nickname || agent.hostname}" from SSLVault? This stops auto-renewal for this server.`)) return
+                setRemoving(true)
+                await supabase.from('agent_jobs').delete().eq('agent_id', agent.id)
+                await supabase.from('persistent_agents').delete().eq('id', agent.id)
+                onRemove?.(agent.id)
+              }}>
+              <Trash2 size={11}/> {removing ? 'Removing…' : 'Remove'}
             </button>
           </div>
         </div>
@@ -533,7 +542,8 @@ export default function Infrastructure({ user }) {
         ) : (
           <>
             {agents.map(agent => (
-              <ServerCard key={agent.id} agent={agent} certs={certs} onRefresh={load}/>
+              <ServerCard key={agent.id} agent={agent} certs={certs} onRefresh={load}
+                onRemove={id => setAgents(prev => prev.filter(a => a.id !== id))}/>
             ))}
 
             {/* "Add another server" nudge */}
