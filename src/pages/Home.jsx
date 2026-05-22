@@ -285,7 +285,7 @@ function ReadinessMockup() {
 }
 
 // ── Ticker items ──────────────────────────────────────────────────────
-const TICKER = ['RFC 8555 · ACME v2','GoGetSSL · CA Integration','AES-256-GCM','TLS 1.3','DNS-01 Challenge','CT Log Monitor','CAA Records','HSTS Verified','SHA-256','CA/B Forum 2026','Zero-touch Renewal','CertVault','47-Day Ready','ML-KEM · PQC Ready','6,200+ Root CAs','CCADB Indexed','PKI Hub Live','eIDAS 2.0 Tracked','NIST FIPS 203/204/205']
+const TICKER = ['RFC 8555 · ACME v2','RapidSSL Partner','AES-256-GCM','TLS 1.3','DNS-01 Challenge','CT Log Monitor','CAA Records','HSTS Verified','SHA-256','CA/B Forum 2026','Zero-touch Renewal','CertVault','47-Day Ready','ML-KEM · PQC Ready','6,200+ Root CAs','CCADB Indexed','PKI Hub Live','eIDAS 2.0 Tracked','NIST FIPS 203/204/205']
 
 // ── Main ──────────────────────────────────────────────────────────────
 export default function Home({ nav }) {
@@ -442,7 +442,7 @@ export default function Home({ nav }) {
                   { text:'↳ DNS provider: Cloudflare', c:'rgba(255,255,255,0.32)', indent:true },
                   { text:'↳ Adding TXT _acme-challenge...', c:'rgba(255,255,255,0.28)', indent:true },
                   { prompt:'›', text:'[21:05:15] DNS propagated · DCV validated ✓', c:'rgba(16,185,129,0.85)' },
-                  { prompt:'›', text:'[21:05:16] Cert issued · GoGetSSL · DV SSL Certificate', c:'rgba(16,185,129,0.85)' },
+                  { prompt:'›', text:'[21:05:16] Cert issued · RapidSSL TLS RSA CA 2022', c:'rgba(16,185,129,0.85)' },
                   { text:'↳ CN=easysecurity.in  valid 180d  grade A+', c:'rgba(255,255,255,0.28)', indent:true },
                   { prompt:'›', text:'[21:05:17] nginx -t OK · systemctl reload nginx ✓', c:'rgba(16,185,129,0.85)' },
                   { prompt:'›', text:'[21:05:18] CertVault: AES-256-GCM encrypted ✓', c:'rgba(139,92,246,0.85)' },
@@ -489,7 +489,7 @@ export default function Home({ nav }) {
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {[
-                  { n:'01', t:'Issue',    d:'Submit via GoGetSSL. DNS-01 auto-validated via your provider API. DV issued in minutes.',         color:W.teal   },
+                  { n:'01', t:'Issue',    d:'Submit to RapidSSL via ACME v2. DNS-01 auto-validated via your provider API.',         color:W.teal   },
                   { n:'02', t:'Install',  d:'Agent deploys to Nginx/Apache. cPanel UAPI install. Zero SSH after setup.',             color:W.green  },
                   { n:'03', t:'Monitor',  d:'Expiry tracking, health scoring A–F, CT log abuse detection, CA/B Forum compliance.',  color:W.purple },
                   { n:'04', t:'Renew',    d:'Auto-renews 30 days before expiry. New cert deployed before old one expires.',         color:W.amber  },
@@ -531,7 +531,7 @@ export default function Home({ nav }) {
             {[
               {
                 icon:'⚡', color:W.teal, title:'Certificate issuance',
-                specs:['DV, OV, EV, Wildcard, SAN','GoGetSSL · DV / OV / EV / Wildcard','ACME v2 · RFC 8555','Issued in < 5 minutes'],
+                specs:['DV, OV, EV, Wildcard, SAN','RapidSSL · DigiCert trust chain','ACME v2 · RFC 8555','Issued in < 5 minutes'],
                 badge:'ACME v2',
               },
               {
@@ -1091,7 +1091,7 @@ export default function Home({ nav }) {
               <Btn label="View pricing" onClick={() => nav('/pricing')}/>
             </div>
             <div style={{ display:'flex', gap:20, justifyContent:'center', flexWrap:'wrap' }}>
-              {['GoGetSSL · DV / OV / EV / Wildcard','RFC 8555 · AES-256-GCM','CA/B Forum 2026 ready'].map(t => (
+              {['RapidSSL · DigiCert trust chain','RFC 8555 · AES-256-GCM','CA/B Forum 2026 ready'].map(t => (
                 <span key={t} style={{ fontSize:12, color:W.muted, display:'flex', alignItems:'center', gap:6 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={W.green} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                   {t}
