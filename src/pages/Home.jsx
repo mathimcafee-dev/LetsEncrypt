@@ -285,7 +285,7 @@ function ReadinessMockup() {
 }
 
 // ── Ticker items ──────────────────────────────────────────────────────
-const TICKER = ['RFC 8555 · ACME v2','DigiCert Trust Chain','RapidSSL Partner','AES-256-GCM','TLS 1.3','DNS-01 Challenge','CT Log Monitor','CAA Records','HSTS Verified','SHA-256','CA/B Forum 2026','Zero-touch Renewal','CertVault','47-Day Ready']
+const TICKER = ['RFC 8555 · ACME v2','GoGetSSL · CA Integration','AES-256-GCM','TLS 1.3','DNS-01 Challenge','CT Log Monitor','CAA Records','HSTS Verified','SHA-256','CA/B Forum 2026','Zero-touch Renewal','CertVault','47-Day Ready','ML-KEM · PQC Ready','6,200+ Root CAs','CCADB Indexed','PKI Hub Live','eIDAS 2.0 Tracked','NIST FIPS 203/204/205']
 
 // ── Main ──────────────────────────────────────────────────────────────
 export default function Home({ nav }) {
@@ -400,7 +400,7 @@ export default function Home({ nav }) {
             <div>
               <div style={{ display:'inline-flex', alignItems:'center', gap:7, border:'1px solid rgba(255,255,255,0.1)', borderRadius:100, padding:'5px 14px', marginBottom:32, background:'rgba(255,255,255,0.03)', backdropFilter:'blur(8px)' }}>
                 <span style={{ width:6, height:6, borderRadius:'50%', background:D.green, boxShadow:`0 0 6px ${D.green}`, animation:'blink 2.4s ease infinite' }}/>
-                <span style={{ fontSize:11.5, fontWeight:500, color:'rgba(255,255,255,0.55)', fontFamily:MONO }}>RFC 8555 · CA/B Forum Compliant · AES-256-GCM</span>
+                <span style={{ fontSize:11.5, fontWeight:500, color:'rgba(255,255,255,0.55)', fontFamily:MONO }}>RFC 8555 · CA/B Forum Compliant · PQC Intelligence</span>
               </div>
 
               <h1 style={{ fontSize:`clamp(36px,5.5vw,68px)`, fontWeight:700, letterSpacing:'-1.5px', lineHeight:1.08, color:'rgba(255,255,255,0.96)', marginBottom:22 }}>
@@ -410,7 +410,7 @@ export default function Home({ nav }) {
               </h1>
 
               <p style={{ fontSize:16.5, color:'rgba(255,255,255,0.42)', lineHeight:1.82, marginBottom:36, maxWidth:420, fontWeight:400 }}>
-                Issue, validate, deploy and auto-renew SSL/TLS certificates — with a persistent agent, DNS automation, AES-256 key vault, and CA/B Forum 2026 compliance built in.
+                Issue, validate, deploy and auto-renew SSL/TLS certificates — with a persistent agent, DNS automation, AES-256 key vault, CA/B Forum compliance, and the industry's deepest PKI intelligence built in.
               </p>
 
               <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:44 }}>
@@ -422,7 +422,7 @@ export default function Home({ nav }) {
                 {[
                   { val: certCount ? `${count.toLocaleString()}+` : '—', label:'Certs managed' },
                   { val:'99.9%', label:'Renewal success' },
-                  { val:'< 5 min', label:'DV issuance' },
+                  { val:'12', label:'PKI bodies tracked' },
                 ].map((m, i) => (
                   <div key={m.label} style={{ flex:1, paddingLeft:i>0?24:0, borderLeft:i>0?'1px solid rgba(255,255,255,0.07)':'none', marginLeft:i>0?24:0 }}>
                     <div style={{ fontSize:20, fontWeight:600, color:'rgba(255,255,255,0.88)', fontFamily:MONO, letterSpacing:'-0.5px', marginBottom:3 }}>{m.val}</div>
@@ -442,7 +442,7 @@ export default function Home({ nav }) {
                   { text:'↳ DNS provider: Cloudflare', c:'rgba(255,255,255,0.32)', indent:true },
                   { text:'↳ Adding TXT _acme-challenge...', c:'rgba(255,255,255,0.28)', indent:true },
                   { prompt:'›', text:'[21:05:15] DNS propagated · DCV validated ✓', c:'rgba(16,185,129,0.85)' },
-                  { prompt:'›', text:'[21:05:16] Cert issued · RapidSSL TLS RSA CA 2022', c:'rgba(16,185,129,0.85)' },
+                  { prompt:'›', text:'[21:05:16] Cert issued · GoGetSSL · DV SSL Certificate', c:'rgba(16,185,129,0.85)' },
                   { text:'↳ CN=easysecurity.in  valid 180d  grade A+', c:'rgba(255,255,255,0.28)', indent:true },
                   { prompt:'›', text:'[21:05:17] nginx -t OK · systemctl reload nginx ✓', c:'rgba(16,185,129,0.85)' },
                   { prompt:'›', text:'[21:05:18] CertVault: AES-256-GCM encrypted ✓', c:'rgba(139,92,246,0.85)' },
@@ -489,7 +489,7 @@ export default function Home({ nav }) {
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {[
-                  { n:'01', t:'Issue',    d:'Submit to RapidSSL via ACME v2. DNS-01 auto-validated via your provider API.',         color:W.teal   },
+                  { n:'01', t:'Issue',    d:'Submit via GoGetSSL. DNS-01 auto-validated via your provider API. DV issued in minutes.',         color:W.teal   },
                   { n:'02', t:'Install',  d:'Agent deploys to Nginx/Apache. cPanel UAPI install. Zero SSH after setup.',             color:W.green  },
                   { n:'03', t:'Monitor',  d:'Expiry tracking, health scoring A–F, CT log abuse detection, CA/B Forum compliance.',  color:W.purple },
                   { n:'04', t:'Renew',    d:'Auto-renews 30 days before expiry. New cert deployed before old one expires.',         color:W.amber  },
@@ -531,7 +531,7 @@ export default function Home({ nav }) {
             {[
               {
                 icon:'⚡', color:W.teal, title:'Certificate issuance',
-                specs:['DV, OV, EV, Wildcard, SAN','RapidSSL · DigiCert trust chain','ACME v2 · RFC 8555','Issued in < 5 minutes'],
+                specs:['DV, OV, EV, Wildcard, SAN','GoGetSSL · DV / OV / EV / Wildcard','ACME v2 · RFC 8555','Issued in < 5 minutes'],
                 badge:'ACME v2',
               },
               {
@@ -568,6 +568,16 @@ export default function Home({ nav }) {
                 icon:'📈', color:'#0891b2', title:'CA intelligence',
                 specs:['DigiCert CertCentral sync','Sectigo SCM portfolio sync','Shadow IT detection','Policy engine · fleet compliance'],
                 badge:'Multi-CA',
+              },
+              {
+                icon:'🏛', color:'#6366f1', title:'Industry Intelligence',
+                specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker (ML-KEM, ML-DSA)'],
+                badge:'PKI Hub',
+              },
+              {
+                icon:'🔬', color:'#8b5cf6', title:'CA Trust Store',
+                specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm · region','CSV export · PEM download'],
+                badge:'CCADB',
               },
             ].map(f => (
               <FadeUp key={f.title}>
@@ -796,6 +806,102 @@ export default function Home({ nav }) {
       </section>
 
 
+
+      {/* ── INDUSTRY INTELLIGENCE ── */}
+      <section style={{ background:'#080c14', padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <FadeUp>
+            <div style={{ textAlign:'center', marginBottom:52 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:D.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:14 }}>Industry Intelligence</div>
+              <h2 style={{ fontSize:`clamp(26px,3.5vw,40px)`, fontWeight:700, letterSpacing:'-0.8px', lineHeight:1.15, color:'rgba(255,255,255,0.93)', marginBottom:14, maxWidth:620, margin:'0 auto 14px' }}>
+                The deepest PKI intelligence platform on the web.
+              </h2>
+              <p style={{ fontSize:15, color:'rgba(255,255,255,0.38)', lineHeight:1.7, maxWidth:520, margin:'0 auto' }}>
+                Not just a certificate manager — a living knowledge base covering every CA, standard, governance body, and cryptographic transition shaping the industry.
+              </p>
+            </div>
+          </FadeUp>
+
+          <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:16, marginBottom:20 }}>
+            {[
+              {
+                icon:'🏛', color:'#60a5fa', title:'CA Trust Store',
+                sub:'6,200+ root & intermediate CAs',
+                desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert. PEM download.',
+                badge:'CCADB Live',
+                path:'/ca-trust-explorer',
+                stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']],
+              },
+              {
+                icon:'⚖️', color:'#f59e0b', title:'CAB Forum Intelligence',
+                sub:'Ballots, timelines & compliance',
+                desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',
+                badge:'Live sync',
+                path:'/cab-forum',
+                stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']],
+              },
+              {
+                icon:'🌍', color:'#10b981', title:'Global PKI Hub',
+                sub:'12 bodies · 22 standards · PQC tracker',
+                desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',
+                badge:'PQC Ready',
+                path:'/pki-hub',
+                stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']],
+              },
+            ].map(item => (
+              <FadeUp key={item.title}>
+                <div onClick={() => nav(item.path)} style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:'24px', cursor:'pointer', transition:'border-color .15s, background .15s', height:'100%', display:'flex', flexDirection:'column', gap:16 }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.16)'; e.currentTarget.style.background='rgba(255,255,255,0.05)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.background='rgba(255,255,255,0.03)' }}>
+                  <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
+                    <div style={{ fontSize:28 }}>{item.icon}</div>
+                    <span style={{ fontSize:9, fontWeight:700, color:item.color, background:item.color+'18', border:`1px solid ${item.color}30`, borderRadius:20, padding:'3px 9px', fontFamily:MONO, letterSpacing:'0.04em' }}>{item.badge}</span>
+                  </div>
+                  <div>
+                    <div style={{ fontSize:15, fontWeight:700, color:'rgba(255,255,255,0.88)', marginBottom:4 }}>{item.title}</div>
+                    <div style={{ fontSize:11, color:item.color, fontWeight:600, fontFamily:MONO, marginBottom:10 }}>{item.sub}</div>
+                    <div style={{ fontSize:12.5, color:'rgba(255,255,255,0.38)', lineHeight:1.7 }}>{item.desc}</div>
+                  </div>
+                  <div style={{ display:'flex', gap:0, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:14, marginTop:'auto' }}>
+                    {item.stats.map(([val, label], i) => (
+                      <div key={label} style={{ flex:1, paddingLeft:i>0?12:0, borderLeft:i>0?'1px solid rgba(255,255,255,0.06)':'none', marginLeft:i>0?12:0 }}>
+                        <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.75)', fontFamily:MONO, marginBottom:2 }}>{val}</div>
+                        <div style={{ fontSize:10, color:'rgba(255,255,255,0.28)' }}>{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap:5, fontSize:12, fontWeight:600, color:item.color }}>
+                    Explore <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </div>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+
+          {/* PQC callout */}
+          <FadeUp>
+            <div style={{ background:'rgba(16,185,129,0.06)', border:'1px solid rgba(16,185,129,0.15)', borderRadius:14, padding:'20px 24px', display:'flex', gap:20, alignItems:'flex-start', flexWrap:'wrap' }}>
+              <div style={{ fontSize:28, flexShrink:0 }}>⚛️</div>
+              <div style={{ flex:1, minWidth:260 }}>
+                <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.85)', marginBottom:5 }}>Post-Quantum Cryptography migration tracker — live</div>
+                <div style={{ fontSize:12, color:'rgba(255,255,255,0.38)', lineHeight:1.7 }}>NIST finalised ML-KEM (FIPS 203), ML-DSA (FIPS 204), and SLH-DSA (FIPS 205) in August 2024. The PKI Hub tracks every body's PQC readiness — from IETF LAMPS WG certificate profiles to ETSI EN 319 updates — so you know exactly where the industry stands.</div>
+              </div>
+              <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', flexShrink:0 }}>
+                {[['ML-KEM','FIPS 203'],['ML-DSA','FIPS 204'],['SLH-DSA','FIPS 205']].map(([alg, fips]) => (
+                  <div key={alg} style={{ background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.2)', borderRadius:8, padding:'7px 12px', textAlign:'center' }}>
+                    <div style={{ fontSize:12, fontWeight:700, color:'#10b981', fontFamily:MONO }}>{alg}</div>
+                    <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', marginTop:2 }}>{fips}</div>
+                  </div>
+                ))}
+                <button onClick={() => nav('/pki-hub')} style={{ background:'#10b981', border:'none', borderRadius:8, padding:'9px 16px', fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer', fontFamily:F, whiteSpace:'nowrap' }}>
+                  View PQC tracker →
+                </button>
+              </div>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+
       {/* ── CERTBIND — KILLER FEATURE ── */}
       <section style={{ background:'#080c14', padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid rgba(255,255,255,0.06)', position:'relative', overflow:'hidden' }}>
         {/* Ambient glow */}
@@ -985,7 +1091,7 @@ export default function Home({ nav }) {
               <Btn label="View pricing" onClick={() => nav('/pricing')}/>
             </div>
             <div style={{ display:'flex', gap:20, justifyContent:'center', flexWrap:'wrap' }}>
-              {['RapidSSL · DigiCert trust chain','RFC 8555 · AES-256-GCM','CA/B Forum 2026 ready'].map(t => (
+              {['GoGetSSL · DV / OV / EV / Wildcard','RFC 8555 · AES-256-GCM','CA/B Forum 2026 ready'].map(t => (
                 <span key={t} style={{ fontSize:12, color:W.muted, display:'flex', alignItems:'center', gap:6 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={W.green} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                   {t}
