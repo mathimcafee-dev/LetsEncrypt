@@ -336,7 +336,7 @@ export default function Home({ nav }) {
 
         {/* Owlish pill */}
         <nav className="nav-links" style={{ position:'absolute', left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:100, padding:'4px 6px' }}>
-          {[['Platform','#platform'],['Features','#features'],['Security','#security'],['CA Trust Store','/ca-trust-explorer'],['CAB Forum','/cab-forum'],['PKI Hub','/pki-hub'],['Pricing','/pricing']].map(([l,h]) => (
+          {[['Platform','#platform'],['Features','#features'],['Security','#security'],['Pricing','/pricing']].map(([l,h]) => (
             <button key={l} onClick={() => h.startsWith('/') ? nav(h) : document.querySelector(h)?.scrollIntoView({ behavior:'smooth' })}
               style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:400, color:'rgba(255,255,255,0.52)', padding:'5px 16px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em' }}
               onMouseEnter={e => { e.currentTarget.style.color='rgba(255,255,255,0.92)'; e.currentTarget.style.background='rgba(255,255,255,0.09)' }}
@@ -344,6 +344,32 @@ export default function Home({ nav }) {
               {l}
             </button>
           ))}
+          {/* Industry Intelligence dropdown */}
+          <div style={{ position:'relative' }}
+            onMouseEnter={e => { const d = e.currentTarget.querySelector('.intel-drop'); if(d) d.style.display='block' }}
+            onMouseLeave={e => { const d = e.currentTarget.querySelector('.intel-drop'); if(d) d.style.display='none' }}>
+            <button style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:400, color:'rgba(255,255,255,0.52)', padding:'5px 16px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em', display:'flex', alignItems:'center', gap:4 }}
+              onMouseEnter={e => { e.currentTarget.style.color='rgba(255,255,255,0.92)'; e.currentTarget.style.background='rgba(255,255,255,0.09)' }}
+              onMouseLeave={e => { e.currentTarget.style.color='rgba(255,255,255,0.52)'; e.currentTarget.style.background='none' }}>
+              Industry Intelligence
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div className="intel-drop" style={{ display:'none', position:'absolute', top:'calc(100% + 6px)', left:'50%', transform:'translateX(-50%)', background:'rgba(15,15,20,0.96)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:12, padding:'6px', minWidth:210, backdropFilter:'blur(16px)', zIndex:300, boxShadow:'0 16px 40px rgba(0,0,0,0.4)' }}>
+              {[
+                { label:'CA Trust Store', path:'/ca-trust-explorer', desc:'6,200+ root & intermediate CAs' },
+                { label:'CAB Forum',       path:'/cab-forum',         desc:'Ballots, timelines & compliance' },
+                { label:'PKI Hub',         path:'/pki-hub',           desc:'Standards bodies & PQC tracker' },
+              ].map(item => (
+                <button key={item.path} onClick={() => nav(item.path)}
+                  style={{ display:'block', width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer', fontFamily:F, padding:'9px 12px', borderRadius:8, transition:'background .12s' }}
+                  onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.07)'}
+                  onMouseLeave={e => e.currentTarget.style.background='none'}>
+                  <div style={{ fontSize:13, fontWeight:500, color:'rgba(255,255,255,0.88)', marginBottom:2 }}>{item.label}</div>
+                  <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)' }}>{item.desc}</div>
+                </button>
+              ))}
+            </div>
+          </div>
         </nav>
 
         <div style={{ display:'flex', gap:4, alignItems:'center', flexShrink:0 }}>
@@ -976,9 +1002,10 @@ export default function Home({ nav }) {
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4,1fr)', gap:32, marginBottom:48 }}>
             {[
               { title:'Product',          links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]] },
-              { title:'Support Resources', links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum Intelligence',()=>nav('/cab-forum')],['Global PKI Hub',()=>nav('/pki-hub')],['CA Intelligence',()=>nav('/ca-intelligence')],['CAA Checker',()=>nav('/caa-check')]] },
+              { title:'Support Resources', links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CA Intelligence',()=>nav('/ca-intelligence')],['CAA Checker',()=>nav('/caa-check')]] },
+              { title:'Industry Intelligence', links:[['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum',()=>nav('/cab-forum')],['PKI Hub',()=>nav('/pki-hub')]] },
               { title:'Security',          links:[['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']] },
-              { title:'Protocol',          links:[['RFC 8555 ACME','#security'],['DNS-01 Challenge','#security'],['AES-256-GCM','#security'],['CA/B Forum',()=>nav('/cab-forum')],['Global PKI Hub',()=>nav('/pki-hub')]] },
+              { title:'Protocol',          links:[['RFC 8555 ACME','#security'],['DNS-01 Challenge','#security'],['AES-256-GCM','#security']] },
               { title:'Company',           links:[['About',()=>nav('/about')],['Developer',()=>nav('/developer')]] },
             ].map(col => (
               <div key={col.title}>
