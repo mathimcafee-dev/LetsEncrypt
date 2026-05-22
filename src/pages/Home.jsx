@@ -336,7 +336,7 @@ export default function Home({ nav }) {
 
         {/* Owlish pill */}
         <nav className="nav-links" style={{ position:'absolute', left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:100, padding:'4px 6px' }}>
-          {[['Platform','#platform'],['Features','#features'],['Security','#security'],['CA Trust Store','/ca-trust-explorer'],['Pricing','/pricing']].map(([l,h]) => (
+          {[['Platform','#platform'],['Features','#features'],['Security','#security'],['CA Trust Store','/ca-trust-explorer'],['CAB Forum','/cab-forum'],['Pricing','/pricing']].map(([l,h]) => (
             <button key={l} onClick={() => h.startsWith('/') ? nav(h) : document.querySelector(h)?.scrollIntoView({ behavior:'smooth' })}
               style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:400, color:'rgba(255,255,255,0.52)', padding:'5px 16px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em' }}
               onMouseEnter={e => { e.currentTarget.style.color='rgba(255,255,255,0.92)'; e.currentTarget.style.background='rgba(255,255,255,0.09)' }}
@@ -976,9 +976,9 @@ export default function Home({ nav }) {
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4,1fr)', gap:32, marginBottom:48 }}>
             {[
               { title:'Product',          links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]] },
-              { title:'Support Resources', links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CA Trust Store',()=>nav('/ca-trust-explorer')],['CA Intelligence',()=>nav('/ca-intelligence')],['CAA Checker',()=>nav('/caa-check')]] },
+              { title:'Support Resources', links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum Intelligence',()=>nav('/cab-forum')],['CA Intelligence',()=>nav('/ca-intelligence')],['CAA Checker',()=>nav('/caa-check')]] },
               { title:'Security',          links:[['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']] },
-              { title:'Protocol',          links:[['RFC 8555 ACME','#security'],['DNS-01 Challenge','#security'],['AES-256-GCM','#security'],['CA/B Forum','#security']] },
+              { title:'Protocol',          links:[['RFC 8555 ACME','#security'],['DNS-01 Challenge','#security'],['AES-256-GCM','#security'],['CA/B Forum',()=>nav('/cab-forum')]] },
               { title:'Company',           links:[['About',()=>nav('/about')],['Developer',()=>nav('/developer')]] },
             ].map(col => (
               <div key={col.title}>
