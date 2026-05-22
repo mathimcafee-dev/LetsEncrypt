@@ -1808,276 +1808,294 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     ...c,
     _healthGrade: healthScores[c.domain]?.grade || null,
   }))
-
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
+  const agoStr = (iso) => { const s = Math.floor((Date.now() - new Date(iso)) / 1000); if (s < 60) return s+'s ago'; if (s < 3600) return Math.floor(s/60)+'m ago'; if (s < 86400) return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago' }
+
   return (
-    <div style={{ background:'linear-gradient(160deg, #f0f4f8 0%, #f8fafc 100%)', minHeight:'100vh' }}>
-      <div style={{ maxWidth:1200, margin:'0 auto', padding:'32px 28px 80px' }}>
+    <div style={{ background:'#fafaf9', minHeight:'100vh', fontFamily:"'Segoe UI',-apple-system,system-ui,sans-serif" }}>
 
-        <div style={{ marginBottom:24, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
-          <div>
-            <h1 style={{ fontSize:22, fontWeight:800, color:'#0f172a', letterSpacing:'-0.5px', marginBottom:3, display:'flex', alignItems:'center', gap:10 }}>
-              Certificate Dashboard
-              {healthy === total && total > 0 && (
-                <span style={{ fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:20,
-                  background:'#f0fdf4', color:'#16a34a', border:'0.5px solid #bbf7d0',
-                  animation:'fadeIn 0.5s ease' }}>
-                  All healthy ✓
-                </span>
-              )}
-            </h1>
-            <p style={{ fontSize:12, color:'#94a3b8' }}>{user.email} · {total} certificate{total!==1?'s':''}</p>
+      <div style={{ background:'#ffffff', borderBottom:'0.5px solid rgba(15,23,42,.08)',
+        padding:'0 20px', height:50, display:'flex', alignItems:'center', justifyContent:'space-between',
+        position:'sticky', top:0, zIndex:100 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+            <div style={{ width:26, height:26, background:'#0a0a0a', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Shield size={13} color="white"/>
+            </div>
+            <span style={{ fontSize:13, fontWeight:600, color:'#0a0a0a', letterSpacing:'-0.2px' }}>SSLVault</span>
+            <span style={{ fontSize:10, fontWeight:600, color:'#0369a1', background:'#eff6ff', border:'0.5px solid #bfdbfe', padding:'1px 7px', borderRadius:20 }}>CLM Platform</span>
           </div>
-          {/* Share SSL status button */}
-          <button
-            onClick={async () => {
-              const { data: { session: s } } = await supabase.auth.getSession()
-              if (!s) return
-              const username = s.user.email.split('@')[0].replace(/[^a-z0-9]/gi, '')
-              const url = `${window.location.origin}/status/${username}`
-              try { await navigator.clipboard.writeText(url) } catch(_) {}
-              setShareMsg('Link copied!')
-              setTimeout(() => setShareMsg(''), 2500)
-            }}
-            style={{ display:'flex', alignItems:'center', gap:6, background:'white',
-              border:'0.5px solid #e2e8f0', borderRadius:8, padding:'7px 14px',
-              fontSize:11, fontWeight:600, color:'#374151', cursor:'pointer', fontFamily:'inherit' }}>
-            <Share2 size={12} color="#10b981"/>
-            {shareMsg || 'Share SSL status'}
+          <div style={{ display:'flex', gap:1 }}>
+            {[
+              { label:'Dashboard', active:true,  action:()=>{} },
+              { label:'Monitor',   active:false, action:()=>nav('/dashboard') },
+              { label:'Servers',   active:false, action:()=>nav('/servers') },
+              { label:'Vault',     active:false, action:()=>nav('/certvault') },
+            ].map(n => (
+              <button key={n.label} onClick={n.action}
+                style={{ fontSize:12, fontWeight:500, padding:'5px 10px', borderRadius:5, border:'none', cursor:'pointer', fontFamily:'inherit',
+                  background: n.active ? '#f4f4f3' : 'transparent',
+                  color: n.active ? '#0a0a0a' : '#a3a3a3' }}>
+                {n.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <button onClick={() => onIssue ? onIssue() : nav('/buy')}
+            style={{ display:'flex', alignItems:'center', gap:5, background:'#0a0a0a', color:'white',
+              border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+            <Plus size={11}/> Issue cert
           </button>
+          <div style={{ width:26, height:26, borderRadius:'50%', background:'#eff6ff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:600, color:'#0369a1' }}>
+            {user.email?.[0]?.toUpperCase() || 'U'}
+          </div>
         </div>
+      </div>
 
-        <FleetWidget
-          certs={certs}
-          agents={[]}
-          loading={loading}
-          nav={nav}
-          onRenew={null}
-        />
+      <div style={{ display:'grid', gridTemplateColumns:'210px 1fr 230px', minHeight:'calc(100vh - 50px)' }}>
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:20 }}>
-          {[
-            { label:'Total',        value:total,    color:'#0e7fc0', bg:'#eff6ff', icon:'▦', sub:'certificates' },
-            { label:'Healthy',      value:healthy,  color:'#16a34a', bg:'#f0fdf4', icon:'✓', sub:healthy>0?'All valid':'None' },
-            { label:'Expiring',     value:expiring, color:expiring>0?'#d97706':'#94a3b8', bg:expiring>0?'#fffbeb':'#f8fafc', icon:'⏱', sub:expiring>0?'Renew soon':'None' },
-            { label:'PQC risk',     value:certs.filter(c=>c.pqc_risk==='high').length, color:certs.filter(c=>c.pqc_risk==='high').length>0?'#7c3aed':'#94a3b8', bg:certs.filter(c=>c.pqc_risk==='high').length>0?'#f5f3ff':'#f8fafc', icon:'⚛', sub:certs.filter(c=>c.pqc_risk==='high').length>0?'Migrate by 2030':'None checked' },
-            { label:'Expired',      value:expired,  color:expired>0?'#dc2626':'#94a3b8', bg:expired>0?'#fef2f2':'#f8fafc', icon:'✗', sub:expired>0?'Action needed':'None' },
-          ].map((s,i) => (
-            <div key={s.label}
-              style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:12,
-                padding:'16px 18px', position:'relative', overflow:'hidden',
-                boxShadow:'0 1px 3px rgba(0,0,0,0.04)',
-                animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}>
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:s.color, borderRadius:'12px 12px 0 0', opacity: s.value > 0 ? 1 : 0.2 }}/>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
-                <div style={{ fontSize:10, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px' }}>{s.label}</div>
-                <div style={{ width:28, height:28, borderRadius:7, background:s.bg,
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                  fontSize:12, color:s.color, fontWeight:700 }}>{s.icon}</div>
-              </div>
-              <div style={{ fontSize:32, fontWeight:800, color: s.value>0 ? s.color : '#0f172a',
-                letterSpacing:'-1px', lineHeight:1, marginBottom:4,
-                transition:'color 0.3s' }}>{s.value}</div>
-              <div style={{ fontSize:11, color:'#94a3b8' }}>{s.sub}</div>
+        <div style={{ background:'#ffffff', borderRight:'0.5px solid rgba(15,23,42,.08)', padding:'16px 12px', overflowY:'auto' }}>
+          <p style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', padding:'0 6px', marginBottom:8 }}>Domains</p>
+
+          {loading ? (
+            <div style={{ padding:'20px 8px', textAlign:'center' }}>
+              <RefreshCw size={14} color="#a3a3a3" style={{ animation:'spin 1s linear infinite' }}/>
             </div>
-          ))}
-        </div>
-
-        {expired > 0 && (
-          <div style={{ background:'rgba(220,38,38,0.1)', border:'0.5px solid rgba(220,38,38,0.3)', borderRadius:8, padding:'12px 16px', marginBottom:14, display:'flex', alignItems:'center', gap:12 }}>
-            <AlertTriangle size={14} color="#f87171" style={{ flexShrink:0 }}/>
-            <span style={{ fontSize:12, color:'#f87171' }}><strong>{expired} expired certificate{expired!==1?'s':''}</strong> — renew immediately.</span>
-          </div>
-        )}
-        {expiring > 0 && expired === 0 && (
-          <div style={{ background:'rgba(245,158,11,0.08)', border:'0.5px solid rgba(245,158,11,0.25)', borderRadius:8, padding:'12px 16px', marginBottom:14, display:'flex', alignItems:'center', gap:12 }}>
-            <AlertTriangle size={14} color="#fbbf24" style={{ flexShrink:0 }}/>
-            <span style={{ fontSize:12, color:'#fbbf24' }}><strong>{expiring} expiring within 30 days</strong></span>
-          </div>
-        )}
-
-        {orders.length > 0 && (
-          <div style={{ marginBottom:16 }}>
-            <div style={{ fontSize:11, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>DNS Validation Pending ({orders.length})</div>
-            {orders.map(o => <DvPendingCard key={o.id} order={o} onRefresh={load}/>)}
-          </div>
-        )}
-
-        <div style={{ display:'grid', gridTemplateColumns: selectedCert ? '1fr 400px':'1fr', gap:16, alignItems:'start' }}>
-          <div style={{ background:'white', border:'0.5px solid #e2e8f0', borderRadius:14,
-            overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
-            <div style={{ padding:'14px 16px', borderBottom:'0.5px solid #f1f5f9',
-              display:'flex', alignItems:'center', gap:8, flexWrap:'wrap',
-              background:'linear-gradient(to bottom, white, #fafbfc)' }}>
-              {/* Filter tabs */}
-              <div style={{ display:'flex', gap:2, background:'#f1f5f9', borderRadius:8, padding:3 }}>
-                {[
-                  { key:'all',      label:'All',      count:total },
-                  { key:'healthy',  label:'Healthy',  count:healthy },
-                  { key:'expiring', label:'Expiring', count:expiring },
-                  { key:'expired',  label:'Expired',  count:expired },
-                ].map(f => (
-                  <button key={f.key} onClick={() => setFilter(f.key)}
-                    style={{ padding:'5px 12px', borderRadius:6, fontSize:11, fontWeight:600,
-                      cursor:'pointer', fontFamily:'inherit', border:'none', transition:'all .15s',
-                      background: filter===f.key ? 'white' : 'transparent',
-                      color: filter===f.key ? '#0f172a' : '#64748b',
-                      boxShadow: filter===f.key ? '0 1px 3px rgba(0,0,0,0.08)' : 'none' }}>
-                    {f.label}
-                    <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                      background: filter===f.key ? '#0e7fc0' : '#e2e8f0',
-                      color: filter===f.key ? 'white' : '#64748b', transition:'all .15s' }}>
-                      {f.count}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
-                <div style={{ position:'relative' }}>
-                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search domains..."
-                    style={{ background:'#f8fafc', border:'0.5px solid #e2e8f0', borderRadius:8, color:'#1e293b',
-                      fontSize:12, padding:'6px 10px 6px 30px', width:190, outline:'none', fontFamily:'inherit',
-                      transition:'border-color .15s' }}
-                    onFocus={e=>e.target.style.borderColor='#0e7fc0'}
-                    onBlur={e=>e.target.style.borderColor='#e2e8f0'}/>
-                  <Globe size={12} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'#94a3b8', pointerEvents:'none' }}/>
-                </div>
-                <ScanPqcButton onDone={load}/>
+          ) : visible.length === 0 ? (
+            <div style={{ padding:'20px 8px', textAlign:'center' }}>
+              <p style={{ fontSize:11, color:'#a3a3a3' }}>{total===0?'No certs yet':'No results'}</p>
+              {total===0 && (
                 <button onClick={() => onIssue ? onIssue() : nav('/buy')}
-                  style={{ display:'flex', alignItems:'center', gap:5, background:'#0e7fc0', color:'white',
-                    border:'none', borderRadius:8, padding:'7px 14px', fontSize:11, fontWeight:700,
-                    cursor:'pointer', fontFamily:'inherit', boxShadow:'0 2px 6px rgba(14,127,192,0.3)',
-                    transition:'all .15s' }}
-                  onMouseEnter={e=>{e.currentTarget.style.background='#0369a1';e.currentTarget.style.boxShadow='0 4px 12px rgba(14,127,192,0.4)'}}
-                  onMouseLeave={e=>{e.currentTarget.style.background='#0e7fc0';e.currentTarget.style.boxShadow='0 2px 6px rgba(14,127,192,0.3)'}}>
-                  <Plus size={11}/> Issue certificate
+                  style={{ marginTop:8, fontSize:11, color:'#0369a1', background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', textDecoration:'underline' }}>
+                  Issue first cert →
                 </button>
-              </div>
+              )}
             </div>
+          ) : visible.map(cert => {
+            const d = daysLeft(cert.expires_at)
+            const s = statusOf(d, cert.status)
+            const dotColor = s.cls==='green' ? '#0e7fc0' : s.cls==='amber' ? '#f59e0b' : '#dc2626'
+            const isSelected = selected === cert.id
+            return (
+              <div key={cert.id} onClick={() => setSelected(isSelected ? null : cert.id)}
+                style={{ display:'flex', alignItems:'center', gap:7, padding:'7px 8px', borderRadius:6,
+                  cursor:'pointer', marginBottom:2, position:'relative',
+                  background: isSelected ? '#eff6ff' : 'transparent' }}
+                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background='#f4f4f3' }}
+                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background='transparent' }}>
+                {isSelected && <div style={{ position:'absolute', left:0, top:0, bottom:0, width:2, background:'#0e7fc0', borderRadius:'0 2px 2px 0' }}/>}
+                <div style={{ width:6, height:6, borderRadius:'50%', background:dotColor, flexShrink:0 }}/>
+                <span style={{ fontSize:12, color:'#0a0a0a', fontWeight: isSelected?500:400, flex:1, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                  {cert.domain}
+                </span>
+                <span style={{ fontSize:10, fontWeight:500,
+                  color: s.cls==='green'?'#0369a1':s.cls==='amber'?'#b45309':'#b91c1c',
+                  background: s.cls==='green'?'#eff6ff':s.cls==='amber'?'#fffbeb':'#fef2f2',
+                  padding:'1px 5px', borderRadius:20, flexShrink:0 }}>
+                  {d != null ? (d<0?'Exp':d+'d') : '—'}
+                </span>
+              </div>
+            )
+          })}
 
-            {loading ? (
-              <div style={{ padding:'48px 16px', textAlign:'center' }}>
-                <RefreshCw size={20} style={{ color:'#94a3b8', animation:'spin 1s linear infinite' }}/>
-                <div style={{ fontSize:12, color:'#94a3b8', marginTop:10 }}>Loading...</div>
-              </div>
-            ) : visible.length === 0 ? (
-              <div style={{ padding:'48px 16px', textAlign:'center' }}>
-                <Shield size={24} style={{ color:'#e2e8f0', marginBottom:12 }}/>
-                <div style={{ fontSize:13, fontWeight:600, color:'#94a3b8', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
-                <div style={{ fontSize:12, color:'#94a3b8', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
-                {total===0 && (
-                  <button onClick={() => onIssue ? onIssue() : nav('/buy')}
-                    style={{ background:'#0e7fc0', color:'white', border:'none', borderRadius:7,
-                      padding:'9px 18px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
-                    Issue your first certificate
-                  </button>
-                )}
-              </div>
-            ) : (
-              visible.map(cert => (
-                <CertRow key={cert.id} cert={{...cert, _healthGrade: healthScores[cert.domain]?.grade || null}} selected={selected===cert.id}
-                  onClick={() => setSelected(selected===cert.id ? null : cert.id)}/>
-              ))
-            )}
+          <div style={{ marginTop:12, paddingTop:12, borderTop:'0.5px solid rgba(15,23,42,.08)' }}>
+            <p style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', padding:'0 6px', marginBottom:6 }}>Filter</p>
+            {[
+              { key:'all',      label:'All',      count:total },
+              { key:'healthy',  label:'Healthy',  count:healthy },
+              { key:'expiring', label:'Expiring', count:expiring },
+              { key:'expired',  label:'Expired',  count:expired },
+            ].map(f => (
+              <button key={f.key} onClick={() => setFilter(f.key)}
+                style={{ display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%',
+                  padding:'5px 8px', borderRadius:5, border:'none', background: filter===f.key?'#f4f4f3':'transparent',
+                  cursor:'pointer', fontFamily:'inherit', marginBottom:1 }}>
+                <span style={{ fontSize:12, color: filter===f.key?'#0a0a0a':'#525252' }}>{f.label}</span>
+                <span style={{ fontSize:10, color: filter===f.key?'#0369a1':'#a3a3a3',
+                  background: filter===f.key?'#eff6ff':'transparent', padding:'0 5px', borderRadius:10 }}>
+                  {f.count}
+                </span>
+              </button>
+            ))}
           </div>
 
-          {selectedCert && (
+          <div style={{ marginTop:12, paddingTop:12, borderTop:'0.5px solid rgba(15,23,42,.08)' }}>
+            <p style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', padding:'0 6px', marginBottom:8 }}>Fleet</p>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:5 }}>
+              {[
+                { num:total,    lbl:'Total',    col:'#0e7fc0' },
+                { num:healthy,  lbl:'Healthy',  col:'#16a34a' },
+                { num:expiring, lbl:'Expiring', col:expiring>0?'#f59e0b':'#a3a3a3' },
+                { num:expired,  lbl:'Expired',  col:expired>0?'#dc2626':'#a3a3a3' },
+              ].map(t => (
+                <div key={t.lbl} style={{ background:'#fafaf9', border:'0.5px solid rgba(15,23,42,.08)', borderRadius:6, padding:'7px 9px' }}>
+                  <div style={{ fontSize:18, fontWeight:600, color:t.num>0||t.lbl==='Total'?t.col:'#a3a3a3', letterSpacing:'-0.3px' }}>{t.num}</div>
+                  <div style={{ fontSize:10, color:'#a3a3a3', marginTop:1 }}>{t.lbl}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {recentEvents.length > 0 && (
+            <div style={{ marginTop:12, paddingTop:12, borderTop:'0.5px solid rgba(15,23,42,.08)' }}>
+              <p style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', padding:'0 6px', marginBottom:8 }}>Activity</p>
+              {recentEvents.slice(0,5).map((ev) => {
+                const dotColor = ev.event_type==='issued'?'#0e7fc0':ev.event_type==='renewed'?'#16a34a':'#f59e0b'
+                const s = Math.floor((Date.now() - new Date(ev.created_at)) / 1000)
+                const ago = s < 60 ? s+'s' : s < 3600 ? Math.floor(s/60)+'m' : Math.floor(s/3600)+'h'
+                return (
+                  <div key={ev.id} style={{ display:'flex', alignItems:'flex-start', gap:6, padding:'3px 4px', marginBottom:3 }}>
+                    <div style={{ width:5, height:5, borderRadius:'50%', background:dotColor, flexShrink:0, marginTop:4 }}/>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <p style={{ fontSize:11, color:'#525252', margin:0, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{ev.domain}</p>
+                      <p style={{ fontSize:10, color:'#a3a3a3', margin:0 }}>{ev.event_type.replace(/_/g,' ')} · {ago} ago</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          <div style={{ marginTop:12, paddingTop:12, borderTop:'0.5px solid rgba(15,23,42,.08)' }}>
+            <div style={{ position:'relative' }}>
+              <Globe size={11} style={{ position:'absolute', left:8, top:'50%', transform:'translateY(-50%)', color:'#a3a3a3', pointerEvents:'none' }}/>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
+                style={{ width:'100%', boxSizing:'border-box', background:'#fafaf9', border:'0.5px solid rgba(15,23,42,.08)',
+                  borderRadius:6, color:'#0a0a0a', fontSize:12, padding:'6px 8px 6px 24px', outline:'none', fontFamily:'inherit' }}/>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ padding:'20px 20px 40px', overflowY:'auto', background:'#fafaf9' }}>
+          {expired > 0 && (
+            <div style={{ background:'#fef2f2', border:'0.5px solid #fecaca', borderRadius:8, padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center', gap:10 }}>
+              <AlertTriangle size={13} color="#dc2626" style={{ flexShrink:0 }}/>
+              <span style={{ fontSize:12, color:'#b91c1c' }}><strong>{expired} expired</strong> — renew immediately</span>
+            </div>
+          )}
+          {expiring > 0 && expired===0 && (
+            <div style={{ background:'#fffbeb', border:'0.5px solid #fde68a', borderRadius:8, padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center', gap:10 }}>
+              <AlertTriangle size={13} color="#d97706" style={{ flexShrink:0 }}/>
+              <span style={{ fontSize:12, color:'#b45309' }}><strong>{expiring} expiring</strong> within 30 days</span>
+            </div>
+          )}
+
+          {orders.length > 0 && (
+            <div style={{ marginBottom:16 }}>
+              <p style={{ fontSize:11, fontWeight:600, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.4px', marginBottom:8 }}>DNS validation pending ({orders.length})</p>
+              {orders.map(o => <DvPendingCard key={o.id} order={o} onRefresh={load}/>)}
+            </div>
+          )}
+
+          {selectedCert ? (
             <CertDetail cert={selectedCert} onClose={() => setSelected(null)}
               onDelete={handleDelete}
               onInstall={cert => { setAgentCert(cert) }}
               onCpanel={cert => { setCpanelCert(cert) }}
               nav={nav} onRefresh={load} session={session}/>
+          ) : (
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minHeight:300, textAlign:'center' }}>
+              <div style={{ width:48, height:48, borderRadius:12, background:'#eff6ff', border:'0.5px solid #bfdbfe', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:14 }}>
+                <Shield size={22} color="#0e7fc0"/>
+              </div>
+              <p style={{ fontSize:14, fontWeight:500, color:'#0a0a0a', marginBottom:4 }}>
+                {total === 0 ? 'No certificates yet' : 'Select a domain'}
+              </p>
+              <p style={{ fontSize:12, color:'#a3a3a3', marginBottom:total===0?20:0 }}>
+                {total === 0 ? 'Issue your first SSL certificate to get started.' : 'Click a domain on the left to view details.'}
+              </p>
+              {total === 0 && (
+                <button onClick={() => onIssue ? onIssue() : nav('/buy')}
+                  style={{ background:'#0a0a0a', color:'white', border:'none', borderRadius:7,
+                    padding:'9px 20px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+                  Issue first certificate
+                </button>
+              )}
+            </div>
           )}
         </div>
 
-        <div style={{ marginTop:28 }}>
-          <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Quick actions</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
-            {[
-              { icon:Shield,    color:'#0e7fc0', bg:'#eff6ff', label:'Issue Certificate', desc:'RapidSSL DV · RapidSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
-              { icon:Download,  color:'#16a34a', bg:'#f0fdf4', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
-              { icon:Activity,  color:'#7c3aed', bg:'#f5f3ff', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
-              { icon:Zap,       color:'#d97706', bg:'#fffbeb', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
-            ].map(({ icon:Icon, color, bg, label, desc, action }, i) => (
-              <button key={label} onClick={action}
-                style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:12, padding:'16px',
-                  textAlign:'left', cursor:'pointer', fontFamily:'inherit', transition:'all .2s',
-                  boxShadow:'0 1px 3px rgba(0,0,0,0.04)',
-                  animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow=`0 6px 20px ${color}20`;e.currentTarget.style.borderColor=color+'44'}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)';e.currentTarget.style.borderColor='#f1f5f9'}}>
-                <div style={{ width:36, height:36, borderRadius:9, background:bg,
-                  display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
-                  <Icon size={16} color={color} strokeWidth={1.8}/>
-                </div>
-                <div style={{ fontSize:12, fontWeight:700, color:'#1e293b', marginBottom:4 }}>{label}</div>
-                <div style={{ fontSize:11, color:'#94a3b8', lineHeight:1.5 }}>{desc}</div>
-              </button>
-            ))}
-          </div>
-        </div>
+        <div style={{ background:'#ffffff', borderLeft:'0.5px solid rgba(15,23,42,.08)', padding:'16px 14px', overflowY:'auto' }}>
+          <p style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:10 }}>Quick actions</p>
+          {[
+            { icon:Shield,   color:'#0e7fc0', bg:'#eff6ff', label:'Issue certificate',  sub:'RapidSSL DV · ~5 min',       action:() => onIssue ? onIssue() : nav('/buy') },
+            { icon:Download, color:'#16a34a', bg:'#f0fdf4', label:'Install guide',      sub:'Nginx · Apache · cPanel',    action:() => nav('/install') },
+            { icon:Activity, color:'#7c3aed', bg:'#f5f3ff', label:'Integrations',       sub:'Cloudflare · Vercel · agent', action:() => nav('/integrations') },
+            { icon:Zap,      color:'#d97706', bg:'#fffbeb', label:'Knowledge base',     sub:'Guides · FAQs',               action:() => nav('/knowledge-base') },
+          ].map(({ icon:Icon, color, bg, label, sub, action }) => (
+            <button key={label} onClick={action}
+              style={{ display:'flex', alignItems:'center', gap:9, width:'100%', padding:'9px 10px',
+                border:'0.5px solid rgba(15,23,42,.08)', borderRadius:7, background:'#ffffff',
+                cursor:'pointer', fontFamily:'inherit', marginBottom:4, textAlign:'left' }}
+              onMouseEnter={e => e.currentTarget.style.background='#fafaf9'}
+              onMouseLeave={e => e.currentTarget.style.background='#ffffff'}>
+              <div style={{ width:28, height:28, borderRadius:6, background:bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <Icon size={13} color={color}/>
+              </div>
+              <div>
+                <div style={{ fontSize:12, fontWeight:500, color:'#0a0a0a' }}>{label}</div>
+                <div style={{ fontSize:10, color:'#a3a3a3' }}>{sub}</div>
+              </div>
+              <ChevronRight size={12} color="#a3a3a3" style={{ marginLeft:'auto' }}/>
+            </button>
+          ))}
 
-        {/* ── Recent activity feed ── */}
-        {recentEvents.length > 0 && (
-          <div style={{ marginTop:24 }}>
-            <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:10 }}>Recent activity</div>
-            <div style={{ background:'white', border:'0.5px solid #f1f5f9', borderRadius:12,
-              overflow:'hidden', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
-              {recentEvents.map((ev, i) => {
-                const evColors = {
-                  issued:          { color:'#16a34a', bg:'#f0fdf4', dot:'#16a34a' },
-                  renewed:         { color:'#2563eb', bg:'#eff6ff', dot:'#2563eb' },
-                  revoked:         { color:'#dc2626', bg:'#fef2f2', dot:'#dc2626' },
-                  agent_installed: { color:'#7c3aed', bg:'#f5f3ff', dot:'#7c3aed' },
-                  private_key_copied: { color:'#d97706', bg:'#fffbeb', dot:'#d97706' },
-                }
-                const cfg = evColors[ev.event_type] || { color:'#64748b', bg:'#f8fafc', dot:'#94a3b8' }
-                const secs = Math.floor((Date.now() - new Date(ev.created_at)) / 1000)
-                const ago = secs < 60 ? `${secs}s ago` : secs < 3600 ? `${Math.floor(secs/60)}m ago`
-                          : secs < 86400 ? `${Math.floor(secs/3600)}h ago` : `${Math.floor(secs/86400)}d ago`
-                return (
-                  <div key={ev.id} style={{ display:'flex', alignItems:'center', gap:12,
-                    padding:'10px 16px', borderBottom: i < recentEvents.length-1 ? '0.5px solid #f8fafc' : 'none' }}>
-                    <div style={{ width:8, height:8, borderRadius:'50%', background:cfg.dot, flexShrink:0 }}/>
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <span style={{ fontSize:12, color:'#374151', fontWeight:500 }}>
-                        {ev.event_type.replace(/_/g,' ')}
-                      </span>
-                      <span style={{ fontSize:12, color:'#94a3b8' }}> — {ev.domain}</span>
-                    </div>
-                    <span style={{ fontSize:11, color:'#94a3b8', flexShrink:0 }}>{ago}</span>
+          {selectedCert && (() => {
+            const d = daysLeft(selectedCert.expires_at)
+            const s = statusOf(d, selectedCert.status)
+            const hs = healthScores[selectedCert.domain]
+            return (
+              <div style={{ marginTop:14, paddingTop:14, borderTop:'0.5px solid rgba(15,23,42,.08)' }}>
+                <p style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:10 }}>Certificate health</p>
+                {[
+                  { label:'Status',     val:s.label, color:s.cls==='green'?'#0369a1':s.cls==='amber'?'#b45309':'#b91c1c', bg:s.cls==='green'?'#eff6ff':s.cls==='amber'?'#fffbeb':'#fef2f2' },
+                  { label:'TLS grade',  val:selectedCert.tls_grade||hs?.grade||'—', color:(selectedCert.tls_grade==='A'||selectedCert.tls_grade==='A+')?'#16a34a':'#b45309', bg:(selectedCert.tls_grade==='A'||selectedCert.tls_grade==='A+')?'#f0fdf4':'#fffbeb' },
+                  { label:'PQC',        val:selectedCert.pqc_risk==='high'?'High risk':'OK', color:selectedCert.pqc_risk==='high'?'#b91c1c':'#16a34a', bg:selectedCert.pqc_risk==='high'?'#fef2f2':'#f0fdf4' },
+                  { label:'Auto-renew', val:selectedCert.auto_renew!==false?'Enabled':'Off', color:selectedCert.auto_renew!==false?'#0369a1':'#b45309', bg:selectedCert.auto_renew!==false?'#eff6ff':'#fffbeb' },
+                ].map(r => (
+                  <div key={r.label} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:7 }}>
+                    <span style={{ fontSize:11, color:'#525252' }}>{r.label}</span>
+                    <span style={{ fontSize:11, fontWeight:500, color:r.color, background:r.bg, padding:'1px 7px', borderRadius:4 }}>{r.val}</span>
                   </div>
-                )
-              })}
+                ))}
+              </div>
+            )
+          })()}
+
+          <div style={{ marginTop:14, paddingTop:14, borderTop:'0.5px solid rgba(15,23,42,.08)' }}>
+            <button onClick={async () => {
+                const { data: { session: s } } = await supabase.auth.getSession()
+                if (!s) return
+                const username = s.user.email.split('@')[0].replace(/[^a-z0-9]/gi, '')
+                const url = `${window.location.origin}/status/${username}`
+                try { await navigator.clipboard.writeText(url) } catch(_) {}
+                setShareMsg('Link copied!')
+                setTimeout(() => setShareMsg(''), 2500)
+              }}
+              style={{ display:'flex', alignItems:'center', gap:7, width:'100%', padding:'8px 10px',
+                border:'0.5px solid rgba(15,23,42,.08)', borderRadius:7, background:'#ffffff',
+                cursor:'pointer', fontFamily:'inherit', fontSize:12, color:'#525252' }}
+              onMouseEnter={e => e.currentTarget.style.background='#fafaf9'}
+              onMouseLeave={e => e.currentTarget.style.background='#ffffff'}>
+              <Share2 size={13} color="#0e7fc0"/>
+              {shareMsg || 'Share SSL status'}
+            </button>
+            <div style={{ marginTop:5 }}>
+              <ScanPqcButton onDone={load}/>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
-      {/* VPS agent install modal */}
       {agentCert && (
-        <AgentInstall
-          cert={agentCert}
-          userId={user.id}
-          onClose={() => setAgentCert(null)}
-          onOpenCpanel={() => {
-            // Switch from VPS modal to cPanel modal for the same cert
-            const cert = agentCert
-            setAgentCert(null)
-            setCpanelCert(cert)
-          }}
-        />
+        <AgentInstall cert={agentCert} userId={user.id} onClose={() => setAgentCert(null)}
+          onOpenCpanel={() => { const c = agentCert; setAgentCert(null); setCpanelCert(c) }}/>
       )}
-
-      {/* cPanel install modal */}
       {cpanelCert && (
-        <CpanelInstall
-          cert={cpanelCert}
-          userId={user.id}
-          onClose={() => setCpanelCert(null)}
-          onSuccess={() => { setCpanelCert(null); load() }}
-        />
+        <CpanelInstall cert={cpanelCert} userId={user.id} onClose={() => setCpanelCert(null)}
+          onSuccess={() => { setCpanelCert(null); load() }}/>
       )}
 
       <style>{`
