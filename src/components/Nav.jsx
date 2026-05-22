@@ -73,31 +73,6 @@ export default function Nav({ nav, page }) {
               )
             })}
 
-            {/* Resources dropdown */}
-            <div style={{position:'relative'}}>
-              <div onClick={()=>setMoreOpen(o=>!o)}
-                style={{display:'flex',alignItems:'center',gap:5,padding:'7px 11px',borderRadius:7,cursor:'pointer',
-                  fontSize:13,fontWeight:600,color:'#525252'}}
-                onMouseEnter={e=>e.currentTarget.style.background='#f8fafc'}
-                onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                Resources <ChevronDown size={12}/>
-              </div>
-              {moreOpen && (
-                <div style={{position:'absolute',top:'calc(100% + 6px)',right:0,background:'white',
-                  border:'1px solid #e2e8f0',borderRadius:9,padding:5,
-                  boxShadow:'0 8px 24px rgba(0,0,0,0.1)',zIndex:300,minWidth:200}}
-                  onMouseLeave={()=>setMoreOpen(false)}>
-                  {resources.map(({path,label,icon:Icon})=>(
-                    <div key={path} onClick={()=>{nav(path);setMoreOpen(false)}}
-                      style={{display:'flex',alignItems:'center',gap:8,padding:'8px 11px',borderRadius:6,cursor:'pointer',fontSize:13,fontWeight:600,color:'#475569'}}
-                      onMouseEnter={e=>e.currentTarget.style.background='#f8fafc'}
-                      onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                      <Icon size={13} color='#94a3b8'/>{label}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
         )}
 
@@ -140,16 +115,7 @@ export default function Nav({ nav, page }) {
                 </div>
               )
             })}
-            <div style={{height:1,background:'#f1f5f9',margin:'8px 0'}}/>
-            <div style={{fontSize:10,fontWeight:700,color:'#a3a3a3',textTransform:'uppercase',
-              letterSpacing:'0.8px',padding:'4px 14px 6px'}}>Resources</div>
-            {resources.map(({path,label,icon:Icon})=>(
-              <div key={path} onClick={()=>{nav(path);setMobileOpen(false)}}
-                style={{display:'flex',alignItems:'center',gap:10,padding:'11px 14px',borderRadius:8,
-                  cursor:'pointer',fontSize:14,fontWeight:500,color:'#475569'}}>
-                <Icon size={15} color='#94a3b8'/>{label}
-              </div>
-            ))}
+
             <div style={{height:1,background:'#f1f5f9',margin:'10px 0 12px'}}/>
             <button onClick={()=>{nav('/auth');setMobileOpen(false)}}
               style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,

@@ -975,10 +975,11 @@ export default function Home({ nav }) {
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4,1fr)', gap:32, marginBottom:48 }}>
             {[
-              { title:'Product',   links:[['Pricing',()=>nav('/pricing')],['CA Trust Store',()=>nav('/ca-trust-explorer')],['Knowledge Base',()=>nav('/knowledge-base')],['Install Guide',()=>nav('/install')],['Get started',()=>nav('/auth')]] },
-              { title:'Security',  links:[['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']] },
-              { title:'Protocol',  links:[['RFC 8555 ACME','#security'],['DNS-01 Challenge','#security'],['AES-256-GCM','#security'],['CA/B Forum','#security']] },
-              { title:'Company',   links:[['About',()=>nav('/about')],['Developer',()=>nav('/developer')]] },
+              { title:'Product',          links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]] },
+              { title:'Support Resources', links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CA Trust Store',()=>nav('/ca-trust-explorer')],['CA Intelligence',()=>nav('/ca-intelligence')],['CAA Checker',()=>nav('/caa-check')]] },
+              { title:'Security',          links:[['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']] },
+              { title:'Protocol',          links:[['RFC 8555 ACME','#security'],['DNS-01 Challenge','#security'],['AES-256-GCM','#security'],['CA/B Forum','#security']] },
+              { title:'Company',           links:[['About',()=>nav('/about')],['Developer',()=>nav('/developer')]] },
             ].map(col => (
               <div key={col.title}>
                 <div style={{ fontSize:11, fontWeight:700, color:D.teal, textTransform:'uppercase', letterSpacing:'0.06em', fontFamily:MONO, marginBottom:16 }}>{col.title}</div>
