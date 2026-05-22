@@ -1777,6 +1777,17 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     document.addEventListener('visibilitychange', fn)
     return () => document.removeEventListener('visibilitychange', fn)
   }, [load])
+
+  // Realtime: auto-reload when any cert or order changes for this user
+  useEffect(() => {
+    if (!user) return
+    const channel = supabase
+      .channel('dashboard-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'certificates', filter: `user_id=eq.${user.id}` }, () => load())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'ssl_orders',   filter: `user_id=eq.${user.id}` }, () => load())
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [user, load])
   useEffect(() => {
     const d = sessionStorage.getItem('install_domain')
     if (!d || !certs.length) return
