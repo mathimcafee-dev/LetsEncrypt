@@ -189,7 +189,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   const call = async (action, extra = {}) => {
     const { data: { session } } = await supabase.auth.getSession()
-    const r = await fetch(`${SUPABASE_URL}/functions/v1/rapidssl-issue`, {
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/gogetssl-issue`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ action, ...extra }),

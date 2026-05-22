@@ -37,6 +37,16 @@ import BulkScanner from './pages/BulkScanner'
 import PublicStatus from './pages/PublicStatus'
 import CAAChecker from './pages/CAAChecker'
 import TrustPassport from './pages/TrustPassport'
+import KeyLocker from './pages/KeyLocker'
+import Servers from './pages/Servers'
+import SettingsPage from './pages/SettingsPage'
+import RenewalCalendar from './pages/RenewalCalendar'
+import SSLHealthScore from './pages/SSLHealthScore'
+import ReadinessDashboard from './pages/ReadinessDashboard'
+import DnsProviders from './pages/DnsProviders'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
+import Contact from './pages/Contact'
 
 export default function App() {
   const _build_ts = 1779297560 // 
@@ -81,7 +91,7 @@ const _build = 1779297041 // cache bust
   }
 
   // Home page has its own nav built-in — exclude it to avoid duplicate
-  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/developer', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/trust-passport']
+  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/developer', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/trust-passport', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness']
   const showPublicNav = !authLoading && !user && !SELF_NAV_PAGES.includes(page)
 
   return (
@@ -132,6 +142,16 @@ const _build = 1779297041 // cache bust
       {page === '/pki-hub/eidas' && <eIDASIntelligence nav={nav} />}
       {page === '/pki-hub/pkic' && <PKIConsortiumIntelligence nav={nav} />}
       {page === '/pki-hub/csc' && <CSCIntelligence nav={nav} />}
+      {page === '/keylocker' && <KeyLocker nav={nav} />}
+      {page === '/servers' && <Servers nav={nav} />}
+      {page === '/settings' && <SettingsPage nav={nav} />}
+      {page === '/renewal-calendar' && <RenewalCalendar nav={nav} />}
+      {page === '/ssl-health-score' && <SSLHealthScore nav={nav} />}
+      {page === '/readiness' && <ReadinessDashboard nav={nav} />}
+      {page === '/dns-providers' && <DnsProviders nav={nav} />}
+      {page === '/privacy' && <Privacy nav={nav} />}
+      {page === '/terms' && <Terms nav={nav} />}
+      {page === '/contact' && <Contact nav={nav} />}
       <VaultBrain />
     </div>
   )

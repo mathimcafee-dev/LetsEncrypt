@@ -529,6 +529,106 @@ serve(async (req) => {
       return json({ ok: true, profile: data || null })
     }
 
+    // ── get_history ───────────────────────────────────────────────────
+    // Returns reissue/renewal history for a cert from cert_reissues table
+    if (action === 'get_history') {
+      const { cert_id } = body
+      if (!cert_id) return json({ error: 'cert_id required' }, 400)
+      const { data, error: dbErr } = await adminDb()
+        .from('cert_reissues')
+        .select('id, created_at, ggs_order_id, new_ggs_order_id, status, triggered_by, expires_at')
+        .eq('user_id', user.id)
+        .or(`cert_id.eq.${cert_id},new_cert_id.eq.${cert_id}`)
+        .order('created_at', { ascending: false })
+        .limit(20)
+      if (dbErr) return json({ error: dbErr.message }, 500)
+      return json({ ok: true, history: data || [] })
+    }
+
+    // ── reissue ───────────────────────────────────────────────────────
+    // Re-generate CSR + place new GoGetSSL order, cancel old one
+    if (action === 'reissue' || action === 'renew') {
+      const { cert_id } = body
+      if (!cert_id) return json({ error: 'cert_id required' }, 400)
+
+      const { data: cert } = await adminDb()
+        .from('certificates')
+        .select('*')
+        .eq('id', cert_id)
+        .eq('user_id', user.id)
+        .single()
+      if (!cert) return json({ error: 'Certificate not found' }, 404)
+
+      const { data: order } = await adminDb()
+        .from('ssl_orders')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('domain', cert.domain)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+
+      const product_code = order?.product_code || 'rapidssl'
+      const cleanDomain = cert.domain.replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
+      const csrDomain = PRODUCT_META[product_code]?.wildcard
+        ? (cleanDomain.startsWith('*.') ? cleanDomain : `*.${cleanDomain}`)
+        : cleanDomain
+
+      const { csrPem, privateKeyPem } = await generateCSRAndKey(csrDomain)
+      const authKey = await ggsAuth()
+      const product = await resolveProductId(authKey, product_code)
+
+      const period = order?.period || 12
+      const adminEmail = order?.admin_email || cert.admin_email || `admin@${cleanDomain}`
+      const firstName  = order?.admin_first_name || cert.first_name || 'Admin'
+      const lastName   = order?.admin_last_name  || cert.last_name  || 'Admin'
+      const phone      = order?.admin_phone      || cert.phone      || '+1.5555555555'
+
+      const orderRes = await ggsPost(authKey, '/orders/add_ssl_order/', {
+        product_id: String(product.id), period: String(period),
+        csr: csrPem, server_count: '-1', webserver_type: '2',
+        dcv_method: 'dns',
+        approver_email: `admin@${cleanDomain}`,
+        admin_email: adminEmail, admin_firstname: firstName, admin_lastname: lastName,
+        admin_phone: phone, admin_org: cleanDomain, admin_jobtitle: 'Admin',
+        admin_city: 'San Francisco', admin_country: 'US', admin_state: 'CA',
+        admin_zip: '94105', tech_firstname: firstName, tech_lastname: lastName,
+        tech_email: adminEmail, tech_phone: phone,
+      })
+      if (!orderRes.order_id) return json({ error: orderRes.description || 'Reissue failed' }, 500)
+
+      // Insert new ssl_order row
+      const { data: newOrder, error: ordErr } = await adminDb()
+        .from('ssl_orders')
+        .insert({
+          user_id: user.id, domain: cleanDomain,
+          ggs_order_id: orderRes.order_id, status: 'dv_pending',
+          product_code, period, cert_type: 'DV',
+          admin_email: adminEmail, admin_first_name: firstName, admin_last_name: lastName, admin_phone: phone,
+          dcv_txt_name: orderRes.dcv_txt_name || null,
+          dcv_txt_value: orderRes.dcv_txt_value || null,
+          dcv_cname_name: orderRes.dcv_cname_name || null,
+          dcv_cname_value: orderRes.dcv_cname_value || null,
+          private_key_pem: privateKeyPem,
+        })
+        .select().single()
+      if (ordErr) return json({ error: ordErr.message }, 500)
+
+      // Log reissue event
+      await adminDb().from('cert_reissues').insert({
+        user_id: user.id, cert_id, new_cert_id: newOrder.id,
+        ggs_order_id: order?.ggs_order_id || null, new_ggs_order_id: orderRes.order_id,
+        status: 'dv_pending', triggered_by: body.triggered_by || 'manual',
+      })
+
+      return json({
+        ok: true, status: 'dv_pending', order_id: newOrder.id,
+        ggs_order_id: orderRes.order_id,
+        dcv_txt_name: orderRes.dcv_txt_name, dcv_txt_value: orderRes.dcv_txt_value,
+        dcv_cname_name: orderRes.dcv_cname_name, dcv_cname_value: orderRes.dcv_cname_value,
+      })
+    }
+
     return json({ error: `Unknown action: ${action}` }, 400)
 
   } catch (e: any) {

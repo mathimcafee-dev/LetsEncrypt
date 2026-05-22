@@ -829,6 +829,9 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           </div>
         </div>
       )}
+    </div>
+  )
+}
 
 // ── Empty state ───────────────────────────────────────────────────────
 function EmptyState({ icon: Icon, title, desc, ctaLabel, onCta }) {

@@ -84,7 +84,7 @@ function DvPendingCard({ order, onRefresh }) {
     setChecking(true); setMsg('')
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      const r = await fetch(SB_URL+'/functions/v1/rapidssl-issue', {
+      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({ action: 'check_status', order_id: order.id })
@@ -465,7 +465,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
   const loadHistory = async () => {
     try {
-      const r = await fetch(SB_URL+'/functions/v1/rapidssl-issue', {
+      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({ action: 'get_history', cert_id: cert.id })
       })
@@ -478,7 +478,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
     if (!confirm(confirmMsg)) return
     setBusy(true); setMsg('')
     try {
-      const r = await fetch(SB_URL+'/functions/v1/rapidssl-issue', {
+      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({ action, cert_id: cert.id, triggered_by: 'manual', ...extra })
       })
@@ -1066,7 +1066,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         .select('id').eq('domain', cert.domain).eq('user_id', cert.user_id)
         .order('updated_at', { ascending: false }).limit(1).single()
       if (!order) { setRefreshMsg('No linked order found'); setRefreshing(false); return }
-      const r = await fetch(SB_URL+'/functions/v1/rapidssl-issue', {
+      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+sess.access_token },
         body: JSON.stringify({ action: 'check_status', order_id: order.id })
