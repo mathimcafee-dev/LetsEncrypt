@@ -328,12 +328,17 @@ export default function CATrustExplorer({ nav }) {
       setFiltered(data || [])
       if (data?.length) setSelected(data[0])
 
-      // Popular CAs — well-known trusted roots
-      const POPULAR_OWNERS = ['DigiCert', "Let's Encrypt", 'GlobalSign', 'Sectigo', 'Google Trust Services', 'Microsoft', 'Amazon', 'ISRG', 'Comodo', 'Entrust', 'GoDaddy', 'IdenTrust']
-      const popular = (data || []).filter(c =>
-        POPULAR_OWNERS.some(o => (c.ca_owner || '').toLowerCase().includes(o.toLowerCase())) &&
-        c.cert_type === 'Root CA' && c.status === 'Active'
-      ).slice(0, 12)
+      // Popular CAs — grouped by OS/platform trust, not score
+      // Priority: certs trusted by all 4 major stores, TLS capable, Root CA
+      const popular = (data || [])
+        .filter(c => c.cert_type === 'Root CA' && c.status === 'Active')
+        .sort((a, b) => {
+          // Score by number of stores trusted
+          const storesA = [a.chrome_trusted, a.mozilla_trusted, a.apple_trusted, a.microsoft_trusted].filter(Boolean).length
+          const storesB = [b.chrome_trusted, b.mozilla_trusted, b.apple_trusted, b.microsoft_trusted].filter(Boolean).length
+          return storesB - storesA
+        })
+        .slice(0, 16)
       setPopularCAs(popular)
     } catch (e) {
       console.error('CATrustExplorer load:', e)
@@ -649,7 +654,12 @@ export default function CATrustExplorer({ nav }) {
                     <span style={{ fontSize: 12, fontWeight: 600, color: isSelected ? 'var(--v2-green-text)' : 'var(--v2-text)', whiteSpace: 'nowrap' }}>
                       {c.ca_owner?.replace('Inc.','').replace('nv-sa','').trim() || c.common_name}
                     </span>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: isSelected ? 'var(--v2-green-text)' : scoreColor(sc), fontVariantNumeric: 'tabular-nums' }}>{sc}</span>
+                    <span style={{ fontSize: 9, color: isSelected ? 'var(--v2-green-text)' : 'var(--v2-text-3)', display:'flex', gap:2 }}>
+                      {c.chrome_trusted && <span title="Chrome" style={{width:5,height:5,borderRadius:'50%',background:'#1d4ed8',display:'inline-block'}}/>}
+                      {c.mozilla_trusted && <span title="Mozilla" style={{width:5,height:5,borderRadius:'50%',background:'#ea580c',display:'inline-block'}}/>}
+                      {c.apple_trusted && <span title="Apple" style={{width:5,height:5,borderRadius:'50%',background:'#374151',display:'inline-block'}}/>}
+                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0369a1',display:'inline-block'}}/>}
+                    </span>
                   </button>
                 )
               })}
@@ -731,15 +741,20 @@ export default function CATrustExplorer({ nav }) {
                       <Copy size={12} /> {copied ? 'Copied!' : 'SHA-256'}
                     </button>
                     <button className="v2-btn v2-btn-sm" style={{ gap: 5 }} onClick={() => {
-                        if (!selected?.pem_info) return
-                        const pem = `-----BEGIN CERTIFICATE-----\n${selected.pem_info}\n-----END CERTIFICATE-----`
-                        const blob = new Blob([pem], { type: 'application/x-pem-file' })
-                        const url = URL.createObjectURL(blob)
-                        const a = document.createElement('a')
-                        a.href = url
-                        a.download = `${(selected.common_name || selected.ca_owner || 'certificate').replace(/[^a-z0-9]/gi, '_')}.pem`
-                        a.click()
-                        URL.revokeObjectURL(url)
+                        const fname = (selected?.common_name || selected?.ca_owner || 'certificate').replace(/[^a-z0-9]/gi, '_')
+                        if (selected?.pem_info) {
+                          const pem = `-----BEGIN CERTIFICATE-----\n${selected.pem_info}\n-----END CERTIFICATE-----`
+                          const blob = new Blob([pem], { type: 'application/x-pem-file' })
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a'); a.href = url; a.download = fname + '.pem'; a.click()
+                          URL.revokeObjectURL(url)
+                        } else if (selected?.sha256_fingerprint) {
+                          // Fallback: open CCADB record page
+                          const fp = selected.sha256_fingerprint
+                          const year = selected.valid_from ? new Date(selected.valid_from).getFullYear() : 2020
+                          const decade = Math.floor(year / 10) * 10
+                          window.open(`https://ccadb.my.salesforce-sites.com/ccadb/AllCertificatePEMsCSVFormat?NotBeforeDecade=${decade}`, '_blank')
+                        }
                       }}>
                       <FileDown size={12} /> Download PEM
                     </button>
