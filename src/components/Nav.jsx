@@ -1,4 +1,4 @@
-import { LogIn, ChevronDown, ArrowRight, BookOpen, Code, FileText, Menu, X, Shield, Activity } from 'lucide-react'
+import { LogIn, ChevronDown, ArrowRight, BookOpen, Code, FileText, Menu, X, Shield, Activity, Globe } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 function useIsMobile(breakpoint = 760) {
@@ -43,6 +43,7 @@ export default function Nav({ nav, page }) {
     { path:'/knowledge-base',  label:'Knowledge Base',  icon:FileText },
     { path:'/cert-intelligence', label:'CA Intelligence',   icon:Activity },
     { path:'/caa-check',       label:'CAA Checker',     icon:Shield },
+    { path:'/ca-trust-explorer', label:'CA Trust Explorer', icon:Globe },
   ]
 
   return (
