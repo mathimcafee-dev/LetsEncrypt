@@ -1737,8 +1737,8 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     const { data: { session: s } } = await supabase.auth.getSession()
     setSession(s)
     const [{ data: certsData }, { data: ordersData }] = await Promise.all([
-      supabase.from('certificates').select('*').eq('user_id', user.id).eq('status', 'active').order('expires_at', { ascending:true }),
-      supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'dv_pending').order('created_at', { ascending:false }),
+      supabase.from('certificates').select('*').eq('user_id', user.id).order('expires_at', { ascending:true }),
+      supabase.from('ssl_orders').select('*').eq('user_id', user.id).neq('status', 'active').order('created_at', { ascending:false }),
     ])
     const enriched = await Promise.all((certsData||[]).map(async cert => {
       if (!cert.ggs_order_id) return cert
@@ -1791,9 +1791,9 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   }
 
   const total    = certs.length
-  const healthy  = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 }).length
-  const expiring = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 }).length
-  const expired  = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 }).length
+  const healthy  = certs.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'active' && d != null && d >= 30 }).length
+  const expiring = certs.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'active' && d != null && d >= 0 && d < 30 }).length
+  const expired  = certs.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'revoked' || (d != null && d < 0) }).length
 
   const visible = certs.filter(c => {
     const d = daysLeft(c.expires_at); const s = statusOf(d, c.status)
@@ -1861,7 +1861,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             { label:'Total',        value:total,    color:'#0e7fc0', bg:'#eff6ff', icon:'▦', sub:'certificates' },
             { label:'Healthy',      value:healthy,  color:'#16a34a', bg:'#f0fdf4', icon:'✓', sub:healthy>0?'All valid':'None' },
             { label:'Expiring',     value:expiring, color:expiring>0?'#d97706':'#94a3b8', bg:expiring>0?'#fffbeb':'#f8fafc', icon:'⏱', sub:expiring>0?'Renew soon':'None' },
-            { label:'PQC risk',     value:certs.filter(c=>c.pqc_risk==='high').length, color:certs.filter(c=>c.pqc_risk==='high').length>0?'#7c3aed':'#94a3b8', bg:certs.filter(c=>c.pqc_risk==='high').length>0?'#f5f3ff':'#f8fafc', icon:'⚛', sub:certs.filter(c=>c.pqc_risk==='high').length>0?'Migrate by 2030':'None checked' },
+            { label:'Pending',      value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#f59e0b':'#94a3b8', bg:orders.filter(o=>o.status==='dv_pending').length>0?'#fffbeb':'#f8fafc', icon:'⏳', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None' },
             { label:'Expired',      value:expired,  color:expired>0?'#dc2626':'#94a3b8', bg:expired>0?'#fef2f2':'#f8fafc', icon:'✗', sub:expired>0?'Action needed':'None' },
           ].map((s,i) => (
             <div key={s.label}
