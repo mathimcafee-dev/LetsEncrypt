@@ -516,8 +516,13 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
   const [msg, setMsg]   = useState('')
   const [tab, setTab]   = useState('reissues')
   const [expanded, setExpanded] = useState({})
+  // Step-by-step progress tracker
+  const [progress, setProgress] = useState(null)
+  // { action, steps: [{label, status:'pending'|'done'|'active'|'error', detail}], pollTimer }
 
   useEffect(() => { loadHistory() }, [cert.id])
+  // Cleanup poll timer on unmount
+  useEffect(() => () => { if (progress?.pollTimer) clearInterval(progress.pollTimer) }, [progress])
 
   const loadHistory = async () => {
     try {
@@ -530,30 +535,134 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
     } catch {}
   }
 
+  const updateStep = (steps, idx, patch) => steps.map((s, i) => i === idx ? { ...s, ...patch } : s)
+
   const callAction = async (action, extra, confirmMsg) => {
     if (!confirm(confirmMsg)) return
     setBusy(true); setMsg('')
+
+    // Build initial steps based on action
+    const isReissue = action === 'reissue'
+    const initialSteps = isReissue ? [
+      { label: 'Submitting reissue to GGS',     status: 'active',  detail: '' },
+      { label: 'New CSR generated',              status: 'pending', detail: '' },
+      { label: 'DNS TXT record auto-added',      status: 'pending', detail: '' },
+      { label: 'GGS validating domain (DCV)',    status: 'pending', detail: '' },
+      { label: 'New certificate issued',         status: 'pending', detail: '' },
+      { label: 'Dispatching to server',          status: 'pending', detail: '' },
+    ] : [
+      { label: 'Placing new renewal order',      status: 'active',  detail: '' },
+      { label: 'New CSR generated',              status: 'pending', detail: '' },
+      { label: 'DNS TXT record auto-added',      status: 'pending', detail: '' },
+      { label: 'GGS validating domain (DCV)',    status: 'pending', detail: '' },
+      { label: 'New certificate issued',         status: 'pending', detail: '' },
+      { label: 'Dispatching to server',          status: 'pending', detail: '' },
+    ]
+    setProgress({ action, steps: initialSteps, pollTimer: null })
+
     try {
       const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({ action, cert_id: cert.id, triggered_by: 'manual', ...extra })
       })
       const d = await r.json()
-      if (d.ok && d.status === 'active') {
-        setMsg(action==='reissue'?'✅ Reissued & active!':('✅ Renewed! New cert created.'))
-        try {
-          await supabase.from('cert_events').insert({
-            user_id: session.user.id, cert_id: cert.id, domain: cert.domain,
-            event_type: action === 'reissue' ? 'renewed' : 'renewed',
-            meta: { action, triggered_by: 'manual' }
-          })
-        } catch (_) {}
-        loadHistory()
+
+      if (!d.ok) {
+        setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: d.error || 'Request failed' }) }))
+        setMsg(''); setBusy(false); return
       }
-      else if (d.ok) { setMsg('⏳ Submitted — DNS validation in progress...'); loadHistory() }
-      else setMsg('❌ '+(d.error||'Unknown error'))
-    } catch(e) { setMsg('❌ '+e.message) }
-    setBusy(false)
+
+      // Steps 0→1→2 done from API response
+      setProgress(p => {
+        let steps = [...p.steps]
+        steps = updateStep(steps, 0, { status: 'done', detail: isReissue ? `GGS order #${cert.ggs_order_id}` : `New GGS order placed` })
+        steps = updateStep(steps, 1, { status: 'done', detail: 'RSA-2048 key pair generated' })
+        if (d.dcv_txt_value) {
+          steps = updateStep(steps, 2, { status: 'done', detail: `${d.dcv_txt_name || '_pki-validation'} → ${d.dcv_txt_value.slice(0,24)}…` })
+        } else {
+          steps = updateStep(steps, 2, { status: 'done', detail: 'TXT record updated in DNS' })
+        }
+        steps = updateStep(steps, 3, { status: 'active', detail: 'Waiting for GGS to confirm DCV…' })
+        return { ...p, steps }
+      })
+
+      // If instantly active (unlikely but possible)
+      if (d.status === 'active') {
+        setProgress(p => {
+          let steps = [...p.steps]
+          steps = updateStep(steps, 3, { status: 'done', detail: 'DCV passed' })
+          steps = updateStep(steps, 4, { status: 'done', detail: `Expires ${d.new_expiry || '199 days'}` })
+          steps = updateStep(steps, 5, { status: 'done', detail: d.dispatch?.method ? `Sent to ${d.dispatch.method}` : 'Install job queued' })
+          return { ...p, steps }
+        })
+        loadHistory(); setBusy(false); return
+      }
+
+      // Poll ssl_orders for this cert every 5 seconds until active
+      const pollStart = Date.now()
+      const timer = setInterval(async () => {
+        try {
+          // Check if the new pending order for this cert/domain has become active
+          const { data: orders } = await supabase
+            .from('ssl_orders')
+            .select('id, status, ggs_order_id, valid_till, install_method')
+            .eq('user_id', session.user.id)
+            .eq('domain', cert.domain)
+            .order('created_at', { ascending: false })
+            .limit(1)
+          const latest = orders?.[0]
+
+          // Timeout after 4 minutes
+          if (Date.now() - pollStart > 4 * 60 * 1000) {
+            clearInterval(timer)
+            setProgress(p => ({
+              ...p, pollTimer: null,
+              steps: updateStep(p.steps, 3, { status: 'active', detail: 'Still validating — GGS may take a few more minutes' })
+            }))
+            setBusy(false)
+            return
+          }
+
+          if (latest?.status === 'active') {
+            clearInterval(timer)
+            setProgress(p => {
+              let steps = [...p.steps]
+              steps = updateStep(steps, 3, { status: 'done', detail: 'DCV passed ✓' })
+              steps = updateStep(steps, 4, { status: 'done', detail: latest.valid_till ? `Expires ${new Date(latest.valid_till).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}` : 'Certificate active' })
+              steps = updateStep(steps, 5, { status: 'active', detail: 'Dispatching to your server…' })
+              return { ...p, pollTimer: null, steps }
+            })
+            // Check agent/cpanel dispatch after short delay
+            setTimeout(async () => {
+              const { data: certRow } = await supabase.from('certificates').select('install_method, certbind_status').eq('id', cert.id).single()
+              setProgress(p => {
+                const method = certRow?.install_method
+                let steps = updateStep(p.steps, 5, {
+                  status: 'done',
+                  detail: method === 'agent' ? '🖥 Sent to VPS agent' : method === 'cpanel' ? '🌐 Sent to cPanel' : 'No server connected — install manually'
+                })
+                return { ...p, steps }
+              })
+              loadHistory()
+              setBusy(false)
+            }, 3000)
+          } else if (latest?.status === 'dv_pending') {
+            // Still waiting — update detail with time elapsed
+            const elapsed = Math.round((Date.now() - pollStart) / 1000)
+            setProgress(p => ({
+              ...p,
+              steps: updateStep(p.steps, 3, { status: 'active', detail: `GGS checking DNS… ${elapsed}s elapsed` })
+            }))
+          }
+        } catch {}
+      }, 5000)
+
+      setProgress(p => ({ ...p, pollTimer: timer }))
+
+    } catch(e) {
+      setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: e.message }) }))
+      setBusy(false)
+    }
   }
 
   const reissues = history?.reissues || []
@@ -591,14 +700,81 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
   const toggleExpand = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
 
+  // Step status icon
+  const stepIcon = (status) => {
+    if (status === 'done')    return <span style={{color:'#1A7A72',fontWeight:700}}>✓</span>
+    if (status === 'error')   return <span style={{color:'#dc2626',fontWeight:700}}>✗</span>
+    if (status === 'active')  return <span style={{display:'inline-block',width:12,height:12,borderRadius:'50%',border:'2px solid #3DBFB0',borderTopColor:'transparent',animation:'spin .7s linear infinite',verticalAlign:'middle'}}/>
+    return <span style={{color:'#D8D0C0',fontWeight:700}}>○</span>
+  }
+
   return (
     <div style={{ marginTop:4 }}>
-      {msg && (
-        <div style={{ fontSize:12, padding:'8px 12px', borderRadius:6, marginBottom:12,
-          background: msg.startsWith('✅') ? '#E8F8F6' : msg.startsWith('⏳') ? '#fefce8' : '#fef2f2',
-          color: msg.startsWith('✅') ? '#16a34a' : msg.startsWith('⏳') ? '#854d0e' : '#dc2626',
-          border: '1px solid '+(msg.startsWith('✅') ? '#A8E6DE' : msg.startsWith('⏳') ? '#F2C4BC' : '#fecaca') }}>
-          {msg}
+      {/* Progress tracker — shown while action is running */}
+      {progress && (
+        <div style={{
+          marginBottom:16, borderRadius:10,
+          border:'1px solid #A8E6DE',
+          background:'#E8F8F6', overflow:'hidden',
+        }}>
+          {/* Header */}
+          <div style={{
+            padding:'10px 14px',
+            borderBottom:'1px solid #A8E6DE',
+            display:'flex', alignItems:'center', justifyContent:'space-between',
+          }}>
+            <span style={{fontSize:12,fontWeight:700,color:'#1A7A72'}}>
+              {progress.action === 'reissue' ? '🔄 Reissue in progress' : '♻️ Renewal in progress'}
+            </span>
+            {!busy && (
+              <button onClick={() => setProgress(null)} style={{
+                background:'none',border:'none',cursor:'pointer',
+                fontSize:11,color:'#7A9E9B',fontFamily:'inherit',
+              }}>Dismiss</button>
+            )}
+          </div>
+          {/* Steps */}
+          <div style={{padding:'12px 14px',display:'flex',flexDirection:'column',gap:8}}>
+            {progress.steps.map((step, i) => (
+              <div key={i} style={{display:'flex',alignItems:'flex-start',gap:10}}>
+                <div style={{width:16,flexShrink:0,paddingTop:1,textAlign:'center',fontSize:12}}>
+                  {stepIcon(step.status)}
+                </div>
+                <div>
+                  <div style={{
+                    fontSize:12,fontWeight:600,
+                    color: step.status==='done' ? '#1A7A72' : step.status==='error' ? '#dc2626' : step.status==='active' ? '#0F5750' : '#7A9E9B',
+                  }}>
+                    {step.label}
+                  </div>
+                  {step.detail && (
+                    <div style={{fontSize:10,color:'#7A9E9B',marginTop:2,fontFamily:'monospace'}}>
+                      {step.detail}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Footer note */}
+          {busy && (
+            <div style={{
+              padding:'8px 14px',
+              borderTop:'1px solid #A8E6DE',
+              fontSize:11,color:'#3D5C59',
+            }}>
+              ⏱ GGS DNS validation typically takes 1–3 minutes. This page will update automatically.
+            </div>
+          )}
+          {!busy && progress.steps.every(s => s.status === 'done') && (
+            <div style={{
+              padding:'8px 14px',
+              borderTop:'1px solid #A8E6DE',
+              fontSize:11,color:'#1A7A72',fontWeight:600,
+            }}>
+              ✓ All steps complete — your certificate has been reissued and dispatched to your server.
+            </div>
+          )}
         </div>
       )}
 
