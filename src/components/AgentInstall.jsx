@@ -152,7 +152,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
     setDispatching(true); setError('')
     try {
       const data = await callDaemon({
-        action: 'dispatch',
+        action: 'dispatch_job',
         user_id: userId,
         agent_id: selectedAgent,
         cert_id: cert.id,

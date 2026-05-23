@@ -69,11 +69,14 @@ esac
 OS_FULL="${PRETTY_NAME:-$OS_ID $OS_VERSION}"
 ARCH=$(uname -m)
 HOSTNAME_VAL=$(hostname -f 2>/dev/null || hostname)
-# Deduplicate hostname segments (e.g. domain.com.domain.com → domain.com)
+# Deduplicate hostname if doubled (e.g. easysecurrity.cfd.easysecurrity.cfd → easysecurrity.cfd)
 _h="$HOSTNAME_VAL"
-_short=$(hostname -s 2>/dev/null || echo "$_h" | cut -d. -f1)
-# If short hostname appears twice, use the raw hostname without FQDN lookup
-if echo "$_h" | grep -qE "^[^.]+\.[^.]+\.[^.]+$" && [ "$(echo "$_h" | cut -d. -f1)" = "$(echo "$_h" | cut -d. -f2)" ]; then
+_half=$(echo "$_h" | awk -F'.' '{n=NF/2; s=""; for(i=1;i<=n;i++) s=s (i>1?".":"") $i; print s}')
+if [ "$_half.$_half" = "$_h" ] || [ "$(echo "$_h" | sed 's/\(.*\)\.\1/\1/')" != "$_h" ]; then
+  HOSTNAME_VAL=$(echo "$_h" | awk -F'.' '{n=int(NF/2); if(n>0 && n*2==NF){s="";for(i=1;i<=n;i++) s=s (i>1?".":"") $i; print s} else print $0}')
+fi
+# Final fallback: if still looks doubled, use short hostname
+if echo "$HOSTNAME_VAL" | grep -qP '^(.+)\.\1$' 2>/dev/null; then
   HOSTNAME_VAL=$(hostname 2>/dev/null || echo "$_h")
 fi
 IP_ADDR=$(curl -fsSL --max-time 5 https://api.ipify.org 2>/dev/null || echo "unknown")
