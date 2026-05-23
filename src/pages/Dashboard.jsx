@@ -1920,7 +1920,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         </div>
 
         <FleetWidget
-          certs={certs}
+          certs={issuedCerts}
           agents={[]}
           loading={loading}
           nav={nav}
