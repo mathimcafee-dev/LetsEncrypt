@@ -1868,7 +1868,7 @@ function EmbedTab({ cert }) {
   )
 }
 function DomainGroup({ primary, versions, index, selected, onSelect }) {
-  const [expanded, setExpanded] = React.useState(false)
+  const [expanded, setExpanded] = useState(false)
   const hasVersions = versions.length > 1
   const days = daysLeft(primary.expires_at)
   const s    = statusOf(days, primary.status)
