@@ -36,10 +36,17 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
   const [pairingError, setPairingError] = useState('')
   const [serverNickname, setServerNickname] = useState('My Server')
 
-  // Helper: call agent-daemon via supabase.functions.invoke so the user's JWT is included
+  // Helper: call agent-daemon with explicit JWT
   const callDaemon = async (body) => {
-    const { data, error } = await supabase.functions.invoke(DAEMON_FN, { body })
-    if (error) throw error
+    const { data: { session } } = await supabase.auth.getSession()
+    const SB_URL = import.meta.env.VITE_SUPABASE_URL
+    const r = await fetch(`${SB_URL}/functions/v1/agent-daemon`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify(body),
+    })
+    const data = await r.json()
+    if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`)
     return data
   }
 
