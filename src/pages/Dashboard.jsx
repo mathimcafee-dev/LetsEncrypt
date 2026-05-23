@@ -1269,6 +1269,9 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const [keyCopied,  setKeyCopied] = useState(false)
   const [keyTimerRef, setKeyTimerRef] = useState(null)
   const [delConfirm, setDel]       = useState(false)
+  const [cancelConfirm, setCancelConfirm] = useState(false)
+  const [cancelling, setCancelling]       = useState(false)
+  const [cancelMsg, setCancelMsg]         = useState('')
   const [keyDelConfirm, setKDC]    = useState(false)
   const [keyDeleting, setKDing]    = useState(false)
   const [keyChecks, setKC]         = useState({ downloaded:false, installed:false, understand:false })
@@ -1308,6 +1311,34 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       if (d.ok) setTimeout(() => onRefresh(), 1000)
     } catch(e) { setRefreshMsg(e.message) }
     setRefreshing(false)
+  }
+
+  // ── Cancel order (within 30 days) ─────────────────────────────────────────
+  const daysSinceIssue = cert.issued_at
+    ? Math.floor((Date.now() - new Date(cert.issued_at).getTime()) / (1000*60*60*24))
+    : 999
+  const canCancel = daysSinceIssue <= 30 && cert.status === 'active' && !!cert.ggs_order_id
+
+  const doCancel = async () => {
+    setCancelling(true); setCancelMsg('')
+    try {
+      const { data: { session: sess } } = await supabase.auth.getSession()
+      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+sess.access_token },
+        body: JSON.stringify({ action: 'cancel', cert_id: cert.id, reason: 'Requested by customer via SSLVault' })
+      })
+      const d = await r.json()
+      if (d.ok) {
+        setCancelMsg('Cancelled. Refund requested with GoGetSSL.')
+        setCancelConfirm(false)
+        setTimeout(() => onRefresh && onRefresh(), 2000)
+      } else {
+        setCancelMsg('Error: ' + (d.error || 'Unknown error'))
+        setCancelConfirm(false)
+      }
+    } catch(e) { setCancelMsg('Error: ' + e.message); setCancelConfirm(false) }
+    setCancelling(false)
   }
 
   // ── Inline copy button ────────────────────────────────────────────────────
@@ -1602,6 +1633,56 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             onClick={doRefresh} disabled={refreshing}/>
           <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
           <PqcRow cert={cert} onRefresh={onRefresh}/>
+          {/* Cancel order — only within 30 days of issue */}
+          {canCancel && (
+            <div style={{ marginTop:12, padding:'12px 14px', borderRadius:8,
+              border:'0.5px solid #FECACA', background:'#FFF5F5' }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
+                <div>
+                  <div style={{ fontSize:12, fontWeight:600, color:'#B91C1C' }}>Cancel & refund this order</div>
+                  <div style={{ fontSize:11, color:'#EF4444', marginTop:1 }}>
+                    Within 30-day window · {30 - daysSinceIssue} day{30 - daysSinceIssue !== 1 ? 's' : ''} remaining · GGS #{cert.ggs_order_id}
+                  </div>
+                </div>
+                {!cancelConfirm && !cancelMsg && (
+                  <button onClick={() => setCancelConfirm(true)}
+                    style={{ fontSize:11, fontWeight:600, color:'#B91C1C', background:'#FEE2E2',
+                      border:'0.5px solid #FECACA', borderRadius:6, padding:'5px 12px',
+                      cursor:'pointer', fontFamily:'inherit' }}
+                    onMouseEnter={e => e.currentTarget.style.background='#FECACA'}
+                    onMouseLeave={e => e.currentTarget.style.background='#FEE2E2'}>
+                    Cancel order
+                  </button>
+                )}
+              </div>
+              {cancelMsg && (
+                <div style={{ fontSize:11, padding:'6px 10px', borderRadius:5, marginTop:4,
+                  background: cancelMsg.includes('Error') ? '#FEE2E2' : '#D1FAE5',
+                  color: cancelMsg.includes('Error') ? '#B91C1C' : '#065F46' }}>
+                  {cancelMsg}
+                </div>
+              )}
+              {cancelConfirm && !cancelMsg && (
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:4 }}>
+                  <div style={{ fontSize:11, color:'#B91C1C', flex:1 }}>
+                    This will cancel GGS order #{cert.ggs_order_id} and request a refund. Are you sure?
+                  </div>
+                  <button onClick={doCancel} disabled={cancelling}
+                    style={{ fontSize:11, fontWeight:600, color:'white', background:'#DC2626',
+                      border:'none', borderRadius:6, padding:'5px 12px',
+                      cursor: cancelling ? 'not-allowed' : 'pointer', fontFamily:'inherit', opacity: cancelling ? 0.7 : 1 }}>
+                    {cancelling ? 'Cancelling...' : 'Yes, cancel'}
+                  </button>
+                  <button onClick={() => setCancelConfirm(false)} disabled={cancelling}
+                    style={{ fontSize:11, color:'#6B7280', background:'none', border:'0.5px solid #D1D5DB',
+                      borderRadius:6, padding:'5px 10px', cursor:'pointer', fontFamily:'inherit' }}>
+                    Keep it
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           <div style={{ display:'flex', justifyContent:'flex-end', marginTop:4 }}>
             {!delConfirm
               ? <button onClick={() => setDel(true)}
