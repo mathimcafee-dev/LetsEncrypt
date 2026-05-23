@@ -1,13 +1,87 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
-const SB_URL  = 'https://frthcwkntciaakqsppss.supabase.co'
-const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydGhjd2tudGNpYWFrcXNwcHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNjcxNTMsImV4cCI6MjA5MzY0MzE1M30.VN3soDSl8cMOnjaj8n2wSujTLsr9-4ptH5hYxiJCgHQ'
+const OLLAMA_URL = 'http://77.42.27.85/api/chat'
 
-const CHIPS_OUT = ['How does auto-renewal work?','Install agent on VPS','DNS challenge failing','What is TLS grade A?','Connect Cloudflare DNS','What is KeyLocker?']
-const CHIPS_IN  = ['List my certificates','Show expiring soon','Are my agents online?','Show active orders','My DNS providers','Show API keys','Recent audit log','My account plan']
+const SYSTEM_PROMPT = `You are VaultBrain, the official AI support agent for SSLVault (easysecurity.in) — a professional SSL/TLS certificate lifecycle management platform built for PKI professionals and businesses.
 
-const G='#3DBFB0',BG='#0a0a0a',S1='#111',S2='#1a1a1a',TX='#f0f0f0',MU='#7a7a7a',BD='rgba(255,255,255,0.08)',GB='rgba(16,185,129,0.25)'
+## About SSLVault
+SSLVault is a multi-tenant certificate lifecycle management (CLM) platform. It helps users discover, monitor, issue, renew, and manage SSL/TLS certificates across all their servers and domains. It is built by a Certified PKI Specialist.
+
+## Key Features
+- **SSL Discovery**: Find certificates via CT Logs, DNS scanning, or direct server connect
+- **Auto-Renewal**: Automatic certificate renewal via persistent VPS agent (polls every 5 min)
+- **KeyLocker**: Secure private key storage with password-protected reveal and 30-second timed access
+- **CertVault**: Central certificate inventory and management
+- **Agent Install**: One-line bash install for persistent monitoring agent on any VPS/server
+- **DNS Provider Catalog**: Integrations with Cloudflare, Route53, Namecheap, GoDaddy, and 50+ providers
+- **SSL Monitor**: Real-time certificate health and expiry monitoring
+- **Bulk Scanner**: Scan multiple domains at once
+- **CAA Checker**: Check CAA DNS records before certificate issuance
+- **Trust Passport**: Visual certificate trust chain explorer
+- **Renewal Calendar**: Visual calendar of upcoming certificate renewals
+- **SSL Health Score**: Grade your SSL/TLS configuration (A+ to F)
+- **Readiness Dashboard**: Pre-issuance checklist for certificate requests
+- **Integrations**: Connect with external CA connectors and DNS providers
+
+## Certificate Issuance
+SSLVault integrates with GoGetSSL as the CA (Certificate Authority) partner for issuing DV, OV, and EV certificates. Certificates are issued via the GoGetSSL API.
+
+## Multi-Tenant Architecture
+- master_admin → end_customer hierarchy
+- Invite-based onboarding via magic link → set-password flow
+- Role-based access control
+
+## Pricing
+SSLVault offers flexible plans. Visit /pricing for current pricing details. There is a free tier and paid plans for advanced features.
+
+## Technical Stack
+- Frontend: React + Vite hosted on Vercel
+- Backend: Supabase Edge Functions
+- Agent: Bash daemon on customer VPS (polls Supabase every 5 min)
+- Auto-deploy on push to main branch
+
+## Common Support Topics
+- **Agent not connecting**: Check if agent service is running — run \`systemctl status sslvault-agent\`. Reinstall via /install page.
+- **DNS challenge failing**: Ensure DNS provider API key has write access. Check propagation with \`dig TXT _acme-challenge.yourdomain.com\`
+- **Certificate not renewing**: Check agent is online in dashboard. Verify DNS credentials are saved.
+- **Auto-renewal**: Certificates renew automatically 30 days before expiry if agent is active and DNS credentials are configured.
+- **KeyLocker**: Private keys are stored encrypted. Access requires password. Keys auto-hide after 30 seconds.
+- **TLS Grade A+**: Requires TLS 1.2/1.3 only, strong ciphers, HSTS, no weak protocols.
+- **Cloudflare setup**: Use API Token (not Global API Key). Token needs Zone:DNS:Edit permission.
+
+## Pages / Routes
+- / — Home/Landing
+- /dashboard — Main dashboard (requires login)
+- /certvault — Certificate inventory
+- /keylocker — Private key storage
+- /servers — Server management
+- /install — Agent installation guide
+- /dns-providers — DNS provider catalog
+- /pricing — Pricing plans
+- /knowledge-base — Help articles
+- /buy — Purchase/issue new certificate
+- /scan — Bulk domain scanner
+- /caa-check — CAA record checker
+- /trust-passport — Certificate trust chain
+- /renewal-calendar — Upcoming renewals
+- /ssl-health-score — SSL configuration grade
+- /contact — Contact support
+- /about — About SSLVault
+
+## Response Style
+- Be concise, helpful, and professional
+- Use markdown formatting for code blocks and lists
+- For account-specific questions when user is not logged in, ask them to sign in
+- Always suggest the relevant page/route when applicable
+- If you don't know something specific, direct user to /contact or the knowledge base
+- Never make up certificate prices or specific plan details — direct to /pricing
+- You are NOT a general AI assistant — stay focused on SSLVault and SSL/PKI topics`
+
+const CHIPS_OUT = ['How does auto-renewal work?','Install agent on VPS','DNS challenge failing','What is TLS grade A+?','Connect Cloudflare DNS','What is KeyLocker?']
+const CHIPS_IN  = ['List my certificates','Show expiring soon','Are my agents online?','How to buy a certificate','My DNS providers','KeyLocker help','Renewal calendar','SSL Health Score']
+
+const G='#10b981',BG='#0a0a0a',S1='#111',S2='#1a1a1a',TX='#f0f0f0',MU='#7a7a7a',BD='rgba(255,255,255,0.08)',GB='rgba(16,185,129,0.25)'
 
 function Av({ai}){return <div style={{width:26,height:26,borderRadius:'50%',flexShrink:0,marginTop:2,fontSize:11,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',background:ai?'rgba(16,185,129,0.12)':'#1e293b',border:ai?'1px solid rgba(16,185,129,0.25)':'1px solid rgba(99,179,237,0.3)',color:ai?G:'#63b3ed'}}>{ai?'V':'U'}</div>}
 function Bub({ai,user,children}){return <div style={{padding:'10px 14px',borderRadius:14,maxWidth:'86%',background:user?'rgba(16,185,129,0.1)':S2,border:`0.5px solid ${user?'rgba(16,185,129,0.2)':BD}`,borderBottomLeftRadius:ai?3:14,borderBottomRightRadius:user?3:14}}>{children}</div>}
@@ -45,15 +119,21 @@ export default function VaultBrain() {
     setMsgs(m=>[...m,{role:'user',text:q},{role:'ai',loading:true}])
     let answer=''
     try{
-      const token=session?.access_token||null
-      const res=await fetch(`${SB_URL}/functions/v1/vaultbrain-agent`,{
+      const messages=[
+        {role:'system',content:SYSTEM_PROMPT},
+        ...history,
+        {role:'user',content:q}
+      ]
+      const res=await fetch(OLLAMA_URL,{
         method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-        body:JSON.stringify({question:q,messages:history,token}),
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'llama3.2:3b',messages,stream:false}),
       })
       const d=await res.json()
-      answer=d.ok?d.answer:(d.error||'Something went wrong.')
-    }catch(e){answer='Connection error. Please try again.'}
+      answer=d.message?.content||'Sorry, I could not get a response. Please try again.'
+    }catch(e){
+      answer='Connection error. The AI agent is temporarily unavailable. Please visit /contact for support.'
+    }
     setHistory(h=>[...h,{role:'user',content:q},{role:'assistant',content:answer}].slice(-12))
     setMsgs(m=>[...m.slice(0,-1),{role:'ai',text:answer}])
     busyRef.current=false
@@ -65,7 +145,7 @@ export default function VaultBrain() {
   const isNew=msgs.length<=1&&!busy
 
   return(<>
-    <button onPointerDown={e=>{e.preventDefault();setOpen(o=>!o)}} aria-label="VaultBrain" style={{position:'fixed',bottom:24,right:24,zIndex:99999,width:52,height:52,borderRadius:'50%',background:open?S2:G,border:`2px solid ${open?'rgba(255,255,255,0.15)':G}`,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:`0 4px 24px ${open?'rgba(0,0,0,0.5)':'rgba(16,185,129,0.5)'}`,outline:'none',padding:0,WebkitTapHighlightColor:'transparent',touchAction:'manipulation',position:'fixed'}}>
+    <button onPointerDown={e=>{e.preventDefault();setOpen(o=>!o)}} aria-label="VaultBrain" style={{position:'fixed',bottom:24,right:24,zIndex:99999,width:52,height:52,borderRadius:'50%',background:open?S2:G,border:`2px solid ${open?'rgba(255,255,255,0.15)':G}`,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:`0 4px 24px ${open?'rgba(0,0,0,0.5)':'rgba(16,185,129,0.5)'}`,outline:'none',padding:0,WebkitTapHighlightColor:'transparent',touchAction:'manipulation'}}>
       {open?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>}
       <span style={{position:'absolute',top:2,right:2,width:10,height:10,borderRadius:'50%',background:G,border:'2px solid '+BG,animation:'vbpulse 2s infinite'}}/>
     </button>
@@ -79,14 +159,14 @@ export default function VaultBrain() {
         </div>
         <div style={{flex:1}}>
           <div style={{fontSize:13,fontWeight:600,color:TX}}>VaultBrain</div>
-          <div style={{fontSize:10,color:G}}>{session?'🔐 Logged in · Live data access':'PKI expert · Sign in for live data'}</div>
+          <div style={{fontSize:10,color:G}}>{session?'🔐 Logged in · AI Support Agent':'PKI expert · AI-powered support'}</div>
         </div>
         <span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'rgba(16,185,129,0.1)',border:'0.5px solid rgba(16,185,129,0.2)',color:G}}>SSLVAULT</span>
       </div>
 
       <div style={{flex:1,overflowY:'auto',padding:'14px 12px',display:'flex',flexDirection:'column',gap:12,touchAction:'pan-y'}}>
         {msgs.map((msg,i)=>{
-          if(msg.welcome)return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{fontSize:12,fontWeight:600,color:G,marginBottom:6}}>{msg.loggedIn?'VaultBrain — Live Agent':'VaultBrain — SSLVault Expert'}</div><div style={{fontSize:12.5,color:TX,lineHeight:1.7}}>{msg.loggedIn?"I have access to your live account. Ask me anything — certificates, orders, agents, API keys, audit logs, and more.":"Ask me anything about SSL, PKI, and SSLVault. Sign in to get live answers about your account."}</div></Bub></div>)
+          if(msg.welcome)return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{fontSize:12,fontWeight:600,color:G,marginBottom:6}}>VaultBrain — SSLVault AI Agent</div><div style={{fontSize:12.5,color:TX,lineHeight:1.7}}>{msg.loggedIn?"Hi! I'm your SSLVault AI assistant. Ask me anything about your certificates, agents, DNS setup, or any SSLVault feature.":"Hi! I'm VaultBrain, SSLVault's AI support agent. Ask me anything about SSL certificates, auto-renewal, agent setup, or any SSLVault feature."}</div></Bub></div>)
           if(msg.loading)return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{display:'flex',gap:5,alignItems:'center',padding:'3px 0'}}>{[0,1,2].map(j=><span key={j} style={{width:7,height:7,borderRadius:'50%',background:G,display:'inline-block',animation:`vbp 1.2s ${j*0.2}s infinite`}}/>)}</div></Bub></div>)
           if(msg.role==='user')return(<div key={i} style={{display:'flex',gap:8,justifyContent:'flex-end'}}><Bub user><span style={{fontSize:13,color:TX}}>{msg.text}</span></Bub><Av/></div>)
           return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{fontSize:13,color:TX,lineHeight:1.75,whiteSpace:'pre-line'}}>{msg.text}</div></Bub></div>)
@@ -102,7 +182,7 @@ export default function VaultBrain() {
         <textarea ref={inputRef} value={input}
           onChange={e=>{setInput(e.target.value);e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,80)+'px'}}
           onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(input)}}}
-          placeholder={session?"Ask about your certs, orders, agents…":"Ask anything about SSLVault…"}
+          placeholder={session?"Ask about your certs, agents, renewals…":"Ask anything about SSLVault…"}
           rows={1} disabled={busy}
           style={{flex:1,background:S2,border:`0.5px solid ${BD}`,borderRadius:8,padding:'9px 12px',color:TX,fontSize:13,fontFamily:'inherit',resize:'none',outline:'none',lineHeight:1.5,minHeight:40,maxHeight:80,opacity:busy?0.6:1}}
           onFocus={e=>e.target.style.borderColor=GB} onBlur={e=>e.target.style.borderColor=BD}/>
