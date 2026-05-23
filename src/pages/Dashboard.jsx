@@ -1913,7 +1913,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
             {hasVersions && (
               <span style={{ fontSize:10, fontWeight:500, padding:'2px 7px', borderRadius:20,
                 background:'#FAEEDA', color:'#854F0B' }}>
-                {versions.length} versions
+                + {versions.length - 1} older cert{versions.length - 1 !== 1 ? 's' : ''}
               </span>
             )}
           </div>
@@ -1945,7 +1945,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
               style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)', borderRadius:6,
                 padding:'4px 8px', fontSize:10, color:'var(--v2-text-2)', cursor:'pointer',
                 display:'flex', alignItems:'center', gap:3, fontFamily:'inherit' }}>
-              {expanded ? '▲ Hide' : '▼ Versions'}
+              {expanded ? '▲ Hide' : `▼ ${versions.length - 1} older cert${versions.length - 1 !== 1 ? 's' : ''}`}
             </button>
           )}
           <ChevronRight size={14} style={{ color:'var(--v2-text-3)', flexShrink:0 }}/>
@@ -1964,11 +1964,26 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
       {hasVersions && expanded && (
         <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-bg)', padding:'10px 14px 12px' }}>
           <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
-            letterSpacing:'0.5px', marginBottom:8 }}>Certificate versions · {versions.length} total</div>
+            letterSpacing:'0.5px', marginBottom:8 }}>All certificates for this domain · {versions.length} total</div>
           <div style={{ display:'flex', flexDirection:'column', gap:5 }}>
             {versions.map((v, i) => {
-              const vDays = daysLeft(v.expires_at)
               const isCurrent = i === 0
+              const isDeployed = !!v.install_method
+              // Label logic:
+              // Newest + deployed  → "Running on server"
+              // Newest + not deployed → "Not deployed yet"
+              // Older  + deployed  → "Previously deployed"
+              // Older  + not deployed → "Never deployed"
+              const statusLabel = isCurrent
+                ? (isDeployed ? 'Running on server' : 'Not deployed yet')
+                : (isDeployed ? 'Previously deployed' : 'Never deployed')
+              const statusBg = isCurrent
+                ? (isDeployed ? '#E1F5EE' : '#FAEEDA')
+                : 'var(--v2-bg)'
+              const statusColor = isCurrent
+                ? (isDeployed ? '#0F6E56' : '#854F0B')
+                : 'var(--v2-text-3)'
+              const statusBorder = isCurrent ? 'none' : '0.5px solid var(--v2-border)'
               return (
                 <div key={v.id} onClick={() => onSelect(v.id)}
                   style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 12px',
@@ -1976,11 +1991,11 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                     border:`0.5px solid ${selected===v.id?'#3DBFB0':'var(--v2-border)'}`,
                     borderRadius:8, cursor:'pointer', opacity: isCurrent ? 1 : 0.75 }}
                   onMouseEnter={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-bg)' }}
-                  onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background=isCurrent?'var(--v2-surface)':'var(--v2-surface)' }}>
-                  <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20, flexShrink:0,
-                    background: isCurrent ? '#E1F5EE' : 'var(--v2-bg)',
-                    color: isCurrent ? '#0F6E56' : 'var(--v2-text-3)' }}>
-                    {isCurrent ? 'Current' : 'Previous'}
+                  onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-surface)' }}>
+                  <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
+                    flexShrink:0, background: statusBg, color: statusColor, border: statusBorder,
+                    whiteSpace:'nowrap' }}>
+                    {statusLabel}
                   </span>
                   <span style={{ fontSize:11, fontFamily:'monospace', color:'var(--v2-text-2)', flex:1, minWidth:0 }}>
                     GGS #{v.ggs_order_id || '—'}
@@ -1991,25 +2006,12 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                   <span style={{ fontSize:11, color:'var(--v2-text-3)', flexShrink:0 }}>
                     Expires {v.expires_at ? new Date(v.expires_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}
                   </span>
-                  {isCurrent && (
-                    <span style={{ fontSize:10, padding:'2px 7px', borderRadius:20,
-                      background:'#E1F5EE', color:'#0F6E56', flexShrink:0 }}>
-                      Installed
-                    </span>
-                  )}
-                  {!isCurrent && (
-                    <span style={{ fontSize:10, padding:'2px 7px', borderRadius:20,
-                      background:'var(--v2-bg)', color:'var(--v2-text-3)', flexShrink:0,
-                      border:'0.5px solid var(--v2-border)' }}>
-                      Superseded
-                    </span>
-                  )}
                 </div>
               )
             })}
           </div>
           <div style={{ marginTop:8, fontSize:10, color:'var(--v2-text-3)' }}>
-            {versions.length} certificates in GGS · All valid until natural expiry
+            {versions.length} certificate{versions.length!==1?'s':''} under this domain · Each valid until its own expiry date
           </div>
         </div>
       )}
