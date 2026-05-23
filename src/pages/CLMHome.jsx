@@ -102,14 +102,11 @@ export default function CLMHome({ user, nav }) {
     { id:'certbind',      label:'Live Verify',        icon:Shield   },
   ]
   const NAV_SECURITY = [
-    { id:'ssl-health',      label:'TLS Score',        icon:Trophy     },
-    { id:'ct-monitor',      label:'CT Watch',         icon:ShieldAlert },
+    { id:'shield',          label:'Shield',           icon:ShieldCheck },
     { id:'cert-changelog',  label:'Audit trail',      icon:History    },
   ]
   const NAV_INTELLIGENCE = [
     { id:'ca-intelligence', label:'CA Insights',      icon:TrendingUp },
-    { id:'bulk-scan',       label:'Mass scanner',     icon:Scan       },
-    { id:'analytics',       label:'Analytics',        icon:Layout     },
   ]
   const NAV_BOTTOM = [
     { id:'kb',        label:'Docs & help',  icon:BookOpen  },

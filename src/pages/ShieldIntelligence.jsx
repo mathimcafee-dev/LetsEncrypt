@@ -270,6 +270,76 @@ function OverviewTab({ user }) {
   )
 }
 
+// ── TLS domain row (must be a component — no hooks inside .map) ──────
+function DomainScoreRow({ s, scanning, onRescan }) {
+  const [expanded, setExpanded] = useState(false)
+  const style = gradeStyle(s.grade)
+  return (
+    <div style={{ border:`0.5px solid ${style.border}`, borderRadius:10,
+      overflow:'hidden', marginBottom:8, background:'var(--v2-surface)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
+        cursor:'pointer' }} onClick={() => setExpanded(v=>!v)}>
+        <GradeBadge grade={s.grade}/>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5 }}>
+            <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text-1)',
+              fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+              {s.domain}
+            </span>
+            {!s.cert_valid && (
+              <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:4,
+                background:'#FCEBEB', color:'#A32D2D' }}>UNREACHABLE</span>
+            )}
+          </div>
+          <ScoreBar score={s.score}/>
+        </div>
+        <div style={{ display:'flex', gap:10, flexShrink:0 }}>
+          <Tick ok={s.hsts} label="HSTS"/>
+          <Tick ok={s.caa}  label="CAA"/>
+          <Tick ok={s.cert_valid} label="TLS"/>
+          {s.expiry_days != null && (
+            <span style={{ fontSize:11, fontWeight:600,
+              color:s.expiry_days<=0?'#A32D2D':s.expiry_days<=30?'#854F0B':'#1A7A72' }}>
+              {s.expiry_days<=0?'Expired':`${s.expiry_days}d`}
+            </span>
+          )}
+        </div>
+        <button onClick={e => { e.stopPropagation(); onRescan(s.domain) }}
+          disabled={scanning===s.domain}
+          style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, padding:'4px 10px',
+            borderRadius:6, border:'0.5px solid var(--v2-border)', background:'var(--v2-bg)',
+            cursor:'pointer', fontFamily:'inherit', color:'var(--v2-text-2)' }}>
+          <RefreshCw size={10} style={scanning===s.domain?{animation:'spin .8s linear infinite'}:{}}/> Rescan
+        </button>
+        <div style={{ color:'var(--v2-text-3)', flexShrink:0 }}>
+          {expanded ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
+        </div>
+      </div>
+      {expanded && (
+        <div style={{ padding:'12px 14px', borderTop:`0.5px solid ${style.border}`,
+          background:'var(--v2-bg)',
+          display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px,1fr))', gap:10 }}>
+          {[
+            ['Score',       `${Math.round(s.score||0)} / 100`],
+            ['Issuer',      s.issuer||'—'],
+            ['Expiry',      s.expiry_days!=null?(s.expiry_days<=0?'Expired':`${s.expiry_days} days`):'—'],
+            ['TLS valid',   s.cert_valid?'Yes ✓':'No ✗'],
+            ['HSTS',        s.hsts?'Enabled ✓':'Missing ✗'],
+            ['CAA record',  s.caa?'Present ✓':'Missing ✗'],
+            ['Last scanned',timeAgo(s.scanned_at)],
+          ].map(([label, val]) => (
+            <div key={label}>
+              <div style={{ fontSize:10, color:'var(--v2-text-3)', marginBottom:2,
+                fontWeight:600, textTransform:'uppercase', letterSpacing:'0.3px' }}>{label}</div>
+              <div style={{ fontSize:12, color:'var(--v2-text-1)', fontWeight:500 }}>{val}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ══════════════════════════════════════════════════════════════════════
 // TAB 2 — TLS GRADES
 // ══════════════════════════════════════════════════════════════════════
@@ -364,74 +434,9 @@ function TLSGradesTab({ tok, user }) {
           <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text-2)', marginBottom:4 }}>No domains scanned yet</div>
           <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>Enter a domain above to get your first TLS grade.</div>
         </div>
-      ) : scores.map(s => {
-        const [expanded, setExpanded] = useState(false)
-        const style = gradeStyle(s.grade)
-        return (
-          <div key={s.id} style={{ border:`0.5px solid ${style.border}`, borderRadius:10,
-            overflow:'hidden', marginBottom:8, background:'var(--v2-surface)' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
-              cursor:'pointer' }} onClick={() => setExpanded(v=>!v)}>
-              <GradeBadge grade={s.grade}/>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5 }}>
-                  <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text-1)',
-                    fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                    {s.domain}
-                  </span>
-                  {!s.cert_valid && (
-                    <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:4,
-                      background:'#FCEBEB', color:'#A32D2D' }}>UNREACHABLE</span>
-                  )}
-                </div>
-                <ScoreBar score={s.score}/>
-              </div>
-              <div style={{ display:'flex', gap:10, flexShrink:0 }}>
-                <Tick ok={s.hsts} label="HSTS"/>
-                <Tick ok={s.caa}  label="CAA"/>
-                <Tick ok={s.cert_valid} label="TLS"/>
-                {s.expiry_days != null && (
-                  <span style={{ fontSize:11, fontWeight:600,
-                    color:s.expiry_days<=0?'#A32D2D':s.expiry_days<=30?'#854F0B':'#1A7A72' }}>
-                    {s.expiry_days<=0?'Expired':`${s.expiry_days}d`}
-                  </span>
-                )}
-              </div>
-              <button onClick={e => { e.stopPropagation(); rescan(s.domain) }}
-                disabled={scanning===s.domain}
-                style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, padding:'4px 10px',
-                  borderRadius:6, border:'0.5px solid var(--v2-border)', background:'var(--v2-bg)',
-                  cursor:'pointer', fontFamily:'inherit', color:'var(--v2-text-2)' }}>
-                <RefreshCw size={10} style={scanning===s.domain?{animation:'spin .8s linear infinite'}:{}}/> Rescan
-              </button>
-              <div style={{ color:'var(--v2-text-3)', flexShrink:0 }}>
-                {expanded ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
-              </div>
-            </div>
-            {expanded && (
-              <div style={{ padding:'12px 14px', borderTop:`0.5px solid ${style.border}`,
-                background:'var(--v2-bg)',
-                display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px,1fr))', gap:10 }}>
-                {[
-                  ['Score',       `${Math.round(s.score||0)} / 100`],
-                  ['Issuer',      s.issuer||'—'],
-                  ['Expiry',      s.expiry_days!=null?(s.expiry_days<=0?'Expired':`${s.expiry_days} days`):'—'],
-                  ['TLS valid',   s.cert_valid?'Yes ✓':'No ✗'],
-                  ['HSTS',        s.hsts?'Enabled ✓':'Missing ✗'],
-                  ['CAA record',  s.caa?'Present ✓':'Missing ✗'],
-                  ['Last scanned',timeAgo(s.scanned_at)],
-                ].map(([label, val]) => (
-                  <div key={label}>
-                    <div style={{ fontSize:10, color:'var(--v2-text-3)', marginBottom:2,
-                      fontWeight:600, textTransform:'uppercase', letterSpacing:'0.3px' }}>{label}</div>
-                    <div style={{ fontSize:12, color:'var(--v2-text-1)', fontWeight:500 }}>{val}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )
-      })}
+      ) : scores.map(s => (
+        <DomainScoreRow key={s.id || s.domain} s={s} scanning={scanning} onRescan={rescan}/>
+      ))}
       {scores.length > 0 && (
         <div style={{ fontSize:11, color:'var(--v2-text-3)', textAlign:'center', marginTop:8 }}>
           A+ ≥90 · A ≥80 · B ≥70 · C ≥60 · D ≥50 · F &lt;50
