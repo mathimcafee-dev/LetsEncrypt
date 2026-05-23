@@ -796,16 +796,24 @@ export default function MyServers({ user }) {
   const load = useCallback(async () => {
     if (!user) return
     setLoading(true)
-    const [{ data: agentData }, { data: certData }, { data: dnsData }, { data: cpanelData }] = await Promise.all([
+    const [{ data: agentData }, { data: certData }, { data: dnsData }, { data: cpanelData }, { data: serverCredsData }] = await Promise.all([
       supabase.from('persistent_agents').select('*').eq('user_id', user.id).order('last_seen_at', { ascending: false, nullsFirst: false }),
       supabase.from('certificates').select('id,domain,expires_at,status,install_method').eq('user_id', user.id).neq('status', 'revoked'),
       supabase.from('dns_credentials').select('id,provider,label,domain_pattern,created_at').eq('user_id', user.id),
       supabase.from('cpanel_credentials').select('id,label,hostname,port,cpanel_user,domains,install_count,last_used_at').eq('user_id', user.id),
+      supabase.from('server_credentials').select('id,nickname,host,port,username,server_type,domains,created_at').eq('user_id', user.id).eq('server_type','cpanel'),
     ])
     setAgents(agentData || [])
     setCerts(certData || [])
     setDnsCredentials(dnsData || [])
-    setCpanelCreds(cpanelData || [])
+    // Merge cpanel_credentials + server_credentials (cpanel type) into one list
+    const fromVault = (cpanelData || []).map(c => ({ ...c, _source: 'cpanel_credentials', cpanel_user: c.cpanel_user }))
+    const fromServer = (serverCredsData || []).map(s => ({
+      id: s.id, label: s.nickname, hostname: s.host, port: s.port,
+      cpanel_user: s.username, domains: s.domains || [], install_count: null,
+      last_used_at: null, _source: 'server_credentials'
+    }))
+    setCpanelCreds([...fromVault, ...fromServer])
     setLoading(false)
   }, [user])
 
@@ -822,9 +830,13 @@ export default function MyServers({ user }) {
     load()
   }
 
-  async function deleteCpanel(id) {
+  async function deleteCpanel(id, source) {
     if (!confirm('Remove this hosting account?')) return
-    await supabase.from('cpanel_credentials').delete().eq('id', id).eq('user_id', user.id)
+    if (source === 'server_credentials') {
+      await supabase.from('server_credentials').delete().eq('id', id).eq('user_id', user.id)
+    } else {
+      await supabase.from('cpanel_credentials').delete().eq('id', id).eq('user_id', user.id)
+    }
     load()
   }
 
@@ -1001,7 +1013,7 @@ export default function MyServers({ user }) {
                 ) : (
                   <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                     {cpanelCreds.map(cred => (
-                      <HostingCard key={cred.id} cred={cred} onDelete={deleteCpanel} />
+                      <HostingCard key={cred.id} cred={cred} onDelete={(id) => deleteCpanel(id, cred._source)} />
                     ))}
                     <button onClick={() => setShowAddHosting(true)} style={{
                       padding:'12px', borderRadius:10,
