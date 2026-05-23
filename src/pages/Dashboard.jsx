@@ -2002,173 +2002,311 @@ function EmbedTab({ cert }) {
 }
 function DomainGroup({ primary, versions, index, selected, onSelect }) {
   const [expanded, setExpanded] = useState(false)
-  const hasVersions = versions.length > 1
-  const days = daysLeft(primary.expires_at)
-  const s    = statusOf(days, primary.status)
+  const days  = daysLeft(primary.expires_at)
+  const s     = statusOf(days, primary.status)
   const initials = primary.domain.replace(/^www\./, '').slice(0,2).toUpperCase()
-  const dotColor = s.dot==='green'?'#16a34a':s.dot==='amber'?'#E8897A':s.dot==='red'?'#dc2626':'#d4d4d4'
-  const iconBg   = s.dot==='green'?'#1A7A72':s.dot==='amber'?'#E8897A':s.dot==='red'?'#dc2626':'#64748b'
-  const isSelected = selected === primary.id
+  const dotColor = s.dot==='green'?'#3DBFB0':s.dot==='amber'?'#E8897A':s.dot==='red'?'#dc2626':'#d4d4d4'
+
+  // Group versions by ggs_order_id — each unique order = one subscription
+  const subscriptionMap = {}
+  for (const v of versions) {
+    const key = v.ggs_order_id || v.id
+    if (!subscriptionMap[key]) subscriptionMap[key] = []
+    subscriptionMap[key].push(v)
+  }
+  // Sort subscriptions: newest first by max issued_at in group
+  const subscriptions = Object.values(subscriptionMap).sort((a, b) => {
+    const aMax = Math.max(...a.map(v => new Date(v.issued_at||0)))
+    const bMax = Math.max(...b.map(v => new Date(v.issued_at||0)))
+    return bMax - aMax
+  })
+  const hasMultipleSubs = subscriptions.length > 1
+  const hasVersions     = versions.length > 1
+
+  const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'
 
   return (
-    <div style={{ background:'var(--v2-surface)', border:`0.5px solid ${isSelected?'#3DBFB0':'var(--v2-border)'}`,
+    <div style={{ background:'var(--v2-surface)',
+      border:`0.5px solid ${selected===primary.id ? '#3DBFB0' : 'var(--v2-border)'}`,
       borderRadius:12, overflow:'hidden', transition:'border-color 0.15s' }}>
 
-      {/* Primary row */}
+      {/* ── LEVEL 1: Domain anchor row ── */}
       <div onClick={() => onSelect(primary.id)}
-        style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 14px',
-          cursor:'pointer', transition:'background 0.15s' }}
+        style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
+          cursor:'pointer', transition:'background 0.15s', background:'var(--v2-surface)' }}
         onMouseEnter={e => e.currentTarget.style.background='var(--v2-bg)'}
-        onMouseLeave={e => e.currentTarget.style.background='transparent'}>
-        <span style={{ fontSize:11, color:'var(--v2-text-3)', fontWeight:600, minWidth:16, textAlign:'right' }}>{index}</span>
+        onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
+
+        <span style={{ fontSize:11, color:'var(--v2-text-3)', fontWeight:600, minWidth:16, textAlign:'right', flexShrink:0 }}>{index}</span>
+
+        {/* Avatar */}
         <div style={{ position:'relative', flexShrink:0 }}>
-          <div style={{ width:32, height:32, borderRadius:8, background:iconBg,
+          <div style={{ width:36, height:36, borderRadius:9, background:'#1A2E2C',
             display:'flex', alignItems:'center', justifyContent:'center',
-            fontSize:10, fontWeight:700, color:'white', letterSpacing:0.5 }}>{initials}</div>
-          <span style={{ position:'absolute', bottom:-1, right:-1, width:8, height:8,
+            fontSize:11, fontWeight:700, color:'#3DBFB0', letterSpacing:0.5 }}>{initials}</div>
+          <span style={{ position:'absolute', bottom:-2, right:-2, width:9, height:9,
             borderRadius:'50%', background:dotColor, border:'2px solid var(--v2-surface)' }}/>
         </div>
+
+        {/* Domain info */}
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2, flexWrap:'wrap' }}>
-            <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace', color:'var(--v2-text-1)' }}>{primary.domain}</span>
-            <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20,
+          <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3, flexWrap:'wrap' }}>
+            <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace', color:'var(--v2-text-1)' }}>
+              {primary.domain}
+            </span>
+            <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
               background: s.dot==='green'?'#E1F5EE':s.dot==='amber'?'#FAEEDA':'#FCEBEB',
               color: s.dot==='green'?'#0F6E56':s.dot==='amber'?'#854F0B':'#A32D2D' }}>
               {days != null ? `${days}d left` : primary.status}
             </span>
-            {primary.order_type && primary.order_type !== 'original' && (
-              <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
-                background: primary.order_type === 'renewal' ? '#EEF2FF' : '#E1F5EE',
-                color:       primary.order_type === 'renewal' ? '#4338CA' : '#1A7A72',
-                border:      primary.order_type === 'renewal' ? '0.5px solid #C7D2FE' : '0.5px solid #A8E6DE' }}>
-                {primary.order_type === 'renewal' ? '↻ Renewal' : '⟳ Reissue'}
-              </span>
-            )}
-            {primary._healthGrade && (
-              <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:4,
-                background:primary._healthGrade==='A'||primary._healthGrade==='A+'?'#E1F5EE':primary._healthGrade==='B'?'#FAEEDA':'#FCEBEB',
-                color:primary._healthGrade==='A'||primary._healthGrade==='A+'?'#0F6E56':primary._healthGrade==='B'?'#854F0B':'#A32D2D' }}>
-                {primary._healthGrade}
-              </span>
-            )}
-            {hasVersions && (
-              <span style={{ fontSize:10, fontWeight:500, padding:'2px 7px', borderRadius:20,
-                background:'#FAEEDA', color:'#854F0B' }}>
-                + {versions.length - 1} older cert{versions.length - 1 !== 1 ? 's' : ''}
-              </span>
-            )}
-          </div>
-          <div style={{ fontSize:11, color:'var(--v2-text-3)', display:'flex', gap:6, flexWrap:'wrap', alignItems:'center' }}>
-            <span>Expires {primary.expires_at ? new Date(primary.expires_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}</span>
-            <span>·</span>
-            <span style={{ background:'var(--v2-bg)', padding:'1px 7px', borderRadius:20, fontSize:10,
-              color:'var(--v2-text-2)', border:'0.5px solid var(--v2-border)', fontWeight:500 }}>
-              {primary.cert_type || primary.issuer || 'RapidSSL Standard'}
-            </span>
-            <span>·</span>
-            <span>Issued {primary.issued_at ? new Date(primary.issued_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}</span>
-          </div>
-          {primary.install_method && (
-            <div style={{ display:'flex', gap:6, marginTop:4 }}>
+            {primary.install_method && (
               <span style={{ fontSize:10, padding:'2px 8px', borderRadius:20,
-                background: primary.install_method==='cpanel'?'#F5EFE0':'#E8F8F6',
-                color: primary.install_method==='cpanel'?'#8B6914':'#0F6E56',
-                border:`0.5px solid ${primary.install_method==='cpanel'?'#E8D88E':'#A8E6DE'}`,
-                display:'flex', alignItems:'center', gap:3 }}>
+                background: primary.install_method==='cpanel'?'#F5EFE0':'#1A2E2C',
+                color: primary.install_method==='cpanel'?'#8B6914':'#3DBFB0',
+                border:`0.5px solid ${primary.install_method==='cpanel'?'#D4C9B0':'#1A2E2C'}`,
+                display:'flex', alignItems:'center', gap:3, flexShrink:0 }}>
                 {primary.install_method==='cpanel' ? '🌐 cPanel' : '🖥 VPS'}
               </span>
-            </div>
-          )}
+            )}
+            <span style={{ fontSize:10, padding:'1px 7px', borderRadius:20,
+              background:'var(--v2-bg)', color:'var(--v2-text-3)', border:'0.5px solid var(--v2-border)' }}>
+              {primary.cert_type || primary.issuer || 'RapidSSL Standard'}
+            </span>
+          </div>
+          <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
+            {subscriptions.length} subscription{subscriptions.length!==1?'s':''} · {versions.length} cert version{versions.length!==1?'s':''} · Expires {fmtDate(primary.expires_at)}
+          </div>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
-          {hasVersions && (
+
+        {/* Right side */}
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+          <div style={{ textAlign:'right' }}>
+            <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>Expires</div>
+            <div style={{ fontSize:12, fontWeight:600, color:'#1A7A72' }}>{fmtDate(primary.expires_at)}</div>
+          </div>
+          {(hasVersions || hasMultipleSubs) && (
             <button onClick={e => { e.stopPropagation(); setExpanded(!expanded) }}
               style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)', borderRadius:6,
                 padding:'4px 8px', fontSize:10, color:'var(--v2-text-2)', cursor:'pointer',
-                display:'flex', alignItems:'center', gap:3, fontFamily:'inherit' }}>
-              {expanded ? '▲ Hide' : `▼ ${versions.length - 1} older cert${versions.length - 1 !== 1 ? 's' : ''}`}
+                display:'flex', alignItems:'center', gap:3, fontFamily:'inherit', flexShrink:0 }}>
+              {expanded ? '▲ Hide' : '▼ Expand'}
             </button>
           )}
           <ChevronRight size={14} style={{ color:'var(--v2-text-3)', flexShrink:0 }}/>
         </div>
       </div>
 
-      {/* Validity bar */}
+      {/* Validity progress bar */}
       {days != null && (
-        <div style={{ height:2, background:'var(--v2-bg)' }}>
-          <div style={{ width:`${Math.min(100, Math.max(0, (days/398)*100))}%`, height:'100%',
-            background: s.dot==='green'?'#3DBFB0':s.dot==='amber'?'#E8897A':'#dc2626' }}/>
+        <div style={{ height:3, background:'var(--v2-bg)' }}>
+          <div style={{ height:'100%',
+            width:`${Math.min(100, Math.max(0, (days/398)*100))}%`,
+            background:`linear-gradient(90deg, #1A7A72, #3DBFB0)` }}/>
         </div>
       )}
 
-      {/* Versions panel — expands when multiple certs exist for domain */}
-      {hasVersions && expanded && (
-        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-bg)', padding:'10px 14px 12px' }}>
-          <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
-            letterSpacing:'0.5px', marginBottom:8 }}>All certificates for this domain · {versions.length} total</div>
-          <div style={{ display:'flex', flexDirection:'column', gap:5 }}>
-            {versions.map((v, i) => {
-              const isCurrent = i === 0
-              const isDeployed = !!v.install_method
-              // Label logic:
-              // Newest + deployed  → "Running on server"
-              // Newest + not deployed → "Not deployed yet"
-              // Older  + deployed  → "Previously deployed"
-              // Older  + not deployed → "Never deployed"
-              const statusLabel = isCurrent
-                ? (isDeployed ? 'Running on server' : 'Not deployed yet')
-                : (isDeployed ? 'Previously deployed' : 'Never deployed')
-              const statusBg = isCurrent
-                ? (isDeployed ? '#E1F5EE' : '#FAEEDA')
-                : 'var(--v2-bg)'
-              const statusColor = isCurrent
-                ? (isDeployed ? '#0F6E56' : '#854F0B')
-                : 'var(--v2-text-3)'
-              const statusBorder = isCurrent ? 'none' : '0.5px solid var(--v2-border)'
-              return (
-                <div key={v.id} onClick={() => onSelect(v.id)}
-                  style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 12px',
-                    background: selected===v.id ? '#E8F8F6' : 'var(--v2-surface)',
-                    border:`0.5px solid ${selected===v.id?'#3DBFB0':'var(--v2-border)'}`,
-                    borderRadius:8, cursor:'pointer', opacity: isCurrent ? 1 : 0.75 }}
-                  onMouseEnter={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-bg)' }}
-                  onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-surface)' }}>
-                  <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
-                    flexShrink:0, background: statusBg, color: statusColor, border: statusBorder,
-                    whiteSpace:'nowrap' }}>
-                    {statusLabel}
-                  </span>
-                  {/* Order type badge */}
-                  {v.order_type && v.order_type !== 'original' && (
-                    <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
-                      flexShrink:0, whiteSpace:'nowrap',
-                      background: v.order_type === 'renewal' ? '#EEF2FF' : '#E1F5EE',
-                      color:       v.order_type === 'renewal' ? '#4338CA' : '#1A7A72',
-                      border:      v.order_type === 'renewal' ? '0.5px solid #C7D2FE' : '0.5px solid #A8E6DE' }}>
-                      {v.order_type === 'renewal' ? '↻ Renewal' : '⟳ Reissue'}
-                    </span>
-                  )}
-                  <span style={{ fontSize:11, fontFamily:'monospace', color:'var(--v2-text-2)', flex:1, minWidth:0 }}>
-                    GGS #{v.ggs_order_id || '—'}
-                  </span>
-                  <span style={{ fontSize:11, color:'var(--v2-text-3)', flexShrink:0 }}>
-                    Issued {v.issued_at ? new Date(v.issued_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}
-                  </span>
-                  <span style={{ fontSize:11, color:'var(--v2-text-3)', flexShrink:0 }}>
-                    Expires {v.expires_at ? new Date(v.expires_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}
-                  </span>
+      {/* ── LEVELS 2 + 3: Subscription groups + version rows ── */}
+      {expanded && (
+        <div style={{ background:'#F5EFE0', padding:'10px 14px 14px' }}>
+          <div style={{ fontSize:10, fontWeight:600, color:'#6B5A3E', textTransform:'uppercase',
+            letterSpacing:'0.5px', marginBottom:10 }}>Subscription history</div>
+
+          {subscriptions.map((subVersions, si) => {
+            const subNewest   = subVersions[0]
+            const isActiveSub = si === 0
+            const isRenewal   = subNewest.order_type === 'renewal'
+            const isReissued  = subNewest.order_type === 'reissue'
+            const ggsOrder    = subNewest.ggs_order_id
+
+            // Subscription left-border colour:
+            // Active original → dark teal #1A7A72
+            // Renewal         → mint teal #3DBFB0
+            // Older           → muted cream
+            const borderColor = isActiveSub && !isRenewal ? '#1A7A72'
+              : isRenewal ? '#3DBFB0'
+              : '#C5BDAD'
+
+            const headerBg    = isActiveSub && !isRenewal ? '#E8F8F6'
+              : isRenewal ? '#E8F8F6'
+              : '#F5EFE0'
+            const headerBorder = isActiveSub && !isRenewal ? '#A8E6DE'
+              : isRenewal ? '#A8E6DE'
+              : '#D4C9B0'
+
+            // Sub type label
+            const subLabel = isRenewal ? 'Renewal' : si === 0 ? 'Original' : `Earlier subscription`
+
+            // Compute subscription period for timeline bar
+            const oldest = subVersions[subVersions.length - 1]
+            const subStart = oldest.issued_at ? new Date(oldest.issued_at) : null
+            // Estimate sub end = start + 365 days
+            const subEnd = subStart ? new Date(subStart.getTime() + 365*86400000) : null
+            const subTotal = subStart && subEnd ? subEnd - subStart : 1
+            const subElapsed = subStart ? Math.min(Date.now() - subStart, subTotal) : 0
+            const subPct = subStart ? Math.round((subElapsed / subTotal) * 100) : 0
+
+            return (
+              <div key={ggsOrder || si}
+                style={{ border:`0.5px solid ${headerBorder}`, borderRadius:10, overflow:'hidden',
+                  marginBottom: si < subscriptions.length - 1 ? 8 : 0, background:'var(--v2-surface)' }}>
+
+                {/* ── LEVEL 2: Subscription header ── */}
+                <div style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 14px',
+                  background:headerBg, borderBottom:`0.5px solid ${headerBorder}` }}>
+                  {/* Left accent bar */}
+                  <div style={{ width:4, height:40, borderRadius:4, background:borderColor, flexShrink:0 }}/>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:5 }}>
+                      <span style={{ fontSize:10, fontWeight:600, textTransform:'uppercase',
+                        letterSpacing:'0.4px', color: isRenewal?'#1A7A72': isActiveSub?'#1A7A72':'#6B5A3E' }}>
+                        Subscription {subscriptions.length - si} · {subLabel}
+                      </span>
+                      {isActiveSub && (
+                        <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
+                          background:isRenewal?'#3DBFB0':'#1A7A72', color:'white' }}>
+                          {isRenewal ? '↻ Active renewal' : 'Active'}
+                        </span>
+                      )}
+                      {ggsOrder && (
+                        <span style={{ fontSize:10, padding:'2px 7px', borderRadius:20,
+                          background:'white', color:'#1A7A72', border:`0.5px solid ${headerBorder}`,
+                          fontFamily:'monospace' }}>
+                          GGS #{ggsOrder}
+                        </span>
+                      )}
+                      <span style={{ fontSize:10, color:'#6B7B79', marginLeft:'auto' }}>
+                        {subVersions.length} version{subVersions.length!==1?'s':''}
+                      </span>
+                    </div>
+
+                    {/* Timeline bar */}
+                    {subStart && (
+                      <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+                        <span style={{ fontSize:9, color:'#6B7B79', width:54, flexShrink:0 }}>
+                          {subStart.toLocaleDateString('en-US',{month:'short',year:'numeric'})}
+                        </span>
+                        <div style={{ flex:1, height:6, background:'rgba(255,255,255,0.6)', borderRadius:6,
+                          position:'relative', overflow:'visible' }}>
+                          {/* Filled progress */}
+                          <div style={{ position:'absolute', left:0, top:0, bottom:0,
+                            width:`${isActiveSub ? subPct : 100}%`,
+                            background:isActiveSub ? borderColor : '#C5BDAD',
+                            borderRadius:6, transition:'width .6s' }}/>
+                          {/* Today marker for active sub */}
+                          {isActiveSub && subPct > 0 && subPct < 100 && (
+                            <div style={{ position:'absolute', left:`${subPct}%`, top:-3,
+                              width:2, height:12, background:'#3DBFB0', borderRadius:1 }}/>
+                          )}
+                          {/* Auto-reissue dot marker */}
+                          {isActiveSub && (
+                            <div style={{ position:'absolute', right:'8%', top:-2,
+                              width:7, height:7, borderRadius:'50%', background:'#E8897A',
+                              border:'1.5px solid white' }}/>
+                          )}
+                        </div>
+                        <span style={{ fontSize:9, color:'#6B7B79', width:54, textAlign:'right', flexShrink:0 }}>
+                          {subEnd ? subEnd.toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '—'}
+                        </span>
+                      </div>
+                    )}
+                    {isActiveSub && subStart && (
+                      <div style={{ display:'flex', gap:14, marginTop:4 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+                          <div style={{ width:6, height:6, borderRadius:'50%', background:'#3DBFB0' }}/>
+                          <span style={{ fontSize:9, color:'#6B7B79' }}>Today</span>
+                        </div>
+                        <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+                          <div style={{ width:6, height:6, borderRadius:'50%', background:'#E8897A' }}/>
+                          <span style={{ fontSize:9, color:'#6B7B79' }}>Auto-reissue trigger point</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )
-            })}
-          </div>
-          <div style={{ marginTop:8, fontSize:10, color:'var(--v2-text-3)' }}>
-            {versions.length} certificate{versions.length!==1?'s':''} under this domain · Each valid until its own expiry date
-          </div>
+
+                {/* ── LEVEL 3: Version rows inside subscription ── */}
+                {subVersions.map((v, vi) => {
+                  const isNewest   = vi === 0
+                  const isDeployed = !!v.install_method
+
+                  const statusLabel = isNewest
+                    ? (isDeployed ? 'Running on server' : 'Not deployed yet')
+                    : (isDeployed ? 'Previously deployed' : 'Never deployed')
+
+                  const circleColor  = isNewest && isDeployed ? '#1A7A72'
+                    : isNewest && !isDeployed ? '#3DBFB0'
+                    : '#C5BDAD'
+                  const circleBorder = isNewest ? `2px solid ${circleColor}` : `1.5px dashed ${circleColor}`
+                  const circleBg     = isNewest ? '#E8F8F6' : '#F5EFE0'
+                  const circleIcon   = isNewest && isDeployed ? '✓'
+                    : isNewest && !isDeployed ? '⏱'
+                    : '—'
+
+                  const vLabel = `v${subVersions.length - vi}`
+
+                  return (
+                    <div key={v.id}
+                      onClick={() => onSelect(v.id)}
+                      style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 14px',
+                        borderTop:`0.5px solid var(--v2-border)`,
+                        background: selected===v.id ? '#E8F8F6' : 'var(--v2-surface)',
+                        cursor:'pointer', opacity: isNewest ? 1 : 0.6,
+                        transition:'background .15s' }}
+                      onMouseEnter={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-bg)' }}
+                      onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-surface)' }}>
+
+                      {/* Circle status icon */}
+                      <div style={{ width:22, height:22, borderRadius:'50%',
+                        background:circleBg, border:circleBorder, flexShrink:0,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontSize:10, color:circleColor, fontWeight:700 }}>
+                        {circleIcon}
+                      </div>
+
+                      {/* Version info */}
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2 }}>
+                          <span style={{ fontSize:10, fontWeight:600, padding:'1px 7px', borderRadius:20,
+                            background: isNewest && isDeployed ? '#1A7A72' : isNewest ? '#E8F8F6' : '#F5EFE0',
+                            color: isNewest && isDeployed ? 'white' : isNewest ? '#1A7A72' : '#8B7355',
+                            border: isNewest && isDeployed ? 'none' : `0.5px solid ${isNewest?'#A8E6DE':'#C5BDAD'}`,
+                            flexShrink:0 }}>
+                            {statusLabel}
+                          </span>
+                          <span style={{ fontSize:10, fontFamily:'monospace', color:'var(--v2-text-3)' }}>
+                            {vLabel} · {v.issued_at ? new Date(v.issued_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}
+                          </span>
+                        </div>
+                        <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
+                          SHA-256 · RSA 2048 ·
+                          {v.cert_type || v.issuer || ' RapidSSL'} · Expires {fmtDate(v.expires_at)}
+                        </div>
+                      </div>
+
+                      {/* Days left */}
+                      {(() => {
+                        const d = daysLeft(v.expires_at)
+                        return (
+                          <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
+                            background: d==null?'var(--v2-bg)':d>30?'#E1F5EE':d>=0?'#FAEEDA':'#FCEBEB',
+                            color: d==null?'var(--v2-text-3)':d>30?'#0F6E56':d>=0?'#854F0B':'#A32D2D',
+                            flexShrink:0 }}>
+                            {d==null?'—':d<=0?'Expired':`${d}d left`}
+                          </span>
+                        )
+                      })()}
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
   )
 }
+
 
 function CertRow({ cert, selected, onClick, index }) {
   const days = daysLeft(cert.expires_at)
