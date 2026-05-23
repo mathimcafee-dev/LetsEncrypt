@@ -213,15 +213,41 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     })
     setBusy(false)
     if (r.error) { setErr(r.error); return }
-    setOrd({ ...r,
+    const ordData = { ...r,
       dcv_txt_name:  r.dcv_txt_name  || r.dcv_cname_name,
       dcv_txt_value: r.dcv_txt_value || r.dcv_cname_value,
-    })
+    }
+    setOrd(ordData)
     // If DNS provider auto-issued the cert, skip DCV step and show success
     if (r.auto_issued || r.status === 'active') {
       setStep('done')
     } else {
       setStep('dv')
+      // Auto-add DNS record if credential saved for this domain — no manual click needed
+      if (r.dcv_txt_value || r.dcv_cname_value) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession()
+          setDns(true)
+          const dnsR = await fetch(`${SUPABASE_URL}/functions/v1/dns-provider`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+            body: JSON.stringify({
+              action:    'auto_add',
+              user_id:   session.user.id,
+              domain:    d,
+              txt_name:  r.dcv_txt_name  || r.dcv_cname_name  || d,
+              txt_value: r.dcv_txt_value || r.dcv_cname_value,
+            }),
+          })
+          const dnsRes = await dnsR.json()
+          setDns(false)
+          setRes({ dns_auto: dnsRes })
+          if (dnsRes.ok) {
+            // DNS added — mark order so UI shows auto-polling message
+            setOrd(p => ({ ...p, dns_auto_added: true, dns_provider: dnsRes.provider || '' }))
+          }
+        } catch { setDns(false) }
+      }
     }
   }
 
