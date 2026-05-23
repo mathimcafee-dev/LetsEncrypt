@@ -386,18 +386,29 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
                 borderRadius:4, padding:'1px 7px' }}>
                 {keyEntry.status}
               </span>
-              {keyEntry.status === 'active' && (
+              {keyEntry.status === 'active' && keyEntry.cert_status === 'active' && (
                 <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:9,
                   color:'#E8897A', background:'rgba(124,58,237,0.07)',
                   border:'0.5px solid rgba(124,58,237,0.2)', borderRadius:4, padding:'1px 7px', fontWeight:700 }}>
                   <Lock size={8}/> VAULT SECURED
                 </span>
               )}
+              {/* Cert order status badge */}
+              {keyEntry.cert_status && keyEntry.cert_status !== 'active' && (
+                <span style={{ fontSize:9, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.3px',
+                  color: keyEntry.cert_status === 'cancelled' ? '#A32D2D' : '#854F0B',
+                  background: keyEntry.cert_status === 'cancelled' ? '#FCEBEB' : '#FAEEDA',
+                  border: `0.5px solid ${keyEntry.cert_status === 'cancelled' ? '#F7C1C1' : '#F0C490'}`,
+                  borderRadius:4, padding:'1px 7px' }}>
+                  cert {keyEntry.cert_status}
+                </span>
+              )}
             </div>
             <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>
               {keyEntry.algorithm || 'RSA'} · {keyEntry.key_size || 2048}-bit ·
               Created {fmtDate(keyEntry.created_at)}
-              {keyEntry.expires_at && ` · Expires ${fmtDate(keyEntry.expires_at)}`}
+              {keyEntry.cert_expires_at && ` · Cert expires ${fmtDate(keyEntry.cert_expires_at)}`}
+              {keyEntry.ggs_order_id && ` · GGS #${keyEntry.ggs_order_id}`}
             </div>
           </div>
         </div>
@@ -625,8 +636,16 @@ export default function CertVault({ nav }) {
   )
 
   // ── Vault UI ──────────────────────────────────────────────────
-  const activeKeys   = keys.filter(k => k.status === 'active')
-  const archivedKeys = keys.filter(k => k.status === 'archived')
+  // Active = key is active AND linked cert is active
+  // Archived = key archived OR cert is cancelled/revoked/expired/orphaned
+  const activeKeys   = keys.filter(k =>
+    k.status === 'active' &&
+    k.cert_status === 'active'
+  )
+  const archivedKeys = keys.filter(k =>
+    k.status === 'archived' ||
+    (k.status === 'active' && k.cert_status !== 'active')
+  )
   const filteredAudit = auditFilter
     ? audit.filter(e => e.domain === auditFilter)
     : audit
