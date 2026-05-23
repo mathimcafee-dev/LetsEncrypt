@@ -1690,7 +1690,7 @@ function EmbedTab({ cert }) {
     </div>
   )
 }
-function CertRow({ cert, selected, onClick }) {
+function CertRow({ cert, selected, onClick, index }) {
   const days = daysLeft(cert.expires_at)
   const s    = statusOf(days, cert.status)
   const initials = cert.domain.replace(/^www\./, '').slice(0,2).toUpperCase()
@@ -1705,6 +1705,10 @@ function CertRow({ cert, selected, onClick }) {
         borderBottom:'0.5px solid #f1f5f9' }}
       onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='#f8fafc';e.currentTarget.style.borderLeftColor='#A8E6DE'}}}
       onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='white';e.currentTarget.style.borderLeftColor='transparent'}}}>
+      {/* Row index */}
+      <div style={{ width:22, textAlign:'right', fontSize:11, fontWeight:600, color:'#7A9E9B', flexShrink:0, fontVariantNumeric:'tabular-nums' }}>
+        {index}
+      </div>
       {/* Avatar with status dot */}
       <div style={{ position:'relative', flexShrink:0 }}>
         <div style={{ width:38, height:38, borderRadius:10, background:iconBg,
@@ -1767,6 +1771,47 @@ function CertRow({ cert, selected, onClick }) {
             <ProgressBar days={days}/>
           </div>
         )}
+        {/* Install status strip */}
+        {(() => {
+          const method = cert.install_method
+          const bindStatus = cert.certbind_status
+          const checkedAt = cert.certbind_checked_at
+          if (!method) return null
+          const isVerified = bindStatus === 'bound'
+          const isAlert = ['key_mismatch','cert_mismatch','chain_anomaly','partial_deploy','unreachable'].includes(bindStatus)
+          const timeAgo = checkedAt ? (() => {
+            const m = Math.round((Date.now() - new Date(checkedAt).getTime()) / 60000)
+            if (m < 1) return 'just now'
+            if (m < 60) return `${m}m ago`
+            if (m < 1440) return `${Math.round(m/60)}h ago`
+            return `${Math.round(m/1440)}d ago`
+          })() : null
+          return (
+            <div style={{ marginTop:5, display:'flex', alignItems:'center', gap:5 }}>
+              {/* Server type pill */}
+              <span style={{
+                display:'inline-flex', alignItems:'center', gap:3,
+                fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20,
+                background: method==='agent' ? '#E8F8F6' : '#F5EFE0',
+                color: method==='agent' ? '#1A7A72' : '#8B5E3C',
+                border: `1px solid ${method==='agent' ? '#A8E6DE' : '#D8C8A8'}`,
+              }}>
+                {method==='agent' ? '🖥 VPS' : '🌐 cPanel'}
+              </span>
+              {/* Verification status */}
+              <span style={{
+                display:'inline-flex', alignItems:'center', gap:3,
+                fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20,
+                background: isVerified ? '#E8F8F6' : isAlert ? '#FDF0EE' : '#F5EFE0',
+                color: isVerified ? '#1A7A72' : isAlert ? '#C45A4A' : '#7A9E9B',
+                border: `1px solid ${isVerified ? '#A8E6DE' : isAlert ? '#F2C4BC' : '#D8D0C0'}`,
+              }}>
+                {isVerified ? '✓ Live & verified' : isAlert ? '⚠ Check needed' : '○ Not verified'}
+                {timeAgo && !isAlert && <span style={{opacity:0.6}}> · {timeAgo}</span>}
+              </span>
+            </div>
+          )
+        })()}
       </div>
       <ChevronRight size={14} color="#cbd5e1" style={{ flexShrink:0 }}/>
     </div>
@@ -2038,8 +2083,8 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 )}
               </div>
             ) : (
-              visible.map(cert => (
-                <CertRow key={cert.id} cert={{...cert, _healthGrade: healthScores[cert.domain]?.grade || null}} selected={selected===cert.id}
+              visible.map((cert, idx) => (
+                <CertRow key={cert.id} index={idx + 1} cert={{...cert, _healthGrade: healthScores[cert.domain]?.grade || null}} selected={selected===cert.id}
                   onClick={() => setSelected(selected===cert.id ? null : cert.id)}/>
               ))
             )}
