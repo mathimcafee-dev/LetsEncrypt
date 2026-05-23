@@ -20,6 +20,7 @@ import CertChangelog from './CertChangelog'
 import BulkScanner from './BulkScanner'
 import RenewalCalendar from './RenewalCalendar'
 import CTAbuseMonitor from './CTAbuseMonitor'
+import ShieldIntelligence from './ShieldIntelligence'
 import ReadinessDashboard from './ReadinessDashboard'
 import Infrastructure from './Infrastructure'
 import MyServers from './MyServers'
@@ -121,10 +122,9 @@ export default function CLMHome({ user, nav }) {
     servers:'Servers & agents', integrations:'DNS providers',
     certvault:'CertVault',
       certbind:'CertBind — Active Binding',
-    'ssl-health':'Health scores', 'ct-monitor':'CT abuse monitor',
+    'shield':'Shield Intelligence',
     'cert-changelog':'Audit log', 'agent-health':'Servers & agents', 'infrastructure':'Servers & agents',
-    'ca-intelligence':'CA intelligence', 'bulk-scan':'Bulk scanner',
-    analytics:'Analytics',
+    'ca-intelligence':'CA intelligence',
     kb:'Docs & help', settings:'Settings',
     about:'About', developer:'Developer', contact:'Contact', pricing:'Pricing',
     'ca-connectors':'CA connectors',
@@ -182,13 +182,13 @@ export default function CLMHome({ user, nav }) {
     if (section === 'certbind')   return <CertBind nav={sideNav}/>
     if (section === 'settings')      return <SettingsPage user={user}/>
     if (section === 'ca-intelligence') return <CAIntelligenceHub nav={sideNav}/>
-    if (section === 'analytics')     return <AdminAnalytics user={user}/>
+
     if (section === 'agent-health')  return <AgentHealth user={user}/>
-    if (section === 'ssl-health')      return <SSLHealthScore user={user}/>
+    if (section === 'shield')           return <ShieldIntelligence user={user}/>
     if (section === 'renewal-calendar') return <RenewalCalendar user={user}/>
-    if (section === 'ct-monitor')       return <CTAbuseMonitor user={user}/>
+
     if (section === 'cert-changelog')  return <CertChangelog user={user}/>
-    if (section === 'bulk-scan')      return <BulkScanner nav={sideNav}/>
+
     return null
   }
 
