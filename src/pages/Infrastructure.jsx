@@ -79,10 +79,28 @@ function CertPill({ cert }) {
 // ── Install modal ─────────────────────────────────────────────────────
 function InstallModal({ onClose }) {
   const [copied, setCopied] = useState(null)
-  const cmds = [
-    { id:'install', label:'1. Install the agent', cmd:'curl -fsSL https://easysecurity.in/agent-install.sh | bash' },
-    { id:'verify',  label:'2. Verify it\'s running', cmd:'sudo systemctl status sslvault-agent' },
-  ]
+  const [installCmd, setInstallCmd] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        const r = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-daemon`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({ action: 'create_install_command', nickname: 'My Server' })
+        })
+        const d = await r.json()
+        if (d.ok && d.command) setInstallCmd(d.command)
+        else setError(d.error || 'Failed to generate command')
+      } catch (e) { setError(String(e?.message || e)) }
+      setLoading(false)
+    })()
+  }, [])
+
+  const verifyCmd = 'sudo systemctl status sslvault-agent'
   const copy = (cmd, id) => {
     navigator.clipboard.writeText(cmd)
     setCopied(id)
@@ -104,20 +122,26 @@ function InstallModal({ onClose }) {
             display:'flex', alignItems:'center', justifyContent:'center' }}>×</button>
         </div>
         <div style={{ padding:'18px 20px' }}>
-          {cmds.map(({ id, label, cmd }) => (
+          {[
+            { id:'install', label:'1. Install the agent', cmd: loading ? 'Generating secure install command…' : (error || installCmd) },
+            { id:'verify',  label:"2. Verify it's running", cmd: verifyCmd },
+          ].map(({ id, label, cmd }) => (
             <div key={id} style={{ marginBottom:14 }}>
               <div style={{ fontSize:11, fontWeight:500, color:'var(--v2-text-2)', marginBottom:6 }}>{label}</div>
               <div style={{ display:'flex', alignItems:'center', gap:8, background:'#0a0e1a',
                 borderRadius:7, padding:'10px 14px' }}>
-                <code style={{ fontSize:12, color:'#0ea5e9', fontFamily:'monospace', flex:1,
+                <code style={{ fontSize:12, color: id==='install' && error ? '#f87171' : '#0ea5e9', fontFamily:'monospace', flex:1,
                   overflow:'auto', whiteSpace:'nowrap' }}>{cmd}</code>
-                <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, fontSize:10, fontWeight:500,
-                  color:'rgba(255,255,255,0.55)', padding:'4px 8px', border:'0.5px solid rgba(255,255,255,0.15)',
-                  borderRadius:4, background:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:4,
-                  fontFamily:'inherit' }}>
-                  {copied===id ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
-                </button>
+                {!loading && !error && (
+                  <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, fontSize:10, fontWeight:500,
+                    color:'rgba(255,255,255,0.55)', padding:'4px 8px', border:'0.5px solid rgba(255,255,255,0.15)',
+                    borderRadius:4, background:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:4,
+                    fontFamily:'inherit' }}>
+                    {copied===id ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
+                  </button>
+                )}
               </div>
+
             </div>
           ))}
           <div style={{ background:'#eff6ff', border:'0.5px solid #bfdbfe', borderRadius:7, padding:'10px 12px' }}>
