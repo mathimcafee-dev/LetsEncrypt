@@ -159,17 +159,23 @@ export default function CertBind() {
 
   async function load(uid) {
     setLoading(true)
-    const [{ data: certsData }, { data: agentsData }, { data: jobs }] = await Promise.all([
-      supabase.from('certificates').select('id,domain,status,install_method,certbind_status,certbind_checked_at,ggs_order_id').eq('user_id', uid).eq('status', 'active').order('issued_at', { ascending: false }),
+    const [{ data: certsData }, { data: agentsData }] = await Promise.all([
+      supabase.from('certificates')
+        .select('id,domain,status,install_method,certbind_status,certbind_checked_at,ggs_order_id,issued_at')
+        .eq('user_id', uid)
+        .eq('status', 'active')
+        .neq('status', 'cancelled')
+        .order('issued_at', { ascending: false }),
       supabase.from('persistent_agents').select('id,nickname,hostname,status,last_seen_at').eq('user_id', uid),
-      supabase.from('agent_jobs').select('domain,agent_id').eq('user_id', uid).eq('status', 'success').order('created_at', { ascending: false }),
     ])
-    const domainAgent = {}
-    for (const j of (jobs || [])) { if (!domainAgent[j.domain]) domainAgent[j.domain] = j.agent_id }
-    // Deduplicate by domain — latest per domain
-    const seen = new Set()
-    const unique = (certsData || []).filter(c => { if (seen.has(c.domain)) return false; seen.add(c.domain); return true })
-    setCerts(unique.map(c => ({ ...c, agent_id: domainAgent[c.domain] || null })))
+    // One row per domain — pick the newest issued_at (same logic as Fleet)
+    const domainMap = {}
+    for (const c of (certsData || [])) {
+      if (!domainMap[c.domain] || new Date(c.issued_at) > new Date(domainMap[c.domain].issued_at)) {
+        domainMap[c.domain] = c
+      }
+    }
+    setCerts(Object.values(domainMap))
     setAgents(agentsData || [])
     setLastRefresh(new Date())
     setLoading(false)
@@ -178,16 +184,20 @@ export default function CertBind() {
   async function runCheck(cert) {
     setChecking(cert.id)
     try {
-      const d = await callCertBind('request_bind_check', { user_id: userId, cert_id: cert.id, agent_id: cert.agent_id || null })
-      if (d.check_id && cert.agent_id) {
-        for (let i = 0; i < 10; i++) {
-          await new Promise(r => setTimeout(r, 3000))
-          const { data: check } = await supabase.from('certbind_checks').select('binding_status').eq('id', d.check_id).single()
-          if (check?.binding_status && check.binding_status !== 'pending') break
-        }
+      // v10: edge function does TLS probe and returns result immediately
+      const d = await callCertBind('request_bind_check', { user_id: userId, cert_id: cert.id })
+      // Update cert in local state immediately from response — no need to re-fetch
+      if (d.ok && d.binding_status) {
+        setCerts(prev => prev.map(c =>
+          c.id === cert.id
+            ? { ...c, certbind_status: d.binding_status, certbind_checked_at: new Date().toISOString() }
+            : c
+        ))
+      } else {
+        // Fallback: reload from DB
+        await load(userId)
       }
-      await load(userId)
-    } catch {}
+    } catch { await load(userId) }
     setChecking(null)
   }
 

@@ -1564,7 +1564,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
       {/* ── Tabs ─── */}
       <div style={{ display:'flex', padding:'0 16px', borderBottom:'0.5px solid #f1f5f9', gap:0 }}>
-        {['details','actions','files','history','embed'].map(t => (
+        {['details','actions','files','history'].map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
             style={{ fontSize:11, fontWeight:700, padding:'11px 14px',
               background:'none', border:'none', cursor:'pointer', fontFamily:'inherit',
@@ -1888,9 +1888,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       )}
 
       {/* ── Tab: Embed ─────────────────────────────────────────────────── */}
-      {activeTab === 'embed' && (
-        <EmbedTab cert={cert} />
-      )}
+
 
       <style>{`
         @keyframes v3pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
