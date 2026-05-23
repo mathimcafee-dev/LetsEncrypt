@@ -68,13 +68,13 @@ const C = {
 const F    = "system-ui,-apple-system,'Segoe UI',sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
-export default function Home() {
+export default function Home({ nav }) {
   const { isMobile, isTablet } = useIsMobile()
   const [user, setUser] = useState(null)
   useEffect(() => { supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user || null)) }, [])
 
-  const nav = (path) => { window.location.hash = ''; window.dispatchEvent(new CustomEvent('sslvault-nav', { detail: path })) }
-  const go  = (path) => { window.location.href = path }
+  // nav prop comes from App.jsx router — handles SPA navigation correctly
+  const go = nav  // alias for internal use
 
   return (
     <div style={{ fontFamily: F, background: C.cream, color: C.ink, overflowX: 'hidden' }}>
@@ -82,7 +82,7 @@ export default function Home() {
       {/* ── NAV ────────────────────────────────────────────────────── */}
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: C.deep, borderBottom: `1px solid rgba(255,255,255,0.08)` }}>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 clamp(16px,4vw,40px)', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }} onClick={() => go('/')}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }} onClick={() => nav('/')}>
             <div style={{ width: 30, height: 30, background: C.mint, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
