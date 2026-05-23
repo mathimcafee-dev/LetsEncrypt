@@ -101,11 +101,13 @@ function WorkspaceRow({ icon: Icon, iconBg, iconColor, label, badge, badgeColor,
 
 function SectionCard({ title, children, style = {} }) {
   return (
-    <div className="v2-card" style={{ marginBottom: 12, ...style }}>
-      <div className="v2-card-pad">
-        {title && <div className="v2-section-label" style={{ marginBottom: 10 }}>{title}</div>}
-        {children}
-      </div>
+    <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
+      borderRadius:10, padding:'14px 16px', marginBottom:12, ...style }}>
+      {title && (
+        <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+          letterSpacing:'0.4px', marginBottom:10 }}>{title}</div>
+      )}
+      {children}
     </div>
   )
 }
@@ -303,6 +305,68 @@ function OverviewTab({ tok, onSwitchCA }) {
   )
 }
 
+function StatCard({ label, val, sub, color, bg, onClick }) {
+  return (
+    <div onClick={onClick} style={{ padding:'12px 14px', borderRadius:10,
+      background:bg||'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
+      cursor:onClick?'pointer':'default' }}>
+      <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:4 }}>{label}</div>
+      <div style={{ fontSize:22, fontWeight:700, color:color||'var(--v2-text-1)', fontFamily:'monospace', lineHeight:1 }}>{val}</div>
+      <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:4 }}>{sub}</div>
+    </div>
+  )
+}
+
+function FilterBar({ filters, active, onSelect, count }) {
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:4, padding:'10px 14px',
+      borderBottom:'0.5px solid var(--v2-border)', flexWrap:'wrap' }}>
+      {filters.map(([id, lbl]) => (
+        <button key={id} onClick={() => onSelect(id)}
+          style={{ padding:'4px 11px', borderRadius:6, fontSize:11, border:'none', fontFamily:'inherit',
+            fontWeight:active===id?600:400, cursor:'pointer', transition:'all .15s',
+            background:active===id?'var(--v2-green)':'none',
+            color:active===id?'white':'var(--v2-text-3)' }}>
+          {lbl}
+        </button>
+      ))}
+      {count !== undefined && (
+        <span style={{ marginLeft:'auto', fontSize:11, color:'var(--v2-text-3)' }}>{count} certs</span>
+      )}
+    </div>
+  )
+}
+
+function TableHead({ cols }) {
+  return (
+    <div style={{ display:'grid', gridTemplateColumns:cols.join(' '),
+      padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)' }}>
+      {cols.map((_, i, arr) => null)}
+    </div>
+  )
+}
+
+function CertTable({ cols, headers, children, loading, empty }) {
+  return (
+    <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden' }}>
+      <div style={{ display:'grid', gridTemplateColumns:cols, padding:'8px 14px',
+        background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)' }}>
+        {headers.map(h => (
+          <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
+            textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
+        ))}
+      </div>
+      {loading ? (
+        <div style={{ padding:40, textAlign:'center', color:'var(--v2-text-3)', fontSize:13 }}>
+          <Spinner/><span style={{ marginLeft:8 }}>Loading…</span>
+        </div>
+      ) : empty ? (
+        <div style={{ padding:'36px 24px', textAlign:'center', fontSize:12, color:'var(--v2-text-3)' }}>{empty}</div>
+      ) : children}
+    </div>
+  )
+}
+
 // ══════════════════════════════════════════════════════════════════════
 // TAB 2 — GOGETSSL
 // ══════════════════════════════════════════════════════════════════════
@@ -361,88 +425,80 @@ function RapidSSLTab({ tok, nav }) {
     return true
   })
 
+  const COLS = '2fr 1fr 1fr 90px'
+  const HEADERS = ['Domain', 'Product', 'Expires', 'Days left']
+
   return (
     <div>
-      {/* Connection banner */}
-      <div style={{ background: '#E8F8F6', border: '0.5px solid #6ee7b7', borderRadius: 8,
-        padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      {/* Banner */}
+      <div style={{ background:'#E1F5EE', border:'0.5px solid #A8E6DE', borderRadius:10,
+        padding:'12px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#0F5750' }}>RapidSSL — SSLVault native CA</div>
-          <div style={{ fontSize: 11, color: '#3DBFB0', marginTop: 2 }}>Live API · {orders.length} active orders</div>
+          <div style={{ fontSize:13, fontWeight:600, color:'#0F6E56' }}>RapidSSL — SSLVault native CA</div>
+          <div style={{ fontSize:11, color:'#3DBFB0', marginTop:2 }}>Live API · {orders.length} domains managed</div>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="v2-btn v2-btn-sm" onClick={load} disabled={loading}>
-            {loading ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync</>}
+        <div style={{ display:'flex', gap:8 }}>
+          <button onClick={load} disabled={loading}
+            style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 12px',
+              borderRadius:7, border:'0.5px solid var(--v2-border)', background:'var(--v2-surface)',
+              cursor:'pointer', fontFamily:'inherit', color:'var(--v2-text-1)' }}>
+            <RefreshCw size={11} style={{ animation:loading?'spin .8s linear infinite':'none' }}/> Sync
           </button>
-          <button className="v2-btn v2-btn-primary" style={{ fontSize: 12, padding: '5px 12px' }}
-            onClick={() => nav('/buy')}>Issue certificate</button>
+          <button onClick={() => nav('/buy')}
+            style={{ fontSize:11, padding:'5px 14px', borderRadius:7, border:'none',
+              background:'var(--v2-green)', color:'white', cursor:'pointer', fontWeight:600, fontFamily:'inherit' }}>
+            Issue certificate
+          </button>
         </div>
       </div>
 
       {/* KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 16 }}>
-        {[
-          { label: 'Total certs',    val: loading ? '…' : orders.length, sub: 'DV · OV · EV · Wildcard', c: 'var(--v2-text)' },
-          { label: 'Auto-renewing', val: loading ? '…' : autoRenew,      sub: 'agent active',             c: '#3DBFB0' },
-          { label: 'Expiring ≤30d', val: loading ? '…' : expiring,       sub: 'needs action',             c: expiring > 0 ? '#E8897A' : '#16a34a' },
-          { label: 'Expired',       val: loading ? '…' : expired,        sub: expired > 0 ? 'act now' : 'all clear', c: expired > 0 ? '#dc2626' : '#16a34a' },
-        ].map(({ label, val, sub, c }) => (
-          <div key={label} className="v2-stat">
-            <div className="v2-stat-label">{label}</div>
-            <div className="v2-stat-value" style={{ color: c }}>{val}</div>
-            <div className="v2-stat-delta">{sub}</div>
-          </div>
-        ))}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:16 }}>
+        <StatCard label="Total domains" val={loading?'…':orders.length} sub="managed by SSLVault"/>
+        <StatCard label="Auto-renewing" val={loading?'…':autoRenew} sub="agent active" color="#1A7A72"/>
+        <StatCard label="Expiring ≤ 30d" val={loading?'…':expiring} sub="needs action"
+          color={expiring>0?'#854F0B':'var(--v2-text-1)'} bg={expiring>0?'#FAEEDA':undefined}/>
+        <StatCard label="Expired" val={loading?'…':expired} sub={expired>0?'act now':'all clear'}
+          color={expired>0?'#A32D2D':'var(--v2-text-1)'} bg={expired>0?'#FCEBEB':undefined}/>
       </div>
 
-      {/* Certificate table */}
-      <div className="v2-card">
-        <div className="v2-filter-bar">
-          {[['all','All'],['expiring','Expiring ≤30d'],['expired','Expired'],['healthy','Healthy']].map(([id, lbl]) => (
-            <button key={id} className={`v2-filter-chip ${filter===id?'active':''}`}
-              onClick={() => setFilter(id)}>{lbl}</button>
-          ))}
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--v2-text-3)' }}>{filtered.length} certs</span>
-        </div>
-        {/* Table header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px 160px', gap: 8,
-          padding: '8px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
-          {['Domain', 'Product', 'Expires', 'Status', 'Actions'].map(h => (
-            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
-              textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
-          ))}
-        </div>
-        <div className="v2-list-scroll">
-          {loading ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
-              <Spinner/><span style={{ marginLeft: 8 }}>Loading certificates…</span>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
-              {orders.length === 0 ? 'No RapidSSL certificates found. Issue your first certificate.' : 'No certificates match this filter.'}
-            </div>
-          ) : filtered.map((c, i) => {
-            const d = dLeft(c.expiry_date)
-            const color = expiryColor(d)
-            const s = d === null ? 'grey' : d <= 0 ? 'red' : d <= 30 ? 'amber' : 'green'
-            return (
-              <div key={i} className={`v2-list-row status-${s}`}
-                style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', padding: '10px 16px', cursor: 'default' }}>
-                <div className="v2-row-body" style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: 'var(--v2-text)',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {c.common_name || c.domain || '—'}
-                  </div>
-                  {c.auto_renew && <div style={{ fontSize: 10, color: '#3DBFB0', marginTop: 2 }}>Auto-renew enabled</div>}
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{c.product_name || 'SSL Certificate'}</div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{fmt(c.expiry_date)}</div>
-                <div style={{ alignSelf: 'center' }}><ExpiryBadge iso={c.expiry_date}/></div>
-              </div>
-            )
-          })}
-        </div>
+      {/* Table */}
+      <div style={{ marginBottom:8 }}>
+        <FilterBar
+          filters={[['all','All'],['expiring','Expiring ≤ 30d'],['expired','Expired'],['healthy','Healthy']]}
+          active={filter} onSelect={setFilter} count={filtered.length}/>
       </div>
+      <CertTable cols={COLS} headers={HEADERS}
+        loading={loading}
+        empty={orders.length===0?'No RapidSSL certificates. Issue your first certificate.':'No certificates match this filter.'}>
+        {filtered.map((c, i) => {
+          const d = dLeft(c.expiry_date)
+          const color = expiryColor(d)
+          return (
+            <div key={i} style={{ display:'grid', gridTemplateColumns:COLS, padding:'10px 14px',
+              borderBottom:'0.5px solid var(--v2-border)', alignItems:'center',
+              background: i%2===0?'var(--v2-surface)':'var(--v2-bg)',
+              transition:'background .1s' }}
+              onMouseEnter={e=>e.currentTarget.style.background='var(--v2-surface-3)'}
+              onMouseLeave={e=>e.currentTarget.style.background=i%2===0?'var(--v2-surface)':'var(--v2-bg)'}>
+              <div style={{ fontFamily:'monospace', fontSize:12, fontWeight:600, color:'var(--v2-text-1)',
+                overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                {c.common_name || c.domain || '—'}
+              </div>
+              <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>{c.product_name||'RapidSSL'}</div>
+              <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>{fmt(c.expiry_date)}</div>
+              <div>
+                <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
+                  background: d===null?'var(--v2-bg)':d<=0?'#FCEBEB':d<=30?'#FAEEDA':'#E1F5EE',
+                  color: d===null?'var(--v2-text-3)':d<=0?'#A32D2D':d<=30?'#854F0B':'#0F6E56',
+                  border:`0.5px solid ${d===null?'var(--v2-border)':d<=0?'#F7C1C1':d<=30?'#F0C490':'#A8E6DE'}` }}>
+                  {d===null?'—':d<=0?'Expired':`${d}d`}
+                </span>
+              </div>
+            </div>
+          )
+        })}
+      </CertTable>
     </div>
   )
 }
@@ -799,19 +855,14 @@ function DigiCertTab({ tok, nav }) {
       </div>
 
       {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 16 }}>
-        {[
-          { label: 'Total certs',    val: portfolio.length, sub: 'in portfolio',      color: 'var(--v2-text)',  onClick: () => setFilterStatus('all') },
-          { label: 'Active',         val: activeCount,      sub: 'issued & valid',    color: '#16a34a',         onClick: () => setFilterStatus('active') },
-          { label: 'Expiring ≤ 30d', val: expiring30,       sub: 'needs attention',   color: expiring30 > 0 ? '#E8897A' : '#16a34a', onClick: () => setFilterStatus('expiring') },
-          { label: 'PQC risk',       val: pqcRisk,          sub: 'RSA keys flagged',  color: pqcRisk > 0 ? '#dc2626' : '#16a34a', onClick: () => {} },
-        ].map(({ label, val, sub, color, onClick }) => (
-          <div key={label} className="v2-stat" style={{ cursor: 'pointer' }} onClick={onClick}>
-            <div className="v2-stat-label">{label}</div>
-            <div className="v2-stat-value" style={{ color }}>{val || '—'}</div>
-            <div className="v2-stat-delta">{sub}</div>
-          </div>
-        ))}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:16 }}>
+        <StatCard label="Total certs" val={portfolio.length} sub="in portfolio" onClick={() => setFilterStatus('all')}/>
+        <StatCard label="Active" val={activeCount} sub="issued & valid" color="#1A7A72" onClick={() => setFilterStatus('active')}/>
+        <StatCard label="Expiring ≤ 30d" val={expiring30} sub="needs attention"
+          color={expiring30>0?'#854F0B':'var(--v2-text-1)'} bg={expiring30>0?'#FAEEDA':undefined}
+          onClick={() => setFilterStatus('expiring')}/>
+        <StatCard label="PQC risk" val={pqcRisk} sub="RSA keys flagged"
+          color={pqcRisk>0?'#A32D2D':'var(--v2-text-1)'} bg={pqcRisk>0?'#FCEBEB':undefined}/>
       </div>
 
       {/* Expiry timeline view */}
@@ -846,8 +897,8 @@ function DigiCertTab({ tok, nav }) {
       )}
 
       {/* Search + filter bar */}
-      <div className="v2-card" style={{ marginBottom: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderBottom: '0.5px solid var(--v2-border)', flexWrap: 'wrap' }}>
+      <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:0 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 14px', borderBottom:'0.5px solid var(--v2-border)', flexWrap:'wrap' }}>
           {/* Search */}
           <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
             <Search size={12} style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--v2-text-3)' }}/>
@@ -886,10 +937,10 @@ function DigiCertTab({ tok, nav }) {
         </div>
 
         {/* Table header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 110px 90px 170px', gap: 8,
-          padding: '7px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'2fr 1.2fr 110px 90px 170px',
+          padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)' }}>
           {['Domain', 'Product', 'Expires', 'Status', 'Actions'].map(h => (
-            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
+            <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
           ))}
         </div>
 
@@ -1275,14 +1326,13 @@ function ShadowITTab({ tok, nav }) {
         </button>
       </div>
 
-      <div className="v2-card">
+      <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden' }}>
         {/* Table header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 80px',
-          padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)',
-          background: 'var(--v2-surface-2)' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 80px',
+          padding:'8px 14px', borderBottom:'0.5px solid var(--v2-border)', background:'var(--v2-bg)' }}>
           {['Domain', 'Product', 'Ordered by', 'Expires', 'Urgency', ''].map(h => (
-            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
-              textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
+            <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
+              textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
           ))}
         </div>
 
