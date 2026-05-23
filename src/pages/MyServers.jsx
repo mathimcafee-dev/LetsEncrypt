@@ -289,9 +289,9 @@ function AddServerModal({ onClose, userId }) {
                 Which domain will this server host?
               </label>
               <input
-                value={nickname}
-                onChange={e => setNickname(e.target.value)}
-                placeholder="e.g. Production VPS, Web Server 1"
+                value={domain}
+                onChange={e => setDomain(e.target.value)}
+                placeholder="e.g. example.com, mysite.com"
                 style={{
                   width: '100%', padding: '10px 12px', borderRadius: 8,
                   border: '1px solid #e5e7eb', fontSize: 14,
