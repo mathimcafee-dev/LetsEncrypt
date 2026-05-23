@@ -23,7 +23,7 @@
 DAEMON_API="https://frthcwkntciaakqsppss.supabase.co/functions/v1/agent-daemon"
 CERTBIND_API="https://frthcwkntciaakqsppss.supabase.co/functions/v1/certbind"
 AGENT_TOKEN_FILE="/etc/sslvault/agent.token"
-POLL_INTERVAL=300
+POLL_INTERVAL=60
 LOG_FILE="/var/log/sslvault-agent.log"
 CERT_BASE="/etc/ssl/sslvault"
 VERSION="2.5"

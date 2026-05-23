@@ -110,7 +110,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
           if (d.status === 'failed') setJobError(d.error_message || 'Install failed')
         }
       } catch(e) {}
-    }, 5000)
+    }, 10000)
     return () => clearInterval(iv)
     // eslint-disable-next-line
   }, [dispatchedJobId, jobStatus, userId])
@@ -231,7 +231,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                       },
                       {
                         label: 'Agent polling for job',
-                        sub: jobStatus === 'claimed' || jobStatus === 'success' ? 'Job received' : ('Checking every 5 min — ' + (elapsed < 60 ? elapsed + 's elapsed' : Math.floor(elapsed/60) + 'm ' + (elapsed%60) + 's elapsed')),
+                        sub: jobStatus === 'claimed' || jobStatus === 'success' ? 'Job received' : ('Checking every 1 min — ' + (elapsed < 60 ? elapsed + 's elapsed' : Math.floor(elapsed/60) + 'm ' + (elapsed%60) + 's elapsed')),
                         done: jobStatus === 'claimed' || jobStatus === 'success',
                         active: jobStatus === 'queued'
                       },
