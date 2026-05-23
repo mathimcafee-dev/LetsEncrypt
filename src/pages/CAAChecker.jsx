@@ -8,16 +8,16 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 function StatusIcon({ status }) {
   if (status === 'pass')    return <CheckCircle  size={15} color="#16a34a" style={{ flexShrink:0 }} />
   if (status === 'fail')    return <XCircle      size={15} color="#dc2626" style={{ flexShrink:0 }} />
-  if (status === 'warn')    return <AlertTriangle size={15} color="#d97706" style={{ flexShrink:0 }} />
-  return                           <Info         size={15} color="#0e7fc0" style={{ flexShrink:0 }} />
+  if (status === 'warn')    return <AlertTriangle size={15} color="#E8897A" style={{ flexShrink:0 }} />
+  return                           <Info         size={15} color="#1A7A72" style={{ flexShrink:0 }} />
 }
 
 function StatusBadge({ status }) {
   const map = {
-    pass: { bg:'#f0fdf4', color:'#16a34a', label:'Pass' },
+    pass: { bg:'#E8F8F6', color:'#16a34a', label:'Pass' },
     fail: { bg:'#fef2f2', color:'#dc2626', label:'Fail' },
-    warn: { bg:'#fffbeb', color:'#d97706', label:'Warning' },
-    info: { bg:'#eff6ff', color:'#0e7fc0', label:'Info' },
+    warn: { bg:'#FDF0EE', color:'#E8897A', label:'Warning' },
+    info: { bg:'#E8F8F6', color:'#1A7A72', label:'Info' },
   }
   const s = map[status] || map.info
   return (
@@ -80,9 +80,9 @@ export default function CAAChecker({ nav }) {
 
         <div style={{ marginBottom:28 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-            <div style={{ width:36, height:36, borderRadius:8, background:'#eff6ff',
+            <div style={{ width:36, height:36, borderRadius:8, background:'#E8F8F6',
               display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Shield size={18} color="#0e7fc0"/>
+              <Shield size={18} color="#1A7A72"/>
             </div>
             <h1 className="v2-h1">CAA Record Checker</h1>
           </div>
@@ -123,8 +123,8 @@ export default function CAAChecker({ nav }) {
 
             {/* Summary banner */}
             <div style={{
-              background: result.safeToIssue ? '#f0fdf4' : '#fef2f2',
-              border: `0.5px solid ${result.safeToIssue ? '#bbf7d0' : '#fecaca'}`,
+              background: result.safeToIssue ? '#E8F8F6' : '#fef2f2',
+              border: `0.5px solid ${result.safeToIssue ? '#A8E6DE' : '#fecaca'}`,
               borderRadius:10, padding:'14px 16px', marginBottom:16,
               display:'flex', alignItems:'flex-start', gap:10,
             }}>

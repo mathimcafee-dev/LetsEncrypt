@@ -23,8 +23,8 @@ function fmt(iso) {
 
 function ExpiryBadge({ iso }) {
   const d = dLeft(iso)
-  const color = d === null ? '#94a3b8' : d <= 0 ? '#dc2626' : d <= 7 ? '#ea580c' : d <= 30 ? '#d97706' : d <= 60 ? '#ca8a04' : '#16a34a'
-  const bg    = d === null ? '#f8fafc' : d <= 0 ? '#fef2f2' : d <= 7 ? '#fff7ed' : d <= 30 ? '#fffbeb' : '#f0fdf4'
+  const color = d === null ? '#94a3b8' : d <= 0 ? '#dc2626' : d <= 7 ? '#ea580c' : d <= 30 ? '#E8897A' : d <= 60 ? '#ca8a04' : '#16a34a'
+  const bg    = d === null ? '#f8fafc' : d <= 0 ? '#fef2f2' : d <= 7 ? '#fff7ed' : d <= 30 ? '#FDF0EE' : '#E8F8F6'
   return (
     <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
       background: bg, color, border: `0.5px solid ${color}44`, whiteSpace: 'nowrap' }}>
@@ -36,10 +36,10 @@ function ExpiryBadge({ iso }) {
 function StatusBadge({ status }) {
   const n = String(status || '').toLowerCase()
   const [color, bg, label] =
-    n.includes('issued') || n === '2'  ? ['#16a34a', '#f0fdf4', 'Issued']  :
+    n.includes('issued') || n === '2'  ? ['#16a34a', '#E8F8F6', 'Issued']  :
     n.includes('revoked') || n === '3' ? ['#64748b', '#f8fafc', 'Revoked'] :
     n.includes('expired') || n === '4' ? ['#dc2626', '#fef2f2', 'Expired'] :
-    n.includes('pending') || n === '1' ? ['#d97706', '#fffbeb', 'Pending'] :
+    n.includes('pending') || n === '1' ? ['#E8897A', '#FDF0EE', 'Pending'] :
     ['#94a3b8', '#f8fafc', status || 'Unknown']
   return (
     <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
@@ -126,7 +126,7 @@ function CredPanel({ onConnect }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <div style={{ width: 40, height: 40, borderRadius: 12, background: '#f5f3ff',
           border: '1px solid #ddd6fe', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', fontWeight: 800, fontSize: 14, color: '#7c3aed' }}>SC</div>
+          justifyContent: 'center', fontWeight: 800, fontSize: 14, color: '#E8897A' }}>SC</div>
         <div>
           <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--v2-text)' }}>Connect Sectigo SCM</div>
           <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 1 }}>SCM REST API credentials</div>
@@ -203,8 +203,8 @@ function InventoryLayer({ creds }) {
     { key: 'upcoming', label: '31–90 days',filter: c => { const d = dLeft(c.expires || c.notAfter); return d > 30 && d <= 90 } },
     { key: 'healthy',  label: '>90 days',  filter: c => dLeft(c.expires || c.notAfter) > 90 },
   ]
-  const COLORS = { expired: '#dc2626', critical: '#ea580c', warning: '#d97706', upcoming: '#2563eb', healthy: '#16a34a' }
-  const BANDS_BG = { expired: '#fef2f2', critical: '#fff7ed', warning: '#fffbeb', upcoming: '#eff6ff', healthy: '#f0fdf4' }
+  const COLORS = { expired: '#dc2626', critical: '#ea580c', warning: '#E8897A', upcoming: '#2563eb', healthy: '#16a34a' }
+  const BANDS_BG = { expired: '#fef2f2', critical: '#fff7ed', warning: '#FDF0EE', upcoming: '#E8F8F6', healthy: '#E8F8F6' }
 
   const filtered = certs.filter(c => {
     const cn = c.commonName || c.cn || c.subject || ''
@@ -218,7 +218,7 @@ function InventoryLayer({ creds }) {
 
   return (
     <div>
-      <SectionHeader icon={Activity} color="#7c3aed" title="Certificate Inventory"
+      <SectionHeader icon={Activity} color="#E8897A" title="Certificate Inventory"
         sub="All SSL/TLS certificates from your Sectigo SCM account, bucketed by expiry urgency."
         badge="Live"/>
 
@@ -311,7 +311,7 @@ function OrgsLayer({ creds }) {
 
   return (
     <div>
-      <SectionHeader icon={Building} color="#7c3aed" title="Organisation Profiles"
+      <SectionHeader icon={Building} color="#E8897A" title="Organisation Profiles"
         sub="All organisations registered in Sectigo SCM. OV/EV validation status and certificate counts."
         badge="Reference"/>
 
@@ -381,7 +381,7 @@ function AnalyticsLayer({ creds }) {
 
   return (
     <div>
-      <SectionHeader icon={BarChart2} color="#7c3aed" title="Certificate Type Breakdown"
+      <SectionHeader icon={BarChart2} color="#E8897A" title="Certificate Type Breakdown"
         sub="Distribution of certificate types and statuses across your Sectigo portfolio."
         badge="Analytics"/>
 
@@ -393,7 +393,7 @@ function AnalyticsLayer({ creds }) {
               <div style={{ flex: 1, fontSize: 12, color: 'var(--v2-text-2)' }}>{type}</div>
               <div style={{ width: 120, height: 6, background: 'var(--v2-surface-3)', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${Math.round((count / data.total) * 100)}%`, height: '100%',
-                  background: '#7c3aed', borderRadius: 3 }}/>
+                  background: '#E8897A', borderRadius: 3 }}/>
               </div>
               <div className="v2-mono" style={{ fontSize: 12, fontWeight: 700, color: 'var(--v2-text)', minWidth: 28, textAlign: 'right' }}>{count}</div>
             </div>
@@ -464,12 +464,12 @@ export default function SectigoIntelligence({ nav }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
             <div style={{ width: 22, height: 22, borderRadius: 6, background: '#f5f3ff',
               border: '1px solid #ddd6fe', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#7c3aed' }}>SC</div>
+              justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#E8897A' }}>SC</div>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)' }}>Sectigo Intelligence</span>
           </div>
           {creds && (
             <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, padding: '2px 8px',
-              borderRadius: 20, background: '#f0fdf4', color: '#16a34a', border: '0.5px solid #bbf7d0',
+              borderRadius: 20, background: '#E8F8F6', color: '#16a34a', border: '0.5px solid #A8E6DE',
               display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }}/>
               Connected
@@ -490,7 +490,7 @@ export default function SectigoIntelligence({ nav }) {
                     padding: '9px 14px', fontSize: 12, fontWeight: 500, fontFamily: 'inherit',
                     background: 'none', border: 'none', cursor: 'pointer', borderRadius: '8px 8px 0 0',
                     color: tab === t.id ? 'var(--v2-text)' : 'var(--v2-text-3)',
-                    borderBottom: tab === t.id ? '2px solid #7c3aed' : '2px solid transparent',
+                    borderBottom: tab === t.id ? '2px solid #E8897A' : '2px solid transparent',
                     marginBottom: -1 }}>
                   <t.icon size={12} strokeWidth={2}/>
                   {t.label}

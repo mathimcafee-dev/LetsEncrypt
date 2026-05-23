@@ -13,14 +13,14 @@ const FONT = "var(--v2-font, 'Segoe UI', system-ui, sans-serif)"
 const ALERT_TYPE_DEFS = [
   { id: 'cert_expiry',       label: 'Certificate expiring',     desc: 'Email at 30/14/7 days before cert expires',             color: '#dc2626' },
   { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#0891b2' },
-  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#059669' },
-  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#059669' },
-  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#059669' },
+  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#1A7A72' },
+  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#1A7A72' },
+  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#1A7A72' },
   { id: 'renewal_failed',    label: 'Auto-renewal failed',      desc: 'Alert when auto-renewal fails (with retry info)',       color: '#dc2626' },
   { id: 'agent_offline',     label: 'Agent offline',            desc: 'When a VPS agent stops responding (1h cooldown)',       color: '#dc2626' },
-  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#d97706' },
-  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#7c3aed' },
-  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#d97706' },
+  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#E8897A' },
+  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#E8897A' },
+  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#E8897A' },
 ]
 
 const DEFAULT_TYPES = ['cert_expiry','order_renewal','cert_issued','cert_installed','renewal_succeeded','renewal_failed','agent_offline','shadow_found','pqc_risk']
@@ -86,10 +86,10 @@ function Row({ label, desc, children, last }) {
 function LogRow({ log }) {
   const meta = {
     cert_expiry: { icon: '⏰', color: '#dc2626' }, order_renewal: { icon: '🔄', color: '#0891b2' },
-    cert_issued: { icon: '✅', color: '#059669' }, cert_installed: { icon: '🚀', color: '#059669' },
-    renewal_succeeded: { icon: '✅', color: '#059669' }, renewal_failed: { icon: '⚠️', color: '#dc2626' },
-    agent_offline: { icon: '🔴', color: '#dc2626' }, shadow_found: { icon: '🔍', color: '#d97706' },
-    pqc_risk: { icon: '⚛️', color: '#7c3aed' }, no_dns_warning: { icon: '⚠️', color: '#d97706' },
+    cert_issued: { icon: '✅', color: '#1A7A72' }, cert_installed: { icon: '🚀', color: '#1A7A72' },
+    renewal_succeeded: { icon: '✅', color: '#1A7A72' }, renewal_failed: { icon: '⚠️', color: '#dc2626' },
+    agent_offline: { icon: '🔴', color: '#dc2626' }, shadow_found: { icon: '🔍', color: '#E8897A' },
+    pqc_risk: { icon: '⚛️', color: '#E8897A' }, no_dns_warning: { icon: '⚠️', color: '#E8897A' },
     weekly_digest: { icon: '📊', color: '#0f2545' },
   }
   const m = meta[log.alert_type] || { icon: '📧', color: 'var(--v2-text-2)' }
@@ -112,8 +112,8 @@ function LogRow({ log }) {
       <div>
         <span style={{
           fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,
-          background: log.status === 'sent' ? '#d1fae5' : '#fef2f2',
-          color: log.status === 'sent' ? '#065f46' : '#dc2626',
+          background: log.status === 'sent' ? '#E8F8F6' : '#fef2f2',
+          color: log.status === 'sent' ? '#0F5750' : '#dc2626',
         }}>{log.status}</span>
       </div>
     </div>
@@ -188,7 +188,7 @@ function ApiKeysPanel({ user }) {
 
       {/* New key revealed */}
       {newKey && (
-        <div style={{ background: '#f0fdf4', border: '0.5px solid #bbf7d0', borderRadius: 8,
+        <div style={{ background: '#E8F8F6', border: '0.5px solid #A8E6DE', borderRadius: 8,
           padding: '12px 14px', marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: '#15803d', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
@@ -473,8 +473,8 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>{createdAt}</span>
             </Row>
             <Row label="Plan" desc="Free for personal and indie use" last>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#0369a1', background: '#eff6ff',
-                border: '0.5px solid #bfdbfe', borderRadius: 4, padding: '3px 8px' }}>Free</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#1A7A72', background: '#E8F8F6',
+                border: '0.5px solid #A8E6DE', borderRadius: 4, padding: '3px 8px' }}>Free</span>
             </Row>
           </Section>
 
@@ -604,8 +604,8 @@ export default function SettingsPage({ user }) {
             </div>
             {testResult && (
               <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 7, fontSize: 12,
-                background: testResult.ok ? '#d1fae5' : '#fef2f2',
-                color: testResult.ok ? '#065f46' : '#dc2626',
+                background: testResult.ok ? '#E8F8F6' : '#fef2f2',
+                color: testResult.ok ? '#0F5750' : '#dc2626',
                 border: `1px solid ${testResult.ok ? '#6ee7b7' : '#fecaca'}` }}>
                 {testResult.ok ? '✓ ' : '✗ '}{testResult.msg}
               </div>
@@ -618,7 +618,7 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>Magic link</span>
             </Row>
             <Row label="Private key storage" desc="AES-256-GCM encrypted at rest" last>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 500, color: '#0369a1' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 500, color: '#1A7A72' }}>
                 <Shield size={11}/> Encrypted
               </span>
             </Row>

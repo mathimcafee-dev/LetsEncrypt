@@ -11,7 +11,7 @@ const STORE_META = {
   Chrome:    { icon: '🌐', color: '#1d4ed8' },
   Mozilla:   { icon: '🦊', color: '#ea580c' },
   Apple:     { icon: '🍎', color: '#374151' },
-  Microsoft: { icon: '🪟', color: '#0369a1' },
+  Microsoft: { icon: '🪟', color: '#1A7A72' },
 }
 
 const ALL_STORES = ['Chrome', 'Mozilla', 'Apple', 'Microsoft']
@@ -36,7 +36,7 @@ const fmtDate = (iso) => {
 }
 
 const avatarColor = (name = '') => {
-  const colors = ['#2563eb','#0369a1','#0e7fc0','#16a34a','#dc2626','#7c3aed','#ea580c','#0891b2','#b45309','#374151']
+  const colors = ['#2563eb','#1A7A72','#1A7A72','#16a34a','#dc2626','#E8897A','#ea580c','#0891b2','#C45A4A','#374151']
   let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff
   return colors[Math.abs(h) % colors.length]
 }
@@ -621,7 +621,7 @@ export default function CATrustExplorer({ nav }) {
             { key: 'root',     val: counts.root,              label: 'Root CAs',          color: 'var(--v2-green)' },
             { key: 'inter',    val: counts.inter,             label: 'Intermediates',     color: 'var(--v2-grey-dot)' },
             { key: 'all4',     val: counts.all4,              label: 'All 4 stores',      color: 'var(--v2-green)' },
-            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#7c3aed', valColor: '#6d28d9' },
+            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#E8897A', valColor: '#6d28d9' },
             { key: 'distrust', val: counts.distrust,          label: 'Distrusted',        color: 'var(--v2-red)', valColor: 'var(--v2-red-text)' },
           ].map(({ key, val, label, color, valColor }) => (
             <div key={key} className={`stat-tile${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
@@ -686,7 +686,7 @@ export default function CATrustExplorer({ nav }) {
                       {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'#1d4ed8',display:'inline-block',flexShrink:0}}/>}
                       {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#ea580c',display:'inline-block',flexShrink:0}}/>}
                       {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#374151',display:'inline-block',flexShrink:0}}/>}
-                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0369a1',display:'inline-block',flexShrink:0}}/>}
+                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#1A7A72',display:'inline-block',flexShrink:0}}/>}
                     </span>
                     {c.ev_capable && <span style={{fontSize:9,color:'#6d28d9',fontWeight:600}}>EV</span>}
                   </button>

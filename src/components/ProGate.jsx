@@ -12,7 +12,7 @@ export default function ProGate({ isPro, nav, feature = 'This feature', compact 
   if (compact) {
     return (
       <div style={{ display:'inline-flex', alignItems:'center', gap:6,
-                    background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
+                    background:'linear-gradient(135deg,#E8897A,#6d28d9)',
                     borderRadius:'var(--v2-r-md)', padding:'4px 10px',
                     cursor:'pointer', flexShrink:0 }}
         onClick={() => nav('/pricing')}>
@@ -32,7 +32,7 @@ export default function ProGate({ isPro, nav, feature = 'This feature', compact 
                     background:'radial-gradient(ellipse,rgba(124,58,237,0.08),transparent 70%)' }} />
       <div style={{ position:'relative' }}>
         <div style={{ width:48, height:48, borderRadius:'var(--v2-r-xl)',
-                      background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
+                      background:'linear-gradient(135deg,#E8897A,#6d28d9)',
                       display:'flex', alignItems:'center', justifyContent:'center',
                       margin:'0 auto 16px',
                       boxShadow:'0 0 0 6px rgba(124,58,237,0.1)' }}>
@@ -48,7 +48,7 @@ export default function ProGate({ isPro, nav, feature = 'This feature', compact 
           and full audit logging — from €9.99/month.
         </p>
         <button className="v2-btn" onClick={() => nav('/pricing')}
-          style={{ background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
+          style={{ background:'linear-gradient(135deg,#E8897A,#6d28d9)',
                    color:'white', border:'none', padding:'10px 22px', fontSize:13,
                    fontWeight:600, display:'inline-flex', alignItems:'center', gap:7 }}>
           <Zap size={13} /> View CertVault plans <ArrowRight size={12} />

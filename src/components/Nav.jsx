@@ -43,11 +43,11 @@ export default function Nav({ nav, page }) {
   ]
 
   return (
-    <nav style={{position:'sticky',top:0,zIndex:200,background:'#ffffff',borderBottom:'0.5px solid rgba(15,23,42,0.08)',boxShadow:'0 1px 3px rgba(15,23,42,0.04)'}}>
+    <nav style={{position:'sticky',top:0,zIndex:200,background:'#FFFFFF',borderBottom:'0.5px solid rgba(15,23,42,0.08)',boxShadow:'0 1px 3px rgba(15,23,42,0.04)'}}>
       <div className='container' style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:56,padding: isMobile ? '0 16px' : undefined}}>
         {/* Logo — consistent with landing page */}
         <div onClick={()=>nav('/')} style={{display:'flex',alignItems:'center',gap:9,cursor:'pointer',userSelect:'none'}}>
-          <div style={{width:30,height:30,background:'#0ea5e9',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+          <div style={{width:30,height:30,background:'#3DBFB0',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{fontSize:15,fontWeight:600,color:'#0a0a0a',letterSpacing:'-0.3px'}}>SSLVault</span>
@@ -61,8 +61,8 @@ export default function Nav({ nav, page }) {
               return (
                 <div key={label} onClick={onClick}
                   style={{padding:'7px 13px',borderRadius:7,cursor:'pointer',
-                    fontSize:13,fontWeight:600,color:active?'#0369a1':'#525252',
-                    background:active?'#eff6ff':'transparent'}}
+                    fontSize:13,fontWeight:600,color:active?'#1A7A72':'#525252',
+                    background:active?'#E8F8F6':'transparent'}}
                   onMouseEnter={e=>{if(!active)e.currentTarget.style.background='#f8fafc'}}
                   onMouseLeave={e=>{if(!active)e.currentTarget.style.background='transparent'}}>
                   {label}
@@ -77,7 +77,7 @@ export default function Nav({ nav, page }) {
         {!isMobile && (
           <div style={{display:'flex',alignItems:'center',gap:8}}>
             <button onClick={()=>nav('/auth')}
-              style={{display:'inline-flex',alignItems:'center',gap:5,background:'#0e7fc0',color:'white',border:'none',padding:'7px 14px',borderRadius:7,fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>
+              style={{display:'inline-flex',alignItems:'center',gap:5,background:'#1A7A72',color:'white',border:'none',padding:'7px 14px',borderRadius:7,fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>
               <LogIn size={12}/> Sign In
             </button>
           </div>
@@ -106,8 +106,8 @@ export default function Nav({ nav, page }) {
                 <div key={label} onClick={onClick}
                   style={{padding:'12px 14px',borderRadius:8,cursor:'pointer',
                     fontSize:15,fontWeight:600,
-                    color:active?'#0369a1':'#0a0a0a',
-                    background:active?'#eff6ff':'transparent'}}>
+                    color:active?'#1A7A72':'#0a0a0a',
+                    background:active?'#E8F8F6':'transparent'}}>
                   {label}
                 </div>
               )
@@ -123,7 +123,7 @@ export default function Nav({ nav, page }) {
             </button>
             <button onClick={()=>{nav('/auth');setMobileOpen(false)}}
               style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,
-                background:'#0e7fc0',color:'white',border:'none',
+                background:'#1A7A72',color:'white',border:'none',
                 padding:'12px 14px',borderRadius:8,fontSize:14,fontWeight:700,
                 cursor:'pointer',fontFamily:'inherit'}}>
               Get Started <ArrowRight size={14}/>

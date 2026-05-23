@@ -85,7 +85,7 @@ export default function Contact({ nav }) {
                 body:"What you're trying to accomplish, how SSLVault falls short today, and what the ideal outcome looks like for you." },
               { icon:Shield,       label:'Account help',      color:'var(--v2-green)',
                 body:"The email address tied to your account and a description of what you're stuck on. Never share passwords or API tokens." },
-              { icon:Users,        label:'Partnerships',      color:'#7c3aed',
+              { icon:Users,        label:'Partnerships',      color:'#E8897A',
                 body:"Who you are, what you're building, and how SSLVault might fit into the picture. Always happy to talk." },
             ].map(({ icon:Icon, label, body, color }) => (
               <div key={label} className="v2-card" style={{ padding:'20px 22px', display:'flex', gap:14, alignItems:'flex-start' }}>

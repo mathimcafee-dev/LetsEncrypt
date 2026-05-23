@@ -62,7 +62,7 @@ function TerminalMock({ lines }) {
     <div className="v2-code" style={{ marginBottom: 12 }}>
       <div className="v2-code-head">
         <div className="v2-code-dots">
-          <span style={{ background: '#ef4444' }}/><span style={{ background: '#f59e0b' }}/><span style={{ background: '#0e7fc0' }}/>
+          <span style={{ background: '#ef4444' }}/><span style={{ background: '#E8897A' }}/><span style={{ background: '#1A7A72' }}/>
           <span style={{ marginLeft: 8, fontSize: 10, color: '#737373', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>browser output</span>
         </div>
       </div>
@@ -165,7 +165,7 @@ export default function SharedHostingGuide({ nav }) {
           <div className="v2-code" style={{ marginBottom: 10 }}>
             <div className="v2-code-head">
               <div className="v2-code-dots">
-                <span style={{ background: '#ef4444' }}/><span style={{ background: '#f59e0b' }}/><span style={{ background: '#0e7fc0' }}/>
+                <span style={{ background: '#ef4444' }}/><span style={{ background: '#E8897A' }}/><span style={{ background: '#1A7A72' }}/>
                 <span style={{ marginLeft: 8, fontSize: 10, color: '#737373', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>File Manager — public_html</span>
               </div>
             </div>
@@ -237,7 +237,7 @@ export default function SharedHostingGuide({ nav }) {
 
         <Step n={8} title="Delete the PHP agent file — important">
           <div className="v2-callout warning" style={{ marginBottom: 12 }}>
-            <AlertCircle size={13} style={{ color: '#d97706' }}/> Delete <code className="v2-kbd">sslvault-agent.php</code> immediately after installation. It contains your install token.
+            <AlertCircle size={13} style={{ color: '#E8897A' }}/> Delete <code className="v2-kbd">sslvault-agent.php</code> immediately after installation. It contains your install token.
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {['Go to cPanel File Manager', 'Navigate to public_html', 'Find sslvault-agent.php', 'Right-click → Delete → Confirm'].map((t, i) => (
@@ -285,7 +285,7 @@ export default function SharedHostingGuide({ nav }) {
 
         {/* RENEWAL NOTE */}
         <div className="v2-callout warning" style={{ marginBottom: 24 }}>
-          <AlertCircle size={13} style={{ color: '#d97706', flexShrink: 0 }}/>
+          <AlertCircle size={13} style={{ color: '#E8897A', flexShrink: 0 }}/>
           <div>
             <span className="v2-callout-title">Renewal requires repeating this process</span><br/>
             <span style={{ fontSize: 12 }}>Every time your certificate renews, you'll need to repeat steps 1–9. For zero-touch auto-renewal, move to a VPS with the persistent agent — it handles installs and renewals automatically.</span>

@@ -137,7 +137,7 @@ export default function CLMHome({ user, nav }) {
           display:'flex', alignItems:'center', gap:10, padding:'8px 16px',
           cursor:'pointer', fontSize:12, fontWeight: isActive ? 600 : 500,
           color: isActive ? 'white' : pro ? 'rgba(252,165,165,0.85)' : 'rgba(255,255,255,0.65)',
-          background: isActive ? (pro ? 'rgba(220,38,38,0.25)' : 'rgba(14,127,192,0.35)') : 'transparent',
+          background: isActive ? (pro ? 'rgba(220,38,38,0.25)' : 'rgba(61,191,176,0.25)') : 'transparent',
           borderLeft: isActive ? `3px solid ${pro ? '#f87171' : '#00a3e0'}` : '3px solid transparent',
           border:'none', width:'100%', textAlign:'left', fontFamily:'inherit',
           transition:'all 0.18s cubic-bezier(0.4,0,0.2,1)',
@@ -194,9 +194,9 @@ export default function CLMHome({ user, nav }) {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
-      <div style={{ background:'#0d3c6e', height:44, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', flexShrink:0, position:'sticky', top:0, zIndex:50 }}>
+      <div style={{ background:'#0F5750', height:44, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', flexShrink:0, position:'sticky', top:0, zIndex:50 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <div style={{ width:26, height:26, borderRadius:6, background:'#0e7fc0', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+          <div style={{ width:26, height:26, borderRadius:6, background:'#1A7A72', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <Shield size={13} color="white" strokeWidth={2.5}/>
           </div>
           <span style={{ fontSize:13, fontWeight:700, color:'white' }}>SSLVault</span>
@@ -229,11 +229,11 @@ export default function CLMHome({ user, nav }) {
                 {/* Header */}
                 <div style={{ padding:'12px 16px', borderBottom:'1px solid #f1f5f9',
                   display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                  <span style={{ fontSize:12, fontWeight:700, color:'#0f172a' }}>Notifications</span>
+                  <span style={{ fontSize:12, fontWeight:700, color:'#1A2E2C' }}>Notifications</span>
                   {unreadCount > 0 && (
                     <button onClick={markAllRead}
                       style={{ background:'none', border:'none', cursor:'pointer', fontSize:11,
-                        color:'#0891b2', fontFamily:'inherit', padding:0 }}>
+                        color:'#1A7A72', fontFamily:'inherit', padding:0 }}>
                       Mark all read
                     </button>
                   )}
@@ -241,11 +241,11 @@ export default function CLMHome({ user, nav }) {
                 {/* Items */}
                 <div style={{ maxHeight:360, overflowY:'auto' }}>
                   {bellLoading && notifs.length === 0 ? (
-                    <div style={{ padding:'24px', textAlign:'center', color:'#94a3b8', fontSize:12 }}>
+                    <div style={{ padding:'24px', textAlign:'center', color:'#7A9E9B', fontSize:12 }}>
                       Loading…
                     </div>
                   ) : notifs.length === 0 ? (
-                    <div style={{ padding:'32px 16px', textAlign:'center', color:'#94a3b8', fontSize:12 }}>
+                    <div style={{ padding:'32px 16px', textAlign:'center', color:'#7A9E9B', fontSize:12 }}>
                       🔔 No notifications yet
                     </div>
                   ) : notifs.map(n => (
@@ -258,23 +258,23 @@ export default function CLMHome({ user, nav }) {
                         setBellOpen(false)
                       }}
                       style={{ padding:'10px 16px', borderBottom:'0.5px solid #f8fafc', cursor:'pointer',
-                        background: n.read ? 'white' : '#f0f9ff', transition:'background .15s',
+                        background: n.read ? 'white' : '#E8F8F6', transition:'background .15s',
                         display:'flex', gap:10, alignItems:'flex-start' }}
                       onMouseEnter={e => e.currentTarget.style.background=n.read?'#f8fafc':'#e0f7fa'}
-                      onMouseLeave={e => e.currentTarget.style.background=n.read?'white':'#f0f9ff'}>
-                      <span style={{ width:7, height:7, borderRadius:'50%', background:n.color||'#0891b2',
+                      onMouseLeave={e => e.currentTarget.style.background=n.read?'white':'#E8F8F6'}>
+                      <span style={{ width:7, height:7, borderRadius:'50%', background:n.color||'#1A7A72',
                         marginTop:4, flexShrink:0 }}/>
                       <div style={{ minWidth:0, flex:1 }}>
-                        <div style={{ fontSize:12, fontWeight:n.read?500:700, color:'#0f172a',
+                        <div style={{ fontSize:12, fontWeight:n.read?500:700, color:'#1A2E2C',
                           marginBottom:2, lineHeight:1.3 }}>{n.title}</div>
-                        <div style={{ fontSize:11, color:'#64748b', lineHeight:1.4,
+                        <div style={{ fontSize:11, color:'#3D5C59', lineHeight:1.4,
                           overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{n.body}</div>
-                        <div style={{ fontSize:10, color:'#94a3b8', marginTop:3 }}>
+                        <div style={{ fontSize:10, color:'#7A9E9B', marginTop:3 }}>
                           {new Date(n.created_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
                         </div>
                       </div>
                       {!n.read && <span style={{ width:6, height:6, borderRadius:'50%',
-                        background:'#0891b2', flexShrink:0, marginTop:5 }}/>}
+                        background:'#1A7A72', flexShrink:0, marginTop:5 }}/>}
                     </div>
                   ))}
                 </div>
@@ -282,7 +282,7 @@ export default function CLMHome({ user, nav }) {
                 <div style={{ padding:'10px 16px', borderTop:'1px solid #f1f5f9', textAlign:'center' }}>
                   <button onClick={() => { navigate('settings'); setBellOpen(false) }}
                     style={{ background:'none', border:'none', cursor:'pointer', fontSize:11,
-                      color:'#0891b2', fontFamily:'inherit' }}>
+                      color:'#1A7A72', fontFamily:'inherit' }}>
                     Manage alert settings →
                   </button>
                 </div>
@@ -297,8 +297,8 @@ export default function CLMHome({ user, nav }) {
         </div>
       </div>
 
-      <div style={{ display:'flex', flex:1, background: ['issue'].includes(section) ? '#050a14' : '#f0f4f8' }}>
-        <nav style={{ width:210, background:'#0d3c6e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto', boxShadow:'4px 0 24px rgba(0,0,0,0.18)' }}>
+      <div style={{ display:'flex', flex:1, background: ['issue'].includes(section) ? '#0F5750' : '#FDFAF5' }}>
+        <nav style={{ width:210, background:'#0F5750', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto', boxShadow:'4px 0 24px rgba(0,0,0,0.18)' }}>
           {[
             { label:'Certificates',  items: NAV_CERTS       },
             { label:'Deployment',    items: NAV_AUTOMATION   },
@@ -352,7 +352,7 @@ export default function CLMHome({ user, nav }) {
 
           <div style={{ borderTop:'0.5px solid rgba(255,255,255,0.08)', padding:'10px 12px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-              <div style={{ width:28, height:28, borderRadius:'50%', background:'#0e7fc0',
+              <div style={{ width:28, height:28, borderRadius:'50%', background:'#1A7A72',
                 display:'flex', alignItems:'center', justifyContent:'center',
                 fontSize:11, fontWeight:700, color:'white', flexShrink:0 }}>
                 {(email[0]||'U').toUpperCase()}
@@ -382,7 +382,7 @@ export default function CLMHome({ user, nav }) {
         <div style={{ flex:1, minWidth:0, display:'flex', flexDirection:'column' }}>
           {!['issue','dashboard','integrations','ca-connectors'].includes(section) && (
             <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
-              <div style={{ fontSize:18, fontWeight:700, color:'#1a2332', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
+              <div style={{ fontSize:18, fontWeight:700, color:'#1A2E2C', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
             </div>
           )}
           <div key={animKey} style={{ flex:1, overflowY:'auto', overflowX:'hidden', animation:'clm-fadein 0.22s cubic-bezier(0.4,0,0.2,1)' }}>

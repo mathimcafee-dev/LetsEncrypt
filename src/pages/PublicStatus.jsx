@@ -6,11 +6,11 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 function gradeStyle(grade) {
   if (!grade || grade === 'F') return { color: '#dc2626', bg: '#fef2f2', border: '#fecaca' }
-  if (grade === 'D') return { color: '#d97706', bg: '#fffbeb', border: '#fde68a' }
+  if (grade === 'D') return { color: '#E8897A', bg: '#FDF0EE', border: '#F2C4BC' }
   if (grade === 'C') return { color: '#ca8a04', bg: '#fefce8', border: '#fef08a' }
-  if (grade === 'B') return { color: '#2563eb', bg: '#eff6ff', border: '#bfdbfe' }
-  if (grade === 'A') return { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' }
-  if (grade === 'A+') return { color: '#059669', bg: '#ecfdf5', border: '#6ee7b7' }
+  if (grade === 'B') return { color: '#2563eb', bg: '#E8F8F6', border: '#A8E6DE' }
+  if (grade === 'A') return { color: '#16a34a', bg: '#E8F8F6', border: '#A8E6DE' }
+  if (grade === 'A+') return { color: '#1A7A72', bg: '#E8F8F6', border: '#6ee7b7' }
   return { color: '#64748b', bg: '#f8fafc', border: '#e2e8f0' }
 }
 
@@ -53,8 +53,8 @@ export default function PublicStatus({ username: propUsername, nav }) {
   const allHealthy = scores.length > 0 && scores.every(s => s.cert_valid && (s.expiry_days == null || s.expiry_days > 30))
   const hasIssues  = scores.some(s => !s.cert_valid || (s.expiry_days != null && s.expiry_days <= 30))
 
-  const overallColor  = allHealthy ? '#16a34a' : hasIssues ? '#dc2626' : '#d97706'
-  const overallBg     = allHealthy ? '#f0fdf4'  : hasIssues ? '#fef2f2' : '#fffbeb'
+  const overallColor  = allHealthy ? '#16a34a' : hasIssues ? '#dc2626' : '#E8897A'
+  const overallBg     = allHealthy ? '#E8F8F6'  : hasIssues ? '#fef2f2' : '#FDF0EE'
   const overallLabel  = allHealthy ? 'All systems operational' : hasIssues ? 'Issues detected' : 'Monitoring'
   const OverallIcon   = allHealthy ? CheckCircle : hasIssues ? XCircle : AlertTriangle
 
@@ -66,12 +66,12 @@ export default function PublicStatus({ username: propUsername, nav }) {
         justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
-          <Shield size={18} color="#10b981" />
+          <Shield size={18} color="#3DBFB0" />
           <span style={{ fontSize: 14, fontWeight: 600, color: '#0a0a0a' }}>SSLVault</span>
         </div>
         <span style={{ fontSize: 11, color: '#94a3b8' }}>
           Powered by <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
-            style={{ color: '#10b981', textDecoration: 'none' }}>easysecurity.in</a>
+            style={{ color: '#3DBFB0', textDecoration: 'none' }}>easysecurity.in</a>
         </span>
       </div>
 
@@ -93,7 +93,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
             {/* Header */}
             <div style={{ marginBottom: 28 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: '#f0fdf4',
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: '#E8F8F6',
                   display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Shield size={20} color="#16a34a" />
                 </div>
@@ -138,7 +138,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
 
                       {/* Status dot */}
                       <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
-                        background: domainHealthy ? '#16a34a' : s.expiry_days != null && s.expiry_days <= 7 ? '#dc2626' : '#d97706',
+                        background: domainHealthy ? '#16a34a' : s.expiry_days != null && s.expiry_days <= 7 ? '#dc2626' : '#E8897A',
                         boxShadow: domainHealthy ? '0 0 0 3px rgba(22,163,74,0.15)' : 'none' }} />
 
                       {/* Domain */}
@@ -162,7 +162,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
                           </span>
                           {s.expiry_days != null && (
                             <span style={{ fontSize: 11, fontWeight: 500,
-                              color: s.expiry_days <= 7 ? '#dc2626' : s.expiry_days <= 30 ? '#d97706' : '#16a34a' }}>
+                              color: s.expiry_days <= 7 ? '#dc2626' : s.expiry_days <= 30 ? '#E8897A' : '#16a34a' }}>
                               {s.expiry_days <= 0 ? 'Expired' : `${s.expiry_days}d until expiry`}
                             </span>
                           )}
@@ -188,7 +188,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
               <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
                 style={{ fontSize: 12, color: '#94a3b8', textDecoration: 'none',
                   display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                <Shield size={12} color="#10b981" />
+                <Shield size={12} color="#3DBFB0" />
                 Secured & monitored by SSLVault · easysecurity.in
               </a>
             </div>

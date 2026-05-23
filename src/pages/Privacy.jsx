@@ -4,7 +4,7 @@ import {
 } from 'lucide-react'
 
 export default function Privacy({ nav }) {
-  const bg = 'linear-gradient(160deg,#eef2ff,#eff6ff 35%,#fefce8 65%,#fdf4ff)'
+  const bg = 'linear-gradient(160deg,#eef2ff,#E8F8F6 35%,#fefce8 65%,#fdf4ff)'
   const updated = 'May 9, 2026'
 
   return (
@@ -15,12 +15,12 @@ export default function Privacy({ nav }) {
       <section style={{position:'relative',padding:'70px 0 30px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'white',border:'1px solid #e2e8f0',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-            <span style={{width:7,height:7,borderRadius:'50%',background:'#0e7fc0',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
+            <span style={{width:7,height:7,borderRadius:'50%',background:'#1A7A72',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
             <span style={{fontSize:11,fontWeight:700,color:'#475569',letterSpacing:'0.4px',textTransform:'uppercase'}}>Privacy Policy</span>
           </div>
           <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#0f172a'}}>
             Your data,<br/>
-            <span style={{background:'linear-gradient(135deg,#2563eb,#7c3aed,#0ea5e9)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>your control.</span>
+            <span style={{background:'linear-gradient(135deg,#2563eb,#E8897A,#3DBFB0)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>your control.</span>
           </h1>
           <p style={{fontSize:15,color:'#64748b',marginTop:14}}>Last updated: <strong style={{color:'#0f172a'}}>{updated}</strong></p>
         </div>
@@ -31,10 +31,10 @@ export default function Privacy({ nav }) {
         <div style={{maxWidth:1080,margin:'0 auto',padding:'0 24px'}}>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14}}>
             {[
-              {icon:Lock,title:'Private keys stay yours',desc:'When you use the persistent agent, private keys are generated and stored on your server. We never see them.',color:'#059669',bg:'#d1fae5'},
-              {icon:Database,title:'Minimum metadata',desc:'We store only what\'s required to issue and renew certificates: domain, expiry, owner email.',color:'#2563eb',bg:'#dbeafe'},
-              {icon:Eye,title:'No tracking',desc:'No third-party analytics, no advertising pixels, no behavioural profiling.',color:'#7c3aed',bg:'#ede9fe'},
-              {icon:Mail,title:'Email only for service',desc:'Renewal alerts, account notices. No marketing. No newsletters you didn\'t subscribe to.',color:'#d97706',bg:'#fef3c7'},
+              {icon:Lock,title:'Private keys stay yours',desc:'When you use the persistent agent, private keys are generated and stored on your server. We never see them.',color:'#1A7A72',bg:'#E8F8F6'},
+              {icon:Database,title:'Minimum metadata',desc:'We store only what\'s required to issue and renew certificates: domain, expiry, owner email.',color:'#2563eb',bg:'#C5EDE9'},
+              {icon:Eye,title:'No tracking',desc:'No third-party analytics, no advertising pixels, no behavioural profiling.',color:'#E8897A',bg:'#ede9fe'},
+              {icon:Mail,title:'Email only for service',desc:'Renewal alerts, account notices. No marketing. No newsletters you didn\'t subscribe to.',color:'#E8897A',bg:'#FDF0EE'},
             ].map(({icon:Icon,title,desc,color,bg})=>(
               <div key={title} style={{background:'white',borderRadius:16,padding:'22px 22px',border:'1px solid #e2e8f0',boxShadow:'0 2px 10px rgba(15,23,42,0.04)'}}>
                 <div style={{width:38,height:38,borderRadius:10,background:bg,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:12}}>

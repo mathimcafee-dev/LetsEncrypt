@@ -6,11 +6,11 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 function GradeBadge({ grade }) {
   const map = {
-    'A+': { bg:'#ecfdf5', color:'#059669' },
-    'A':  { bg:'#f0fdf4', color:'#16a34a' },
-    'B':  { bg:'#eff6ff', color:'#2563eb' },
+    'A+': { bg:'#E8F8F6', color:'#1A7A72' },
+    'A':  { bg:'#E8F8F6', color:'#16a34a' },
+    'B':  { bg:'#E8F8F6', color:'#2563eb' },
     'C':  { bg:'#fefce8', color:'#ca8a04' },
-    'D':  { bg:'#fffbeb', color:'#d97706' },
+    'D':  { bg:'#FDF0EE', color:'#E8897A' },
     'F':  { bg:'#fef2f2', color:'#dc2626' },
   }
   const s = map[grade] || { bg:'#f8fafc', color:'#64748b' }
@@ -28,13 +28,13 @@ function ProtoRow({ proto }) {
     ? <CheckCircle  size={13} color="#16a34a" style={{ flexShrink:0 }}/>
     : proto.status === 'bad'
     ? <XCircle      size={13} color="#dc2626" style={{ flexShrink:0 }}/>
-    : <AlertTriangle size={13} color="#d97706" style={{ flexShrink:0 }}/>
+    : <AlertTriangle size={13} color="#E8897A" style={{ flexShrink:0 }}/>
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0',
       borderBottom:'0.5px solid rgba(15,23,42,0.06)' }}>
       {icon}
       <span style={{ fontSize:13, flex:1, color:'#0f172a' }}>{proto.name}</span>
-      <span style={{ fontSize:11, color: proto.status==='good'?'#16a34a':proto.status==='bad'?'#dc2626':'#d97706' }}>
+      <span style={{ fontSize:11, color: proto.status==='good'?'#16a34a':proto.status==='bad'?'#dc2626':'#E8897A' }}>
         {proto.note}
       </span>
     </div>
@@ -46,10 +46,10 @@ function VulnRow({ v }) {
     ? <CheckCircle  size={13} color="#16a34a" style={{ flexShrink:0 }}/>
     : v.status === 'vulnerable'
     ? <XCircle      size={13} color="#dc2626" style={{ flexShrink:0 }}/>
-    : <Info         size={13} color="#0e7fc0" style={{ flexShrink:0 }}/>
+    : <Info         size={13} color="#1A7A72" style={{ flexShrink:0 }}/>
   const label = v.status === 'safe' ? { text:'Not vulnerable', color:'#16a34a' }
     : v.status === 'vulnerable' ? { text:'Vulnerable', color:'#dc2626' }
-    : { text:'Manual check', color:'#0e7fc0' }
+    : { text:'Manual check', color:'#1A7A72' }
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0',
       borderBottom:'0.5px solid rgba(15,23,42,0.06)' }}>
@@ -176,8 +176,8 @@ export default function VulnScanner({ domain, session }) {
           {/* Cipher strength */}
           <p style={{ margin:'0 0 8px', fontSize:11, fontWeight:700, color:'#94a3b8',
             textTransform:'uppercase', letterSpacing:'0.5px' }}>Cipher strength</p>
-          <CipherBar label="Strong" count={result.ciphers.strong} total={totalCiphers} color="#10b981"/>
-          <CipherBar label="Medium" count={result.ciphers.medium} total={totalCiphers} color="#f59e0b"/>
+          <CipherBar label="Strong" count={result.ciphers.strong} total={totalCiphers} color="#3DBFB0"/>
+          <CipherBar label="Medium" count={result.ciphers.medium} total={totalCiphers} color="#E8897A"/>
           <CipherBar label="Weak"   count={result.ciphers.weak}   total={totalCiphers} color="#ef4444"/>
 
           {result.note && (

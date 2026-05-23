@@ -83,8 +83,8 @@ function computeChecklist(cert, hasAgent, hasDnsCreds) {
 
 // ── Readiness level from score ────────────────────────────────────────
 function readinessLevel(score) {
-  if (score >= 90) return { label:'Ready',    color:'#16a34a', bg:'#f0fdf4', border:'#bbf7d0', icon:ShieldCheck  }
-  if (score >= 60) return { label:'At risk',  color:'#d97706', bg:'#fffbeb', border:'#fde68a', icon:AlertTriangle }
+  if (score >= 90) return { label:'Ready',    color:'#16a34a', bg:'#E8F8F6', border:'#A8E6DE', icon:ShieldCheck  }
+  if (score >= 60) return { label:'At risk',  color:'#E8897A', bg:'#FDF0EE', border:'#F2C4BC', icon:AlertTriangle }
   return              { label:'Will break', color:'#dc2626', bg:'#fef2f2', border:'#fecaca', icon:ShieldAlert  }
 }
 
@@ -236,8 +236,8 @@ function CertRow({ cert, hasAgent, hasDnsCreds }) {
               {milestones.map(m => (
                 <div key={m.label} style={{
                   padding:'10px 12px', borderRadius:9,
-                  background: m.compliant ? '#f0fdf4' : '#fef2f2',
-                  border:`1px solid ${m.compliant ? '#bbf7d0' : '#fecaca'}`,
+                  background: m.compliant ? '#E8F8F6' : '#fef2f2',
+                  border:`1px solid ${m.compliant ? '#A8E6DE' : '#fecaca'}`,
                   transition:'all .2s',
                 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
@@ -417,26 +417,26 @@ export default function ReadinessDashboard({ user }) {
 
         {/* Countdown banner */}
         <div style={{
-          background: daysToMar2026 <= 60 ? '#fef2f2' : '#fffbeb',
-          border:`0.5px solid ${daysToMar2026<=60?'#fecaca':'#fde68a'}`,
+          background: daysToMar2026 <= 60 ? '#fef2f2' : '#FDF0EE',
+          border:`0.5px solid ${daysToMar2026<=60?'#fecaca':'#F2C4BC'}`,
           borderRadius:10, padding:'12px 16px', marginBottom:20,
           display:'flex', alignItems:'center', gap:12,
         }}>
-          <AlertTriangle size={16} color={daysToMar2026<=60?'#dc2626':'#d97706'} style={{flexShrink:0}}/>
+          <AlertTriangle size={16} color={daysToMar2026<=60?'#dc2626':'#E8897A'} style={{flexShrink:0}}/>
           <div style={{ flex:1 }}>
             <div style={{ fontSize:13, fontWeight:500,
-              color:daysToMar2026<=60?'#b91c1c':'#92400e' }}>
+              color:daysToMar2026<=60?'#b91c1c':'#C45A4A' }}>
               {daysToMar2026 > 0
                 ? `${daysToMar2026} days until March 15, 2026 — max cert validity drops to 200 days`
                 : '200-day maximum is now in effect (March 15, 2026)'}
             </div>
-            <div style={{ fontSize:11, color:daysToMar2026<=60?'#dc2626':'#d97706', marginTop:2 }}>
+            <div style={{ fontSize:11, color:daysToMar2026<=60?'#dc2626':'#E8897A', marginTop:2 }}>
               Then 100 days from March 2027 · 47 days from March 2029 · Manual renewal will be impossible
             </div>
           </div>
           <div style={{ textAlign:'right', flexShrink:0 }}>
             <div style={{ fontSize:22, fontWeight:700,
-              color:daysToMar2026<=60?'#dc2626':'#d97706', fontFamily:'monospace' }}>
+              color:daysToMar2026<=60?'#dc2626':'#E8897A', fontFamily:'monospace' }}>
               {Math.max(0,daysToMar2026)}d
             </div>
             <div style={{ fontSize:9, color:'var(--v2-text-3)', fontWeight:500 }}>REMAINING</div>
@@ -477,8 +477,8 @@ export default function ReadinessDashboard({ user }) {
                   </div>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
                     {[
-                      { label:'Ready',      count:ready.length,     color:'#16a34a', bg:'#f0fdf4', border:'#bbf7d0', f:'ready'      },
-                      { label:'At risk',    count:atRisk.length,    color:'#d97706', bg:'#fffbeb', border:'#fde68a', f:'at-risk'    },
+                      { label:'Ready',      count:ready.length,     color:'#16a34a', bg:'#E8F8F6', border:'#A8E6DE', f:'ready'      },
+                      { label:'At risk',    count:atRisk.length,    color:'#E8897A', bg:'#FDF0EE', border:'#F2C4BC', f:'at-risk'    },
                       { label:'Will break', count:willBreak.length, color:'#dc2626', bg:'#fef2f2', border:'#fecaca', f:'will-break' },
                     ].map(({ label, count, color, bg, border, f }) => (
                       <div key={label}
@@ -505,8 +505,8 @@ export default function ReadinessDashboard({ user }) {
                     { label:'DNS provider connected',ok:hasDnsCreds, fix:'Add a DNS provider credential' },
                   ].map(({ label, ok, fix }) => (
                     <div key={label} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 10px',
-                      borderRadius:7, background: ok?'#f0fdf4':'#fef2f2',
-                      border:`0.5px solid ${ok?'#bbf7d0':'#fecaca'}` }}>
+                      borderRadius:7, background: ok?'#E8F8F6':'#fef2f2',
+                      border:`0.5px solid ${ok?'#A8E6DE':'#fecaca'}` }}>
                       {ok ? <CheckCircle size={13} color="#16a34a"/>
                            : <XCircle   size={13} color="#dc2626"/>}
                       <div style={{ flex:1, minWidth:0 }}>

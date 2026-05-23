@@ -16,9 +16,9 @@ export default function AboutInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Mission block */}
-      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'28px 32px', marginBottom:16, borderLeft:'3px solid #0e7fc0' }}>
+      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'28px 32px', marginBottom:16, borderLeft:'3px solid #1A7A72' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
-          <Heart size={14} color="#0e7fc0"/>
+          <Heart size={14} color="#1A7A72"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Mission</span>
         </div>
         <p style={{ fontSize:20, fontWeight:500, color:'#0a0a0a', lineHeight:1.5, letterSpacing:'-.3px', margin:'0 0 14px', maxWidth:680 }}>
@@ -36,8 +36,8 @@ export default function AboutInner({ nav }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:12, marginBottom:16 }}>
         {PILLARS.map(({ icon:Icon, title, body }) => (
           <div key={title} style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
-            <div style={{ width:32, height:32, background:'#eff6ff', border:'0.5px solid #bfdbfe', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
-              <Icon size={15} color="#0e7fc0"/>
+            <div style={{ width:32, height:32, background:'#E8F8F6', border:'0.5px solid #A8E6DE', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
+              <Icon size={15} color="#1A7A72"/>
             </div>
             <div style={{ fontSize:13, fontWeight:500, color:'#0a0a0a', marginBottom:6 }}>{title}</div>
             <div style={{ fontSize:12, color:'#525252', lineHeight:1.7 }}>{body}</div>
@@ -67,7 +67,7 @@ export default function AboutInner({ nav }) {
 
       {/* CTA */}
       <div style={{ display:'flex', gap:10 }}>
-        <button onClick={() => nav('/developer')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0e7fc0', color:'white', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+        <button onClick={() => nav('/developer')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#1A7A72', color:'white', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
           <Code2 size={13}/> Meet the developer
         </button>
         <button onClick={() => nav('/contact')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'#0a0a0a', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>

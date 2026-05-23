@@ -6,15 +6,15 @@ const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
-  bg:'#ffffff', bg2:'#f9fafb', bg3:'#f3f4f6',
+  bg:'#FFFFFF', bg2:'#FDFAF5', bg3:'#F5EFE0',
   border:'#e5e7eb', border2:'#d1d5db',
   heading:'#0a0a0a', body:'#4b5563', muted:'#9ca3af',
-  teal:'#0ea5e9', tealDk:'#0284c7', tealBg:'#f0f9ff', tealBd:'#bae6fd',
-  green:'#10b981', greenBg:'#f0fdf4', greenBd:'#bbf7d0',
-  purple:'#7c3aed', purpleBg:'#faf5ff',
-  amber:'#d97706', amberBg:'#fffbeb',
+  teal:'#3DBFB0', tealDk:'#1A7A72', tealBg:'#E8F8F6', tealBd:'#A8E6DE',
+  green:'#3DBFB0', greenBg:'#E8F8F6', greenBd:'#A8E6DE',
+  purple:'#E8897A', purpleBg:'#faf5ff',
+  amber:'#E8897A', amberBg:'#FDF0EE',
   red:'#dc2626', redBg:'#fef2f2',
-  ink:'#080c14',
+  ink:'#0F5750',
 }
 
 function Code({ code, lang = 'bash' }) {
@@ -24,7 +24,7 @@ function Code({ code, lang = 'bash' }) {
     setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   return (
-    <div style={{ background:'#0d1117', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
+    <div style={{ background:'#0F5750', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
       <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display:'flex', gap:5, alignItems:'center' }}>
           {['#ff5f57','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
@@ -45,7 +45,7 @@ function Code({ code, lang = 'bash' }) {
 function Note({ type = 'tip', children }) {
   const s = {
     tip:     { bg:C.tealBg,  bd:C.tealBd,   color:C.tealDk, label:'TIP',      icon:'💡' },
-    warning: { bg:C.amberBg, bd:'#fde68a',   color:C.amber,  label:'WARNING',  icon:'⚠️' },
+    warning: { bg:C.amberBg, bd:'#F2C4BC',   color:C.amber,  label:'WARNING',  icon:'⚠️' },
     info:    { bg:C.greenBg, bd:C.greenBd,   color:C.green,  label:'INFO',     icon:'ℹ️' },
   }[type]
   return (
@@ -91,7 +91,7 @@ function GuideCard({ icon, title, badge, badgeColor, time, difficulty, children,
 
 const GUIDES = [
   { id:'vps',    icon:'🤖', title:'VPS / Linux server',    badge:'Agent',   badgeColor:C.green,   time:'5 min',   difficulty:'Easy'   },
-  { id:'cpanel', icon:'🏛', title:'cPanel shared hosting', badge:'cPanel',  badgeColor:'#6366f1', time:'3 min',   difficulty:'Easy'   },
+  { id:'cpanel', icon:'🏛', title:'cPanel shared hosting', badge:'cPanel',  badgeColor:'#3DBFB0', time:'3 min',   difficulty:'Easy'   },
   { id:'nginx',  icon:'⚡', title:'Nginx manual install',  badge:'Manual',  badgeColor:C.amber,   time:'10 min',  difficulty:'Medium' },
   { id:'apache', icon:'🔥', title:'Apache manual install', badge:'Manual',  badgeColor:C.amber,   time:'10 min',  difficulty:'Medium' },
 ]

@@ -56,7 +56,7 @@ function CopyBtn({ text, label = 'Copy' }) {
       background: 'none', border: '1px solid #d1d5db',
       borderRadius: 5, padding: '4px 10px',
       fontSize: 11, fontWeight: 500,
-      color: ok ? '#059669' : '#6b7280',
+      color: ok ? '#1A7A72' : '#6b7280',
       cursor: 'pointer', fontFamily: 'inherit',
       transition: 'all .15s',
     }}>
@@ -75,7 +75,7 @@ function ServerCard({ agent, certs }) {
 
   return (
     <div style={{
-      background: '#fff', border: `1px solid ${expiringSoon > 0 ? '#fde68a' : '#e5e7eb'}`,
+      background: '#fff', border: `1px solid ${expiringSoon > 0 ? '#F2C4BC' : '#e5e7eb'}`,
       borderRadius: 12, overflow: 'hidden',
       boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
     }}>
@@ -85,8 +85,8 @@ function ServerCard({ agent, certs }) {
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <div style={{
             width: 40, height: 40, borderRadius: 10,
-            background: online ? '#f0fdf4' : '#f9fafb',
-            border: `1px solid ${online ? '#bbf7d0' : '#e5e7eb'}`,
+            background: online ? '#E8F8F6' : '#FDFAF5',
+            border: `1px solid ${online ? '#A8E6DE' : '#e5e7eb'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <Server size={18} color={online ? '#16a34a' : '#9ca3af'} />
@@ -121,8 +121,8 @@ function ServerCard({ agent, certs }) {
           {expiringSoon > 0 && (
             <div style={{
               padding: '4px 10px', borderRadius: 20,
-              background: '#fffbeb', border: '1px solid #fde68a',
-              fontSize: 11, fontWeight: 600, color: '#d97706',
+              background: '#FDF0EE', border: '1px solid #F2C4BC',
+              fontSize: 11, fontWeight: 600, color: '#E8897A',
               display: 'flex', alignItems: 'center', gap: 4,
             }}>
               <AlertCircle size={10} />
@@ -131,8 +131,8 @@ function ServerCard({ agent, certs }) {
           )}
           <div style={{
             padding: '4px 10px', borderRadius: 20,
-            background: '#f0f9ff', border: '1px solid #bae6fd',
-            fontSize: 11, fontWeight: 600, color: '#0369a1',
+            background: '#E8F8F6', border: '1px solid #A8E6DE',
+            fontSize: 11, fontWeight: 600, color: '#1A7A72',
           }}>
             {certCount} cert{certCount !== 1 ? 's' : ''}
           </div>
@@ -147,7 +147,7 @@ function ServerCard({ agent, certs }) {
 
       {/* Expanded: cert list */}
       {expanded && (
-        <div style={{ borderTop: '1px solid #f3f4f6' }}>
+        <div style={{ borderTop: '1px solid #F5EFE0' }}>
           {certs.length === 0 ? (
             <div style={{ padding: '16px 20px', fontSize: 13, color: '#9ca3af', textAlign: 'center' }}>
               No certificates installed on this server yet
@@ -158,23 +158,23 @@ function ServerCard({ agent, certs }) {
               return (
                 <div key={cert.id} style={{
                   padding: '12px 20px',
-                  borderBottom: '1px solid #f9fafb',
+                  borderBottom: '1px solid #FDFAF5',
                   display: 'flex', alignItems: 'center', gap: 12,
                 }}>
-                  <Shield size={13} color={d !== null && d <= 30 ? '#d97706' : '#10b981'} />
+                  <Shield size={13} color={d !== null && d <= 30 ? '#E8897A' : '#3DBFB0'} />
                   <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: '#111' }}>
                     {cert.domain}
                   </span>
                   <span style={{
                     fontSize: 11,
-                    color: d !== null && d <= 0 ? '#dc2626' : d !== null && d <= 30 ? '#d97706' : '#6b7280',
+                    color: d !== null && d <= 0 ? '#dc2626' : d !== null && d <= 30 ? '#E8897A' : '#6b7280',
                     fontWeight: d !== null && d <= 30 ? 600 : 400,
                   }}>
                     {d !== null ? (d <= 0 ? 'Expired' : `${d}d left`) : '—'}
                   </span>
                   <div style={{
                     width: 8, height: 8, borderRadius: '50%',
-                    background: cert.status === 'active' ? '#10b981' : '#e5e7eb',
+                    background: cert.status === 'active' ? '#3DBFB0' : '#e5e7eb',
                   }} />
                 </div>
               )
@@ -184,7 +184,7 @@ function ServerCard({ agent, certs }) {
           {(agent.cpu_pct || agent.mem_pct) && (
             <div style={{
               padding: '10px 20px',
-              background: '#f9fafb', borderTop: '1px solid #f3f4f6',
+              background: '#FDFAF5', borderTop: '1px solid #F5EFE0',
               display: 'flex', gap: 20, fontSize: 11, color: '#6b7280',
             }}>
               {agent.cpu_pct && <span>CPU: <b style={{color:'#374151'}}>{agent.cpu_pct}%</b></span>}
@@ -223,7 +223,7 @@ function DnsCard({ cred, onDelete }) {
       </div>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 4,
-        fontSize: 11, color: '#059669', fontWeight: 500,
+        fontSize: 11, color: '#1A7A72', fontWeight: 500,
       }}>
         <CheckCircle size={11} />
         Connected
@@ -313,7 +313,7 @@ function AddServerModal({ onClose, userId }) {
                   { icon: Lock, text: 'Private keys never leave your server' },
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} style={{ display: 'flex', gap: 10, marginBottom: 8, alignItems: 'flex-start' }}>
-                    <Icon size={13} color="#10b981" style={{ marginTop: 1, flexShrink: 0 }} />
+                    <Icon size={13} color="#3DBFB0" style={{ marginTop: 1, flexShrink: 0 }} />
                     <span style={{ fontSize: 12, color: '#374151', lineHeight: 1.5 }}>{text}</span>
                   </div>
                 ))}
@@ -339,18 +339,18 @@ function AddServerModal({ onClose, userId }) {
           ) : (
             <>
               <div style={{
-                background: '#f0fdf4', border: '1px solid #bbf7d0',
+                background: '#E8F8F6', border: '1px solid #A8E6DE',
                 borderRadius: 8, padding: '10px 14px', marginBottom: 16,
-                fontSize: 12, color: '#065f46', fontWeight: 500,
+                fontSize: 12, color: '#0F5750', fontWeight: 500,
                 display: 'flex', gap: 8, alignItems: 'center',
               }}>
-                <CheckCircle size={13} color="#10b981" />
+                <CheckCircle size={13} color="#3DBFB0" />
                 Command ready — paste this on your server as root or with sudo
               </div>
 
               {/* Command box */}
               <div style={{
-                background: '#0d1117', borderRadius: 10, overflow: 'hidden', marginBottom: 16,
+                background: '#0F5750', borderRadius: 10, overflow: 'hidden', marginBottom: 16,
               }}>
                 <div style={{
                   padding: '8px 14px',
@@ -366,7 +366,7 @@ function AddServerModal({ onClose, userId }) {
                 </div>
                 <pre style={{
                   padding: '14px 16px', fontSize: 11, lineHeight: 1.8,
-                  color: '#0ea5e9', fontFamily: 'monospace',
+                  color: '#3DBFB0', fontFamily: 'monospace',
                   overflowX: 'auto', margin: 0,
                   whiteSpace: 'pre-wrap', wordBreak: 'break-all',
                 }}>
@@ -505,7 +505,7 @@ function AddDnsModal({ onClose, onSaved, userId }) {
                 provider === 'godaddy' ? 'https://developer.godaddy.com/keys' :
                 '#'
               } target="_blank" rel="noreferrer"
-                style={{ fontSize:11, color:'#0369a1', display:'flex', alignItems:'center', gap:4, marginBottom:16, textDecoration:'none' }}>
+                style={{ fontSize:11, color:'#1A7A72', display:'flex', alignItems:'center', gap:4, marginBottom:16, textDecoration:'none' }}>
                 <ExternalLink size={10} /> How to get your {p?.name} API token
               </a>
             </>
@@ -517,7 +517,7 @@ function AddDnsModal({ onClose, onSaved, userId }) {
             <button onClick={onClose} style={{ flex:1, padding:'10px', borderRadius:8, border:'1px solid #e5e7eb', background:'#fff', fontSize:13, fontWeight:600, color:'#374151', cursor:'pointer', fontFamily:'inherit' }}>Cancel</button>
             <button onClick={save} disabled={saving||!provider||!apiToken} style={{
               flex:2, padding:'10px', borderRadius:8, border:'none',
-              background: saving||!provider||!apiToken ? '#f3f4f6' : '#0a0a0a',
+              background: saving||!provider||!apiToken ? '#F5EFE0' : '#0a0a0a',
               color: saving||!provider||!apiToken ? '#9ca3af' : '#fff',
               fontSize:13, fontWeight:600, cursor: saving||!provider||!apiToken ? 'not-allowed' : 'pointer',
               fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6,
@@ -540,11 +540,11 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
       maxWidth: 560, margin: '0 auto',
     }}>
       <div style={{
-        width: 56, height: 56, borderRadius: 14, background: '#f0f9ff',
-        border: '1px solid #bae6fd', display: 'flex', alignItems: 'center',
+        width: 56, height: 56, borderRadius: 14, background: '#E8F8F6',
+        border: '1px solid #A8E6DE', display: 'flex', alignItems: 'center',
         justifyContent: 'center', margin: '0 auto 20px',
       }}>
-        <Server size={24} color="#0369a1" />
+        <Server size={24} color="#1A7A72" />
       </div>
       <div style={{ fontSize: 18, fontWeight: 700, color: '#0a0a0a', marginBottom: 8 }}>
         Set up your first server
@@ -571,13 +571,13 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
         ].map(step => (
           <div key={step.num} style={{
             padding: '16px', borderRadius: 10,
-            border: `1px solid ${step.done ? '#bbf7d0' : '#e5e7eb'}`,
-            background: step.done ? '#f0fdf4' : '#fafafa',
+            border: `1px solid ${step.done ? '#A8E6DE' : '#e5e7eb'}`,
+            background: step.done ? '#E8F8F6' : '#fafafa',
             textAlign: 'left',
           }}>
             <div style={{
               width: 24, height: 24, borderRadius: '50%',
-              background: step.done ? '#10b981' : '#f3f4f6',
+              background: step.done ? '#3DBFB0' : '#F5EFE0',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 11, fontWeight: 700,
               color: step.done ? '#fff' : '#9ca3af',
@@ -589,7 +589,7 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
             <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 12, lineHeight: 1.5 }}>{step.desc}</div>
             <button onClick={step.done ? undefined : step.action} style={{
               fontSize: 12, fontWeight: 600,
-              color: step.done ? '#059669' : '#0369a1',
+              color: step.done ? '#1A7A72' : '#1A7A72',
               background: 'none', border: 'none', cursor: step.done ? 'default' : 'pointer',
               padding: 0, fontFamily: 'inherit',
             }}>
@@ -615,7 +615,7 @@ function HostingCard({ cred, onDelete }) {
         width: 36, height: 36, borderRadius: 8, flexShrink: 0,
         background: '#faf5ff', border: '1px solid #e9d5ff',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 11, fontWeight: 700, color: '#7c3aed',
+        fontSize: 11, fontWeight: 700, color: '#E8897A',
       }}>
         cP
       </div>
@@ -628,7 +628,7 @@ function HostingCard({ cred, onDelete }) {
           {domainCount > 0 && ` · ${domainCount} domain${domainCount !== 1 ? 's' : ''}`}
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#059669', fontWeight: 500 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#1A7A72', fontWeight: 500 }}>
         <CheckCircle size={11} />
         Connected
       </div>
@@ -716,7 +716,7 @@ function AddHostingModal({ onClose, onSaved, userId }) {
               'Auto-renews just like VPS — no manual uploads ever',
             ].map(t => (
               <div key={t} style={{ display:'flex', gap:8, marginBottom:5, alignItems:'flex-start' }}>
-                <CheckCircle size={11} color="#10b981" style={{ marginTop:1, flexShrink:0 }} />
+                <CheckCircle size={11} color="#3DBFB0" style={{ marginTop:1, flexShrink:0 }} />
                 <span style={{ fontSize:11, color:'#374151', lineHeight:1.5 }}>{t}</span>
               </div>
             ))}
@@ -747,8 +747,8 @@ function AddHostingModal({ onClose, onSaved, userId }) {
           <input value={apiToken} onChange={e=>setApiToken(e.target.value)} type="password" placeholder="Paste your cPanel API token" style={inp} />
 
           {testOk && (
-            <div style={{ padding:'8px 12px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:6, fontSize:12, color:'#065f46', marginBottom:12, display:'flex', gap:6, alignItems:'center' }}>
-              <CheckCircle size={12} color="#10b981" /> Connection successful!
+            <div style={{ padding:'8px 12px', background:'#E8F8F6', border:'1px solid #A8E6DE', borderRadius:6, fontSize:12, color:'#0F5750', marginBottom:12, display:'flex', gap:6, alignItems:'center' }}>
+              <CheckCircle size={12} color="#3DBFB0" /> Connection successful!
             </div>
           )}
           {error && <div style={{ padding:'8px 12px', background:'#fef2f2', border:'1px solid #fecaca', borderRadius:6, fontSize:12, color:'#dc2626', marginBottom:12 }}>{error}</div>}
@@ -766,7 +766,7 @@ function AddHostingModal({ onClose, onSaved, userId }) {
             </button>
             <button onClick={save} disabled={saving||!hostname||!username||!apiToken} style={{
               flex:2, padding:'10px', borderRadius:8, border:'none',
-              background: saving||!hostname||!username||!apiToken ? '#f3f4f6' : '#0a0a0a',
+              background: saving||!hostname||!username||!apiToken ? '#F5EFE0' : '#0a0a0a',
               color: saving||!hostname||!username||!apiToken ? '#9ca3af' : '#fff',
               fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit',
               display:'flex', alignItems:'center', justifyContent:'center', gap:6,
@@ -917,8 +917,8 @@ export default function MyServers({ user }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 24 }}>
               {[
                 { num: agents.length, label: 'Servers connected', color: '#374151', sub: `${onlineCount} online` },
-                { num: certs.filter(c => c.status === 'active').length, label: 'Certs protected', color: '#059669', sub: 'auto-renewing' },
-                { num: dnsCredentials.length, label: 'DNS providers', color: '#0369a1', sub: 'for auto-validation' },
+                { num: certs.filter(c => c.status === 'active').length, label: 'Certs protected', color: '#1A7A72', sub: 'auto-renewing' },
+                { num: dnsCredentials.length, label: 'DNS providers', color: '#1A7A72', sub: 'for auto-validation' },
               ].map(({ num, label, color, sub }) => (
                 <div key={label} style={{
                   background: '#fff', border: '1px solid #e5e7eb',
@@ -1034,9 +1034,9 @@ export default function MyServers({ user }) {
               <div>
                 {/* Why DNS explanation */}
                 <div style={{
-                  background: '#f0f9ff', border: '1px solid #bae6fd',
+                  background: '#E8F8F6', border: '1px solid #A8E6DE',
                   borderRadius: 10, padding: '12px 16px', marginBottom: 16,
-                  fontSize: 12, color: '#0369a1', lineHeight: 1.6,
+                  fontSize: 12, color: '#1A7A72', lineHeight: 1.6,
                 }}>
                   <b>Why do we need DNS credentials?</b> When issuing a certificate, we need to prove you own the domain. We do this by automatically adding a TXT record to your DNS — no manual steps needed.
                 </div>

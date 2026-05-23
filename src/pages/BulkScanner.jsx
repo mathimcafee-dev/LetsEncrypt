@@ -15,11 +15,11 @@ async function bulkScan(domains) {
 
 function gradeStyle(grade) {
   if (!grade || grade === 'F') return { color: '#dc2626', bg: '#fef2f2' }
-  if (grade === 'D') return { color: '#d97706', bg: '#fffbeb' }
+  if (grade === 'D') return { color: '#E8897A', bg: '#FDF0EE' }
   if (grade === 'C') return { color: '#ca8a04', bg: '#fefce8' }
-  if (grade === 'B') return { color: '#2563eb', bg: '#eff6ff' }
-  if (grade === 'A') return { color: '#16a34a', bg: '#f0fdf4' }
-  if (grade === 'A+') return { color: '#059669', bg: '#ecfdf5' }
+  if (grade === 'B') return { color: '#2563eb', bg: '#E8F8F6' }
+  if (grade === 'A') return { color: '#16a34a', bg: '#E8F8F6' }
+  if (grade === 'A+') return { color: '#1A7A72', bg: '#E8F8F6' }
   return { color: '#64748b', bg: '#f8fafc' }
 }
 
@@ -82,7 +82,7 @@ export default function BulkScanner({ nav }) {
         justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
-          <Shield size={18} color="#10b981" />
+          <Shield size={18} color="#3DBFB0" />
           <span style={{ fontSize: 14, fontWeight: 600, color: '#0a0a0a' }}>SSLVault</span>
           <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400 }}>· Bulk Scanner</span>
         </div>
@@ -98,7 +98,7 @@ export default function BulkScanner({ nav }) {
 
         {/* Hero */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, background: '#f0fdf4',
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: '#E8F8F6',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 14px' }}>
             <Scan size={22} color="#16a34a" />
@@ -138,7 +138,7 @@ export default function BulkScanner({ nav }) {
             </span>
             <button onClick={doScan} disabled={scanning || !input.trim()}
               style={{ fontSize: 13, fontWeight: 500, padding: '9px 20px', borderRadius: 8,
-                background: scanning || !input.trim() ? '#e2e8f0' : '#10b981',
+                background: scanning || !input.trim() ? '#e2e8f0' : '#3DBFB0',
                 color: scanning || !input.trim() ? '#94a3b8' : '#fff',
                 border: 'none', cursor: scanning || !input.trim() ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 7, transition: 'background .15s' }}>
@@ -151,7 +151,7 @@ export default function BulkScanner({ nav }) {
           {/* Progress bar */}
           {scanning && (
             <div style={{ marginTop: 12, height: 3, background: '#e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: '#10b981', borderRadius: 2,
+              <div style={{ height: '100%', background: '#3DBFB0', borderRadius: 2,
                 width: `${progress}%`, transition: 'width .4s ease' }} />
             </div>
           )}
@@ -229,7 +229,7 @@ export default function BulkScanner({ nav }) {
                     <div style={{ fontSize: 11, fontWeight: 500,
                       color: r.expiry_days == null ? '#94a3b8'
                            : r.expiry_days <= 7 ? '#dc2626'
-                           : r.expiry_days <= 30 ? '#d97706' : '#16a34a' }}>
+                           : r.expiry_days <= 30 ? '#E8897A' : '#16a34a' }}>
                       {r.expiry_days != null ? (r.expiry_days <= 0 ? 'Expired' : `${r.expiry_days}d`) : '—'}
                     </div>
                   </div>

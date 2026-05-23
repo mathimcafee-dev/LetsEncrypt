@@ -190,7 +190,7 @@ function InventoryMockup() {
         {['Domain','Days','Grade','CA','Auto','Status'].map(h => <div key={h} style={{ fontSize:9.5, fontWeight:700, color:W.muted, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>)}
       </div>
       {rows.map((r,i) => (
-        <div key={r.d} style={{ display:'grid', gridTemplateColumns:'2fr 52px 52px 80px 60px 70px', padding:'9px 14px', borderBottom:i<rows.length-1?`1px solid ${W.bg3}`:'none', background:r.s==='critical'?'#fef2f280':r.s==='warning'?'#fffbeb80':W.bg, alignItems:'center' }}>
+        <div key={r.d} style={{ display:'grid', gridTemplateColumns:'2fr 52px 52px 80px 60px 70px', padding:'9px 14px', borderBottom:i<rows.length-1?`1px solid ${W.bg3}`:'none', background:r.s==='critical'?'#fef2f280':r.s==='warning'?'#FDF0EE80':W.bg, alignItems:'center' }}>
           <span style={{ fontSize:11.5, fontWeight:500, color:W.heading, fontFamily:MONO }}>{r.d}</span>
           <span style={{ fontSize:11, fontWeight:700, color:sc(r.s), fontFamily:MONO }}>{r.days}d</span>
           <span style={{ fontSize:11, fontWeight:800, color:gc(r.grade) }}>{r.grade}</span>
@@ -315,7 +315,7 @@ export default function Home({ nav }) {
       <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
       <style>{`
         *, *::before, *::after { box-sizing:border-box; margin:0; padding:0 }
-        ::selection { background:#0ea5e922; color:#0284c7 }
+        ::selection { background:#3DBFB022; color:#1A7A72 }
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes fadeSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
@@ -382,7 +382,7 @@ export default function Home({ nav }) {
           </button>
           <button onClick={() => nav('/auth')}
             style={{ background:D.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'white', padding:'7px 20px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em' }}
-            onMouseEnter={e => { e.currentTarget.style.background='#0284c7'; e.currentTarget.style.boxShadow=`0 4px 20px rgba(14,165,233,0.4)` }}
+            onMouseEnter={e => { e.currentTarget.style.background='#1A7A72'; e.currentTarget.style.boxShadow=`0 4px 20px rgba(14,165,233,0.4)` }}
             onMouseLeave={e => { e.currentTarget.style.background=D.teal; e.currentTarget.style.boxShadow='none' }}>
             Get started
           </button>
@@ -546,7 +546,7 @@ export default function Home({ nav }) {
                 badge:'DNS-01',
               },
               {
-                icon:'🏛', color:'#6366f1', title:'cPanel install',
+                icon:'🏛', color:'#3DBFB0', title:'cPanel install',
                 specs:['UAPI-based installation','No SSH or agent required','API token auth','Auto-renew via cPanel'],
                 badge:'UAPI',
               },
@@ -571,12 +571,12 @@ export default function Home({ nav }) {
                 badge:'Multi-CA',
               },
               {
-                icon:'🏛', color:'#6366f1', title:'Industry Intelligence',
+                icon:'🏛', color:'#3DBFB0', title:'Industry Intelligence',
                 specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker (ML-KEM, ML-DSA)'],
                 badge:'PKI Hub',
               },
               {
-                icon:'🔬', color:'#8b5cf6', title:'CA Trust Store',
+                icon:'🔬', color:'#E8897A', title:'CA Trust Store',
                 specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm · region','CSV export · PEM download'],
                 badge:'CCADB',
               },
@@ -809,7 +809,7 @@ export default function Home({ nav }) {
 
 
       {/* ── INDUSTRY INTELLIGENCE ── */}
-      <section style={{ background:'#080c14', padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+      <section style={{ background:'#0F5750', padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ textAlign:'center', marginBottom:52 }}>
@@ -834,7 +834,7 @@ export default function Home({ nav }) {
                 stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']],
               },
               {
-                icon:'⚖️', color:'#f59e0b', title:'CAB Forum Intelligence',
+                icon:'⚖️', color:'#E8897A', title:'CAB Forum Intelligence',
                 sub:'Ballots, timelines & compliance',
                 desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',
                 badge:'Live sync',
@@ -842,7 +842,7 @@ export default function Home({ nav }) {
                 stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']],
               },
               {
-                icon:'🌍', color:'#10b981', title:'Global PKI Hub',
+                icon:'🌍', color:'#3DBFB0', title:'Global PKI Hub',
                 sub:'12 bodies · 22 standards · PQC tracker',
                 desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',
                 badge:'PQC Ready',
@@ -890,11 +890,11 @@ export default function Home({ nav }) {
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', flexShrink:0 }}>
                 {[['ML-KEM','FIPS 203'],['ML-DSA','FIPS 204'],['SLH-DSA','FIPS 205']].map(([alg, fips]) => (
                   <div key={alg} style={{ background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.2)', borderRadius:8, padding:'7px 12px', textAlign:'center' }}>
-                    <div style={{ fontSize:12, fontWeight:700, color:'#10b981', fontFamily:MONO }}>{alg}</div>
+                    <div style={{ fontSize:12, fontWeight:700, color:'#3DBFB0', fontFamily:MONO }}>{alg}</div>
                     <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', marginTop:2 }}>{fips}</div>
                   </div>
                 ))}
-                <button onClick={() => nav('/pki-hub')} style={{ background:'#10b981', border:'none', borderRadius:8, padding:'9px 16px', fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer', fontFamily:F, whiteSpace:'nowrap' }}>
+                <button onClick={() => nav('/pki-hub')} style={{ background:'#3DBFB0', border:'none', borderRadius:8, padding:'9px 16px', fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer', fontFamily:F, whiteSpace:'nowrap' }}>
                   View PQC tracker →
                 </button>
               </div>
@@ -904,7 +904,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CERTBIND — KILLER FEATURE ── */}
-      <section style={{ background:'#080c14', padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid rgba(255,255,255,0.06)', position:'relative', overflow:'hidden' }}>
+      <section style={{ background:'#0F5750', padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:'1px solid rgba(255,255,255,0.06)', position:'relative', overflow:'hidden' }}>
         {/* Ambient glow */}
         <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:800, height:400, background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(14,165,233,0.07) 0%, transparent 100%)', pointerEvents:'none' }}/>
 

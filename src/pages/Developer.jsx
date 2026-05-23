@@ -3,7 +3,7 @@ import portrait from '../assets/mathi-portrait.jpg'
 
 const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
-const C    = { ink:'#0a0e1a', teal:'#0ea5e9', tealDk:'#0284c7', green:'#10b981', purple:'#8b5cf6', border:'rgba(255,255,255,0.07)', text:'rgba(255,255,255,0.85)', textMid:'rgba(255,255,255,0.5)', textLt:'rgba(255,255,255,0.28)' }
+const C    = { ink:'#0F5750', teal:'#3DBFB0', tealDk:'#1A7A72', green:'#3DBFB0', purple:'#E8897A', border:'rgba(255,255,255,0.07)', text:'rgba(255,255,255,0.85)', textMid:'rgba(255,255,255,0.5)', textLt:'rgba(255,255,255,0.28)' }
 
 export default function Developer({ nav }) {
   return (

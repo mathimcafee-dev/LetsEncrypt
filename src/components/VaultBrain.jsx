@@ -7,7 +7,7 @@ const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const CHIPS_OUT = ['How does auto-renewal work?','Install agent on VPS','DNS challenge failing','What is TLS grade A?','Connect Cloudflare DNS','What is KeyLocker?']
 const CHIPS_IN  = ['List my certificates','Show expiring soon','Are my agents online?','Show active orders','My DNS providers','Show API keys','Recent audit log','My account plan']
 
-const G='#10b981',BG='#0a0a0a',S1='#111',S2='#1a1a1a',TX='#f0f0f0',MU='#7a7a7a',BD='rgba(255,255,255,0.08)',GB='rgba(16,185,129,0.25)'
+const G='#3DBFB0',BG='#0a0a0a',S1='#111',S2='#1a1a1a',TX='#f0f0f0',MU='#7a7a7a',BD='rgba(255,255,255,0.08)',GB='rgba(16,185,129,0.25)'
 
 function Av({ai}){return <div style={{width:26,height:26,borderRadius:'50%',flexShrink:0,marginTop:2,fontSize:11,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',background:ai?'rgba(16,185,129,0.12)':'#1e293b',border:ai?'1px solid rgba(16,185,129,0.25)':'1px solid rgba(99,179,237,0.3)',color:ai?G:'#63b3ed'}}>{ai?'V':'U'}</div>}
 function Bub({ai,user,children}){return <div style={{padding:'10px 14px',borderRadius:14,maxWidth:'86%',background:user?'rgba(16,185,129,0.1)':S2,border:`0.5px solid ${user?'rgba(16,185,129,0.2)':BD}`,borderBottomLeftRadius:ai?3:14,borderBottomRightRadius:user?3:14}}>{children}</div>}

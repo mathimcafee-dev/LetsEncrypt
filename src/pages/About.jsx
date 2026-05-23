@@ -6,15 +6,15 @@ const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
-  bg:'#ffffff', bg2:'#f9fafb', bg3:'#f3f4f6',
+  bg:'#FFFFFF', bg2:'#FDFAF5', bg3:'#F5EFE0',
   border:'#e5e7eb', border2:'#d1d5db',
   heading:'#0a0a0a', body:'#4b5563', muted:'#9ca3af',
-  teal:'#0ea5e9', tealDk:'#0284c7', tealBg:'#f0f9ff', tealBd:'#bae6fd',
-  green:'#10b981', greenBg:'#f0fdf4', greenBd:'#bbf7d0',
-  purple:'#7c3aed', purpleBg:'#faf5ff', purpleBd:'#ddd6fe',
-  amber:'#d97706', amberBg:'#fffbeb', amberBd:'#fde68a',
+  teal:'#3DBFB0', tealDk:'#1A7A72', tealBg:'#E8F8F6', tealBd:'#A8E6DE',
+  green:'#3DBFB0', greenBg:'#E8F8F6', greenBd:'#A8E6DE',
+  purple:'#E8897A', purpleBg:'#faf5ff', purpleBd:'#ddd6fe',
+  amber:'#E8897A', amberBg:'#FDF0EE', amberBd:'#F2C4BC',
   red:'#dc2626', redBg:'#fef2f2', redBd:'#fecaca',
-  ink:'#080c14',
+  ink:'#0F5750',
 }
 
 function Stat({ val, label, sub, color = C.teal }) {

@@ -4,7 +4,7 @@ import {
 } from 'lucide-react'
 
 export default function Terms({ nav }) {
-  const bg = 'linear-gradient(160deg,#eef2ff,#eff6ff 35%,#fefce8 65%,#fdf4ff)'
+  const bg = 'linear-gradient(160deg,#eef2ff,#E8F8F6 35%,#fefce8 65%,#fdf4ff)'
   const updated = 'May 9, 2026'
 
   return (
@@ -15,12 +15,12 @@ export default function Terms({ nav }) {
       <section style={{position:'relative',padding:'70px 0 30px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'white',border:'1px solid #e2e8f0',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-            <span style={{width:7,height:7,borderRadius:'50%',background:'#0e7fc0',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
+            <span style={{width:7,height:7,borderRadius:'50%',background:'#1A7A72',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
             <span style={{fontSize:11,fontWeight:700,color:'#475569',letterSpacing:'0.4px',textTransform:'uppercase'}}>Terms of Service</span>
           </div>
           <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#0f172a'}}>
             The fine print,<br/>
-            <span style={{background:'linear-gradient(135deg,#2563eb,#7c3aed,#0ea5e9)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>kept short.</span>
+            <span style={{background:'linear-gradient(135deg,#2563eb,#E8897A,#3DBFB0)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>kept short.</span>
           </h1>
           <p style={{fontSize:15,color:'#64748b',marginTop:14}}>Last updated: <strong style={{color:'#0f172a'}}>{updated}</strong></p>
         </div>
@@ -29,12 +29,12 @@ export default function Terms({ nav }) {
       {/* TLDR CARD */}
       <section style={{position:'relative',padding:'30px 0 50px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px'}}>
-          <div style={{background:'linear-gradient(135deg,#fef3c7,#fef9c3)',borderRadius:18,padding:'28px 32px',border:'1.5px solid #fde68a',display:'flex',gap:18,alignItems:'flex-start'}}>
-            <div style={{width:42,height:42,borderRadius:11,background:'#d97706',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(217,119,6,0.3)'}}>
+          <div style={{background:'linear-gradient(135deg,#FDF0EE,#fef9c3)',borderRadius:18,padding:'28px 32px',border:'1.5px solid #F2C4BC',display:'flex',gap:18,alignItems:'flex-start'}}>
+            <div style={{width:42,height:42,borderRadius:11,background:'#E8897A',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(217,119,6,0.3)'}}>
               <AlertTriangle size={20} color='white'/>
             </div>
             <div>
-              <div style={{fontSize:11,fontWeight:800,color:'#92400e',letterSpacing:'1.2px',textTransform:'uppercase',marginBottom:6}}>The TL;DR</div>
+              <div style={{fontSize:11,fontWeight:800,color:'#C45A4A',letterSpacing:'1.2px',textTransform:'uppercase',marginBottom:6}}>The TL;DR</div>
               <div style={{fontSize:14,color:'#451a03',lineHeight:1.7,fontWeight:500}}>
                 SSLVault is a free service operated as-is. You're responsible for the domains you secure
                 and the servers you manage. We're not liable if Let's Encrypt is down or your DNS provider

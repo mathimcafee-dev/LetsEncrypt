@@ -12,7 +12,7 @@ function CopyBtn({ text }) {
   }
   return (
     <button onClick={copy} style={{ background:'none', border:'0.5px solid #e8edf2', borderRadius:5,
-      cursor:'pointer', color: ok ? '#0e7fc0' : '#64748b', display:'flex', alignItems:'center',
+      cursor:'pointer', color: ok ? '#1A7A72' : '#64748b', display:'flex', alignItems:'center',
       gap:4, fontSize:11, padding:'3px 8px', fontFamily:'inherit' }}>
       {ok ? <><Check size={11}/> Copied</> : <><Copy size={11}/> Copy</>}
     </button>
@@ -203,12 +203,12 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
           ].map(t => (
             <button key={t.key} onClick={() => setHostType(t.key)} style={{
               padding:'14px 16px', borderRadius:8,
-              border: hostType===t.key ? '2px solid #0e7fc0' : '0.5px solid #e8edf2',
-              background: hostType===t.key ? '#f0f9ff' : 'white',
+              border: hostType===t.key ? '2px solid #1A7A72' : '0.5px solid #e8edf2',
+              background: hostType===t.key ? '#E8F8F6' : 'white',
               cursor:'pointer', textAlign:'left', fontFamily:'inherit'
             }}>
-              <div style={{ color: hostType===t.key ? '#0e7fc0' : '#94a3b8', marginBottom:6 }}>{t.icon}</div>
-              <div style={{ fontSize:13, fontWeight:600, color: hostType===t.key ? '#0e7fc0' : '#0a0a0a' }}>{t.label}</div>
+              <div style={{ color: hostType===t.key ? '#1A7A72' : '#94a3b8', marginBottom:6 }}>{t.icon}</div>
+              <div style={{ fontSize:13, fontWeight:600, color: hostType===t.key ? '#1A7A72' : '#0a0a0a' }}>{t.label}</div>
               <div style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>{t.sub}</div>
             </button>
           ))}
@@ -254,12 +254,12 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                       <div key={i} style={{ display:'flex', gap:12, marginBottom:12, alignItems:'flex-start' }}>
                         <div style={{ flexShrink:0, marginTop:2 }}>
                           {step.done ? (
-                            <div style={{ width:20, height:20, borderRadius:'50%', background:'#0e7fc0',
+                            <div style={{ width:20, height:20, borderRadius:'50%', background:'#1A7A72',
                               display:'flex', alignItems:'center', justifyContent:'center' }}>
                               <CheckCircle size={12} color="white" strokeWidth={3}/>
                             </div>
                           ) : step.active ? (
-                            <div style={{ width:20, height:20, borderRadius:'50%', background:'#eff6ff',
+                            <div style={{ width:20, height:20, borderRadius:'50%', background:'#E8F8F6',
                               border:'2px solid #3b82f6', display:'flex', alignItems:'center', justifyContent:'center' }}>
                               <RefreshCw size={10} color="#3b82f6" style={{ animation:'spin 1s linear infinite' }}/>
                             </div>
@@ -284,7 +284,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                   </div>
 
                   {jobStatus === 'success' && (
-                    <div style={{ background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:8,
+                    <div style={{ background:'#E8F8F6', border:'1px solid #A8E6DE', borderRadius:8,
                       padding:'14px', marginBottom:16 }}>
                       <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:8 }}>
                         <CheckCircle size={16} color="#16a34a"/>
@@ -315,7 +315,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                   <button onClick={onClose}
                     style={{ width:'100%', padding:'10px', fontSize:13, fontWeight:500, borderRadius:7,
                       border:'none', cursor:'pointer', fontFamily:'inherit',
-                      background: jobStatus === 'success' ? '#0e7fc0' : '#f1f5f9',
+                      background: jobStatus === 'success' ? '#1A7A72' : '#f1f5f9',
                       color: jobStatus === 'success' ? 'white' : '#374151' }}>
                     {jobStatus === 'success' ? 'Done' : jobStatus === 'failed' ? 'Close' : 'Close (job continues in background)'}
                   </button>
@@ -333,11 +333,11 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                     return (
                       <div key={a.id} onClick={() => setSelectedAgent(a.id)}
                         style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 12px',
-                          border: selectedAgent===a.id ? '1.5px solid #0e7fc0' : '0.5px solid #e8edf2',
+                          border: selectedAgent===a.id ? '1.5px solid #1A7A72' : '0.5px solid #e8edf2',
                           borderRadius:7, marginBottom:8, cursor:'pointer',
-                          background: selectedAgent===a.id ? '#f0f9ff' : 'white' }}>
+                          background: selectedAgent===a.id ? '#E8F8F6' : 'white' }}>
                         <div style={{ width:8, height:8, borderRadius:'50%', flexShrink:0,
-                          background: isActive ? '#0e7fc0' : '#e5e7eb' }}/>
+                          background: isActive ? '#1A7A72' : '#e5e7eb' }}/>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ fontSize:13, fontWeight:500, color:'#0a0a0a',
                             whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
@@ -352,7 +352,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                   })}
                   {error && <div style={{ fontSize:12, color:'#dc2626', marginBottom:10 }}>{error}</div>}
                   <button onClick={dispatchToAgent} disabled={!selectedAgent || dispatching}
-                    style={{ width:'100%', background: selectedAgent ? '#0e7fc0' : '#e5e7eb',
+                    style={{ width:'100%', background: selectedAgent ? '#1A7A72' : '#e5e7eb',
                       color: selectedAgent ? 'white' : '#94a3b8', border:'none', borderRadius:7,
                       padding:'10px', fontSize:13, fontWeight:500, cursor: selectedAgent ? 'pointer' : 'default',
                       fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
@@ -363,8 +363,8 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                 </div>
               ) : (
                 <div>
-                  <div style={{ background:'#f0f9ff', border:'0.5px solid #bae6fd', borderRadius:8,
-                    padding:'12px 14px', marginBottom:14, fontSize:12, color:'#0c4a6e', lineHeight:1.7 }}>
+                  <div style={{ background:'#E8F8F6', border:'0.5px solid #A8E6DE', borderRadius:8,
+                    padding:'12px 14px', marginBottom:14, fontSize:12, color:'#0F5750', lineHeight:1.7 }}>
                     No agent connected yet. Run this on your server to install the SSLVault agent.
                     Once connected, cert installs and renewals are fully automatic.
                   </div>
@@ -403,7 +403,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                   </div>
 
                   {!pairingCmd && !pairingLoading && (
-                    <button onClick={fetchPairingCmd} style={{ width:'100%', background:'#0e7fc0',
+                    <button onClick={fetchPairingCmd} style={{ width:'100%', background:'#1A7A72',
                       color:'white', border:'none', borderRadius:7, padding:'10px',
                       fontSize:13, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
                       Generate install command
@@ -421,13 +421,13 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
 
           {hostType === 'shared' && (
             <div>
-              <div style={{ background:'#f0f9ff', border:'0.5px solid #bae6fd', borderRadius:8,
-                padding:'12px 14px', marginBottom:16, fontSize:12, color:'#0c4a6e', lineHeight:1.7 }}>
+              <div style={{ background:'#E8F8F6', border:'0.5px solid #A8E6DE', borderRadius:8,
+                padding:'12px 14px', marginBottom:16, fontSize:12, color:'#0F5750', lineHeight:1.7 }}>
                 SSLVault installs directly via cPanel's API — no PHP file, no upload, nothing in public_html.
                 Your credentials are encrypted in Supabase Vault and never exposed.
               </div>
               <button onClick={() => { onClose(); onOpenCpanel && onOpenCpanel() }}
-                style={{ width:'100%', background:'#0e7fc0', color:'white', border:'none',
+                style={{ width:'100%', background:'#1A7A72', color:'white', border:'none',
                   borderRadius:7, padding:'11px', fontSize:13, fontWeight:500,
                   cursor:'pointer', fontFamily:'inherit', display:'flex',
                   alignItems:'center', justifyContent:'center', gap:7 }}>

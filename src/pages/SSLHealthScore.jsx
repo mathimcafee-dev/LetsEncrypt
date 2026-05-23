@@ -30,17 +30,17 @@ function timeAgo(iso) {
 // Grade colour map
 function gradeStyle(grade) {
   if (!grade || grade === 'F') return { color: '#dc2626', bg: '#fef2f2', border: '#fecaca' }
-  if (grade === 'D') return { color: '#d97706', bg: '#fffbeb', border: '#fde68a' }
+  if (grade === 'D') return { color: '#E8897A', bg: '#FDF0EE', border: '#F2C4BC' }
   if (grade === 'C') return { color: '#ca8a04', bg: '#fefce8', border: '#fef08a' }
-  if (grade === 'B') return { color: '#2563eb', bg: '#eff6ff', border: '#bfdbfe' }
-  if (grade === 'A') return { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' }
-  if (grade === 'A+') return { color: '#059669', bg: '#ecfdf5', border: '#6ee7b7' }
+  if (grade === 'B') return { color: '#2563eb', bg: '#E8F8F6', border: '#A8E6DE' }
+  if (grade === 'A') return { color: '#16a34a', bg: '#E8F8F6', border: '#A8E6DE' }
+  if (grade === 'A+') return { color: '#1A7A72', bg: '#E8F8F6', border: '#6ee7b7' }
   return { color: '#64748b', bg: '#f8fafc', border: '#e2e8f0' }
 }
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
-  const color = pct >= 80 ? '#16a34a' : pct >= 60 ? '#2563eb' : pct >= 50 ? '#d97706' : '#dc2626'
+  const color = pct >= 80 ? '#16a34a' : pct >= 60 ? '#2563eb' : pct >= 50 ? '#E8897A' : '#dc2626'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{ flex: 1, height: 4, background: 'var(--v2-border)', borderRadius: 2, overflow: 'hidden' }}>
@@ -105,7 +105,7 @@ function DomainRow({ score, onRescan, scanning }) {
           <Check ok={score.cert_valid} label="TLS" />
           {score.expiry_days != null && (
             <span style={{ fontSize: 11, fontWeight: 500,
-              color: score.expiry_days <= 7 ? '#dc2626' : score.expiry_days <= 30 ? '#d97706' : '#16a34a' }}>
+              color: score.expiry_days <= 7 ? '#dc2626' : score.expiry_days <= 30 ? '#E8897A' : '#16a34a' }}>
               {score.expiry_days <= 0 ? 'Expired' : `${score.expiry_days}d`}
             </span>
           )}

@@ -34,7 +34,7 @@ function fmtDate(iso) {
 function ExpiryBadge({ expiresAt }) {
   const d = daysLeft(expiresAt)
   if (d === null) return null
-  const [color, bg] = d > 30 ? ['#16a34a', '#f0fdf4'] : d > 7 ? ['#d97706', '#fffbeb'] : ['#dc2626', '#fef2f2']
+  const [color, bg] = d > 30 ? ['#16a34a', '#E8F8F6'] : d > 7 ? ['#E8897A', '#FDF0EE'] : ['#dc2626', '#fef2f2']
   return (
     <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 7px', borderRadius: 4,
       background: bg, color, border: `0.5px solid ${color}30` }}>
@@ -46,11 +46,11 @@ function ExpiryBadge({ expiresAt }) {
 function SourceBadge({ source }) {
   const map = {
     digicert:   { label: 'DigiCert',       color: '#dc2626', bg: '#fef2f2' },
-    sectigo:    { label: 'Sectigo',        color: '#7c3aed', bg: '#f5f3ff' },
-    sslcom:     { label: 'SSL.com',        color: '#0369a1', bg: '#e0f2fe' },
+    sectigo:    { label: 'Sectigo',        color: '#E8897A', bg: '#f5f3ff' },
+    sslcom:     { label: 'SSL.com',        color: '#1A7A72', bg: '#D4F5EF' },
     imported:   { label: 'Manual',         color: '#64748b', bg: '#f8fafc' },
-    rapidssl:   { label: 'RapidSSL',       color: '#16a34a', bg: '#f0fdf4' },
-    letsencrypt:{ label: "Let's Encrypt",  color: '#2563eb', bg: '#eff6ff' },
+    rapidssl:   { label: 'RapidSSL',       color: '#16a34a', bg: '#E8F8F6' },
+    letsencrypt:{ label: "Let's Encrypt",  color: '#2563eb', bg: '#E8F8F6' },
   }
   const s = map[source] || { label: source || 'Unknown', color: '#64748b', bg: '#f8fafc' }
   return (
@@ -75,7 +75,7 @@ const CA_DEFS = {
   },
   sectigo: {
     name: 'Sectigo SCM',
-    color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe',
+    color: '#E8897A', bg: '#f5f3ff', border: '#ddd6fe',
     logo: 'SC',
     desc: 'Pull all certificates from Sectigo Certificate Manager. Monitoring only — no private keys needed.',
     fields: [
@@ -87,7 +87,7 @@ const CA_DEFS = {
   },
   sslcom: {
     name: 'SSL.com',
-    color: '#0369a1', bg: '#e0f2fe', border: '#bae6fd',
+    color: '#1A7A72', bg: '#D4F5EF', border: '#A8E6DE',
     logo: 'SL',
     desc: 'Pull all issued certificates from your SSL.com reseller account. Monitoring only — no private keys needed.',
     fields: [
@@ -271,7 +271,7 @@ export default function CAConnectors({ nav }) {
           {[
             { val: connections.length, label: 'CAs connected',   color: '#16a34a' },
             { val: certs.length,       label: 'Certs tracked',   color: 'var(--v2-text)' },
-            { val: expiring30.length,  label: 'Expiring in 30d', color: '#d97706' },
+            { val: expiring30.length,  label: 'Expiring in 30d', color: '#E8897A' },
             { val: expired.length,     label: 'Expired',         color: '#dc2626' },
           ].map(({ val, label, color }) => (
             <div key={label} className="v2-card" style={{ padding: '12px 14px' }}>
@@ -283,10 +283,10 @@ export default function CAConnectors({ nav }) {
 
         {/* Expiry alert */}
         {expiring30.length > 0 && (
-          <div style={{ background: '#fffbeb', border: '0.5px solid #fde68a', borderRadius: 10,
+          <div style={{ background: '#FDF0EE', border: '0.5px solid #F2C4BC', borderRadius: 10,
             padding: '12px 16px', marginBottom: 20, display: 'flex', gap: 10, alignItems: 'center' }}>
-            <AlertTriangle size={15} style={{ color: '#d97706', flexShrink: 0 }}/>
-            <div style={{ fontSize: 12, color: '#92400e' }}>
+            <AlertTriangle size={15} style={{ color: '#E8897A', flexShrink: 0 }}/>
+            <div style={{ fontSize: 12, color: '#C45A4A' }}>
               <strong>{expiring30.length} certificate{expiring30.length !== 1 ? 's' : ''}</strong> expiring
               within 30 days: {expiring30.map(c => c.domain).join(', ')}
             </div>
@@ -337,7 +337,7 @@ export default function CAConnectors({ nav }) {
                   )}
                   {res && (
                     <div style={{ fontSize: 11, marginBottom: 8, padding: '5px 8px', borderRadius: 5,
-                      background: res.ok ? '#f0fdf4' : '#fef2f2',
+                      background: res.ok ? '#E8F8F6' : '#fef2f2',
                       color: res.ok ? '#166534' : '#dc2626' }}>
                       {res.ok
                         ? `✓ Synced — ${res.imported} imported, ${res.skipped || 0} skipped`
@@ -394,7 +394,7 @@ export default function CAConnectors({ nav }) {
               <div style={{ textAlign: 'center' }}>
                 <div style={{ width: 36, height: 36, borderRadius: 8, background: '#f5f3ff',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 700, fontSize: 12, color: '#7c3aed', margin: '0 auto 8px' }}>SC</div>
+                  fontWeight: 700, fontSize: 12, color: '#E8897A', margin: '0 auto 8px' }}>SC</div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text-2)' }}>Connect Sectigo</div>
                 <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 2 }}>SCM API</div>
               </div>
@@ -488,11 +488,11 @@ export default function CAConnectors({ nav }) {
                   onClick={() => openRenewModal(cert)}
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 4,
                     fontSize: 10, fontWeight: 600, padding: '4px 9px', borderRadius: 6,
-                    background: '#eff6ff', color: '#0e7fc0',
-                    border: '0.5px solid #bfdbfe', cursor: 'pointer',
+                    background: '#E8F8F6', color: '#1A7A72',
+                    border: '0.5px solid #A8E6DE', cursor: 'pointer',
                     fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'all .15s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background='#0e7fc0'; e.currentTarget.style.color='white' }}
-                  onMouseLeave={e => { e.currentTarget.style.background='#eff6ff'; e.currentTarget.style.color='#0e7fc0' }}>
+                  onMouseEnter={e => { e.currentTarget.style.background='#1A7A72'; e.currentTarget.style.color='white' }}
+                  onMouseLeave={e => { e.currentTarget.style.background='#E8F8F6'; e.currentTarget.style.color='#1A7A72' }}>
                   <RotateCcw size={10}/> Renew
                 </button>
               </div>
@@ -679,8 +679,8 @@ export default function CAConnectors({ nav }) {
                   </>
                 ) : importResult.ok ? (
                   <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                    <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#f0fdf4',
-                      border: '1.5px solid #bbf7d0', display: 'flex', alignItems: 'center',
+                    <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#E8F8F6',
+                      border: '1.5px solid #A8E6DE', display: 'flex', alignItems: 'center',
                       justifyContent: 'center', margin: '0 auto 14px' }}>
                       <Check size={20} style={{ color: '#16a34a' }}/>
                     </div>
@@ -749,7 +749,7 @@ export default function CAConnectors({ nav }) {
                 <div style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.6 }}>
                   This CA connection will be disconnected and will no longer sync.
                   {connCertCount > 0 && (
-                    <span style={{ color: '#d97706', fontWeight: 500 }}> {connCertCount} certificate{connCertCount !== 1 ? 's' : ''} are linked to this connection.</span>
+                    <span style={{ color: '#E8897A', fontWeight: 500 }}> {connCertCount} certificate{connCertCount !== 1 ? 's' : ''} are linked to this connection.</span>
                   )}
                 </div>
                 {connCertCount > 0 && (
@@ -808,9 +808,9 @@ export default function CAConnectors({ nav }) {
                   display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <div>
                     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                      <div style={{ width:28, height:28, borderRadius:7, background:'#eff6ff',
+                      <div style={{ width:28, height:28, borderRadius:7, background:'#E8F8F6',
                         display:'flex', alignItems:'center', justifyContent:'center' }}>
-                        <RotateCcw size={13} color="#0e7fc0"/>
+                        <RotateCcw size={13} color="#1A7A72"/>
                       </div>
                       <span style={{ fontSize:14, fontWeight:700, color:'#0f172a' }}>Renew certificate</span>
                     </div>
@@ -835,7 +835,7 @@ export default function CAConnectors({ nav }) {
                     style={{ display:'flex', alignItems:'flex-start', gap:14, padding:'14px 16px',
                       borderRadius:10, border:'1.5px solid #e2e8f0', background:'white',
                       cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor='#0e7fc0'; e.currentTarget.style.background='#f0f9ff' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor='#1A7A72'; e.currentTarget.style.background='#E8F8F6' }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor='#e2e8f0'; e.currentTarget.style.background='white' }}>
                     <div style={{ width:34, height:34, borderRadius:8, background:'#f1f5f9',
                       display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -861,9 +861,9 @@ export default function CAConnectors({ nav }) {
                     style={{ display:'flex', alignItems:'flex-start', gap:14, padding:'14px 16px',
                       borderRadius:10, border:'1.5px solid #e2e8f0', background:'white',
                       cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor='#16a34a'; e.currentTarget.style.background='#f0fdf4' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor='#16a34a'; e.currentTarget.style.background='#E8F8F6' }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor='#e2e8f0'; e.currentTarget.style.background='white' }}>
-                    <div style={{ width:34, height:34, borderRadius:8, background:'#f0fdf4',
+                    <div style={{ width:34, height:34, borderRadius:8, background:'#E8F8F6',
                       display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                       <Shield size={15} color="#16a34a"/>
                     </div>
@@ -871,8 +871,8 @@ export default function CAConnectors({ nav }) {
                       <div style={{ fontSize:13, fontWeight:700, color:'#0f172a', marginBottom:3 }}>
                         Renew via SSLVault
                         <span style={{ marginLeft:7, fontSize:9, fontWeight:700, padding:'2px 7px',
-                          borderRadius:20, background:'#f0fdf4', color:'#16a34a',
-                          border:'0.5px solid #bbf7d0' }}>Recommended</span>
+                          borderRadius:20, background:'#E8F8F6', color:'#16a34a',
+                          border:'0.5px solid #A8E6DE' }}>Recommended</span>
                       </div>
                       <div style={{ fontSize:11, color:'#64748b', lineHeight:1.5 }}>
                         Issue a fresh RapidSSL DV certificate through SSLVault — RapidSSL CA API,
@@ -933,7 +933,7 @@ export default function CAConnectors({ nav }) {
                   {['digicert','sectigo','sslcom','imported'].map(src => {
                     const count = certs.filter(c => c.source===src||c.imported_from===src).length
                     if (!count) return null
-                    const colors = {digicert:['#fef2f2','#dc2626'],sectigo:['#f5f3ff','#7c3aed'],sslcom:['#e0f2fe','#0369a1'],imported:['#f8fafc','#64748b']}
+                    const colors = {digicert:['#fef2f2','#dc2626'],sectigo:['#f5f3ff','#E8897A'],sslcom:['#D4F5EF','#1A7A72'],imported:['#f8fafc','#64748b']}
                     const [bg,color] = colors[src]||['#f8fafc','#64748b']
                     const labels = {digicert:'DigiCert',sectigo:'Sectigo',sslcom:'SSL.com',imported:'Manual'}
                     return (

@@ -8,16 +8,16 @@ const MONTHS   = ['January','February','March','April','May','June','July','Augu
 const MONTHS_S = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const DAYS_S   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
-const ACCENT = '#0e7fc0'
+const ACCENT = '#1A7A72'
 const RED    = '#dc2626'
-const AMBER  = '#d97706'
+const AMBER  = '#E8897A'
 const GREEN  = '#16a34a'
 
 const STATUS = {
   expired: { color: RED,   bg: '#fef2f2', border: '#fca5a5', bar: RED,   text: '#b91c1c' },
-  warning: { color: AMBER, bg: '#fffbeb', border: '#fcd34d', bar: AMBER, text: '#92400e' },
-  healthy: { color: GREEN, bg: '#f0fdf4', border: '#86efac', bar: GREEN, text: '#166534' },
-  today:   { color: ACCENT,bg: '#eff6ff', border: '#93c5fd', bar: ACCENT,text: '#1e40af' },
+  warning: { color: AMBER, bg: '#FDF0EE', border: '#fcd34d', bar: AMBER, text: '#C45A4A' },
+  healthy: { color: GREEN, bg: '#E8F8F6', border: '#86efac', bar: GREEN, text: '#166534' },
+  today:   { color: ACCENT,bg: '#E8F8F6', border: '#93c5fd', bar: ACCENT,text: '#1e40af' },
 }
 
 function daysUntil(iso) {
@@ -157,7 +157,7 @@ function DetailPanel({ label, certs, onClose }) {
                 {c.cert_type || 'DV'}
                 {c.auto_renew_enabled && (
                   <span style={{ marginLeft:5, fontSize:9, fontWeight:600,
-                    color:ACCENT, background:'#eff6ff', padding:'1px 5px', borderRadius:3 }}>AUTO</span>
+                    color:ACCENT, background:'#E8F8F6', padding:'1px 5px', borderRadius:3 }}>AUTO</span>
                 )}
               </div>
             </div>
@@ -576,9 +576,9 @@ export default function RenewalCalendar({ user }) {
         <div style={{ display:'flex', gap:14, marginBottom:14, flexWrap:'wrap' }}>
           {[
             { label:'Expired',        color:RED,   bg:'#fef2f2', border:'#fca5a5' },
-            { label:'Expiring ≤30d',  color:AMBER, bg:'#fffbeb', border:'#fcd34d' },
-            { label:'Healthy (>30d)', color:GREEN, bg:'#f0fdf4', border:'#86efac' },
-            { label:'Today',          color:ACCENT,bg:'#eff6ff', border:'#93c5fd' },
+            { label:'Expiring ≤30d',  color:AMBER, bg:'#FDF0EE', border:'#fcd34d' },
+            { label:'Healthy (>30d)', color:GREEN, bg:'#E8F8F6', border:'#86efac' },
+            { label:'Today',          color:ACCENT,bg:'#E8F8F6', border:'#93c5fd' },
           ].map(({label,color,bg,border})=>(
             <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
               <div style={{ width:10,height:10,borderRadius:2,background:bg,border:`0.5px solid ${border}` }}/>
@@ -646,7 +646,7 @@ export default function RenewalCalendar({ user }) {
                       </span>
                       {c.auto_renew_enabled && (
                         <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:3,
-                          background:'#eff6ff', color:ACCENT }}>AUTO</span>
+                          background:'#E8F8F6', color:ACCENT }}>AUTO</span>
                       )}
                     </div>
                     <div style={{ height:3, background:'var(--v2-surface-3)', borderRadius:2, overflow:'hidden' }}>

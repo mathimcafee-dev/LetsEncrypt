@@ -110,7 +110,7 @@ export default function GetStarted({ nav }) {
                 Red "Not Secure" warning. Visitor data exposed. Lower Google ranking. Payments blocked.
               </p>
             </div>
-            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
+            <div style={{ background: '#E8F8F6', border: '1px solid #A8E6DE', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#16a34a', marginBottom: 6 }}>With SSL (HTTPS)</div>
               <p style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
                 Green padlock. All traffic encrypted. Trust signals for visitors and Google. Required for payments.
@@ -200,7 +200,7 @@ export default function GetStarted({ nav }) {
                       <Step n={2} title="Go to Dashboard → expand cert → Install"><p>Click the <strong>Install</strong> button on your certificate row. If no agent is connected, the modal shows a one-line install command.</p></Step>
                       <Step n={3} title="Run the agent install on your server (one time only)">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#f59e0b' }}/><span style={{ background: '#0e7fc0' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#E8897A' }}/><span style={{ background: '#1A7A72' }}/></div></div>
                           <pre>curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash</pre>
                         </div>
                         <p>The agent registers with SSLVault. Your server appears as Online in <strong>Dashboard → Servers</strong>.</p>
@@ -218,7 +218,7 @@ export default function GetStarted({ nav }) {
                       <Step n={3} title="Download and upload the PHP agent"><p>Click <strong>Download PHP Agent</strong>. Upload the file to your <code className="v2-kbd">public_html</code> directory via cPanel File Manager.</p></Step>
                       <Step n={4} title="Visit the agent URL to activate">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#f59e0b' }}/><span style={{ background: '#0e7fc0' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#E8897A' }}/><span style={{ background: '#1A7A72' }}/></div></div>
                           <pre>https://yourdomain.com/sslvault-agent.php</pre>
                         </div>
                         <p>The script installs your certificate via cPanel's UAPI. <strong>Delete the file immediately after.</strong></p>

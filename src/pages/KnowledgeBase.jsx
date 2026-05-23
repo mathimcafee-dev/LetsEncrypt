@@ -6,15 +6,15 @@ const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
-  bg:'#ffffff', bg2:'#f9fafb', bg3:'#f3f4f6',
+  bg:'#FFFFFF', bg2:'#FDFAF5', bg3:'#F5EFE0',
   border:'#e5e7eb', border2:'#d1d5db',
   heading:'#0a0a0a', body:'#4b5563', muted:'#9ca3af',
-  teal:'#0ea5e9', tealDk:'#0284c7', tealBg:'#f0f9ff', tealBd:'#bae6fd',
-  green:'#10b981', greenBg:'#f0fdf4',
-  purple:'#7c3aed', purpleBg:'#faf5ff',
-  amber:'#d97706', amberBg:'#fffbeb',
+  teal:'#3DBFB0', tealDk:'#1A7A72', tealBg:'#E8F8F6', tealBd:'#A8E6DE',
+  green:'#3DBFB0', greenBg:'#E8F8F6',
+  purple:'#E8897A', purpleBg:'#faf5ff',
+  amber:'#E8897A', amberBg:'#FDF0EE',
   red:'#dc2626', redBg:'#fef2f2',
-  ink:'#080c14',
+  ink:'#0F5750',
 }
 
 // ── Code block ─────────────────────────────────────────────────────────
@@ -25,7 +25,7 @@ function Code({ code, lang = 'bash' }) {
     setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   return (
-    <div style={{ background:'#0d1117', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, overflow:'hidden', margin:'14px 0', fontFamily:MONO }}>
+    <div style={{ background:'#0F5750', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, overflow:'hidden', margin:'14px 0', fontFamily:MONO }}>
       <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display:'flex', gap:5 }}>
           {['#ff5f57','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
@@ -47,8 +47,8 @@ function Code({ code, lang = 'bash' }) {
 function Note({ type = 'tip', children }) {
   const styles = {
     tip:     { bg:C.tealBg,   bd:C.tealBd,        color:C.tealDk,  label:'TIP',     icon:'💡' },
-    warning: { bg:C.amberBg,  bd:'#fde68a',        color:C.amber,   label:'WARNING', icon:'⚠️' },
-    info:    { bg:C.greenBg,  bd:'#bbf7d0',        color:C.green,   label:'INFO',    icon:'ℹ️' },
+    warning: { bg:C.amberBg,  bd:'#F2C4BC',        color:C.amber,   label:'WARNING', icon:'⚠️' },
+    info:    { bg:C.greenBg,  bd:'#A8E6DE',        color:C.green,   label:'INFO',    icon:'ℹ️' },
     danger:  { bg:C.redBg,    bd:'#fecaca',        color:C.red,     label:'IMPORTANT',icon:'🔴' },
   }[type]
   return (
@@ -131,7 +131,7 @@ function Table({ headers, rows }) {
 const SECTIONS = [
   { id:'getting-started', icon:'⚡', title:'Getting started',          subtitle:'Issue your first cert in minutes',               badge:'Start here', badgeColor:C.teal   },
   { id:'agent',           icon:'🤖', title:'Persistent agent',         subtitle:'Zero-touch VPS installs and renewals',            badge:'VPS',        badgeColor:C.green  },
-  { id:'cpanel',          icon:'🏛', title:'cPanel / shared hosting',  subtitle:'No SSH needed — UAPI install',                   badge:'cPanel',     badgeColor:'#6366f1'},
+  { id:'cpanel',          icon:'🏛', title:'cPanel / shared hosting',  subtitle:'No SSH needed — UAPI install',                   badge:'cPanel',     badgeColor:'#3DBFB0'},
   { id:'dns',             icon:'🌐', title:'DNS providers',            subtitle:'Auto DCV via Cloudflare, Vercel, Route53…',       badge:'DNS-01',     badgeColor:'#06b6d4'},
   { id:'autorenew',       icon:'🔄', title:'Auto-renewal',             subtitle:'Set once, renew forever',                        badge:'Automation', badgeColor:C.amber  },
   { id:'certvault',       icon:'🔐', title:'CertVault',                subtitle:'AES-256-GCM private key vault',                  badge:'Security',   badgeColor:C.purple },
