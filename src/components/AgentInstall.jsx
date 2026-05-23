@@ -104,7 +104,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
     if (jobStatus === 'success' || jobStatus === 'failed') return
     const iv = setInterval(async () => {
       try {
-        const d = await callDaemon({ action: 'status', user_id: userId, job_id: dispatchedJobId })
+        const d = await callDaemon({ action: 'job_status', user_id: userId, job_id: dispatchedJobId })
         if (d.ok) {
           setJobStatus(d.status)
           if (d.status === 'failed') setJobError(d.error_message || 'Install failed')
