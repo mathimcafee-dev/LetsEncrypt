@@ -2036,6 +2036,14 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
               color: s.dot==='green'?'#0F6E56':s.dot==='amber'?'#854F0B':'#A32D2D' }}>
               {days != null ? `${days}d left` : primary.status}
             </span>
+            {primary.order_type && primary.order_type !== 'original' && (
+              <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
+                background: primary.order_type === 'renewal' ? '#EEF2FF' : '#E1F5EE',
+                color:       primary.order_type === 'renewal' ? '#4338CA' : '#1A7A72',
+                border:      primary.order_type === 'renewal' ? '0.5px solid #C7D2FE' : '0.5px solid #A8E6DE' }}>
+                {primary.order_type === 'renewal' ? '↻ Renewal' : '⟳ Reissue'}
+              </span>
+            )}
             {primary._healthGrade && (
               <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:4,
                 background:primary._healthGrade==='A'||primary._healthGrade==='A+'?'#E1F5EE':primary._healthGrade==='B'?'#FAEEDA':'#FCEBEB',
@@ -2130,6 +2138,16 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                     whiteSpace:'nowrap' }}>
                     {statusLabel}
                   </span>
+                  {/* Order type badge */}
+                  {v.order_type && v.order_type !== 'original' && (
+                    <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
+                      flexShrink:0, whiteSpace:'nowrap',
+                      background: v.order_type === 'renewal' ? '#EEF2FF' : '#E1F5EE',
+                      color:       v.order_type === 'renewal' ? '#4338CA' : '#1A7A72',
+                      border:      v.order_type === 'renewal' ? '0.5px solid #C7D2FE' : '0.5px solid #A8E6DE' }}>
+                      {v.order_type === 'renewal' ? '↻ Renewal' : '⟳ Reissue'}
+                    </span>
+                  )}
                   <span style={{ fontSize:11, fontFamily:'monospace', color:'var(--v2-text-2)', flex:1, minWidth:0 }}>
                     GGS #{v.ggs_order_id || '—'}
                   </span>
@@ -2300,7 +2318,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     const { data: { session: s } } = await supabase.auth.getSession()
     setSession(s)
     const [{ data: certsData }, { data: ordersData }] = await Promise.all([
-      supabase.from('certificates').select('*').eq('user_id', user.id).neq('status', 'cancelled').order('issued_at', { ascending:false }),
+      supabase.from('certificates').select('*, order_type').eq('user_id', user.id).neq('status', 'cancelled').order('issued_at', { ascending:false }),
       supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'dv_pending').order('created_at', { ascending:false }),
     ])
     const enriched = await Promise.all((certsData||[]).map(async cert => {
