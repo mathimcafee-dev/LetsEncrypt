@@ -602,6 +602,184 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
   )
 }
 
+
+// ── Hosting credential card ───────────────────────────────────────────
+function HostingCard({ cred, onDelete }) {
+  const domainCount = (cred.domains || []).length
+  return (
+    <div style={{
+      background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10,
+      padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12,
+    }}>
+      <div style={{
+        width: 36, height: 36, borderRadius: 8, flexShrink: 0,
+        background: '#faf5ff', border: '1px solid #e9d5ff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 11, fontWeight: 700, color: '#7c3aed',
+      }}>
+        cP
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontWeight: 600, fontSize: 13, color: '#111' }}>
+          {cred.label || cred.hostname}
+        </div>
+        <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
+          {cred.hostname}:{cred.port || 2083} · {cred.cpanel_user}
+          {domainCount > 0 && ` · ${domainCount} domain${domainCount !== 1 ? 's' : ''}`}
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#059669', fontWeight: 500 }}>
+        <CheckCircle size={11} />
+        Connected
+      </div>
+      {cred.install_count > 0 && (
+        <div style={{ fontSize: 11, color: '#9ca3af' }}>
+          {cred.install_count} install{cred.install_count !== 1 ? 's' : ''}
+        </div>
+      )}
+      <button onClick={() => onDelete(cred.id)} style={{
+        background: 'none', border: 'none', cursor: 'pointer',
+        color: '#d1d5db', padding: 4, transition: 'color .15s',
+      }}
+        onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+        onMouseLeave={e => e.currentTarget.style.color = '#d1d5db'}
+      >
+        <Trash2 size={13} />
+      </button>
+    </div>
+  )
+}
+
+// ── Add Hosting Modal ─────────────────────────────────────────────────
+function AddHostingModal({ onClose, onSaved, userId }) {
+  const [label, setLabel]       = useState('')
+  const [hostname, setHostname] = useState('')
+  const [port, setPort]         = useState('2083')
+  const [username, setUsername] = useState('')
+  const [apiToken, setApiToken] = useState('')
+  const [saving, setSaving]     = useState(false)
+  const [error, setError]       = useState('')
+  const [testing, setTesting]   = useState(false)
+  const [testOk, setTestOk]     = useState(false)
+
+  async function testConnection() {
+    if (!hostname || !username || !apiToken) { setError('Fill in all fields first'); return }
+    setTesting(true); setError(''); setTestOk(false)
+    try {
+      const r = await fetch(`${SB}/functions/v1/cpanel-install`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'test_connection', user_id: userId, hostname, port: parseInt(port)||2083, cpanel_user: username, api_token: apiToken }),
+      })
+      const d = await r.json()
+      if (d.ok) setTestOk(true)
+      else setError(d.error || d.message || 'Connection failed — check hostname, username and API token')
+    } catch(e) { setError('Connection failed') }
+    setTesting(false)
+  }
+
+  async function save() {
+    if (!hostname || !username || !apiToken) { setError('All fields are required'); return }
+    setSaving(true); setError('')
+    try {
+      const r = await fetch(`${SB}/functions/v1/cpanel-install`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_credential', user_id: userId, label: label || hostname, hostname, port: parseInt(port)||2083, cpanel_user: username, api_token: apiToken }),
+      })
+      const d = await r.json()
+      if (d.ok) { onSaved(); onClose() }
+      else setError(d.error || d.message || 'Failed to save')
+    } catch(e) { setError('Failed to save') }
+    setSaving(false)
+  }
+
+  const inp = {
+    width: '100%', padding: '9px 12px', borderRadius: 8,
+    border: '1px solid #e5e7eb', fontSize: 13, outline: 'none',
+    fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 14,
+  }
+
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+      <div style={{ background:'#fff', borderRadius:14, width:'100%', maxWidth:480, boxShadow:'0 20px 60px rgba(0,0,0,0.15)', overflow:'hidden' }}>
+        <div style={{ padding:'20px 24px', borderBottom:'1px solid #f0f0f0' }}>
+          <div style={{ fontSize:16, fontWeight:700, color:'#0a0a0a' }}>Connect shared hosting</div>
+          <div style={{ fontSize:13, color:'#6b7280', marginTop:4 }}>Supports cPanel, WHM and compatible control panels</div>
+        </div>
+        <div style={{ padding:24 }}>
+
+          {/* How it works */}
+          <div style={{ background:'#f8fafc', border:'1px solid #e8edf2', borderRadius:10, padding:'12px 14px', marginBottom:20 }}>
+            <div style={{ fontSize:11, fontWeight:600, color:'#374151', marginBottom:8 }}>How shared hosting SSL works:</div>
+            {[
+              'SSLVault connects to your cPanel via its API — no SSH needed',
+              'Certificates install directly into your hosting account',
+              'Auto-renews just like VPS — no manual uploads ever',
+            ].map(t => (
+              <div key={t} style={{ display:'flex', gap:8, marginBottom:5, alignItems:'flex-start' }}>
+                <CheckCircle size={11} color="#10b981" style={{ marginTop:1, flexShrink:0 }} />
+                <span style={{ fontSize:11, color:'#374151', lineHeight:1.5 }}>{t}</span>
+              </div>
+            ))}
+          </div>
+
+          <label style={{ fontSize:12, fontWeight:600, color:'#374151', display:'block', marginBottom:6 }}>Label <span style={{fontWeight:400,color:'#9ca3af'}}>(nickname)</span></label>
+          <input value={label} onChange={e=>setLabel(e.target.value)} placeholder="e.g. Bluehost, GoDaddy cPanel" style={inp} />
+
+          <label style={{ fontSize:12, fontWeight:600, color:'#374151', display:'block', marginBottom:6 }}>cPanel hostname</label>
+          <input value={hostname} onChange={e=>setHostname(e.target.value)} placeholder="server.yourhostingprovider.com" style={inp} />
+
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 120px', gap:10 }}>
+            <div>
+              <label style={{ fontSize:12, fontWeight:600, color:'#374151', display:'block', marginBottom:6 }}>cPanel username</label>
+              <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="your-cpanel-username" style={{...inp, marginBottom:0}} />
+            </div>
+            <div>
+              <label style={{ fontSize:12, fontWeight:600, color:'#374151', display:'block', marginBottom:6 }}>Port</label>
+              <input value={port} onChange={e=>setPort(e.target.value)} placeholder="2083" style={{...inp, marginBottom:0}} />
+            </div>
+          </div>
+          <div style={{ marginBottom:14 }} />
+
+          <label style={{ fontSize:12, fontWeight:600, color:'#374151', display:'block', marginBottom:4 }}>API Token</label>
+          <div style={{ fontSize:11, color:'#6b7280', marginBottom:6 }}>
+            cPanel → Security → Manage API Tokens → Create token
+          </div>
+          <input value={apiToken} onChange={e=>setApiToken(e.target.value)} type="password" placeholder="Paste your cPanel API token" style={inp} />
+
+          {testOk && (
+            <div style={{ padding:'8px 12px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:6, fontSize:12, color:'#065f46', marginBottom:12, display:'flex', gap:6, alignItems:'center' }}>
+              <CheckCircle size={12} color="#10b981" /> Connection successful!
+            </div>
+          )}
+          {error && <div style={{ padding:'8px 12px', background:'#fef2f2', border:'1px solid #fecaca', borderRadius:6, fontSize:12, color:'#dc2626', marginBottom:12 }}>{error}</div>}
+
+          <div style={{ display:'flex', gap:8 }}>
+            <button onClick={onClose} style={{ flex:1, padding:'10px', borderRadius:8, border:'1px solid #e5e7eb', background:'#fff', fontSize:13, fontWeight:600, color:'#374151', cursor:'pointer', fontFamily:'inherit' }}>Cancel</button>
+            <button onClick={testConnection} disabled={testing} style={{
+              flex:1, padding:'10px', borderRadius:8,
+              border:'1px solid #e5e7eb', background:'#fafafa',
+              fontSize:13, fontWeight:600, color:'#374151',
+              cursor:'pointer', fontFamily:'inherit',
+              display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+            }}>
+              {testing ? <><RefreshCw size={11} style={{animation:'spin .8s linear infinite'}}/> Testing…</> : 'Test connection'}
+            </button>
+            <button onClick={save} disabled={saving||!hostname||!username||!apiToken} style={{
+              flex:2, padding:'10px', borderRadius:8, border:'none',
+              background: saving||!hostname||!username||!apiToken ? '#f3f4f6' : '#0a0a0a',
+              color: saving||!hostname||!username||!apiToken ? '#9ca3af' : '#fff',
+              fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit',
+              display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+            }}>
+              {saving ? <><RefreshCw size={11} style={{animation:'spin .8s linear infinite'}}/> Saving…</> : 'Save'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Main page ─────────────────────────────────────────────────────────
 export default function MyServers({ user }) {
   const [agents, setAgents] = useState([])
@@ -611,19 +789,23 @@ export default function MyServers({ user }) {
   const [showAddServer, setShowAddServer] = useState(false)
   const [showAddDns, setShowAddDns] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
-  const [activeTab, setActiveTab] = useState('servers') // servers | dns
+  const [activeTab, setActiveTab] = useState('servers') // servers | dns | hosting
+  const [cpanelCreds, setCpanelCreds] = useState([])
+  const [showAddHosting, setShowAddHosting] = useState(false)
 
   const load = useCallback(async () => {
     if (!user) return
     setLoading(true)
-    const [{ data: agentData }, { data: certData }, { data: dnsData }] = await Promise.all([
+    const [{ data: agentData }, { data: certData }, { data: dnsData }, { data: cpanelData }] = await Promise.all([
       supabase.from('persistent_agents').select('*').eq('user_id', user.id).order('last_seen_at', { ascending: false, nullsFirst: false }),
       supabase.from('certificates').select('id,domain,expires_at,status,install_method').eq('user_id', user.id).neq('status', 'revoked'),
       supabase.from('dns_credentials').select('id,provider,label,domain_pattern,created_at').eq('user_id', user.id),
+      supabase.from('cpanel_credentials').select('id,label,hostname,port,cpanel_user,domains,install_count,last_used_at').eq('user_id', user.id),
     ])
     setAgents(agentData || [])
     setCerts(certData || [])
     setDnsCredentials(dnsData || [])
+    setCpanelCreds(cpanelData || [])
     setLoading(false)
   }, [user])
 
@@ -640,8 +822,14 @@ export default function MyServers({ user }) {
     load()
   }
 
+  async function deleteCpanel(id) {
+    if (!confirm('Remove this hosting account?')) return
+    await supabase.from('cpanel_credentials').delete().eq('id', id).eq('user_id', user.id)
+    load()
+  }
+
   const onlineCount = agents.filter(agentOnline).length
-  const hasSetup = agents.length > 0 || dnsCredentials.length > 0
+  const hasSetup = agents.length > 0 || dnsCredentials.length > 0 || cpanelCreds.length > 0
 
   return (
     <div style={{ minHeight: '100vh', background: '#f7f8fa', fontFamily: "'DM Sans','Inter',system-ui,sans-serif" }}>
@@ -649,6 +837,7 @@ export default function MyServers({ user }) {
 
       {showAddServer && <AddServerModal onClose={() => { setShowAddServer(false); setTimeout(load, 2000) }} userId={user?.id} />}
       {showAddDns && <AddDnsModal onClose={() => setShowAddDns(false)} onSaved={load} userId={user?.id} />}
+      {showAddHosting && <AddHostingModal onClose={() => setShowAddHosting(false)} onSaved={load} userId={user?.id} />}
 
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 24px' }}>
 
@@ -681,6 +870,15 @@ export default function MyServers({ user }) {
               cursor: 'pointer', fontFamily: 'inherit',
             }}>
               <Globe size={12} /> Add DNS
+            </button>
+            <button onClick={() => setShowAddHosting(true)} style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '8px 14px', borderRadius: 8,
+              border: '1px solid #e5e7eb', background: '#fff',
+              fontSize: 12, fontWeight: 600, color: '#374151',
+              cursor: 'pointer', fontFamily: 'inherit',
+            }}>
+              <Globe size={12} /> Add hosting
             </button>
             <button onClick={() => setShowAddServer(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5,
@@ -726,6 +924,7 @@ export default function MyServers({ user }) {
               {[
                 { id: 'servers', label: `Servers (${agents.length})`, icon: Server },
                 { id: 'dns',     label: `DNS providers (${dnsCredentials.length})`, icon: Globe },
+              { id: 'hosting', label: `Shared Hosting (${cpanelCreds.length})`, icon: Globe },
               ].map(({ id, label, icon: Icon }) => (
                 <button key={id} onClick={() => setActiveTab(id)} style={{
                   display: 'flex', alignItems: 'center', gap: 6,
@@ -770,6 +969,49 @@ export default function MyServers({ user }) {
                         certs={certs.filter(c => c.install_method === 'agent')}
                       />
                     ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Hosting tab */}
+            {activeTab === 'hosting' && (
+              <div>
+                <div style={{
+                  background: '#faf5ff', border: '1px solid #e9d5ff',
+                  borderRadius: 10, padding: '12px 16px', marginBottom: 16,
+                  fontSize: 12, color: '#6d28d9', lineHeight: 1.6,
+                }}>
+                  <b>Shared hosting (cPanel):</b> SSLVault connects directly to your hosting account via the cPanel API. No SSH, no server access needed. Certificates install and renew automatically.
+                </div>
+                {cpanelCreds.length === 0 ? (
+                  <div style={{ textAlign:'center', padding:'40px 24px', background:'#fff', borderRadius:12, border:'1px solid #e5e7eb' }}>
+                    <Globe size={28} color="#e5e7eb" style={{ marginBottom:12 }} />
+                    <div style={{ fontSize:14, fontWeight:600, color:'#374151', marginBottom:6 }}>No hosting accounts connected</div>
+                    <div style={{ fontSize:13, color:'#9ca3af', marginBottom:16 }}>Connect your cPanel to install SSL automatically</div>
+                    <button onClick={() => setShowAddHosting(true)} style={{
+                      padding:'9px 18px', borderRadius:8, border:'none',
+                      background:'#0a0a0a', color:'#fff', fontSize:13, fontWeight:600,
+                      cursor:'pointer', fontFamily:'inherit',
+                      display:'inline-flex', alignItems:'center', gap:6,
+                    }}>
+                      <Plus size={12} /> Connect cPanel
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    {cpanelCreds.map(cred => (
+                      <HostingCard key={cred.id} cred={cred} onDelete={deleteCpanel} />
+                    ))}
+                    <button onClick={() => setShowAddHosting(true)} style={{
+                      padding:'12px', borderRadius:10,
+                      border:'1px dashed #d1d5db', background:'#fafafa',
+                      fontSize:12, fontWeight:600, color:'#6b7280',
+                      cursor:'pointer', fontFamily:'inherit',
+                      display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                    }}>
+                      <Plus size={12} /> Add another hosting account
+                    </button>
                   </div>
                 )}
               </div>
