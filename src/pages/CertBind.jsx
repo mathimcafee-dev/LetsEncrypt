@@ -47,7 +47,7 @@ function CertRow({ cert, onCheck, checking }) {
   const s = getStatus(cert.certbind_status)
   const Icon = s.icon
   const isChecking = checking === cert.id
-  const canCheck = !!cert.install_method
+  const canCheck = true // all active certs can be checked via TLS probe
   const isLive = cert.certbind_status === 'bound'
   const isAlert = ['key_mismatch','cert_mismatch','chain_anomaly','partial_deploy','unreachable'].includes(cert.certbind_status)
 
@@ -98,7 +98,7 @@ function CertRow({ cert, onCheck, checking }) {
             </span>
           )}
           {!cert.install_method && (
-            <span style={{ fontSize:11, color:'#9ca3af' }}>Not installed</span>
+            <span style={{ fontSize:11, color:'#9ca3af' }}>No agent — TLS only</span>
           )}
           {checkedAt && (
             <span style={{ fontSize:11, color:'#9ca3af' }}>· {checkedAt}</span>
@@ -122,7 +122,7 @@ function CertRow({ cert, onCheck, checking }) {
       <button
         onClick={() => canCheck && !isChecking && onCheck(cert)}
         disabled={!canCheck || isChecking}
-        title={!canCheck ? 'Install the certificate first' : 'Run verification check'}
+        title='Run TLS verification check'
         style={{
           display: 'flex', alignItems: 'center', gap: 5,
           padding: '6px 12px', borderRadius: 7,
