@@ -105,7 +105,7 @@ export default function ReadinessDashboard({ user }) {
     if (!user) return
     Promise.all([
       supabase.from('certificates')
-        .select('id,domain,expires_at,issued_at,cert_type,auto_renew_enabled,dns_provider_id,install_method,keylocker_key_id')
+        .select('id,domain,expires_at,issued_at,cert_type,auto_renew_enabled,dns_provider_id,install_method,keylocker_key_id,source,issuer')
         .eq('user_id', user.id).neq('status','cancelled').neq('status','revoked')
         .order('expires_at', { ascending:true }),
       supabase.from('persistent_agents').select('id').eq('user_id', user.id).limit(1),
@@ -303,10 +303,29 @@ export default function ReadinessDashboard({ user }) {
                         onMouseLeave={e => e.currentTarget.style.background=idx%2===0?'var(--v2-surface)':'var(--v2-bg)'}>
 
                         {/* Domain */}
-                        <td style={{ padding:'10px 12px', fontFamily:'monospace', fontSize:12,
-                          fontWeight:500, color:'var(--v2-text-1)', maxWidth:160,
-                          overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                          {cert.domain}
+                        <td style={{ padding:'10px 12px', maxWidth:180 }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+                            <span style={{ fontFamily:'monospace', fontSize:12, fontWeight:500,
+                              color:'var(--v2-text-1)', overflow:'hidden', textOverflow:'ellipsis',
+                              whiteSpace:'nowrap', maxWidth:130 }}>
+                              {cert.domain}
+                            </span>
+                            {cert.source === 'gogetssl' ? (
+                              <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px',
+                                borderRadius:4, whiteSpace:'nowrap', flexShrink:0,
+                                background:'#E1F5EE', color:'#0F6E56',
+                                border:'0.5px solid #A8E6DE' }}>
+                                SSLVault
+                              </span>
+                            ) : cert.source ? (
+                              <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px',
+                                borderRadius:4, whiteSpace:'nowrap', flexShrink:0,
+                                background:'#FAEEDA', color:'#854F0B',
+                                border:'0.5px solid #F0C490' }}>
+                                {cert.issuer || cert.source}
+                              </span>
+                            ) : null}
+                          </div>
                         </td>
 
                         {/* Readiness */}
