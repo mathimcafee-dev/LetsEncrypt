@@ -90,24 +90,24 @@ export default function CLMHome({ user, nav }) {
 
   // ── Navigation structure ───────────────────────────────────────────
   const NAV_CERTS = [
-    { id:'dashboard',         label:'Inventory',          icon:Layout      },
-    { id:'issue',             label:'Issue certificate',  icon:Plus        },
-    { id:'readiness',         label:'47-day readiness',   icon:ShieldCheck, alert:true },
-    { id:'renewal-calendar',  label:'Renewal calendar',   icon:CalendarDays},
+    { id:'dashboard',         label:'Fleet',              icon:Layout      },
+    { id:'issue',             label:'Issue SSL',          icon:Plus        },
+    { id:'readiness',         label:'47-day radar',       icon:ShieldCheck, alert:true },
+    { id:'renewal-calendar',  label:'Lifecycle',          icon:CalendarDays},
   ]
   const NAV_AUTOMATION = [
     { id:'my-servers',    label:'My Servers',         icon:Server   },
-    { id:'certvault',     label:'CertVault',          icon:Lock     },
-    { id:'certbind',      label:'CertBind',           icon:Shield   },
+    { id:'certvault',     label:'Key Vault',          icon:Lock     },
+    { id:'certbind',      label:'Live Verify',        icon:Shield   },
   ]
   const NAV_SECURITY = [
-    { id:'ssl-health',      label:'Health scores',    icon:Trophy     },
-    { id:'ct-monitor',      label:'CT abuse monitor', icon:ShieldAlert },
-    { id:'cert-changelog',  label:'Audit log',        icon:History    },
+    { id:'ssl-health',      label:'TLS Score',        icon:Trophy     },
+    { id:'ct-monitor',      label:'CT Watch',         icon:ShieldAlert },
+    { id:'cert-changelog',  label:'Audit trail',      icon:History    },
   ]
   const NAV_INTELLIGENCE = [
-    { id:'ca-intelligence', label:'CA intelligence',  icon:TrendingUp },
-    { id:'bulk-scan',       label:'Bulk scanner',     icon:Scan       },
+    { id:'ca-intelligence', label:'CA Insights',      icon:TrendingUp },
+    { id:'bulk-scan',       label:'Mass scanner',     icon:Scan       },
     { id:'analytics',       label:'Analytics',        icon:Layout     },
   ]
   const NAV_BOTTOM = [
@@ -301,8 +301,8 @@ export default function CLMHome({ user, nav }) {
         <nav style={{ width:210, background:'#0d3c6e', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto', boxShadow:'4px 0 24px rgba(0,0,0,0.18)' }}>
           {[
             { label:'Certificates',  items: NAV_CERTS       },
-            { label:'Automation',    items: NAV_AUTOMATION   },
-            { label:'Security',      items: NAV_SECURITY     },
+            { label:'Deployment',    items: NAV_AUTOMATION   },
+            { label:'Shield',        items: NAV_SECURITY     },
             { label:'Intelligence',  items: NAV_INTELLIGENCE },
           ].map(({ label, items }, i) => {
             const isOpen = openGroups[label] !== false
