@@ -22,6 +22,7 @@ import RenewalCalendar from './RenewalCalendar'
 import CTAbuseMonitor from './CTAbuseMonitor'
 import ReadinessDashboard from './ReadinessDashboard'
 import Infrastructure from './Infrastructure'
+import MyServers from './MyServers'
 import CertVault from './CertVault'
 import CertBind from './CertBind'
 import Pricing from './Pricing'
@@ -95,8 +96,7 @@ export default function CLMHome({ user, nav }) {
     { id:'renewal-calendar',  label:'Renewal calendar',   icon:CalendarDays},
   ]
   const NAV_AUTOMATION = [
-    { id:'infrastructure', label:'Servers & agents',  icon:Server   },
-    { id:'integrations',  label:'DNS providers',      icon:Globe    },
+    { id:'my-servers',    label:'My Servers',         icon:Server   },
     { id:'certvault',     label:'CertVault',          icon:Lock     },
     { id:'certbind',      label:'CertBind',           icon:Shield   },
   ]
@@ -174,7 +174,8 @@ export default function CLMHome({ user, nav }) {
     if (section === 'install')    return <Install nav={sideNav}/>
     if (section === 'kb')         return <KnowledgeBase nav={sideNav}/>
     if (section === 'pricing')    return <Pricing nav={sideNav}/>
-    if (section === 'infrastructure') return <Infrastructure user={user}/>
+    if (section === 'my-servers') return <MyServers user={user}/>
+    if (section === 'infrastructure') return <MyServers user={user}/>
     if (section === 'servers')         return <Infrastructure user={user}/>
     if (section === 'agent-health')    return <Infrastructure user={user}/>
     if (section === 'certvault')  return <CertVault nav={sideNav}/>
