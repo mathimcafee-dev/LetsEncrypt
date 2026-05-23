@@ -573,9 +573,16 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       }
 
       // Steps 0→1→2 done from API response
+      // For renew, store the new GGS order ID so we poll the right order
+      const newGgsOrderId = d.ggs_order_id || null
       setProgress(p => {
         let steps = [...p.steps]
-        steps = updateStep(steps, 0, { status: 'done', detail: isReissue ? `GGS order #${cert.ggs_order_id}` : `New GGS order placed` })
+        steps = updateStep(steps, 0, {
+          status: 'done',
+          detail: isReissue
+            ? `GGS order #${cert.ggs_order_id}`
+            : `New GGS order #${newGgsOrderId || '—'} placed`
+        })
         steps = updateStep(steps, 1, { status: 'done', detail: 'RSA-2048 key pair generated' })
         if (d.dcv_txt_value) {
           steps = updateStep(steps, 2, { status: 'done', detail: `${d.dcv_txt_name || '_pki-validation'} → ${d.dcv_txt_value.slice(0,24)}…` })
@@ -583,7 +590,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
           steps = updateStep(steps, 2, { status: 'done', detail: 'TXT record updated in DNS' })
         }
         steps = updateStep(steps, 3, { status: 'active', detail: 'Waiting for GGS to confirm DCV…' })
-        return { ...p, steps }
+        return { ...p, steps, newGgsOrderId }
       })
 
       // If instantly active (unlikely but possible)
@@ -599,18 +606,32 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       }
 
       // Poll ssl_orders for this cert every 5 seconds until active
+      // For renew: poll by new GGS order ID (from d.ggs_order_id)
+      // For reissue: poll by domain + latest order
       const pollStart = Date.now()
       const timer = setInterval(async () => {
         try {
-          // Check if the new pending order for this cert/domain has become active
-          const { data: orders } = await supabase
-            .from('ssl_orders')
-            .select('id, status, ggs_order_id, valid_till, install_method')
-            .eq('user_id', session.user.id)
-            .eq('domain', cert.domain)
-            .order('created_at', { ascending: false })
-            .limit(1)
-          const latest = orders?.[0]
+          let latest = null
+          if (!isReissue && newGgsOrderId) {
+            // Renew: poll by exact new GGS order ID
+            const { data: orders } = await supabase
+              .from('ssl_orders')
+              .select('id, status, ggs_order_id, valid_till, install_method')
+              .eq('user_id', session.user.id)
+              .eq('ggs_order_id', newGgsOrderId)
+              .limit(1)
+            latest = orders?.[0]
+          } else {
+            // Reissue: poll domain's latest order
+            const { data: orders } = await supabase
+              .from('ssl_orders')
+              .select('id, status, ggs_order_id, valid_till, install_method')
+              .eq('user_id', session.user.id)
+              .eq('domain', cert.domain)
+              .order('created_at', { ascending: false })
+              .limit(1)
+            latest = orders?.[0]
+          }
 
           // Timeout after 4 minutes
           if (Date.now() - pollStart > 4 * 60 * 1000) {
@@ -633,10 +654,24 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               return { ...p, pollTimer: null, steps }
             })
             // Check agent/cpanel dispatch after short delay
+            // For renew, look up the NEW cert by new ggs_order_id; for reissue use cert.id
             setTimeout(async () => {
-              const { data: certRow } = await supabase.from('certificates').select('install_method, certbind_status').eq('id', cert.id).single()
+              let method = null
+              if (!isReissue && newGgsOrderId) {
+                // Renew — new cert row created by cron
+                const { data: newCert } = await supabase
+                  .from('certificates')
+                  .select('install_method')
+                  .eq('user_id', session.user.id)
+                  .eq('ggs_order_id', newGgsOrderId)
+                  .order('created_at', { ascending: false })
+                  .limit(1)
+                method = newCert?.[0]?.install_method
+              } else {
+                const { data: certRow } = await supabase.from('certificates').select('install_method').eq('id', cert.id).single()
+                method = certRow?.install_method
+              }
               setProgress(p => {
-                const method = certRow?.install_method
                 let steps = updateStep(p.steps, 5, {
                   status: 'done',
                   detail: method === 'agent' ? '🖥 Sent to VPS agent' : method === 'cpanel' ? '🌐 Sent to cPanel' : 'No server connected — install manually'
