@@ -244,7 +244,7 @@ function DnsCard({ cred, onDelete }) {
 // ── Add Server Modal ──────────────────────────────────────────────────
 function AddServerModal({ onClose, userId }) {
   const [cmd, setCmd] = useState('')
-  const [nickname, setNickname] = useState('')
+  const [domain, setDomain] = useState('')
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1) // 1=name, 2=run command
 
@@ -255,7 +255,7 @@ function AddServerModal({ onClose, userId }) {
       const r = await fetch(`${SB}/functions/v1/agent-daemon`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
-        body: JSON.stringify({ action: 'create_install_command', nickname: nickname || 'My Server' }),
+        body: JSON.stringify({ action: 'create_install_command', nickname: domain || 'My Server' }),
       })
       const d = await r.json()
       if (d.ok && d.command) { setCmd(d.command); setStep(2) }
@@ -286,7 +286,7 @@ function AddServerModal({ onClose, userId }) {
           {step === 1 ? (
             <>
               <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 8 }}>
-                Give your server a name (optional)
+                Which domain will this server host?
               </label>
               <input
                 value={nickname}
@@ -298,7 +298,7 @@ function AddServerModal({ onClose, userId }) {
                   outline: 'none', fontFamily: 'inherit', marginBottom: 20,
                   boxSizing: 'border-box',
                 }}
-                onKeyDown={e => e.key === 'Enter' && generate()}
+                onKeyDown={e => e.key === 'Enter' && domain && generate()}
               />
               {/* What this does */}
               <div style={{
