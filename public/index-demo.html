@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSLVault — Zero-Touch SSL for Your Server</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080b10;
+    --surface: #0d1117;
+    --border: #1e2530;
+    --green: #10b981;
+    --green-dim: rgba(16,185,129,0.12);
+    --green-glow: rgba(16,185,129,0.4);
+    --text: #e2e8f0;
+    --text-2: #64748b;
+    --text-3: #94a3b8;
+    --amber: #f59e0b;
+    --blue: #3b82f6;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(16,185,129,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16,185,129,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orb */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,11,16,0.8);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: -0.3px;
+  }
+
+  .logo-icon {
+    width: 28px; height: 28px;
+    background: var(--green);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .nav-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--green-dim);
+  }
+
+  .nav-link {
+    color: var(--text-3);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: color .2s;
+  }
+  .nav-link:hover { color: var(--green); }
+
+  main { position: relative; z-index: 1; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+  }
+
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    border: 1px solid rgba(16,185,129,0.3);
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: var(--green-dim);
+    margin-bottom: 32px;
+    display: inline-block;
+    animation: fadeUp .6s ease both;
+  }
+
+  .hero h1 {
+    font-size: clamp(40px, 7vw, 80px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    animation: fadeUp .6s ease .1s both;
+  }
+
+  .hero h1 span { color: var(--green); }
+
+  .hero-sub {
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--text-3);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    font-weight: 400;
+    animation: fadeUp .6s ease .2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp .6s ease .3s both;
+  }
+
+  .btn-primary {
+    background: var(--green);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary:hover {
+    background: #0ea572;
+    box-shadow: 0 0 24px var(--green-glow);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-3);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+  }
+  .btn-secondary:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  /* TERMINAL */
+  .terminal-wrap {
+    margin: 48px auto 0;
+    max-width: 640px;
+    width: 100%;
+    animation: fadeUp .6s ease .4s both;
+  }
+
+  .terminal {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(16,185,129,0.05);
+  }
+
+  .term-header {
+    background: #161b22;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .term-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+  }
+  .dot-red    { background: #ff5f57; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green  { background: #28c840; }
+
+  .term-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-2);
+    margin-left: 8px;
+  }
+
+  .term-body {
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.9;
+  }
+
+  .term-line { display: flex; gap: 8px; }
+  .prompt { color: var(--green); flex-shrink: 0; }
+  .cmd { color: var(--text); }
+  .out-ok { color: var(--green); }
+  .out-info { color: var(--text-3); padding-left: 16px; }
+  .out-warn { color: var(--amber); padding-left: 16px; }
+  .cursor {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: var(--green);
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+
+  /* STATS */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+    padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0;
+    background: rgba(13,17,23,0.5);
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--green);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-top: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* STEPS */
+  .section {
+    padding: 100px 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .section h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+
+  .section-sub {
+    color: var(--text-3);
+    font-size: 16px;
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 64px;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .step {
+    background: var(--surface);
+    padding: 32px;
+    transition: background .2s;
+    position: relative;
+  }
+  .step:hover { background: #111827; }
+
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .step-icon {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  .step h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+  }
+
+  .step p {
+    font-size: 13px;
+    color: var(--text-3);
+    line-height: 1.7;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* FEATURES */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .feature {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: border-color .2s, transform .2s;
+  }
+  .feature:hover {
+    border-color: rgba(16,185,129,0.3);
+    transform: translateY(-2px);
+  }
+
+  .feature-icon {
+    width: 40px; height: 40px;
+    background: var(--green-dim);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .feature h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.2px;
+  }
+
+  .feature p {
+    font-size: 13px;
+    color: var(--text-3);
+    line-height: 1.7;
+  }
+
+  /* CTA */
+  .cta-section {
+    text-align: center;
+    padding: 100px 24px;
+    position: relative;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(16,185,129,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    margin-bottom: 16px;
+  }
+
+  .cta-section p {
+    color: var(--text-3);
+    font-size: 16px;
+    margin-bottom: 40px;
+  }
+
+  .cta-command {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  .cta-command:hover { border-color: var(--green); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-2);
+    font-family: 'JetBrains Mono', monospace;
+    position: relative;
+    z-index: 1;
+  }
+
+  footer a { color: var(--green); text-decoration: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  /* Typing animation */
+  .typed { overflow: hidden; white-space: nowrap; }
+  .line-1 { animation: type1 .8s steps(60) 1s both; }
+  .line-2 { animation: type1 .5s steps(40) 2s both; }
+  .line-3 { animation: type1 .3s steps(30) 2.6s both; }
+  .line-4 { animation: type1 .4s steps(35) 3s both; }
+  .line-5 { animation: type1 .3s steps(25) 3.5s both; }
+  .line-6 { animation: type1 .3s steps(25) 3.9s both; }
+  .line-7 { animation: type1 .3s steps(25) 4.3s both; }
+  .cursor-wrap { animation: fadeUp 0s ease 4.8s both; }
+
+  @keyframes type1 {
+    from { width: 0; }
+    to   { width: 100%; }
+  }
+
+  @media (max-width: 600px) {
+    nav { padding: 12px 16px; }
+    .hero { padding: 100px 16px 60px; }
+    .stats { gap: 24px; }
+    .section { padding: 60px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">🔒</div>
+    SSLVault
+  </div>
+  <span class="nav-badge">● LIVE DEMO</span>
+  <a href="https://easysecurity.in" class="nav-link">Dashboard →</a>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="hero-tag">// zero-touch SSL for VPS servers</div>
+
+    <h1>
+      SSL on autopilot.<br>
+      <span>No manual work.</span>
+    </h1>
+
+    <p class="hero-sub">
+      One command installs the SSLVault agent on your server.
+      Certificates are issued, installed, and renewed automatically — forever.
+    </p>
+
+    <div class="hero-actions">
+      <a href="https://easysecurity.in" class="btn-primary">
+        🚀 Get started free
+      </a>
+      <a href="#how" class="btn-secondary">See how it works</a>
+    </div>
+
+    <div class="terminal-wrap">
+      <div class="terminal">
+        <div class="term-header">
+          <div class="term-dot dot-red"></div>
+          <div class="term-dot dot-yellow"></div>
+          <div class="term-dot dot-green"></div>
+          <span class="term-title">root@your-server ~ bash</span>
+        </div>
+        <div class="term-body">
+          <div class="term-line typed line-1">
+            <span class="prompt">$</span>
+            <span class="cmd">curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash</span>
+          </div>
+          <div class="term-line typed line-2">
+            <span class="out-info">SSLVault Agent Installer v2.5</span>
+          </div>
+          <div class="term-line typed line-3">
+            <span class="out-ok">✓</span>
+            <span class="cmd">&nbsp;Detected: Ubuntu 22.04.5 LTS (x86_64)</span>
+          </div>
+          <div class="term-line typed line-4">
+            <span class="out-ok">✓</span>
+            <span class="cmd">&nbsp;Web server: nginx</span>
+          </div>
+          <div class="term-line typed line-5">
+            <span class="out-ok">✓</span>
+            <span class="cmd">&nbsp;Agent installed → /usr/local/bin/sslvault-agent</span>
+          </div>
+          <div class="term-line typed line-6">
+            <span class="out-ok">✓</span>
+            <span class="cmd">&nbsp;Certificate installed → /etc/ssl/sslvault/yourdomain.com/</span>
+          </div>
+          <div class="term-line typed line-7">
+            <span class="out-ok">✓</span>
+            <span class="cmd">&nbsp;nginx reloaded — HTTPS is live</span>
+          </div>
+          <div class="term-line cursor-wrap">
+            <span class="prompt">$</span>
+            <span class="cursor"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">90s</div>
+      <div class="stat-label">From signup to HTTPS</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0</div>
+      <div class="stat-label">Manual renewals ever</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Automated cert lifecycle</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">Free</div>
+      <div class="stat-label">To get started</div>
+    </div>
+  </div>
+
+  <section class="section" id="how">
+    <div class="section-label">// how it works</div>
+    <h2>Three steps.<br>Then never again.</h2>
+    <p class="section-sub">The agent handles everything after installation — cert issuance, nginx config, renewals, and monitoring.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon">🔑</div>
+        <h3>Sign up & connect DNS</h3>
+        <p>Create account. Add your Cloudflare, Vercel, or Route53 credentials. Takes 2 minutes.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon">⚡</div>
+        <h3>Run one install command</h3>
+        <p>Copy the command from your dashboard. Paste on your server as root. Done in 30 seconds.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon">🛡️</div>
+        <h3>HTTPS goes live</h3>
+        <p>DNS validated automatically. Cert issued by RapidSSL. nginx configured. Reloaded. Live.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="section-label">// features</div>
+    <h2>Everything SSL.<br>Nothing manual.</h2>
+    <p class="section-sub">Built for engineers who want SSL to just work — on every server, every domain, forever.</p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🤖</div>
+        <h3>Persistent VPS Agent</h3>
+        <p>Daemon polls every 5 minutes. Installs certs, renews automatically 30 days before expiry.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌐</div>
+        <h3>16 DNS Providers</h3>
+        <p>Cloudflare, Vercel, Route53, GoDaddy, DigitalOcean, Porkbun, Hetzner, and more.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔐</div>
+        <h3>Encrypted Key Vault</h3>
+        <p>Private keys encrypted with AES-256-GCM envelope encryption. Never stored in plaintext.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Live Dashboard</h3>
+        <p>Monitor all certs across all servers in real-time. Expiry alerts. Auto-renewal calendar.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔄</div>
+        <h3>Zero-Downtime Renewal</h3>
+        <p>New cert written atomically. Key match verified with openssl. nginx reloaded gracefully.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🆓</div>
+        <h3>Free to Start</h3>
+        <p>No credit card. Issue and manage your first certificates at zero cost.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2>Your server deserves<br><span style="color:var(--green)">better SSL.</span></h2>
+    <p>One command. Full automation. Free forever for personal use.</p>
+
+    <div>
+      <div class="cta-command" onclick="navigator.clipboard.writeText('curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash');this.textContent='✓ Copied!'">
+        <span>📋</span>
+        curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash
+      </div>
+    </div>
+
+    <div>
+      <a href="https://easysecurity.in" class="btn-primary" style="font-size:15px; padding:14px 36px;">
+        Open SSLVault Dashboard →
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>
+    Built with ❤️ by <a href="https://easysecurity.in">SSLVault</a> ·
+    Powered by RapidSSL · 
+    <a href="https://easysecurity.in/privacy">Privacy</a> ·
+    <a href="https://easysecurity.in/terms">Terms</a>
+  </p>
+</footer>
+
+</body>
+</html>
