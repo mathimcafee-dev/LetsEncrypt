@@ -2023,11 +2023,16 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
   const hasMultipleSubs = subscriptions.length > 1
   const hasVersions     = versions.length > 1
 
-  // Find the ONE cert that is actually live in browser right now:
-  // → the cert with the latest successful agent install time across all versions
-  const liveCertId = versions
-    .filter(v => v._installTime)
-    .sort((a,b) => new Date(b._installTime) - new Date(a._installTime))[0]?.id || null
+  // Find the ONE cert that is live right now — 3-layer priority:
+  // Layer 1: DB flag is_live_on_server=true (set by agent/cpanel/certbind)
+  // Layer 2: precomputed map from agent_jobs latest install per domain
+  // Layer 3: none found → no cert marked live (show unknown)
+  const liveCertByDomain = versions[0]?._liveCertByDomain || {}
+  const liveCertId = liveCertByDomain[primary.domain] || null
+
+  // Confirmed-by source for the live cert
+  const liveCert = versions.find(v => v.id === liveCertId)
+  const liveConfirmedBy = liveCert?.live_confirmed_by || null
 
   const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'
 
@@ -2232,31 +2237,28 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
 
                 {/* ── LEVEL 3: Version rows inside subscription ── */}
                 {subVersions.map((v, vi) => {
-                  // Live = the ONE cert with the latest install time across ALL domain versions
+                  // ── DEFINITIVE LIVE STATE ──────────────────────────────────────────
+                  // isLive: DB flag (layer 1) or agent_jobs map (layer 2)
                   const isLive        = liveCertId !== null && v.id === liveCertId
                   const wasInstalled  = !!v._installTime && !isLive
-                  const neverInstalled = !v._installTime
+                  const neverInstalled = !v._installTime && !isLive
 
-                  // Status labels — clear, unambiguous
+                  // Live cert source label for tooltip
+                  const confirmSource = isLive
+                    ? (v.live_confirmed_by === 'certbind_probe' ? 'TLS verified'
+                      : v.live_confirmed_by === 'cpanel_install' ? 'cPanel confirmed'
+                      : v.live_confirmed_by === 'agent_job' ? 'Agent confirmed'
+                      : 'Confirmed')
+                    : null
+
+                  // Status labels — unambiguous, scannable
                   const statusLabel = isLive
-                    ? 'Live in browser'
+                    ? `Live · ${confirmSource}`
                     : wasInstalled
                     ? 'Replaced on server'
                     : vi === 0
                     ? 'Issued · not installed'
                     : 'Superseded'
-
-                  // Icon + colour per state
-                  const circleColor  = isLive ? '#1A7A72'
-                    : wasInstalled ? '#9CA3AF'
-                    : vi === 0 ? '#3DBFB0'
-                    : '#D1D5DB'
-                  const circleBorder = isLive ? `2px solid #1A7A72`
-                    : wasInstalled ? `1.5px solid #9CA3AF`
-                    : vi === 0 ? `1.5px dashed #3DBFB0`
-                    : `1.5px solid #D1D5DB`
-                  const circleBg     = isLive ? '#1A7A72' : wasInstalled ? '#F5EFE0' : '#E8F8F6'
-                  const circleIcon   = isLive ? '🌐' : wasInstalled ? '×' : vi === 0 ? '⏱' : '—'
 
                   const vLabel = `v${subVersions.length - vi}`
 
@@ -2266,20 +2268,28 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                       style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 14px',
                         borderTop:`0.5px solid var(--v2-border)`,
                         background: isLive ? '#E8F8F6' : selected===v.id ? '#E8F8F6' : 'var(--v2-surface)',
-                        cursor:'pointer', opacity: isLive ? 1 : wasInstalled ? 0.5 : neverInstalled && vi > 0 ? 0.45 : 1,
-                        borderLeft: isLive ? '3px solid #1A7A72' : wasInstalled ? '3px solid #E5E7EB' : '3px solid transparent',
+                        cursor:'pointer',
+                        opacity: isLive ? 1 : wasInstalled ? 0.5 : neverInstalled && vi > 0 ? 0.4 : 1,
+                        borderLeft: isLive ? '3px solid #1A7A72' : wasInstalled ? '3px solid #E5E7EB' : neverInstalled && vi===0 ? '3px solid #3DBFB0' : '3px solid transparent',
                         transition:'background .15s' }}
                       onMouseEnter={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-bg)' }}
                       onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-surface)' }}>
 
-                      {/* Circle status icon */}
-                      <div style={{ width:28, height:28, borderRadius:8,
-                        background: isLive ? '#1A7A72' : wasInstalled ? '#F5EFE0' : circleBg,
-                        border: isLive ? 'none' : circleBorder,
-                        flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
-                        fontSize:isLive?14:11, color: isLive ? 'white' : circleColor, fontWeight:700,
-                        position:'relative', overflow:'hidden' }}>
-                        {isLive ? <Globe size={14} color="white"/> : wasInstalled ? <span style={{fontSize:14,color:'#9CA3AF',lineHeight:1}}>×</span> : vi===0 ? <Clock size={11} color="#3DBFB0"/> : <span style={{color:'#D1D5DB'}}>—</span>}
+                      {/* Status icon — each state has a distinct visual */}
+                      <div style={{ width:28, height:28, borderRadius:8, flexShrink:0,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        background: isLive ? '#1A7A72' : wasInstalled ? '#F5F5F5' : neverInstalled && vi===0 ? '#E8F8F6' : '#F5F5F5',
+                        border: isLive ? 'none' : wasInstalled ? '1.5px solid #E5E7EB' : vi===0 ? '1.5px dashed #3DBFB0' : '1.5px solid #E5E7EB',
+                        position:'relative', overflow: wasInstalled ? 'hidden' : 'visible' }}>
+                        {isLive && <Globe size={14} color="white"/>}
+                        {wasInstalled && (
+                          <>
+                            <Server size={12} color="#9CA3AF"/>
+                            <div style={{ position:'absolute', top:'50%', left:3, right:3, height:1.5, background:'#9CA3AF', transform:'rotate(-25deg)', transformOrigin:'center' }}/>
+                          </>
+                        )}
+                        {!isLive && !wasInstalled && vi===0 && <Clock size={11} color="#3DBFB0"/>}
+                        {!isLive && !wasInstalled && vi>0 && <span style={{fontSize:11,color:'#D1D5DB',lineHeight:1}}>—</span>}
                       </div>
 
                       {/* Version info */}
@@ -2289,6 +2299,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                             background: isLive ? '#1A7A72' : wasInstalled ? '#F5F5F5' : vi===0 ? '#E8F8F6' : '#F5F5F5',
                             color: isLive ? 'white' : wasInstalled ? '#6B7280' : vi===0 ? '#1A7A72' : '#9CA3AF',
                             border: isLive ? 'none' : `0.5px solid ${wasInstalled?'#E5E7EB':vi===0?'#A8E6DE':'#E5E7EB'}`,
+                            fontWeight: isLive ? 600 : 500,
                             flexShrink:0 }}>
                             {statusLabel}
                           </span>
@@ -2475,25 +2486,51 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     const { data: { session: s } } = await supabase.auth.getSession()
     setSession(s)
     const [{ data: certsData }, { data: agentInstalls }, { data: ordersData }] = await Promise.all([
-      supabase.from('certificates').select('*, order_type').eq('user_id', user.id).neq('status', 'cancelled').order('issued_at', { ascending:false }),
-      supabase.from('agent_jobs').select('cert_id, status, created_at').eq('user_id', user.id).eq('job_type', 'install').eq('status', 'success').order('created_at', { ascending:false }).limit(100),
+      supabase.from('certificates')
+        .select('*, order_type, is_live_on_server, live_confirmed_by, live_confirmed_at')
+        .eq('user_id', user.id).neq('status', 'cancelled')
+        .order('issued_at', { ascending:false }),
+      supabase.from('agent_jobs')
+        .select('cert_id, created_at')
+        .eq('user_id', user.id).eq('job_type', 'install').eq('status', 'success')
+        .order('created_at', { ascending:false }).limit(100),
       supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'dv_pending').order('created_at', { ascending:false }),
     ])
-    // Build a map: cert_id → latest successful install timestamp
-    // Then per domain, only the cert with the LATEST install is "running on server"
+
+    // Build cert_id → latest agent install time (Layer 2 fallback)
     const certInstallTime = {}
     for (const job of (agentInstalls || [])) {
-      if (!certInstallTime[job.cert_id]) {
-        certInstallTime[job.cert_id] = job.created_at
+      if (!certInstallTime[job.cert_id]) certInstallTime[job.cert_id] = job.created_at
+    }
+
+    // For each domain: if NO cert has is_live_on_server=true in DB,
+    // fall back to agent_jobs to find the latest installed cert and mark it
+    const domainLiveMap = {}
+    for (const cert of (certsData || [])) {
+      if (cert.is_live_on_server) domainLiveMap[cert.domain] = cert.id
+    }
+    // Layer 2 fallback: use latest agent_job if DB flag not set
+    const domainLatestInstall = {}
+    for (const [certId, installTime] of Object.entries(certInstallTime)) {
+      const cert = (certsData||[]).find(c => c.id === certId)
+      if (!cert) continue
+      if (!domainLatestInstall[cert.domain] ||
+          new Date(installTime) > new Date(domainLatestInstall[cert.domain].time)) {
+        domainLatestInstall[cert.domain] = { certId, time: installTime }
       }
     }
+    // Merge: DB flag wins, fallback to agent_jobs
+    const liveCertByDomain = { ...Object.fromEntries(
+      Object.entries(domainLatestInstall).map(([domain, { certId }]) => [domain, certId])
+    ), ...domainLiveMap }
+
     const enriched = await Promise.all((certsData||[]).map(async cert => {
-      if (!cert.ggs_order_id) return cert
+      if (!cert.ggs_order_id) return { ...cert, _installTime: certInstallTime[cert.id]||null, _liveCertByDomain: liveCertByDomain }
       const { data: ord } = await supabase.from('ssl_orders')
         .select('product_name,product_code,period,ggs_invoice_id,ggs_order_id,partner_order_id,vendor_order_id,order_type,subscription_start,subscription_end,admin_email,admin_first_name,admin_last_name,admin_phone,admin_title,admin_city,admin_country,tech_first_name,tech_last_name,tech_email,tech_phone,serial_number,cert_md5')
         .eq('ggs_order_id', cert.ggs_order_id).eq('user_id', user.id)
         .order('created_at', { ascending: false }).limit(1).single()
-      return ord ? { ...cert, _order: ord, _installTime: certInstallTime[cert.id] || null } : { ...cert, _installTime: certInstallTime[cert.id] || null }
+      return { ...(ord ? { ...cert, _order: ord } : cert), _installTime: certInstallTime[cert.id]||null, _liveCertByDomain: liveCertByDomain }
     }))
     setCerts(enriched); setOrders(ordersData||[]); setLoading(false)
 
