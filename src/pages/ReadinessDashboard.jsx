@@ -1,28 +1,16 @@
-// ReadinessDashboard.jsx
-// 47-day CA/B Forum readiness: fleet score + per-cert automation checklist
+// ReadinessDashboard.jsx v2 — Clean redesign
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
-import {
-  ShieldCheck, ShieldAlert, AlertTriangle, CheckCircle,
-  XCircle, RefreshCw, ExternalLink, ChevronDown, ChevronUp,
-  Zap, Server, Globe, Key, RotateCcw, Info
-} from 'lucide-react'
+import { ShieldCheck, ShieldAlert, AlertTriangle, CheckCircle, XCircle, RefreshCw, ExternalLink, ChevronDown, Zap, Server, Globe, Key, RotateCcw } from 'lucide-react'
 import '../styles/design-v2.css'
 
-// CA/B Forum SC-081v3 milestones
 const MILESTONES = [
-  { date: new Date('2026-03-15'), days: 200, label: 'Mar 2026', desc: '200-day max validity' },
-  { date: new Date('2027-03-15'), days: 100, label: 'Mar 2027', desc: '100-day max validity' },
-  { date: new Date('2029-03-15'), days: 47,  label: 'Mar 2029', desc: '47-day max validity'  },
+  { date: new Date('2026-03-15'), days: 200, label: 'Mar 2026', desc: '200-day max' },
+  { date: new Date('2027-03-15'), days: 100, label: 'Mar 2027', desc: '100-day max' },
+  { date: new Date('2029-03-15'), days: 47,  label: 'Mar 2029', desc: '47-day max'  },
 ]
 
-function daysUntil(iso) {
-  if (!iso) return null
-  return Math.ceil((new Date(iso) - Date.now()) / 86400000)
-}
-function daysUntilDate(d) {
-  return Math.ceil((d - Date.now()) / 86400000)
-}
+function daysUntilDate(d) { return Math.ceil((d - Date.now()) / 86400000) }
 function fmtDate(iso) {
   if (!iso) return '—'
   return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
@@ -32,563 +20,417 @@ function certValidityDays(cert) {
   return Math.ceil((new Date(cert.expires_at) - new Date(cert.issued_at)) / 86400000)
 }
 
-// ── Compute per-cert readiness checklist ─────────────────────────────
 function computeChecklist(cert, hasAgent, hasDnsCreds) {
   const validity = certValidityDays(cert)
   const checks = [
-    {
-      id:   'auto_renew',
-      label:'Auto-renew enabled',
-      desc: 'SSLVault will renew this cert automatically before it expires.',
-      ok:   !!cert.auto_renew_enabled,
-      fix:  'Enable auto-renew in Dashboard → cert settings.',
-      weight: 30,
-    },
-    {
-      id:   'dns_provider',
-      label:'DNS provider connected',
-      desc: 'Automated DCV requires a connected DNS provider (Cloudflare, Vercel, etc).',
-      ok:   hasDnsCreds || !!cert.dns_provider_id,
-      fix:  'Connect your DNS provider in DNS Providers → Add Provider.',
-      weight: 25,
-    },
-    {
-      id:   'install_method',
-      label:'Auto-install configured',
-      desc: 'After renewal, the new cert must be deployed automatically via agent or cPanel.',
-      ok:   cert.install_method === 'agent' || cert.install_method === 'cpanel',
-      fix:  'Install the SSLVault agent on your server, or connect via cPanel.',
-      weight: 20,
-    },
-    {
-      id:   'validity_200',
-      label:'Valid under 200-day rule (Mar 2026)',
-      desc: 'CA/B Forum mandates max 200-day certs from March 15, 2026.',
-      ok:   validity !== null && validity <= 200,
-      fix:  'This cert was issued for over 200 days. It won\'t be re-issuable after Mar 2026 until renewed.',
-      weight: 15,
-    },
-    {
-      id:   'certvault',
-      label:'Private key secured in CertVault',
-      desc: 'Private key is encrypted and stored securely — not exposed in plain text.',
-      ok:   !!cert.keylocker_key_id,
-      fix:  'Rotate the key via CertVault to store it encrypted.',
-      weight: 10,
-    },
+    { id:'auto_renew',     label:'Auto-renew on',           ok:!!cert.auto_renew_enabled,                                             fix:'Enable auto-renew in cert settings',          icon:RotateCcw, weight:30 },
+    { id:'dns_provider',   label:'DNS provider connected',  ok:hasDnsCreds || !!cert.dns_provider_id,                                 fix:'Connect a DNS provider for auto-DCV',         icon:Globe,     weight:25 },
+    { id:'install_method', label:'Auto-install configured', ok:cert.install_method==='agent'||cert.install_method==='cpanel',          fix:'Connect via agent or cPanel',                 icon:Server,    weight:20 },
+    { id:'validity_200',   label:'Under 200-day rule',      ok:validity!==null && validity<=200,                                       fix:'Cert issued >200 days — renew after Mar 2026', icon:ShieldCheck,weight:15},
+    { id:'certvault',      label:'Key in CertVault',        ok:!!cert.keylocker_key_id,                                               fix:'Rotate key to store encrypted',               icon:Key,       weight:10 },
   ]
-  const score = checks.reduce((sum, c) => sum + (c.ok ? c.weight : 0), 0)
+  const score = checks.reduce((s,c) => s + (c.ok ? c.weight : 0), 0)
   return { checks, score }
 }
 
-// ── Readiness level from score ────────────────────────────────────────
 function readinessLevel(score) {
-  if (score >= 90) return { label:'Ready',    color:'#16a34a', bg:'#E8F8F6', border:'#A8E6DE', icon:ShieldCheck  }
-  if (score >= 60) return { label:'At risk',  color:'#E8897A', bg:'#FDF0EE', border:'#F2C4BC', icon:AlertTriangle }
-  return              { label:'Will break', color:'#dc2626', bg:'#fef2f2', border:'#fecaca', icon:ShieldAlert  }
+  if (score >= 90) return { label:'Ready',      color:'#1A7A72', bg:'#E1F5EE', border:'#A8E6DE' }
+  if (score >= 60) return { label:'At risk',    color:'#9A5A30', bg:'#FAEEDA', border:'#F0C490' }
+  return              { label:'Will break',   color:'#A32D2D', bg:'#FCEBEB', border:'#F7C1C1' }
 }
 
-// ── Milestone compliance for a cert ──────────────────────────────────
-function certMilestoneStatus(cert) {
-  const validity = certValidityDays(cert)
-  return MILESTONES.map(m => ({
-    ...m,
-    compliant: validity !== null && validity <= m.days,
-    daysLeft:  daysUntilDate(m.date),
-  }))
-}
-
-// ── Single cert row ───────────────────────────────────────────────────
-function CertRow({ cert, hasAgent, hasDnsCreds }) {
-  const [open, setOpen] = useState(false)   // always closed by default
-  const { checks, score } = useMemo(
-    () => computeChecklist(cert, hasAgent, hasDnsCreds),
-    [cert, hasAgent, hasDnsCreds]
+function ScoreRing({ score, size=48 }) {
+  const r = (size-8)/2, c = 2*Math.PI*r, level = readinessLevel(score)
+  return (
+    <div style={{ position:'relative', width:size, height:size, flexShrink:0 }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--v2-border)" strokeWidth="4"/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={level.color} strokeWidth="4"
+          strokeDasharray={c} strokeDashoffset={c*(1-score/100)}
+          strokeLinecap="round" transform={`rotate(-90 ${size/2} ${size/2})`}
+          style={{ transition:'stroke-dashoffset .6s cubic-bezier(.16,1,.3,1)' }}/>
+      </svg>
+      <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center',
+        justifyContent:'center', fontSize:size<50?11:13, fontWeight:700, color:level.color }}>
+        {score}
+      </div>
+    </div>
   )
-  const level      = readinessLevel(score)
-  const milestones = certMilestoneStatus(cert)
-  const passCount  = checks.filter(c => c.ok).length
-  const failCount  = checks.filter(c => !c.ok).length
+}
 
-  const ICONS = {
-    auto_renew:    RotateCcw,
-    dns_provider:  Globe,
-    install_method:Server,
-    validity_200:  ShieldCheck,
-    keylocker:     Key,
-  }
+function MilestoneBar({ cert }) {
+  const validity = certValidityDays(cert)
+  return (
+    <div style={{ display:'flex', gap:6 }}>
+      {MILESTONES.map(m => {
+        const ok = validity !== null && validity <= m.days
+        const past = daysUntilDate(m.date) <= 0
+        return (
+          <div key={m.label} style={{ display:'flex', alignItems:'center', gap:4,
+            padding:'3px 9px', borderRadius:20, fontSize:10, fontWeight:500,
+            background: ok ? '#E1F5EE' : '#FCEBEB',
+            color: ok ? '#1A7A72' : '#A32D2D',
+            border: `0.5px solid ${ok ? '#A8E6DE' : '#F7C1C1'}` }}>
+            {ok
+              ? <CheckCircle size={9} color="#1A7A72"/>
+              : <XCircle    size={9} color="#A32D2D"/>}
+            {m.label}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function CertRow({ cert, hasAgent, hasDnsCreds }) {
+  const [open, setOpen] = useState(false)
+  const { checks, score } = useMemo(() => computeChecklist(cert, hasAgent, hasDnsCreds), [cert, hasAgent, hasDnsCreds])
+  const level    = readinessLevel(score)
+  const failList = checks.filter(c => !c.ok)
+  const passCount = checks.filter(c => c.ok).length
 
   return (
-    <div style={{
-      border:`0.5px solid ${open ? level.color+'55' : 'var(--v2-border)'}`,
-      borderRadius:12,
-      marginBottom:8,
-      overflow:'hidden',
-      transition:'border-color .2s, box-shadow .2s',
-      boxShadow: open ? `0 4px 20px ${level.color}14` : 'none',
-    }}>
+    <div style={{ border:`0.5px solid ${open?level.border:'var(--v2-border)'}`,
+      borderRadius:10, overflow:'hidden', marginBottom:6,
+      background:'var(--v2-surface)', transition:'border-color .2s' }}>
 
-      {/* ── Collapsed header — always visible ── */}
-      <div
-        onClick={() => setOpen(v => !v)}
-        style={{
-          display:'flex', alignItems:'center', gap:14, padding:'14px 18px',
-          background: open ? level.bg : 'var(--v2-surface)',
-          cursor:'pointer', transition:'background .2s',
-          userSelect:'none',
-        }}
-        onMouseEnter={e => { if(!open) e.currentTarget.style.background='var(--v2-surface-3)' }}
-        onMouseLeave={e => { if(!open) e.currentTarget.style.background='var(--v2-surface)' }}
-      >
-        {/* Score ring */}
-        <div style={{ position:'relative', width:46, height:46, flexShrink:0 }}>
-          <svg width="46" height="46" viewBox="0 0 46 46">
-            <circle cx="23" cy="23" r="19" fill="none" stroke="var(--v2-border)" strokeWidth="4.5"/>
-            <circle cx="23" cy="23" r="19" fill="none"
-              stroke={level.color} strokeWidth="4.5"
-              strokeDasharray={`${2*Math.PI*19}`}
-              strokeDashoffset={`${2*Math.PI*19*(1-score/100)}`}
-              strokeLinecap="round"
-              transform="rotate(-90 23 23)"
-              style={{ transition:'stroke-dashoffset .7s cubic-bezier(.16,1,.3,1)' }}
-            />
-          </svg>
-          <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center',
-            justifyContent:'center', fontSize:12, fontWeight:700, color:level.color }}>
-            {score}
-          </div>
-        </div>
+      {/* Header row */}
+      <div onClick={() => setOpen(v=>!v)}
+        style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
+          cursor:'pointer', userSelect:'none' }}
+        onMouseEnter={e => e.currentTarget.style.background='var(--v2-bg)'}
+        onMouseLeave={e => e.currentTarget.style.background='transparent'}>
 
-        {/* Domain + status row */}
+        <ScoreRing score={score} size={44}/>
+
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
-            <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)',
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5 }}>
+            <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text-1)',
               overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
               {cert.domain}
             </span>
-            <span style={{ fontSize:10, fontWeight:700, padding:'2px 9px', borderRadius:10, flexShrink:0,
+            <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20, flexShrink:0,
               background:level.bg, color:level.color, border:`0.5px solid ${level.border}` }}>
               {level.label}
             </span>
           </div>
-          {/* Milestone dots + pass count */}
-          <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
-            {milestones.map(m => (
-              <div key={m.label} style={{ display:'flex', alignItems:'center', gap:3 }}>
-                {m.compliant
-                  ? <CheckCircle size={10} color="#16a34a"/>
-                  : <XCircle    size={10} color="#dc2626"/>}
-                <span style={{ fontSize:10, fontWeight:500,
-                  color: m.compliant ? '#16a34a' : '#dc2626' }}>{m.label}</span>
-              </div>
-            ))}
-            <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>·</span>
-            <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>
-              {passCount}/{checks.length} checks
-            </span>
-            {failCount > 0 && (
-              <span style={{ fontSize:10, fontWeight:600, color:'#dc2626' }}>
-                · {failCount} action{failCount>1?'s':''} needed
-              </span>
-            )}
+          <MilestoneBar cert={cert}/>
+        </div>
+
+        <div style={{ textAlign:'right', flexShrink:0 }}>
+          <div style={{ fontSize:11, color:'var(--v2-text-2)', fontWeight:500 }}>{fmtDate(cert.expires_at)}</div>
+          <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:2 }}>
+            {passCount}/{checks.length} checks · {certValidityDays(cert)??'?'}d validity
           </div>
         </div>
 
-        {/* Right: expiry + chevron */}
-        <div style={{ textAlign:'right', flexShrink:0, marginRight:4 }}>
-          <div style={{ fontSize:11, fontWeight:500, color:'var(--v2-text-2)' }}>
-            {fmtDate(cert.expires_at)}
-          </div>
-          <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>
-            {cert.cert_type||'DV'} · {certValidityDays(cert)??'?'}d validity
-          </div>
-        </div>
-
-        {/* Animated chevron */}
-        <div style={{ color:'var(--v2-text-3)', flexShrink:0,
-          transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-          transition:'transform .25s cubic-bezier(.16,1,.3,1)' }}>
-          <ChevronDown size={15}/>
+        <div style={{ color:'var(--v2-text-3)', transform:open?'rotate(180deg)':'none',
+          transition:'transform .25s', flexShrink:0 }}>
+          <ChevronDown size={14}/>
         </div>
       </div>
 
-      {/* ── Expandable body — CSS max-height animation ── */}
-      <div style={{
-        maxHeight: open ? '900px' : '0px',
-        overflow: 'hidden',
-        transition: open
-          ? 'max-height .45s cubic-bezier(.16,1,.3,1)'
-          : 'max-height .28s cubic-bezier(.4,0,1,1)',
-      }}>
-        <div style={{
-          padding:'16px 18px 18px',
-          borderTop:`0.5px solid ${level.border}`,
-          background:'var(--v2-surface)',
-        }}>
+      {/* Expandable checklist */}
+      {open && (
+        <div style={{ borderTop:`0.5px solid var(--v2-border)`, padding:'12px 16px',
+          background:'var(--v2-bg)' }}>
 
-          {/* Milestone timeline — horizontal */}
-          <div style={{ marginBottom:16 }}>
-            <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
-              textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>
-              CA/B Forum milestones
+          {/* Quick summary */}
+          {failList.length === 0 ? (
+            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12,
+              padding:'8px 12px', borderRadius:8, background:'#E1F5EE',
+              border:'0.5px solid #A8E6DE' }}>
+              <CheckCircle size={13} color="#1A7A72"/>
+              <span style={{ fontSize:12, color:'#1A7A72', fontWeight:500 }}>
+                All checks passed — this cert is ready for the 47-day era
+              </span>
             </div>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
-              {milestones.map(m => (
-                <div key={m.label} style={{
-                  padding:'10px 12px', borderRadius:9,
-                  background: m.compliant ? '#E8F8F6' : '#fef2f2',
-                  border:`1px solid ${m.compliant ? '#A8E6DE' : '#fecaca'}`,
-                  transition:'all .2s',
-                }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
-                    {m.compliant
-                      ? <CheckCircle size={13} color="#16a34a"/>
-                      : <XCircle    size={13} color="#dc2626"/>}
-                    <span style={{ fontSize:12, fontWeight:600,
-                      color: m.compliant ? '#16a34a' : '#dc2626' }}>{m.label}</span>
-                  </div>
-                  <div style={{ fontSize:11, color: m.compliant ? '#15803d' : '#b91c1c',
-                    marginBottom:3 }}>{m.desc}</div>
-                  <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>
-                    {m.daysLeft > 0 ? `${m.daysLeft}d away` : 'In effect now'}
-                  </div>
-                </div>
-              ))}
+          ) : (
+            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12,
+              padding:'8px 12px', borderRadius:8, background:'#FCEBEB',
+              border:'0.5px solid #F7C1C1' }}>
+              <AlertTriangle size={13} color="#A32D2D"/>
+              <span style={{ fontSize:12, color:'#A32D2D', fontWeight:500 }}>
+                {failList.length} action{failList.length>1?'s':''} needed before 47-day certs become mandatory
+              </span>
             </div>
-          </div>
+          )}
 
-          {/* Automation checklist — compact table style */}
-          <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
-            textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>
-            Automation checklist
-          </div>
-          <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:9, overflow:'hidden' }}>
-            {checks.map((c, i) => {
-              const CheckIcon = ICONS[c.id] || Zap
+          {/* Checklist items */}
+          <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+            {checks.map(c => {
+              const Icon = c.icon
               return (
-                <div key={c.id} style={{
-                  display:'flex', alignItems:'center', gap:12, padding:'10px 14px',
-                  borderBottom: i < checks.length-1 ? '0.5px solid var(--v2-border)' : 'none',
-                  background: c.ok ? '#fafffe' : '#fffafa',
-                  transition:'background .15s',
-                }}>
-                  {/* Icon */}
-                  <div style={{ width:30, height:30, borderRadius:7, flexShrink:0,
-                    background: c.ok ? '#dcfce7' : '#fee2e2',
+                <div key={c.id} style={{ display:'flex', alignItems:'center', gap:10,
+                  padding:'8px 10px', borderRadius:7,
+                  background: c.ok ? 'var(--v2-surface)' : '#FFFAFA',
+                  border:`0.5px solid ${c.ok ? 'var(--v2-border)' : '#F7C1C1'}` }}>
+                  <div style={{ width:26, height:26, borderRadius:6, flexShrink:0,
+                    background: c.ok ? '#E1F5EE' : '#FCEBEB',
                     display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <CheckIcon size={13} color={c.ok ? '#16a34a' : '#dc2626'}/>
+                    <Icon size={12} color={c.ok?'#1A7A72':'#A32D2D'}/>
                   </div>
-
-                  {/* Label + description */}
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:12, fontWeight:500,
-                      color: c.ok ? '#15803d' : '#b91c1c', marginBottom:1 }}>
-                      {c.label}
-                    </div>
-                    <div style={{ fontSize:11, color:'var(--v2-text-3)', lineHeight:1.4 }}>
-                      {c.ok ? c.desc : c.fix}
-                    </div>
+                    <span style={{ fontSize:12, fontWeight:500,
+                      color: c.ok ? 'var(--v2-text-1)' : '#A32D2D' }}>{c.label}</span>
+                    {!c.ok && (
+                      <div style={{ fontSize:11, color:'#C04040', marginTop:1 }}>{c.fix}</div>
+                    )}
                   </div>
-
-                  {/* Pass/Fail badge + weight */}
-                  <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
-                    <span style={{ fontSize:9, fontWeight:700, padding:'2px 8px', borderRadius:8,
-                      background: c.ok ? '#16a34a' : '#fef2f2',
-                      color: c.ok ? 'white' : '#dc2626',
-                      border: c.ok ? 'none' : '0.5px solid #fecaca' }}>
-                      {c.ok ? '✓ PASS' : '✗ FAIL'}
-                    </span>
-                    <span style={{ fontSize:10, color:'var(--v2-text-3)', width:24, textAlign:'right' }}>
-                      {c.weight}pt
-                    </span>
+                  <div style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:6,
+                    background: c.ok ? '#1A7A72' : '#FCEBEB',
+                    color: c.ok ? 'white' : '#A32D2D',
+                    border: c.ok ? 'none' : '0.5px solid #F7C1C1', flexShrink:0 }}>
+                    {c.ok ? '✓' : '✗'} {c.weight}pt
                   </div>
                 </div>
               )
             })}
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
 
-// ── Fleet score ring ──────────────────────────────────────────────────
-function FleetRing({ score, size = 120 }) {
-  const r    = (size - 16) / 2
-  const circ = 2 * Math.PI * r
-  const level = readinessLevel(score)
-  return (
-    <div style={{ position:'relative', width:size, height:size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none"
-          stroke="var(--v2-border)" strokeWidth="10"/>
-        <circle cx={size/2} cy={size/2} r={r} fill="none"
-          stroke={level.color} strokeWidth="10"
-          strokeDasharray={`${circ}`}
-          strokeDashoffset={`${circ*(1-score/100)}`}
-          strokeLinecap="round"
-          transform={`rotate(-90 ${size/2} ${size/2})`}
-          style={{ transition:'stroke-dashoffset .8s cubic-bezier(.16,1,.3,1)' }}
-        />
-      </svg>
-      <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column',
-        alignItems:'center', justifyContent:'center' }}>
-        <div style={{ fontSize:28, fontWeight:700, color:level.color, lineHeight:1 }}>{score}</div>
-        <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>fleet score</div>
-      </div>
-    </div>
-  )
-}
-
-// ══ MAIN PAGE ═════════════════════════════════════════════════════════
 export default function ReadinessDashboard({ user }) {
-  const [certs,      setCerts]      = useState([])
-  const [hasAgent,   setHasAgent]   = useState(false)
-  const [hasDnsCreds,setHasDnsCreds]= useState(false)
-  const [loading,    setLoading]    = useState(true)
-  const [filter,     setFilter]     = useState('all')
+  const [certs,       setCerts]       = useState([])
+  const [hasAgent,    setHasAgent]    = useState(false)
+  const [hasDnsCreds, setHasDnsCreds] = useState(false)
+  const [loading,     setLoading]     = useState(true)
+  const [filter,      setFilter]      = useState('all')
 
   useEffect(() => {
     if (!user) return
     Promise.all([
-      supabase.from('certificates').select(
-        'id,domain,expires_at,issued_at,cert_type,auto_renew_enabled,dns_provider_id,' +
-        'install_method,install_status,dcv_method,keylocker_key_id,auto_reissue_enabled,issuer'
-      ).eq('user_id', user.id).neq('status','revoked').order('expires_at',{ascending:true}),
+      supabase.from('certificates')
+        .select('id,domain,expires_at,issued_at,cert_type,auto_renew_enabled,dns_provider_id,install_method,keylocker_key_id,issuer')
+        .eq('user_id', user.id).neq('status','cancelled').neq('status','revoked')
+        .order('expires_at', { ascending:true }),
       supabase.from('persistent_agents').select('id').eq('user_id', user.id).limit(1),
       supabase.from('dns_credentials').select('id').eq('user_id', user.id).limit(1),
-    ]).then(([{ data:certsData }, { data:agentData }, { data:dnsData }]) => {
-      setCerts(certsData||[])
-      setHasAgent((agentData||[]).length > 0)
-      setHasDnsCreds((dnsData||[]).length > 0)
+    ]).then(([{ data:cd }, { data:ad }, { data:dd }]) => {
+      // Deduplicate by domain — latest cert per domain
+      const seen = new Set(), unique = []
+      for (const c of (cd||[])) { if (!seen.has(c.domain)) { seen.add(c.domain); unique.push(c) } }
+      setCerts(unique)
+      setHasAgent((ad||[]).length > 0)
+      setHasDnsCreds((dd||[]).length > 0)
       setLoading(false)
     })
   }, [user])
 
-  // Compute all scores
   const certScores = useMemo(() =>
-    certs.map(c => ({
-      cert: c,
-      ...computeChecklist(c, hasAgent, hasDnsCreds),
-    })),
+    certs.map(c => ({ cert:c, ...computeChecklist(c, hasAgent, hasDnsCreds) })),
     [certs, hasAgent, hasDnsCreds]
   )
 
   const fleetScore = certScores.length
-    ? Math.round(certScores.reduce((s,c)=>s+c.score,0)/certScores.length)
-    : 0
-
+    ? Math.round(certScores.reduce((s,c)=>s+c.score,0)/certScores.length) : 0
   const ready     = certScores.filter(c => c.score >= 90)
   const atRisk    = certScores.filter(c => c.score >= 60 && c.score < 90)
   const willBreak = certScores.filter(c => c.score < 60)
-
-  const filtered = certScores.filter(c => {
-    if (filter === 'ready')      return c.score >= 90
-    if (filter === 'at-risk')    return c.score >= 60 && c.score < 90
-    if (filter === 'will-break') return c.score < 60
+  const filtered  = certScores.filter(c => {
+    if (filter==='ready')      return c.score >= 90
+    if (filter==='at-risk')    return c.score >= 60 && c.score < 90
+    if (filter==='will-break') return c.score < 60
     return true
   })
 
-  // Days to first milestone
-  const daysToMar2026 = daysUntilDate(MILESTONES[0].date)
+  const fleetLevel   = readinessLevel(fleetScore)
+  const daysToMar26  = daysUntilDate(MILESTONES[0].date)
+  const inEffect     = daysToMar26 <= 0
+
+  // Fleet ring (larger)
+  const ringSize = 100
+  const r = (ringSize-12)/2, circ = 2*Math.PI*r
 
   return (
     <div className="v2-page">
-      <div className="v2-container" style={{ maxWidth:900 }}>
+      <div className="v2-container" style={{ maxWidth:860 }}>
 
-        {/* Header */}
-        <div style={{ paddingTop:8, marginBottom:20 }}>
-          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
-            gap:12, flexWrap:'wrap' }}>
-            <div>
-              <h1 className="v2-h1" style={{ fontSize:22 }}>47-day readiness</h1>
-              <p style={{ fontSize:13, color:'var(--v2-text-3)', marginTop:4 }}>
-                CA/B Forum SC-081v3 — is your fleet ready for shorter cert lifetimes?
-              </p>
-            </div>
-            <a href="https://www.digicert.com/blog/tls-certificate-lifetimes-will-officially-reduce-to-47-days"
-              target="_blank" rel="noreferrer"
-              style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
-                color:'var(--v2-green)', textDecoration:'none', marginTop:8 }}>
-              <ExternalLink size={11}/> CA/B Forum SC-081v3
-            </a>
+        {/* ── Header ── */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+          marginBottom:20, paddingTop:8 }}>
+          <div>
+            <h1 className="v2-h1" style={{ fontSize:20, marginBottom:3 }}>47-day readiness</h1>
+            <p style={{ fontSize:12, color:'var(--v2-text-3)', margin:0 }}>
+              CA/B Forum SC-081v3 — how ready is your fleet for shorter cert lifetimes?
+            </p>
           </div>
+          <a href="https://cabforum.org/working-groups/server/baseline-requirements/requirements/"
+            target="_blank" rel="noreferrer"
+            style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
+              color:'var(--v2-green)', textDecoration:'none', flexShrink:0 }}>
+            <ExternalLink size={11}/> CA/B Forum
+          </a>
         </div>
 
-        {/* Countdown banner */}
-        <div style={{
-          background: daysToMar2026 <= 60 ? '#fef2f2' : '#FDF0EE',
-          border:`0.5px solid ${daysToMar2026<=60?'#fecaca':'#F2C4BC'}`,
-          borderRadius:10, padding:'12px 16px', marginBottom:20,
-          display:'flex', alignItems:'center', gap:12,
-        }}>
-          <AlertTriangle size={16} color={daysToMar2026<=60?'#dc2626':'#E8897A'} style={{flexShrink:0}}/>
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:13, fontWeight:500,
-              color:daysToMar2026<=60?'#b91c1c':'#C45A4A' }}>
-              {daysToMar2026 > 0
-                ? `${daysToMar2026} days until March 15, 2026 — max cert validity drops to 200 days`
-                : '200-day maximum is now in effect (March 15, 2026)'}
-            </div>
-            <div style={{ fontSize:11, color:daysToMar2026<=60?'#dc2626':'#E8897A', marginTop:2 }}>
-              Then 100 days from March 2027 · 47 days from March 2029 · Manual renewal will be impossible
-            </div>
-          </div>
-          <div style={{ textAlign:'right', flexShrink:0 }}>
-            <div style={{ fontSize:22, fontWeight:700,
-              color:daysToMar2026<=60?'#dc2626':'#E8897A', fontFamily:'monospace' }}>
-              {Math.max(0,daysToMar2026)}d
-            </div>
-            <div style={{ fontSize:9, color:'var(--v2-text-3)', fontWeight:500 }}>REMAINING</div>
-          </div>
+        {/* ── Timeline strip — 3 milestones ── */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:20 }}>
+          {MILESTONES.map((m, i) => {
+            const dLeft = daysUntilDate(m.date)
+            const past  = dLeft <= 0
+            return (
+              <div key={m.label} style={{ padding:'12px 14px', borderRadius:10,
+                background: past ? (i===0?'#FAEEDA':'var(--v2-bg)') : 'var(--v2-surface)',
+                border:`0.5px solid ${past?(i===0?'#F0C490':'var(--v2-border)'):'var(--v2-border)'}` }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+                  marginBottom:4 }}>
+                  <span style={{ fontSize:12, fontWeight:600,
+                    color: past ? (i===0?'#9A5A30':'var(--v2-text-2)') : 'var(--v2-text-1)' }}>
+                    {m.label}
+                  </span>
+                  <span style={{ fontSize:10, padding:'2px 7px', borderRadius:20,
+                    background: past ? (i===0?'#FAEEDA':'var(--v2-bg)') : '#E1F5EE',
+                    color: past ? (i===0?'#9A5A30':'var(--v2-text-3)') : '#1A7A72',
+                    border: `0.5px solid ${past?(i===0?'#F0C490':'var(--v2-border)'):'#A8E6DE'}`,
+                    fontWeight:500 }}>
+                    {past ? 'In effect' : `${dLeft}d away`}
+                  </span>
+                </div>
+                <div style={{ fontSize:13, fontWeight:700, color:'var(--v2-text-1)',
+                  fontFamily:'monospace' }}>{m.days} days</div>
+                <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:1 }}>max cert validity</div>
+              </div>
+            )
+          })}
         </div>
 
         {loading ? (
-          <div style={{ textAlign:'center', padding:'48px 0', color:'var(--v2-text-3)' }}>
-            <RefreshCw size={22} style={{ animation:'spin .8s linear infinite',
+          <div style={{ textAlign:'center', padding:'48px', color:'var(--v2-text-3)' }}>
+            <RefreshCw size={20} style={{ animation:'spin .8s linear infinite',
               margin:'0 auto 10px', display:'block' }}/>
-            Analysing your certificate fleet…
+            Analysing fleet…
           </div>
         ) : certs.length === 0 ? (
-          <div style={{ textAlign:'center', padding:'48px 0' }}>
-            <ShieldCheck size={32} style={{ color:'var(--v2-text-3)', margin:'0 auto 12px', display:'block' }}/>
-            <div style={{ fontSize:14, fontWeight:500, color:'var(--v2-text-2)', marginBottom:6 }}>
-              No certificates to analyse
+          <div style={{ textAlign:'center', padding:'48px', color:'var(--v2-text-3)',
+            background:'var(--v2-surface)', borderRadius:12, border:'0.5px solid var(--v2-border)' }}>
+            <ShieldCheck size={28} style={{ margin:'0 auto 10px', display:'block', opacity:.4 }}/>
+            <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text-2)', marginBottom:4 }}>
+              No certificates yet
             </div>
-            <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>
-              Issue your first certificate to see your readiness score.
-            </div>
+            <div style={{ fontSize:12 }}>Issue your first certificate to see readiness scores.</div>
           </div>
         ) : (
           <>
-            {/* Fleet summary */}
-            <div className="v2-card" style={{ padding:'20px', marginBottom:20 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:24, flexWrap:'wrap' }}>
-                <FleetRing score={fleetScore}/>
-                <div style={{ flex:1, minWidth:200 }}>
-                  <div style={{ fontSize:16, fontWeight:600, color:readinessLevel(fleetScore).color,
-                    marginBottom:4 }}>
-                    Fleet is {readinessLevel(fleetScore).label.toLowerCase()}
-                    {fleetScore>=90?' for the 47-day era':fleetScore>=60?' — action needed':' — urgent attention required'}
+            {/* ── Fleet score card ── */}
+            <div className="v2-card" style={{ padding:'18px 20px', marginBottom:16 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:20, flexWrap:'wrap' }}>
+
+                {/* Large score ring */}
+                <div style={{ position:'relative', width:ringSize, height:ringSize, flexShrink:0 }}>
+                  <svg width={ringSize} height={ringSize} viewBox={`0 0 ${ringSize} ${ringSize}`}>
+                    <circle cx={ringSize/2} cy={ringSize/2} r={r} fill="none"
+                      stroke="var(--v2-border)" strokeWidth="8"/>
+                    <circle cx={ringSize/2} cy={ringSize/2} r={r} fill="none"
+                      stroke={fleetLevel.color} strokeWidth="8"
+                      strokeDasharray={circ} strokeDashoffset={circ*(1-fleetScore/100)}
+                      strokeLinecap="round" transform={`rotate(-90 ${ringSize/2} ${ringSize/2})`}
+                      style={{ transition:'stroke-dashoffset .8s cubic-bezier(.16,1,.3,1)' }}/>
+                  </svg>
+                  <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column',
+                    alignItems:'center', justifyContent:'center' }}>
+                    <div style={{ fontSize:24, fontWeight:700, color:fleetLevel.color, lineHeight:1 }}>
+                      {fleetScore}
+                    </div>
+                    <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:3 }}>fleet score</div>
                   </div>
-                  <div style={{ fontSize:12, color:'var(--v2-text-3)', marginBottom:16, lineHeight:1.6 }}>
-                    Score is the average automation readiness across all {certs.length} certificate{certs.length!==1?'s':''}.
-                    Each cert is assessed on 5 criteria weighted by criticality.
+                </div>
+
+                {/* Summary stats */}
+                <div style={{ flex:1, minWidth:160 }}>
+                  <div style={{ fontSize:14, fontWeight:600, color:fleetLevel.color, marginBottom:3 }}>
+                    {fleetScore >= 90 ? 'Fleet is ready for the 47-day era'
+                     : fleetScore >= 60 ? 'Fleet needs attention'
+                     : 'Fleet will break — action needed'}
                   </div>
-                  <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
+                  <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:14 }}>
+                    {certs.length} domain{certs.length!==1?'s':''} scored across 5 automation criteria
+                  </div>
+                  <div style={{ display:'flex', gap:8 }}>
                     {[
-                      { label:'Ready',      count:ready.length,     color:'#16a34a', bg:'#E8F8F6', border:'#A8E6DE', f:'ready'      },
-                      { label:'At risk',    count:atRisk.length,    color:'#E8897A', bg:'#FDF0EE', border:'#F2C4BC', f:'at-risk'    },
-                      { label:'Will break', count:willBreak.length, color:'#dc2626', bg:'#fef2f2', border:'#fecaca', f:'will-break' },
+                      { label:'Ready',      count:ready.length,     color:'#1A7A72', bg:'#E1F5EE', border:'#A8E6DE', f:'ready'      },
+                      { label:'At risk',    count:atRisk.length,    color:'#9A5A30', bg:'#FAEEDA', border:'#F0C490', f:'at-risk'    },
+                      { label:'Will break', count:willBreak.length, color:'#A32D2D', bg:'#FCEBEB', border:'#F7C1C1', f:'will-break' },
                     ].map(({ label, count, color, bg, border, f }) => (
-                      <div key={label}
-                        onClick={() => setFilter(filter===f?'all':f)}
-                        style={{ padding:'10px 12px', borderRadius:8, cursor:'pointer',
-                          background: filter===f ? bg : 'var(--v2-surface-3)',
+                      <div key={label} onClick={() => setFilter(filter===f?'all':f)}
+                        style={{ padding:'8px 12px', borderRadius:8, cursor:'pointer', flex:1,
+                          background: filter===f ? bg : 'var(--v2-bg)',
                           border:`0.5px solid ${filter===f?border:'var(--v2-border)'}`,
                           transition:'all .15s' }}>
-                        <div style={{ fontSize:20, fontWeight:600, color, fontFamily:'monospace' }}>{count}</div>
-                        <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>{label}</div>
+                        <div style={{ fontSize:18, fontWeight:700, color, fontFamily:'monospace' }}>{count}</div>
+                        <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:2 }}>{label}</div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Infrastructure status */}
-                <div style={{ display:'flex', flexDirection:'column', gap:8, minWidth:180 }}>
+                {/* Infrastructure pills */}
+                <div style={{ display:'flex', flexDirection:'column', gap:6, flexShrink:0 }}>
                   <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
                     textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:2 }}>
                     Infrastructure
                   </div>
                   {[
-                    { label:'Agent installed',      ok:hasAgent,    fix:'Install agent on your VPS'     },
-                    { label:'DNS provider connected',ok:hasDnsCreds, fix:'Add a DNS provider credential' },
-                  ].map(({ label, ok, fix }) => (
-                    <div key={label} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 10px',
-                      borderRadius:7, background: ok?'#E8F8F6':'#fef2f2',
-                      border:`0.5px solid ${ok?'#A8E6DE':'#fecaca'}` }}>
-                      {ok ? <CheckCircle size={13} color="#16a34a"/>
-                           : <XCircle   size={13} color="#dc2626"/>}
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ fontSize:11, fontWeight:500,
-                          color:ok?'#15803d':'#b91c1c', lineHeight:1.3 }}>{label}</div>
-                        {!ok && <div style={{ fontSize:10, color:'#dc2626', marginTop:1 }}>{fix}</div>}
-                      </div>
+                    { label:'Agent installed',       ok:hasAgent    },
+                    { label:'DNS provider connected', ok:hasDnsCreds },
+                  ].map(({ label, ok }) => (
+                    <div key={label} style={{ display:'flex', alignItems:'center', gap:7,
+                      padding:'6px 10px', borderRadius:7, fontSize:11, fontWeight:500,
+                      background: ok?'#E1F5EE':'var(--v2-bg)',
+                      border:`0.5px solid ${ok?'#A8E6DE':'var(--v2-border)'}`,
+                      color: ok?'#1A7A72':'var(--v2-text-3)' }}>
+                      {ok ? <CheckCircle size={12} color="#1A7A72"/> : <XCircle size={12} color="#A32D2D"/>}
+                      {label}
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Filter tabs */}
-            <div style={{ display:'flex', gap:6, marginBottom:12, alignItems:'center' }}>
-              <div style={{ display:'flex', gap:1, border:'0.5px solid var(--v2-border)',
-                borderRadius:8, overflow:'hidden' }}>
-                {[
-                  { key:'all',        label:`All (${certScores.length})` },
-                  { key:'will-break', label:`Will break (${willBreak.length})` },
-                  { key:'at-risk',    label:`At risk (${atRisk.length})` },
-                  { key:'ready',      label:`Ready (${ready.length})` },
-                ].map(({ key, label }) => (
-                  <button key={key} onClick={() => setFilter(key)}
-                    style={{ padding:'7px 12px', fontSize:11, fontWeight:filter===key?500:400,
-                      background: filter===key?'var(--v2-surface-3)':'none',
-                      border:'none', cursor:'pointer', fontFamily:'inherit',
-                      color: filter===key?'var(--v2-text)':'var(--v2-text-3)' }}>
-                    {label}
-                  </button>
-                ))}
-              </div>
+            {/* ── Filter tabs ── */}
+            <div style={{ display:'flex', alignItems:'center', gap:4, marginBottom:10 }}>
+              {[
+                { key:'all',        label:`All (${certScores.length})`         },
+                { key:'will-break', label:`Will break (${willBreak.length})`   },
+                { key:'at-risk',    label:`At risk (${atRisk.length})`          },
+                { key:'ready',      label:`Ready (${ready.length})`             },
+              ].map(({ key, label }) => (
+                <button key={key} onClick={() => setFilter(key)}
+                  style={{ padding:'5px 11px', borderRadius:6, fontSize:11, fontWeight:filter===key?600:400,
+                    background: filter===key?'var(--v2-green)':'none', fontFamily:'inherit', border:'none',
+                    color: filter===key?'white':'var(--v2-text-3)', cursor:'pointer', transition:'all .15s' }}>
+                  {label}
+                </button>
+              ))}
               <span style={{ marginLeft:'auto', fontSize:11, color:'var(--v2-text-3)' }}>
-                Click any cert to expand checklist
+                Click a domain to expand
               </span>
             </div>
 
-            {/* Cert list */}
+            {/* ── Cert rows ── */}
             {filtered.length === 0 ? (
-              <div style={{ textAlign:'center', padding:'32px', fontSize:13, color:'var(--v2-text-3)' }}>
+              <div style={{ textAlign:'center', padding:'24px', fontSize:12, color:'var(--v2-text-3)' }}>
                 No certificates match this filter.
               </div>
             ) : (
-              filtered.map(({ cert, checks, score }) => (
-                <CertRow
-                  key={cert.id}
-                  cert={cert}
-                  hasAgent={hasAgent}
-                  hasDnsCreds={hasDnsCreds}
-
-                />
+              filtered.map(({ cert }) => (
+                <CertRow key={cert.id} cert={cert} hasAgent={hasAgent} hasDnsCreds={hasDnsCreds}/>
               ))
             )}
 
-            {/* CA/B Forum info footer */}
-            <div style={{ marginTop:20, padding:'14px 16px',
-              background:'var(--v2-surface-3)', borderRadius:10,
-              border:'0.5px solid var(--v2-border)', fontSize:11,
-              color:'var(--v2-text-3)', lineHeight:1.7 }}>
-              <div style={{ display:'flex', alignItems:'flex-start', gap:8 }}>
-                <Info size={13} style={{ flexShrink:0, marginTop:1 }} color="var(--v2-text-3)"/>
-                <div>
-                  <strong style={{ color:'var(--v2-text-2)' }}>CA/B Forum Ballot SC-081v3</strong> — passed
-                  unanimously April 11, 2025. Maximum TLS cert validity: 200 days from Mar 15, 2026 ·
-                  100 days from Mar 15, 2027 · 47 days from Mar 15, 2029. DCV reuse drops to 10 days.
-                  Manual renewal will be operationally impossible by 2027.{' '}
-                  <a href="https://cabforum.org/working-groups/server/baseline-requirements/requirements/"
-                    target="_blank" rel="noreferrer"
-                    style={{ color:'var(--v2-green)', textDecoration:'none' }}>
-                    Read the full requirements →
-                  </a>
-                </div>
-              </div>
+            {/* Footer note */}
+            <div style={{ marginTop:16, padding:'10px 14px', borderRadius:8, fontSize:11,
+              color:'var(--v2-text-3)', background:'var(--v2-bg)',
+              border:'0.5px solid var(--v2-border)', lineHeight:1.6 }}>
+              CA/B Forum SC-081v3 passed April 2025. Max TLS validity: 200d from Mar 2026 · 100d from Mar 2027 · 47d from Mar 2029.
+              DCV reuse drops to 10 days. Manual renewal will be operationally impossible by 2027.
             </div>
           </>
         )}
-
       </div>
-      <style>{`
-        @keyframes spin      { from{transform:rotate(0)}to{transform:rotate(360deg)} }
-        @keyframes slideDown { from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)} }
-      `}</style>
+      <style>{`@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }`}</style>
     </div>
   )
 }
