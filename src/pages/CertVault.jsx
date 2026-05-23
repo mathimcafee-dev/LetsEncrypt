@@ -141,7 +141,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
         <div style={{ padding:'16px 20px', borderBottom:'0.5px solid var(--v2-border)',
           display:'flex', alignItems:'center', gap:10 }}>
           <div style={{ width:34, height:34, borderRadius:9,
-            background: step==='auth' ? 'rgba(124,58,237,0.1)' : 'rgba(124,58,237,0.1)',
+            background: step==='auth' ? '#E8F8F6' : '#E8F8F6',
             display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             {step === 'auth' ? <Lock size={15} color="#E8897A"/> : <Eye size={15} color="#E8897A"/>}
           </div>
@@ -388,8 +388,8 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
               </span>
               {keyEntry.status === 'active' && (
                 <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:9,
-                  color:'#E8897A', background:'rgba(124,58,237,0.07)',
-                  border:'0.5px solid rgba(124,58,237,0.2)', borderRadius:4, padding:'1px 7px', fontWeight:700 }}>
+                  color:'#E8897A', background:'#FDF0EE',
+                  border:'0.5px solid #F2C4BC', borderRadius:4, padding:'1px 7px', fontWeight:700 }}>
                   <Lock size={8}/> VAULT SECURED
                 </span>
               )}
@@ -434,10 +434,10 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
             <button onClick={() => onReveal(keyEntry)}
               style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 12px',
                 fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(124,58,237,0.08)', color:'#E8897A',
-                border:'0.5px solid rgba(124,58,237,0.25)', transition:'all .15s' }}
-              onMouseEnter={e=>e.currentTarget.style.background='rgba(124,58,237,0.14)'}
-              onMouseLeave={e=>e.currentTarget.style.background='rgba(124,58,237,0.08)'}>
+                background:'#FDF0EE', color:'#E8897A',
+                border:'0.5px solid #F2C4BC', transition:'all .15s' }}
+              onMouseEnter={e=>e.currentTarget.style.background='#FAECE7'}
+              onMouseLeave={e=>e.currentTarget.style.background='#FDF0EE'}>
               <Eye size={11}/> Reveal key
             </button>
 
@@ -645,16 +645,16 @@ export default function CertVault({ nav }) {
           marginBottom:24, flexWrap:'wrap', gap:12 }}>
           <div style={{ display:'flex', alignItems:'center', gap:12 }}>
             <div style={{ width:40, height:40, borderRadius:10,
-              background:'linear-gradient(135deg,#E8897A,#6d28d9)',
+              background:'linear-gradient(135deg,#E8897A,#1A2E2C)',
               display:'flex', alignItems:'center', justifyContent:'center',
-              boxShadow:'0 0 0 4px rgba(124,58,237,0.1)' }}>
+              boxShadow:'0 0 0 4px rgba(232,137,122,0.15)' }}>
               <Lock size={18} color="white"/>
             </div>
             <div>
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <h1 className="v2-h1">CertVault Vault</h1>
                 <span style={{ fontSize:9, fontWeight:700, color:'#E8897A',
-                  background:'rgba(124,58,237,0.08)', border:'0.5px solid rgba(124,58,237,0.2)',
+                  background:'#FDF0EE', border:'0.5px solid #F2C4BC',
                   borderRadius:4, padding:'2px 7px', textTransform:'uppercase',
                   letterSpacing:'0.4px' }}>PRO</span>
               </div>
@@ -671,11 +671,11 @@ export default function CertVault({ nav }) {
         </div>
 
         {/* Security strip */}
-        <div style={{ background:'rgba(124,58,237,0.05)', border:'0.5px solid rgba(124,58,237,0.18)',
+        <div style={{ background:'#E8F8F6', border:'0.5px solid #A8E6DE',
           borderRadius:9, padding:'12px 16px', marginBottom:20,
           display:'flex', alignItems:'center', gap:10 }}>
           <Lock size={13} color="#E8897A" style={{ flexShrink:0 }}/>
-          <div style={{ fontSize:11, color:'#6d28d9', fontWeight:500 }}>
+          <div style={{ fontSize:11, color:'#1A7A72', fontWeight:500 }}>
             AES-256-GCM encrypted · Envelope key hierarchy · Immutable audit log ·
             Keys never stored in plaintext
           </div>
