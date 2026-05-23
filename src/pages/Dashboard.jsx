@@ -1205,7 +1205,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   }
 
   const period = cert._order?.period
-  const periodLabel = period ? (period === 12 ? '1 year' : period === 24 ? '2 years' : '3 years') : '1 year'
+  const periodLabel = '1 year'
 
   return (
     <div style={{ background:'white', border:'0.5px solid #e2e8f0', borderRadius:14,

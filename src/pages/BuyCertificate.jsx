@@ -412,20 +412,13 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: 7 }}>
                   Validity period
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {[{y:1,label:'1 year',sub:'Standard'},{y:2,label:'2 years',sub:'Best value'},{y:3,label:'3 years',sub:'Max coverage'}].map(({y,label,sub}) => (
-                    <div key={y} onClick={() => setYears(y)}
-                      style={{ padding: '10px 14px', borderRadius: 7, cursor: 'pointer',
-                        border: years === y ? '1.5px solid #0e7fc0' : '0.5px solid rgba(255,255,255,0.08)',
-                        background: years === y ? 'rgba(14,127,192,0.1)' : 'rgba(255,255,255,0.02)',
-                        transition: 'all 0.12s' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: '#e5e7eb' }}>{label}</span>
-                        {years === y && <span style={{ fontSize: 11, color: '#0e7fc0' }}>✓</span>}
-                      </div>
-                      <div style={{ fontSize: 10, color: '#4b5563', marginTop: 2 }}>{sub}</div>
-                    </div>
-                  ))}
+                <div style={{ padding: '10px 14px', borderRadius: 7,
+                  border: '1.5px solid #0e7fc0', background: 'rgba(14,127,192,0.1)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#e5e7eb' }}>1 year</span>
+                    <span style={{ fontSize: 11, color: '#0e7fc0' }}>✓ Selected</span>
+                  </div>
+                  <div style={{ fontSize: 10, color: '#4b5563', marginTop: 2 }}>12 months · auto-renews before expiry</div>
                 </div>
               </div>
             </div>
