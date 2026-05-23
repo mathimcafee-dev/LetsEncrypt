@@ -633,13 +633,18 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             latest = orders?.[0]
           }
 
-          // Timeout after 4 minutes
-          if (Date.now() - pollStart > 4 * 60 * 1000) {
+          // Timeout after 8 minutes — GGS DNS validation can take up to 5 mins
+          if (Date.now() - pollStart > 8 * 60 * 1000) {
             clearInterval(timer)
             setProgress(p => ({
               ...p, pollTimer: null,
-              steps: updateStep(p.steps, 3, { status: 'active', detail: 'Still validating — GGS may take a few more minutes' })
+              steps: updateStep(p.steps, 3, {
+                status: 'active',
+                detail: 'GGS DNS validation is taking longer than usual. The certificate will issue automatically in the background — check back in a few minutes.'
+              })
             }))
+            // Show a background processing note at the bottom
+            setProgress(p => ({ ...p, backgroundProcessing: true }))
             setBusy(false)
             return
           }
@@ -682,15 +687,20 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               setBusy(false)
             }, 3000)
           } else if (latest?.status === 'dv_pending') {
-            // Still waiting — update detail with time elapsed
             const elapsed = Math.round((Date.now() - pollStart) / 1000)
+            const mins = Math.floor(elapsed / 60)
+            const secs = elapsed % 60
+            const elapsedStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`
             setProgress(p => ({
               ...p,
-              steps: updateStep(p.steps, 3, { status: 'active', detail: `GGS checking DNS… ${elapsed}s elapsed` })
+              steps: updateStep(p.steps, 3, {
+                status: 'active',
+                detail: `Waiting for GGS DNS check… ${elapsedStr} elapsed`
+              })
             }))
           }
         } catch {}
-      }, 5000)
+      }, 2000)
 
       setProgress(p => ({ ...p, pollTimer: timer }))
 
@@ -801,13 +811,22 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               ⏱ GGS DNS validation typically takes 1–3 minutes. This page will update automatically.
             </div>
           )}
-          {!busy && progress.steps.every(s => s.status === 'done') && (
-            <div style={{
-              padding:'8px 14px',
-              borderTop:'1px solid #A8E6DE',
-              fontSize:11,color:'#1A7A72',fontWeight:600,
-            }}>
-              ✓ All steps complete — your certificate has been reissued and dispatched to your server.
+          {!busy && progress.backgroundProcessing && (
+            <div style={{ padding:'10px 14px', borderTop:'1px solid #F0C490',
+              fontSize:11, color:'#854F0B', fontWeight:500,
+              background:'#FAEEDA', display:'flex', alignItems:'flex-start', gap:8 }}>
+              <span style={{ fontSize:13, flexShrink:0 }}>⏳</span>
+              <div>
+                <div style={{ fontWeight:600, marginBottom:2 }}>Processing in the background</div>
+                GGS DNS validation is running. Your certificate will issue and install automatically
+                — you don't need to keep this page open. Check the Fleet view in a few minutes.
+              </div>
+            </div>
+          )}
+          {!busy && !progress.backgroundProcessing && progress.steps.every(s => s.status === 'done') && (
+            <div style={{ padding:'8px 14px', borderTop:'1px solid #A8E6DE',
+              fontSize:11, color:'#1A7A72', fontWeight:600 }}>
+              ✓ All steps complete — your certificate has been {progress.action === 'reissue' ? 'reissued' : 'renewed'} and dispatched to your server.
             </div>
           )}
         </div>
