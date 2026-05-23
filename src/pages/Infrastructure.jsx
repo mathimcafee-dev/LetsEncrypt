@@ -76,6 +76,131 @@ function CertPill({ cert }) {
   )
 }
 
+
+// ── VPS Setup Checklist ──────────────────────────────────────────────
+function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent }) {
+  const steps = [
+    {
+      num: 1,
+      title: 'Connect your DNS provider',
+      desc: 'So SSLVault can auto-add TXT records during certificate validation — required for every cert issuance.',
+      done: hasDns,
+      doneLabel: 'DNS provider connected',
+      pendingLabel: 'No DNS provider yet',
+      action: onAddDns,
+      actionLabel: 'Connect DNS →',
+    },
+    {
+      num: 2,
+      title: 'Issue a certificate',
+      desc: 'Go to your Dashboard, click "+ Issue certificate", enter your domain. DNS auto-validates and cert is issued.',
+      done: true, // always available
+      doneLabel: 'Available any time',
+      pendingLabel: '',
+      action: null,
+      actionLabel: null,
+      always: true,
+    },
+    {
+      num: 3,
+      title: 'Install the agent on your VPS',
+      desc: 'A lightweight daemon that installs certs on nginx/apache and handles auto-renewals — runs 24/7 on your server.',
+      done: hasAgent,
+      doneLabel: hasAgentOnline ? 'Agent online and polling' : 'Agent installed (offline)',
+      pendingLabel: 'No agent installed yet',
+      action: onAddAgent,
+      actionLabel: 'Install agent →',
+    },
+    {
+      num: 4,
+      title: 'Click "Install on this server"',
+      desc: 'In the Dashboard cert detail panel → Actions → Install on server → select your agent. Done — auto-installs and auto-renews forever.',
+      done: hasAgent,
+      doneLabel: 'Agent ready to receive jobs',
+      pendingLabel: 'Complete step 3 first',
+      action: null,
+      actionLabel: null,
+    },
+  ]
+
+  const allDone = hasDns && hasAgent
+  if (allDone) return null // hide when fully set up
+
+  return (
+    <div style={{
+      background: '#fff', border: '1px solid #e8edf2', borderRadius: 12,
+      marginBottom: 24, overflow: 'hidden',
+    }}>
+      {/* Banner */}
+      <div style={{
+        padding: '12px 20px', background: '#f8fafc',
+        borderBottom: '1px solid #e8edf2',
+        display: 'flex', alignItems: 'center', gap: 8,
+      }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b', flexShrink: 0 }} />
+        <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>
+          Complete VPS setup — {[hasDns, hasAgent].filter(Boolean).length} of 2 prerequisites done
+        </span>
+        <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 4 }}>
+          DNS credentials + agent install are both needed for full auto-SSL
+        </span>
+      </div>
+
+      {/* Steps */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
+        {steps.map((step, i) => {
+          const isDone = step.always || step.done
+          return (
+            <div key={step.num} style={{
+              padding: '16px 18px',
+              borderRight: i < steps.length - 1 ? '1px solid #f0f0f0' : 'none',
+              background: isDone ? '#fff' : '#fafafa',
+            }}>
+              {/* Step number + status */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <div style={{
+                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: isDone ? '#10b981' : '#f3f4f6',
+                  fontSize: 11, fontWeight: 700,
+                  color: isDone ? '#fff' : '#9ca3af',
+                }}>
+                  {isDone ? '✓' : step.num}
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: isDone ? '#059669' : '#9ca3af' }}>
+                  {isDone ? step.doneLabel : step.pendingLabel}
+                </span>
+              </div>
+
+              {/* Title */}
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#111', marginBottom: 6, lineHeight: 1.4 }}>
+                {step.title}
+              </div>
+
+              {/* Desc */}
+              <div style={{ fontSize: 11, color: '#6b7280', lineHeight: 1.6, marginBottom: step.action ? 12 : 0 }}>
+                {step.desc}
+              </div>
+
+              {/* Action */}
+              {step.action && !step.done && (
+                <button onClick={step.action} style={{
+                  marginTop: 8,
+                  fontSize: 11, fontWeight: 600, color: '#0e7fc0',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  padding: 0, fontFamily: 'inherit',
+                }}>
+                  {step.actionLabel}
+                </button>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 // ── Install modal ─────────────────────────────────────────────────────
 function InstallModal({ onClose }) {
   const [copied, setCopied] = useState(null)
@@ -459,20 +584,24 @@ export default function Infrastructure({ user }) {
   const [loading, setLoading] = useState(true)
   const [showInstall, setShowInstall] = useState(false)
   const [refreshing,  setRefreshing]  = useState(false)
+  const [dnsCredentials, setDnsCredentials] = useState([])
 
   const load = useCallback(async () => {
     if (!user) return
     setLoading(true)
-    const [{ data: agentData }, { data: certData }] = await Promise.all([
+    const [{ data: agentData }, { data: certData }, { data: dnsData }] = await Promise.all([
       supabase.from('persistent_agents')
         .select('*').eq('user_id', user.id)
         .order('last_seen_at', { ascending:false, nullsFirst:false }),
       supabase.from('certificates')
         .select('id,domain,expires_at,auto_renew_enabled,install_server_id,agent_url,status')
         .eq('user_id', user.id).neq('status','revoked'),
+      supabase.from('dns_credentials')
+        .select('id,provider,label').eq('user_id', user.id).limit(5),
     ])
     setAgents(agentData || [])
     setCerts(certData  || [])
+    setDnsCredentials(dnsData || [])
     setLoading(false)
   }, [user])
 
@@ -493,6 +622,17 @@ export default function Infrastructure({ user }) {
       <div className="v2-container" style={{ maxWidth:920 }}>
 
         {showInstall && <InstallModal onClose={() => setShowInstall(false)}/>}
+
+        {/* VPS Setup Checklist — shown until DNS + agent are both set up */}
+        {!loading && (
+          <SetupChecklist
+            hasDns={dnsCredentials.length > 0}
+            hasAgent={agents.length > 0}
+            hasAgentOnline={agents.some(a => a.last_seen_at && differenceInMinutes(new Date(), new Date(a.last_seen_at)) <= 6)}
+            onAddDns={() => window.location.href = '/dns-providers'}
+            onAddAgent={() => setShowInstall(true)}
+          />
+        )}
 
         {/* Header */}
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
