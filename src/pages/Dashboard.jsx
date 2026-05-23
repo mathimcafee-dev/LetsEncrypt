@@ -1793,7 +1793,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     const { data: { session: s } } = await supabase.auth.getSession()
     setSession(s)
     const [{ data: certsData }, { data: ordersData }] = await Promise.all([
-      supabase.from('certificates').select('*').eq('user_id', user.id).order('expires_at', { ascending:true }),
+      supabase.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending:false }),
       supabase.from('ssl_orders').select('*').eq('user_id', user.id).neq('status', 'active').order('created_at', { ascending:false }),
     ])
     const enriched = await Promise.all((certsData||[]).map(async cert => {
