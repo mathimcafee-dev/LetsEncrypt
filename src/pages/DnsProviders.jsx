@@ -30,6 +30,17 @@ const PROVIDERS = {
     docs: 'https://vercel.com/account/tokens',
     note: 'Token needs DNS record write access.'
   },
+  route53: {
+    name: 'AWS Route 53', mono: 'R53', color: '#FF9900',
+    fields: [
+      { key: 'accessKeyId',     label: 'Access Key ID',     type: 'password', placeholder: 'AKIAIOSFODNN7EXAMPLE', help: 'IAM → Users → Security credentials', optional: false },
+      { key: 'secretAccessKey', label: 'Secret Access Key', type: 'password', placeholder: 'your-secret-key',       help: 'Shown once at creation time', optional: false },
+      { key: 'region',          label: 'Region',            type: 'text',     placeholder: 'us-east-1',             help: 'Usually us-east-1 for Route 53', optional: true },
+      { key: 'hostedZoneId',    label: 'Hosted Zone ID',    type: 'text',     placeholder: 'Z1234567890ABC',        help: 'Optional — auto-detected from domain', optional: true },
+    ],
+    docs: 'https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/access-control-managing-permissions.html',
+    note: 'IAM user needs route53:ChangeResourceRecordSets permission.'
+  },
   godaddy: {
     name: 'GoDaddy', mono: 'GD', color: '#00A4A6',
     fields: [
@@ -46,6 +57,103 @@ const PROVIDERS = {
     ],
     docs: 'https://docs.digitalocean.com/reference/api/',
     note: 'Token needs Read + Write scope.'
+  },
+  namecheap: {
+    name: 'Namecheap', mono: 'NC', color: '#DE3723',
+    fields: [
+      { key: 'apiUser', label: 'API Username', type: 'text',     placeholder: 'your-namecheap-username', help: 'Your Namecheap account username', optional: false },
+      { key: 'apiKey',  label: 'API Key',      type: 'password', placeholder: 'your-namecheap-api-key',  help: 'Profile → Tools → Namecheap API Access', optional: false },
+    ],
+    docs: 'https://www.namecheap.com/support/api/intro/',
+    note: 'Enable API access and whitelist your IP in Namecheap settings.'
+  },
+  porkbun: {
+    name: 'Porkbun', mono: 'PB', color: '#EF6C6C',
+    fields: [
+      { key: 'apiKey',       label: 'API Key',       type: 'password', placeholder: 'pk1_xxxxxxxx', help: 'Account → API Access', optional: false },
+      { key: 'secretApiKey', label: 'Secret API Key', type: 'password', placeholder: 'sk1_xxxxxxxx', help: 'Created alongside API key', optional: false },
+    ],
+    docs: 'https://porkbun.com/api/json/v3/documentation',
+    note: 'Enable API access in your Porkbun account settings.'
+  },
+  gandi: {
+    name: 'Gandi', mono: 'GA', color: '#00B6A0',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'your-gandi-api-key', help: 'Account → Security → API Key', optional: false },
+    ],
+    docs: 'https://api.gandi.net/docs/',
+    note: 'Personal access token from Gandi account settings.'
+  },
+  dnsmadeeasy: {
+    name: 'DNS Made Easy', mono: 'DME', color: '#0072BC',
+    fields: [
+      { key: 'apiKey',    label: 'API Key',    type: 'password', placeholder: 'your-api-key',    help: 'Account → API Credentials', optional: false },
+      { key: 'secretKey', label: 'Secret Key', type: 'password', placeholder: 'your-secret-key', help: 'Created alongside API key', optional: false },
+    ],
+    docs: 'https://dnsmadeeasy.com/integration/restapi/',
+    note: 'API credentials from your DNS Made Easy account.'
+  },
+  azure: {
+    name: 'Azure DNS', mono: 'AZ', color: '#0078D4',
+    fields: [
+      { key: 'subscriptionId', label: 'Subscription ID', type: 'text',     placeholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', help: 'Azure Portal → Subscriptions', optional: false },
+      { key: 'resourceGroup',  label: 'Resource Group',  type: 'text',     placeholder: 'my-resource-group',                    help: 'Resource group containing your DNS zone', optional: false },
+      { key: 'tenantId',       label: 'Tenant ID',       type: 'text',     placeholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', help: 'Azure AD → Properties → Directory ID', optional: false },
+      { key: 'clientId',       label: 'Client ID',       type: 'password', placeholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', help: 'App registration Client ID', optional: false },
+      { key: 'clientSecret',   label: 'Client Secret',   type: 'password', placeholder: 'your-client-secret',                  help: 'App registration → Certificates & secrets', optional: false },
+    ],
+    docs: 'https://docs.microsoft.com/en-us/azure/dns/',
+    note: 'Service principal needs DNS Zone Contributor role.'
+  },
+  googlecloud: {
+    name: 'Google Cloud DNS', mono: 'GCP', color: '#4285F4',
+    fields: [
+      { key: 'projectId',   label: 'Project ID',          type: 'text',     placeholder: 'my-gcp-project',     help: 'Google Cloud Console → Project selector', optional: false },
+      { key: 'credentials', label: 'Service Account JSON', type: 'password', placeholder: '{"type":"service_account",...}', help: 'IAM → Service Accounts → Keys → Create JSON', optional: false },
+    ],
+    docs: 'https://cloud.google.com/dns/docs/reference/v1/',
+    note: 'Service account needs DNS Administrator role.'
+  },
+  hetzner: {
+    name: 'Hetzner DNS', mono: 'HZ', color: '#D50C2D',
+    fields: [
+      { key: 'apiToken', label: 'API Token', type: 'password', placeholder: 'your-hetzner-dns-token', help: 'dns.hetzner.com → API tokens', optional: false },
+    ],
+    docs: 'https://dns.hetzner.com/api-docs/',
+    note: 'Token from Hetzner DNS Console — separate from Cloud API.'
+  },
+  linode: {
+    name: 'Linode / Akamai', mono: 'LN', color: '#00A95C',
+    fields: [
+      { key: 'apiToken', label: 'API Token', type: 'password', placeholder: 'your-linode-api-token', help: 'Profile → API Tokens → Create', optional: false },
+    ],
+    docs: 'https://www.linode.com/docs/api/',
+    note: 'Token needs Domain:Read/Write scope.'
+  },
+  vultr: {
+    name: 'Vultr', mono: 'VU', color: '#007BFC',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'your-vultr-api-key', help: 'Account → API → Enable API', optional: false },
+    ],
+    docs: 'https://www.vultr.com/api/',
+    note: 'Full API key from Vultr account settings.'
+  },
+  bunny: {
+    name: 'Bunny DNS', mono: 'BN', color: '#FF6633',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'your-bunny-api-key', help: 'panel.bunny.net → Account → API', optional: false },
+    ],
+    docs: 'https://docs.bunny.net/reference/dnszonepublic_index',
+    note: 'Account API key from Bunny panel.'
+  },
+  dnsimple: {
+    name: 'DNSimple', mono: 'DS', color: '#1F9B55',
+    fields: [
+      { key: 'apiToken',   label: 'API Token',   type: 'password', placeholder: 'your-dnsimple-token', help: 'Account → API Access Tokens', optional: false },
+      { key: 'accountId',  label: 'Account ID',  type: 'text',     placeholder: '12345',               help: 'Found in account URL or settings', optional: false },
+    ],
+    docs: 'https://developer.dnsimple.com/v2/',
+    note: 'User or account token with domain write access.'
   },
 }
 
