@@ -65,6 +65,9 @@ const W = {
   purpleBd:  '#F2C4BC',
   amber:     '#E8897A',
   amberBg:   '#FDF0EE',
+  mintDk:    '#1A7A72',
+  mintBg:    '#E8F8F6',
+  mintBd:    '#A8E6DE',
   red:       '#dc2626',
   redBg:     '#fef2f2',
 }
@@ -83,7 +86,7 @@ const D = {
 }
 
 // ── Primitives ────────────────────────────────────────────────────────
-function Badge({ children, color = W.teal, bg = W.tealBg, border = W.tealBd }) {
+function Badge({ children, color = W.mintDk, bg = W.mintBg, border = W.mintBd }) {
   return (
     <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11, fontWeight:600, color, background:bg, border:`1px solid ${border}`, borderRadius:6, padding:'3px 10px', fontFamily:MONO, letterSpacing:'0.02em' }}>
       {children}
@@ -91,7 +94,7 @@ function Badge({ children, color = W.teal, bg = W.tealBg, border = W.tealBd }) {
   )
 }
 
-function SectionLabel({ children, color = W.tealDk }) {
+function SectionLabel({ children, color = W.mintDk }) {
   return (
     <div style={{ fontSize:11, fontWeight:700, color, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:14 }}>
       {children}
@@ -119,7 +122,7 @@ function Btn({ label, onClick, primary, dark }) {
   const [h, setH] = useState(false)
   if (primary) return (
     <button onClick={onClick} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ display:'inline-flex', alignItems:'center', gap:7, fontFamily:F, fontWeight:500, fontSize:14, padding:'9px 22px', borderRadius:100, border:'none', cursor:'pointer', background:h?W.tealDk:W.teal, color:'white', transition:'all .15s', letterSpacing:'-0.01em' }}>
+      style={{ display:'inline-flex', alignItems:'center', gap:7, fontFamily:F, fontWeight:600, fontSize:14, padding:'9px 22px', borderRadius:100, border:'none', cursor:'pointer', background:h?'#C0624F':'#E8897A', color:'white', transition:'all .15s', letterSpacing:'-0.01em' }}>
       {label} <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </button>
   )
@@ -165,7 +168,7 @@ function Terminal({ title, lines }) {
         ))}
         <div style={{ marginTop:12, display:'flex', alignItems:'center', gap:6 }}>
           <span style={{ color:D.lt }}>›</span>
-          <span style={{ display:'inline-block', width:7, height:14, background:D.teal, opacity:.7, animation:'blink 1.2s step-end infinite', borderRadius:1 }}/>
+          <span style={{ display:'inline-block', width:7, height:14, background:'#E8897A', opacity:.8, animation:'blink 1.2s step-end infinite', borderRadius:1 }}/>
         </div>
       </div>
     </div>
@@ -330,7 +333,7 @@ export default function Home({ nav }) {
       {/* ── NAV ── */}
       <header style={{ position:'sticky', top:0, zIndex:200, background:'rgba(26,46,44,0.95)', backdropFilter:'blur(28px)', WebkitBackdropFilter:'blur(28px)', borderBottom:'1px solid rgba(255,255,255,0.08)', height:60, display:'flex', alignItems:'center', padding:`0 clamp(16px,4vw,40px)`, justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer', flexShrink:0 }} onClick={() => nav('/')}>
-          <div style={{ width:30, height:30, background:W.teal, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <div style={{ width:30, height:30, background:'#E8897A', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.92)', letterSpacing:'-0.3px' }}>SSLVault</span>
@@ -383,9 +386,9 @@ export default function Home({ nav }) {
             Sign in
           </button>
           <button onClick={() => nav('/auth')}
-            style={{ background:W.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:600, color:'white', padding:'7px 20px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em' }}
+            style={{ background:'#E8897A', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:600, color:'white', padding:'7px 20px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em' }}
             onMouseEnter={e => { e.currentTarget.style.background='#1A7A72'; e.currentTarget.style.boxShadow=`0 4px 20px rgba(14,165,233,0.4)` }}
-            onMouseLeave={e => { e.currentTarget.style.background=D.teal; e.currentTarget.style.boxShadow='none' }}>
+            onMouseLeave={e => { e.currentTarget.style.background='#E8897A'; e.currentTarget.style.boxShadow='none' }}>
             Get started
           </button>
         </div>
@@ -402,13 +405,13 @@ export default function Home({ nav }) {
             {/* Left */}
             <div>
               <div style={{ display:'inline-flex', alignItems:'center', gap:7, border:'1px solid rgba(255,255,255,0.1)', borderRadius:100, padding:'5px 14px', marginBottom:32, background:'rgba(255,255,255,0.03)', backdropFilter:'blur(8px)' }}>
-                <span style={{ width:6, height:6, borderRadius:'50%', background:D.green, boxShadow:`0 0 6px ${D.green}`, animation:'blink 2.4s ease infinite' }}/>
+                <span style={{ width:6, height:6, borderRadius:'50%', background:'#E8897A', boxShadow:`0 0 6px #E8897A44`, animation:'blink 2.4s ease infinite' }}/>
                 <span style={{ fontSize:11.5, fontWeight:500, color:'rgba(255,255,255,0.55)', fontFamily:MONO }}>RFC 8555 · CA/B Forum Compliant · PQC Intelligence</span>
               </div>
 
               <h1 style={{ fontSize:`clamp(36px,5.5vw,68px)`, fontWeight:700, letterSpacing:'-1.5px', lineHeight:1.08, color:'rgba(255,255,255,0.96)', marginBottom:22 }}>
                 Certificate<br/>
-                <span style={{ color:D.teal }}>lifecycle</span><br/>
+                <span style={{ color:'#E8897A' }}>lifecycle</span><br/>
                 management.
               </h1>
 
@@ -428,7 +431,7 @@ export default function Home({ nav }) {
                   { val:'12', label:'PKI bodies tracked' },
                 ].map((m, i) => (
                   <div key={m.label} style={{ flex:1, paddingLeft:i>0?24:0, borderLeft:i>0?'1px solid rgba(255,255,255,0.07)':'none', marginLeft:i>0?24:0 }}>
-                    <div style={{ fontSize:20, fontWeight:600, color:'rgba(255,255,255,0.88)', fontFamily:MONO, letterSpacing:'-0.5px', marginBottom:3 }}>{m.val}</div>
+                    <div style={{ fontSize:20, fontWeight:700, color:'#E8897A', fontFamily:MONO, letterSpacing:'-0.5px', marginBottom:3 }}>{m.val}</div>
                     <div style={{ fontSize:11.5, color:'rgba(255,255,255,0.3)' }}>{m.label}</div>
                   </div>
                 ))}
@@ -473,7 +476,7 @@ export default function Home({ nav }) {
           <div style={{ display:'flex', gap:48, flexShrink:0, animation:'ticker 36s linear infinite', whiteSpace:'nowrap' }}>
             {[...TICKER,...TICKER].map((p,i) => (
               <span key={i} style={{ fontSize:11, fontWeight:600, color:W.muted, letterSpacing:'0.05em', fontFamily:MONO }}>
-                <span style={{ color:W.border2, marginRight:8 }}>◆</span>{p}
+                <span style={{ color:'#E8897A80', marginRight:8 }}>◆</span>{p}
               </span>
             ))}
           </div>
@@ -492,10 +495,10 @@ export default function Home({ nav }) {
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {[
-                  { n:'01', t:'Issue',    d:'Submit to RapidSSL via ACME v2. DNS-01 auto-validated via your provider API.',         color:W.teal   },
-                  { n:'02', t:'Install',  d:'Agent deploys to Nginx/Apache. cPanel UAPI install. Zero SSH after setup.',             color:W.green  },
-                  { n:'03', t:'Monitor',  d:'Expiry tracking, health scoring A–F, CT log abuse detection, CA/B Forum compliance.',  color:W.purple },
-                  { n:'04', t:'Renew',    d:'Auto-renews 30 days before expiry. New cert deployed before old one expires.',         color:W.amber  },
+                  { n:'01', t:'Issue',    d:'Submit to RapidSSL via ACME v2. DNS-01 auto-validated via your provider API.',         color:'#E8897A' },
+                  { n:'02', t:'Install',  d:'Agent deploys to Nginx/Apache. cPanel UAPI install. Zero SSH after setup.',             color:W.teal   },
+                  { n:'03', t:'Monitor',  d:'Expiry tracking, health scoring A–F, CT log abuse detection, CA/B Forum compliance.',  color:W.teal   },
+                  { n:'04', t:'Renew',    d:'Auto-renews 30 days before expiry. New cert deployed before old one expires.',         color:'#E8897A'  },
                 ].map(s => (
                   <div key={s.n} style={{ display:'flex', gap:14, alignItems:'flex-start', padding:'14px 16px', background:W.bg2, border:`1px solid ${W.border}`, borderRadius:10, borderLeft:`3px solid ${s.color}` }}>
                     <div style={{ fontSize:10, fontWeight:800, color:s.color, fontFamily:MONO, width:20, flexShrink:0, marginTop:1 }}>{s.n}</div>
@@ -533,17 +536,17 @@ export default function Home({ nav }) {
           <div style={{ display:'grid', gridTemplateColumns:`repeat(${cols},1fr)`, gap:12 }}>
             {[
               {
-                icon:'⚡', color:W.teal, title:'Certificate issuance',
+                icon:'⚡', color:'#E8897A', title:'Certificate issuance',
                 specs:['DV, OV, EV, Wildcard, SAN','RapidSSL · DigiCert trust chain','ACME v2 · RFC 8555','Issued in < 5 minutes'],
                 badge:'ACME v2',
               },
               {
-                icon:'🤖', color:W.green, title:'Persistent agent',
+                icon:'🤖', color:W.teal, title:'Persistent agent',
                 specs:['systemd daemon · polls every 5 min','Nginx + Apache auto-detect','Config test before reload','Outbound HTTPS only — no firewall changes'],
                 badge:'systemd',
               },
               {
-                icon:'🌐', color:'#3DBFB0', title:'DNS automation',
+                icon:'🌐', color:W.teal, title:'DNS automation',
                 specs:['Cloudflare · Vercel · Route53','Namecheap · GoDaddy · DigitalOcean','Auto TXT/CNAME challenge','Cleanup after DCV completes'],
                 badge:'DNS-01',
               },
@@ -553,27 +556,27 @@ export default function Home({ nav }) {
                 badge:'UAPI',
               },
               {
-                icon:'🔐', color:W.purple, title:'CertVault',
+                icon:'🔐', color:'#E8897A', title:'CertVault',
                 specs:['AES-256-GCM · envelope encryption','Password re-auth before reveal','30-day rotation archive','Immutable audit log → CSV'],
                 badge:'AES-256',
               },
               {
-                icon:'📋', color:W.amber, title:'47-day readiness',
+                icon:'📋', color:'#E8897A', title:'47-day readiness',
                 specs:['Scores every cert 0–100','200d → 100d → 47d mandate timeline','Per-cert automation checklist','Fleet-wide compliance report'],
                 badge:'CA/B 2026',
               },
               {
-                icon:'🔍', color:W.red, title:'Discovery & monitoring',
+                icon:'🔍', color:W.teal, title:'Discovery & monitoring',
                 specs:['CT log scan via crt.sh','CT abuse monitor — unknown CAs','SSL health score A+ to F','HSTS · CAA · TLS 1.3 checks'],
                 badge:'CT Logs',
               },
               {
-                icon:'📈', color:'#1A7A72', title:'CA intelligence',
+                icon:'📈', color:W.tealDk, title:'CA intelligence',
                 specs:['DigiCert CertCentral sync','Sectigo SCM portfolio sync','Shadow IT detection','Policy engine · fleet compliance'],
                 badge:'Multi-CA',
               },
               {
-                icon:'🏛', color:'#3DBFB0', title:'Industry Intelligence',
+                icon:'🏛', color:W.teal, title:'Industry Intelligence',
                 specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker (ML-KEM, ML-DSA)'],
                 badge:'PKI Hub',
               },
@@ -610,7 +613,7 @@ export default function Home({ nav }) {
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <FadeUp>
             <div style={{ textAlign:'center', marginBottom:52 }}>
-              <SectionLabel color={W.purple}>Security controls</SectionLabel>
+              <SectionLabel color='#E8897A'>Security controls</SectionLabel>
               <H2 style={{ maxWidth:560, margin:'0 auto 14px' }}>Enterprise PKI controls. Not an afterthought.</H2>
               <Body style={{ maxWidth:500, margin:'0 auto' }}>CertVault and 47-Day Readiness are built into every account — not a paid add-on.</Body>
             </div>
@@ -649,7 +652,7 @@ export default function Home({ nav }) {
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
                 {[
-                  { spec:'AES-256-GCM',      title:'Key encryption',    color:W.purple, desc:'DEK wrapped with KEK. Keys never in plaintext.' },
+                  { spec:'AES-256-GCM',      title:'Key encryption',    color:'#E8897A', desc:'DEK wrapped with KEK. Keys never in plaintext.' },
                   { spec:'RFC 8555',          title:'ACME v2',           color:W.teal,   desc:'DNS-01 challenge. Auto-validated via provider API.' },
                   { spec:'CT monitoring',     title:'Cert transparency', color:W.green,  desc:'crt.sh queries for every cert ever issued.' },
                   { spec:'CAA + HSTS',        title:'DNS security',      color:W.amber,  desc:'CAA prevents unauthorised CA issuance.' },
@@ -670,12 +673,12 @@ export default function Home({ nav }) {
           <FadeUp>
             <Card style={{ background:W.bg }}>
               <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:28 }}>
-                <div style={{ width:8, height:8, borderRadius:'50%', background:W.red, animation:'blink 2s ease infinite' }}/>
+                <div style={{ width:8, height:8, borderRadius:'50%', background:'#E8897A', animation:'blink 2s ease infinite' }}/>
                 <span style={{ fontSize:13, fontWeight:700, color:W.heading }}>CA/B Forum maximum validity mandate — action required now</span>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:isMobile?20:0 }}>
                 {[
-                  { date:'March 15, 2026', limit:'200 days', status:'IMMINENT', color:W.red,
+                  { date:'March 15, 2026', limit:'200 days', status:'IMMINENT', color:'#E8897A',
                     action:'Certificates issued with validity > 200 days will be rejected by all major browsers. Audit your fleet immediately.' },
                   { date:'March 15, 2027', limit:'100 days', status:'UPCOMING', color:W.amber,
                     action:'Manual renewal every 100 days is operationally unsustainable. Automation becomes a hard requirement.' },
@@ -828,7 +831,7 @@ export default function Home({ nav }) {
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:16, marginBottom:20 }}>
             {[
               {
-                icon:'🏛', color:'#60a5fa', title:'CA Trust Store',
+                icon:'🏛', color:'#3DBFB0', title:'CA Trust Store',
                 sub:'6,200+ root & intermediate CAs',
                 desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert. PEM download.',
                 badge:'CCADB Live',
@@ -891,7 +894,7 @@ export default function Home({ nav }) {
               </div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', flexShrink:0 }}>
                 {[['ML-KEM','FIPS 203'],['ML-DSA','FIPS 204'],['SLH-DSA','FIPS 205']].map(([alg, fips]) => (
-                  <div key={alg} style={{ background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.2)', borderRadius:8, padding:'7px 12px', textAlign:'center' }}>
+                  <div key={alg} style={{ background:'#E8F8F6', border:'1px solid #A8E6DE', borderRadius:8, padding:'7px 12px', textAlign:'center' }}>
                     <div style={{ fontSize:12, fontWeight:700, color:'#3DBFB0', fontFamily:MONO }}>{alg}</div>
                     <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', marginTop:2 }}>{fips}</div>
                   </div>
@@ -943,7 +946,7 @@ export default function Home({ nav }) {
                   <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                     <span style={{ fontSize:16 }}>🔗</span>
                     <span style={{ fontSize:13, fontWeight:600, color:'rgba(255,255,255,0.85)', fontFamily:MONO }}>CertBind</span>
-                    <span style={{ fontSize:10, fontWeight:700, color:'rgba(14,165,233,0.9)', background:'rgba(14,165,233,0.1)', border:'1px solid rgba(14,165,233,0.2)', borderRadius:4, padding:'2px 8px', fontFamily:MONO }}>ACTIVE</span>
+                    <span style={{ fontSize:10, fontWeight:700, color:'#1A7A72', background:'#E8F8F6', border:'1px solid #A8E6DE', borderRadius:4, padding:'2px 8px', fontFamily:MONO }}>ACTIVE</span>
                   </div>
                   <span style={{ fontSize:11, color:'rgba(255,255,255,0.28)', fontFamily:MONO }}>4/4 domains bound</span>
                 </div>
@@ -956,7 +959,7 @@ export default function Home({ nav }) {
                   { n:'04', label:'Multi-Node Consistency',    status:'7/7 NODES', color:'#3DBFB0', desc:'All load balancer nodes serving correct certificate' },
                 ].map(l => (
                   <div key={l.n} style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:10, padding:'12px 16px', display:'flex', gap:12, alignItems:'flex-start' }}>
-                    <div style={{ width:24, height:24, borderRadius:6, background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:800, color:'rgba(16,185,129,0.8)', fontFamily:MONO, flexShrink:0 }}>{l.n}</div>
+                    <div style={{ width:24, height:24, borderRadius:6, background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:800, color:'#1A7A72', fontFamily:MONO, flexShrink:0 }}>{l.n}</div>
                     <div style={{ flex:1 }}>
                       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:4 }}>
                         <span style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.8)' }}>{l.label}</span>
@@ -1044,12 +1047,12 @@ export default function Home({ nav }) {
                   { name:'Keyfactor Command',  price:'$75–200k/yr', notes:'Mid-market · Complex setup · No free tier', highlight:false },
                   { name:'SSLVault CLM',       price:'Partner rates', notes:'Full CLM · Agent + cPanel + DNS · All cert types', highlight:true },
                 ].map(c => (
-                  <div key={c.name} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 16px', background:c.highlight?W.tealBg:W.bg2, border:`1px solid ${c.highlight?W.tealBd:W.border}`, borderRadius:10 }}>
+                  <div key={c.name} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 16px', background:c.highlight?'#FDF0EE':W.bg2, border:`1px solid ${c.highlight?'#F2C4BC':W.border}`, borderRadius:10 }}>
                     <div style={{ flex:1 }}>
-                      <div style={{ fontSize:13, fontWeight:700, color:c.highlight?W.teal:W.heading }}>{c.name}</div>
+                      <div style={{ fontSize:13, fontWeight:700, color:c.highlight?'#E8897A':W.heading }}>{c.name}</div>
                       <div style={{ fontSize:11.5, color:W.muted, marginTop:3 }}>{c.notes}</div>
                     </div>
-                    <div style={{ fontSize:14, fontWeight:700, color:c.highlight?W.teal:W.muted, fontFamily:MONO, whiteSpace:'nowrap' }}>{c.price}</div>
+                    <div style={{ fontSize:14, fontWeight:700, color:c.highlight?'#E8897A':W.muted, fontFamily:MONO, whiteSpace:'nowrap' }}>{c.price}</div>
                   </div>
                 ))}
 
@@ -1079,12 +1082,12 @@ export default function Home({ nav }) {
       <section style={{ background:W.bg2, padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:`1px solid ${W.border}` }}>
         <div style={{ maxWidth:680, margin:'0 auto', textAlign:'center' }}>
           <FadeUp>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:7, border:`1px solid ${W.tealBd}`, borderRadius:100, padding:'5px 14px', marginBottom:28, background:W.tealBg }}>
-              <span style={{ width:6, height:6, borderRadius:'50%', background:W.teal, animation:'blink 2.4s ease infinite' }}/>
-              <span style={{ fontSize:11.5, fontWeight:600, color:W.teal, fontFamily:MONO }}>Production-ready · RFC 8555 · CA/B Forum 2026 compliant</span>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:7, border:`1px solid #F2C4BC`, borderRadius:100, padding:'5px 14px', marginBottom:28, background:'#FDF0EE' }}>
+              <span style={{ width:6, height:6, borderRadius:'50%', background:'#E8897A', animation:'blink 2.4s ease infinite' }}/>
+              <span style={{ fontSize:11.5, fontWeight:600, color:'#E8897A', fontFamily:MONO }}>Production-ready · RFC 8555 · CA/B Forum 2026 compliant</span>
             </div>
             <H2 style={{ fontSize:'clamp(28px,5vw,48px)', letterSpacing:'-1.2px', marginBottom:18 }}>
-              Ready to automate your<br/>certificate lifecycle?
+              Ready to automate your<br/><span style={{ color:'#E8897A' }}>certificate lifecycle?</span>
             </H2>
             <Body style={{ maxWidth:460, margin:'0 auto 36px' }}>
               Issue, monitor, and auto-renew SSL certificates across every server with enterprise-grade PKI controls — CertVault, 47-day readiness, and CA intelligence included.
@@ -1096,7 +1099,7 @@ export default function Home({ nav }) {
             <div style={{ display:'flex', gap:20, justifyContent:'center', flexWrap:'wrap' }}>
               {['RapidSSL · DigiCert trust chain','RFC 8555 · AES-256-GCM','CA/B Forum 2026 ready'].map(t => (
                 <span key={t} style={{ fontSize:12, color:W.muted, display:'flex', alignItems:'center', gap:6 }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={W.green} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={W.teal} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                   {t}
                 </span>
               ))}
@@ -1134,7 +1137,7 @@ export default function Home({ nav }) {
           </div>
           <div style={{ borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:24, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
             <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-              <div style={{ width:22, height:22, background:D.teal, borderRadius:5, display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <div style={{ width:22, height:22, background:'#E8897A', borderRadius:5, display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </div>
               <span style={{ fontSize:13, fontWeight:600, color:'rgba(255,255,255,0.8)' }}>SSLVault</span>
