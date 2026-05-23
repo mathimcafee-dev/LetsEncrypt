@@ -416,12 +416,10 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
                 <span style={{ fontSize:11, fontWeight:600, color:isCurrent?ACCENT:'var(--v2-text)' }}>
                   {MONTHS_S[mi]}
                 </span>
-                {m.certs.length>0 && (
-                  <span style={{ fontSize:10, fontWeight:600,
-                    color:m.expired>0?RED:m.warning>0?AMBER:GREEN }}>
-                    {m.certs.length}
-                  </span>
-                )}
+                <span style={{ fontSize:10, fontWeight:600,
+                  color: m.certs.length===0 ? 'var(--v2-text-3)' : m.expired>0?RED:m.warning>0?AMBER:GREEN }}>
+                  {m.certs.length}
+                </span>
               </div>
               {/* Micro pixel grid */}
               <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:1 }}>
