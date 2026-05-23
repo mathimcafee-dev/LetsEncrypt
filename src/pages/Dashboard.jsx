@@ -1867,6 +1867,156 @@ function EmbedTab({ cert }) {
     </div>
   )
 }
+function DomainGroup({ primary, versions, index, selected, onSelect }) {
+  const [expanded, setExpanded] = React.useState(false)
+  const hasVersions = versions.length > 1
+  const days = daysLeft(primary.expires_at)
+  const s    = statusOf(days, primary.status)
+  const initials = primary.domain.replace(/^www\./, '').slice(0,2).toUpperCase()
+  const dotColor = s.dot==='green'?'#16a34a':s.dot==='amber'?'#E8897A':s.dot==='red'?'#dc2626':'#d4d4d4'
+  const iconBg   = s.dot==='green'?'#1A7A72':s.dot==='amber'?'#E8897A':s.dot==='red'?'#dc2626':'#64748b'
+  const isSelected = selected === primary.id
+
+  return (
+    <div style={{ background:'var(--v2-surface)', border:`0.5px solid ${isSelected?'#3DBFB0':'var(--v2-border)'}`,
+      borderRadius:12, overflow:'hidden', transition:'border-color 0.15s' }}>
+
+      {/* Primary row */}
+      <div onClick={() => onSelect(primary.id)}
+        style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 14px',
+          cursor:'pointer', transition:'background 0.15s' }}
+        onMouseEnter={e => e.currentTarget.style.background='var(--v2-bg)'}
+        onMouseLeave={e => e.currentTarget.style.background='transparent'}>
+        <span style={{ fontSize:11, color:'var(--v2-text-3)', fontWeight:600, minWidth:16, textAlign:'right' }}>{index}</span>
+        <div style={{ position:'relative', flexShrink:0 }}>
+          <div style={{ width:32, height:32, borderRadius:8, background:iconBg,
+            display:'flex', alignItems:'center', justifyContent:'center',
+            fontSize:10, fontWeight:700, color:'white', letterSpacing:0.5 }}>{initials}</div>
+          <span style={{ position:'absolute', bottom:-1, right:-1, width:8, height:8,
+            borderRadius:'50%', background:dotColor, border:'2px solid var(--v2-surface)' }}/>
+        </div>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2, flexWrap:'wrap' }}>
+            <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace', color:'var(--v2-text-1)' }}>{primary.domain}</span>
+            <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20,
+              background: s.dot==='green'?'#E1F5EE':s.dot==='amber'?'#FAEEDA':'#FCEBEB',
+              color: s.dot==='green'?'#0F6E56':s.dot==='amber'?'#854F0B':'#A32D2D' }}>
+              {days != null ? `${days}d left` : primary.status}
+            </span>
+            {primary._healthGrade && (
+              <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:4,
+                background:primary._healthGrade==='A'||primary._healthGrade==='A+'?'#E1F5EE':primary._healthGrade==='B'?'#FAEEDA':'#FCEBEB',
+                color:primary._healthGrade==='A'||primary._healthGrade==='A+'?'#0F6E56':primary._healthGrade==='B'?'#854F0B':'#A32D2D' }}>
+                {primary._healthGrade}
+              </span>
+            )}
+            {hasVersions && (
+              <span style={{ fontSize:10, fontWeight:500, padding:'2px 7px', borderRadius:20,
+                background:'#FAEEDA', color:'#854F0B' }}>
+                {versions.length} versions
+              </span>
+            )}
+          </div>
+          <div style={{ fontSize:11, color:'var(--v2-text-3)', display:'flex', gap:6, flexWrap:'wrap', alignItems:'center' }}>
+            <span>Expires {primary.expires_at ? new Date(primary.expires_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}</span>
+            <span>·</span>
+            <span style={{ background:'var(--v2-bg)', padding:'1px 7px', borderRadius:20, fontSize:10,
+              color:'var(--v2-text-2)', border:'0.5px solid var(--v2-border)', fontWeight:500 }}>
+              {primary.cert_type || primary.issuer || 'RapidSSL Standard'}
+            </span>
+            <span>·</span>
+            <span>Issued {primary.issued_at ? new Date(primary.issued_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}</span>
+          </div>
+          {primary.install_method && (
+            <div style={{ display:'flex', gap:6, marginTop:4 }}>
+              <span style={{ fontSize:10, padding:'2px 8px', borderRadius:20,
+                background: primary.install_method==='cpanel'?'#F5EFE0':'#E8F8F6',
+                color: primary.install_method==='cpanel'?'#8B6914':'#0F6E56',
+                border:`0.5px solid ${primary.install_method==='cpanel'?'#E8D88E':'#A8E6DE'}`,
+                display:'flex', alignItems:'center', gap:3 }}>
+                {primary.install_method==='cpanel' ? '🌐 cPanel' : '🖥 VPS'}
+              </span>
+            </div>
+          )}
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
+          {hasVersions && (
+            <button onClick={e => { e.stopPropagation(); setExpanded(!expanded) }}
+              style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)', borderRadius:6,
+                padding:'4px 8px', fontSize:10, color:'var(--v2-text-2)', cursor:'pointer',
+                display:'flex', alignItems:'center', gap:3, fontFamily:'inherit' }}>
+              {expanded ? '▲ Hide' : '▼ Versions'}
+            </button>
+          )}
+          <ChevronRight size={14} style={{ color:'var(--v2-text-3)', flexShrink:0 }}/>
+        </div>
+      </div>
+
+      {/* Validity bar */}
+      {days != null && (
+        <div style={{ height:2, background:'var(--v2-bg)' }}>
+          <div style={{ width:`${Math.min(100, Math.max(0, (days/398)*100))}%`, height:'100%',
+            background: s.dot==='green'?'#3DBFB0':s.dot==='amber'?'#E8897A':'#dc2626' }}/>
+        </div>
+      )}
+
+      {/* Versions panel — expands when multiple certs exist for domain */}
+      {hasVersions && expanded && (
+        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-bg)', padding:'10px 14px 12px' }}>
+          <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+            letterSpacing:'0.5px', marginBottom:8 }}>Certificate versions · {versions.length} total</div>
+          <div style={{ display:'flex', flexDirection:'column', gap:5 }}>
+            {versions.map((v, i) => {
+              const vDays = daysLeft(v.expires_at)
+              const isCurrent = i === 0
+              return (
+                <div key={v.id} onClick={() => onSelect(v.id)}
+                  style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 12px',
+                    background: selected===v.id ? '#E8F8F6' : 'var(--v2-surface)',
+                    border:`0.5px solid ${selected===v.id?'#3DBFB0':'var(--v2-border)'}`,
+                    borderRadius:8, cursor:'pointer', opacity: isCurrent ? 1 : 0.75 }}
+                  onMouseEnter={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-bg)' }}
+                  onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background=isCurrent?'var(--v2-surface)':'var(--v2-surface)' }}>
+                  <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20, flexShrink:0,
+                    background: isCurrent ? '#E1F5EE' : 'var(--v2-bg)',
+                    color: isCurrent ? '#0F6E56' : 'var(--v2-text-3)' }}>
+                    {isCurrent ? 'Current' : 'Previous'}
+                  </span>
+                  <span style={{ fontSize:11, fontFamily:'monospace', color:'var(--v2-text-2)', flex:1, minWidth:0 }}>
+                    GGS #{v.ggs_order_id || '—'}
+                  </span>
+                  <span style={{ fontSize:11, color:'var(--v2-text-3)', flexShrink:0 }}>
+                    Issued {v.issued_at ? new Date(v.issued_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}
+                  </span>
+                  <span style={{ fontSize:11, color:'var(--v2-text-3)', flexShrink:0 }}>
+                    Expires {v.expires_at ? new Date(v.expires_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}
+                  </span>
+                  {isCurrent && (
+                    <span style={{ fontSize:10, padding:'2px 7px', borderRadius:20,
+                      background:'#E1F5EE', color:'#0F6E56', flexShrink:0 }}>
+                      Installed
+                    </span>
+                  )}
+                  {!isCurrent && (
+                    <span style={{ fontSize:10, padding:'2px 7px', borderRadius:20,
+                      background:'var(--v2-bg)', color:'var(--v2-text-3)', flexShrink:0,
+                      border:'0.5px solid var(--v2-border)' }}>
+                      Superseded
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          <div style={{ marginTop:8, fontSize:10, color:'var(--v2-text-3)' }}>
+            {versions.length} certificates in GGS · All valid until natural expiry
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function CertRow({ cert, selected, onClick, index }) {
   const days = daysLeft(cert.expires_at)
   const s    = statusOf(days, cert.status)
@@ -2083,11 +2233,13 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   const issuedCerts   = certs.filter(c => c.source === 'gogetssl' || c.source === 'rapidssl' || !c.source)
   const importedCerts = certs.filter(c => c.source && c.source !== 'gogetssl' && c.source !== 'rapidssl')
 
+  // Total cert count (all rows from GGS)
   const total    = issuedCerts.length
   const healthy  = issuedCerts.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'active' && d != null && d >= 30 }).length
   const expiring = issuedCerts.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'active' && d != null && d >= 0 && d < 30 }).length
   const expired  = issuedCerts.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'revoked' || c.status === 'cancelled' || (d != null && d < 0) }).length
 
+  // All matching certs after filter+search
   const visible = issuedCerts.filter(c => {
     const d = daysLeft(c.expires_at); const s = statusOf(d, c.status)
     if (filter === 'healthy'  && s.cls !== 'green') return false
@@ -2096,6 +2248,23 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     if (search && !c.domain.toLowerCase().includes(search.toLowerCase())) return false
     return true
   })
+
+  // Group by domain — each domain has one primary (latest issued_at) + older versions
+  const domainGroups = (() => {
+    const groups = {}
+    for (const c of visible) {
+      if (!groups[c.domain]) groups[c.domain] = []
+      groups[c.domain].push({ ...c, _healthGrade: healthScores[c.domain]?.grade || null })
+    }
+    // Sort each group: newest first
+    for (const d in groups) {
+      groups[d].sort((a, b) => new Date(b.issued_at) - new Date(a.issued_at))
+    }
+    // Return as array of { primary, versions } sorted by primary issued_at desc
+    return Object.values(groups)
+      .map(versions => ({ primary: versions[0], versions }))
+      .sort((a, b) => new Date(b.primary.issued_at) - new Date(a.primary.issued_at))
+  })()
 
   const visibleWithHealth = visible.map(c => ({
     ...c,
@@ -2120,7 +2289,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 </span>
               )}
             </h1>
-            <p style={{ fontSize:12, color:'#94a3b8' }}>{user.email} · {total} certificate{total!==1?'s':''}</p>
+            <p style={{ fontSize:12, color:'#94a3b8' }}>{user.email} · {domainGroups.length} domain{domainGroups.length!==1?'s':''} · {total} certificate{total!==1?'s':''}</p>
           </div>
           {/* Share SSL status button */}
           <button
@@ -2260,9 +2429,15 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 )}
               </div>
             ) : (
-              visible.map((cert, idx) => (
-                <CertRow key={cert.id} index={idx + 1} cert={{...cert, _healthGrade: healthScores[cert.domain]?.grade || null}} selected={selected===cert.id}
-                  onClick={() => setSelected(selected===cert.id ? null : cert.id)}/>
+              domainGroups.map(({ primary, versions }, idx) => (
+                <DomainGroup
+                  key={primary.domain}
+                  index={idx + 1}
+                  primary={primary}
+                  versions={versions}
+                  selected={selected}
+                  onSelect={id => setSelected(selected === id ? null : id)}
+                />
               ))
             )}
           </div>
