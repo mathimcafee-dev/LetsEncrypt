@@ -346,15 +346,15 @@ export default function Home({ nav }) {
           ))}
           {/* Industry Intelligence dropdown */}
           <div style={{ position:'relative' }}
-            onMouseEnter={e => { const d = e.currentTarget.querySelector('.intel-drop'); if(d) d.style.display='block' }}
-            onMouseLeave={e => { const d = e.currentTarget.querySelector('.intel-drop'); if(d) d.style.display='none' }}>
+            onMouseEnter={e => { const d = e.currentTarget.querySelector('.intel-drop'); if(d) { d.style.opacity='1'; d.style.transform='translateX(-50%) translateY(0)'; d.style.pointerEvents='auto' } }}
+            onMouseLeave={e => { const d = e.currentTarget.querySelector('.intel-drop'); if(d) { d.style.opacity='0'; d.style.transform='translateX(-50%) translateY(-6px)'; d.style.pointerEvents='none' } }}>
             <button style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:400, color:'rgba(255,255,255,0.52)', padding:'5px 16px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em', display:'flex', alignItems:'center', gap:4 }}
               onMouseEnter={e => { e.currentTarget.style.color='rgba(255,255,255,0.92)'; e.currentTarget.style.background='rgba(255,255,255,0.09)' }}
               onMouseLeave={e => { e.currentTarget.style.color='rgba(255,255,255,0.52)'; e.currentTarget.style.background='none' }}>
               Industry Intelligence
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <div className="intel-drop" style={{ display:'none', position:'absolute', top:'calc(100% + 6px)', left:'50%', transform:'translateX(-50%)', background:'rgba(15,15,20,0.96)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:12, padding:'6px', minWidth:210, backdropFilter:'blur(16px)', zIndex:300, boxShadow:'0 16px 40px rgba(0,0,0,0.4)' }}>
+            <div className="intel-drop" style={{ position:'absolute', top:'calc(100% + 8px)', left:'50%', transform:'translateX(-50%) translateY(-6px)', background:'rgba(15,15,20,0.96)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:12, padding:'6px', minWidth:210, backdropFilter:'blur(16px)', zIndex:300, boxShadow:'0 16px 40px rgba(0,0,0,0.4)', opacity:0, pointerEvents:'none', transition:'opacity .2s cubic-bezier(.16,1,.3,1), transform .2s cubic-bezier(.16,1,.3,1)' }}>
               {[
                 { label:'CA Trust Store', path:'/ca-trust-explorer', desc:'6,200+ root & intermediate CAs' },
                 { label:'CAB Forum',       path:'/cab-forum',         desc:'Ballots, timelines & compliance' },
