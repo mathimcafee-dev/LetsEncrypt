@@ -1,7 +1,7 @@
-// CertBind.jsx v4 — Simplified: "Is my cert live on my server?"
-import { useState, useEffect, useCallback } from 'react'
+// CertBind.jsx v5 — Professional security monitoring design
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { RefreshCw, CheckCircle, XCircle, AlertCircle, Clock, Shield, Server, Globe } from 'lucide-react'
+import { RefreshCw, CheckCircle2, XCircle, AlertTriangle, Clock, Server, Globe, Wifi, Shield, ChevronRight } from 'lucide-react'
 
 const SB = 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -15,87 +15,130 @@ async function callCertBind(action, extra = {}) {
   return res.json()
 }
 
-function statusConfig(status) {
-  switch (status) {
-    case 'bound':          return { icon: CheckCircle, color: '#10b981', bg: '#f0fdf4', border: '#bbf7d0', label: 'Live & Verified',    desc: 'Certificate is active on your server' }
-    case 'key_mismatch':   return { icon: XCircle,     color: '#ef4444', bg: '#fef2f2', border: '#fecaca', label: 'Key Mismatch',       desc: 'Wrong private key on server — reinstall needed' }
-    case 'cert_mismatch':  return { icon: XCircle,     color: '#ef4444', bg: '#fef2f2', border: '#fecaca', label: 'Wrong Certificate',  desc: 'Server is serving a different certificate' }
-    case 'chain_anomaly':  return { icon: AlertCircle, color: '#8b5cf6', bg: '#faf5ff', border: '#ddd6fe', label: 'Chain Issue',        desc: 'Possible SSL inspection proxy detected' }
-    case 'partial_deploy': return { icon: AlertCircle, color: '#f59e0b', bg: '#fffbeb', border: '#fde68a', label: 'Partial Deploy',     desc: 'Some servers have the old certificate' }
-    case 'unreachable':    return { icon: AlertCircle, color: '#f59e0b', bg: '#fffbeb', border: '#fde68a', label: 'Unreachable',        desc: 'Could not connect to check' }
-    case 'pending':        return { icon: Clock,        color: '#6b7280', bg: '#f9fafb', border: '#e5e7eb', label: 'Checking…',         desc: 'Verification in progress' }
-    default:               return { icon: Clock,        color: '#6b7280', bg: '#f9fafb', border: '#e5e7eb', label: 'Not Checked',       desc: 'Click Run Check to verify' }
-  }
+const STATUS_MAP = {
+  bound:          { label: 'Live',          color: '#10b981', dot: '#10b981', bg: 'rgba(16,185,129,0.08)',  border: 'rgba(16,185,129,0.2)',  icon: CheckCircle2,    priority: 0 },
+  key_mismatch:   { label: 'Key Mismatch',  color: '#ef4444', dot: '#ef4444', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
+  cert_mismatch:  { label: 'Wrong Cert',    color: '#ef4444', dot: '#ef4444', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
+  chain_anomaly:  { label: 'Chain Issue',   color: '#a78bfa', dot: '#a78bfa', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.2)', icon: AlertTriangle,   priority: 2 },
+  partial_deploy: { label: 'Partial',       color: '#f59e0b', dot: '#f59e0b', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
+  unreachable:    { label: 'Unreachable',   color: '#f59e0b', dot: '#f59e0b', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
+  pending:        { label: 'Checking',      color: '#6b7280', dot: '#6b7280', bg: 'rgba(107,114,128,0.06)', border: 'rgba(107,114,128,0.15)', icon: Clock,           priority: 1 },
+  null:           { label: 'Not checked',   color: '#6b7280', dot: '#374151', bg: 'rgba(107,114,128,0.04)', border: 'rgba(107,114,128,0.1)',  icon: Clock,           priority: 1 },
 }
 
-function CertCard({ cert, onCheck, checking }) {
-  const cfg = statusConfig(cert.certbind_status)
-  const Icon = cfg.icon
-  const hasAgent = !!cert.agent_id
+function getStatus(s) { return STATUS_MAP[s] || STATUS_MAP['null'] }
+
+function PulseDot({ color, animate }) {
+  return (
+    <span style={{ position: 'relative', display: 'inline-flex', width: 8, height: 8, flexShrink: 0 }}>
+      {animate && (
+        <span style={{
+          position: 'absolute', inset: 0, borderRadius: '50%',
+          background: color, opacity: 0.4,
+          animation: 'pulse-ring 1.5s cubic-bezier(0.4,0,0.6,1) infinite'
+        }} />
+      )}
+      <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, display: 'block' }} />
+    </span>
+  )
+}
+
+function CertRow({ cert, onCheck, checking }) {
+  const s = getStatus(cert.certbind_status)
+  const Icon = s.icon
+  const isChecking = checking === cert.id
+  const canCheck = !!cert.install_method
+  const isLive = cert.certbind_status === 'bound'
+  const isAlert = ['key_mismatch','cert_mismatch','chain_anomaly','partial_deploy','unreachable'].includes(cert.certbind_status)
+
   const checkedAt = cert.certbind_checked_at
-    ? new Date(cert.certbind_checked_at).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })
+    ? (() => {
+        const d = new Date(cert.certbind_checked_at)
+        const mins = Math.round((Date.now() - d.getTime()) / 60000)
+        if (mins < 1) return 'just now'
+        if (mins < 60) return `${mins}m ago`
+        if (mins < 1440) return `${Math.round(mins/60)}h ago`
+        return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short' })
+      })()
     : null
-  const installMethod = cert.install_method
 
   return (
     <div style={{
-      background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12,
-      overflow: 'hidden', transition: 'box-shadow .15s',
-    }}>
-      {/* Header */}
-      <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid #f3f4f6' }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 600, fontSize: 14, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {cert.domain}
-          </div>
-          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-            {installMethod === 'agent' && <><Server size={10} /> VPS</>}
-            {installMethod === 'cpanel' && <><Globe size={10} /> cPanel</>}
-            {!installMethod && <><Shield size={10} /> Not installed</>}
-            {checkedAt && <span>· {checkedAt}</span>}
-          </div>
+      display: 'grid',
+      gridTemplateColumns: '16px 1fr auto auto auto',
+      alignItems: 'center',
+      gap: 16,
+      padding: '14px 20px',
+      borderRadius: 10,
+      background: isAlert ? 'rgba(239,68,68,0.03)' : '#fff',
+      border: `1px solid ${isAlert ? 'rgba(239,68,68,0.15)' : '#f0f0f0'}`,
+      transition: 'border-color .15s, box-shadow .15s',
+      cursor: 'default',
+    }}
+    onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06)'}
+    onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+    >
+      {/* Status dot */}
+      <PulseDot color={s.dot} animate={isLive} />
+
+      {/* Domain + meta */}
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontWeight: 600, fontSize: 14, color: '#0a0a0a', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {cert.domain}
         </div>
-        {/* Status badge */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          padding: '5px 10px', borderRadius: 20,
-          background: cfg.bg, border: `1px solid ${cfg.border}`,
-          fontSize: 11, fontWeight: 600, color: cfg.color,
-          flexShrink: 0
-        }}>
-          <Icon size={12} />
-          {cfg.label}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
+          {cert.install_method === 'agent' && (
+            <span style={{ display:'flex', alignItems:'center', gap:3, fontSize:11, color:'#6b7280' }}>
+              <Server size={10} /> VPS Agent
+            </span>
+          )}
+          {cert.install_method === 'cpanel' && (
+            <span style={{ display:'flex', alignItems:'center', gap:3, fontSize:11, color:'#6b7280' }}>
+              <Globe size={10} /> cPanel
+            </span>
+          )}
+          {!cert.install_method && (
+            <span style={{ fontSize:11, color:'#9ca3af' }}>Not installed</span>
+          )}
+          {checkedAt && (
+            <span style={{ fontSize:11, color:'#9ca3af' }}>· {checkedAt}</span>
+          )}
         </div>
       </div>
 
-      {/* Body */}
-      <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-        <div style={{ fontSize: 12, color: '#6b7280' }}>
-          {cert.certbind_status
-            ? cfg.desc
-            : installMethod
-              ? 'Run a check to verify the certificate is live on your server'
-              : 'Install the certificate on a server first, then run a check'
-          }
-        </div>
-        <button
-          onClick={() => onCheck(cert)}
-          disabled={checking === cert.id || !installMethod}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '7px 14px', borderRadius: 7,
-            background: installMethod ? '#10b981' : '#f3f4f6',
-            color: installMethod ? '#fff' : '#9ca3af',
-            border: 'none', fontWeight: 600, fontSize: 12,
-            cursor: installMethod ? 'pointer' : 'not-allowed',
-            flexShrink: 0, transition: 'background .15s',
-            fontFamily: 'inherit',
-          }}
-        >
-          <RefreshCw size={12} style={{ animation: checking === cert.id ? 'spin 1s linear infinite' : 'none' }} />
-          {checking === cert.id ? 'Checking…' : 'Run check'}
-        </button>
+      {/* Status badge */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 5,
+        padding: '4px 10px', borderRadius: 20,
+        background: s.bg, border: `1px solid ${s.border}`,
+        fontSize: 11, fontWeight: 600, color: s.color,
+        whiteSpace: 'nowrap',
+      }}>
+        {isChecking ? <RefreshCw size={10} style={{ animation: 'spin 1s linear infinite' }} /> : <Icon size={10} />}
+        {isChecking ? 'Checking…' : s.label}
       </div>
+
+      {/* Check button */}
+      <button
+        onClick={() => canCheck && !isChecking && onCheck(cert)}
+        disabled={!canCheck || isChecking}
+        title={!canCheck ? 'Install the certificate first' : 'Run verification check'}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          padding: '6px 12px', borderRadius: 7,
+          background: canCheck && !isChecking ? '#0a0a0a' : '#f3f4f6',
+          color: canCheck && !isChecking ? '#fff' : '#9ca3af',
+          border: 'none', fontWeight: 600, fontSize: 11,
+          cursor: canCheck && !isChecking ? 'pointer' : 'not-allowed',
+          transition: 'all .15s', fontFamily: 'inherit',
+          whiteSpace: 'nowrap',
+        }}
+        onMouseEnter={e => { if(canCheck && !isChecking) e.currentTarget.style.background = '#222' }}
+        onMouseLeave={e => { if(canCheck && !isChecking) e.currentTarget.style.background = '#0a0a0a' }}
+      >
+        <RefreshCw size={10} />
+        Run check
+      </button>
     </div>
   )
 }
@@ -104,8 +147,9 @@ export default function CertBind() {
   const [certs, setCerts] = useState([])
   const [agents, setAgents] = useState([])
   const [loading, setLoading] = useState(true)
-  const [checking, setChecking] = useState(null) // cert.id being checked
+  const [checking, setChecking] = useState(null)
   const [userId, setUserId] = useState(null)
+  const [lastRefresh, setLastRefresh] = useState(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -115,45 +159,31 @@ export default function CertBind() {
 
   async function load(uid) {
     setLoading(true)
-    const [{ data: certsData }, { data: agentsData }] = await Promise.all([
-      supabase.from('certificates')
-        .select('id, domain, status, install_method, certbind_status, certbind_checked_at, ggs_order_id')
-        .eq('user_id', uid).eq('status', 'active')
-        .order('issued_at', { ascending: false }),
-      supabase.from('persistent_agents')
-        .select('id, nickname, hostname, status, last_seen_at')
-        .eq('user_id', uid),
+    const [{ data: certsData }, { data: agentsData }, { data: jobs }] = await Promise.all([
+      supabase.from('certificates').select('id,domain,status,install_method,certbind_status,certbind_checked_at,ggs_order_id').eq('user_id', uid).eq('status', 'active').order('issued_at', { ascending: false }),
+      supabase.from('persistent_agents').select('id,nickname,hostname,status,last_seen_at').eq('user_id', uid),
+      supabase.from('agent_jobs').select('domain,agent_id').eq('user_id', uid).eq('status', 'success').order('created_at', { ascending: false }),
     ])
-    // Deduplicate by domain — keep latest per domain
-    const seen = new Set()
-    const unique = (certsData || []).filter(c => { if (seen.has(c.domain)) return false; seen.add(c.domain); return true })
-    // Attach agent_id from last successful job
-    const { data: jobs } = await supabase.from('agent_jobs')
-      .select('domain, agent_id').eq('user_id', uid).eq('status', 'success')
-      .order('created_at', { ascending: false })
     const domainAgent = {}
     for (const j of (jobs || [])) { if (!domainAgent[j.domain]) domainAgent[j.domain] = j.agent_id }
-    const enriched = unique.map(c => ({ ...c, agent_id: domainAgent[c.domain] || null }))
-    setCerts(enriched)
+    // Deduplicate by domain — latest per domain
+    const seen = new Set()
+    const unique = (certsData || []).filter(c => { if (seen.has(c.domain)) return false; seen.add(c.domain); return true })
+    setCerts(unique.map(c => ({ ...c, agent_id: domainAgent[c.domain] || null })))
     setAgents(agentsData || [])
+    setLastRefresh(new Date())
     setLoading(false)
   }
 
   async function runCheck(cert) {
-    if (!cert.install_method) return
     setChecking(cert.id)
     try {
-      const agentId = cert.agent_id
-      const d = await callCertBind('request_bind_check', {
-        user_id: userId, cert_id: cert.id, agent_id: agentId || null
-      })
-      // Poll for result up to 30s
-      if (d.check_id && agentId) {
+      const d = await callCertBind('request_bind_check', { user_id: userId, cert_id: cert.id, agent_id: cert.agent_id || null })
+      if (d.check_id && cert.agent_id) {
         for (let i = 0; i < 10; i++) {
           await new Promise(r => setTimeout(r, 3000))
-          const { data: check } = await supabase.from('certbind_checks')
-            .select('binding_status').eq('id', d.check_id).single()
-          if (check && check.binding_status && check.binding_status !== 'pending') break
+          const { data: check } = await supabase.from('certbind_checks').select('binding_status').eq('id', d.check_id).single()
+          if (check?.binding_status && check.binding_status !== 'pending') break
         }
       }
       await load(userId)
@@ -161,67 +191,146 @@ export default function CertBind() {
     setChecking(null)
   }
 
-  // Counts
-  const verified = certs.filter(c => c.certbind_status === 'bound').length
-  const issues   = certs.filter(c => ['key_mismatch','cert_mismatch','chain_anomaly','partial_deploy'].includes(c.certbind_status)).length
-  const noAgent  = certs.filter(c => !c.install_method).length
+  const live    = certs.filter(c => c.certbind_status === 'bound').length
+  const alerts  = certs.filter(c => ['key_mismatch','cert_mismatch','chain_anomaly','partial_deploy','unreachable'].includes(c.certbind_status)).length
+  const unchecked = certs.filter(c => !c.certbind_status).length
+  const onlineAgents = agents.filter(a => a.last_seen_at && (Date.now() - new Date(a.last_seen_at).getTime()) < 12 * 60 * 1000).length
 
-  if (loading) return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'60vh', color:'#9ca3af', fontFamily:'inherit' }}>
-      <RefreshCw size={16} style={{ animation:'spin 1s linear infinite', marginRight:8 }} /> Loading…
-    </div>
-  )
+  // Sort: alerts first, then unchecked, then live
+  const sorted = [...certs].sort((a, b) => {
+    const pa = getStatus(a.certbind_status).priority
+    const pb = getStatus(b.certbind_status).priority
+    return pb - pa
+  })
 
   return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: '32px 24px', fontFamily: "'Inter var','Inter',system-ui,sans-serif" }}>
-      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+    <div style={{ minHeight: '100vh', background: '#f7f8fa', fontFamily: "'DM Sans','Inter',system-ui,sans-serif", padding: '32px 0' }}>
+      <style>{`
+        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes pulse-ring { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(2.2);opacity:0} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+      `}</style>
 
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#111', marginBottom: 4 }}>
-          Certificate Status
-        </div>
-        <div style={{ fontSize: 13, color: '#6b7280' }}>
-          Is your certificate actually live on your server?
-        </div>
-      </div>
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px' }}>
 
-      {/* Summary row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 28 }}>
-        {[
-          { num: verified, label: 'Verified live', color: '#10b981', bg: '#f0fdf4', border: '#bbf7d0' },
-          { num: issues,   label: 'Need attention', color: '#ef4444', bg: '#fef2f2', border: '#fecaca' },
-          { num: noAgent,  label: 'Not installed',  color: '#9ca3af', bg: '#f9fafb', border: '#e5e7eb' },
-        ].map(({ num, label, color, bg, border }) => (
-          <div key={label} style={{ background: bg, border: `1px solid ${border}`, borderRadius: 10, padding: '14px 16px' }}>
-            <div style={{ fontSize: 24, fontWeight: 700, color, lineHeight: 1 }}>{num}</div>
-            <div style={{ fontSize: 11, color, marginTop: 4, fontWeight: 500 }}>{label}</div>
+        {/* Header */}
+        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom: 28, animation: 'fadeUp .35s ease both' }}>
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#0a0a0a', letterSpacing: '-0.5px', marginBottom: 4 }}>
+              Live Certificate Status
+            </div>
+            <div style={{ fontSize: 13, color: '#6b7280' }}>
+              Verify your certificates are active on your servers in real-time
+            </div>
           </div>
-        ))}
-      </div>
-
-      {/* Cert list */}
-      {certs.length === 0 ? (
-        <div style={{ textAlign:'center', padding:'48px 24px', color:'#9ca3af', fontSize:13 }}>
-          No active certificates yet. Issue your first certificate to get started.
+          <button
+            onClick={() => userId && load(userId)}
+            disabled={loading}
+            style={{
+              display:'flex', alignItems:'center', gap:6,
+              padding:'8px 14px', borderRadius:8,
+              background:'#fff', border:'1px solid #e5e7eb',
+              color:'#374151', fontWeight:600, fontSize:12,
+              cursor:'pointer', transition:'all .15s', fontFamily:'inherit',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background='#f9fafb'}
+            onMouseLeave={e => e.currentTarget.style.background='#fff'}
+          >
+            <RefreshCw size={12} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
+            Refresh
+          </button>
         </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {certs.map(cert => (
-            <CertCard key={cert.id} cert={cert} onCheck={runCheck} checking={checking} />
+
+        {/* Summary cards */}
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:10, marginBottom:24, animation:'fadeUp .35s ease .05s both' }}>
+          {[
+            { num: certs.length, label: 'Total domains',   color: '#374151', bg: '#fff',           border: '#e5e7eb' },
+            { num: live,         label: 'Verified live',   color: '#059669', bg: '#f0fdf4',        border: '#d1fae5' },
+            { num: alerts,       label: 'Need attention',  color: '#dc2626', bg: '#fef2f2',        border: '#fee2e2' },
+            { num: unchecked,    label: 'Not checked',     color: '#6b7280', bg: '#f9fafb',        border: '#f0f0f0' },
+          ].map(({ num, label, color, bg, border }) => (
+            <div key={label} style={{
+              background: bg, border: `1px solid ${border}`,
+              borderRadius: 10, padding: '14px 16px',
+            }}>
+              <div style={{ fontSize: 26, fontWeight: 700, color, lineHeight: 1, letterSpacing: '-1px' }}>{num}</div>
+              <div style={{ fontSize: 11, color, opacity: .7, marginTop: 5, fontWeight: 500 }}>{label}</div>
+            </div>
           ))}
         </div>
-      )}
 
-      {/* Agent status footer */}
-      {agents.length > 0 && (
-        <div style={{ marginTop: 24, padding: '12px 16px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Server size={13} color="#6b7280" />
-          <span style={{ fontSize: 12, color: '#6b7280' }}>
-            {agents.filter(a => (Date.now() - new Date(a.last_seen_at).getTime()) < 12*60*1000).length} of {agents.length} agent{agents.length !== 1 ? 's' : ''} online
-          </span>
-        </div>
-      )}
+        {/* Agent bar */}
+        {agents.length > 0 && (
+          <div style={{
+            display:'flex', alignItems:'center', gap:8,
+            padding:'10px 14px', borderRadius:8,
+            background:'#fff', border:'1px solid #f0f0f0',
+            marginBottom:20, animation:'fadeUp .35s ease .1s both',
+          }}>
+            <PulseDot color={onlineAgents > 0 ? '#10b981' : '#9ca3af'} animate={onlineAgents > 0} />
+            <span style={{ fontSize:12, color:'#374151', fontWeight:500 }}>
+              {onlineAgents} of {agents.length} agent{agents.length !== 1 ? 's' : ''} online
+            </span>
+            {agents.slice(0,3).map(a => (
+              <span key={a.id} style={{
+                fontSize:10, padding:'2px 8px', borderRadius:20,
+                background: (Date.now() - new Date(a.last_seen_at).getTime()) < 12*60*1000 ? 'rgba(16,185,129,0.08)' : '#f3f4f6',
+                color: (Date.now() - new Date(a.last_seen_at).getTime()) < 12*60*1000 ? '#059669' : '#9ca3af',
+                border: '1px solid transparent',
+                fontWeight: 500,
+              }}>
+                {a.nickname || a.hostname}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Alert banner */}
+        {alerts > 0 && (
+          <div style={{
+            display:'flex', alignItems:'center', gap:10,
+            padding:'12px 16px', borderRadius:10,
+            background:'rgba(239,68,68,0.06)', border:'1px solid rgba(239,68,68,0.2)',
+            marginBottom:16, animation:'fadeUp .35s ease .12s both',
+          }}>
+            <AlertTriangle size={14} color="#dc2626" />
+            <span style={{ fontSize:13, color:'#dc2626', fontWeight:600 }}>
+              {alerts} certificate{alerts !== 1 ? 's' : ''} {alerts === 1 ? 'needs' : 'need'} attention — check the highlighted rows below
+            </span>
+          </div>
+        )}
+
+        {/* Cert table */}
+        {loading ? (
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'60px 0', gap:8, color:'#9ca3af', fontSize:13 }}>
+            <RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }} /> Loading certificates…
+          </div>
+        ) : certs.length === 0 ? (
+          <div style={{
+            textAlign:'center', padding:'60px 24px',
+            background:'#fff', borderRadius:12, border:'1px solid #f0f0f0',
+          }}>
+            <Shield size={32} color="#e5e7eb" style={{ marginBottom:12 }} />
+            <div style={{ fontSize:14, fontWeight:600, color:'#374151', marginBottom:6 }}>No active certificates</div>
+            <div style={{ fontSize:12, color:'#9ca3af' }}>Issue your first certificate to start monitoring</div>
+          </div>
+        ) : (
+          <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+            {sorted.map((cert, i) => (
+              <div key={cert.id} style={{ animation: `fadeUp .3s ease ${.15 + i * .04}s both` }}>
+                <CertRow cert={cert} onCheck={runCheck} checking={checking} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Footer */}
+        {lastRefresh && !loading && (
+          <div style={{ textAlign:'center', marginTop:20, fontSize:11, color:'#9ca3af' }}>
+            Last refreshed {lastRefresh.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
