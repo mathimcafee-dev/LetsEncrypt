@@ -1796,8 +1796,9 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       )}
 
       {/* ── Tab: History ─────────────────────────────────────────────────── */}
-      {activeTab === 'history' && session && (
-        <div style={{ padding:'14px 18px' }}>
+      {/* Always mounted so certHistoryRef is available for action buttons on other tabs */}
+      {session && (
+        <div style={{ display: activeTab === 'history' ? 'block' : 'none', padding:'14px 18px' }}>
           <CertHistory ref={certHistoryRef} cert={cert} session={session}/>
         </div>
       )}
