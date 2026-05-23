@@ -503,9 +503,9 @@ export default function CertVault({ nav }) {
   }, [])
 
   useEffect(() => {
-    if (!user || !isPro || planLoading) return
+    if (!user || planLoading) return
     loadData()
-  }, [user?.id, isPro, planLoading, loadData])
+  }, [user?.id, planLoading, loadData])
 
   // ── Rotate — proper flow: calls auto-renew which re-issues cert + stores new key ──
   const handleRotate = async (keyEntry) => {
@@ -624,58 +624,7 @@ export default function CertVault({ nav }) {
     </div>
   )
 
-  if (!isPro) return (
-    <div className="v2-page">
-      <div className="v2-container" style={{ maxWidth:800, padding:'60px 24px 80px' }}>
-        <div style={{ textAlign:'center', marginBottom:40 }}>
-          <div style={{ width:64, height:64, borderRadius:16, margin:'0 auto 20px',
-            background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
-            display:'flex', alignItems:'center', justifyContent:'center',
-            boxShadow:'0 0 0 8px rgba(124,58,237,0.08)' }}>
-            <Lock size={28} color="white"/>
-          </div>
-          <h1 style={{ fontSize:28, fontWeight:700, letterSpacing:'-0.6px',
-            marginBottom:10, color:'var(--v2-text)' }}>CertVault Vault</h1>
-          <p style={{ fontSize:15, color:'var(--v2-text-2)', lineHeight:1.65,
-            maxWidth:440, margin:'0 auto 28px' }}>
-            Encrypted key storage, automatic rotation, and full audit logging —
-            built for teams who need compliance-grade PKI.
-          </p>
-          <button onClick={() => nav('/pricing')}
-            style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'12px 24px',
-              background:'linear-gradient(135deg,#7c3aed,#6d28d9)', color:'white',
-              border:'none', borderRadius:8, fontSize:14, fontWeight:600,
-              cursor:'pointer', fontFamily:'inherit' }}>
-            <Zap size={14}/> View CertVault plans <ArrowRight size={13}/>
-          </button>
-        </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10 }}>
-          {[
-            { icon:<Lock size={16}/>, color:'#7c3aed', title:'Envelope encryption',
-              desc:'AES-256-GCM per certificate. DEK wrapped with your personal KEK.' },
-            { icon:<RotateCcw size={16}/>, color:'#2563eb', title:'Zero-downtime rotation',
-              desc:'New cert issued and deployed before old key is archived. 30-day rollback.' },
-            { icon:<Activity size={16}/>, color:'#059669', title:'Immutable audit log',
-              desc:'Every key access logged. Export for SOC 2 or ISO 27001 audits.' },
-            { icon:<Bell size={16}/>, color:'#d97706', title:'Access alerts',
-              desc:'Know every time your private key is fetched or copied.' },
-          ].map(({ icon, color, title, desc }) => (
-            <div key={title} className="v2-card" style={{ padding:'20px 22px' }}>
-              <div style={{ width:34, height:34, borderRadius:8, display:'flex',
-                alignItems:'center', justifyContent:'center',
-                background:`${color}12`, border:`0.5px solid ${color}20`,
-                color, marginBottom:12 }}>{icon}</div>
-              <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)', marginBottom:6 }}>{title}</div>
-              <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.65 }}>{desc}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
-    </div>
-  )
-
-  // ── Pro vault UI ──────────────────────────────────────────────────
+  // ── Vault UI ──────────────────────────────────────────────────
   const activeKeys   = keys.filter(k => k.status === 'active')
   const archivedKeys = keys.filter(k => k.status === 'archived')
   const filteredAudit = auditFilter
