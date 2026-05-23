@@ -2088,14 +2088,26 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   const expiring = issuedCerts.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'active' && d != null && d >= 0 && d < 30 }).length
   const expired  = issuedCerts.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'revoked' || c.status === 'cancelled' || (d != null && d < 0) }).length
 
-  const visible = issuedCerts.filter(c => {
-    const d = daysLeft(c.expires_at); const s = statusOf(d, c.status)
-    if (filter === 'healthy'  && s.cls !== 'green') return false
-    if (filter === 'expiring' && s.cls !== 'amber') return false
-    if (filter === 'expired'  && s.cls !== 'red')   return false
-    if (search && !c.domain.toLowerCase().includes(search.toLowerCase())) return false
-    return true
-  })
+  const visible = (() => {
+    // Step 1: apply tab + search filter
+    const filtered = issuedCerts.filter(c => {
+      const d = daysLeft(c.expires_at); const s = statusOf(d, c.status)
+      if (filter === 'healthy'  && s.cls !== 'green') return false
+      if (filter === 'expiring' && s.cls !== 'amber') return false
+      if (filter === 'expired'  && s.cls !== 'red')   return false
+      if (search && !c.domain.toLowerCase().includes(search.toLowerCase())) return false
+      return true
+    })
+    // Step 2: deduplicate by domain — keep latest issued_at per domain (Option A)
+    const latest = {}
+    for (const c of filtered) {
+      const prev = latest[c.domain]
+      if (!prev || new Date(c.issued_at) > new Date(prev.issued_at)) {
+        latest[c.domain] = c
+      }
+    }
+    return Object.values(latest)
+  })()
 
   const visibleWithHealth = visible.map(c => ({
     ...c,
