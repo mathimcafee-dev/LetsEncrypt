@@ -169,95 +169,136 @@ function OverviewTab({ tok, onSwitchCA }) {
 
   return (
     <div>
-      {/* KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 14 }}>
+      {/* KPI strip */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:16 }}>
         {[
-          { label: 'Certs tracked',  val: total,   sub: 'all CAs',      c: 'var(--v2-text)' },
-          { label: 'Expiring ≤ 30d', val: exp30,   sub: 'needs action', c: exp30   > 0 ? '#E8897A' : 'var(--v2-text)' },
-          { label: 'Expired',        val: expired,  sub: 'act now',      c: expired > 0 ? '#dc2626' : 'var(--v2-text)' },
-          { label: 'CAs active',     val: 1 + (dcConn ? 1 : 0) + (scConn ? 1 : 0), sub: 'GGS + connected', c: 'var(--v2-text)' },
-        ].map(({ label, val, sub, c }) => (
-          <div key={label} className="v2-stat">
-            <div className="v2-stat-label">{label}</div>
-            <div className="v2-stat-value" style={{ color: c }}>{val}</div>
-            <div className="v2-stat-delta">{sub}</div>
+          { label:'Total certs',    val:total,   sub:'across all CAs',  color:'var(--v2-text-1)' },
+          { label:'Expiring ≤ 30d', val:exp30,   sub:'need attention',  color:exp30>0?'#854F0B':'var(--v2-text-1)', bg:exp30>0?'#FAEEDA':'var(--v2-surface)' },
+          { label:'Expired',        val:expired,  sub:'act now',         color:expired>0?'#A32D2D':'var(--v2-text-1)', bg:expired>0?'#FCEBEB':'var(--v2-surface)' },
+          { label:'CAs connected',  val:1+(dcConn?1:0)+(scConn?1:0), sub:'of 3 supported', color:'var(--v2-text-1)' },
+        ].map(({ label, val, sub, color, bg }) => (
+          <div key={label} style={{ padding:'12px 14px', borderRadius:10, background:bg||'var(--v2-surface)',
+            border:'0.5px solid var(--v2-border)' }}>
+            <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:4 }}>{label}</div>
+            <div style={{ fontSize:22, fontWeight:700, color, fontFamily:'monospace', lineHeight:1 }}>{val}</div>
+            <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:4 }}>{sub}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-        {/* Portfolio by CA */}
-        <SectionCard title="Portfolio by CA" style={{ marginBottom: 0 }}>
-          {[
-            { ca: 'rapidssl', count: ggsCount, label: 'RapidSSL (native)' },
-            { ca: 'digicert', count: dcCount,  label: 'DigiCert' },
-            { ca: 'sectigo',  count: scCount,  label: 'Sectigo' },
-          ].map(({ ca, count, label }) => (
-            <div key={ca} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-              <CALogo label={CA_META[ca].label} bg={CA_META[ca].bg} color={CA_META[ca].color}/>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontSize: 12, color: 'var(--v2-text)' }}>{label}</span>
-                  <span style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{count}</span>
-                </div>
-                <div className="v2-bar">
-                  <div className="v2-bar-fill" style={{
-                    width: `${Math.round((count / maxCount) * 100)}%`,
-                    background: CA_META[ca].accent,
-                  }}/>
-                </div>
-              </div>
-            </div>
-          ))}
-          <button className="v2-btn v2-btn-sm" style={{ marginTop: 4 }} onClick={() => onSwitchCA('rapidssl')}>
-            View RapidSSL <ChevronRight size={11}/>
-          </button>
-        </SectionCard>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
 
-        {/* Expiry risk */}
-        <SectionCard title="Expiry risk — all CAs" style={{ marginBottom: 0 }}>
+        {/* Portfolio by CA — visual bars */}
+        <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, padding:'14px 16px' }}>
+          <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+            letterSpacing:'0.4px', marginBottom:14 }}>Portfolio by CA</div>
           {[
-            { label: 'Expired',   n: expired,  color: '#dc2626' },
-            { label: '≤ 7 days',  n: exp7,     color: '#ea580c' },
-            { label: '≤ 30 days', n: exp30,    color: '#E8897A' },
-            { label: '≤ 90 days', n: exp90,    color: '#ca8a04' },
-            { label: 'Healthy',   n: healthy,  color: '#16a34a' },
-          ].map(({ label, n, color }) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 9 }}>
-              <span style={{ fontSize: 11, color: 'var(--v2-text-3)', width: 70, flexShrink: 0 }}>{label}</span>
-              <div className="v2-bar" style={{ flex: 1 }}>
-                <div style={{ height: '100%', width: `${Math.max(total ? Math.round((n/total)*100) : 0, 2)}%`,
-                  background: color, borderRadius: 100 }}/>
-              </div>
-              <span style={{ fontSize: 12, fontWeight: 500, color, width: 24, textAlign: 'right' }}>{n}</span>
-            </div>
-          ))}
-        </SectionCard>
-      </div>
-
-      {/* CA status */}
-      <SectionCard title="CA connection status">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
-          {[
-            { ca: 'rapidssl', label: 'RapidSSL', sub: 'Native CA · always active',  conn: true, onClick: () => onSwitchCA('rapidssl') },
-            { ca: 'digicert', label: 'DigiCert',  sub: dcConn ? 'API key active' : 'Not connected — click to connect', conn: !!dcConn, onClick: () => onSwitchCA('digicert') },
-            { ca: 'sectigo',  label: 'Sectigo',   sub: scConn ? 'API credentials active' : 'Not connected — click to connect', conn: !!scConn, onClick: () => onSwitchCA('sectigo') },
-          ].map(({ ca, label, sub, conn, onClick }) => (
-            <div key={ca} onClick={onClick}
-              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
-                background: 'var(--v2-surface-3)', borderRadius: 8,
-                border: '0.5px solid var(--v2-border)', cursor: 'pointer' }}>
+            { ca:'rapidssl', count:ggsCount, label:'RapidSSL', sub:'SSLVault native', clickable:true },
+            { ca:'digicert', count:dcCount,  label:'DigiCert',  sub:dcConn?'connected':'not connected', clickable:true },
+            { ca:'sectigo',  count:scCount,  label:'Sectigo',   sub:scConn?'connected':'not connected', clickable:true },
+          ].map(({ ca, count, label, sub, clickable }) => (
+            <div key={ca} onClick={() => clickable && onSwitchCA(ca)}
+              style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12, cursor:'pointer',
+                padding:'8px 10px', borderRadius:8, transition:'background .15s' }}
+              onMouseEnter={e => e.currentTarget.style.background='var(--v2-bg)'}
+              onMouseLeave={e => e.currentTarget.style.background='transparent'}>
               <CALogo label={CA_META[ca].label} bg={CA_META[ca].bg} color={CA_META[ca].color}/>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-text)' }}>{label}</div>
-                <div style={{ fontSize: 11, marginTop: 2, color: conn ? '#3DBFB0' : 'var(--v2-text-3)' }}>{sub}</div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:5 }}>
+                  <div>
+                    <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-text-1)' }}>{label}</span>
+                    <span style={{ fontSize:10, color:'var(--v2-text-3)', marginLeft:6 }}>{sub}</span>
+                  </div>
+                  <span style={{ fontSize:13, fontWeight:700, color:CA_META[ca].accent, fontFamily:'monospace' }}>{count}</span>
+                </div>
+                <div style={{ height:5, borderRadius:99, background:'var(--v2-bg)', overflow:'hidden' }}>
+                  <div style={{ height:'100%',
+                    width:`${count>0?Math.max(8,Math.round((count/maxCount)*100)):0}%`,
+                    background:CA_META[ca].accent, borderRadius:99,
+                    transition:'width .6s cubic-bezier(.16,1,.3,1)' }}/>
+                </div>
               </div>
-              <div style={{ width: 7, height: 7, borderRadius: '50%',
-                background: conn ? '#3DBFB0' : '#d4d4d4', flexShrink: 0 }}/>
+              <ChevronRight size={12} color="var(--v2-text-3)"/>
             </div>
           ))}
         </div>
-      </SectionCard>
+
+        {/* Expiry risk — horizontal bar chart */}
+        <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, padding:'14px 16px' }}>
+          <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+            letterSpacing:'0.4px', marginBottom:14 }}>Expiry risk — all CAs</div>
+          {[
+            { label:'Expired',    n:expired, color:'#A32D2D', bg:'#FCEBEB' },
+            { label:'≤ 7 days',   n:exp7,    color:'#C04040', bg:'#FBEAEA' },
+            { label:'≤ 30 days',  n:exp30,   color:'#854F0B', bg:'#FAEEDA' },
+            { label:'≤ 90 days',  n:exp90,   color:'#0F6E56', bg:'#E1F5EE' },
+            { label:'Healthy',    n:healthy, color:'#0F6E56', bg:'#E1F5EE' },
+          ].map(({ label, n, color, bg }) => (
+            <div key={label} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
+              <span style={{ fontSize:11, color:'var(--v2-text-3)', width:72, flexShrink:0 }}>{label}</span>
+              <div style={{ flex:1, height:24, background:'var(--v2-bg)', borderRadius:6, overflow:'hidden', position:'relative' }}>
+                {n > 0 && (
+                  <div style={{ position:'absolute', left:0, top:0, bottom:0,
+                    width:`${Math.max(total?Math.round((n/total)*100):0, 8)}%`,
+                    background:bg, borderRight:`2px solid ${color}`,
+                    display:'flex', alignItems:'center', paddingLeft:8,
+                    transition:'width .6s cubic-bezier(.16,1,.3,1)' }}>
+                    <span style={{ fontSize:10, fontWeight:700, color }}>{n}</span>
+                  </div>
+                )}
+                {n === 0 && (
+                  <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)',
+                    fontSize:10, color:'var(--v2-text-3)' }}>0</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CA connection cards — live feel */}
+      <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+        letterSpacing:'0.4px', marginBottom:10 }}>CA connections</div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
+        {[
+          { ca:'rapidssl', label:'RapidSSL', sub:'Native CA · always active',
+            conn:true, extra:`${ggsCount} certs`, onClick:()=>onSwitchCA('rapidssl') },
+          { ca:'digicert', label:'DigiCert',
+            sub:dcConn?'API key active':'Not connected — click to connect',
+            conn:!!dcConn, extra:dcConn?`${dcCount} certs`:'Click to connect', onClick:()=>onSwitchCA('digicert') },
+          { ca:'sectigo',  label:'Sectigo',
+            sub:scConn?'API credentials active':'Not connected — click to connect',
+            conn:!!scConn, extra:scConn?`${scCount} certs`:'Click to connect', onClick:()=>onSwitchCA('sectigo') },
+        ].map(({ ca, label, sub, conn, extra, onClick }) => (
+          <div key={ca} onClick={onClick}
+            style={{ padding:'14px 16px', borderRadius:10, cursor:'pointer',
+              background:conn?'var(--v2-surface)':'var(--v2-bg)',
+              border:`0.5px solid ${conn?CA_META[ca].accent+'44':'var(--v2-border)'}`,
+              transition:'all .15s' }}
+            onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
+            onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+              <CALogo label={CA_META[ca].label} bg={CA_META[ca].bg} color={CA_META[ca].color}/>
+              {/* Live pulse dot */}
+              <div style={{ position:'relative', width:10, height:10 }}>
+                {conn && (
+                  <span style={{ position:'absolute', inset:0, borderRadius:'50%',
+                    background:CA_META[ca].accent, opacity:0.4,
+                    animation:'pulse-ca 2s ease-in-out infinite' }}/>
+                )}
+                <span style={{ position:'absolute', inset:0, borderRadius:'50%',
+                  background:conn?CA_META[ca].accent:'#D4D4D4' }}/>
+              </div>
+            </div>
+            <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text-1)', marginBottom:3 }}>{label}</div>
+            <div style={{ fontSize:11, color:conn?CA_META[ca].accent:'var(--v2-text-3)', marginBottom:6 }}>{sub}</div>
+            <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)',
+              padding:'3px 8px', borderRadius:20, background:'var(--v2-bg)',
+              border:'0.5px solid var(--v2-border)', display:'inline-block' }}>{extra}</div>
+          </div>
+        ))}
+      </div>
+      <style>{`@keyframes pulse-ca { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(2.5);opacity:0} }`}</style>
     </div>
   )
 }
@@ -280,8 +321,15 @@ function RapidSSLTab({ tok, nav }) {
         .select('id,domain,product_name,product_code,status,ggs_status,valid_from,valid_till,created_at,order_type,ca_code')
         .order('valid_till', { ascending: true })
       if (!error && data) {
-        // Normalise to common shape
-        const normalised = data.map(o => ({
+        // Deduplicate by domain — keep latest valid_till per domain
+        const domainMap = {}
+        for (const o of data) {
+          const prev = domainMap[o.domain]
+          if (!prev || new Date(o.valid_till||0) > new Date(prev.valid_till||0)) {
+            domainMap[o.domain] = o
+          }
+        }
+        const normalised = Object.values(domainMap).map(o => ({
           id:           o.id,
           common_name:  o.domain,
           domain:       o.domain,
@@ -1540,57 +1588,44 @@ export default function CAIntelligenceHub({ nav }) {
   ]
 
   return (
-    <div style={{ background: '#f0f4f8', minHeight: '100vh',
-      fontFamily: "'Segoe UI',-apple-system,system-ui,sans-serif" }}>
+    <div className="v2-page">
+      <div className="v2-container" style={{ maxWidth:1100 }}>
 
-      {/* Header — dark navy matching CLMHome sidebar */}
-      <div style={{ background: '#0d3c6e' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 24px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: '#1A7A72',
-              display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp size={16} color="white" strokeWidth={2}/>
-            </div>
+        {/* Header */}
+        <div style={{ paddingTop:8, marginBottom:0 }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <h1 style={{ fontSize: 15, fontWeight: 700, color: 'white', margin: 0, letterSpacing: '-0.2px' }}>
-                CA Intelligence hub
-              </h1>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', margin: 0, marginTop: 1 }}>
+              <h1 className="v2-h1" style={{ fontSize:20, marginBottom:3 }}>CA Intelligence</h1>
+              <p style={{ fontSize:12, color:'var(--v2-text-3)', margin:0 }}>
                 Unified certificate visibility across RapidSSL, DigiCert &amp; Sectigo
               </p>
             </div>
           </div>
 
-          {/* Tab bar — white underline on navy */}
-          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+          {/* Tab bar */}
+          <div style={{ display:'flex', gap:2, borderBottom:'0.5px solid var(--v2-border)', marginBottom:20 }}>
             {TABS.map(({ id, label, dot, divider }) => (
-              <div key={id} style={{ display: 'flex', alignItems: 'flex-end' }}>
-                {divider && (
-                  <div style={{ width: 1, height: 28, background: 'rgba(255,255,255,0.15)',
-                    marginBottom: 1, marginRight: 2 }}/>
-                )}
+              <div key={id} style={{ display:'flex', alignItems:'center' }}>
+                {divider && <div style={{ width:1, height:20, background:'var(--v2-border)', margin:'0 6px' }}/>}
                 <button onClick={() => setTab(id)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '9px 16px 10px', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    borderBottom: tab === id ? '2px solid white' : '2px solid transparent',
-                    color: tab === id ? 'white' : 'rgba(255,255,255,0.5)',
-                    transition: 'color 0.12s, border-color 0.12s',
-                    marginBottom: -1 }}>
-                  {dot && <span style={{ width: 7, height: 7, borderRadius: '50%', background: dot, flexShrink: 0 }}/>}
+                  style={{ display:'flex', alignItems:'center', gap:5,
+                    padding:'7px 14px 8px', fontSize:12, fontWeight: tab===id ? 600 : 400,
+                    fontFamily:'inherit', background:'none', border:'none', cursor:'pointer',
+                    borderBottom: tab===id ? '2px solid var(--v2-green)' : '2px solid transparent',
+                    color: tab===id ? 'var(--v2-green)' : 'var(--v2-text-3)',
+                    marginBottom:-1, transition:'all .15s' }}>
+                  {dot && <span style={{ width:6, height:6, borderRadius:'50%', background:dot, flexShrink:0 }}/>}
                   {label}
                 </button>
               </div>
             ))}
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 24px 80px' }}>
+        {/* Content */}
         {!tok
-          ? <div style={{ textAlign: 'center', padding: 60, color: 'var(--v2-text-3)', fontSize: 13 }}>
-              <Spinner/><span style={{ marginLeft: 8 }}>Loading session…</span>
+          ? <div style={{ textAlign:'center', padding:60, color:'var(--v2-text-3)', fontSize:13 }}>
+              <Spinner/><span style={{ marginLeft:8 }}>Loading session…</span>
             </div>
           : <>
               {tab === 'overview'       && <OverviewTab       tok={tok} nav={nav} onSwitchCA={setTab}/>}
@@ -1602,7 +1637,6 @@ export default function CAIntelligenceHub({ nav }) {
             </>
         }
       </div>
-
       <style>{`@keyframes spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }`}</style>
     </div>
   )
