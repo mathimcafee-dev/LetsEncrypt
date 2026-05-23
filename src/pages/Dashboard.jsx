@@ -2014,11 +2014,21 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
     if (!subscriptionMap[key]) subscriptionMap[key] = []
     subscriptionMap[key].push(v)
   }
-  // Sort subscriptions: newest first by max issued_at in group
-  const subscriptions = Object.values(subscriptionMap).sort((a, b) => {
-    const aMax = Math.max(...a.map(v => new Date(v.issued_at||0)))
-    const bMax = Math.max(...b.map(v => new Date(v.issued_at||0)))
-    return bMax - aMax
+  // Sort subscriptions: OLDEST first (chronological) so numbering is correct
+  // Subscription 1 = first ever placed, Subscription 2 = renewal, etc.
+  // This matches customer expectations — Sub 1 is what they first ordered
+  const subscriptionsChron = Object.values(subscriptionMap).sort((a, b) => {
+    const aMin = Math.min(...a.map(v => new Date(v.issued_at||0).getTime()))
+    const bMin = Math.min(...b.map(v => new Date(v.issued_at||0).getTime()))
+    return aMin - bMin  // oldest first
+  })
+  // For display: show most recent (active) subscription at top, but keep numbering chronological
+  // We number by chronological position, display newest first
+  const subscriptions = [...subscriptionsChron].reverse()  // newest displayed first
+  const subNumberMap = {}  // certGroupKey → chronological number
+  subscriptionsChron.forEach((sub, i) => {
+    const key = sub[0]?.ggs_order_id || sub[0]?.id
+    subNumberMap[key] = i + 1  // 1-indexed, chronological
   })
   const hasMultipleSubs = subscriptions.length > 1
   const hasVersions     = versions.length > 1
@@ -2170,7 +2180,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                     <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:5 }}>
                       <span style={{ fontSize:10, fontWeight:600, textTransform:'uppercase',
                         letterSpacing:'0.4px', color: isRenewal?'#1A7A72': isActiveSub?'#1A7A72':'#6B5A3E' }}>
-                        Subscription {subscriptions.length - si} · {subLabel}
+                        Subscription {subNumberMap[subNewest.ggs_order_id || subNewest.id] || (si + 1)} · {subLabel}
                       </span>
                       {isActiveSub && (
                         <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
