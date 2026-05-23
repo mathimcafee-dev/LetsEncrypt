@@ -92,7 +92,7 @@ export default function CLMHome({ user, nav }) {
   // ── Navigation structure ───────────────────────────────────────────
   const NAV_CERTS = [
     { id:'dashboard',         label:'Fleet',              icon:Layout      },
-    { id:'issue',             label:'Issue SSL',          icon:Plus        },
+    { id:'issue',             label:'New SSL',          icon:Plus        },
     { id:'readiness',         label:'47-day radar',       icon:ShieldCheck, alert:true },
     { id:'renewal-calendar',  label:'Lifecycle',          icon:CalendarDays},
   ]
@@ -114,7 +114,7 @@ export default function CLMHome({ user, nav }) {
   ]
 
   const SECTION_TITLES = {
-    dashboard:'Certificate inventory', issue:'Issue certificate',
+    dashboard:'Certificate inventory', issue:'New SSL',
     readiness:'47-day readiness', 'renewal-calendar':'Renewal calendar',
     servers:'Servers & agents', integrations:'DNS providers',
     certvault:'CertVault',

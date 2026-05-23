@@ -2771,7 +2771,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                     transition:'all .15s' }}
                   onMouseEnter={e=>{e.currentTarget.style.background='#1A7A72';e.currentTarget.style.boxShadow='0 4px 12px rgba(14,127,192,0.4)'}}
                   onMouseLeave={e=>{e.currentTarget.style.background='#1A7A72';e.currentTarget.style.boxShadow='0 2px 6px rgba(14,127,192,0.3)'}}>
-                  <Plus size={11}/> Issue certificate
+                  <Plus size={11}/> New SSL
                 </button>
               </div>
             </div>
@@ -2944,7 +2944,7 @@ function MarketingDashboard({ nav }) {
               <Shield size={14}/> Get started free
             </button>
             <button className="v2-btn" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => onIssue ? onIssue() : nav('/buy')}>
-              Issue SSL Certificate
+              New SSL
             </button>
           </div>
         </div>
