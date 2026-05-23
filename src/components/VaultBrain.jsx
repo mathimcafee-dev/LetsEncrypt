@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
-const OLLAMA_URL = 'http://77.42.27.85/api/chat'
+const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydGhjd2tudGNpYWFrcXNwcHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNjcxNTMsImV4cCI6MjA5MzY0MzE1M30.VN3soDSl8cMOnjaj8n2wSujTLsr9-4ptH5hYxiJCgHQ'
 
 const SYSTEM_PROMPT = `You are VaultBrain, the official AI support agent for SSLVault (easysecurity.in) — a professional SSL/TLS certificate lifecycle management platform built for PKI professionals and businesses.
 
@@ -119,18 +120,13 @@ export default function VaultBrain() {
     setMsgs(m=>[...m,{role:'user',text:q},{role:'ai',loading:true}])
     let answer=''
     try{
-      const messages=[
-        {role:'system',content:SYSTEM_PROMPT},
-        ...history,
-        {role:'user',content:q}
-      ]
-      const res=await fetch(OLLAMA_URL,{
+      const res=await fetch(`${SB_URL}/functions/v1/vaultbrain-agent`,{
         method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'llama3.2:3b',messages,stream:false}),
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+        body:JSON.stringify({question:q,messages:history}),
       })
       const d=await res.json()
-      answer=d.message?.content||'Sorry, I could not get a response. Please try again.'
+      answer=d.ok?d.answer:(d.error||'Sorry, I could not get a response. Please try again.')
     }catch(e){
       answer='Connection error. The AI agent is temporarily unavailable. Please visit /contact for support.'
     }
