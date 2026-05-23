@@ -1919,14 +1919,6 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           </button>
         </div>
 
-        <FleetWidget
-          certs={issuedCerts}
-          agents={[]}
-          loading={loading}
-          nav={nav}
-          onRenew={null}
-        />
-
         <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:20 }}>
           {[
             { label:'Total',        value:total,    color:'#0e7fc0', bg:'#eff6ff', icon:'▦', sub:'certificates' },
