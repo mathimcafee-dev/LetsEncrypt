@@ -2226,20 +2226,35 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
 
                 {/* ── LEVEL 3: Version rows inside subscription ── */}
                 {subVersions.map((v, vi) => {
-                  const isNewest   = vi === 0
-                  const isDeployed = !!v.install_method
+                  // Determine which cert in this subscription is actually live on server
+                  // → the cert with the latest _installTime is the one running
+                  const subInstallTimes = subVersions
+                    .filter(v => v._installTime)
+                    .sort((a,b) => new Date(b._installTime) - new Date(a._installTime))
+                  const latestInstalledId = subInstallTimes[0]?.id || null
 
-                  const statusLabel = isNewest
-                    ? (isDeployed ? 'Running on server' : 'Not deployed yet')
-                    : (isDeployed ? 'Previously deployed' : 'Never deployed')
+                  const isLive     = latestInstalledId === v.id
+                  const wasInstalled = !!v._installTime && !isLive
+                  const neverInstalled = !v._installTime
 
-                  const circleColor  = isNewest && isDeployed ? '#1A7A72'
-                    : isNewest && !isDeployed ? '#3DBFB0'
+                  const statusLabel = isLive
+                    ? 'Running on server'
+                    : wasInstalled
+                    ? 'Previously deployed'
+                    : vi === 0
+                    ? 'Not deployed yet'
+                    : 'Never deployed'
+
+                  const circleColor  = isLive ? '#1A7A72'
+                    : wasInstalled ? '#C5BDAD'
+                    : vi === 0 ? '#3DBFB0'
                     : '#C5BDAD'
-                  const circleBorder = isNewest ? `2px solid ${circleColor}` : `1.5px dashed ${circleColor}`
-                  const circleBg     = isNewest ? '#E8F8F6' : '#F5EFE0'
-                  const circleIcon   = isNewest && isDeployed ? '✓'
-                    : isNewest && !isDeployed ? '⏱'
+                  const circleBorder = isLive ? `2px solid #1A7A72`
+                    : vi === 0 && neverInstalled ? `1.5px dashed #3DBFB0`
+                    : `1.5px solid #C5BDAD`
+                  const circleBg     = isLive ? '#E8F8F6' : '#F5EFE0'
+                  const circleIcon   = isLive ? '✓'
+                    : vi === 0 && neverInstalled ? '⏱'
                     : '—'
 
                   const vLabel = `v${subVersions.length - vi}`
@@ -2250,7 +2265,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                       style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 14px',
                         borderTop:`0.5px solid var(--v2-border)`,
                         background: selected===v.id ? '#E8F8F6' : 'var(--v2-surface)',
-                        cursor:'pointer', opacity: isNewest ? 1 : 0.6,
+                        cursor:'pointer', opacity: isLive ? 1 : wasInstalled ? 0.55 : neverInstalled && vi > 0 ? 0.55 : 1,
                         transition:'background .15s' }}
                       onMouseEnter={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-bg)' }}
                       onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-surface)' }}>
@@ -2267,9 +2282,9 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                       <div style={{ flex:1, minWidth:0 }}>
                         <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2 }}>
                           <span style={{ fontSize:10, fontWeight:600, padding:'1px 7px', borderRadius:20,
-                            background: isNewest && isDeployed ? '#1A7A72' : isNewest ? '#E8F8F6' : '#F5EFE0',
-                            color: isNewest && isDeployed ? 'white' : isNewest ? '#1A7A72' : '#8B7355',
-                            border: isNewest && isDeployed ? 'none' : `0.5px solid ${isNewest?'#A8E6DE':'#C5BDAD'}`,
+                            background: isLive ? '#1A7A72' : wasInstalled ? '#F5EFE0' : vi===0 ? '#E8F8F6' : '#F5EFE0',
+                            color: isLive ? 'white' : wasInstalled ? '#8B7355' : vi===0 ? '#1A7A72' : '#8B7355',
+                            border: isLive ? 'none' : `0.5px solid ${wasInstalled?'#C5BDAD':vi===0?'#A8E6DE':'#C5BDAD'}`,
                             flexShrink:0 }}>
                             {statusLabel}
                           </span>
@@ -2455,17 +2470,26 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     setLoading(true)
     const { data: { session: s } } = await supabase.auth.getSession()
     setSession(s)
-    const [{ data: certsData }, { data: ordersData }] = await Promise.all([
+    const [{ data: certsData }, { data: agentInstalls }, { data: ordersData }] = await Promise.all([
       supabase.from('certificates').select('*, order_type').eq('user_id', user.id).neq('status', 'cancelled').order('issued_at', { ascending:false }),
+      supabase.from('agent_jobs').select('cert_id, status, created_at').eq('user_id', user.id).eq('job_type', 'install').eq('status', 'success').order('created_at', { ascending:false }).limit(100),
       supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'dv_pending').order('created_at', { ascending:false }),
     ])
+    // Build a map: cert_id → latest successful install timestamp
+    // Then per domain, only the cert with the LATEST install is "running on server"
+    const certInstallTime = {}
+    for (const job of (agentInstalls || [])) {
+      if (!certInstallTime[job.cert_id]) {
+        certInstallTime[job.cert_id] = job.created_at
+      }
+    }
     const enriched = await Promise.all((certsData||[]).map(async cert => {
       if (!cert.ggs_order_id) return cert
       const { data: ord } = await supabase.from('ssl_orders')
         .select('product_name,product_code,period,ggs_invoice_id,ggs_order_id,partner_order_id,vendor_order_id,order_type,subscription_start,subscription_end,admin_email,admin_first_name,admin_last_name,admin_phone,admin_title,admin_city,admin_country,tech_first_name,tech_last_name,tech_email,tech_phone,serial_number,cert_md5')
         .eq('ggs_order_id', cert.ggs_order_id).eq('user_id', user.id)
         .order('created_at', { ascending: false }).limit(1).single()
-      return ord ? { ...cert, _order: ord } : cert
+      return ord ? { ...cert, _order: ord, _installTime: certInstallTime[cert.id] || null } : { ...cert, _installTime: certInstallTime[cert.id] || null }
     }))
     setCerts(enriched); setOrders(ordersData||[]); setLoading(false)
 
