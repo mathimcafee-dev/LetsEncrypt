@@ -3,698 +3,693 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSLVault — Zero-Touch SSL for Your Server</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>SSLVault — Zero-Touch SSL</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#020408;--surface:#070d14;--border:#0f1e2e;
+  --green:#00ff88;--green2:#00cc6a;--green-dim:rgba(0,255,136,0.07);
+  --amber:#ffb800;--red:#ff3d5a;--blue:#00b4ff;--purple:#bd93f9;
+  --text:#c8d8e8;--text-2:#4a6580;--text-3:#8aa0b8;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'JetBrains Mono',monospace;
+  min-height:100vh;
+  overflow-x:hidden;
+  cursor:default;
+}
 
-  :root {
-    --bg: #080b10;
-    --surface: #0d1117;
-    --border: #1e2530;
-    --green: #10b981;
-    --green-dim: rgba(16,185,129,0.12);
-    --green-glow: rgba(16,185,129,0.4);
-    --text: #e2e8f0;
-    --text-2: #64748b;
-    --text-3: #94a3b8;
-    --amber: #f59e0b;
-    --blue: #3b82f6;
-  }
+/* scanlines */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);
+  pointer-events:none;z-index:999;
+}
 
-  html { scroll-behavior: smooth; }
+/* crt glow */
+body::after{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(0,255,136,0.04) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px;
+  background:rgba(2,4,8,0.92);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(8px);
+}
+.nav-left{display:flex;align-items:center;gap:16px}
+.logo{color:var(--green);font-size:14px;font-weight:700;letter-spacing:1px}
+.nav-status{
+  font-size:10px;color:var(--text-2);
+  border:1px solid var(--border);padding:2px 10px;border-radius:2px;
+}
+.nav-status span{color:var(--green)}
+.nav-right{display:flex;gap:20px;align-items:center}
+.nav-link{color:var(--text-2);font-size:11px;text-decoration:none;transition:color .15s}
+.nav-link:hover{color:var(--green)}
 
-  /* Grid background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(16,185,129,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(16,185,129,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  gap:0;
+  padding:80px 0 0;
+  position:relative;z-index:1;
+}
 
-  /* Glow orb */
-  body::after {
-    content: '';
-    position: fixed;
-    top: -20%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
+.hero-left{
+  padding:60px 48px 60px 64px;
+  border-right:1px solid var(--border);
+}
 
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 32px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(8,11,16,0.8);
-    backdrop-filter: blur(12px);
-  }
+.sys-line{
+  font-size:10px;color:var(--text-2);
+  margin-bottom:32px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.sys-line span{display:block}
+.sys-val{color:var(--green)}
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 800;
-    font-size: 16px;
-    letter-spacing: -0.3px;
-  }
+h1{
+  font-size:clamp(28px,3.5vw,48px);
+  font-weight:700;
+  line-height:1.15;
+  letter-spacing:-0.5px;
+  margin-bottom:24px;
+  color:#fff;
+}
+h1 .hi{color:var(--green)}
+h1 .dim{color:var(--text-2);font-weight:300}
 
-  .logo-icon {
-    width: 28px; height: 28px;
-    background: var(--green);
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-  }
+.tagline{
+  font-size:12px;color:var(--text-3);
+  line-height:1.9;margin-bottom:40px;
+  max-width:420px;
+  border-left:2px solid var(--border);
+  padding-left:16px;
+}
+.tagline em{color:var(--green);font-style:normal}
 
-  .nav-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--green);
-    border: 1px solid var(--green);
-    padding: 2px 8px;
-    border-radius: 20px;
-    background: var(--green-dim);
-  }
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:48px}
 
-  .nav-link {
-    color: var(--text-3);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    transition: color .2s;
-  }
-  .nav-link:hover { color: var(--green); }
+.btn{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:700;
+  padding:10px 20px;border-radius:2px;
+  border:none;cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+  transition:all .15s;letter-spacing:.5px;
+}
+.btn-g{background:var(--green);color:#000}
+.btn-g:hover{background:#00ffaa;box-shadow:0 0 20px rgba(0,255,136,0.35)}
+.btn-o{background:transparent;color:var(--text-3);border:1px solid var(--border)}
+.btn-o:hover{border-color:var(--green);color:var(--green)}
 
-  main { position: relative; z-index: 1; }
+.mini-stats{
+  display:flex;gap:32px;
+  padding-top:32px;
+  border-top:1px solid var(--border);
+}
+.mini-stat-num{font-size:24px;font-weight:700;color:var(--green)}
+.mini-stat-lbl{font-size:9px;color:var(--text-2);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px}
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 120px 24px 80px;
-  }
+/* ── TERMINAL PANEL ── */
+.hero-right{
+  padding:0;
+  height:100vh;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  background:var(--surface);
+}
 
-  .hero-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--green);
-    border: 1px solid rgba(16,185,129,0.3);
-    padding: 4px 14px;
-    border-radius: 20px;
-    background: var(--green-dim);
-    margin-bottom: 32px;
-    display: inline-block;
-    animation: fadeUp .6s ease both;
-  }
+.term-tabs{
+  display:flex;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+  flex-shrink:0;
+}
+.term-tab{
+  padding:10px 18px;font-size:10px;
+  color:var(--text-2);cursor:pointer;
+  border-right:1px solid var(--border);
+  transition:all .15s;
+  border-bottom:2px solid transparent;
+}
+.term-tab.active{color:var(--green);border-bottom-color:var(--green);background:var(--surface)}
+.term-tab:hover:not(.active){color:var(--text-3)}
 
-  .hero h1 {
-    font-size: clamp(40px, 7vw, 80px);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -2px;
-    margin-bottom: 24px;
-    animation: fadeUp .6s ease .1s both;
-  }
+.term-body{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:20px 24px;
+  font-size:12px;line-height:1.7;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+.term-body::-webkit-scrollbar{width:4px}
+.term-body::-webkit-scrollbar-thumb{background:var(--border)}
 
-  .hero h1 span { color: var(--green); }
+.tline{display:flex;gap:0;align-items:flex-start;margin-bottom:1px}
+.prompt-host{color:var(--green)}
+.prompt-path{color:var(--blue)}
+.prompt-sym{color:var(--text-3)}
+.cmd-text{color:#fff}
+.out{color:var(--text-3);padding-left:4px}
+.out-ok{color:var(--green)}
+.out-err{color:var(--red)}
+.out-warn{color:var(--amber)}
+.out-info{color:var(--blue)}
+.out-dim{color:var(--text-2)}
+.out-purple{color:var(--purple)}
+.blank{height:10px}
 
-  .hero-sub {
-    font-size: clamp(15px, 2vw, 18px);
-    color: var(--text-3);
-    max-width: 520px;
-    line-height: 1.7;
-    margin-bottom: 48px;
-    font-weight: 400;
-    animation: fadeUp .6s ease .2s both;
-  }
+.cursor-blink{
+  display:inline-block;width:8px;height:13px;
+  background:var(--green);vertical-align:middle;
+  animation:blink 1s step-end infinite;
+  margin-left:2px;
+}
 
-  .hero-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-    animation: fadeUp .6s ease .3s both;
-  }
+/* ── FEATURES ── */
+.features-section{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:80px 64px;
+}
+.sec-header{
+  display:flex;align-items:baseline;gap:16px;
+  margin-bottom:48px;
+}
+.sec-num{font-size:11px;color:var(--text-2)}
+.sec-title{font-size:20px;font-weight:700;color:#fff}
+.sec-sub{font-size:11px;color:var(--text-2);margin-left:auto}
 
-  .btn-primary {
-    background: var(--green);
-    color: #000;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    padding: 12px 28px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all .2s;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .btn-primary:hover {
-    background: #0ea572;
-    box-shadow: 0 0 24px var(--green-glow);
-    transform: translateY(-1px);
-  }
+.feat-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);
+}
+.feat{
+  background:var(--surface);
+  padding:28px 24px;
+  transition:background .15s;
+}
+.feat:hover{background:#0a1520}
+.feat-tag{font-size:9px;color:var(--text-2);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.feat-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:8px}
+.feat-desc{font-size:11px;color:var(--text-3);line-height:1.8}
+.feat-desc em{color:var(--green);font-style:normal}
 
-  .btn-secondary {
-    background: transparent;
-    color: var(--text-3);
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    padding: 12px 28px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: all .2s;
-    text-decoration: none;
-  }
-  .btn-secondary:hover {
-    border-color: var(--green);
-    color: var(--green);
-  }
+/* ── HOW ── */
+.how-section{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:80px 64px;
+  display:grid;grid-template-columns:1fr 2fr;gap:64px;align-items:start;
+}
+.how-left h2{font-size:20px;font-weight:700;color:#fff;margin-bottom:12px}
+.how-left p{font-size:11px;color:var(--text-3);line-height:1.8}
 
-  /* TERMINAL */
-  .terminal-wrap {
-    margin: 48px auto 0;
-    max-width: 640px;
-    width: 100%;
-    animation: fadeUp .6s ease .4s both;
-  }
+.how-steps{display:flex;flex-direction:column;gap:0}
+.how-step{
+  display:grid;grid-template-columns:40px 1fr;gap:16px;
+  padding:20px 0;border-bottom:1px solid var(--border);
+}
+.how-step:last-child{border:none}
+.step-idx{font-size:10px;color:var(--text-2);padding-top:2px}
+.step-body h3{font-size:12px;font-weight:700;color:#fff;margin-bottom:6px}
+.step-body p{font-size:11px;color:var(--text-3);line-height:1.7}
+.step-code{
+  font-size:10px;color:var(--green);
+  background:var(--green-dim);
+  border:1px solid rgba(0,255,136,0.1);
+  padding:6px 12px;border-radius:2px;
+  margin-top:8px;display:inline-block;
+}
 
-  .terminal {
-    background: #0d1117;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(16,185,129,0.05);
-  }
+/* ── CTA ── */
+.cta-section{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:80px 64px;
+  display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;
+}
+.cta-left h2{font-size:28px;font-weight:700;color:#fff;margin-bottom:12px;line-height:1.2}
+.cta-left h2 span{color:var(--green)}
+.cta-left p{font-size:11px;color:var(--text-3);line-height:1.8;margin-bottom:28px}
 
-  .term-header {
-    background: #161b22;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border-bottom: 1px solid var(--border);
-  }
+.cta-cmd{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:2px;padding:16px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;cursor:pointer;transition:border-color .15s;
+}
+.cta-cmd:hover{border-color:var(--green)}
+.cta-cmd-text{font-size:11px;color:var(--green)}
+.cta-cmd-copy{font-size:9px;color:var(--text-2)}
 
-  .term-dot {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-  }
-  .dot-red    { background: #ff5f57; }
-  .dot-yellow { background: #ffbd2e; }
-  .dot-green  { background: #28c840; }
+.cta-right{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:2px;padding:24px;
+}
+.mini-term-line{font-size:11px;margin-bottom:4px}
 
-  .term-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text-2);
-    margin-left: 8px;
-  }
+footer{
+  border-top:1px solid var(--border);
+  padding:20px 64px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:1;
+}
+.footer-left{font-size:10px;color:var(--text-2)}
+.footer-left span{color:var(--green)}
+.footer-right{display:flex;gap:20px}
+.footer-right a{font-size:10px;color:var(--text-2);text-decoration:none}
+.footer-right a:hover{color:var(--green)}
 
-  .term-body {
-    padding: 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-    line-height: 1.9;
-  }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-  .term-line { display: flex; gap: 8px; }
-  .prompt { color: var(--green); flex-shrink: 0; }
-  .cmd { color: var(--text); }
-  .out-ok { color: var(--green); }
-  .out-info { color: var(--text-3); padding-left: 16px; }
-  .out-warn { color: var(--amber); padding-left: 16px; }
-  .cursor {
-    display: inline-block;
-    width: 8px; height: 14px;
-    background: var(--green);
-    vertical-align: middle;
-    animation: blink 1s step-end infinite;
-  }
+.tline{opacity:0;animation:fadeIn .1s ease forwards}
 
-  /* STATS */
-  .stats {
-    display: flex;
-    justify-content: center;
-    gap: 48px;
-    flex-wrap: wrap;
-    padding: 40px 24px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    margin: 0;
-    background: rgba(13,17,23,0.5);
-  }
-
-  .stat { text-align: center; }
-  .stat-num {
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--green);
-    letter-spacing: -1px;
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 12px;
-    color: var(--text-2);
-    margin-top: 6px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  /* STEPS */
-  .section {
-    padding: 100px 24px;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .section-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--green);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 16px;
-  }
-
-  .section h2 {
-    font-size: clamp(28px, 4vw, 44px);
-    font-weight: 800;
-    letter-spacing: -1px;
-    margin-bottom: 16px;
-    line-height: 1.1;
-  }
-
-  .section-sub {
-    color: var(--text-3);
-    font-size: 16px;
-    max-width: 480px;
-    line-height: 1.7;
-    margin-bottom: 64px;
-  }
-
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-  }
-
-  .step {
-    background: var(--surface);
-    padding: 32px;
-    transition: background .2s;
-    position: relative;
-  }
-  .step:hover { background: #111827; }
-
-  .step-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--green);
-    font-weight: 600;
-    margin-bottom: 16px;
-  }
-
-  .step-icon {
-    font-size: 24px;
-    margin-bottom: 16px;
-  }
-
-  .step h3 {
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    letter-spacing: -0.3px;
-  }
-
-  .step p {
-    font-size: 13px;
-    color: var(--text-3);
-    line-height: 1.7;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  /* FEATURES */
-  .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
-  }
-
-  .feature {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px;
-    transition: border-color .2s, transform .2s;
-  }
-  .feature:hover {
-    border-color: rgba(16,185,129,0.3);
-    transform: translateY(-2px);
-  }
-
-  .feature-icon {
-    width: 40px; height: 40px;
-    background: var(--green-dim);
-    border: 1px solid rgba(16,185,129,0.2);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    margin-bottom: 16px;
-  }
-
-  .feature h3 {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    letter-spacing: -0.2px;
-  }
-
-  .feature p {
-    font-size: 13px;
-    color: var(--text-3);
-    line-height: 1.7;
-  }
-
-  /* CTA */
-  .cta-section {
-    text-align: center;
-    padding: 100px 24px;
-    position: relative;
-  }
-
-  .cta-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, rgba(16,185,129,0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .cta-section h2 {
-    font-size: clamp(28px, 4vw, 48px);
-    font-weight: 800;
-    letter-spacing: -1.5px;
-    margin-bottom: 16px;
-  }
-
-  .cta-section p {
-    color: var(--text-3);
-    font-size: 16px;
-    margin-bottom: 40px;
-  }
-
-  .cta-command {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 20px;
-    margin-bottom: 32px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--green);
-    cursor: pointer;
-    transition: border-color .2s;
-  }
-  .cta-command:hover { border-color: var(--green); }
-
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 24px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-2);
-    font-family: 'JetBrains Mono', monospace;
-    position: relative;
-    z-index: 1;
-  }
-
-  footer a { color: var(--green); text-decoration: none; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
-  }
-
-  /* Typing animation */
-  .typed { overflow: hidden; white-space: nowrap; }
-  .line-1 { animation: type1 .8s steps(60) 1s both; }
-  .line-2 { animation: type1 .5s steps(40) 2s both; }
-  .line-3 { animation: type1 .3s steps(30) 2.6s both; }
-  .line-4 { animation: type1 .4s steps(35) 3s both; }
-  .line-5 { animation: type1 .3s steps(25) 3.5s both; }
-  .line-6 { animation: type1 .3s steps(25) 3.9s both; }
-  .line-7 { animation: type1 .3s steps(25) 4.3s both; }
-  .cursor-wrap { animation: fadeUp 0s ease 4.8s both; }
-
-  @keyframes type1 {
-    from { width: 0; }
-    to   { width: 100%; }
-  }
-
-  @media (max-width: 600px) {
-    nav { padding: 12px 16px; }
-    .hero { padding: 100px 16px 60px; }
-    .stats { gap: 24px; }
-    .section { padding: 60px 16px; }
-  }
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;grid-template-rows:auto auto}
+  .hero-left{padding:40px 24px;border-right:none;border-bottom:1px solid var(--border)}
+  .hero-right{height:460px}
+  .features-section,.how-section,.cta-section,.footer{padding:48px 24px}
+  .feat-grid{grid-template-columns:1fr}
+  .how-section,.cta-section{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo">
-    <div class="logo-icon">🔒</div>
-    SSLVault
+  <div class="nav-left">
+    <span class="logo">// SSLVAULT</span>
+    <span class="nav-status">sys:<span>online</span> · agent:<span>v2.5</span></span>
   </div>
-  <span class="nav-badge">● LIVE DEMO</span>
-  <a href="https://easysecurity.in" class="nav-link">Dashboard →</a>
+  <div class="nav-right">
+    <a href="#how" class="nav-link">--help</a>
+    <a href="#features" class="nav-link">--features</a>
+    <a href="https://easysecurity.in" class="btn btn-g">→ dashboard</a>
+  </div>
 </nav>
 
-<main>
-  <section class="hero">
-    <div class="hero-tag">// zero-touch SSL for VPS servers</div>
+<section class="hero">
+  <div class="hero-left">
+    <div class="sys-line">
+      <span>OS: <span class="sys-val">Ubuntu 22.04.5 LTS</span></span>
+      <span>kernel: <span class="sys-val">5.15.0-112-generic</span></span>
+      <span>uptime: <span class="sys-val">47d 3h 12m</span></span>
+      <span>ssl: <span class="sys-val">✓ active · expires Dec 7 2026</span></span>
+    </div>
 
     <h1>
-      SSL on autopilot.<br>
-      <span>No manual work.</span>
+      <span class="dim">$ sudo install</span><br>
+      <span class="hi">zero-touch SSL</span><br>
+      <span class="dim">--server=yours</span>
     </h1>
 
-    <p class="hero-sub">
-      One command installs the SSLVault agent on your server.
-      Certificates are issued, installed, and renewed automatically — forever.
+    <p class="tagline">
+      One command. The agent takes over.<br>
+      <em>Cert issued. nginx configured. HTTPS live.</em><br>
+      Auto-renews forever. You never touch it again.
     </p>
 
     <div class="hero-actions">
-      <a href="https://easysecurity.in" class="btn-primary">
-        🚀 Get started free
-      </a>
-      <a href="#how" class="btn-secondary">See how it works</a>
+      <a href="https://easysecurity.in" class="btn btn-g">⚡ get started free</a>
+      <a href="#how" class="btn btn-o">man sslvault</a>
     </div>
 
-    <div class="terminal-wrap">
-      <div class="terminal">
-        <div class="term-header">
-          <div class="term-dot dot-red"></div>
-          <div class="term-dot dot-yellow"></div>
-          <div class="term-dot dot-green"></div>
-          <span class="term-title">root@your-server ~ bash</span>
-        </div>
-        <div class="term-body">
-          <div class="term-line typed line-1">
-            <span class="prompt">$</span>
-            <span class="cmd">curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash</span>
-          </div>
-          <div class="term-line typed line-2">
-            <span class="out-info">SSLVault Agent Installer v2.5</span>
-          </div>
-          <div class="term-line typed line-3">
-            <span class="out-ok">✓</span>
-            <span class="cmd">&nbsp;Detected: Ubuntu 22.04.5 LTS (x86_64)</span>
-          </div>
-          <div class="term-line typed line-4">
-            <span class="out-ok">✓</span>
-            <span class="cmd">&nbsp;Web server: nginx</span>
-          </div>
-          <div class="term-line typed line-5">
-            <span class="out-ok">✓</span>
-            <span class="cmd">&nbsp;Agent installed → /usr/local/bin/sslvault-agent</span>
-          </div>
-          <div class="term-line typed line-6">
-            <span class="out-ok">✓</span>
-            <span class="cmd">&nbsp;Certificate installed → /etc/ssl/sslvault/yourdomain.com/</span>
-          </div>
-          <div class="term-line typed line-7">
-            <span class="out-ok">✓</span>
-            <span class="cmd">&nbsp;nginx reloaded — HTTPS is live</span>
-          </div>
-          <div class="term-line cursor-wrap">
-            <span class="prompt">$</span>
-            <span class="cursor"></span>
-          </div>
-        </div>
+    <div class="mini-stats">
+      <div>
+        <div class="mini-stat-num">90<span style="font-size:14px;color:var(--text-2)">s</span></div>
+        <div class="mini-stat-lbl">to https</div>
       </div>
-    </div>
-  </section>
-
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-num">90s</div>
-      <div class="stat-label">From signup to HTTPS</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">0</div>
-      <div class="stat-label">Manual renewals ever</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">100%</div>
-      <div class="stat-label">Automated cert lifecycle</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">Free</div>
-      <div class="stat-label">To get started</div>
+      <div>
+        <div class="mini-stat-num">0</div>
+        <div class="mini-stat-lbl">manual renewals</div>
+      </div>
+      <div>
+        <div class="mini-stat-num">16</div>
+        <div class="mini-stat-lbl">dns providers</div>
+      </div>
     </div>
   </div>
 
-  <section class="section" id="how">
-    <div class="section-label">// how it works</div>
-    <h2>Three steps.<br>Then never again.</h2>
-    <p class="section-sub">The agent handles everything after installation — cert issuance, nginx config, renewals, and monitoring.</p>
+  <div class="hero-right">
+    <div class="term-tabs">
+      <div class="term-tab active" onclick="showTab('install')">install.sh</div>
+      <div class="term-tab" onclick="showTab('agent')">agent.log</div>
+      <div class="term-tab" onclick="showTab('nginx')">nginx.conf</div>
+      <div class="term-tab" onclick="showTab('cert')">cert.info</div>
+    </div>
+    <div class="term-body" id="term-output"></div>
+  </div>
+</section>
 
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-icon">🔑</div>
-        <h3>Sign up & connect DNS</h3>
-        <p>Create account. Add your Cloudflare, Vercel, or Route53 credentials. Takes 2 minutes.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-icon">⚡</div>
-        <h3>Run one install command</h3>
-        <p>Copy the command from your dashboard. Paste on your server as root. Done in 30 seconds.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-icon">🛡️</div>
-        <h3>HTTPS goes live</h3>
-        <p>DNS validated automatically. Cert issued by RapidSSL. nginx configured. Reloaded. Live.</p>
+<section class="features-section" id="features">
+  <div class="sec-header">
+    <span class="sec-num">// 01</span>
+    <span class="sec-title">what you get</span>
+    <span class="sec-sub">cat /etc/sslvault/features.conf</span>
+  </div>
+  <div class="feat-grid">
+    <div class="feat">
+      <div class="feat-tag">// daemon</div>
+      <div class="feat-title">Persistent VPS Agent</div>
+      <div class="feat-desc">Polls every <em>5 minutes</em>. Installs certs, handles renewals automatically 30 days before expiry. systemd service. Zero downtime.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-tag">// dns</div>
+      <div class="feat-title">16 DNS Providers</div>
+      <div class="feat-desc"><em>Cloudflare, Vercel, Route53</em>, GoDaddy, DigitalOcean, Porkbun, Hetzner, Linode, Vultr, Bunny, DNSimple + more.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-tag">// crypto</div>
+      <div class="feat-title">AES-256 Key Vault</div>
+      <div class="feat-desc">Private keys encrypted with <em>envelope encryption</em>. DEK wrapped with KEK. Never stored in plaintext. Audit logged.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-tag">// monitoring</div>
+      <div class="feat-title">Live Dashboard</div>
+      <div class="feat-desc">Real-time cert status. Expiry alerts. <em>Auto-renewal calendar</em>. Realtime DB subscriptions. Multi-domain fleet view.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-tag">// integrity</div>
+      <div class="feat-title">Atomic Cert Write</div>
+      <div class="feat-desc">Writes to <em>.new files</em> first. openssl key-cert match verified. Atomic mv on success. Rollback on failure. nginx reloaded gracefully.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-tag">// cost</div>
+      <div class="feat-title">Free to Start</div>
+      <div class="feat-desc">No credit card. Issue and manage your first certs at <em>zero cost</em>. Powered by RapidSSL via GoGetSSL.</div>
+    </div>
+  </div>
+</section>
+
+<section class="how-section" id="how">
+  <div class="how-left">
+    <div style="font-size:10px;color:var(--text-2);margin-bottom:8px">// 02</div>
+    <h2>sslvault --help</h2>
+    <p style="margin-top:12px">Three commands max. Usually just one. Then the agent handles everything forever.</p>
+  </div>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="step-idx">01</div>
+      <div class="step-body">
+        <h3>Sign up + connect DNS</h3>
+        <p>Add Cloudflare / Vercel / Route53 API token in the dashboard. Takes 90 seconds.</p>
+        <span class="step-code">$ open https://easysecurity.in</span>
       </div>
     </div>
-  </section>
-
-  <section class="section" style="padding-top:0">
-    <div class="section-label">// features</div>
-    <h2>Everything SSL.<br>Nothing manual.</h2>
-    <p class="section-sub">Built for engineers who want SSL to just work — on every server, every domain, forever.</p>
-
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon">🤖</div>
-        <h3>Persistent VPS Agent</h3>
-        <p>Daemon polls every 5 minutes. Installs certs, renews automatically 30 days before expiry.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🌐</div>
-        <h3>16 DNS Providers</h3>
-        <p>Cloudflare, Vercel, Route53, GoDaddy, DigitalOcean, Porkbun, Hetzner, and more.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🔐</div>
-        <h3>Encrypted Key Vault</h3>
-        <p>Private keys encrypted with AES-256-GCM envelope encryption. Never stored in plaintext.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">📊</div>
-        <h3>Live Dashboard</h3>
-        <p>Monitor all certs across all servers in real-time. Expiry alerts. Auto-renewal calendar.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🔄</div>
-        <h3>Zero-Downtime Renewal</h3>
-        <p>New cert written atomically. Key match verified with openssl. nginx reloaded gracefully.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🆓</div>
-        <h3>Free to Start</h3>
-        <p>No credit card. Issue and manage your first certificates at zero cost.</p>
+    <div class="how-step">
+      <div class="step-idx">02</div>
+      <div class="step-body">
+        <h3>Run the install command</h3>
+        <p>One curl command from your dashboard. Paste on your server as root. Agent installs as a systemd service.</p>
+        <span class="step-code">$ curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash -s -- --token=&lt;TOKEN&gt; --user-id=&lt;UID&gt;</span>
       </div>
     </div>
-  </section>
-
-  <section class="cta-section">
-    <h2>Your server deserves<br><span style="color:var(--green)">better SSL.</span></h2>
-    <p>One command. Full automation. Free forever for personal use.</p>
-
-    <div>
-      <div class="cta-command" onclick="navigator.clipboard.writeText('curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash');this.textContent='✓ Copied!'">
-        <span>📋</span>
-        curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash
+    <div class="how-step">
+      <div class="step-idx">03</div>
+      <div class="step-body">
+        <h3>Issue cert from dashboard</h3>
+        <p>Click "Issue certificate". DNS TXT added automatically. GGS validates. Cert issued. Agent installs it on nginx. Done.</p>
+        <span class="step-code">$ systemctl status sslvault-agent → active (running)</span>
       </div>
     </div>
-
-    <div>
-      <a href="https://easysecurity.in" class="btn-primary" style="font-size:15px; padding:14px 36px;">
-        Open SSLVault Dashboard →
-      </a>
+    <div class="how-step">
+      <div class="step-idx">∞</div>
+      <div class="step-body">
+        <h3>Never touch it again</h3>
+        <p>Auto-renew cron runs 30 days before expiry. New cert issued, dispatched to agent, installed, nginx reloaded. Zero intervention.</p>
+        <span class="step-code">$ cat /var/log/sslvault-agent.log | grep renewed</span>
+      </div>
     </div>
-  </section>
-</main>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-left">
+    <h2>Your server.<br><span>Secured forever.</span></h2>
+    <p>One command away from never worrying about SSL again. Free to start. No card needed.</p>
+    <div class="cta-cmd" onclick="copyCmd(this)">
+      <span class="cta-cmd-text">$ curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash</span>
+      <span class="cta-cmd-copy">click to copy</span>
+    </div>
+    <a href="https://easysecurity.in" class="btn btn-g" style="font-size:12px;padding:12px 24px">→ open dashboard</a>
+  </div>
+  <div class="cta-right">
+    <div style="font-size:9px;color:var(--text-2);margin-bottom:16px;text-transform:uppercase;letter-spacing:2px">// live cert on this server</div>
+    <div class="mini-term-line"><span style="color:var(--text-2)">domain:</span>  <span style="color:var(--green)">easysecurrity.cfd</span></div>
+    <div class="mini-term-line"><span style="color:var(--text-2)">issuer:</span>  <span style="color:#fff">RapidSSL Standard</span></div>
+    <div class="mini-term-line"><span style="color:var(--text-2)">issued:</span>  <span style="color:#fff">May 23 2026</span></div>
+    <div class="mini-term-line"><span style="color:var(--text-2)">expires:</span> <span style="color:var(--amber)">Dec 7 2026</span></div>
+    <div class="mini-term-line"><span style="color:var(--text-2)">key:</span>     <span style="color:#fff">RSA 2048-bit</span></div>
+    <div class="mini-term-line"><span style="color:var(--text-2)">status:</span>  <span style="color:var(--green)">✓ VALID · installed by sslvault-agent</span></div>
+    <div class="mini-term-line"><span style="color:var(--text-2)">renews:</span> <span style="color:#fff">auto · 30d before expiry</span></div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:10px;color:var(--text-2)">
+      This page is served over HTTPS using a certificate issued and installed automatically by SSLVault. No manual steps.
+    </div>
+  </div>
+</section>
 
 <footer>
-  <p>
-    Built with ❤️ by <a href="https://easysecurity.in">SSLVault</a> ·
-    Powered by RapidSSL · 
-    <a href="https://easysecurity.in/privacy">Privacy</a> ·
-    <a href="https://easysecurity.in/terms">Terms</a>
-  </p>
+  <div class="footer-left">
+    <span>// SSLVAULT</span> · zero-touch SSL for linux servers · <a href="https://easysecurity.in" style="color:var(--green);text-decoration:none">easysecurity.in</a>
+  </div>
+  <div class="footer-right">
+    <a href="https://easysecurity.in/privacy">privacy</a>
+    <a href="https://easysecurity.in/terms">terms</a>
+    <a href="https://easysecurity.in/developer">api</a>
+  </div>
 </footer>
 
+<script>
+const tabs = {
+  install: [
+    {t:'cmd', host:'root@easysecurrity', path:'~', text:'curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash -s -- --token=yNdV... --user-id=8ef54...'},
+    {t:'blank'},
+    {t:'out', cls:'out-purple', text:'  ██████╗ ███████╗██╗     ██╗   ██╗ █████╗ ██╗   ██╗██╗  ████████╗'},
+    {t:'out', cls:'out-purple', text:'  ██╔════╝██╔════╝██║     ██║   ██║██╔══██╗██║   ██║██║  ╚══██╔══╝'},
+    {t:'out', cls:'out-purple', text:'  ███████╗███████╗██║     ██║   ██║███████║██║   ██║██║     ██║   '},
+    {t:'out', cls:'out-purple', text:'  ╚════██║╚════██║██║     ╚██╗ ██╔╝██╔══██║██║   ██║██║     ██║   '},
+    {t:'out', cls:'out-purple', text:'  ███████║███████║███████╗ ╚████╔╝ ██║  ██║╚██████╔╝███████╗██║   '},
+    {t:'out', cls:'out-purple', text:'  ╚══════╝╚══════╝╚══════╝  ╚═══╝  ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝   '},
+    {t:'out', cls:'out-dim',    text:'  SSLVault Agent Installer v2.5 · zero-touch SSL for linux servers'},
+    {t:'blank'},
+    {t:'out', cls:'out-info',   text:'[*] Detecting operating system...'},
+    {t:'out', cls:'out-ok',     text:'[✓] Ubuntu 22.04.5 LTS (x86_64)'},
+    {t:'out', cls:'out-info',   text:'[*] Detecting web server...'},
+    {t:'out', cls:'out-ok',     text:'[✓] nginx/1.18.0'},
+    {t:'out', cls:'out-info',   text:'[*] Checking dependencies...'},
+    {t:'out', cls:'out-ok',     text:'[✓] curl openssl python3 systemctl — all present'},
+    {t:'out', cls:'out-info',   text:'[*] Downloading agent daemon...'},
+    {t:'out', cls:'out-dim',    text:'    https://easysecurity.in/sslvault-agent.sh'},
+    {t:'out', cls:'out-dim',    text:'    ████████████████████████ 100% 48.2KB/s'},
+    {t:'out', cls:'out-ok',     text:'[✓] Agent installed → /usr/local/bin/sslvault-agent'},
+    {t:'out', cls:'out-info',   text:'[*] Creating systemd service...'},
+    {t:'out', cls:'out-ok',     text:'[✓] /etc/systemd/system/sslvault-agent.service'},
+    {t:'out', cls:'out-ok',     text:'[✓] systemctl enable sslvault-agent'},
+    {t:'out', cls:'out-ok',     text:'[✓] systemctl start sslvault-agent'},
+    {t:'out', cls:'out-info',   text:'[*] Writing agent config...'},
+    {t:'out', cls:'out-ok',     text:'[✓] /etc/sslvault/agent.conf'},
+    {t:'out', cls:'out-info',   text:'[*] Registering with SSLVault...'},
+    {t:'out', cls:'out-ok',     text:'[✓] agent_id: dbd1c08f-b85c-4d1a-8318-9266daeb7f23'},
+    {t:'blank'},
+    {t:'out', cls:'out-ok',     text:'[✓] SSLVault Agent is running. Polling every 5 minutes.'},
+    {t:'out', cls:'out-dim',    text:'    Cert install jobs will execute automatically.'},
+    {t:'out', cls:'out-dim',    text:'    Monitor: journalctl -u sslvault-agent -f'},
+    {t:'blank'},
+    {t:'cmd', host:'root@easysecurrity', path:'~', text:'systemctl status sslvault-agent'},
+    {t:'out', cls:'out-ok',     text:'● sslvault-agent.service - SSLVault Certificate Agent'},
+    {t:'out', cls:'out-ok',     text:'     Loaded: loaded (/etc/systemd/system/sslvault-agent.service)'},
+    {t:'out', cls:'out-ok',     text:'     Active: active (running) since Sat 2026-05-23 04:05:22 UTC'},
+    {t:'out', cls:'out-dim',    text:'    Process: polling interval=300s · jobs=queued'},
+    {t:'blank'},
+    {t:'cursor'}
+  ],
+  agent: [
+    {t:'out', cls:'out-dim',  text:'-- Logs begin at Sat 2026-05-23 01:00:00 UTC --'},
+    {t:'blank'},
+    {t:'out', cls:'out-dim',  text:'May 23 01:08:50 [INFO]  SSLVault Agent v2.5 started'},
+    {t:'out', cls:'out-dim',  text:'May 23 01:08:50 [INFO]  polling interval: 300s'},
+    {t:'out', cls:'out-dim',  text:'May 23 01:08:50 [INFO]  agent_id: dbd1c08f'},
+    {t:'out', cls:'out-dim',  text:'May 23 01:08:55 [INFO]  poll → 0 jobs queued'},
+    {t:'out', cls:'out-dim',  text:'May 23 01:13:55 [INFO]  poll → 0 jobs queued'},
+    {t:'out', cls:'out-dim',  text:'May 23 02:05:00 [INFO]  poll → 1 job received'},
+    {t:'out', cls:'out-ok',   text:'May 23 02:05:00 [JOB]   id=0083f451 type=install domain=easysecurrity.cfd'},
+    {t:'out', cls:'out-info', text:'May 23 02:05:01 [INFO]  writing cert files...'},
+    {t:'out', cls:'out-ok',   text:'May 23 02:05:01 [OK]    /etc/ssl/sslvault/easysecurrity.cfd/fullchain.pem (5285 bytes)'},
+    {t:'out', cls:'out-ok',   text:'May 23 02:05:01 [OK]    /etc/ssl/sslvault/easysecurrity.cfd/privkey.pem  (1704 bytes)'},
+    {t:'out', cls:'out-info', text:'May 23 02:05:01 [INFO]  verifying key-cert match...'},
+    {t:'out', cls:'out-ok',   text:'May 23 02:05:01 [OK]    openssl pubkey hash match confirmed'},
+    {t:'out', cls:'out-info', text:'May 23 02:05:01 [INFO]  configuring nginx vhost...'},
+    {t:'out', cls:'out-ok',   text:'May 23 02:05:01 [OK]    /etc/nginx/sites-available/easysecurrity.cfd'},
+    {t:'out', cls:'out-info', text:'May 23 02:05:01 [INFO]  nginx -t → syntax ok'},
+    {t:'out', cls:'out-ok',   text:'May 23 02:05:02 [OK]    systemctl reload nginx → success'},
+    {t:'out', cls:'out-ok',   text:'May 23 02:05:02 [DONE]  job 0083f451 complete · https://easysecurrity.cfd is live'},
+    {t:'blank'},
+    {t:'out', cls:'out-dim',  text:'May 23 02:10:02 [INFO]  poll → 0 jobs queued'},
+    {t:'out', cls:'out-dim',  text:'May 23 02:15:02 [INFO]  poll → 0 jobs queued · cpu=4% mem=38% disk=22%'},
+    {t:'out', cls:'out-dim',  text:'...'},
+    {t:'out', cls:'out-dim',  text:'Nov 07 00:00:01 [INFO]  checking cert expiry...'},
+    {t:'out', cls:'out-warn', text:'Nov 07 00:00:01 [WARN]  easysecurrity.cfd expires in 30d — triggering renewal'},
+    {t:'out', cls:'out-info', text:'Nov 07 00:00:02 [INFO]  auto-renew: new GGS order placed'},
+    {t:'out', cls:'out-info', text:'Nov 07 00:00:02 [INFO]  DNS TXT added via Cloudflare API'},
+    {t:'out', cls:'out-info', text:'Nov 07 00:00:45 [INFO]  DCV validated · cert issued'},
+    {t:'out', cls:'out-ok',   text:'Nov 07 00:00:46 [OK]    cert renewed · expires May 2027'},
+    {t:'out', cls:'out-ok',   text:'Nov 07 00:00:46 [OK]    nginx reloaded · zero downtime'},
+    {t:'blank'},
+    {t:'cursor'}
+  ],
+  nginx: [
+    {t:'out', cls:'out-dim',    text:'# /etc/nginx/sites-available/easysecurrity.cfd'},
+    {t:'out', cls:'out-dim',    text:'# managed by sslvault-agent v2.5'},
+    {t:'blank'},
+    {t:'out', cls:'out-info',   text:'server {'},
+    {t:'out', cls:'out-dim',    text:'    listen 80;'},
+    {t:'out', cls:'out-dim',    text:'    server_name easysecurrity.cfd www.easysecurrity.cfd;'},
+    {t:'out', cls:'out-ok',     text:'    return 301 https://$host$request_uri;'},
+    {t:'out', cls:'out-info',   text:'}'},
+    {t:'blank'},
+    {t:'out', cls:'out-info',   text:'server {'},
+    {t:'out', cls:'out-dim',    text:'    listen 443 ssl;'},
+    {t:'out', cls:'out-dim',    text:'    server_name easysecurrity.cfd www.easysecurrity.cfd;'},
+    {t:'blank'},
+    {t:'out', cls:'out-ok',     text:'    # SSLVault managed certificates'},
+    {t:'out', cls:'out-ok',     text:'    ssl_certificate     /etc/ssl/sslvault/easysecurrity.cfd/fullchain.pem;'},
+    {t:'out', cls:'out-ok',     text:'    ssl_certificate_key /etc/ssl/sslvault/easysecurrity.cfd/privkey.pem;'},
+    {t:'blank'},
+    {t:'out', cls:'out-dim',    text:'    ssl_protocols TLSv1.2 TLSv1.3;'},
+    {t:'out', cls:'out-dim',    text:'    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;'},
+    {t:'out', cls:'out-dim',    text:'    ssl_session_cache shared:SSL:10m;'},
+    {t:'out', cls:'out-dim',    text:'    ssl_session_timeout 10m;'},
+    {t:'blank'},
+    {t:'out', cls:'out-dim',    text:'    root /var/www/easysecurrity.cfd;'},
+    {t:'out', cls:'out-dim',    text:'    index index.html;'},
+    {t:'blank'},
+    {t:'out', cls:'out-dim',    text:'    location / {'},
+    {t:'out', cls:'out-dim',    text:'        try_files $uri $uri/ =404;'},
+    {t:'out', cls:'out-dim',    text:'    }'},
+    {t:'out', cls:'out-info',   text:'}'},
+    {t:'blank'},
+    {t:'cmd', host:'root@easysecurrity', path:'~', text:'nginx -t'},
+    {t:'out', cls:'out-ok',     text:'nginx: configuration file /etc/nginx/nginx.conf syntax is ok'},
+    {t:'out', cls:'out-ok',     text:'nginx: configuration file /etc/nginx/nginx.conf test is successful'},
+    {t:'blank'},
+    {t:'cmd', host:'root@easysecurrity', path:'~', text:'openssl s_client -connect easysecurrity.cfd:443 -brief'},
+    {t:'out', cls:'out-ok',     text:'CONNECTION ESTABLISHED'},
+    {t:'out', cls:'out-dim',    text:'Protocol version: TLSv1.3'},
+    {t:'out', cls:'out-dim',    text:'Ciphersuite: TLS_AES_256_GCM_SHA384'},
+    {t:'out', cls:'out-ok',     text:'Peer certificate: CN=easysecurrity.cfd, O=SSLVault'},
+    {t:'out', cls:'out-ok',     text:'Verification: OK'},
+    {t:'blank'},
+    {t:'cursor'}
+  ],
+  cert: [
+    {t:'cmd', host:'root@easysecurrity', path:'~', text:'openssl x509 -in /etc/ssl/sslvault/easysecurrity.cfd/fullchain.pem -text -noout'},
+    {t:'blank'},
+    {t:'out', cls:'out-info',   text:'Certificate:'},
+    {t:'out', cls:'out-info',   text:'    Data:'},
+    {t:'out', cls:'out-dim',    text:'        Version: 3 (0x2)'},
+    {t:'out', cls:'out-dim',    text:'        Serial Number: 14:a3:c2:f8:91:... (truncated)'},
+    {t:'out', cls:'out-dim',    text:'        Signature Algorithm: sha256WithRSAEncryption'},
+    {t:'out', cls:'out-info',   text:'        Issuer: CN=RapidSSL TLS RSA CA G1, OU=www.digicert.com, O=DigiCert Inc'},
+    {t:'out', cls:'out-ok',     text:'        Validity'},
+    {t:'out', cls:'out-ok',     text:'            Not Before: May 23 00:00:00 2026 GMT'},
+    {t:'out', cls:'out-ok',     text:'            Not After : Dec  7 23:59:59 2026 GMT'},
+    {t:'out', cls:'out-ok',     text:'        Subject: CN=easysecurrity.cfd'},
+    {t:'blank'},
+    {t:'out', cls:'out-info',   text:'        X509v3 extensions:'},
+    {t:'out', cls:'out-dim',    text:'            X509v3 Key Usage: Digital Signature, Key Encipherment'},
+    {t:'out', cls:'out-dim',    text:'            X509v3 Extended Key Usage: TLS Web Server Authentication'},
+    {t:'out', cls:'out-ok',     text:'            X509v3 Subject Alternative Name: DNS:easysecurrity.cfd'},
+    {t:'blank'},
+    {t:'cmd', host:'root@easysecurrity', path:'~', text:'openssl rsa -noout -modulus -in privkey.pem | md5sum'},
+    {t:'out', cls:'out-dim',    text:'a4f9c2e8b1d73a56... (key hash)'},
+    {t:'blank'},
+    {t:'cmd', host:'root@easysecurrity', path:'~', text:'openssl x509 -noout -modulus -in fullchain.pem | md5sum'},
+    {t:'out', cls:'out-dim',    text:'a4f9c2e8b1d73a56... (cert hash)'},
+    {t:'blank'},
+    {t:'out', cls:'out-ok',     text:'[✓] Key and certificate match confirmed'},
+    {t:'blank'},
+    {t:'cmd', host:'root@easysecurrity', path:'~', text:'ls -la /etc/ssl/sslvault/easysecurrity.cfd/'},
+    {t:'out', cls:'out-dim',    text:'total 20'},
+    {t:'out', cls:'out-dim',    text:'drwxr-xr-x 2 root root 4096 May 23 04:05 .'},
+    {t:'out', cls:'out-dim',    text:'drwx------- 3 root root 4096 May 19 12:21 ..'},
+    {t:'out', cls:'out-ok',     text:'-rw-r--r-- 1 root root 5285 May 23 04:05 fullchain.pem'},
+    {t:'out', cls:'out-ok',     text:'-rw------- 1 root root 1704 May 23 04:05 privkey.pem'},
+    {t:'blank'},
+    {t:'out', cls:'out-ok',     text:'// installed by sslvault-agent · renewed automatically'},
+    {t:'blank'},
+    {t:'cursor'}
+  ]
+}
+
+let currentTab = 'install'
+
+function showTab(name) {
+  currentTab = name
+  document.querySelectorAll('.term-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['install','agent','nginx','cert'][i] === name)
+  })
+  renderTerminal(name)
+}
+
+function renderTerminal(name) {
+  const out = document.getElementById('term-output')
+  out.innerHTML = ''
+  const lines = tabs[name]
+  lines.forEach((line, i) => {
+    setTimeout(() => {
+      if (currentTab !== name) return
+      if (line.t === 'blank') {
+        const d = document.createElement('div')
+        d.className = 'blank'
+        out.appendChild(d)
+      } else if (line.t === 'cursor') {
+        const d = document.createElement('div')
+        d.className = 'tline'
+        d.style.animationDelay = '0ms'
+        d.innerHTML = `<span class="prompt-host">root@easysecurrity</span><span class="prompt-path" style="color:var(--blue)">:~</span><span class="prompt-sym">$ </span><span class="cursor-blink"></span>`
+        out.appendChild(d)
+      } else if (line.t === 'cmd') {
+        const d = document.createElement('div')
+        d.className = 'tline'
+        d.style.animationDelay = '0ms'
+        d.innerHTML = `<span class="prompt-host">${line.host}</span><span class="prompt-path">:${line.path}</span><span class="prompt-sym">$ </span><span class="cmd-text">${line.text}</span>`
+        out.appendChild(d)
+      } else {
+        const d = document.createElement('div')
+        d.className = 'tline'
+        d.style.animationDelay = '0ms'
+        d.innerHTML = `<span class="${line.cls}">${line.text}</span>`
+        out.appendChild(d)
+      }
+      out.scrollTop = out.scrollHeight
+    }, i * 28)
+  })
+}
+
+function copyCmd(el) {
+  navigator.clipboard.writeText('curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash')
+  el.querySelector('.cta-cmd-copy').textContent = '✓ copied!'
+  setTimeout(() => el.querySelector('.cta-cmd-copy').textContent = 'click to copy', 2000)
+}
+
+renderTerminal('install')
+</script>
 </body>
 </html>
