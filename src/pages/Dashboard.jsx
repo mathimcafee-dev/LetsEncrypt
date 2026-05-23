@@ -75,6 +75,62 @@ function ProgressBar({ days, max = 365 }) {
   )
 }
 
+function ImportedCertsSection({ certs, onDelete }) {
+  const [open, setOpen] = useState(false)
+  const sourceLabel = s => ({ digicert:'DigiCert', sectigo:'Sectigo', entrust:'Entrust', globalsign:'GlobalSign' }[s] || s || 'CA Connector')
+  const daysLeft = exp => { if (!exp) return null; return Math.floor((new Date(exp) - Date.now()) / 86400000) }
+  return (
+    <div style={{ marginTop:20, border:'0.5px solid #e2e8f0', borderRadius:14, overflow:'hidden', background:'white', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
+      <button onClick={() => setOpen(o => !o)}
+        style={{ width:'100%', padding:'14px 18px', display:'flex', alignItems:'center', gap:10,
+          background:'#f8fafc', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}>
+        <span style={{ fontSize:11, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px', flex:1 }}>
+          CA Connector — Imported Certificates ({certs.length})
+        </span>
+        <span style={{ fontSize:10, color:'#94a3b8', marginRight:4 }}>Tracked only · not managed by SSLVault</span>
+        <span style={{ fontSize:12, color:'#94a3b8' }}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <div>
+          {certs.map(c => {
+            const d = daysLeft(c.expires_at)
+            const isExpired = d == null || d < 0
+            const isExpiring = d != null && d >= 0 && d < 30
+            const dotColor = isExpired ? '#ef4444' : isExpiring ? '#f59e0b' : '#22c55e'
+            return (
+              <div key={c.id} style={{ padding:'12px 18px', borderTop:'0.5px solid #f1f5f9',
+                display:'flex', alignItems:'center', gap:12, background:'white' }}>
+                <div style={{ width:8, height:8, borderRadius:'50%', background:dotColor, flexShrink:0 }}/>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:13, fontWeight:600, color:'#1e293b', display:'flex', alignItems:'center', gap:8 }}>
+                    {c.domain}
+                    <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:4,
+                      background:'#f1f5f9', color:'#64748b' }}>
+                      {sourceLabel(c.source)}
+                    </span>
+                    {isExpired && <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:4, background:'#fef2f2', color:'#dc2626' }}>EXPIRED</span>}
+                  </div>
+                  <div style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>
+                    {c.issuer || c.cert_type || 'Unknown issuer'} ·{' '}
+                    {isExpired ? `Expired ${Math.abs(d)}d ago` : `${d}d left`} ·{' '}
+                    Expires {c.expires_at ? new Date(c.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—'}
+                  </div>
+                </div>
+                <button onClick={() => onDelete(c.id)}
+                  style={{ background:'none', border:'none', cursor:'pointer', color:'#94a3b8', padding:4,
+                    borderRadius:4, transition:'color .15s', fontFamily:'inherit' }}
+                  onMouseEnter={e => e.currentTarget.style.color='#ef4444'}
+                  onMouseLeave={e => e.currentTarget.style.color='#94a3b8'}
+                  title="Remove imported cert">✕</button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function DvPendingCard({ order, onRefresh }) {
   const [checking, setChecking] = useState(false)
   const [addingDns, setAddingDns] = useState(false)
@@ -1801,12 +1857,16 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     setCerts(p => p.filter(c => c.id !== id)); setSelected(null)
   }
 
-  const total    = certs.length
-  const healthy  = certs.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'active' && d != null && d >= 30 }).length
-  const expiring = certs.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'active' && d != null && d >= 0 && d < 30 }).length
-  const expired  = certs.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'revoked' || (d != null && d < 0) }).length
+  // Split: issued certs (GGS) vs imported from CA connector
+  const issuedCerts   = certs.filter(c => c.source === 'gogetssl' || c.source === 'rapidssl' || !c.source)
+  const importedCerts = certs.filter(c => c.source && c.source !== 'gogetssl' && c.source !== 'rapidssl')
 
-  const visible = certs.filter(c => {
+  const total    = issuedCerts.length
+  const healthy  = issuedCerts.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'active' && d != null && d >= 30 }).length
+  const expiring = issuedCerts.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'active' && d != null && d >= 0 && d < 30 }).length
+  const expired  = issuedCerts.filter(c => { const d = daysLeft(c.expires_at); return c.status === 'revoked' || c.status === 'cancelled' || (d != null && d < 0) }).length
+
+  const visible = issuedCerts.filter(c => {
     const d = daysLeft(c.expires_at); const s = statusOf(d, c.status)
     if (filter === 'healthy'  && s.cls !== 'green') return false
     if (filter === 'expiring' && s.cls !== 'amber') return false
@@ -2001,6 +2061,11 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               nav={nav} onRefresh={load} session={session}/>
           )}
         </div>
+
+        {/* Imported certs from CA Connector — shown separately */}
+        {importedCerts.length > 0 && (
+          <ImportedCertsSection certs={importedCerts} onDelete={handleDelete} />
+        )}
 
         <div style={{ marginTop:28 }}>
           <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Quick actions</div>
