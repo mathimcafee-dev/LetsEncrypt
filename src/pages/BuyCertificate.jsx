@@ -144,45 +144,54 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     return () => clearTimeout(t)
   }, [domain, user])
 
-  // Auto-poll for DCV value when not yet received
-  useEffect(() => {
-    if (step !== 'dv' || !ord?.order_id || ord?.dcv_txt_value) return
-    setPoll(true)
-    let n = 0
-    const iv = setInterval(async () => {
-      n++
-      try {
-        const s = await call('check_status', { order_id: ord.order_id })
-        if (s.dcv_txt_value || s.dcv_cname_value) {
-          setOrd(p => ({ ...p,
-            dcv_txt_name:    s.dcv_txt_name    || s.dcv_cname_name,
-            dcv_txt_value:   s.dcv_txt_value   || s.dcv_cname_value,
-            dcv_cname_name:  s.dcv_cname_name,
-            dcv_cname_value: s.dcv_cname_value,
-          }))
-          setPoll(false); clearInterval(iv)
-        }
-        if (s.status === 'active') { setStep('done'); setPoll(false); clearInterval(iv) }
-      } catch {}
-      if (n >= 12) { setPoll(false); clearInterval(iv) }
-    }, 5000)
-    return () => { clearInterval(iv); setPoll(false) }
-  }, [step, ord?.order_id])
-
-  // Auto-poll for active status when DNS was auto-added — no manual click needed
+  // Single polling loop: handles DCV fetch, DNS auto-add, and cert activation
   useEffect(() => {
     if (step !== 'dv' || !ord?.order_id) return
     let n = 0
+    let dnsAttempted = false
     const iv = setInterval(async () => {
       n++
       try {
         const s = await call('check_status', { order_id: ord.order_id })
-        // check_status returns live GGS data — accept active from either field
-        if (s.status === 'active' || s.ggs_status === 'active') {
-          setStep('done'); clearInterval(iv)
+
+        // Cert issued — go to done
+        if (s.status === 'active') { setStep('done'); clearInterval(iv); return }
+
+        // Got DCV values — update UI
+        if (s.dcv_txt_value || s.dcv_cname_value) {
+          setOrd(p => ({ ...p,
+            dcv_txt_name:    s.dcv_txt_name    || s.dcv_cname_name  || p.dcv_txt_name,
+            dcv_txt_value:   s.dcv_txt_value   || s.dcv_cname_value || p.dcv_txt_value,
+            dcv_cname_name:  s.dcv_cname_name  || p.dcv_cname_name,
+            dcv_cname_value: s.dcv_cname_value || p.dcv_cname_value,
+          }))
+
+          // Auto-add DNS once DCV values are confirmed — only try once
+          if (!dnsAttempted) {
+            dnsAttempted = true
+            try {
+              const { data: { session } } = await supabase.auth.getSession()
+              setDns(true)
+              const dnsR = await fetch(`${SUPABASE_URL}/functions/v1/dns-provider`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+                body: JSON.stringify({
+                  action:    'auto_add',
+                  user_id:   session.user.id,
+                  domain:    ord.domain,
+                  txt_name:  s.dcv_txt_name  || s.dcv_cname_name  || ord.domain,
+                  txt_value: s.dcv_txt_value || s.dcv_cname_value,
+                }),
+              })
+              const dnsRes = await dnsR.json()
+              setDns(false)
+              setRes({ dns_auto: dnsRes })
+              if (dnsRes.ok) setOrd(p => ({ ...p, dns_auto_added: true, dns_provider: dnsRes.provider || '' }))
+            } catch { setDns(false) }
+          }
         }
       } catch {}
-      if (n >= 120) clearInterval(iv) // stop after 10 min max
+      if (n >= 120) clearInterval(iv) // stop after 10 min
     }, 5000)
     return () => clearInterval(iv)
   }, [step, ord?.order_id])
@@ -218,36 +227,11 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       dcv_txt_value: r.dcv_txt_value || r.dcv_cname_value,
     }
     setOrd(ordData)
-    // If DNS provider auto-issued the cert, skip DCV step and show success
     if (r.auto_issued || r.status === 'active') {
       setStep('done')
     } else {
       setStep('dv')
-      // Auto-add DNS record if credential saved for this domain — no manual click needed
-      if (r.dcv_txt_value || r.dcv_cname_value) {
-        try {
-          const { data: { session } } = await supabase.auth.getSession()
-          setDns(true)
-          const dnsR = await fetch(`${SUPABASE_URL}/functions/v1/dns-provider`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
-            body: JSON.stringify({
-              action:    'auto_add',
-              user_id:   session.user.id,
-              domain:    d,
-              txt_name:  r.dcv_txt_name  || r.dcv_cname_name  || d,
-              txt_value: r.dcv_txt_value || r.dcv_cname_value,
-            }),
-          })
-          const dnsRes = await dnsR.json()
-          setDns(false)
-          setRes({ dns_auto: dnsRes })
-          if (dnsRes.ok) {
-            // DNS added — mark order so UI shows auto-polling message
-            setOrd(p => ({ ...p, dns_auto_added: true, dns_provider: dnsRes.provider || '' }))
-          }
-        } catch { setDns(false) }
-      }
+      // Polling loop (useEffect) handles DNS auto-add and cert activation automatically
     }
   }
 
