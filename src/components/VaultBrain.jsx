@@ -3,88 +3,36 @@ import { supabase } from '../lib/supabase'
 
 const RAG_URL = 'https://ai.easysecurity.in/rag'
 
-const SYSTEM_PROMPT = `You are VaultBrain, the official AI support agent for SSLVault (easysecurity.in) — a professional SSL/TLS certificate lifecycle management platform built for PKI professionals and businesses.
-
-## About SSLVault
-SSLVault is a multi-tenant certificate lifecycle management (CLM) platform. It helps users discover, monitor, issue, renew, and manage SSL/TLS certificates across all their servers and domains. It is built by a Certified PKI Specialist.
-
-## Key Features
-- **SSL Discovery**: Find certificates via CT Logs, DNS scanning, or direct server connect
-- **Auto-Renewal**: Automatic certificate renewal via persistent VPS agent (polls every 5 min)
-- **KeyLocker**: Secure private key storage with password-protected reveal and 30-second timed access
-- **CertVault**: Central certificate inventory and management
-- **Agent Install**: One-line bash install for persistent monitoring agent on any VPS/server
-- **DNS Provider Catalog**: Integrations with Cloudflare, Route53, Namecheap, GoDaddy, and 50+ providers
-- **SSL Monitor**: Real-time certificate health and expiry monitoring
-- **Bulk Scanner**: Scan multiple domains at once
-- **CAA Checker**: Check CAA DNS records before certificate issuance
-- **Trust Passport**: Visual certificate trust chain explorer
-- **Renewal Calendar**: Visual calendar of upcoming certificate renewals
-- **SSL Health Score**: Grade your SSL/TLS configuration (A+ to F)
-- **Readiness Dashboard**: Pre-issuance checklist for certificate requests
-- **Integrations**: Connect with external CA connectors and DNS providers
-
-## Certificate Issuance
-SSLVault integrates with GoGetSSL as the CA (Certificate Authority) partner for issuing DV, OV, and EV certificates. Certificates are issued via the GoGetSSL API.
-
-## Multi-Tenant Architecture
-- master_admin → end_customer hierarchy
-- Invite-based onboarding via magic link → set-password flow
-- Role-based access control
-
-## Pricing
-SSLVault offers flexible plans. Visit /pricing for current pricing details. There is a free tier and paid plans for advanced features.
-
-## Technical Stack
-- Frontend: React + Vite hosted on Vercel
-- Backend: Supabase Edge Functions
-- Agent: Bash daemon on customer VPS (polls Supabase every 5 min)
-- Auto-deploy on push to main branch
-
-## Common Support Topics
-- **Agent not connecting**: Check if agent service is running — run \`systemctl status sslvault-agent\`. Reinstall via /install page.
-- **DNS challenge failing**: Ensure DNS provider API key has write access. Check propagation with \`dig TXT _acme-challenge.yourdomain.com\`
-- **Certificate not renewing**: Check agent is online in dashboard. Verify DNS credentials are saved.
-- **Auto-renewal**: Certificates renew automatically 30 days before expiry if agent is active and DNS credentials are configured.
-- **KeyLocker**: Private keys are stored encrypted. Access requires password. Keys auto-hide after 30 seconds.
-- **TLS Grade A+**: Requires TLS 1.2/1.3 only, strong ciphers, HSTS, no weak protocols.
-- **Cloudflare setup**: Use API Token (not Global API Key). Token needs Zone:DNS:Edit permission.
-
-## Pages / Routes
-- / — Home/Landing
-- /dashboard — Main dashboard (requires login)
-- /certvault — Certificate inventory
-- /keylocker — Private key storage
-- /servers — Server management
-- /install — Agent installation guide
-- /dns-providers — DNS provider catalog
-- /pricing — Pricing plans
-- /knowledge-base — Help articles
-- /buy — Purchase/issue new certificate
-- /scan — Bulk domain scanner
-- /caa-check — CAA record checker
-- /trust-passport — Certificate trust chain
-- /renewal-calendar — Upcoming renewals
-- /ssl-health-score — SSL configuration grade
-- /contact — Contact support
-- /about — About SSLVault
-
-## Response Style
-- Be concise, helpful, and professional
-- Use markdown formatting for code blocks and lists
-- For account-specific questions when user is not logged in, ask them to sign in
-- Always suggest the relevant page/route when applicable
-- If you don't know something specific, direct user to /contact or the knowledge base
-- Never make up certificate prices or specific plan details — direct to /pricing
-- You are NOT a general AI assistant — stay focused on SSLVault and SSL/PKI topics`
-
 const CHIPS_OUT = ['How does auto-renewal work?','Install agent on VPS','DNS challenge failing','What is TLS grade A+?','Connect Cloudflare DNS','What is KeyLocker?']
-const CHIPS_IN  = ['List my certificates','Show expiring soon','Are my agents online?','How to buy a certificate','My DNS providers','KeyLocker help','Renewal calendar','SSL Health Score']
+const CHIPS_IN  = ['List my certificates','Show expiring soon','Are my agents online?','How to issue a certificate','My DNS providers','KeyLocker help']
 
 const G='#10b981',BG='#0a0a0a',S1='#111',S2='#1a1a1a',TX='#f0f0f0',MU='#7a7a7a',BD='rgba(255,255,255,0.08)',GB='rgba(16,185,129,0.25)'
 
 function Av({ai}){return <div style={{width:26,height:26,borderRadius:'50%',flexShrink:0,marginTop:2,fontSize:11,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',background:ai?'rgba(16,185,129,0.12)':'#1e293b',border:ai?'1px solid rgba(16,185,129,0.25)':'1px solid rgba(99,179,237,0.3)',color:ai?G:'#63b3ed'}}>{ai?'V':'U'}</div>}
 function Bub({ai,user,children}){return <div style={{padding:'10px 14px',borderRadius:14,maxWidth:'86%',background:user?'rgba(16,185,129,0.1)':S2,border:`0.5px solid ${user?'rgba(16,185,129,0.2)':BD}`,borderBottomLeftRadius:ai?3:14,borderBottomRightRadius:user?3:14}}>{children}</div>}
+
+// Intent detection
+function detectIntent(q) {
+  const lower = q.toLowerCase()
+  if (/my cert|list cert|show cert|all cert|certif/.test(lower)) return 'list_certs'
+  if (/expir|renew soon|expiring/.test(lower)) return 'expiring'
+  if (/agent|server|connect|online|offline/.test(lower)) return 'agents'
+  if (/keylock|private key|my key/.test(lower)) return 'keylocker'
+  if (/dns provider|cloudflare|route53|namecheap/.test(lower)) return 'dns'
+  return 'rag'
+}
+
+// Format date
+function fmtDate(d) {
+  if (!d) return 'unknown'
+  const date = new Date(d)
+  const days = Math.ceil((date - new Date()) / 86400000)
+  const str = date.toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})
+  if (days < 0) return `${str} ⛔ expired`
+  if (days < 14) return `${str} 🔴 ${days}d left`
+  if (days < 30) return `${str} 🟡 ${days}d left`
+  return `${str} ✅ ${days}d left`
+}
 
 export default function VaultBrain() {
   const [open,setOpen]=useState(false)
@@ -92,7 +40,6 @@ export default function VaultBrain() {
   const [input,setInput]=useState('')
   const [busy,setBusy]=useState(false)
   const [session,setSession]=useState(null)
-  const [history,setHistory]=useState([])
   const bottomRef=useRef(null)
   const inputRef=useRef(null)
   const busyRef=useRef(false)
@@ -105,10 +52,79 @@ export default function VaultBrain() {
 
   useEffect(()=>{
     setMsgs([{role:'ai',welcome:true,loggedIn:!!session}])
-    setHistory([])
   },[!!session])
 
   useEffect(()=>{bottomRef.current?.scrollIntoView({behavior:'smooth'})},[msgs])
+
+  // Supabase queries
+  async function fetchCerts() {
+    const {data,error} = await supabase
+      .from('certificates')
+      .select('domain,expiry_date,status,issuer')
+      .order('expiry_date',{ascending:true})
+      .limit(10)
+    if (error || !data?.length) return "You don't have any certificates yet. Issue your first one at /buy."
+    const lines = data.map(c=>`• **${c.domain}** — expires ${fmtDate(c.expiry_date)} (${c.status||'active'})`)
+    return `You have **${data.length}** certificate${data.length>1?'s':''}:\n\n${lines.join('\n')}\n\nView all at /certvault`
+  }
+
+  async function fetchExpiring() {
+    const soon = new Date(); soon.setDate(soon.getDate()+30)
+    const {data,error} = await supabase
+      .from('certificates')
+      .select('domain,expiry_date,status')
+      .lt('expiry_date', soon.toISOString())
+      .order('expiry_date',{ascending:true})
+      .limit(10)
+    if (error || !data?.length) return "✅ No certificates expiring in the next 30 days. You're all good!"
+    const lines = data.map(c=>`• **${c.domain}** — ${fmtDate(c.expiry_date)}`)
+    return `⚠️ **${data.length}** certificate${data.length>1?'s expire':'expires'} within 30 days:\n\n${lines.join('\n')}\n\nRenew at /certvault`
+  }
+
+  async function fetchAgents() {
+    const {data,error} = await supabase
+      .from('persistent_agents')
+      .select('hostname,status,last_seen,ip_address')
+      .order('last_seen',{ascending:false})
+      .limit(10)
+    if (error || !data?.length) return "No agents installed yet. Install one at /install."
+    const lines = data.map(a=>{
+      const mins = a.last_seen ? Math.floor((new Date()-new Date(a.last_seen))/60000) : null
+      const status = mins===null ? '❓ unknown' : mins < 10 ? '🟢 online' : mins < 60 ? `🟡 ${mins}m ago` : `🔴 offline (${Math.floor(mins/60)}h ago)`
+      return `• **${a.hostname||a.ip_address}** — ${status}`
+    })
+    return `You have **${data.length}** agent${data.length>1?'s':''}:\n\n${lines.join('\n')}\n\nView all at /agent-health`
+  }
+
+  async function fetchDNS() {
+    const {data,error} = await supabase
+      .from('dns_providers')
+      .select('provider_name,domain,created_at')
+      .limit(10)
+    if (error || !data?.length) return "No DNS providers configured yet. Add one at /dns-providers for auto-renewal."
+    const lines = data.map(d=>`• **${d.provider_name}** — ${d.domain}`)
+    return `You have **${data.length}** DNS provider${data.length>1?'s':''}:\n\n${lines.join('\n')}\n\nManage at /dns-providers`
+  }
+
+  async function fetchKeylocker() {
+    const {data,error} = await supabase
+      .from('key_locker')
+      .select('domain,created_at')
+      .limit(10)
+    if (error || !data?.length) return "No private keys stored in KeyLocker yet. Keys are stored automatically when you issue certificates."
+    const lines = data.map(k=>`• **${k.domain}**`)
+    return `You have **${data.length}** private key${data.length>1?'s':''}  stored in KeyLocker:\n\n${lines.join('\n')}\n\nAccess at /keylocker (password required)`
+  }
+
+  async function askRAG(q) {
+    const res = await fetch(RAG_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question:q}),
+    })
+    const d = await res.json()
+    return d.ok ? d.answer : 'Sorry, I could not get a response. Please try again.'
+  }
 
   const send=useCallback(async(q)=>{
     q=(q||'').trim()
@@ -117,24 +133,25 @@ export default function VaultBrain() {
     setBusy(true)
     setInput('')
     setMsgs(m=>[...m,{role:'user',text:q},{role:'ai',loading:true}])
+
     let answer=''
     try{
-      const res=await fetch(RAG_URL,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({question:q}),
-      })
-      const d=await res.json()
-      answer=d.ok?d.answer:(d.error||'Sorry, I could not get a response. Please try again.')
+      const intent = session ? detectIntent(q) : 'rag'
+      if (intent==='list_certs') answer = await fetchCerts()
+      else if (intent==='expiring') answer = await fetchExpiring()
+      else if (intent==='agents') answer = await fetchAgents()
+      else if (intent==='dns') answer = await fetchDNS()
+      else if (intent==='keylocker') answer = await fetchKeylocker()
+      else answer = await askRAG(q)
     }catch(e){
       answer='Connection error. The AI agent is temporarily unavailable. Please visit /contact for support.'
     }
-    setHistory(h=>[...h,{role:'user',content:q},{role:'assistant',content:answer}].slice(-12))
+
     setMsgs(m=>[...m.slice(0,-1),{role:'ai',text:answer}])
     busyRef.current=false
     setBusy(false)
     setTimeout(()=>inputRef.current?.focus(),100)
-  },[session,history])
+  },[session])
 
   const chips=session?CHIPS_IN:CHIPS_OUT
   const isNew=msgs.length<=1&&!busy
@@ -154,14 +171,14 @@ export default function VaultBrain() {
         </div>
         <div style={{flex:1}}>
           <div style={{fontSize:13,fontWeight:600,color:TX}}>VaultBrain</div>
-          <div style={{fontSize:10,color:G}}>{session?'🔐 Logged in · AI Support Agent':'PKI expert · AI-powered support'}</div>
+          <div style={{fontSize:10,color:G}}>{session?'🔐 Connected to your account · AI Support':'PKI expert · AI-powered support'}</div>
         </div>
         <span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'rgba(16,185,129,0.1)',border:'0.5px solid rgba(16,185,129,0.2)',color:G}}>SSLVAULT</span>
       </div>
 
       <div style={{flex:1,overflowY:'auto',padding:'14px 12px',display:'flex',flexDirection:'column',gap:12,touchAction:'pan-y'}}>
         {msgs.map((msg,i)=>{
-          if(msg.welcome)return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{fontSize:12,fontWeight:600,color:G,marginBottom:6}}>VaultBrain — SSLVault AI Agent</div><div style={{fontSize:12.5,color:TX,lineHeight:1.7}}>{msg.loggedIn?"Hi! I'm your SSLVault AI assistant. Ask me anything about your certificates, agents, DNS setup, or any SSLVault feature.":"Hi! I'm VaultBrain, SSLVault's AI support agent. Ask me anything about SSL certificates, auto-renewal, agent setup, or any SSLVault feature."}</div></Bub></div>)
+          if(msg.welcome)return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{fontSize:12,fontWeight:600,color:G,marginBottom:6}}>VaultBrain — SSLVault AI Agent</div><div style={{fontSize:12.5,color:TX,lineHeight:1.7}}>{msg.loggedIn?"Hi! I'm connected to your account. Ask me about your certificates, agents, DNS providers, or any PKI question.":"Hi! I'm VaultBrain, SSLVault's AI support agent. Ask me anything about SSL certificates, auto-renewal, agent setup, or any SSLVault feature."}</div></Bub></div>)
           if(msg.loading)return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{display:'flex',gap:5,alignItems:'center',padding:'3px 0'}}>{[0,1,2].map(j=><span key={j} style={{width:7,height:7,borderRadius:'50%',background:G,display:'inline-block',animation:`vbp 1.2s ${j*0.2}s infinite`}}/>)}</div></Bub></div>)
           if(msg.role==='user')return(<div key={i} style={{display:'flex',gap:8,justifyContent:'flex-end'}}><Bub user><span style={{fontSize:13,color:TX}}>{msg.text}</span></Bub><Av/></div>)
           return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{fontSize:13,color:TX,lineHeight:1.75,whiteSpace:'pre-line'}}>{msg.text}</div></Bub></div>)
@@ -177,7 +194,7 @@ export default function VaultBrain() {
         <textarea ref={inputRef} value={input}
           onChange={e=>{setInput(e.target.value);e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,80)+'px'}}
           onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(input)}}}
-          placeholder={session?"Ask about your certs, agents, renewals…":"Ask anything about SSLVault…"}
+          placeholder={session?"Ask about your certs, agents, or any PKI question…":"Ask anything about SSLVault or PKI…"}
           rows={1} disabled={busy}
           style={{flex:1,background:S2,border:`0.5px solid ${BD}`,borderRadius:8,padding:'9px 12px',color:TX,fontSize:13,fontFamily:'inherit',resize:'none',outline:'none',lineHeight:1.5,minHeight:40,maxHeight:80,opacity:busy?0.6:1}}
           onFocus={e=>e.target.style.borderColor=GB} onBlur={e=>e.target.style.borderColor=BD}/>
