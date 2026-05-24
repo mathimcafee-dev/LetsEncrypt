@@ -34,7 +34,7 @@ function fmtDate(d) {
   return `${str} ✅ ${days}d left`
 }
 
-export default function VaultBrain() {
+export default function SpartansBrain() {
   const [open,setOpen]=useState(false)
   const [msgs,setMsgs]=useState([{role:'ai',welcome:true,loggedIn:false}])
   const [input,setInput]=useState('')
@@ -157,7 +157,7 @@ export default function VaultBrain() {
   const isNew=msgs.length<=1&&!busy
 
   return(<>
-    <button onPointerDown={e=>{e.preventDefault();setOpen(o=>!o)}} aria-label="VaultBrain" style={{position:'fixed',bottom:24,right:24,zIndex:99999,width:52,height:52,borderRadius:'50%',background:open?S2:G,border:`2px solid ${open?'rgba(255,255,255,0.15)':G}`,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:`0 4px 24px ${open?'rgba(0,0,0,0.5)':'rgba(16,185,129,0.5)'}`,outline:'none',padding:0,WebkitTapHighlightColor:'transparent',touchAction:'manipulation'}}>
+    <button onPointerDown={e=>{e.preventDefault();setOpen(o=>!o)}} aria-label="Spartan's Brain" style={{position:'fixed',bottom:24,right:24,zIndex:99999,width:52,height:52,borderRadius:'50%',background:open?S2:G,border:`2px solid ${open?'rgba(255,255,255,0.15)':G}`,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:`0 4px 24px ${open?'rgba(0,0,0,0.5)':'rgba(16,185,129,0.5)'}`,outline:'none',padding:0,WebkitTapHighlightColor:'transparent',touchAction:'manipulation'}}>
       {open?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>}
       <span style={{position:'absolute',top:2,right:2,width:10,height:10,borderRadius:'50%',background:G,border:'2px solid '+BG,animation:'vbpulse 2s infinite'}}/>
     </button>
@@ -170,7 +170,7 @@ export default function VaultBrain() {
           <span style={{position:'absolute',bottom:0,right:0,width:9,height:9,borderRadius:'50%',background:G,border:'2px solid '+S1}}/>
         </div>
         <div style={{flex:1}}>
-          <div style={{fontSize:13,fontWeight:600,color:TX}}>VaultBrain</div>
+          <div style={{fontSize:13,fontWeight:600,color:TX}}>Spartan's Brain</div>
           <div style={{fontSize:10,color:G}}>{session?'🔐 Connected to your account · AI Support':'PKI expert · AI-powered support'}</div>
         </div>
         <span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'rgba(16,185,129,0.1)',border:'0.5px solid rgba(16,185,129,0.2)',color:G}}>SSLVAULT</span>
@@ -178,7 +178,7 @@ export default function VaultBrain() {
 
       <div style={{flex:1,overflowY:'auto',padding:'14px 12px',display:'flex',flexDirection:'column',gap:12,touchAction:'pan-y'}}>
         {msgs.map((msg,i)=>{
-          if(msg.welcome)return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{fontSize:12,fontWeight:600,color:G,marginBottom:6}}>VaultBrain — SSLVault AI Agent</div><div style={{fontSize:12.5,color:TX,lineHeight:1.7}}>{msg.loggedIn?"Hi! I'm connected to your account. Ask me about your certificates, agents, DNS providers, or any PKI question.":"Hi! I'm VaultBrain, SSLVault's AI support agent. Ask me anything about SSL certificates, auto-renewal, agent setup, or any SSLVault feature."}</div></Bub></div>)
+          if(msg.welcome)return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{fontSize:12,fontWeight:600,color:G,marginBottom:6}}>Spartan's Brain — SSLVault AI Agent</div><div style={{fontSize:12.5,color:TX,lineHeight:1.7}}>{msg.loggedIn?"Hi! I'm Spartan's Brain, connected to your account. Ask me about your certificates, agents, DNS providers, or any PKI question.":"Hi! I'm Spartan's Brain, SSLVault's AI support agent. Ask me anything about SSL certificates, auto-renewal, agent setup, or any SSLVault feature."}</div></Bub></div>)
           if(msg.loading)return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{display:'flex',gap:5,alignItems:'center',padding:'3px 0'}}>{[0,1,2].map(j=><span key={j} style={{width:7,height:7,borderRadius:'50%',background:G,display:'inline-block',animation:`vbp 1.2s ${j*0.2}s infinite`}}/>)}</div></Bub></div>)
           if(msg.role==='user')return(<div key={i} style={{display:'flex',gap:8,justifyContent:'flex-end'}}><Bub user><span style={{fontSize:13,color:TX}}>{msg.text}</span></Bub><Av/></div>)
           return(<div key={i} style={{display:'flex',gap:8}}><Av ai/><Bub ai><div style={{fontSize:13,color:TX,lineHeight:1.75,whiteSpace:'pre-line'}}>{msg.text}</div></Bub></div>)
