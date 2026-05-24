@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
-const OLLAMA_URL = 'https://ai.easysecurity.in/api/chat'
+const RAG_URL = 'https://ai.easysecurity.in/rag'
 
 const SYSTEM_PROMPT = `You are VaultBrain, the official AI support agent for SSLVault (easysecurity.in) — a professional SSL/TLS certificate lifecycle management platform built for PKI professionals and businesses.
 
@@ -119,18 +119,13 @@ export default function VaultBrain() {
     setMsgs(m=>[...m,{role:'user',text:q},{role:'ai',loading:true}])
     let answer=''
     try{
-      const messages=[
-        {role:'system',content:SYSTEM_PROMPT},
-        ...history,
-        {role:'user',content:q}
-      ]
-      const res=await fetch(OLLAMA_URL,{
+      const res=await fetch(RAG_URL,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'qwen2.5:0.5b',messages,stream:false}),
+        body:JSON.stringify({question:q}),
       })
       const d=await res.json()
-      answer=d.message?.content||'Sorry, I could not get a response. Please try again.'
+      answer=d.ok?d.answer:(d.error||'Sorry, I could not get a response. Please try again.')
     }catch(e){
       answer='Connection error. The AI agent is temporarily unavailable. Please visit /contact for support.'
     }
