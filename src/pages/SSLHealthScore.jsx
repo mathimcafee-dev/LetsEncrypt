@@ -38,7 +38,7 @@ function gradeStyle(grade) {
   return { color: '#3D5C59', bg: '#f8fafc', border: '#e2e8f0' }
 }
 
-function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))

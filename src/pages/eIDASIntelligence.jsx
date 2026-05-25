@@ -26,7 +26,7 @@ const TIMELINE = [
 
 const TABS = ['Overview','Trust Services','eIDAS vs eIDAS 2.0','Timeline','Current Initiatives','Official Links']
 
-function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
 export default function eIDASIntelligence({ nav }) {
   const isMobile = useIsMobile()
