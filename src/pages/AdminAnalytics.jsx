@@ -14,7 +14,10 @@ async function callApproval(tok, body) {
   return r.json()
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 export default function AdminAnalytics({ user }) {
+  const isMobile = useIsMobile()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [requests, setRequests] = useState([])
@@ -119,14 +122,14 @@ export default function AdminAnalytics({ user }) {
             </div>
           ) : (
             <div style={{border:'0.5px solid var(--v2-border)',borderRadius:8,overflow:'hidden'}}>
-              <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',padding:'8px 16px',
+              <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:520,minWidth:520,padding:'8px 16px',
                 background:'var(--v2-surface-2)',borderBottom:'0.5px solid var(--v2-border)'}}>
                 {['Email','Status','Requested','Actions'].map(h=>(
                   <div key={h} style={{fontSize:10,fontWeight:700,color:'var(--v2-text-3)',textTransform:'uppercase',letterSpacing:'0.4px'}}>{h}</div>
                 ))}
               </div>
               {requests.map((req,i)=>(
-                <div key={req.id} style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',
+                <div key={req.id} style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:520,minWidth:520,
                   padding:'10px 16px',borderBottom:i<requests.length-1?'0.5px solid var(--v2-border)':'none',
                   background:i%2===0?'transparent':'var(--v2-surface-2)',alignItems:'center'}}>
                   <div style={{fontSize:12,fontWeight:500,color:'var(--v2-text)'}}>{req.email}</div>

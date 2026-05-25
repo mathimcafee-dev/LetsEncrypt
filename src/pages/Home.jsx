@@ -226,7 +226,7 @@ function CertVaultMockup() {
               <span style={{ fontSize:12, fontWeight:700, color:W.heading, fontFamily:MONO }}>{k.d}</span>
               <span style={{ fontSize:9.5, fontWeight:700, color:W.purple, background:W.purpleBg, padding:'2px 8px', borderRadius:4 }}>🔒 VAULT SECURED</span>
             </div>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:6, marginBottom:10 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:6, marginBottom:10 }}>
               {[['Algorithm',k.alg],['Rotations','2'],['Last access',k.last]].map(([l,v]) => (
                 <div key={l} style={{ background:W.bg2, borderRadius:5, padding:'5px 8px' }}>
                   <div style={{ fontSize:9, color:W.muted, textTransform:'uppercase', letterSpacing:'0.3px', marginBottom:2 }}>{l}</div>
@@ -259,7 +259,7 @@ function ReadinessMockup() {
         <span style={{ fontSize:11, color:W.muted, fontFamily:MONO, flex:1, textAlign:'center' }}>47-Day Readiness · CA/B Forum</span>
       </div>
       <div style={{ padding:'14px 16px' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:14 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:14 }}>
           {[{d:'Mar 2026',v:'200d',s:W.red,bg:W.redBg},{d:'Mar 2027',v:'100d',s:W.amber,bg:W.amberBg},{d:'Mar 2029',v:'47d',s:W.teal,bg:W.tealBg}].map(m => (
             <div key={m.d} style={{ padding:'9px 10px', borderRadius:8, background:m.bg, border:`1px solid ${m.s}22` }}>
               <div style={{ fontSize:10, fontWeight:700, color:m.s, marginBottom:2 }}>{m.d}</div>
@@ -324,7 +324,7 @@ export default function Home({ nav }) {
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes fadeSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
-        @media(max-width:767px) {
+        @media(max-width:min(767px,100%)) {
           .nav-links { display:none !important; }
           .nav-signin { display:none !important; }
         }
@@ -676,7 +676,7 @@ export default function Home({ nav }) {
                 <div style={{ width:8, height:8, borderRadius:'50%', background:'#E8897A', animation:'blink 2s ease infinite' }}/>
                 <span style={{ fontSize:13, fontWeight:700, color:W.heading }}>CA/B Forum maximum validity mandate — action required now</span>
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:isMobile?20:0 }}>
+              <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(auto-fill,minmax(180px,1fr))', gap:isMobile?20:0 }}>
                 {[
                   { date:'March 15, 2026', limit:'200 days', status:'IMMINENT', color:'#E8897A',
                     action:'Certificates issued with validity > 200 days will be rejected by all major browsers. Audit your fleet immediately.' },
@@ -828,7 +828,7 @@ export default function Home({ nav }) {
             </div>
           </FadeUp>
 
-          <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:16, marginBottom:20 }}>
+          <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(auto-fill,minmax(180px,1fr))', gap:16, marginBottom:20 }}>
             {[
               {
                 icon:'🏛', color:'#3DBFB0', title:'CA Trust Store',
@@ -1111,7 +1111,7 @@ export default function Home({ nav }) {
       {/* ── FOOTER ── */}
       <footer style={{ background:D.bg, borderTop:`2px solid ${W.teal}`, padding:`clamp(48px,6vw,64px) clamp(20px,4vw,48px) clamp(28px,3vw,40px)` }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4,1fr)', gap:32, marginBottom:48 }}>
+          <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(auto-fill,minmax(150px,1fr))', gap:32, marginBottom:48 }}>
             {[
               { title:'Product',          links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]] },
               { title:'Support Resources', links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CA Intelligence',()=>nav('/ca-intelligence')],['CAA Checker',()=>nav('/caa-check')]] },

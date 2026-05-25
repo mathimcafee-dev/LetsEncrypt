@@ -4,6 +4,8 @@ import {
 } from 'lucide-react'
 import portrait from '../assets/mathi-portrait.jpg'
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function Github({ size=14, color='currentColor' }) {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' width={size} height={size} viewBox='0 0 24 24' fill={color} aria-hidden='true'>
@@ -20,6 +22,7 @@ const CERTS = [
 ]
 
 export default function DeveloperInner({ nav }) {
+  const isMobile = useIsMobile()
   return (
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
@@ -50,7 +53,7 @@ export default function DeveloperInner({ nav }) {
         </div>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:14 }}>
         {/* Credentials */}
         <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
           <div style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Credentials</div>

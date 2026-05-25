@@ -40,6 +40,8 @@ const STATUS_CONFIG = {
   known:      { label: 'Known',      color: '#16a34a', bg: '#E8F8F6', border: '#A8E6DE', leftBorder: '#16a34a' },
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.unknown
   return (
@@ -124,6 +126,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
 }
 
 export default function CTAbuseMonitor({ user }) {
+  const isMobile = useIsMobile()
   const [shadows,      setShadows]      = useState([])
   const [watchDomains, setWatchDomains] = useState([])
   const [knownCerts,   setKnownCerts]   = useState(new Set())
@@ -252,7 +255,7 @@ export default function CTAbuseMonitor({ user }) {
         )}
 
         {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 16 }}>
           {[
             { label: 'Total detected', val: classified.length,            color: 'var(--v2-text)' },
             { label: 'Flagged',        val: flagged,                       color: '#dc2626'         },

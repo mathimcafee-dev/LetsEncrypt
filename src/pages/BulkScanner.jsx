@@ -24,6 +24,8 @@ function gradeStyle(grade) {
   return { color: 'var(--v2-text-3)', bg: 'var(--v2-bg)' }
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function Tick({ ok }) {
   return ok
     ? <CheckCircle size={12} color="#16a34a" style={{ flexShrink: 0 }} />
@@ -44,6 +46,7 @@ function exportCSV(results) {
 }
 
 export default function BulkScanner({ nav }) {
+  const isMobile = useIsMobile()
   const [input,    setInput]    = useState('')
   const [scanning, setScanning] = useState(false)
   const [progress, setProgress] = useState(0)

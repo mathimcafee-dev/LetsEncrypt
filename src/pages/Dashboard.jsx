@@ -2780,12 +2780,12 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             </div>
 
             {loading ? (
-              <div style={{ padding:'48px 16px', textAlign:'center' }}>
+              <div style={{ padding:'clamp(16px,16vw,48px) 16px', textAlign:'center' }}>
                 <RefreshCw size={20} style={{ color:'#94a3b8', animation:'spin 1s linear infinite' }}/>
                 <div style={{ fontSize:12, color:'#94a3b8', marginTop:10 }}>Loading...</div>
               </div>
             ) : visible.length === 0 ? (
-              <div style={{ padding:'48px 16px', textAlign:'center' }}>
+              <div style={{ padding:'clamp(16px,16vw,48px) 16px', textAlign:'center' }}>
                 <Shield size={24} style={{ color:'#e2e8f0', marginBottom:12 }}/>
                 <div style={{ fontSize:13, fontWeight:600, color:'#94a3b8', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
                 <div style={{ fontSize:12, color:'#94a3b8', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>

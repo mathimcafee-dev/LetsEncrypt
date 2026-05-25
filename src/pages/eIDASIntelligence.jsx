@@ -44,7 +44,7 @@ export default function eIDASIntelligence({ nav }) {
         .eid-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}
         .eid-tab:hover{color:var(--v2-text)}
         .eid-tab.on{color:var(--v2-text);border-bottom-color:var(--v2-text)}
-        .eid-body{padding:20px clamp(12px,24px,24px);max-width:900px}
+        .eid-body{padding:20px clamp(12px,24px,24px);max-width:min(900px,100%)}
         .eid-section{margin-bottom:28px}
         .eid-sh{font-size:13px;font-weight:600;color:var(--v2-text);margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--v2-border)}
         .eid-p{font-size:13px;color:var(--v2-text-2);line-height:1.8;margin-bottom:10px}
@@ -58,7 +58,7 @@ export default function eIDASIntelligence({ nav }) {
         .cmp-card{background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px}
         .link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--v2-border)}
         .link-row:last-child{border-bottom:none}
-        @media(max-width:700px){.cmp-grid{grid-template-columns:1fr}}
+        @media(max-width:min(700px,100%)){.cmp-grid{grid-template-columns:1fr}}
       `}</style>
 
       <div className="eid-hero">

@@ -1754,7 +1754,7 @@ export default function DnsProviders({ nav }) {
           <div>
             {loading ? (
               <ListPanel>
-                <div style={{ padding:'48px 16px', textAlign:'center', fontSize:12, color:'var(--v2-text-3)' }}>
+                <div style={{ padding:'clamp(16px,16vw,48px) 16px', textAlign:'center', fontSize:12, color:'var(--v2-text-3)' }}>
                   <RefreshCw size={18} style={{ color:'var(--v2-text-3)', animation:'spin 1s linear infinite', marginBottom:10, display:'block', margin:'0 auto 10px' }}/>
                   Loading domains…
                 </div>
@@ -1886,7 +1886,7 @@ export default function DnsProviders({ nav }) {
         .spin { animation: v2-spin 0.8s linear infinite; }
         @keyframes v2-spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }
       
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           .dp-hero{padding:20px 14px 18px!important}
           .dp-h1{font-size:18px!important}
         }`}</style>

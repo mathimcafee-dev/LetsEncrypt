@@ -101,6 +101,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
 const clean = v => v.trim().replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase()
 
 export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embedded = false }) {
+  const isMobile = useIsMobile()
   const { user, loading: authLoading } = useAuth()
   const [step, setStep]       = useState('form')
   const [product, setProduct] = useState('rapidssl')
@@ -345,7 +346,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
       {/* Body */}
       <div style={{ maxWidth: embedded ? '100%' : 1100, margin: '0 auto', padding: embedded ? '20px 20px 40px' : '40px 32px 80px',
-        display: 'grid', gridTemplateColumns: '1fr 360px', gap: embedded ? 20 : 32, alignItems: 'start' }}>
+        display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr clamp(260px,32vw,360px)', gap: embedded ? 20 : 32, alignItems: 'start' }}>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 

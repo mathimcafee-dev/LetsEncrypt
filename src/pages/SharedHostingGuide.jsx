@@ -5,6 +5,8 @@ import {
 } from 'lucide-react'
 import '../styles/design-v2.css'
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
   const copy = () => { try { navigator.clipboard.writeText(text) } catch(e) {}; setOk(true); setTimeout(() => setOk(false), 2000) }
@@ -72,6 +74,7 @@ function TerminalMock({ lines }) {
 }
 
 export default function SharedHostingGuide({ nav }) {
+  const isMobile = useIsMobile()
   return (
     <div className="v2-page">
       <div className="v2-container" style={{ maxWidth: 800 }}>

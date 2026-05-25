@@ -30,6 +30,8 @@ function daysLeft(iso) {
 }
 
 // ── Status dot with optional pulse ring ──────────────────────────────
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function StatusDot({ st, size = 8 }) {
   return (
     <span style={{ position:'relative', display:'inline-flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -147,7 +149,7 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
       </div>
 
       {/* Steps */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 0 }}>
         {steps.map((step, i) => {
           const isDone = step.always || step.done
           return (
@@ -490,7 +492,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
 
             {/* INFO TAB */}
             {tab === 'info' && (
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:16 }}>
                 <div>
                   {[
                     ['Hostname',      agent.hostname],
@@ -579,6 +581,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
 
 // ══ MAIN ══════════════════════════════════════════════════════════════
 export default function Infrastructure({ user }) {
+  const isMobile = useIsMobile()
   const [agents,  setAgents]  = useState([])
   const [certs,   setCerts]   = useState([])
   const [loading, setLoading] = useState(true)
@@ -686,7 +689,7 @@ export default function Infrastructure({ user }) {
           </div>
         ) : agents.length === 0 ? (
           /* Empty state */
-          <div className="v2-card" style={{ padding:'48px 24px', textAlign:'center' }}>
+          <div className="v2-card" style={{ padding:'clamp(16px,16vw,48px) 24px', textAlign:'center' }}>
             <Server size={36} color="var(--v2-text-3)" strokeWidth={1.5}
               style={{ margin:'0 auto 14px', display:'block' }}/>
             <div style={{ fontSize:15, fontWeight:500, color:'var(--v2-text)', marginBottom:6 }}>

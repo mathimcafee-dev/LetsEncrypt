@@ -207,7 +207,7 @@ export default function CABForumNewsroom({ nav }) {
         .hero-eyebrow { font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase;font-weight:500;margin-bottom:8px }
         .hero-h1 { font-size:26px;font-weight:600;letter-spacing:-.4px;color:#fff;line-height:1.2;margin-bottom:10px }
         .hero-h1 em { color:#3DBFB0;font-style:normal }
-        .hero-sub { font-size:13px;color:rgba(255,255,255,.55);max-width:640px;line-height:1.7;margin-bottom:20px }
+        .hero-sub { font-size:13px;color:rgba(255,255,255,.55);max-width:min(640px,100%);line-height:1.7;margin-bottom:20px }
         .hero-stats { display:flex;gap:28px;flex-wrap:wrap }
         .hstat-n { font-size:22px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums;line-height:1 }
         .hstat-l { font-size:10px;color:rgba(255,255,255,.4);margin-top:3px;letter-spacing:.05em;text-transform:uppercase }
@@ -266,10 +266,10 @@ export default function CABForumNewsroom({ nav }) {
         .bdp-field:last-child { border-bottom:none }
         .bdp-k { font-size:11px;color:var(--v2-text-3);min-width:90px;flex-shrink:0 }
         .bdp-v { font-size:12px;color:var(--v2-text);font-weight:500 }
-        @media(max-width:900px){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
+        @media(max-width:min(900px,100%)){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
       
-        @media(max-width:900px){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
-        @media(max-width:767px){
+        @media(max-width:min(900px,100%)){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
+        @media(max-width:min(767px,100%)){
           .hero-band{padding:20px 14px 18px}
           .hero-h1{font-size:20px}
           .hero-sub{font-size:12px}

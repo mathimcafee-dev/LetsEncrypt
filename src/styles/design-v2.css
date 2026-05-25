@@ -419,3 +419,143 @@ img, video, iframe {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+
+/* ── Data table scroll wrapper ───────────────────────────────────────── */
+/* Any element with minWidth set (data table rows/headers) needs a scroll container */
+.v2-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* ── RenewalCalendar — 7-col grid must scroll on mobile ─────────────── */
+@media (max-width: 600px) {
+  /* Force calendar to scroll horizontally */
+  .v2-page [style*="repeat(auto-fill,minmax(100px"] {
+    min-width: 560px;
+  }
+}
+
+/* ── Page-level padding overrides ───────────────────────────────────── */
+@media (max-width: 767px) {
+  /* All v2-page inline padding containers */
+  .v2-page > .v2-container,
+  .v2-page .v2-container {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  /* Reduce large top padding on content sections */
+  .v2-page [style*="padding-top: 60px"],
+  .v2-page [style*="paddingTop: 60px"],
+  .v2-page [style*="padding-top: 56px"],
+  .v2-page [style*="paddingTop: 56px"],
+  .v2-page [style*="padding-top: 48px"],
+  .v2-page [style*="paddingTop: 48px"] {
+    padding-top: 24px !important;
+  }
+
+  /* Ensure ALL grids with minWidth overflow scroll */
+  .v2-page .v2-card,
+  .v2-page [class*="card"] {
+    overflow-x: auto;
+  }
+
+  /* Fix flex rows that might overflow */
+  .v2-page .v2-section-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Sidebar nav tabs — horizontal scroll */
+  .v2-page [class*="-tabs"],
+  .v2-page .page-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .v2-page [class*="-tabs"]::-webkit-scrollbar,
+  .v2-page .page-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Intelligence page bodies */
+  .v2-page [class*="-body"] {
+    padding: 14px !important;
+    max-width: 100% !important;
+  }
+
+  /* Hero sections */
+  .v2-page [class*="-hero"],
+  .v2-page [class*="hero-band"],
+  .v2-page .hero-band {
+    padding: 20px 14px 18px !important;
+  }
+
+  /* Two-col splits → single col */
+  .v2-page .content-grid,
+  .v2-page [class*="content-grid"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Filter bars */
+  .v2-page .filter-bar,
+  .v2-page [class*="filter-bar"] {
+    padding: 8px 10px !important;
+    flex-wrap: wrap;
+  }
+
+  /* Pane headers */
+  .v2-page .pane-head,
+  .v2-page [class*="pane-head"] {
+    padding: 10px 12px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* h1 font sizes */
+  .v2-page [class*="-h1"] {
+    font-size: clamp(18px, 5vw, 24px) !important;
+  }
+
+  /* stat numbers */
+  .v2-page [class*="-sn"],
+  .v2-page [class*="hstat-n"],
+  .v2-page [class*="stat-n"] {
+    font-size: 18px !important;
+  }
+
+  /* Sync bars */
+  .v2-page [class*="sync-bar"] {
+    padding: 6px 12px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* ── Very small screens ──────────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .v2-page .v2-container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
+
+/* ── iPad portrait (768–1023px) ──────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .v2-container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  /* Reduce very wide data table minWidths for iPad */
+  .v2-page .v2-card {
+    overflow-x: auto;
+  }
+
+  /* 6-col grids → 3 on iPad */
+  .v2-page [class*="hero-stats"],
+  .v2-page [class*="-stats"] {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}

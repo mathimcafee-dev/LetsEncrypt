@@ -18,6 +18,8 @@ function fmtRelative(iso) {
   try { return formatDistanceToNow(new Date(iso), { addSuffix: true }) } catch { return '—' }
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function JobRow({ job }) {
   const icon = job.status === 'completed'
     ? <CheckCircle size={12} color="#1A7A72"/>
@@ -214,6 +216,7 @@ function InstallModal({ onClose }) {
 
 // ── Main page ─────────────────────────────────────────────────────────
 export default function ServersPage({ user }) {
+  const isMobile = useIsMobile()
   const [agents, setAgents] = useState([])
   const [loading, setLoading] = useState(true)
   const [showInstall, setShowInstall] = useState(false)
@@ -267,7 +270,7 @@ export default function ServersPage({ user }) {
 
       {/* KPI strip */}
       {!loading && agents.length > 0 && (
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, marginBottom:24 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:12, marginBottom:24 }}>
           {[
             { label:'Total servers', val:agents.length, color:'var(--v2-text)' },
             { label:'Online now', val:online, color: online > 0 ? '#1A7A72' : 'var(--v2-text)' },
@@ -294,9 +297,9 @@ export default function ServersPage({ user }) {
 
       {/* Agent list */}
       {loading ? (
-        <div style={{ padding:'60px 20px', textAlign:'center', color:'var(--v2-text-3)', fontSize:12 }}>Loading…</div>
+        <div style={{ padding:'clamp(16px,20vw,60px) 20px', textAlign:'center', color:'var(--v2-text-3)', fontSize:12 }}>Loading…</div>
       ) : agents.length === 0 ? (
-        <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'60px 20px', textAlign:'center' }}>
+        <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'clamp(16px,20vw,60px) 20px', textAlign:'center' }}>
           <Server size={36} color="#d4d4d4" strokeWidth={1.5} style={{ marginBottom:12 }}/>
           <div style={{ fontSize:14, fontWeight:500, color:'var(--v2-text)', marginBottom:6 }}>No servers connected</div>
           <div style={{ fontSize:12, color:'var(--v2-text-3)', marginBottom:20, maxWidth:340, margin:'0 auto 20px' }}>

@@ -255,7 +255,7 @@ export default function CertBind() {
         </div>
 
         {/* Summary cards */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:10, marginBottom:24, animation:'fadeUp .35s ease .05s both' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:10, marginBottom:24, animation:'fadeUp .35s ease .05s both' }}>
           {[
             { num: certs.length, label: 'Total domains',   color: 'var(--v2-text-2)', bg: 'var(--v2-surface)',           border: '#e5e7eb' },
             { num: live,         label: 'Verified live',   color: '#1A7A72', bg: '#E8F8F6',        border: '#E8F8F6' },
@@ -320,7 +320,7 @@ export default function CertBind() {
           </div>
         ) : certs.length === 0 ? (
           <div style={{
-            textAlign:'center', padding:'60px 24px',
+            textAlign:'center', padding:'clamp(16px,20vw,60px) 24px',
             background:'var(--v2-surface)', borderRadius:12, border:'1px solid #f0f0f0',
           }}>
             <Shield size={32} color="#e5e7eb" style={{ marginBottom:12 }} />

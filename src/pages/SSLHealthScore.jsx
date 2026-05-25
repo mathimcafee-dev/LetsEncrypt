@@ -38,6 +38,8 @@ function gradeStyle(grade) {
   return { color: '#3D5C59', bg: '#f8fafc', border: '#e2e8f0' }
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
   const color = pct >= 80 ? '#16a34a' : pct >= 60 ? '#2563eb' : pct >= 50 ? '#E8897A' : '#dc2626'
@@ -157,6 +159,7 @@ function DomainRow({ score, onRescan, scanning }) {
 }
 
 export default function SSLHealthScore({ user }) {
+  const isMobile = useIsMobile()
   const [tok, setTok] = useState('')
   const [scores, setScores] = useState([])
   const [loading, setLoading] = useState(true)
@@ -229,7 +232,7 @@ export default function SSLHealthScore({ user }) {
 
         {/* Summary cards */}
         {scores.length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
             {[
               { label: 'Domains', val: scores.length, color: 'var(--v2-text)' },
               { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#16a34a' : avgScore >= 60 ? '#2563eb' : '#dc2626' },

@@ -166,7 +166,7 @@ export default function Pricing({ nav }) {
       <style>{`
         *{box-sizing:border-box}
         ::selection{background:#3DBFB022;color:#3DBFB0}
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           .pricing-grid{grid-template-columns:1fr !important;}
           .pricing-compare-grid{grid-template-columns:1fr !important;}
           .pricing-hero h1{font-size:32px !important;}

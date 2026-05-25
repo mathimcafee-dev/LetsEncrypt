@@ -155,7 +155,7 @@ export default function KnowledgeBase({ nav }) {
   return (
     <div style={{ minHeight:'100vh', background:C.bg, fontFamily:F, color:C.heading }}>
       <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}} *{box-sizing:border-box;margin:0;padding:0}
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           .kb-body{padding:16px 14px!important}
           .kb-tabs{padding:0 10px!important;overflow-x:auto!important}
         }`}</style>

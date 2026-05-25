@@ -182,7 +182,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
         </div>
 
         {/* Quick stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 1,
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 1,
           borderBottom: '0.5px solid var(--v2-border)', background: 'var(--v2-border)' }}>
           {[
             { label: 'Uptime',        val: fmtUptime(agent.uptime_seconds) },
@@ -483,7 +483,7 @@ export default function AgentHealth({ user }) {
         </div>
 
         {/* ── Summary cards ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
           {[
             { val: agents.length, label: 'Total agents', color: 'var(--v2-text)', filter: 'all' },
             { val: online.length,  label: 'Online',       color: '#16a34a', filter: 'online' },

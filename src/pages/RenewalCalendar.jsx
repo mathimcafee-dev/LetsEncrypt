@@ -37,6 +37,8 @@ function certStatus(expiresAt) {
 }
 
 // ── Day cell used in month view ───────────────────────────────────────
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function DayCell({ day, certs, isToday, isSelected, onClick }) {
   const worst = certs.reduce((w, c) => {
     const s = certStatus(c.expires_at)
@@ -127,7 +129,7 @@ function DetailPanel({ label, certs, onClose }) {
           color:'var(--v2-text-3)', fontSize:16, lineHeight:1, padding:'0 4px' }}>×</button>
       </div>
       {/* Col headers */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
         padding:'6px 14px', background:'var(--v2-surface-3)',
         borderBottom:'0.5px solid var(--v2-border)' }}>
         {['Domain','Issuer','Expires','Days'].map(h => (
@@ -140,7 +142,7 @@ function DetailPanel({ label, certs, onClose }) {
         const css = st ? STATUS[st] : STATUS.healthy
         const d   = daysUntil(c.expires_at)
         return (
-          <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',
+          <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
             padding:'9px 14px', alignItems:'center',
             borderBottom: i<certs.length-1 ? '0.5px solid var(--v2-border)' : 'none',
             background: 'var(--v2-surface)',
@@ -258,7 +260,7 @@ function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
   return (
     <div>
       {/* Day headers */}
-      <div style={{ display:'grid', gridTemplateColumns:'50px repeat(7,1fr)', gap:3, marginBottom:3 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'50px repeat(auto-fill,minmax(100px,1fr))', gap:3, marginBottom:3 }}>
         <div/>
         {weekDates.map((d,i) => {
           const isToday = d.toDateString()===today.toDateString()
@@ -290,7 +292,7 @@ function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
       {/* Time rows */}
       <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
         {Array.from({length:10}, (_,i) => i+8).map(hour => (
-          <div key={hour} style={{ display:'grid', gridTemplateColumns:'50px repeat(7,1fr)',
+          <div key={hour} style={{ display:'grid', gridTemplateColumns:'50px repeat(auto-fill,minmax(100px,1fr))',
             borderBottom:'0.5px solid var(--v2-border)', minHeight:48 }}>
             <div style={{ fontSize:9, color:'var(--v2-text-3)', padding:'5px 8px',
               borderRight:'0.5px solid var(--v2-border)', background:'var(--v2-surface-3)',
@@ -357,7 +359,7 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
   return (
     <div>
       {/* Bar chart */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(12,1fr)', gap:6, marginBottom:20 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(60px,1fr))', gap:6, marginBottom:20 }}>
         {certsByMonth.map((m,mi) => {
           const isCurrent = mi===today.getMonth() && viewYear===today.getFullYear()
           const total = m.certs.length
@@ -399,7 +401,7 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
       </div>
 
       {/* Mini month grid — 12 months */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:10 }}>
         {certsByMonth.map((m,mi) => {
           const isCurrent = mi===today.getMonth() && viewYear===today.getFullYear()
           const firstDow  = new Date(viewYear,mi,1).getDay()
@@ -454,6 +456,7 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
 
 // ══ MAIN ══════════════════════════════════════════════════════════════
 export default function RenewalCalendar({ user }) {
+  const isMobile = useIsMobile()
   const today = useMemo(()=>new Date(),[])
   const [certs,     setCerts]     = useState([])
   const [loading,   setLoading]   = useState(true)
@@ -555,7 +558,7 @@ export default function RenewalCalendar({ user }) {
         </div>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:14 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:14 }}>
           {[
             { label:'Total',         val:certs.length, color:'var(--v2-text)' },
             { label:'Expired',       val:allExpired,   color:RED   },

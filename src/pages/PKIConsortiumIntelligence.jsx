@@ -50,7 +50,7 @@ export default function PKIConsortiumIntelligence({ nav }) {
         .pkic-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}
         .pkic-tab:hover{color:var(--v2-text)}
         .pkic-tab.on{color:var(--v2-text);border-bottom-color:var(--v2-text)}
-        .pkic-body{padding:20px clamp(12px,24px,24px);max-width:900px}
+        .pkic-body{padding:20px clamp(12px,24px,24px);max-width:min(900px,100%)}
         .pkic-section{margin-bottom:28px}
         .pkic-sh{font-size:13px;font-weight:600;color:var(--v2-text);margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--v2-border)}
         .pkic-p{font-size:13px;color:var(--v2-text-2);line-height:1.8;margin-bottom:10px}
@@ -65,7 +65,7 @@ export default function PKIConsortiumIntelligence({ nav }) {
         .link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--v2-border)}
         .link-row:last-child{border-bottom:none}
       
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           [class*="-hero"],[class*="-band"]{padding:20px 14px 18px!important}
           [class*="-body"]{padding:14px!important;max-width:100%!important}
           [class*="-tabs"]{padding:0 10px!important}

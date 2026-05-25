@@ -228,7 +228,7 @@ export default function GlobalPKIHub({ nav }) {
         .ev-yr{font-size:10px;color:var(--v2-text-3);font-family:${MONO}}
         .side-info{background:var(--v2-surface-2);border-left:0.5px solid var(--v2-border);padding:16px;min-width:260px;max-width:300px;flex-shrink:0}
         .si-head{font-size:11px;letter-spacing:.06em;color:var(--v2-text-3);text-transform:uppercase;font-weight:500;margin-bottom:10px}
-        @media(max-width:800px){.org-grid{grid-template-columns:1fr}.pqc-grid{grid-template-columns:1fr}}
+        @media(max-width:min(800px,100%)){.org-grid{grid-template-columns:1fr}.pqc-grid{grid-template-columns:1fr}}
       `}</style>
 
       {/* Sync bar */}
@@ -324,7 +324,7 @@ export default function GlobalPKIHub({ nav }) {
                 </div>
                 <button className="v2-btn v2-btn-sm" onClick={()=>setSelectedOrg(null)}>✕</button>
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:14 }}>
                 <div>
                   <div className="v2-callout tip" style={{ fontSize:12, marginBottom:12 }}>{selectedOrg.plain_english}</div>
                   <div style={{ fontSize:11, color:'var(--v2-text-2)', lineHeight:1.7 }}><strong style={{ color:'var(--v2-text)' }}>Mission:</strong> {selectedOrg.mission}</div>
@@ -492,7 +492,7 @@ export default function GlobalPKIHub({ nav }) {
             <h1 className="v2-h1" style={{ marginBottom:4 }}>Global PKI history timeline</h1>
             <p className="v2-subtitle">From ITU-T founding in 1865 through X.509, SSL, CAB Forum, PQC — every defining moment in public key infrastructure history.</p>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14, alignItems:'start' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:14, alignItems:'start' }}>
             {[0,1].map(col => (
               <div key={col}>
                 {filteredTimeline.filter((_,i) => i%2===col).map((e, i, arr) => (

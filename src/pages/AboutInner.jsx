@@ -11,7 +11,10 @@ const PILLARS = [
   { icon: Globe, title: 'Any hosting', body: 'VPS with Nginx or Apache, cPanel shared hosting, or any server reachable by the agent. DNS validation via Cloudflare, Vercel, and more.' },
 ]
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 export default function AboutInner({ nav }) {
+  const isMobile = useIsMobile()
   return (
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
@@ -48,7 +51,7 @@ export default function AboutInner({ nav }) {
       {/* Stack */}
       <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 24px', marginBottom:16 }}>
         <div style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Stack & infrastructure</div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8 }}>
           {[
             ['Frontend', 'React 18 + Vite'],
             ['Database', 'Supabase (PostgreSQL)'],

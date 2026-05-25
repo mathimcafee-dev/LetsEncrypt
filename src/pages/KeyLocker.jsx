@@ -425,7 +425,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
         )}
 
         {/* Metrics */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:14 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:14 }}>
           {[
             { label:'Last accessed', value: keyEntry.last_accessed_at ? fmtAgo(keyEntry.last_accessed_at) : 'Never' },
             { label:'Rotations',     value: keyEntry.rotation_count ?? 0 },
@@ -703,7 +703,7 @@ export default function CertVault({ nav }) {
         </div>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:20 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:20 }}>
           {[
             { label:'Active keys',  val:activeKeys.length,   color:'#E8897A' },
             { label:'Archived',     val:archivedKeys.length, color:'#E8897A' },

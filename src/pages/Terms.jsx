@@ -48,7 +48,7 @@ export default function Terms({ nav }) {
       {/* DETAILED TERMS */}
       <section style={{position:'relative',padding:'30px 0 80px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px'}}>
-          <div style={{background:'white',borderRadius:24,padding:'48px 50px',boxShadow:'0 4px 24px rgba(15,23,42,0.06)',border:'1px solid #e2e8f0'}}>
+          <div style={{background:'white',borderRadius:24,padding:'clamp(16px,16vw,48px) clamp(14px,16vw,50px)',boxShadow:'0 4px 24px rgba(15,23,42,0.06)',border:'1px solid #e2e8f0'}}>
 
             <Section title='1. Acceptance'>
               By creating an SSLVault account or using any feature of the service, you agree to these

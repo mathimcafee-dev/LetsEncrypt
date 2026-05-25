@@ -44,7 +44,7 @@ export default function APKICIntelligence({ nav }) {
         .ap-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}
         .ap-tab:hover{color:var(--v2-text)}
         .ap-tab.on{color:var(--v2-text);border-bottom-color:var(--v2-text)}
-        .ap-body{padding:20px clamp(12px,24px,24px);max-width:900px}
+        .ap-body{padding:20px clamp(12px,24px,24px);max-width:min(900px,100%)}
         .ap-section{margin-bottom:28px}
         .ap-sh{font-size:13px;font-weight:600;color:var(--v2-text);margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--v2-border)}
         .ap-p{font-size:13px;color:var(--v2-text-2);line-height:1.8;margin-bottom:10px}
@@ -57,7 +57,7 @@ export default function APKICIntelligence({ nav }) {
         .link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--v2-border)}
         .link-row:last-child{border-bottom:none}
       
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           [class*="-hero"],[class*="-band"]{padding:20px 14px 18px!important}
           [class*="-body"]{padding:14px!important;max-width:100%!important}
           [class*="-tabs"]{padding:0 10px!important}
@@ -104,7 +104,7 @@ export default function APKICIntelligence({ nav }) {
             </div>
             <div className="ap-section">
               <div className="ap-sh">Governance and structure</div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'6px 16px' }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'6px 16px' }}>
                 {[['Founded','2001'],['HQ','Hong Kong (rotating host)'],['Chair','Eva Chan'],['Category','Regional Consortium'],['Region','Asia / Oceania'],['Members','11+ economies'],['Funding','Membership contributions'],['Secretariat','Rotating among member economies']].map(([k,v])=>(
                   <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid var(--v2-border)', fontSize:12 }}>
                     <span style={{ color:'var(--v2-text-3)', minWidth:100, flexShrink:0 }}>{k}</span>

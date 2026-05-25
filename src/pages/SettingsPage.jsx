@@ -436,7 +436,7 @@ export default function SettingsPage({ user }) {
   const handleSignOut = async () => { await supabase.auth.signOut() }
 
   if (loading) return (
-    <div style={{ padding: '48px 28px', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--v2-text-3)', fontSize: 13, fontFamily: 'inherit' }}>
+    <div style={{ padding: 'clamp(16px,16vw,48px) 28px', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--v2-text-3)', fontSize: 13, fontFamily: 'inherit' }}>
       <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }}/> Loading…
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>

@@ -49,6 +49,8 @@ function computeRow(cert, hasAgent, hasDnsCreds) {
   return { checks, milestones, score, status, validity }
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function Tick({ ok }) {
   return ok
     ? <CheckCircle size={14} color="#1A7A72" style={{ flexShrink:0 }}/>
@@ -93,6 +95,7 @@ const COL_DEFS = [
 ]
 
 export default function ReadinessDashboard({ user }) {
+  const isMobile = useIsMobile()
   const [certs,       setCerts]       = useState([])
   const [hasAgent,    setHasAgent]    = useState(false)
   const [hasDnsCreds, setHasDnsCreds] = useState(false)
@@ -198,7 +201,7 @@ export default function ReadinessDashboard({ user }) {
         </div>
 
         {/* Summary strip */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:8, marginBottom:16 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))', gap:8, marginBottom:16 }}>
           {[
             { label:'Fleet score',  value:fleetScore, unit:'/ 100', color: fleetScore>=90?'#0F6E56':fleetScore>=60?'#854F0B':'#A32D2D' },
             { label:'Domains',      value:rows.length, unit:'total',    color:'var(--v2-text-1)' },

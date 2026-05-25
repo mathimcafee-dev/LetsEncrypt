@@ -5,6 +5,8 @@ import '../styles/design-v2.css'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function StatusIcon({ status }) {
   if (status === 'pass')    return <CheckCircle  size={15} color="#16a34a" style={{ flexShrink:0 }} />
   if (status === 'fail')    return <XCircle      size={15} color="#dc2626" style={{ flexShrink:0 }} />
@@ -43,6 +45,7 @@ function CopySnippet({ text }) {
 }
 
 export default function CAAChecker({ nav }) {
+  const isMobile = useIsMobile()
   const [domain,   setDomain]   = useState('')
   const [loading,  setLoading]  = useState(false)
   const [result,   setResult]   = useState(null)

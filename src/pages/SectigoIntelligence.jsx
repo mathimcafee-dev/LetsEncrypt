@@ -222,7 +222,7 @@ function InventoryLayer({ creds }) {
         sub="All SSL/TLS certificates from your Sectigo SCM account, bucketed by expiry urgency."
         badge="Live"/>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))', gap: 8, marginBottom: 20 }}>
         {BANDS.map(b => {
           const count = certs.filter(b.filter).length
           return (
@@ -513,7 +513,7 @@ export default function SectigoIntelligence({ nav }) {
         )}
       </div>
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           [class*="-hero"],[class*="-band"]{padding:20px 14px 18px!important}
           [class*="-body"]{padding:14px!important;max-width:100%!important}
           [class*="-tabs"]{padding:0 10px!important}

@@ -446,7 +446,7 @@ export default function CATrustExplorer({ nav }) {
         .sync-bar { background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:7px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--v2-text-2);gap:12px;flex-wrap:wrap }
         .live-dot { display:inline-block;width:6px;height:6px;border-radius:50%;background:#22c55e;margin-right:5px;vertical-align:middle;animation:blink 2.4s infinite }
         @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-        .stats-grid { display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px }
+        .stats-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:18px }
         .stat-tile { background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-lg);padding:12px 14px;cursor:pointer;transition:border-color .12s,background .12s;user-select:none }
         .stat-tile:hover { background:var(--v2-surface-3);border-color:var(--v2-border-strong) }
         .stat-tile.active { background:var(--v2-green-bg);border-color:var(--v2-green-border) }
@@ -566,9 +566,9 @@ export default function CATrustExplorer({ nav }) {
         .loading-rows { padding:16px;display:flex;flex-direction:column;gap:10px }
         .skeleton { background:linear-gradient(90deg,var(--v2-hover) 25%,var(--v2-surface-2) 50%,var(--v2-hover) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--v2-r-md);height:14px }
         @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-        @media(max-width:900px){.split{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(3,1fr)}}
+        @media(max-width:min(900px,100%)){.split{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
       
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           [class*="-hero"],[class*="-band"]{padding:20px 14px 18px!important}
           [class*="-body"]{padding:14px!important}
           [class*="-tabs"]{padding:0 10px!important;overflow-x:auto!important}

@@ -731,7 +731,7 @@ function AddHostingModal({ onClose, onSaved, userId }) {
           <label style={{ fontSize:12, fontWeight:600, color:'var(--v2-text-2)', display:'block', marginBottom:6 }}>cPanel hostname</label>
           <input value={hostname} onChange={e=>setHostname(e.target.value)} placeholder="server.yourhostingprovider.com" style={inp} />
 
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 120px', gap:10 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) clamp(220px,10vw,120px)', gap:10 }}>
             <div>
               <label style={{ fontSize:12, fontWeight:600, color:'var(--v2-text-2)', display:'block', marginBottom:6 }}>cPanel username</label>
               <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="your-cpanel-username" style={{...inp, marginBottom:0}} />
@@ -918,7 +918,7 @@ export default function MyServers({ user }) {
         ) : (
           <>
             {/* Status strip */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10, marginBottom: 24 }}>
               {[
                 { num: agents.length, label: 'Servers connected', color: 'var(--v2-text-2)', sub: `${onlineCount} online` },
                 { num: certs.filter(c => c.status === 'active').length, label: 'Certs protected', color: '#1A7A72', sub: 'auto-renewing' },

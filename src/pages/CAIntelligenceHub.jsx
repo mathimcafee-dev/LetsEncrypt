@@ -301,7 +301,7 @@ function OverviewTab({ tok, onSwitchCA }) {
         ))}
       </div>
       <style>{`@keyframes pulse-ca { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(2.5);opacity:0} }
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           .ci-hero{padding:20px 14px!important}
           .ci-tabs{padding:0 10px!important;overflow-x:auto!important}
         }`}</style>
@@ -941,7 +941,7 @@ function DigiCertTab({ tok, nav }) {
         </div>
 
         {/* Table header */}
-        <div style={{ display:'grid', gridTemplateColumns:'2fr 1.2fr 110px 90px 170px',
+        <div style={{ display:'grid', gridTemplateColumns:'2fr 1.2fr 110px 90px 170px',minWidth:600,
           padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)' }}>
           {['Domain', 'Product', 'Expires', 'Status', 'Actions'].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
@@ -961,7 +961,7 @@ function DigiCertTab({ tok, nav }) {
             const rowBg = i % 2 === 0 ? 'transparent' : 'var(--v2-surface-2)'
             return (
               <div key={c.id || i}
-                style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 110px 90px 170px', gap: 8,
+                style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 110px 90px 170px', minWidth:600, gap: 8,
                   padding: '9px 16px', background: rowBg, borderBottom: '0.5px solid var(--v2-border)',
                   cursor: 'pointer', transition: 'background 0.1s' }}
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-hover)'}
@@ -1114,7 +1114,7 @@ function SectigoTab({ tok }) {
         <button className="v2-btn v2-btn-sm v2-btn-danger" onClick={disconnect}>Disconnect</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10, marginBottom: 14 }}>
         {[
           { label: 'Cert inventory',  val: '—', sub: 'fetch to see',   c: 'var(--v2-text)' },
           { label: 'Expiring ≤ 30d',  val: '—', sub: 'needs attention', c: 'var(--v2-text)' },
@@ -1148,7 +1148,7 @@ function SectigoTab({ tok }) {
           </div>
         ) : (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px',
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', minWidth:480,
               padding: '8px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
               {['Domain', 'Type', 'Expires', 'Status'].map(h => (
                 <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
@@ -1162,7 +1162,7 @@ function SectigoTab({ tok }) {
                 const s = d === null ? 'grey' : d <= 0 ? 'red' : d <= 30 ? 'amber' : 'green'
                 return (
                   <div key={i} className={'v2-list-row status-' + s}
-                    style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', padding: '10px 16px', cursor: 'default' }}>
+                    style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', minWidth:480, padding: '10px 16px', cursor: 'default' }}>
                     <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: 'var(--v2-text)',
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignSelf: 'center' }}>
                       {c.commonName || c.cn || '—'}
@@ -1332,7 +1332,7 @@ function ShadowITTab({ tok, nav }) {
 
       <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden' }}>
         {/* Table header */}
-        <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 80px',
+        <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 80px',minWidth:700,
           padding:'8px 14px', borderBottom:'0.5px solid var(--v2-border)', background:'var(--v2-bg)' }}>
           {['Domain', 'Product', 'Ordered by', 'Expires', 'Urgency', ''].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
@@ -1362,7 +1362,7 @@ function ShadowITTab({ tok, nav }) {
           const u = URGENCY_MAP[s.urgency] || URGENCY_MAP.unknown
           return (
             <div key={s.id} className={`v2-list-row status-${s.urgency === 'expired' || s.urgency === 'critical' ? 'red' : s.urgency === 'warning' ? 'amber' : 'green'}`}
-              style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 80px', padding: '10px 16px',
+              style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 80px', minWidth:700, minWidth:700, padding: '10px 16px',
                 borderBottom: i < shadows.length - 1 ? '0.5px solid var(--v2-border)' : 'none', cursor: 'default' }}>
               <div>
                 <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace',
@@ -1535,7 +1535,7 @@ function ConsolidationTab({ tok, nav }) {
                 </span>
               </div>
               <div className="v2-card" style={{ marginBottom: 16 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px 80px',
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px 80px', minWidth:660,
                   padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)',
                   background: 'var(--v2-surface-2)' }}>
                   {['Domain', 'Current CA', 'Product', 'Expires', 'Saving/yr', ''].map(h => (
@@ -1544,7 +1544,7 @@ function ConsolidationTab({ tok, nav }) {
                   ))}
                 </div>
                 {consolidation.map((opp, i) => (
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px 80px',
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px 80px', minWidth:660,
                     padding: '11px 16px', alignItems: 'center',
                     borderBottom: i < consolidation.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
                     transition: 'background .12s' }}

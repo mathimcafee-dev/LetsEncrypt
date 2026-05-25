@@ -196,7 +196,7 @@ export default function Install({ nav }) {
 
               <div style={{ marginTop:28, padding:'20px', background:C.bg2, border:`1px solid ${C.border}`, borderRadius:10 }}>
                 <div style={{ fontSize:13, fontWeight:600, color:C.heading, marginBottom:14 }}>What the agent does automatically</div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:8 }}>
                   {[
                     '✓ Detects Nginx or Apache',
                     '✓ Writes cert files to correct paths',

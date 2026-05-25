@@ -3,7 +3,10 @@ import { supabase } from '../lib/supabase'
 import { Shield, Lock, CheckCircle, Zap, Eye, EyeOff, AlertTriangle, ArrowRight, RefreshCw } from 'lucide-react'
 import '../styles/design-v2.css'
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 export default function Auth({ nav }) {
+  const isMobile = useIsMobile()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -67,7 +70,7 @@ export default function Auth({ nav }) {
       <div style={{ position:'fixed', top:60, left:0, right:0, height:2, background:'var(--v2-green)', zIndex:10 }} />
 
       <div style={{ maxWidth:1060, margin:'0 auto', padding:'clamp(24px,6vw,60px) clamp(14px,3vw,24px)',
-                    display:'grid', gridTemplateColumns:'1fr 420px', gap:60,
+                    display:'grid', gridTemplateColumns:'minmax(0,1fr) clamp(320px,35vw,420px)', gap:60,
                     alignItems:'center', width:'100%' }}>
 
         {/* Left: value prop */}

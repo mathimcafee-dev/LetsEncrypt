@@ -23,7 +23,10 @@ function timeAgo(iso) {
   return `${Math.floor(s / 86400)}d ago`
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 export default function PublicStatus({ username: propUsername, nav }) {
+  const isMobile = useIsMobile()
   // Support /status/username URL pattern
   const username = propUsername || window.location.pathname.split('/status/')[1]?.split('/')[0] || ''
 

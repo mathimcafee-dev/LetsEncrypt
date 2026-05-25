@@ -157,7 +157,7 @@ function OverviewTab({ user }) {
   return (
     <div>
       {/* KPI strip */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Active certs" val={active} sub={`of ${total} total`}
           color={active>0?'#1A7A72':'var(--v2-text-1)'}/>
         <StatCard label="Expiring ≤ 30d" val={expiring30} sub={expiring7>0?`${expiring7} within 7 days`:'none critical'}
@@ -172,7 +172,7 @@ function OverviewTab({ user }) {
 
         {/* TLS grade distribution */}
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
-          borderRadius:10, padding:'14px 16px' }}>
+          borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
           <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
             letterSpacing:'0.4px', marginBottom:14 }}>TLS grade distribution</div>
           {gradeEntries.map(([g, color]) => (
@@ -201,7 +201,7 @@ function OverviewTab({ user }) {
         {/* Source & activity */}
         <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
-            borderRadius:10, padding:'14px 16px', flex:1 }}>
+            borderRadius:10, padding:'14px 16px', flex:1 , overflowX:'auto'}}>
             <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
               letterSpacing:'0.4px', marginBottom:12 }}>Certificate sources</div>
             {Object.entries(bySource).length === 0 ? (
@@ -218,7 +218,7 @@ function OverviewTab({ user }) {
             ))}
           </div>
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
-            borderRadius:10, padding:'14px 16px' }}>
+            borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
             <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
               letterSpacing:'0.4px', marginBottom:10 }}>Activity</div>
             <div style={{ display:'flex', gap:16 }}>
@@ -238,7 +238,7 @@ function OverviewTab({ user }) {
       {/* Expiry health bar */}
       {active > 0 && (
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
-          borderRadius:10, padding:'14px 16px' }}>
+          borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
           <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
             letterSpacing:'0.4px', marginBottom:12 }}>Fleet health</div>
           <div style={{ display:'flex', height:12, borderRadius:8, overflow:'hidden', gap:1 }}>
@@ -387,7 +387,7 @@ function TLSGradesTab({ tok, user }) {
     <div>
       {/* Stats */}
       {scores.length > 0 && (
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:16 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
           <StatCard label="Domains tracked" val={scores.length}/>
           <StatCard label="Average score" val={avgScore}
             color={avgScore>=80?'#1A7A72':avgScore>=60?'#0F6E56':'#A32D2D'}/>
@@ -402,7 +402,7 @@ function TLSGradesTab({ tok, user }) {
 
       {/* Add domain */}
       <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
-        borderRadius:10, padding:'12px 14px', marginBottom:14 }}>
+        borderRadius:10, padding:'12px 14px', marginBottom:14 , overflowX:'auto'}}>
         <div style={{ display:'flex', gap:8, alignItems:'center' }}>
           <Globe size={14} color="var(--v2-text-3)" style={{ flexShrink:0 }}/>
           <input ref={inputRef} value={newDomain}
@@ -492,7 +492,7 @@ function CTWatchTab({ tok, user }) {
   return (
     <div>
       {/* Summary */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Total findings" val={shadows.length}/>
         <StatCard label="Needs review" val={unknowns.length}
           color={unknowns.length>0?'#A32D2D':'#1A7A72'}
@@ -524,7 +524,7 @@ function CTWatchTab({ tok, user }) {
       ) : (
         <div>
           {/* Table header */}
-          <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',
+          <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:560,minWidth:650,
             padding:'8px 14px', background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
             borderRadius:'10px 10px 0 0', marginBottom:0 }}>
             {['Domain','Product','Expires','Status',''].map(h => (
@@ -542,7 +542,7 @@ function CTWatchTab({ tok, user }) {
               const isExp = expanded === s.id
               return (
                 <div key={s.id} style={{ borderBottom: i<shadows.length-1?'0.5px solid var(--v2-border)':'none' }}>
-                  <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',
+                  <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:560,minWidth:650,
                     padding:'10px 14px', alignItems:'center',
                     background: i%2===0?'var(--v2-surface)':'var(--v2-bg)',
                     borderLeft:`3px solid ${status==='known'?'transparent':cfg.color}` }}>
@@ -684,7 +684,7 @@ function MassScanTab() {
     <div>
       {/* Input */}
       <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
-        borderRadius:10, padding:'14px 16px', marginBottom:14 }}>
+        borderRadius:10, padding:'14px 16px', marginBottom:14 , overflowX:'auto'}}>
         <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
           letterSpacing:'0.4px', marginBottom:10 }}>Paste up to 100 domains</div>
         <textarea value={input} onChange={e => setInput(e.target.value)}
@@ -729,7 +729,7 @@ function MassScanTab() {
       {results && (
         <div>
           {/* Summary */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:12 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:12 }}>
             <StatCard label="Scanned" val={results.length} sub="domains"/>
             <StatCard label="Passed" val={passCount} color="#1A7A72" bg="#E1F5EE"/>
             <StatCard label="Failed" val={failCount}
@@ -874,7 +874,7 @@ export default function ShieldIntelligence({ user }) {
         {tab === 'mass'     && <MassScanTab/>}
       </div>
       <style>{`@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           [class*="-hero"],[class*="-band"]{padding:20px 14px 18px!important}
           [class*="-body"]{padding:14px!important;max-width:100%!important}
           [class*="-tabs"]{padding:0 10px!important}

@@ -37,7 +37,10 @@ const EVENT_CONFIG = {
   default:         { icon: Shield,      color: '#3D5C59', bg: '#f8fafc', label: 'Event' },
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 export default function CertChangelog({ user }) {
+  const isMobile = useIsMobile()
   const [events,  setEvents]  = useState([])
   const [loading, setLoading] = useState(true)
   const [search,  setSearch]  = useState('')
@@ -126,7 +129,7 @@ export default function CertChangelog({ user }) {
           const counts = events.reduce((a, e) => { a[e.event_type] = (a[e.event_type]||0)+1; return a }, {})
           const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,4)
           return (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
               {top.map(([type, count]) => {
                 const cfg = EVENT_CONFIG[type] || EVENT_CONFIG.default
                 const Icon = cfg.icon

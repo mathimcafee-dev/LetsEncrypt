@@ -170,7 +170,7 @@ function ExpiryTimeline({ tok }) {
         sub="Every certificate across all connected CAs, unified by urgency. Certs with no renewal path are flagged for manual action."/>
 
       {/* Summary stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 8, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(120px,1fr))', gap: 8, marginBottom: 20 }}>
         {Object.entries(URGENCY).map(([key, u]) => (
           <Card key={key} style={{ padding: '12px 14px', cursor: 'pointer',
             borderTop: `3px solid ${counts[key] > 0 ? u.dot : 'var(--v2-border)'}`,
@@ -772,7 +772,7 @@ function ConsolidationAdvisor({ tok, nav }) {
 
       {/* Summary */}
       {opps.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10, marginBottom: 20 }}>
           <Card style={{ padding: '14px 16px', borderLeft: '3px solid #16a34a' }}>
             <div style={{ fontSize: 26, fontWeight: 800, color: '#16a34a', letterSpacing: '-0.5px', marginBottom: 4 }}>
               ${totalSaving.toFixed(0)}<span style={{ fontSize: 13, fontWeight: 500 }}>/yr</span>

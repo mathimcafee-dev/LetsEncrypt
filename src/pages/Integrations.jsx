@@ -1714,7 +1714,7 @@ export default function Integrations({ nav }) {
               </div>
             ) : credentials.length === 0 ? (
               <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
-                padding:'60px 32px', textAlign:'center' }}>
+                padding:'clamp(16px,20vw,60px) 32px', textAlign:'center' , overflowX:'auto'}}>
                 <Globe size={36} style={{ color:'var(--v2-text-3)', marginBottom:14, display:'block', margin:'0 auto 14px' }}/>
                 <div style={{ fontSize:15, fontWeight:500, color:'var(--v2-text)', marginBottom:6 }}>No DNS providers connected</div>
                 <div style={{ fontSize:13, color:'var(--v2-text-3)', maxWidth:420, margin:'0 auto 20px' }}>
@@ -1728,7 +1728,7 @@ export default function Integrations({ nav }) {
             ) : (
               <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
                 {/* Table header */}
-                <div style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',
+                <div style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidth:640,minWidth:650,
                   padding:'10px 20px', background:'var(--v2-surface-2)',
                   borderBottom:'0.5px solid var(--v2-border)' }}>
                   {['Provider', 'Domain', 'API credentials', 'Status', 'Actions'].map(h => (
@@ -1747,7 +1747,7 @@ export default function Integrations({ nav }) {
                   const ss = statusStyles[st] || statusStyles.untested
                   return (
                     <div key={cred.id}
-                      style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',
+                      style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidth:640,minWidth:650,
                         padding:'14px 20px', alignItems:'center',
                         borderBottom: i < credentials.length-1 ? '0.5px solid var(--v2-border)' : 'none',
                         background:'var(--v2-surface)', transition:'background .1s' }}
@@ -1849,7 +1849,7 @@ export default function Integrations({ nav }) {
               </div>
             ) : servers.length === 0 ? (
               <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
-                padding:'60px 32px', textAlign:'center' }}>
+                padding:'clamp(16px,20vw,60px) 32px', textAlign:'center' , overflowX:'auto'}}>
                 <Server size={36} style={{ color:'var(--v2-text-3)', display:'block', margin:'0 auto 14px' }}/>
                 <div style={{ fontSize:15, fontWeight:500, color:'var(--v2-text)', marginBottom:6 }}>No servers connected</div>
                 <div style={{ fontSize:13, color:'var(--v2-text-3)', maxWidth:420, margin:'0 auto 20px' }}>
@@ -1863,7 +1863,7 @@ export default function Integrations({ nav }) {
             ) : (
               <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
                 {/* Table header */}
-                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',
+                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidth:650,
                   padding:'10px 20px', background:'var(--v2-surface-2)',
                   borderBottom:'0.5px solid var(--v2-border)' }}>
                   {['Server', 'Type', 'Domains', 'Agent', 'Actions'].map(h => (
@@ -1887,7 +1887,7 @@ export default function Integrations({ nav }) {
                   const ag = agentUI[agentStatus]
                   return (
                     <div key={srv.id}
-                      style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',
+                      style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidth:650,
                         padding:'14px 20px', alignItems:'center',
                         borderBottom: i < servers.length-1 ? '0.5px solid var(--v2-border)' : 'none',
                         background:'var(--v2-surface)', transition:'background .1s' }}
@@ -1984,7 +1984,7 @@ export default function Integrations({ nav }) {
 
             {connections.length === 0 ? (
               <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
-                padding:'60px 32px', textAlign:'center' }}>
+                padding:'clamp(16px,20vw,60px) 32px', textAlign:'center' , overflowX:'auto'}}>
                 <Shield size={36} style={{ color:'var(--v2-text-3)', display:'block', margin:'0 auto 14px' }}/>
                 <div style={{ fontSize:15, fontWeight:500, color:'var(--v2-text)', marginBottom:6 }}>No CA connections</div>
                 <div style={{ fontSize:13, color:'var(--v2-text-3)', maxWidth:420, margin:'0 auto 20px' }}>
@@ -1997,7 +1997,7 @@ export default function Integrations({ nav }) {
               </div>
             ) : (
               <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
-                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',
+                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:650,
                   padding:'10px 20px', background:'var(--v2-surface-2)',
                   borderBottom:'0.5px solid var(--v2-border)' }}>
                   {['Certificate authority', 'Label', 'Certs', 'Status', 'Actions'].map(h => (
@@ -2011,7 +2011,7 @@ export default function Integrations({ nav }) {
                   const isActive = conn.status === 'active'
                   return (
                     <div key={conn.id}
-                      style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',
+                      style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:650,
                         padding:'14px 20px', alignItems:'center',
                         borderBottom: i < connections.length-1 ? '0.5px solid var(--v2-border)' : 'none',
                         background:'var(--v2-surface)', transition:'background .1s' }}
@@ -2335,7 +2335,7 @@ export default function Integrations({ nav }) {
         .spin { animation: v2-spin 0.8s linear infinite; }
         @keyframes v2-spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }
       
-        @media(max-width:767px){
+        @media(max-width:min(767px,100%)){
           [class*="-hero"]{padding:20px 14px!important}
           [class*="-tabs"]{padding:0 10px!important;overflow-x:auto!important}
         }`}</style>

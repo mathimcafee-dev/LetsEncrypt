@@ -49,6 +49,8 @@ const btnStyle = {
 }
 
 // ── Detail panel ──────────────────────────────────────────────────────
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, onIssue, onRefresh }) {
   const [showKey, setShowKey]       = useState(false)
   const [copiedField, setCopied]    = useState(null)
@@ -151,7 +153,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
         <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--v2-text-3)', padding:4 }}><X size={16}/></button>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 280px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) clamp(220px,23vw,280px)' }}>
         {/* Main */}
         <div style={{ padding:'20px 24px', borderRight:'0.5px solid var(--v2-border)' }}>
 
@@ -314,6 +316,7 @@ const STATUS_FILTERS = [
 
 // ── Main ──────────────────────────────────────────────────────────────
 export default function CertInventory({ user, nav, onIssue }) {
+  const isMobile = useIsMobile()
   const [certs, setCerts]           = useState([])
   const [orders, setOrders]         = useState({})
   const [loading, setLoading]       = useState(true)
@@ -451,7 +454,7 @@ export default function CertInventory({ user, nav, onIssue }) {
         {/* Certificate alerts */}
         <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'16px 20px' }}>
           <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)', marginBottom:14 }}>Certificate alerts</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:0 }}>
             {[
               { label:'Expired in last 7 days',  val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=-7&&d<0 }).length, color:'#dc2626', filter:'Exp7' },
               { label:'Expires in 0–30 days',    val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=0&&d<=30&&c.status==='active' }).length, color:'#E8897A', filter:'Exp30' },
@@ -474,7 +477,7 @@ export default function CertInventory({ user, nav, onIssue }) {
         {/* Order alerts */}
         <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'16px 20px' }}>
           <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)', marginBottom:14 }}>Order alerts</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:0 }}>
             {[
               { label:'Expired in last 7 days',  val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=-7&&d<0 }).length, color:'#dc2626', filter:'Exp7' },
               { label:'Expires in 0–30 days',    val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=0&&d<=30&&c.status==='active' }).length, color:'#E8897A', filter:'Exp30' },
@@ -548,9 +551,9 @@ export default function CertInventory({ user, nav, onIssue }) {
         </div>
 
         {loading ? (
-          <div style={{ padding:'48px 20px', textAlign:'center', color:'var(--v2-text-3)', fontSize:12 }}>Loading…</div>
+          <div style={{ padding:'clamp(16px,16vw,48px) 20px', textAlign:'center', color:'var(--v2-text-3)', fontSize:12 }}>Loading…</div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding:'56px 20px', textAlign:'center' }}>
+          <div style={{ padding:'clamp(16px,18vw,56px) 20px', textAlign:'center' }}>
             <Shield size={32} color="#d4d4d4" strokeWidth={1.5} style={{ marginBottom:10 }}/>
             <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)', marginBottom:4 }}>{certs.length===0?'No certificates yet':'No matches'}</div>
             <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:16 }}>{certs.length===0?'Issue your first SSL certificate to get started':'Try a different filter or search term'}</div>

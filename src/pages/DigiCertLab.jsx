@@ -41,6 +41,8 @@ function daysLeft(iso) {
   return Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000)
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function StatusDot({ d }) {
   const color = d === null ? '#d4d4d4' : d < 0 ? '#ef4444' : d < 30 ? '#E8897A' : '#16a34a'
   return <span style={{ display:'inline-block', width:8, height:8, borderRadius:'50%', background:color, marginRight:6, flexShrink:0 }}/>
@@ -85,6 +87,7 @@ const SECTIONS = [
 ]
 
 export default function DigiCertLab({ nav }) {
+  const isMobile = useIsMobile()
   const [tok, setTok] = useState('')
   const [user, setUser] = useState(null)
   const [section, setSection] = useState('connect')
@@ -449,7 +452,7 @@ export default function DigiCertLab({ nav }) {
             </div>
 
             {/* Stat cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
               {[
                 { label: 'Total certs',    value: total,    color: '#1A7A72', bg: '#E8F8F6' },
                 { label: 'Active',         value: active,   color: '#16a34a', bg: '#E8F8F6' },
@@ -564,7 +567,7 @@ export default function DigiCertLab({ nav }) {
             ) : (
               <>
                 {/* Risk breakdown */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 20 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10, marginBottom: 20 }}>
                   {[
                     { risk:'high',   label:'High risk (RSA-2048)',    color:'#dc2626', bg:'#fef2f2', note:'Migrate by 2030' },
                     { risk:'medium', label:'Medium risk (RSA-3072)',  color:'#E8897A', bg:'#FDF0EE', note:'Plan migration' },
