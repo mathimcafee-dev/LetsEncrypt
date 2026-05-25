@@ -28,11 +28,11 @@ function FAQ({ q, a }) {
     <div onClick={() => setOpen(o => !o)}
          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '18px 0', cursor: 'pointer' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: open ? 'white' : 'rgba(255,255,255,0.7)' }}>{q}</div>
-        <span style={{ color: '#3DBFB0', fontSize: 20, lineHeight: 1, flexShrink: 0 }}>{open ? '−' : '+'}</span>
+        <div style={{ fontSize:14, fontWeight: 600, color: open ? 'white' : 'rgba(255,255,255,0.7)' }}>{q}</div>
+        <span style={{ color: '#3DBFB0', fontSize:20, lineHeight: 1, flexShrink: 0 }}>{open ? '−' : '+'}</span>
       </div>
       {open && (
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.48)', lineHeight: 1.8, marginTop: 12 }}>{a}</div>
+        <div style={{ fontSize:13, color: 'rgba(255,255,255,0.48)', lineHeight: 1.8, marginTop: 12 }}>{a}</div>
       )}
     </div>
   )
@@ -189,7 +189,7 @@ export default function Pricing({ nav }) {
             Professional CLM.<br/>
             <span style={{ color: '#3DBFB0' }}>Transparent cert pricing.</span>
           </h1>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 12px', lineHeight: 1.75 }}>
+          <p style={{ fontSize:15, color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 12px', lineHeight: 1.75 }}>
             The complete CLM platform — agents, auto-renewal, DNS automation, CertBind active binding verification, CA intelligence, CertVault, 47-day readiness. Certificates at RapidSSL partner rates.
           </p>
         </div>
@@ -207,20 +207,20 @@ export default function Pricing({ nav }) {
               {plan.badge && (
                 <div style={{ position: 'absolute', top: -11, left: '50%', transform: 'translateX(-50%)',
                   background: plan.color, borderRadius: 20, padding: '3px 14px',
-                  fontSize: 10, fontWeight: 800, color: 'white', whiteSpace: 'nowrap', letterSpacing: '0.5px', ...Mo }}>
+                  fontSize:10, fontWeight: 800, color: 'white', whiteSpace: 'nowrap', letterSpacing: '0.5px', ...Mo }}>
                   {plan.badge}
                 </div>
               )}
 
-              <div style={{ fontSize: 10, fontWeight: 700, color: plan.color, letterSpacing: '1.5px',
+              <div style={{ fontSize:10, fontWeight: 700, color: plan.color, letterSpacing: '1.5px',
                 textTransform: 'uppercase', marginBottom: 14, ...Mo }}>{plan.name}</div>
 
               <div style={{ marginBottom: 4 }}>
                 <span style={{ fontSize: plan.price === 'Custom' ? 28 : 40, fontWeight: 900, letterSpacing: '-2px', lineHeight: 1 }}>{plan.price}</span>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginLeft: 6, ...Mo }}>{plan.per}</span>
+                <span style={{ fontSize:11, color: 'rgba(255,255,255,0.3)', marginLeft: 6, ...Mo }}>{plan.per}</span>
               </div>
 
-              <div style={{ fontSize: 10, color: plan.color, marginBottom: 20, ...Mo, opacity: 0.7 }}>
+              <div style={{ fontSize:10, color: plan.color, marginBottom: 20, ...Mo, opacity: 0.7 }}>
                 + {plan.certNote}
               </div>
 
@@ -228,7 +228,7 @@ export default function Pricing({ nav }) {
                 style={{ width: '100%', padding: '11px', borderRadius: 7, border: `1px solid ${plan.color}`,
                   background: plan.highlight ? plan.color : 'transparent',
                   color: plan.highlight ? 'white' : plan.color,
-                  fontSize: 13, fontWeight: 700, cursor: 'pointer', ...S, marginBottom: 22, transition: 'all .15s' }}
+                  fontSize:13, fontWeight: 700, cursor: 'pointer', ...S, marginBottom: 22, transition: 'all .15s' }}
                 onMouseEnter={e => { e.currentTarget.style.background = plan.color; e.currentTarget.style.color = 'white' }}
                 onMouseLeave={e => { e.currentTarget.style.background = plan.highlight ? plan.color : 'transparent'; e.currentTarget.style.color = plan.highlight ? 'white' : plan.color }}>
                 {plan.cta}
@@ -238,7 +238,7 @@ export default function Pricing({ nav }) {
                 {PLAN_HIGHLIGHTS[plan.key].map(f => (
                   <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                     <Tick color={plan.color}/>
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>{f}</span>
+                    <span style={{ fontSize:12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>{f}</span>
                   </div>
                 ))}
               </div>
@@ -250,7 +250,7 @@ export default function Pricing({ nav }) {
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <button onClick={() => setShowComparison(v => !v)}
             style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)',
-              borderRadius: 7, padding: '10px 22px', fontSize: 13, cursor: 'pointer', ...S, transition: 'all .15s' }}
+              borderRadius: 7, padding: '10px 22px', fontSize:13, cursor: 'pointer', ...S, transition: 'all .15s' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#3DBFB0'; e.currentTarget.style.color = '#3DBFB0' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}>
             {showComparison ? '▲ Hide full comparison' : '▼ See full feature comparison'}
@@ -264,9 +264,9 @@ export default function Pricing({ nav }) {
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
               background: 'rgba(255,255,255,0.04)', padding: '14px 20px',
               borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', ...Mo }}>Feature</div>
+              <div style={{ fontSize:11, color: 'rgba(255,255,255,0.3)', ...Mo }}>Feature</div>
               {PLANS.map(p => (
-                <div key={p.key} style={{ fontSize: 11, fontWeight: 700, color: p.color,
+                <div key={p.key} style={{ fontSize:11, fontWeight: 700, color: p.color,
                   textTransform: 'uppercase', letterSpacing: '0.8px', textAlign: 'center', ...Mo }}>
                   {p.name}
                 </div>
@@ -278,7 +278,7 @@ export default function Pricing({ nav }) {
                 {/* Section header */}
                 <div style={{ padding: '10px 20px', background: 'rgba(255,255,255,0.02)',
                   borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: '#3DBFB0', textTransform: 'uppercase',
+                  <span style={{ fontSize:10, fontWeight: 700, color: '#3DBFB0', textTransform: 'uppercase',
                     letterSpacing: '1px', ...Mo }}>{section.section}</span>
                 </div>
                 {section.rows.map((row, i) => (
@@ -288,7 +288,7 @@ export default function Pricing({ nav }) {
                     transition: 'background .1s' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.4 }}>{row.label}</span>
+                    <span style={{ fontSize:12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.4 }}>{row.label}</span>
                     {['starter', 'pro', 'reseller'].map(k => (
                       <div key={k} style={{ display: 'flex', justifyContent: 'center' }}>
                         {row[k] ? <Tick color={k === 'starter' ? '#3DBFB0' : k === 'pro' ? '#3DBFB0' : '#E8897A'}/> : <Cross/>}
@@ -309,7 +309,7 @@ export default function Pricing({ nav }) {
             <h2 style={{ fontSize: 'clamp(22px,3vw,34px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 10 }}>
               RapidSSL partner rates
             </h2>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', maxWidth: 420, margin: '0 auto', lineHeight: 1.7 }}>
+            <p style={{ fontSize:13, color: 'rgba(255,255,255,0.38)', maxWidth: 420, margin: '0 auto', lineHeight: 1.7 }}>
               DigiCert DV retail $218/yr vs. SSLVault $14/yr — same trust chain.
             </p>
           </div>
@@ -317,7 +317,7 @@ export default function Pricing({ nav }) {
             <div className="cert-table-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
               background: 'rgba(255,255,255,0.035)', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '12px 20px' }}>
               {['Certificate type', 'Term', 'CA', 'Price/yr'].map(h => (
-                <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.32)',
+                <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'rgba(255,255,255,0.32)',
                   textTransform: 'uppercase', letterSpacing: '0.8px', ...Mo }}>{h}</div>
               ))}
             </div>
@@ -329,7 +329,7 @@ export default function Pricing({ nav }) {
                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(16,185,129,0.04)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.72)' }}>{row.type}</span>
+                  <span style={{ fontSize:13, color: 'rgba(255,255,255,0.72)' }}>{row.type}</span>
                   {row.badge && (
                     <span style={{ fontSize: 8, fontWeight: 800, padding: '2px 7px', borderRadius: 10,
                       background: '#3DBFB018', color: '#3DBFB0', letterSpacing: '0.5px', ...Mo }}>
@@ -337,13 +337,13 @@ export default function Pricing({ nav }) {
                     </span>
                   )}
                 </div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', ...Mo }}>{row.term}</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', ...Mo }}>{row.ca}</div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: '#3DBFB0', ...Mo }}>{row.price}</div>
+                <div style={{ fontSize:12, color: 'rgba(255,255,255,0.3)', ...Mo }}>{row.term}</div>
+                <div style={{ fontSize:12, color: 'rgba(255,255,255,0.3)', ...Mo }}>{row.ca}</div>
+                <div style={{ fontSize:15, fontWeight: 800, color: '#3DBFB0', ...Mo }}>{row.price}</div>
               </div>
             ))}
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', marginTop: 12, textAlign: 'center', ...Mo }}>
+          <div style={{ fontSize:11, color: 'rgba(255,255,255,0.22)', marginTop: 12, textAlign: 'center', ...Mo }}>
             All prices in USD · RapidSSL partner rates · Subject to change
           </div>
         </div>
@@ -370,14 +370,14 @@ export default function Pricing({ nav }) {
               <div key={item.name} style={{ padding: '24px 20px',
                 borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none',
                 background: i === 0 ? 'rgba(16,185,129,0.04)' : 'transparent' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: item.color, letterSpacing: '0.5px', marginBottom: 8, ...Mo }}>{item.name}</div>
-                <div style={{ fontSize: 28, fontWeight: 900, color: item.color, letterSpacing: '-1px', marginBottom: 2, lineHeight: 1 }}>{item.price}</div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', marginBottom: 16, ...Mo }}>{item.sub}</div>
+                <div style={{ fontSize:10, fontWeight: 700, color: item.color, letterSpacing: '0.5px', marginBottom: 8, ...Mo }}>{item.name}</div>
+                <div style={{ fontSize:28, fontWeight: 900, color: item.color, letterSpacing: '-1px', marginBottom: 2, lineHeight: 1 }}>{item.price}</div>
+                <div style={{ fontSize:10, color: 'rgba(255,255,255,0.22)', marginBottom: 16, ...Mo }}>{item.sub}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                   {item.points.map(p => (
                     <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                       {i === 0 ? <Tick color="#3DBFB0"/> : <Cross/>}
-                      <span style={{ fontSize: 11, color: i === 0 ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.3)', lineHeight: 1.4 }}>{p}</span>
+                      <span style={{ fontSize:11, color: i === 0 ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.3)', lineHeight: 1.4 }}>{p}</span>
                     </div>
                   ))}
                 </div>
@@ -400,19 +400,19 @@ export default function Pricing({ nav }) {
           <h2 style={{ fontSize: 'clamp(22px,3vw,38px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 12 }}>
             Start today.
           </h2>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)', maxWidth: 380, margin: '0 auto 28px', lineHeight: 1.7 }}>
+          <p style={{ fontSize:14, color: 'rgba(255,255,255,0.38)', maxWidth: 380, margin: '0 auto 28px', lineHeight: 1.7 }}>
             Full CLM platform from day one — 47-day readiness, CertVault, agent automation, CA intelligence.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={() => nav('/auth')}
               style={{ background: '#3DBFB0', border: 'none', borderRadius: 7, color: 'white',
-                fontSize: 14, fontWeight: 700, padding: '13px 28px', cursor: 'pointer', ...S,
+                fontSize:14, fontWeight: 700, padding: '13px 28px', cursor: 'pointer', ...S,
                 boxShadow: '0 0 30px rgba(16,185,129,0.25)' }}>
               Get Started →
             </button>
             <button onClick={() => window.location.href = 'mailto:mathimcafee@gmail.com'}
               style={{ background: 'transparent', border: '1px solid rgba(245,158,11,0.4)', borderRadius: 7,
-                color: '#E8897A', fontSize: 14, fontWeight: 600, padding: '13px 28px', cursor: 'pointer', ...S }}>
+                color: '#E8897A', fontSize:14, fontWeight: 600, padding: '13px 28px', cursor: 'pointer', ...S }}>
               Contact for Reseller →
             </button>
           </div>

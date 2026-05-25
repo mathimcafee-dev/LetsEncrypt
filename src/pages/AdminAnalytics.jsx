@@ -121,15 +121,15 @@ export default function AdminAnalytics({ user }) {
               No pending signup requests
             </div>
           ) : (
-            <div style={{border:'0.5px solid var(--v2-border)',borderRadius:8,overflow:'hidden'}}>
-              <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:520,minWidth:520,padding:'8px 16px',
+            <div style={{border:'0.5px solid var(--v2-border)',borderRadius:8,overflowX:'auto'}}>
+              <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:640,padding:'8px 16px',
                 background:'var(--v2-surface-2)',borderBottom:'0.5px solid var(--v2-border)'}}>
                 {['Email','Status','Requested','Actions'].map(h=>(
                   <div key={h} style={{fontSize:10,fontWeight:700,color:'var(--v2-text-3)',textTransform:'uppercase',letterSpacing:'0.4px'}}>{h}</div>
                 ))}
               </div>
               {requests.map((req,i)=>(
-                <div key={req.id} style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:520,minWidth:520,
+                <div key={req.id} style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:640,
                   padding:'10px 16px',borderBottom:i<requests.length-1?'0.5px solid var(--v2-border)':'none',
                   background:i%2===0?'transparent':'var(--v2-surface-2)',alignItems:'center'}}>
                   <div style={{fontSize:12,fontWeight:500,color:'var(--v2-text)'}}>{req.email}</div>
@@ -187,7 +187,7 @@ export default function AdminAnalytics({ user }) {
           ))}
         </div>
 
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:20}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:16,marginBottom:20}}>
           {/* TLS Grade distribution */}
           <div className="v2-card" style={{padding:'16px 18px'}}>
             <div className="v2-section-label" style={{marginBottom:14}}>TLS posture grades</div>

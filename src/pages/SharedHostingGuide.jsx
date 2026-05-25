@@ -11,7 +11,7 @@ function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
   const copy = () => { try { navigator.clipboard.writeText(text) } catch(e) {}; setOk(true); setTimeout(() => setOk(false), 2000) }
   return (
-    <button onClick={copy} className={`v2-btn ${ok ? '' : ''}`} style={{ fontSize: 12 }}>
+    <button onClick={copy} className={`v2-btn ${ok ? '' : ''}`} style={{ fontSize:12 }}>
       {ok ? <><Check size={12}/> Copied!</> : <><Copy size={12}/> Copy</>}
     </button>
   )
@@ -42,7 +42,7 @@ function FAQ({ q, a }) {
         <span className="v2-accordion-title" style={{ flex: 1 }}>{q}</span>
         {open ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
       </button>
-      {open && <div className="v2-accordion-body" style={{ paddingTop: 10 }}><p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: 'var(--v2-text-2)' }}>{a}</p></div>}
+      {open && <div className="v2-accordion-body" style={{ paddingTop: 10 }}><p style={{ margin: 0, fontSize:13, lineHeight: 1.7, color: 'var(--v2-text-2)' }}>{a}</p></div>}
     </div>
   )
 }
@@ -54,7 +54,7 @@ function Divider({ label, title }) {
         <span className="v2-section-label">{label}</span>
         <div style={{ flex: 1, height: 1, background: 'var(--v2-border)' }} />
       </div>
-      <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--v2-text)', letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
+      <h2 style={{ fontSize:16, fontWeight: 600, color: 'var(--v2-text)', letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
     </div>
   )
 }
@@ -65,7 +65,7 @@ function TerminalMock({ lines }) {
       <div className="v2-code-head">
         <div className="v2-code-dots">
           <span style={{ background: '#ef4444' }}/><span style={{ background: '#E8897A' }}/><span style={{ background: '#1A7A72' }}/>
-          <span style={{ marginLeft: 8, fontSize: 10, color: '#737373', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>browser output</span>
+          <span style={{ marginLeft: 8, fontSize:10, color: '#737373', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>browser output</span>
         </div>
       </div>
       <pre>{lines.join('\n')}</pre>
@@ -85,10 +85,10 @@ export default function SharedHostingGuide({ nav }) {
             <span className="v2-badge v2-badge-green">No SSH needed</span>
             <span className="v2-badge">cPanel</span>
           </div>
-          <h1 className="v2-h1" style={{ fontSize: 26, letterSpacing: '-0.5px' }}>
+          <h1 className="v2-h1" style={{ fontSize:26, letterSpacing: '-0.5px' }}>
             Install SSL on Shared Hosting — cPanel Guide
           </h1>
-          <p className="v2-subtitle" style={{ fontSize: 13, marginTop: 6, maxWidth: 560 }}>
+          <p className="v2-subtitle" style={{ fontSize:13, marginTop: 6, maxWidth: 560 }}>
             Works with GoDaddy, Bluehost, Hostinger, SiteGround, Hostgator, and any cPanel host.
             No terminal, no SSH, no technical knowledge required.
           </p>
@@ -109,8 +109,8 @@ export default function SharedHostingGuide({ nav }) {
                 ? <CheckCircle size={13} style={{ color: 'var(--v2-green)', flexShrink: 0, marginTop: 2 }}/>
                 : <AlertCircle size={13} style={{ color: 'var(--v2-text-3)', flexShrink: 0, marginTop: 2 }}/>}
               <div>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: good ? 'var(--v2-green)' : 'var(--v2-text-3)', marginBottom: 2 }}>{badge}</div>
-                <div style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.55 }}>{text}</div>
+                <div style={{ fontSize:10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: good ? 'var(--v2-green)' : 'var(--v2-text-3)', marginBottom: 2 }}>{badge}</div>
+                <div style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.55 }}>{text}</div>
               </div>
             </div>
           ))}
@@ -121,7 +121,7 @@ export default function SharedHostingGuide({ nav }) {
         <Step n={1} title="Issue your SSL certificate in SSLVault">
           <p>Click <strong>Issue Certificate</strong> in the navigation. Enter your domain name (e.g. <span className="v2-kbd">mysite.com</span>) and complete DNS validation. Your certificate appears in <strong>Dashboard</strong> once issued.</p>
           <Note type="info">Already have a certificate issued? Jump to Step 2.</Note>
-          <button className="v2-btn v2-btn-primary" style={{ fontSize: 12 }} onClick={() => nav('/buy')}>
+          <button className="v2-btn v2-btn-primary" style={{ fontSize:12 }} onClick={() => nav('/buy')}>
             <Shield size={12}/> Issue Certificate <ArrowRight size={12}/>
           </button>
         </Step>
@@ -132,10 +132,10 @@ export default function SharedHostingGuide({ nav }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Globe size={18} strokeWidth={1.5} style={{ color: 'var(--v2-text-2)' }}/>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--v2-text)', marginBottom: 6 }}>mysite.com</div>
+                <div style={{ fontWeight: 600, fontSize:13, color: 'var(--v2-text)', marginBottom: 6 }}>mysite.com</div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button className="v2-btn" style={{ fontSize: 11, padding: '3px 10px' }}>Renewal Schedule</button>
-                  <button className="v2-btn v2-btn-primary" style={{ fontSize: 11, padding: '3px 10px', cursor: 'default' }}>Install</button>
+                  <button className="v2-btn" style={{ fontSize:11, padding: '3px 10px' }}>Renewal Schedule</button>
+                  <button className="v2-btn v2-btn-primary" style={{ fontSize:11, padding: '3px 10px', cursor: 'default' }}>Install</button>
                 </div>
               </div>
             </div>
@@ -147,12 +147,12 @@ export default function SharedHostingGuide({ nav }) {
           <p>Enter your <strong>cPanel username</strong> and <strong>API token</strong>. Credentials are saved encrypted for future installs.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
             <div className="v2-card v2-card-pad">
-              <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--v2-text)', marginBottom: 3 }}>Finding your cPanel username</div>
-              <p style={{ fontSize: 12, color: 'var(--v2-text-2)', margin: 0, lineHeight: 1.6 }}>Your short login name (not email). Find it in your hosting welcome email or at the top-right corner of cPanel when logged in.</p>
+              <div style={{ fontWeight: 600, fontSize:12, color: 'var(--v2-text)', marginBottom: 3 }}>Finding your cPanel username</div>
+              <p style={{ fontSize:12, color: 'var(--v2-text-2)', margin: 0, lineHeight: 1.6 }}>Your short login name (not email). Find it in your hosting welcome email or at the top-right corner of cPanel when logged in.</p>
             </div>
             <div className="v2-card v2-card-pad">
-              <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--v2-text)', marginBottom: 3 }}>Creating a cPanel API token</div>
-              <p style={{ fontSize: 12, color: 'var(--v2-text-2)', margin: 0, lineHeight: 1.6 }}>cPanel → search <strong>API Tokens</strong> → Manage API Tokens → Create token → enable SSL permissions → copy the token.</p>
+              <div style={{ fontWeight: 600, fontSize:12, color: 'var(--v2-text)', marginBottom: 3 }}>Creating a cPanel API token</div>
+              <p style={{ fontSize:12, color: 'var(--v2-text-2)', margin: 0, lineHeight: 1.6 }}>cPanel → search <strong>API Tokens</strong> → Manage API Tokens → Create token → enable SSL permissions → copy the token.</p>
             </div>
           </div>
           <Note type="warn">Create a cPanel API token — do not use your cPanel password. Tokens can be revoked independently.</Note>
@@ -169,7 +169,7 @@ export default function SharedHostingGuide({ nav }) {
             <div className="v2-code-head">
               <div className="v2-code-dots">
                 <span style={{ background: '#ef4444' }}/><span style={{ background: '#E8897A' }}/><span style={{ background: '#1A7A72' }}/>
-                <span style={{ marginLeft: 8, fontSize: 10, color: '#737373', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>File Manager — public_html</span>
+                <span style={{ marginLeft: 8, fontSize:10, color: '#737373', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>File Manager — public_html</span>
               </div>
             </div>
             <pre>{`/home/youraccount/public_html/
@@ -187,8 +187,8 @@ export default function SharedHostingGuide({ nav }) {
               'Wait for the upload to complete',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
-                <span style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>{t}</span>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+                <span style={{ fontSize:12, color: 'var(--v2-text-2)' }}>{t}</span>
               </div>
             ))}
           </div>
@@ -198,11 +198,11 @@ export default function SharedHostingGuide({ nav }) {
         <Step n={6} title="Visit the agent URL to activate">
           <p>Open a new browser tab and go to:</p>
           <div className="v2-card v2-card-pad" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 10 }}>
-            <code className="v2-mono" style={{ fontSize: 13, color: 'var(--v2-green)', fontWeight: 600 }}>https://yourdomain.com/sslvault-agent.php</code>
+            <code className="v2-mono" style={{ fontSize:13, color: 'var(--v2-green)', fontWeight: 600 }}>https://yourdomain.com/sslvault-agent.php</code>
             <CopyBtn text="https://yourdomain.com/sslvault-agent.php"/>
           </div>
           <Note type="warn">Replace <strong>yourdomain.com</strong> with your actual domain.</Note>
-          <p style={{ fontSize: 13, color: 'var(--v2-text-2)', lineHeight: 1.7, marginBottom: 10 }}>The page runs automatically and shows progress:</p>
+          <p style={{ fontSize:13, color: 'var(--v2-text-2)', lineHeight: 1.7, marginBottom: 10 }}>The page runs automatically and shows progress:</p>
           <TerminalMock lines={[
             'SSLVault Certificate Installer',
             '',
@@ -230,8 +230,8 @@ export default function SharedHostingGuide({ nav }) {
               'Click Install Certificate',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
-                <span style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{t}</span>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                <span style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{t}</span>
               </div>
             ))}
           </div>
@@ -246,7 +246,7 @@ export default function SharedHostingGuide({ nav }) {
             {['Go to cPanel File Manager', 'Navigate to public_html', 'Find sslvault-agent.php', 'Right-click → Delete → Confirm'].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '8px 14px', background: '#fef2f2', border: '0.5px solid #fecaca' }}>
                 <Trash2 size={12} style={{ color: '#dc2626', flexShrink: 0 }}/>
-                <span style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>{t}</span>
+                <span style={{ fontSize:12, color: 'var(--v2-text-2)' }}>{t}</span>
               </div>
             ))}
           </div>
@@ -260,7 +260,7 @@ export default function SharedHostingGuide({ nav }) {
               ['SSL Checker', 'https://www.sslshopper.com/ssl-checker.html'],
               ['Why No Padlock', 'https://www.whynopadlock.com/'],
             ].map(([name, url]) => (
-              <a key={name} href={url} target="_blank" rel="noopener noreferrer" className="v2-btn" style={{ textDecoration: 'none', fontSize: 12 }}>
+              <a key={name} href={url} target="_blank" rel="noopener noreferrer" className="v2-btn" style={{ textDecoration: 'none', fontSize:12 }}>
                 <ExternalLink size={11}/> {name}
               </a>
             ))}
@@ -280,8 +280,8 @@ export default function SharedHostingGuide({ nav }) {
             ['Namecheap', 'cPanel Hosting → Go to cPanel'],
           ].map(([name, path]) => (
             <div key={name} className="v2-card v2-card-pad">
-              <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--v2-text)', marginBottom: 4 }}>{name}</div>
-              <p style={{ fontSize: 11, color: 'var(--v2-text-2)', lineHeight: 1.6, margin: 0 }}>{path}</p>
+              <div style={{ fontWeight: 600, fontSize:12, color: 'var(--v2-text)', marginBottom: 4 }}>{name}</div>
+              <p style={{ fontSize:11, color: 'var(--v2-text-2)', lineHeight: 1.6, margin: 0 }}>{path}</p>
             </div>
           ))}
         </div>
@@ -291,7 +291,7 @@ export default function SharedHostingGuide({ nav }) {
           <AlertCircle size={13} style={{ color: '#E8897A', flexShrink: 0 }}/>
           <div>
             <span className="v2-callout-title">Renewal requires repeating this process</span><br/>
-            <span style={{ fontSize: 12 }}>Every time your certificate renews, you'll need to repeat steps 1–9. For zero-touch auto-renewal, move to a VPS with the persistent agent — it handles installs and renewals automatically.</span>
+            <span style={{ fontSize:12 }}>Every time your certificate renews, you'll need to repeat steps 1–9. For zero-touch auto-renewal, move to a VPS with the persistent agent — it handles installs and renewals automatically.</span>
           </div>
         </div>
 
@@ -316,10 +316,10 @@ export default function SharedHostingGuide({ nav }) {
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>
-          <h3 style={{ fontSize: 17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6 }}>
+          <h3 style={{ fontSize:17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6 }}>
             Ready to secure your website?
           </h3>
-          <p style={{ color: 'var(--v2-text-2)', fontSize: 13, maxWidth: 380, margin: '0 auto 16px', lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--v2-text-2)', fontSize:13, maxWidth: 380, margin: '0 auto 16px', lineHeight: 1.6 }}>
             Issue your certificate first — takes under 2 minutes.
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>

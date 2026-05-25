@@ -86,7 +86,7 @@ function CertRow({ cert, onCheck, checking }) {
 
       {/* Domain + meta */}
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--v2-text)', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div style={{ fontWeight: 600, fontSize:14, color: 'var(--v2-text)', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {cert.domain}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
@@ -114,7 +114,7 @@ function CertRow({ cert, onCheck, checking }) {
         display: 'flex', alignItems: 'center', gap: 5,
         padding: '4px 10px', borderRadius: 20,
         background: s.bg, border: `1px solid ${s.border}`,
-        fontSize: 11, fontWeight: 600, color: s.color,
+        fontSize:11, fontWeight: 600, color: s.color,
         whiteSpace: 'nowrap',
       }}>
         {isChecking ? <RefreshCw size={10} style={{ animation: 'spin 1s linear infinite' }} /> : <Icon size={10} />}
@@ -131,7 +131,7 @@ function CertRow({ cert, onCheck, checking }) {
           padding: '6px 12px', borderRadius: 7,
           background: canCheck && !isChecking ? 'var(--v2-text)' : '#F5EFE0',
           color: canCheck && !isChecking ? 'var(--v2-surface)' : '#9ca3af',
-          border: 'none', fontWeight: 600, fontSize: 11,
+          border: 'none', fontWeight: 600, fontSize:11,
           cursor: canCheck && !isChecking ? 'pointer' : 'not-allowed',
           transition: 'all .15s', fontFamily: 'inherit',
           whiteSpace: 'nowrap',
@@ -229,10 +229,10 @@ export default function CertBind() {
         {/* Header */}
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom: 28, animation: 'fadeUp .35s ease both' }}>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.5px', marginBottom: 4 }}>
+            <div style={{ fontSize:22, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.5px', marginBottom: 4 }}>
               Live Certificate Status
             </div>
-            <div style={{ fontSize: 13, color: 'var(--v2-text-3)' }}>
+            <div style={{ fontSize:13, color: 'var(--v2-text-3)' }}>
               Verify your certificates are active on your servers in real-time
             </div>
           </div>
@@ -266,8 +266,8 @@ export default function CertBind() {
               background: bg, border: `1px solid ${border}`,
               borderRadius: 10, padding: '14px 16px',
             }}>
-              <div style={{ fontSize: 26, fontWeight: 700, color, lineHeight: 1, letterSpacing: '-1px' }}>{num}</div>
-              <div style={{ fontSize: 11, color, opacity: .7, marginTop: 5, fontWeight: 500 }}>{label}</div>
+              <div style={{ fontSize:26, fontWeight: 700, color, lineHeight: 1, letterSpacing: '-1px' }}>{num}</div>
+              <div style={{ fontSize:11, color, opacity: .7, marginTop: 5, fontWeight: 500 }}>{label}</div>
             </div>
           ))}
         </div>

@@ -21,7 +21,7 @@ function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
   const copy = () => { try { navigator.clipboard.writeText(text) } catch(e) {}; setOk(true); setTimeout(() => setOk(false), 2000) }
   return (
-    <button onClick={copy} className="v2-btn" style={{ fontSize: 12 }}>
+    <button onClick={copy} className="v2-btn" style={{ fontSize:12 }}>
       {ok ? <><Check size={12}/> Copied</> : <><Copy size={12}/> Copy</>}
     </button>
   )
@@ -131,8 +131,8 @@ export default function QuickSetup({ nav }) {
 
         {/* HERO */}
         <div style={{ textAlign: 'center', padding: '8px 0 28px' }}>
-          <h1 className="v2-h1" style={{ fontSize: 26, letterSpacing: '-0.5px' }}>Quick Setup</h1>
-          <p className="v2-subtitle" style={{ fontSize: 13, marginTop: 4 }}>
+          <h1 className="v2-h1" style={{ fontSize:26, letterSpacing: '-0.5px' }}>Quick Setup</h1>
+          <p className="v2-subtitle" style={{ fontSize:13, marginTop: 4 }}>
             Domain → DNS validation → Certificate issued — in one flow
           </p>
         </div>
@@ -147,11 +147,11 @@ export default function QuickSetup({ nav }) {
                   background: step > i + 1 ? 'var(--v2-green)' : step === i + 1 ? 'var(--v2-text)' : 'var(--v2-surface-3)',
                   color: step >= i + 1 ? 'white' : 'var(--v2-text-3)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 11, fontWeight: 700, flexShrink: 0
+                  fontSize:11, fontWeight: 700, flexShrink: 0
                 }}>
                   {step > i + 1 ? <CheckCircle size={13}/> : i + 1}
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: step >= i + 1 ? 'var(--v2-text)' : 'var(--v2-text-3)', whiteSpace: 'nowrap' }}>{s}</span>
+                <span style={{ fontSize:11, fontWeight: 600, color: step >= i + 1 ? 'var(--v2-text)' : 'var(--v2-text-3)', whiteSpace: 'nowrap' }}>{s}</span>
               </div>
               {i < STEPS.length - 1 && (
                 <div style={{ flex: 1, height: 1.5, background: step > i + 1 ? 'var(--v2-green)' : 'var(--v2-border)', margin: '0 10px', borderRadius: 1 }}/>
@@ -163,8 +163,8 @@ export default function QuickSetup({ nav }) {
         {/* STEP 1 */}
         {step === 1 && (
           <div className="v2-card v2-card-pad">
-            <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Enter your domain</h2>
-            <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 20 }}>We'll issue your RapidSSL certificate and handle DNS validation.</p>
+            <h2 style={{ fontSize:17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Enter your domain</h2>
+            <p style={{ fontSize:13, color: 'var(--v2-text-2)', marginBottom: 20 }}>We'll issue your RapidSSL certificate and handle DNS validation.</p>
 
             <label className="v2-label">Domain Name</label>
             <input className="v2-input" value={domain} onChange={e => setDomain(e.target.value)}
@@ -182,7 +182,7 @@ export default function QuickSetup({ nav }) {
               <Note type="success"><CheckCircle size={13} style={{ flexShrink: 0 }}/> Using saved <strong>{PROVIDERS[provider]?.name}</strong> credentials.</Note>
             )}
             {provider !== 'manual' && !savedCred && (
-              <Note type="warn">No saved credentials for {PROVIDERS[provider]?.name}. Enter below or save them in <button onClick={() => nav('/integrations')} className="v2-btn" style={{ padding: '0', border: 'none', background: 'none', color: 'var(--v2-green)', fontSize: 12, cursor: 'pointer', display: 'inline', fontWeight: 600 }}>More → DNS Providers</button>.</Note>
+              <Note type="warn">No saved credentials for {PROVIDERS[provider]?.name}. Enter below or save them in <button onClick={() => nav('/integrations')} className="v2-btn" style={{ padding: '0', border: 'none', background: 'none', color: 'var(--v2-green)', fontSize:12, cursor: 'pointer', display: 'inline', fontWeight: 600 }}>More → DNS Providers</button>.</Note>
             )}
             {provider !== 'manual' && !savedCred && PROVIDERS[provider].fields.map(f => (
               <div key={f.k} style={{ marginBottom: 14 }}>
@@ -200,7 +200,7 @@ export default function QuickSetup({ nav }) {
             {error && <Note type="error">{error}</Note>}
 
             <button className="v2-btn v2-btn-primary" onClick={handleStart} disabled={loading}
-                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '11px' }}>
+                    style={{ width: '100%', justifyContent: 'center', fontSize:14, padding: '11px' }}>
               {loading ? <><Loader size={14} className="spin"/> Processing...</> : <>Issue Certificate <ArrowRight size={14}/></>}
             </button>
           </div>
@@ -212,13 +212,13 @@ export default function QuickSetup({ nav }) {
             {dcvInfo.autoAdded ? (
               <>
                 <Note type="success"><CheckCircle size={13}/> DNS validation record added automatically via {PROVIDERS[provider]?.name}.</Note>
-                <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Issue your certificate</h2>
-                <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 20 }}>DNS is ready. Click below to complete issuance.</p>
+                <h2 style={{ fontSize:17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Issue your certificate</h2>
+                <p style={{ fontSize:13, color: 'var(--v2-text-2)', marginBottom: 20 }}>DNS is ready. Click below to complete issuance.</p>
               </>
             ) : (
               <>
-                <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Add DNS validation record</h2>
-                <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 16 }}>Add this record to your DNS provider, then click Verify.</p>
+                <h2 style={{ fontSize:17, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>Add DNS validation record</h2>
+                <p style={{ fontSize:13, color: 'var(--v2-text-2)', marginBottom: 16 }}>Add this record to your DNS provider, then click Verify.</p>
                 <div className="v2-code" style={{ marginBottom: 12 }}>
                   <div className="v2-code-head">
                     <div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#E8897A' }}/><span style={{ background: '#1A7A72' }}/></div>
@@ -236,7 +236,7 @@ TTL     300`}</pre>
             {error && <Note type="error">{error}</Note>}
 
             <button className="v2-btn v2-btn-primary" onClick={handleVerify} disabled={loading}
-                    style={{ width: '100%', justifyContent: 'center', fontSize: 14, padding: '11px' }}>
+                    style={{ width: '100%', justifyContent: 'center', fontSize:14, padding: '11px' }}>
               {loading ? <><Loader size={14} className="spin"/> Verifying...</>
                        : <>{dcvInfo.autoAdded ? 'Issue Certificate' : 'Verify DNS & Issue'} <ArrowRight size={14}/></>}
             </button>
@@ -252,21 +252,21 @@ TTL     300`}</pre>
                   <CheckCircle size={24} color="var(--v2-green)"/>
                 </div>
                 <div>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--v2-green)', marginBottom: 2 }}>Certificate Issued</h2>
-                  <p style={{ fontSize: 12, color: 'var(--v2-text-3)', margin: 0 }}>{d}</p>
+                  <h2 style={{ fontSize:18, fontWeight: 700, color: 'var(--v2-green)', marginBottom: 2 }}>Certificate Issued</h2>
+                  <p style={{ fontSize:12, color: 'var(--v2-text-3)', margin: 0 }}>{d}</p>
                 </div>
               </div>
-              <p style={{ fontSize: 12, color: 'var(--v2-text-2)', marginBottom: 14, lineHeight: 1.7 }}>
+              <p style={{ fontSize:12, color: 'var(--v2-text-2)', marginBottom: 14, lineHeight: 1.7 }}>
                 Your certificate is saved in <strong>Dashboard</strong>. Download the files below or install directly from the cert row.
               </p>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 {certData?.fullchain && (
-                  <button className="v2-btn v2-btn-primary" onClick={() => dl(certData.fullchain, d + '-fullchain.pem')} style={{ fontSize: 12 }}>
+                  <button className="v2-btn v2-btn-primary" onClick={() => dl(certData.fullchain, d + '-fullchain.pem')} style={{ fontSize:12 }}>
                     <Download size={12}/> fullchain.pem
                   </button>
                 )}
                 {certData?.privateKey && (
-                  <button className="v2-btn" onClick={() => dl(certData.privateKey, d + '-key.pem')} style={{ fontSize: 12 }}>
+                  <button className="v2-btn" onClick={() => dl(certData.privateKey, d + '-key.pem')} style={{ fontSize:12 }}>
                     <Download size={12}/> key.pem
                   </button>
                 )}
@@ -274,25 +274,25 @@ TTL     300`}</pre>
             </div>
 
             <div className="v2-card v2-card-pad">
-              <h3 style={{ fontWeight: 600, fontSize: 14, color: 'var(--v2-text)', marginBottom: 12 }}>Install on your server</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+              <h3 style={{ fontWeight: 600, fontSize:14, color: 'var(--v2-text)', marginBottom: 12 }}>Install on your server</h3>
+              <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap: 10, marginBottom: 12 }}>
                 <div className="v2-card v2-card-pad" style={{ cursor: 'pointer', background: 'var(--v2-surface-2)' }} onClick={() => nav('/dashboard')}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 3 }}>VPS / Cloud</div>
-                  <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>Persistent agent — one click deploy</div>
+                  <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 3 }}>VPS / Cloud</div>
+                  <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>Persistent agent — one click deploy</div>
                 </div>
                 <div className="v2-card v2-card-pad" style={{ cursor: 'pointer', background: 'var(--v2-surface-2)' }} onClick={() => nav('/shared-hosting')}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 3 }}>cPanel / Shared</div>
-                  <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>PHP agent — no SSH needed</div>
+                  <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 3 }}>cPanel / Shared</div>
+                  <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>PHP agent — no SSH needed</div>
                 </div>
               </div>
-              <p style={{ fontSize: 11, color: 'var(--v2-text-3)', margin: 0 }}>Go to Dashboard → {d} → Install</p>
+              <p style={{ fontSize:11, color: 'var(--v2-text-3)', margin: 0 }}>Go to Dashboard → {d} → Install</p>
             </div>
 
             <div style={{ display: 'flex', gap: 10 }}>
-              <button className="v2-btn v2-btn-primary" onClick={() => nav('/dashboard')} style={{ flex: 1, justifyContent: 'center', fontSize: 13 }}>
+              <button className="v2-btn v2-btn-primary" onClick={() => nav('/dashboard')} style={{ flex: 1, justifyContent: 'center', fontSize:13 }}>
                 <Shield size={13}/> My Dashboard
               </button>
-              <button className="v2-btn" onClick={() => { setStep(1); setDomain(''); setCertData(null); setError(''); setCreds({}); setDcvInfo(null) }} style={{ fontSize: 13 }}>
+              <button className="v2-btn" onClick={() => { setStep(1); setDomain(''); setCertData(null); setError(''); setCreds({}); setDcvInfo(null) }} style={{ fontSize:13 }}>
                 <RotateCcw size={13}/> New Certificate
               </button>
             </div>

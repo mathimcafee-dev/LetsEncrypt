@@ -482,6 +482,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
 
 // ══ MAIN CertVault PAGE ════════════════════════════════════════════════
 export default function CertVault({ nav }) {
+  const isMobile = useIsMobile()
   const { user, loading: authLoading } = useAuth()
   const { isPro, loading: planLoading } = usePlan(user)
 

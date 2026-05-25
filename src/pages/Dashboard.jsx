@@ -486,7 +486,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
       </div>
 
       {/* Three date labels below bar */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', marginTop:8 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(220px,100%),1fr))', marginTop:8 }}>
         <div>
           <div style={{ fontSize:10, fontWeight:600, color:'#3D5C59', fontFamily:'monospace' }}>
             {fmtShort(issuedAt)}
@@ -897,7 +897,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               {/* Expanded details */}
               {expanded[r.id] && (
                 <div style={{ borderTop:'1px solid var(--v2-border)', padding:'12px 14px', background:'var(--v2-surface)' }}>
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px 16px', marginBottom:12 }}>
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:'8px 16px', marginBottom:12 }}>
                     {[
                       ['Reissue #',     r.reissue_number||i+1],
                       ['Triggered by',  triggeredLabel(r.triggered_by)],
@@ -966,7 +966,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   background: r.status==='active' ? '#dcfce7' : '#f1f5f9',
                   color: r.status==='active' ? '#16a34a' : '#3D5C59' }}>{r.status}</span>
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'4px 12px' }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:'4px 12px' }}>
                 {[
                   ['Created',    fmtDate(r.created_at)],
                   ['Valid from', r.issued_at  ? fmtDate(r.issued_at)  : '—'],
@@ -1144,7 +1144,7 @@ function PqcRow({ cert, onRefresh }) {
                 </div>
 
                 {/* Algorithm info */}
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:12 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:8, marginBottom:12 }}>
                   {[
                     ['Algorithm',  d.algorithm || '—'],
                     ['Key size',   d.bits ? `${d.bits} bits` : '—'],
@@ -2699,7 +2699,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                   display:'flex', alignItems:'center', justifyContent:'center',
                   fontSize:12, color:s.color, fontWeight:700 }}>{s.icon}</div>
               </div>
-              <div style={{ fontSize:32, fontWeight:800, color: s.value>0 ? s.color : '#0f172a',
+              <div style={{ fontSize:Math.min(32,window.innerWidth>768?32:24), fontWeight:800, color: s.value>0 ? s.color : '#0f172a',
                 letterSpacing:'-1px', lineHeight:1, marginBottom:4,
                 transition:'color 0.3s' }}>{s.value}</div>
               <div style={{ fontSize:11, color:'#94a3b8' }}>{s.sub}</div>
@@ -2934,7 +2934,7 @@ function MarketingDashboard({ nav }) {
             <span className="v2-pulse"/>
             <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-green-text)' }}>Free · Open · Trusted</span>
           </div>
-          <h1 style={{ fontSize:38, fontWeight:700, color:'var(--v2-text)', letterSpacing:'-0.8px',
+          <h1 style={{ fontSize:Math.min(38,window.innerWidth>768?38:30), fontWeight:700, color:'var(--v2-text)', letterSpacing:'-0.8px',
             lineHeight:1.15, margin:'0 0 14px', maxWidth:560, marginLeft:'auto', marginRight:'auto' }}>
             Your SSL certificates,<br/>
             <span style={{ color:'var(--v2-green)' }}>always under control</span>
@@ -2957,6 +2957,7 @@ function MarketingDashboard({ nav }) {
 }
 
 export default function Dashboard({ nav, onIssue }) {
+  const isMobile = useIsMobile()
   const { user, loading } = useAuth()
   if (loading) return (
     <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>

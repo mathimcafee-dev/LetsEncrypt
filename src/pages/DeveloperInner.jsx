@@ -27,7 +27,7 @@ export default function DeveloperInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Profile card */}
-      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'28px 32px', marginBottom:14, borderLeft:'3px solid #1A7A72' }}>
+      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:14, borderLeft:'3px solid #1A7A72' }}>
         <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:24, alignItems:'start' }}>
           <img src={portrait} alt="Mathivanan Kathirvel"
             style={{ width:80, height:80, borderRadius:8, objectFit:'cover', border:'0.5px solid #e8edf2', flexShrink:0 }}/>

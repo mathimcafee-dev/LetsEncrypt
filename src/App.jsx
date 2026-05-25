@@ -70,6 +70,18 @@ const _build = 1779297041 // cache bust
     return () => window.removeEventListener('popstate', handler)
   }, [])
 
+  // Add/remove 'mobile' class on <html> for CSS targeting
+  useEffect(() => {
+    const update = () => {
+      document.documentElement.classList.toggle('is-mobile', window.innerWidth <= 768)
+      document.documentElement.classList.toggle('is-tablet', window.innerWidth > 768 && window.innerWidth <= 1024)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)

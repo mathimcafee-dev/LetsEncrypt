@@ -61,7 +61,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <ShieldAlert size={14} color={cfg.color}/>
-          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)' }}>Certificate detail</span>
+          <span style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)' }}>Certificate detail</span>
           <StatusBadge status={status}/>
         </div>
         <button onClick={onClose}
@@ -70,7 +70,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+      <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap: 0 }}>
         {[
           { label: 'Domain',        val: shadow.domain },
           { label: 'Issuing CA',    val: shadow.ca_type || '—' },
@@ -83,8 +83,8 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
         ].map(({ label, val }) => (
           <div key={label} style={{ padding: '6px 0', borderBottom: '0.5px solid var(--v2-border)',
             display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-            <span style={{ fontSize: 11, color: 'var(--v2-text-3)', minWidth: 100, flexShrink: 0 }}>{label}</span>
-            <span style={{ fontSize: 11, color: 'var(--v2-text)', fontWeight: 500,
+            <span style={{ fontSize:11, color: 'var(--v2-text-3)', minWidth: 100, flexShrink: 0 }}>{label}</span>
+            <span style={{ fontSize:11, color: 'var(--v2-text)', fontWeight: 500,
               fontFamily: label === 'Serial number' ? 'monospace' : 'inherit',
               wordBreak: 'break-all' }}>{val}</span>
           </div>
@@ -93,7 +93,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
 
       {shadow.reason && (
         <div style={{ marginTop: 10, padding: '8px 10px', background: cfg.bg, borderRadius: 6,
-          fontSize: 11, color: cfg.color, lineHeight: 1.5 }}>
+          fontSize:11, color: cfg.color, lineHeight: 1.5 }}>
           <AlertTriangle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }}/>
           {shadow.reason}
         </div>
@@ -216,8 +216,8 @@ export default function CTAbuseMonitor({ user }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
           marginBottom: 16, paddingTop: 8, gap: 12 }}>
           <div>
-            <h1 className="v2-h1" style={{ fontSize: 22 }}>CT abuse monitor</h1>
-            <p style={{ fontSize: 13, color: 'var(--v2-text-3)', marginTop: 4 }}>
+            <h1 className="v2-h1" style={{ fontSize:22 }}>CT abuse monitor</h1>
+            <p style={{ fontSize:13, color: 'var(--v2-text-3)', marginTop: 4 }}>
               Certificates issued for your domains by any CA — detected via CT logs. Spot phishing and mis-issuance instantly.
             </p>
           </div>
@@ -234,10 +234,10 @@ export default function CTAbuseMonitor({ user }) {
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
             <ShieldAlert size={16} color="#dc2626" style={{ flexShrink: 0, marginTop: 1 }}/>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: '#b91c1c' }}>
+              <div style={{ fontSize:13, fontWeight: 500, color: '#b91c1c' }}>
                 {flagged} unauthorised certificate{flagged !== 1 ? 's' : ''} detected
               </div>
-              <div style={{ fontSize: 11, color: '#dc2626', marginTop: 2 }}>
+              <div style={{ fontSize:11, color: '#dc2626', marginTop: 2 }}>
                 Certs issued for your domains by unrecognised CAs. Review immediately — possible phishing or shadow IT.
               </div>
             </div>
@@ -248,7 +248,7 @@ export default function CTAbuseMonitor({ user }) {
           <div style={{ background: '#E8F8F6', border: '0.5px solid #A8E6DE', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
             <Shield size={15} color="#16a34a" style={{ flexShrink: 0 }}/>
-            <div style={{ fontSize: 13, color: '#15803d', fontWeight: 500 }}>
+            <div style={{ fontSize:13, color: '#15803d', fontWeight: 500 }}>
               All detected certs are known and accounted for
             </div>
           </div>
@@ -266,8 +266,8 @@ export default function CTAbuseMonitor({ user }) {
               onClick={() => setFilter(label === 'Total detected' ? 'all'
                 : label === 'Flagged' ? 'flagged'
                 : label === 'Suspicious' ? 'suspicious' : 'known')}>
-              <div style={{ fontSize: 24, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
-              <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 3 }}>{label}</div>
+              <div style={{ fontSize:24, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
+              <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 3 }}>{label}</div>
             </div>
           ))}
         </div>
@@ -282,12 +282,12 @@ export default function CTAbuseMonitor({ user }) {
               { key: 'known',      label: 'Known' },
             ].map(({ key, label }) => (
               <button key={key} onClick={() => { setFilter(key); setSelected(null) }}
-                style={{ padding: '7px 12px', fontSize: 11, fontWeight: filter === key ? 500 : 400,
+                style={{ padding: '7px 12px', fontSize:11, fontWeight: filter === key ? 500 : 400,
                   background: filter === key ? 'var(--v2-surface-3)' : 'none',
                   border: 'none', cursor: 'pointer', color: filter === key ? 'var(--v2-text)' : 'var(--v2-text-3)' }}>
                 {label}
                 {key !== 'all' && (
-                  <span style={{ marginLeft: 4, fontSize: 10, color: 'var(--v2-text-3)' }}>
+                  <span style={{ marginLeft: 4, fontSize:10, color: 'var(--v2-text-3)' }}>
                     ({key === 'flagged' ? flagged : key === 'suspicious' ? (counts.suspicious||0) : (counts.known||0)})
                   </span>
                 )}
@@ -299,9 +299,9 @@ export default function CTAbuseMonitor({ user }) {
               transform: 'translateY(-50%)', color: 'var(--v2-text-3)', pointerEvents: 'none' }}/>
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search domain, CA, org…"
-              style={{ width: '100%', paddingLeft: 30, fontSize: 12, boxSizing: 'border-box' }}/>
+              style={{ width: '100%', paddingLeft: 30, fontSize:12, boxSizing: 'border-box' }}/>
           </div>
-          <span style={{ fontSize: 11, color: 'var(--v2-text-3)', flexShrink: 0 }}>
+          <span style={{ fontSize:11, color: 'var(--v2-text-3)', flexShrink: 0 }}>
             {filtered.length} of {classified.length}
           </span>
         </div>
@@ -315,10 +315,10 @@ export default function CTAbuseMonitor({ user }) {
         ) : filtered.length === 0 ? (
           <div className="v2-card" style={{ padding: '40px', textAlign: 'center' }}>
             <Shield size={28} style={{ color: 'var(--v2-text-3)', margin: '0 auto 10px', display: 'block' }}/>
-            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text-2)', marginBottom: 4 }}>
+            <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text-2)', marginBottom: 4 }}>
               {shadows.length === 0 ? 'No CT data yet' : 'No results match your filter'}
             </div>
-            <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>
+            <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>
               {shadows.length === 0
                 ? 'Connect DigiCert or run a shadow scan to populate CT findings.'
                 : 'Try clearing your search or filter.'}
@@ -332,7 +332,7 @@ export default function CTAbuseMonitor({ user }) {
                 padding: '8px 16px', background: 'var(--v2-surface-3)',
                 borderBottom: '0.5px solid var(--v2-border)' }}>
                 {['Domain', 'Issuing CA', 'Org', 'Issued', 'Expires', 'Status'].map(h => (
-                  <div key={h} style={{ fontSize: 10, fontWeight: 600, color: 'var(--v2-text-3)',
+                  <div key={h} style={{ fontSize:10, fontWeight: 600, color: 'var(--v2-text-3)',
                     textTransform: 'uppercase', letterSpacing: '0.3px' }}>{h}</div>
                 ))}
               </div>
@@ -352,23 +352,23 @@ export default function CTAbuseMonitor({ user }) {
                       transition: 'background .12s' }}>
 
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-text)',
+                      <div style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {s.domain}
                       </div>
                       {s.serial_number && (
-                        <div style={{ fontSize: 10, color: 'var(--v2-text-3)', fontFamily: 'monospace', marginTop: 1 }}>
+                        <div style={{ fontSize:10, color: 'var(--v2-text-3)', fontFamily: 'monospace', marginTop: 1 }}>
                           {s.serial_number.slice(0, 20)}
                         </div>
                       )}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{s.ca_type || '—'}</div>
-                    <div style={{ fontSize: 11, color: 'var(--v2-text-2)',
+                    <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>{s.ca_type || '—'}</div>
+                    <div style={{ fontSize:11, color: 'var(--v2-text-2)',
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {s.org_name || '—'}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{fmtDate(s.issued_at)}</div>
-                    <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{fmtDate(s.expires_at)}</div>
+                    <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>{fmtDate(s.issued_at)}</div>
+                    <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>{fmtDate(s.expires_at)}</div>
                     <div><StatusBadge status={s._status}/></div>
                   </div>
                 )
@@ -399,10 +399,10 @@ export default function CTAbuseMonitor({ user }) {
               borderBottom: showWatched ? '0.5px solid var(--v2-border)' : 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Shield size={14} color="var(--v2-accent)"/>
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)' }}>
+              <span style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)' }}>
                 Watched domains
               </span>
-              <span style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>
+              <span style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
                 {watchDomains.length} domain{watchDomains.length !== 1 ? 's' : ''} monitored
               </span>
             </div>
@@ -411,7 +411,7 @@ export default function CTAbuseMonitor({ user }) {
 
           {showWatched && (
             <div style={{ padding: '12px 16px' }}>
-              <div style={{ fontSize: 12, color: 'var(--v2-text-3)', marginBottom: 10, lineHeight: 1.5 }}>
+              <div style={{ fontSize:12, color: 'var(--v2-text-3)', marginBottom: 10, lineHeight: 1.5 }}>
                 SSLVault monitors CT logs for these domains and alerts you when new certs are detected from unknown CAs.
               </div>
 
@@ -420,7 +420,7 @@ export default function CTAbuseMonitor({ user }) {
                 <input value={newDomain} onChange={e => setNewDomain(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && addWatchDomain()}
                   placeholder="Add domain to watch (e.g. yourdomain.com)"
-                  style={{ flex: 1, fontSize: 12 }}/>
+                  style={{ flex: 1, fontSize:12 }}/>
                 <button className="v2-btn v2-btn-sm" onClick={addWatchDomain}
                   disabled={addingDomain || !newDomain.trim()}
                   style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -433,7 +433,7 @@ export default function CTAbuseMonitor({ user }) {
 
               {/* Domain list */}
               {watchDomains.length === 0 ? (
-                <div style={{ fontSize: 12, color: 'var(--v2-text-3)', textAlign: 'center', padding: '12px 0' }}>
+                <div style={{ fontSize:12, color: 'var(--v2-text-3)', textAlign: 'center', padding: '12px 0' }}>
                   No domains being watched. Add one above.
                 </div>
               ) : (
@@ -450,13 +450,13 @@ export default function CTAbuseMonitor({ user }) {
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor,
                         flexShrink: 0, animation: !hasFlagged && !hasSuspicious ? 'ctpulse 2.5s ease infinite' : 'none' }}/>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-text)' }}>{w.domain}</div>
-                        <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 1 }}>
+                        <div style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)' }}>{w.domain}</div>
+                        <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginTop: 1 }}>
                           {domainShadows.length} cert{domainShadows.length !== 1 ? 's' : ''} detected ·
                           Added {timeAgo(w.created_at)}
                         </div>
                       </div>
-                      <div style={{ fontSize: 10, color: hasFlagged ? '#dc2626' : hasSuspicious ? '#E8897A' : '#16a34a',
+                      <div style={{ fontSize:10, color: hasFlagged ? '#dc2626' : hasSuspicious ? '#E8897A' : '#16a34a',
                         fontWeight: 500 }}>
                         {hasFlagged ? '⚠ Action needed' : hasSuspicious ? '○ Review' : '✓ All clear'}
                       </div>

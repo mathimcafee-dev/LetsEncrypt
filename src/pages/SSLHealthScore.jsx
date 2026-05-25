@@ -48,7 +48,7 @@ function ScoreBar({ score }) {
       <div style={{ flex: 1, height: 4, background: 'var(--v2-border)', borderRadius: 2, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 2, transition: 'width .6s' }} />
       </div>
-      <span style={{ fontSize: 11, fontWeight: 500, color, fontFamily: 'monospace', minWidth: 28, textAlign: 'right' }}>
+      <span style={{ fontSize:11, fontWeight: 500, color, fontFamily: 'monospace', minWidth: 28, textAlign: 'right' }}>
         {Math.round(pct)}
       </span>
     </div>
@@ -61,7 +61,7 @@ function Check({ ok, label }) {
       {ok
         ? <CheckCircle size={11} color="#16a34a" />
         : <XCircle size={11} color="#dc2626" />}
-      <span style={{ fontSize: 11, color: ok ? '#16a34a' : '#dc2626' }}>{label}</span>
+      <span style={{ fontSize:11, color: ok ? '#16a34a' : '#dc2626' }}>{label}</span>
     </div>
   )
 }
@@ -80,7 +80,7 @@ function DomainRow({ score, onRescan, scanning }) {
         {/* Grade badge */}
         <div style={{ width: 44, height: 44, borderRadius: 10, background: gs.bg, flexShrink: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${gs.border}` }}>
-          <span style={{ fontSize: 16, fontWeight: 700, color: gs.color, fontFamily: 'monospace' }}>
+          <span style={{ fontSize:16, fontWeight: 700, color: gs.color, fontFamily: 'monospace' }}>
             {score.grade || 'F'}
           </span>
         </div>
@@ -88,7 +88,7 @@ function DomainRow({ score, onRescan, scanning }) {
         {/* Domain + score bar */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)',
+            <span style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {score.domain}
             </span>
@@ -106,7 +106,7 @@ function DomainRow({ score, onRescan, scanning }) {
           <Check ok={score.caa} label="CAA" />
           <Check ok={score.cert_valid} label="TLS" />
           {score.expiry_days != null && (
-            <span style={{ fontSize: 11, fontWeight: 500,
+            <span style={{ fontSize:11, fontWeight: 500,
               color: score.expiry_days <= 7 ? '#dc2626' : score.expiry_days <= 30 ? '#E8897A' : '#16a34a' }}>
               {score.expiry_days <= 0 ? 'Expired' : `${score.expiry_days}d`}
             </span>
@@ -142,14 +142,14 @@ function DomainRow({ score, onRescan, scanning }) {
             { label: 'Last scanned',  val: timeAgo(score.scanned_at) },
           ].map(({ label, val }) => (
             <div key={label}>
-              <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginBottom: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{label}</div>
-              <div style={{ fontSize: 12, color: 'var(--v2-text)', fontWeight: 500 }}>{val}</div>
+              <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginBottom: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{label}</div>
+              <div style={{ fontSize:12, color: 'var(--v2-text)', fontWeight: 500 }}>{val}</div>
             </div>
           ))}
           {score.error && (
             <div style={{ gridColumn: '1/-1' }}>
-              <div style={{ fontSize: 10, color: '#dc2626', fontWeight: 500, marginBottom: 2 }}>Error</div>
-              <div style={{ fontSize: 11, color: '#dc2626', fontFamily: 'monospace' }}>{score.error}</div>
+              <div style={{ fontSize:10, color: '#dc2626', fontWeight: 500, marginBottom: 2 }}>Error</div>
+              <div style={{ fontSize:11, color: '#dc2626', fontFamily: 'monospace' }}>{score.error}</div>
             </div>
           )}
         </div>
@@ -218,8 +218,8 @@ export default function SSLHealthScore({ user }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
           marginBottom: 20, paddingTop: 8, gap: 12 }}>
           <div>
-            <h1 className="v2-h1" style={{ fontSize: 22 }}>SSL health score</h1>
-            <p style={{ fontSize: 13, color: 'var(--v2-text-3)', marginTop: 4 }}>
+            <h1 className="v2-h1" style={{ fontSize:22 }}>SSL health score</h1>
+            <p style={{ fontSize:13, color: 'var(--v2-text-3)', marginTop: 4 }}>
               Grade A–F across TLS reachability, HSTS, CAA records and expiry
             </p>
           </div>
@@ -240,8 +240,8 @@ export default function SSLHealthScore({ user }) {
               { label: 'Need attention', val: issues.length, color: issues.length > 0 ? '#dc2626' : '#16a34a' },
             ].map(({ label, val, color }) => (
               <div key={label} className="v2-card" style={{ padding: '12px 14px' }}>
-                <div style={{ fontSize: 24, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 3 }}>{label}</div>
+                <div style={{ fontSize:24, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
+                <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 3 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -257,7 +257,7 @@ export default function SSLHealthScore({ user }) {
               onChange={e => setNewDomain(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addDomain()}
               placeholder="yourdomain.com — press Enter to scan"
-              style={{ flex: 1, fontSize: 13 }}
+              style={{ flex: 1, fontSize:13 }}
             />
             <button className="v2-btn v2-btn-sm" onClick={addDomain} disabled={adding || !newDomain.trim()}
               style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
@@ -266,7 +266,7 @@ export default function SSLHealthScore({ user }) {
                 : <><Plus size={10} /> Scan domain</>}
             </button>
           </div>
-          {addError && <div style={{ fontSize: 11, color: '#dc2626', marginTop: 6 }}>{addError}</div>}
+          {addError && <div style={{ fontSize:11, color: '#dc2626', marginTop: 6 }}>{addError}</div>}
         </div>
 
         {/* Domain list */}
@@ -278,10 +278,10 @@ export default function SSLHealthScore({ user }) {
         ) : scores.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 0' }}>
             <Trophy size={32} style={{ color: 'var(--v2-text-3)', margin: '0 auto 12px', display: 'block' }} />
-            <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--v2-text-2)', marginBottom: 6 }}>
+            <div style={{ fontSize:14, fontWeight: 500, color: 'var(--v2-text-2)', marginBottom: 6 }}>
               No domains scanned yet
             </div>
-            <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>
+            <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>
               Enter a domain above to get your first SSL health grade.
             </div>
           </div>
@@ -290,7 +290,7 @@ export default function SSLHealthScore({ user }) {
             {scores.map(s => (
               <DomainRow key={s.id} score={s} onRescan={rescan} scanning={scanning} />
             ))}
-            <div style={{ fontSize: 11, color: 'var(--v2-text-3)', textAlign: 'center', marginTop: 8 }}>
+            <div style={{ fontSize:11, color: 'var(--v2-text-3)', textAlign: 'center', marginTop: 8 }}>
               Grading: A+ (90–100) · A (80–89) · B (70–79) · C (60–69) · D (50–59) · F (&lt;50)
             </div>
           </div>

@@ -21,12 +21,14 @@ function fmt(iso) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function ExpiryBadge({ iso }) {
   const d = dLeft(iso)
   const color = d === null ? '#94a3b8' : d <= 0 ? '#dc2626' : d <= 7 ? '#ea580c' : d <= 30 ? '#E8897A' : d <= 60 ? '#ca8a04' : '#16a34a'
   const bg    = d === null ? '#f8fafc' : d <= 0 ? '#fef2f2' : d <= 7 ? '#fff7ed' : d <= 30 ? '#FDF0EE' : '#E8F8F6'
   return (
-    <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
+    <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
       background: bg, color, border: `0.5px solid ${color}44`, whiteSpace: 'nowrap' }}>
       {d === null ? '—' : d <= 0 ? 'Expired' : `${d}d`}
     </span>
@@ -42,7 +44,7 @@ function StatusBadge({ status }) {
     n.includes('pending') || n === '1' ? ['#E8897A', '#FDF0EE', 'Pending'] :
     ['#94a3b8', '#f8fafc', status || 'Unknown']
   return (
-    <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
+    <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
       background: bg, color, border: `0.5px solid ${color}44` }}>{label}</span>
   )
 }
@@ -60,13 +62,13 @@ function SectionHeader({ icon: Icon, color, title, sub, badge }) {
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--v2-text)',
+          <h2 style={{ fontSize:16, fontWeight: 700, color: 'var(--v2-text)',
             letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
           {badge && <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 20,
             background: color + '18', color, border: `0.5px solid ${color}44`,
             textTransform: 'uppercase', letterSpacing: '0.5px' }}>{badge}</span>}
         </div>
-        {sub && <p style={{ fontSize: 12, color: 'var(--v2-text-3)', margin: '3px 0 0', lineHeight: 1.5 }}>{sub}</p>}
+        {sub && <p style={{ fontSize:12, color: 'var(--v2-text-3)', margin: '3px 0 0', lineHeight: 1.5 }}>{sub}</p>}
       </div>
     </div>
   )
@@ -126,15 +128,15 @@ function CredPanel({ onConnect }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <div style={{ width: 40, height: 40, borderRadius: 12, background: '#FDF0EE',
           border: '1px solid #F2C4BC', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', fontWeight: 800, fontSize: 14, color: '#E8897A' }}>SC</div>
+          justifyContent: 'center', fontWeight: 800, fontSize:14, color: '#E8897A' }}>SC</div>
         <div>
-          <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--v2-text)' }}>Connect Sectigo SCM</div>
-          <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginTop: 1 }}>SCM REST API credentials</div>
+          <div style={{ fontWeight: 600, fontSize:15, color: 'var(--v2-text)' }}>Connect Sectigo SCM</div>
+          <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 1 }}>SCM REST API credentials</div>
         </div>
       </div>
       <div className="v2-callout info" style={{ marginBottom: 16 }}>
         <Info size={12} style={{ flexShrink: 0 }}/>
-        <span style={{ fontSize: 12 }}>
+        <span style={{ fontSize:12 }}>
           Your <strong>Customer URI</strong> is the short identifier for your Sectigo account
           (e.g. <span className="v2-kbd">yourcompany</span>). Find it in your SCM welcome email.
         </span>
@@ -156,14 +158,14 @@ function CredPanel({ onConnect }) {
           {show ? <EyeOff size={13}/> : <Eye size={13}/>}
         </button>
       </div>
-      {error && <div className="v2-callout error" style={{ marginBottom: 12, fontSize: 12 }}>{error}</div>}
+      {error && <div className="v2-callout error" style={{ marginBottom: 12, fontSize:12 }}>{error}</div>}
       <button className="v2-btn v2-btn-primary" onClick={connect} disabled={busy}
-        style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '11px' }}>
+        style={{ width: '100%', justifyContent: 'center', fontSize:13, padding: '11px' }}>
         {busy ? <><Spinner/> Connecting…</> : <><CheckCircle size={13}/> Connect & load portfolio</>}
       </button>
       <a href="https://sectigo.com/knowledge-base/detail/Sectigo-Certificate-Manager-API/kA01N000000bvOx"
         target="_blank" rel="noopener noreferrer"
-        style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12, fontSize: 11,
+        style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12, fontSize:11,
           color: 'var(--v2-text-3)', textDecoration: 'none', justifyContent: 'center' }}>
         SCM API docs <ExternalLink size={10}/>
       </a>
@@ -230,10 +232,10 @@ function InventoryLayer({ creds }) {
               borderTop: `3px solid ${count > 0 ? COLORS[b.key] : 'var(--v2-border)'}`,
               background: filter === b.key ? BANDS_BG[b.key] : 'var(--v2-bg)', transition: 'all .15s' }}
               onClick={() => setFilter(filter === b.key ? 'all' : b.key)}>
-              <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1,
+              <div style={{ fontSize:22, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1,
                 marginBottom: 4, fontFamily: 'var(--v2-mono)',
                 color: count > 0 ? COLORS[b.key] : 'var(--v2-text-3)' }}>{count}</div>
-              <div style={{ fontSize: 10, color: 'var(--v2-text-3)', textTransform: 'uppercase',
+              <div style={{ fontSize:10, color: 'var(--v2-text-3)', textTransform: 'uppercase',
                 letterSpacing: '0.4px' }}>{b.label}</div>
             </div>
           )
@@ -244,7 +246,7 @@ function InventoryLayer({ creds }) {
         <Search size={13} style={{ position: 'absolute', left: 10, top: '50%',
           transform: 'translateY(-50%)', color: 'var(--v2-text-3)' }}/>
         <input className="v2-input" placeholder="Search domain…" value={search}
-          onChange={e => setSearch(e.target.value)} style={{ paddingLeft: 32, fontSize: 12 }}/>
+          onChange={e => setSearch(e.target.value)} style={{ paddingLeft: 32, fontSize:12 }}/>
       </div>
 
       <div className="v2-card" style={{ overflow: 'hidden', padding: 0 }}>
@@ -252,12 +254,12 @@ function InventoryLayer({ creds }) {
           padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Domain', 'Type', 'Status', 'Expires', 'Days left'].map(h => (
-            <div key={h} style={{ fontSize: 10, fontWeight: 600, color: 'var(--v2-text-3)',
+            <div key={h} style={{ fontSize:10, fontWeight: 600, color: 'var(--v2-text-3)',
               textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</div>
           ))}
         </div>
         {filtered.length === 0 ? (
-          <div style={{ padding: 24, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
+          <div style={{ padding: 24, textAlign: 'center', color: 'var(--v2-text-3)', fontSize:13 }}>
             No certificates match this filter
           </div>
         ) : filtered.slice(0, 200).map((c, i) => {
@@ -271,12 +273,12 @@ function InventoryLayer({ creds }) {
               onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-surface-3)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
               <div>
-                <div className="v2-mono" style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-text)' }}>{cn}</div>
-                {c.id && <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 1 }}>ID: {c.id}</div>}
+                <div className="v2-mono" style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)' }}>{cn}</div>
+                {c.id && <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginTop: 1 }}>ID: {c.id}</div>}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{typ}</div>
+              <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>{typ}</div>
               <div><StatusBadge status={c.status || c.state}/></div>
-              <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{fmt(exp)}</div>
+              <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>{fmt(exp)}</div>
               <div><ExpiryBadge iso={exp}/></div>
             </div>
           )
@@ -320,25 +322,25 @@ function OrgsLayer({ creds }) {
           padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Organisation', 'City / Country', 'Status', 'Cert types'].map(h => (
-            <div key={h} style={{ fontSize: 10, fontWeight: 600, color: 'var(--v2-text-3)',
+            <div key={h} style={{ fontSize:10, fontWeight: 600, color: 'var(--v2-text-3)',
               textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</div>
           ))}
         </div>
         {orgs.length === 0 ? (
-          <div style={{ padding: 20, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 12 }}>No organisations found</div>
+          <div style={{ padding: 20, textAlign: 'center', color: 'var(--v2-text-3)', fontSize:12 }}>No organisations found</div>
         ) : orgs.map((org, i) => (
           <div key={org.id || i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
             padding: '9px 14px', borderBottom: i < orgs.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
             alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--v2-text)' }}>{org.name || org.commonName || '—'}</div>
-              {org.id && <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 1 }}>ID: {org.id}</div>}
+              <div style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)' }}>{org.name || org.commonName || '—'}</div>
+              {org.id && <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginTop: 1 }}>ID: {org.id}</div>}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{[org.city, org.country].filter(Boolean).join(', ') || '—'}</div>
+            <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>{[org.city, org.country].filter(Boolean).join(', ') || '—'}</div>
             <div>
               <StatusBadge status={org.status || org.validationStatus || 'active'}/>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{org.certTypes || org.certType || '—'}</div>
+            <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>{org.certTypes || org.certType || '—'}</div>
           </div>
         ))}
       </div>
@@ -385,17 +387,17 @@ function AnalyticsLayer({ creds }) {
         sub="Distribution of certificate types and statuses across your Sectigo portfolio."
         badge="Analytics"/>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap: 16 }}>
         <div className="v2-card v2-card-pad">
           <div className="v2-section-label" style={{ marginBottom: 12 }}>By certificate type</div>
           {Object.entries(data.byType).sort((a,b) => b[1]-a[1]).map(([type, count]) => (
             <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-              <div style={{ flex: 1, fontSize: 12, color: 'var(--v2-text-2)' }}>{type}</div>
+              <div style={{ flex: 1, fontSize:12, color: 'var(--v2-text-2)' }}>{type}</div>
               <div style={{ width: 120, height: 6, background: 'var(--v2-surface-3)', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${Math.round((count / data.total) * 100)}%`, height: '100%',
                   background: '#E8897A', borderRadius: 3 }}/>
               </div>
-              <div className="v2-mono" style={{ fontSize: 12, fontWeight: 700, color: 'var(--v2-text)', minWidth: 28, textAlign: 'right' }}>{count}</div>
+              <div className="v2-mono" style={{ fontSize:12, fontWeight: 700, color: 'var(--v2-text)', minWidth: 28, textAlign: 'right' }}>{count}</div>
             </div>
           ))}
         </div>
@@ -403,16 +405,16 @@ function AnalyticsLayer({ creds }) {
           <div className="v2-section-label" style={{ marginBottom: 12 }}>By status</div>
           {Object.entries(data.byStatus).sort((a,b) => b[1]-a[1]).map(([status, count]) => (
             <div key={status} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-              <div style={{ flex: 1, fontSize: 12, color: 'var(--v2-text-2)', textTransform: 'capitalize' }}>{status}</div>
+              <div style={{ flex: 1, fontSize:12, color: 'var(--v2-text-2)', textTransform: 'capitalize' }}>{status}</div>
               <div style={{ width: 120, height: 6, background: 'var(--v2-surface-3)', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${Math.round((count / data.total) * 100)}%`, height: '100%',
                   background: '#16a34a', borderRadius: 3 }}/>
               </div>
-              <div className="v2-mono" style={{ fontSize: 12, fontWeight: 700, color: 'var(--v2-text)', minWidth: 28, textAlign: 'right' }}>{count}</div>
+              <div className="v2-mono" style={{ fontSize:12, fontWeight: 700, color: 'var(--v2-text)', minWidth: 28, textAlign: 'right' }}>{count}</div>
             </div>
           ))}
           <div style={{ marginTop: 12, paddingTop: 12, borderTop: '0.5px solid var(--v2-border)',
-            fontSize: 12, color: 'var(--v2-text-3)' }}>
+            fontSize:12, color: 'var(--v2-text-3)' }}>
             Total: <strong style={{ color: 'var(--v2-text)' }}>{data.total}</strong>
           </div>
         </div>
@@ -431,6 +433,7 @@ const TABS = [
 ]
 
 export default function SectigoIntelligence({ nav }) {
+  const isMobile = useIsMobile()
   const [creds,  setCreds]  = useState(null)
   const [tab,    setTab]    = useState('inventory')
 
@@ -457,18 +460,18 @@ export default function SectigoIntelligence({ nav }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, paddingTop: 8 }}>
           <button onClick={() => nav('/ca-intelligence')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)',
-              padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontFamily: 'inherit' }}>
+              padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontSize:12, fontFamily: 'inherit' }}>
             <ChevronLeft size={13}/> CA Intelligence
           </button>
-          <span style={{ color: 'var(--v2-border)', fontSize: 12 }}>/</span>
+          <span style={{ color: 'var(--v2-border)', fontSize:12 }}>/</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
             <div style={{ width: 22, height: 22, borderRadius: 6, background: '#FDF0EE',
               border: '1px solid #F2C4BC', display: 'flex', alignItems: 'center',
               justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#E8897A' }}>SC</div>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)' }}>Sectigo Intelligence</span>
+            <span style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)' }}>Sectigo Intelligence</span>
           </div>
           {creds && (
-            <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, padding: '2px 8px',
+            <span style={{ marginLeft: 'auto', fontSize:10, fontWeight: 700, padding: '2px 8px',
               borderRadius: 20, background: '#E8F8F6', color: '#16a34a', border: '0.5px solid #A8E6DE',
               display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }}/>
@@ -487,7 +490,7 @@ export default function SectigoIntelligence({ nav }) {
               {TABS.map(t => (
                 <button key={t.id} onClick={() => setTab(t.id)}
                   style={{ display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '9px 14px', fontSize: 12, fontWeight: 500, fontFamily: 'inherit',
+                    padding: '9px 14px', fontSize:12, fontWeight: 500, fontFamily: 'inherit',
                     background: 'none', border: 'none', cursor: 'pointer', borderRadius: '8px 8px 0 0',
                     color: tab === t.id ? 'var(--v2-text)' : 'var(--v2-text-3)',
                     borderBottom: tab === t.id ? '2px solid #E8897A' : '2px solid transparent',
@@ -498,7 +501,7 @@ export default function SectigoIntelligence({ nav }) {
               ))}
               <button onClick={() => setCreds(null)}
                 style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: 11, color: 'var(--v2-text-3)', padding: '9px 8px', fontFamily: 'inherit',
+                  fontSize:11, color: 'var(--v2-text-3)', padding: '9px 8px', fontFamily: 'inherit',
                   display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Lock size={11}/> Disconnect
               </button>

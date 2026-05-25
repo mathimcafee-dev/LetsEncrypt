@@ -80,7 +80,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
         width: 22, height: 22, borderRadius: '50%', marginBottom: 5,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: isToday ? ACCENT : 'transparent',
-        fontSize: 11, fontWeight: hasCerts || isToday ? 700 : 400,
+        fontSize:11, fontWeight: hasCerts || isToday ? 700 : 400,
         color: isToday ? '#fff' : hasCerts ? (st ? st.text : 'var(--v2-text)') : 'var(--v2-text-3)',
       }}>
         {day}
@@ -92,7 +92,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
         const css = s ? STATUS[s] : STATUS.healthy
         return (
           <div key={i} style={{
-            fontSize: 10, fontWeight: 600, padding: '2px 5px', borderRadius: 4,
+            fontSize:10, fontWeight: 600, padding: '2px 5px', borderRadius: 4,
             marginBottom: 2, lineHeight: 1.4,
             background: css.bar, color: '#fff',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -102,7 +102,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
         )
       })}
       {certs.length > 3 && (
-        <div style={{ fontSize: 10, color: st ? st.text : 'var(--v2-text-3)',
+        <div style={{ fontSize:10, color: st ? st.text : 'var(--v2-text-3)',
           fontWeight: 600, marginTop: 1 }}>
           +{certs.length - 3} more
         </div>

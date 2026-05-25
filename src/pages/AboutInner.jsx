@@ -19,7 +19,7 @@ export default function AboutInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Mission block */}
-      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'28px 32px', marginBottom:16, borderLeft:'3px solid #1A7A72' }}>
+      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #1A7A72' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
           <Heart size={14} color="#1A7A72"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Mission</span>
@@ -36,7 +36,7 @@ export default function AboutInner({ nav }) {
       </div>
 
       {/* Pillars grid */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:12, marginBottom:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:16 }}>
         {PILLARS.map(({ icon:Icon, title, body }) => (
           <div key={title} style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
             <div style={{ width:32, height:32, background:'#E8F8F6', border:'0.5px solid #A8E6DE', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>

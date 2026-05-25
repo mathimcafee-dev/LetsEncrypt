@@ -73,9 +73,9 @@ function SectionBanner({ icon: Icon, color, title, sub }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Icon size={16} color={color}/>
         </div>
-        <h2 style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.3px', margin: 0 }}>{title}</h2>
+        <h2 style={{ fontSize:17, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.3px', margin: 0 }}>{title}</h2>
       </div>
-      <p style={{ fontSize: 12, color: 'var(--v2-text-3)', margin: '0 0 0 42px', lineHeight: 1.5 }}>{sub}</p>
+      <p style={{ fontSize:12, color: 'var(--v2-text-3)', margin: '0 0 0 42px', lineHeight: 1.5 }}>{sub}</p>
     </div>
   )
 }
@@ -177,9 +177,9 @@ function ExpiryTimeline({ tok }) {
             background: filter === key ? u.bg : 'var(--v2-surface)',
             transition: 'all .15s' }}
             onClick={() => setFilter(filter === key ? 'all' : key)}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: counts[key] > 0 ? u.color : 'var(--v2-text-3)',
+            <div style={{ fontSize:22, fontWeight: 800, color: counts[key] > 0 ? u.color : 'var(--v2-text-3)',
               letterSpacing: '-0.5px', lineHeight: 1, marginBottom: 4 }}>{counts[key] || 0}</div>
-            <div style={{ fontSize: 10, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{u.label}</div>
+            <div style={{ fontSize:10, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{u.label}</div>
           </Card>
         ))}
       </div>
@@ -189,7 +189,7 @@ function ExpiryTimeline({ tok }) {
         <div style={{ background: '#fef2f2', border: '0.5px solid #fecaca', borderRadius: 10,
           padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
           <AlertCircle size={15} color="#dc2626" style={{ flexShrink: 0 }}/>
-          <span style={{ fontSize: 13, color: '#b91c1c', fontWeight: 600 }}>
+          <span style={{ fontSize:13, color: '#b91c1c', fontWeight: 600 }}>
             {counts.expired > 0 && `${counts.expired} expired`}
             {counts.expired > 0 && counts.critical > 0 && ' · '}
             {counts.critical > 0 && `${counts.critical} expiring within 7 days`}
@@ -202,7 +202,7 @@ function ExpiryTimeline({ tok }) {
         <div style={{ background: '#FDF0EE', border: '0.5px solid #F2C4BC', borderRadius: 10,
           padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
           <AlertTriangle size={14} color="#E8897A" style={{ flexShrink: 0 }}/>
-          <span style={{ fontSize: 12, color: '#C45A4A' }}>
+          <span style={{ fontSize:12, color: '#C45A4A' }}>
             <strong>{no_renewal_path_count} certificate{no_renewal_path_count !== 1 ? 's' : ''}</strong> have no renewal path —
             no agent, no DNS connector, and not a RapidSSL cert. These require manual renewal.
           </span>
@@ -215,7 +215,7 @@ function ExpiryTimeline({ tok }) {
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Search domains…"
             style={{ width: '100%', boxSizing: 'border-box', padding: '7px 10px 7px 30px',
-              borderRadius: 8, border: '0.5px solid var(--v2-border)', fontSize: 12, fontFamily: 'inherit',
+              borderRadius: 8, border: '0.5px solid var(--v2-border)', fontSize:12, fontFamily: 'inherit',
               outline: 'none', color: '#111' }}
             onFocus={e => e.target.style.borderColor = '#1A7A72'}
             onBlur={e => e.target.style.borderColor = 'var(--v2-border)'}/>
@@ -223,7 +223,7 @@ function ExpiryTimeline({ tok }) {
         </div>
         {filter !== 'all' && (
           <button onClick={() => setFilter('all')}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600,
+            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 600,
               padding: '6px 10px', borderRadius: 7, border: '0.5px solid var(--v2-border)',
               background: 'var(--v2-surface)', cursor: 'pointer', fontFamily: 'inherit', color: 'var(--v2-text-3)' }}>
             <X size={11}/> Clear filter
@@ -232,27 +232,27 @@ function ExpiryTimeline({ tok }) {
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginLeft: 'auto' }}>
           {conns.length > 0 && (
             <select value={connId || ''} onChange={e => setConnId(e.target.value || null)}
-              style={{ fontSize: 11, padding: '6px 8px', borderRadius: 7, border: '0.5px solid var(--v2-border)',
+              style={{ fontSize:11, padding: '6px 8px', borderRadius: 7, border: '0.5px solid var(--v2-border)',
                 fontFamily: 'inherit', color: 'var(--v2-text-2)', cursor: 'pointer', outline: 'none' }}>
               <option value="">All connections</option>
               {conns.map(c => <option key={c.id} value={c.id}>{c.label || c.ca_name}</option>)}
             </select>
           )}
           <button onClick={doSync} disabled={syncing}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600,
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:11, fontWeight: 600,
               padding: '6px 12px', borderRadius: 7, border: 'none', background: syncing ? 'var(--v2-text-3)' : '#1A7A72',
               color: 'var(--v2-surface)', cursor: syncing ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
             {syncing ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync now</>}
           </button>
           <button onClick={load}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600,
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:11, fontWeight: 600,
               padding: '6px 12px', borderRadius: 7, border: '0.5px solid var(--v2-border)',
               background: 'var(--v2-surface)', cursor: 'pointer', fontFamily: 'inherit', color: 'var(--v2-text-2)' }}>
             <RefreshCw size={11}/> Refresh
           </button>
         </div>
       </div>
-      {last_sync && <div style={{ fontSize: 11, color: 'var(--v2-text-3)', marginBottom: 10 }}>Last synced: {fmt(last_sync)}</div>}
+      {last_sync && <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginBottom: 10 }}>Last synced: {fmt(last_sync)}</div>}
 
       {/* Batch delete toolbar — appears when items selected */}
       {selected.size > 0 && (
@@ -288,12 +288,12 @@ function ExpiryTimeline({ tok }) {
               : <Square size={13} style={{ color:'#cbd5e1' }}/>}
           </div>
           {['Domain', 'CA source', 'Expires', 'Days left', 'Status', ''].map(h => (
-            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
+            <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
               textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
           ))}
         </div>
         {certs.length === 0 ? (
-          <div style={{ padding: 32, textAlign: 'center', color: 'var(--v2-text-3)', fontSize: 13 }}>
+          <div style={{ padding: 32, textAlign: 'center', color: 'var(--v2-text-3)', fontSize:13 }}>
             {search || filter !== 'all' ? 'No certificates match this filter.' : 'No certificates tracked. Connect a CA or sync.'}
           </div>
         ) : certs.map((cert, i) => {
@@ -317,7 +317,7 @@ function ExpiryTimeline({ tok }) {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
                   <UrgencyDot urgency={cert.urgency}/>
-                  <span style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: '#0f172a',
+                  <span style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace', color: '#0f172a',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cert.domain}</span>
                 </div>
                 {cert.no_renewal_path && (
@@ -327,8 +327,8 @@ function ExpiryTimeline({ tok }) {
               <div>
                 <Tag text={cert.ca_name || cert.ca_type || '—'} color={caColor} bg={caColor + '12'}/>
               </div>
-              <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{fmt(cert.expires_at)}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: u.color }}>
+              <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{fmt(cert.expires_at)}</div>
+              <div style={{ fontSize:12, fontWeight: 700, color: u.color }}>
                 {cert.days_left === null ? '—' : cert.days_left < 0 ? 'Expired' : `${cert.days_left}d`}
               </div>
               <div><Tag text={u.label} color={u.color} bg={u.bg}/></div>
@@ -349,7 +349,7 @@ function ExpiryTimeline({ tok }) {
           )
         })}
         {certs.length > 0 && (
-          <div style={{ padding: '8px 16px', fontSize: 11, color: 'var(--v2-text-3)', borderTop: '0.5px solid var(--v2-border)' }}>
+          <div style={{ padding: '8px 16px', fontSize:11, color: 'var(--v2-text-3)', borderTop: '0.5px solid var(--v2-border)' }}>
             Showing {certs.length} of {total} certificates
             {selected.size > 0 && <span style={{ color:'#1A7A72', marginLeft:8 }}>· {selected.size} selected</span>}
           </div>
@@ -569,11 +569,11 @@ function ShadowScanner({ tok, nav }) {
 
       {/* Connection picker + scan */}
       <Card style={{ padding: '18px 20px', marginBottom: 20 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--v2-text-2)', marginBottom: 12,
+        <div style={{ fontSize:12, fontWeight: 700, color: 'var(--v2-text-2)', marginBottom: 12,
           textTransform: 'uppercase', letterSpacing: '0.4px' }}>Run shadow scan</div>
 
         {conns.length === 0 ? (
-          <div style={{ fontSize: 13, color: 'var(--v2-text-3)' }}>
+          <div style={{ fontSize:13, color: 'var(--v2-text-3)' }}>
             No active DigiCert connections found.{' '}
             <span style={{ color: '#1A7A72', cursor: 'pointer', textDecoration: 'underline' }}
               onClick={() => nav('/integrations')}>
@@ -584,26 +584,26 @@ function ShadowScanner({ tok, nav }) {
           <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
             {conns.length > 1 && (
               <select value={selectedConn || ''} onChange={e => setSelectedConn(e.target.value)}
-                style={{ fontSize: 12, padding: '7px 10px', borderRadius: 8, border: '0.5px solid var(--v2-border)',
+                style={{ fontSize:12, padding: '7px 10px', borderRadius: 8, border: '0.5px solid var(--v2-border)',
                   fontFamily: 'inherit', color: 'var(--v2-text-2)', outline: 'none' }}>
                 <option value="">Select connection…</option>
                 {conns.map(c => <option key={c.id} value={c.id}>{c.label || c.ca_name}</option>)}
               </select>
             )}
             {conns.length === 1 && (
-              <div style={{ fontSize: 12, color: 'var(--v2-text-2)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontSize:12, color: 'var(--v2-text-2)', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a' }}/>
                 {conns[0].label || conns[0].ca_name}
               </div>
             )}
             <button onClick={doScan} disabled={scanning || !selectedConn}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700,
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, fontWeight: 700,
                 padding: '8px 16px', borderRadius: 8, border: 'none',
                 background: scanning || !selectedConn ? 'var(--v2-text-3)' : '#E8897A',
                 color: 'var(--v2-surface)', cursor: scanning || !selectedConn ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
               {scanning ? <><Spinner/> Scanning DigiCert…</> : <><Search size={12}/> Run Shadow Scan</>}
             </button>
-            <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>
+            <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
               Compares your entire DigiCert order history vs SSLVault DB
             </div>
           </div>
@@ -614,7 +614,7 @@ function ShadowScanner({ tok, nav }) {
             background: result.ok ? '#E8F8F6' : '#fef2f2',
             border: `0.5px solid ${result.ok ? '#A8E6DE' : '#fecaca'}` }}>
             {result.ok ? (
-              <div style={{ display: 'flex', gap: 20, fontSize: 12, color: '#166534' }}>
+              <div style={{ display: 'flex', gap: 20, fontSize:12, color: '#166534' }}>
                 <span><strong>{result.total_in_ca}</strong> total in DigiCert</span>
                 <span><strong>{result.total_in_sslvault}</strong> in SSLVault</span>
                 <span style={{ fontWeight: 700, color: result.shadow_count > 0 ? '#dc2626' : '#16a34a' }}>
@@ -622,7 +622,7 @@ function ShadowScanner({ tok, nav }) {
                 </span>
               </div>
             ) : (
-              <span style={{ fontSize: 12, color: '#b91c1c' }}>{result.error}</span>
+              <span style={{ fontSize:12, color: '#b91c1c' }}>{result.error}</span>
             )}
           </div>
         )}
@@ -630,11 +630,11 @@ function ShadowScanner({ tok, nav }) {
 
       {/* Shadow cert list */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>
+        <div style={{ fontSize:13, fontWeight: 700, color: '#0f172a' }}>
           Shadow certificates {loadingExist ? '' : `(${shadows.length})`}
         </div>
         <button onClick={loadExisting}
-          style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600,
+          style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize:11, fontWeight: 600,
             padding: '5px 10px', borderRadius: 7, border: '0.5px solid var(--v2-border)',
             background: 'var(--v2-surface)', cursor: 'pointer', fontFamily: 'inherit', color: 'var(--v2-text-2)' }}>
           <RefreshCw size={10} style={{ animation: loadingExist ? 'spin .8s linear infinite' : 'none' }}/> Refresh
@@ -645,14 +645,14 @@ function ShadowScanner({ tok, nav }) {
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto',
           padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)', background: '#fafbfc' }}>
           {['Domain', 'Product', 'Ordered by', 'Expires', 'Urgency', ''].map(h => (
-            <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
+            <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
               textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
           ))}
         </div>
         {shadows.length === 0 ? (
           <div style={{ padding: 32, textAlign: 'center' }}>
             <Shield size={28} style={{ color: 'var(--v2-border)', display: 'block', margin: '0 auto 12px' }}/>
-            <div style={{ fontSize: 13, color: 'var(--v2-text-3)', marginBottom: 4 }}>
+            <div style={{ fontSize:13, color: 'var(--v2-text-3)', marginBottom: 4 }}>
               {result?.ok ? 'No shadow certs found — portfolio is fully accounted for.' : 'Run a scan to find shadow certificates.'}
             </div>
             {result?.ok && (
@@ -669,16 +669,16 @@ function ShadowScanner({ tok, nav }) {
               onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-bg)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace',
+                <div style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace',
                   color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   marginBottom: 2 }}>{s.domain}</div>
-                {s.org_name && <div style={{ fontSize: 10, color: 'var(--v2-text-3)' }}>{s.org_name}</div>}
+                {s.org_name && <div style={{ fontSize:10, color: 'var(--v2-text-3)' }}>{s.org_name}</div>}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{s.product || '—'}</div>
-              <div style={{ fontSize: 11, color: 'var(--v2-text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{s.product || '—'}</div>
+              <div style={{ fontSize:11, color: 'var(--v2-text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {s.ordered_by || '—'}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{fmt(s.expires_at)}</div>
+              <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{fmt(s.expires_at)}</div>
               <div><Tag text={u.label} color={u.color} bg={u.bg}/></div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <button onClick={() => { sessionStorage.setItem('prefill_domain', s.domain); nav('/buy') }}
@@ -753,11 +753,11 @@ function ConsolidationAdvisor({ tok, nav }) {
       <Card style={{ padding: '18px 20px', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Portfolio cost analysis</div>
-            <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>Analyses all tracked certs for consolidation opportunities against RapidSSL pricing</div>
+            <div style={{ fontSize:13, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Portfolio cost analysis</div>
+            <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>Analyses all tracked certs for consolidation opportunities against RapidSSL pricing</div>
           </div>
           <button onClick={runAnalysis} disabled={running}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700,
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, fontWeight: 700,
               padding: '9px 18px', borderRadius: 8, border: 'none',
               background: running ? 'var(--v2-text-3)' : '#16a34a', color: 'var(--v2-surface)',
               cursor: running ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
@@ -765,7 +765,7 @@ function ConsolidationAdvisor({ tok, nav }) {
           </button>
         </div>
         {result && !result.ok && (
-          <div style={{ marginTop: 12, fontSize: 12, color: '#b91c1c', background: '#fef2f2',
+          <div style={{ marginTop: 12, fontSize:12, color: '#b91c1c', background: '#fef2f2',
             border: '0.5px solid #fecaca', borderRadius: 8, padding: '10px 14px' }}>{result.error}</div>
         )}
       </Card>
@@ -774,18 +774,18 @@ function ConsolidationAdvisor({ tok, nav }) {
       {opps.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10, marginBottom: 20 }}>
           <Card style={{ padding: '14px 16px', borderLeft: '3px solid #16a34a' }}>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#16a34a', letterSpacing: '-0.5px', marginBottom: 4 }}>
-              ${totalSaving.toFixed(0)}<span style={{ fontSize: 13, fontWeight: 500 }}>/yr</span>
+            <div style={{ fontSize:26, fontWeight: 800, color: '#16a34a', letterSpacing: '-0.5px', marginBottom: 4 }}>
+              ${totalSaving.toFixed(0)}<span style={{ fontSize:13, fontWeight: 500 }}>/yr</span>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Estimated savings</div>
+            <div style={{ fontSize:11, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Estimated savings</div>
           </Card>
           <Card style={{ padding: '14px 16px', borderLeft: '3px solid #1A7A72' }}>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#1A7A72', letterSpacing: '-0.5px', marginBottom: 4 }}>{consolidation.length}</div>
-            <div style={{ fontSize: 11, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>CA consolidation opportunities</div>
+            <div style={{ fontSize:26, fontWeight: 800, color: '#1A7A72', letterSpacing: '-0.5px', marginBottom: 4 }}>{consolidation.length}</div>
+            <div style={{ fontSize:11, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>CA consolidation opportunities</div>
           </Card>
           <Card style={{ padding: '14px 16px', borderLeft: '3px solid #E8897A' }}>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#E8897A', letterSpacing: '-0.5px', marginBottom: 4 }}>{duplicates.length}</div>
-            <div style={{ fontSize: 11, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Duplicate domain findings</div>
+            <div style={{ fontSize:26, fontWeight: 800, color: '#E8897A', letterSpacing: '-0.5px', marginBottom: 4 }}>{duplicates.length}</div>
+            <div style={{ fontSize:11, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Duplicate domain findings</div>
           </Card>
         </div>
       )}
@@ -793,14 +793,14 @@ function ConsolidationAdvisor({ tok, nav }) {
       {/* CA Consolidation Opportunities */}
       {consolidation.length > 0 && (
         <>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 10 }}>
+          <div style={{ fontSize:13, fontWeight: 700, color: '#0f172a', marginBottom: 10 }}>
             CA Consolidation — move DV certs to RapidSSL
           </div>
           <Card style={{ marginBottom: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto',
               padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)', background: '#fafbfc' }}>
               {['Domain', 'Current CA', 'Current product', 'Expires', 'Saving/yr', ''].map(h => (
-                <div key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)',
+                <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
                   textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
               ))}
             </div>
@@ -812,16 +812,16 @@ function ConsolidationAdvisor({ tok, nav }) {
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-bg)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: '#0f172a',
+                  <div style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace', color: '#0f172a',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 2 }}>
                     {opp.domain}
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--v2-text-3)' }}>{opp.reason}</div>
+                  <div style={{ fontSize:10, color: 'var(--v2-text-3)' }}>{opp.reason}</div>
                 </div>
                 <Tag text={opp.current_ca} color={CA_COLORS[opp.current_ca]||'var(--v2-text-3)'} bg={(CA_COLORS[opp.current_ca]||'var(--v2-text-3)')+'14'}/>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{opp.current_product || '—'}</div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{fmt(opp.expires_at)}</div>
-                <div style={{ fontSize: 13, fontWeight: 800, color: '#16a34a' }}>
+                <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{opp.current_product || '—'}</div>
+                <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{fmt(opp.expires_at)}</div>
+                <div style={{ fontSize:13, fontWeight: 800, color: '#16a34a' }}>
                   ${(opp.estimated_saving_usd || 0).toFixed(0)}
                 </div>
                 <div style={{ display: 'flex', gap: 4 }}>
@@ -845,7 +845,7 @@ function ConsolidationAdvisor({ tok, nav }) {
       {/* Duplicate domain findings */}
       {duplicates.length > 0 && (
         <>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 10 }}>
+          <div style={{ fontSize:13, fontWeight: 700, color: '#0f172a', marginBottom: 10 }}>
             Duplicate domains across CAs
           </div>
           <Card>
@@ -854,8 +854,8 @@ function ConsolidationAdvisor({ tok, nav }) {
                 borderBottom: i < duplicates.length - 1 ? '0.5px solid #f8fafc' : 'none' }}>
                 <AlertTriangle size={14} color="#E8897A" style={{ flexShrink: 0 }}/>
                 <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, fontFamily: 'monospace', color: '#0f172a' }}>{opp.domain}</span>
-                  <span style={{ fontSize: 11, color: 'var(--v2-text-3)', marginLeft: 8 }}>{opp.reason}</span>
+                  <span style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace', color: '#0f172a' }}>{opp.domain}</span>
+                  <span style={{ fontSize:11, color: 'var(--v2-text-3)', marginLeft: 8 }}>{opp.reason}</span>
                 </div>
                 <button onClick={() => dismiss(consolidation.length + i)}
                   style={{ fontSize: 9, fontWeight: 700, padding: '4px 7px', borderRadius: 5,
@@ -870,11 +870,11 @@ function ConsolidationAdvisor({ tok, nav }) {
       {opps.length === 0 && !loading && (
         <Card style={{ padding: 40, textAlign: 'center' }}>
           <DollarSign size={32} style={{ color: 'var(--v2-border)', display: 'block', margin: '0 auto 12px' }}/>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--v2-text-3)', marginBottom: 6 }}>
+          <div style={{ fontSize:14, fontWeight: 600, color: 'var(--v2-text-3)', marginBottom: 6 }}>
             {result?.ok ? 'No consolidation opportunities found.' : 'Run analysis to find cost-saving opportunities.'}
           </div>
           {result?.ok && (
-            <div style={{ fontSize: 12, color: 'var(--v2-text-3)' }}>Your portfolio is already optimally consolidated.</div>
+            <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>Your portfolio is already optimally consolidated.</div>
           )}
         </Card>
       )}
@@ -915,15 +915,15 @@ export default function CertIntelligence({ nav }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Activity size={18} color="var(--v2-surface)" strokeWidth={2}/>
             </div>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px', margin: 0 }}>
+            <h1 style={{ fontSize:22, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px', margin: 0 }}>
               CA Intelligence Suite
             </h1>
-            <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 20,
+            <span style={{ fontSize:10, fontWeight: 700, padding: '3px 9px', borderRadius: 20,
               background: '#E8F8F6', color: '#16a34a', border: '0.5px solid #A8E6DE' }}>
               Live
             </span>
           </div>
-          <p style={{ fontSize: 13, color: 'var(--v2-text-3)', margin: 0, maxWidth: 600 }}>
+          <p style={{ fontSize:13, color: 'var(--v2-text-3)', margin: 0, maxWidth: 600 }}>
             Cross-CA expiry intelligence, shadow IT discovery, and cost consolidation — unified across all your connected certificate authorities.
           </p>
         </div>
@@ -936,7 +936,7 @@ export default function CertIntelligence({ nav }) {
             <button key={id} onClick={() => setTab(id)}
               style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
                 padding: '9px 14px', borderRadius: 9, border: 'none', cursor: 'pointer',
-                fontFamily: 'inherit', fontSize: 12, fontWeight: 600, transition: 'all .15s',
+                fontFamily: 'inherit', fontSize:12, fontWeight: 600, transition: 'all .15s',
                 background: tab === id ? color : 'transparent',
                 color: tab === id ? 'var(--v2-surface)' : 'var(--v2-text-3)',
                 boxShadow: tab === id ? `0 2px 8px ${color}33` : 'none' }}>
@@ -948,7 +948,7 @@ export default function CertIntelligence({ nav }) {
 
         {/* Tab content */}
         {!tok ? (
-          <div style={{ textAlign: 'center', padding: 60, color: 'var(--v2-text-3)', fontSize: 13 }}>
+          <div style={{ textAlign: 'center', padding: 60, color: 'var(--v2-text-3)', fontSize:13 }}>
             Loading session…
           </div>
         ) : (

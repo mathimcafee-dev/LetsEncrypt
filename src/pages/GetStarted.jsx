@@ -11,7 +11,7 @@ function CopyBtn({ text, label }) {
   const [ok, setOk] = useState(false)
   const copy = () => { try { navigator.clipboard.writeText(text) } catch(e) {}; setOk(true); setTimeout(() => setOk(false), 2000) }
   return (
-    <button onClick={copy} className={`v2-btn ${ok ? '' : 'v2-btn-primary'}`} style={{ fontSize: 12 }}>
+    <button onClick={copy} className={`v2-btn ${ok ? '' : 'v2-btn-primary'}`} style={{ fontSize:12 }}>
       {ok ? <><Check size={12}/> Copied!</> : <><Copy size={12}/> {label || 'Copy'}</>}
     </button>
   )
@@ -58,7 +58,7 @@ function FAQ({ q, a }) {
         <span className="v2-accordion-title" style={{ flex: 1 }}>{q}</span>
         {open ? <ChevronUp size={14} strokeWidth={1.8}/> : <ChevronDown size={14} strokeWidth={1.8}/>}
       </button>
-      {open && <div className="v2-accordion-body" style={{ paddingTop: 10 }}><p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: 'var(--v2-text-2)' }}>{a}</p></div>}
+      {open && <div className="v2-accordion-body" style={{ paddingTop: 10 }}><p style={{ margin: 0, fontSize:13, lineHeight: 1.7, color: 'var(--v2-text-2)' }}>{a}</p></div>}
     </div>
   )
 }
@@ -70,7 +70,7 @@ function Divider({ label, title }) {
         <span className="v2-section-label">{label}</span>
         <div style={{ flex: 1, height: 1, background: 'var(--v2-border)' }} />
       </div>
-      <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--v2-text)', letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
+      <h2 style={{ fontSize:16, fontWeight: 600, color: 'var(--v2-text)', letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
     </div>
   )
 }
@@ -85,8 +85,8 @@ export default function GetStarted({ nav }) {
 
         {/* HERO */}
         <div style={{ padding: '8px 0 28px' }}>
-          <h1 className="v2-h1" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>SSL Certificates — Plain English Guide</h1>
-          <p className="v2-subtitle" style={{ fontSize: 14, marginTop: 6, maxWidth: 560 }}>
+          <h1 className="v2-h1" style={{ fontSize:28, letterSpacing: '-0.5px' }}>SSL Certificates — Plain English Guide</h1>
+          <p className="v2-subtitle" style={{ fontSize:14, marginTop: 6, maxWidth: 560 }}>
             New to SSL? Start here. What it is, why you need it, and how SSLVault gets you from zero to HTTPS in minutes.
           </p>
           <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
@@ -102,20 +102,20 @@ export default function GetStarted({ nav }) {
         {/* WHAT IS SSL */}
         <Divider label="BASICS" title="What is SSL?" />
         <div className="v2-card v2-card-pad" style={{ marginBottom: 8 }}>
-          <p style={{ fontSize: 14, color: 'var(--v2-text-2)', lineHeight: 1.8, marginBottom: 16 }}>
+          <p style={{ fontSize:14, color: 'var(--v2-text-2)', lineHeight: 1.8, marginBottom: 16 }}>
             SSL (Secure Sockets Layer) encrypts the connection between your website and your visitors.
             When it's active, your browser shows <strong>https://</strong> and a padlock. Without it — a red "Not Secure" warning.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 16 }}>
             <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#dc2626', marginBottom: 6 }}>Without SSL (HTTP)</div>
-              <p style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#dc2626', marginBottom: 6 }}>Without SSL (HTTP)</div>
+              <p style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
                 Red "Not Secure" warning. Visitor data exposed. Lower Google ranking. Payments blocked.
               </p>
             </div>
             <div style={{ background: '#E8F8F6', border: '1px solid #A8E6DE', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#16a34a', marginBottom: 6 }}>With SSL (HTTPS)</div>
-              <p style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#16a34a', marginBottom: 6 }}>With SSL (HTTPS)</div>
+              <p style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
                 Green padlock. All traffic encrypted. Trust signals for visitors and Google. Required for payments.
               </p>
             </div>
@@ -138,8 +138,8 @@ export default function GetStarted({ nav }) {
             <div key={title} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
               <span className={`v2-badge ${badge === 'Yes' ? 'v2-badge-green' : 'v2-badge-amber'}`} style={{ flexShrink: 0, marginTop: 2 }}>{badge}</span>
               <div>
-                <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--v2-text)', marginBottom: 2 }}>{title}</div>
-                <div style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{desc}</div>
+                <div style={{ fontWeight: 600, fontSize:13, color: 'var(--v2-text)', marginBottom: 2 }}>{title}</div>
+                <div style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{desc}</div>
               </div>
             </div>
           ))}
@@ -155,9 +155,9 @@ export default function GetStarted({ nav }) {
             { type: 'Wildcard DV', time: '~5 minutes', use: '*.yourdomain.com — all subdomains', color: 'var(--v2-green)' },
           ].map(({ type, time, use, color }) => (
             <div key={type} className="v2-card v2-card-pad">
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>{type}</div>
-              <div style={{ fontSize: 11, color, marginBottom: 3, fontWeight: 500 }}>{time}</div>
-              <div style={{ fontSize: 11, color: 'var(--v2-text-3)', lineHeight: 1.55 }}>{use}</div>
+              <div style={{ fontSize:12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>{type}</div>
+              <div style={{ fontSize:11, color, marginBottom: 3, fontWeight: 500 }}>{time}</div>
+              <div style={{ fontSize:11, color: 'var(--v2-text-3)', lineHeight: 1.55 }}>{use}</div>
             </div>
           ))}
         </div>
@@ -167,7 +167,7 @@ export default function GetStarted({ nav }) {
 
         {/* CHOOSE YOUR PATH */}
         <Divider label="YOUR SITUATION" title="Choose your setup path" />
-        <p style={{ fontSize: 13, color: 'var(--v2-text-2)', marginBottom: 14, lineHeight: 1.7 }}>Pick the one that matches your hosting setup:</p>
+        <p style={{ fontSize:13, color: 'var(--v2-text-2)', marginBottom: 14, lineHeight: 1.7 }}>Pick the one that matches your hosting setup:</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 }}>
           {[
             { id: 'vps', icon: Server, title: 'VPS or cloud server (DigitalOcean, AWS, Hetzner, Linode)', desc: 'SSH access available. Install the persistent agent once — all future installs and renewals are fully automatic.', badge: 'Recommended' },
@@ -182,10 +182,10 @@ export default function GetStarted({ nav }) {
                   <p.icon size={15} strokeWidth={1.8} style={{ color: 'var(--v2-text-2)', flexShrink: 0 }}/>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 2 }}>
-                      <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--v2-text)' }}>{p.title}</span>
+                      <span style={{ fontWeight: 600, fontSize:13, color: 'var(--v2-text)' }}>{p.title}</span>
                       <span className="v2-badge v2-badge-green">{p.badge}</span>
                     </div>
-                    <p style={{ fontSize: 12, color: 'var(--v2-text-2)', margin: 0, lineHeight: 1.6 }}>{p.desc}</p>
+                    <p style={{ fontSize:12, color: 'var(--v2-text-2)', margin: 0, lineHeight: 1.6 }}>{p.desc}</p>
                   </div>
                   {path === p.id ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
                 </div>
@@ -197,7 +197,7 @@ export default function GetStarted({ nav }) {
                       <div className="v2-callout v2-callout-green" style={{ marginBottom: 12 }}>
                         <Zap size={13} style={{ color: 'var(--v2-green)', flexShrink: 0 }}/>
                         <div><span className="v2-callout-title">Fully automated with the persistent agent</span><br/>
-                        <span style={{ fontSize: 12 }}>Install the agent once via SSH. All future certificate installs and auto-renewals happen automatically — zero touch.</span></div>
+                        <span style={{ fontSize:12 }}>Install the agent once via SSH. All future certificate installs and auto-renewals happen automatically — zero touch.</span></div>
                       </div>
                       <Step n={1} title="Issue your certificate"><p>Click <strong>Issue Certificate</strong> in the nav. Enter your domain, select cert type, choose DNS validation provider (Cloudflare, GoDaddy, Vercel, DigitalOcean supported). Click Issue.</p></Step>
                       <Step n={2} title="Go to Dashboard → expand cert → Install"><p>Click the <strong>Install</strong> button on your certificate row. If no agent is connected, the modal shows a one-line install command.</p></Step>
@@ -235,12 +235,12 @@ export default function GetStarted({ nav }) {
                     <>
                       <div className="v2-callout tip" style={{ marginBottom: 12 }}>
                         <span className="v2-callout-title">Good news — Vercel and Netlify handle SSL automatically</span><br/>
-                        <span style={{ fontSize: 12 }}>Just add your custom domain in their project settings and SSL is provisioned automatically.</span>
+                        <span style={{ fontSize:12 }}>Just add your custom domain in their project settings and SSL is provisioned automatically.</span>
                       </div>
-                      <p style={{ fontSize: 13, color: 'var(--v2-text-2)', lineHeight: 1.7 }}>
+                      <p style={{ fontSize:13, color: 'var(--v2-text-2)', lineHeight: 1.7 }}>
                         If you have a <strong>backend server, API, or external domain</strong> that these platforms don't manage, issue a certificate via SSLVault and install it on that server using the persistent agent or manual steps.
                       </p>
-                      <button className="v2-btn" onClick={() => nav('/buy')} style={{ marginTop: 4, fontSize: 12 }}>
+                      <button className="v2-btn" onClick={() => nav('/buy')} style={{ marginTop: 4, fontSize:12 }}>
                         Issue Certificate Anyway <ArrowRight size={13}/>
                       </button>
                     </>
@@ -267,7 +267,7 @@ export default function GetStarted({ nav }) {
 
         <Step n={1} title="Create your SSLVault account">
           <p>Click <strong>Sign In</strong> in the navigation. Enter your email and set a password. You'll receive a confirmation email — click the link to activate. Done.</p>
-          <button className="v2-btn v2-btn-primary" style={{ fontSize: 12, marginTop: 4 }} onClick={() => nav('/auth')}>
+          <button className="v2-btn v2-btn-primary" style={{ fontSize:12, marginTop: 4 }} onClick={() => nav('/auth')}>
             Create Account <ArrowRight size={13}/>
           </button>
         </Step>
@@ -287,7 +287,7 @@ export default function GetStarted({ nav }) {
             </tbody>
           </table></div>
           <div style={{ background: '#0f172a', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '6px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '6px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize:12 }}>
               <span style={{ color: '#3D5C59', fontWeight: 600 }}>TYPE</span><span style={{ color: '#1A7A72' }}>CNAME</span>
               <span style={{ color: '#3D5C59', fontWeight: 600 }}>NAME</span><span style={{ color: '#38bdf8' }}>_acme-challenge</span>
               <span style={{ color: '#3D5C59', fontWeight: 600 }}>VALUE</span><span style={{ color: '#fbbf24', wordBreak: 'break-all' }}>abc123def456.comodoca.com</span>
@@ -311,8 +311,8 @@ export default function GetStarted({ nav }) {
               <div key={label} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 10 }}>
                 <Icon size={14} strokeWidth={1.8} style={{ color, flexShrink: 0, marginTop: 2 }}/>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--v2-text)', marginBottom: 2 }}>{label}</div>
-                  <div style={{ fontSize: 11, color: 'var(--v2-text-2)', lineHeight: 1.55 }}>{desc}</div>
+                  <div style={{ fontWeight: 600, fontSize:12, color: 'var(--v2-text)', marginBottom: 2 }}>{label}</div>
+                  <div style={{ fontSize:11, color: 'var(--v2-text-2)', lineHeight: 1.55 }}>{desc}</div>
                 </div>
               </div>
             ))}
@@ -341,8 +341,8 @@ export default function GetStarted({ nav }) {
             ['Auto-Renewal', 'SSLVault automatically reorders and redeploys certificates before expiry — no action needed from you.'],
           ].map(([term, def]) => (
             <div key={term} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 16 }}>
-              <span className="v2-mono" style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-green)', minWidth: 160, flexShrink: 0 }}>{term}</span>
-              <span style={{ fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{def}</span>
+              <span className="v2-mono" style={{ fontSize:12, fontWeight: 600, color: 'var(--v2-green)', minWidth: 160, flexShrink: 0 }}>{term}</span>
+              <span style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{def}</span>
             </div>
           ))}
         </div>
@@ -370,10 +370,10 @@ export default function GetStarted({ nav }) {
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6, letterSpacing: '-0.3px' }}>
+          <h3 style={{ fontSize:18, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6, letterSpacing: '-0.3px' }}>
             Ready to secure your domains?
           </h3>
-          <p style={{ color: 'var(--v2-text-2)', fontSize: 13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--v2-text-2)', fontSize:13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
             Issue DV, OV, EV or Wildcard certificates via RapidSSL. Auto-renew. Deploy with one command.
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>

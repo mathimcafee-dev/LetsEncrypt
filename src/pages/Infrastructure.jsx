@@ -140,10 +140,10 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
         display: 'flex', alignItems: 'center', gap: 8,
       }}>
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8897A', flexShrink: 0 }} />
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>
+        <span style={{ fontSize:12, fontWeight: 600, color: '#374151' }}>
           Complete VPS setup — {[hasDns, hasAgent].filter(Boolean).length} of 2 prerequisites done
         </span>
-        <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 4 }}>
+        <span style={{ fontSize:11, color: '#9ca3af', marginLeft: 4 }}>
           DNS credentials + agent install are both needed for full auto-SSL
         </span>
       </div>
@@ -164,23 +164,23 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
                   width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: isDone ? '#3DBFB0' : '#F5EFE0',
-                  fontSize: 11, fontWeight: 700,
+                  fontSize:11, fontWeight: 700,
                   color: isDone ? '#fff' : '#9ca3af',
                 }}>
                   {isDone ? '✓' : step.num}
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: isDone ? '#1A7A72' : '#9ca3af' }}>
+                <span style={{ fontSize:11, fontWeight: 600, color: isDone ? '#1A7A72' : '#9ca3af' }}>
                   {isDone ? step.doneLabel : step.pendingLabel}
                 </span>
               </div>
 
               {/* Title */}
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#111', marginBottom: 6, lineHeight: 1.4 }}>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#111', marginBottom: 6, lineHeight: 1.4 }}>
                 {step.title}
               </div>
 
               {/* Desc */}
-              <div style={{ fontSize: 11, color: '#6b7280', lineHeight: 1.6, marginBottom: step.action ? 12 : 0 }}>
+              <div style={{ fontSize:11, color: '#6b7280', lineHeight: 1.6, marginBottom: step.action ? 12 : 0 }}>
                 {step.desc}
               </div>
 
@@ -188,7 +188,7 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
               {step.action && !step.done && (
                 <button onClick={step.action} style={{
                   marginTop: 8,
-                  fontSize: 11, fontWeight: 600, color: '#1A7A72',
+                  fontSize:11, fontWeight: 600, color: '#1A7A72',
                   background: 'none', border: 'none', cursor: 'pointer',
                   padding: 0, fontFamily: 'inherit',
                 }}>
@@ -683,7 +683,7 @@ export default function Infrastructure({ user }) {
 
         {/* Server list */}
         {loading ? (
-          <div style={{ textAlign:'center', padding:'48px 0', color:'var(--v2-text-3)' }}>
+          <div style={{ textAlign:'center', padding:isMobile?'14px 0':'48px 0', color:'var(--v2-text-3)' }}>
             <RefreshCw size={22} style={{ animation:'spin .8s linear infinite', margin:'0 auto 10px', display:'block' }}/>
             Loading servers…
           </div>

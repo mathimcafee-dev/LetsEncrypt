@@ -77,7 +77,7 @@ export default function Contact({ nav }) {
             <h2 className="v2-h1" style={{ fontSize:18, marginBottom:4 }}>What to include</h2>
             <p className="v2-subtitle">To help us help you faster.</p>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:10 }}>
             {[
               { icon:Wrench,       label:'Bug reports',       color:'var(--v2-red)',
                 body:'Domain affected, browser and OS, the exact error message, and steps to reproduce. A screenshot helps a lot.' },

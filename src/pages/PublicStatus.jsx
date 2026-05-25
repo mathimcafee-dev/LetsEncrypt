@@ -70,15 +70,15 @@ export default function PublicStatus({ username: propUsername, nav }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
           <Shield size={18} color="#3DBFB0" />
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#0a0a0a' }}>SSLVault</span>
+          <span style={{ fontSize:14, fontWeight: 600, color: '#0a0a0a' }}>SSLVault</span>
         </div>
-        <span style={{ fontSize: 11, color: '#94a3b8' }}>
+        <span style={{ fontSize:11, color: '#94a3b8' }}>
           Powered by <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
             style={{ color: '#3DBFB0', textDecoration: 'none' }}>easysecurity.in</a>
         </span>
       </div>
 
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '40px 24px' }}>
+      <div style={{ maxWidth: 680, margin: '0 auto', padding:'min(40px,5vw) min(24px,4vw)' }}>
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: '60px 0', color: '#94a3b8' }}>
@@ -88,8 +88,8 @@ export default function PublicStatus({ username: propUsername, nav }) {
         ) : error ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
             <XCircle size={32} style={{ color: '#dc2626', margin: '0 auto 12px', display: 'block' }} />
-            <div style={{ fontSize: 15, fontWeight: 500, color: '#0a0a0a', marginBottom: 6 }}>{error}</div>
-            <div style={{ fontSize: 13, color: '#94a3b8' }}>This status page may not be public or doesn't exist.</div>
+            <div style={{ fontSize:15, fontWeight: 500, color: '#0a0a0a', marginBottom: 6 }}>{error}</div>
+            <div style={{ fontSize:13, color: '#94a3b8' }}>This status page may not be public or doesn't exist.</div>
           </div>
         ) : (
           <>
@@ -101,10 +101,10 @@ export default function PublicStatus({ username: propUsername, nav }) {
                   <Shield size={20} color="#16a34a" />
                 </div>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 600, color: '#0a0a0a' }}>
+                  <div style={{ fontSize:18, fontWeight: 600, color: '#0a0a0a' }}>
                     {data?.display_name || username}
                   </div>
-                  <div style={{ fontSize: 12, color: '#94a3b8' }}>SSL status page</div>
+                  <div style={{ fontSize:12, color: '#94a3b8' }}>SSL status page</div>
                 </div>
               </div>
 
@@ -113,12 +113,12 @@ export default function PublicStatus({ username: propUsername, nav }) {
                 borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
                 <OverallIcon size={18} color={overallColor} style={{ flexShrink: 0 }} />
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: overallColor }}>{overallLabel}</div>
-                  <div style={{ fontSize: 12, color: overallColor + 'aa', marginTop: 1 }}>
+                  <div style={{ fontSize:14, fontWeight: 600, color: overallColor }}>{overallLabel}</div>
+                  <div style={{ fontSize:12, color: overallColor + 'aa', marginTop: 1 }}>
                     {scores.length} domain{scores.length !== 1 ? 's' : ''} monitored
                   </div>
                 </div>
-                <div style={{ marginLeft: 'auto', fontSize: 11, color: '#94a3b8' }}>
+                <div style={{ marginLeft: 'auto', fontSize:11, color: '#94a3b8' }}>
                   Updated {scores.length > 0 ? timeAgo(scores[0].scanned_at) : '—'}
                 </div>
               </div>
@@ -126,7 +126,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
 
             {/* Domain list */}
             {scores.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '32px 0', fontSize: 13, color: '#94a3b8' }}>
+              <div style={{ textAlign: 'center', padding: '32px 0', fontSize:13, color: '#94a3b8' }}>
                 No public domains to display.
               </div>
             ) : (
@@ -146,7 +146,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
 
                       {/* Domain */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 500, color: '#0a0a0a',
+                        <div style={{ fontSize:13, fontWeight: 500, color: '#0a0a0a',
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           display: 'flex', alignItems: 'center', gap: 6 }}>
                           {s.domain}
@@ -157,14 +157,14 @@ export default function PublicStatus({ username: propUsername, nav }) {
                           </a>
                         </div>
                         <div style={{ display: 'flex', gap: 12, marginTop: 3 }}>
-                          <span style={{ fontSize: 11, color: s.hsts ? '#16a34a' : '#dc2626' }}>
+                          <span style={{ fontSize:11, color: s.hsts ? '#16a34a' : '#dc2626' }}>
                             {s.hsts ? '✓' : '✗'} HSTS
                           </span>
-                          <span style={{ fontSize: 11, color: s.caa ? '#16a34a' : '#dc2626' }}>
+                          <span style={{ fontSize:11, color: s.caa ? '#16a34a' : '#dc2626' }}>
                             {s.caa ? '✓' : '✗'} CAA
                           </span>
                           {s.expiry_days != null && (
-                            <span style={{ fontSize: 11, fontWeight: 500,
+                            <span style={{ fontSize:11, fontWeight: 500,
                               color: s.expiry_days <= 7 ? '#dc2626' : s.expiry_days <= 30 ? '#E8897A' : '#16a34a' }}>
                               {s.expiry_days <= 0 ? 'Expired' : `${s.expiry_days}d until expiry`}
                             </span>
@@ -176,7 +176,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
                       <div style={{ width: 40, height: 40, borderRadius: 9, background: gs.bg,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         border: `1px solid ${gs.border}`, flexShrink: 0 }}>
-                        <span style={{ fontSize: 15, fontWeight: 700, color: gs.color, fontFamily: 'monospace' }}>
+                        <span style={{ fontSize:15, fontWeight: 700, color: gs.color, fontFamily: 'monospace' }}>
                           {s.grade || 'F'}
                         </span>
                       </div>
@@ -189,7 +189,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
             {/* Footer */}
             <div style={{ textAlign: 'center', marginTop: 32 }}>
               <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
-                style={{ fontSize: 12, color: '#94a3b8', textDecoration: 'none',
+                style={{ fontSize:12, color: '#94a3b8', textDecoration: 'none',
                   display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                 <Shield size={12} color="#3DBFB0" />
                 Secured & monitored by SSLVault · easysecurity.in

@@ -559,3 +559,145 @@ img, video, iframe {
     gap: 16px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   MOBILE LAYOUT OVERRIDES — html.is-mobile class (set by App.jsx)
+   These target the <html> element class which gives us enough specificity
+   with !important to override inline styles where needed
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── All grid containers → single column on mobile ─────────────────── */
+html.is-mobile .v2-page [style*="grid-template-columns"],
+html.is-mobile .v2-page [style*="gridTemplateColumns"] {
+  /* Can't override gridTemplateColumns directly via CSS on inline styles */
+  /* Instead we force all child divs to be full width */
+}
+
+/* ── Padding normalization ───────────────────────────────────────────── */
+html.is-mobile .v2-page * {
+  max-width: 100vw;
+}
+
+/* ── Overflow control ────────────────────────────────────────────────── */
+html.is-mobile .v2-page {
+  overflow-x: hidden;
+}
+
+/* ── Section headers wrap ────────────────────────────────────────────── */
+html.is-mobile .v2-section-header,
+html.is-mobile [class*="section-header"] {
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+/* ── Tab bars scroll ─────────────────────────────────────────────────── */
+html.is-mobile [class*="-tabs"],
+html.is-mobile .page-tabs {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  flex-wrap: nowrap !important;
+}
+
+/* ── Hero padding ────────────────────────────────────────────────────── */
+html.is-mobile [class*="-hero"],
+html.is-mobile .hero-band,
+html.is-mobile [class*="hero-band"],
+html.is-mobile [class*="-band"] {
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  padding-top: 20px !important;
+  padding-bottom: 18px !important;
+}
+
+/* ── Body content areas ──────────────────────────────────────────────── */
+html.is-mobile [class*="-body"] {
+  padding: 14px !important;
+  max-width: 100% !important;
+}
+
+/* ── Filter bars ─────────────────────────────────────────────────────── */
+html.is-mobile [class*="filter-bar"],
+html.is-mobile .filter-bar {
+  padding: 8px 10px !important;
+}
+
+/* ── Pane heads ──────────────────────────────────────────────────────── */
+html.is-mobile .pane-head,
+html.is-mobile [class*="pane-head"] {
+  flex-wrap: wrap !important;
+  padding: 10px 12px !important;
+}
+
+/* ── Content grids collapse ──────────────────────────────────────────── */
+html.is-mobile .content-grid {
+  grid-template-columns: 1fr !important;
+}
+
+html.is-mobile .side-pane {
+  border-top: 0.5px solid var(--v2-border) !important;
+}
+
+/* ── v2-card overflow for data tables ───────────────────────────────── */
+html.is-mobile .v2-card,
+html.is-mobile [class*="-card"] {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+}
+
+/* ── Headline sizes ──────────────────────────────────────────────────── */
+html.is-mobile [class*="-h1"] {
+  font-size: clamp(18px, 5vw, 24px) !important;
+  line-height: 1.25 !important;
+}
+
+html.is-mobile [class*="-sub"] {
+  font-size: 12px !important;
+  max-width: 100% !important;
+}
+
+/* ── Stats / number displays ─────────────────────────────────────────── */
+html.is-mobile [class*="-stats"],
+html.is-mobile [class*="hero-stats"] {
+  gap: 14px !important;
+  flex-wrap: wrap !important;
+}
+
+/* ── Sync bars ───────────────────────────────────────────────────────── */
+html.is-mobile [class*="sync-bar"],
+html.is-mobile .sync-bar {
+  padding: 6px 12px !important;
+  font-size: 11px !important;
+  flex-wrap: wrap !important;
+}
+
+/* ── Compliance alerts ───────────────────────────────────────────────── */
+html.is-mobile [class*="compliance-alert"],
+html.is-mobile .compliance-alert {
+  padding: 8px 12px !important;
+  font-size: 11px !important;
+  flex-wrap: wrap !important;
+}
+
+/* ── Button groups ───────────────────────────────────────────────────── */
+html.is-mobile .v2-section-header .v2-btn {
+  font-size: 11px !important;
+  padding: 5px 9px !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TABLET OVERRIDES — html.is-tablet class
+   ══════════════════════════════════════════════════════════════════════ */
+
+html.is-tablet .v2-container {
+  max-width: 100%;
+  padding: 0 20px;
+}
+
+html.is-tablet [class*="-body"] {
+  max-width: 100% !important;
+}
+
+html.is-tablet .v2-card {
+  overflow-x: auto;
+}

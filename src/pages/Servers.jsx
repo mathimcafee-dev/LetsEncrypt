@@ -112,7 +112,7 @@ function AgentCard({ agent, onRefresh }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-bg)', padding:'16px 18px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:24 }}>
+        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-bg)', padding:'16px 18px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:24 }}>
           {/* Server info */}
           <div>
             <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:10 }}>Server Info</div>

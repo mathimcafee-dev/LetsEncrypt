@@ -488,7 +488,7 @@ export default function KnowledgeBase({ nav }) {
 
         {filtered.length === 0 && (
           <div style={{ textAlign:'center', padding:'48px 0', color:C.muted }}>
-            <div style={{ fontSize:32, marginBottom:12 }}>🔍</div>
+            <div style={{ fontSize:Math.min(32,window.innerWidth>768?32:24), marginBottom:12 }}>🔍</div>
             <div style={{ fontSize:15, fontWeight:500 }}>No results for "{search}"</div>
             <div style={{ fontSize:13, marginTop:6 }}>Try a different keyword</div>
           </div>

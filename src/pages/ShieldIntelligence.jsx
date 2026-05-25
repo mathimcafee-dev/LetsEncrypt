@@ -45,6 +45,8 @@ function gradeStyle(g) {
   return { color:'#6B7280', bg:'var(--v2-bg)', border:'var(--v2-border)' }
 }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function GradeBadge({ grade, size = 44 }) {
   const gs = gradeStyle(grade)
   return (
@@ -168,7 +170,7 @@ function OverviewTab({ user }) {
           color="#1A7A72"/>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:12 }}>
 
         {/* TLS grade distribution */}
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
@@ -524,7 +526,7 @@ function CTWatchTab({ tok, user }) {
       ) : (
         <div>
           {/* Table header */}
-          <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:560,minWidth:650,
+          <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:640,
             padding:'8px 14px', background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
             borderRadius:'10px 10px 0 0', marginBottom:0 }}>
             {['Domain','Product','Expires','Status',''].map(h => (
@@ -533,7 +535,7 @@ function CTWatchTab({ tok, user }) {
             ))}
           </div>
           <div style={{ border:'0.5px solid var(--v2-border)', borderTop:'none',
-            borderRadius:'0 0 10px 10px', overflow:'hidden' }}>
+            borderRadius:'0 0 10px 10px', overflowX:'auto' }}>
             {shadows.map((s, i) => {
               const status = s.status === 'known' || s.dismissed ? 'known'
                 : s.status === 'phishing' ? 'phishing'
@@ -542,7 +544,7 @@ function CTWatchTab({ tok, user }) {
               const isExp = expanded === s.id
               return (
                 <div key={s.id} style={{ borderBottom: i<shadows.length-1?'0.5px solid var(--v2-border)':'none' }}>
-                  <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:560,minWidth:650,
+                  <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:640,
                     padding:'10px 14px', alignItems:'center',
                     background: i%2===0?'var(--v2-surface)':'var(--v2-bg)',
                     borderLeft:`3px solid ${status==='known'?'transparent':cfg.color}` }}>
@@ -755,7 +757,7 @@ function MassScanTab() {
           </div>
 
           {/* Table */}
-          <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden' }}>
+          <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'visible' }}>
             <div style={{ display:'grid', gridTemplateColumns:'2fr 60px 60px 60px 60px 80px 1fr',
               padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)' }}>
               {['Domain','Grade','Score','TLS','HSTS','CAA','Expiry / Issue'].map(h => (
@@ -814,6 +816,7 @@ function MassScanTab() {
 // MAIN EXPORT — Shell
 // ══════════════════════════════════════════════════════════════════════
 export default function ShieldIntelligence({ user }) {
+  const isMobile = useIsMobile()
   const [tok, setTok] = useState('')
   const [tab, setTab] = useState('overview')
 

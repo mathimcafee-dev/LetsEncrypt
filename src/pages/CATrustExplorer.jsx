@@ -74,12 +74,14 @@ function computeScore(cert) {
 }
 
 // ── Sub-components ────────────────────────────────────────────────────
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function CertAvatar({ name, size = 30 }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: 6, flexShrink: 0,
       background: avatarColor(name), display: 'flex', alignItems: 'center',
-      justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', letterSpacing: '0.2px'
+      justifyContent: 'center', fontSize:11, fontWeight: 700, color: '#fff', letterSpacing: '0.2px'
     }}>
       {initials(name)}
     </div>
@@ -119,7 +121,7 @@ function ScoreBanner({ score, cert }) {
       <div style={{ flexShrink: 0 }}>
         <div className="score-num">
           {score ?? '—'}
-          {score != null && <span style={{ fontSize: 14, fontWeight: 400, opacity: 0.5 }}>/100</span>}
+          {score != null && <span style={{ fontSize:14, fontWeight: 400, opacity: 0.5 }}>/100</span>}
         </div>
         <div className="score-label">PKI Trust Score</div>
       </div>
@@ -181,7 +183,7 @@ function TrustStoreGrid({ cert }) {
         const cls = t && !distrusted ? 'trusted' : distrusted && t ? 'distrusted' : ''
         return (
           <div key={s} className={`store-card ${cls}`}>
-            <span style={{ fontSize: 18 }}>{STORE_META[s].icon}</span>
+            <span style={{ fontSize:18 }}>{STORE_META[s].icon}</span>
             <div>
               <div className="store-name">{s}</div>
               <div className={`store-status ${t && !distrusted ? 'ok' : distrusted && t ? 'bad' : 'no'}`}>
@@ -209,7 +211,7 @@ function ChainView({ cert }) {
           <div className="chain-card">
             <div className="cc-top">
               <span className="v2-chip chip-blue">Root CA</span>
-              <span className="cc-name" style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>
+              <span className="cc-name" style={{ fontSize:11, color: 'var(--v2-text-2)' }}>
                 Issuing root — {cert?.ca_owner}
               </span>
             </div>
@@ -284,6 +286,7 @@ function IntelStrip({ cert }) {
 
 // ── Main page ─────────────────────────────────────────────────────────
 export default function CATrustExplorer({ nav }) {
+  const isMobile = useIsMobile()
   const [certs, setCerts] = useState([])
   const [filtered, setFiltered] = useState([])
   const [selected, setSelected] = useState(null)
@@ -661,7 +664,7 @@ export default function CATrustExplorer({ nav }) {
         {/* Popular CAs strip */}
         {popularCAs.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 11, letterSpacing: '0.4px', color: 'var(--v2-text-3)', textTransform: 'uppercase', fontWeight: 500, marginBottom: 10 }}>
+            <div style={{ fontSize:11, letterSpacing: '0.4px', color: 'var(--v2-text-3)', textTransform: 'uppercase', fontWeight: 500, marginBottom: 10 }}>
               Popular CAs
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -685,7 +688,7 @@ export default function CATrustExplorer({ nav }) {
                     }}>
                       {initials(c.ca_owner || c.common_name || '?')}
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: isSelected ? 'var(--v2-green-text)' : 'var(--v2-text)', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize:12, fontWeight: 600, color: isSelected ? 'var(--v2-green-text)' : 'var(--v2-text)', whiteSpace: 'nowrap' }}>
                       {c.ca_owner?.replace('Inc.','').replace('nv-sa','').trim() || c.common_name}
                     </span>
                     <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
@@ -732,8 +735,8 @@ export default function CATrustExplorer({ nav }) {
               ) : filtered.length === 0 ? (
                 <div className="empty-state">
                   <Globe size={28} style={{ marginBottom: 8 }} />
-                  <div style={{ fontSize: 13, fontWeight: 500 }}>No certificates found</div>
-                  <div style={{ fontSize: 12, marginTop: 4 }}>Try a different search or run a sync</div>
+                  <div style={{ fontSize:13, fontWeight: 500 }}>No certificates found</div>
+                  <div style={{ fontSize:12, marginTop: 4 }}>Try a different search or run a sync</div>
                 </div>
               ) : (
                 filtered.map((c, i) => {
@@ -864,7 +867,7 @@ export default function CATrustExplorer({ nav }) {
                             <span style={{ background: '#27c93f', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
                           </div>
                           <button
-                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#a3a3a3', fontSize: 11, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}
+                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#a3a3a3', fontSize:11, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}
                             onClick={() => copyText(selected.pem_info)}
                           >
                             <Copy size={11} /> Copy PEM
@@ -884,8 +887,8 @@ export default function CATrustExplorer({ nav }) {
             ) : (
               <div className="empty-state">
                 <ShieldCheck size={32} style={{ marginBottom: 12, color: 'var(--v2-text-3)' }} />
-                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text-2)' }}>Select a certificate</div>
-                <div style={{ fontSize: 12, color: 'var(--v2-text-3)', marginTop: 4 }}>Click any row in the list to inspect it</div>
+                <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text-2)' }}>Select a certificate</div>
+                <div style={{ fontSize:12, color: 'var(--v2-text-3)', marginTop: 4 }}>Click any row in the list to inspect it</div>
               </div>
             )}
           </div>

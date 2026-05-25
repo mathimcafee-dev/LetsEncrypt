@@ -25,7 +25,7 @@ export default function ContactInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Main contact card */}
-      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'28px 32px', marginBottom:16, borderLeft:'3px solid #1A7A72' }}>
+      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #1A7A72' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
           <Mail size={14} color="#1A7A72"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Contact</span>
@@ -54,7 +54,7 @@ export default function ContactInner({ nav }) {
       </div>
 
       {/* Topics grid */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:10 }}>
         {TOPICS.map(({ icon:Icon, label, body }) => (
           <div key={label} style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'16px 18px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>

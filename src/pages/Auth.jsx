@@ -110,7 +110,7 @@ export default function Auth({ nav }) {
 
         {/* Right: form card */}
         <div>
-          <div className="v2-card" style={{ padding:'32px 30px', borderTop:'2px solid var(--v2-green)' }}>
+          <div className="v2-card" style={{ padding:'min(32px,5vw) min(30px,4vw)', borderTop:'2px solid var(--v2-green)' }}>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
               <div style={{ width:40, height:40, background:'#0a0a0a', borderRadius:'var(--v2-r-lg)',
                              display:'flex', alignItems:'center', justifyContent:'center',

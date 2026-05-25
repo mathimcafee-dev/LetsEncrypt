@@ -44,13 +44,16 @@ const CURRENT_INITIATIVES = [
 
 const TABS = ['Overview','PQC Standards','Classical Standards','Timeline','Current Initiatives','Official Links']
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 export default function NISTIntelligence({ nav }) {
+  const isMobile = useIsMobile()
   const [tab, setTab] = useState('Overview')
 
   return (
     <div className="v2-page" style={{ fontFamily: FONT }}>
       <style>{`
-        .ni-hero{background:#0a0a0a;padding:32px 24px 28px;color:#fff}
+        .ni-hero{background:#0a0a0a;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#fff}
         .ni-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .ni-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#fff;line-height:1.15;margin-bottom:10px}
         .ni-h1 em{color:#E8897A;font-style:normal}

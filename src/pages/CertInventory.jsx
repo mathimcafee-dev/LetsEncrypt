@@ -158,7 +158,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
         <div style={{ padding:'20px 24px', borderRight:'0.5px solid var(--v2-border)' }}>
 
           {/* Two-col info grid */}
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:24, marginBottom:20 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:24, marginBottom:20 }}>
             <table style={{ borderCollapse:'collapse', width:'100%' }}>
               <tbody>
                 <InfoRow label="Product Name"    value={productName(order?.product_code, cert.cert_type)}/>
@@ -450,7 +450,7 @@ export default function CertInventory({ user, nav, onIssue }) {
       </div>
 
       {/* Alert strips — DigiCert style */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:20 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:16, marginBottom:20 }}>
         {/* Certificate alerts */}
         <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'16px 20px' }}>
           <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)', marginBottom:14 }}>Certificate alerts</div>

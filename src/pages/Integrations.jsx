@@ -365,8 +365,8 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
           {p.mono}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)' }}>{p.name}</div>
-          <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>
+          <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)' }}>{p.name}</div>
+          <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>
             DNS provider · added {fmtDate(cred.created_at)}
           </div>
         </div>
@@ -618,8 +618,8 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           <Icon size={18} strokeWidth={1.8} color={t.color} />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)' }}>{server.nickname}</div>
-          <div style={{ fontSize: 11, color: 'var(--v2-text-2)', fontFamily: 'JetBrains Mono, monospace' }}>
+          <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)' }}>{server.nickname}</div>
+          <div style={{ fontSize:11, color: 'var(--v2-text-2)', fontFamily: 'JetBrains Mono, monospace' }}>
             {server.username}@{server.host}
           </div>
         </div>
@@ -634,11 +634,11 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
               {agentActive ? 'Agent online' : `Offline · ${lastSeenMin}m ago`}
             </span>
             {agent.version && (
-              <span style={{ marginLeft: 'auto', fontSize: 10, fontFamily: 'JetBrains Mono, monospace',
+              <span style={{ marginLeft: 'auto', fontSize:10, fontFamily: 'JetBrains Mono, monospace',
                              color: 'var(--v2-green-text)' }}>v{agent.version}</span>
             )}
           </div>
-          <div style={{ fontSize: 11, color: 'var(--v2-green-text)', marginTop: 4 }}>
+          <div style={{ fontSize:11, color: 'var(--v2-green-text)', marginTop: 4 }}>
             Polling every 5 minutes · Last heartbeat {timeAgo(agent.last_seen_at)}
           </div>
         </div>
@@ -651,7 +651,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           {isVPS && (
             <button onClick={() => onInstallAgent(server)}
                     style={{ background: 'transparent', border: 'none', color: '#2563eb',
-                             fontWeight: 500, fontSize: 11, cursor: 'pointer', padding: 0 }}>
+                             fontWeight: 500, fontSize:11, cursor: 'pointer', padding: 0 }}>
               Install →
             </button>
           )}
@@ -675,7 +675,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           {agent && agentActive && (
             <button
               className="v2-btn v2-btn-sm v2-btn-primary"
-              style={{ fontSize: 10, padding: '3px 10px' }}
+              style={{ fontSize:10, padding: '3px 10px' }}
               onClick={() => { setShowInstall(true); setDispatchResult(null) }}>
               + Install cert
             </button>
@@ -685,12 +685,12 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
         {/* Install cert modal */}
         {showInstall && (
           <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)', borderRadius: 8, padding: 14, marginBottom: 10 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text-1)', marginBottom: 10 }}>
+            <div style={{ fontSize:12, fontWeight: 600, color: 'var(--v2-text-1)', marginBottom: 10 }}>
               Install certificate to this server
             </div>
             <div style={{ marginBottom: 8 }}>
               <label className="v2-section-label" style={{ marginBottom: 4, display: 'block' }}>Certificate</label>
-              <select className="v2-input" style={{ fontSize: 12 }}
+              <select className="v2-input" style={{ fontSize:12 }}
                 value={installCertId} onChange={e => {
                   setInstallCertId(e.target.value)
                   const cert = certs?.find(c => c.id === e.target.value)
@@ -704,7 +704,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
             </div>
             <div style={{ marginBottom: 10 }}>
               <label className="v2-section-label" style={{ marginBottom: 4, display: 'block' }}>Domain on server</label>
-              <input className="v2-input" style={{ fontSize: 12, fontFamily: 'var(--v2-font-mono)' }}
+              <input className="v2-input" style={{ fontSize:12, fontFamily: 'var(--v2-font-mono)' }}
                 value={installDomain} onChange={e => setInstallDomain(e.target.value)}
                 placeholder="yourdomain.com"/>
             </div>
@@ -715,7 +715,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
               <button className="v2-btn v2-btn-sm" onClick={() => { setShowInstall(false); setDispatchResult(null) }}>Cancel</button>
             </div>
             {dispatchResult && (
-              <div style={{ marginTop: 8, fontSize: 11, color: dispatchResult.ok ? 'var(--v2-green-text)' : '#dc2626' }}>
+              <div style={{ marginTop: 8, fontSize:11, color: dispatchResult.ok ? 'var(--v2-green-text)' : '#dc2626' }}>
                 {dispatchResult.msg}
               </div>
             )}
@@ -734,7 +734,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           {loadingJobs && jobs.length === 0 && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-grey" />
-              <span style={{ color: 'var(--v2-text-3)', fontSize: 11 }}>Loading job history…</span>
+              <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>Loading job history…</span>
             </div>
           )}
           {jobs.map(j => {
@@ -747,7 +747,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
                   animation: isActive ? 'v2-pulse 1.5s ease-in-out infinite' : 'none' }}/>
                 <span style={{ color: 'var(--v2-text-2)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   <strong style={{ color: d.color, fontWeight: 600 }}>{d.label}</strong>
-                  {' · '}{j.job_type} · <span style={{ fontFamily: 'var(--v2-font-mono)', fontSize: 10 }}>{j.domain}</span>
+                  {' · '}{j.job_type} · <span style={{ fontFamily: 'var(--v2-font-mono)', fontSize:10 }}>{j.domain}</span>
                   {j.error_message && <span style={{ color: '#dc2626', marginLeft: 4 }}>— {j.error_message.slice(0,60)}</span>}
                 </span>
                 <span className="v2-timeline-time">{fmtJobTime(j.completed_at || j.claimed_at || j.created_at)}</span>
@@ -757,7 +757,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           {!loadingJobs && jobs.length === 0 && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-grey" />
-              <span style={{ color: 'var(--v2-text-3)', fontSize: 11 }}>No jobs yet — cert installs and renewals will appear here</span>
+              <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>No jobs yet — cert installs and renewals will appear here</span>
             </div>
           )}
           <div className="v2-timeline-item">
@@ -946,7 +946,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
           {!isEdit && (
             <div style={{ marginBottom: 20 }}>
               <label className="v2-label" style={{ marginBottom: 8, display: 'block' }}>What do you want to save?</label>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+              <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(220px,100%),1fr))', gap: 8 }}>
                 {modeOptions.map(m => (
                   <button key={m.key} type="button" onClick={() => { setMode(m.key); setError('') }}
                     style={{
@@ -959,9 +959,9 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                       color: mode === m.key ? 'var(--v2-accent)' : 'var(--v2-text-3)' }}>
                       {m.icon}
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: mode === m.key ? 'var(--v2-accent)' : 'var(--v2-text)',
+                    <div style={{ fontSize:11, fontWeight: 700, color: mode === m.key ? 'var(--v2-accent)' : 'var(--v2-text)',
                       marginBottom: 2 }}>{m.label}</div>
-                    <div style={{ fontSize: 10, color: 'var(--v2-text-3)', lineHeight: 1.4 }}>{m.desc}</div>
+                    <div style={{ fontSize:10, color: 'var(--v2-text-3)', lineHeight: 1.4 }}>{m.desc}</div>
                   </button>
                 ))}
               </div>
@@ -984,7 +984,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
           {saveDns && (
             <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)',
               borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--v2-text)', marginBottom: 12,
+              <div style={{ fontSize:12, fontWeight: 700, color: 'var(--v2-text)', marginBottom: 12,
                 display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Globe size={13} style={{ color: 'var(--v2-accent)' }}/> DNS Provider
               </div>
@@ -998,7 +998,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                       onClick={() => { setProvider(key); setDnsFields({}); setError('') }}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
-                        borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: 'pointer',
+                        borderRadius: 6, fontSize:11, fontWeight: 500, cursor: 'pointer',
                         border: provider === key ? `1.5px solid ${prov.color}` : '0.5px solid var(--v2-border)',
                         background: provider === key ? `${prov.color}15` : 'var(--v2-surface)',
                         color: provider === key ? prov.color : 'var(--v2-text-2)',
@@ -1042,7 +1042,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                 </div>
               ))}
 
-              <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 4 }}>
+              <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginTop: 4 }}>
                 <a href={p.docs} target="_blank" rel="noopener noreferrer"
                   style={{ color: 'var(--v2-accent)', textDecoration: 'none' }}>
                   {p.name} docs
@@ -1055,7 +1055,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
           {saveServer && (
             <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)',
               borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--v2-text)', marginBottom: 12,
+              <div style={{ fontSize:12, fontWeight: 700, color: 'var(--v2-text)', marginBottom: 12,
                 display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Server size={13} style={{ color: 'var(--v2-accent)' }}/> Server
               </div>
@@ -1076,7 +1076,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                           onClick={() => { setServerType(key); setError('') }}
                           style={{
                             display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
-                            borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: 'pointer',
+                            borderRadius: 6, fontSize:11, fontWeight: 500, cursor: 'pointer',
                             border: serverType === key ? `1.5px solid ${st.color}` : '0.5px solid var(--v2-border)',
                             background: serverType === key ? st.bg : 'var(--v2-surface)',
                             color: serverType === key ? st.color : 'var(--v2-text-2)',
@@ -1110,7 +1110,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                           ? '(saved — paste new key to replace)' : f.placeholder}
                         value={serverFields[f.key] || ''}
                         onChange={e => setServerFields(s => ({ ...s, [f.key]: e.target.value }))}
-                        style={{ resize: 'vertical', fontSize: 11, lineHeight: 1.4 }}/>
+                        style={{ resize: 'vertical', fontSize:11, lineHeight: 1.4 }}/>
                     ) : ['host', 'username', 'port'].includes(f.key) ? (
                       <input className="v2-input mono" placeholder={f.placeholder}
                         value={serverFields[f.key] || ''}
@@ -1159,7 +1159,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                   <label className="v2-label" style={{ marginBottom: 8, display: 'block' }}>
                     Certificate install method
                   </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap: 8 }}>
                     {[
                       { id: 'agent',    title: 'Agent', desc: 'One-time setup on server. No SSH stored. Recommended.', color: 'var(--v2-accent)' },
                       { id: 'ssh_push', title: 'SSH Push', desc: 'SSLVault SSHes in directly. Fully automatic.', color: '#16a34a' },
@@ -1168,11 +1168,11 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                         style={{ padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
                           border: installMode === opt.id ? `1.5px solid ${opt.color}` : '1px solid var(--v2-border)',
                           background: installMode === opt.id ? (opt.id === 'ssh_push' ? '#E8F8F6' : 'var(--v2-accent-bg)') : 'var(--v2-surface)' }}>
-                        <div style={{ fontWeight: 700, fontSize: 11, marginBottom: 3,
+                        <div style={{ fontWeight: 700, fontSize:11, marginBottom: 3,
                           color: installMode === opt.id ? opt.color : 'var(--v2-text)' }}>
                           {opt.title}
                         </div>
-                        <div style={{ fontSize: 10, color: 'var(--v2-text-3)', lineHeight: 1.4 }}>{opt.desc}</div>
+                        <div style={{ fontSize:10, color: 'var(--v2-text-3)', lineHeight: 1.4 }}>{opt.desc}</div>
                       </div>
                     ))}
                   </div>
@@ -1281,22 +1281,22 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
               }}>
                 <Check size={22} strokeWidth={2.2} color="#0F5750" />
               </div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>Agent registered</div>
-              <div style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>{server.nickname} is now fully automated</div>
+              <div style={{ fontSize:14, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>Agent registered</div>
+              <div style={{ fontSize:12, color: 'var(--v2-text-2)' }}>{server.nickname} is now fully automated</div>
             </div>
           ) : tokenError ? (
             <div className="v2-alert v2-alert-error">
               <AlertCircle size={13} /> <span>{tokenError} — please close and try again.</span>
             </div>
           ) : tokenLoading ? (
-            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--v2-text-2)', fontSize: 13 }}>
+            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--v2-text-2)', fontSize:13 }}>
               Generating secure token…
             </div>
           ) : (
             <>
               <div style={{ marginBottom: 14 }}>
                 <div className="v2-section-label" style={{ marginBottom: 6 }}>What this does</div>
-                <ul style={{ paddingLeft: 18, margin: 0, fontSize: 12, color: 'var(--v2-text-2)', lineHeight: 1.7 }}>
+                <ul style={{ paddingLeft: 18, margin: 0, fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.7 }}>
                   <li>Installs a lightweight background service (~2MB RAM)</li>
                   <li>Registers the server with SSLVault automatically</li>
                   <li>Handles future cert installs &amp; renewals — no SSH needed</li>
@@ -1316,21 +1316,21 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                     </div>
                     <button onClick={copy} style={{
                       background: 'transparent', border: 'none', cursor: 'pointer',
-                      color: copied ? '#1A7A72' : '#a3a3a3', fontSize: 11, fontWeight: 500,
+                      color: copied ? '#1A7A72' : '#a3a3a3', fontSize:11, fontWeight: 500,
                       display: 'inline-flex', alignItems: 'center', gap: 4
                     }}>
                       {copied ? <><Check size={11} /> Copied</> : 'Copy'}
                     </button>
                   </div>
                   <pre style={{
-                    margin: 0, padding: '12px 14px', color: '#e5e5e5', fontSize: 11,
+                    margin: 0, padding: '12px 14px', color: '#e5e5e5', fontSize:11,
                     fontFamily: 'JetBrains Mono, monospace', whiteSpace: 'pre-wrap',
                     wordBreak: 'break-all', lineHeight: 1.6
                   }}>{installCmd}</pre>
                 </div>
               </div>
 
-              <div className="v2-alert v2-alert-info" style={{ marginBottom: 14, fontSize: 11 }}>
+              <div className="v2-alert v2-alert-info" style={{ marginBottom: 14, fontSize:11 }}>
                 <span><strong style={{ color: 'var(--v2-text)' }}>Requirements:</strong> Ubuntu 20/22/24, Debian 10/11/12, CentOS 7/8/9, Amazon Linux 2/2023 · Nginx or Apache · sudo</span>
               </div>
 
@@ -1352,10 +1352,10 @@ function LoggedOutView({ nav }) {
     <div className="v2-page">
       <div className="v2-container" style={{ maxWidth: 920 }}>
         <div style={{ textAlign: 'center', padding: '32px 0 28px' }}>
-          <h1 className="v2-h1" style={{ fontSize: 32, marginBottom: 10, letterSpacing: '-0.6px' }}>
+          <h1 className="v2-h1" style={{ fontSize:Math.min(32,window.innerWidth>768?32:24), marginBottom: 10, letterSpacing: '-0.6px' }}>
             One vault for DNS &amp; servers
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--v2-text-2)', maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
+          <p style={{ fontSize:14, color: 'var(--v2-text-2)', maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
             Connect your DNS provider and servers once. Auto-DNS, auto-install, auto-renewal.
           </p>
         </div>
@@ -1365,8 +1365,8 @@ function LoggedOutView({ nav }) {
             <div key={key} className="v2-card v2-card-pad" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{ width:32, height:32, borderRadius:7, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontSize:10, fontWeight:700, flexShrink:0 }}>{p.mono}</div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)' }}>{p.name}</div>
-                <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>DNS provider</div>
+                <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)' }}>{p.name}</div>
+                <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>DNS provider</div>
               </div>
             </div>
           ))}
@@ -1380,8 +1380,8 @@ function LoggedOutView({ nav }) {
                   <Icon size={16} strokeWidth={1.8} color={t.color} />
                 </div>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text)' }}>{t.short}</div>
-                  <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>Server type</div>
+                  <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)' }}>{t.short}</div>
+                  <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>Server type</div>
                 </div>
               </div>
             )
@@ -1395,10 +1395,10 @@ function LoggedOutView({ nav }) {
           }}>
             <Lock size={20} strokeWidth={2} color="white" />
           </div>
-          <div style={{ fontSize: 18, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 6, letterSpacing: '-0.3px' }}>
+          <div style={{ fontSize:18, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 6, letterSpacing: '-0.3px' }}>
             Sign in to manage credentials
           </div>
-          <p style={{ color: 'var(--v2-text-2)', fontSize: 13, maxWidth: 360, margin: '0 auto 18px', lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--v2-text-2)', fontSize:13, maxWidth: 360, margin: '0 auto 18px', lineHeight: 1.6 }}>
             Credentials are encrypted at rest. Used only for automation — never displayed back to your browser.
           </p>
           <div style={{ display: 'inline-flex', gap: 8 }}>
@@ -1650,7 +1650,7 @@ export default function Integrations({ nav }) {
 
   return (
     <div style={{ background:'var(--v2-surface-3)', minHeight:'100vh', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
-      <div style={{ maxWidth:1100, margin:'0 auto', padding:'32px 28px 80px' }}>
+      <div style={{ maxWidth:1100, margin:'0 auto', padding:isMobile?'14px 12px':'32px 28px 80px' }}>
 
         {/* Modals */}
         {showAddDns  && <UnifiedSetupModal userId={user?.id} defaultMode="dns"    onSave={() => { loadCredentials(); loadServers() }} onClose={() => setShowAddDns(false)} />}
@@ -1726,9 +1726,9 @@ export default function Integrations({ nav }) {
                 </button>
               </div>
             ) : (
-              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
                 {/* Table header */}
-                <div style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidth:640,minWidth:650,
+                <div style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidth:640,
                   padding:'10px 20px', background:'var(--v2-surface-2)',
                   borderBottom:'0.5px solid var(--v2-border)' }}>
                   {['Provider', 'Domain', 'API credentials', 'Status', 'Actions'].map(h => (
@@ -1747,7 +1747,7 @@ export default function Integrations({ nav }) {
                   const ss = statusStyles[st] || statusStyles.untested
                   return (
                     <div key={cred.id}
-                      style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidth:640,minWidth:650,
+style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidth:640,
                         padding:'14px 20px', alignItems:'center',
                         borderBottom: i < credentials.length-1 ? '0.5px solid var(--v2-border)' : 'none',
                         background:'var(--v2-surface)', transition:'background .1s' }}
@@ -1861,7 +1861,7 @@ export default function Integrations({ nav }) {
                 </button>
               </div>
             ) : (
-              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
                 {/* Table header */}
                 <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidth:650,
                   padding:'10px 20px', background:'var(--v2-surface-2)',
@@ -1887,7 +1887,7 @@ export default function Integrations({ nav }) {
                   const ag = agentUI[agentStatus]
                   return (
                     <div key={srv.id}
-                      style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidth:650,
+style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidth:650,
                         padding:'14px 20px', alignItems:'center',
                         borderBottom: i < servers.length-1 ? '0.5px solid var(--v2-border)' : 'none',
                         background:'var(--v2-surface)', transition:'background .1s' }}
@@ -1996,7 +1996,7 @@ export default function Integrations({ nav }) {
                 </button>
               </div>
             ) : (
-              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
                 <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:650,
                   padding:'10px 20px', background:'var(--v2-surface-2)',
                   borderBottom:'0.5px solid var(--v2-border)' }}>
@@ -2011,7 +2011,7 @@ export default function Integrations({ nav }) {
                   const isActive = conn.status === 'active'
                   return (
                     <div key={conn.id}
-                      style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:650,
+style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:650,
                         padding:'14px 20px', alignItems:'center',
                         borderBottom: i < connections.length-1 ? '0.5px solid var(--v2-border)' : 'none',
                         background:'var(--v2-surface)', transition:'background .1s' }}

@@ -258,7 +258,7 @@ export default function About({ nav }) {
         </div>
 
         {/* ── CTA ── */}
-        <div style={{ background:C.tealBg, border:`1px solid ${C.tealBd}`, borderRadius:14, padding:'36px 32px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:20 }}>
+        <div style={{ background:C.tealBg, border:`1px solid ${C.tealBd}`, borderRadius:14, padding:'min(36px,5vw) min(32px,4vw)', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:20 }}>
           <div>
             <div style={{ fontSize:18, fontWeight:700, color:C.heading, marginBottom:8 }}>Ready to automate your certificate lifecycle?</div>
             <div style={{ fontSize:14, color:C.body, maxWidth:440, lineHeight:1.7 }}>Enterprise-grade PKI controls — CertVault, 47-day readiness, CA intelligence — built in from day one.</div>

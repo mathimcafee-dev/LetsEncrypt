@@ -650,7 +650,7 @@ export default function Home({ nav }) {
                   ))}
                 </div>
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:10 }}>
                 {[
                   { spec:'AES-256-GCM',      title:'Key encryption',    color:'#E8897A', desc:'DEK wrapped with KEK. Keys never in plaintext.' },
                   { spec:'RFC 8555',          title:'ACME v2',           color:W.teal,   desc:'DNS-01 challenge. Auto-validated via provider API.' },
@@ -707,7 +707,7 @@ export default function Home({ nav }) {
                 <SectionLabel>DNS automation</SectionLabel>
                 <H2 style={{ marginBottom:16 }}>Automated DNS-01 challenge across every major provider.</H2>
                 <Body style={{ marginBottom:28 }}>When issuing or renewing, SSLVault calls your DNS provider API to add the ACME challenge record, polls for propagation, validates, then cleans up — fully automatic, zero copy-paste.</Body>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:8 }}>
                   {[
                     ['Cloudflare','API Token · Zone:DNS:Edit'],
                     ['Vercel','Access Token · Settings → Tokens'],
@@ -1057,7 +1057,7 @@ export default function Home({ nav }) {
                 ))}
 
                 {/* Trust specs */}
-                <div style={{ marginTop:8, display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                <div style={{ marginTop:8, display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:8 }}>
                   {[
                     ['DigiCert','Trust chain · 99.9% browser'],
                     ['RapidSSL','CA partner · wholesale pricing'],
