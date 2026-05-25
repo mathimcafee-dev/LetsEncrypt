@@ -142,6 +142,8 @@ const fmtDate = (iso) =>
   iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
 
 // ── Sparkline ─────────────────────────────────────────────────────────
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function Sparkline({ status = 'green' }) {
   const points =
     status === 'green' ? '0,16 8,12 16,14 24,9 32,11 40,6 48,8 56,4 64,5'
@@ -1412,6 +1414,7 @@ function LoggedOutView({ nav }) {
 
 // ── Main page ─────────────────────────────────────────────────────────
 export default function Integrations({ nav }) {
+  const isMobile = useIsMobile()
   const { user, loading: authLoading } = useAuth()
   const [tab, setTab]                 = useState('dns') // kept for PageHeader compat
   const [viewMode, setViewMode]        = useState('table') // table | list
@@ -2331,7 +2334,11 @@ export default function Integrations({ nav }) {
       <style>{`
         .spin { animation: v2-spin 0.8s linear infinite; }
         @keyframes v2-spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }
-      `}</style>
+      
+        @media(max-width:767px){
+          [class*="-hero"]{padding:20px 14px!important}
+          [class*="-tabs"]{padding:0 10px!important;overflow-x:auto!important}
+        }`}</style>
     </div>
   )
 }

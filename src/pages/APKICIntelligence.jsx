@@ -36,7 +36,7 @@ export default function APKICIntelligence({ nav }) {
         .ap-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .ap-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#fff;line-height:1.15;margin-bottom:10px}
         .ap-h1 em{color:#38bdf8;font-style:normal}
-        .ap-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:680px;line-height:1.7;margin-bottom:20px}
+        .ap-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .ap-stats{display:flex;gap:28px;flex-wrap:wrap}
         .ap-sn{font-size:22px;font-weight:600;color:#fff;line-height:1}
         .ap-sl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
@@ -44,7 +44,7 @@ export default function APKICIntelligence({ nav }) {
         .ap-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}
         .ap-tab:hover{color:var(--v2-text)}
         .ap-tab.on{color:var(--v2-text);border-bottom-color:var(--v2-text)}
-        .ap-body{padding:20px 24px;max-width:900px}
+        .ap-body{padding:20px clamp(12px,24px,24px);max-width:900px}
         .ap-section{margin-bottom:28px}
         .ap-sh{font-size:13px;font-weight:600;color:var(--v2-text);margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--v2-border)}
         .ap-p{font-size:13px;color:var(--v2-text-2);line-height:1.8;margin-bottom:10px}
@@ -56,7 +56,17 @@ export default function APKICIntelligence({ nav }) {
         .tl-line{width:1px;background:var(--v2-border);flex:1;min-height:14px;margin-top:3px}
         .link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--v2-border)}
         .link-row:last-child{border-bottom:none}
-      `}</style>
+      
+        @media(max-width:767px){
+          [class*="-hero"],[class*="-band"]{padding:20px 14px 18px!important}
+          [class*="-body"]{padding:14px!important;max-width:100%!important}
+          [class*="-tabs"]{padding:0 10px!important}
+          [class*="-tab"]{margin-right:12px!important;font-size:12px!important;padding:10px 2px 11px!important}
+          [class*="-h1"]{font-size:20px!important}
+          [class*="-sub"]{font-size:12px!important}
+          [class*="-stats"]{gap:18px!important}
+          .out-card{padding:12px!important}
+        }`}</style>
 
       <div className="ap-hero">
         <div className="ap-eyebrow">SSLVault PKI Intelligence · APKIC Deep Dive</div>

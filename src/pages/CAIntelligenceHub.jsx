@@ -172,7 +172,7 @@ function OverviewTab({ tok, onSwitchCA }) {
   return (
     <div>
       {/* KPI strip */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
         {[
           { label:'Total certs',    val:total,   sub:'across all CAs',  color:'var(--v2-text-1)' },
           { label:'Expiring ≤ 30d', val:exp30,   sub:'need attention',  color:exp30>0?'#854F0B':'var(--v2-text-1)', bg:exp30>0?'#FAEEDA':'var(--v2-surface)' },
@@ -261,7 +261,7 @@ function OverviewTab({ tok, onSwitchCA }) {
       {/* CA connection cards — live feel */}
       <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
         letterSpacing:'0.4px', marginBottom:10 }}>CA connections</div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))', gap:10 }}>
         {[
           { ca:'rapidssl', label:'RapidSSL', sub:'Native CA · always active',
             conn:true, extra:`${ggsCount} certs`, onClick:()=>onSwitchCA('rapidssl') },
@@ -300,7 +300,11 @@ function OverviewTab({ tok, onSwitchCA }) {
           </div>
         ))}
       </div>
-      <style>{`@keyframes pulse-ca { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(2.5);opacity:0} }`}</style>
+      <style>{`@keyframes pulse-ca { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(2.5);opacity:0} }
+        @media(max-width:767px){
+          .ci-hero{padding:20px 14px!important}
+          .ci-tabs{padding:0 10px!important;overflow-x:auto!important}
+        }`}</style>
     </div>
   )
 }
@@ -453,7 +457,7 @@ function RapidSSLTab({ tok, nav }) {
       </div>
 
       {/* KPIs */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Total domains" val={loading?'…':orders.length} sub="managed by SSLVault"/>
         <StatCard label="Auto-renewing" val={loading?'…':autoRenew} sub="agent active" color="#1A7A72"/>
         <StatCard label="Expiring ≤ 30d" val={loading?'…':expiring} sub="needs action"
@@ -855,7 +859,7 @@ function DigiCertTab({ tok, nav }) {
       </div>
 
       {/* KPI row */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Total certs" val={portfolio.length} sub="in portfolio" onClick={() => setFilterStatus('all')}/>
         <StatCard label="Active" val={activeCount} sub="issued & valid" color="#1A7A72" onClick={() => setFilterStatus('active')}/>
         <StatCard label="Expiring ≤ 30d" val={expiring30} sub="needs attention"

@@ -45,6 +45,8 @@ const DNS_PROVIDERS = {
 }
 
 // ── Copy button ──────────────────────────────────────────────────────
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function CopyBtn({ text, label = 'Copy' }) {
   const [ok, setOk] = useState(false)
   const copy = () => {
@@ -445,7 +447,7 @@ function AddDnsModal({ onClose, onSaved, userId }) {
         <div style={{ padding:24 }}>
           {/* Provider grid */}
           <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text-2)', marginBottom:10 }}>Your DNS provider</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:20 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:20 }}>
             {POPULAR.map(id => {
               const info = DNS_PROVIDERS[id]
               return (
@@ -783,6 +785,7 @@ function AddHostingModal({ onClose, onSaved, userId }) {
 
 // ── Main page ─────────────────────────────────────────────────────────
 export default function MyServers({ user }) {
+  const isMobile = useIsMobile()
   const [agents, setAgents] = useState([])
   const [certs, setCerts] = useState([])
   const [dnsCredentials, setDnsCredentials] = useState([])

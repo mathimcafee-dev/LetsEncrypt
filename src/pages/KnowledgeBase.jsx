@@ -18,6 +18,8 @@ const C = {
 }
 
 // ── Code block ─────────────────────────────────────────────────────────
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function Code({ code, lang = 'bash' }) {
   const [copied, setCopied] = useState(false)
   const copy = () => {
@@ -152,7 +154,11 @@ export default function KnowledgeBase({ nav }) {
 
   return (
     <div style={{ minHeight:'100vh', background:C.bg, fontFamily:F, color:C.heading }}>
-      <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}} *{box-sizing:border-box;margin:0;padding:0}`}</style>
+      <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}} *{box-sizing:border-box;margin:0;padding:0}
+        @media(max-width:767px){
+          .kb-body{padding:16px 14px!important}
+          .kb-tabs{padding:0 10px!important;overflow-x:auto!important}
+        }`}</style>
 
       {/* Nav */}
       <header style={{ background:'rgba(8,12,20,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.06)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(16px,4vw,40px)', position:'sticky', top:0, zIndex:100 }}>

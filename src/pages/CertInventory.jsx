@@ -536,7 +536,7 @@ export default function CertInventory({ user, nav, onIssue }) {
       <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', overflow:'hidden' }}>
         <div style={{ overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
         {/* Header */}
-        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)', fontSize:11, fontWeight:600, color:'#737373', letterSpacing:'.3px', textTransform:'uppercase', minWidth:760 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)', fontSize:11, fontWeight:600, color:'#737373', letterSpacing:'.3px', textTransform:'uppercase', minWidth:0 }}>
           <div>Domain</div>
           <div>Order ID</div>
           <div>Product</div>
@@ -565,7 +565,7 @@ export default function CertInventory({ user, nav, onIssue }) {
             <div key={cert.id}>
               <div
                 onClick={() => setExpanded(isExpanded ? null : cert.id)}
-                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid var(--v2-border)', background:isExpanded?'#E8F8F6':'var(--v2-surface)', transition:'background 0.1s', minWidth:760 }}
+                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid var(--v2-border)', background:isExpanded?'#E8F8F6':'var(--v2-surface)', transition:'background 0.1s', minWidth:0 }}
                 onMouseEnter={e => { if(!isExpanded) e.currentTarget.style.background='#fafafa' }}
                 onMouseLeave={e => { if(!isExpanded) e.currentTarget.style.background='var(--v2-surface)' }}
               >

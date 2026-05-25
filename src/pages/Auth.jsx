@@ -66,7 +66,7 @@ export default function Auth({ nav }) {
     <div className="v2-page" style={{ minHeight:'calc(100vh - 60px)', display:'flex', alignItems:'center' }}>
       <div style={{ position:'fixed', top:60, left:0, right:0, height:2, background:'var(--v2-green)', zIndex:10 }} />
 
-      <div style={{ maxWidth:1060, margin:'0 auto', padding:'60px 24px',
+      <div style={{ maxWidth:1060, margin:'0 auto', padding:'clamp(24px,6vw,60px) clamp(14px,3vw,24px)',
                     display:'grid', gridTemplateColumns:'1fr 420px', gap:60,
                     alignItems:'center', width:'100%' }}>
 

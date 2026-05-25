@@ -167,7 +167,7 @@ export default function AdminAnalytics({ user }) {
         </div>
 
         {/* Primary metrics */}
-        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10,marginBottom:20}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:10,marginBottom:20}}>
           {[
             {icon:Shield,      val:stats.active,      label:'Active certs',     color:'#16a34a'},
             {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#2563eb'},

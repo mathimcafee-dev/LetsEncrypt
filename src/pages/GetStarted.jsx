@@ -276,13 +276,13 @@ export default function GetStarted({ nav }) {
 
         <Step n={3} title="Complete domain validation (DCV)">
           <p>SSLVault (via RapidSSL) verifies you own the domain before issuing. Three methods:</p>
-          <table className="v2-table" style={{ marginBottom: 10 }}>
+          <div style={{overflowX:"auto"}}><table className="v2-table" style={{ marginBottom: 10 }}>
             <tbody>
               <tr><td style={{ fontWeight: 600, width: 120 }}>DNS CNAME</td><td>Add a CNAME record — recommended. Auto-added if a DNS provider is connected.</td></tr>
               <tr><td style={{ fontWeight: 600 }}>DNS TXT</td><td>Add a TXT record — similar, preferred by some registrars.</td></tr>
               <tr><td style={{ fontWeight: 600 }}>Email</td><td>Click a link sent to admin@, webmaster@, or hostmaster@ for your domain.</td></tr>
             </tbody>
-          </table>
+          </table></div>
           <div style={{ background: '#0f172a', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '6px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12 }}>
               <span style={{ color: '#3D5C59', fontWeight: 600 }}>TYPE</span><span style={{ color: '#1A7A72' }}>CNAME</span>

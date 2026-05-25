@@ -944,7 +944,17 @@ export default function DigiCertIntelligence({ nav }) {
           </>
         )}
       </div>
-      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+        @media(max-width:767px){
+          [class*="-hero"],[class*="-band"]{padding:20px 14px 18px!important}
+          [class*="-body"]{padding:14px!important;max-width:100%!important}
+          [class*="-tabs"]{padding:0 10px!important}
+          [class*="-tab"]{margin-right:12px!important;font-size:12px!important;padding:10px 2px 11px!important}
+          [class*="-h1"]{font-size:20px!important}
+          [class*="-sub"]{font-size:12px!important}
+          [class*="-stats"]{gap:18px!important}
+          .out-card{padding:12px!important}
+        }`}</style>
     </div>
   )
 }

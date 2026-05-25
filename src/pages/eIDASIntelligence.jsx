@@ -36,7 +36,7 @@ export default function eIDASIntelligence({ nav }) {
         .eid-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .eid-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#fff;line-height:1.15;margin-bottom:10px}
         .eid-h1 em{color:#818cf8;font-style:normal}
-        .eid-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:680px;line-height:1.7;margin-bottom:20px}
+        .eid-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .eid-stats{display:flex;gap:28px;flex-wrap:wrap}
         .eid-sn{font-size:22px;font-weight:600;color:#fff;line-height:1}
         .eid-sl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
@@ -44,7 +44,7 @@ export default function eIDASIntelligence({ nav }) {
         .eid-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}
         .eid-tab:hover{color:var(--v2-text)}
         .eid-tab.on{color:var(--v2-text);border-bottom-color:var(--v2-text)}
-        .eid-body{padding:20px 24px;max-width:900px}
+        .eid-body{padding:20px clamp(12px,24px,24px);max-width:900px}
         .eid-section{margin-bottom:28px}
         .eid-sh{font-size:13px;font-weight:600;color:var(--v2-text);margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--v2-border)}
         .eid-p{font-size:13px;color:var(--v2-text-2);line-height:1.8;margin-bottom:10px}

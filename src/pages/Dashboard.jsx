@@ -16,6 +16,8 @@ import VulnScanner from '../components/VulnScanner'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function daysLeft(iso) {
   if (!iso) return null
   return differenceInDays(new Date(iso), new Date())
@@ -1517,7 +1519,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       </div>
 
       {/* ── Metric strip ─── */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)',
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',
         borderBottom:'0.5px solid #f1f5f9', background:'#fafbfc' }}>
         {(() => {
           // ── Date logic ─────────────────────────────────────────────────
@@ -2477,6 +2479,7 @@ function CertRow({ cert, selected, onClick, index }) {
 }
 
 function LoggedInDashboard({ user, nav, onIssue }) {
+  const isMobile = useIsMobile()
   const [certs,   setCerts]  = useState([])
   const [orders,  setOrders] = useState([])
   const [loading, setLoading]= useState(true)
@@ -2676,7 +2679,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           </button>
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:20 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))', gap:10, marginBottom:20 }}>
           {[
             { label:'Total',        value:total,    color:'#1A7A72', bg:'#E8F8F6', icon:'▦', sub:'certificates' },
             { label:'Healthy',      value:healthy,  color:'#16a34a', bg:'#E8F8F6', icon:'✓', sub:healthy>0?'All valid':'None' },
@@ -2724,7 +2727,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           </div>
         )}
 
-        <div style={{ display:'grid', gridTemplateColumns: selectedCert ? '1fr 400px':'1fr', gap:16, alignItems:'start' }}>
+        <div style={{ display:'grid', gridTemplateColumns: (!isMobile && selectedCert) ? 'minmax(0,1fr) clamp(280px,35vw,400px)':'1fr', gap:16, alignItems:'start' }}>
           <div style={{ background:'white', border:'0.5px solid #e2e8f0', borderRadius:14,
             overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
             <div style={{ padding:'14px 16px', borderBottom:'0.5px solid #f1f5f9',
@@ -2824,7 +2827,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
 
         <div style={{ marginTop:28 }}>
           <div style={{ fontSize:10, fontWeight:700, color:'#94a3b8', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Quick actions</div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:10 }}>
             {[
               { icon:Shield,    color:'#1A7A72', bg:'#E8F8F6', label:'Issue Certificate', desc:'RapidSSL DV · RapidSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
               { icon:Download,  color:'#16a34a', bg:'#E8F8F6', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },

@@ -267,7 +267,23 @@ export default function CABForumNewsroom({ nav }) {
         .bdp-k { font-size:11px;color:var(--v2-text-3);min-width:90px;flex-shrink:0 }
         .bdp-v { font-size:12px;color:var(--v2-text);font-weight:500 }
         @media(max-width:900px){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
-      `}</style>
+      
+        @media(max-width:900px){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
+        @media(max-width:767px){
+          .hero-band{padding:20px 14px 18px}
+          .hero-h1{font-size:20px}
+          .hero-sub{font-size:12px}
+          .hero-stats{gap:16px}
+          .hstat-n{font-size:18px}
+          .page-tabs{padding:0 10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+          .pane-head{padding:10px 12px}
+          .filter-bar{padding:8px 10px}
+          .sync-bar{padding:6px 14px;font-size:11px}
+          .compliance-alert{padding:8px 14px;font-size:11px}
+          .side-pane{padding:12px}
+          .tl-wrap{padding:12px}
+          .ballot-detail-panel{margin:0 10px 10px}
+        }`}</style>
 
       {/* Sync banner */}
       <div className="sync-bar">

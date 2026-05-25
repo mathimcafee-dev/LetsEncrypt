@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import {
   Shield, Plus, Globe, Server, Activity, TrendingUp, Trophy, History, Scan, CalendarDays, ShieldAlert, ShieldCheck,
   Layout, Download, Settings, Lock,
-  BookOpen, CreditCard, Info, User, Mail, LogOut, Bell
+  BookOpen, CreditCard, Info, User, Mail, LogOut, Bell, Menu, X
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import Dashboard from './Dashboard'
@@ -28,13 +28,24 @@ import CertVault from './CertVault'
 import CertBind from './CertBind'
 import Pricing from './Pricing'
 
-// Default collapsed state — Overview & Account open, rest start open too but user can close
-const DEFAULT_OPEN = { Certificates: true, Automation: true, Security: true, Intelligence: true }
+const DEFAULT_OPEN = { Certificates: true, Deployment: true, Shield: true, Intelligence: true }
+
+function useIsMobile(bp = 768) {
+  const [m, setM] = useState(typeof window !== 'undefined' ? window.innerWidth <= bp : false)
+  useEffect(() => {
+    const h = () => setM(window.innerWidth <= bp)
+    window.addEventListener('resize', h)
+    return () => window.removeEventListener('resize', h)
+  }, [bp])
+  return m
+}
 
 export default function CLMHome({ user, nav }) {
   const [section, setSection] = useState('dashboard')
   const [animKey, setAnimKey] = useState(0)
   const [openGroups, setOpenGroups] = useState(DEFAULT_OPEN)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const isMobile = useIsMobile()
 
   const toggleGroup = (label) => setOpenGroups(prev => ({ ...prev, [label]: !prev[label] }))
 
@@ -42,13 +53,14 @@ export default function CLMHome({ user, nav }) {
     if (id === section) return
     setSection(id)
     setAnimKey(k => k + 1)
+    if (isMobile) setSidebarOpen(false)
   }
   const email = user?.email || ''
 
   // ── Notification bell ──────────────────────────────────────────────
-  const [notifs, setNotifs]         = useState([])
+  const [notifs, setNotifs]           = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
-  const [bellOpen, setBellOpen]     = useState(false)
+  const [bellOpen, setBellOpen]       = useState(false)
   const [bellLoading, setBellLoading] = useState(false)
   const bellRef = useRef(null)
 
@@ -63,7 +75,7 @@ export default function CLMHome({ user, nav }) {
         setNotifs(data.notifications || [])
         setUnreadCount(data.unread_count || 0)
       }
-    } catch (_) { /* CORS or network error — silently ignore, notifications are non-critical */ }
+    } catch (_) {}
     setBellLoading(false)
   }
 
@@ -75,38 +87,47 @@ export default function CLMHome({ user, nav }) {
     setUnreadCount(0)
   }
 
-  // Load on mount + every 60s
   useEffect(() => {
     loadNotifs()
     const iv = setInterval(loadNotifs, 60000)
     return () => clearInterval(iv)
   }, [user])
 
-  // Close bell on outside click
   useEffect(() => {
     const handler = (e) => { if (bellRef.current && !bellRef.current.contains(e.target)) setBellOpen(false) }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
+  // Close sidebar on outside tap (mobile)
+  const sidebarRef = useRef(null)
+  useEffect(() => {
+    if (!isMobile || !sidebarOpen) return
+    const handler = (e) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target)) setSidebarOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [isMobile, sidebarOpen])
+
   // ── Navigation structure ───────────────────────────────────────────
   const NAV_CERTS = [
-    { id:'dashboard',         label:'Fleet',              icon:Layout      },
-    { id:'issue',             label:'New SSL',          icon:Plus        },
-    { id:'readiness',         label:'47-day radar',       icon:ShieldCheck, alert:true },
-    { id:'renewal-calendar',  label:'Lifecycle',          icon:CalendarDays},
+    { id:'dashboard',         label:'Fleet',          icon:Layout      },
+    { id:'issue',             label:'New SSL',        icon:Plus        },
+    { id:'readiness',         label:'47-day radar',   icon:ShieldCheck, alert:true },
+    { id:'renewal-calendar',  label:'Lifecycle',      icon:CalendarDays},
   ]
   const NAV_AUTOMATION = [
-    { id:'my-servers',    label:'My Servers',         icon:Server   },
-    { id:'certvault',     label:'Key Vault',          icon:Lock     },
-    { id:'certbind',      label:'Live Verify',        icon:Shield   },
+    { id:'my-servers',    label:'My Servers',     icon:Server   },
+    { id:'certvault',     label:'Key Vault',      icon:Lock     },
+    { id:'certbind',      label:'Live Verify',    icon:Shield   },
   ]
   const NAV_SECURITY = [
-    { id:'shield',          label:'Shield',           icon:ShieldCheck },
-    { id:'cert-changelog',  label:'Audit trail',      icon:History    },
+    { id:'shield',          label:'Shield',       icon:ShieldCheck },
+    { id:'cert-changelog',  label:'Audit trail',  icon:History    },
   ]
   const NAV_INTELLIGENCE = [
-    { id:'ca-intelligence', label:'CA Insights',      icon:TrendingUp },
+    { id:'ca-intelligence', label:'CA Insights',  icon:TrendingUp },
   ]
   const NAV_BOTTOM = [
     { id:'kb',        label:'Docs & help',  icon:BookOpen  },
@@ -117,10 +138,9 @@ export default function CLMHome({ user, nav }) {
     dashboard:'Certificate inventory', issue:'New SSL',
     readiness:'47-day readiness', 'renewal-calendar':'Renewal calendar',
     servers:'Servers & agents', integrations:'DNS providers',
-    certvault:'CertVault',
-      certbind:'CertBind — Active Binding',
-    'shield':'Shield Intelligence',
-    'cert-changelog':'Audit log', 'agent-health':'Servers & agents', 'infrastructure':'Servers & agents',
+    certvault:'CertVault', certbind:'CertBind — Active Binding',
+    shield:'Shield Intelligence', 'cert-changelog':'Audit log',
+    'agent-health':'Servers & agents', infrastructure:'Servers & agents',
     'ca-intelligence':'CA intelligence',
     kb:'Docs & help', settings:'Settings',
     about:'About', developer:'Developer', contact:'Contact', pricing:'Pricing',
@@ -154,53 +174,139 @@ export default function CLMHome({ user, nav }) {
     )
   }
 
-  // Sidebar-aware navigation — switches sections instead of URL routing
   const sideNav = (path) => {
     const map = { '/buy': 'issue', '/dashboard': 'dashboard', '/integrations': 'integrations',
-      '/certvault': 'certvault',
-      '/certbind': 'certbind', '/install': 'kb', '/': 'dashboard' }
+      '/certvault': 'certvault', '/certbind': 'certbind', '/install': 'kb', '/': 'dashboard' }
     const mapped = map[path]
     if (mapped) { navigate(mapped) } else { nav(path) }
   }
 
   const renderContent = () => {
-    if (section === 'dashboard')   return <Dashboard nav={sideNav} onIssue={() => navigate('issue')}/>
-    if (section === 'readiness')   return <ReadinessDashboard user={user}/>
-    if (section === 'issue')      return <BuyCertificate nav={sideNav} embedded={true} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
-    if (section === 'integrations') return <Integrations nav={sideNav}/>
-    if (section === 'install')    return <Install nav={sideNav}/>
-    if (section === 'kb')         return <KnowledgeBase nav={sideNav}/>
-    if (section === 'pricing')    return <Pricing nav={sideNav}/>
-    if (section === 'my-servers') return <MyServers user={user}/>
-    if (section === 'infrastructure') return <MyServers user={user}/>
+    if (section === 'dashboard')       return <Dashboard nav={sideNav} onIssue={() => navigate('issue')}/>
+    if (section === 'readiness')       return <ReadinessDashboard user={user}/>
+    if (section === 'issue')           return <BuyCertificate nav={sideNav} embedded={true} onDashboard={() => navigate('dashboard')} onIssueAnother={() => navigate('issue')}/>
+    if (section === 'integrations')    return <Integrations nav={sideNav}/>
+    if (section === 'install')         return <Install nav={sideNav}/>
+    if (section === 'kb')              return <KnowledgeBase nav={sideNav}/>
+    if (section === 'pricing')         return <Pricing nav={sideNav}/>
+    if (section === 'my-servers')      return <MyServers user={user}/>
+    if (section === 'infrastructure')  return <MyServers user={user}/>
     if (section === 'servers')         return <Infrastructure user={user}/>
     if (section === 'agent-health')    return <Infrastructure user={user}/>
-    if (section === 'certvault')  return <CertVault nav={sideNav}/>
-    if (section === 'certbind')   return <CertBind nav={sideNav}/>
-    if (section === 'settings')      return <SettingsPage user={user}/>
+    if (section === 'certvault')       return <CertVault nav={sideNav}/>
+    if (section === 'certbind')        return <CertBind nav={sideNav}/>
+    if (section === 'settings')        return <SettingsPage user={user}/>
     if (section === 'ca-intelligence') return <CAIntelligenceHub nav={sideNav}/>
-
-    if (section === 'agent-health')  return <AgentHealth user={user}/>
-    if (section === 'shield')           return <ShieldIntelligence user={user}/>
+    if (section === 'shield')          return <ShieldIntelligence user={user}/>
     if (section === 'renewal-calendar') return <RenewalCalendar user={user}/>
-
     if (section === 'cert-changelog')  return <CertChangelog user={user}/>
-
     return null
   }
 
+  const SidebarContent = () => (
+    <>
+      {[
+        { label:'Certificates',  items: NAV_CERTS       },
+        { label:'Deployment',    items: NAV_AUTOMATION   },
+        { label:'Shield',        items: NAV_SECURITY     },
+        { label:'Intelligence',  items: NAV_INTELLIGENCE },
+      ].map(({ label, items }, i) => {
+        const isOpen = openGroups[label] !== false
+        const hasActive = items.some(item => item.id === section)
+        return (
+          <div key={label} style={{ borderTop: i > 0 ? '0.5px solid rgba(255,255,255,0.08)' : 'none' }}>
+            <button
+              onClick={() => toggleGroup(label)}
+              style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
+                padding:'9px 14px 7px', background:'none', border:'none', cursor:'pointer', fontFamily:'inherit' }}
+            >
+              <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+                <span style={{
+                  fontSize:10, fontWeight:700, letterSpacing:'0.6px', textTransform:'uppercase',
+                  color: (hasActive && !isOpen) ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)',
+                  transition:'color 0.2s'
+                }}>{label}</span>
+                {!isOpen && hasActive && (
+                  <span style={{ width:5, height:5, borderRadius:'50%', background:'#00a3e0', display:'inline-block', marginLeft:2 }}/>
+                )}
+              </div>
+              <span style={{
+                color:'rgba(255,255,255,0.25)', fontSize:10,
+                transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition:'transform 0.22s cubic-bezier(0.4,0,0.2,1)',
+                display:'inline-block', lineHeight:1
+              }}>▾</span>
+            </button>
+            <div style={{
+              maxHeight: isOpen ? `${items.length * 40}px` : '0px',
+              overflow:'hidden',
+              transition:'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
+            }}>
+              <div style={{ paddingBottom: isOpen ? 6 : 0 }}>
+                {items.map(item => <NavItem key={item.id} {...item}/>)}
+              </div>
+            </div>
+          </div>
+        )
+      })}
+
+      <div style={{ flex:1 }}/>
+
+      <div style={{ borderTop:'0.5px solid rgba(255,255,255,0.08)', paddingTop:4, paddingBottom:4 }}>
+        {NAV_BOTTOM.map(item => <NavItem key={item.id} {...item}/>)}
+      </div>
+
+      <div style={{ borderTop:'0.5px solid rgba(255,255,255,0.08)', padding:'10px 12px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:9 }}>
+          <div style={{ width:28, height:28, borderRadius:'50%', background:'#1A7A72',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            fontSize:11, fontWeight:700, color:'white', flexShrink:0 }}>
+            {(email[0]||'U').toUpperCase()}
+          </div>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.85)',
+              overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+              {email.split('@')[0]}
+            </div>
+            <div style={{ fontSize:9, color:'rgba(255,255,255,0.35)', marginTop:1 }}>
+              {email.split('@')[1] || 'easysecurity.in'}
+            </div>
+          </div>
+          <button onClick={() => supabase.auth.signOut()}
+            style={{ background:'none', border:'none', cursor:'pointer',
+              color:'rgba(255,255,255,0.3)', padding:3, display:'flex',
+              borderRadius:4, transition:'color .15s' }}
+            title="Sign out"
+            onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.7)'}
+            onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.3)'}>
+            <LogOut size={13}/>
+          </button>
+        </div>
+      </div>
+    </>
+  )
+
   return (
     <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
-      <div style={{ background:'#0F5750', height:44, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', flexShrink:0, position:'sticky', top:0, zIndex:50 }}>
+      {/* ── Top bar ── */}
+      <div style={{ background:'#0F5750', height:44, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 14px', flexShrink:0, position:'sticky', top:0, zIndex:50 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          {/* Hamburger — mobile only */}
+          {isMobile && (
+            <button onClick={() => setSidebarOpen(o => !o)}
+              style={{ background:'none', border:'none', cursor:'pointer', color:'white',
+                padding:4, display:'flex', alignItems:'center', borderRadius:6, marginRight:4 }}>
+              {sidebarOpen ? <X size={18}/> : <Menu size={18}/>}
+            </button>
+          )}
           <div style={{ width:26, height:26, borderRadius:6, background:'#1A7A72', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <Shield size={13} color="white" strokeWidth={2.5}/>
           </div>
           <span style={{ fontSize:13, fontWeight:700, color:'white' }}>SSLVault</span>
-          <span style={{ fontSize:10, color:'rgba(255,255,255,0.4)', marginLeft:2 }}>CLM PLATFORM</span>
+          {!isMobile && <span style={{ fontSize:10, color:'rgba(255,255,255,0.4)', marginLeft:2 }}>CLM PLATFORM</span>}
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:14 }}>
-          {/* ── Notification Bell ── */}
+        <div style={{ display:'flex', alignItems:'center', gap: isMobile ? 8 : 14 }}>
+          {/* Notification Bell */}
           <div ref={bellRef} style={{ position:'relative' }}>
             <button onClick={() => { setBellOpen(v => !v); if (!bellOpen) loadNotifs() }}
               style={{ position:'relative', background:'none', border:'none', cursor:'pointer',
@@ -218,12 +324,11 @@ export default function CLMHome({ user, nav }) {
                 </span>
               )}
             </button>
-            {/* Dropdown */}
             {bellOpen && (
-              <div style={{ position:'absolute', top:'calc(100% + 8px)', right:0, width:320,
+              <div style={{ position:'absolute', top:'calc(100% + 8px)', right:0,
+                width: isMobile ? 'calc(100vw - 28px)' : 320,
                 background:'white', border:'1px solid #e2e8f0', borderRadius:12,
                 boxShadow:'0 8px 32px rgba(0,0,0,0.15)', zIndex:200, overflow:'hidden' }}>
-                {/* Header */}
                 <div style={{ padding:'12px 16px', borderBottom:'1px solid #f1f5f9',
                   display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <span style={{ fontSize:12, fontWeight:700, color:'#1A2E2C' }}>Notifications</span>
@@ -235,23 +340,18 @@ export default function CLMHome({ user, nav }) {
                     </button>
                   )}
                 </div>
-                {/* Items */}
                 <div style={{ maxHeight:360, overflowY:'auto' }}>
                   {bellLoading && notifs.length === 0 ? (
-                    <div style={{ padding:'24px', textAlign:'center', color:'#7A9E9B', fontSize:12 }}>
-                      Loading…
-                    </div>
+                    <div style={{ padding:'24px', textAlign:'center', color:'#7A9E9B', fontSize:12 }}>Loading…</div>
                   ) : notifs.length === 0 ? (
-                    <div style={{ padding:'32px 16px', textAlign:'center', color:'#7A9E9B', fontSize:12 }}>
-                      🔔 No notifications yet
-                    </div>
+                    <div style={{ padding:'32px 16px', textAlign:'center', color:'#7A9E9B', fontSize:12 }}>🔔 No notifications yet</div>
                   ) : notifs.map(n => (
                     <div key={n.id}
                       onClick={async () => {
                         try { await supabase.functions.invoke('send-alert', { body:{ action:'mark_read', user_id:user.id, notification_id:n.id }}) } catch(_){}
                         setNotifs(prev => prev.map(x => x.id===n.id ? {...x,read:true} : x))
                         setUnreadCount(c => Math.max(0, c-1))
-                        if (n.action_url) { const section = n.action_url.replace('/',''); navigate(section||'dashboard') }
+                        if (n.action_url) { const sec = n.action_url.replace('/',''); navigate(sec||'dashboard') }
                         setBellOpen(false)
                       }}
                       style={{ padding:'10px 16px', borderBottom:'0.5px solid #f8fafc', cursor:'pointer',
@@ -259,27 +359,21 @@ export default function CLMHome({ user, nav }) {
                         display:'flex', gap:10, alignItems:'flex-start' }}
                       onMouseEnter={e => e.currentTarget.style.background=n.read?'#f8fafc':'#e0f7fa'}
                       onMouseLeave={e => e.currentTarget.style.background=n.read?'white':'#E8F8F6'}>
-                      <span style={{ width:7, height:7, borderRadius:'50%', background:n.color||'#1A7A72',
-                        marginTop:4, flexShrink:0 }}/>
+                      <span style={{ width:7, height:7, borderRadius:'50%', background:n.color||'#1A7A72', marginTop:4, flexShrink:0 }}/>
                       <div style={{ minWidth:0, flex:1 }}>
-                        <div style={{ fontSize:12, fontWeight:n.read?500:700, color:'#1A2E2C',
-                          marginBottom:2, lineHeight:1.3 }}>{n.title}</div>
-                        <div style={{ fontSize:11, color:'#3D5C59', lineHeight:1.4,
-                          overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{n.body}</div>
+                        <div style={{ fontSize:12, fontWeight:n.read?500:700, color:'#1A2E2C', marginBottom:2, lineHeight:1.3 }}>{n.title}</div>
+                        <div style={{ fontSize:11, color:'#3D5C59', lineHeight:1.4, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{n.body}</div>
                         <div style={{ fontSize:10, color:'#7A9E9B', marginTop:3 }}>
                           {new Date(n.created_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
                         </div>
                       </div>
-                      {!n.read && <span style={{ width:6, height:6, borderRadius:'50%',
-                        background:'#1A7A72', flexShrink:0, marginTop:5 }}/>}
+                      {!n.read && <span style={{ width:6, height:6, borderRadius:'50%', background:'#1A7A72', flexShrink:0, marginTop:5 }}/>}
                     </div>
                   ))}
                 </div>
-                {/* Footer */}
                 <div style={{ padding:'10px 16px', borderTop:'1px solid #f1f5f9', textAlign:'center' }}>
                   <button onClick={() => { navigate('settings'); setBellOpen(false) }}
-                    style={{ background:'none', border:'none', cursor:'pointer', fontSize:11,
-                      color:'#1A7A72', fontFamily:'inherit' }}>
+                    style={{ background:'none', border:'none', cursor:'pointer', fontSize:11, color:'#1A7A72', fontFamily:'inherit' }}>
                     Manage alert settings →
                   </button>
                 </div>
@@ -287,99 +381,45 @@ export default function CLMHome({ user, nav }) {
             )}
           </div>
 
-          <span style={{ fontSize:11, color:'rgba(255,255,255,0.5)' }}>{email}</span>
+          {!isMobile && <span style={{ fontSize:11, color:'rgba(255,255,255,0.5)' }}>{email}</span>}
           <button onClick={() => supabase.auth.signOut()} style={{ display:'flex', alignItems:'center', gap:5, background:'none', border:'none', cursor:'pointer', color:'rgba(255,255,255,0.5)', fontSize:11, fontFamily:'inherit', padding:0 }}>
-            <LogOut size={13}/> Sign out
+            <LogOut size={13}/>
+            {!isMobile && ' Sign out'}
           </button>
         </div>
       </div>
 
-      <div style={{ display:'flex', flex:1, background: ['issue'].includes(section) ? '#0F5750' : '#FDFAF5' }}>
-        <nav style={{ width:210, background:'#0F5750', display:'flex', flexDirection:'column', flexShrink:0, position:'sticky', top:44, height:'calc(100vh - 44px)', overflowY:'auto', boxShadow:'4px 0 24px rgba(0,0,0,0.18)' }}>
-          {[
-            { label:'Certificates',  items: NAV_CERTS       },
-            { label:'Deployment',    items: NAV_AUTOMATION   },
-            { label:'Shield',        items: NAV_SECURITY     },
-            { label:'Intelligence',  items: NAV_INTELLIGENCE },
-          ].map(({ label, items }, i) => {
-            const isOpen = openGroups[label] !== false
-            const hasActive = items.some(item => item.id === section)
-            return (
-              <div key={label} style={{ borderTop: i > 0 ? '0.5px solid rgba(255,255,255,0.08)' : 'none' }}>
-                <button
-                  onClick={() => toggleGroup(label)}
-                  style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
-                    padding:'9px 14px 7px', background:'none', border:'none', cursor:'pointer', fontFamily:'inherit' }}
-                >
-                  <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-                    <span style={{
-                      fontSize:10, fontWeight:700, letterSpacing:'0.6px', textTransform:'uppercase',
-                      color: (hasActive && !isOpen) ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)',
-                      transition:'color 0.2s'
-                    }}>{label}</span>
-                    {!isOpen && hasActive && (
-                      <span style={{ width:5, height:5, borderRadius:'50%', background:'#00a3e0', display:'inline-block', marginLeft:2 }}/>
-                    )}
-                  </div>
-                  <span style={{
-                    color:'rgba(255,255,255,0.25)', fontSize:10,
-                    transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition:'transform 0.22s cubic-bezier(0.4,0,0.2,1)',
-                    display:'inline-block', lineHeight:1
-                  }}>▾</span>
-                </button>
-                <div style={{
-                  maxHeight: isOpen ? `${items.length * 40}px` : '0px',
-                  overflow:'hidden',
-                  transition:'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
-                }}>
-                  <div style={{ paddingBottom: isOpen ? 6 : 0 }}>
-                    {items.map(item => <NavItem key={item.id} {...item}/>)}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
+      {/* ── Body ── */}
+      <div style={{ display:'flex', flex:1, background: ['issue'].includes(section) ? '#0F5750' : '#FDFAF5', position:'relative' }}>
 
-          <div style={{ flex:1 }}/>
+        {/* Mobile overlay */}
+        {isMobile && sidebarOpen && (
+          <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.45)', zIndex:39 }}
+            onClick={() => setSidebarOpen(false)}/>
+        )}
 
-          <div style={{ borderTop:'0.5px solid rgba(255,255,255,0.08)', paddingTop:4, paddingBottom:4 }}>
-            {NAV_BOTTOM.map(item => <NavItem key={item.id} {...item}/>)}
-          </div>
-
-          <div style={{ borderTop:'0.5px solid rgba(255,255,255,0.08)', padding:'10px 12px' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-              <div style={{ width:28, height:28, borderRadius:'50%', background:'#1A7A72',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                fontSize:11, fontWeight:700, color:'white', flexShrink:0 }}>
-                {(email[0]||'U').toUpperCase()}
-              </div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.85)',
-                  overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                  {email.split('@')[0]}
-                </div>
-                <div style={{ fontSize:9, color:'rgba(255,255,255,0.35)', marginTop:1 }}>
-                  {email.split('@')[1] || 'easysecurity.in'}
-                </div>
-              </div>
-              <button onClick={() => supabase.auth.signOut()}
-                style={{ background:'none', border:'none', cursor:'pointer',
-                  color:'rgba(255,255,255,0.3)', padding:3, display:'flex',
-                  borderRadius:4, transition:'color .15s' }}
-                title="Sign out"
-                onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.7)'}
-                onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.3)'}>
-                <LogOut size={13}/>
-              </button>
-            </div>
-          </div>
+        {/* Sidebar */}
+        <nav ref={sidebarRef} style={{
+          width: 210,
+          background:'#0F5750',
+          display:'flex', flexDirection:'column', flexShrink:0,
+          overflowY:'auto', boxShadow:'4px 0 24px rgba(0,0,0,0.18)',
+          ...(isMobile ? {
+            position:'fixed', left:0, top:44, bottom:0, zIndex:40,
+            transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+            transition:'transform 0.25s cubic-bezier(0.4,0,0.2,1)',
+          } : {
+            position:'sticky', top:44, height:'calc(100vh - 44px)',
+          })
+        }}>
+          <SidebarContent />
         </nav>
 
+        {/* Main content */}
         <div style={{ flex:1, minWidth:0, display:'flex', flexDirection:'column' }}>
           {!['issue','dashboard','integrations','ca-connectors'].includes(section) && (
-            <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 28px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
-              <div style={{ fontSize:18, fontWeight:700, color:'#1A2E2C', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
+            <div style={{ background:'white', borderBottom:'1px solid #e8edf2', padding:'0 16px', height:48, display:'flex', alignItems:'center', flexShrink:0, position:'sticky', top:44, zIndex:30 }}>
+              <div style={{ fontSize: isMobile ? 15 : 18, fontWeight:700, color:'#1A2E2C', letterSpacing:'-0.3px' }}>{SECTION_TITLES[section]}</div>
             </div>
           )}
           <div key={animKey} style={{ flex:1, overflowY:'auto', overflowX:'hidden', animation:'clm-fadein 0.22s cubic-bezier(0.4,0,0.2,1)' }}>
@@ -387,7 +427,10 @@ export default function CLMHome({ user, nav }) {
           </div>
         </div>
       </div>
-      <style>{`@keyframes clm-fadein{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}} @keyframes navpulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
+      <style>{`
+        @keyframes clm-fadein{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes navpulse{0%,100%{opacity:1}50%{opacity:0.4}}
+      `}</style>
     </div>
   )
 }

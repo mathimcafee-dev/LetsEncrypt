@@ -567,7 +567,13 @@ export default function CATrustExplorer({ nav }) {
         .skeleton { background:linear-gradient(90deg,var(--v2-hover) 25%,var(--v2-surface-2) 50%,var(--v2-hover) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--v2-r-md);height:14px }
         @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
         @media(max-width:900px){.split{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(3,1fr)}}
-      `}</style>
+      
+        @media(max-width:767px){
+          [class*="-hero"],[class*="-band"]{padding:20px 14px 18px!important}
+          [class*="-body"]{padding:14px!important}
+          [class*="-tabs"]{padding:0 10px!important;overflow-x:auto!important}
+          .content-grid{grid-template-columns:1fr!important}
+        }`}</style>
 
       {/* Sync banner */}
       <div className="sync-bar">

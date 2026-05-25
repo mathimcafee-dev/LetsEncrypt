@@ -29,6 +29,8 @@ const STATUS_MAP = {
 
 function getStatus(s) { return STATUS_MAP[s] || STATUS_MAP['null'] }
 
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function PulseDot({ color, animate }) {
   return (
     <span style={{ position: 'relative', display: 'inline-flex', width: 8, height: 8, flexShrink: 0 }}>

@@ -663,7 +663,7 @@ export default function Infrastructure({ user }) {
 
         {/* Stats strip */}
         {!loading && agents.length > 0 && (
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:20 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))', gap:8, marginBottom:20 }}>
             {[
               { label:'Servers online',  val:online,       color:'#16a34a' },
               { label:'Offline / idle',  val:offline,      color:offline>0?'#dc2626':'var(--v2-text)' },

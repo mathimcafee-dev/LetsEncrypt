@@ -219,7 +219,7 @@ export default function ReadinessDashboard({ user }) {
         </div>
 
         {/* Milestone context */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:16 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))', gap:8, marginBottom:16 }}>
           {MILESTONES.map((m,i) => {
             const d = daysUntilDate(m.date)
             const past = d <= 0

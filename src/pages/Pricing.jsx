@@ -195,7 +195,7 @@ export default function Pricing({ nav }) {
         </div>
 
         {/* ── PLAN CARDS ── */}
-        <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 56 }}>
+        <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12, marginBottom: 56 }}>
           {PLANS.map(plan => (
             <div key={plan.name} style={{
               borderRadius: 12, border: `1px solid ${plan.border}`,
@@ -358,7 +358,7 @@ export default function Pricing({ nav }) {
               Enterprise CLM without the enterprise price tag.
             </h2>
           </div>
-          <div className="pricing-compare-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 1 }}>
+          <div className="pricing-compare-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 1 }}>
             {[
               { name: 'SSLVault', price: 'Starter', sub: 'entry tier + cert costs', color: '#3DBFB0',
                 points: ['Complete CLM platform', '47-day readiness built-in', 'CA-agnostic intelligence', 'CertVault included', 'cPanel + agent + DNS'] },

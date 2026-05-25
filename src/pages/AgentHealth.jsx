@@ -48,6 +48,8 @@ function daysUntil(iso) {
 }
 
 // ── Mini metric bar (inline, horizontal) ─────────────────────────────
+function useIsMobile(bp=768){const[m,setM]=React.useState(typeof window!=='undefined'?window.innerWidth<=bp:false);React.useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
 function MiniBar({ value, warn = 80, danger = 90 }) {
   if (value == null) return <span style={{ color: 'var(--v2-text-3)', fontSize: 11 }}>—</span>
   const pct   = Math.min(100, Math.max(0, value))

@@ -196,13 +196,13 @@ function MonthView({ certs, viewYear, viewMonth, today }) {
 
   return (
     <div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:3, marginBottom:3 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:3, marginBottom:3 }}>
         {DAYS_S.map(d => (
           <div key={d} style={{ fontSize:9, fontWeight:600, color:'var(--v2-text-3)',
             textAlign:'center', padding:'4px 0', textTransform:'uppercase', letterSpacing:'0.4px' }}>{d}</div>
         ))}
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:3 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:3 }}>
         {Array.from({length:firstDow}).map((_,i) => (
           <div key={`e${i}`} style={{ minHeight:72, borderRadius:8,
             background:'var(--v2-surface-3)', opacity:0.4 }}/>
@@ -424,7 +424,7 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
                 </span>
               </div>
               {/* Micro pixel grid */}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:1 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:1 }}>
                 {Array.from({length:firstDow}).map((_,i)=>(
                   <div key={`e${i}`} style={{ height:6 }}/>
                 ))}
