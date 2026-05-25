@@ -102,26 +102,86 @@ function Chip({ cls, children }) {
   return <span className={`v2-chip ${cls}`}>{children}</span>
 }
 
-function BallotRow({ b, onClick }) {
-  const imp = impactChip(b.impact_level)
+function Pill({ color, bg, border, children }) {
   return (
-    <div className="v2-list-row" onClick={() => onClick(b)} style={{ cursor: 'pointer' }}>
-      <div className="v2-row-body">
-        <div className="v2-row-title-line">
-          <span style={{ fontFamily: "'JetBrains Mono','SF Mono',monospace", fontSize:10, fontWeight:700, color:'var(--v2-text-3)', flexShrink:0 }}>{b.ballot_id}</span>
-          <span className="v2-row-title">{b.title}</span>
-          {imp && <Chip cls={imp.cls}>{imp.label}</Chip>}
+    <span style={{ display:'inline-flex', alignItems:'center', padding:'2px 8px', borderRadius:100,
+      fontSize:10, fontWeight:600, whiteSpace:'nowrap', flexShrink:0, lineHeight:1.4,
+      color, background:bg, border:`0.5px solid ${border}` }}>
+      {children}
+    </span>
+  )
+}
+
+const STATUS_STYLE = {
+  passed:   { color:'#1A7A72', bg:'#E8F8F6', border:'#A8E6DE' },
+  adopted:  { color:'#1A7A72', bg:'#E8F8F6', border:'#A8E6DE' },
+  withdrawn:{ color:'#C45A4A', bg:'#FDF0EE', border:'#F2C4BC' },
+  failed:   { color:'#C45A4A', bg:'#FDF0EE', border:'#F2C4BC' },
+  draft:    { color:'#C45A4A', bg:'#FDF0EE', border:'#F2C4BC' },
+}
+const WG_STYLE = {
+  'Server Cert WG': { color:'#1A7A72', bg:'#E8F8F6', border:'#A8E6DE' },
+  'S/MIME WG':      { color:'#C45A4A', bg:'#FDF0EE', border:'#F2C4BC' },
+  'Code Signing WG':{ color:'#C45A4A', bg:'#FDF0EE', border:'#F2C4BC' },
+  'NetSec WG':      { color:'#1A7A72', bg:'#E8F8F6', border:'#A8E6DE' },
+  'Forum':          { color:'#7A9E9B', bg:'#F5EFE0', border:'#EDE8DE' },
+}
+const IMPACT_STYLE = {
+  critical: { color:'#b91c1c', bg:'#fef2f2', border:'#fecaca' },
+  high:     { color:'#C45A4A', bg:'#FDF0EE', border:'#F2C4BC' },
+}
+
+function BallotRow({ b, onClick }) {
+  const imp = b.impact_level ? IMPACT_STYLE[b.impact_level.toLowerCase()] : null
+  const impLabel = b.impact_level === 'critical' ? 'Critical' : b.impact_level === 'high' ? 'High impact' : null
+  const st = STATUS_STYLE[(b.status||'').toLowerCase()] || { color:'#7A9E9B', bg:'#F5EFE0', border:'#EDE8DE' }
+  const wg = WG_STYLE[b.working_group] || { color:'#7A9E9B', bg:'#F5EFE0', border:'#EDE8DE' }
+
+  return (
+    <div onClick={() => onClick(b)} style={{
+      cursor:'pointer', padding:'12px 16px',
+      borderBottom:'0.5px solid var(--v2-border)',
+      transition:'background .1s',
+    }}
+    onMouseEnter={e => e.currentTarget.style.background='var(--v2-hover)'}
+    onMouseLeave={e => e.currentTarget.style.background='transparent'}>
+
+      {/* ID + Title + Impact chip */}
+      <div style={{ display:'flex', alignItems:'flex-start', gap:8, flexWrap:'wrap', marginBottom:5 }}>
+        <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, fontWeight:700,
+          color:'var(--v2-text-3)', flexShrink:0, paddingTop:2 }}>{b.ballot_id}</span>
+        <span style={{ fontSize:14, fontWeight:600, color:'var(--v2-text)', lineHeight:1.3, flex:1, minWidth:0 }}>
+          {b.title}
+        </span>
+        {imp && impLabel && <Pill {...imp}>{impLabel}</Pill>}
+      </div>
+
+      {/* Description */}
+      {b.plain_english && (
+        <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.6, marginBottom:8, paddingLeft:0 }}>
+          {b.plain_english}
         </div>
-        {b.plain_english && (
-          <div style={{ color:'var(--v2-text-2)', fontSize:12, lineHeight:1.55, margin:'4px 0 6px' }}>{b.plain_english}</div>
+      )}
+
+      {/* Meta row: WG · author · date · br_version · status */}
+      <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+        <Pill {...wg}>{b.working_group}</Pill>
+        {b.proposed_by && (
+          <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>
+            {b.proposed_by}{b.proposed_org ? ` · ${b.proposed_org}` : ''}
+          </span>
         )}
-        <div className="v2-row-meta">
-          <Chip cls={wgChip(b.working_group)}>{b.working_group}</Chip>
-          {b.proposed_by && <span style={{ color:'var(--v2-text-3)' }}>{b.proposed_by}{b.proposed_org ? ` · ${b.proposed_org}` : ''}</span>}
-          {b.voting_closed && <span style={{ color:'var(--v2-text-3)' }}>{fmtDate(b.voting_closed)}</span>}
-          {b.br_version && <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, color:'var(--v2-green-text)', background:'var(--v2-green-bg)', padding:'1px 6px', borderRadius:4 }}>{b.br_version}</span>}
-          <Chip cls={statusChipClass(b.status)} style={{ marginLeft:'auto' }}>{b.status || '—'}</Chip>
-        </div>
+        {b.voting_closed && (
+          <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>{fmtDate(b.voting_closed)}</span>
+        )}
+        {b.br_version && (
+          <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10,
+            color:'var(--v2-green-text)', background:'var(--v2-green-bg)',
+            padding:'1px 6px', borderRadius:4, border:'0.5px solid var(--v2-green-border)' }}>
+            {b.br_version}
+          </span>
+        )}
+        <Pill {...st}>{b.status || '—'}</Pill>
       </div>
     </div>
   )
