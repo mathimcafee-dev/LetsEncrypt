@@ -454,7 +454,7 @@ export default function DigiCertLab({ nav }) {
                 { label: 'Total certs',    value: total,    color: '#1A7A72', bg: '#E8F8F6' },
                 { label: 'Active',         value: active,   color: '#16a34a', bg: '#E8F8F6' },
                 { label: 'Expiring ≤30d',  value: expiring, color: '#E8897A', bg: '#FDF0EE' },
-                { label: 'RSA-2048 (PQC)', value: highPqc,  color: '#E8897A', bg: '#f5f3ff' },
+                { label: 'RSA-2048 (PQC)', value: highPqc,  color: '#E8897A', bg: '#FDF0EE' },
               ].map(s => (
                 <Card key={s.label} style={{ padding: '14px 16px', borderTop: `3px solid ${s.color}` }}>
                   <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase',
@@ -509,7 +509,7 @@ export default function DigiCertLab({ nav }) {
                       </div>
                       {risk === 'high' && (
                         <div style={{ marginTop: 2 }}>
-                          <Badge text="PQC ✗ RSA-2048" color="#E8897A" bg="#f5f3ff"/>
+                          <Badge text="PQC ✗ RSA-2048" color="#E8897A" bg="#FDF0EE"/>
                         </div>
                       )}
                     </div>
@@ -595,7 +595,7 @@ export default function DigiCertLab({ nav }) {
                       <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
                         padding: '10px 16px', borderBottom: '0.5px solid #f8fafc', alignItems: 'center' }}>
                         <div style={{ fontSize: 12, fontFamily: 'monospace', color: '#0f172a' }}>{cert.common_name}</div>
-                        <Badge text={`RSA-${cert.key_size || 2048}`} color="#E8897A" bg="#f5f3ff"/>
+                        <Badge text={`RSA-${cert.key_size || 2048}`} color="#E8897A" bg="#FDF0EE"/>
                         <div style={{ fontSize: 11, color: 'var(--v2-text-3)' }}>{fmt(cert.valid_till)}</div>
                         <div style={{ fontSize: 11, color: '#dc2626', fontWeight: 600 }}>
                           Migrate before 2030
@@ -689,7 +689,7 @@ export default function DigiCertLab({ nav }) {
                   <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--v2-text-2)', textTransform: 'uppercase',
                     letterSpacing: '0.4px', marginBottom: 6 }}>API call preview</div>
                   <div style={{ background: 'var(--v2-text)', borderRadius: 8, padding: '12px 14px', fontFamily: 'monospace', fontSize: 11, color: '#e5e7eb', lineHeight: 1.6 }}>
-                    <span style={{ color: '#60a5fa' }}>POST</span>{' '}
+                    <span style={{ color: '#3DBFB0' }}>POST</span>{' '}
                     <span style={{ color: '#34d399' }}>https://www.digicert.com/services/v2</span>
                     <span style={{ color: '#fbbf24' }}>/order/certificate/{selectedCert.order_id}/reissue</span>
                     <br/>
@@ -776,7 +776,7 @@ export default function DigiCertLab({ nav }) {
                     letterSpacing: '0.4px', marginBottom: 6 }}>API call that will be executed</div>
                   <div style={{ background: 'var(--v2-text)', borderRadius: 8, padding: '12px 14px',
                     fontFamily: 'monospace', fontSize: 11, color: '#e5e7eb', lineHeight: 1.6 }}>
-                    <span style={{ color: '#60a5fa' }}>PUT</span>{' '}
+                    <span style={{ color: '#3DBFB0' }}>PUT</span>{' '}
                     <span style={{ color: '#34d399' }}>https://www.digicert.com/services/v2</span>
                     <span style={{ color: '#f87171' }}>/certificate/{selectedCert.certificate_id || '{cert_id}'}/revoke</span>
                     <br/>

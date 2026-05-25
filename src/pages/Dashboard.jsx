@@ -84,7 +84,7 @@ function ImportedCertsSection({ certs, onDelete }) {
       <button onClick={() => setOpen(o => !o)}
         style={{ width:'100%', padding:'14px 18px', display:'flex', alignItems:'center', gap:10,
           background:'#f8fafc', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}>
-        <span style={{ fontSize:11, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px', flex:1 }}>
+        <span style={{ fontSize:11, fontWeight:700, color:'#3D5C59', textTransform:'uppercase', letterSpacing:'0.5px', flex:1 }}>
           CA Connector — Imported Certificates ({certs.length})
         </span>
         <span style={{ fontSize:10, color:'#94a3b8', marginRight:4 }}>Tracked only · not managed by SSLVault</span>
@@ -105,7 +105,7 @@ function ImportedCertsSection({ certs, onDelete }) {
                   <div style={{ fontSize:13, fontWeight:600, color:'#1e293b', display:'flex', alignItems:'center', gap:8 }}>
                     {c.domain}
                     <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:4,
-                      background:'#f1f5f9', color:'#64748b' }}>
+                      background:'#f1f5f9', color:'#3D5C59' }}>
                       {sourceLabel(c.source)}
                     </span>
                     {isExpired && <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:4, background:'#fef2f2', color:'#dc2626' }}>EXPIRED</span>}
@@ -215,19 +215,19 @@ function DvPendingCard({ order, onRefresh }) {
       <div style={{ fontSize:13, fontWeight:600, color:'#1e293b', marginBottom:10, fontFamily:'monospace' }}>{order.domain}</div>
       <div style={{ background:'#0f172a', borderRadius:8, padding:'10px 14px', marginBottom:10, fontSize:11, fontFamily:'monospace' }}>
         <div style={{ display:'grid', gridTemplateColumns:'60px 1fr auto', gap:'6px 10px', alignItems:'center' }}>
-          <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Name</span>
+          <span style={{ color:'#3D5C59', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Name</span>
           <span style={{ color:'#94a3b8', wordBreak:'break-all' }}>
             {hasDcv ? dcvName : <span style={{ color:'#475569' }}>⟳ Fetching...</span>}
           </span>
           {hasDcv && <CopyBtn text={dcvName}/>}
-          <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Type</span>
+          <span style={{ color:'#3D5C59', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Type</span>
           <span style={{ color:'#34d399' }}>TXT</span><span/>
-          <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Value</span>
+          <span style={{ color:'#3D5C59', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Value</span>
           <span style={{ color:'#fbbf24', wordBreak:'break-all' }}>
             {hasDcv ? dcvValue : <span style={{ color:'#475569' }}>⟳ Fetching...</span>}
           </span>
           {hasDcv && <CopyBtn text={dcvValue}/>}
-          <span style={{ color:'#64748b', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>TTL</span>
+          <span style={{ color:'#3D5C59', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>TTL</span>
           <span style={{ color:'#e2e8f0' }}>300</span><span/>
         </div>
       </div>
@@ -486,7 +486,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
       {/* Three date labels below bar */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', marginTop:8 }}>
         <div>
-          <div style={{ fontSize:10, fontWeight:600, color:'#64748b', fontFamily:'monospace' }}>
+          <div style={{ fontSize:10, fontWeight:600, color:'#3D5C59', fontFamily:'monospace' }}>
             {fmtShort(issuedAt)}
           </div>
           <div style={{ fontSize:9, color:'#94a3b8', marginTop:2 }}>SSL valid from</div>
@@ -732,7 +732,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       pending_validation: { bg:'#fef9c3', color:'#854d0e', label:'Pending DV' },
       failed:   { bg:'#fee2e2', color:'#dc2626', label:'Failed' },
     }
-    const t = map[s] || { bg:'#f1f5f9', color:'#64748b', label: s||'—' }
+    const t = map[s] || { bg:'#f1f5f9', color:'#3D5C59', label: s||'—' }
     return <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4, background:t.bg, color:t.color }}>{t.label}</span>
   }
 
@@ -845,13 +845,13 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             {l}
             {k==='reissues' && reissues.length > 0 && (
               <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                background: tab===k ? '#1A7A72' : '#e2e8f0', color: tab===k ? 'white' : '#64748b' }}>
+                background: tab===k ? '#1A7A72' : '#e2e8f0', color: tab===k ? 'white' : '#3D5C59' }}>
                 {reissues.length}
               </span>
             )}
             {k==='renewals' && renewals.length > 0 && (
               <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                background: tab===k ? '#1A7A72' : '#e2e8f0', color: tab===k ? 'white' : '#64748b' }}>
+                background: tab===k ? '#1A7A72' : '#e2e8f0', color: tab===k ? 'white' : '#3D5C59' }}>
                 {renewals.length}
               </span>
             )}
@@ -962,7 +962,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                 </div>
                 <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4,
                   background: r.status==='active' ? '#dcfce7' : '#f1f5f9',
-                  color: r.status==='active' ? '#16a34a' : '#64748b' }}>{r.status}</span>
+                  color: r.status==='active' ? '#16a34a' : '#3D5C59' }}>{r.status}</span>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'4px 12px' }}>
                 {[
@@ -1077,10 +1077,10 @@ function PqcRow({ cert, onRefresh }) {
         style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
           padding:'11px 14px', background:'var(--v2-bg)',
           cursor: risk ? 'pointer' : 'default', transition:'background .15s' }}
-        onMouseEnter={e=>e.currentTarget.style.background='#f5f3ff'}
+        onMouseEnter={e=>e.currentTarget.style.background='#FDF0EE'}
         onMouseLeave={e=>e.currentTarget.style.background='var(--v2-bg)'}>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <div style={{ width:34, height:34, borderRadius:8, background:'#f5f3ff',
+          <div style={{ width:34, height:34, borderRadius:8, background:'#FDF0EE',
             display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <Shield size={16} color="#E8897A"/>
           </div>
@@ -1106,7 +1106,7 @@ function PqcRow({ cert, onRefresh }) {
           {!noPem && (
             <button onClick={runCheck} disabled={checking}
               style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
-                color:'#E8897A', background:'#f5f3ff', border:'0.5px solid #ddd6fe',
+                color:'#E8897A', background:'#FDF0EE', border:'0.5px solid #F2C4BC',
                 borderRadius:6, padding:'4px 10px', cursor:checking?'wait':'pointer',
                 fontFamily:'inherit', fontWeight:500, flexShrink:0 }}>
               {checking
@@ -1193,7 +1193,7 @@ function TlsPostureRow({ cert, onRefresh }) {
   const gradeColor = { A:'#16a34a', B:'#65a30d', C:'#E8897A', D:'#ea580c', F:'#dc2626' }
   const grade = cert.tls_grade
   const score = cert.tls_score || 0
-  const color = gradeColor[grade] || '#64748b'
+  const color = gradeColor[grade] || '#3D5C59'
 
   const runCheck = async (e) => {
     e.stopPropagation()
@@ -1676,8 +1676,8 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             title="Renew for another year" subtitle="New GGS order · new cert row"
             onClick={() => certHistoryRef.current?.doAction('renew')}
             disabled={!session}/>
-          <ActionRow icon={Server} iconColor="#E8897A" iconBg="#f5f3ff"
-            hoverBorder="#ddd6fe" hoverBg="#f5f3ff"
+          <ActionRow icon={Server} iconColor="#E8897A" iconBg="#FDF0EE"
+            hoverBorder="#F2C4BC" hoverBg="#FDF0EE"
             title="Install on server" subtitle="VPS agent or cPanel wizard"
             onClick={() => onInstall(cert)}/>
           <ActionRow icon={RefreshCw} iconColor="#E8897A" iconBg="#FDF0EE"
@@ -2353,7 +2353,7 @@ function CertRow({ cert, selected, onClick, index }) {
   const s    = statusOf(days, cert.status)
   const initials = cert.domain.replace(/^www\./, '').slice(0,2).toUpperCase()
   const dotColor = s.dot==='green'?'#16a34a':s.dot==='amber'?'#E8897A':s.dot==='red'?'#dc2626':'#d4d4d4'
-  const iconBg   = s.dot==='green'?'#1A7A72':s.dot==='amber'?'#E8897A':s.dot==='red'?'#dc2626':'#64748b'
+  const iconBg   = s.dot==='green'?'#1A7A72':s.dot==='amber'?'#E8897A':s.dot==='red'?'#dc2626':'#3D5C59'
   return (
     <div onClick={onClick}
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
@@ -2691,7 +2691,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}>
               <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:s.color, borderRadius:'12px 12px 0 0', opacity: s.value > 0 ? 1 : 0.2 }}/>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
-                <div style={{ fontSize:10, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px' }}>{s.label}</div>
+                <div style={{ fontSize:10, fontWeight:700, color:'#3D5C59', textTransform:'uppercase', letterSpacing:'0.5px' }}>{s.label}</div>
                 <div style={{ width:28, height:28, borderRadius:7, background:s.bg,
                   display:'flex', alignItems:'center', justifyContent:'center',
                   fontSize:12, color:s.color, fontWeight:700 }}>{s.icon}</div>
@@ -2719,7 +2719,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
 
         {orders.length > 0 && (
           <div style={{ marginBottom:16 }}>
-            <div style={{ fontSize:11, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>DNS Validation Pending ({orders.length})</div>
+            <div style={{ fontSize:11, fontWeight:700, color:'#3D5C59', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>DNS Validation Pending ({orders.length})</div>
             {orders.map(o => <DvPendingCard key={o.id} order={o} onRefresh={load}/>)}
           </div>
         )}
@@ -2742,12 +2742,12 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                     style={{ padding:'5px 12px', borderRadius:6, fontSize:11, fontWeight:600,
                       cursor:'pointer', fontFamily:'inherit', border:'none', transition:'all .15s',
                       background: filter===f.key ? 'white' : 'transparent',
-                      color: filter===f.key ? '#0f172a' : '#64748b',
+                      color: filter===f.key ? '#0f172a' : '#3D5C59',
                       boxShadow: filter===f.key ? '0 1px 3px rgba(0,0,0,0.08)' : 'none' }}>
                     {f.label}
                     <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
                       background: filter===f.key ? '#1A7A72' : '#e2e8f0',
-                      color: filter===f.key ? 'white' : '#64748b', transition:'all .15s' }}>
+                      color: filter===f.key ? 'white' : '#3D5C59', transition:'all .15s' }}>
                       {f.count}
                     </span>
                   </button>
@@ -2828,7 +2828,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             {[
               { icon:Shield,    color:'#1A7A72', bg:'#E8F8F6', label:'Issue Certificate', desc:'RapidSSL DV · RapidSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
               { icon:Download,  color:'#16a34a', bg:'#E8F8F6', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
-              { icon:Activity,  color:'#E8897A', bg:'#f5f3ff', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
+              { icon:Activity,  color:'#E8897A', bg:'#FDF0EE', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
               { icon:Zap,       color:'#E8897A', bg:'#FDF0EE', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
             ].map(({ icon:Icon, color, bg, label, desc, action }, i) => (
               <button key={label} onClick={action}
@@ -2860,10 +2860,10 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                   issued:          { color:'#16a34a', bg:'#E8F8F6', dot:'#16a34a' },
                   renewed:         { color:'#2563eb', bg:'#E8F8F6', dot:'#2563eb' },
                   revoked:         { color:'#dc2626', bg:'#fef2f2', dot:'#dc2626' },
-                  agent_installed: { color:'#E8897A', bg:'#f5f3ff', dot:'#E8897A' },
+                  agent_installed: { color:'#E8897A', bg:'#FDF0EE', dot:'#E8897A' },
                   private_key_copied: { color:'#E8897A', bg:'#FDF0EE', dot:'#E8897A' },
                 }
-                const cfg = evColors[ev.event_type] || { color:'#64748b', bg:'#f8fafc', dot:'#94a3b8' }
+                const cfg = evColors[ev.event_type] || { color:'#3D5C59', bg:'#f8fafc', dot:'#94a3b8' }
                 const secs = Math.floor((Date.now() - new Date(ev.created_at)) / 1000)
                 const ago = secs < 60 ? `${secs}s ago` : secs < 3600 ? `${Math.floor(secs/60)}m ago`
                           : secs < 86400 ? `${Math.floor(secs/3600)}h ago` : `${Math.floor(secs/86400)}d ago`

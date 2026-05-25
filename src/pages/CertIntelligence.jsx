@@ -34,7 +34,7 @@ const URGENCY = {
   expired:  { label: 'Expired',    color: '#dc2626', bg: '#fef2f2', border: '#fecaca', dot: '#ef4444' },
   critical: { label: 'Critical',   color: '#dc2626', bg: '#fef2f2', border: '#fecaca', dot: '#f97316' },
   warning:  { label: 'Warning',    color: '#E8897A', bg: '#FDF0EE', border: '#F2C4BC', dot: '#E8897A' },
-  upcoming: { label: 'Upcoming',   color: '#1A7A72', bg: '#E8F8F6', border: '#A8E6DE', dot: '#3b82f6' },
+  upcoming: { label: 'Upcoming',   color: '#1A7A72', bg: '#E8F8F6', border: '#A8E6DE', dot: '#1A7A72' },
   healthy:  { label: 'Healthy',    color: '#16a34a', bg: '#E8F8F6', border: '#A8E6DE', dot: '#22c55e' },
   unknown:  { label: 'Unknown',    color: 'var(--v2-text-3)', bg: 'var(--v2-bg)', border: 'var(--v2-border)', dot: 'var(--v2-text-3)' },
 }

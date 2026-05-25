@@ -46,13 +46,13 @@ function ExpiryBadge({ expiresAt }) {
 function SourceBadge({ source }) {
   const map = {
     digicert:   { label: 'DigiCert',       color: '#dc2626', bg: '#fef2f2' },
-    sectigo:    { label: 'Sectigo',        color: '#E8897A', bg: '#f5f3ff' },
+    sectigo:    { label: 'Sectigo',        color: '#E8897A', bg: '#FDF0EE' },
     sslcom:     { label: 'SSL.com',        color: '#1A7A72', bg: '#D4F5EF' },
-    imported:   { label: 'Manual',         color: '#64748b', bg: '#f8fafc' },
+    imported:   { label: 'Manual',         color: '#3D5C59', bg: '#f8fafc' },
     rapidssl:   { label: 'RapidSSL',       color: '#16a34a', bg: '#E8F8F6' },
     letsencrypt:{ label: "Let's Encrypt",  color: '#2563eb', bg: '#E8F8F6' },
   }
-  const s = map[source] || { label: source || 'Unknown', color: '#64748b', bg: '#f8fafc' }
+  const s = map[source] || { label: source || 'Unknown', color: '#3D5C59', bg: '#f8fafc' }
   return (
     <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 7px', borderRadius: 4,
       background: s.bg, color: s.color }}>
@@ -75,7 +75,7 @@ const CA_DEFS = {
   },
   sectigo: {
     name: 'Sectigo SCM',
-    color: '#E8897A', bg: '#f5f3ff', border: '#ddd6fe',
+    color: '#E8897A', bg: '#FDF0EE', border: '#F2C4BC',
     logo: 'SC',
     desc: 'Pull all certificates from Sectigo Certificate Manager. Monitoring only — no private keys needed.',
     fields: [
@@ -302,12 +302,12 @@ export default function CAConnectors({ nav }) {
             const res = syncResult[conn.id]
             return (
               <div key={conn.id} className="v2-card" style={{ overflow: 'hidden',
-                borderColor: conn.status === 'active' ? `${def.color || '#64748b'}30` : '#fecaca' }}>
+                borderColor: conn.status === 'active' ? `${def.color || '#3D5C59'}30` : '#fecaca' }}>
                 <div style={{ padding: '13px 14px', borderBottom: '0.5px solid var(--v2-border)',
                   display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 36, height: 36, borderRadius: 8, background: def.bg || '#f8fafc',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 700, fontSize: 12, color: def.color || '#64748b', flexShrink: 0 }}>
+                    fontWeight: 700, fontSize: 12, color: def.color || '#3D5C59', flexShrink: 0 }}>
                     {def.logo || conn.ca_name?.slice(0,2).toUpperCase() || '?'}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -392,7 +392,7 @@ export default function CAConnectors({ nav }) {
               alignItems: 'center', justifyContent: 'center', minHeight: 120, cursor: 'pointer' }}
               onClick={() => openAdd('sectigo')}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ width: 36, height: 36, borderRadius: 8, background: '#f5f3ff',
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: '#FDF0EE',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontWeight: 700, fontSize: 12, color: '#E8897A', margin: '0 auto 8px' }}>SC</div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--v2-text-2)' }}>Connect Sectigo</div>
@@ -826,7 +826,7 @@ export default function CAConnectors({ nav }) {
 
                 {/* Two options */}
                 <div style={{ padding:'16px 20px 20px', display:'flex', flexDirection:'column', gap:10 }}>
-                  <div style={{ fontSize:12, color:'#64748b', marginBottom:4 }}>
+                  <div style={{ fontSize:12, color:'#3D5C59', marginBottom:4 }}>
                     How would you like to renew this certificate?
                   </div>
 
@@ -845,7 +845,7 @@ export default function CAConnectors({ nav }) {
                       <div style={{ fontSize:13, fontWeight:700, color:'#0f172a', marginBottom:3 }}>
                         Renew via {caName}
                       </div>
-                      <div style={{ fontSize:11, color:'#64748b', lineHeight:1.5 }}>
+                      <div style={{ fontSize:11, color:'#3D5C59', lineHeight:1.5 }}>
                         Log into {caUrl ? caName : 'your original CA'} and renew there.
                         Once renewed, re-import or re-sync to update SSLVault.
                       </div>
@@ -874,7 +874,7 @@ export default function CAConnectors({ nav }) {
                           borderRadius:20, background:'#E8F8F6', color:'#16a34a',
                           border:'0.5px solid #A8E6DE' }}>Recommended</span>
                       </div>
-                      <div style={{ fontSize:11, color:'#64748b', lineHeight:1.5 }}>
+                      <div style={{ fontSize:11, color:'#3D5C59', lineHeight:1.5 }}>
                         Issue a fresh RapidSSL DV certificate through SSLVault — RapidSSL CA API,
                         auto-DNS validation, auto-install on your servers. Domain pre-filled.
                       </div>
@@ -933,8 +933,8 @@ export default function CAConnectors({ nav }) {
                   {['digicert','sectigo','sslcom','imported'].map(src => {
                     const count = certs.filter(c => c.source===src||c.imported_from===src).length
                     if (!count) return null
-                    const colors = {digicert:['#fef2f2','#dc2626'],sectigo:['#f5f3ff','#E8897A'],sslcom:['#D4F5EF','#1A7A72'],imported:['#f8fafc','#64748b']}
-                    const [bg,color] = colors[src]||['#f8fafc','#64748b']
+                    const colors = {digicert:['#fef2f2','#dc2626'],sectigo:['#FDF0EE','#E8897A'],sslcom:['#D4F5EF','#1A7A72'],imported:['#f8fafc','#3D5C59']}
+                    const [bg,color] = colors[src]||['#f8fafc','#3D5C59']
                     const labels = {digicert:'DigiCert',sectigo:'Sectigo',sslcom:'SSL.com',imported:'Manual'}
                     return (
                       <div key={src} style={{ fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:20,

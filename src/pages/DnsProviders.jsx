@@ -175,7 +175,7 @@ const SERVER_TYPES = {
       { key: 'ssh_key',  label: 'Private SSH Key',      type: 'password', placeholder: '-----BEGIN OPENSSH PRIVATE KEY-----', help: 'Paste your id_rsa private key' },
     ]
   },
-  plesk: { label: 'Plesk Panel', short: 'Plesk', Icon: Settings, color: '#E8897A', bg: '#f5f3ff', border: '#ddd6fe',
+  plesk: { label: 'Plesk Panel', short: 'Plesk', Icon: Settings, color: '#E8897A', bg: '#FDF0EE', border: '#F2C4BC',
     desc: 'Plesk Obsidian, Onyx',
     fields: [
       { key: 'host',      label: 'Plesk Host', type: 'text',     placeholder: 'server.example.com', help: 'Your Plesk panel hostname or IP' },
@@ -311,9 +311,9 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
   const t = server ? (SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel) : null
   const TIcon = t?.Icon
 
-  const tagBg = hasBoth ? '#1d4ed8' : dnsOnly ? '#16a34a' : '#64748b'
+  const tagBg = hasBoth ? '#1d4ed8' : dnsOnly ? '#16a34a' : '#3D5C59'
   const tagLabel = hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'
-  const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#1A7A72)' : dnsOnly ? p?.color : t?.color || '#64748b'
+  const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#1A7A72)' : dnsOnly ? p?.color : t?.color || '#3D5C59'
   const dotColor = rowDot==='green'?'#16a34a':rowDot==='amber'?'#E8897A':'#d1d5db'
   return (
     <div onClick={() => onSelect(domain)}
@@ -672,7 +672,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
     if (s === 'done')    return { color: 'var(--v2-green)',   label: 'Done' }
     if (s === 'failed')  return { color: '#dc2626',           label: 'Failed' }
     if (s === 'claimed') return { color: '#E8897A',           label: 'Running' }
-    if (s === 'queued')  return { color: '#3b82f6',           label: 'Queued' }
+    if (s === 'queued')  return { color: '#1A7A72',           label: 'Queued' }
     return { color: 'var(--v2-grey-dot)', label: s }
   }
 
@@ -1476,7 +1476,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                     </div>
                     <button onClick={copy} style={{
                       background: 'transparent', border: 'none', cursor: 'pointer',
-                      color: copied ? '#3b82f6' : '#a3a3a3', fontSize: 11, fontWeight: 500,
+                      color: copied ? '#1A7A72' : '#a3a3a3', fontSize: 11, fontWeight: 500,
                       display: 'inline-flex', alignItems: 'center', gap: 4
                     }}>
                       {copied ? <><Check size={11} /> Copied</> : 'Copy'}

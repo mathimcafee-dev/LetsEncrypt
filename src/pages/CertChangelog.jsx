@@ -34,7 +34,7 @@ const EVENT_CONFIG = {
   key_rotated:     { icon: RotateCcw,   color: '#E8897A', bg: '#FDF0EE', label: 'Key rotated' },
   downloaded:      { icon: Download,    color: '#1A7A72', bg: '#D4F5EF', label: 'Certificate downloaded' },
   private_key_copied: { icon: Shield,   color: '#E8897A', bg: '#FDF0EE', label: 'Private key copied' },
-  default:         { icon: Shield,      color: '#64748b', bg: '#f8fafc', label: 'Event' },
+  default:         { icon: Shield,      color: '#3D5C59', bg: '#f8fafc', label: 'Event' },
 }
 
 export default function CertChangelog({ user }) {

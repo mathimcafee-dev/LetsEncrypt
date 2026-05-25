@@ -882,7 +882,7 @@ export default function CertVault({ nav }) {
                 </button>
                 <button onClick={() => handleRotate(rotateConfirm)}
                   style={{ display:'flex', alignItems:'center', gap:7, padding:'7px 16px',
-                    background:'linear-gradient(135deg,#E8897A,#6d28d9)',
+                    background:'linear-gradient(135deg,#E8897A,#C45A4A)',
                     color:'white', border:'none', borderRadius:7, fontSize:12,
                     fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
                   <RotateCcw size={12}/> Rotate now

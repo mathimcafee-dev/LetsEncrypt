@@ -116,7 +116,7 @@ function SectionCard({ title, children, style = {} }) {
 const CA_META = {
   rapidssl: { label: 'GGS', bg: '#E8F8F6', color: '#0F5750', accent: '#3DBFB0' },
   digicert: { label: 'DC',  bg: '#fef2f2', color: '#991b1b', accent: '#dc2626' },
-  sectigo:  { label: 'SC',  bg: '#f5f3ff', color: '#6b21a8', accent: '#E8897A' },
+  sectigo:  { label: 'SC',  bg: '#FDF0EE', color: '#6b21a8', accent: '#E8897A' },
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -839,7 +839,7 @@ function DigiCertTab({ tok, nav }) {
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563eb', display: 'inline-block', boxShadow: '0 0 0 3px #A8E6DE' }}/>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#1e40af' }}>DigiCert CertCentral connected</div>
-            <div style={{ fontSize: 11, color: '#3b82f6' }}>API key active · {portfolio.length} certs loaded</div>
+            <div style={{ fontSize: 11, color: '#1A7A72' }}>API key active · {portfolio.length} certs loaded</div>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
@@ -1187,7 +1187,7 @@ const URGENCY_MAP = {
   warning:  { label: 'Warning',  color: '#E8897A', bg: '#FDF0EE' },
   upcoming: { label: 'Upcoming', color: '#1A7A72', bg: '#E8F8F6' },
   healthy:  { label: 'Healthy',  color: '#16a34a', bg: '#E8F8F6' },
-  unknown:  { label: 'Unknown',  color: '#64748b', bg: '#f8fafc' },
+  unknown:  { label: 'Unknown',  color: '#3D5C59', bg: '#f8fafc' },
 }
 
 function ShadowITTab({ tok, nav }) {
@@ -1400,7 +1400,7 @@ function ShadowITTab({ tok, nav }) {
 // ══════════════════════════════════════════════════════════════════════
 const CA_COLORS_HUB = {
   digicert: '#dc2626', sectigo: '#E8897A', sslcom: '#1A7A72',
-  rapidssl: '#16a34a', imported: '#64748b', unknown: '#94a3b8'
+  rapidssl: '#16a34a', imported: '#3D5C59', unknown: '#94a3b8'
 }
 
 function ConsolidationTab({ tok, nav }) {
@@ -1555,9 +1555,9 @@ function ConsolidationTab({ tok, nav }) {
                     </div>
                     <div>
                       <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
-                        background: (CA_COLORS_HUB[opp.current_ca] || '#64748b') + '18',
-                        color: CA_COLORS_HUB[opp.current_ca] || '#64748b',
-                        border: `0.5px solid ${CA_COLORS_HUB[opp.current_ca] || '#64748b'}44` }}>
+                        background: (CA_COLORS_HUB[opp.current_ca] || '#3D5C59') + '18',
+                        color: CA_COLORS_HUB[opp.current_ca] || '#3D5C59',
+                        border: `0.5px solid ${CA_COLORS_HUB[opp.current_ca] || '#3D5C59'}44` }}>
                         {opp.current_ca}
                       </span>
                     </div>

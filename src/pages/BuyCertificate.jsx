@@ -367,7 +367,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                         transition: 'all 0.12s' }}/>
                       <span style={{ fontSize: 13, fontWeight: 600, color: '#e5e7eb' }}>{p.name}</span>
                       <span style={{ fontSize: 9, fontWeight: 700, background: 'rgba(14,127,192,0.2)',
-                        color: '#60a5fa', borderRadius: 3, padding: '2px 6px', letterSpacing: '0.3px' }}>{p.badge}</span>
+                        color: '#3DBFB0', borderRadius: 3, padding: '2px 6px', letterSpacing: '0.3px' }}>{p.badge}</span>
                     </div>
                     <div style={{ fontSize: 10, color: '#4b5563', marginLeft: 22 }}>{p.sub}</div>
                   </div>
@@ -380,7 +380,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: 7 }}>
                   Domain name <span style={{ color: '#ef4444' }}>*</span>
                   {PRODUCTS.find(p => p.code === product)?.wildcard && (
-                    <span style={{ color: '#60a5fa', fontWeight: 400, textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>
+                    <span style={{ color: '#3DBFB0', fontWeight: 400, textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>
                       · enter root domain, wildcard applied automatically
                     </span>
                   )}
@@ -493,7 +493,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               ].map(({ k, v, blue }) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 7 }}>
                   <span style={{ color: '#4b5563' }}>{k}</span>
-                  <span style={{ color: blue ? '#60a5fa' : '#9ca3af', fontWeight: blue ? 500 : 400 }}>{v}</span>
+                  <span style={{ color: blue ? '#3DBFB0' : '#9ca3af', fontWeight: blue ? 500 : 400 }}>{v}</span>
                 </div>
               ))}
             </div>

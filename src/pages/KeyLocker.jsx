@@ -664,7 +664,7 @@ export default function CertVault({ nav }) {
           marginBottom:24, flexWrap:'wrap', gap:12 }}>
           <div style={{ display:'flex', alignItems:'center', gap:12 }}>
             <div style={{ width:40, height:40, borderRadius:10,
-              background:'linear-gradient(135deg,#E8897A,#6d28d9)',
+              background:'linear-gradient(135deg,#E8897A,#C45A4A)',
               display:'flex', alignItems:'center', justifyContent:'center',
               boxShadow:'0 0 0 4px rgba(124,58,237,0.1)' }}>
               <Lock size={18} color="white"/>
@@ -694,7 +694,7 @@ export default function CertVault({ nav }) {
           borderRadius:9, padding:'12px 16px', marginBottom:20,
           display:'flex', alignItems:'center', gap:10 }}>
           <Lock size={13} color="#E8897A" style={{ flexShrink:0 }}/>
-          <div style={{ fontSize:11, color:'#6d28d9', fontWeight:500 }}>
+          <div style={{ fontSize:11, color:'#C45A4A', fontWeight:500 }}>
             AES-256-GCM encrypted · Envelope key hierarchy · Immutable audit log ·
             Keys never stored in plaintext
           </div>
@@ -901,7 +901,7 @@ export default function CertVault({ nav }) {
                 </button>
                 <button onClick={() => handleRotate(rotateConfirm)}
                   style={{ display:'flex', alignItems:'center', gap:7, padding:'7px 16px',
-                    background:'linear-gradient(135deg,#E8897A,#6d28d9)',
+                    background:'linear-gradient(135deg,#E8897A,#C45A4A)',
                     color:'white', border:'none', borderRadius:7, fontSize:12,
                     fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
                   <RotateCcw size={12}/> Rotate now

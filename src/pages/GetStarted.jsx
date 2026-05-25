@@ -285,9 +285,9 @@ export default function GetStarted({ nav }) {
           </table>
           <div style={{ background: '#0f172a', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '6px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize: 12 }}>
-              <span style={{ color: '#64748b', fontWeight: 600 }}>TYPE</span><span style={{ color: '#3b82f6' }}>CNAME</span>
-              <span style={{ color: '#64748b', fontWeight: 600 }}>NAME</span><span style={{ color: '#38bdf8' }}>_acme-challenge</span>
-              <span style={{ color: '#64748b', fontWeight: 600 }}>VALUE</span><span style={{ color: '#fbbf24', wordBreak: 'break-all' }}>abc123def456.comodoca.com</span>
+              <span style={{ color: '#3D5C59', fontWeight: 600 }}>TYPE</span><span style={{ color: '#1A7A72' }}>CNAME</span>
+              <span style={{ color: '#3D5C59', fontWeight: 600 }}>NAME</span><span style={{ color: '#38bdf8' }}>_acme-challenge</span>
+              <span style={{ color: '#3D5C59', fontWeight: 600 }}>VALUE</span><span style={{ color: '#fbbf24', wordBreak: 'break-all' }}>abc123def456.comodoca.com</span>
             </div>
           </div>
           <Note type="warn">In the Name field, enter <strong>only</strong> <code className="v2-kbd">_acme-challenge</code> — your DNS provider appends the domain automatically. Entering the full hostname will fail.</Note>

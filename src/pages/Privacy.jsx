@@ -22,7 +22,7 @@ export default function Privacy({ nav }) {
             Your data,<br/>
             <span style={{background:'linear-gradient(135deg,#2563eb,#E8897A,#3DBFB0)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>your control.</span>
           </h1>
-          <p style={{fontSize:15,color:'#64748b',marginTop:14}}>Last updated: <strong style={{color:'#0f172a'}}>{updated}</strong></p>
+          <p style={{fontSize:15,color:'#3D5C59',marginTop:14}}>Last updated: <strong style={{color:'#0f172a'}}>{updated}</strong></p>
         </div>
       </section>
 
@@ -41,7 +41,7 @@ export default function Privacy({ nav }) {
                   <Icon size={18} color={color}/>
                 </div>
                 <div style={{fontSize:14,fontWeight:800,color:'#0f172a',marginBottom:6,letterSpacing:'-0.2px'}}>{title}</div>
-                <div style={{fontSize:12,color:'#64748b',lineHeight:1.6}}>{desc}</div>
+                <div style={{fontSize:12,color:'#3D5C59',lineHeight:1.6}}>{desc}</div>
               </div>
             ))}
           </div>

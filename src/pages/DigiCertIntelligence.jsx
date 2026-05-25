@@ -54,7 +54,7 @@ function StatusBadge({ status }) {
   const map = {
     issued:   ['#16a34a', '#E8F8F6'],
     expired:  ['#dc2626', '#fef2f2'],
-    revoked:  ['#64748b', '#f8fafc'],
+    revoked:  ['#3D5C59', '#f8fafc'],
     pending:  ['#E8897A', '#FDF0EE'],
     approved: ['#1A7A72', '#E8F8F6'],
   }

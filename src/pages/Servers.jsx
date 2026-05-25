@@ -74,7 +74,7 @@ function AgentCard({ agent, onRefresh }) {
             <span style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
               {agent.nickname || agent.hostname || 'Unnamed server'}
             </span>
-            {agent.is_sandbox && <span style={{ fontSize:9, color:'#6d28d9', background:'#f5f3ff', border:'0.5px solid #ddd6fe', borderRadius:3, padding:'1px 5px', fontWeight:500, flexShrink:0 }}>SANDBOX</span>}
+            {agent.is_sandbox && <span style={{ fontSize:9, color:'#C45A4A', background:'#FDF0EE', border:'0.5px solid #F2C4BC', borderRadius:3, padding:'1px 5px', fontWeight:500, flexShrink:0 }}>SANDBOX</span>}
           </div>
           <div style={{ fontSize:11, color:'var(--v2-text-3)', fontFamily:'var(--font-mono, monospace)' }}>
             {agent.ip_address || agent.hostname || '—'}

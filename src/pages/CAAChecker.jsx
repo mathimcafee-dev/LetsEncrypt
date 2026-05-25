@@ -135,7 +135,7 @@ export default function CAAChecker({ nav }) {
                 <p style={{ margin:0, fontSize:13, fontWeight:600,
                   color: result.safeToIssue ? '#15803d' : '#b91c1c' }}>{result.summary}</p>
                 {result.checkedDomain !== result.domain && (
-                  <p style={{ margin:'3px 0 0', fontSize:12, color:'#64748b' }}>
+                  <p style={{ margin:'3px 0 0', fontSize:12, color:'#3D5C59' }}>
                     CAA inherited from parent: <code style={{ fontSize:11 }}>{result.checkedDomain}</code>
                   </p>
                 )}

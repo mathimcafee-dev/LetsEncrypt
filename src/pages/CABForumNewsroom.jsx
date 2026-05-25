@@ -41,7 +41,7 @@ const TIMELINE = [
 
 const WORKING_GROUPS = [
   { id: 'server', name: 'Server Certificate WG', short: 'SCWG', color: '#1A7A72', chair: 'Dimitris Zacharopoulos', chairOrg: 'HARICA', vchair: 'Wayne Thayer', vchairOrg: 'Fastly', latestBR: 'TLS BR v2.2.7', latestBallot: 'SC099', desc: 'Governs all publicly-trusted TLS/SSL certificates. Produces the Baseline Requirements — the primary rulebook for web PKI. Covers DCV methods, validity, key requirements, revocation, audit, and CT logging.', ballotPrefix: 'SC', members: 53, docs: 'https://cabforum.org/working-groups/server/' },
-  { id: 'smime', name: 'S/MIME Certificate WG', short: 'SMCWG', color: '#6d28d9', chair: 'Stephen Davidson', chairOrg: 'DigiCert', vchair: 'Martijn Katerbarg', vchairOrg: 'Sectigo', latestBR: 'S/MIME BR v1.0.14', latestBallot: 'SMC016', desc: 'Produces the S/MIME Baseline Requirements governing email encryption and signing certificates. Chartered in 2020, first BRs published 2023. Covers mailbox-validated, org-validated, sponsor-validated and individual-validated S/MIME certs.', ballotPrefix: 'SMC', members: 38, docs: 'https://cabforum.org/working-groups/smime/' },
+  { id: 'smime', name: 'S/MIME Certificate WG', short: 'SMCWG', color: '#C45A4A', chair: 'Stephen Davidson', chairOrg: 'DigiCert', vchair: 'Martijn Katerbarg', vchairOrg: 'Sectigo', latestBR: 'S/MIME BR v1.0.14', latestBallot: 'SMC016', desc: 'Produces the S/MIME Baseline Requirements governing email encryption and signing certificates. Chartered in 2020, first BRs published 2023. Covers mailbox-validated, org-validated, sponsor-validated and individual-validated S/MIME certs.', ballotPrefix: 'SMC', members: 38, docs: 'https://cabforum.org/working-groups/smime/' },
   { id: 'codesign', name: 'Code Signing WG', short: 'CSCWG', color: '#C45A4A', chair: 'Martijn Katerbarg', chairOrg: 'Sectigo', vchair: 'Thomas Zermeno', vchairOrg: 'SSL.com', latestBR: 'Code Signing BR v3.8', latestBallot: 'CSC-25', desc: 'Governs code signing certificates used to authenticate software publishers. Covers EV code signing, timestamping, private key protection requirements, and the transition to cloud-based signing services.', ballotPrefix: 'CSC', members: 31, docs: 'https://cabforum.org/working-groups/code-signing/' },
   { id: 'netsec', name: 'Network Security WG', short: 'NSWG', color: '#15803d', chair: 'Clint Wilson', chairOrg: 'Apple', vchair: 'David Kluge', vchairOrg: 'Google Trust Services', latestBR: 'NetSec BR v2.0.5', latestBallot: 'NS-008', desc: 'Focuses on CA infrastructure security — network architecture, physical security, logical access controls, incident response, and system monitoring. Covers all systems involved in certificate issuance and management.', ballotPrefix: 'NS', members: 28, docs: 'https://cabforum.org/working-groups/netsec/' },
   { id: 'definitions', name: 'Definitions & Glossary WG', short: 'DWG', color: '#525252', chair: 'Tim Hollebeek', chairOrg: 'DigiCert', vchair: '—', vchairOrg: '', latestBR: 'Definitions v1.0', latestBallot: '—', desc: 'Maintains consistent terminology across all CAB Forum documents. Ensures that terms like "Applicant", "Subscriber", "Relying Party", and "Certificate Consumer" have unified definitions across all Working Group standards.', ballotPrefix: 'DEF', members: 22, docs: 'https://cabforum.org/working-groups/definitions/' },
@@ -91,7 +91,7 @@ const impactChip = (lvl) => {
 }
 
 const wgChip = (wg) => {
-  const map = { 'Server Cert WG': 'chip-blue', 'S/MIME WG': 'chip-purple', 'Code Signing WG': 'chip-amber', 'NetSec WG': 'chip-green', 'Forum': 'chip-grey' }
+  const map = { 'Server Cert WG': 'chip-blue', 'S/MIME WG': 'chip-amber', 'Code Signing WG': 'chip-amber', 'NetSec WG': 'chip-green', 'Forum': 'chip-grey' }
   return map[wg] || 'chip-grey'
 }
 
@@ -206,7 +206,7 @@ export default function CABForumNewsroom({ nav }) {
         .hero-band { background:var(--v2-border-focus,#0a0a0a);padding:32px 24px 28px;color:#fff }
         .hero-eyebrow { font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase;font-weight:500;margin-bottom:8px }
         .hero-h1 { font-size:26px;font-weight:600;letter-spacing:-.4px;color:#fff;line-height:1.2;margin-bottom:10px }
-        .hero-h1 em { color:#60a5fa;font-style:normal }
+        .hero-h1 em { color:#3DBFB0;font-style:normal }
         .hero-sub { font-size:13px;color:rgba(255,255,255,.55);max-width:640px;line-height:1.7;margin-bottom:20px }
         .hero-stats { display:flex;gap:28px;flex-wrap:wrap }
         .hstat-n { font-size:22px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums;line-height:1 }

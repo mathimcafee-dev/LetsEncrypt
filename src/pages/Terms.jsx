@@ -22,7 +22,7 @@ export default function Terms({ nav }) {
             The fine print,<br/>
             <span style={{background:'linear-gradient(135deg,#2563eb,#E8897A,#3DBFB0)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>kept short.</span>
           </h1>
-          <p style={{fontSize:15,color:'#64748b',marginTop:14}}>Last updated: <strong style={{color:'#0f172a'}}>{updated}</strong></p>
+          <p style={{fontSize:15,color:'#3D5C59',marginTop:14}}>Last updated: <strong style={{color:'#0f172a'}}>{updated}</strong></p>
         </div>
       </section>
 

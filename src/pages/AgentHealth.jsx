@@ -70,7 +70,7 @@ function StatusPill({ status }) {
   const map = {
     online:  { bg: '#E8F8F6', color: '#15803d', label: 'Online',   dot: '#16a34a' },
     offline: { bg: '#fef2f2', color: '#b91c1c', label: 'Offline',  dot: '#dc2626' },
-    never:   { bg: '#f8fafc', color: '#64748b', label: 'Never',    dot: '#94a3b8' },
+    never:   { bg: '#f8fafc', color: '#3D5C59', label: 'Never',    dot: '#94a3b8' },
     unknown: { bg: '#FDF0EE', color: '#C45A4A', label: 'Unknown',  dot: '#E8897A' },
   }
   const s = map[status] || map.unknown
@@ -94,7 +94,7 @@ function JobBadge({ status }) {
     queued:  { bg: '#FDF0EE', color: '#C45A4A' },
     claimed: { bg: '#E8F8F6', color: '#1d4ed8' },
   }
-  const s = map[status] || { bg: '#f8fafc', color: '#64748b' }
+  const s = map[status] || { bg: '#f8fafc', color: '#3D5C59' }
   return (
     <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 4,
       background: s.bg, color: s.color }}>
@@ -275,8 +275,8 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 borderBottom: '0.5px solid var(--v2-border)', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
                   marginTop: 2, flexShrink: 0,
-                  background: (statusColor[job.status]||'#64748b')+'18',
-                  color: statusColor[job.status]||'#64748b' }}>
+                  background: (statusColor[job.status]||'#3D5C59')+'18',
+                  color: statusColor[job.status]||'#3D5C59' }}>
                   {job.status}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>

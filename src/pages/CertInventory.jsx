@@ -180,7 +180,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 <InfoRow label="Vendor Status"  value={(order?.minor_status||cert.status||'').toUpperCase()} color="#1A7A72"/>
                 <InfoRow label="Install Method" value={cert.install_method ? cert.install_method.toUpperCase() : '—'}/>
                 <InfoRow label="Install Status" value={cert.install_status === 'success' ? (cert.install_verified ? '✓ Verified Live' : 'Installed') : (cert.install_status||'Not installed')} color={cert.install_status==='success'?'#1A7A72':'#737373'}/>
-                <InfoRow label="Environment"    value={cert.is_sandbox?'Sandbox':'Production'} color={cert.is_sandbox?'#6d28d9':'#1A7A72'}/>
+                <InfoRow label="Environment"    value={cert.is_sandbox?'Sandbox':'Production'} color={cert.is_sandbox?'#C45A4A':'#1A7A72'}/>
               </tbody>
             </table>
           </div>
@@ -281,7 +281,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
           </div>
 
           {cert.is_sandbox && (
-            <div style={{ marginTop:16, padding:10, background:'#f5f3ff', border:'0.5px solid #ddd6fe', borderRadius:6, fontSize:10, color:'#6d28d9', lineHeight:1.6 }}>
+            <div style={{ marginTop:16, padding:10, background:'#FDF0EE', border:'0.5px solid #F2C4BC', borderRadius:6, fontSize:10, color:'#C45A4A', lineHeight:1.6 }}>
               <strong>Sandbox certificate</strong><br/>Not trusted by browsers. Issue a production cert for live use.
             </div>
           )}
@@ -463,7 +463,7 @@ export default function CertInventory({ user, nav, onIssue }) {
                 <div style={{ display:'flex', alignItems:'baseline', gap:6 }}>
                   <span style={{ fontSize:26, fontWeight:700, color, lineHeight:1 }}>{loading?'—':val}</span>
                   {val > 0 && (
-                    <button onClick={() => { setFilter(f); setSearch('') }} style={{ fontSize:10, color:'#3b82f6', background:'none', border:'none', cursor:'pointer', padding:0, fontFamily:'inherit', textDecoration:'underline' }}>view</button>
+                    <button onClick={() => { setFilter(f); setSearch('') }} style={{ fontSize:10, color:'#1A7A72', background:'none', border:'none', cursor:'pointer', padding:0, fontFamily:'inherit', textDecoration:'underline' }}>view</button>
                   )}
                 </div>
               </div>
@@ -486,7 +486,7 @@ export default function CertInventory({ user, nav, onIssue }) {
                 <div style={{ display:'flex', alignItems:'baseline', gap:6 }}>
                   <span style={{ fontSize:26, fontWeight:700, color, lineHeight:1 }}>{loading?'—':val}</span>
                   {val > 0 && (
-                    <button onClick={() => { setFilter(f); setSearch('') }} style={{ fontSize:10, color:'#3b82f6', background:'none', border:'none', cursor:'pointer', padding:0, fontFamily:'inherit', textDecoration:'underline' }}>view</button>
+                    <button onClick={() => { setFilter(f); setSearch('') }} style={{ fontSize:10, color:'#1A7A72', background:'none', border:'none', cursor:'pointer', padding:0, fontFamily:'inherit', textDecoration:'underline' }}>view</button>
                   )}
                 </div>
               </div>
@@ -576,7 +576,7 @@ export default function CertInventory({ user, nav, onIssue }) {
                 </div>
                 {/* Order ID */}
                 <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
-                  <span style={{ fontSize:11, color:'#3b82f6', fontFamily:"'SF Mono','Menlo',monospace", cursor:'pointer' }} onClick={e => { e.stopPropagation(); setExpanded(isExpanded?null:cert.id) }}>{cert.ggs_order_id||cert.external_order_id||'—'}</span>
+                  <span style={{ fontSize:11, color:'#1A7A72', fontFamily:"'SF Mono','Menlo',monospace", cursor:'pointer' }} onClick={e => { e.stopPropagation(); setExpanded(isExpanded?null:cert.id) }}>{cert.ggs_order_id||cert.external_order_id||'—'}</span>
                 </div>
                 {/* Product */}
                 <div style={{ display:'flex', flexDirection:'column', gap:2 }}>

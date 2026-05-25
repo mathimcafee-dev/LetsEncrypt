@@ -260,8 +260,8 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                             </div>
                           ) : step.active ? (
                             <div style={{ width:20, height:20, borderRadius:'50%', background:'#E8F8F6',
-                              border:'2px solid #3b82f6', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                              <RefreshCw size={10} color="#3b82f6" style={{ animation:'spin 1s linear infinite' }}/>
+                              border:'2px solid #1A7A72', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                              <RefreshCw size={10} color="#1A7A72" style={{ animation:'spin 1s linear infinite' }}/>
                             </div>
                           ) : (
                             <div style={{ width:20, height:20, borderRadius:'50%', background:'#f1f5f9',

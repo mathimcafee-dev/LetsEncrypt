@@ -37,7 +37,7 @@ function StatusBadge({ status }) {
   const n = String(status || '').toLowerCase()
   const [color, bg, label] =
     n.includes('issued') || n === '2'  ? ['#16a34a', '#E8F8F6', 'Issued']  :
-    n.includes('revoked') || n === '3' ? ['#64748b', '#f8fafc', 'Revoked'] :
+    n.includes('revoked') || n === '3' ? ['#3D5C59', '#f8fafc', 'Revoked'] :
     n.includes('expired') || n === '4' ? ['#dc2626', '#fef2f2', 'Expired'] :
     n.includes('pending') || n === '1' ? ['#E8897A', '#FDF0EE', 'Pending'] :
     ['#94a3b8', '#f8fafc', status || 'Unknown']
@@ -124,8 +124,8 @@ function CredPanel({ onConnect }) {
   return (
     <div className="v2-card v2-card-pad" style={{ maxWidth: 480, margin: '48px auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{ width: 40, height: 40, borderRadius: 12, background: '#f5f3ff',
-          border: '1px solid #ddd6fe', display: 'flex', alignItems: 'center',
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: '#FDF0EE',
+          border: '1px solid #F2C4BC', display: 'flex', alignItems: 'center',
           justifyContent: 'center', fontWeight: 800, fontSize: 14, color: '#E8897A' }}>SC</div>
         <div>
           <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--v2-text)' }}>Connect Sectigo SCM</div>
@@ -462,8 +462,8 @@ export default function SectigoIntelligence({ nav }) {
           </button>
           <span style={{ color: 'var(--v2-border)', fontSize: 12 }}>/</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            <div style={{ width: 22, height: 22, borderRadius: 6, background: '#f5f3ff',
-              border: '1px solid #ddd6fe', display: 'flex', alignItems: 'center',
+            <div style={{ width: 22, height: 22, borderRadius: 6, background: '#FDF0EE',
+              border: '1px solid #F2C4BC', display: 'flex', alignItems: 'center',
               justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#E8897A' }}>SC</div>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)' }}>Sectigo Intelligence</span>
           </div>

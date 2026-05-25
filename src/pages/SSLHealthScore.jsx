@@ -35,7 +35,7 @@ function gradeStyle(grade) {
   if (grade === 'B') return { color: '#2563eb', bg: '#E8F8F6', border: '#A8E6DE' }
   if (grade === 'A') return { color: '#16a34a', bg: '#E8F8F6', border: '#A8E6DE' }
   if (grade === 'A+') return { color: '#1A7A72', bg: '#E8F8F6', border: '#6ee7b7' }
-  return { color: '#64748b', bg: '#f8fafc', border: '#e2e8f0' }
+  return { color: '#3D5C59', bg: '#f8fafc', border: '#e2e8f0' }
 }
 
 function ScoreBar({ score }) {

@@ -11,7 +11,7 @@ const C = {
   heading:'#0a0a0a', body:'#4b5563', muted:'#9ca3af',
   teal:'#3DBFB0', tealDk:'#1A7A72', tealBg:'#E8F8F6', tealBd:'#A8E6DE',
   green:'#3DBFB0', greenBg:'#E8F8F6', greenBd:'#A8E6DE',
-  purple:'#E8897A', purpleBg:'#faf5ff', purpleBd:'#ddd6fe',
+  purple:'#E8897A', purpleBg:'#faf5ff', purpleBd:'#F2C4BC',
   amber:'#E8897A', amberBg:'#FDF0EE', amberBd:'#F2C4BC',
   red:'#dc2626', redBg:'#fef2f2', redBd:'#fecaca',
   ink:'#0F5750',

@@ -993,7 +993,7 @@ export default function MyServers({ user }) {
                 <div style={{
                   background: '#faf5ff', border: '1px solid #e9d5ff',
                   borderRadius: 10, padding: '12px 16px', marginBottom: 16,
-                  fontSize: 12, color: '#6d28d9', lineHeight: 1.6,
+                  fontSize: 12, color: '#C45A4A', lineHeight: 1.6,
                 }}>
                   <b>Shared hosting (cPanel):</b> SSLVault connects directly to your hosting account via the cPanel API. No SSH, no server access needed. Certificates install and renew automatically.
                 </div>
