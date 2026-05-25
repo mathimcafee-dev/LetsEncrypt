@@ -324,10 +324,7 @@ export default function Home({ nav }) {
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes fadeSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
-        @media(max-width:min(767px,100%)) {
-          .nav-links { display:none !important; }
-          .nav-signin { display:none !important; }
-        }
+        
       `}</style>
 
       {/* ── NAV ── */}
@@ -339,8 +336,8 @@ export default function Home({ nav }) {
           <span style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.92)', letterSpacing:'-0.3px' }}>SSLVault</span>
         </div>
 
-        {/* Owlish pill */}
-        <nav className="nav-links" style={{ position:'absolute', left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:100, padding:'4px 6px' }}>
+        {/* Owlish pill — desktop only */}
+        {!isMobile && <nav style={{ position:'absolute', left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:100, padding:'4px 6px' }}>
           {[['Platform','#platform'],['Features','#features'],['Security','#security'],['Pricing','/pricing']].map(([l,h]) => (
             <button key={l} onClick={() => h.startsWith('/') ? nav(h) : document.querySelector(h)?.scrollIntoView({ behavior:'smooth' })}
               style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:400, color:'rgba(255,255,255,0.52)', padding:'5px 16px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em' }}
@@ -376,15 +373,15 @@ export default function Home({ nav }) {
               ))}
             </div>
           </div>
-        </nav>
+        </nav>}
 
         <div style={{ display:'flex', gap:4, alignItems:'center', flexShrink:0 }}>
-          <button className="nav-signin" onClick={() => nav('/auth')}
+          {!isMobile && <button onClick={() => nav('/auth')}
             style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, color:'rgba(255,255,255,0.48)', padding:'7px 16px', borderRadius:100, transition:'color .15s', letterSpacing:'-0.01em' }}
             onMouseEnter={e => e.currentTarget.style.color='rgba(255,255,255,0.88)'}
             onMouseLeave={e => e.currentTarget.style.color='rgba(255,255,255,0.48)'}>
             Sign in
-          </button>
+          </button>}
           <button onClick={() => nav('/auth')}
             style={{ background:'#E8897A', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:600, color:'white', padding:'7px 20px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em' }}
             onMouseEnter={e => { e.currentTarget.style.background='#1A7A72'; e.currentTarget.style.boxShadow=`0 4px 20px rgba(14,165,233,0.4)` }}
