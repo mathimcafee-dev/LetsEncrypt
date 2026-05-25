@@ -106,28 +106,22 @@ function BallotRow({ b, onClick }) {
   const imp = impactChip(b.impact_level)
   return (
     <div className="v2-list-row" onClick={() => onClick(b)} style={{ cursor: 'pointer' }}>
-      <div style={{ minWidth: 80 }}>
-        <span style={{ fontFamily: "'JetBrains Mono','SF Mono',monospace", fontSize:11, fontWeight: 600, color: 'var(--v2-text-2)' }}>{b.ballot_id}</span>
-      </div>
       <div className="v2-row-body">
         <div className="v2-row-title-line">
+          <span style={{ fontFamily: "'JetBrains Mono','SF Mono',monospace", fontSize:10, fontWeight:700, color:'var(--v2-text-3)', flexShrink:0 }}>{b.ballot_id}</span>
           <span className="v2-row-title">{b.title}</span>
           {imp && <Chip cls={imp.cls}>{imp.label}</Chip>}
         </div>
         {b.plain_english && (
-          <div className="v2-row-meta" style={{ marginTop: 3 }}>
-            <span style={{ color: 'var(--v2-text-2)', fontSize:12, lineHeight: 1.5, maxWidth: 600 }}>{b.plain_english}</span>
-          </div>
+          <div style={{ color:'var(--v2-text-2)', fontSize:12, lineHeight:1.55, margin:'4px 0 6px' }}>{b.plain_english}</div>
         )}
-        <div className="v2-row-meta" style={{ marginTop: 5 }}>
+        <div className="v2-row-meta">
           <Chip cls={wgChip(b.working_group)}>{b.working_group}</Chip>
-          {b.proposed_by && <span>{b.proposed_by} · {b.proposed_org}</span>}
-          {b.voting_closed && <span>{fmtDate(b.voting_closed)}</span>}
-          {b.br_version && <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize:10, color: 'var(--v2-green-text)' }}>{b.br_version}</span>}
+          {b.proposed_by && <span style={{ color:'var(--v2-text-3)' }}>{b.proposed_by}{b.proposed_org ? ` · ${b.proposed_org}` : ''}</span>}
+          {b.voting_closed && <span style={{ color:'var(--v2-text-3)' }}>{fmtDate(b.voting_closed)}</span>}
+          {b.br_version && <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, color:'var(--v2-green-text)', background:'var(--v2-green-bg)', padding:'1px 6px', borderRadius:4 }}>{b.br_version}</span>}
+          <Chip cls={statusChipClass(b.status)} style={{ marginLeft:'auto' }}>{b.status || '—'}</Chip>
         </div>
-      </div>
-      <div style={{ flexShrink: 0, textAlign: 'right', minWidth: 90 }}>
-        <Chip cls={statusChipClass(b.status)}>{b.status || '—'}</Chip>
       </div>
     </div>
   )
@@ -269,9 +263,7 @@ export default function CABForumNewsroom({ nav }) {
         .bdp-field:last-child { border-bottom:none }
         .bdp-k { font-size:11px;color:var(--v2-text-3);min-width:90px;flex-shrink:0 }
         .bdp-v { font-size:12px;color:var(--v2-text);font-weight:500 }
-        @media(max-width:min(900px,100%)){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
-      
-        @media(max-width:min(900px,100%)){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
+        @media(max-width:900px){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
         @media(max-width:min(767px,100%)){
           .hero-band{padding:20px 14px 18px}
           .hero-h1{font-size:20px}
@@ -286,6 +278,44 @@ export default function CABForumNewsroom({ nav }) {
           .side-pane{padding:12px}
           .tl-wrap{padding:12px}
           .ballot-detail-panel{margin:0 10px 10px}
+        }
+        /* ── Ballot row layout ─────────────────────────────── */
+        .v2-list-row { display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:0.5px solid var(--v2-border);transition:background .1s }
+        .v2-list-row:hover { background:var(--v2-hover) }
+        .v2-list-row:last-child { border-bottom:none }
+        .v2-row-body { flex:1;min-width:0 }
+        .v2-row-title-line { display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px }
+        .v2-row-title { font-size:14px;font-weight:600;color:var(--v2-text);line-height:1.3 }
+        .v2-row-meta { display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:11px;color:var(--v2-text-2) }
+        .v2-empty { text-align:center;padding:40px 16px;color:var(--v2-text-3) }
+        .v2-empty-title { font-size:14px;font-weight:600;margin-bottom:6px }
+        .v2-empty-desc { font-size:12px }
+        /* ── Chips ─────────────────────────────────────────── */
+        .v2-chip { display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;white-space:nowrap;flex-shrink:0 }
+        .chip-green { background:var(--v2-green-bg);color:var(--v2-green-text);border:0.5px solid var(--v2-green-border) }
+        .chip-amber { background:var(--v2-amber-bg);color:var(--v2-amber-text);border:0.5px solid var(--v2-amber-border) }
+        .chip-red { background:var(--v2-red-bg);color:var(--v2-red-text);border:0.5px solid var(--v2-red-border) }
+        .chip-blue { background:#E8F8F6;color:#1A7A72;border:0.5px solid #A8E6DE }
+        .chip-grey { background:var(--v2-surface-3,var(--v2-hover));color:var(--v2-text-3);border:0.5px solid var(--v2-border) }
+        /* ── Callouts ──────────────────────────────────────── */
+        .v2-callout { padding:12px 14px;border-radius:var(--v2-r-lg);border:0.5px solid var(--v2-border);margin-bottom:10px }
+        .v2-callout.tip { background:var(--v2-green-bg);border-color:var(--v2-green-border) }
+        .v2-callout-title { font-size:11px;font-weight:700;color:var(--v2-green-text);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px }
+        /* ── Mobile ballot rows ────────────────────────────── */
+        @media(max-width:600px){
+          .v2-list-row { flex-direction:column;gap:6px;padding:12px 12px }
+          .v2-list-row > div:last-child { align-self:flex-start }
+          .v2-row-title { font-size:13px }
+          .content-grid { grid-template-columns:1fr!important }
+          .side-pane { display:none }
+          .page-tabs { overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none }
+          .page-tabs::-webkit-scrollbar { display:none }
+          .sync-bar { padding:6px 12px;font-size:11px }
+          .hero-band { padding:18px 12px 16px }
+          .hero-h1 { font-size:19px }
+          .hero-stats { gap:14px }
+          .filter-bar { padding:8px 10px }
+          .pane-head { padding:10px 12px;flex-wrap:wrap;gap:6px }
         }`}</style>
 
       {/* Sync banner */}
@@ -353,7 +383,7 @@ export default function CABForumNewsroom({ nav }) {
             <div className="pane-head">
               <span className="pane-label">All ballots — plain English explained</span>
               <div style={{ display: 'flex', gap: 7, alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border-strong)', borderRadius: 'var(--v2-r-md)', padding: '5px 10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border-strong)', borderRadius: 'var(--v2-r-md)', padding: '5px 10px', flex: 1 }}>
                   <Search size={13} color="var(--v2-text-3)" />
                   <input type="text" placeholder="Search ballots…" value={query} onChange={e => setQuery(e.target.value)}
                     style={{ border: 'none', outline: 'none', background: 'transparent', fontSize:12, color: 'var(--v2-text)', fontFamily: S.font, width: 160 }} />
