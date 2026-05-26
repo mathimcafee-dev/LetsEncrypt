@@ -127,7 +127,10 @@ count_certs() {
 
 # ── Detect web server ─────────────────────────────────────────────────
 detect_web_server() {
-  if command -v nginx &>/dev/null && (systemctl is-active --quiet nginx 2>/dev/null || pgrep -x nginx &>/dev/null); then
+  # cPanel environment — check first since it runs apache underneath
+  if [ -f /usr/local/cpanel/cpanel ] || [ -d /usr/local/cpanel/bin ]; then
+    echo "cpanel"
+  elif command -v nginx &>/dev/null && (systemctl is-active --quiet nginx 2>/dev/null || pgrep -x nginx &>/dev/null); then
     echo "nginx"
   elif systemctl is-active --quiet apache2 2>/dev/null; then
     echo "apache2"
@@ -469,6 +472,38 @@ process_job() {
     if ! write_cert_files "$domain" "$cert_pem" "$key_pem" "$is_renewal"; then
       report_result "$job_id" "false" "Failed to write cert files" "$ws"
       return 0
+    fi
+
+    # ── cPanel: install via UAPI (runs locally — no network needed) ──────
+    if [ "$ws" = "cpanel" ]; then
+      local cpanel_user
+      # Detect cPanel user who owns this domain
+      cpanel_user=$(grep -r "^$domain$" /etc/userdatadomains 2>/dev/null | awk '{print $2}' | head -1)
+      if [ -z "$cpanel_user" ]; then
+        # Fallback: find via /var/cpanel/userdata
+        cpanel_user=$(grep -rl "documentroot.*$domain" /var/cpanel/userdata/ 2>/dev/null | head -1 | xargs dirname 2>/dev/null | xargs basename 2>/dev/null)
+      fi
+      if [ -z "$cpanel_user" ]; then
+        warn "Could not detect cPanel user for $domain — falling back to apache reload"
+      else
+        local cert_dir="$CERT_BASE/$domain"
+        log "Installing via cPanel UAPI for user $cpanel_user domain $domain"
+        if /usr/local/cpanel/bin/uapi --user="$cpanel_user" SSL install_ssl \
+          domain="$domain" \
+          cert="$(cat "$cert_dir/fullchain.pem" 2>/dev/null)" \
+          key="$(cat "$cert_dir/privkey.pem" 2>/dev/null)" \
+          cabundle="" \
+          > /tmp/sslvault_uapi_result.json 2>&1; then
+          ok "cPanel UAPI install succeeded for $domain"
+          report_result "$job_id" "true" "" "cpanel"
+          return 0
+        else
+          local uapi_err
+          uapi_err=$(cat /tmp/sslvault_uapi_result.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('result',{}).get('errors',[['Unknown error']])[0])" 2>/dev/null || echo "UAPI call failed")
+          warn "cPanel UAPI install failed: $uapi_err — trying apache reload fallback"
+          # Fall through to apache reload as fallback
+        fi
+      fi
     fi
 
     # install: first time — configure web server vhost

@@ -733,44 +733,58 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                 }
               } catch(e) { console.warn('Failed to resolve cert/method:', e) }
 
-              setModalSerial(serialNumber)
-
-              // ── cPanel install (real edge function) ──────────────────────
-              if (method === 'cpanel') {
+              // ── Dispatch install via agent_jobs (works for both VPS + cPanel) ──
+              // The bash agent polls agent_jobs and handles install locally.
+              // For cPanel: agent calls uapi on localhost — no network needed.
+              if (method === 'agent' || method === 'cpanel') {
                 try {
-                  const { data: creds } = await supabase
+                  const { data: serverRows } = await supabase
                     .from('server_credentials')
-                    .select('id')
-                    .eq('server_type', 'cpanel')
+                    .select('id, agent_id, server_type')
                     .contains('domains', [cert.domain])
-                    .limit(1)
-                  const credId = creds?.[0]?.id
-                  if (!credId) {
-                    installDetail = '⚠️ No cPanel credential found — install manually'
-                  } else {
-                    const cpRes = await fetch(SB_URL + '/functions/v1/cpanel-install', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
-                      body: JSON.stringify({ action: 'install', cert_id: dispatchCertId, domain: cert.domain, credential_id: credId }),
-                    })
-                    const cpData = await cpRes.json().catch(() => ({}))
-                    if (cpData.ok) {
+                    .not('agent_id', 'is', null)
+                  for (const row of (serverRows || [])) {
+                    const { data: existing } = await supabase
+                      .from('agent_jobs')
+                      .select('id')
+                      .eq('agent_id', row.agent_id)
+                      .eq('cert_id', dispatchCertId)
+                      .in('status', ['queued', 'claimed'])
+                      .maybeSingle()
+                    if (!existing) {
+                      // Fetch cert + key for job payload
+                      const { data: certData } = await supabase
+                        .from('certificates')
+                        .select('cert_pem, ca_pem')
+                        .eq('id', dispatchCertId)
+                        .single()
+                      const { data: keyData } = await supabase
+                        .from('keylocker_keys')
+                        .select('private_key_pem')
+                        .eq('cert_id', dispatchCertId)
+                        .single()
+                      await supabase.from('agent_jobs').insert({
+                        agent_id: row.agent_id,
+                        user_id: session.user.id,
+                        cert_id: dispatchCertId,
+                        job_type: isReissue ? 'reissue' : 'renew',
+                        status: 'queued',
+                        cert_pem: certData?.cert_pem || '',
+                        key_pem: keyData?.private_key_pem || '',
+                        domain: cert.domain,
+                      })
                       installOk = true
-                      installDetail = '🌐 Installed on cPanel server'
-                      if (cpData.serial) setModalSerial(cpData.serial)
-                      setModalLiveConfirmed(true)
                     } else {
-                      installDetail = `⚠️ cPanel install failed: ${cpData.error || 'unknown'} — cert issued, install manually`
-                      console.warn('cPanel install failed:', cpData.error)
+                      installOk = true // already queued
                     }
                   }
-                } catch(cpErr) {
-                  installDetail = '⚠️ cPanel dispatch error — cert issued, install manually'
-                  console.warn('cPanel dispatch error:', cpErr)
+                  installDetail = method === 'cpanel'
+                    ? '🌐 Install job queued — cPanel agent will apply within 5 min'
+                    : '🖥 Install job queued — VPS agent will apply within 5 min'
+                } catch(dispatchErr) {
+                  installDetail = `⚠️ Failed to queue install job: ${dispatchErr.message}`
+                  console.warn('agent_jobs dispatch error:', dispatchErr)
                 }
-              } else if (method === 'agent') {
-                installOk = true
-                installDetail = '🖥 Install job queued — agent will apply within 5 min'
               } else {
                 installDetail = 'No server connected — install manually'
               }

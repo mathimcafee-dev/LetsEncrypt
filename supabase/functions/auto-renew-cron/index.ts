@@ -228,8 +228,8 @@ async function dispatchToAllAgents(cert: Certificate, certData: Record<string, u
     const keyPem  = certData.private_key_pem as string || ''
 
     for (const row of serverRows) {
-      // Only dispatch to SSH servers (VPS persistent agent)
-      if (row.server_type && row.server_type !== 'ssh') continue
+      // Dispatch to SSH (VPS) agents AND cPanel agents — both use agent_jobs polling pattern
+      if (row.server_type && row.server_type !== 'ssh' && row.server_type !== 'cpanel') continue
 
       try {
         // Dedup: check if a pending renew job already exists for this agent+cert
