@@ -584,11 +584,12 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       // During this time keep step 0 spinning — that's expected
       await new Promise(resolve => {
         const t = setInterval(() => { if (fetchDone) { clearInterval(t); resolve() } }, 500)
-        setTimeout(() => { clearInterval(t); resolve() }, 10000)
+        setTimeout(() => { clearInterval(t); resolve() }, 120000)
       })
 
       if (!fetchOk) {
-        setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: fetchErr || 'Request failed' }) }))
+        const errMsg = fetchErr || (fetchData === null ? 'GGS request timed out — the certificate may still be issuing. Refresh in 2 minutes.' : 'Request failed')
+        setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: errMsg }) }))
         setMsg(''); setBusy(false); return
       }
       const d = fetchData
