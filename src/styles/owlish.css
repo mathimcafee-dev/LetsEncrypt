@@ -193,3 +193,62 @@ a:hover { color: #58a6ff; }
   --v2-accent-bg:      rgba(56,139,253,0.1);
   --v2-accent-border:  rgba(56,139,253,0.25);
 }
+
+/* ── Dashboard visual polish — CSS only, no JSX touched ── */
+
+/* Stat cards — cleaner typography */
+.v2-page h1 { font-size: 18px !important; font-weight: 600 !important; letter-spacing: -0.2px !important; }
+
+/* Table rows — subtle hover */
+.v2-page [style*="cursor:'pointer'"],
+.v2-page [style*='cursor:"pointer"'] {
+  transition: background 0.1s !important;
+}
+
+/* Progress bars — blue instead of teal */
+[style*="background:'#14b8a6'"] { background: #388bfd !important; }
+[style*='background:"#14b8a6"'] { background: #388bfd !important; }
+
+/* Filter tabs — underline style */
+.v2-page button[style*="borderBottom: filter"] {
+  border-radius: 0 !important;
+  padding-bottom: 10px !important;
+}
+
+/* Quick action cards */
+.v2-page button[style*="borderRadius:12"] {
+  border-radius: 8px !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+.v2-page button[style*="borderRadius:12"]:hover {
+  border-color: rgba(255,255,255,0.16) !important;
+  background: #1c2128 !important;
+}
+
+/* Recent activity — tighter */
+.v2-page [style*="borderRadius:12"][style*="overflow:'hidden'"] {
+  border-radius: 8px !important;
+}
+
+/* Section headings */
+.v2-page [style*="textTransform:'uppercase'"][style*="letterSpacing:'0.6px'"] {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #6e7681 !important;
+  letter-spacing: 0.06em !important;
+}
+
+/* Cert row borders */
+.v2-page [style*="border:'0.5px solid #f0fdf9'"],
+.v2-page [style*='border:"0.5px solid #f0fdf9"'],
+.v2-page [style*="borderBottom: '0.5px solid #f0fdf9'"],
+.v2-page [style*="borderBottom:'0.5px solid #f0fdf9'"] {
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* CA Connector banner */
+.v2-page [style*="border:'0.5px solid #e6fbf5'"],
+.v2-page [style*='border:"0.5px solid #e6fbf5"'] {
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  background: #161b22 !important;
+}
