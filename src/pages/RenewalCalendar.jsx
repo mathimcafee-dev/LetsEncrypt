@@ -156,7 +156,7 @@ function DetailPanel({ label, certs, onClose }) {
                 {c.cert_type || 'DV'}
                 {c.auto_renew_enabled && (
                   <span style={{ marginLeft:5, fontSize:9, fontWeight:600,
-                    color:ACCENT, background:'#111111', padding:'1px 5px', borderRadius:3 }}>AUTO</span>
+                    color:ACCENT, background:'#0f3535', padding:'1px 5px', borderRadius:3 }}>AUTO</span>
                 )}
               </div>
             </div>
@@ -646,7 +646,7 @@ export default function RenewalCalendar({ user }) {
                       </span>
                       {c.auto_renew_enabled && (
                         <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:3,
-                          background:'#111111', color:ACCENT }}>AUTO</span>
+                          background:'#0f3535', color:ACCENT }}>AUTO</span>
                       )}
                     </div>
                     <div style={{ height:3, background:'var(--v2-surface-3)', borderRadius:2, overflow:'hidden' }}>

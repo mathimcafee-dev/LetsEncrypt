@@ -26,15 +26,15 @@ function fmtDate(iso) {
 }
 
 const EVENT_CONFIG = {
-  issued:          { icon: ShieldCheck, color: '#ffffff', bg: '#111111', label: 'Certificate issued' },
-  reissued:        { icon: RefreshCw,   color: '#ffffff', bg: '#111111', label: 'Certificate reissued' },
-  renewed:         { icon: RotateCcw,   color: '#ffffff', bg: '#111111', label: 'Certificate renewed' },
-  revoked:         { icon: ShieldOff,   color: '#f87171', bg: '#fef2f2', label: 'Certificate revoked' },
-  agent_installed: { icon: Zap,         color: '#ffffff', bg: '#111111', label: 'Installed by agent' },
-  key_rotated:     { icon: RotateCcw,   color: '#ffffff', bg: 'rgba(239,68,68,0.08)', label: 'Key rotated' },
-  downloaded:      { icon: Download,    color: '#ffffff', bg: '#D4F5EF', label: 'Certificate downloaded' },
-  private_key_copied: { icon: Shield,   color: '#ffffff', bg: 'rgba(239,68,68,0.08)', label: 'Private key copied' },
-  default:         { icon: Shield,      color: 'rgba(255,255,255,0.7)', bg: '#000000', label: 'Event' },
+  issued:          { icon: ShieldCheck, color: '#2dd4bf', bg: 'rgba(45,212,191,0.12)', label: 'Certificate issued' },
+  reissued:        { icon: RefreshCw,   color: '#2dd4bf', bg: 'rgba(45,212,191,0.12)', label: 'Certificate reissued' },
+  renewed:         { icon: RotateCcw,   color: '#2dd4bf', bg: 'rgba(45,212,191,0.12)', label: 'Certificate renewed' },
+  revoked:         { icon: ShieldOff,   color: '#f87171', bg: 'rgba(248,113,113,0.12)', label: 'Certificate revoked' },
+  agent_installed: { icon: Zap,         color: '#fbbf24', bg: 'rgba(251,191,36,0.12)', label: 'Installed by agent' },
+  key_rotated:     { icon: RotateCcw,   color: '#ff6b5b', bg: 'rgba(255,107,91,0.12)', label: 'Key rotated' },
+  downloaded:      { icon: Download,    color: '#2dd4bf', bg: 'rgba(45,212,191,0.12)', label: 'Certificate downloaded' },
+  private_key_copied: { icon: Shield,   color: '#ff6b5b', bg: 'rgba(255,107,91,0.12)', label: 'Private key copied' },
+  default:         { icon: Shield,      color: 'rgba(232,245,244,0.5)', bg: 'rgba(232,245,244,0.06)', label: 'Event' },
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
