@@ -114,7 +114,7 @@ export default function CLMHome({ user, nav }) {
         fontSize:12,fontWeight:isActive?500:400,
         color:isActive?'#0a0a0a':'rgba(0,0,0,0.5)',
         background:isActive?'rgba(0,0,0,0.06)':'transparent',
-        borderLeft:`2px solid ${isActive?'#0a0a0a':'transparent'}``2px solid ${isActive?'rgba(0,0,0,0.48)':'transparent'}`,
+        borderLeft:`2px solid ${isActive?'#0a0a0a':'transparent'}`,
         border:'none',width:'100%',textAlign:'left',fontFamily:F,
         transition:'all 0.12s',borderRadius:'0 3px 3px 0',marginBottom:1,
       }}
