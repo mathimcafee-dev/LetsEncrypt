@@ -4,7 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const GGS_API = 'https://my.gogetssl.com/api'
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, content-type',
+  'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info',
 }
 
 function adminDb() {
@@ -603,7 +603,7 @@ serve(async (req) => {
         .insert({
           user_id: user.id, domain: cleanDomain,
           ggs_order_id: orderRes.order_id, status: 'dv_pending',
-          product_code, period, cert_type: 'DV',
+          product_code, period,
           admin_email: adminEmail, admin_first_name: firstName, admin_last_name: lastName, admin_phone: phone,
           dcv_txt_name: orderRes.dcv_txt_name || null,
           dcv_txt_value: orderRes.dcv_txt_value || null,
