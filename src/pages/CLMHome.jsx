@@ -22,19 +22,21 @@ import CertVault from './CertVault'
 import CertBind from './CertBind'
 import Pricing from './Pricing'
 
-// Resend.com dark tokens
+// Professional CLM dark theme — DigiCert/Sectigo style
 const F   = "'Inter',system-ui,sans-serif"
-const W   = '#ffffff'   // white — text/button labels only
-const BK  = '#000000'   // black — page bg
-const S   = '#0d0d0d'   // sidebar bg
-const S2  = '#1a1a1a'   // sidebar active item bg
-const T1  = '#ffffff'   // heading text
-const T2  = 'rgba(255,255,255,0.55)'  // body text
-const T3  = 'rgba(255,255,255,0.35)'  // muted text
-const LN  = 'rgba(255,255,255,0.08)'  // default border
-const LN2 = 'rgba(255,255,255,0.14)'  // strong border
-const GRN = '#4ade80'
-const RED = '#f87171'
+const W   = '#ffffff'
+const BK  = '#0d1117'   // page bg — deep navy
+const S   = '#0d1117'   // sidebar bg
+const S2  = '#1c2128'   // sidebar active bg
+const T1  = '#e6edf3'   // primary text
+const T2  = '#8b949e'   // secondary text
+const T3  = '#484f58'   // muted text
+const LN  = 'rgba(255,255,255,0.08)'
+const LN2 = 'rgba(255,255,255,0.13)'
+const LN3 = 'rgba(255,255,255,0.2)'
+const BLU = '#388bfd'   // brand blue
+const GRN = '#3fb950'
+const RED = '#f85149'
 
 function useW(bp=768){const[m,setM]=useState(window.innerWidth<=bp);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
@@ -119,10 +121,10 @@ export default function CLMHome({ user, nav }) {
       {/* Logo */}
       <div style={{padding:'14px 14px 10px',borderBottom:`1px solid ${LN}`,flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:7}}>
-          <div style={{width:20,height:20,background:'#14b8a6',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+          <div style={{width:20,height:20,background:'#388bfd',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{fontSize:13,fontWeight:600,color:"#14b8a6",fontFamily:F}}>SSLVault</span>
+          <span style={{fontSize:13,fontWeight:600,color:T1,fontFamily:F}}>SSLVault</span>
         </div>
       </div>
 
@@ -170,7 +172,7 @@ export default function CLMHome({ user, nav }) {
   )
 
   return (
-    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:'#000000'}}>
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:BK}}>
 
       {/* Top bar */}
       <div style={{background:'#000000',borderBottom:'1px solid rgba(255,255,255,0.08)',height:46,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 16px',flexShrink:0,position:'sticky',top:0,zIndex:50}}>
@@ -178,7 +180,7 @@ export default function CLMHome({ user, nav }) {
           {sm && <button onClick={()=>setSideOpen(o=>!o)} style={{background:'none',border:'none',cursor:'pointer',color:T2,padding:4,display:'flex',alignItems:'center',borderRadius:3}}>
             {sideOpen?<X size={16}/>:<Menu size={16}/>}
           </button>}
-          <span style={{fontSize:12,fontWeight:500,color:'#14b8a6'}}>{TITLES[sec]||'SSLVault'}</span>
+          <span style={{fontSize:12,fontWeight:500,color:T1}}>{TITLES[sec]||'SSLVault'}</span>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           {!sm && <span style={{fontSize:11,color:T3,fontFamily:'monospace'}}>{email}</span>}
@@ -191,7 +193,7 @@ export default function CLMHome({ user, nav }) {
               {unread>0 && <span style={{position:'absolute',top:2,right:2,width:6,height:6,borderRadius:'50%',background:'#ffffff',border:`1.5px solid #000000`}}/>}
             </button>
             {bellOpen && (
-              <div style={{position:'absolute',right:0,top:'calc(100% + 6px)',background:'#111111',border:`1px solid ${LN2}`,borderRadius:4,width:280,boxShadow:'0 4px 16px rgba(255,255,255,0.12)',zIndex:100}}>
+              <div style={{position:'absolute',right:0,top:'calc(100% + 6px)',background:'#1c2128',border:`1px solid rgba(255,255,255,0.13)`,borderRadius:4,width:280,boxShadow:'0 4px 16px rgba(255,255,255,0.12)',zIndex:100}}>
                 <div style={{padding:'10px 14px',borderBottom:`1px solid ${LN}`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                   <span style={{fontSize:12,fontWeight:500,color:T1}}>Notifications</span>
                   <button onClick={()=>setBellOpen(false)} style={{background:'none',border:'none',cursor:'pointer',color:T3,fontSize:11,fontFamily:F}}>Close</button>
@@ -225,13 +227,13 @@ export default function CLMHome({ user, nav }) {
         {sm&&sideOpen && <div style={{position:'fixed',inset:0,background:'rgba(255,255,255,0.32)',zIndex:39}} onClick={()=>setSideOpen(false)}/>}
 
         {/* Sidebar */}
-        <nav ref={sideRef} style={{width:200,background:S,borderRight:`1px solid ${LN}`,display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto',
+        <nav ref={sideRef} style={{width:200,background:'#0d1117',borderRight:'1px solid rgba(255,255,255,0.08)',display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto',
           ...(sm?{position:'fixed',left:0,top:46,bottom:0,zIndex:40,transform:sideOpen?'translateX(0)':'translateX(-100%)',transition:'transform 0.22s ease',boxShadow:'4px 0 16px rgba(255,255,255,0.1)'}:{position:'sticky',top:46,height:'calc(100vh - 46px)'})}}>
           <Sidebar/>
         </nav>
 
         {/* Main */}
-        <div style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',background:'#000000'}}>
+        <div style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',background:BK}}>
           <div key={key} style={{flex:1,overflowY:'auto',overflowX:'hidden',animation:'fadein 0.18s ease'}}>
             {content()}
           </div>

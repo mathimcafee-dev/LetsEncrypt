@@ -4,19 +4,19 @@ import { supabase } from '../lib/supabase'
 // ── Resend.com design tokens — pure black/white ────────────────────────
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const BG   = '#000000'   // page background
-const BG2  = '#0a0a0a'   // alt section background
-const BG3  = '#111111'   // card surface
-const BG4  = '#1a1a1a'   // deep card / input
+const BG   = '#0d1117'   // page background
+const BG2  = '#0d1117'   // alt section background
+const BG3  = '#161b22'   // card surface
+const BG4  = '#1c2128'   // deep card / input
 const T1   = '#ffffff'   // heading text
 const T2   = 'rgba(255,255,255,0.6)'   // body text
 const T3   = 'rgba(255,255,255,0.35)'  // muted text
 const LN   = 'rgba(255,255,255,0.08)'  // default border
 const LN2  = 'rgba(255,255,255,0.14)'  // strong border
 const LN3  = 'rgba(255,255,255,0.22)'  // hover border
-const GRN  = '#4ade80'   // success green
-const AMB  = '#fbbf24'   // warning amber
-const RED  = '#f87171'   // error red
+const GRN  = '#3fb950'   // success green
+const AMB  = '#d29922'   // warning amber
+const RED  = '#f85149'   // error red
 
 function useIsMobile() {
   const [w,setW] = useState(window.innerWidth)
@@ -54,7 +54,7 @@ function Pill({status}) {
 function BtnPrimary({label,onClick}) {
   const[h,setH]=useState(false)
   return <button onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-    style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:F,fontWeight:600,fontSize:13,padding:'9px 20px',borderRadius:6,border:'none',cursor:'pointer',background:h?'rgba(255,255,255,0.88)':T1,color:BG,transition:'background .14s'}}>
+    style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:F,fontWeight:600,fontSize:13,padding:'9px 20px',borderRadius:6,border:'none',cursor:'pointer',background:h?'#1f6feb':'#388bfd',color:'#ffffff',transition:'background .14s'}}>
     {label} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
   </button>
 }
@@ -98,7 +98,7 @@ function InventoryMockup() {
   const sc=s=>s==='active'?GRN:s==='warning'?AMB:RED
   const gc=g=>g.startsWith('A')?GRN:g==='B'?AMB:RED
   return (
-    <div style={{background:BG2,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
+    <div style={{background:'#161b22',border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
       <div style={{background:'#161616',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>Inventory · 4 certificates</span>
@@ -122,7 +122,7 @@ function InventoryMockup() {
 
 function CertVaultMockup() {
   return (
-    <div style={{background:BG2,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
+    <div style={{background:'#161b22',border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
       <div style={{background:'#161616',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>CertVault · Private key vault</span>
@@ -160,7 +160,7 @@ function CertVaultMockup() {
 function ReadinessMockup() {
   const certs=[{d:'easysecurity.in',s:92,label:'Ready',c:GRN},{d:'api.shop.com',s:58,label:'At Risk',c:AMB},{d:'staging.portal.io',s:24,label:'Will Break',c:RED}]
   return (
-    <div style={{background:BG2,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
+    <div style={{background:'#161b22',border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
       <div style={{background:'#161616',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>47-Day Readiness · CA/B Forum</span>
@@ -214,10 +214,10 @@ export default function Home({ nav }) {
       <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(255,255,255,0.15);color:#fff}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       {/* ── NAV ── */}
-      <header style={{position:'sticky',top:0,zIndex:200,background:'rgba(0,0,0,0.9)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderBottom:`1px solid ${LN}`,height:52,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
+      <header style={{position:'sticky',top:0,zIndex:200,background:'rgba(13,17,23,0.95)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderBottom:`1px solid ${LN}`,height:52,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',flexShrink:0}} onClick={()=>nav('/')}>
-          <div style={{width:22,height:22,background:T1,borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div style={{width:22,height:22,background:'#388bfd',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{fontSize:13,fontWeight:600,color:T1,letterSpacing:'-0.3px'}}>SSLVault</span>
         </div>
@@ -247,7 +247,7 @@ export default function Home({ nav }) {
         </nav>}
         <div style={{display:'flex',gap:8,alignItems:'center',flexShrink:0}}>
           {!isMobile&&<button onClick={()=>nav('/auth')} style={{background:'none',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,color:T2,padding:'5px 10px',borderRadius:4,transition:'color .12s'}} onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>Sign in</button>}
-          <button onClick={()=>nav('/auth')} style={{background:T1,border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:BG,padding:'7px 16px',borderRadius:5,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.88)'} onMouseLeave={e=>e.currentTarget.style.background=T1}>Get started</button>
+          <button onClick={()=>nav('/auth')} style={{background:'#388bfd',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#fff',padding:'7px 16px',borderRadius:5,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#1f6feb'} onMouseLeave={e=>e.currentTarget.style.background='#388bfd'}>Get started</button>
         </div>
       </header>
 
@@ -304,7 +304,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── TICKER ── */}
-      <div style={{background:BG2,borderBottom:`1px solid ${LN}`,overflow:'hidden',padding:'8px 0'}}>
+      <div style={{background:'#161b22',borderBottom:`1px solid ${LN}`,overflow:'hidden',padding:'8px 0'}}>
         <div style={{display:'flex',overflow:'hidden',maskImage:'linear-gradient(to right,transparent,black 8%,black 92%,transparent)'}}>
           <div style={{display:'flex',gap:48,flexShrink:0,animation:'ticker 36s linear infinite',whiteSpace:'nowrap'}}>
             {[...TICKER,...TICKER].map((p,i)=><span key={i} style={{fontSize:10.5,fontWeight:400,color:T3,letterSpacing:'0.05em',fontFamily:MONO}}><span style={{color:LN2,marginRight:8}}>◆</span>{p}</span>)}
@@ -340,7 +340,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" style={{background:BG2,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="features" style={{background:'#0d1117',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp><div style={{marginBottom:44,maxWidth:480}}>
               <Eyebrow>All capabilities</Eyebrow>
@@ -404,7 +404,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── SECURITY SPECS ── */}
-      <section id="security" style={{background:BG2,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="security" style={{background:'#0d1117',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start',marginBottom:44}}>
@@ -483,7 +483,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── ARCHITECTURE ── */}
-      <section style={{background:BG2,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#0d1117',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{textAlign:'center',marginBottom:44}}>
@@ -568,7 +568,7 @@ export default function Home({ nav }) {
                     <div style={{fontSize:9.5,color:T3,marginTop:1}}>{fips}</div>
                   </div>
                 ))}
-                <button onClick={()=>nav('/pki-hub')} style={{background:T1,border:'none',borderRadius:4,padding:'7px 14px',fontSize:12,fontWeight:600,color:BG,cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.88)'} onMouseLeave={e=>e.currentTarget.style.background=T1}>View PQC tracker →</button>
+                <button onClick={()=>nav('/pki-hub')} style={{background:'#388bfd',border:'none',borderRadius:4,padding:'7px 14px',fontSize:12,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#1f6feb'} onMouseLeave={e=>e.currentTarget.style.background='#388bfd'}>View PQC tracker →</button>
               </div>
             </Card>
           </FadeUp>
@@ -576,7 +576,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CERTBIND ── */}
-      <section style={{background:BG2,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#0d1117',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:18}}>
@@ -677,7 +677,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CTA ── */}
-      <section style={{background:BG2,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#0d1117',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:560,margin:'0 auto',textAlign:'center'}}>
           <FadeUp>
             <div style={{display:'inline-flex',alignItems:'center',gap:6,border:`1px solid ${LN}`,borderRadius:100,padding:'4px 12px',marginBottom:22,background:'rgba(255,255,255,0.03)'}}>
