@@ -1673,11 +1673,14 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             title="Reissue certificate" subtitle="New cert, same order period · auto DNS"
             onClick={() => certHistoryRef.current?.doAction('reissue')}
             disabled={!session}/>
-          <ActionRow icon={RefreshCw} iconColor="#2563eb" iconBg="#E8F8F6"
-            hoverBorder="#A8E6DE" hoverBg="#E8F8F6"
-            title="Renew for another year" subtitle="New GGS order · new cert row"
-            onClick={() => certHistoryRef.current?.doAction('renew')}
-            disabled={!session}/>
+          {/* Renew only visible within 30 days of order expiry (issued_at + period), not cert expiry */}
+          {cert._daysToRenewal != null && cert._daysToRenewal <= 30 && (
+            <ActionRow icon={RefreshCw} iconColor="#2563eb" iconBg="#E8F8F6"
+              hoverBorder="#A8E6DE" hoverBg="#E8F8F6"
+              title="Renew for another year" subtitle="New GGS order · new cert row"
+              onClick={() => certHistoryRef.current?.doAction('renew')}
+              disabled={!session}/>
+          )}
           <ActionRow icon={Server} iconColor="#E8897A" iconBg="#FDF0EE"
             hoverBorder="#F2C4BC" hoverBg="#FDF0EE"
             title="Install on server" subtitle="VPS agent or cPanel wizard"
@@ -2543,7 +2546,14 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         .select('product_name,product_code,period,ggs_invoice_id,ggs_order_id,partner_order_id,vendor_order_id,order_type,subscription_start,subscription_end,admin_email,admin_first_name,admin_last_name,admin_phone,admin_title,admin_city,admin_country,tech_first_name,tech_last_name,tech_email,tech_phone,serial_number,cert_md5')
         .eq('ggs_order_id', cert.ggs_order_id).eq('user_id', user.id)
         .order('created_at', { ascending: false }).limit(1).single()
-      return { ...(ord ? { ...cert, _order: ord } : cert), _installTime: certInstallTime[cert.id]||null, _liveCertByDomain: liveCertByDomain }
+      const _orderPeriodMonths = ord?.period || 12
+      const _orderExpires = cert.issued_at
+        ? (() => { const d = new Date(cert.issued_at); d.setMonth(d.getMonth() + _orderPeriodMonths); return d })()
+        : null
+      const _daysToRenewal = _orderExpires
+        ? Math.ceil((_orderExpires.getTime() - Date.now()) / 86400000)
+        : null
+      return { ...(ord ? { ...cert, _order: ord } : cert), _installTime: certInstallTime[cert.id]||null, _liveCertByDomain: liveCertByDomain, _daysToRenewal }
     }))
     setCerts(enriched); setOrders(ordersData||[]); setLoading(false)
 
