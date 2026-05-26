@@ -264,6 +264,39 @@ async function callKeyLocker(authHeader: string, body: Record<string, unknown>) 
   return res.json()
 }
 
+
+// Extract DCV TXT record from any GGS response object
+// GGS returns DCV in different shapes depending on endpoint:
+// - add_ssl_order: direct fields dcv_txt_name/dcv_txt_value OR dcv_cname_name/dcv_cname_value
+// - orders/status: nested in .domains[0].cname_name/.cname_value or .txt_record_name/.txt_record_value
+function extractDcv(resp: any): { name: string; value: string } {
+  if (!resp) return { name: '', value: '' }
+  // Direct fields (add_ssl_order response)
+  const directName  = resp.dcv_txt_name  || resp.dcv_cname_name  || ''
+  const directValue = resp.dcv_txt_value || resp.dcv_cname_value || ''
+  if (directValue) return { name: directName, value: directValue }
+  // Nested in domains object (status response)
+  if (resp.domains) {
+    const d = Object.values(resp.domains)[0] as any
+    const name  = d?.txt_record_name  || d?.cname_name  || d?.validation?.cname_name  || ''
+    const value = d?.txt_record_value || d?.cname_value || d?.validation?.cname_value || ''
+    return { name, value }
+  }
+  return { name: '', value: '' }
+}
+
+// Auto-add DNS TXT record via dns-provider (non-fatal)
+async function autoDns(authHeader: string, userId: string, domain: string, name: string, value: string) {
+  if (!value) return
+  try {
+    await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: authHeader },
+      body: JSON.stringify({ action: 'auto_add', user_id: userId, domain, txt_name: name, txt_value: value }),
+    })
+  } catch(e: any) { console.warn('DNS auto-add (non-fatal):', e.message) }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
@@ -387,16 +420,14 @@ serve(async (req) => {
       // Poll once immediately for DCV info
       await new Promise(r => setTimeout(r, 2000))
       const statusRes = await ggsGet(authKey, `/orders/status/${orderRes.order_id}`)
-
-      let dcvName = '', dcvValue = ''
-      if (statusRes.domains) {
-        const d = Object.values(statusRes.domains)[0] as any
-        dcvName  = d?.cname_name  || d?.validation?.cname_name  || ''
-        dcvValue = d?.cname_value || d?.validation?.cname_value || ''
-      }
+      // Try direct fields first, fallback to domains object
+      let { name: dcvName, value: dcvValue } = extractDcv(orderRes)
+      if (!dcvValue) { const s = extractDcv(statusRes); dcvName = s.name; dcvValue = s.value }
 
       if (dcvName || dcvValue) {
         await adminDb().from('ssl_orders').update({
+          dcv_txt_name:    dcvName,
+          dcv_txt_value:   dcvValue,
           dcv_cname_name:  dcvName,
           dcv_cname_value: dcvValue,
           ggs_status:      statusRes.status,
@@ -404,12 +435,17 @@ serve(async (req) => {
         }).eq('id', saved.id)
       }
 
+      // Auto-add DNS TXT record
+      await autoDns(req.headers.get('Authorization')!, user.id, cleanDomain, dcvName, dcvValue)
+
       return json({
         ok:              true,
         order_id:        saved.id,
         ggs_order_id:    orderRes.order_id,
         domain:          cleanDomain,
         product_name:    product.name,
+        dcv_txt_name:    dcvName,
+        dcv_txt_value:   dcvValue,
         dcv_cname_name:  dcvName,
         dcv_cname_value: dcvValue,
         status:          'dv_pending',
@@ -438,10 +474,9 @@ serve(async (req) => {
       }
 
       // Pick up DCV info if missing
-      if (!order.dcv_cname_value && statusRes.domains) {
-        const d = Object.values(statusRes.domains)[0] as any
-        upd.dcv_cname_name  = d?.cname_name  || d?.validation?.cname_name  || ''
-        upd.dcv_cname_value = d?.cname_value || d?.validation?.cname_value || ''
+      if (!order.dcv_txt_value && !order.dcv_cname_value) {
+        const { name: dn, value: dv } = extractDcv(statusRes)
+        if (dv) { upd.dcv_txt_name = dn; upd.dcv_txt_value = dv; upd.dcv_cname_name = dn; upd.dcv_cname_value = dv }
       }
 
       // Certificate active — mirror to certificates table
@@ -497,6 +532,8 @@ serve(async (req) => {
         ok:              true,
         status:          upd.status || order.status,
         ggs_status:      statusRes.status,
+        dcv_txt_name:    upd.dcv_txt_name    || order.dcv_txt_name    || upd.dcv_cname_name  || order.dcv_cname_name,
+        dcv_txt_value:   upd.dcv_txt_value   || order.dcv_txt_value   || upd.dcv_cname_value || order.dcv_cname_value,
         dcv_cname_name:  upd.dcv_cname_name  || order.dcv_cname_name,
         dcv_cname_value: upd.dcv_cname_value || order.dcv_cname_value,
         crt_code:        statusRes.crt_code,
@@ -605,16 +642,8 @@ serve(async (req) => {
           dcvTxtName  = d?.txt_record_name  || d?.cname_name  || d?.validation?.cname_name  || ''
           dcvTxtValue = d?.txt_record_value || d?.cname_value || d?.validation?.cname_value || ''
         }
-        // Auto-add DNS TXT record via dns-provider if user has Cloudflare connected
-        if (dcvTxtValue) {
-          try {
-            await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: req.headers.get('Authorization')! },
-              body: JSON.stringify({ action: 'auto_add', user_id: user.id, domain: cleanDomain, txt_name: dcvTxtName, txt_value: dcvTxtValue }),
-            })
-          } catch(e) { console.warn('DNS auto-add (non-fatal):', e) }
-        }
+        // Auto-add DNS TXT record
+        await autoDns(req.headers.get('Authorization')!, user.id, cleanDomain, dcvTxtName, dcvTxtValue)
         or = {
           order_id:      ggsOrderId,
           dcv_txt_name:  dcvTxtName,
@@ -637,18 +666,14 @@ serve(async (req) => {
           tech_email: adminEmail, tech_phone: phone, tech_title: 'Mr',
         })
         if (!or.order_id) return json({ error: or.description || 'Renewal failed' }, 500)
-        // Auto-add DNS for renewal too
-        const dcvVal = or.dcv_txt_value || or.dcv_cname_value || ''
-        const dcvName = or.dcv_txt_name || or.dcv_cname_name || ''
-        if (dcvVal) {
-          try {
-            await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: req.headers.get('Authorization')! },
-              body: JSON.stringify({ action: 'auto_add', user_id: user.id, domain: cleanDomain, txt_name: dcvName, txt_value: dcvVal }),
-            })
-          } catch(e) { console.warn('DNS auto-add (non-fatal):', e) }
-        }
+        // For renewal, also fetch status to get DCV records (GGS may return them in domains obj)
+        await new Promise(r => setTimeout(r, 1500))
+        const renewStatus = await ggsGet(authKey, `/orders/status/${or.order_id}`)
+        let { name: rdcvName, value: rdcvValue } = extractDcv(or)
+        if (!rdcvValue) { const s = extractDcv(renewStatus); rdcvName = s.name; rdcvValue = s.value }
+        or.dcv_txt_name = rdcvName; or.dcv_txt_value = rdcvValue
+        or.dcv_cname_name = rdcvName; or.dcv_cname_value = rdcvValue
+        await autoDns(req.headers.get('Authorization')!, user.id, cleanDomain, rdcvName, rdcvValue)
       }
 
       // Insert new ssl_order row
