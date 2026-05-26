@@ -162,6 +162,49 @@ a:hover { color: rgba(255,255,255,0.7); }
 .v2-progress { background: rgba(255,255,255,0.08) !important; border-radius:99px; overflow:hidden; }
 .v2-progress-bar { background: var(--ink) !important; height:100%; border-radius:99px; transition: width .6s ease; }
 
+
+/* ── Colour accent system ── */
+:root {
+  --teal:      #14b8a6;
+  --teal-dim:  #0d9488;
+  --teal-bg:   rgba(20,184,166,0.1);
+  --teal-bd:   rgba(20,184,166,0.25);
+  --purple:    #a78bfa;
+  --purple-bg: rgba(167,139,250,0.1);
+  --blue:      #60a5fa;
+  --blue-bg:   rgba(96,165,250,0.1);
+  --coral:     #fb7185;
+  --coral-bg:  rgba(251,113,133,0.1);
+}
+
+/* Sidebar active — teal accent */
+.sidebar-active {
+  background: var(--teal-bg) !important;
+  border-left: 2px solid var(--teal) !important;
+  color: var(--teal) !important;
+}
+
+/* Progress bars — teal */
+.v2-progress-bar { background: var(--teal) !important; }
+
+/* Inputs focus — teal ring */
+.v2-input:focus {
+  border-color: var(--teal) !important;
+  box-shadow: 0 0 0 3px rgba(20,184,166,0.12) !important;
+}
+
+/* Primary button — teal */
+.v2-btn-primary {
+  background: var(--teal) !important;
+  color: #000 !important;
+}
+.v2-btn-primary:hover { background: var(--teal-dim) !important; }
+
+/* Status green → teal for consistency */
+.v2-status-green { background: var(--teal-bg) !important; color: var(--teal) !important; }
+.v2-dot-green    { background: var(--teal) !important; }
+.v2-pulse        { background: var(--teal) !important; }
+
 /* ── Utility ── */
 .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 .spin { animation: spin 1s linear infinite; }

@@ -119,10 +119,10 @@ export default function CLMHome({ user, nav }) {
       {/* Logo */}
       <div style={{padding:'14px 14px 10px',borderBottom:`1px solid ${LN}`,flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:7}}>
-          <div style={{width:20,height:20,background:'#ffffff',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div style={{width:20,height:20,background:'#14b8a6',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{fontSize:13,fontWeight:600,color:T1,fontFamily:F}}>SSLVault</span>
+          <span style={{fontSize:13,fontWeight:600,color:"#14b8a6",fontFamily:F}}>SSLVault</span>
         </div>
       </div>
 
@@ -178,7 +178,7 @@ export default function CLMHome({ user, nav }) {
           {sm && <button onClick={()=>setSideOpen(o=>!o)} style={{background:'none',border:'none',cursor:'pointer',color:T2,padding:4,display:'flex',alignItems:'center',borderRadius:3}}>
             {sideOpen?<X size={16}/>:<Menu size={16}/>}
           </button>}
-          <span style={{fontSize:12,fontWeight:500,color:T1}}>{TITLES[sec]||'SSLVault'}</span>
+          <span style={{fontSize:12,fontWeight:500,color:'#14b8a6'}}>{TITLES[sec]||'SSLVault'}</span>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           {!sm && <span style={{fontSize:11,color:T3,fontFamily:'monospace'}}>{email}</span>}

@@ -82,7 +82,7 @@ function ImportedCertsSection({ certs, onDelete }) {
   const sourceLabel = s => ({ digicert:'DigiCert', sectigo:'Sectigo', entrust:'Entrust', globalsign:'GlobalSign' }[s] || s || 'CA Connector')
   const daysLeft = exp => { if (!exp) return null; return Math.floor((new Date(exp) - Date.now()) / 86400000) }
   return (
-    <div style={{ marginTop:20, border:'1px solid rgba(74,222,128,0.2)', borderRadius:14, overflow:'hidden', background:'#000000', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
+    <div style={{ marginTop:20, border:'1px solid rgba(20,184,166,0.2)', borderRadius:14, overflow:'hidden', background:'#000000', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
       <button onClick={() => setOpen(o => !o)}
         style={{ width:'100%', padding:'14px 18px', display:'flex', alignItems:'center', gap:10,
           background:'#000000', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}>
@@ -771,9 +771,9 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
   const statusBadge = (s) => {
     const map = {
-      issued:   { bg:'#dcfce7', color:'#4ade80', label:'Issued' },
-      active:   { bg:'#dcfce7', color:'#4ade80', label:'Active' },
-      installed:{ bg:'#dcfce7', color:'#4ade80', label:'Installed' },
+      issued:   { bg:'#dcfce7', color:'#14b8a6', label:'Issued' },
+      active:   { bg:'#dcfce7', color:'#14b8a6', label:'Active' },
+      installed:{ bg:'#dcfce7', color:'#14b8a6', label:'Installed' },
       pending:  { bg:'#fef9c3', color:'#854d0e', label:'Pending DV' },
       pending_validation: { bg:'#fef9c3', color:'#854d0e', label:'Pending DV' },
       failed:   { bg:'rgba(239,68,68,0.08)', color:'#f87171', label:'Failed' },
@@ -1082,7 +1082,7 @@ function ScanPqcButton({ onDone }) {
 
 // ── PQC Readiness row ─────────────────────────────────────────────────
 const PQC_RISK_MAP = {
-  ready:  { color:'#4ade80', bg:'#111111', border:'#A8E6DE', label:'PQC Ready',     icon:'✓' },
+  ready:  { color:'#14b8a6', bg:'#111111', border:'#A8E6DE', label:'PQC Ready',     icon:'✓' },
   low:    { color:'#ffffff', bg:'#111111', border:'#A8E6DE', label:'Low risk',       icon:'~' },
   medium: { color:'#ffffff', bg:'rgba(239,68,68,0.08)', border:'#F2C4BC', label:'Medium risk',    icon:'!' },
   high:   { color:'#f87171', bg:'#fef2f2', border:'#fecaca', label:'High risk',      icon:'✗' },
@@ -2706,7 +2706,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               Certificate Dashboard
               {healthy === total && total > 0 && (
                 <span style={{ fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:20,
-                  background:'#111111', color:'#4ade80', border:'0.5px solid #A8E6DE',
+                  background:'#111111', color:'#14b8a6', border:'0.5px solid #A8E6DE',
                   animation:'fadeIn 0.5s ease' }}>
                   All healthy ✓
                 </span>
@@ -2735,14 +2735,14 @@ function LoggedInDashboard({ user, nav, onIssue }) {
 
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))', gap:10, marginBottom:20 }}>
           {[
-            { label:'Total',        value:total,    color:'#ffffff', bg:'#111111', icon:'▦', sub:'certificates' },
-            { label:'Healthy',      value:healthy,  color:'#4ade80', bg:'#111111', icon:'✓', sub:healthy>0?'All valid':'None' },
+            { label:'Total',        value:total,    color:'#60a5fa', bg:'rgba(96,165,250,0.1)', icon:'▦', sub:'certificates' },
+            { label:'Healthy',      value:healthy,  color:'#14b8a6', bg:'rgba(20,184,166,0.1)', icon:'✓', sub:healthy>0?'All valid':'None' },
             { label:'Expiring',     value:expiring, color:expiring>0?'#ffffff':'rgba(255,255,255,0.38)', bg:expiring>0?'rgba(239,68,68,0.08)':'#000000', icon:'⏱', sub:expiring>0?'Renew soon':'None' },
             { label:'Pending',      value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#ffffff':'rgba(255,255,255,0.38)', bg:orders.filter(o=>o.status==='dv_pending').length>0?'rgba(239,68,68,0.08)':'#000000', icon:'⏳', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None' },
             { label:'Expired',      value:expired,  color:expired>0?'#f87171':'rgba(255,255,255,0.38)', bg:expired>0?'#fef2f2':'#000000', icon:'✗', sub:expired>0?'Action needed':'None' },
           ].map((s,i) => (
             <div key={s.label}
-              style={{ background:'#000000', border:'0.5px solid #e6fbf5', borderRadius:12,
+              style={{ background:'#000000', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8,
                 padding:'16px 18px', position:'relative', overflow:'hidden',
                 boxShadow:'0 1px 3px rgba(0,0,0,0.04)',
                 animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}>
@@ -2782,7 +2782,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         )}
 
         <div style={{ display:'grid', gridTemplateColumns: (!isMobile && selectedCert) ? 'minmax(0,1fr) clamp(280px,35vw,400px)':'1fr', gap:16, alignItems:'start' }}>
-          <div style={{ background:'#0a0a0a', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8,
+          <div style={{ background:'#0a0a0a', border:'1px solid rgba(20,184,166,0.2)', borderRadius:8,
             overflow:'hidden' }}>
             <div style={{ padding:'14px 16px', borderBottom:'0.5px solid #e6fbf5',
               display:'flex', alignItems:'center', gap:8, flexWrap:'wrap',
@@ -2816,7 +2816,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                     style={{ background:'#000000', border:'1px solid rgba(74,222,128,0.2)', borderRadius:8, color:'#ffffff',
                       fontSize:12, padding:'6px 10px 6px 30px', width:190, outline:'none', fontFamily:'inherit',
                       transition:'border-color .15s' }}
-                    onFocus={e=>e.target.style.borderColor='rgba(255,255,255,0.3)'}
+                    onFocus={e=>e.target.style.borderColor='#14b8a6'}
                     onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
                   <Globe size={12} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'rgba(255,255,255,0.38)', pointerEvents:'none' }}/>
                 </div>
@@ -2884,7 +2884,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:10 }}>
             {[
               { icon:Shield,    color:'#ffffff', bg:'#111111', label:'Issue Certificate', desc:'RapidSSL DV · RapidSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
-              { icon:Download,  color:'#4ade80', bg:'#111111', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
+              { icon:Download,  color:'#14b8a6', bg:'#111111', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
               { icon:Activity,  color:'#ffffff', bg:'rgba(239,68,68,0.08)', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
               { icon:Zap,       color:'#ffffff', bg:'rgba(239,68,68,0.08)', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
             ].map(({ icon:Icon, color, bg, label, desc, action }, i) => (
@@ -2914,7 +2914,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               overflow:'hidden', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
               {recentEvents.map((ev, i) => {
                 const evColors = {
-                  issued:          { color:'#4ade80', bg:'#111111', dot:'#4ade80' },
+                  issued:          { color:'#14b8a6', bg:'#111111', dot:'#4ade80' },
                   renewed:         { color:'#ffffff', bg:'#111111', dot:'#ffffff' },
                   revoked:         { color:'#f87171', bg:'#fef2f2', dot:'#f87171' },
                   agent_installed: { color:'#ffffff', bg:'rgba(239,68,68,0.08)', dot:'#ffffff' },
