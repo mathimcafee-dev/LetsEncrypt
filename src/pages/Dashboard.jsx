@@ -563,16 +563,35 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
     setProgress({ action, steps: initialSteps, pollTimer: null })
 
     try {
-      const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+      // Fire the reissue/renew — don't await; GGS can take 60-90s and we don't want to block the UI
+      // Instead, start polling ssl_orders immediately so the UI advances in real time
+      let fetchDone = false
+      let fetchOk = false
+      let fetchErr = null
+      let fetchData = null
+
+      fetch(SB_URL+'/functions/v1/gogetssl-issue', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({ action, cert_id: cert.id, triggered_by: 'manual', ...extra })
-      })
-      const d = await r.json()
+      }).then(r => r.json()).then(d => {
+        fetchDone = true; fetchData = d
+        if (!d.ok) { fetchOk = false; fetchErr = d.error || 'Request failed' }
+        else { fetchOk = true }
+      }).catch(e => { fetchDone = true; fetchOk = false; fetchErr = e.message })
 
-      if (!d.ok) {
-        setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: d.error || 'Request failed' }) }))
+      // Wait up to 10s for the fetch to return before we start polling
+      // (need order_id or ggs_order_id from the response to poll correctly)
+      // During this time keep step 0 spinning — that's expected
+      await new Promise(resolve => {
+        const t = setInterval(() => { if (fetchDone) { clearInterval(t); resolve() } }, 500)
+        setTimeout(() => { clearInterval(t); resolve() }, 10000)
+      })
+
+      if (!fetchOk) {
+        setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: fetchErr || 'Request failed' }) }))
         setMsg(''); setBusy(false); return
       }
+      const d = fetchData
 
       // Steps 0→1→2 done from API response
       // For renew, store the new GGS order ID so we poll the right order
@@ -664,24 +683,48 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             // For renew, look up the NEW cert by new ggs_order_id; for reissue use cert.id
             setTimeout(async () => {
               let method = null
+              let dispatchCertId = cert.id
               if (!isReissue && newGgsOrderId) {
-                // Renew — new cert row created by cron
                 const { data: newCert } = await supabase
                   .from('certificates')
-                  .select('install_method')
+                  .select('id, install_method')
                   .eq('user_id', session.user.id)
                   .eq('ggs_order_id', newGgsOrderId)
                   .order('created_at', { ascending: false })
                   .limit(1)
                 method = newCert?.[0]?.install_method
+                if (newCert?.[0]?.id) dispatchCertId = newCert[0].id
               } else {
-                const { data: certRow } = await supabase.from('certificates').select('install_method').eq('id', cert.id).single()
+                const { data: certRow } = await supabase.from('certificates').select('id, install_method').eq('id', cert.id).single()
                 method = certRow?.install_method
               }
+
+              // Auto-dispatch to cPanel if saved credential exists
+              if (method === 'cpanel') {
+                try {
+                  const { data: creds } = await supabase
+                    .from('server_credentials')
+                    .select('id')
+                    .eq('server_type', 'cpanel')
+                    .contains('domains', [cert.domain])
+                    .limit(1)
+                  const credId = creds?.[0]?.id
+                  if (credId) {
+                    const cpRes = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/cpanel-install', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+                      body: JSON.stringify({ action: 'install', cert_id: dispatchCertId, domain: cert.domain, credential_id: credId, credential_source: 'cpanel_credentials' })
+                    })
+                    const cpData = await cpRes.json().catch(() => ({}))
+                    if (!cpData.ok) console.warn('cPanel auto-install failed:', cpData.error)
+                  }
+                } catch(cpErr) { console.warn('cPanel dispatch error (non-fatal):', cpErr) }
+              }
+
               setProgress(p => {
                 let steps = updateStep(p.steps, 5, {
                   status: 'done',
-                  detail: method === 'agent' ? '🖥 Sent to VPS agent' : method === 'cpanel' ? '🌐 Sent to cPanel' : 'No server connected — install manually'
+                  detail: method === 'agent' ? '🖥 Sent to VPS agent' : method === 'cpanel' ? '🌐 Installed to cPanel' : 'No server connected — install manually'
                 })
                 return { ...p, steps }
               })
