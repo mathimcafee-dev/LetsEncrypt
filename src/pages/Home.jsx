@@ -41,48 +41,48 @@ function FadeUp({ children, delay = 0 }) {
 }
 
 // ── Design tokens ─────────────────────────────────────────────────────
-const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
+const F    = "'DM Sans','Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
-// Owlish white palette
+// Dark v2 palette
 const W = {
-  bg:        '#FDFAF5',
-  bg2:       '#F5EFE0',
-  bg3:       '#EDE8D8',
-  border:    '#D8D0C0',
-  border2:   '#C8BEA8',
-  heading:   '#1A2E2C',
-  body:      '#3D5C59',
-  muted:     '#7A9E9B',
-  teal:      '#3DBFB0',
-  tealDk:    '#1A7A72',
-  tealBg:    '#E8F8F6',
-  tealBd:    '#A8E6DE',
-  green:     '#3DBFB0',
-  greenBg:   '#E8F8F6',
+  bg:        '#0a0a0a',
+  bg2:       '#111111',
+  bg3:       '#1a1a1a',
+  border:    '#1e1e1e',
+  border2:   '#2a2a2a',
+  heading:   '#f0f0f0',
+  body:      '#999999',
+  muted:     '#555555',
+  teal:      '#10b981',
+  tealDk:    '#059669',
+  tealBg:    '#0a1a12',
+  tealBd:    '#134e35',
+  green:     '#10b981',
+  greenBg:   '#0a1a12',
   purple:    '#E8897A',
-  purpleBg:  '#FDF0EE',
-  purpleBd:  '#F2C4BC',
+  purpleBg:  '#1a100e',
+  purpleBd:  '#3a1e18',
   amber:     '#E8897A',
-  amberBg:   '#FDF0EE',
-  mintDk:    '#1A7A72',
-  mintBg:    '#E8F8F6',
-  mintBd:    '#A8E6DE',
-  red:       '#dc2626',
-  redBg:     '#fef2f2',
+  amberBg:   '#1a100e',
+  mintDk:    '#059669',
+  mintBg:    '#0a1a12',
+  mintBd:    '#134e35',
+  red:       '#ef4444',
+  redBg:     '#1a0a0a',
 }
 
-// Dark palette for hero + footer
+// Dark v2 hero + footer palette
 const D = {
-  bg:   '#1A2E2C',
-  bg2:  '#0F5750',
+  bg:   '#0a0a0a',
+  bg2:  '#0d0d0d',
   text: 'rgba(255,255,255,0.92)',
   mid:  'rgba(255,255,255,0.55)',
   lt:   'rgba(255,255,255,0.30)',
   bd:   'rgba(255,255,255,0.10)',
-  teal: '#3DBFB0',
-  tealDk: '#1A7A72',
-  green:'#A8E6DE',
+  teal: '#10b981',
+  tealDk: '#059669',
+  green:'#6ee7b7',
 }
 
 // ── Primitives ────────────────────────────────────────────────────────
@@ -143,7 +143,7 @@ function Btn({ label, onClick, primary, dark }) {
 // ── Card component ────────────────────────────────────────────────────
 function Card({ children, style = {} }) {
   return (
-    <div style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, padding:'24px', boxShadow:'0 1px 3px rgba(0,0,0,0.05)', ...style }}>
+    <div style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, padding:'24px', boxShadow:'0 1px 3px rgba(0,0,0,0.4)', ...style }}>
       {children}
     </div>
   )
@@ -152,7 +152,7 @@ function Card({ children, style = {} }) {
 // ── Terminal ──────────────────────────────────────────────────────────
 function Terminal({ title, lines }) {
   return (
-    <div style={{ background:`linear-gradient(180deg, ${D.bg2} 0%, ${D.bg} 100%)`, border:`1px solid rgba(61,191,176,0.15)`, borderRadius:12, overflow:'hidden', fontFamily:MONO, boxShadow:'0 20px 60px rgba(0,0,0,0.3)' }}>
+    <div style={{ background:`linear-gradient(180deg, ${D.bg2} 0%, ${D.bg} 100%)`, border:`1px solid rgba(16,185,129,0.15)`, borderRadius:12, overflow:'hidden', fontFamily:MONO, boxShadow:'0 20px 60px rgba(0,0,0,0.3)' }}>
       <div style={{ background:'rgba(255,255,255,0.03)', padding:'10px 16px', display:'flex', alignItems:'center', gap:8, borderBottom:`1px solid ${D.bd}` }}>
         <div style={{ display:'flex', gap:5 }}>
           {['#ff5f57','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:10, height:10, borderRadius:'50%', background:c, opacity:.85 }}/>)}
@@ -186,7 +186,7 @@ function InventoryMockup() {
   const sc = s => s==='active'?W.green:s==='warning'?W.amber:W.red
   const gc = g => g.startsWith('A')?W.green:g==='B'?W.amber:W.red
   return (
-    <div style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, overflow:'hidden', boxShadow:'0 4px 24px rgba(0,0,0,0.08)' }}>
+    <div style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, overflow:'hidden', boxShadow:'0 4px 24px rgba(0,0,0,0.6)' }}>
       <div style={{ background:W.bg2, padding:'10px 14px', display:'flex', alignItems:'center', gap:8, borderBottom:`1px solid ${W.border}` }}>
         <div style={{ display:'flex', gap:5 }}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{ width:8,height:8,borderRadius:'50%',background:c }}/>)}</div>
         <span style={{ fontSize:11, color:W.muted, fontFamily:MONO, flex:1, textAlign:'center' }}>Inventory · 4 certificates</span>
@@ -210,7 +210,7 @@ function InventoryMockup() {
 
 function CertVaultMockup() {
   return (
-    <div style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, overflow:'hidden', boxShadow:'0 4px 24px rgba(0,0,0,0.08)' }}>
+    <div style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, overflow:'hidden', boxShadow:'0 4px 24px rgba(0,0,0,0.6)' }}>
       <div style={{ background:W.bg2, padding:'10px 14px', display:'flex', alignItems:'center', gap:8, borderBottom:`1px solid ${W.border}` }}>
         <div style={{ display:'flex', gap:5 }}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{ width:8,height:8,borderRadius:'50%',background:c }}/>)}</div>
         <span style={{ fontSize:11, color:W.muted, fontFamily:MONO, flex:1, textAlign:'center' }}>CertVault · Private key vault</span>
@@ -253,7 +253,7 @@ function ReadinessMockup() {
     { d:'staging.portal.io', s:24, label:'Will Break',  color:W.red   },
   ]
   return (
-    <div style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, overflow:'hidden', boxShadow:'0 4px 24px rgba(0,0,0,0.08)' }}>
+    <div style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, overflow:'hidden', boxShadow:'0 4px 24px rgba(0,0,0,0.6)' }}>
       <div style={{ background:W.bg2, padding:'10px 14px', display:'flex', alignItems:'center', gap:8, borderBottom:`1px solid ${W.border}` }}>
         <div style={{ display:'flex', gap:5 }}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{ width:8,height:8,borderRadius:'50%',background:c }}/>)}</div>
         <span style={{ fontSize:11, color:W.muted, fontFamily:MONO, flex:1, textAlign:'center' }}>47-Day Readiness · CA/B Forum</span>
@@ -317,10 +317,10 @@ export default function Home({ nav }) {
 
   return (
     <div style={{ fontFamily:F, background:W.bg, color:W.heading, overflowX:'hidden' }}>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
       <style>{`
         *, *::before, *::after { box-sizing:border-box; margin:0; padding:0 }
-        ::selection { background:#3DBFB022; color:#1A7A72 }
+        ::selection { background:#10b98122; color:#10b981 }
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes fadeSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
@@ -328,7 +328,7 @@ export default function Home({ nav }) {
       `}</style>
 
       {/* ── NAV ── */}
-      <header style={{ position:'sticky', top:0, zIndex:200, background:'#1A2E2C', borderBottom:'1px solid rgba(255,255,255,0.08)', height:60, display:'flex', alignItems:'center', padding:`0 clamp(16px,4vw,40px)`, justifyContent:'space-between' }}>
+      <header style={{ position:'sticky', top:0, zIndex:200, background:'#0a0a0a', borderBottom:'1px solid rgba(255,255,255,0.08)', height:60, display:'flex', alignItems:'center', padding:`0 clamp(16px,4vw,40px)`, justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer', flexShrink:0 }} onClick={() => nav('/')}>
           <div style={{ width:30, height:30, background:'#E8897A', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -384,7 +384,7 @@ export default function Home({ nav }) {
           </button>}
           <button onClick={() => nav('/auth')}
             style={{ background:'#E8897A', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:600, color:'white', padding:'7px 20px', borderRadius:100, transition:'all .15s', letterSpacing:'-0.01em' }}
-            onMouseEnter={e => { e.currentTarget.style.background='#1A7A72'; e.currentTarget.style.boxShadow=`0 4px 20px rgba(14,165,233,0.4)` }}
+            onMouseEnter={e => { e.currentTarget.style.background='#059669'; e.currentTarget.style.boxShadow=`0 4px 20px rgba(14,165,233,0.4)` }}
             onMouseLeave={e => { e.currentTarget.style.background='#E8897A'; e.currentTarget.style.boxShadow='none' }}>
             Get started
           </button>
@@ -393,8 +393,8 @@ export default function Home({ nav }) {
 
       {/* ── HERO ── */}
       <section style={{ background:`linear-gradient(160deg, ${D.bg} 0%, ${D.bg2} 100%)`, padding:`clamp(80px,10vw,130px) clamp(20px,5vw,48px) clamp(70px,9vw,110px)`, position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', inset:0, backgroundImage:`linear-gradient(rgba(61,191,176,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(61,191,176,0.04) 1px, transparent 1px)`, backgroundSize:'72px 72px', maskImage:'radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 100%)', WebkitMaskImage:'radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 100%)', pointerEvents:'none' }}/>
-        <div style={{ position:'absolute', top:'-10%', left:'50%', transform:'translateX(-50%)', width:900, height:500, background:`radial-gradient(ellipse 60% 55% at 50% 0%, rgba(61,191,176,0.14) 0%, transparent 100%)`, pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', inset:0, backgroundImage:`linear-gradient(rgba(16,185,129,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.04) 1px, transparent 1px)`, backgroundSize:'72px 72px', maskImage:'radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 100%)', WebkitMaskImage:'radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 100%)', pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', top:'-10%', left:'50%', transform:'translateX(-50%)', width:900, height:500, background:`radial-gradient(ellipse 60% 55% at 50% 0%, rgba(16,185,129,0.14) 0%, transparent 100%)`, pointerEvents:'none' }}/>
 
         <div style={{ maxWidth:1100, margin:'0 auto', position:'relative' }}>
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?48:72, alignItems:'center' }}>
@@ -441,7 +441,7 @@ export default function Home({ nav }) {
               <div style={{ position:'relative' }}>
                 <Terminal title="sslvault-agent · prod-server-01" lines={[
                   { prompt:'›', text:'[21:05:12] Checking for pending jobs...', c:'rgba(255,255,255,0.2)' },
-                  { prompt:'›', text:'[21:05:13] Job received: renew · easysecurity.in', c:'rgba(61,191,176,0.9)' },
+                  { prompt:'›', text:'[21:05:13] Job received: renew · easysecurity.in', c:'rgba(16,185,129,0.9)' },
                   { text:'↳ DNS provider: Cloudflare', c:'rgba(255,255,255,0.32)', indent:true },
                   { text:'↳ Adding TXT _acme-challenge...', c:'rgba(255,255,255,0.28)', indent:true },
                   { prompt:'›', text:'[21:05:15] DNS propagated · DCV validated ✓', c:'rgba(16,185,129,0.85)' },
@@ -449,7 +449,7 @@ export default function Home({ nav }) {
                   { text:'↳ CN=easysecurity.in  valid 180d  grade A+', c:'rgba(255,255,255,0.28)', indent:true },
                   { prompt:'›', text:'[21:05:17] nginx -t OK · systemctl reload nginx ✓', c:'rgba(16,185,129,0.85)' },
                   { prompt:'›', text:'[21:05:18] CertVault: AES-256-GCM encrypted ✓', c:'rgba(232,137,122,0.85)' },
-                  { prompt:'›', text:'[21:05:18] ✓ Complete · next run: 21:10:18', c:'rgba(61,191,176,0.9)' },
+                  { prompt:'›', text:'[21:05:18] ✓ Complete · next run: 21:10:18', c:'rgba(16,185,129,0.9)' },
                 ]}/>
                 {!isMobile && (
                   <div style={{ position:'absolute', bottom:-18, right:-14, background:'rgba(13,17,23,0.95)', border:'1px solid rgba(16,185,129,0.25)', borderRadius:10, padding:'10px 14px', backdropFilter:'blur(12px)' }}>
@@ -548,7 +548,7 @@ export default function Home({ nav }) {
                 badge:'DNS-01',
               },
               {
-                icon:'🏛', color:'#3DBFB0', title:'cPanel install',
+                icon:'🏛', color:'#10b981', title:'cPanel install',
                 specs:['UAPI-based installation','No SSH or agent required','API token auth','Auto-renew via cPanel'],
                 badge:'UAPI',
               },
@@ -653,7 +653,7 @@ export default function Home({ nav }) {
                   { spec:'RFC 8555',          title:'ACME v2',           color:W.teal,   desc:'DNS-01 challenge. Auto-validated via provider API.' },
                   { spec:'CT monitoring',     title:'Cert transparency', color:W.green,  desc:'crt.sh queries for every cert ever issued.' },
                   { spec:'CAA + HSTS',        title:'DNS security',      color:W.amber,  desc:'CAA prevents unauthorised CA issuance.' },
-                  { spec:'TLS 1.2 / 1.3',    title:'TLS posture',       color:'#3DBFB0',desc:'ECDHE + PFS. HSTS max-age verified.' },
+                  { spec:'TLS 1.2 / 1.3',    title:'TLS posture',       color:'#10b981',desc:'ECDHE + PFS. HSTS max-age verified.' },
                   { spec:'Append-only',       title:'Audit trail',       color:W.red,    desc:'Every access logged. CSV export for SOC 2.' },
                 ].map(s => (
                   <div key={s.spec} style={{ background:W.bg, border:`1px solid ${W.border}`, borderTop:`2px solid ${s.color}`, borderRadius:9, padding:'14px 14px', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
@@ -731,7 +731,7 @@ export default function Home({ nav }) {
               <Terminal title="dns-provider · Cloudflare API" lines={[
                 { prompt:'#', text:' DCV for renewal · api.myshop.com', c:'rgba(255,255,255,0.18)' },
                 { prompt:'›', text:'Resolving zone: myshop.com', c:'rgba(255,255,255,0.4)' },
-                { prompt:'›', text:'PUT /zones/{id}/dns_records', c:'rgba(61,191,176,0.9)' },
+                { prompt:'›', text:'PUT /zones/{id}/dns_records', c:'rgba(16,185,129,0.9)' },
                 { text:'↳ type:TXT  name:_acme-challenge', c:'rgba(255,255,255,0.32)', indent:true },
                 { text:'↳ content:xK3-mP9_aQ2rZ...  ttl:60', c:'rgba(255,255,255,0.28)', indent:true },
                 { prompt:'›', text:'Record created · TTL 60s', c:'rgba(16,185,129,0.85)' },
@@ -739,7 +739,7 @@ export default function Home({ nav }) {
                 { prompt:'›', text:'Propagated in 4.2s ✓', c:'rgba(16,185,129,0.85)' },
                 { prompt:'›', text:'ACME challenge: verified ✓', c:'rgba(16,185,129,0.85)' },
                 { prompt:'›', text:'DELETE /zones/{id}/dns_records/{rid}', c:'rgba(255,255,255,0.3)' },
-                { prompt:'›', text:'Challenge record removed ✓', c:'rgba(61,191,176,0.9)' },
+                { prompt:'›', text:'Challenge record removed ✓', c:'rgba(16,185,129,0.9)' },
               ]}/>
             </FadeUp>
           </div>
@@ -776,7 +776,7 @@ export default function Home({ nav }) {
                   </div>
                 )
                 return (
-                  <div key={s.n} style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, padding:'20px', textAlign:'center', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
+                  <div key={s.n} style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, padding:'20px', textAlign:'center', boxShadow:'0 1px 3px rgba(0,0,0,0.4)' }}>
                     <div style={{ fontSize:24, marginBottom:10 }}>{s.icon}</div>
                     <div style={{ fontSize:10, fontWeight:700, color:W.teal, fontFamily:MONO, marginBottom:6 }}>{s.n}</div>
                     <div style={{ fontSize:13, fontWeight:600, color:W.heading, marginBottom:6 }}>{s.title}</div>
@@ -795,7 +795,7 @@ export default function Home({ nav }) {
               ].map((s, i) => {
                 if (!s) return <div key={i}/>
                 return (
-                  <div key={s.n} style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, padding:'20px', textAlign:'center', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
+                  <div key={s.n} style={{ background:W.bg, border:`1px solid ${W.border}`, borderRadius:12, padding:'20px', textAlign:'center', boxShadow:'0 1px 3px rgba(0,0,0,0.4)' }}>
                     <div style={{ fontSize:24, marginBottom:10 }}>{s.icon}</div>
                     <div style={{ fontSize:10, fontWeight:700, color:W.teal, fontFamily:MONO, marginBottom:6 }}>{s.n}</div>
                     <div style={{ fontSize:13, fontWeight:600, color:W.heading, marginBottom:6 }}>{s.title}</div>
@@ -828,7 +828,7 @@ export default function Home({ nav }) {
           <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(auto-fill,minmax(180px,1fr))', gap:16, marginBottom:20 }}>
             {[
               {
-                icon:'🏛', color:'#3DBFB0', title:'CA Trust Store',
+                icon:'🏛', color:'#10b981', title:'CA Trust Store',
                 sub:'6,200+ root & intermediate CAs',
                 desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert. PEM download.',
                 badge:'CCADB Live',
@@ -844,7 +844,7 @@ export default function Home({ nav }) {
                 stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']],
               },
               {
-                icon:'🌍', color:'#3DBFB0', title:'Global PKI Hub',
+                icon:'🌍', color:'#10b981', title:'Global PKI Hub',
                 sub:'12 bodies · 22 standards · PQC tracker',
                 desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',
                 badge:'PQC Ready',
@@ -892,11 +892,11 @@ export default function Home({ nav }) {
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', flexShrink:0 }}>
                 {[['ML-KEM','FIPS 203'],['ML-DSA','FIPS 204'],['SLH-DSA','FIPS 205']].map(([alg, fips]) => (
                   <div key={alg} style={{ background:'#E8F8F6', border:'1px solid #A8E6DE', borderRadius:8, padding:'7px 12px', textAlign:'center' }}>
-                    <div style={{ fontSize:12, fontWeight:700, color:'#3DBFB0', fontFamily:MONO }}>{alg}</div>
+                    <div style={{ fontSize:12, fontWeight:700, color:'#10b981', fontFamily:MONO }}>{alg}</div>
                     <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', marginTop:2 }}>{fips}</div>
                   </div>
                 ))}
-                <button onClick={() => nav('/pki-hub')} style={{ background:'#3DBFB0', border:'none', borderRadius:8, padding:'9px 16px', fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer', fontFamily:F, whiteSpace:'nowrap' }}>
+                <button onClick={() => nav('/pki-hub')} style={{ background:'#10b981', border:'none', borderRadius:8, padding:'9px 16px', fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer', fontFamily:F, whiteSpace:'nowrap' }}>
                   View PQC tracker →
                 </button>
               </div>
@@ -943,20 +943,20 @@ export default function Home({ nav }) {
                   <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                     <span style={{ fontSize:16 }}>🔗</span>
                     <span style={{ fontSize:13, fontWeight:600, color:'rgba(255,255,255,0.85)', fontFamily:MONO }}>CertBind</span>
-                    <span style={{ fontSize:10, fontWeight:700, color:'#1A7A72', background:'#E8F8F6', border:'1px solid #A8E6DE', borderRadius:4, padding:'2px 8px', fontFamily:MONO }}>ACTIVE</span>
+                    <span style={{ fontSize:10, fontWeight:700, color:'#059669', background:'#E8F8F6', border:'1px solid #A8E6DE', borderRadius:4, padding:'2px 8px', fontFamily:MONO }}>ACTIVE</span>
                   </div>
                   <span style={{ fontSize:11, color:'rgba(255,255,255,0.28)', fontFamily:MONO }}>4/4 domains bound</span>
                 </div>
 
                 {/* 4 verification layers */}
                 {[
-                  { n:'01', label:'Key-Cert Binding Proof',   status:'VERIFIED', color:'#3DBFB0',  desc:'Agent signs nonce · key ↔ cert proven cryptographically' },
-                  { n:'02', label:'Live TLS Fingerprint',      status:'MATCH',    color:'#3DBFB0',  desc:'SHA-256 of served cert matches issued cert on every poll' },
-                  { n:'03', label:'Chain Integrity',           status:'CLEAN',    color:'#3DBFB0',  desc:'No unexpected intermediates · no SSL inspection proxy' },
-                  { n:'04', label:'Multi-Node Consistency',    status:'7/7 NODES', color:'#3DBFB0', desc:'All load balancer nodes serving correct certificate' },
+                  { n:'01', label:'Key-Cert Binding Proof',   status:'VERIFIED', color:'#10b981',  desc:'Agent signs nonce · key ↔ cert proven cryptographically' },
+                  { n:'02', label:'Live TLS Fingerprint',      status:'MATCH',    color:'#10b981',  desc:'SHA-256 of served cert matches issued cert on every poll' },
+                  { n:'03', label:'Chain Integrity',           status:'CLEAN',    color:'#10b981',  desc:'No unexpected intermediates · no SSL inspection proxy' },
+                  { n:'04', label:'Multi-Node Consistency',    status:'7/7 NODES', color:'#10b981', desc:'All load balancer nodes serving correct certificate' },
                 ].map(l => (
                   <div key={l.n} style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:10, padding:'12px 16px', display:'flex', gap:12, alignItems:'flex-start' }}>
-                    <div style={{ width:24, height:24, borderRadius:6, background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:800, color:'#1A7A72', fontFamily:MONO, flexShrink:0 }}>{l.n}</div>
+                    <div style={{ width:24, height:24, borderRadius:6, background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:800, color:'#059669', fontFamily:MONO, flexShrink:0 }}>{l.n}</div>
                     <div style={{ flex:1 }}>
                       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:4 }}>
                         <span style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.8)' }}>{l.label}</span>
