@@ -28,19 +28,19 @@ import Pricing from './Pricing'
 
 // ── Design tokens ──────────────────────────────────────────────────────
 const F = "'Inter',system-ui,sans-serif"
-const NAVY  = '#0d1117'   // page bg
-const CARD  = '#161b22'   // card / topbar bg
-const CARD2 = '#1c2128'   // elevated card
-const CARD3 = '#21262d'   // input / hover
-const LINE  = 'rgba(255,255,255,0.08)'
-const LINE2 = 'rgba(255,255,255,0.14)'
-const INK   = '#e6edf3'
-const BODY  = '#8b949e'
-const MUTED = '#6e7681'
-const BLUE  = '#388bfd'
-const BLUEH = '#1f6feb'
-const GREEN = '#3fb950'
-const RED   = '#f85149'
+const NAVY  = '#f3f6fb'   // page bg
+const CARD  = '#ffffff'   // card / topbar bg
+const CARD2 = '#f0f4f9'   // elevated card
+const CARD3 = '#e8edf5'   // input / hover
+const LINE  = '#e1e7ef'
+const LINE2 = '#c8d3e0'
+const INK   = '#1a2332'
+const BODY  = '#4a5568'
+const MUTED = '#8496a9'
+const BLUE  = '#0063b0'
+const BLUEH = '#004f8c'
+const GREEN = '#1a7f37'
+const RED   = '#cf222e'
 const AMBER = '#d29922'
 
 function useIsMobile(bp=860) {
@@ -266,7 +266,7 @@ export default function CLMHome({ user, nav }) {
               onMouseLeave={e=>{e.currentTarget.style.background='none';e.currentTarget.style.color='#4a5568'}}>
               <Bell size={15}/>
               {unread>0&&<span style={{position:'absolute',top:5,right:5,width:6,height:6,
-                borderRadius:'50%',background:RED,border:`1.5px solid ${CARD}`}}/>}
+                borderRadius:'50%',background:'#cf222e',border:`1.5px solid #ffffff`}}/>}
             </button>
             {bellOpen&&(
               <div style={{position:'absolute',right:0,top:'calc(100% + 8px)',background:'#f0f4f9',
