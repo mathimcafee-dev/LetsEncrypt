@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Menu, X } from 'lucide-react'
 
 const F = "'Inter',system-ui,sans-serif"
-const W = '#faf7f2', BK = '#0a0a0a'
+const W = '#f0fdf9', BK = '#0a0a0a'
 const T1 = '#0a0a0a', T2 = 'rgba(0,0,0,0.5)', T3 = 'rgba(0,0,0,0.32)'
 const LN = 'rgba(0,0,0,0.08)', LN2 = 'rgba(0,0,0,0.14)'
 
@@ -53,7 +53,7 @@ export default function Nav({ nav, page }) {
               <div style={{position:'absolute',top:'calc(100% + 6px)',left:'50%',transform:'translateX(-50%)',background:W,border:`1px solid ${LN2}`,borderRadius:4,padding:'5px',minWidth:200,boxShadow:'0 4px 16px rgba(0,0,0,0.1)',zIndex:300}}>
                 {intel.map(it=>(
                   <button key={it.path} onClick={()=>{nav(it.path);setDrop(false)}} style={{display:'block',width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',fontFamily:F,padding:'7px 10px',borderRadius:3,transition:'background .1s'}}
-                    onMouseEnter={e=>e.currentTarget.style.background='#f0fdfa'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
+                    onMouseEnter={e=>e.currentTarget.style.background='#ccfbf1'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
                     <div style={{fontSize:12,fontWeight:500,color:T1,marginBottom:1}}>{it.label}</div>
                     <div style={{fontSize:11,color:T3}}>{it.desc}</div>
                   </button>

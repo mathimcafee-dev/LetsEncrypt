@@ -24,10 +24,10 @@ import Pricing from './Pricing'
 
 // Light-mode tokens — never change these
 const F   = "'Inter',system-ui,sans-serif"
-const W   = '#faf7f2'
+const W   = '#f0fdf9'
 const BK  = '#0a0a0a'
 const S   = '#f5f5f5'   // sidebar bg
-const S2  = '#e4e0d8'   // sidebar active
+const S2  = '#99f6e4'   // sidebar active
 const T1  = '#0a0a0a'
 const T2  = 'rgba(0,0,0,0.5)'
 const T3  = 'rgba(0,0,0,0.32)'
@@ -82,7 +82,7 @@ export default function CLMHome({ user, nav }) {
   const Item=({id,label,icon:Icon,alert})=>{
     const on=sec===id
     return <button onClick={()=>go(id)} style={{display:'flex',alignItems:'center',gap:9,padding:'7px 12px 7px 14px',cursor:'pointer',fontSize:12,fontWeight:on?500:400,color:on?'#0f766e':T2,background:on?'#ccfbf1':'transparent',borderLeft:`2px solid ${on?'#0d9488':'transparent'}`,border:'none',width:'100%',textAlign:'left',fontFamily:F,transition:'all 0.12s',borderRadius:'0 3px 3px 0',marginBottom:1}}
-      onMouseEnter={e=>{if(!on){e.currentTarget.style.background='#f0fdfa';e.currentTarget.style.color='#0f766e'}}}
+      onMouseEnter={e=>{if(!on){e.currentTarget.style.background='#ccfbf1';e.currentTarget.style.color='#0f766e'}}}
       onMouseLeave={e=>{if(!on){e.currentTarget.style.background='transparent';e.currentTarget.style.color=T2}}}>
       <Icon size={13} strokeWidth={on?2.2:1.7} style={{flexShrink:0}}/>
       <span style={{flex:1}}>{label}</span>
@@ -199,7 +199,7 @@ export default function CLMHome({ user, nav }) {
                 {bellLoad ? <div style={{padding:'20px',textAlign:'center',color:T3,fontSize:11}}>Loading…</div>
                 : notifs.length===0 ? <div style={{padding:'28px 14px',textAlign:'center',color:T3,fontSize:11}}>No notifications yet</div>
                 : notifs.map(n=>(
-                  <div key={n.id} style={{padding:'9px 14px',borderBottom:`1px solid ${LN}`,display:'flex',gap:9,alignItems:'flex-start',background:n.read?'#ffffff':'#f0fdfa'}}
+                  <div key={n.id} style={{padding:'9px 14px',borderBottom:`1px solid ${LN}`,display:'flex',gap:9,alignItems:'flex-start',background:n.read?'#ffffff':'#ccfbf1'}}
                     onMouseEnter={e=>e.currentTarget.style.background='rgba(0,0,0,0.03)'} onMouseLeave={e=>e.currentTarget.style.background=n.read?W:'rgba(0,0,0,0.02)'}>
                     <span style={{width:5,height:5,borderRadius:'50%',background:n.color||BK,marginTop:4,flexShrink:0}}/>
                     <div style={{flex:1,minWidth:0}}>
@@ -225,7 +225,7 @@ export default function CLMHome({ user, nav }) {
         {sm&&sideOpen && <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.3)',zIndex:39}} onClick={()=>setSideOpen(false)}/>}
 
         {/* Sidebar */}
-        <nav ref={sideRef} style={{width:200,background:'#f5f1ea',borderRight:`1px solid ${LN}`,display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto',
+        <nav ref={sideRef} style={{width:200,background:'#e6fbf5',borderRight:`1px solid ${LN}`,display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto',
           ...(sm?{position:'fixed',left:0,top:46,bottom:0,zIndex:40,transform:sideOpen?'translateX(0)':'translateX(-100%)',transition:'transform 0.22s ease',boxShadow:'4px 0 16px rgba(0,0,0,0.1)'}:{position:'sticky',top:46,height:'calc(100vh - 46px)'})}}>
           <Sidebar/>
         </nav>

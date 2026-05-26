@@ -13,10 +13,10 @@
   --accent-light:   #fde8e4;   /* coral tint */
   --accent-mid:     #f9b8ad;   /* coral border */
 
-  --bg:             #faf7f2;   /* warm cream page bg */
-  --bg2:            #f5f1ea;   /* slightly deeper cream */
-  --bg3:            #edeae3;   /* card / panel surface */
-  --bg4:            #e4e0d8;   /* deep panel / inputs */
+  --bg:             #f0fdf9;   /* warm cream page bg */
+  --bg2:            #e6fbf5;   /* slightly deeper cream */
+  --bg3:            #ccfbf1;   /* card / panel surface */
+  --bg4:            #99f6e4;   /* deep panel / inputs */
   --surface:        #ffffff;   /* pure white cards */
 
   --line:           rgba(0,0,0,0.08);

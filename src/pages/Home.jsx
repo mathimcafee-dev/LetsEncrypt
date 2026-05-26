@@ -4,12 +4,12 @@ import { supabase } from '../lib/supabase'
 // ── Light mode tokens ─────────────────────────────────────────────────
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const W    = '#faf7f2'
+const W    = '#f0fdf9'
 const BK   = '#0a0a0a'
-const BG1  = '#faf7f2'   // page
-const BG2  = '#f5f1ea'   // alt sections
-const BG3  = '#edeae3'   // cards
-const BG4  = '#e4e0d8'   // deep card
+const BG1  = '#f0fdf9'   // page
+const BG2  = '#e6fbf5'   // alt sections
+const BG3  = '#ccfbf1'   // cards
+const BG4  = '#99f6e4'   // deep card
 const T1   = '#0a0a0a'
 const T2   = 'rgba(0,0,0,0.52)'
 const T3   = 'rgba(0,0,0,0.32)'
