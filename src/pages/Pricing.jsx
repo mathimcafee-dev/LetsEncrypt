@@ -51,7 +51,7 @@ const PLANS = [
     color:TEAL, glow:'rgba(45,212,191,0.15)', highlight:false,
     cta:'Get started', badge:null,
     sub:'Perfect for individuals & small teams',
-    certNote:'+ certificate charges at partner rates',
+    certNote:'+ SSL certificates billed by usage',
     features:[
       'Up to 10 managed certificates',
       'Persistent VPS agent — Nginx / Apache',
@@ -71,7 +71,7 @@ const PLANS = [
     color:CORAL, glow:'rgba(255,107,91,0.2)', highlight:true,
     cta:'Start Premium', badge:'Most Popular',
     sub:'For growing teams & agencies',
-    certNote:'+ certificate charges at partner rates',
+    certNote:'+ SSL certificates billed by usage',
     features:[
       'Up to 50 managed certificates',
       'Everything in Starter',
@@ -89,7 +89,7 @@ const PLANS = [
     color:AMBER, glow:'rgba(251,191,36,0.15)', highlight:false,
     cta:'Start Pro', badge:null,
     sub:'For enterprises & resellers',
-    certNote:'+ certificate charges at partner rates',
+    certNote:'+ SSL certificates billed by usage',
     features:[
       'Unlimited managed certificates',
       'Everything in Premium',
@@ -105,18 +105,6 @@ const PLANS = [
       'Volume certificate pricing',
     ],
   },
-]
-
-const CERT_PRICES = [
-  { type:'RapidSSL Standard DV',  term:'1yr', price:'€14',       ca:'DigiCert chain', note:'Most popular' },
-  { type:'RapidSSL Wildcard DV',  term:'1yr', price:'€72',       ca:'DigiCert chain', note:null },
-  { type:'Sectigo PositiveSSL DV',term:'1yr', price:'€8',        ca:'Sectigo',        note:'Entry level' },
-  { type:'Sectigo OV',            term:'1yr', price:'€49',       ca:'Sectigo',        note:null },
-  { type:'Sectigo EV',            term:'1yr', price:'€99',       ca:'Sectigo',        note:null },
-  { type:'Multi-domain SAN DV',   term:'1yr', price:'from €28',  ca:'Various',        note:null },
-  { type:'DigiCert Standard DV',  term:'1yr', price:'€218',      ca:'DigiCert',       note:'vs €14 at SSLVault' },
-  { type:'DigiCert OV',           term:'1yr', price:'€348',      ca:'DigiCert',       note:null },
-  { type:'DigiCert EV',           term:'1yr', price:'€695',      ca:'DigiCert',       note:null },
 ]
 
 const FEATURES = [
@@ -168,7 +156,7 @@ const FAQS = [
   { q:'What does each plan include?',
     a:'Starter ($5/mo) — up to 10 certs, agent, cPanel, DNS automation, auto-renewal, CertVault, CT discovery, 47-Day Readiness, monitoring. Premium ($10/mo) — up to 50 certs, adds CertBind, OV/Wildcard, CA sync, CT Abuse Monitor. Pro ($20/mo) — unlimited certs, adds EV/SAN, Sectigo sync, REST API, reseller tools, white-label. All plans: certificates charged separately at RapidSSL partner rates.' },
   { q:'Are certificate costs included in the plan price?',
-    a:'No. Plan fees ($5/$10/$20/mo) cover the platform and CLM features. Certificates are purchased separately at partner rates — from $8/yr for DV up to $99/yr for EV. This keeps the platform affordable even if you only need a few certificates.' },
+    a:'No. Plan fees cover the CLM platform features. SSL certificates are billed separately based on your monthly usage — the type and number of certs you issue. We source from RapidSSL and Sectigo at wholesale partner rates, passing savings directly to you. Pay only for what you actually issue.' },
   { q:'What is the 47-Day Readiness Dashboard?',
     a:'CA/B Forum is mandating shorter certificate validity: 200 days by March 2026, 100 days by 2027, 47 days by 2029. The dashboard scores every certificate 0–100 and shows exactly what needs to be fixed — auto-renew enabled, DNS provider connected, agent installed, key stored securely.' },
   { q:'What is CertBind — and why does it matter?',
@@ -323,55 +311,38 @@ export default function Pricing({ nav }) {
           </div>
         )}
 
-        {/* ── CERTIFICATE PRICING ── */}
-        <div style={{marginBottom:72}}>
-          <div style={{textAlign:'center',marginBottom:36}}>
-            <div style={{fontSize:9,fontWeight:700,color:TEAL,letterSpacing:'2px',
-              textTransform:'uppercase',marginBottom:14,fontFamily:MONO}}>Certificate pricing</div>
-            <h2 style={{fontSize:'clamp(22px,3vw,36px)',fontWeight:900,letterSpacing:'-1px',marginBottom:12}}>
-              RapidSSL partner rates
-            </h2>
-            <p style={{fontSize:14,color:BODY,maxWidth:460,margin:'0 auto',lineHeight:1.75}}>
-              DigiCert DV retails at €218/yr. At SSLVault you get the same DigiCert trust chain for €14/yr — 15× cheaper.
-            </p>
-          </div>
 
-          <div style={{border:`1px solid ${LINE}`,borderRadius:12,overflow:'hidden'}}>
-            {/* Table header */}
-            <div style={{display:'grid',gridTemplateColumns:'2fr 80px 1fr 100px',
-              background:CARD2,borderBottom:`1px solid ${LINE}`,padding:'13px 24px'}}>
-              {['Certificate type','Term','Issuing CA','Price/yr'].map(h => (
-                <div key={h} style={{fontSize:10,fontWeight:700,color:MUTED,
-                  textTransform:'uppercase',letterSpacing:'0.8px',fontFamily:MONO}}>{h}</div>
-              ))}
-            </div>
-            {CERT_PRICES.map((row, i) => (
-              <div key={row.type}
-                style={{display:'grid',gridTemplateColumns:'2fr 80px 1fr 100px',
-                  padding:'14px 24px',alignItems:'center',
-                  borderBottom:i<CERT_PRICES.length-1?`1px solid ${LINE}`:'none',
-                  transition:'background .12s'}}
-                onMouseEnter={e=>e.currentTarget.style.background='rgba(45,212,191,0.05)'}
-                onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                <div style={{display:'flex',alignItems:'center',gap:10}}>
-                  <span style={{fontSize:13,color:INK,fontWeight:500}}>{row.type}</span>
-                  {row.note && (
-                    <span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:10,
-                      background:`rgba(45,212,191,0.12)`,color:TEAL,letterSpacing:'0.3px',fontFamily:MONO}}>
-                      {row.note}
-                    </span>
-                  )}
+        {/* ── SSL USAGE NOTE ── */}
+        <div style={{border:`1px solid ${LINE}`,borderRadius:12,padding:'28px 32px',marginBottom:72,
+          background:'rgba(45,212,191,0.04)',textAlign:'center'}}>
+          <div style={{fontSize:10,fontWeight:700,color:TEAL,letterSpacing:'2px',
+            textTransform:'uppercase',marginBottom:12,fontFamily:MONO}}>Certificate billing</div>
+          <h3 style={{fontSize:20,fontWeight:700,color:INK,marginBottom:12,letterSpacing:'-0.3px'}}>
+            SSL certificates billed by usage
+          </h3>
+          <p style={{fontSize:14,color:BODY,maxWidth:520,margin:'0 auto',lineHeight:1.85}}>
+            Certificate costs are billed separately based on your monthly usage —
+            the type and number of certificates you issue. We source from RapidSSL and Sectigo
+            at wholesale partner rates, passing the savings directly to you.
+            No upfront commitment. Pay only for what you issue.
+          </p>
+          <div style={{display:'flex',gap:28,justifyContent:'center',marginTop:24,flexWrap:'wrap'}}>
+            {[
+              ['DV Certificates','Domain validation — most common'],
+              ['OV & EV Certificates','Organisation & extended validation'],
+              ['Wildcard & SAN','Multi-domain & subdomain coverage'],
+            ].map(([title,desc]) => (
+              <div key={title} style={{display:'flex',alignItems:'center',gap:9}}>
+                <span style={{color:TEAL,fontSize:14}}>◆</span>
+                <div style={{textAlign:'left'}}>
+                  <div style={{fontSize:12,fontWeight:600,color:INK}}>{title}</div>
+                  <div style={{fontSize:11,color:MUTED}}>{desc}</div>
                 </div>
-                <div style={{fontSize:12,color:MUTED,fontFamily:MONO}}>{row.term}</div>
-                <div style={{fontSize:12,color:MUTED,fontFamily:MONO}}>{row.ca}</div>
-                <div style={{fontSize:18,fontWeight:800,color:TEAL,fontFamily:MONO}}>{row.price}</div>
               </div>
             ))}
           </div>
-          <div style={{fontSize:11,color:MUTED,marginTop:12,textAlign:'center',fontFamily:MONO}}>
-            All prices in EUR · RapidSSL partner rates · Subject to change
-          </div>
         </div>
+
 
         {/* ── COMPETITOR COMPARISON ── */}
         <div style={{border:`1px solid ${LINE}`,borderRadius:14,overflow:'hidden',marginBottom:72}}>
@@ -445,7 +416,7 @@ export default function Pricing({ nav }) {
             </button>
           </div>
           <div style={{marginTop:20,fontSize:12,color:MUTED,fontFamily:MONO}}>
-            Certified PKI Specialist · Netherlands-based · GDPR compliant
+            SSL certificates billed by usage · No upfront commitment · Certified PKI Specialist
           </div>
         </div>
 
