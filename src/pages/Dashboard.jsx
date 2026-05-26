@@ -2104,16 +2104,16 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
       <div onClick={() => onSelect(primary.id)}
         style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
           cursor:'pointer', transition:'background 0.15s', background:'var(--v2-surface)' }}
-        onMouseEnter={e => e.currentTarget.style.background='var(--v2-bg)'}
+        onMouseEnter={e => e.currentTarget.style.background='rgba(255,107,91,0.07)'}
         onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
 
         <span style={{ fontSize:11, color:'var(--v2-text-3)', fontWeight:600, minWidth:16, textAlign:'right', flexShrink:0 }}>{index}</span>
 
         {/* Avatar */}
         <div style={{ position:'relative', flexShrink:0 }}>
-          <div style={{ width:36, height:36, borderRadius:9, background:'rgba(255,255,255,0.7)',
+          <div style={{ width:36, height:36, borderRadius:9, background:'linear-gradient(135deg,#ff6b5b,#ff9e8c)',
             display:'flex', alignItems:'center', justifyContent:'center',
-            fontSize:11, fontWeight:700, color:'#e8f5f4', letterSpacing:0.5 }}>{initials}</div>
+            fontSize:11, fontWeight:700, color:'#fff', letterSpacing:0.5 }}>{initials}</div>
           <span style={{ position:'absolute', bottom:-2, right:-2, width:9, height:9,
             borderRadius:'50%', background:dotColor, border:'2px solid var(--v2-surface)' }}/>
         </div>
@@ -2121,7 +2121,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
         {/* Domain info */}
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3, flexWrap:'wrap' }}>
-            <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace', color:'var(--v2-text-1)' }}>
+            <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace', color:'#e8f5f4' }}>
               {primary.domain}
             </span>
             <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
@@ -2168,7 +2168,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
 
       {/* Validity progress bar */}
       {days != null && (
-        <div style={{ height:3, background:'var(--v2-bg)' }}>
+        <div style={{ height:4, background:'rgba(45,212,191,0.12)', borderRadius:4 }}>
           <div style={{ height:'100%',
             width:`${Math.min(100, Math.max(0, (days/398)*100))}%`,
             background:`linear-gradient(90deg, #0d9488, #0d9488)` }}/>
@@ -2332,7 +2332,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                         borderLeft: isLive ? '3px solid #0d9488' : wasInstalled ? '3px solid #E5E7EB' : neverInstalled && vi===0 ? '3px solid #0d9488' : '3px solid transparent',
                         transition:'background .15s' }}
                       onMouseEnter={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-bg)' }}
-                      onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-surface)' }}>
+                      onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background='transparent' }}>
 
                       {/* Status icon — each state has a distinct visual */}
                       <div style={{ width:28, height:28, borderRadius:8, flexShrink:0,
@@ -2410,7 +2410,7 @@ function CertRow({ cert, selected, onClick, index }) {
         background: selected ? '#f0f7ff' : '#000000',
         borderLeft: selected ? '3px solid #0d9488' : '3px solid transparent',
         borderBottom:'1px solid rgba(45,212,191,0.15)' }}
-      onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='#000000';e.currentTarget.style.borderLeftColor='#A8E6DE'}}}
+      onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='rgba(255,107,91,0.07)';e.currentTarget.style.borderLeftColor='#ff6b5b'}}}
       onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='#000000';e.currentTarget.style.borderLeftColor='transparent'}}}>
       {/* Row index */}
       <div style={{ width:22, textAlign:'right', fontSize:11, fontWeight:600, color:'#7A9E9B', flexShrink:0, fontVariantNumeric:'tabular-nums' }}>
@@ -2896,7 +2896,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                   animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}
                 onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow=`0 6px 20px ${color}20`;e.currentTarget.style.borderColor=color+'44'}}
                 onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)';e.currentTarget.style.borderColor='#ffffff'}}>
-                <div style={{ width:36, height:36, borderRadius:9, background:bg,
+                <div style={{ width:36, height:36, borderRadius:9, background:'linear-gradient(135deg,#ff6b5b,#ff9e8c)',
                   display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
                   <Icon size={16} color={color} strokeWidth={1.8}/>
                 </div>
