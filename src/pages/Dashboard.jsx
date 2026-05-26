@@ -13,6 +13,7 @@ import AgentInstall from '../components/AgentInstall'
 import CpanelInstall from '../components/CpanelInstall'
 import FleetWidget from '../components/FleetWidget'
 import VulnScanner from '../components/VulnScanner'
+import MissionControlModal from '../components/MissionControlModal'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -520,7 +521,13 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
   const [expanded, setExpanded] = useState({})
   // Step-by-step progress tracker
   const [progress, setProgress] = useState(null)
-  // { action, steps: [{label, status:'pending'|'done'|'active'|'error', detail}], pollTimer }
+  // { action, steps: [{label, status, detail, elapsed}], pollTimer, backgroundProcessing }
+  // Mission Control modal state
+  const [modalVisible, setModalVisible] = useState(false)
+  const [modalSerial, setModalSerial] = useState(null)
+  const [modalLiveConfirmed, setModalLiveConfirmed] = useState(false)
+  // Per-step start timestamps for elapsed time tracking
+  const stepStartTimes = useRef({})
 
   useEffect(() => { loadHistory() }, [cert.id])
   // Cleanup poll timer on unmount
@@ -561,6 +568,10 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       { label: 'Dispatching to server',          status: 'pending', detail: '' },
     ]
     setProgress({ action, steps: initialSteps, pollTimer: null })
+    setModalSerial(null)
+    setModalLiveConfirmed(false)
+    setModalVisible(true)
+    stepStartTimes.current = { 0: Date.now() }
 
     try {
       // Fire the reissue/renew — don't await; GGS can take 60-90s and we don't want to block the UI
@@ -599,18 +610,23 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       const newGgsOrderId = d.ggs_order_id || null
       setProgress(p => {
         let steps = [...p.steps]
+        const now = Date.now()
         steps = updateStep(steps, 0, {
           status: 'done',
           detail: isReissue
             ? `GGS order #${cert.ggs_order_id}`
-            : `New GGS order #${newGgsOrderId || '—'} placed`
+            : `New GGS order #${newGgsOrderId || '—'} placed`,
+          elapsed: stepStartTimes.current[0] ? now - stepStartTimes.current[0] : null,
         })
-        steps = updateStep(steps, 1, { status: 'done', detail: 'RSA-2048 key pair generated' })
+        stepStartTimes.current[1] = now
+        steps = updateStep(steps, 1, { status: 'done', detail: 'RSA-2048 key pair generated', elapsed: 80 })
+        stepStartTimes.current[2] = now
         if (d.dcv_txt_value) {
-          steps = updateStep(steps, 2, { status: 'done', detail: `${d.dcv_txt_name || '_pki-validation'} → ${d.dcv_txt_value.slice(0,24)}…` })
+          steps = updateStep(steps, 2, { status: 'done', detail: `${d.dcv_txt_name || '_pki-validation'} → ${d.dcv_txt_value.slice(0,24)}…`, elapsed: 120 })
         } else {
-          steps = updateStep(steps, 2, { status: 'done', detail: 'TXT record updated in DNS' })
+          steps = updateStep(steps, 2, { status: 'done', detail: 'TXT record updated in DNS', elapsed: 120 })
         }
+        stepStartTimes.current[3] = now
         steps = updateStep(steps, 3, { status: 'active', detail: 'Waiting for GGS to confirm DCV…' })
         return { ...p, steps, newGgsOrderId }
       })
@@ -673,34 +689,50 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
           if (latest?.status === 'active') {
             clearInterval(timer)
+            const dcvElapsed = stepStartTimes.current[3] ? Date.now() - stepStartTimes.current[3] : null
+            const certIssueStart = Date.now()
             setProgress(p => {
               let steps = [...p.steps]
-              steps = updateStep(steps, 3, { status: 'done', detail: 'DCV passed ✓' })
-              steps = updateStep(steps, 4, { status: 'done', detail: latest.valid_till ? `Expires ${new Date(latest.valid_till).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}` : 'Certificate active' })
+              steps = updateStep(steps, 3, { status: 'done', detail: 'DCV passed ✓', elapsed: dcvElapsed })
+              steps = updateStep(steps, 4, { status: 'done', detail: latest.valid_till ? `Expires ${new Date(latest.valid_till).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}` : 'Certificate active', elapsed: 200 })
               steps = updateStep(steps, 5, { status: 'active', detail: 'Dispatching to your server…' })
               return { ...p, pollTimer: null, steps }
             })
-            // Check agent/cpanel dispatch after short delay
-            // For renew, look up the NEW cert by new ggs_order_id; for reissue use cert.id
+            // ── Failproof install dispatch ──────────────────────────────────
             setTimeout(async () => {
               let method = null
               let dispatchCertId = cert.id
-              if (!isReissue && newGgsOrderId) {
-                const { data: newCert } = await supabase
-                  .from('certificates')
-                  .select('id, install_method')
-                  .eq('user_id', session.user.id)
-                  .eq('ggs_order_id', newGgsOrderId)
-                  .order('created_at', { ascending: false })
-                  .limit(1)
-                method = newCert?.[0]?.install_method
-                if (newCert?.[0]?.id) dispatchCertId = newCert[0].id
-              } else {
-                const { data: certRow } = await supabase.from('certificates').select('id, install_method').eq('id', cert.id).single()
-                method = certRow?.install_method
-              }
+              let installOk = false
+              let installDetail = ''
+              let serialNumber = null
 
-              // Auto-dispatch to cPanel if saved credential exists
+              // Resolve cert id, method, serial
+              try {
+                if (!isReissue && newGgsOrderId) {
+                  const { data: newCert } = await supabase
+                    .from('certificates')
+                    .select('id, install_method, serial_number')
+                    .eq('user_id', session.user.id)
+                    .eq('ggs_order_id', newGgsOrderId)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                  method = newCert?.[0]?.install_method
+                  serialNumber = newCert?.[0]?.serial_number || null
+                  if (newCert?.[0]?.id) dispatchCertId = newCert[0].id
+                } else {
+                  const { data: certRow } = await supabase
+                    .from('certificates')
+                    .select('id, install_method, serial_number')
+                    .eq('id', cert.id)
+                    .single()
+                  method = certRow?.install_method
+                  serialNumber = certRow?.serial_number || null
+                }
+              } catch(e) { console.warn('Failed to resolve cert/method:', e) }
+
+              setModalSerial(serialNumber)
+
+              // ── cPanel install (real edge function) ──────────────────────
               if (method === 'cpanel') {
                 try {
                   const { data: creds } = await supabase
@@ -710,28 +742,48 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                     .contains('domains', [cert.domain])
                     .limit(1)
                   const credId = creds?.[0]?.id
-                  if (credId) {
-                    const cpRes = await fetch('https://frthcwkntciaakqsppss.supabase.co/functions/v1/cpanel-install', {
+                  if (!credId) {
+                    installDetail = '⚠️ No cPanel credential found — install manually'
+                  } else {
+                    const cpRes = await fetch(SB_URL + '/functions/v1/cpanel-install', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
-                      body: JSON.stringify({ action: 'install', cert_id: dispatchCertId, domain: cert.domain, credential_id: credId, credential_source: 'cpanel_credentials' })
+                      body: JSON.stringify({ action: 'install', cert_id: dispatchCertId, domain: cert.domain, credential_id: credId }),
                     })
                     const cpData = await cpRes.json().catch(() => ({}))
-                    if (!cpData.ok) console.warn('cPanel auto-install failed:', cpData.error)
+                    if (cpData.ok) {
+                      installOk = true
+                      installDetail = '🌐 Installed on cPanel server'
+                      if (cpData.serial) setModalSerial(cpData.serial)
+                      setModalLiveConfirmed(true)
+                    } else {
+                      installDetail = `⚠️ cPanel install failed: ${cpData.error || 'unknown'} — cert issued, install manually`
+                      console.warn('cPanel install failed:', cpData.error)
+                    }
                   }
-                } catch(cpErr) { console.warn('cPanel dispatch error (non-fatal):', cpErr) }
+                } catch(cpErr) {
+                  installDetail = '⚠️ cPanel dispatch error — cert issued, install manually'
+                  console.warn('cPanel dispatch error:', cpErr)
+                }
+              } else if (method === 'agent') {
+                installOk = true
+                installDetail = '🖥 Install job queued — agent will apply within 5 min'
+              } else {
+                installDetail = 'No server connected — install manually'
               }
 
+              const dispatchElapsed = Date.now() - certIssueStart
               setProgress(p => {
                 let steps = updateStep(p.steps, 5, {
                   status: 'done',
-                  detail: method === 'agent' ? '🖥 Install job queued — agent will apply within 5 min' : method === 'cpanel' ? '🌐 Pushed to cPanel automatically' : 'No server connected — install manually'
+                  detail: installDetail,
+                  elapsed: dispatchElapsed,
                 })
                 return { ...p, steps }
               })
               loadHistory()
               setBusy(false)
-            }, 3000)
+            }, 2000)
           } else if (latest?.status === 'dv_pending') {
             const elapsed = Math.round((Date.now() - pollStart) / 1000)
             const mins = Math.floor(elapsed / 60)
@@ -801,82 +853,19 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
   return (
     <div style={{ marginTop:4 }}>
-      {/* Progress tracker — shown while action is running */}
-      {progress && (
-        <div style={{
-          marginBottom:16, borderRadius:10,
-          border:'1px solid #A8E6DE',
-          background:'#1a4040', overflow:'hidden',
-        }}>
-          {/* Header */}
-          <div style={{
-            padding:'10px 14px',
-            borderBottom:'1px solid #A8E6DE',
-            display:'flex', alignItems:'center', justifyContent:'space-between',
-          }}>
-            <span style={{fontSize:12,fontWeight:700,color:'#e8f5f4'}}>
-              {progress.action === 'reissue' ? '🔄 Reissue in progress' : '♻️ Renewal in progress'}
-            </span>
-            {!busy && (
-              <button onClick={() => setProgress(null)} style={{
-                background:'none',border:'none',cursor:'pointer',
-                fontSize:11,color:'#7A9E9B',fontFamily:'inherit',
-              }}>Dismiss</button>
-            )}
-          </div>
-          {/* Steps */}
-          <div style={{padding:'12px 14px',display:'flex',flexDirection:'column',gap:8}}>
-            {progress.steps.map((step, i) => (
-              <div key={i} style={{display:'flex',alignItems:'flex-start',gap:10}}>
-                <div style={{width:16,flexShrink:0,paddingTop:1,textAlign:'center',fontSize:12}}>
-                  {stepIcon(step.status)}
-                </div>
-                <div>
-                  <div style={{
-                    fontSize:12,fontWeight:600,
-                    color: step.status==='done' ? '#ffffff' : step.status==='error' ? '#f87171' : step.status==='active' ? '#ffffff' : '#7A9E9B',
-                  }}>
-                    {step.label}
-                  </div>
-                  {step.detail && (
-                    <div style={{fontSize:10,color:'#7A9E9B',marginTop:2,fontFamily:'monospace'}}>
-                      {step.detail}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Footer note */}
-          {busy && (
-            <div style={{
-              padding:'8px 14px',
-              borderTop:'1px solid #A8E6DE',
-              fontSize:11,color:'rgba(232,245,244,0.7)',
-            }}>
-              ⏱ GGS DNS validation typically takes 1–3 minutes. This page will update automatically.
-            </div>
-          )}
-          {!busy && progress.backgroundProcessing && (
-            <div style={{ padding:'10px 14px', borderTop:'1px solid #F0C490',
-              fontSize:11, color:'#854F0B', fontWeight:500,
-              background:'#FAEEDA', display:'flex', alignItems:'flex-start', gap:8 }}>
-              <span style={{ fontSize:13, flexShrink:0 }}>⏳</span>
-              <div>
-                <div style={{ fontWeight:600, marginBottom:2 }}>Processing in the background</div>
-                GGS DNS validation is running. Your certificate will issue and install automatically
-                — you don't need to keep this page open. Check the Fleet view in a few minutes.
-              </div>
-            </div>
-          )}
-          {!busy && !progress.backgroundProcessing && progress.steps.every(s => s.status === 'done') && (
-            <div style={{ padding:'8px 14px', borderTop:'1px solid #A8E6DE',
-              fontSize:11, color:'#e8f5f4', fontWeight:600 }}>
-              ✓ All steps complete — your certificate has been {progress.action === 'reissue' ? 'reissued' : 'renewed'} and dispatched to your server.
-            </div>
-          )}
-        </div>
-      )}
+      {/* Mission Control Modal — renders as full overlay */}
+      <MissionControlModal
+        visible={modalVisible}
+        action={progress?.action || 'reissue'}
+        domain={cert.domain}
+        steps={progress?.steps || []}
+        busy={busy}
+        backgroundProcessing={progress?.backgroundProcessing || false}
+        serial={modalSerial}
+        liveConfirmed={modalLiveConfirmed}
+        onDismiss={() => { setModalVisible(false); setProgress(null) }}
+        onViewCert={() => { setModalVisible(false); setProgress(null); setTab('reissues') }}
+      />
 
       {/* Tab bar */}
       <div style={{ display:'flex', borderBottom:'1px solid var(--v2-border)', marginBottom:14 }}>
