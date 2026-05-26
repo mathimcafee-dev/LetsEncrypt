@@ -28,20 +28,20 @@ import Pricing from './Pricing'
 
 // ── Design tokens ──────────────────────────────────────────────────────
 const F = "'Inter',system-ui,sans-serif"
-const NAVY  = '#0d1117'   // page bg
-const CARD  = '#161b22'   // card / topbar bg
-const CARD2 = '#1c2128'   // elevated card
-const CARD3 = '#21262d'   // input / hover
-const LINE  = 'rgba(255,255,255,0.08)'
-const LINE2 = 'rgba(255,255,255,0.14)'
-const INK   = '#e6edf3'
-const BODY  = '#8b949e'
-const MUTED = '#6e7681'
-const BLUE  = '#388bfd'
-const BLUEH = '#1f6feb'
-const GREEN = '#3fb950'
-const RED   = '#f85149'
-const AMBER = '#d29922'
+const NAVY  = '#f2faf9'   // page bg
+const CARD  = '#ffffff'   // card / topbar bg
+const CARD2 = '#e8f7f5'   // elevated card
+const CARD3 = '#d4f0ec'   // input / hover
+const LINE  = '#c8e8e5'
+const LINE2 = '#a8d8d4'
+const INK   = '#1a3333'
+const BODY  = '#3d6666'
+const MUTED = '#7aa8a8'
+const BLUE  = '#2ab5a5'
+const BLUEH = '#1a9585'
+const GREEN = '#1a8a6a'
+const RED   = '#d94040'
+const AMBER = '#c47a20'
 
 function useIsMobile(bp=860) {
   const [m,setM] = useState(window.innerWidth<=bp)

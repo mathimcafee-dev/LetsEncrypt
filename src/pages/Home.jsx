@@ -4,19 +4,19 @@ import { supabase } from '../lib/supabase'
 // ── Resend.com design tokens — pure black/white ────────────────────────
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const BG   = '#0d1117'   // page background
+const BG   = '#f2faf9'   // page background
 const BG2  = '#0d1117'   // alt section background
-const BG3  = '#161b22'   // card surface
-const BG4  = '#1c2128'   // deep card / input
-const T1   = '#ffffff'   // heading text
-const T2   = 'rgba(255,255,255,0.6)'   // body text
-const T3   = 'rgba(255,255,255,0.35)'  // muted text
-const LN   = 'rgba(255,255,255,0.08)'  // default border
-const LN2  = 'rgba(255,255,255,0.14)'  // strong border
+const BG3  = '#e8f7f5'   // card surface
+const BG4  = '#d4f0ec'   // deep card / input
+const T1   = '#1a3333'   // heading text
+const T2   = '#3d6666'   // body text
+const T3   = '#7aa8a8'  // muted text
+const LN   = '#c8e8e5'  // default border
+const LN2  = '#a8d8d4'  // strong border
 const LN3  = 'rgba(255,255,255,0.22)'  // hover border
-const GRN  = '#3fb950'   // success green
-const AMB  = '#d29922'   // warning amber
-const RED  = '#f85149'   // error red
+const GRN  = '#1a8a6a'   // success green
+const AMB  = '#c47a20'   // warning amber
+const RED  = '#d94040'   // error red
 
 function useIsMobile() {
   const [w,setW] = useState(window.innerWidth)
@@ -234,10 +234,10 @@ export default function Home({ nav }) {
               onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>
               Industry Intelligence <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <div className="id" style={{position:'absolute',top:'calc(100% + 6px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:BG3,border:`1px solid ${LN2}`,borderRadius:6,padding:'5px',minWidth:200,boxShadow:'0 8px 32px rgba(0,0,0,0.6)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
+            <div className="id" style={{position:'absolute',top:'calc(100% + 6px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:'#ffffff',border:`1px solid #a8d8d4`,borderRadius:6,padding:'5px',minWidth:200,boxShadow:'0 8px 32px rgba(0,0,0,0.6)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
               {[{label:'CA Trust Store',path:'/ca-trust-explorer',desc:'6,200+ root & intermediate CAs'},{label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},{label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'},{label:'Trust Passport',path:'/trust-passport',desc:'Is this site safe?'}].map(it=>(
                 <button key={it.path} onClick={()=>nav(it.path)} style={{display:'block',width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',fontFamily:F,padding:'7px 10px',borderRadius:4,transition:'background .1s'}}
-                  onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.06)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
+                  onMouseEnter={e=>e.currentTarget.style.background='#f2faf9'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
                   <div style={{fontSize:12,fontWeight:500,color:T1,marginBottom:1}}>{it.label}</div>
                   <div style={{fontSize:11,color:T3}}>{it.desc}</div>
                 </button>
