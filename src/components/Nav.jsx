@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Menu, X } from 'lucide-react'
 
 const F = "'Inter',system-ui,sans-serif"
-const W = '#000000', BK = '#ffffff'
+const W = '#ffffff', BK = '#000000'
 const T1 = '#ffffff', T2 = 'rgba(255,255,255,0.55)', T3 = 'rgba(255,255,255,0.35)'
 const LN = 'rgba(255,255,255,0.08)', LN2 = 'rgba(255,255,255,0.15)'
 
@@ -32,7 +32,7 @@ export default function Nav({ nav, page }) {
         {/* Logo */}
         <div onClick={()=>nav('/')} style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',userSelect:'none',flexShrink:0}}>
           <div style={{width:22,height:22,background:'#ffffff',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{fontSize:13,fontWeight:600,color:T1,letterSpacing:'-0.3px'}}>SSLVault</span>
         </div>

@@ -22,17 +22,17 @@ import CertVault from './CertVault'
 import CertBind from './CertBind'
 import Pricing from './Pricing'
 
-// Light-mode tokens — never change these
+// Resend.com dark tokens
 const F   = "'Inter',system-ui,sans-serif"
-const W   = '#ffffff'
-const BK  = '#ffffff'
-const S   = '#ffffff'   // sidebar bg
-const S2  = '#ffffff'   // sidebar active
-const T1  = '#ffffff'
-const T2  = 'rgba(255,255,255,0.55)'
-const T3  = 'rgba(255,255,255,0.35)'
-const LN  = 'rgba(255,255,255,0.08)'
-const LN2 = 'rgba(255,255,255,0.15)'
+const W   = '#ffffff'   // white — text/button labels only
+const BK  = '#000000'   // black — page bg
+const S   = '#0d0d0d'   // sidebar bg
+const S2  = '#1a1a1a'   // sidebar active item bg
+const T1  = '#ffffff'   // heading text
+const T2  = 'rgba(255,255,255,0.55)'  // body text
+const T3  = 'rgba(255,255,255,0.35)'  // muted text
+const LN  = 'rgba(255,255,255,0.08)'  // default border
+const LN2 = 'rgba(255,255,255,0.14)'  // strong border
 const GRN = '#4ade80'
 const RED = '#f87171'
 
@@ -170,7 +170,7 @@ export default function CLMHome({ user, nav }) {
   )
 
   return (
-    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:W}}>
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:'#000000'}}>
 
       {/* Top bar */}
       <div style={{background:'#000000',borderBottom:'1px solid rgba(255,255,255,0.08)',height:46,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 16px',flexShrink:0,position:'sticky',top:0,zIndex:50}}>
@@ -188,10 +188,10 @@ export default function CLMHome({ user, nav }) {
               style={{background:'none',border:'none',cursor:'pointer',color:T2,padding:5,display:'flex',alignItems:'center',borderRadius:3,position:'relative',transition:'color .12s'}}
               onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>
               <Bell size={14}/>
-              {unread>0 && <span style={{position:'absolute',top:2,right:2,width:6,height:6,borderRadius:'50%',background:'#ffffff',border:`1.5px solid #faf7f2`}}/>}
+              {unread>0 && <span style={{position:'absolute',top:2,right:2,width:6,height:6,borderRadius:'50%',background:'#ffffff',border:`1.5px solid #000000`}}/>}
             </button>
             {bellOpen && (
-              <div style={{position:'absolute',right:0,top:'calc(100% + 6px)',background:W,border:`1px solid ${LN2}`,borderRadius:4,width:280,boxShadow:'0 4px 16px rgba(255,255,255,0.12)',zIndex:100}}>
+              <div style={{position:'absolute',right:0,top:'calc(100% + 6px)',background:'#111111',border:`1px solid ${LN2}`,borderRadius:4,width:280,boxShadow:'0 4px 16px rgba(255,255,255,0.12)',zIndex:100}}>
                 <div style={{padding:'10px 14px',borderBottom:`1px solid ${LN}`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                   <span style={{fontSize:12,fontWeight:500,color:T1}}>Notifications</span>
                   <button onClick={()=>setBellOpen(false)} style={{background:'none',border:'none',cursor:'pointer',color:T3,fontSize:11,fontFamily:F}}>Close</button>
@@ -225,13 +225,13 @@ export default function CLMHome({ user, nav }) {
         {sm&&sideOpen && <div style={{position:'fixed',inset:0,background:'rgba(255,255,255,0.32)',zIndex:39}} onClick={()=>setSideOpen(false)}/>}
 
         {/* Sidebar */}
-        <nav ref={sideRef} style={{width:200,background:'#ffffff',borderRight:`1px solid ${LN}`,display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto',
+        <nav ref={sideRef} style={{width:200,background:S,borderRight:`1px solid ${LN}`,display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto',
           ...(sm?{position:'fixed',left:0,top:46,bottom:0,zIndex:40,transform:sideOpen?'translateX(0)':'translateX(-100%)',transition:'transform 0.22s ease',boxShadow:'4px 0 16px rgba(255,255,255,0.1)'}:{position:'sticky',top:46,height:'calc(100vh - 46px)'})}}>
           <Sidebar/>
         </nav>
 
         {/* Main */}
-        <div style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',background:W}}>
+        <div style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',background:'#000000'}}>
           <div key={key} style={{flex:1,overflowY:'auto',overflowX:'hidden',animation:'fadein 0.18s ease'}}>
             {content()}
           </div>
