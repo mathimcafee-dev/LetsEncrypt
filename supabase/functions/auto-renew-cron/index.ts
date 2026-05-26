@@ -411,6 +411,21 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Also poll any pending GGS orders (dv_pending ssl_orders → activate + dispatch)
+    try {
+      const sbUrl = 'https://frthcwkntciaakqsppss.supabase.co'
+      const srk = Deno.env.get('SERVICE_ROLE_KEY') || Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+      const pollRes = await fetch(`${sbUrl}/functions/v1/gogetssl-issue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${srk}` },
+        body: JSON.stringify({ action: 'poll_pending' })
+      })
+      const pollData = await pollRes.json().catch(() => ({}))
+      ;(summary as any).ggs_poll = { checked: pollData.checked || 0, activated: pollData.activated || 0 }
+    } catch (pollErr) {
+      console.warn('GGS poll_pending failed (non-fatal):', pollErr)
+    }
+
     summary.finished_at = new Date().toISOString()
     console.log('cron summary:', JSON.stringify(summary))
     return new Response(JSON.stringify(summary), { status: 200, headers: { 'Content-Type': 'application/json' } })

@@ -112,9 +112,9 @@ export default function Auth({ nav }) {
         <div>
           <div className="v2-card" style={{ padding:'min(32px,5vw) min(30px,4vw)', borderTop:'2px solid var(--v2-green)' }}>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
-              <div style={{ width:40, height:40, background:'#0a0a0a', borderRadius:'var(--v2-r-lg)',
+              <div style={{ width:40, height:40, background:'#1C2B1F', borderRadius:'var(--v2-r-lg)',
                              display:'flex', alignItems:'center', justifyContent:'center',
-                             boxShadow:'0 0 0 5px rgba(16,185,129,0.1)' }}>
+                             boxShadow:'0 0 0 5px rgba(45,106,79,0.12)' }}>
                 <Shield size={18} color='white' />
               </div>
               <div>

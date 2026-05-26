@@ -803,3 +803,37 @@ html.is-tablet .v2-card {
   .v2-row-title { font-size: 13px; }
   .v2-row-meta { gap: 5px; }
 }
+
+/* ── v6 Theme overrides — cream/forest/sienna ── */
+:root {
+  --v2-bg:          #F5F0E8;
+  --v2-bg-alt:      #EDE8DC;
+  --v2-surface:     #FFFDF8;
+  --v2-surface-2:   #EDE8DC;
+  --v2-surface-3:   #D8D0C0;
+  --v2-hover:       #D8D0C0;
+  --v2-border:      rgba(28,43,31,0.12);
+  --v2-border-strong: rgba(28,43,31,0.22);
+  --v2-border-focus: #2D6A4F;
+  --v2-text:        #1C2B1F;
+  --v2-text-2:      #4A5E4E;
+  --v2-text-3:      #8A9E8E;
+  --v2-green:       #52B788;
+  --v2-green-text:  #2D6A4F;
+  --v2-green-text-2:#1C2B1F;
+  --v2-green-bg:    #D8F3DC;
+  --v2-green-border:#95D5B2;
+  --v2-amber:       #C1440E;
+  --v2-amber-text:  #9E3709;
+  --v2-amber-bg:    #FDECD8;
+  --v2-amber-border:#F4A96A;
+  --v2-red:         #C0392B;
+  --v2-red-text:    #9B2922;
+  --v2-red-bg:      #FCE8E6;
+  --v2-red-border:  #EFA89E;
+  --v2-shadow-sm:   0 1px 3px rgba(28,43,31,0.06);
+  --v2-shadow-md:   0 4px 16px rgba(28,43,31,0.08);
+  --v2-shadow-lg:   0 8px 32px rgba(28,43,31,0.10);
+}
+
+.v2-page { background: var(--v2-bg) !important; font-family:'Space Grotesk','DM Sans',system-ui,sans-serif !important; }

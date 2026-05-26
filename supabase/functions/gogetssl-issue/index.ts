@@ -629,7 +629,120 @@ serve(async (req) => {
       })
     }
 
-    return json({ error: `Unknown action: ${action}` }, 400)
+    // ── poll_pending ──────────────────────────────────────────────────
+    // Called by ggs-pending-orders-poller cron every 2 min.
+    // Finds all dv_pending ssl_orders, checks GGS status, and when active:
+    //   1. Updates ssl_orders row to active with cert_pem
+    //   2. Updates certificates row with new cert + expiry
+    //   3. Dispatches to agent (VPS) or cpanel-install (cPanel)
+    //   4. Updates cert_reissues row to completed
+    if (action === 'poll_pending') {
+      const { data: pendingOrders } = await adminDb()
+        .from('ssl_orders')
+        .select('id, user_id, domain, ggs_order_id, private_key_pem, keylocker_key_id')
+        .eq('status', 'dv_pending')
+        .order('created_at', { ascending: true })
+        .limit(20)
+
+      if (!pendingOrders?.length) return json({ ok: true, checked: 0, activated: 0 })
+
+      const authKey = await ggsAuth()
+      let activated = 0
+
+      for (const order of pendingOrders) {
+        try {
+          const statusRes = await ggsGet(authKey, `/orders/status/${order.ggs_order_id}`)
+          if (statusRes.status !== 'active' || !statusRes.crt_code) continue
+
+          // Update ssl_orders row
+          await adminDb().from('ssl_orders').update({
+            status: 'active',
+            crt_code: statusRes.crt_code,
+            ca_code: statusRes.ca_code || null,
+            valid_from: statusRes.valid_from || null,
+            valid_till: statusRes.valid_till || null,
+            cert_pem: statusRes.crt_code,
+            ca_pem: statusRes.ca_code || null,
+            updated_at: new Date().toISOString(),
+          }).eq('id', order.id)
+
+          // Get private key from keylocker if needed
+          let privateKeyPem = order.private_key_pem || null
+          if (!privateKeyPem && order.keylocker_key_id) {
+            const { data: kl } = await adminDb()
+              .from('keylocker_keys').select('private_key_pem').eq('id', order.keylocker_key_id).single()
+            privateKeyPem = kl?.private_key_pem || null
+          }
+
+          // Find the certificate row linked to this domain/user
+          const { data: cert } = await adminDb()
+            .from('certificates')
+            .select('id, user_id, install_method, install_server_id')
+            .eq('domain', order.domain)
+            .eq('user_id', order.user_id)
+            .eq('status', 'active')
+            .single()
+
+          if (cert) {
+            // Update certificate with new cert data
+            await adminDb().from('certificates').update({
+              cert_pem: statusRes.crt_code,
+              ca_pem: statusRes.ca_code || null,
+              private_key_pem: privateKeyPem,
+              expires_at: statusRes.valid_till || null,
+              issued_at: statusRes.valid_from || null,
+              last_reissued_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            }).eq('id', cert.id)
+
+            // Dispatch install based on install_method
+            if (cert.install_method === 'agent') {
+              // Find agent via server_credentials
+              const { data: serverRows } = await adminDb()
+                .from('server_credentials')
+                .select('id, agent_id')
+                .contains('domains', [order.domain])
+                .not('agent_id', 'is', null)
+              for (const row of (serverRows || [])) {
+                const { data: existing } = await adminDb()
+                  .from('agent_jobs').select('id')
+                  .eq('agent_id', row.agent_id).eq('cert_id', cert.id)
+                  .in('status', ['queued','claimed']).maybeSingle()
+                if (!existing) {
+                  await adminDb().from('agent_jobs').insert({
+                    agent_id: row.agent_id, user_id: order.user_id, cert_id: cert.id,
+                    job_type: 'reissue', status: 'queued',
+                    cert_pem: statusRes.crt_code, key_pem: privateKeyPem || '', domain: order.domain,
+                  })
+                }
+              }
+            } else if (cert.install_method === 'cpanel' && cert.install_server_id) {
+              const CPANEL_URL = `${Deno.env.get("SUPABASE_URL")}/functions/v1/cpanel-install`
+              await fetch(CPANEL_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}` },
+                body: JSON.stringify({ action: 'install', cert_id: cert.id, domain: order.domain, credential_id: cert.install_server_id, credential_source: 'cpanel_credentials' })
+              }).catch(e => console.warn('cpanel dispatch failed:', e.message))
+            }
+          }
+
+          // Mark cert_reissues row as completed
+          await adminDb().from('cert_reissues')
+            .update({ status: 'completed', completed_at: new Date().toISOString() })
+            .eq('new_ggs_order_id', order.ggs_order_id)
+            .eq('status', 'dv_pending')
+
+          activated++
+          console.log(`[poll_pending] Activated ${order.domain} (GGS #${order.ggs_order_id})`)
+        } catch (e: any) {
+          console.error(`[poll_pending] Error on ${order.domain}:`, e.message)
+        }
+      }
+
+      return json({ ok: true, checked: pendingOrders.length, activated })
+    }
+
+        return json({ error: `Unknown action: ${action}` }, 400)
 
   } catch (e: any) {
     console.error('gogetssl-issue:', e)

@@ -1,0 +1,48 @@
+/* SSLVault Global Theme v6 — Warm Cream / Forest / Sienna */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --f:       'Space Grotesk','DM Sans',system-ui,sans-serif;
+  --mono:    'Space Mono','JetBrains Mono','Menlo',monospace;
+  --page:    #F5F0E8;
+  --surface: #FFFDF8;
+  --alt:     #EDE8DC;
+  --dark:    #1C2B1F;
+  --dark2:   #243528;
+  --line:    #D8D0C0;
+  --line2:   #C4BAA8;
+  --ink:     #1C2B1F;
+  --body:    #4A5E4E;
+  --faint:   #8A9E8E;
+  --green:   #2D6A4F;
+  --greenLt: #52B788;
+  --greenBg: #D8F3DC;
+  --greenBd: #95D5B2;
+  --sienna:  #C1440E;
+  --siennaBg:#FDECD8;
+  --siennaBd:#F4A96A;
+  --amber:   #B5652A;
+  --amberBg: #FDF0DC;
+  --red:     #C0392B;
+  --redBg:   #FCE8E6;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { font-family: var(--f); background: var(--page); color: var(--ink); }
+::selection { background: #D8F3DC; color: #2D6A4F; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--alt); }
+::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 99px; }
+
+/* Design-v2 overrides — bring old classes into new theme */
+.v2-page, [class*="v2-"] { font-family: var(--f) !important; }
+
+/* Override old dark teal colours across entire app */
+.v2-btn-primary, button[style*="#1A7A72"], button[style*="#3DBFB0"] { background: var(--green) !important; }
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+@keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+@keyframes clm-fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
