@@ -2836,7 +2836,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             </div>
 
             {/* Cert rows */}
-            {filteredGroups.length === 0 ? (
+            {domainGroups.length === 0 ? (
               <div style={{ padding:'48px 16px', textAlign:'center' }}>
                 <div style={{ fontSize:13, fontWeight:500, color:'#6e7681', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
                 <div style={{ fontSize:12, color:'#484f58', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
@@ -2848,8 +2848,8 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                   </button>
                 )}
               </div>
-            ) : filteredGroups.map((group, gi) => {
-              const cert = group.latest
+            ) : domainGroups.map((group, gi) => {
+              const cert = group.primary
               const daysLeft = cert.expires_at ? Math.max(0, Math.ceil((new Date(cert.expires_at) - Date.now()) / 86400000)) : null
               const isExpiring = daysLeft !== null && daysLeft <= 30 && daysLeft > 0
               const isExpired = daysLeft !== null && daysLeft <= 0
@@ -2860,7 +2860,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 : 0
               const gradeColor = {'A+':'#3fb950','A':'#3fb950','B':'#d29922','C':'#f85149','F':'#f85149'}[cert.tls_grade] || '#484f58'
               return (
-                <div key={group.domain} onClick={() => setSelected(isSelected ? null : cert.id)}
+                <div key={group.primary.domain} onClick={() => setSelected(isSelected ? null : cert.id)}
                   style={{ display:'grid', gridTemplateColumns:'32px 1fr 80px 90px 90px 100px 28px',
                     padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)',
                     cursor:'pointer', transition:'background .1s',
@@ -2876,10 +2876,10 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                       <div style={{ width:28, height:28, borderRadius:6, background:'rgba(255,255,255,0.06)',
                         display:'flex', alignItems:'center', justifyContent:'center',
                         fontSize:10, fontWeight:700, color:'#8b949e', flexShrink:0 }}>
-                        {group.domain.slice(0,2).toUpperCase()}
+                        {group.primary.domain.slice(0,2).toUpperCase()}
                       </div>
                       <div style={{ minWidth:0 }}>
-                        <div style={{ fontSize:13, fontWeight:500, color:'#e6edf3', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{group.domain}</div>
+                        <div style={{ fontSize:13, fontWeight:500, color:'#e6edf3', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{group.primary.domain}</div>
                         <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:2 }}>
                           {cert.install_method==='cpanel' && <span style={{ fontSize:10, padding:'1px 6px', borderRadius:3, background:'rgba(56,139,253,0.1)', color:'#388bfd', border:'1px solid rgba(56,139,253,0.2)' }}>cPanel</span>}
                           {cert.install_method==='agent' && <span style={{ fontSize:10, padding:'1px 6px', borderRadius:3, background:'rgba(63,185,80,0.1)', color:'#3fb950', border:'1px solid rgba(63,185,80,0.2)' }}>VPS</span>}
