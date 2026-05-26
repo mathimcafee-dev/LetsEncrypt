@@ -454,7 +454,7 @@ export default function SettingsPage({ user }) {
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
               borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize:12, fontWeight: 600,
               fontFamily: 'inherit', transition: 'all .15s',
-              background: activeTab === id ? '#000000' : 'transparent',
+              background: activeTab === id ? 'rgba(45,212,191,0.12)' : 'transparent',
               color: activeTab === id ? '#ffffff' : 'rgba(255,255,255,0.38)',
               borderBottom: activeTab === id ? '2px solid #0d9488' : '2px solid transparent',
             }}>
@@ -494,7 +494,7 @@ export default function SettingsPage({ user }) {
                 {ALERT_TYPE_DEFS.map(({ id, label, desc, color }) => (
                   <div key={id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     gap: 12, padding: '8px 12px', borderRadius: 8,
-                    background: alertTypes.includes(id) ? '#000000' : 'transparent',
+                    background: alertTypes.includes(id) ? 'rgba(45,212,191,0.08)' : 'rgba(232,245,244,0.03)',
                     border: `1px solid ${alertTypes.includes(id) ? '#ffffff' : 'transparent'}`,
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all .15s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
@@ -523,7 +523,7 @@ export default function SettingsPage({ user }) {
                   style={{ padding: '6px 14px', borderRadius: 6, fontSize:12, fontWeight: 500,
                     cursor: emailAlerts ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all 0.15s',
-                    background: alertDays.includes(d) ? '#e0f7fa' : '#000000',
+                    background: alertDays.includes(d) ? 'rgba(45,212,191,0.2)' : 'rgba(232,245,244,0.06)',
                     color: alertDays.includes(d) ? '#0e7490' : 'rgba(255,255,255,0.38)',
                     border: alertDays.includes(d) ? '1px solid #a5f3fc' : '1px solid #99f6e4' }}>
                   {d} {d === 1 ? 'day' : 'days'}
@@ -554,7 +554,7 @@ export default function SettingsPage({ user }) {
                 placeholder="name@example.com"
                 style={{ flex: 1, padding: '7px 10px', border: `1px solid ${emailError ? '#fecaca' : '#ffffff'}`,
                   borderRadius: 7, fontSize:12, fontFamily: 'monospace', outline: 'none',
-                  background: emailError ? '#fef2f2' : '#000000' }}/>
+                  background: emailError ? 'rgba(248,113,113,0.1)' : '#1a4040' }}/>
               <button onClick={addExtraEmail}
                 style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
                   background: '#ffffff', color: '#ffffff', border: 'none', borderRadius: 7,
@@ -599,7 +599,7 @@ export default function SettingsPage({ user }) {
               </select>
               <button onClick={sendTestEmail} disabled={testSending}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px',
-                  background: testSending ? '#ffffff' : '#0f2545', color: testSending ? 'rgba(255,255,255,0.38)' : '#000000',
+                  background: testSending ? 'rgba(45,212,191,0.3)' : 'rgba(45,212,191,0.15)', color: '#e8f5f4',
                   border: 'none', borderRadius: 7, fontSize:12, fontWeight: 600,
                   cursor: testSending ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
                 {testSending ? <><RefreshCw size={11} className="spin"/> Sending…</> : <><Send size={11}/> Send test</>}
@@ -728,7 +728,7 @@ export default function SettingsPage({ user }) {
                   <button onClick={() => setLogsPage(p => Math.max(0, p - 1))} disabled={logsPage === 0}
                     style={{ padding: '4px 10px', border: '1px solid #99f6e4', borderRadius: 5,
                       fontSize:11, cursor: logsPage === 0 ? 'not-allowed' : 'pointer',
-                      background: logsPage === 0 ? '#000000' : '#000000',
+                      background: 'rgba(45,212,191,0.08)',
                       color: logsPage === 0 ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.6)', fontFamily: 'inherit' }}>
                     ← Prev
                   </button>
@@ -736,7 +736,7 @@ export default function SettingsPage({ user }) {
                     disabled={(logsPage + 1) * 20 >= logsTotal}
                     style={{ padding: '4px 10px', border: '1px solid #99f6e4', borderRadius: 5,
                       fontSize:11, cursor: (logsPage + 1) * 20 >= logsTotal ? 'not-allowed' : 'pointer',
-                      background: (logsPage + 1) * 20 >= logsTotal ? '#000000' : '#000000',
+                      background: 'rgba(45,212,191,0.08)',
                       color: (logsPage + 1) * 20 >= logsTotal ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.6)', fontFamily: 'inherit' }}>
                     Next →
                   </button>
