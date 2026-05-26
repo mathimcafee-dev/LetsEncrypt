@@ -4,18 +4,18 @@ import { supabase } from '../lib/supabase'
 // ── Light mode tokens ─────────────────────────────────────────────────
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const W    = '#ffffff'
+const W    = '#faf7f2'
 const BK   = '#0a0a0a'
-const BG1  = '#ffffff'   // page
-const BG2  = '#f9f9f9'   // alt sections
-const BG3  = '#f3f3f3'   // cards
-const BG4  = '#eeeeee'   // deep card
+const BG1  = '#faf7f2'   // page
+const BG2  = '#f5f1ea'   // alt sections
+const BG3  = '#edeae3'   // cards
+const BG4  = '#e4e0d8'   // deep card
 const T1   = '#0a0a0a'
 const T2   = 'rgba(0,0,0,0.52)'
 const T3   = 'rgba(0,0,0,0.32)'
 const LN   = 'rgba(0,0,0,0.08)'
 const LN2  = 'rgba(0,0,0,0.14)'
-const GRN  = '#16a34a'
+const GRN  = '#059669'
 const AMB  = '#d97706'
 const RED  = '#dc2626'
 // Footer / terminal stay dark
@@ -27,7 +27,7 @@ function useIn(t=0.08){const ref=useRef(null);const[v,setV]=useState(false);useE
 function FadeUp({children,delay=0}){const[ref,v]=useIn();return <div ref={ref} style={{opacity:v?1:0,transform:v?'none':'translateY(18px)',transition:`opacity .6s ease ${delay}ms,transform .6s ease ${delay}ms`}}>{children}</div>}
 
 function Tag({children}){return <span style={{display:'inline-flex',alignItems:'center',fontSize:10,fontWeight:600,color:T3,background:BG3,border:`1px solid ${LN2}`,borderRadius:3,padding:'2px 7px',fontFamily:MONO,letterSpacing:'0.04em'}}>{children}</span>}
-function Pill({status}){const m={active:[GRN,'rgba(22,163,74,0.08)'],warning:[AMB,'rgba(217,119,6,0.08)'],critical:[RED,'rgba(220,38,38,0.08)']};const[c,bg]=m[status]||[T3,BG3];return <span style={{fontSize:10,fontWeight:500,color:c,background:bg,padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>{status}</span>}
+function Pill({status}){const m={active:[GRN,'rgba(5,150,105,0.08)'],warning:[AMB,'rgba(217,119,6,0.08)'],critical:[RED,'rgba(220,38,38,0.08)']};const[c,bg]=m[status]||[T3,BG3];return <span style={{fontSize:10,fontWeight:500,color:c,background:bg,padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>{status}</span>}
 function Eyebrow({children}){return <div style={{fontSize:11,fontWeight:500,color:T3,letterSpacing:'0.06em',textTransform:'uppercase',fontFamily:MONO,marginBottom:12}}>{children}</div>}
 function H2({children,style={}}){return <h2 style={{fontSize:'clamp(20px,3vw,32px)',fontWeight:700,color:T1,letterSpacing:'-0.6px',lineHeight:1.2,...style}}>{children}</h2>}
 function Body({children,style={}}){return <p style={{fontSize:14,color:T2,lineHeight:1.75,...style}}>{children}</p>}
@@ -526,7 +526,7 @@ export default function Home({ nav }) {
                   <div style={{display:'flex',alignItems:'center',gap:9}}>
                     <span style={{fontSize:13}}>🔗</span>
                     <span style={{fontSize:12,fontWeight:500,color:T1,fontFamily:MONO}}>CertBind</span>
-                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(22,163,74,0.08)',border:'1px solid rgba(22,163,74,0.18)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
+                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(5,150,105,0.08)',border:'1px solid rgba(5,150,105,0.18)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
                   </div>
                   <span style={{fontSize:10.5,color:T3,fontFamily:MONO}}>4/4 domains bound</span>
                 </Card>
