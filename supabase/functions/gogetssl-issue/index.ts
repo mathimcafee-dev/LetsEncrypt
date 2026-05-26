@@ -583,23 +583,49 @@ serve(async (req) => {
       const lastName   = order?.admin_last_name  || cert.last_name  || 'Admin'
       const phone      = order?.admin_phone      || cert.phone      || '+1.5555555555'
 
-      let orderRes: any
+      let or: any
       if (action === 'reissue') {
-        // ── TRUE REISSUE: same order_id, same subscription period, new CSR ──
-        // Uses GGS /orders/ssl/reissue/{order_id}/ — no new billing, instant
+        // TRUE REISSUE: same GGS order, new CSR, no new billing
         const ggsOrderId = order?.ggs_order_id
         if (!ggsOrderId) return json({ error: 'No GGS order ID found — cannot reissue' }, 400)
-        orderRes = await ggsPost(authKey, `/orders/ssl/reissue/${ggsOrderId}/`, {
-          csr:          csrPem,
+        const reissueRes = await ggsPost(authKey, `/orders/ssl/reissue/${ggsOrderId}/`, {
+          csr: csrPem,
           webserver_type: '2',
-          dcv_method:   'dns',
+          dcv_method: 'dns',
         })
-        // GGS reissue returns order_id same as original
-        if (!orderRes.order_id) return json({ error: orderRes.description || orderRes.message || JSON.stringify(orderRes) }, 500)
+        if (!reissueRes.order_id && !reissueRes.success) {
+          return json({ error: reissueRes.description || reissueRes.message || JSON.stringify(reissueRes) }, 500)
+        }
+        // GGS reissue returns same order_id — fetch status to get new DCV TXT records
+        await new Promise(r => setTimeout(r, 1500))
+        const statusRes = await ggsGet(authKey, `/orders/status/${ggsOrderId}`)
+        let dcvTxtName = '', dcvTxtValue = ''
+        if (statusRes.domains) {
+          const d = Object.values(statusRes.domains)[0] as any
+          dcvTxtName  = d?.txt_record_name  || d?.cname_name  || d?.validation?.cname_name  || ''
+          dcvTxtValue = d?.txt_record_value || d?.cname_value || d?.validation?.cname_value || ''
+        }
+        // Auto-add DNS TXT record via dns-provider if user has Cloudflare connected
+        if (dcvTxtValue) {
+          try {
+            await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: req.headers.get('Authorization')! },
+              body: JSON.stringify({ action: 'auto_add', user_id: user.id, domain: cleanDomain, txt_name: dcvTxtName, txt_value: dcvTxtValue }),
+            })
+          } catch(e) { console.warn('DNS auto-add (non-fatal):', e) }
+        }
+        or = {
+          order_id:      ggsOrderId,
+          dcv_txt_name:  dcvTxtName,
+          dcv_txt_value: dcvTxtValue,
+          dcv_cname_name:  dcvTxtName,
+          dcv_cname_value: dcvTxtValue,
+        }
       } else {
-        // ── RENEWAL: new order, new billing period ──
+        // RENEWAL: new order, new billing period
         const product = await resolveProductId(authKey, product_code)
-        orderRes = await ggsPost(authKey, '/orders/add_ssl_order/', {
+        or = await ggsPost(authKey, '/orders/add_ssl_order/', {
           product_id: String(product.id), period: String(period),
           csr: csrPem, server_count: '-1', webserver_type: '2',
           dcv_method: 'dns',
@@ -610,7 +636,19 @@ serve(async (req) => {
           admin_zip: '94105', tech_firstname: firstName, tech_lastname: lastName,
           tech_email: adminEmail, tech_phone: phone, tech_title: 'Mr',
         })
-        if (!orderRes.order_id) return json({ error: orderRes.description || 'Renewal failed' }, 500)
+        if (!or.order_id) return json({ error: or.description || 'Renewal failed' }, 500)
+        // Auto-add DNS for renewal too
+        const dcvVal = or.dcv_txt_value || or.dcv_cname_value || ''
+        const dcvName = or.dcv_txt_name || or.dcv_cname_name || ''
+        if (dcvVal) {
+          try {
+            await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: req.headers.get('Authorization')! },
+              body: JSON.stringify({ action: 'auto_add', user_id: user.id, domain: cleanDomain, txt_name: dcvName, txt_value: dcvVal }),
+            })
+          } catch(e) { console.warn('DNS auto-add (non-fatal):', e) }
+        }
       }
 
       // Insert new ssl_order row
@@ -618,13 +656,13 @@ serve(async (req) => {
         .from('ssl_orders')
         .insert({
           user_id: user.id, domain: cleanDomain,
-          ggs_order_id: orderRes.order_id, status: 'dv_pending',
+          ggs_order_id: or.order_id, status: 'dv_pending',
           product_code, period,
           admin_email: adminEmail, admin_first_name: firstName, admin_last_name: lastName, admin_phone: phone,
-          dcv_txt_name: orderRes.dcv_txt_name || null,
-          dcv_txt_value: orderRes.dcv_txt_value || null,
-          dcv_cname_name: orderRes.dcv_cname_name || null,
-          dcv_cname_value: orderRes.dcv_cname_value || null,
+          dcv_txt_name: or.dcv_txt_name || null,
+          dcv_txt_value: or.dcv_txt_value || null,
+          dcv_cname_name: or.dcv_cname_name || null,
+          dcv_cname_value: or.dcv_cname_value || null,
           private_key_pem: privateKeyPem,
         })
         .select().single()
@@ -633,15 +671,15 @@ serve(async (req) => {
       // Log reissue event
       await adminDb().from('cert_reissues').insert({
         user_id: user.id, cert_id, new_cert_id: newOrder.id,
-        ggs_order_id: order?.ggs_order_id || null, new_ggs_order_id: orderRes.order_id,
+        ggs_order_id: order?.ggs_order_id || null, new_ggs_order_id: or.order_id,
         status: 'dv_pending', triggered_by: body.triggered_by || 'manual',
       })
 
       return json({
         ok: true, status: 'dv_pending', order_id: newOrder.id,
-        ggs_order_id: orderRes.order_id,
-        dcv_txt_name: orderRes.dcv_txt_name, dcv_txt_value: orderRes.dcv_txt_value,
-        dcv_cname_name: orderRes.dcv_cname_name, dcv_cname_value: orderRes.dcv_cname_value,
+        ggs_order_id: or.order_id,
+        dcv_txt_name: or.dcv_txt_name, dcv_txt_value: or.dcv_txt_value,
+        dcv_cname_name: or.dcv_cname_name, dcv_cname_value: or.dcv_cname_value,
       })
     }
 
