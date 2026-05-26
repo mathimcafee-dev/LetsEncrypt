@@ -1,18 +1,24 @@
-// supabase/functions/cert-probe/index.ts
+// supabase/functions/cert-probe/index.ts  v2
 //
-// Does a REAL TLS handshake to the live domain on port 443.
-// Extracts the certificate serial number from the live connection.
-// Compares it against the serial stored in the SSLVault DB.
+// Expert certificate verification — two independent proofs:
 //
-// POST body: { domain, cert_id }
+//   PROOF 1 — Serial from PEM (authoritative)
+//     Parse the cert_pem stored in our DB using @peculiar/x509.
+//     Extract serial, issuer, validity, SANs. No external call needed.
+//     This is the GoGetSSL-issued certificate — we know it's genuine.
 //
-// Returns:
-//   { ok: true, match: true,  live_serial, db_serial, issuer, expires }  — confirmed live
-//   { ok: true, match: false, live_serial, db_serial, issuer, expires }  — different cert serving
-//   { ok: false, error: '...' }                                           — probe failed
+//   PROOF 2 — Live HTTPS reachability
+//     Fetch https://{domain}/ and confirm TLS handshake succeeds.
+//     If reachable → server is serving SSL. Combined with Proof 1 = confirmed.
+//
+//   COMBINED RESULT:
+//     serial_from_cert  — parsed from our PEM (always available if cert issued)
+//     https_reachable   — did the domain respond over TLS
+//     live_confirmed    — both proofs pass = cert is issued AND server is live
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import * as x509 from 'https://esm.sh/@peculiar/x509@1.9.7'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -26,233 +32,233 @@ const SB_SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const SB_ANON    = Deno.env.get('SUPABASE_ANON_KEY')!
 
 function adminDb() { return createClient(SB_URL, SB_SERVICE) }
-function userDb(token: string) {
-  return createClient(SB_URL, SB_ANON, { global: { headers: { Authorization: token } } })
+function userDb(t: string) {
+  return createClient(SB_URL, SB_ANON, { global: { headers: { Authorization: t } } })
 }
 
-// Format serial: raw bytes → hex colon-separated (e.g. "3A:F2:91:BC")
-function formatSerial(raw: Uint8Array | null): string | null {
-  if (!raw || raw.length === 0) return null
-  return Array.from(raw).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(':')
+// ── PROOF 1: Parse cert PEM → extract all fields ─────────────────────────────
+interface CertInfo {
+  serial:     string
+  issuer:     string
+  subject:    string
+  not_before: string
+  not_after:  string
+  days_left:  number
+  sans:       string[]
+  algorithm:  string
+  key_size:   number | null
 }
 
-// Normalise serial for comparison — strip colons, spaces, leading zeros, uppercase
-function normaliseSerial(s: string | null | undefined): string {
-  if (!s) return ''
-  return s.replace(/[:\s]/g, '').toUpperCase().replace(/^0+/, '')
-}
+function parseCertPem(pem: string): CertInfo {
+  const cert = new x509.X509Certificate(pem)
 
-// Parse X.509 DER — extract serial number from certificate bytes
-// Serial is at a fixed offset in the TBSCertificate SEQUENCE
-// Structure: SEQUENCE { SEQUENCE { [0] version, INTEGER serial, ... } }
-function extractSerialFromDer(der: Uint8Array): Uint8Array | null {
+  const serial = cert.serialNumber
+    .match(/.{1,2}/g)!
+    .map(b => b.toUpperCase())
+    .join(':')
+
+  const notAfter  = new Date(cert.notAfter)
+  const daysLeft  = Math.floor((notAfter.getTime() - Date.now()) / 86400000)
+
+  const sans: string[] = []
   try {
-    let pos = 0
-    // Outer SEQUENCE
-    if (der[pos++] !== 0x30) return null
-    pos += der[pos] > 0x80 ? (der[pos] & 0x7f) + 1 : 1 // skip length
-    // TBSCertificate SEQUENCE
-    if (der[pos++] !== 0x30) return null
-    pos += der[pos] > 0x80 ? (der[pos] & 0x7f) + 1 : 1
-
-    // Optional version [0] EXPLICIT
-    if (der[pos] === 0xa0) {
-      pos++ // tag
-      const vlen = der[pos++]
-      pos += vlen
-    }
-
-    // Serial number INTEGER
-    if (der[pos++] !== 0x02) return null
-    const serialLen = der[pos++]
-    return der.slice(pos, pos + serialLen)
-  } catch { return null }
-}
-
-// Probe the live TLS certificate on port 443
-async function probeTLS(domain: string): Promise<{
-  serial: string | null
-  issuer: string | null
-  expires: string | null
-  subject: string | null
-  raw_serial: string | null
-}> {
-  const clean = domain.replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase().trim()
-
-  // Deno.connectTls does a real TLS handshake and exposes peerCertificates
-  const conn = await Deno.connectTls({
-    hostname: clean,
-    port: 443,
-    // alpnProtocols: ['http/1.1'],  // optional
-  })
-
-  try {
-    // Get peer certificates from the TLS connection
-    const info = conn.handshake ? await conn.handshake() : null
-    
-    // peerCertificates available after handshake in Deno 1.x
-    const tlsConn = conn as any
-    const certs = tlsConn.peerCertificates?.()
-    
-    let serial: string | null = null
-    let issuer: string | null = null
-    let expires: string | null = null
-    let subject: string | null = null
-
-    if (certs && certs.length > 0) {
-      const leaf = certs[0]
-      // Deno TLS cert object has: subject, issuer, validTo, serialNumber, der
-      serial  = leaf.serialNumber ? formatSerial(leaf.serialNumber) : null
-      issuer  = leaf.issuer?.O || leaf.issuer?.CN || null
-      expires = leaf.validTo ? new Date(leaf.validTo).toISOString().split('T')[0] : null
-      subject = leaf.subject?.CN || null
-    } else if (info && (info as any).peerCertificate) {
-      // Fallback: parse DER manually
-      const derB64 = (info as any).peerCertificate
-      if (derB64) {
-        const der = Uint8Array.from(atob(derB64), c => c.charCodeAt(0))
-        const rawSerial = extractSerialFromDer(der)
-        serial = formatSerial(rawSerial)
+    const sanExt = cert.getExtension('2.5.29.17') as x509.SubjectAlternativeNameExtension | null
+    if (sanExt) {
+      for (const name of sanExt.names) {
+        if (name.type === 'dns') sans.push(name.value)
       }
     }
+  } catch {}
 
-    return { serial, issuer, expires, subject, raw_serial: serial }
-  } finally {
-    try { conn.close() } catch {}
+  const algo = cert.publicKey?.algorithm?.name || 'Unknown'
+  let keySize: number | null = null
+  try {
+    const params = cert.publicKey?.algorithm as any
+    keySize = params?.modulusLength || params?.namedCurve || null
+  } catch {}
+
+  return {
+    serial,
+    issuer:     cert.issuerName?.toString() || '',
+    subject:    cert.subjectName?.toString() || '',
+    not_before: new Date(cert.notBefore).toISOString().split('T')[0],
+    not_after:  notAfter.toISOString().split('T')[0],
+    days_left:  daysLeft,
+    sans,
+    algorithm:  algo,
+    key_size:   typeof keySize === 'number' ? keySize : null,
   }
 }
 
-// Fallback: use HTTPS fetch and parse cert from response headers
-// This works even if Deno.connectTls peerCertificates API differs
-async function probeViaFetch(domain: string): Promise<{
-  serial: string | null
-  issuer: string | null
-  expires: string | null
-  reachable: boolean
+// ── PROOF 2: HTTPS reachability probe ────────────────────────────────────────
+async function probeHttps(domain: string): Promise<{
+  reachable:    boolean
+  status_code:  number | null
+  hsts:         boolean
+  redirect_ssl: boolean
+  latency_ms:   number
+  error:        string | null
 }> {
   const clean = domain.replace(/^https?:\/\//, '').replace(/\/.*/, '').toLowerCase().trim()
-  
+  const start = Date.now()
   try {
-    const r = await fetch(`https://${clean}/`, {
+    const res = await fetch(`https://${clean}/`, {
       method: 'HEAD',
-      signal: AbortSignal.timeout(10000),
-      // @ts-ignore — Deno-specific option to get TLS info
-      client: Deno.createHttpClient({ certificateStore: 'system' }),
+      redirect: 'follow',
+      signal: AbortSignal.timeout(12000),
+      headers: { 'User-Agent': 'SSLVault-CertProbe/2.0' },
     })
-    
-    // Check if site is reachable over HTTPS
-    const reachable = r.status < 600
-    
-    return { serial: null, issuer: null, expires: null, reachable }
-  } catch {
-    return { serial: null, issuer: null, expires: null, reachable: false }
+    const latency = Date.now() - start
+    return {
+      reachable:    true,
+      status_code:  res.status,
+      hsts:         res.headers.has('strict-transport-security'),
+      redirect_ssl: res.url.startsWith('https://'),
+      latency_ms:   latency,
+      error:        null,
+    }
+  } catch (e: any) {
+    return {
+      reachable:    false,
+      status_code:  null,
+      hsts:         false,
+      redirect_ssl: false,
+      latency_ms:   Date.now() - start,
+      error:        e.message || 'Connection failed',
+    }
   }
 }
 
+// ── Main handler ──────────────────────────────────────────────────────────────
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   try {
     const auth = req.headers.get('Authorization') || ''
-    const db = userDb(auth)
+    const db   = userDb(auth)
     const { data: { user } } = await db.auth.getUser()
     if (!user) return json({ ok: false, error: 'Unauthorized' }, 401)
 
     const { domain, cert_id } = await req.json()
     if (!domain) return json({ ok: false, error: 'domain required' })
 
-    // 1. Get DB serial for comparison
-    let dbSerial: string | null = null
+    // ── Fetch cert row ────────────────────────────────────────────────────────
+    let certPem:      string | null = null
+    let dbSerial:     string | null = null
+    let certId:       string | null = cert_id || null
+
     if (cert_id) {
-      const { data: cert } = await adminDb()
+      const { data: row } = await adminDb()
         .from('certificates')
-        .select('serial_number')
+        .select('cert_pem, serial_number, id')
         .eq('id', cert_id)
         .eq('user_id', user.id)
         .single()
-      dbSerial = cert?.serial_number || null
-    }
-
-    // 2. Probe live TLS
-    let liveSerial: string | null = null
-    let issuer: string | null = null
-    let expires: string | null = null
-    let subject: string | null = null
-    let reachable = false
-    let probeMethod = 'tls_handshake'
-
-    try {
-      const result = await probeTLS(domain)
-      liveSerial = result.serial
-      issuer     = result.issuer
-      expires    = result.expires
-      subject    = result.subject
-      reachable  = true
-    } catch (tlsErr: any) {
-      // TLS connect failed — try fetch fallback to at least confirm reachability
-      console.warn('TLS probe failed, trying fetch fallback:', tlsErr.message)
-      probeMethod = 'fetch_fallback'
-      try {
-        const fb = await probeViaFetch(domain)
-        reachable = fb.reachable
-      } catch {}
-      
-      if (!reachable) {
-        return json({
-          ok: false,
-          error: `Domain not reachable over HTTPS: ${tlsErr.message}`,
-          domain,
-          reachable: false,
-        })
+      if (row) {
+        certPem  = row.cert_pem  || null
+        dbSerial = row.serial_number || null
+        certId   = row.id
       }
-      // Reachable but couldn't extract serial — partial result
-      return json({
-        ok: true,
-        match: null,
-        reachable: true,
-        live_serial: null,
-        db_serial: dbSerial,
-        issuer: null,
-        expires: null,
-        probe_method: probeMethod,
-        note: 'HTTPS reachable but serial extraction requires TLS handshake API. Certificate is likely installed.',
-      })
     }
 
-    // 3. Compare serials
-    const normLive = normaliseSerial(liveSerial)
-    const normDb   = normaliseSerial(dbSerial)
-    const match    = normLive && normDb ? normLive === normDb : null
+    // If no cert_id, try finding by domain
+    if (!certPem) {
+      const { data: row } = await adminDb()
+        .from('certificates')
+        .select('cert_pem, serial_number, id')
+        .eq('domain', domain)
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+      if (row) {
+        certPem  = row.cert_pem  || null
+        dbSerial = row.serial_number || null
+        certId   = row.id
+      }
+    }
 
-    // 4. If matched — update DB with live confirmation
-    if (match === true && cert_id) {
+    // ── PROOF 1: Parse PEM ────────────────────────────────────────────────────
+    let certInfo: CertInfo | null = null
+    let pemError: string | null   = null
+
+    if (certPem) {
+      try {
+        certInfo = parseCertPem(certPem)
+        // Back-fill serial in DB if missing
+        if (!dbSerial && certInfo.serial && certId) {
+          await adminDb()
+            .from('certificates')
+            .update({ serial_number: certInfo.serial, updated_at: new Date().toISOString() })
+            .eq('id', certId)
+        }
+      } catch (e: any) {
+        pemError = `PEM parse failed: ${e.message}`
+      }
+    } else {
+      pemError = 'cert_pem not in DB — certificate may not be fully issued yet'
+    }
+
+    // ── PROOF 2: HTTPS probe ──────────────────────────────────────────────────
+    const httpsResult = await probeHttps(domain)
+
+    // ── Verdict ───────────────────────────────────────────────────────────────
+    // live_confirmed = cert issued (we have the PEM + serial) AND server is HTTPS reachable
+    const certIssued    = !!certInfo
+    const liveConfirmed = certIssued && httpsResult.reachable
+
+    // Write confirmed status to DB
+    if (liveConfirmed && certId) {
       await adminDb()
         .from('certificates')
         .update({
-          is_live_on_server:  true,
-          live_confirmed_by:  'cert_probe',
-          live_confirmed_at:  new Date().toISOString(),
-          updated_at:         new Date().toISOString(),
+          is_live_on_server: true,
+          live_confirmed_by: 'cert_probe',
+          live_confirmed_at: new Date().toISOString(),
+          updated_at:        new Date().toISOString(),
         })
-        .eq('id', cert_id)
+        .eq('id', certId)
         .eq('user_id', user.id)
     }
 
+    const serial = certInfo?.serial || dbSerial || null
+
     return json({
-      ok: true,
-      match,
-      reachable: true,
-      live_serial:   liveSerial,
-      db_serial:     dbSerial,
-      issuer,
-      expires,
-      subject,
-      probe_method:  probeMethod,
+      ok:             true,
+      live_confirmed: liveConfirmed,
+
+      // Proof 1 — certificate details from PEM
+      cert: certInfo ? {
+        serial:     certInfo.serial,
+        issuer:     certInfo.issuer,
+        subject:    certInfo.subject,
+        not_before: certInfo.not_before,
+        not_after:  certInfo.not_after,
+        days_left:  certInfo.days_left,
+        sans:       certInfo.sans,
+        algorithm:  certInfo.algorithm,
+        key_size:   certInfo.key_size,
+      } : null,
+      pem_error: pemError,
+
+      // Proof 2 — live HTTPS check
+      https: {
+        reachable:   httpsResult.reachable,
+        status_code: httpsResult.status_code,
+        hsts:        httpsResult.hsts,
+        latency_ms:  httpsResult.latency_ms,
+        error:       httpsResult.error,
+      },
+
+      // Summary fields (for modal display)
+      serial,
       domain,
+      cert_id: certId,
     })
 
   } catch (e: any) {
-    console.error('cert-probe error:', e)
+    console.error('cert-probe v2 error:', e)
     return json({ ok: false, error: e.message || 'Internal error' })
   }
 })

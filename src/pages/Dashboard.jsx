@@ -787,29 +787,31 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               loadHistory()
               setBusy(false)
 
-              // ── Live TLS probe — real serial verification ──────────────
-              // Wait a bit for cPanel/agent to apply, then probe the live domain
-              const probeDelay = method === 'agent' ? 35000 : method === 'cpanel' ? 8000 : 0
-              if (probeDelay > 0) {
-                setModalProbeStatus('probing')
-                setTimeout(async () => {
-                  try {
-                    const probeRes = await fetch(SB_URL + '/functions/v1/cert-probe', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
-                      body: JSON.stringify({ domain: cert.domain, cert_id: dispatchCertId }),
-                    })
-                    const probeData = await probeRes.json().catch(() => ({}))
-                    setModalProbeStatus(probeData)
-                    if (probeData.ok && probeData.match === true) {
-                      setModalLiveConfirmed(true)
-                      if (probeData.live_serial) setModalSerial(probeData.live_serial)
-                    }
-                  } catch(pe) {
-                    setModalProbeStatus({ ok: false, error: pe.message })
+              // ── Live TLS probe — real serial + HTTPS verification ──────────
+              // For cPanel: small delay for install to apply
+              // For agent: longer wait
+              // For no server / always: still probe to verify cert was issued
+              const probeDelay = method === 'agent' ? 30000 : method === 'cpanel' ? 6000 : 2000
+              setModalProbeStatus('probing')
+              setTimeout(async () => {
+                try {
+                  const probeRes = await fetch(SB_URL + '/functions/v1/cert-probe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+                    body: JSON.stringify({ domain: cert.domain, cert_id: dispatchCertId }),
+                  })
+                  const probeData = await probeRes.json().catch(() => ({ ok: false, error: 'Parse failed' }))
+                  setModalProbeStatus(probeData)
+                  if (probeData.ok && probeData.live_confirmed) {
+                    setModalLiveConfirmed(true)
                   }
-                }, probeDelay)
-              }
+                  if (probeData.cert?.serial || probeData.serial) {
+                    setModalSerial(probeData.cert?.serial || probeData.serial)
+                  }
+                } catch(pe) {
+                  setModalProbeStatus({ ok: false, error: pe.message })
+                }
+              }, probeDelay)
             }, 2000)
           } else if (latest?.status === 'dv_pending') {
             const elapsed = Math.round((Date.now() - pollStart) / 1000)

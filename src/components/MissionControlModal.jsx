@@ -88,133 +88,163 @@ function FloatingPill({ action, domain, elapsedMs, onExpand }) {
 
 function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onDone, onViewCert }) {
   const isProbing  = probeStatus === 'probing'
-  const probeOk    = probeStatus?.ok && probeStatus?.match === true
-  const probeFail  = probeStatus?.ok && probeStatus?.match === false
-  const probeWarn  = probeStatus?.ok && probeStatus?.match === null
-  const probeError = probeStatus && !probeStatus?.ok
+  const p          = probeStatus && probeStatus !== 'probing' ? probeStatus : null
+  const confirmed  = p?.ok && p?.live_confirmed
+  const certIssued = p?.ok && p?.cert
+  const reachable  = p?.ok && p?.https?.reachable
+  const probeErr   = p && !p.ok
+
+  const displaySerial = p?.cert?.serial || p?.serial || serial
 
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', padding: '40px 32px', gap: 0, textAlign: 'center',
+      padding: '32px 28px', textAlign: 'center',
     }}>
-      {/* Animated checkmark */}
-      <div style={{ position: 'relative', marginBottom: 24 }}>
-        <svg width="80" height="80" viewBox="0 0 80 80" style={{ animation: 'mc-pop 0.4s cubic-bezier(.16,1,.3,1)' }}>
-          <circle cx="40" cy="40" r="38" fill="none" stroke="#10b981" strokeWidth="3"/>
-          <path d="M24 40l12 12 20-20" stroke="#10b981" strokeWidth="3.5"
+      {/* Checkmark */}
+      <div style={{ marginBottom: 20 }}>
+        <svg width="72" height="72" viewBox="0 0 72 72" style={{ animation: 'mc-pop 0.4s cubic-bezier(.16,1,.3,1)' }}>
+          <circle cx="36" cy="36" r="34" fill="none" stroke={confirmed ? '#10b981' : '#10b981'} strokeWidth="2.5"/>
+          <path d="M22 36l10 10 18-18" stroke="#10b981" strokeWidth="3"
             strokeLinecap="round" strokeLinejoin="round" fill="none"/>
         </svg>
       </div>
 
-      <div style={{ fontSize: 22, fontWeight: 800, color: '#e8f5f4', marginBottom: 6 }}>
+      <div style={{ fontSize: 20, fontWeight: 800, color: '#e8f5f4', marginBottom: 4 }}>
         Certificate {action === 'reissue' ? 'Reissued' : 'Renewed'}
       </div>
-      <div style={{ fontSize: 14, color: 'rgba(232,245,244,0.6)', marginBottom: 28 }}>
-        {domain} is secured
+      <div style={{ fontSize: 13, color: 'rgba(232,245,244,0.5)', marginBottom: 24, fontFamily: 'monospace' }}>
+        {domain}
       </div>
 
-      {/* Info cards */}
+      {/* Proof card */}
       <div style={{
-        width: '100%', maxWidth: 360,
-        background: 'rgba(255,255,255,0.04)',
+        width: '100%', maxWidth: 380,
+        borderRadius: 12, overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: 12, overflow: 'hidden', marginBottom: 24,
+        marginBottom: 22,
       }}>
 
-        {/* Serial number row */}
-        {serial && (
+        {/* PROOF 1 — Certificate issued */}
+        <div style={{
+          padding: '14px 16px',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          background: certIssued ? 'rgba(16,185,129,0.06)' : 'rgba(255,255,255,0.03)',
+          display: 'flex', alignItems: 'flex-start', gap: 12,
+        }}>
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+            width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+            background: certIssued ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 16,
           }}>
-            <span style={{ fontSize: 12, color: 'rgba(232,245,244,0.5)' }}>Serial number</span>
-            <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#e8f5f4', fontWeight: 600,
-              maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {serial}
-            </span>
+            {isProbing ? '⏳' : certIssued ? '🔐' : '❓'}
           </div>
-        )}
-
-        {/* Live probe row — the real confirmation */}
-        <div style={{ padding: '14px 16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: 12, color: 'rgba(232,245,244,0.5)' }}>Live server check</span>
-
-            {/* Probing spinner */}
-            {isProbing && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                <div style={{
-                  width: 10, height: 10, borderRadius: '50%',
-                  border: '2px solid #10b981', borderTopColor: 'transparent',
-                  animation: 'mc-spin 0.7s linear infinite', flexShrink: 0,
-                }}/>
-                <span style={{ fontSize: 12, color: 'rgba(232,245,244,0.5)' }}>Connecting to server…</span>
-              </div>
-            )}
-
-            {/* ✅ Serial matched — confirmed live */}
-            {probeOk && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#10b981', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block', flexShrink: 0 }}/>
-                  Live & confirmed
-                </span>
-                <span style={{ fontSize: 10, fontFamily: 'monospace', color: 'rgba(16,185,129,0.7)' }}>
-                  Serial matched ✓
-                </span>
-              </div>
-            )}
-
-            {/* ⚠️ Different cert serving */}
-            {probeFail && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fbbf24', display: 'inline-block', flexShrink: 0 }}/>
-                  Old cert still serving
-                </span>
-                <span style={{ fontSize: 10, fontFamily: 'monospace', color: 'rgba(251,191,36,0.7)' }}>
-                  Live: {probeStatus.live_serial?.slice(0, 20)}…
-                </span>
-                <span style={{ fontSize: 10, color: 'rgba(251,191,36,0.6)', marginTop: 2 }}>
-                  Server may need a reload / restart
-                </span>
-              </div>
-            )}
-
-            {/* 🟡 Reachable but couldn't extract serial */}
-            {probeWarn && (
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fbbf24', display: 'inline-block', flexShrink: 0 }}/>
-                HTTPS reachable, cert likely live
-              </span>
-            )}
-
-            {/* ❌ Probe error */}
-            {probeError && (
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#f87171', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f87171', display: 'inline-block', flexShrink: 0 }}/>
-                Could not reach server
-              </span>
-            )}
-
-            {/* Waiting for probe to start */}
-            {!isProbing && !probeOk && !probeFail && !probeWarn && !probeError && (
-              <span style={{ fontSize: 12, color: 'rgba(232,245,244,0.35)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'inline-block', flexShrink: 0 }}/>
-                Probe queued…
-              </span>
-            )}
-          </div>
-
-          {/* Issuer + expiry from live probe */}
-          {probeStatus?.issuer && (
-            <div style={{ marginTop: 8, fontSize: 11, color: 'rgba(232,245,244,0.35)', textAlign: 'right' }}>
-              {probeStatus.issuer}{probeStatus.expires ? ` · expires ${probeStatus.expires}` : ''}
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: certIssued ? '#e8f5f4' : 'rgba(232,245,244,0.5)', marginBottom: 4 }}>
+              Certificate Issued
             </div>
+            {isProbing && (
+              <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>Parsing certificate…</div>
+            )}
+            {certIssued && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#10b981', wordBreak: 'break-all' }}>
+                  Serial: {p.cert.serial}
+                </div>
+                <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>
+                  {p.cert.algorithm}{p.cert.key_size ? ` ${p.cert.key_size}-bit` : ''} · valid {p.cert.not_before} → {p.cert.not_after}
+                </div>
+                {p.cert.issuer && (
+                  <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {p.cert.issuer.replace(/CN=/g,'').split(',')[0].trim()}
+                  </div>
+                )}
+              </div>
+            )}
+            {p && !certIssued && p.pem_error && (
+              <div style={{ fontSize: 11, color: '#fca5a5' }}>{p.pem_error}</div>
+            )}
+          </div>
+          {certIssued && (
+            <div style={{
+              fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 20,
+              background: 'rgba(16,185,129,0.15)', color: '#10b981', flexShrink: 0,
+            }}>VERIFIED</div>
+          )}
+        </div>
+
+        {/* PROOF 2 — Live server */}
+        <div style={{
+          padding: '14px 16px',
+          background: reachable ? 'rgba(16,185,129,0.04)' : 'rgba(255,255,255,0.02)',
+          display: 'flex', alignItems: 'flex-start', gap: 12,
+        }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+            background: reachable ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
+          }}>
+            {isProbing ? '⏳' : reachable ? '🌐' : '⚠️'}
+          </div>
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: reachable ? '#e8f5f4' : 'rgba(232,245,244,0.5)', marginBottom: 4 }}>
+              Live Server Check
+            </div>
+            {isProbing && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', border: '1.5px solid #10b981', borderTopColor: 'transparent', animation: 'mc-spin 0.7s linear infinite' }}/>
+                <span style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>Connecting to {domain}…</span>
+              </div>
+            )}
+            {reachable && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <div style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>
+                  HTTPS responding · {p.https.latency_ms}ms
+                </div>
+                <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>
+                  HTTP {p.https.status_code}{p.https.hsts ? ' · HSTS ✓' : ''}
+                </div>
+              </div>
+            )}
+            {p && !reachable && (
+              <div style={{ fontSize: 11, color: '#fca5a5' }}>
+                {p.https?.error || 'Server not reachable over HTTPS'}
+              </div>
+            )}
+          </div>
+          {reachable && (
+            <div style={{
+              fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 20,
+              background: 'rgba(16,185,129,0.15)', color: '#10b981', flexShrink: 0,
+            }}>LIVE</div>
           )}
         </div>
       </div>
+
+      {/* Final verdict banner */}
+      {!isProbing && p && (
+        <div style={{
+          width: '100%', maxWidth: 380,
+          padding: '11px 16px', borderRadius: 10, marginBottom: 22,
+          background: confirmed
+            ? 'rgba(16,185,129,0.1)'
+            : certIssued && !reachable
+              ? 'rgba(251,191,36,0.1)'
+              : 'rgba(248,113,113,0.08)',
+          border: `1px solid ${confirmed ? 'rgba(16,185,129,0.3)' : certIssued && !reachable ? 'rgba(251,191,36,0.3)' : 'rgba(248,113,113,0.2)'}`,
+          fontSize: 12, fontWeight: 600,
+          color: confirmed ? '#10b981' : certIssued && !reachable ? '#fbbf24' : '#fca5a5',
+        }}>
+          {confirmed
+            ? '✓ Certificate issued and server is live over HTTPS'
+            : certIssued && !reachable
+              ? '⚠ Certificate issued — server not yet reachable (may need 1–2 min to propagate)'
+              : probeErr
+                ? '✗ Probe failed — certificate was issued, check server manually'
+                : '⚠ Verification incomplete'}
+        </div>
+      )}
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: 10 }}>
@@ -222,20 +252,18 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
           fontSize: 13, fontWeight: 600, padding: '10px 20px', borderRadius: 8,
           background: 'rgba(16,185,129,0.12)', border: '1px solid #10b981',
           color: '#10b981', cursor: 'pointer', fontFamily: 'inherit',
-          transition: 'background 0.15s',
         }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(16,185,129,0.22)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(16,185,129,0.12)'}>
+          onMouseEnter={e => e.currentTarget.style.background='rgba(16,185,129,0.22)'}
+          onMouseLeave={e => e.currentTarget.style.background='rgba(16,185,129,0.12)'}>
           View Certificate
         </button>
         <button onClick={onDone} style={{
           fontSize: 13, fontWeight: 600, padding: '10px 20px', borderRadius: 8,
           background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
           color: '#e8f5f4', cursor: 'pointer', fontFamily: 'inherit',
-          transition: 'background 0.15s',
         }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}>
+          onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
+          onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.07)'}>
           Done
         </button>
       </div>
