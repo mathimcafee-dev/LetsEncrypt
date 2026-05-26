@@ -4,19 +4,19 @@ import { supabase } from '../lib/supabase'
 // ── Resend.com design tokens — pure black/white ────────────────────────
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const BG   = '#f3f6fb'   // page background
+const BG   = '#0d1117'   // page background
 const BG2  = '#0d1117'   // alt section background
-const BG3  = '#f0f4f9'   // card surface
-const BG4  = '#e8edf5'   // deep card / input
-const T1   = '#1a2332'   // heading text
-const T2   = '#4a5568'   // body text
-const T3   = '#8496a9'  // muted text
-const LN   = '#e1e7ef'  // default border
-const LN2  = '#c8d3e0'  // strong border
+const BG3  = '#161b22'   // card surface
+const BG4  = '#1c2128'   // deep card / input
+const T1   = '#ffffff'   // heading text
+const T2   = 'rgba(255,255,255,0.6)'   // body text
+const T3   = 'rgba(255,255,255,0.35)'  // muted text
+const LN   = 'rgba(255,255,255,0.08)'  // default border
+const LN2  = 'rgba(255,255,255,0.14)'  // strong border
 const LN3  = 'rgba(255,255,255,0.22)'  // hover border
-const GRN  = '#1a7f37'   // success green
-const AMB  = '#9a6700'   // warning amber
-const RED  = '#cf222e'   // error red
+const GRN  = '#3fb950'   // success green
+const AMB  = '#d29922'   // warning amber
+const RED  = '#f85149'   // error red
 
 function useIsMobile() {
   const [w,setW] = useState(window.innerWidth)
@@ -214,9 +214,9 @@ export default function Home({ nav }) {
       <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(255,255,255,0.15);color:#fff}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       {/* ── NAV ── */}
-      <header style={{position:'sticky',top:0,zIndex:200,background:'rgba(255,255,255,0.97)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderBottom:`1px solid ${LN}`,height:52,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
+      <header style={{position:'sticky',top:0,zIndex:200,background:'rgba(13,17,23,0.95)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderBottom:`1px solid ${LN}`,height:52,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',flexShrink:0}} onClick={()=>nav('/')}>
-          <div style={{width:22,height:22,background:'#0063b0',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <div style={{width:22,height:22,background:'#388bfd',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{fontSize:13,fontWeight:600,color:T1,letterSpacing:'-0.3px'}}>SSLVault</span>
@@ -234,10 +234,10 @@ export default function Home({ nav }) {
               onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>
               Industry Intelligence <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <div className="id" style={{position:'absolute',top:'calc(100% + 6px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:'#ffffff',border:`1px solid ${LN2}`,borderRadius:6,padding:'5px',minWidth:200,boxShadow:'0 8px 32px rgba(0,0,0,0.6)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
+            <div className="id" style={{position:'absolute',top:'calc(100% + 6px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:BG3,border:`1px solid ${LN2}`,borderRadius:6,padding:'5px',minWidth:200,boxShadow:'0 8px 32px rgba(0,0,0,0.6)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
               {[{label:'CA Trust Store',path:'/ca-trust-explorer',desc:'6,200+ root & intermediate CAs'},{label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},{label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'},{label:'Trust Passport',path:'/trust-passport',desc:'Is this site safe?'}].map(it=>(
                 <button key={it.path} onClick={()=>nav(it.path)} style={{display:'block',width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',fontFamily:F,padding:'7px 10px',borderRadius:4,transition:'background .1s'}}
-                  onMouseEnter={e=>e.currentTarget.style.background='#f0f4f9'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
+                  onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.06)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
                   <div style={{fontSize:12,fontWeight:500,color:T1,marginBottom:1}}>{it.label}</div>
                   <div style={{fontSize:11,color:T3}}>{it.desc}</div>
                 </button>
@@ -247,7 +247,7 @@ export default function Home({ nav }) {
         </nav>}
         <div style={{display:'flex',gap:8,alignItems:'center',flexShrink:0}}>
           {!isMobile&&<button onClick={()=>nav('/auth')} style={{background:'none',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,color:T2,padding:'5px 10px',borderRadius:4,transition:'color .12s'}} onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>Sign in</button>}
-          <button onClick={()=>nav('/auth')} style={{background:'#388bfd',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#fff',padding:'7px 16px',borderRadius:5,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#004f8c'} onMouseLeave={e=>e.currentTarget.style.background='#0063b0'}>Get started</button>
+          <button onClick={()=>nav('/auth')} style={{background:'#388bfd',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#fff',padding:'7px 16px',borderRadius:5,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#1f6feb'} onMouseLeave={e=>e.currentTarget.style.background='#388bfd'}>Get started</button>
         </div>
       </header>
 
@@ -568,7 +568,7 @@ export default function Home({ nav }) {
                     <div style={{fontSize:9.5,color:T3,marginTop:1}}>{fips}</div>
                   </div>
                 ))}
-                <button onClick={()=>nav('/pki-hub')} style={{background:'#0063b0',border:'none',borderRadius:4,padding:'7px 14px',fontSize:12,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#1f6feb'} onMouseLeave={e=>e.currentTarget.style.background='#388bfd'}>View PQC tracker →</button>
+                <button onClick={()=>nav('/pki-hub')} style={{background:'#388bfd',border:'none',borderRadius:4,padding:'7px 14px',fontSize:12,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#1f6feb'} onMouseLeave={e=>e.currentTarget.style.background='#388bfd'}>View PQC tracker →</button>
               </div>
             </Card>
           </FadeUp>
