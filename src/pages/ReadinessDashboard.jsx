@@ -59,7 +59,7 @@ function Tick({ ok }) {
 
 function StatusPill({ status }) {
   const map = {
-    'Ready':      { bg:'#d1fae5', color:'#0F6E56', border:'#A8E6DE' },
+    'Ready':      { bg:'#111111', color:'#0F6E56', border:'#A8E6DE' },
     'At risk':    { bg:'#FAEEDA', color:'#854F0B', border:'#F0C490' },
     'Will break': { bg:'#FCEBEB', color:'#A32D2D', border:'#F7C1C1' },
   }
@@ -239,7 +239,7 @@ export default function ReadinessDashboard({ user }) {
                   </span>
                 </div>
                 <span style={{ fontSize:11, fontWeight:600, padding:'2px 8px', borderRadius:20,
-                  background: past ? (i===0?'#FAEEDA':'var(--v2-bg)') : '#d1fae5',
+                  background: past ? (i===0?'#FAEEDA':'var(--v2-bg)') : '#111111',
                   color: past ? (i===0?'#854F0B':'var(--v2-text-3)') : '#0F6E56',
                   border:`0.5px solid ${past?(i===0?'#F0C490':'var(--v2-border)'):'#A8E6DE'}` }}>
                   {past ? 'In effect' : `${d}d`}
@@ -261,7 +261,7 @@ export default function ReadinessDashboard({ user }) {
               style={{ padding:'5px 12px', borderRadius:6, fontSize:11, border:'none',
                 fontWeight: filter===f.key ? 600 : 400, fontFamily:'inherit', cursor:'pointer',
                 background: filter===f.key ? 'var(--v2-green)' : 'none',
-                color: filter===f.key ? 'white' : 'var(--v2-text-3)',
+                color: filter===f.key ? '#000000' : 'var(--v2-text-3)',
                 transition:'all .15s' }}>
               {f.label}
             </button>
@@ -316,7 +316,7 @@ export default function ReadinessDashboard({ user }) {
                             {cert.source === 'gogetssl' ? (
                               <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px',
                                 borderRadius:4, whiteSpace:'nowrap', flexShrink:0,
-                                background:'#d1fae5', color:'#0F6E56',
+                                background:'#111111', color:'#0F6E56',
                                 border:'0.5px solid #A8E6DE' }}>
                                 SSLVault
                               </span>

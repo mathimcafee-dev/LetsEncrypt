@@ -34,10 +34,10 @@ function classifyCert(shadow, knownDomains) {
 }
 
 const STATUS_CONFIG = {
-  unknown:    { label: 'Unknown',    color: '#dc2626', bg: '#fef2f2', border: '#fecaca', leftBorder: '#dc2626' },
-  phishing:   { label: 'Phishing',   color: '#f07059', bg: '#fdf4ff', border: '#e9d5ff', leftBorder: '#f07059' },
-  suspicious: { label: 'Suspicious', color: '#f07059', bg: '#fde8e4', border: '#F2C4BC', leftBorder: '#f07059' },
-  known:      { label: 'Known',      color: '#16a34a', bg: '#ccfbf1', border: '#A8E6DE', leftBorder: '#16a34a' },
+  unknown:    { label: 'Unknown',    color: '#f87171', bg: '#fef2f2', border: '#fecaca', leftBorder: '#f87171' },
+  phishing:   { label: 'Phishing',   color: '#ffffff', bg: '#fdf4ff', border: '#e9d5ff', leftBorder: '#ffffff' },
+  suspicious: { label: 'Suspicious', color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC', leftBorder: '#ffffff' },
+  known:      { label: 'Known',      color: '#4ade80', bg: '#111111', border: '#A8E6DE', leftBorder: '#4ade80' },
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
@@ -104,7 +104,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
           <button className="v2-btn v2-btn-sm" onClick={() => onDismiss(shadow.id)}
             disabled={dismissing === shadow.id}
             style={{ display: 'flex', alignItems: 'center', gap: 5,
-              borderColor: '#A8E6DE', color: '#16a34a' }}>
+              borderColor: '#A8E6DE', color: '#4ade80' }}>
             <Check size={11}/>
             {dismissing === shadow.id ? 'Marking…' : 'Mark as known'}
           </button>
@@ -116,7 +116,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
         </button>
         {status !== 'known' && (
           <button className="v2-btn v2-btn-sm" onClick={() => onMark(shadow.id, 'phishing')}
-            style={{ display: 'flex', alignItems: 'center', gap: 5, borderColor: '#fecaca', color: '#dc2626' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 5, borderColor: '#fecaca', color: '#f87171' }}>
             <AlertTriangle size={11}/> Report mis-issuance
           </button>
         )}
@@ -234,10 +234,10 @@ export default function CTAbuseMonitor({ user }) {
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
             <ShieldAlert size={16} color="#dc2626" style={{ flexShrink: 0, marginTop: 1 }}/>
             <div>
-              <div style={{ fontSize:13, fontWeight: 500, color: '#b91c1c' }}>
+              <div style={{ fontSize:13, fontWeight: 500, color: '#f87171' }}>
                 {flagged} unauthorised certificate{flagged !== 1 ? 's' : ''} detected
               </div>
-              <div style={{ fontSize:11, color: '#dc2626', marginTop: 2 }}>
+              <div style={{ fontSize:11, color: '#f87171', marginTop: 2 }}>
                 Certs issued for your domains by unrecognised CAs. Review immediately — possible phishing or shadow IT.
               </div>
             </div>
@@ -245,10 +245,10 @@ export default function CTAbuseMonitor({ user }) {
         )}
 
         {flagged === 0 && !loading && shadows.length > 0 && (
-          <div style={{ background: '#ccfbf1', border: '0.5px solid #A8E6DE', borderRadius: 10,
+          <div style={{ background: '#111111', border: '0.5px solid #A8E6DE', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
             <Shield size={15} color="#16a34a" style={{ flexShrink: 0 }}/>
-            <div style={{ fontSize:13, color: '#0d9488', fontWeight: 500 }}>
+            <div style={{ fontSize:13, color: '#ffffff', fontWeight: 500 }}>
               All detected certs are known and accounted for
             </div>
           </div>
@@ -258,9 +258,9 @@ export default function CTAbuseMonitor({ user }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 16 }}>
           {[
             { label: 'Total detected', val: classified.length,            color: 'var(--v2-text)' },
-            { label: 'Flagged',        val: flagged,                       color: '#dc2626'         },
-            { label: 'Suspicious',     val: counts.suspicious || 0,        color: '#f07059'         },
-            { label: 'Known / safe',   val: counts.known || 0,             color: '#16a34a'         },
+            { label: 'Flagged',        val: flagged,                       color: '#f87171'         },
+            { label: 'Suspicious',     val: counts.suspicious || 0,        color: '#ffffff'         },
+            { label: 'Known / safe',   val: counts.known || 0,             color: '#4ade80'         },
           ].map(({ label, val, color }) => (
             <div key={label} className="v2-card" style={{ padding: '12px 14px', cursor: 'pointer' }}
               onClick={() => setFilter(label === 'Total detected' ? 'all'
@@ -441,7 +441,7 @@ export default function CTAbuseMonitor({ user }) {
                   const domainShadows = classified.filter(s => s.domain === w.domain)
                   const hasFlagged = domainShadows.some(s => s._status === 'unknown' || s._status === 'phishing')
                   const hasSuspicious = domainShadows.some(s => s._status === 'suspicious')
-                  const dotColor = hasFlagged ? '#dc2626' : hasSuspicious ? '#f07059' : '#16a34a'
+                  const dotColor = hasFlagged ? '#f87171' : hasSuspicious ? '#ffffff' : '#4ade80'
                   const hasCaa = false // Would be fetched from ssl_health_scores
 
                   return (
@@ -456,7 +456,7 @@ export default function CTAbuseMonitor({ user }) {
                           Added {timeAgo(w.created_at)}
                         </div>
                       </div>
-                      <div style={{ fontSize:10, color: hasFlagged ? '#dc2626' : hasSuspicious ? '#f07059' : '#16a34a',
+                      <div style={{ fontSize:10, color: hasFlagged ? '#f87171' : hasSuspicious ? '#ffffff' : '#4ade80',
                         fontWeight: 500 }}>
                         {hasFlagged ? '⚠ Action needed' : hasSuspicious ? '○ Review' : '✓ All clear'}
                       </div>

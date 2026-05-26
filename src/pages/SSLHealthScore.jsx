@@ -29,20 +29,20 @@ function timeAgo(iso) {
 
 // Grade colour map
 function gradeStyle(grade) {
-  if (!grade || grade === 'F') return { color: '#dc2626', bg: '#fef2f2', border: '#fecaca' }
-  if (grade === 'D') return { color: '#f07059', bg: '#fde8e4', border: '#F2C4BC' }
+  if (!grade || grade === 'F') return { color: '#f87171', bg: '#fef2f2', border: '#fecaca' }
+  if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC' }
   if (grade === 'C') return { color: '#ca8a04', bg: '#fefce8', border: '#fef08a' }
-  if (grade === 'B') return { color: '#0d9488', bg: '#ccfbf1', border: '#A8E6DE' }
-  if (grade === 'A') return { color: '#16a34a', bg: '#ccfbf1', border: '#A8E6DE' }
-  if (grade === 'A+') return { color: '#0d9488', bg: '#ccfbf1', border: '#6ee7b7' }
-  return { color: '#0f766e', bg: '#f0fdf9', border: '#99f6e4' }
+  if (grade === 'B') return { color: '#ffffff', bg: '#111111', border: '#A8E6DE' }
+  if (grade === 'A') return { color: '#4ade80', bg: '#111111', border: '#A8E6DE' }
+  if (grade === 'A+') return { color: '#ffffff', bg: '#111111', border: '#6ee7b7' }
+  return { color: 'rgba(255,255,255,0.7)', bg: '#000000', border: '#ffffff' }
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
-  const color = pct >= 80 ? '#16a34a' : pct >= 60 ? '#0d9488' : pct >= 50 ? '#f07059' : '#dc2626'
+  const color = pct >= 80 ? '#4ade80' : pct >= 60 ? '#ffffff' : pct >= 50 ? '#ffffff' : '#f87171'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{ flex: 1, height: 4, background: 'var(--v2-border)', borderRadius: 2, overflow: 'hidden' }}>
@@ -61,7 +61,7 @@ function Check({ ok, label }) {
       {ok
         ? <CheckCircle size={11} color="#16a34a" />
         : <XCircle size={11} color="#dc2626" />}
-      <span style={{ fontSize:11, color: ok ? '#16a34a' : '#dc2626' }}>{label}</span>
+      <span style={{ fontSize:11, color: ok ? '#4ade80' : '#f87171' }}>{label}</span>
     </div>
   )
 }
@@ -94,7 +94,7 @@ function DomainRow({ score, onRescan, scanning }) {
             </span>
             {!score.cert_valid && (
               <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
-                background: '#fef2f2', color: '#dc2626' }}>UNREACHABLE</span>
+                background: '#fef2f2', color: '#f87171' }}>UNREACHABLE</span>
             )}
           </div>
           <ScoreBar score={score.score} />
@@ -107,7 +107,7 @@ function DomainRow({ score, onRescan, scanning }) {
           <Check ok={score.cert_valid} label="TLS" />
           {score.expiry_days != null && (
             <span style={{ fontSize:11, fontWeight: 500,
-              color: score.expiry_days <= 7 ? '#dc2626' : score.expiry_days <= 30 ? '#f07059' : '#16a34a' }}>
+              color: score.expiry_days <= 7 ? '#f87171' : score.expiry_days <= 30 ? '#ffffff' : '#4ade80' }}>
               {score.expiry_days <= 0 ? 'Expired' : `${score.expiry_days}d`}
             </span>
           )}
@@ -148,8 +148,8 @@ function DomainRow({ score, onRescan, scanning }) {
           ))}
           {score.error && (
             <div style={{ gridColumn: '1/-1' }}>
-              <div style={{ fontSize:10, color: '#dc2626', fontWeight: 500, marginBottom: 2 }}>Error</div>
-              <div style={{ fontSize:11, color: '#dc2626', fontFamily: 'monospace' }}>{score.error}</div>
+              <div style={{ fontSize:10, color: '#f87171', fontWeight: 500, marginBottom: 2 }}>Error</div>
+              <div style={{ fontSize:11, color: '#f87171', fontFamily: 'monospace' }}>{score.error}</div>
             </div>
           )}
         </div>
@@ -235,9 +235,9 @@ export default function SSLHealthScore({ user }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
             {[
               { label: 'Domains', val: scores.length, color: 'var(--v2-text)' },
-              { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#16a34a' : avgScore >= 60 ? '#0d9488' : '#dc2626' },
-              { label: 'A / A+', val: (gradeCount['A'] || 0) + (gradeCount['A+'] || 0), color: '#16a34a' },
-              { label: 'Need attention', val: issues.length, color: issues.length > 0 ? '#dc2626' : '#16a34a' },
+              { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#ffffff' : '#f87171' },
+              { label: 'A / A+', val: (gradeCount['A'] || 0) + (gradeCount['A+'] || 0), color: '#4ade80' },
+              { label: 'Need attention', val: issues.length, color: issues.length > 0 ? '#f87171' : '#4ade80' },
             ].map(({ label, val, color }) => (
               <div key={label} className="v2-card" style={{ padding: '12px 14px' }}>
                 <div style={{ fontSize:24, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
@@ -266,7 +266,7 @@ export default function SSLHealthScore({ user }) {
                 : <><Plus size={10} /> Scan domain</>}
             </button>
           </div>
-          {addError && <div style={{ fontSize:11, color: '#dc2626', marginTop: 6 }}>{addError}</div>}
+          {addError && <div style={{ fontSize:11, color: '#f87171', marginTop: 6 }}>{addError}</div>}
         </div>
 
         {/* Domain list */}

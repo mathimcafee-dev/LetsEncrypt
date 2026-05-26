@@ -80,7 +80,7 @@ export default function AdminAnalytics({ user }) {
 
   if (loading) return <div className="v2-page"><div className="v2-container" style={{paddingTop:40,textAlign:'center',color:'var(--v2-text-3)'}}>Loading analytics…</div></div>
 
-  const gradeColor = {A:'#16a34a',B:'#65a30d',C:'#f07059',D:'#ea580c',F:'#dc2626',unknown:'rgba(0,0,0,0.36)'}
+  const gradeColor = {A:'#4ade80',B:'#65a30d',C:'#ffffff',D:'#ea580c',F:'#f87171',unknown:'rgba(255,255,255,0.38)'}
 
   return (
     <div className="v2-page">
@@ -105,9 +105,9 @@ export default function AdminAnalytics({ user }) {
             </button>
           </div>
           {actionMsg && (
-            <div style={{padding:'8px 12px',borderRadius:6,background:actionMsg.startsWith('Error')?'#fef2f2':'#ccfbf1',
+            <div style={{padding:'8px 12px',borderRadius:6,background:actionMsg.startsWith('Error')?'#fef2f2':'#111111',
               border:`0.5px solid ${actionMsg.startsWith('Error')?'#fecaca':'#A8E6DE'}`,
-              color:actionMsg.startsWith('Error')?'#dc2626':'#16a34a',fontSize:12,marginBottom:10,
+              color:actionMsg.startsWith('Error')?'#f87171':'#4ade80',fontSize:12,marginBottom:10,
               display:'flex',alignItems:'center',justifyContent:'space-between'}}>
               {actionMsg}
               <button onClick={()=>setActionMsg('')} style={{background:'none',border:'none',cursor:'pointer',fontSize:14,lineHeight:1}}>×</button>
@@ -135,8 +135,8 @@ export default function AdminAnalytics({ user }) {
                   <div style={{fontSize:12,fontWeight:500,color:'var(--v2-text)'}}>{req.email}</div>
                   <div>
                     <span style={{fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:20,
-                      background:req.status==='pending'?'#fde8e4':req.status==='approved'?'#ccfbf1':'#fef2f2',
-                      color:req.status==='pending'?'#f07059':req.status==='approved'?'#16a34a':'#dc2626',
+                      background:req.status==='pending'?'rgba(239,68,68,0.08)':req.status==='approved'?'#111111':'#fef2f2',
+                      color:req.status==='pending'?'#ffffff':req.status==='approved'?'#4ade80':'#f87171',
                       border:`0.5px solid ${req.status==='pending'?'#F2C4BC':req.status==='approved'?'#A8E6DE':'#fecaca'}`}}>
                       {req.status}
                     </span>
@@ -148,12 +148,12 @@ export default function AdminAnalytics({ user }) {
                     {req.status==='pending' && (<>
                       <button onClick={()=>handleApprove(req.user_id)}
                         style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #A8E6DE',
-                          background:'#ccfbf1',color:'#16a34a',cursor:'pointer',fontWeight:600}}>
+                          background:'#111111',color:'#4ade80',cursor:'pointer',fontWeight:600}}>
                         ✓ Approve
                       </button>
                       <button onClick={()=>handleReject(req.user_id,req.email)}
                         style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #fecaca',
-                          background:'#fef2f2',color:'#dc2626',cursor:'pointer',fontWeight:600}}>
+                          background:'#fef2f2',color:'#f87171',cursor:'pointer',fontWeight:600}}>
                         ✗ Reject
                       </button>
                     </>)}
@@ -172,10 +172,10 @@ export default function AdminAnalytics({ user }) {
         {/* Primary metrics */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:10,marginBottom:20}}>
           {[
-            {icon:Shield,      val:stats.active,      label:'Active certs',     color:'#16a34a'},
-            {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#0d9488'},
-            {icon:AlertTriangle,val:stats.expiring30, label:'Expiring in 30d',  color:'#f07059'},
-            {icon:CheckCircle, val:stats.installed,   label:'Auto-installed',   color:'#f07059'},
+            {icon:Shield,      val:stats.active,      label:'Active certs',     color:'#4ade80'},
+            {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#ffffff'},
+            {icon:AlertTriangle,val:stats.expiring30, label:'Expiring in 30d',  color:'#ffffff'},
+            {icon:CheckCircle, val:stats.installed,   label:'Auto-installed',   color:'#ffffff'},
           ].map(({icon:Icon,val,label,color})=>(
             <div key={label} className="v2-card" style={{padding:'14px 16px'}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
@@ -194,11 +194,11 @@ export default function AdminAnalytics({ user }) {
             {Object.entries(stats.grades).filter(([,v])=>v>0).map(([g,v])=>(
               <div key={g} style={{marginBottom:10}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
-                  <span style={{fontSize:12,fontWeight:500,color:gradeColor[g]||'#0f766e',fontFamily:'monospace'}}>{g==='unknown'?'—':g}</span>
+                  <span style={{fontSize:12,fontWeight:500,color:gradeColor[g]||'rgba(255,255,255,0.7)',fontFamily:'monospace'}}>{g==='unknown'?'—':g}</span>
                   <span style={{fontSize:12,color:'var(--v2-text-2)'}}>{v} cert{v!==1?'s':''}</span>
                 </div>
                 <div style={{height:6,borderRadius:3,background:'var(--v2-surface-3)',overflow:'hidden'}}>
-                  <div style={{height:'100%',borderRadius:3,background:gradeColor[g]||'#0f766e',width:`${Math.min(100,(v/Math.max(1,stats.active))*100)}%`,transition:'width .6s'}}/>
+                  <div style={{height:'100%',borderRadius:3,background:gradeColor[g]||'rgba(255,255,255,0.7)',width:`${Math.min(100,(v/Math.max(1,stats.active))*100)}%`,transition:'width .6s'}}/>
                 </div>
               </div>
             ))}
@@ -210,7 +210,7 @@ export default function AdminAnalytics({ user }) {
             <div className="v2-section-label" style={{marginBottom:14}}>Certificates by CA</div>
             {Object.entries(stats.bySource).sort((a,b)=>b[1]-a[1]).map(([src,cnt])=>{
               const labels = {rapidssl:'RapidSSL',tss:'RapidSSL',letsencrypt:"Let's Encrypt",zerossl:'ZeroSSL',buypass:'Buypass',acme:'ACME',unknown:'Unknown'}
-              const colors = {rapidssl:'#16a34a',tss:'#16a34a',letsencrypt:'#0d9488',zerossl:'#f07059',buypass:'#0d9488',acme:'#0f766e',unknown:'rgba(0,0,0,0.36)'}
+              const colors = {rapidssl:'#4ade80',tss:'#4ade80',letsencrypt:'#ffffff',zerossl:'#ffffff',buypass:'#ffffff',acme:'rgba(255,255,255,0.7)',unknown:'rgba(255,255,255,0.38)'}
               return (
                 <div key={src} style={{marginBottom:10}}>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
@@ -218,7 +218,7 @@ export default function AdminAnalytics({ user }) {
                     <span style={{fontSize:12,color:'var(--v2-text-2)'}}>{cnt}</span>
                   </div>
                   <div style={{height:6,borderRadius:3,background:'var(--v2-surface-3)',overflow:'hidden'}}>
-                    <div style={{height:'100%',borderRadius:3,background:colors[src]||'#0f766e',width:`${(cnt/Math.max(1,stats.active))*100}%`,transition:'width .6s'}}/>
+                    <div style={{height:'100%',borderRadius:3,background:colors[src]||'rgba(255,255,255,0.7)',width:`${(cnt/Math.max(1,stats.active))*100}%`,transition:'width .6s'}}/>
                   </div>
                 </div>
               )
@@ -229,10 +229,10 @@ export default function AdminAnalytics({ user }) {
         {/* Expiry urgency */}
         {stats.expiring7 > 0 && (
           <div style={{background:'#fef2f2',border:'0.5px solid #fecaca',borderRadius:10,padding:'14px 18px',marginBottom:20,display:'flex',gap:12,alignItems:'flex-start'}}>
-            <AlertTriangle size={16} style={{color:'#dc2626',flexShrink:0,marginTop:2}}/>
+            <AlertTriangle size={16} style={{color:'#f87171',flexShrink:0,marginTop:2}}/>
             <div>
               <div style={{fontSize:13,fontWeight:500,color:'#991b1b',marginBottom:3}}>{stats.expiring7} certificate{stats.expiring7!==1?'s':''} expiring within 7 days</div>
-              <div style={{fontSize:12,color:'#b91c1c'}}>Check the dashboard and renew immediately if auto-renew is not enabled.</div>
+              <div style={{fontSize:12,color:'#f87171'}}>Check the dashboard and renew immediately if auto-renew is not enabled.</div>
             </div>
           </div>
         )}

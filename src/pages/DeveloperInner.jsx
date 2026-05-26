@@ -27,25 +27,25 @@ export default function DeveloperInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Profile card */}
-      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:14, borderLeft:'3px solid #0d9488' }}>
+      <div style={{ background:'#000000', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:14, borderLeft:'3px solid #0d9488' }}>
         <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:24, alignItems:'start' }}>
           <img src={portrait} alt="Mathivanan Kathirvel"
             style={{ width:80, height:80, borderRadius:8, objectFit:'cover', border:'0.5px solid #e8edf2', flexShrink:0 }}/>
           <div>
-            <div style={{ fontSize:18, fontWeight:500, color:'#0a0a0a', letterSpacing:'-.3px', marginBottom:4 }}>Mathivanan Kathirvel</div>
+            <div style={{ fontSize:18, fontWeight:500, color:'#ffffff', letterSpacing:'-.3px', marginBottom:4 }}>Mathivanan Kathirvel</div>
             <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:10 }}>
-              <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11, color:'rgba(0,0,0,0.55)' }}>
+              <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11, color:'rgba(255,255,255,0.6)' }}>
                 <MapPin size={11} color="#a3a3a3"/> Netherlands
               </span>
             </div>
-            <p style={{ fontSize:12, color:'rgba(0,0,0,0.55)', lineHeight:1.7, margin:'0 0 14px', maxWidth:580 }}>
+            <p style={{ fontSize:12, color:'rgba(255,255,255,0.6)', lineHeight:1.7, margin:'0 0 14px', maxWidth:580 }}>
               PKI specialist with a deep interest in digital trust and certificate lifecycle management. SSLVault is a personal project — a way to give back to the indie and non-profit community who need enterprise-grade CLM without the enterprise price tag.
             </p>
             <div style={{ display:'flex', gap:8 }}>
-              <a href="mailto:mathimcafee@gmail.com" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d9488', color:'#1a1a1a', textDecoration:'none', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
+              <a href="mailto:mathimcafee@gmail.com" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#ffffff', color:'#ffffff', textDecoration:'none', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
                 <Mail size={12}/> Contact
               </a>
-              <a href="https://github.com/mathimcafee-dev" target="_blank" rel="noopener noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'#0a0a0a', textDecoration:'none', border:'0.5px solid #e8edf2', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
+              <a href="https://github.com/mathimcafee-dev" target="_blank" rel="noopener noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#000000', color:'#ffffff', textDecoration:'none', border:'0.5px solid #e8edf2', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
                 <Github size={12}/> GitHub
               </a>
             </div>
@@ -55,11 +55,11 @@ export default function DeveloperInner({ nav }) {
 
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:14 }}>
         {/* Credentials */}
-        <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
+        <div style={{ background:'#000000', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
           <div style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Credentials</div>
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
             {CERTS.map(c => (
-              <div key={c} style={{ display:'flex', alignItems:'flex-start', gap:10, fontSize:12, color:'rgba(0,0,0,0.55)' }}>
+              <div key={c} style={{ display:'flex', alignItems:'flex-start', gap:10, fontSize:12, color:'rgba(255,255,255,0.6)' }}>
                 <Award size={13} color="#0d9488" style={{ flexShrink:0, marginTop:1 }}/>
                 {c}
               </div>
@@ -68,25 +68,25 @@ export default function DeveloperInner({ nav }) {
         </div>
 
         {/* Skills */}
-        <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
+        <div style={{ background:'#000000', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
           <div style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Skills</div>
           <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
             {SKILLS.map(s => (
-              <span key={s} style={{ fontSize:11, fontWeight:500, color:'rgba(0,0,0,0.55)', background:'#f0fdf9', border:'0.5px solid #e8edf2', borderRadius:4, padding:'4px 9px' }}>{s}</span>
+              <span key={s} style={{ fontSize:11, fontWeight:500, color:'rgba(255,255,255,0.6)', background:'#000000', border:'0.5px solid #e8edf2', borderRadius:4, padding:'4px 9px' }}>{s}</span>
             ))}
           </div>
         </div>
 
         {/* SSLVault story */}
-        <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px', gridColumn:'span 2' }}>
+        <div style={{ background:'#000000', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px', gridColumn:'span 2' }}>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
             <Shield size={13} color="#0d9488"/>
             <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Why SSLVault</span>
           </div>
-          <p style={{ fontSize:12, color:'rgba(0,0,0,0.55)', lineHeight:1.8, margin:'0 0 10px' }}>
+          <p style={{ fontSize:12, color:'rgba(255,255,255,0.6)', lineHeight:1.8, margin:'0 0 10px' }}>
             Working in the PKI industry gives a clear view of both sides: the enterprise tools that handle certificate lifecycle management elegantly — and the gap that exists for everyone else. A non-profit running on shared hosting. A developer with 10 side projects. A freelancer who just wants the padlock to stay green.
           </p>
-          <p style={{ fontSize:12, color:'rgba(0,0,0,0.55)', lineHeight:1.8, margin:0 }}>
+          <p style={{ fontSize:12, color:'rgba(255,255,255,0.6)', lineHeight:1.8, margin:0 }}>
             SSLVault is built to close that gap — bringing real CLM capabilities (issuance, monitoring, auto-renewal, agent-based installation) to people who can't justify an enterprise platform but deserve the same reliability.
           </p>
         </div>

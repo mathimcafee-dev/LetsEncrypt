@@ -17,12 +17,12 @@ async function callCertBind(action, extra = {}) {
 }
 
 const STATUS_MAP = {
-  bound:          { label: 'Live',          color: '#0d9488', dot: '#0d9488', bg: 'rgba(16,185,129,0.08)',  border: 'rgba(16,185,129,0.2)',  icon: CheckCircle2,    priority: 0 },
-  key_mismatch:   { label: 'Key Mismatch',  color: '#ef4444', dot: '#ef4444', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
-  cert_mismatch:  { label: 'Wrong Cert',    color: '#ef4444', dot: '#ef4444', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
+  bound:          { label: 'Live',          color: '#ffffff', dot: '#ffffff', bg: 'rgba(16,185,129,0.08)',  border: 'rgba(16,185,129,0.2)',  icon: CheckCircle2,    priority: 0 },
+  key_mismatch:   { label: 'Key Mismatch',  color: '#f87171', dot: '#f87171', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
+  cert_mismatch:  { label: 'Wrong Cert',    color: '#f87171', dot: '#f87171', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
   chain_anomaly:  { label: 'Chain Issue',   color: '#a78bfa', dot: '#a78bfa', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.2)', icon: AlertTriangle,   priority: 2 },
-  partial_deploy: { label: 'Partial',       color: '#f07059', dot: '#f07059', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
-  unreachable:    { label: 'Unreachable',   color: '#f07059', dot: '#f07059', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
+  partial_deploy: { label: 'Partial',       color: '#ffffff', dot: '#ffffff', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
+  unreachable:    { label: 'Unreachable',   color: '#ffffff', dot: '#ffffff', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
   pending:        { label: 'Checking',      color: 'var(--v2-text-3)', dot: 'var(--v2-text-3)', bg: 'rgba(107,114,128,0.06)', border: 'rgba(107,114,128,0.15)', icon: Clock,           priority: 1 },
   null:           { label: 'Not checked',   color: 'var(--v2-text-3)', dot: 'var(--v2-text-2)', bg: 'rgba(107,114,128,0.04)', border: 'rgba(107,114,128,0.1)',  icon: Clock,           priority: 1 },
 }
@@ -78,7 +78,7 @@ function CertRow({ cert, onCheck, checking }) {
       transition: 'border-color .15s, box-shadow .15s',
       cursor: 'default',
     }}
-    onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06)'}
+    onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 12px rgba(255,255,255,0.07)'}
     onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
     >
       {/* Status dot */}
@@ -101,10 +101,10 @@ function CertRow({ cert, onCheck, checking }) {
             </span>
           )}
           {!cert.install_method && (
-            <span style={{ fontSize:11, color:'#9ca3af' }}>No agent — TLS only</span>
+            <span style={{ fontSize:11, color:'rgba(255,255,255,0.35)' }}>No agent — TLS only</span>
           )}
           {checkedAt && (
-            <span style={{ fontSize:11, color:'#9ca3af' }}>· {checkedAt}</span>
+            <span style={{ fontSize:11, color:'rgba(255,255,255,0.35)' }}>· {checkedAt}</span>
           )}
         </div>
       </div>
@@ -129,8 +129,8 @@ function CertRow({ cert, onCheck, checking }) {
         style={{
           display: 'flex', alignItems: 'center', gap: 5,
           padding: '6px 12px', borderRadius: 7,
-          background: canCheck && !isChecking ? 'var(--v2-text)' : '#f0fdf9',
-          color: canCheck && !isChecking ? 'var(--v2-surface)' : '#9ca3af',
+          background: canCheck && !isChecking ? 'var(--v2-text)' : '#000000',
+          color: canCheck && !isChecking ? 'var(--v2-surface)' : 'rgba(255,255,255,0.35)',
           border: 'none', fontWeight: 600, fontSize:11,
           cursor: canCheck && !isChecking ? 'pointer' : 'not-allowed',
           transition: 'all .15s', fontFamily: 'inherit',
@@ -246,7 +246,7 @@ export default function CertBind() {
               color:'var(--v2-text-2)', fontWeight:600, fontSize:12,
               cursor:'pointer', transition:'all .15s', fontFamily:'inherit',
             }}
-            onMouseEnter={e => e.currentTarget.style.background='#f0fdf9'}
+            onMouseEnter={e => e.currentTarget.style.background='#000000'}
             onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}
           >
             <RefreshCw size={12} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
@@ -257,10 +257,10 @@ export default function CertBind() {
         {/* Summary cards */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:10, marginBottom:24, animation:'fadeUp .35s ease .05s both' }}>
           {[
-            { num: certs.length, label: 'Total domains',   color: 'var(--v2-text-2)', bg: 'var(--v2-surface)',           border: '#e5e7eb' },
-            { num: live,         label: 'Verified live',   color: '#0d9488', bg: '#ccfbf1',        border: '#ccfbf1' },
-            { num: alerts,       label: 'Need attention',  color: '#dc2626', bg: '#fef2f2',        border: '#fee2e2' },
-            { num: unchecked,    label: 'Not checked',     color: 'var(--v2-text-3)', bg: '#f0fdf9',        border: '#f0f0f0' },
+            { num: certs.length, label: 'Total domains',   color: 'var(--v2-text-2)', bg: 'var(--v2-surface)',           border: 'rgba(255,255,255,0.12)' },
+            { num: live,         label: 'Verified live',   color: '#ffffff', bg: '#111111',        border: '#111111' },
+            { num: alerts,       label: 'Need attention',  color: '#f87171', bg: '#fef2f2',        border: 'rgba(239,68,68,0.08)' },
+            { num: unchecked,    label: 'Not checked',     color: 'var(--v2-text-3)', bg: '#000000',        border: '#f0f0f0' },
           ].map(({ num, label, color, bg, border }) => (
             <div key={label} style={{
               background: bg, border: `1px solid ${border}`,
@@ -280,15 +280,15 @@ export default function CertBind() {
             background:'var(--v2-surface)', border:'1px solid #f0f0f0',
             marginBottom:20, animation:'fadeUp .35s ease .1s both',
           }}>
-            <PulseDot color={onlineAgents > 0 ? '#0d9488' : '#9ca3af'} animate={onlineAgents > 0} />
+            <PulseDot color={onlineAgents > 0 ? '#ffffff' : 'rgba(255,255,255,0.35)'} animate={onlineAgents > 0} />
             <span style={{ fontSize:12, color:'var(--v2-text-2)', fontWeight:500 }}>
               {onlineAgents} of {agents.length} agent{agents.length !== 1 ? 's' : ''} online
             </span>
             {agents.slice(0,3).map(a => (
               <span key={a.id} style={{
                 fontSize:10, padding:'2px 8px', borderRadius:20,
-                background: (Date.now() - new Date(a.last_seen_at).getTime()) < 12*60*1000 ? 'rgba(16,185,129,0.08)' : '#f0fdf9',
-                color: (Date.now() - new Date(a.last_seen_at).getTime()) < 12*60*1000 ? '#0d9488' : '#9ca3af',
+                background: (Date.now() - new Date(a.last_seen_at).getTime()) < 12*60*1000 ? 'rgba(16,185,129,0.08)' : '#000000',
+                color: (Date.now() - new Date(a.last_seen_at).getTime()) < 12*60*1000 ? '#ffffff' : 'rgba(255,255,255,0.35)',
                 border: '1px solid transparent',
                 fontWeight: 500,
               }}>
@@ -307,7 +307,7 @@ export default function CertBind() {
             marginBottom:16, animation:'fadeUp .35s ease .12s both',
           }}>
             <AlertTriangle size={14} color="#dc2626" />
-            <span style={{ fontSize:13, color:'#dc2626', fontWeight:600 }}>
+            <span style={{ fontSize:13, color:'#f87171', fontWeight:600 }}>
               {alerts} certificate{alerts !== 1 ? 's' : ''} {alerts === 1 ? 'needs' : 'need'} attention — check the highlighted rows below
             </span>
           </div>
@@ -315,7 +315,7 @@ export default function CertBind() {
 
         {/* Cert table */}
         {loading ? (
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'60px 0', gap:8, color:'#9ca3af', fontSize:13 }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'60px 0', gap:8, color:'rgba(255,255,255,0.35)', fontSize:13 }}>
             <RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }} /> Loading certificates…
           </div>
         ) : certs.length === 0 ? (
@@ -325,7 +325,7 @@ export default function CertBind() {
           }}>
             <Shield size={32} color="#e5e7eb" style={{ marginBottom:12 }} />
             <div style={{ fontSize:14, fontWeight:600, color:'var(--v2-text-2)', marginBottom:6 }}>No active certificates</div>
-            <div style={{ fontSize:12, color:'#9ca3af' }}>Issue your first certificate to start monitoring</div>
+            <div style={{ fontSize:12, color:'rgba(255,255,255,0.35)' }}>Issue your first certificate to start monitoring</div>
           </div>
         ) : (
           <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
@@ -339,7 +339,7 @@ export default function CertBind() {
 
         {/* Footer */}
         {lastRefresh && !loading && (
-          <div style={{ textAlign:'center', marginTop:20, fontSize:11, color:'#9ca3af' }}>
+          <div style={{ textAlign:'center', marginTop:20, fontSize:11, color:'rgba(255,255,255,0.35)' }}>
             Last refreshed {lastRefresh.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' })}
           </div>
         )}

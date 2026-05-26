@@ -53,7 +53,7 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function MiniBar({ value, warn = 80, danger = 90 }) {
   if (value == null) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
   const pct   = Math.min(100, Math.max(0, value))
-  const color = pct >= danger ? '#dc2626' : pct >= warn ? '#f07059' : '#16a34a'
+  const color = pct >= danger ? '#f87171' : pct >= warn ? '#ffffff' : '#4ade80'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
       <div style={{ flex: 1, height: 4, borderRadius: 2, background: 'var(--v2-border)', overflow: 'hidden' }}>
@@ -70,10 +70,10 @@ function MiniBar({ value, warn = 80, danger = 90 }) {
 // ── Status pill ───────────────────────────────────────────────────────
 function StatusPill({ status }) {
   const map = {
-    online:  { bg: '#ccfbf1', color: '#0d9488', label: 'Online',   dot: '#16a34a' },
-    offline: { bg: '#fef2f2', color: '#b91c1c', label: 'Offline',  dot: '#dc2626' },
-    never:   { bg: '#f0fdf9', color: '#0f766e', label: 'Never',    dot: 'rgba(0,0,0,0.36)' },
-    unknown: { bg: '#fde8e4', color: '#C45A4A', label: 'Unknown',  dot: '#f07059' },
+    online:  { bg: '#111111', color: '#ffffff', label: 'Online',   dot: '#4ade80' },
+    offline: { bg: '#fef2f2', color: '#f87171', label: 'Offline',  dot: '#f87171' },
+    never:   { bg: '#000000', color: 'rgba(255,255,255,0.7)', label: 'Never',    dot: 'rgba(255,255,255,0.38)' },
+    unknown: { bg: 'rgba(239,68,68,0.08)', color: '#C45A4A', label: 'Unknown',  dot: '#ffffff' },
   }
   const s = map[status] || map.unknown
   return (
@@ -91,12 +91,12 @@ function StatusPill({ status }) {
 function JobBadge({ status }) {
   if (!status) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
   const map = {
-    success: { bg: '#ccfbf1', color: '#0d9488' },
-    failed:  { bg: '#fef2f2', color: '#b91c1c' },
-    queued:  { bg: '#fde8e4', color: '#C45A4A' },
-    claimed: { bg: '#ccfbf1', color: '#0f766e' },
+    success: { bg: '#111111', color: '#ffffff' },
+    failed:  { bg: '#fef2f2', color: '#f87171' },
+    queued:  { bg: 'rgba(239,68,68,0.08)', color: '#C45A4A' },
+    claimed: { bg: '#111111', color: 'rgba(255,255,255,0.7)' },
   }
-  const s = map[status] || { bg: '#f0fdf9', color: '#0f766e' }
+  const s = map[status] || { bg: '#000000', color: 'rgba(255,255,255,0.7)' }
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 4,
       background: s.bg, color: s.color }}>
@@ -108,8 +108,8 @@ function JobBadge({ status }) {
 // ── Renewal badge (days until soonest cert expiry on this agent) ──────
 function RenewalBadge({ days }) {
   if (days == null) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
-  const color = days <= 7 ? '#dc2626' : days <= 30 ? '#f07059' : '#16a34a'
-  const bg    = days <= 7 ? '#fef2f2' : days <= 30 ? '#fde8e4' : '#ccfbf1'
+  const color = days <= 7 ? '#f87171' : days <= 30 ? '#ffffff' : '#4ade80'
+  const bg    = days <= 7 ? '#fef2f2' : days <= 30 ? 'rgba(239,68,68,0.08)' : '#111111'
   return (
     <span style={{ fontSize:11, fontWeight: 500, color, background: bg,
       padding: '2px 7px', borderRadius: 4 }}>
@@ -140,7 +140,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
     load()
   }, [agent.id])
 
-  const statusColor = { success: '#16a34a', failed: '#dc2626', queued: '#f07059', claimed: '#0d9488' }
+  const statusColor = { success: '#4ade80', failed: '#f87171', queued: '#ffffff', claimed: '#ffffff' }
   const eventIcon   = { online: '🟢', offline: '🔴', recovered: '✅', degraded: '🟡' }
 
   const copyCmd = () => {
@@ -151,7 +151,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
   return (
     <>
       {/* Backdrop */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 40 }}/>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.28)', zIndex: 40 }}/>
       {/* Panel */}
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, zIndex: 50,
         background: 'var(--v2-bg)', borderLeft: '0.5px solid var(--v2-border)',
@@ -161,7 +161,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
         <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)',
           display: 'flex', alignItems: 'center', gap: 12, position: 'sticky', top: 0,
           background: 'var(--v2-bg)', zIndex: 1 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 9, background: '#ccfbf1',
+          <div style={{ width: 36, height: 36, borderRadius: 9, background: '#111111',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Server size={16} color="#16a34a"/>
           </div>
@@ -209,13 +209,13 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ fontSize:12, color: 'var(--v2-text-3)' }}>{label}</span>
                   <span style={{ fontSize:12, fontWeight: 500,
-                    color: value >= danger ? '#dc2626' : value >= warn ? '#f07059' : '#16a34a',
+                    color: value >= danger ? '#f87171' : value >= warn ? '#ffffff' : '#4ade80',
                     fontFamily: 'monospace' }}>{Math.round(value)}%</span>
                 </div>
                 <div style={{ height: 5, borderRadius: 3, background: 'var(--v2-border)', overflow: 'hidden' }}>
                   <div style={{ height: '100%', borderRadius: 3, transition: 'width .6s',
                     width: `${Math.min(100, value)}%`,
-                    background: value >= danger ? '#dc2626' : value >= warn ? '#f07059' : '#16a34a' }}/>
+                    background: value >= danger ? '#f87171' : value >= warn ? '#ffffff' : '#4ade80' }}/>
                 </div>
               </div>
             ))}
@@ -233,7 +233,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
             </button>
             <button className="v2-btn v2-btn-sm" onClick={() => onDelete(agent)}
               style={{ display: 'flex', alignItems: 'center', gap: 5,
-                borderColor: '#fecaca', color: '#dc2626' }}>
+                borderColor: '#fecaca', color: '#f87171' }}>
               <Trash2 size={11}/>
               Delete agent
             </button>
@@ -277,8 +277,8 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 borderBottom: '0.5px solid var(--v2-border)', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
                   marginTop: 2, flexShrink: 0,
-                  background: (statusColor[job.status]||'#0f766e')+'18',
-                  color: statusColor[job.status]||'#0f766e' }}>
+                  background: (statusColor[job.status]||'rgba(255,255,255,0.7)')+'18',
+                  color: statusColor[job.status]||'rgba(255,255,255,0.7)' }}>
                   {job.status}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -289,7 +289,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                   <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginTop: 2 }}>
                     {timeAgo(job.created_at)}
                     {job.error_message && (
-                      <span style={{ color: '#dc2626' }}> · {job.error_message.slice(0, 60)}</span>
+                      <span style={{ color: '#f87171' }}> · {job.error_message.slice(0, 60)}</span>
                     )}
                   </div>
                 </div>
@@ -361,7 +361,7 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 60 }}/>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.32)', zIndex: 60 }}/>
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
         zIndex: 70, background: 'var(--v2-bg)', border: '0.5px solid var(--v2-border)',
         borderRadius: 12, padding: '24px', width: 360 }}>
@@ -376,11 +376,11 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
           Remove <strong>{agent.nickname}</strong> from SSLVault? The server card will go offline.
           Run <code style={{ fontSize:11, background: 'var(--v2-surface-3)', padding: '1px 5px', borderRadius: 3 }}>sslvault-agent uninstall</code> on the server to remove the daemon.
         </p>
-        {err && <div style={{ fontSize:12, color: '#dc2626', marginBottom: 8 }}>{err}</div>}
+        {err && <div style={{ fontSize:12, color: '#f87171', marginBottom: 8 }}>{err}</div>}
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button className="v2-btn v2-btn-sm" onClick={onClose}>Cancel</button>
           <button className="v2-btn v2-btn-sm" onClick={confirm} disabled={busy}
-            style={{ background: '#dc2626', borderColor: '#dc2626', color: '#fff' }}>
+            style={{ background: '#f87171', borderColor: '#f87171', color: '#fff' }}>
             {busy ? 'Deleting…' : 'Delete'}
           </button>
         </div>
@@ -487,9 +487,9 @@ export default function AgentHealth({ user }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
           {[
             { val: agents.length, label: 'Total agents', color: 'var(--v2-text)', filter: 'all' },
-            { val: online.length,  label: 'Online',       color: '#16a34a', filter: 'online' },
-            { val: offline.length, label: 'Offline',      color: '#dc2626', filter: 'offline' },
-            { val: highLoad.length,label: 'High load',    color: '#f07059', filter: 'all' },
+            { val: online.length,  label: 'Online',       color: '#4ade80', filter: 'online' },
+            { val: offline.length, label: 'Offline',      color: '#f87171', filter: 'offline' },
+            { val: highLoad.length,label: 'High load',    color: '#ffffff', filter: 'all' },
           ].map(({ val, label, color, filter }) => (
             <div key={label} className="v2-card"
               onClick={() => setFilterStatus(filter)}
@@ -596,12 +596,12 @@ export default function AgentHealth({ user }) {
                   {/* Server name + meta */}
                   <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-                      background: status === 'online' ? '#ccfbf1' : status === 'offline' ? '#fef2f2' : '#f0fdf9',
+                      background: status === 'online' ? '#111111' : status === 'offline' ? '#fef2f2' : '#000000',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                      <Server size={14} color={status === 'online' ? '#16a34a' : status === 'offline' ? '#dc2626' : 'rgba(0,0,0,0.36)'}/>
+                      <Server size={14} color={status === 'online' ? '#4ade80' : status === 'offline' ? '#f87171' : 'rgba(255,255,255,0.38)'}/>
                       {status === 'online' && (
                         <span style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8,
-                          borderRadius: '50%', background: '#16a34a', border: '1.5px solid var(--v2-bg)',
+                          borderRadius: '50%', background: '#4ade80', border: '1.5px solid var(--v2-bg)',
                           animation: 'v3pulse 2s ease infinite' }}/>
                       )}
                     </div>

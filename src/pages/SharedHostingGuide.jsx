@@ -64,7 +64,7 @@ function TerminalMock({ lines }) {
     <div className="v2-code" style={{ marginBottom: 12 }}>
       <div className="v2-code-head">
         <div className="v2-code-dots">
-          <span style={{ background: '#ef4444' }}/><span style={{ background: '#f07059' }}/><span style={{ background: '#0d9488' }}/>
+          <span style={{ background: '#f87171' }}/><span style={{ background: '#ffffff' }}/><span style={{ background: '#ffffff' }}/>
           <span style={{ marginLeft: 8, fontSize:10, color: '#737373', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>browser output</span>
         </div>
       </div>
@@ -168,7 +168,7 @@ export default function SharedHostingGuide({ nav }) {
           <div className="v2-code" style={{ marginBottom: 10 }}>
             <div className="v2-code-head">
               <div className="v2-code-dots">
-                <span style={{ background: '#ef4444' }}/><span style={{ background: '#f07059' }}/><span style={{ background: '#0d9488' }}/>
+                <span style={{ background: '#f87171' }}/><span style={{ background: '#ffffff' }}/><span style={{ background: '#ffffff' }}/>
                 <span style={{ marginLeft: 8, fontSize:10, color: '#737373', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>File Manager — public_html</span>
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function SharedHostingGuide({ nav }) {
               'Wait for the upload to complete',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
                 <span style={{ fontSize:12, color: 'var(--v2-text-2)' }}>{t}</span>
               </div>
             ))}
@@ -230,7 +230,7 @@ export default function SharedHostingGuide({ nav }) {
               'Click Install Certificate',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
                 <span style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{t}</span>
               </div>
             ))}
@@ -240,12 +240,12 @@ export default function SharedHostingGuide({ nav }) {
 
         <Step n={8} title="Delete the PHP agent file — important">
           <div className="v2-callout warning" style={{ marginBottom: 12 }}>
-            <AlertCircle size={13} style={{ color: '#f07059' }}/> Delete <code className="v2-kbd">sslvault-agent.php</code> immediately after installation. It contains your install token.
+            <AlertCircle size={13} style={{ color: '#ffffff' }}/> Delete <code className="v2-kbd">sslvault-agent.php</code> immediately after installation. It contains your install token.
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {['Go to cPanel File Manager', 'Navigate to public_html', 'Find sslvault-agent.php', 'Right-click → Delete → Confirm'].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '8px 14px', background: '#fef2f2', border: '0.5px solid #fecaca' }}>
-                <Trash2 size={12} style={{ color: '#dc2626', flexShrink: 0 }}/>
+                <Trash2 size={12} style={{ color: '#f87171', flexShrink: 0 }}/>
                 <span style={{ fontSize:12, color: 'var(--v2-text-2)' }}>{t}</span>
               </div>
             ))}
@@ -288,7 +288,7 @@ export default function SharedHostingGuide({ nav }) {
 
         {/* RENEWAL NOTE */}
         <div className="v2-callout warning" style={{ marginBottom: 24 }}>
-          <AlertCircle size={13} style={{ color: '#f07059', flexShrink: 0 }}/>
+          <AlertCircle size={13} style={{ color: '#ffffff', flexShrink: 0 }}/>
           <div>
             <span className="v2-callout-title">Renewal requires repeating this process</span><br/>
             <span style={{ fontSize:12 }}>Every time your certificate renews, you'll need to repeat steps 1–9. For zero-touch auto-renewal, move to a VPS with the persistent agent — it handles installs and renewals automatically.</span>

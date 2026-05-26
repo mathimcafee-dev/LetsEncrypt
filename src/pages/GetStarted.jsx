@@ -108,13 +108,13 @@ export default function GetStarted({ nav }) {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 16 }}>
             <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
-              <div style={{ fontSize:12, fontWeight: 600, color: '#dc2626', marginBottom: 6 }}>Without SSL (HTTP)</div>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#f87171', marginBottom: 6 }}>Without SSL (HTTP)</div>
               <p style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
                 Red "Not Secure" warning. Visitor data exposed. Lower Google ranking. Payments blocked.
               </p>
             </div>
-            <div style={{ background: '#ccfbf1', border: '1px solid #A8E6DE', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
-              <div style={{ fontSize:12, fontWeight: 600, color: '#16a34a', marginBottom: 6 }}>With SSL (HTTPS)</div>
+            <div style={{ background: '#111111', border: '1px solid #A8E6DE', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#4ade80', marginBottom: 6 }}>With SSL (HTTPS)</div>
               <p style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
                 Green padlock. All traffic encrypted. Trust signals for visitors and Google. Required for payments.
               </p>
@@ -203,7 +203,7 @@ export default function GetStarted({ nav }) {
                       <Step n={2} title="Go to Dashboard → expand cert → Install"><p>Click the <strong>Install</strong> button on your certificate row. If no agent is connected, the modal shows a one-line install command.</p></Step>
                       <Step n={3} title="Run the agent install on your server (one time only)">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#f07059' }}/><span style={{ background: '#0d9488' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#f87171' }}/><span style={{ background: '#ffffff' }}/><span style={{ background: '#ffffff' }}/></div></div>
                           <pre>curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash</pre>
                         </div>
                         <p>The agent registers with SSLVault. Your server appears as Online in <strong>Dashboard → Servers</strong>.</p>
@@ -221,7 +221,7 @@ export default function GetStarted({ nav }) {
                       <Step n={3} title="Download and upload the PHP agent"><p>Click <strong>Download PHP Agent</strong>. Upload the file to your <code className="v2-kbd">public_html</code> directory via cPanel File Manager.</p></Step>
                       <Step n={4} title="Visit the agent URL to activate">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#f07059' }}/><span style={{ background: '#0d9488' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#f87171' }}/><span style={{ background: '#ffffff' }}/><span style={{ background: '#ffffff' }}/></div></div>
                           <pre>https://yourdomain.com/sslvault-agent.php</pre>
                         </div>
                         <p>The script installs your certificate via cPanel's UAPI. <strong>Delete the file immediately after.</strong></p>
@@ -286,11 +286,11 @@ export default function GetStarted({ nav }) {
               <tr><td style={{ fontWeight: 600 }}>Email</td><td>Click a link sent to admin@, webmaster@, or hostmaster@ for your domain.</td></tr>
             </tbody>
           </table></div>
-          <div style={{ background: '#1a1a1a', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
+          <div style={{ background: '#ffffff', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '6px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize:12 }}>
-              <span style={{ color: '#0f766e', fontWeight: 600 }}>TYPE</span><span style={{ color: '#0d9488' }}>CNAME</span>
-              <span style={{ color: '#0f766e', fontWeight: 600 }}>NAME</span><span style={{ color: '#38bdf8' }}>_acme-challenge</span>
-              <span style={{ color: '#0f766e', fontWeight: 600 }}>VALUE</span><span style={{ color: '#fbbf24', wordBreak: 'break-all' }}>abc123def456.comodoca.com</span>
+              <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>TYPE</span><span style={{ color: '#ffffff' }}>CNAME</span>
+              <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>NAME</span><span style={{ color: '#38bdf8' }}>_acme-challenge</span>
+              <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>VALUE</span><span style={{ color: '#fbbf24', wordBreak: 'break-all' }}>abc123def456.comodoca.com</span>
             </div>
           </div>
           <Note type="warn">In the Name field, enter <strong>only</strong> <code className="v2-kbd">_acme-challenge</code> — your DNS provider appends the domain automatically. Entering the full hostname will fail.</Note>

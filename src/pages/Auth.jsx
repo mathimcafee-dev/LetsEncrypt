@@ -60,9 +60,9 @@ export default function Auth({ nav }) {
 
   const perks = [
     { icon:<Zap size={15} />,    color:'var(--v2-amber)',       title:'Unlimited certificates',   desc:'No cap on domains or issuances — ever.' },
-    { icon:<Shield size={15} />, color:'#0d9488',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
+    { icon:<Shield size={15} />, color:'#ffffff',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
     { icon:<Lock size={15} />,   color:'var(--v2-green)',       title:'Private keys stay private', desc:'AES-256 at rest. Keys never leave your server.' },
-    { icon:<CheckCircle size={15} />, color:'#f07059',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
+    { icon:<CheckCircle size={15} />, color:'#ffffff',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
   ]
 
   return (
@@ -112,10 +112,10 @@ export default function Auth({ nav }) {
         <div>
           <div className="v2-card" style={{ padding:'min(32px,5vw) min(30px,4vw)', borderTop:'2px solid var(--v2-green)' }}>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
-              <div style={{ width:40, height:40, background:'#0d9488', borderRadius:'var(--v2-r-lg)',
+              <div style={{ width:40, height:40, background:'#ffffff', borderRadius:'var(--v2-r-lg)',
                              display:'flex', alignItems:'center', justifyContent:'center',
                              boxShadow:'0 0 0 4px rgba(13,148,136,0.15)' }}>
-                <Shield size={18} color='white' />
+                <Shield size={18} color='#000000' />
               </div>
               <div>
                 <div style={{ fontSize:16, fontWeight:700, color:'var(--v2-text)', letterSpacing:'-0.3px' }}>

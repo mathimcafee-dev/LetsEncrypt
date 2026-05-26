@@ -8,10 +8,10 @@ const SYNC_FN = `${SUPABASE_URL}/functions/v1/ccadb-sync`
 const PAGE_SIZE = 10000
 
 const STORE_META = {
-  Chrome:    { icon: '🌐', color: '#0f766e' },
+  Chrome:    { icon: '🌐', color: 'rgba(255,255,255,0.7)' },
   Mozilla:   { icon: '🦊', color: '#ea580c' },
-  Apple:     { icon: '🍎', color: '#1a1a1a' },
-  Microsoft: { icon: '🪟', color: '#0d9488' },
+  Apple:     { icon: '🍎', color: '#ffffff' },
+  Microsoft: { icon: '🪟', color: '#ffffff' },
 }
 
 const ALL_STORES = ['Chrome', 'Mozilla', 'Apple', 'Microsoft']
@@ -36,7 +36,7 @@ const fmtDate = (iso) => {
 }
 
 const avatarColor = (name = '') => {
-  const colors = ['#0d9488','#0d9488','#0d9488','#16a34a','#dc2626','#f07059','#ea580c','#0d9488','#C45A4A','#1a1a1a']
+  const colors = ['#ffffff','#ffffff','#ffffff','#4ade80','#f87171','#ffffff','#ea580c','#ffffff','#C45A4A','#ffffff']
   let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff
   return colors[Math.abs(h) % colors.length]
 }
@@ -468,7 +468,7 @@ export default function CATrustExplorer({ nav }) {
         .fchip.on { background:var(--v2-surface);border-color:var(--v2-border-strong);color:var(--v2-text);box-shadow:var(--v2-shadow-sm) }
         .cert-list { max-height:520px;overflow-y:auto }
         .cert-list::-webkit-scrollbar { width:4px }
-        .cert-list::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.08);border-radius:2px }
+        .cert-list::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08);border-radius:2px }
         .list-row { position:relative;display:flex;align-items:center;gap:10px;padding:11px 14px 11px 16px;border-bottom:0.5px solid var(--v2-border);cursor:pointer;transition:background .1s }
         .list-row:last-child { border-bottom:none }
         .list-row:hover { background:var(--v2-surface-3) }
@@ -492,7 +492,7 @@ export default function CATrustExplorer({ nav }) {
         .dp-actions { display:flex;gap:6px;flex-shrink:0 }
         .dp-body { padding:16px;max-height:480px;overflow-y:auto }
         .dp-body::-webkit-scrollbar { width:4px }
-        .dp-body::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.08);border-radius:2px }
+        .dp-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08);border-radius:2px }
         .score-banner { background:var(--v2-green-bg);border:0.5px solid var(--v2-green-border);border-radius:var(--v2-r-lg);padding:12px 14px;display:flex;align-items:center;gap:14px;margin-bottom:16px }
         .score-banner.amber { background:var(--v2-amber-bg);border-color:var(--v2-amber-border) }
         .score-banner.red { background:var(--v2-red-bg);border-color:var(--v2-red-border) }
@@ -548,7 +548,7 @@ export default function CATrustExplorer({ nav }) {
         .intel-title { font-size:11px;letter-spacing:0.4px;color:var(--v2-text-3);text-transform:uppercase;font-weight:500;margin-bottom:8px }
         .intel-row { display:flex;gap:8px;overflow-x:auto;padding-bottom:4px }
         .intel-row::-webkit-scrollbar { height:3px }
-        .intel-row::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.08) }
+        .intel-row::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08) }
         .intel-card { background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-lg);padding:9px 12px;flex-shrink:0;min-width:110px }
         .intel-card.warn { border-color:var(--v2-amber-border);background:var(--v2-amber-bg) }
         .intel-card.good { border-color:var(--v2-green-border);background:var(--v2-green-bg) }
@@ -559,7 +559,7 @@ export default function CATrustExplorer({ nav }) {
         .intel-card.good .ic-val { color:var(--v2-green-text) }
         .intel-card.bad  .ic-val { color:var(--v2-red-text) }
         .pem-block { background:#0a0a0a;border-radius:var(--v2-r-lg);overflow:hidden;border:0.5px solid #1a1a1a;margin-top:4px }
-        .pem-head { display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:0.5px solid rgba(0,0,0,0.05);background:#111 }
+        .pem-head { display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:0.5px solid rgba(255,255,255,0.06);background:#111 }
         .pem-dots { display:flex;gap:4px }
         .pem-body { padding:10px 12px;font-family:'JetBrains Mono','SF Mono',monospace;font-size:10px;color:#a3a3a3;line-height:1.6;word-break:break-all;max-height:80px;overflow:hidden;position:relative }
         .pem-fade { position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(transparent,#0a0a0a) }
@@ -630,7 +630,7 @@ export default function CATrustExplorer({ nav }) {
             { key: 'root',     val: counts.root,              label: 'Root CAs',          color: 'var(--v2-green)' },
             { key: 'inter',    val: counts.inter,             label: 'Intermediates',     color: 'var(--v2-grey-dot)' },
             { key: 'all4',     val: counts.all4,              label: 'All 4 stores',      color: 'var(--v2-green)' },
-            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#f07059', valColor: '#C45A4A' },
+            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#ffffff', valColor: '#C45A4A' },
             { key: 'distrust', val: counts.distrust,          label: 'Distrusted',        color: 'var(--v2-red)', valColor: 'var(--v2-red-text)' },
           ].map(({ key, val, label, color, valColor }) => (
             <div key={key} className={`stat-tile${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
@@ -692,10 +692,10 @@ export default function CATrustExplorer({ nav }) {
                       {c.ca_owner?.replace('Inc.','').replace('nv-sa','').trim() || c.common_name}
                     </span>
                     <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
-                      {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'#0f766e',display:'inline-block',flexShrink:0}}/>}
+                      {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'rgba(255,255,255,0.7)',display:'inline-block',flexShrink:0}}/>}
                       {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#ea580c',display:'inline-block',flexShrink:0}}/>}
-                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#1a1a1a',display:'inline-block',flexShrink:0}}/>}
-                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0d9488',display:'inline-block',flexShrink:0}}/>}
+                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#ffffff',display:'inline-block',flexShrink:0}}/>}
+                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#ffffff',display:'inline-block',flexShrink:0}}/>}
                     </span>
                     {c.ev_capable && <span style={{fontSize:9,color:'#C45A4A',fontWeight:600}}>EV</span>}
                   </button>
@@ -797,7 +797,7 @@ export default function CATrustExplorer({ nav }) {
                       }}>
                       <FileDown size={12} /> {pemDownloading ? 'Fetching…' : 'Download PEM'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" style={{ background: '#0a0a0a', color: '#fff', borderColor: '#0a0a0a', gap: 5 }}
+                    <button className="v2-btn v2-btn-sm" style={{ background: '#ffffff', color: '#fff', borderColor: '#ffffff', gap: 5 }}
                       onClick={() => {
                         const fp = selected?.sha256_fingerprint || selected?.fingerprint
                         if (fp) window.open(`https://crt.sh/?q=${encodeURIComponent(fp)}`, '_blank')

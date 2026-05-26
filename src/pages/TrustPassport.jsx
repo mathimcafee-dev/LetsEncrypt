@@ -7,11 +7,11 @@ const FONT = "'Segoe UI',-apple-system,system-ui,sans-serif"
 const MONO = "'JetBrains Mono','SF Mono',monospace"
 
 const VERDICT_CONFIG = {
-  trusted:    { color: '#16a34a', bg: '#ccfbf1', border: '#A8E6DE', label: 'Trusted',    icon: <CheckCircle  size={18} color="#16a34a"/> },
-  caution:    { color: '#f07059', bg: '#fde8e4', border: '#F2C4BC', label: 'Caution',    icon: <AlertTriangle size={18} color="#f07059"/> },
-  new:        { color: '#0d9488', bg: '#ccfbf1', border: '#A8E6DE', label: 'New Site',   icon: <Clock         size={18} color="#0d9488"/> },
-  suspicious: { color: '#dc2626', bg: '#fef2f2', border: '#fecaca', label: 'Suspicious', icon: <XCircle       size={18} color="#dc2626"/> },
-  blocked:    { color: '#dc2626', bg: '#fef2f2', border: '#fecaca', label: 'Blocked',    icon: <XCircle       size={18} color="#dc2626"/> },
+  trusted:    { color: '#4ade80', bg: '#111111', border: '#A8E6DE', label: 'Trusted',    icon: <CheckCircle  size={18} color="#16a34a"/> },
+  caution:    { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC', label: 'Caution',    icon: <AlertTriangle size={18} color="#f07059"/> },
+  new:        { color: '#ffffff', bg: '#111111', border: '#A8E6DE', label: 'New Site',   icon: <Clock         size={18} color="#0d9488"/> },
+  suspicious: { color: '#f87171', bg: '#fef2f2', border: '#fecaca', label: 'Suspicious', icon: <XCircle       size={18} color="#dc2626"/> },
+  blocked:    { color: '#f87171', bg: '#fef2f2', border: '#fecaca', label: 'Blocked',    icon: <XCircle       size={18} color="#dc2626"/> },
 }
 
 const EXAMPLE_DOMAINS = ['github.com', 'stripe.com', 'netflix.com', 'shopify.com', 'paypal.com']
@@ -143,7 +143,7 @@ export default function TrustPassport({ nav }) {
           </div>
           <h1 style={{ fontSize:'clamp(28px,4vw,44px)', fontWeight:700, letterSpacing:'-1px', lineHeight:1.1, color:'rgba(255,255,255,.95)', marginBottom:14 }}>
             Does this site<br/>
-            <span style={{ color:'#0d9488' }}>deserve your trust?</span>
+            <span style={{ color:'#ffffff' }}>deserve your trust?</span>
           </h1>
           <p style={{ fontSize:15, color:'rgba(255,255,255,.4)', lineHeight:1.8, maxWidth:520, margin:'0 auto 0' }}>
             SSL certificates are free for everyone — including phishing sites. Trust Passport looks deeper: CT log history, domain age, DNS infrastructure, and abuse signals. Time cannot be faked.
@@ -153,7 +153,7 @@ export default function TrustPassport({ nav }) {
 
       {/* Search */}
       <div className="tp-input-wrap" style={{ paddingTop:28 }}>
-        <div style={{ background:'white', border:'0.5px solid var(--v2-border-strong)', borderRadius:12, padding:'14px 16px', marginBottom:4 }}>
+        <div style={{ background:'#000000', border:'0.5px solid var(--v2-border-strong)', borderRadius:12, padding:'14px 16px', marginBottom:4 }}>
           <div style={{ display:'flex', gap:10, alignItems:'center' }}>
             <Globe size={16} color="var(--v2-text-3)" style={{ flexShrink:0 }}/>
             <input
@@ -166,7 +166,7 @@ export default function TrustPassport({ nav }) {
             />
             <button onClick={() => check()}
               disabled={loading}
-              style={{ display:'flex', alignItems:'center', gap:7, background:'#0a0a0a', color:'#1a1a1a', border:'none',
+              style={{ display:'flex', alignItems:'center', gap:7, background:'#ffffff', color:'#ffffff', border:'none',
                 borderRadius:8, padding:'9px 20px', fontSize:13, fontWeight:600, cursor:loading?'not-allowed':'pointer',
                 opacity:loading?0.6:1, fontFamily:'inherit', flexShrink:0 }}>
               {loading
@@ -214,7 +214,7 @@ export default function TrustPassport({ nav }) {
               <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6, flexWrap:'wrap' }}>
                 {v.icon}
                 <span style={{ fontSize:20, fontWeight:700, color:v.color }}>{result.domain}</span>
-                <span style={{ fontSize:12, fontWeight:600, padding:'3px 10px', borderRadius:20, background:v.color, color:'#1a1a1a' }}>{v.label}</span>
+                <span style={{ fontSize:12, fontWeight:600, padding:'3px 10px', borderRadius:20, background:v.color, color:'#ffffff' }}>{v.label}</span>
               </div>
               <p style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.7, margin:'0 0 10px' }}>{result.summary}</p>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -230,7 +230,7 @@ export default function TrustPassport({ nav }) {
             <div style={{ fontSize:11, fontWeight:700, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'.06em', marginBottom:10 }}>Trust score breakdown</div>
 
             <LayerBar label="Certificate Transparency lineage" score={result.layers.ct_lineage.score} max={40}
-              color={result.layers.ct_lineage.score >= 28 ? '#16a34a' : result.layers.ct_lineage.score >= 14 ? '#f07059' : '#dc2626'}
+              color={result.layers.ct_lineage.score >= 28 ? '#4ade80' : result.layers.ct_lineage.score >= 14 ? '#ffffff' : '#f87171'}
               expanded={expanded.ct} onToggle={() => toggle('ct')}>
               {result.layers.ct_lineage.data?.count > 0 ? (<>
                 <FactRow ok={true}  text={`${result.layers.ct_lineage.data.count} certificates found in public CT logs`}/>
@@ -242,7 +242,7 @@ export default function TrustPassport({ nav }) {
             </LayerBar>
 
             <LayerBar label="Domain age & registration" score={result.layers.domain_age.score} max={25}
-              color={result.layers.domain_age.score >= 18 ? '#16a34a' : result.layers.domain_age.score >= 10 ? '#f07059' : '#dc2626'}
+              color={result.layers.domain_age.score >= 18 ? '#4ade80' : result.layers.domain_age.score >= 10 ? '#ffffff' : '#f87171'}
               expanded={expanded.age} onToggle={() => toggle('age')}>
               {result.layers.domain_age.data ? (<>
                 <FactRow ok={true}  text={`Domain registered: ${result.layers.domain_age.data.registeredDate}`}/>
@@ -255,7 +255,7 @@ export default function TrustPassport({ nav }) {
             </LayerBar>
 
             <LayerBar label="DNS infrastructure signals" score={result.layers.dns_infrastructure.score} max={20}
-              color={result.layers.dns_infrastructure.score >= 14 ? '#16a34a' : result.layers.dns_infrastructure.score >= 8 ? '#f07059' : '#dc2626'}
+              color={result.layers.dns_infrastructure.score >= 14 ? '#4ade80' : result.layers.dns_infrastructure.score >= 8 ? '#ffffff' : '#f87171'}
               expanded={expanded.dns} onToggle={() => toggle('dns')}>
               {result.layers.dns_infrastructure.data && (<>
                 <FactRow ok={result.layers.dns_infrastructure.data.hasHTTPS}  text={`HTTPS: ${result.layers.dns_infrastructure.data.hasHTTPS ? 'Site responds over HTTPS' : 'No HTTPS response detected'}`}/>
@@ -268,7 +268,7 @@ export default function TrustPassport({ nav }) {
             </LayerBar>
 
             <LayerBar label="Abuse & threat signals" score={result.layers.abuse_signals.score} max={15}
-              color={result.layers.abuse_signals.score === 15 ? '#16a34a' : '#dc2626'}
+              color={result.layers.abuse_signals.score === 15 ? '#4ade80' : '#f87171'}
               expanded={expanded.abuse} onToggle={() => toggle('abuse')}>
               <FactRow ok={!result.layers.abuse_signals.data?.flagged} text={result.layers.abuse_signals.data?.flagged ? `FLAGGED: ${result.layers.abuse_signals.data.flagReason}` : 'No matches in public abuse and spam blocklists'}/>
               <p style={{ marginTop:8, fontSize:11, color:'var(--v2-text-3)' }}>Checked against Spamhaus Domain Block List and public DNS-based threat intelligence feeds. A clean result means no reported abuse history.</p>

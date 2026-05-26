@@ -20,18 +20,18 @@ export default function AboutInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Mission block */}
-      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #0d9488' }}>
+      <div style={{ background:'#000000', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #0d9488' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
           <Heart size={14} color="#0d9488"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Mission</span>
         </div>
-        <p style={{ fontSize:20, fontWeight:500, color:'#0a0a0a', lineHeight:1.5, letterSpacing:'-.3px', margin:'0 0 14px', maxWidth:680 }}>
+        <p style={{ fontSize:20, fontWeight:500, color:'#ffffff', lineHeight:1.5, letterSpacing:'-.3px', margin:'0 0 14px', maxWidth:680 }}>
           The web should be encrypted by default — and managing that encryption should never be a barrier.
         </p>
-        <p style={{ fontSize:13, color:'rgba(0,0,0,0.55)', lineHeight:1.8, margin:'0 0 10px', maxWidth:720 }}>
+        <p style={{ fontSize:13, color:'rgba(255,255,255,0.6)', lineHeight:1.8, margin:'0 0 10px', maxWidth:720 }}>
           SSLVault is a certificate lifecycle management platform built on RapidSSL's API and designed for indie developers, SMBs, and non-profits who need enterprise-grade SSL management without enterprise pricing.
         </p>
-        <p style={{ fontSize:13, color:'rgba(0,0,0,0.55)', lineHeight:1.8, margin:0, maxWidth:720 }}>
+        <p style={{ fontSize:13, color:'rgba(255,255,255,0.6)', lineHeight:1.8, margin:0, maxWidth:720 }}>
           Enterprise CLM platforms solve this beautifully — but cost thousands per year and are built for security teams managing thousands of certificates. SSLVault brings that same capability to anyone running a site on a $5 VPS or shared hosting.
         </p>
       </div>
@@ -39,18 +39,18 @@ export default function AboutInner({ nav }) {
       {/* Pillars grid */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:16 }}>
         {PILLARS.map(({ icon:Icon, title, body }) => (
-          <div key={title} style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
-            <div style={{ width:32, height:32, background:'#ccfbf1', border:'0.5px solid #A8E6DE', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
+          <div key={title} style={{ background:'#000000', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
+            <div style={{ width:32, height:32, background:'#111111', border:'0.5px solid #A8E6DE', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
               <Icon size={15} color="#0d9488"/>
             </div>
-            <div style={{ fontSize:13, fontWeight:500, color:'#0a0a0a', marginBottom:6 }}>{title}</div>
-            <div style={{ fontSize:12, color:'rgba(0,0,0,0.55)', lineHeight:1.7 }}>{body}</div>
+            <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:6 }}>{title}</div>
+            <div style={{ fontSize:12, color:'rgba(255,255,255,0.6)', lineHeight:1.7 }}>{body}</div>
           </div>
         ))}
       </div>
 
       {/* Stack */}
-      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 24px', marginBottom:16 }}>
+      <div style={{ background:'#000000', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 24px', marginBottom:16 }}>
         <div style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Stack & infrastructure</div>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8 }}>
           {[
@@ -61,9 +61,9 @@ export default function AboutInner({ nav }) {
             ['Agent', 'Bash daemon, systemd'],
             ['DNS', 'Cloudflare · Vercel · cPanel'],
           ].map(([k, v]) => (
-            <div key={k} style={{ padding:'10px 12px', background:'#f0fdf9', borderRadius:6, border:'0.5px solid #e6fbf5' }}>
+            <div key={k} style={{ padding:'10px 12px', background:'#000000', borderRadius:6, border:'0.5px solid #e6fbf5' }}>
               <div style={{ fontSize:9, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.4px', marginBottom:4 }}>{k}</div>
-              <div style={{ fontSize:12, color:'#0a0a0a', fontFamily:"'SF Mono',monospace" }}>{v}</div>
+              <div style={{ fontSize:12, color:'#ffffff', fontFamily:"'SF Mono',monospace" }}>{v}</div>
             </div>
           ))}
         </div>
@@ -71,10 +71,10 @@ export default function AboutInner({ nav }) {
 
       {/* CTA */}
       <div style={{ display:'flex', gap:10 }}>
-        <button onClick={() => nav('/developer')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d9488', color:'#1a1a1a', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+        <button onClick={() => nav('/developer')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#ffffff', color:'#ffffff', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
           <Code2 size={13}/> Meet the developer
         </button>
-        <button onClick={() => nav('/contact')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'#0a0a0a', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+        <button onClick={() => nav('/contact')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#000000', color:'#ffffff', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
           Contact us <ArrowRight size={12}/>
         </button>
       </div>

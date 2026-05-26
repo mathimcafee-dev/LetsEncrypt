@@ -1,52 +1,46 @@
-/* SSLVault — Teal + Coral palette inspired by reference image */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* SSLVault — resend.com design language — pure black/white */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
-  /* ── Core palette ── */
-  --primary:        #0d9488;   /* teal — main brand colour */
-  --primary-dark:   #0f766e;   /* teal dark — hover */
-  --primary-light:  #ccfbf1;   /* teal tint — bg fills */
-  --primary-mid:    #99f6e4;   /* teal border */
+  --bg:       #000000;
+  --bg2:      #0a0a0a;
+  --bg3:      #111111;
+  --bg4:      #1a1a1a;
+  --surface:  #0d0d0d;
 
-  --accent:         #f07059;   /* coral — CTA, highlights */
-  --accent-dark:    #d4583f;   /* coral dark — hover */
-  --accent-light:   #fde8e4;   /* coral tint */
-  --accent-mid:     #f9b8ad;   /* coral border */
+  --line:     rgba(255,255,255,0.08);
+  --line2:    rgba(255,255,255,0.14);
+  --line3:    rgba(255,255,255,0.22);
 
-  --bg:             #f0fdf9;   /* warm cream page bg */
-  --bg2:            #e6fbf5;   /* slightly deeper cream */
-  --bg3:            #ccfbf1;   /* card / panel surface */
-  --bg4:            #99f6e4;   /* deep panel / inputs */
-  --surface:        #ffffff;   /* pure white cards */
+  --ink:      #ffffff;
+  --body:     rgba(255,255,255,0.6);
+  --muted:    rgba(255,255,255,0.35);
+  --hint:     rgba(255,255,255,0.18);
 
-  --line:           rgba(0,0,0,0.08);
-  --line2:          rgba(0,0,0,0.14);
-
-  --ink:            #1a1a1a;   /* heading text */
-  --body:           rgba(0,0,0,0.58);
-  --muted:          rgba(0,0,0,0.36);
-
-  --green:          #059669;   /* success */
-  --green-bg:       #d1fae5;
-  --amber:          #d97706;   /* warning */
-  --amber-bg:       #fef3c7;
-  --red:            #dc2626;   /* error */
-  --red-bg:         #fee2e2;
+  --green:    #22c55e;
+  --green-bg: rgba(34,197,94,0.08);
+  --amber:    #f59e0b;
+  --amber-bg: rgba(245,158,11,0.08);
+  --red:      #ef4444;
+  --red-bg:   rgba(239,68,68,0.08);
+  --blue:     #3b82f6;
+  --blue-bg:  rgba(59,130,246,0.08);
 
   --f:    'Inter', system-ui, sans-serif;
-  --mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
-  --r:    4px;
+  --mono: 'SF Mono','Menlo','Consolas',monospace;
+  --r:    6px;
 }
 
-/* ── Reset + base ── */
+/* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   font-family: var(--f);
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-::selection { background: var(--primary-light); color: var(--primary-dark); }
+::selection { background: rgba(255,255,255,0.15); color: #fff; }
 
 /* ── Animations ── */
 @keyframes blink  { 0%,100%{opacity:1} 50%{opacity:0} }
@@ -57,11 +51,18 @@ html, body {
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width:4px; height:4px; }
 ::-webkit-scrollbar-track { background: var(--bg2); }
-::-webkit-scrollbar-thumb { background: var(--primary-mid); border-radius:99px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius:99px; }
 
-/* ══════════════════════════════════════════════
-   v2 class overrides — every inner page inherits
-   ══════════════════════════════════════════════ */
+/* ── Links ── */
+a { color: var(--ink); text-decoration: none; }
+a:hover { color: rgba(255,255,255,0.7); }
+
+/* ── Focus ── */
+:focus-visible { outline: 1px solid rgba(255,255,255,0.4); outline-offset: 2px; }
+
+/* ════════════════════════════════════════════════════════
+   v2 overrides — every inner page with v2-* classes
+   ════════════════════════════════════════════════════════ */
 
 .v2-page {
   background: var(--bg) !important;
@@ -69,29 +70,27 @@ html, body {
   font-family: var(--f) !important;
 }
 
-/* Cards */
 .v2-card {
-  background: var(--surface) !important;
+  background: var(--bg3) !important;
   border: 1px solid var(--line) !important;
   border-radius: var(--r) !important;
   box-shadow: none !important;
 }
 
-/* Inputs */
 .v2-input {
-  background: var(--surface) !important;
+  background: var(--bg3) !important;
   border: 1px solid var(--line2) !important;
   border-radius: var(--r) !important;
   color: var(--ink) !important;
+  transition: border-color .15s !important;
 }
-.v2-input::placeholder { color: var(--muted) !important; }
+.v2-input::placeholder { color: var(--hint) !important; }
 .v2-input:focus {
-  border-color: var(--primary) !important;
+  border-color: rgba(255,255,255,0.4) !important;
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(13,148,136,0.12) !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.06) !important;
 }
 
-/* Labels */
 .v2-label {
   color: var(--muted) !important;
   font-size: 11px !important;
@@ -101,9 +100,8 @@ html, body {
   margin-bottom: 6px !important;
   display: block;
 }
-.v2-label-help { font-size: 11px !important; color: var(--muted) !important; margin-top: 5px; }
+.v2-label-help { font-size: 11px !important; color: var(--hint) !important; margin-top: 5px; }
 
-/* Buttons */
 .v2-btn {
   background: var(--bg3) !important;
   border: 1px solid var(--line2) !important;
@@ -111,21 +109,21 @@ html, body {
   color: var(--ink) !important;
   font-family: var(--f) !important;
   cursor: pointer;
-  transition: background .14s;
+  transition: background .14s, border-color .14s !important;
 }
-.v2-btn:hover { background: var(--bg4) !important; }
-
+.v2-btn:hover {
+  background: var(--bg4) !important;
+  border-color: var(--line3) !important;
+}
 .v2-btn-primary {
-  background: var(--primary) !important;
-  color: #ffffff !important;
+  background: var(--ink) !important;
+  color: var(--bg) !important;
   border: none !important;
   font-weight: 600 !important;
 }
-.v2-btn-primary:hover { background: var(--primary-dark) !important; }
+.v2-btn-primary:hover { background: rgba(255,255,255,0.85) !important; }
+.v2-btn-sm { font-size: 11px !important; padding: 3px 9px !important; }
 
-.v2-btn-sm { font-size: 11px !important; padding: 3px 8px !important; }
-
-/* Alerts */
 .v2-alert {
   border-radius: var(--r) !important;
   font-size: 12px !important;
@@ -134,106 +132,68 @@ html, body {
   align-items: center !important;
   gap: 6px !important;
 }
-.v2-alert-error   { background: var(--red-bg)   !important; border: 1px solid rgba(220,38,38,0.25)   !important; color: var(--red)   !important; }
-.v2-alert-success { background: var(--green-bg) !important; border: 1px solid rgba(5,150,105,0.25)   !important; color: var(--green) !important; }
-.v2-alert-warning { background: var(--amber-bg) !important; border: 1px solid rgba(217,119,6,0.25)   !important; color: var(--amber) !important; }
+.v2-alert-error   { background: var(--red-bg)   !important; border: 1px solid rgba(239,68,68,0.2)   !important; color: #f87171 !important; }
+.v2-alert-success { background: var(--green-bg) !important; border: 1px solid rgba(34,197,94,0.2)   !important; color: #4ade80 !important; }
+.v2-alert-warning { background: var(--amber-bg) !important; border: 1px solid rgba(245,158,11,0.2)  !important; color: #fbbf24 !important; }
 
-/* Status pills */
 .v2-status {
   font-size: 11px !important;
   font-weight: 500 !important;
   padding: 2px 8px !important;
-  border-radius: 3px !important;
+  border-radius: 4px !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 5px !important;
+  font-family: var(--mono) !important;
 }
-.v2-status-green { background: var(--green-bg) !important; color: var(--green) !important; }
-.v2-status-amber { background: var(--amber-bg) !important; color: var(--amber) !important; }
-.v2-status-red   { background: var(--red-bg)   !important; color: var(--red)   !important; }
-.v2-status-grey  { background: var(--bg3)      !important; color: var(--muted) !important; }
+.v2-status-green { background: var(--green-bg) !important; color: #4ade80 !important; }
+.v2-status-amber { background: var(--amber-bg) !important; color: #fbbf24 !important; }
+.v2-status-red   { background: var(--red-bg)   !important; color: #f87171 !important; }
+.v2-status-grey  { background: rgba(255,255,255,0.05) !important; color: var(--muted) !important; }
 
-/* Dots */
 .v2-dot { width:5px !important; height:5px !important; border-radius:50% !important; display:inline-block !important; }
-.v2-dot-green { background: var(--green) !important; }
-.v2-dot-amber { background: var(--amber) !important; }
-.v2-dot-red   { background: var(--red)   !important; }
+.v2-dot-green { background: #4ade80 !important; }
+.v2-dot-amber { background: #fbbf24 !important; }
+.v2-dot-red   { background: #f87171 !important; }
 .v2-dot-grey  { background: var(--muted) !important; }
 
-/* Pulse */
-.v2-pulse { width:6px; height:6px; border-radius:50%; background: var(--primary); display:inline-block; animation:blink 2s ease infinite; }
+.v2-pulse { width:6px; height:6px; border-radius:50%; background:#fff; opacity:.5; display:inline-block; animation:blink 2s ease infinite; }
 
-/* Progress */
-.v2-progress { background: var(--bg3) !important; border-radius:99px; overflow:hidden; }
-.v2-progress-bar { background: var(--primary) !important; height:100%; border-radius:99px; transition: width .6s ease; }
+.v2-progress { background: rgba(255,255,255,0.08) !important; border-radius:99px; overflow:hidden; }
+.v2-progress-bar { background: var(--ink) !important; height:100%; border-radius:99px; transition: width .6s ease; }
 
-/* Links */
-a { color: var(--primary); }
-a:hover { color: var(--primary-dark); }
-
-/* Focus ring global */
-:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-
-/* ── Utility classes for inner pages ── */
+/* ── Utility ── */
 .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 .spin { animation: spin 1s linear infinite; }
 
-/* ── Design-v2 CSS variable overrides (inner pages use these) ── */
+/* ── CSS variable bridge for design-v2 inner pages ── */
 :root {
-  --v2-bg:            var(--bg);
-  --v2-bg-alt:        var(--bg2);
-  --v2-surface:       var(--surface);
-  --v2-surface-2:     var(--bg3);
-  --v2-surface-3:     var(--bg4);
-  --v2-hover:         var(--bg3);
-  --v2-border:        var(--line);
-  --v2-border-strong: var(--line2);
-  --v2-border-focus:  var(--primary);
-  --v2-text:          var(--ink);
-  --v2-text-2:        var(--body);
-  --v2-text-3:        var(--muted);
-  --v2-green:         var(--primary);
-  --v2-green-text:    var(--primary-dark);
-  --v2-green-text-2:  var(--primary-dark);
-  --v2-green-bg:      var(--primary-light);
-  --v2-green-border:  var(--primary-mid);
-  --v2-amber:         var(--accent);
-  --v2-amber-text:    var(--accent-dark);
-  --v2-amber-bg:      var(--accent-light);
-  --v2-amber-border:  var(--accent-mid);
-  --v2-red:           var(--red);
-  --v2-red-text:      var(--red);
-  --v2-red-bg:        var(--red-bg);
-  --v2-red-border:    rgba(220,38,38,0.3);
-  --v2-shadow-sm:     0 1px 3px rgba(0,0,0,0.05);
-  --v2-shadow-md:     0 4px 16px rgba(0,0,0,0.07);
-  --v2-shadow-lg:     0 8px 32px rgba(0,0,0,0.09);
+  --v2-bg:            #000000;
+  --v2-bg-alt:        #0a0a0a;
+  --v2-surface:       #111111;
+  --v2-surface-2:     #1a1a1a;
+  --v2-surface-3:     #222222;
+  --v2-hover:         #1a1a1a;
+  --v2-border:        rgba(255,255,255,0.08);
+  --v2-border-strong: rgba(255,255,255,0.14);
+  --v2-border-focus:  rgba(255,255,255,0.4);
+  --v2-text:          #ffffff;
+  --v2-text-2:        rgba(255,255,255,0.6);
+  --v2-text-3:        rgba(255,255,255,0.35);
+  --v2-green:         #4ade80;
+  --v2-green-text:    #4ade80;
+  --v2-green-text-2:  #4ade80;
+  --v2-green-bg:      rgba(34,197,94,0.08);
+  --v2-green-border:  rgba(34,197,94,0.2);
+  --v2-amber:         #fbbf24;
+  --v2-amber-text:    #fbbf24;
+  --v2-amber-bg:      rgba(245,158,11,0.08);
+  --v2-amber-border:  rgba(245,158,11,0.2);
+  --v2-red:           #f87171;
+  --v2-red-text:      #f87171;
+  --v2-red-bg:        rgba(239,68,68,0.08);
+  --v2-red-border:    rgba(239,68,68,0.2);
+  --v2-shadow-sm:     0 1px 3px rgba(0,0,0,0.4);
+  --v2-shadow-md:     0 4px 16px rgba(0,0,0,0.5);
+  --v2-shadow-lg:     0 8px 32px rgba(0,0,0,0.6);
 }
-
-/* ── Accent elements that appear across all inner pages ── */
-
-/* Any teal progress bar */
-[class*="progress"] { background: var(--primary) !important; }
-
-/* Section headers with coloured left border */
-[style*="border-left"][style*="#10b981"],
-[style*="border-left"][style*="#1A7A72"],
-[style*="border-left"][style*="#0a0a0a"] { border-left-color: var(--primary) !important; }
-
-/* Override any lingering old teal/dark primary buttons in inline styles */
-button[style*="background:#1A7A72"],
-button[style*="background: #1A7A72"],
-button[style*="background:#10b981"],
-button[style*='background:"#0a0a0a"'] {
-  background: var(--primary) !important;
-  color: #fff !important;
-}
-
-/* Coral accent for nav "Get started" + primary CTAs */
-.nav-cta,
-button.primary-cta {
-  background: var(--accent) !important;
-  color: #fff !important;
-}
-button.primary-cta:hover { background: var(--accent-dark) !important; }
-

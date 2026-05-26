@@ -4,7 +4,7 @@ import { useState } from 'react'
 const S  = { fontFamily: "'Inter var','Inter',system-ui,-apple-system,sans-serif" }
 const Mo = { fontFamily: "'JetBrains Mono','Fira Mono','Menlo',monospace" }
 
-function Tick({ color = '#0d9488' }) {
+function Tick({ color = '#ffffff' }) {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
       <circle cx="12" cy="12" r="11" fill={color + '22'}/>
@@ -16,7 +16,7 @@ function Tick({ color = '#0d9488' }) {
 function Cross() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-      <circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.05)"/>
+      <circle cx="12" cy="12" r="11" fill="rgba(255,255,255,0.06)"/>
       <path d="M8 8l8 8M16 8l-8 8" stroke="rgba(0,0,0,0.25)" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   )
@@ -28,8 +28,8 @@ function FAQ({ q, a }) {
     <div onClick={() => setOpen(o => !o)}
          style={{ borderBottom: '1px solid rgba(0,0,0,0.04)', padding: '18px 0', cursor: 'pointer' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
-        <div style={{ fontSize:14, fontWeight: 600, color: open ? 'white' : 'rgba(255,255,255,0.7)' }}>{q}</div>
-        <span style={{ color: '#0d9488', fontSize:20, lineHeight: 1, flexShrink: 0 }}>{open ? '−' : '+'}</span>
+        <div style={{ fontSize:14, fontWeight: 600, color: open ? '#000000' : 'rgba(255,255,255,0.7)' }}>{q}</div>
+        <span style={{ color: '#ffffff', fontSize:20, lineHeight: 1, flexShrink: 0 }}>{open ? '−' : '+'}</span>
       </div>
       {open && (
         <div style={{ fontSize:13, color: 'rgba(255,255,255,0.48)', lineHeight: 1.8, marginTop: 12 }}>{a}</div>
@@ -146,9 +146,9 @@ const FAQS = [
 ]
 
 const PLANS = [
-  { key: 'starter',  name: 'Starter',  price: 'Starter', per: 'entry tier',                    color: '#0d9488', border: 'rgba(16,185,129,0.2)',  highlight: false, cta: 'Get started', badge: null,           certNote: 'Enterprise certificate pricing via RapidSSL' },
-  { key: 'pro',      name: 'Pro',      price: '$29',  per: '/mo · billed annually',  color: '#0d9488', border: 'rgba(99,102,241,0.3)',  highlight: true,  cta: 'Start Pro',        badge: 'Most Popular', certNote: 'All cert types · RapidSSL partner rates' },
-  { key: 'reseller', name: 'Reseller', price: 'Custom', per: 'contact us',           color: '#f07059', border: 'rgba(245,158,11,0.2)',  highlight: false, cta: 'Contact us',       badge: null,           certNote: 'Volume pricing available' },
+  { key: 'starter',  name: 'Starter',  price: 'Starter', per: 'entry tier',                    color: '#ffffff', border: 'rgba(16,185,129,0.2)',  highlight: false, cta: 'Get started', badge: null,           certNote: 'Enterprise certificate pricing via RapidSSL' },
+  { key: 'pro',      name: 'Pro',      price: '$29',  per: '/mo · billed annually',  color: '#ffffff', border: 'rgba(99,102,241,0.3)',  highlight: true,  cta: 'Start Pro',        badge: 'Most Popular', certNote: 'All cert types · RapidSSL partner rates' },
+  { key: 'reseller', name: 'Reseller', price: 'Custom', per: 'contact us',           color: '#ffffff', border: 'rgba(245,158,11,0.2)',  highlight: false, cta: 'Contact us',       badge: null,           certNote: 'Volume pricing available' },
 ]
 
 const PLAN_HIGHLIGHTS = {
@@ -161,7 +161,7 @@ export default function Pricing({ nav }) {
   const [showComparison, setShowComparison] = useState(false)
 
   return (
-    <div style={{ background: '#f0fdf9', minHeight: '100vh', color: '#1a1a1a', ...S }}>
+    <div style={{ background: '#000000', minHeight: '100vh', color: '#ffffff', ...S }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
       <style>{`
         *{box-sizing:border-box}
@@ -179,7 +179,7 @@ export default function Pricing({ nav }) {
 
         {/* ── HERO ── */}
         <div className="pricing-hero" style={{ textAlign: 'center', marginBottom: 64 }}>
-          <div style={{ display: 'inline-block', fontSize: 9, fontWeight: 700, color: '#0d9488',
+          <div style={{ display: 'inline-block', fontSize: 9, fontWeight: 700, color: '#ffffff',
             letterSpacing: '2px', textTransform: 'uppercase', padding: '5px 12px',
             border: '1px solid rgba(16,185,129,0.22)', borderRadius: 4, marginBottom: 20, ...Mo }}>
             Pricing
@@ -187,7 +187,7 @@ export default function Pricing({ nav }) {
           <h1 style={{ fontSize: 'clamp(32px,5vw,56px)', fontWeight: 900, letterSpacing: '-2px',
             lineHeight: 1.05, marginBottom: 16 }}>
             Professional CLM.<br/>
-            <span style={{ color: '#0d9488' }}>Transparent cert pricing.</span>
+            <span style={{ color: '#ffffff' }}>Transparent cert pricing.</span>
           </h1>
           <p style={{ fontSize:15, color: 'rgba(255,255,255,0.42)', maxWidth: 520, margin: '0 auto 12px', lineHeight: 1.75 }}>
             The complete CLM platform — agents, auto-renewal, DNS automation, CertBind active binding verification, CA intelligence, CertVault, 47-day readiness. Certificates at RapidSSL partner rates.
@@ -207,7 +207,7 @@ export default function Pricing({ nav }) {
               {plan.badge && (
                 <div style={{ position: 'absolute', top: -11, left: '50%', transform: 'translateX(-50%)',
                   background: plan.color, borderRadius: 20, padding: '3px 14px',
-                  fontSize:10, fontWeight: 800, color: '#1a1a1a', whiteSpace: 'nowrap', letterSpacing: '0.5px', ...Mo }}>
+                  fontSize:10, fontWeight: 800, color: '#ffffff', whiteSpace: 'nowrap', letterSpacing: '0.5px', ...Mo }}>
                   {plan.badge}
                 </div>
               )}
@@ -217,7 +217,7 @@ export default function Pricing({ nav }) {
 
               <div style={{ marginBottom: 4 }}>
                 <span style={{ fontSize: plan.price === 'Custom' ? 28 : 40, fontWeight: 900, letterSpacing: '-2px', lineHeight: 1 }}>{plan.price}</span>
-                <span style={{ fontSize:11, color: 'rgba(0,0,0,0.32)', marginLeft: 6, ...Mo }}>{plan.per}</span>
+                <span style={{ fontSize:11, color: 'rgba(255,255,255,0.35)', marginLeft: 6, ...Mo }}>{plan.per}</span>
               </div>
 
               <div style={{ fontSize:10, color: plan.color, marginBottom: 20, ...Mo, opacity: 0.7 }}>
@@ -238,7 +238,7 @@ export default function Pricing({ nav }) {
                 {PLAN_HIGHLIGHTS[plan.key].map(f => (
                   <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                     <Tick color={plan.color}/>
-                    <span style={{ fontSize:12, color: 'rgba(0,0,0,0.6)', lineHeight: 1.5 }}>{f}</span>
+                    <span style={{ fontSize:12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{f}</span>
                   </div>
                 ))}
               </div>
@@ -249,22 +249,22 @@ export default function Pricing({ nav }) {
         {/* ── FULL COMPARISON TOGGLE ── */}
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <button onClick={() => setShowComparison(v => !v)}
-            style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.08)', color: 'rgba(255,255,255,0.6)',
+            style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)',
               borderRadius: 7, padding: '10px 22px', fontSize:13, cursor: 'pointer', ...S, transition: 'all .15s' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#0d9488'; e.currentTarget.style.color = '#0d9488' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}>
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffffff'; e.currentTarget.style.color = '#ffffff' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}>
             {showComparison ? '▲ Hide full comparison' : '▼ See full feature comparison'}
           </button>
         </div>
 
         {/* ── FULL COMPARISON TABLE ── */}
         {showComparison && (
-          <div style={{ marginBottom: 64, border: '1px solid rgba(0,0,0,0.07)', borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{ marginBottom: 64, border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, overflow: 'hidden' }}>
             {/* Header */}
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-              background: 'rgba(0,0,0,0.02)', padding: '14px 20px',
-              borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-              <div style={{ fontSize:11, color: 'rgba(0,0,0,0.32)', ...Mo }}>Feature</div>
+              background: 'rgba(255,255,255,0.03)', padding: '14px 20px',
+              borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize:11, color: 'rgba(255,255,255,0.35)', ...Mo }}>Feature</div>
               {PLANS.map(p => (
                 <div key={p.key} style={{ fontSize:11, fontWeight: 700, color: p.color,
                   textTransform: 'uppercase', letterSpacing: '0.8px', textAlign: 'center', ...Mo }}>
@@ -278,7 +278,7 @@ export default function Pricing({ nav }) {
                 {/* Section header */}
                 <div style={{ padding: '10px 20px', background: 'rgba(255,255,255,0.02)',
                   borderTop: '1px solid rgba(0,0,0,0.04)', borderBottom: '1px solid rgba(0,0,0,0.02)' }}>
-                  <span style={{ fontSize:10, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase',
+                  <span style={{ fontSize:10, fontWeight: 700, color: '#ffffff', textTransform: 'uppercase',
                     letterSpacing: '1px', ...Mo }}>{section.section}</span>
                 </div>
                 {section.rows.map((row, i) => (
@@ -291,7 +291,7 @@ export default function Pricing({ nav }) {
                     <span style={{ fontSize:12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.4 }}>{row.label}</span>
                     {['starter', 'pro', 'reseller'].map(k => (
                       <div key={k} style={{ display: 'flex', justifyContent: 'center' }}>
-                        {row[k] ? <Tick color={k === 'starter' ? '#0d9488' : k === 'pro' ? '#0d9488' : '#f07059'}/> : <Cross/>}
+                        {row[k] ? <Tick color={k === 'starter' ? '#ffffff' : k === 'pro' ? '#ffffff' : '#ffffff'}/> : <Cross/>}
                       </div>
                     ))}
                   </div>
@@ -304,7 +304,7 @@ export default function Pricing({ nav }) {
         {/* ── CERT PRICING TABLE ── */}
         <div style={{ marginBottom: 64 }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: '#0d9488', letterSpacing: '2px',
+            <div style={{ fontSize: 9, fontWeight: 700, color: '#ffffff', letterSpacing: '2px',
               textTransform: 'uppercase', marginBottom: 12, ...Mo }}>Certificate pricing</div>
             <h2 style={{ fontSize: 'clamp(22px,3vw,34px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 10 }}>
               RapidSSL partner rates
@@ -313,9 +313,9 @@ export default function Pricing({ nav }) {
               DigiCert DV retail $218/yr vs. SSLVault $14/yr — same trust chain.
             </p>
           </div>
-          <div className="cert-table" style={{ border: '1px solid rgba(0,0,0,0.07)', borderRadius: 10, overflow: 'hidden' }}>
+          <div className="cert-table" style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, overflow: 'hidden' }}>
             <div className="cert-table-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-              background: 'rgba(255,255,255,0.035)', borderBottom: '1px solid rgba(0,0,0,0.07)', padding: '12px 20px' }}>
+              background: 'rgba(255,255,255,0.035)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '12px 20px' }}>
               {['Certificate type', 'Term', 'CA', 'Price/yr'].map(h => (
                 <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'rgba(255,255,255,0.32)',
                   textTransform: 'uppercase', letterSpacing: '0.8px', ...Mo }}>{h}</div>
@@ -332,14 +332,14 @@ export default function Pricing({ nav }) {
                   <span style={{ fontSize:13, color: 'rgba(255,255,255,0.72)' }}>{row.type}</span>
                   {row.badge && (
                     <span style={{ fontSize: 8, fontWeight: 800, padding: '2px 7px', borderRadius: 10,
-                      background: '#0d948818', color: '#0d9488', letterSpacing: '0.5px', ...Mo }}>
+                      background: '#0d948818', color: '#ffffff', letterSpacing: '0.5px', ...Mo }}>
                       {row.badge}
                     </span>
                   )}
                 </div>
-                <div style={{ fontSize:12, color: 'rgba(0,0,0,0.32)', ...Mo }}>{row.term}</div>
-                <div style={{ fontSize:12, color: 'rgba(0,0,0,0.32)', ...Mo }}>{row.ca}</div>
-                <div style={{ fontSize:15, fontWeight: 800, color: '#0d9488', ...Mo }}>{row.price}</div>
+                <div style={{ fontSize:12, color: 'rgba(255,255,255,0.35)', ...Mo }}>{row.term}</div>
+                <div style={{ fontSize:12, color: 'rgba(255,255,255,0.35)', ...Mo }}>{row.ca}</div>
+                <div style={{ fontSize:15, fontWeight: 800, color: '#ffffff', ...Mo }}>{row.price}</div>
               </div>
             ))}
           </div>
@@ -352,7 +352,7 @@ export default function Pricing({ nav }) {
         <div style={{ border: '1px solid rgba(0,0,0,0.04)', borderRadius: 12, padding: '32px',
           background: 'rgba(255,255,255,0.01)', marginBottom: 64 }}>
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: '#0d9488', letterSpacing: '2px',
+            <div style={{ fontSize: 9, fontWeight: 700, color: '#ffffff', letterSpacing: '2px',
               textTransform: 'uppercase', marginBottom: 8, ...Mo }}>CLM market comparison</div>
             <h2 style={{ fontSize: 'clamp(18px,2.5vw,28px)', fontWeight: 800, letterSpacing: '-0.5px' }}>
               Enterprise CLM without the enterprise price tag.
@@ -360,11 +360,11 @@ export default function Pricing({ nav }) {
           </div>
           <div className="pricing-compare-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 1 }}>
             {[
-              { name: 'SSLVault', price: 'Starter', sub: 'entry tier + cert costs', color: '#0d9488',
+              { name: 'SSLVault', price: 'Starter', sub: 'entry tier + cert costs', color: '#ffffff',
                 points: ['Complete CLM platform', '47-day readiness built-in', 'CA-agnostic intelligence', 'CertVault included', 'cPanel + agent + DNS'] },
-              { name: 'Venafi TLS Protect', price: '$250k+', sub: 'per year', color: 'rgba(0,0,0,0.32)',
+              { name: 'Venafi TLS Protect', price: '$250k+', sub: 'per year', color: 'rgba(255,255,255,0.35)',
                 points: ['Enterprise only', 'No free tier', 'No cPanel support', 'No cert issuance', 'PKI team required'] },
-              { name: 'Keyfactor Command', price: '$75–200k', sub: 'per year', color: 'rgba(0,0,0,0.32)',
+              { name: 'Keyfactor Command', price: '$75–200k', sub: 'per year', color: 'rgba(255,255,255,0.35)',
                 points: ['Mid-market focus', 'No free tier', 'Complex setup', 'No cert issuance', 'Professional services needed'] },
             ].map((item, i) => (
               <div key={item.name} style={{ padding: '24px 20px',
@@ -377,7 +377,7 @@ export default function Pricing({ nav }) {
                   {item.points.map(p => (
                     <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                       {i === 0 ? <Tick color="#0d9488"/> : <Cross/>}
-                      <span style={{ fontSize:11, color: i === 0 ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.22)', lineHeight: 1.4 }}>{p}</span>
+                      <span style={{ fontSize:11, color: i === 0 ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.25)', lineHeight: 1.4 }}>{p}</span>
                     </div>
                   ))}
                 </div>
@@ -405,14 +405,14 @@ export default function Pricing({ nav }) {
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={() => nav('/auth')}
-              style={{ background: '#0d9488', border: 'none', borderRadius: 7, color: '#1a1a1a',
+              style={{ background: '#ffffff', border: 'none', borderRadius: 7, color: '#ffffff',
                 fontSize:14, fontWeight: 700, padding: '13px 28px', cursor: 'pointer', ...S,
                 boxShadow: '0 0 30px rgba(16,185,129,0.25)' }}>
               Get Started →
             </button>
             <button onClick={() => window.location.href = 'mailto:mathimcafee@gmail.com'}
               style={{ background: 'transparent', border: '1px solid rgba(245,158,11,0.4)', borderRadius: 7,
-                color: '#f07059', fontSize:14, fontWeight: 600, padding: '13px 28px', cursor: 'pointer', ...S }}>
+                color: '#ffffff', fontSize:14, fontWeight: 600, padding: '13px 28px', cursor: 'pointer', ...S }}>
               Contact for Reseller →
             </button>
           </div>

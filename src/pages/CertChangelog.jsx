@@ -26,15 +26,15 @@ function fmtDate(iso) {
 }
 
 const EVENT_CONFIG = {
-  issued:          { icon: ShieldCheck, color: '#0d9488', bg: '#ccfbf1', label: 'Certificate issued' },
-  reissued:        { icon: RefreshCw,   color: '#0d9488', bg: '#ccfbf1', label: 'Certificate reissued' },
-  renewed:         { icon: RotateCcw,   color: '#0d9488', bg: '#ccfbf1', label: 'Certificate renewed' },
-  revoked:         { icon: ShieldOff,   color: '#dc2626', bg: '#fef2f2', label: 'Certificate revoked' },
-  agent_installed: { icon: Zap,         color: '#0d9488', bg: '#ccfbf1', label: 'Installed by agent' },
-  key_rotated:     { icon: RotateCcw,   color: '#f07059', bg: '#fde8e4', label: 'Key rotated' },
-  downloaded:      { icon: Download,    color: '#0d9488', bg: '#D4F5EF', label: 'Certificate downloaded' },
-  private_key_copied: { icon: Shield,   color: '#f07059', bg: '#fde8e4', label: 'Private key copied' },
-  default:         { icon: Shield,      color: '#0f766e', bg: '#f0fdf9', label: 'Event' },
+  issued:          { icon: ShieldCheck, color: '#ffffff', bg: '#111111', label: 'Certificate issued' },
+  reissued:        { icon: RefreshCw,   color: '#ffffff', bg: '#111111', label: 'Certificate reissued' },
+  renewed:         { icon: RotateCcw,   color: '#ffffff', bg: '#111111', label: 'Certificate renewed' },
+  revoked:         { icon: ShieldOff,   color: '#f87171', bg: '#fef2f2', label: 'Certificate revoked' },
+  agent_installed: { icon: Zap,         color: '#ffffff', bg: '#111111', label: 'Installed by agent' },
+  key_rotated:     { icon: RotateCcw,   color: '#ffffff', bg: 'rgba(239,68,68,0.08)', label: 'Key rotated' },
+  downloaded:      { icon: Download,    color: '#ffffff', bg: '#D4F5EF', label: 'Certificate downloaded' },
+  private_key_copied: { icon: Shield,   color: '#ffffff', bg: 'rgba(239,68,68,0.08)', label: 'Private key copied' },
+  default:         { icon: Shield,      color: 'rgba(255,255,255,0.7)', bg: '#000000', label: 'Event' },
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}

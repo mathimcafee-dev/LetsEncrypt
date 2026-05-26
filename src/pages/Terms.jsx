@@ -14,15 +14,15 @@ export default function Terms({ nav }) {
       {/* HERO */}
       <section style={{position:'relative',padding:'70px 0 30px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
-          <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'white',border:'1px solid #99f6e4',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-            <span style={{width:7,height:7,borderRadius:'50%',background:'#0d9488',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
-            <span style={{fontSize:11,fontWeight:700,color:'rgba(0,0,0,0.55)',letterSpacing:'0.4px',textTransform:'uppercase'}}>Terms of Service</span>
+          <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'#000000',border:'1px solid #99f6e4',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+            <span style={{width:7,height:7,borderRadius:'50%',background:'#ffffff',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
+            <span style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.6)',letterSpacing:'0.4px',textTransform:'uppercase'}}>Terms of Service</span>
           </div>
-          <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#1a1a1a'}}>
+          <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#ffffff'}}>
             The fine print,<br/>
             <span style={{background:'linear-gradient(135deg,#0d9488,#f07059,#0d9488)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>kept short.</span>
           </h1>
-          <p style={{fontSize:15,color:'#0f766e',marginTop:14}}>Last updated: <strong style={{color:'#1a1a1a'}}>{updated}</strong></p>
+          <p style={{fontSize:15,color:'rgba(255,255,255,0.7)',marginTop:14}}>Last updated: <strong style={{color:'#ffffff'}}>{updated}</strong></p>
         </div>
       </section>
 
@@ -30,8 +30,8 @@ export default function Terms({ nav }) {
       <section style={{position:'relative',padding:'30px 0 50px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px'}}>
           <div style={{background:'linear-gradient(135deg,#fde8e4,#fef9c3)',borderRadius:18,padding:'min(28px,5vw) min(32px,4vw)',border:'1.5px solid #F2C4BC',display:'flex',gap:18,alignItems:'flex-start'}}>
-            <div style={{width:42,height:42,borderRadius:11,background:'#f07059',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(217,119,6,0.3)'}}>
-              <AlertTriangle size={20} color='white'/>
+            <div style={{width:42,height:42,borderRadius:11,background:'#ffffff',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(217,119,6,0.3)'}}>
+              <AlertTriangle size={20} color='#000000'/>
             </div>
             <div>
               <div style={{fontSize:11,fontWeight:800,color:'#C45A4A',letterSpacing:'1.2px',textTransform:'uppercase',marginBottom:6}}>The TL;DR</div>
@@ -48,7 +48,7 @@ export default function Terms({ nav }) {
       {/* DETAILED TERMS */}
       <section style={{position:'relative',padding:'30px 0 80px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px'}}>
-          <div style={{background:'white',borderRadius:24,padding:'clamp(16px,16vw,48px) clamp(14px,16vw,50px)',boxShadow:'0 4px 24px rgba(15,23,42,0.06)',border:'1px solid #99f6e4'}}>
+          <div style={{background:'#000000',borderRadius:24,padding:'clamp(16px,16vw,48px) clamp(14px,16vw,50px)',boxShadow:'0 4px 24px rgba(15,23,42,0.06)',border:'1px solid #99f6e4'}}>
 
             <Section title='1. Acceptance'>
               By creating an SSLVault account or using any feature of the service, you agree to these
@@ -103,7 +103,7 @@ export default function Terms({ nav }) {
             </Section>
 
             <Section title='7. Your data'>
-              <p style={p}>How we handle data is described in the <button onClick={()=>nav('/privacy')} style={{background:'none',border:'none',color:'#0d9488',fontWeight:700,cursor:'pointer',padding:0,fontSize:'inherit',fontFamily:'inherit'}}>Privacy Policy</button>. By using the service, you also accept that policy.</p>
+              <p style={p}>How we handle data is described in the <button onClick={()=>nav('/privacy')} style={{background:'none',border:'none',color:'#ffffff',fontWeight:700,cursor:'pointer',padding:0,fontSize:'inherit',fontFamily:'inherit'}}>Privacy Policy</button>. By using the service, you also accept that policy.</p>
             </Section>
 
             <Section title='8. Service changes & termination'>
@@ -138,10 +138,10 @@ export default function Terms({ nav }) {
       {/* FOOTER LINKS */}
       <section style={{position:'relative',padding:'0 0 80px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
-          <button onClick={()=>nav('/privacy')} style={{background:'white',color:'#1a1a1a',border:'1.5px solid #99f6e4',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/privacy')} style={{background:'#000000',color:'#ffffff',border:'1.5px solid #99f6e4',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <Shield size={14}/> Privacy Policy
           </button>
-          <button onClick={()=>nav('/contact')} style={{background:'#1a1a1a',color:'#1a1a1a',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/contact')} style={{background:'#ffffff',color:'#ffffff',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <Mail size={14}/> Contact us <ArrowRight size={13}/>
           </button>
         </div>
@@ -150,14 +150,14 @@ export default function Terms({ nav }) {
   )
 }
 
-const p = {fontSize:14,color:'rgba(0,0,0,0.55)',lineHeight:1.75,marginBottom:12}
-const ul = {fontSize:14,color:'rgba(0,0,0,0.55)',lineHeight:1.85,paddingLeft:22,marginBottom:14}
-const a = {color:'#0d9488',fontWeight:700,textDecoration:'none'}
+const p = {fontSize:14,color:'rgba(255,255,255,0.6)',lineHeight:1.75,marginBottom:12}
+const ul = {fontSize:14,color:'rgba(255,255,255,0.6)',lineHeight:1.85,paddingLeft:22,marginBottom:14}
+const a = {color:'#ffffff',fontWeight:700,textDecoration:'none'}
 
 function Section({title, children, last}) {
   return (
     <div style={{paddingBottom:last?0:28,marginBottom:last?0:24,borderBottom:last?'none':'1px dashed #99f6e4'}}>
-      <h3 style={{fontFamily:'Georgia, serif',fontSize:20,fontWeight:800,color:'#1a1a1a',letterSpacing:'-0.4px',marginBottom:14}}>{title}</h3>
+      <h3 style={{fontFamily:'Georgia, serif',fontSize:20,fontWeight:800,color:'#ffffff',letterSpacing:'-0.4px',marginBottom:14}}>{title}</h3>
       {typeof children === 'string' ? <p style={p}>{children}</p> : children}
     </div>
   )

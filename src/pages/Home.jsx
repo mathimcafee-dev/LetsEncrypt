@@ -4,22 +4,22 @@ import { supabase } from '../lib/supabase'
 // ── Light mode tokens ─────────────────────────────────────────────────
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const W    = '#f0fdf9'
-const BK   = '#0a0a0a'
-const BG1  = '#f0fdf9'   // page
-const BG2  = '#e6fbf5'   // alt sections
-const BG3  = '#ccfbf1'   // cards
-const BG4  = '#99f6e4'   // deep card
-const T1   = '#0a0a0a'
-const T2   = 'rgba(0,0,0,0.52)'
-const T3   = 'rgba(0,0,0,0.32)'
-const LN   = 'rgba(0,0,0,0.08)'
-const LN2  = 'rgba(0,0,0,0.14)'
-const GRN  = '#059669'
-const AMB  = '#d97706'
-const RED  = '#dc2626'
+const W    = '#ffffff'
+const BK   = '#ffffff'
+const BG1  = '#000000'   // page
+const BG2  = '#ffffff'   // alt sections
+const BG3  = '#111111'   // cards
+const BG4  = '#ffffff'   // deep card
+const T1   = '#ffffff'
+const T2   = 'rgba(255,255,255,0.6)'
+const T3   = 'rgba(255,255,255,0.35)'
+const LN   = 'rgba(255,255,255,0.08)'
+const LN2  = 'rgba(255,255,255,0.15)'
+const GRN  = '#4ade80'
+const AMB  = '#fbbf24'
+const RED  = '#f87171'
 // Footer / terminal stay dark
-const DK   = '#0a0a0a'
+const DK   = '#ffffff'
 const DK2  = '#111111'
 
 function useIsMobile(){const[w,setW]=useState(window.innerWidth);useEffect(()=>{const f=()=>setW(window.innerWidth);window.addEventListener('resize',f);return()=>window.removeEventListener('resize',f)},[]);return{isMobile:w<768,isTablet:w<1024}}
@@ -27,7 +27,7 @@ function useIn(t=0.08){const ref=useRef(null);const[v,setV]=useState(false);useE
 function FadeUp({children,delay=0}){const[ref,v]=useIn();return <div ref={ref} style={{opacity:v?1:0,transform:v?'none':'translateY(18px)',transition:`opacity .6s ease ${delay}ms,transform .6s ease ${delay}ms`}}>{children}</div>}
 
 function Tag({children}){return <span style={{display:'inline-flex',alignItems:'center',fontSize:10,fontWeight:600,color:T3,background:BG3,border:`1px solid ${LN2}`,borderRadius:3,padding:'2px 7px',fontFamily:MONO,letterSpacing:'0.04em'}}>{children}</span>}
-function Pill({status}){const m={active:[GRN,'rgba(5,150,105,0.08)'],warning:[AMB,'rgba(217,119,6,0.08)'],critical:[RED,'rgba(220,38,38,0.08)']};const[c,bg]=m[status]||[T3,BG3];return <span style={{fontSize:10,fontWeight:500,color:c,background:bg,padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>{status}</span>}
+function Pill({status}){const m={active:[GRN,'rgba(34,197,94,0.1)'],warning:[AMB,'rgba(245,158,11,0.1)'],critical:[RED,'rgba(239,68,68,0.1)']};const[c,bg]=m[status]||[T3,BG3];return <span style={{fontSize:10,fontWeight:500,color:c,background:bg,padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>{status}</span>}
 function Eyebrow({children}){return <div style={{fontSize:11,fontWeight:500,color:T3,letterSpacing:'0.06em',textTransform:'uppercase',fontFamily:MONO,marginBottom:12}}>{children}</div>}
 function H2({children,style={}}){return <h2 style={{fontSize:'clamp(20px,3vw,32px)',fontWeight:700,color:T1,letterSpacing:'-0.6px',lineHeight:1.2,...style}}>{children}</h2>}
 function Body({children,style={}}){return <p style={{fontSize:14,color:T2,lineHeight:1.75,...style}}>{children}</p>}
@@ -153,13 +153,13 @@ export default function Home({ nav }) {
 
   return (
     <div style={{fontFamily:F,background:BG1,color:T1,overflowX:'hidden'}}>
-      <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(0,0,0,0.08)}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
+      <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(255,255,255,0.08)}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       {/* NAV */}
       <header style={{position:'sticky',top:0,zIndex:200,background:W,borderBottom:`1px solid ${LN}`,height:52,display:'flex',alignItems:'center',padding:'0 clamp(16px,4vw,40px)',justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',flexShrink:0}} onClick={()=>nav('/')}>
           <div style={{width:22,height:22,background:BK,borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{fontSize:13,fontWeight:600,color:T1,letterSpacing:'-0.3px'}}>SSLVault</span>
         </div>
@@ -176,10 +176,10 @@ export default function Home({ nav }) {
               onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>
               Industry Intelligence <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <div className="id" style={{position:'absolute',top:'calc(100% + 5px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:W,border:`1px solid ${LN2}`,borderRadius:4,padding:'5px',minWidth:195,boxShadow:'0 4px 14px rgba(0,0,0,0.1)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
+            <div className="id" style={{position:'absolute',top:'calc(100% + 5px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:W,border:`1px solid ${LN2}`,borderRadius:4,padding:'5px',minWidth:195,boxShadow:'0 4px 14px rgba(255,255,255,0.1)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
               {[{label:'CA Trust Store',path:'/ca-trust-explorer',desc:'6,200+ root & intermediate CAs'},{label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},{label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'},{label:'Trust Passport',path:'/trust-passport',desc:'Is this site safe? Time-based trust'}].map(it=>(
                 <button key={it.path} onClick={()=>nav(it.path)} style={{display:'block',width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',fontFamily:F,padding:'7px 10px',borderRadius:3,transition:'background .1s'}}
-                  onMouseEnter={e=>e.currentTarget.style.background='rgba(0,0,0,0.04)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
+                  onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.05)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
                   <div style={{fontSize:12,fontWeight:500,color:T1,marginBottom:1}}>{it.label}</div>
                   <div style={{fontSize:10.5,color:T3}}>{it.desc}</div>
                 </button>
@@ -526,7 +526,7 @@ export default function Home({ nav }) {
                   <div style={{display:'flex',alignItems:'center',gap:9}}>
                     <span style={{fontSize:13}}>🔗</span>
                     <span style={{fontSize:12,fontWeight:500,color:T1,fontFamily:MONO}}>CertBind</span>
-                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(5,150,105,0.08)',border:'1px solid rgba(5,150,105,0.18)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
+                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(34,197,94,0.1)',border:'1px solid rgba(5,150,105,0.18)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
                   </div>
                   <span style={{fontSize:10.5,color:T3,fontFamily:MONO}}>4/4 domains bound</span>
                 </Card>
@@ -542,7 +542,7 @@ export default function Home({ nav }) {
                     </div>
                   </Card>
                 ))}
-                <Card style={{display:'flex',gap:9,alignItems:'flex-start',padding:'10px 12px',background:'rgba(220,38,38,0.04)',border:'1px solid rgba(220,38,38,0.1)'}}>
+                <Card style={{display:'flex',gap:9,alignItems:'flex-start',padding:'10px 12px',background:'rgba(239,68,68,0.07)',border:'1px solid rgba(239,68,68,0.1)'}}>
                   <span style={{fontSize:13,flexShrink:0}}>🚨</span>
                   <div>
                     <div style={{fontSize:11.5,fontWeight:600,color:RED,marginBottom:2}}>What CertBind catches that others miss</div>
@@ -556,7 +556,7 @@ export default function Home({ nav }) {
             <div style={{borderTop:`1px solid ${LN}`,paddingTop:32}}>
               <div style={{fontSize:10,fontWeight:500,color:T3,fontFamily:MONO,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:16,textAlign:'center'}}>Real-world failures CertBind prevents</div>
               <div style={{display:'grid',gridTemplateColumns:`repeat(${isMobile?1:3},1fr)`,gap:8}}>
-                {[{status:'key_mismatch',color:RED,bg:'rgba(220,38,38,0.04)',bd:'rgba(220,38,38,0.1)',title:'The Zombie Certificate',scenario:'Nginx renewed cert automatically. But a config change six months ago redirected nginx to a backup key from a previous issuance. CLM shows green. Browser shows valid. The cert and key are from different issuances.',impact:'$11M average PKI outage cost · undetected for months in typical orgs'},{status:'partial_deploy',color:AMB,bg:'rgba(217,119,6,0.04)',bd:'rgba(217,119,6,0.1)',title:'The Phantom Install',scenario:'New cert deployed to 4 of 7 load balancer nodes. The other 3 are still running the cert that expires in 4 days. CLM shows the cert was issued and installed. It has no idea about the other 3 nodes.',impact:'#1 cause of PKI-related outages in enterprises · usually found by customers first'},{status:'chain_anomaly',color:'#7c3aed',bg:'rgba(124,58,237,0.04)',bd:'rgba(124,58,237,0.1)',title:'The Silent Swap',scenario:"Enterprise Palo Alto proxy is SSL-inspecting traffic to your API server. Every TLS connection is being decrypted, inspected, and re-encrypted with the proxy's internal CA. Your CLM doesn't know. Your monitoring doesn't know.",impact:'Affects every enterprise with SSL inspection · invisible to all other CLM tools'}].map(s=>(
+                {[{status:'key_mismatch',color:RED,bg:'rgba(239,68,68,0.07)',bd:'rgba(239,68,68,0.1)',title:'The Zombie Certificate',scenario:'Nginx renewed cert automatically. But a config change six months ago redirected nginx to a backup key from a previous issuance. CLM shows green. Browser shows valid. The cert and key are from different issuances.',impact:'$11M average PKI outage cost · undetected for months in typical orgs'},{status:'partial_deploy',color:AMB,bg:'rgba(217,119,6,0.04)',bd:'rgba(217,119,6,0.1)',title:'The Phantom Install',scenario:'New cert deployed to 4 of 7 load balancer nodes. The other 3 are still running the cert that expires in 4 days. CLM shows the cert was issued and installed. It has no idea about the other 3 nodes.',impact:'#1 cause of PKI-related outages in enterprises · usually found by customers first'},{status:'chain_anomaly',color:'#7c3aed',bg:'rgba(124,58,237,0.04)',bd:'rgba(124,58,237,0.1)',title:'The Silent Swap',scenario:"Enterprise Palo Alto proxy is SSL-inspecting traffic to your API server. Every TLS connection is being decrypted, inspected, and re-encrypted with the proxy's internal CA. Your CLM doesn't know. Your monitoring doesn't know.",impact:'Affects every enterprise with SSL inspection · invisible to all other CLM tools'}].map(s=>(
                   <div key={s.title} style={{background:s.bg,border:`1px solid ${s.bd}`,borderRadius:4,padding:'16px'}}>
                     <div style={{fontSize:9.5,fontWeight:700,color:s.color,fontFamily:MONO,letterSpacing:'0.05em',marginBottom:8}}>{s.status.toUpperCase()}</div>
                     <div style={{fontSize:13,fontWeight:600,color:T1,marginBottom:8}}>{s.title}</div>
@@ -638,7 +638,7 @@ export default function Home({ nav }) {
       <footer style={{background:DK,borderTop:'1px solid rgba(255,255,255,0.07)',padding:'clamp(36px,5vw,52px) clamp(20px,4vw,48px) clamp(22px,3vw,32px)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:32,paddingBottom:24,borderBottom:'1px solid rgba(255,255,255,0.07)'}}>
-            <div style={{width:20,height:20,background:'rgba(255,255,255,0.1)',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <div style={{width:20,height:20,background:'rgba(255,255,255,0.12)',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center'}}>
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
             <span style={{fontSize:13,fontWeight:600,color:'#fff'}}>SSLVault</span>
