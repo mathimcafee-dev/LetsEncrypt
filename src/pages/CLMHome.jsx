@@ -120,7 +120,7 @@ export default function CLMHome({ user, nav }) {
       <div style={{padding:'14px 14px 10px',borderBottom:`1px solid ${LN}`,flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:7}}>
           <div style={{width:20,height:20,background:'#ffffff',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{fontSize:13,fontWeight:600,color:T1,fontFamily:F}}>SSLVault</span>
         </div>
