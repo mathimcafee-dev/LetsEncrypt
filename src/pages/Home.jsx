@@ -221,7 +221,7 @@ export default function Home({ nav }) {
           </div>
           <span style={{fontSize:13,fontWeight:600,color:T1,letterSpacing:'-0.3px'}}>SSLVault</span>
         </div>
-        {!isMobile&&<nav style={{display:'flex',alignItems:'center',gap:1}}>
+        {!isMobile&&<nav style={{display:'flex',alignItems:'center',gap:1,background:'transparent'}}>
           {[['Platform','#platform'],['Features','#features'],['Security','#security'],['Pricing','/pricing']].map(([l,h])=>(
             <button key={l} onClick={()=>h.startsWith('/')?nav(h):document.querySelector(h)?.scrollIntoView({behavior:'smooth'})}
               style={{background:'none',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,color:T2,padding:'5px 12px',borderRadius:4,transition:'color .12s'}}
@@ -234,7 +234,7 @@ export default function Home({ nav }) {
               onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>
               Industry Intelligence <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <div className="id" style={{position:'absolute',top:'calc(100%+6px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:BG3,border:`1px solid ${LN2}`,borderRadius:6,padding:'5px',minWidth:200,boxShadow:'0 8px 32px rgba(0,0,0,0.6)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
+            <div className="id" style={{position:'absolute',top:'calc(100% + 6px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:BG3,border:`1px solid ${LN2}`,borderRadius:6,padding:'5px',minWidth:200,boxShadow:'0 8px 32px rgba(0,0,0,0.6)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
               {[{label:'CA Trust Store',path:'/ca-trust-explorer',desc:'6,200+ root & intermediate CAs'},{label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},{label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'},{label:'Trust Passport',path:'/trust-passport',desc:'Is this site safe?'}].map(it=>(
                 <button key={it.path} onClick={()=>nav(it.path)} style={{display:'block',width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',fontFamily:F,padding:'7px 10px',borderRadius:4,transition:'background .1s'}}
                   onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.06)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
@@ -342,16 +342,14 @@ export default function Home({ nav }) {
       {/* ── FEATURES ── */}
       <section id="features" style={{background:BG2,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
-          <FadeUp>
-            <div style={{marginBottom:44,maxWidth:480}}>
+          <FadeUp><div style={{marginBottom:44,maxWidth:480}}>
               <Eyebrow>All capabilities</Eyebrow>
               <H2 style={{marginBottom:12}}>Every feature a PKI team needs.</H2>
               <Body>Eight core capability areas — built, not bolted on.</Body>
             </div>
           </FadeUp>
           <div style={{display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
-            {[
-              {icon:'⚡',title:'Certificate issuance',specs:['DV, OV, EV, Wildcard, SAN','RapidSSL · DigiCert trust chain','ACME v2 · RFC 8555','Issued in < 5 minutes'],badge:'ACME v2'},
+            {[{icon:'⚡',title:'Certificate issuance',specs:['DV, OV, EV, Wildcard, SAN','RapidSSL · DigiCert trust chain','ACME v2 · RFC 8555','Issued in < 5 minutes'],badge:'ACME v2'},
               {icon:'🤖',title:'Persistent agent',specs:['systemd daemon · polls every 5 min','Nginx + Apache auto-detect','Config test before reload','Outbound HTTPS only'],badge:'systemd'},
               {icon:'🌐',title:'DNS automation',specs:['Cloudflare · Vercel · Route53','Namecheap · GoDaddy · DigitalOcean','Auto TXT/CNAME challenge','Cleanup after DCV completes'],badge:'DNS-01'},
               {icon:'🏛',title:'cPanel install',specs:['UAPI-based installation','No SSH or agent required','API token auth','Auto-renew via cPanel'],badge:'UAPI'},
@@ -362,8 +360,7 @@ export default function Home({ nav }) {
               {icon:'🏛',title:'Industry Intelligence',specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker'],badge:'PKI Hub'},
               {icon:'🔬',title:'CA Trust Store',specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm','CSV export · PEM download'],badge:'CCADB'},
             ].map(f=>(
-              <FadeUp key={f.title}>
-                <div style={{background:BG,padding:'20px',height:'100%'}}>
+              <div key={f.title} style={{background:BG,padding:'20px'}}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:12}}>
                     <span style={{fontSize:20}}>{f.icon}</span>
                     <Tag>{f.badge}</Tag>
@@ -374,7 +371,6 @@ export default function Home({ nav }) {
                     <span style={{fontSize:12,color:T2,lineHeight:1.5}}>{s}</span>
                   </div>)}
                 </div>
-              </FadeUp>
             ))}
           </div>
         </div>
@@ -535,8 +531,7 @@ export default function Home({ nav }) {
           </FadeUp>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden',marginBottom:12}}>
             {[{icon:'🏛',title:'CA Trust Store',sub:'6,200+ root & intermediate CAs',desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert.',badge:'CCADB Live',path:'/ca-trust-explorer',stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']]},{icon:'⚖️',title:'CAB Forum Intelligence',sub:'Ballots, timelines & compliance',desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',badge:'Live sync',path:'/cab-forum',stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']]},{icon:'🌍',title:'Global PKI Hub',sub:'12 bodies · 22 standards · PQC tracker',desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',badge:'PQC Ready',path:'/pki-hub',stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']]}].map(item=>(
-              <FadeUp key={item.title}>
-                <div onClick={()=>nav(item.path)} style={{background:BG,padding:'22px',cursor:'pointer',transition:'background .12s',height:'100%',display:'flex',flexDirection:'column',gap:14}}
+              <div key={item.title} onClick={()=>nav(item.path)} style={{background:BG,padding:'22px',cursor:'pointer',transition:'background .12s',height:'100%',display:'flex',flexDirection:'column',gap:14}}
                   onMouseEnter={e=>e.currentTarget.style.background=BG3} onMouseLeave={e=>e.currentTarget.style.background=BG}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
                     <span style={{fontSize:26}}>{item.icon}</span>
@@ -556,8 +551,7 @@ export default function Home({ nav }) {
                     ))}
                   </div>
                   <div style={{fontSize:11,color:T3}}>Explore →</div>
-                </div>
-              </FadeUp>
+              </div>
             ))}
           </div>
           <FadeUp>

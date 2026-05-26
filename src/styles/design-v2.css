@@ -5,8 +5,8 @@
 
 :root {
   /* ── Page backgrounds ── */
-  --v2-bg:        #FDFAF5;
-  --v2-bg-alt:    #F5EFE0;
+  --v2-bg:        #000000;
+  --v2-bg-alt:    #0a0a0a;
   --v2-surface:   #FFFFFF;
   --v2-surface-2: #FAF7F2;
   --v2-surface-3: #F5EFE0;
@@ -806,8 +806,8 @@ html.is-tablet .v2-card {
 
 /* ── v6 Theme overrides — cream/forest/sienna ── */
 :root {
-  --v2-bg:          #F5F0E8;
-  --v2-bg-alt:      #EDE8DC;
+  --v2-bg:          #000000;
+  --v2-bg-alt:      #0a0a0a;
   --v2-surface:     #FFFDF8;
   --v2-surface-2:   #EDE8DC;
   --v2-surface-3:   #D8D0C0;
@@ -836,4 +836,4 @@ html.is-tablet .v2-card {
   --v2-shadow-lg:   0 8px 32px rgba(28,43,31,0.10);
 }
 
-.v2-page { background: var(--v2-bg) !important; font-family:'Space Grotesk','DM Sans',system-ui,sans-serif !important; }
+.v2-page { background: var(--v2-bg) !important; font-family:'Inter',system-ui,sans-serif !important; color:#ffffff !important; }
