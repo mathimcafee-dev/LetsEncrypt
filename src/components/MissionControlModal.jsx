@@ -86,7 +86,13 @@ function FloatingPill({ action, domain, elapsedMs, onExpand }) {
 
 // ── Success screen ────────────────────────────────────────────────────────────
 
-function SuccessScreen({ action, domain, serial, liveConfirmed, onDone, onViewCert }) {
+function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onDone, onViewCert }) {
+  const isProbing  = probeStatus === 'probing'
+  const probeOk    = probeStatus?.ok && probeStatus?.match === true
+  const probeFail  = probeStatus?.ok && probeStatus?.match === false
+  const probeWarn  = probeStatus?.ok && probeStatus?.match === null
+  const probeError = probeStatus && !probeStatus?.ok
+
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -95,12 +101,9 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, onDone, onViewCe
       {/* Animated checkmark */}
       <div style={{ position: 'relative', marginBottom: 24 }}>
         <svg width="80" height="80" viewBox="0 0 80 80" style={{ animation: 'mc-pop 0.4s cubic-bezier(.16,1,.3,1)' }}>
-          <circle cx="40" cy="40" r="38" fill="none" stroke="#10b981" strokeWidth="3"
-            strokeDasharray="239" strokeDashoffset="0"
-            style={{ animation: 'mc-circle 0.6s ease forwards' }}/>
+          <circle cx="40" cy="40" r="38" fill="none" stroke="#10b981" strokeWidth="3"/>
           <path d="M24 40l12 12 20-20" stroke="#10b981" strokeWidth="3.5"
-            strokeLinecap="round" strokeLinejoin="round" fill="none"
-            style={{ animation: 'mc-check 0.3s 0.4s ease forwards', strokeDasharray: 50, strokeDashoffset: 0 }}/>
+            strokeLinecap="round" strokeLinejoin="round" fill="none"/>
         </svg>
       </div>
 
@@ -113,11 +116,13 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, onDone, onViewCe
 
       {/* Info cards */}
       <div style={{
-        width: '100%', maxWidth: 340,
+        width: '100%', maxWidth: 360,
         background: 'rgba(255,255,255,0.04)',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: 12, overflow: 'hidden', marginBottom: 24,
       }}>
+
+        {/* Serial number row */}
         {serial && (
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -125,26 +130,88 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, onDone, onViewCe
           }}>
             <span style={{ fontSize: 12, color: 'rgba(232,245,244,0.5)' }}>Serial number</span>
             <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#e8f5f4', fontWeight: 600,
-              maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {serial}
             </span>
           </div>
         )}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '12px 16px',
-        }}>
-          <span style={{ fontSize: 12, color: 'rgba(232,245,244,0.5)' }}>Server status</span>
-          {liveConfirmed ? (
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#10b981', display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', display: 'inline-block' }}/>
-              Live & confirmed
-            </span>
-          ) : (
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', display: 'inline-block' }}/>
-              Dispatched to server
-            </span>
+
+        {/* Live probe row — the real confirmation */}
+        <div style={{ padding: '14px 16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <span style={{ fontSize: 12, color: 'rgba(232,245,244,0.5)' }}>Live server check</span>
+
+            {/* Probing spinner */}
+            {isProbing && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                <div style={{
+                  width: 10, height: 10, borderRadius: '50%',
+                  border: '2px solid #10b981', borderTopColor: 'transparent',
+                  animation: 'mc-spin 0.7s linear infinite', flexShrink: 0,
+                }}/>
+                <span style={{ fontSize: 12, color: 'rgba(232,245,244,0.5)' }}>Connecting to server…</span>
+              </div>
+            )}
+
+            {/* ✅ Serial matched — confirmed live */}
+            {probeOk && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#10b981', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block', flexShrink: 0 }}/>
+                  Live & confirmed
+                </span>
+                <span style={{ fontSize: 10, fontFamily: 'monospace', color: 'rgba(16,185,129,0.7)' }}>
+                  Serial matched ✓
+                </span>
+              </div>
+            )}
+
+            {/* ⚠️ Different cert serving */}
+            {probeFail && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fbbf24', display: 'inline-block', flexShrink: 0 }}/>
+                  Old cert still serving
+                </span>
+                <span style={{ fontSize: 10, fontFamily: 'monospace', color: 'rgba(251,191,36,0.7)' }}>
+                  Live: {probeStatus.live_serial?.slice(0, 20)}…
+                </span>
+                <span style={{ fontSize: 10, color: 'rgba(251,191,36,0.6)', marginTop: 2 }}>
+                  Server may need a reload / restart
+                </span>
+              </div>
+            )}
+
+            {/* 🟡 Reachable but couldn't extract serial */}
+            {probeWarn && (
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fbbf24', display: 'inline-block', flexShrink: 0 }}/>
+                HTTPS reachable, cert likely live
+              </span>
+            )}
+
+            {/* ❌ Probe error */}
+            {probeError && (
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#f87171', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f87171', display: 'inline-block', flexShrink: 0 }}/>
+                Could not reach server
+              </span>
+            )}
+
+            {/* Waiting for probe to start */}
+            {!isProbing && !probeOk && !probeFail && !probeWarn && !probeError && (
+              <span style={{ fontSize: 12, color: 'rgba(232,245,244,0.35)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'inline-block', flexShrink: 0 }}/>
+                Probe queued…
+              </span>
+            )}
+          </div>
+
+          {/* Issuer + expiry from live probe */}
+          {probeStatus?.issuer && (
+            <div style={{ marginTop: 8, fontSize: 11, color: 'rgba(232,245,244,0.35)', textAlign: 'right' }}>
+              {probeStatus.issuer}{probeStatus.expires ? ` · expires ${probeStatus.expires}` : ''}
+            </div>
           )}
         </div>
       </div>
@@ -180,13 +247,14 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, onDone, onViewCe
 
 export default function MissionControlModal({
   visible,
-  action,        // 'reissue' | 'renew'
+  action,
   domain,
-  steps,         // [{ label, status, detail, startedAt, completedAt }]
+  steps,
   busy,
   backgroundProcessing,
   serial,
   liveConfirmed,
+  probeStatus,
   onDismiss,
   onViewCert,
 }) {
@@ -347,6 +415,7 @@ export default function MissionControlModal({
               domain={domain}
               serial={serial}
               liveConfirmed={liveConfirmed}
+              probeStatus={probeStatus}
               onDone={onDismiss}
               onViewCert={onViewCert}
             />

@@ -528,6 +528,8 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
   const [modalLiveConfirmed, setModalLiveConfirmed] = useState(false)
   // Per-step start timestamps for elapsed time tracking
   const stepStartTimes = useRef({})
+  // Probe result: null | 'probing' | { match, live_serial, db_serial, issuer, expires, reachable, note }
+  const [modalProbeStatus, setModalProbeStatus] = useState(null)
 
   useEffect(() => { loadHistory() }, [cert.id])
   // Cleanup poll timer on unmount
@@ -570,6 +572,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
     setProgress({ action, steps: initialSteps, pollTimer: null })
     setModalSerial(null)
     setModalLiveConfirmed(false)
+    setModalProbeStatus(null)
     setModalVisible(true)
     stepStartTimes.current = { 0: Date.now() }
 
@@ -783,6 +786,30 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               })
               loadHistory()
               setBusy(false)
+
+              // ── Live TLS probe — real serial verification ──────────────
+              // Wait a bit for cPanel/agent to apply, then probe the live domain
+              const probeDelay = method === 'agent' ? 35000 : method === 'cpanel' ? 8000 : 0
+              if (probeDelay > 0) {
+                setModalProbeStatus('probing')
+                setTimeout(async () => {
+                  try {
+                    const probeRes = await fetch(SB_URL + '/functions/v1/cert-probe', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+                      body: JSON.stringify({ domain: cert.domain, cert_id: dispatchCertId }),
+                    })
+                    const probeData = await probeRes.json().catch(() => ({}))
+                    setModalProbeStatus(probeData)
+                    if (probeData.ok && probeData.match === true) {
+                      setModalLiveConfirmed(true)
+                      if (probeData.live_serial) setModalSerial(probeData.live_serial)
+                    }
+                  } catch(pe) {
+                    setModalProbeStatus({ ok: false, error: pe.message })
+                  }
+                }, probeDelay)
+              }
             }, 2000)
           } else if (latest?.status === 'dv_pending') {
             const elapsed = Math.round((Date.now() - pollStart) / 1000)
@@ -863,6 +890,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         backgroundProcessing={progress?.backgroundProcessing || false}
         serial={modalSerial}
         liveConfirmed={modalLiveConfirmed}
+        probeStatus={modalProbeStatus}
         onDismiss={() => { setModalVisible(false); setProgress(null) }}
         onViewCert={() => { setModalVisible(false); setProgress(null); setTab('reissues') }}
       />
