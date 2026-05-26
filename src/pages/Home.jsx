@@ -328,7 +328,7 @@ export default function Home({ nav }) {
       `}</style>
 
       {/* ── NAV ── */}
-      <header style={{ position:'sticky', top:0, zIndex:200, background:'rgba(26,46,44,0.95)', backdropFilter:'blur(28px)', WebkitBackdropFilter:'blur(28px)', borderBottom:'1px solid rgba(255,255,255,0.08)', height:60, display:'flex', alignItems:'center', padding:`0 clamp(16px,4vw,40px)`, justifyContent:'space-between' }}>
+      <header style={{ position:'sticky', top:0, zIndex:200, background:'#1A2E2C', borderBottom:'1px solid rgba(255,255,255,0.08)', height:60, display:'flex', alignItems:'center', padding:`0 clamp(16px,4vw,40px)`, justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer', flexShrink:0 }} onClick={() => nav('/')}>
           <div style={{ width:30, height:30, background:'#E8897A', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
