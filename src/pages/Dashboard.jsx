@@ -2932,7 +2932,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         </div>
 
         {/* ── CA Connector ── */}
-        {(imported.length > 0 || true) && (
+        {(importedCerts.length >= 0) && (
           <div style={{ marginTop:16 }}>
             <CaConnectorPanel userId={user.id} nav={nav}/>
           </div>
