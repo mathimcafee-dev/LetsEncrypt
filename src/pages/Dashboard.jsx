@@ -621,7 +621,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
           let steps = [...p.steps]
           steps = updateStep(steps, 3, { status: 'done', detail: 'DCV passed' })
           steps = updateStep(steps, 4, { status: 'done', detail: `Expires ${d.new_expiry || '199 days'}` })
-          steps = updateStep(steps, 5, { status: 'done', detail: d.dispatch?.method ? `Sent to ${d.dispatch.method}` : 'Install job queued' })
+          steps = updateStep(steps, 5, { status: cert.install_method === 'agent' ? 'done' : cert.install_method === 'cpanel' ? 'done' : 'skipped', detail: cert.install_method === 'agent' ? 'Install job queued for VPS agent' : cert.install_method === 'cpanel' ? 'Install job queued for cPanel' : 'No server connected — update manually (Vercel/other)' })
           return { ...p, steps }
         })
         loadHistory(); setBusy(false); return
@@ -725,7 +725,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               setProgress(p => {
                 let steps = updateStep(p.steps, 5, {
                   status: 'done',
-                  detail: method === 'agent' ? '🖥 Sent to VPS agent' : method === 'cpanel' ? '🌐 Installed to cPanel' : 'No server connected — install manually'
+                  detail: method === 'agent' ? '🖥 Install job queued — agent will apply within 5 min' : method === 'cpanel' ? '🌐 Pushed to cPanel automatically' : 'No server connected — install manually'
                 })
                 return { ...p, steps }
               })
