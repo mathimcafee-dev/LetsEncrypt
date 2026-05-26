@@ -231,7 +231,7 @@ export default function CLMHome({ user, nav }) {
   )
 
   return (
-    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:BK,color:T1}}>
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:NAVY,color:INK}}>
 
       {/* ── Topbar ── */}
       <div style={{
@@ -324,7 +324,7 @@ export default function CLMHome({ user, nav }) {
         </nav>
 
         {/* Main */}
-        <div style={{flex:1,minWidth:0,background:BK,overflowY:'auto'}}>
+        <div style={{flex:1,minWidth:0,background:NAVY,overflowY:'auto'}}>
           <div key={key} style={{minHeight:'100%',animation:'fadein 0.18s ease'}}>
             {content()}
           </div>
