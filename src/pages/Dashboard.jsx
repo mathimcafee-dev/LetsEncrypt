@@ -421,7 +421,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
   useEffect(() => { const t = setTimeout(() => setAnimated(true), 120); return () => clearTimeout(t) }, [])
 
   return (
-    <div style={{ padding:'16px 18px', borderBottom:'0.5px solid #e6fbf5' }}>
+    <div style={{ padding:'16px 18px', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
       {/* Header */}
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
         <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.38)', textTransform:'uppercase', letterSpacing:'0.6px' }}>
@@ -2782,11 +2782,11 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         )}
 
         <div style={{ display:'grid', gridTemplateColumns: (!isMobile && selectedCert) ? 'minmax(0,1fr) clamp(280px,35vw,400px)':'1fr', gap:16, alignItems:'start' }}>
-          <div style={{ background:'#000000', border:'1px solid rgba(74,222,128,0.2)', borderRadius:14,
-            overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
+          <div style={{ background:'#0a0a0a', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8,
+            overflow:'hidden' }}>
             <div style={{ padding:'14px 16px', borderBottom:'0.5px solid #e6fbf5',
               display:'flex', alignItems:'center', gap:8, flexWrap:'wrap',
-              background:'linear-gradient(to bottom, white, #f0fdf9)' }}>
+              background:'#0a0a0a' }}>
               {/* Filter tabs */}
               <div style={{ display:'flex', gap:2, background:'#111111', borderRadius:8, padding:3 }}>
                 {[
@@ -2803,8 +2803,8 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                       boxShadow: filter===f.key ? '0 1px 3px rgba(255,255,255,0.08)' : 'none' }}>
                     {f.label}
                     <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                      background: filter===f.key ? '#ffffff' : '#ffffff',
-                      color: filter===f.key ? '#000000' : 'rgba(255,255,255,0.7)', transition:'all .15s' }}>
+                      background: filter===f.key ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.07)',
+                      color: filter===f.key ? '#ffffff' : 'rgba(255,255,255,0.5)', transition:'all .15s' }}>
                       {f.count}
                     </span>
                   </button>
@@ -2816,8 +2816,8 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                     style={{ background:'#000000', border:'1px solid rgba(74,222,128,0.2)', borderRadius:8, color:'#ffffff',
                       fontSize:12, padding:'6px 10px 6px 30px', width:190, outline:'none', fontFamily:'inherit',
                       transition:'border-color .15s' }}
-                    onFocus={e=>e.target.style.borderColor='#ffffff'}
-                    onBlur={e=>e.target.style.borderColor='#ffffff'}/>
+                    onFocus={e=>e.target.style.borderColor='rgba(255,255,255,0.3)'}
+                    onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
                   <Globe size={12} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'rgba(255,255,255,0.38)', pointerEvents:'none' }}/>
                 </div>
                 <ScanPqcButton onDone={load}/>
