@@ -47,19 +47,18 @@ function FAQ({ q, a }) {
 
 const PLANS = [
   {
-    key:'starter', name:'Starter', price:'€0', per:'/month',
+    key:'starter', name:'Starter', price:'$5', per:'/month',
     color:TEAL, glow:'rgba(45,212,191,0.15)', highlight:false,
     cta:'Get started', badge:null,
     sub:'Perfect for individuals & small teams',
-    certNote:'DV certificates via RapidSSL partner pricing',
+    certNote:'+ certificate charges at partner rates',
     features:[
-      'Up to 5 managed certificates',
+      'Up to 10 managed certificates',
       'Persistent VPS agent — Nginx / Apache',
       'cPanel auto-install (UAPI)',
       'Auto DNS validation (Cloudflare, Vercel…)',
       'Auto-renew before cert + order expiry',
       'CertVault — AES-256-GCM key vault',
-      'CertBind — active binding verification',
       'CT Log discovery',
       '47-Day Readiness Dashboard',
       'Renewal Calendar',
@@ -68,39 +67,39 @@ const PLANS = [
     ],
   },
   {
-    key:'pro', name:'Pro', price:'€29', per:'/month · billed annually',
+    key:'premium', name:'Premium', price:'$10', per:'/month',
     color:CORAL, glow:'rgba(255,107,91,0.2)', highlight:true,
-    cta:'Start Pro', badge:'Most Popular',
-    sub:'For agencies & growing teams',
-    certNote:'All cert types · OV, EV, Wildcard, SAN',
+    cta:'Start Premium', badge:'Most Popular',
+    sub:'For growing teams & agencies',
+    certNote:'+ certificate charges at partner rates',
     features:[
-      'Unlimited managed certificates',
+      'Up to 50 managed certificates',
       'Everything in Starter',
-      'OV, EV, Wildcard & SAN certificates',
-      'DigiCert CertCentral portfolio sync',
-      'Sectigo SCM portfolio sync',
-      'Shadow IT detection',
-      'Policy engine — fleet compliance',
+      'CertBind — active binding verification',
+      'OV & Wildcard certificates',
       'CT Abuse Monitor',
-      'REST API access',
-      'Portfolio CSV export',
-      'Priority email support',
       'Multi-server fleet management',
+      'Priority email support',
+      'DigiCert CertCentral portfolio sync',
+      'Shadow IT detection',
     ],
   },
   {
-    key:'reseller', name:'Reseller', price:'Custom', per:'contact us',
-    color:AMBER, glow:'rgba(251,191,36,0.12)', highlight:false,
-    cta:'Contact us', badge:null,
-    sub:'For MSPs & SSL resellers',
-    certNote:'Volume pricing · white-label available',
+    key:'pro', name:'Pro', price:'$20', per:'/month',
+    color:AMBER, glow:'rgba(251,191,36,0.15)', highlight:false,
+    cta:'Start Pro', badge:null,
+    sub:'For enterprises & resellers',
+    certNote:'+ certificate charges at partner rates',
     features:[
-      'Everything in Pro',
-      'Sub-reseller registration & approval',
+      'Unlimited managed certificates',
+      'Everything in Premium',
+      'EV & SAN certificates',
+      'Sectigo SCM portfolio sync',
+      'Policy engine — fleet compliance',
+      'REST API access',
+      'Portfolio CSV export',
+      'Sub-reseller management',
       'End-customer portal',
-      'Customer invite via magic link',
-      'Order management for customers',
-      'Excel order export',
       'White-label dashboard',
       'Dedicated account manager',
       'Volume certificate pricing',
@@ -166,10 +165,10 @@ const FEATURES = [
 ]
 
 const FAQS = [
-  { q:'What does the Starter plan include?',
-    a:'Starter gives you everything to run a complete certificate lifecycle — up to 5 certificates, persistent VPS agent, cPanel installer, DNS automation, auto-renewal, AES-256 key vault (CertVault), CertBind active binding verification, 47-Day Readiness Dashboard, CT log discovery, renewal calendar, and SSL health scoring. Certificates are purchased separately at our RapidSSL partner rates.' },
-  { q:'What does Pro add over Starter?',
-    a:'Pro removes the certificate limit and unlocks OV/EV/Wildcard/SAN certificates, CA Intelligence (DigiCert + Sectigo portfolio sync, shadow IT detection, policy engine), CT Abuse Monitor, REST API access, and portfolio CSV exports. Designed for agencies and teams managing certificates across multiple CAs.' },
+  { q:'What does each plan include?',
+    a:'Starter ($5/mo) — up to 10 certs, agent, cPanel, DNS automation, auto-renewal, CertVault, CT discovery, 47-Day Readiness, monitoring. Premium ($10/mo) — up to 50 certs, adds CertBind, OV/Wildcard, CA sync, CT Abuse Monitor. Pro ($20/mo) — unlimited certs, adds EV/SAN, Sectigo sync, REST API, reseller tools, white-label. All plans: certificates charged separately at RapidSSL partner rates.' },
+  { q:'Are certificate costs included in the plan price?',
+    a:'No. Plan fees ($5/$10/$20/mo) cover the platform and CLM features. Certificates are purchased separately at partner rates — from $8/yr for DV up to $99/yr for EV. This keeps the platform affordable even if you only need a few certificates.' },
   { q:'What is the 47-Day Readiness Dashboard?',
     a:'CA/B Forum is mandating shorter certificate validity: 200 days by March 2026, 100 days by 2027, 47 days by 2029. The dashboard scores every certificate 0–100 and shows exactly what needs to be fixed — auto-renew enabled, DNS provider connected, agent installed, key stored securely.' },
   { q:'What is CertBind — and why does it matter?',
@@ -293,7 +292,7 @@ export default function Pricing({ nav }) {
             <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr',
               background:CARD2,padding:'16px 24px',borderBottom:`1px solid ${LINE}`}}>
               <div style={{fontSize:11,color:MUTED,fontFamily:MONO}}>Feature</div>
-              {[['Starter',TEAL],['Pro',CORAL],['Reseller',AMBER]].map(([n,c]) => (
+              {[['Starter',TEAL],['Premium',CORAL],['Pro',AMBER]].map(([n,c]) => (
                 <div key={n} style={{fontSize:11,fontWeight:700,color:c,textTransform:'uppercase',
                   letterSpacing:'0.8px',textAlign:'center',fontFamily:MONO}}>{n}</div>
               ))}
@@ -385,7 +384,7 @@ export default function Pricing({ nav }) {
           </div>
           <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)'}}>
             {[
-              { name:'SSLVault', price:'€29', sub:'/month Pro · certificates extra', color:TEAL,
+              { name:'SSLVault', price:'$20', sub:'/month Pro · + certificate charges', color:TEAL,
                 points:['Complete CLM platform','CertBind — industry first','47-day readiness built-in','CertVault AES-256 included','cPanel + agent + DNS'], hi:true },
               { name:'Venafi TLS Protect', price:'€250k+', sub:'per year enterprise', color:MUTED,
                 points:['Enterprise contracts only','No cert issuance included','No cPanel support','PKI team required','No free tier'], hi:false },
