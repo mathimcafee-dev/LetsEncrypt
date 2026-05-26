@@ -53,13 +53,13 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 
 function Tick({ ok }) {
   return ok
-    ? <CheckCircle size={14} color="#1A7A72" style={{ flexShrink:0 }}/>
+    ? <CheckCircle size={14} color="#0d9488" style={{ flexShrink:0 }}/>
     : <XCircle    size={14} color="#C04040" style={{ flexShrink:0 }}/>
 }
 
 function StatusPill({ status }) {
   const map = {
-    'Ready':      { bg:'#E1F5EE', color:'#0F6E56', border:'#A8E6DE' },
+    'Ready':      { bg:'#d1fae5', color:'#0F6E56', border:'#A8E6DE' },
     'At risk':    { bg:'#FAEEDA', color:'#854F0B', border:'#F0C490' },
     'Will break': { bg:'#FCEBEB', color:'#A32D2D', border:'#F7C1C1' },
   }
@@ -239,7 +239,7 @@ export default function ReadinessDashboard({ user }) {
                   </span>
                 </div>
                 <span style={{ fontSize:11, fontWeight:600, padding:'2px 8px', borderRadius:20,
-                  background: past ? (i===0?'#FAEEDA':'var(--v2-bg)') : '#E1F5EE',
+                  background: past ? (i===0?'#FAEEDA':'var(--v2-bg)') : '#d1fae5',
                   color: past ? (i===0?'#854F0B':'var(--v2-text-3)') : '#0F6E56',
                   border:`0.5px solid ${past?(i===0?'#F0C490':'var(--v2-border)'):'#A8E6DE'}` }}>
                   {past ? 'In effect' : `${d}d`}
@@ -316,7 +316,7 @@ export default function ReadinessDashboard({ user }) {
                             {cert.source === 'gogetssl' ? (
                               <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px',
                                 borderRadius:4, whiteSpace:'nowrap', flexShrink:0,
-                                background:'#E1F5EE', color:'#0F6E56',
+                                background:'#d1fae5', color:'#0F6E56',
                                 border:'0.5px solid #A8E6DE' }}>
                                 SSLVault
                               </span>

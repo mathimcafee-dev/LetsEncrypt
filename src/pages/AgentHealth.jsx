@@ -53,7 +53,7 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function MiniBar({ value, warn = 80, danger = 90 }) {
   if (value == null) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
   const pct   = Math.min(100, Math.max(0, value))
-  const color = pct >= danger ? '#dc2626' : pct >= warn ? '#E8897A' : '#16a34a'
+  const color = pct >= danger ? '#dc2626' : pct >= warn ? '#f07059' : '#16a34a'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
       <div style={{ flex: 1, height: 4, borderRadius: 2, background: 'var(--v2-border)', overflow: 'hidden' }}>
@@ -70,10 +70,10 @@ function MiniBar({ value, warn = 80, danger = 90 }) {
 // ── Status pill ───────────────────────────────────────────────────────
 function StatusPill({ status }) {
   const map = {
-    online:  { bg: '#E8F8F6', color: '#15803d', label: 'Online',   dot: '#16a34a' },
+    online:  { bg: '#ccfbf1', color: '#0d9488', label: 'Online',   dot: '#16a34a' },
     offline: { bg: '#fef2f2', color: '#b91c1c', label: 'Offline',  dot: '#dc2626' },
-    never:   { bg: '#f8fafc', color: '#3D5C59', label: 'Never',    dot: '#94a3b8' },
-    unknown: { bg: '#FDF0EE', color: '#C45A4A', label: 'Unknown',  dot: '#E8897A' },
+    never:   { bg: '#f0fdf9', color: '#0f766e', label: 'Never',    dot: 'rgba(0,0,0,0.36)' },
+    unknown: { bg: '#fde8e4', color: '#C45A4A', label: 'Unknown',  dot: '#f07059' },
   }
   const s = map[status] || map.unknown
   return (
@@ -91,12 +91,12 @@ function StatusPill({ status }) {
 function JobBadge({ status }) {
   if (!status) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
   const map = {
-    success: { bg: '#E8F8F6', color: '#15803d' },
+    success: { bg: '#ccfbf1', color: '#0d9488' },
     failed:  { bg: '#fef2f2', color: '#b91c1c' },
-    queued:  { bg: '#FDF0EE', color: '#C45A4A' },
-    claimed: { bg: '#E8F8F6', color: '#1d4ed8' },
+    queued:  { bg: '#fde8e4', color: '#C45A4A' },
+    claimed: { bg: '#ccfbf1', color: '#0f766e' },
   }
-  const s = map[status] || { bg: '#f8fafc', color: '#3D5C59' }
+  const s = map[status] || { bg: '#f0fdf9', color: '#0f766e' }
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 4,
       background: s.bg, color: s.color }}>
@@ -108,8 +108,8 @@ function JobBadge({ status }) {
 // ── Renewal badge (days until soonest cert expiry on this agent) ──────
 function RenewalBadge({ days }) {
   if (days == null) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
-  const color = days <= 7 ? '#dc2626' : days <= 30 ? '#E8897A' : '#16a34a'
-  const bg    = days <= 7 ? '#fef2f2' : days <= 30 ? '#FDF0EE' : '#E8F8F6'
+  const color = days <= 7 ? '#dc2626' : days <= 30 ? '#f07059' : '#16a34a'
+  const bg    = days <= 7 ? '#fef2f2' : days <= 30 ? '#fde8e4' : '#ccfbf1'
   return (
     <span style={{ fontSize:11, fontWeight: 500, color, background: bg,
       padding: '2px 7px', borderRadius: 4 }}>
@@ -140,7 +140,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
     load()
   }, [agent.id])
 
-  const statusColor = { success: '#16a34a', failed: '#dc2626', queued: '#E8897A', claimed: '#2563eb' }
+  const statusColor = { success: '#16a34a', failed: '#dc2626', queued: '#f07059', claimed: '#0d9488' }
   const eventIcon   = { online: '🟢', offline: '🔴', recovered: '✅', degraded: '🟡' }
 
   const copyCmd = () => {
@@ -161,7 +161,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
         <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)',
           display: 'flex', alignItems: 'center', gap: 12, position: 'sticky', top: 0,
           background: 'var(--v2-bg)', zIndex: 1 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 9, background: '#E8F8F6',
+          <div style={{ width: 36, height: 36, borderRadius: 9, background: '#ccfbf1',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Server size={16} color="#16a34a"/>
           </div>
@@ -209,13 +209,13 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ fontSize:12, color: 'var(--v2-text-3)' }}>{label}</span>
                   <span style={{ fontSize:12, fontWeight: 500,
-                    color: value >= danger ? '#dc2626' : value >= warn ? '#E8897A' : '#16a34a',
+                    color: value >= danger ? '#dc2626' : value >= warn ? '#f07059' : '#16a34a',
                     fontFamily: 'monospace' }}>{Math.round(value)}%</span>
                 </div>
                 <div style={{ height: 5, borderRadius: 3, background: 'var(--v2-border)', overflow: 'hidden' }}>
                   <div style={{ height: '100%', borderRadius: 3, transition: 'width .6s',
                     width: `${Math.min(100, value)}%`,
-                    background: value >= danger ? '#dc2626' : value >= warn ? '#E8897A' : '#16a34a' }}/>
+                    background: value >= danger ? '#dc2626' : value >= warn ? '#f07059' : '#16a34a' }}/>
                 </div>
               </div>
             ))}
@@ -277,8 +277,8 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 borderBottom: '0.5px solid var(--v2-border)', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
                   marginTop: 2, flexShrink: 0,
-                  background: (statusColor[job.status]||'#3D5C59')+'18',
-                  color: statusColor[job.status]||'#3D5C59' }}>
+                  background: (statusColor[job.status]||'#0f766e')+'18',
+                  color: statusColor[job.status]||'#0f766e' }}>
                   {job.status}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -489,7 +489,7 @@ export default function AgentHealth({ user }) {
             { val: agents.length, label: 'Total agents', color: 'var(--v2-text)', filter: 'all' },
             { val: online.length,  label: 'Online',       color: '#16a34a', filter: 'online' },
             { val: offline.length, label: 'Offline',      color: '#dc2626', filter: 'offline' },
-            { val: highLoad.length,label: 'High load',    color: '#E8897A', filter: 'all' },
+            { val: highLoad.length,label: 'High load',    color: '#f07059', filter: 'all' },
           ].map(({ val, label, color, filter }) => (
             <div key={label} className="v2-card"
               onClick={() => setFilterStatus(filter)}
@@ -596,9 +596,9 @@ export default function AgentHealth({ user }) {
                   {/* Server name + meta */}
                   <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-                      background: status === 'online' ? '#E8F8F6' : status === 'offline' ? '#fef2f2' : '#f8fafc',
+                      background: status === 'online' ? '#ccfbf1' : status === 'offline' ? '#fef2f2' : '#f0fdf9',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                      <Server size={14} color={status === 'online' ? '#16a34a' : status === 'offline' ? '#dc2626' : '#94a3b8'}/>
+                      <Server size={14} color={status === 'online' ? '#16a34a' : status === 'offline' ? '#dc2626' : 'rgba(0,0,0,0.36)'}/>
                       {status === 'online' && (
                         <span style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8,
                           borderRadius: '50%', background: '#16a34a', border: '1.5px solid var(--v2-bg)',
@@ -611,7 +611,7 @@ export default function AgentHealth({ user }) {
                         display: 'flex', alignItems: 'center', gap: 6 }}>
                         {agent.nickname}
                         {hasDeg && status === 'online' && (
-                          <AlertTriangle size={11} color="#E8897A"/>
+                          <AlertTriangle size={11} color="#f07059"/>
                         )}
                       </div>
                       <div style={{ fontSize:11, color: 'var(--v2-text-3)',

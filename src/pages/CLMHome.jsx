@@ -26,7 +26,7 @@ import Pricing from './Pricing'
 const F   = "'Inter',system-ui,sans-serif"
 const W   = '#f0fdf9'
 const BK  = '#0a0a0a'
-const S   = '#f5f5f5'   // sidebar bg
+const S   = '#e6fbf5'   // sidebar bg
 const S2  = '#99f6e4'   // sidebar active
 const T1  = '#0a0a0a'
 const T2  = 'rgba(0,0,0,0.5)'
@@ -241,7 +241,7 @@ export default function CLMHome({ user, nav }) {
       <style>{`
         @keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
         ::-webkit-scrollbar{width:4px;height:4px}
-        ::-webkit-scrollbar-track{background:#f5f5f5}
+        ::-webkit-scrollbar-track{background:#e6fbf5}
         ::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:99px}
       `}</style>
     </div>

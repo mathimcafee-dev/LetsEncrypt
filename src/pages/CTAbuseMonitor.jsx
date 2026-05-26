@@ -35,9 +35,9 @@ function classifyCert(shadow, knownDomains) {
 
 const STATUS_CONFIG = {
   unknown:    { label: 'Unknown',    color: '#dc2626', bg: '#fef2f2', border: '#fecaca', leftBorder: '#dc2626' },
-  phishing:   { label: 'Phishing',   color: '#E8897A', bg: '#fdf4ff', border: '#e9d5ff', leftBorder: '#E8897A' },
-  suspicious: { label: 'Suspicious', color: '#E8897A', bg: '#FDF0EE', border: '#F2C4BC', leftBorder: '#E8897A' },
-  known:      { label: 'Known',      color: '#16a34a', bg: '#E8F8F6', border: '#A8E6DE', leftBorder: '#16a34a' },
+  phishing:   { label: 'Phishing',   color: '#f07059', bg: '#fdf4ff', border: '#e9d5ff', leftBorder: '#f07059' },
+  suspicious: { label: 'Suspicious', color: '#f07059', bg: '#fde8e4', border: '#F2C4BC', leftBorder: '#f07059' },
+  known:      { label: 'Known',      color: '#16a34a', bg: '#ccfbf1', border: '#A8E6DE', leftBorder: '#16a34a' },
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
@@ -245,10 +245,10 @@ export default function CTAbuseMonitor({ user }) {
         )}
 
         {flagged === 0 && !loading && shadows.length > 0 && (
-          <div style={{ background: '#E8F8F6', border: '0.5px solid #A8E6DE', borderRadius: 10,
+          <div style={{ background: '#ccfbf1', border: '0.5px solid #A8E6DE', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
             <Shield size={15} color="#16a34a" style={{ flexShrink: 0 }}/>
-            <div style={{ fontSize:13, color: '#15803d', fontWeight: 500 }}>
+            <div style={{ fontSize:13, color: '#0d9488', fontWeight: 500 }}>
               All detected certs are known and accounted for
             </div>
           </div>
@@ -259,7 +259,7 @@ export default function CTAbuseMonitor({ user }) {
           {[
             { label: 'Total detected', val: classified.length,            color: 'var(--v2-text)' },
             { label: 'Flagged',        val: flagged,                       color: '#dc2626'         },
-            { label: 'Suspicious',     val: counts.suspicious || 0,        color: '#E8897A'         },
+            { label: 'Suspicious',     val: counts.suspicious || 0,        color: '#f07059'         },
             { label: 'Known / safe',   val: counts.known || 0,             color: '#16a34a'         },
           ].map(({ label, val, color }) => (
             <div key={label} className="v2-card" style={{ padding: '12px 14px', cursor: 'pointer' }}
@@ -441,7 +441,7 @@ export default function CTAbuseMonitor({ user }) {
                   const domainShadows = classified.filter(s => s.domain === w.domain)
                   const hasFlagged = domainShadows.some(s => s._status === 'unknown' || s._status === 'phishing')
                   const hasSuspicious = domainShadows.some(s => s._status === 'suspicious')
-                  const dotColor = hasFlagged ? '#dc2626' : hasSuspicious ? '#E8897A' : '#16a34a'
+                  const dotColor = hasFlagged ? '#dc2626' : hasSuspicious ? '#f07059' : '#16a34a'
                   const hasCaa = false // Would be fetched from ssl_health_scores
 
                   return (
@@ -456,7 +456,7 @@ export default function CTAbuseMonitor({ user }) {
                           Added {timeAgo(w.created_at)}
                         </div>
                       </div>
-                      <div style={{ fontSize:10, color: hasFlagged ? '#dc2626' : hasSuspicious ? '#E8897A' : '#16a34a',
+                      <div style={{ fontSize:10, color: hasFlagged ? '#dc2626' : hasSuspicious ? '#f07059' : '#16a34a',
                         fontWeight: 500 }}>
                         {hasFlagged ? '⚠ Action needed' : hasSuspicious ? '○ Review' : '✓ All clear'}
                       </div>

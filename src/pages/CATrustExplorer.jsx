@@ -8,10 +8,10 @@ const SYNC_FN = `${SUPABASE_URL}/functions/v1/ccadb-sync`
 const PAGE_SIZE = 10000
 
 const STORE_META = {
-  Chrome:    { icon: '🌐', color: '#1d4ed8' },
+  Chrome:    { icon: '🌐', color: '#0f766e' },
   Mozilla:   { icon: '🦊', color: '#ea580c' },
-  Apple:     { icon: '🍎', color: '#374151' },
-  Microsoft: { icon: '🪟', color: '#1A7A72' },
+  Apple:     { icon: '🍎', color: '#1a1a1a' },
+  Microsoft: { icon: '🪟', color: '#0d9488' },
 }
 
 const ALL_STORES = ['Chrome', 'Mozilla', 'Apple', 'Microsoft']
@@ -36,7 +36,7 @@ const fmtDate = (iso) => {
 }
 
 const avatarColor = (name = '') => {
-  const colors = ['#2563eb','#1A7A72','#1A7A72','#16a34a','#dc2626','#E8897A','#ea580c','#0891b2','#C45A4A','#374151']
+  const colors = ['#0d9488','#0d9488','#0d9488','#16a34a','#dc2626','#f07059','#ea580c','#0d9488','#C45A4A','#1a1a1a']
   let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff
   return colors[Math.abs(h) % colors.length]
 }
@@ -485,7 +485,7 @@ export default function CATrustExplorer({ nav }) {
         .chip-amber { color:var(--v2-amber-text);background:var(--v2-amber-bg);border-color:var(--v2-amber-border) }
         .chip-red { color:var(--v2-red-text);background:var(--v2-red-bg);border-color:var(--v2-red-border) }
         .chip-grey { color:var(--v2-text-2);background:var(--v2-hover);border-color:var(--v2-border) }
-        .chip-amber { color:#C45A4A;background:#FDF0EE;border-color:#F2C4BC }
+        .chip-amber { color:#C45A4A;background:#fde8e4;border-color:#F2C4BC }
         .detail-panel { background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);overflow:hidden }
         .dp-header { padding:14px 16px;border-bottom:0.5px solid var(--v2-border);display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--v2-surface-2);flex-wrap:wrap }
         .dp-title { font-size:14px;font-weight:600;color:var(--v2-text);letter-spacing:-0.2px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 }
@@ -559,7 +559,7 @@ export default function CATrustExplorer({ nav }) {
         .intel-card.good .ic-val { color:var(--v2-green-text) }
         .intel-card.bad  .ic-val { color:var(--v2-red-text) }
         .pem-block { background:#0a0a0a;border-radius:var(--v2-r-lg);overflow:hidden;border:0.5px solid #1a1a1a;margin-top:4px }
-        .pem-head { display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:0.5px solid rgba(255,255,255,0.06);background:#111 }
+        .pem-head { display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:0.5px solid rgba(0,0,0,0.05);background:#111 }
         .pem-dots { display:flex;gap:4px }
         .pem-body { padding:10px 12px;font-family:'JetBrains Mono','SF Mono',monospace;font-size:10px;color:#a3a3a3;line-height:1.6;word-break:break-all;max-height:80px;overflow:hidden;position:relative }
         .pem-fade { position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(transparent,#0a0a0a) }
@@ -630,7 +630,7 @@ export default function CATrustExplorer({ nav }) {
             { key: 'root',     val: counts.root,              label: 'Root CAs',          color: 'var(--v2-green)' },
             { key: 'inter',    val: counts.inter,             label: 'Intermediates',     color: 'var(--v2-grey-dot)' },
             { key: 'all4',     val: counts.all4,              label: 'All 4 stores',      color: 'var(--v2-green)' },
-            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#E8897A', valColor: '#C45A4A' },
+            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#f07059', valColor: '#C45A4A' },
             { key: 'distrust', val: counts.distrust,          label: 'Distrusted',        color: 'var(--v2-red)', valColor: 'var(--v2-red-text)' },
           ].map(({ key, val, label, color, valColor }) => (
             <div key={key} className={`stat-tile${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
@@ -692,10 +692,10 @@ export default function CATrustExplorer({ nav }) {
                       {c.ca_owner?.replace('Inc.','').replace('nv-sa','').trim() || c.common_name}
                     </span>
                     <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
-                      {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'#1d4ed8',display:'inline-block',flexShrink:0}}/>}
+                      {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'#0f766e',display:'inline-block',flexShrink:0}}/>}
                       {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#ea580c',display:'inline-block',flexShrink:0}}/>}
-                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#374151',display:'inline-block',flexShrink:0}}/>}
-                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#1A7A72',display:'inline-block',flexShrink:0}}/>}
+                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#1a1a1a',display:'inline-block',flexShrink:0}}/>}
+                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0d9488',display:'inline-block',flexShrink:0}}/>}
                     </span>
                     {c.ev_capable && <span style={{fontSize:9,color:'#C45A4A',fontWeight:600}}>EV</span>}
                   </button>

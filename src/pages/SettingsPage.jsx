@@ -12,15 +12,15 @@ const FONT = "var(--v2-font, 'Segoe UI', system-ui, sans-serif)"
 // All configurable alert types
 const ALERT_TYPE_DEFS = [
   { id: 'cert_expiry',       label: 'Certificate expiring',     desc: 'Email at 30/14/7 days before cert expires',             color: '#dc2626' },
-  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#0891b2' },
-  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#1A7A72' },
-  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#1A7A72' },
-  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#1A7A72' },
+  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#0d9488' },
+  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#0d9488' },
+  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#0d9488' },
+  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#0d9488' },
   { id: 'renewal_failed',    label: 'Auto-renewal failed',      desc: 'Alert when auto-renewal fails (with retry info)',       color: '#dc2626' },
   { id: 'agent_offline',     label: 'Agent offline',            desc: 'When a VPS agent stops responding (1h cooldown)',       color: '#dc2626' },
-  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#E8897A' },
-  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#E8897A' },
-  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#E8897A' },
+  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#f07059' },
+  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#f07059' },
+  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#f07059' },
 ]
 
 const DEFAULT_TYPES = ['cert_expiry','order_renewal','cert_issued','cert_installed','renewal_succeeded','renewal_failed','agent_offline','shadow_found','pqc_risk']
@@ -39,7 +39,7 @@ function Toggle({ on, onClick, disabled }) {
   return (
     <button onClick={disabled ? undefined : onClick} style={{
       width: 36, height: 20, borderRadius: 10, border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-      background: on ? '#0891b2' : '#e2e8f0', position: 'relative',
+      background: on ? '#0d9488' : '#99f6e4', position: 'relative',
       transition: 'background .18s', flexShrink: 0, opacity: disabled ? 0.5 : 1,
     }}>
       <span style={{
@@ -56,7 +56,7 @@ function Section({ title, icon: Icon, children, collapsible = false }) {
   return (
     <div style={{ background: 'var(--v2-bg)', border: '0.5px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
       <div onClick={collapsible ? () => setOpen(v => !v) : undefined}
-        style={{ padding: '11px 18px', borderBottom: open ? '0.5px solid #f1f5f9' : 'none',
+        style={{ padding: '11px 18px', borderBottom: open ? '0.5px solid #e6fbf5' : 'none',
           fontSize:10, fontWeight: 700, color: 'var(--v2-text-2)', textTransform: 'uppercase',
           letterSpacing: '.6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           cursor: collapsible ? 'pointer' : 'default' }}>
@@ -74,7 +74,7 @@ function Section({ title, icon: Icon, children, collapsible = false }) {
 function Row({ label, desc, children, last }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
-      padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid #f8fafc' }}>
+      padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid #f0fdf9' }}>
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 1 }}>{label}</div>
         {desc && <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{desc}</div>}
@@ -87,11 +87,11 @@ function Row({ label, desc, children, last }) {
 // Alert log table row
 function LogRow({ log }) {
   const meta = {
-    cert_expiry: { icon: '⏰', color: '#dc2626' }, order_renewal: { icon: '🔄', color: '#0891b2' },
-    cert_issued: { icon: '✅', color: '#1A7A72' }, cert_installed: { icon: '🚀', color: '#1A7A72' },
-    renewal_succeeded: { icon: '✅', color: '#1A7A72' }, renewal_failed: { icon: '⚠️', color: '#dc2626' },
-    agent_offline: { icon: '🔴', color: '#dc2626' }, shadow_found: { icon: '🔍', color: '#E8897A' },
-    pqc_risk: { icon: '⚛️', color: '#E8897A' }, no_dns_warning: { icon: '⚠️', color: '#E8897A' },
+    cert_expiry: { icon: '⏰', color: '#dc2626' }, order_renewal: { icon: '🔄', color: '#0d9488' },
+    cert_issued: { icon: '✅', color: '#0d9488' }, cert_installed: { icon: '🚀', color: '#0d9488' },
+    renewal_succeeded: { icon: '✅', color: '#0d9488' }, renewal_failed: { icon: '⚠️', color: '#dc2626' },
+    agent_offline: { icon: '🔴', color: '#dc2626' }, shadow_found: { icon: '🔍', color: '#f07059' },
+    pqc_risk: { icon: '⚛️', color: '#f07059' }, no_dns_warning: { icon: '⚠️', color: '#f07059' },
     weekly_digest: { icon: '📊', color: '#0f2545' },
   }
   const m = meta[log.alert_type] || { icon: '📧', color: 'var(--v2-text-2)' }
@@ -99,7 +99,7 @@ function LogRow({ log }) {
   const domain = log.metadata?.domain || '—'
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 80px 70px', gap: 12,
-      padding: '9px 0', borderBottom: '0.5px solid #f8fafc', alignItems: 'center', fontSize:12 }}>
+      padding: '9px 0', borderBottom: '0.5px solid #f0fdf9', alignItems: 'center', fontSize:12 }}>
       <span style={{ fontSize:14 }}>{m.icon}</span>
       <div>
         <div style={{ fontWeight: 500, color: 'var(--v2-text)', fontSize:12 }}>
@@ -114,8 +114,8 @@ function LogRow({ log }) {
       <div>
         <span style={{
           fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,
-          background: log.status === 'sent' ? '#E8F8F6' : '#fef2f2',
-          color: log.status === 'sent' ? '#0F5750' : '#dc2626',
+          background: log.status === 'sent' ? '#ccfbf1' : '#fef2f2',
+          color: log.status === 'sent' ? '#0d9488' : '#dc2626',
         }}>{log.status}</span>
       </div>
     </div>
@@ -190,9 +190,9 @@ function ApiKeysPanel({ user }) {
 
       {/* New key revealed */}
       {newKey && (
-        <div style={{ background: '#E8F8F6', border: '0.5px solid #A8E6DE', borderRadius: 8,
+        <div style={{ background: '#ccfbf1', border: '0.5px solid #A8E6DE', borderRadius: 8,
           padding: '12px 14px', marginBottom: 16 }}>
-          <div style={{ fontSize:11, fontWeight: 600, color: '#15803d', marginBottom: 6 }}>
+          <div style={{ fontSize:11, fontWeight: 600, color: '#0d9488', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
           </div>
           <div style={{ background: '#0a0a0a', borderRadius: 6, padding: '8px 10px',
@@ -202,7 +202,7 @@ function ApiKeysPanel({ user }) {
           <button onClick={() => { navigator.clipboard?.writeText(newKey); setCopied(true); setTimeout(()=>setCopied(false),2000) }}
             style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#16a34a',
               border: 'none', borderRadius: 6, padding: '6px 12px', fontSize:11,
-              color: 'white', cursor: 'pointer', fontFamily: 'inherit' }}>
+              color: '#1a1a1a', cursor: 'pointer', fontFamily: 'inherit' }}>
             {copied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy key</>}
           </button>
         </div>
@@ -455,8 +455,8 @@ export default function SettingsPage({ user }) {
               borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize:12, fontWeight: 600,
               fontFamily: 'inherit', transition: 'all .15s',
               background: activeTab === id ? 'white' : 'transparent',
-              color: activeTab === id ? '#0f172a' : '#94a3b8',
-              borderBottom: activeTab === id ? '2px solid #0891b2' : '2px solid transparent',
+              color: activeTab === id ? '#1a1a1a' : 'rgba(0,0,0,0.36)',
+              borderBottom: activeTab === id ? '2px solid #0d9488' : '2px solid transparent',
             }}>
             <Icon size={12}/>{label}
           </button>
@@ -476,7 +476,7 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize:12, color: 'var(--v2-text-2)' }}>{createdAt}</span>
             </Row>
             <Row label="Plan" desc="Free for personal and indie use" last>
-              <span style={{ fontSize:11, fontWeight: 600, color: '#1A7A72', background: '#E8F8F6',
+              <span style={{ fontSize:11, fontWeight: 600, color: '#0d9488', background: '#ccfbf1',
                 border: '0.5px solid #A8E6DE', borderRadius: 4, padding: '3px 8px' }}>Free</span>
             </Row>
           </Section>
@@ -494,8 +494,8 @@ export default function SettingsPage({ user }) {
                 {ALERT_TYPE_DEFS.map(({ id, label, desc, color }) => (
                   <div key={id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     gap: 12, padding: '8px 12px', borderRadius: 8,
-                    background: alertTypes.includes(id) ? '#f8fafc' : 'transparent',
-                    border: `1px solid ${alertTypes.includes(id) ? '#e2e8f0' : 'transparent'}`,
+                    background: alertTypes.includes(id) ? '#f0fdf9' : 'transparent',
+                    border: `1px solid ${alertTypes.includes(id) ? '#99f6e4' : 'transparent'}`,
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all .15s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }}/>
@@ -523,9 +523,9 @@ export default function SettingsPage({ user }) {
                   style={{ padding: '6px 14px', borderRadius: 6, fontSize:12, fontWeight: 500,
                     cursor: emailAlerts ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all 0.15s',
-                    background: alertDays.includes(d) ? '#e0f7fa' : '#f8fafc',
-                    color: alertDays.includes(d) ? '#0e7490' : '#94a3b8',
-                    border: alertDays.includes(d) ? '1px solid #a5f3fc' : '1px solid #e2e8f0' }}>
+                    background: alertDays.includes(d) ? '#e0f7fa' : '#f0fdf9',
+                    color: alertDays.includes(d) ? '#0e7490' : 'rgba(0,0,0,0.36)',
+                    border: alertDays.includes(d) ? '1px solid #a5f3fc' : '1px solid #99f6e4' }}>
                   {d} {d === 1 ? 'day' : 'days'}
                 </button>
               ))}
@@ -539,9 +539,9 @@ export default function SettingsPage({ user }) {
             </div>
             {extraEmails.map(e => (
               <div key={e} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '7px 10px', background: 'var(--v2-surface-3)', border: '1px solid #e2e8f0',
+                padding: '7px 10px', background: 'var(--v2-surface-3)', border: '1px solid #99f6e4',
                 borderRadius: 7, marginBottom: 6 }}>
-                <span style={{ fontSize:12, color: '#475569', fontFamily: 'monospace' }}>{e}</span>
+                <span style={{ fontSize:12, color: 'rgba(0,0,0,0.55)', fontFamily: 'monospace' }}>{e}</span>
                 <button onClick={() => removeExtraEmail(e)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', padding: 2 }}>
                   <X size={12}/>
@@ -552,12 +552,12 @@ export default function SettingsPage({ user }) {
               <input value={newEmail} onChange={e => { setNewEmail(e.target.value); setEmailError('') }}
                 onKeyDown={e => e.key === 'Enter' && addExtraEmail()}
                 placeholder="name@example.com"
-                style={{ flex: 1, padding: '7px 10px', border: `1px solid ${emailError ? '#fecaca' : '#e2e8f0'}`,
+                style={{ flex: 1, padding: '7px 10px', border: `1px solid ${emailError ? '#fecaca' : '#99f6e4'}`,
                   borderRadius: 7, fontSize:12, fontFamily: 'monospace', outline: 'none',
                   background: emailError ? '#fef2f2' : 'white' }}/>
               <button onClick={addExtraEmail}
                 style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
-                  background: '#0891b2', color: 'white', border: 'none', borderRadius: 7,
+                  background: '#0d9488', color: '#1a1a1a', border: 'none', borderRadius: 7,
                   fontSize:12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Plus size={11}/> Add
               </button>
@@ -572,7 +572,7 @@ export default function SettingsPage({ user }) {
             </div>
             <input value={slackWebhook} onChange={e => setSlackWebhook(e.target.value)}
               placeholder="https://hooks.slack.com/services/..."
-              style={{ width: '100%', padding: '8px 10px', border: '1px solid #e2e8f0',
+              style={{ width: '100%', padding: '8px 10px', border: '1px solid #99f6e4',
                 borderRadius: 7, fontSize:11, fontFamily: 'monospace', outline: 'none',
                 boxSizing: 'border-box' }}/>
           </Section>
@@ -591,7 +591,7 @@ export default function SettingsPage({ user }) {
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
               <select value={testType} onChange={e => setTestType(e.target.value)}
-                style={{ flex: 1, minWidth: 180, padding: '7px 10px', border: '1px solid #e2e8f0',
+                style={{ flex: 1, minWidth: 180, padding: '7px 10px', border: '1px solid #99f6e4',
                   borderRadius: 7, fontSize:12, fontFamily: 'inherit', outline: 'none', background: 'var(--v2-bg)' }}>
                 {ALERT_TYPE_DEFS.map(({ id, label }) => (
                   <option key={id} value={id}>{TYPE_ICONS[id]} {label}</option>
@@ -599,7 +599,7 @@ export default function SettingsPage({ user }) {
               </select>
               <button onClick={sendTestEmail} disabled={testSending}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px',
-                  background: testSending ? '#e2e8f0' : '#0f2545', color: testSending ? '#94a3b8' : 'white',
+                  background: testSending ? '#99f6e4' : '#0f2545', color: testSending ? 'rgba(0,0,0,0.36)' : 'white',
                   border: 'none', borderRadius: 7, fontSize:12, fontWeight: 600,
                   cursor: testSending ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
                 {testSending ? <><RefreshCw size={11} className="spin"/> Sending…</> : <><Send size={11}/> Send test</>}
@@ -607,8 +607,8 @@ export default function SettingsPage({ user }) {
             </div>
             {testResult && (
               <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 7, fontSize:12,
-                background: testResult.ok ? '#E8F8F6' : '#fef2f2',
-                color: testResult.ok ? '#0F5750' : '#dc2626',
+                background: testResult.ok ? '#ccfbf1' : '#fef2f2',
+                color: testResult.ok ? '#0d9488' : '#dc2626',
                 border: `1px solid ${testResult.ok ? '#6ee7b7' : '#fecaca'}` }}>
                 {testResult.ok ? '✓ ' : '✗ '}{testResult.msg}
               </div>
@@ -621,7 +621,7 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize:11, color: 'var(--v2-text-2)' }}>Magic link</span>
             </Row>
             <Row label="Private key storage" desc="AES-256-GCM encrypted at rest" last>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#1A7A72' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#0d9488' }}>
                 <Shield size={11}/> Encrypted
               </span>
             </Row>
@@ -650,8 +650,8 @@ export default function SettingsPage({ user }) {
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
             <button onClick={handleSave} disabled={saving}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6,
-                background: saving ? '#e2e8f0' : saved ? '#16a34a' : '#0891b2',
-                color: saving ? '#94a3b8' : 'white', border: 'none', borderRadius: 7,
+                background: saving ? '#99f6e4' : saved ? '#16a34a' : '#0d9488',
+                color: saving ? 'rgba(0,0,0,0.36)' : 'white', border: 'none', borderRadius: 7,
                 padding: '10px 22px', fontSize:12, fontWeight: 700,
                 cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'background .2s' }}>
               {saving ? <><RefreshCw size={12} className="spin"/> Saving…</>
@@ -672,14 +672,14 @@ export default function SettingsPage({ user }) {
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <select value={logsTypeFilter} onChange={e => { setLogsTypeFilter(e.target.value); setLogsPage(0) }}
-                  style={{ padding: '5px 8px', border: '1px solid #e2e8f0', borderRadius: 6,
+                  style={{ padding: '5px 8px', border: '1px solid #99f6e4', borderRadius: 6,
                     fontSize:11, fontFamily: 'inherit', outline: 'none', background: 'var(--v2-bg)' }}>
                   <option value="">All types</option>
                   {ALERT_TYPE_DEFS.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}
                 </select>
                 <button onClick={() => loadLogs(logsPage, logsTypeFilter)}
                   style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px',
-                    background: 'var(--v2-surface-3)', border: '1px solid #e2e8f0', borderRadius: 6,
+                    background: 'var(--v2-surface-3)', border: '1px solid #99f6e4', borderRadius: 6,
                     fontSize:11, cursor: 'pointer', fontFamily: 'inherit', color: 'var(--v2-text-2)' }}>
                   <RefreshCw size={10}/> Refresh
                 </button>
@@ -707,7 +707,7 @@ export default function SettingsPage({ user }) {
                 <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--v2-text-3)', fontSize:12 }}>
                   No alerts sent yet.{' '}
                   <button onClick={() => setActiveTab('preferences')}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0891b2',
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0d9488',
                       fontSize:12, fontFamily: 'inherit', textDecoration: 'underline' }}>
                     Configure alerts →
                   </button>
@@ -719,25 +719,25 @@ export default function SettingsPage({ user }) {
 
             {/* Pagination */}
             {logsTotal > 20 && (
-              <div style={{ padding: '10px 18px', borderTop: '0.5px solid #f1f5f9',
+              <div style={{ padding: '10px 18px', borderTop: '0.5px solid #e6fbf5',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
                   Showing {logsPage * 20 + 1}–{Math.min((logsPage + 1) * 20, logsTotal)} of {logsTotal}
                 </span>
                 <div style={{ display: 'flex', gap: 6 }}>
                   <button onClick={() => setLogsPage(p => Math.max(0, p - 1))} disabled={logsPage === 0}
-                    style={{ padding: '4px 10px', border: '1px solid #e2e8f0', borderRadius: 5,
+                    style={{ padding: '4px 10px', border: '1px solid #99f6e4', borderRadius: 5,
                       fontSize:11, cursor: logsPage === 0 ? 'not-allowed' : 'pointer',
-                      background: logsPage === 0 ? '#f8fafc' : 'white',
-                      color: logsPage === 0 ? '#94a3b8' : '#475569', fontFamily: 'inherit' }}>
+                      background: logsPage === 0 ? '#f0fdf9' : 'white',
+                      color: logsPage === 0 ? 'rgba(0,0,0,0.36)' : 'rgba(0,0,0,0.55)', fontFamily: 'inherit' }}>
                     ← Prev
                   </button>
                   <button onClick={() => setLogsPage(p => p + 1)}
                     disabled={(logsPage + 1) * 20 >= logsTotal}
-                    style={{ padding: '4px 10px', border: '1px solid #e2e8f0', borderRadius: 5,
+                    style={{ padding: '4px 10px', border: '1px solid #99f6e4', borderRadius: 5,
                       fontSize:11, cursor: (logsPage + 1) * 20 >= logsTotal ? 'not-allowed' : 'pointer',
-                      background: (logsPage + 1) * 20 >= logsTotal ? '#f8fafc' : 'white',
-                      color: (logsPage + 1) * 20 >= logsTotal ? '#94a3b8' : '#475569', fontFamily: 'inherit' }}>
+                      background: (logsPage + 1) * 20 >= logsTotal ? '#f0fdf9' : 'white',
+                      color: (logsPage + 1) * 20 >= logsTotal ? 'rgba(0,0,0,0.36)' : 'rgba(0,0,0,0.55)', fontFamily: 'inherit' }}>
                     Next →
                   </button>
                 </div>

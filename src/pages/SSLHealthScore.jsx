@@ -30,19 +30,19 @@ function timeAgo(iso) {
 // Grade colour map
 function gradeStyle(grade) {
   if (!grade || grade === 'F') return { color: '#dc2626', bg: '#fef2f2', border: '#fecaca' }
-  if (grade === 'D') return { color: '#E8897A', bg: '#FDF0EE', border: '#F2C4BC' }
+  if (grade === 'D') return { color: '#f07059', bg: '#fde8e4', border: '#F2C4BC' }
   if (grade === 'C') return { color: '#ca8a04', bg: '#fefce8', border: '#fef08a' }
-  if (grade === 'B') return { color: '#2563eb', bg: '#E8F8F6', border: '#A8E6DE' }
-  if (grade === 'A') return { color: '#16a34a', bg: '#E8F8F6', border: '#A8E6DE' }
-  if (grade === 'A+') return { color: '#1A7A72', bg: '#E8F8F6', border: '#6ee7b7' }
-  return { color: '#3D5C59', bg: '#f8fafc', border: '#e2e8f0' }
+  if (grade === 'B') return { color: '#0d9488', bg: '#ccfbf1', border: '#A8E6DE' }
+  if (grade === 'A') return { color: '#16a34a', bg: '#ccfbf1', border: '#A8E6DE' }
+  if (grade === 'A+') return { color: '#0d9488', bg: '#ccfbf1', border: '#6ee7b7' }
+  return { color: '#0f766e', bg: '#f0fdf9', border: '#99f6e4' }
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
-  const color = pct >= 80 ? '#16a34a' : pct >= 60 ? '#2563eb' : pct >= 50 ? '#E8897A' : '#dc2626'
+  const color = pct >= 80 ? '#16a34a' : pct >= 60 ? '#0d9488' : pct >= 50 ? '#f07059' : '#dc2626'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{ flex: 1, height: 4, background: 'var(--v2-border)', borderRadius: 2, overflow: 'hidden' }}>
@@ -107,7 +107,7 @@ function DomainRow({ score, onRescan, scanning }) {
           <Check ok={score.cert_valid} label="TLS" />
           {score.expiry_days != null && (
             <span style={{ fontSize:11, fontWeight: 500,
-              color: score.expiry_days <= 7 ? '#dc2626' : score.expiry_days <= 30 ? '#E8897A' : '#16a34a' }}>
+              color: score.expiry_days <= 7 ? '#dc2626' : score.expiry_days <= 30 ? '#f07059' : '#16a34a' }}>
               {score.expiry_days <= 0 ? 'Expired' : `${score.expiry_days}d`}
             </span>
           )}
@@ -235,7 +235,7 @@ export default function SSLHealthScore({ user }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
             {[
               { label: 'Domains', val: scores.length, color: 'var(--v2-text)' },
-              { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#16a34a' : avgScore >= 60 ? '#2563eb' : '#dc2626' },
+              { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#16a34a' : avgScore >= 60 ? '#0d9488' : '#dc2626' },
               { label: 'A / A+', val: (gradeCount['A'] || 0) + (gradeCount['A+'] || 0), color: '#16a34a' },
               { label: 'Need attention', val: issues.length, color: issues.length > 0 ? '#dc2626' : '#16a34a' },
             ].map(({ label, val, color }) => (

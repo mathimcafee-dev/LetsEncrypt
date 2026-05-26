@@ -60,9 +60,9 @@ export default function Auth({ nav }) {
 
   const perks = [
     { icon:<Zap size={15} />,    color:'var(--v2-amber)',       title:'Unlimited certificates',   desc:'No cap on domains or issuances — ever.' },
-    { icon:<Shield size={15} />, color:'#2563eb',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
+    { icon:<Shield size={15} />, color:'#0d9488',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
     { icon:<Lock size={15} />,   color:'var(--v2-green)',       title:'Private keys stay private', desc:'AES-256 at rest. Keys never leave your server.' },
-    { icon:<CheckCircle size={15} />, color:'#E8897A',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
+    { icon:<CheckCircle size={15} />, color:'#f07059',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
   ]
 
   return (

@@ -6,15 +6,15 @@ const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
-  bg:'#FFFFFF', bg2:'#FDFAF5', bg3:'#F5EFE0',
+  bg:'#FFFFFF', bg2:'#f0fdf9', bg3:'#f0fdf9',
   border:'#e5e7eb', border2:'#d1d5db',
   heading:'#0a0a0a', body:'#4b5563', muted:'#9ca3af',
-  teal:'#3DBFB0', tealDk:'#1A7A72', tealBg:'#E8F8F6', tealBd:'#A8E6DE',
-  green:'#3DBFB0', greenBg:'#E8F8F6', greenBd:'#A8E6DE',
-  purple:'#E8897A', purpleBg:'#faf5ff',
-  amber:'#E8897A', amberBg:'#FDF0EE',
+  teal:'#0d9488', tealDk:'#0d9488', tealBg:'#ccfbf1', tealBd:'#A8E6DE',
+  green:'#0d9488', greenBg:'#ccfbf1', greenBd:'#A8E6DE',
+  purple:'#f07059', purpleBg:'#faf5ff',
+  amber:'#f07059', amberBg:'#fde8e4',
   red:'#dc2626', redBg:'#fef2f2',
-  ink:'#0F5750',
+  ink:'#0d9488',
 }
 
 function Code({ code, lang = 'bash' }) {
@@ -24,20 +24,20 @@ function Code({ code, lang = 'bash' }) {
     setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   return (
-    <div style={{ background:'#0F5750', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
-      <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ background:'#0d9488', border:'1px solid rgba(0,0,0,0.07)', borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
+      <div style={{ background:'rgba(0,0,0,0.02)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
         <div style={{ display:'flex', gap:5, alignItems:'center' }}>
           {['#ff5f57','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
-          <span style={{ fontSize:10, color:'rgba(255,255,255,0.3)', marginLeft:8 }}>{lang}</span>
+          <span style={{ fontSize:10, color:'rgba(0,0,0,0.32)', marginLeft:8 }}>{lang}</span>
         </div>
-        <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'rgba(255,255,255,0.4)', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>
+        <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'rgba(0,0,0,0.38)', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>
           {copied
             ? <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg> Copied</>
             : <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</>
           }
         </button>
       </div>
-      <pre style={{ padding:'14px 16px', fontSize:12, lineHeight:1.9, color:'rgba(255,255,255,0.75)', overflowX:'auto', margin:0 }}>{code}</pre>
+      <pre style={{ padding:'14px 16px', fontSize:12, lineHeight:1.9, color:'rgba(0,0,0,0.7)', overflowX:'auto', margin:0 }}>{code}</pre>
     </div>
   )
 }
@@ -59,7 +59,7 @@ function Note({ type = 'tip', children }) {
 function Step({ n, title, children }) {
   return (
     <div style={{ display:'flex', gap:16, marginBottom:24 }}>
-      <div style={{ width:30, height:30, borderRadius:8, background:C.teal, color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, flexShrink:0, marginTop:1 }}>{n}</div>
+      <div style={{ width:30, height:30, borderRadius:8, background:C.teal, color:'#1a1a1a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, flexShrink:0, marginTop:1 }}>{n}</div>
       <div style={{ flex:1 }}>
         <div style={{ fontSize:14, fontWeight:600, color:C.heading, marginBottom:8 }}>{title}</div>
         <div style={{ fontSize:13.5, color:C.body, lineHeight:1.8 }}>{children}</div>
@@ -91,7 +91,7 @@ function GuideCard({ icon, title, badge, badgeColor, time, difficulty, children,
 
 const GUIDES = [
   { id:'vps',    icon:'🤖', title:'VPS / Linux server',    badge:'Agent',   badgeColor:C.green,   time:'5 min',   difficulty:'Easy'   },
-  { id:'cpanel', icon:'🏛', title:'cPanel shared hosting', badge:'cPanel',  badgeColor:'#3DBFB0', time:'3 min',   difficulty:'Easy'   },
+  { id:'cpanel', icon:'🏛', title:'cPanel shared hosting', badge:'cPanel',  badgeColor:'#0d9488', time:'3 min',   difficulty:'Easy'   },
   { id:'nginx',  icon:'⚡', title:'Nginx manual install',  badge:'Manual',  badgeColor:C.amber,   time:'10 min',  difficulty:'Medium' },
   { id:'apache', icon:'🔥', title:'Apache manual install', badge:'Manual',  badgeColor:C.amber,   time:'10 min',  difficulty:'Medium' },
 ]
@@ -105,17 +105,17 @@ export default function Install({ nav }) {
       <style>{`*{box-sizing:border-box;margin:0;padding:0}`}</style>
 
       {/* Nav */}
-      <header style={{ background:'rgba(8,12,20,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.06)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(16px,4vw,40px)', position:'sticky', top:0, zIndex:100 }}>
+      <header style={{ background:'rgba(8,12,20,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(0,0,0,0.05)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(16px,4vw,40px)', position:'sticky', top:0, zIndex:100 }}>
         <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }} onClick={() => nav('/')}>
           <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.92)' }}>SSLVault</span>
-          <span style={{ fontSize:11, color:'rgba(255,255,255,0.35)', fontFamily:MONO }}>/ Install Guide</span>
+          <span style={{ fontSize:11, color:'rgba(0,0,0,0.35)', fontFamily:MONO }}>/ Install Guide</span>
         </div>
         <div style={{ display:'flex', gap:8 }}>
-          <button onClick={() => nav('/knowledge-base')} style={{ background:'none', border:`1px solid rgba(255,255,255,0.12)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'rgba(255,255,255,0.5)', padding:'6px 14px', borderRadius:100 }}>Knowledge base</button>
-          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'white', padding:'7px 18px', borderRadius:100 }}>Get started</button>
+          <button onClick={() => nav('/knowledge-base')} style={{ background:'none', border:`1px solid rgba(0,0,0,0.1)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'rgba(0,0,0,0.45)', padding:'6px 14px', borderRadius:100 }}>Knowledge base</button>
+          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#1a1a1a', padding:'7px 18px', borderRadius:100 }}>Get started</button>
         </div>
       </header>
 

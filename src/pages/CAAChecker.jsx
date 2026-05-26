@@ -10,16 +10,16 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function StatusIcon({ status }) {
   if (status === 'pass')    return <CheckCircle  size={15} color="#16a34a" style={{ flexShrink:0 }} />
   if (status === 'fail')    return <XCircle      size={15} color="#dc2626" style={{ flexShrink:0 }} />
-  if (status === 'warn')    return <AlertTriangle size={15} color="#E8897A" style={{ flexShrink:0 }} />
-  return                           <Info         size={15} color="#1A7A72" style={{ flexShrink:0 }} />
+  if (status === 'warn')    return <AlertTriangle size={15} color="#f07059" style={{ flexShrink:0 }} />
+  return                           <Info         size={15} color="#0d9488" style={{ flexShrink:0 }} />
 }
 
 function StatusBadge({ status }) {
   const map = {
-    pass: { bg:'#E8F8F6', color:'#16a34a', label:'Pass' },
+    pass: { bg:'#ccfbf1', color:'#16a34a', label:'Pass' },
     fail: { bg:'#fef2f2', color:'#dc2626', label:'Fail' },
-    warn: { bg:'#FDF0EE', color:'#E8897A', label:'Warning' },
-    info: { bg:'#E8F8F6', color:'#1A7A72', label:'Info' },
+    warn: { bg:'#fde8e4', color:'#f07059', label:'Warning' },
+    info: { bg:'#ccfbf1', color:'#0d9488', label:'Info' },
   }
   const s = map[status] || map.info
   return (
@@ -35,9 +35,9 @@ function CopySnippet({ text }) {
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(()=>setCopied(false),1800) }}
-      style={{ display:'flex', alignItems:'center', gap:5, background:'#f8fafc',
-        border:'0.5px solid #e2e8f0', borderRadius:4, padding:'4px 9px',
-        fontSize:12, color:'#475569', cursor:'pointer', fontFamily:'monospace' }}>
+      style={{ display:'flex', alignItems:'center', gap:5, background:'#f0fdf9',
+        border:'0.5px solid #99f6e4', borderRadius:4, padding:'4px 9px',
+        fontSize:12, color:'rgba(0,0,0,0.55)', cursor:'pointer', fontFamily:'monospace' }}>
       {copied ? <Check size={11} color="#16a34a"/> : <Copy size={11}/>}
       {text}
     </button>
@@ -83,9 +83,9 @@ export default function CAAChecker({ nav }) {
 
         <div style={{ marginBottom:28 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-            <div style={{ width:36, height:36, borderRadius:8, background:'#E8F8F6',
+            <div style={{ width:36, height:36, borderRadius:8, background:'#ccfbf1',
               display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Shield size={18} color="#1A7A72"/>
+              <Shield size={18} color="#0d9488"/>
             </div>
             <h1 className="v2-h1">CAA Record Checker</h1>
           </div>
@@ -110,7 +110,7 @@ export default function CAAChecker({ nav }) {
               onClick={check}
               disabled={loading}
               style={{ display:'flex', alignItems:'center', gap:6, background:'#0a0a0a',
-                color:'white', border:'none', borderRadius:6, padding:'9px 18px',
+                color:'#1a1a1a', border:'none', borderRadius:6, padding:'9px 18px',
                 fontSize:13, fontWeight:600, cursor:loading?'not-allowed':'pointer',
                 opacity:loading?0.6:1, fontFamily:'inherit', whiteSpace:'nowrap' }}>
               {loading ? <RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }}/> : <Search size={14}/>}
@@ -126,7 +126,7 @@ export default function CAAChecker({ nav }) {
 
             {/* Summary banner */}
             <div style={{
-              background: result.safeToIssue ? '#E8F8F6' : '#fef2f2',
+              background: result.safeToIssue ? '#ccfbf1' : '#fef2f2',
               border: `0.5px solid ${result.safeToIssue ? '#A8E6DE' : '#fecaca'}`,
               borderRadius:10, padding:'14px 16px', marginBottom:16,
               display:'flex', alignItems:'flex-start', gap:10,
@@ -136,9 +136,9 @@ export default function CAAChecker({ nav }) {
                 : <XCircle     size={18} color="#dc2626" style={{ flexShrink:0, marginTop:1 }}/>}
               <div>
                 <p style={{ margin:0, fontSize:13, fontWeight:600,
-                  color: result.safeToIssue ? '#15803d' : '#b91c1c' }}>{result.summary}</p>
+                  color: result.safeToIssue ? '#0d9488' : '#b91c1c' }}>{result.summary}</p>
                 {result.checkedDomain !== result.domain && (
-                  <p style={{ margin:'3px 0 0', fontSize:12, color:'#3D5C59' }}>
+                  <p style={{ margin:'3px 0 0', fontSize:12, color:'#0f766e' }}>
                     CAA inherited from parent: <code style={{ fontSize:11 }}>{result.checkedDomain}</code>
                   </p>
                 )}
@@ -176,10 +176,10 @@ export default function CAAChecker({ nav }) {
 
             {/* Raw records */}
             {result.rawRecords?.length > 0 && (
-              <div style={{ background:'#f8fafc', border:'0.5px solid var(--v2-border)', borderRadius:8, padding:'12px 14px' }}>
+              <div style={{ background:'#f0fdf9', border:'0.5px solid var(--v2-border)', borderRadius:8, padding:'12px 14px' }}>
                 <p style={{ margin:'0 0 6px', fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Raw CAA records</p>
                 {result.rawRecords.map((r, i) => (
-                  <code key={i} style={{ display:'block', fontSize:12, color:'#475569', padding:'2px 0' }}>{r}</code>
+                  <code key={i} style={{ display:'block', fontSize:12, color:'rgba(0,0,0,0.55)', padding:'2px 0' }}>{r}</code>
                 ))}
               </div>
             )}

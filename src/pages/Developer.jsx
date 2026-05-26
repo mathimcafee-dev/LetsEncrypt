@@ -3,7 +3,7 @@ import portrait from '../assets/mathi-portrait.jpg'
 
 const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
-const C    = { ink:'#0F5750', teal:'#3DBFB0', tealDk:'#1A7A72', green:'#3DBFB0', purple:'#E8897A', border:'rgba(255,255,255,0.07)', text:'rgba(255,255,255,0.85)', textMid:'rgba(255,255,255,0.5)', textLt:'rgba(255,255,255,0.28)' }
+const C    = { ink:'#0d9488', teal:'#0d9488', tealDk:'#0d9488', green:'#0d9488', purple:'#f07059', border:'rgba(0,0,0,0.06)', text:'rgba(0,0,0,0.8)', textMid:'rgba(0,0,0,0.45)', textLt:'rgba(255,255,255,0.28)' }
 
 export default function Developer({ nav }) {
   return (
@@ -19,7 +19,7 @@ export default function Developer({ nav }) {
           <span style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.92)' }}>SSLVault</span>
         </div>
         <button onClick={()=>nav('/auth')}
-          style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'white', padding:'7px 20px', borderRadius:100 }}>
+          style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#1a1a1a', padding:'7px 20px', borderRadius:100 }}>
           Get started
         </button>
       </header>
@@ -65,7 +65,7 @@ export default function Developer({ nav }) {
             { spec:'ACME · RFC 8555', color:C.purple, desc:'Protocol implementation, DNS-01 challenge automation, certificate transparency' },
             { spec:'Security automation', color:C.teal,   desc:'AES-256-GCM, key vault design, audit logging, zero-trust certificate deployment' },
           ].map(e=>(
-            <div key={e.spec} style={{ background:'rgba(255,255,255,0.03)', border:`1px solid ${C.border}`, borderLeft:`3px solid ${e.color}`, borderRadius:8, padding:'16px 16px' }}>
+            <div key={e.spec} style={{ background:'rgba(0,0,0,0.02)', border:`1px solid ${C.border}`, borderLeft:`3px solid ${e.color}`, borderRadius:8, padding:'16px 16px' }}>
               <div style={{ fontSize:11, fontWeight:700, color:e.color, fontFamily:MONO, marginBottom:6 }}>{e.spec}</div>
               <div style={{ fontSize:12, color:C.textMid, lineHeight:1.65 }}>{e.desc}</div>
             </div>
@@ -73,13 +73,13 @@ export default function Developer({ nav }) {
         </div>
 
         {/* Contact */}
-        <div style={{ background:'rgba(255,255,255,0.03)', border:`1px solid ${C.border}`, borderRadius:10, padding:'24px 24px', marginBottom:48, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
+        <div style={{ background:'rgba(0,0,0,0.02)', border:`1px solid ${C.border}`, borderRadius:10, padding:'24px 24px', marginBottom:48, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
           <div>
-            <div style={{ fontSize:14, fontWeight:600, color:'rgba(255,255,255,0.9)', marginBottom:4 }}>Get in touch</div>
+            <div style={{ fontSize:14, fontWeight:600, color:'rgba(0,0,0,0.88)', marginBottom:4 }}>Get in touch</div>
             <div style={{ fontSize:13, color:C.textMid }}>Feedback, enterprise enquiries, or PKI questions — always open.</div>
           </div>
           <a href="mailto:mathimcafee@gmail.com"
-            style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'white', padding:'9px 22px', borderRadius:100, textDecoration:'none', whiteSpace:'nowrap' }}>
+            style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#1a1a1a', padding:'9px 22px', borderRadius:100, textDecoration:'none', whiteSpace:'nowrap' }}>
             Email Mathi →
           </a>
         </div>
@@ -89,7 +89,7 @@ export default function Developer({ nav }) {
           {[['← Back home','/'],['About SSLVault','/about'],['Pricing','/pricing'],['Knowledge Base','/knowledge-base']].map(([l,p])=>(
             <button key={l} onClick={()=>nav(p)}
               style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, color:C.textMid, padding:0, transition:'color .15s' }}
-              onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.8)'}
+              onMouseEnter={e=>e.currentTarget.style.color='rgba(0,0,0,0.75)'}
               onMouseLeave={e=>e.currentTarget.style.color=C.textMid}>
               {l}
             </button>

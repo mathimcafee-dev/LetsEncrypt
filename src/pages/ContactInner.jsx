@@ -25,22 +25,22 @@ export default function ContactInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Main contact card */}
-      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #1A7A72' }}>
+      <div style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #0d9488' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
-          <Mail size={14} color="#1A7A72"/>
+          <Mail size={14} color="#0d9488"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Contact</span>
         </div>
         <div style={{ fontSize:20, fontWeight:500, color:'#0a0a0a', letterSpacing:'-.3px', marginBottom:8 }}>
           Every message gets read.
         </div>
-        <p style={{ fontSize:13, color:'#525252', lineHeight:1.7, margin:'0 0 20px', maxWidth:560 }}>
+        <p style={{ fontSize:13, color:'rgba(0,0,0,0.55)', lineHeight:1.7, margin:'0 0 20px', maxWidth:560 }}>
           SSLVault is built and maintained by a single developer. Bug reports, feature requests, and partnership ideas all land directly in one inbox — with a typical reply time of 1–2 days.
         </p>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <a href={`mailto:${email}`} style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#1A7A72', color:'white', textDecoration:'none', borderRadius:6, padding:'9px 16px', fontSize:13, fontWeight:500 }}>
+          <a href={`mailto:${email}`} style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#0d9488', color:'#1a1a1a', textDecoration:'none', borderRadius:6, padding:'9px 16px', fontSize:13, fontWeight:500 }}>
             <Mail size={13}/> {email}
           </a>
-          <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'#525252', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 12px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'white', color:'rgba(0,0,0,0.55)', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 12px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
             {copied ? <><Check size={12}/> Copied</> : <><Copy size={12}/> Copy</>}
           </button>
         </div>
@@ -49,7 +49,7 @@ export default function ContactInner({ nav }) {
       {/* Response time note */}
       <div style={{ display:'flex', alignItems:'center', gap:8, background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'14px 18px', marginBottom:16 }}>
         <Clock size={13} color="#a3a3a3"/>
-        <span style={{ fontSize:12, color:'#525252' }}>Typical response time: <strong style={{ color:'#0a0a0a' }}>1–2 business days</strong></span>
+        <span style={{ fontSize:12, color:'rgba(0,0,0,0.55)' }}>Typical response time: <strong style={{ color:'#0a0a0a' }}>1–2 business days</strong></span>
         <span style={{ marginLeft:'auto', fontSize:11, color:'#a3a3a3' }}>Based in Netherlands (CET)</span>
       </div>
 
@@ -58,10 +58,10 @@ export default function ContactInner({ nav }) {
         {TOPICS.map(({ icon:Icon, label, body }) => (
           <div key={label} style={{ background:'white', border:'0.5px solid #e8edf2', borderRadius:8, padding:'16px 18px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-              <Icon size={13} color="#1A7A72"/>
+              <Icon size={13} color="#0d9488"/>
               <span style={{ fontSize:12, fontWeight:500, color:'#0a0a0a' }}>{label}</span>
             </div>
-            <p style={{ fontSize:11, color:'#525252', lineHeight:1.7, margin:0 }}>{body}</p>
+            <p style={{ fontSize:11, color:'rgba(0,0,0,0.55)', lineHeight:1.7, margin:0 }}>{body}</p>
           </div>
         ))}
       </div>

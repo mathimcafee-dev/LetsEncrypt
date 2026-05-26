@@ -26,15 +26,15 @@ function fmtDate(iso) {
 }
 
 const EVENT_CONFIG = {
-  issued:          { icon: ShieldCheck, color: '#1A7A72', bg: '#E8F8F6', label: 'Certificate issued' },
-  reissued:        { icon: RefreshCw,   color: '#1A7A72', bg: '#E8F8F6', label: 'Certificate reissued' },
-  renewed:         { icon: RotateCcw,   color: '#3DBFB0', bg: '#E8F8F6', label: 'Certificate renewed' },
+  issued:          { icon: ShieldCheck, color: '#0d9488', bg: '#ccfbf1', label: 'Certificate issued' },
+  reissued:        { icon: RefreshCw,   color: '#0d9488', bg: '#ccfbf1', label: 'Certificate reissued' },
+  renewed:         { icon: RotateCcw,   color: '#0d9488', bg: '#ccfbf1', label: 'Certificate renewed' },
   revoked:         { icon: ShieldOff,   color: '#dc2626', bg: '#fef2f2', label: 'Certificate revoked' },
-  agent_installed: { icon: Zap,         color: '#1A7A72', bg: '#E8F8F6', label: 'Installed by agent' },
-  key_rotated:     { icon: RotateCcw,   color: '#E8897A', bg: '#FDF0EE', label: 'Key rotated' },
-  downloaded:      { icon: Download,    color: '#1A7A72', bg: '#D4F5EF', label: 'Certificate downloaded' },
-  private_key_copied: { icon: Shield,   color: '#E8897A', bg: '#FDF0EE', label: 'Private key copied' },
-  default:         { icon: Shield,      color: '#3D5C59', bg: '#f8fafc', label: 'Event' },
+  agent_installed: { icon: Zap,         color: '#0d9488', bg: '#ccfbf1', label: 'Installed by agent' },
+  key_rotated:     { icon: RotateCcw,   color: '#f07059', bg: '#fde8e4', label: 'Key rotated' },
+  downloaded:      { icon: Download,    color: '#0d9488', bg: '#D4F5EF', label: 'Certificate downloaded' },
+  private_key_copied: { icon: Shield,   color: '#f07059', bg: '#fde8e4', label: 'Private key copied' },
+  default:         { icon: Shield,      color: '#0f766e', bg: '#f0fdf9', label: 'Event' },
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}

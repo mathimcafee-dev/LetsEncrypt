@@ -33,7 +33,7 @@ function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
   return (
     <button onClick={() => { navigator.clipboard.writeText(text); setOk(true); setTimeout(() => setOk(false), 1800) }}
-      style={{ background: 'rgba(255,255,255,0.07)', border: '0.5px solid rgba(255,255,255,0.12)',
+      style={{ background: 'rgba(0,0,0,0.06)', border: '0.5px solid rgba(0,0,0,0.1)',
         borderRadius: 4, cursor: 'pointer', color: ok ? '#34d399' : '#9ca3af',
         display: 'flex', alignItems: 'center', gap: 4, fontSize:10, padding: '3px 8px', fontFamily: 'inherit' }}>
       {ok ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
@@ -49,19 +49,19 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
   const exp    = new Date(Date.now() + years * 365 * 86400000).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
   const name   = [fn, ln].filter(Boolean).join(' ') || 'Your Name'
   return (
-    <div style={{ background: '#0a0f1a', border: '1px solid rgba(14,127,192,0.3)',
+    <div style={{ background: '#f0fdf9', border: '1px solid rgba(14,127,192,0.3)',
       borderRadius: 10, overflow: 'hidden', fontFamily: 'var(--v2-font-mono)' }}>
-      <div style={{ background: 'linear-gradient(135deg, #1A7A72 0%, #1a56db 100%)',
+      <div style={{ background: 'linear-gradient(135deg, #0d9488 0%, #1a56db 100%)',
         padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 10 }}>
         <ShieldCheck size={20} color="white" strokeWidth={2}/>
         <div>
-          <div style={{ fontSize:12, fontWeight: 700, color: 'white', letterSpacing: '-0.2px' }}>
+          <div style={{ fontSize:12, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
             SSL Certificate — {p.name}
           </div>
-          <div style={{ fontSize:10, color: 'rgba(255,255,255,0.6)' }}>DigiCert / RapidSSL trust chain</div>
+          <div style={{ fontSize:10, color: 'rgba(0,0,0,0.55)' }}>DigiCert / RapidSSL trust chain</div>
         </div>
-        <div style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.15)', borderRadius: 3,
-          padding: '2px 7px', fontSize: 9, fontWeight: 700, color: 'white', letterSpacing: '0.5px' }}>
+        <div style={{ marginLeft: 'auto', background: 'rgba(0,0,0,0.14)', borderRadius: 3,
+          padding: '2px 7px', fontSize: 9, fontWeight: 700, color: '#1a1a1a', letterSpacing: '0.5px' }}>
           LIVE
         </div>
       </div>
@@ -84,14 +84,14 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
           </div>
         ))}
       </div>
-      <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
+      <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(0,0,0,0.05)',
         display: 'flex', alignItems: 'center', gap: 6 }}>
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399',
           boxShadow: '0 0 0 3px rgba(52,211,153,0.2)' }}/>
         <span style={{ fontSize:10, color: '#4b5563' }}>
           {domain ? 'Ready to issue' : 'Enter domain to preview'}
         </span>
-        <span style={{ marginLeft: 'auto', fontSize: 9, color: '#374151', fontWeight: 600,
+        <span style={{ marginLeft: 'auto', fontSize: 9, color: '#1a1a1a', fontWeight: 600,
           textTransform: 'uppercase', letterSpacing: '0.3px' }}>{p.name}</span>
       </div>
     </div>
@@ -275,23 +275,23 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   if (authLoading) return null
   if (!user) return (
-    <div style={{ minHeight: '100vh', background: '#0a0f1a', display: 'flex',
+    <div style={{ minHeight: '100vh', background: '#f0fdf9', display: 'flex',
       alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ textAlign: 'center', maxWidth: 320 }}>
         <div style={{ width: 56, height: 56, background: 'rgba(14,127,192,0.15)',
           border: '1px solid rgba(14,127,192,0.3)', borderRadius: 14,
           display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-          <Shield size={24} color="#1A7A72"/>
+          <Shield size={24} color="#0d9488"/>
         </div>
-        <h2 style={{ fontSize:22, fontWeight: 800, color: 'white', marginBottom: 8, letterSpacing: '-0.4px' }}>
+        <h2 style={{ fontSize:22, fontWeight: 800, color: '#1a1a1a', marginBottom: 8, letterSpacing: '-0.4px' }}>
           Sign in to continue
         </h2>
         <p style={{ fontSize:13, color: '#6b7280', lineHeight: 1.7, marginBottom: 24 }}>
           Issue, manage and auto-renew SSL certificates from SSLVault.
         </p>
         <button onClick={() => nav('/auth')}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#1A7A72',
-            color: 'white', border: 'none', borderRadius: 8, padding: '12px 24px',
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#0d9488',
+            color: '#1a1a1a', border: 'none', borderRadius: 8, padding: '12px 24px',
             fontSize:13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
           <Lock size={14}/> Sign in to SSLVault
         </button>
@@ -304,15 +304,15 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     <div style={{ minHeight: embedded ? 'auto' : '100vh', background: '#050a14' }}>
 
       {/* Top bar — hidden when embedded inside CLM */}
-      <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
+      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.06)',
         padding: '0 32px', display: embedded ? 'none' : 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg,#1A7A72,#1a56db)',
+          <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg,#0d9488,#1a56db)',
             borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Shield size={14} color="white"/>
           </div>
-          <span style={{ fontSize:13, fontWeight: 600, color: 'white' }}>Issue SSL Certificate</span>
-          <span style={{ background: '#15803d', color: 'white', fontSize: 9, fontWeight: 700,
+          <span style={{ fontSize:13, fontWeight: 600, color: '#1a1a1a' }}>Issue SSL Certificate</span>
+          <span style={{ background: '#0d9488', color: '#1a1a1a', fontSize: 9, fontWeight: 700,
             letterSpacing: '0.8px', textTransform: 'uppercase', borderRadius: 3, padding: '3px 7px' }}>
             LIVE
           </span>
@@ -327,19 +327,19 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       </div>
 
       {/* Progress — hidden when embedded */}
-      <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+      <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.04)',
         padding: '0 32px', display: embedded ? 'none' : 'flex', alignItems: 'center', gap: 4, height: 40 }}>
         {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
           <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 18, height: 18, borderRadius: '50%',
-              background: i === 0 ? '#1A7A72' : 'rgba(255,255,255,0.06)',
+              background: i === 0 ? '#0d9488' : 'rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 9, fontWeight: 700, color: i === 0 ? 'white' : '#374151' }}>
+              fontSize: 9, fontWeight: 700, color: i === 0 ? 'white' : '#1a1a1a' }}>
               {i + 1}
             </div>
             <span style={{ fontSize:11, fontWeight: i === 0 ? 600 : 400,
-              color: i === 0 ? '#e5e7eb' : '#374151' }}>{s}</span>
-            {i < 2 && <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.06)', margin: '0 4px' }}/>}
+              color: i === 0 ? '#e5e7eb' : '#1a1a1a' }}>{s}</span>
+            {i < 2 && <div style={{ width: 24, height: 1, background: 'rgba(0,0,0,0.05)', margin: '0 4px' }}/>}
           </div>
         ))}
       </div>
@@ -351,9 +351,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* Certificate selection */}
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.07)',
+          <div style={{ background: 'rgba(0,0,0,0.02)', border: '0.5px solid rgba(0,0,0,0.06)',
             borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.04)' }}>
               <span style={{ fontSize:11, fontWeight: 700, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Certificate type</span>
             </div>
             <div style={{ padding: '18px 20px' }}>
@@ -361,16 +361,16 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 {PRODUCTS.map(p => (
                   <div key={p.code} onClick={() => setProduct(p.code)}
                     style={{ flex: 1, padding: '12px 16px', borderRadius: 8, cursor: 'pointer',
-                      border: product === p.code ? '1.5px solid #1A7A72' : '0.5px solid rgba(255,255,255,0.08)',
+                      border: product === p.code ? '1.5px solid #0d9488' : '0.5px solid rgba(0,0,0,0.07)',
                       background: product === p.code ? 'rgba(14,127,192,0.1)' : 'rgba(255,255,255,0.02)',
                       transition: 'all 0.12s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <div style={{ width: 14, height: 14, borderRadius: '50%',
-                        border: product === p.code ? '4px solid #1A7A72' : '1.5px solid rgba(255,255,255,0.15)',
+                        border: product === p.code ? '4px solid #0d9488' : '1.5px solid rgba(0,0,0,0.14)',
                         transition: 'all 0.12s' }}/>
                       <span style={{ fontSize:13, fontWeight: 600, color: '#e5e7eb' }}>{p.name}</span>
                       <span style={{ fontSize: 9, fontWeight: 700, background: 'rgba(14,127,192,0.2)',
-                        color: '#3DBFB0', borderRadius: 3, padding: '2px 6px', letterSpacing: '0.3px' }}>{p.badge}</span>
+                        color: '#0d9488', borderRadius: 3, padding: '2px 6px', letterSpacing: '0.3px' }}>{p.badge}</span>
                     </div>
                     <div style={{ fontSize:10, color: '#4b5563', marginLeft: 22 }}>{p.sub}</div>
                   </div>
@@ -383,7 +383,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: 7 }}>
                   Domain name <span style={{ color: '#ef4444' }}>*</span>
                   {PRODUCTS.find(p => p.code === product)?.wildcard && (
-                    <span style={{ color: '#3DBFB0', fontWeight: 400, textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>
+                    <span style={{ color: '#0d9488', fontWeight: 400, textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>
                       · enter root domain, wildcard applied automatically
                     </span>
                   )}
@@ -402,8 +402,8 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   )}
                   <input value={domain} onChange={e => setD(e.target.value)}
                     placeholder={PRODUCTS.find(p => p.code === product)?.wildcard ? 'yourdomain.com' : 'yourdomain.com'}
-                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)',
-                      border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'white',
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.03)',
+                      border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: 7, color: '#1a1a1a',
                       fontSize:15, fontFamily: 'var(--v2-font-mono)', fontWeight: 500,
                       padding: '11px 12px 11px 36px', outline: 'none' }}/>
                 </div>
@@ -416,10 +416,10 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   Validity period
                 </label>
                 <div style={{ padding: '10px 14px', borderRadius: 7,
-                  border: '1.5px solid #1A7A72', background: 'rgba(14,127,192,0.1)' }}>
+                  border: '1.5px solid #0d9488', background: 'rgba(14,127,192,0.1)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize:13, fontWeight: 600, color: '#e5e7eb' }}>1 year</span>
-                    <span style={{ fontSize:11, color: '#1A7A72' }}>✓ Selected</span>
+                    <span style={{ fontSize:11, color: '#0d9488' }}>✓ Selected</span>
                   </div>
                   <div style={{ fontSize:10, color: '#4b5563', marginTop: 2 }}>12 months · auto-renews before expiry</div>
                 </div>
@@ -428,12 +428,12 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           </div>
 
           {/* Contact details */}
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.07)',
+          <div style={{ background: 'rgba(0,0,0,0.02)', border: '0.5px solid rgba(0,0,0,0.06)',
             borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.04)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize:11, fontWeight: 700, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact details</span>
-              <span style={{ fontSize:10, color: '#374151' }}>Required by certificate authority</span>
+              <span style={{ fontSize:10, color: '#1a1a1a' }}>Required by certificate authority</span>
             </div>
             <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap: 12 }}>
@@ -444,8 +444,8 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                       {f.label} <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <input value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph}
-                      style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)',
-                        border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'white',
+                      style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.03)',
+                        border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: 7, color: '#1a1a1a',
                         fontSize:13, fontFamily: 'inherit', padding: '9px 12px', outline: 'none' }}/>
                   </div>
                 ))}
@@ -458,11 +458,11 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   <label style={{ fontSize:11, fontWeight: 600, color: '#4b5563',
                     textTransform: 'uppercase', letterSpacing: '0.3px', display: 'block', marginBottom: 6 }}>
                     {f.label} <span style={{ color: '#ef4444' }}>*</span>
-                    {f.note && <span style={{ color: '#374151', fontWeight: 400, textTransform: 'none', letterSpacing: 0, marginLeft: 6 }}>· {f.note}</span>}
+                    {f.note && <span style={{ color: '#1a1a1a', fontWeight: 400, textTransform: 'none', letterSpacing: 0, marginLeft: 6 }}>· {f.note}</span>}
                   </label>
                   <input value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph} type={f.type||'text'}
-                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)',
-                      border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'white',
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.03)',
+                      border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: 7, color: '#1a1a1a',
                       fontSize:13, fontFamily: 'inherit', padding: '9px 12px', outline: 'none' }}/>
                 </div>
               ))}
@@ -482,9 +482,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <CertPreview domain={clean(domain)} fn={fn} ln={ln} em={em} product={product} years={years}/>
 
-          <div style={{ background: '#111827', border: '0.5px solid rgba(255,255,255,0.06)',
+          <div style={{ background: '#111827', border: '0.5px solid rgba(0,0,0,0.05)',
             borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 18px', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ padding: '12px 18px', borderBottom: '0.5px solid rgba(0,0,0,0.04)' }}>
               <div style={{ fontSize:11, fontWeight: 700, color: '#4b5563',
                 textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Order summary</div>
               {[
@@ -496,13 +496,13 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               ].map(({ k, v, blue }) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize:12, marginBottom: 7 }}>
                   <span style={{ color: '#4b5563' }}>{k}</span>
-                  <span style={{ color: blue ? '#3DBFB0' : '#9ca3af', fontWeight: blue ? 500 : 400 }}>{v}</span>
+                  <span style={{ color: blue ? '#0d9488' : '#9ca3af', fontWeight: blue ? 500 : 400 }}>{v}</span>
                 </div>
               ))}
             </div>
             <div style={{ padding: '12px 18px 16px' }}>
               <button onClick={place} disabled={busy}
-                style={{ width: '100%', background: busy ? '#1f2937' : 'linear-gradient(135deg,#1A7A72,#1a56db)',
+                style={{ width: '100%', background: busy ? '#1f2937' : 'linear-gradient(135deg,#0d9488,#1a56db)',
                   color: busy ? '#4b5563' : 'white', border: 'none', borderRadius: 8,
                   padding: '13px', fontSize:14, fontWeight: 700, cursor: busy ? 'not-allowed' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -513,8 +513,8 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               </button>
               <div style={{ marginTop: 10, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
                 {['RapidSSL CA partner', '99.9% browser trust', 'DigiCert chain'].map(t => (
-                  <span key={t} style={{ fontSize:10, color: '#374151', display: 'flex', alignItems: 'center', gap: 3 }}>
-                    <Check size={9} style={{ color: '#1A7A72' }}/> {t}
+                  <span key={t} style={{ fontSize:10, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <Check size={9} style={{ color: '#0d9488' }}/> {t}
                   </span>
                 ))}
               </div>
@@ -529,55 +529,55 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
   // ── DV ──────────────────────────────────────────────────────────────────────
   if (step === 'dv' && ord) return (
     <div style={{ minHeight: '100vh', background: '#050a14' }}>
-      <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
+      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.06)',
         padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Shield size={16} color="#1A7A72"/>
-        <span style={{ fontSize:13, fontWeight: 600, color: 'white' }}>Validate Domain Ownership</span>
+        <Shield size={16} color="#0d9488"/>
+        <span style={{ fontSize:13, fontWeight: 600, color: '#1a1a1a' }}>Validate Domain Ownership</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, alignItems: 'center' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8897A',
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#f07059',
             boxShadow: '0 0 0 3px rgba(245,158,11,0.2)', animation: 'pulse 2s infinite' }}/>
-          <span style={{ fontSize:11, color: '#E8897A', fontWeight: 500 }}>Awaiting DNS validation</span>
+          <span style={{ fontSize:11, color: '#f07059', fontWeight: 500 }}>Awaiting DNS validation</span>
         </div>
       </div>
 
-      <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+      <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.04)',
         padding: '0 32px', display: 'flex', alignItems: 'center', gap: 4, height: 40 }}>
         {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
           <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 18, height: 18, borderRadius: '50%',
-              background: i === 0 ? '#15803d' : i === 1 ? '#1A7A72' : 'rgba(255,255,255,0.06)',
+              background: i === 0 ? '#0d9488' : i === 1 ? '#0d9488' : 'rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 9, fontWeight: 700, color: 'white' }}>
+              fontSize: 9, fontWeight: 700, color: '#1a1a1a' }}>
               {i === 0 ? <Check size={10}/> : i + 1}
             </div>
             <span style={{ fontSize:11, fontWeight: i === 1 ? 600 : 400,
-              color: i === 0 ? '#15803d' : i === 1 ? '#e5e7eb' : '#374151' }}>{s}</span>
-            {i < 2 && <div style={{ width: 24, height: 1, background: i === 0 ? '#15803d' : 'rgba(255,255,255,0.06)', margin: '0 4px' }}/>}
+              color: i === 0 ? '#0d9488' : i === 1 ? '#e5e7eb' : '#1a1a1a' }}>{s}</span>
+            {i < 2 && <div style={{ width: 24, height: 1, background: i === 0 ? '#0d9488' : 'rgba(0,0,0,0.05)', margin: '0 4px' }}/>}
           </div>
         ))}
       </div>
 
       <div style={{ maxWidth: 720, margin: '0 auto', padding:'min(40px,5vw) min(32px,4vw)' }}>
         <div style={{ marginBottom: 28, textAlign: 'center' }}>
-          <div style={{ fontSize:22, fontWeight: 800, color: 'white', letterSpacing: '-0.4px', marginBottom: 8 }}>
+          <div style={{ fontSize:22, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.4px', marginBottom: 8 }}>
             Add this TXT record to prove ownership
           </div>
           <div style={{ fontSize:13, color: '#4b5563', lineHeight: 1.6 }}>
             Add a <strong style={{ color: '#9ca3af' }}>TXT record</strong> to your DNS for{' '}
-            <strong style={{ color: '#1A7A72', fontFamily: 'monospace' }}>{ord.domain || clean(domain)}</strong>
+            <strong style={{ color: '#0d9488', fontFamily: 'monospace' }}>{ord.domain || clean(domain)}</strong>
           </div>
         </div>
 
         {/* DNS record card */}
-        <div style={{ background: '#0a0f1a', border: '0.5px solid rgba(255,255,255,0.08)',
+        <div style={{ background: '#f0fdf9', border: '0.5px solid rgba(0,0,0,0.07)',
           borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
           <div style={{ background: '#111827', padding: '10px 16px',
-            display: 'flex', alignItems: 'center', gap: 6, borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+            display: 'flex', alignItems: 'center', gap: 6, borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
             {['#ff5f56','#ffbd2e','#27c93f'].map(c => (
               <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, display: 'block' }}/>
             ))}
             <span style={{ fontSize:11, color: '#4b5563', fontFamily: 'monospace', marginLeft: 8 }}>DNS record · TXT</span>
-            <span style={{ marginLeft: 'auto', fontFamily: 'monospace', fontSize:10, color: '#374151' }}>
+            <span style={{ marginLeft: 'auto', fontFamily: 'monospace', fontSize:10, color: '#1a1a1a' }}>
               GGS #{ord.ggs_order_id || '—'}
             </span>
           </div>
@@ -590,11 +590,11 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             ].map(({ k, v, copy, accent, loading }) => (
               <div key={k} style={{ display: 'grid', gridTemplateColumns: '70px 1fr auto',
                 alignItems: 'center', padding: '10px 18px',
-                borderBottom: '0.5px solid rgba(255,255,255,0.04)' }}>
-                <span style={{ fontSize:10, fontWeight: 700, color: '#374151',
+                borderBottom: '0.5px solid rgba(0,0,0,0.03)' }}>
+                <span style={{ fontSize:10, fontWeight: 700, color: '#1a1a1a',
                   textTransform: 'uppercase', letterSpacing: '0.4px' }}>{k}</span>
                 <span style={{ fontSize:12, fontFamily: 'monospace',
-                  color: loading ? '#374151' : accent ? '#34d399' : '#9ca3af',
+                  color: loading ? '#1a1a1a' : accent ? '#34d399' : '#9ca3af',
                   wordBreak: 'break-all', lineHeight: 1.5 }}>
                   {loading
                     ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -608,7 +608,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           </div>
 
           {res?.dns_auto && (
-            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
+            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(0,0,0,0.05)',
               background: res.dns_auto.ok ? 'rgba(52,211,153,0.06)' : 'rgba(220,38,38,0.06)',
               display: 'flex', alignItems: 'flex-start', gap: 8 }}>
               {res.dns_auto.ok
@@ -622,9 +622,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             </div>
           )}
           {res && res.ggs_status && res.ggs_status !== 'active' && !res.dns_auto && (
-            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
+            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(0,0,0,0.05)',
               background: 'rgba(245,158,11,0.06)', display: 'flex', gap: 8 }}>
-              <AlertTriangle size={12} style={{ color: '#E8897A', flexShrink: 0, marginTop: 1 }}/>
+              <AlertTriangle size={12} style={{ color: '#f07059', flexShrink: 0, marginTop: 1 }}/>
               <span style={{ fontSize:11, color: '#fbbf24' }}>
                 Not validated yet ({res.ggs_status}) — DNS may still be propagating. Try again in a minute.
               </span>
@@ -642,8 +642,8 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               </div>
             ) : (
               <button onClick={addDns} disabled={dns || !(ord.dcv_txt_value || ord.dcv_cname_value)}
-                style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#1A7A72',
-                  color: 'white', border: 'none', borderRadius: 7, padding: '10px 18px',
+                style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#0d9488',
+                  color: '#1a1a1a', border: 'none', borderRadius: 7, padding: '10px 18px',
                   fontSize:13, fontWeight: 600, cursor: dns || !(ord.dcv_txt_value || ord.dcv_cname_value) ? 'not-allowed' : 'pointer',
                   opacity: !(ord.dcv_txt_value || ord.dcv_cname_value) ? 0.4 : 1, fontFamily: 'inherit' }}>
                 {dns ? <><RefreshCw size={13} className="spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS Record</>}
@@ -651,13 +651,13 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             )
           }
           <button onClick={check} disabled={chk}
-            style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.06)',
-              color: '#e5e7eb', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 7,
+            style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(0,0,0,0.05)',
+              color: '#e5e7eb', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: 7,
               padding: '10px 18px', fontSize:13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
             {chk ? <><RefreshCw size={13} className="spin"/> Checking…</> : <><RefreshCw size={13}/> Check Status</>}
           </button>
           <button onClick={reset}
-            style={{ background: 'none', border: 'none', color: '#374151', fontSize:12,
+            style={{ background: 'none', border: 'none', color: '#1a1a1a', fontSize:12,
               cursor: 'pointer', fontFamily: 'inherit', marginLeft: 'auto' }}>
             ← Start over
           </button>
@@ -665,7 +665,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
         <div style={{ background: 'rgba(14,127,192,0.08)', border: '0.5px solid rgba(14,127,192,0.2)',
           borderRadius: 8, padding: '12px 16px', display: 'flex', gap: 10 }}>
-          <Zap size={14} style={{ color: '#1A7A72', flexShrink: 0, marginTop: 1 }}/>
+          <Zap size={14} style={{ color: '#0d9488', flexShrink: 0, marginTop: 1 }}/>
           <div style={{ fontSize:12, color: '#4b5563', lineHeight: 1.6 }}>
             <strong style={{ color: '#9ca3af' }}>Fully automatic:</strong> If your DNS provider is connected under{' '}
             <strong style={{ color: '#9ca3af' }}>More → DNS Providers</strong>, click{' '}
@@ -691,10 +691,10 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
           <ShieldCheck size={32} color="#34d399" strokeWidth={2}/>
         </div>
-        <h2 style={{ fontSize:28, fontWeight: 800, color: 'white', letterSpacing: '-0.6px', marginBottom: 8 }}>
+        <h2 style={{ fontSize:28, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.6px', marginBottom: 8 }}>
           Certificate Issued
         </h2>
-        <div style={{ fontFamily: 'monospace', fontSize:15, color: '#1A7A72', marginBottom: 8, fontWeight: 600 }}>
+        <div style={{ fontFamily: 'monospace', fontSize:15, color: '#0d9488', marginBottom: 8, fontWeight: 600 }}>
           {clean(domain)}
         </div>
         <p style={{ fontSize:13, color: '#4b5563', marginBottom: 32, lineHeight: 1.6 }}>
@@ -703,15 +703,15 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
           <button onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              background: 'linear-gradient(135deg,#1A7A72,#1a56db)', color: 'white',
+              background: 'linear-gradient(135deg,#0d9488,#1a56db)', color: '#1a1a1a',
               border: 'none', borderRadius: 8, padding: '13px', fontSize:14,
               fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
             <Server size={15}/> Go to Dashboard
           </button>
           <button onClick={reset}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              background: 'rgba(255,255,255,0.06)', color: '#9ca3af',
-              border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 8,
+              background: 'rgba(0,0,0,0.05)', color: '#9ca3af',
+              border: '0.5px solid rgba(0,0,0,0.07)', borderRadius: 8,
               padding: '11px', fontSize:13, cursor: 'pointer', fontFamily: 'inherit' }}>
             Issue Another Certificate
           </button>

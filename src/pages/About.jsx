@@ -6,15 +6,15 @@ const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
-  bg:'#FFFFFF', bg2:'#FDFAF5', bg3:'#F5EFE0',
+  bg:'#FFFFFF', bg2:'#f0fdf9', bg3:'#f0fdf9',
   border:'#e5e7eb', border2:'#d1d5db',
   heading:'#0a0a0a', body:'#4b5563', muted:'#9ca3af',
-  teal:'#3DBFB0', tealDk:'#1A7A72', tealBg:'#E8F8F6', tealBd:'#A8E6DE',
-  green:'#3DBFB0', greenBg:'#E8F8F6', greenBd:'#A8E6DE',
-  purple:'#E8897A', purpleBg:'#faf5ff', purpleBd:'#F2C4BC',
-  amber:'#E8897A', amberBg:'#FDF0EE', amberBd:'#F2C4BC',
+  teal:'#0d9488', tealDk:'#0d9488', tealBg:'#ccfbf1', tealBd:'#A8E6DE',
+  green:'#0d9488', greenBg:'#ccfbf1', greenBd:'#A8E6DE',
+  purple:'#f07059', purpleBg:'#faf5ff', purpleBd:'#F2C4BC',
+  amber:'#f07059', amberBg:'#fde8e4', amberBd:'#F2C4BC',
   red:'#dc2626', redBg:'#fef2f2', redBd:'#fecaca',
-  ink:'#0F5750',
+  ink:'#0d9488',
 }
 
 function Stat({ val, label, sub, color = C.teal }) {
@@ -41,17 +41,17 @@ export default function About({ nav }) {
       <style>{`*, *::before, *::after{box-sizing:border-box;margin:0;padding:0} @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}`}</style>
 
       {/* Nav */}
-      <header style={{ background:'rgba(8,12,20,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.06)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(16px,4vw,40px)', position:'sticky', top:0, zIndex:100 }}>
+      <header style={{ background:'rgba(8,12,20,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(0,0,0,0.05)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(16px,4vw,40px)', position:'sticky', top:0, zIndex:100 }}>
         <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }} onClick={() => nav('/')}>
           <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.92)' }}>SSLVault</span>
-          <span style={{ fontSize:11, color:'rgba(255,255,255,0.3)', fontFamily:MONO }}>/ About</span>
+          <span style={{ fontSize:11, color:'rgba(0,0,0,0.32)', fontFamily:MONO }}>/ About</span>
         </div>
         <div style={{ display:'flex', gap:8 }}>
-          <button onClick={() => nav('/pricing')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.12)', cursor:'pointer', fontFamily:F, fontSize:12, color:'rgba(255,255,255,0.5)', padding:'6px 14px', borderRadius:100 }}>Pricing</button>
-          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'white', padding:'7px 18px', borderRadius:100 }}>Get started</button>
+          <button onClick={() => nav('/pricing')} style={{ background:'none', border:'1px solid rgba(0,0,0,0.1)', cursor:'pointer', fontFamily:F, fontSize:12, color:'rgba(0,0,0,0.45)', padding:'6px 14px', borderRadius:100 }}>Pricing</button>
+          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#1a1a1a', padding:'7px 18px', borderRadius:100 }}>Get started</button>
         </div>
       </header>
 
@@ -63,7 +63,7 @@ export default function About({ nav }) {
           <h1 style={{ fontSize:'clamp(32px,5vw,56px)', fontWeight:700, letterSpacing:'-1.5px', lineHeight:1.08, color:'rgba(255,255,255,0.95)', marginBottom:22, maxWidth:640 }}>
             Enterprise certificate lifecycle management. Built by a PKI engineer, for everyone.
           </h1>
-          <p style={{ fontSize:17, color:'rgba(255,255,255,0.45)', lineHeight:1.85, maxWidth:580, marginBottom:36 }}>
+          <p style={{ fontSize:17, color:'rgba(0,0,0,0.4)', lineHeight:1.85, maxWidth:580, marginBottom:36 }}>
             SSLVault automates the full SSL/TLS certificate lifecycle — from issuance through DNS validation, deployment, monitoring, and renewal. Built on open standards. No proprietary black boxes.
           </p>
           <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
@@ -264,7 +264,7 @@ export default function About({ nav }) {
             <div style={{ fontSize:14, color:C.body, maxWidth:440, lineHeight:1.7 }}>Enterprise-grade PKI controls — CertVault, 47-day readiness, CA intelligence — built in from day one.</div>
           </div>
           <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-            <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'white', padding:'10px 24px', borderRadius:100 }}>Get started →</button>
+            <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#1a1a1a', padding:'10px 24px', borderRadius:100 }}>Get started →</button>
             <button onClick={() => nav('/pricing')} style={{ background:C.bg, border:`1px solid ${C.border}`, cursor:'pointer', fontFamily:F, fontSize:13, color:C.heading, padding:'10px 24px', borderRadius:100 }}>View pricing</button>
           </div>
         </div>

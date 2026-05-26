@@ -221,7 +221,7 @@ export default function QuickSetup({ nav }) {
                 <p style={{ fontSize:13, color: 'var(--v2-text-2)', marginBottom: 16 }}>Add this record to your DNS provider, then click Verify.</p>
                 <div className="v2-code" style={{ marginBottom: 12 }}>
                   <div className="v2-code-head">
-                    <div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#E8897A' }}/><span style={{ background: '#1A7A72' }}/></div>
+                    <div className="v2-code-dots"><span style={{ background: '#ef4444' }}/><span style={{ background: '#f07059' }}/><span style={{ background: '#0d9488' }}/></div>
                   </div>
                   <pre>{`TYPE    ${dcvInfo.type || 'CNAME'}
 NAME    ${dcvInfo.host || '_acme-challenge'}
@@ -248,7 +248,7 @@ TTL     300`}</pre>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div className="v2-card v2-card-pad" style={{ border: '1.5px solid var(--v2-green)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E8F8F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#ccfbf1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <CheckCircle size={24} color="var(--v2-green)"/>
                 </div>
                 <div>
