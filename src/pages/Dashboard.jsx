@@ -2932,9 +2932,10 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         </div>
 
         {/* ── CA Connector ── */}
-        {(importedCerts.length >= 0) && (
+        {importedCerts.length > 0 && (
           <div style={{ marginTop:16 }}>
-            <CaConnectorPanel userId={user.id} nav={nav}/>
+            <div style={{ fontSize:11, fontWeight:600, color:'#6e7681', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:12 }}>CA Connector — Imported Certificates ({importedCerts.length})</div>
+            <ImportedCertsSection certs={importedCerts} onDelete={async id => { await supabase.from('certificates').delete().eq('id',id); load(); }}/>
           </div>
         )}
 
