@@ -590,10 +590,10 @@ serve(async (req) => {
         dcv_method: 'dns',
         approver_email: `admin@${cleanDomain}`,
         admin_email: adminEmail, admin_firstname: firstName, admin_lastname: lastName,
-        admin_phone: phone, admin_org: cleanDomain, admin_jobtitle: 'Admin',
+        admin_title: 'Mr', admin_phone: phone, admin_org: cleanDomain,
         admin_city: 'San Francisco', admin_country: 'US', admin_state: 'CA',
         admin_zip: '94105', tech_firstname: firstName, tech_lastname: lastName,
-        tech_email: adminEmail, tech_phone: phone,
+        tech_email: adminEmail, tech_phone: phone, tech_title: 'Mr',
       })
       if (!orderRes.order_id) return json({ error: orderRes.description || 'Reissue failed' }, 500)
 
