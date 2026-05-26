@@ -195,7 +195,7 @@ function InventoryMockup() {
         {['Domain','Days','Grade','CA','Auto','Status'].map(h => <div key={h} style={{ fontSize:9.5, fontWeight:700, color:W.muted, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>)}
       </div>
       {rows.map((r,i) => (
-        <div key={r.d} style={{ display:'grid', gridTemplateColumns:'2fr 52px 52px 80px 60px 70px', padding:'9px 14px', borderBottom:i<rows.length-1?`1px solid ${W.bg3}`:'none', background:r.s==='critical'?'#fef2f280':r.s==='warning'?'#FDF0EE80':W.bg, alignItems:'center' }}>
+        <div key={r.d} style={{ display:'grid', gridTemplateColumns:'2fr 52px 52px 80px 60px 70px', padding:'9px 14px', borderBottom:i<rows.length-1?`1px solid ${W.bg3}`:'none', background:r.s==='critical'?'rgba(239,68,68,0.08)':r.s==='warning'?'rgba(249,115,22,0.08)':W.bg, alignItems:'center' }}>
           <span style={{ fontSize:11.5, fontWeight:500, color:W.heading, fontFamily:MONO }}>{r.d}</span>
           <span style={{ fontSize:11, fontWeight:700, color:sc(r.s), fontFamily:MONO }}>{r.days}d</span>
           <span style={{ fontSize:11, fontWeight:800, color:gc(r.grade) }}>{r.grade}</span>
@@ -216,7 +216,7 @@ function CertVaultMockup() {
         <span style={{ fontSize:11, color:W.muted, fontFamily:MONO, flex:1, textAlign:'center' }}>CertVault · Private key vault</span>
       </div>
       <div style={{ padding:'16px' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', background:W.purpleBg, border:`1px solid ${W.purple}22`, borderRadius:8, marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', background:W.purpleBg, border:`1px solid ${W.purple}40`, borderRadius:8, marginBottom:14 }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={W.purple} strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           <span style={{ fontSize:11, color:W.purple, fontWeight:600 }}>AES-256-GCM · Envelope encryption · Immutable audit</span>
         </div>
@@ -891,9 +891,9 @@ export default function Home({ nav }) {
               </div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', flexShrink:0 }}>
                 {[['ML-KEM','FIPS 203'],['ML-DSA','FIPS 204'],['SLH-DSA','FIPS 205']].map(([alg, fips]) => (
-                  <div key={alg} style={{ background:'#E8F8F6', border:'1px solid #A8E6DE', borderRadius:8, padding:'7px 12px', textAlign:'center' }}>
+                  <div key={alg} style={{ background:'rgba(16,185,129,0.12)', border:'1px solid rgba(16,185,129,0.25)', borderRadius:8, padding:'7px 12px', textAlign:'center' }}>
                     <div style={{ fontSize:12, fontWeight:700, color:'#10b981', fontFamily:MONO }}>{alg}</div>
-                    <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', marginTop:2 }}>{fips}</div>
+                    <div style={{ fontSize:10, color:'rgba(240,248,255,0.45)', marginTop:2 }}>{fips}</div>
                   </div>
                 ))}
                 <button onClick={() => nav('/pki-hub')} style={{ background:'#10b981', border:'none', borderRadius:8, padding:'9px 16px', fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer', fontFamily:F, whiteSpace:'nowrap' }}>
@@ -1044,7 +1044,7 @@ export default function Home({ nav }) {
                   { name:'Keyfactor Command',  price:'$75–200k/yr', notes:'Mid-market · Complex setup · No free tier', highlight:false },
                   { name:'SSLVault CLM',       price:'Partner rates', notes:'Full CLM · Agent + cPanel + DNS · All cert types', highlight:true },
                 ].map(c => (
-                  <div key={c.name} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 16px', background:c.highlight?'#FDF0EE':W.bg2, border:`1px solid ${c.highlight?'#F2C4BC':W.border}`, borderRadius:10 }}>
+                  <div key={c.name} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 16px', background:c.highlight?'rgba(249,115,22,0.08)':W.bg2, border:`1px solid ${c.highlight?'rgba(249,115,22,0.3)':W.border}`, borderRadius:10 }}>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:13, fontWeight:700, color:c.highlight?'#E8897A':W.heading }}>{c.name}</div>
                       <div style={{ fontSize:11.5, color:W.muted, marginTop:3 }}>{c.notes}</div>
@@ -1079,9 +1079,9 @@ export default function Home({ nav }) {
       <section style={{ background:W.bg2, padding:`clamp(72px,9vw,100px) clamp(20px,4vw,48px)`, borderTop:`1px solid ${W.border}` }}>
         <div style={{ maxWidth:680, margin:'0 auto', textAlign:'center' }}>
           <FadeUp>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:7, border:`1px solid #F2C4BC`, borderRadius:100, padding:'5px 14px', marginBottom:28, background:'#FDF0EE' }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:7, border:'1px solid rgba(249,115,22,0.25)', borderRadius:100, padding:'5px 14px', marginBottom:28, background:'rgba(249,115,22,0.1)' }}>
               <span style={{ width:6, height:6, borderRadius:'50%', background:'#E8897A', animation:'blink 2.4s ease infinite' }}/>
-              <span style={{ fontSize:11.5, fontWeight:600, color:'#E8897A', fontFamily:MONO }}>Production-ready · RFC 8555 · CA/B Forum 2026 compliant</span>
+              <span style={{ fontSize:11.5, fontWeight:600, color:'#f97316', fontFamily:MONO }}>Production-ready · RFC 8555 · CA/B Forum 2026 compliant</span>
             </div>
             <H2 style={{ fontSize:'clamp(28px,5vw,48px)', letterSpacing:'-1.2px', marginBottom:18 }}>
               Ready to automate your<br/><span style={{ color:'#E8897A' }}>certificate lifecycle?</span>
