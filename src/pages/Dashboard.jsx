@@ -69,7 +69,7 @@ function ProgressBar({ days, max = 365 }) {
   const pct = days == null ? 0 : Math.max(0, Math.min(100, (days / max) * 100))
   const color = days == null ? '#ffffff' : days < 0 ? '#f87171' : days < 14 ? '#f87171' : days < 30 ? '#ffffff' : '#ffffff'
   return (
-    <div style={{ height:4, borderRadius:999, background:'#ffffff', overflow:'hidden' }}>
+    <div style={{ height:4, borderRadius:999, background:'#111111', overflow:'hidden' }}>
       <div style={{ height:'100%', borderRadius:999, background:color,
         width: animated ? pct+'%' : '0%',
         transition:'width 0.8s cubic-bezier(0.16,1,0.3,1)' }}/>
@@ -82,7 +82,7 @@ function ImportedCertsSection({ certs, onDelete }) {
   const sourceLabel = s => ({ digicert:'DigiCert', sectigo:'Sectigo', entrust:'Entrust', globalsign:'GlobalSign' }[s] || s || 'CA Connector')
   const daysLeft = exp => { if (!exp) return null; return Math.floor((new Date(exp) - Date.now()) / 86400000) }
   return (
-    <div style={{ marginTop:20, border:'0.5px solid #99f6e4', borderRadius:14, overflow:'hidden', background:'#000000', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
+    <div style={{ marginTop:20, border:'1px solid rgba(74,222,128,0.2)', borderRadius:14, overflow:'hidden', background:'#000000', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
       <button onClick={() => setOpen(o => !o)}
         style={{ width:'100%', padding:'14px 18px', display:'flex', alignItems:'center', gap:10,
           background:'#000000', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}>
@@ -107,10 +107,10 @@ function ImportedCertsSection({ certs, onDelete }) {
                   <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', display:'flex', alignItems:'center', gap:8 }}>
                     {c.domain}
                     <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:4,
-                      background:'#ffffff', color:'rgba(255,255,255,0.7)' }}>
+                      background:'#111111', color:'rgba(255,255,255,0.7)' }}>
                       {sourceLabel(c.source)}
                     </span>
-                    {isExpired && <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:4, background:'#fef2f2', color:'#f87171' }}>EXPIRED</span>}
+                    {isExpired && <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:4, background:'rgba(248,113,113,0.08)', color:'#f87171' }}>EXPIRED</span>}
                   </div>
                   <div style={{ fontSize:11, color:'rgba(255,255,255,0.38)', marginTop:2 }}>
                     {c.issuer || c.cert_type || 'Unknown issuer'} ·{' '}
@@ -215,7 +215,7 @@ function DvPendingCard({ order, onRefresh }) {
         <span style={{ fontFamily:'monospace', fontSize:11, color:'#C45A4A', marginLeft:'auto' }}>GGS #{order.ggs_order_id}</span>
       </div>
       <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginBottom:10, fontFamily:'monospace' }}>{order.domain}</div>
-      <div style={{ background:'#ffffff', borderRadius:8, padding:'10px 14px', marginBottom:10, fontSize:11, fontFamily:'monospace' }}>
+      <div style={{ background:'#111111', borderRadius:8, padding:'10px 14px', marginBottom:10, fontSize:11, fontFamily:'monospace' }}>
         <div style={{ display:'grid', gridTemplateColumns:'60px 1fr auto', gap:'6px 10px', alignItems:'center' }}>
           <span style={{ color:'rgba(255,255,255,0.7)', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Name</span>
           <span style={{ color:'rgba(255,255,255,0.38)', wordBreak:'break-all' }}>
@@ -235,14 +235,14 @@ function DvPendingCard({ order, onRefresh }) {
       </div>
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
         <button onClick={autoDns} disabled={addingDns || !hasDcv}
-          style={{ display:'flex', alignItems:'center', gap:6, background:'#ffffff', color:'#ffffff',
+          style={{ display:'flex', alignItems:'center', gap:6, background:'#111111', color:'#ffffff',
             border:'none', borderRadius:6, padding:'7px 14px', fontSize:11, fontWeight:600,
             cursor: !hasDcv||addingDns ? 'not-allowed':'pointer', opacity: !hasDcv ? 0.4:1, fontFamily:'inherit' }}>
           <Zap size={11}/> {addingDns ? 'Adding...' : 'Auto-Add DNS Record'}
         </button>
         <button onClick={checkStatus} disabled={checking}
           style={{ display:'flex', alignItems:'center', gap:6, background:'#000000',
-            border:'1px solid #d1d9e0', color:'#ffffff', borderRadius:6,
+            border:'1px solid rgba(255,255,255,0.12)', color:'#ffffff', borderRadius:6,
             padding:'7px 14px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
           <RefreshCw size={11} style={{ animation: checking ? 'spin 0.8s linear infinite':'none' }}/>
           {checking ? 'Checking...' : 'Check Status'}
@@ -263,7 +263,7 @@ function DvPendingCard({ order, onRefresh }) {
               {dismissing ? 'Removing...' : 'Yes, remove'}
             </button>
             <button onClick={() => setConfirmDismiss(false)}
-              style={{ background:'#000000', color:'#ffffff', border:'1px solid #d1d9e0', borderRadius:6,
+              style={{ background:'#000000', color:'#ffffff', border:'1px solid rgba(255,255,255,0.12)', borderRadius:6,
                 padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
               Cancel
             </button>
@@ -439,7 +439,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
 
       {/* Bar — full subscription width */}
       <div style={{ position:'relative', height:20, borderRadius:6, overflow:'hidden',
-        background:'#ffffff', border:'0.5px solid #99f6e4' }}>
+        background:'#111111', border:'1px solid rgba(74,222,128,0.2)' }}>
 
         {/* Green "Current" cert segment */}
         <div style={{ position:'absolute', left:0, top:0, bottom:0,
@@ -480,7 +480,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
         {/* Today marker */}
         <div style={{ position:'absolute', top:0, bottom:0, width:3,
           left: animated ? `calc(${todayPct}% - 1.5px)` : '0%',
-          background:'#ffffff', borderRadius:2, zIndex:5,
+          background:'#111111', borderRadius:2, zIndex:5,
           boxShadow:'0 0 0 1.5px white, 0 1px 4px rgba(0,0,0,0.3)',
           transition:'left 1.4s cubic-bezier(0.16,1,0.3,1)' }}/>
       </div>
@@ -891,13 +891,13 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             {l}
             {k==='reissues' && reissues.length > 0 && (
               <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                background: tab===k ? '#ffffff' : '#ffffff', color: tab===k ? '#000000' : 'rgba(255,255,255,0.7)' }}>
+                background: tab===k ? 'rgba(255,255,255,0.1)' : 'transparent', color: tab===k ? '#ffffff' : 'rgba(255,255,255,0.5)' }}>
                 {reissues.length}
               </span>
             )}
             {k==='renewals' && renewals.length > 0 && (
               <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                background: tab===k ? '#ffffff' : '#ffffff', color: tab===k ? '#000000' : 'rgba(255,255,255,0.7)' }}>
+                background: tab===k ? 'rgba(255,255,255,0.1)' : 'transparent', color: tab===k ? '#ffffff' : 'rgba(255,255,255,0.5)' }}>
                 {renewals.length}
               </span>
             )}
@@ -965,7 +965,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   {r.cert_pem && (
                     <div>
                       <div style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:6 }}>Reissued Certificate PEM</div>
-                      <div style={{ background:'#ffffff', borderRadius:6, padding:'10px 12px', position:'relative' }}>
+                      <div style={{ background:'#111111', borderRadius:6, padding:'10px 12px', position:'relative' }}>
                         <pre style={{ fontSize:10, color:'rgba(255,255,255,0.38)', margin:0, overflow:'hidden', maxHeight:80, fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all' }}>
                           {r.cert_pem.slice(0,300)}...
                         </pre>
@@ -977,7 +977,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   {/* Auto-install details */}
                   {(r.auto_install_status || r.auto_install_error) && (
                     <div style={{ marginTop:10, padding:'8px 10px', borderRadius:6,
-                      background: r.auto_install_status==='success' ? '#111111' : '#fef2f2',
+                      background: r.auto_install_status==='success' ? '#111111' : 'rgba(248,113,113,0.08)',
                       border: '1px solid '+(r.auto_install_status==='success' ? '#A8E6DE' : '#fecaca') }}>
                       <div style={{ fontSize:11, fontWeight:600, color: r.auto_install_status==='success' ? '#4ade80' : '#f87171' }}>
                         Auto-install: {r.auto_install_status}
@@ -1007,7 +1007,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   Renewal · GGS #{r.ggs_order_id||'—'}
                 </div>
                 <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4,
-                  background: r.status==='active' ? '#dcfce7' : '#ffffff',
+                  background: r.status==='active' ? 'rgba(74,222,128,0.08)' : '#111111',
                   color: r.status==='active' ? '#4ade80' : 'rgba(255,255,255,0.7)' }}>{r.status}</span>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:'4px 12px' }}>
@@ -1061,7 +1061,7 @@ function ScanPqcButton({ onDone }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:6 }}>
       <button onClick={run} disabled={scanning}
-        style={{ display:'flex', alignItems:'center', gap:5, background:'#ffffff', color:'#ffffff',
+        style={{ display:'flex', alignItems:'center', gap:5, background:'#111111', color:'#ffffff',
           border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600,
           cursor:scanning?'wait':'pointer', fontFamily:'inherit', opacity:scanning?0.8:1 }}>
         {scanning
@@ -1515,12 +1515,12 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const periodLabel = '1 year'
 
   return (
-    <div style={{ background:'#000000', border:'0.5px solid #99f6e4', borderRadius:14,
+    <div style={{ background:'#000000', border:'1px solid rgba(74,222,128,0.2)', borderRadius:14,
       overflow:'hidden', boxShadow:'0 4px 20px rgba(255,255,255,0.08)',
       position:'sticky', top:20, animation:'fadeSlideUp 0.3s ease both' }}>
 
       {/* ── Hero header ─── */}
-      <div style={{ padding:'20px 20px 16px', background:'linear-gradient(135deg, #f0fdf9 0%, white 100%)',
+      <div style={{ padding:'20px 20px 16px', background:'#111111',
         borderBottom:'0.5px solid #e6fbf5' }}>
         <div style={{ display:'flex', alignItems:'flex-start', gap:16 }}>
           <RingGauge days={days} expiresAt={cert.expires_at} issuedAt={cert.issued_at}/>
@@ -1529,11 +1529,11 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               <span style={{ fontSize:14, fontWeight:700, wordBreak:'break-all',
                 color:'#ffffff', fontFamily:'monospace', lineHeight:1.3 }}>{cert.domain}</span>
               <button onClick={onClose}
-                style={{ background:'#000000', border:'0.5px solid #99f6e4', cursor:'pointer',
+                style={{ background:'#000000', border:'1px solid rgba(74,222,128,0.2)', cursor:'pointer',
                   color:'rgba(255,255,255,0.38)', padding:'5px', borderRadius:7, display:'flex', flexShrink:0,
                   marginLeft:8, transition:'all .15s' }}
                 onMouseEnter={e=>{e.currentTarget.style.background='rgba(239,68,68,0.08)';e.currentTarget.style.color='#f87171';e.currentTarget.style.borderColor='#fecaca'}}
-                onMouseLeave={e=>{e.currentTarget.style.background='#000000';e.currentTarget.style.color='rgba(255,255,255,0.38)';e.currentTarget.style.borderColor='#ffffff'}}>
+                onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.06)';e.currentTarget.style.color='rgba(255,255,255,0.6)';e.currentTarget.style.borderColor='rgba(255,255,255,0.2)'}}>
                 <X size={13} strokeWidth={2}/>
               </button>
             </div>
@@ -1554,7 +1554,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                 RapidSSL
               </span>
               <span style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20,
-                background:'#000000', color:'rgba(255,255,255,0.6)', border:'0.5px solid #99f6e4' }}>
+                background:'#000000', color:'rgba(255,255,255,0.6)', border:'1px solid rgba(74,222,128,0.2)' }}>
                 {cert._order?.product_name || cert.cert_type || 'RapidSSL'}
               </span>
             </div>
@@ -1855,7 +1855,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
                 padding:'10px 12px' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-                  <div style={{ width:30, height:30, borderRadius:7, background:'#fef2f2',
+                  <div style={{ width:30, height:30, borderRadius:7, background:'rgba(248,113,113,0.08)',
                     display:'flex', alignItems:'center', justifyContent:'center' }}>
                     <Lock size={14} color="#dc2626"/>
                   </div>
@@ -2017,7 +2017,7 @@ function EmbedTab({ cert }) {
         <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:8, lineHeight:1.5 }}>
           Paste this on your website to show a live SSL status badge. Updates automatically.
         </div>
-        <div style={{ background:'#ffffff', borderRadius:8, padding:'10px 12px',
+        <div style={{ background:'#111111', borderRadius:8, padding:'10px 12px',
           fontFamily:'monospace', fontSize:11, color:'#a3e635', wordBreak:'break-all', marginBottom:8 }}>
           {widgetSnippet}
         </div>
@@ -2265,12 +2265,12 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                           {/* Today marker for active sub */}
                           {isActiveSub && subPct > 0 && subPct < 100 && (
                             <div style={{ position:'absolute', left:`${subPct}%`, top:-3,
-                              width:2, height:12, background:'#ffffff', borderRadius:1 }}/>
+                              width:2, height:12, background:'#111111', borderRadius:1 }}/>
                           )}
                           {/* Auto-reissue dot marker */}
                           {isActiveSub && (
                             <div style={{ position:'absolute', right:'8%', top:-2,
-                              width:7, height:7, borderRadius:'50%', background:'#ffffff',
+                              width:7, height:7, borderRadius:'50%', background:'#111111',
                               border:'1.5px solid white' }}/>
                           )}
                         </div>
@@ -2282,11 +2282,11 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                     {isActiveSub && subStart && (
                       <div style={{ display:'flex', gap:14, marginTop:4 }}>
                         <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-                          <div style={{ width:6, height:6, borderRadius:'50%', background:'#ffffff' }}/>
+                          <div style={{ width:6, height:6, borderRadius:'50%', background:'#111111' }}/>
                           <span style={{ fontSize:9, color:'#6B7B79' }}>Today</span>
                         </div>
                         <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-                          <div style={{ width:6, height:6, borderRadius:'50%', background:'#ffffff' }}/>
+                          <div style={{ width:6, height:6, borderRadius:'50%', background:'#111111' }}/>
                           <span style={{ fontSize:9, color:'#6B7B79' }}>Auto-reissue trigger point</span>
                         </div>
                       </div>
@@ -2697,7 +2697,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
   return (
-    <div style={{ background:'linear-gradient(160deg, #f0f4f8 0%, #f0fdf9 100%)', minHeight:'100vh' }}>
+    <div style={{ background:'#000000', minHeight:'100vh' }}>
       <div style={{ maxWidth:1200, margin:'0 auto', padding:'32px 28px 80px' }}>
 
         <div style={{ marginBottom:24, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
@@ -2726,7 +2726,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               setTimeout(() => setShareMsg(''), 2500)
             }}
             style={{ display:'flex', alignItems:'center', gap:6, background:'#000000',
-              border:'0.5px solid #99f6e4', borderRadius:8, padding:'7px 14px',
+              border:'1px solid rgba(74,222,128,0.2)', borderRadius:8, padding:'7px 14px',
               fontSize:11, fontWeight:600, color:'#ffffff', cursor:'pointer', fontFamily:'inherit' }}>
             <Share2 size={12} color="#0d9488"/>
             {shareMsg || 'Share SSL status'}
@@ -2782,13 +2782,13 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         )}
 
         <div style={{ display:'grid', gridTemplateColumns: (!isMobile && selectedCert) ? 'minmax(0,1fr) clamp(280px,35vw,400px)':'1fr', gap:16, alignItems:'start' }}>
-          <div style={{ background:'#000000', border:'0.5px solid #99f6e4', borderRadius:14,
+          <div style={{ background:'#000000', border:'1px solid rgba(74,222,128,0.2)', borderRadius:14,
             overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
             <div style={{ padding:'14px 16px', borderBottom:'0.5px solid #e6fbf5',
               display:'flex', alignItems:'center', gap:8, flexWrap:'wrap',
               background:'linear-gradient(to bottom, white, #f0fdf9)' }}>
               {/* Filter tabs */}
-              <div style={{ display:'flex', gap:2, background:'#ffffff', borderRadius:8, padding:3 }}>
+              <div style={{ display:'flex', gap:2, background:'#111111', borderRadius:8, padding:3 }}>
                 {[
                   { key:'all',      label:'All',      count:total },
                   { key:'healthy',  label:'Healthy',  count:healthy },
@@ -2813,7 +2813,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
                 <div style={{ position:'relative' }}>
                   <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search domains..."
-                    style={{ background:'#000000', border:'0.5px solid #99f6e4', borderRadius:8, color:'#ffffff',
+                    style={{ background:'#000000', border:'1px solid rgba(74,222,128,0.2)', borderRadius:8, color:'#ffffff',
                       fontSize:12, padding:'6px 10px 6px 30px', width:190, outline:'none', fontFamily:'inherit',
                       transition:'border-color .15s' }}
                     onFocus={e=>e.target.style.borderColor='#ffffff'}
@@ -2822,7 +2822,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 </div>
                 <ScanPqcButton onDone={load}/>
                 <button onClick={() => onIssue ? onIssue() : nav('/buy')}
-                  style={{ display:'flex', alignItems:'center', gap:5, background:'#ffffff', color:'#ffffff',
+                  style={{ display:'flex', alignItems:'center', gap:5, background:'#111111', color:'#ffffff',
                     border:'none', borderRadius:8, padding:'7px 14px', fontSize:11, fontWeight:700,
                     cursor:'pointer', fontFamily:'inherit', boxShadow:'0 2px 6px rgba(14,127,192,0.3)',
                     transition:'all .15s' }}
@@ -2845,7 +2845,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 <div style={{ fontSize:12, color:'rgba(255,255,255,0.38)', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
                 {total===0 && (
                   <button onClick={() => onIssue ? onIssue() : nav('/buy')}
-                    style={{ background:'#ffffff', color:'#ffffff', border:'none', borderRadius:7,
+                    style={{ background:'#111111', color:'#ffffff', border:'none', borderRadius:7,
                       padding:'9px 18px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
                     Issue your first certificate
                   </button>
