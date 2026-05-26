@@ -28,20 +28,20 @@ import Pricing from './Pricing'
 
 // ── Design tokens ──────────────────────────────────────────────────────
 const F = "'Inter',system-ui,sans-serif"
-const NAVY  = '#f2faf9'   // page bg
-const CARD  = '#ffffff'   // card / topbar bg
-const CARD2 = '#e8f7f5'   // elevated card
-const CARD3 = '#d4f0ec'   // input / hover
-const LINE  = '#c8e8e5'
-const LINE2 = '#a8d8d4'
-const INK   = '#1a3333'
-const BODY  = '#3d6666'
-const MUTED = '#7aa8a8'
-const BLUE  = '#2ab5a5'
-const BLUEH = '#1a9585'
-const GREEN = '#1a8a6a'
-const RED   = '#d94040'
-const AMBER = '#c47a20'
+const NAVY  = '#0d2b2b'   // page bg
+const CARD  = '#1a4040'   // card / topbar bg
+const CARD2 = '#0f3535'   // elevated card
+const CARD3 = '#133d3d'   // input / hover
+const LINE  = 'rgba(45,212,191,0.15)'
+const LINE2 = 'rgba(45,212,191,0.25)'
+const INK   = '#e8f5f4'
+const BODY  = 'rgba(232,245,244,0.7)'
+const MUTED = 'rgba(232,245,244,0.4)'
+const BLUE  = '#2dd4bf'
+const BLUEH = '#14b8a6'
+const GREEN = '#4ade80'
+const RED   = '#f87171'
+const AMBER = '#fbbf24'
 
 function useIsMobile(bp=860) {
   const [m,setM] = useState(window.innerWidth<=bp)
