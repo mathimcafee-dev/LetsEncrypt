@@ -576,7 +576,6 @@ serve(async (req) => {
 
       const { csrPem, privateKeyPem } = await generateCSRAndKey(csrDomain)
       const authKey = await ggsAuth()
-      const product = await resolveProductId(authKey, product_code)
 
       const period = order?.period || 12
       const adminEmail = order?.admin_email || cert.admin_email || `admin@${cleanDomain}`
@@ -584,18 +583,35 @@ serve(async (req) => {
       const lastName   = order?.admin_last_name  || cert.last_name  || 'Admin'
       const phone      = order?.admin_phone      || cert.phone      || '+1.5555555555'
 
-      const orderRes = await ggsPost(authKey, '/orders/add_ssl_order/', {
-        product_id: String(product.id), period: String(period),
-        csr: csrPem, server_count: '-1', webserver_type: '2',
-        dcv_method: 'dns',
-        approver_email: `admin@${cleanDomain}`,
-        admin_email: adminEmail, admin_firstname: firstName, admin_lastname: lastName,
-        admin_title: 'Mr', admin_phone: phone, admin_org: cleanDomain,
-        admin_city: 'San Francisco', admin_country: 'US', admin_state: 'CA',
-        admin_zip: '94105', tech_firstname: firstName, tech_lastname: lastName,
-        tech_email: adminEmail, tech_phone: phone, tech_title: 'Mr',
-      })
-      if (!orderRes.order_id) return json({ error: orderRes.description || 'Reissue failed' }, 500)
+      let orderRes: any
+      if (action === 'reissue') {
+        // ── TRUE REISSUE: same order_id, same subscription period, new CSR ──
+        // Uses GGS /orders/ssl/reissue/{order_id}/ — no new billing, instant
+        const ggsOrderId = order?.ggs_order_id
+        if (!ggsOrderId) return json({ error: 'No GGS order ID found — cannot reissue' }, 400)
+        orderRes = await ggsPost(authKey, `/orders/ssl/reissue/${ggsOrderId}/`, {
+          csr:          csrPem,
+          webserver_type: '2',
+          dcv_method:   'dns',
+        })
+        // GGS reissue returns order_id same as original
+        if (!orderRes.order_id) return json({ error: orderRes.description || orderRes.message || JSON.stringify(orderRes) }, 500)
+      } else {
+        // ── RENEWAL: new order, new billing period ──
+        const product = await resolveProductId(authKey, product_code)
+        orderRes = await ggsPost(authKey, '/orders/add_ssl_order/', {
+          product_id: String(product.id), period: String(period),
+          csr: csrPem, server_count: '-1', webserver_type: '2',
+          dcv_method: 'dns',
+          approver_email: `admin@${cleanDomain}`,
+          admin_email: adminEmail, admin_firstname: firstName, admin_lastname: lastName,
+          admin_title: 'Mr', admin_phone: phone, admin_org: cleanDomain,
+          admin_city: 'San Francisco', admin_country: 'US', admin_state: 'CA',
+          admin_zip: '94105', tech_firstname: firstName, tech_lastname: lastName,
+          tech_email: adminEmail, tech_phone: phone, tech_title: 'Mr',
+        })
+        if (!orderRes.order_id) return json({ error: orderRes.description || 'Renewal failed' }, 500)
+      }
 
       // Insert new ssl_order row
       const { data: newOrder, error: ordErr } = await adminDb()
@@ -696,8 +712,6 @@ serve(async (req) => {
             }).eq('id', cert.id)
 
             // Dispatch install based on install_method
-            // agent (VPS): queue agent_jobs, bash agent picks up within 5 min
-            // cpanel: call cpanel-install edge fn directly over HTTPS:2083
             if (cert.install_method === 'agent') {
               const { data: serverRows } = await adminDb()
                 .from('server_credentials')
@@ -718,12 +732,11 @@ serve(async (req) => {
                 }
               }
             } else if (cert.install_method === 'cpanel' && cert.install_server_id) {
-              const CPANEL_URL = `${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`
-              fetch(CPANEL_URL, {
+              fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
                 body: JSON.stringify({ action: 'install', cert_id: cert.id, domain: order.domain, credential_id: cert.install_server_id }),
-              }).catch((e: any) => console.warn('cpanel-install dispatch (non-fatal):', e.message))
+              }).catch((e: any) => console.warn('cpanel-install (non-fatal):', e.message))
             }
           }
 
