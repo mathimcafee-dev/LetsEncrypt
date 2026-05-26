@@ -82,10 +82,10 @@ function ImportedCertsSection({ certs, onDelete }) {
   const sourceLabel = s => ({ digicert:'DigiCert', sectigo:'Sectigo', entrust:'Entrust', globalsign:'GlobalSign' }[s] || s || 'CA Connector')
   const daysLeft = exp => { if (!exp) return null; return Math.floor((new Date(exp) - Date.now()) / 86400000) }
   return (
-    <div style={{ marginTop:20, border:'1px solid rgba(20,184,166,0.2)', borderRadius:14, overflow:'hidden', background:'#0d1117', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
+    <div style={{ marginTop:20, border:'1px solid rgba(20,184,166,0.2)', borderRadius:14, overflow:'hidden', background:'#161b22', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
       <button onClick={() => setOpen(o => !o)}
         style={{ width:'100%', padding:'14px 18px', display:'flex', alignItems:'center', gap:10,
-          background:'#0d1117', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}>
+          background:'#161b22', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}>
         <span style={{ fontSize:11, fontWeight:700, color:'#8b949e', textTransform:'uppercase', letterSpacing:'0.5px', flex:1 }}>
           CA Connector — Imported Certificates ({certs.length})
         </span>
@@ -101,7 +101,7 @@ function ImportedCertsSection({ certs, onDelete }) {
             const dotColor = isExpired ? '#f85149' : isExpiring ? '#ffffff' : '#3fb950'
             return (
               <div key={c.id} style={{ padding:'12px 18px', borderTop:'0.5px solid #e6fbf5',
-                display:'flex', alignItems:'center', gap:12, background:'#0d1117' }}>
+                display:'flex', alignItems:'center', gap:12, background:'#161b22' }}>
                 <div style={{ width:8, height:8, borderRadius:'50%', background:dotColor, flexShrink:0 }}/>
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', display:'flex', alignItems:'center', gap:8 }}>
@@ -241,7 +241,7 @@ function DvPendingCard({ order, onRefresh }) {
           <Zap size={11}/> {addingDns ? 'Adding...' : 'Auto-Add DNS Record'}
         </button>
         <button onClick={checkStatus} disabled={checking}
-          style={{ display:'flex', alignItems:'center', gap:6, background:'#0d1117',
+          style={{ display:'flex', alignItems:'center', gap:6, background:'#161b22',
             border:'1px solid rgba(255,255,255,0.12)', color:'#ffffff', borderRadius:6,
             padding:'7px 14px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
           <RefreshCw size={11} style={{ animation: checking ? 'spin 0.8s linear infinite':'none' }}/>
@@ -249,7 +249,7 @@ function DvPendingCard({ order, onRefresh }) {
         </button>
         {!confirmDismiss ? (
           <button onClick={() => setConfirmDismiss(true)}
-            style={{ display:'flex', alignItems:'center', gap:5, background:'#0d1117',
+            style={{ display:'flex', alignItems:'center', gap:5, background:'#161b22',
               border:'1px solid #fca5a5', color:'#f85149', borderRadius:6,
               padding:'7px 14px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit', marginLeft:'auto' }}>
             <X size={11}/> Dismiss
@@ -263,7 +263,7 @@ function DvPendingCard({ order, onRefresh }) {
               {dismissing ? 'Removing...' : 'Yes, remove'}
             </button>
             <button onClick={() => setConfirmDismiss(false)}
-              style={{ background:'#0d1117', color:'#ffffff', border:'1px solid rgba(255,255,255,0.12)', borderRadius:6,
+              style={{ background:'#161b22', color:'#ffffff', border:'1px solid rgba(255,255,255,0.12)', borderRadius:6,
                 padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
               Cancel
             </button>
@@ -374,7 +374,7 @@ function RingGauge({ days, total, expiresAt, issuedAt }) {
             { val: pad(timeLeft.s), label:'s' },
           ].map(({ val, label }) => (
             <div key={label} style={{ display:'flex', flexDirection:'column', alignItems:'center',
-              background:'#0d1117', borderRadius:5, padding:'2px 5px', minWidth:28 }}>
+              background:'#161b22', borderRadius:5, padding:'2px 5px', minWidth:28 }}>
               <span style={{ fontSize:11, fontWeight:800, fontFamily:'monospace',
                 color: isWarn ? '#ffffff' : '#ffffff', lineHeight:1,
                 transition:'all 0.3s' }}>{val}</span>
@@ -1300,7 +1300,7 @@ function TlsPostureRow({ cert, onRefresh }) {
           )}
           <button onClick={runCheck} disabled={checking}
             style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
-              color:'#ffffff', background:'#161b22', border:'0.5px solid #A8E6DE',
+              color:'#ffffff', background:'#161b22', border:'1px solid rgba(63,185,80,0.2)',
               borderRadius:6, padding:'4px 10px', cursor:checking?'wait':'pointer',
               fontFamily:'inherit', fontWeight:500, flexShrink:0 }}>
             {checking
@@ -1515,7 +1515,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const periodLabel = '1 year'
 
   return (
-    <div style={{ background:'#0d1117', border:'1px solid rgba(63,185,80,0.2)', borderRadius:14,
+    <div style={{ background:'#161b22', border:'1px solid rgba(63,185,80,0.2)', borderRadius:14,
       overflow:'hidden', boxShadow:'0 4px 20px rgba(255,255,255,0.08)',
       position:'sticky', top:20, animation:'fadeSlideUp 0.3s ease both' }}>
 
@@ -1529,7 +1529,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               <span style={{ fontSize:14, fontWeight:700, wordBreak:'break-all',
                 color:'#ffffff', fontFamily:'monospace', lineHeight:1.3 }}>{cert.domain}</span>
               <button onClick={onClose}
-                style={{ background:'#0d1117', border:'1px solid rgba(63,185,80,0.2)', cursor:'pointer',
+                style={{ background:'#161b22', border:'1px solid rgba(63,185,80,0.2)', cursor:'pointer',
                   color:'#484f58', padding:'5px', borderRadius:7, display:'flex', flexShrink:0,
                   marginLeft:8, transition:'all .15s' }}
                 onMouseEnter={e=>{e.currentTarget.style.background='rgba(239,68,68,0.08)';e.currentTarget.style.color='#f85149';e.currentTarget.style.borderColor='#fecaca'}}
@@ -1554,7 +1554,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                 RapidSSL
               </span>
               <span style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20,
-                background:'#0d1117', color:'rgba(255,255,255,0.6)', border:'1px solid rgba(63,185,80,0.2)' }}>
+                background:'#161b22', color:'rgba(255,255,255,0.6)', border:'1px solid rgba(63,185,80,0.2)' }}>
                 {cert._order?.product_name || cert.cert_type || 'RapidSSL'}
               </span>
             </div>
@@ -1564,7 +1564,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
       {/* ── Metric strip ─── */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',
-        borderBottom:'0.5px solid #e6fbf5', background:'#0d1117' }}>
+        borderBottom:'0.5px solid #e6fbf5', background:'#161b22' }}>
         {(() => {
           // ── Date logic ─────────────────────────────────────────────────
           //
@@ -2177,7 +2177,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
 
       {/* ── LEVELS 2 + 3: Subscription groups + version rows ── */}
       {expanded && (
-        <div style={{ background:'#0d1117', padding:'10px 14px 14px' }}>
+        <div style={{ background:'#161b22', padding:'10px 14px 14px' }}>
           <div style={{ fontSize:10, fontWeight:600, color:'#6B5A3E', textTransform:'uppercase',
             letterSpacing:'0.5px', marginBottom:10 }}>Subscription history</div>
 
@@ -2239,7 +2239,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                       )}
                       {ggsOrder && (
                         <span style={{ fontSize:10, padding:'2px 7px', borderRadius:20,
-                          background:'#0d1117', color:'#ffffff', border:`0.5px solid ${headerBorder}`,
+                          background:'#161b22', color:'#ffffff', border:`0.5px solid ${headerBorder}`,
                           fontFamily:'monospace' }}>
                           GGS #{ggsOrder}
                         </span>
@@ -2697,16 +2697,16 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
   return (
-    <div style={{ background:'#0d1117', minHeight:'100vh' }}>
-      <div style={{ maxWidth:1200, margin:'0 auto', padding:'32px 28px 80px' }}>
+    <div style={{ background:'#0d1117', minHeight:'100vh', fontFamily:"'Inter',system-ui,sans-serif" }}>
+      <div style={{ maxWidth:1280, margin:'0 auto', padding:'28px 24px 80px' }}>
 
         <div style={{ marginBottom:24, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
           <div>
-            <h1 style={{ fontSize:22, fontWeight:800, color:'#ffffff', letterSpacing:'-0.5px', marginBottom:3, display:'flex', alignItems:'center', gap:10 }}>
+            <h1 style={{ fontSize:20, fontWeight:700, color:'#e6edf3', letterSpacing:'-0.3px', marginBottom:4, display:'flex', alignItems:'center', gap:10 }}>
               Certificate Dashboard
               {healthy === total && total > 0 && (
                 <span style={{ fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:20,
-                  background:'#161b22', color:'#3fb950', border:'0.5px solid #A8E6DE',
+                  background:'#161b22', color:'#3fb950', border:'1px solid rgba(63,185,80,0.2)',
                   animation:'fadeIn 0.5s ease' }}>
                   All healthy ✓
                 </span>
@@ -2725,37 +2725,33 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               setShareMsg('Link copied!')
               setTimeout(() => setShareMsg(''), 2500)
             }}
-            style={{ display:'flex', alignItems:'center', gap:6, background:'#0d1117',
+            style={{ display:'flex', alignItems:'center', gap:6, background:'#161b22',
               border:'1px solid rgba(63,185,80,0.2)', borderRadius:8, padding:'7px 14px',
               fontSize:11, fontWeight:600, color:'#ffffff', cursor:'pointer', fontFamily:'inherit' }}>
-            <Share2 size={12} color="#0d9488"/>
+            <Share2 size={12} color="#8b949e"/>
             {shareMsg || 'Share SSL status'}
           </button>
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))', gap:10, marginBottom:20 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:24 }}>
           {[
-            { label:'Total',        value:total,    color:'#58a6ff', bg:'rgba(56,139,253,0.12)', icon:'▦', sub:'certificates' },
-            { label:'Healthy',      value:healthy,  color:'#3fb950', bg:'rgba(63,185,80,0.12)', icon:'✓', sub:healthy>0?'All valid':'None' },
-            { label:'Expiring',     value:expiring, color:expiring>0?'#ffffff':'rgba(255,255,255,0.38)', bg:expiring>0?'rgba(239,68,68,0.08)':'#000000', icon:'⏱', sub:expiring>0?'Renew soon':'None' },
-            { label:'Pending',      value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#ffffff':'rgba(255,255,255,0.38)', bg:orders.filter(o=>o.status==='dv_pending').length>0?'rgba(239,68,68,0.08)':'#000000', icon:'⏳', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None' },
-            { label:'Expired',      value:expired,  color:expired>0?'#f85149':'rgba(255,255,255,0.38)', bg:expired>0?'#fef2f2':'#000000', icon:'✗', sub:expired>0?'Action needed':'None' },
+            { label:'Total certificates', value:total,    color:'#388bfd', border:'rgba(56,139,253,0.25)',   sub:'managed by SSLVault' },
+            { label:'Healthy',            value:healthy,  color:'#3fb950', border:'rgba(63,185,80,0.25)',    sub:healthy>0?'All valid':'No active certs' },
+            { label:'Expiring ≤30d',      value:expiring, color:expiring>0?'#d29922':'#6e7681', border:expiring>0?'rgba(210,153,34,0.25)':'rgba(255,255,255,0.08)', sub:expiring>0?'Needs attention':'None expiring' },
+            { label:'Pending DCV',        value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#f85149':'#6e7681', border:orders.filter(o=>o.status==='dv_pending').length>0?'rgba(248,81,73,0.25)':'rgba(255,255,255,0.08)', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None pending' },
+            { label:'Expired',            value:expired,  color:expired>0?'#f85149':'#6e7681', border:expired>0?'rgba(248,81,73,0.3)':'rgba(255,255,255,0.08)', sub:expired>0?'Renew immediately':'None expired' },
           ].map((s,i) => (
-            <div key={s.label}
-              style={{ background:'#161b22', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8,
-                padding:'16px 18px', position:'relative', overflow:'hidden',
-                boxShadow:'0 1px 3px rgba(0,0,0,0.04)',
-                animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}>
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:s.color, borderRadius:'12px 12px 0 0', opacity: s.value > 0 ? 1 : 0.2 }}/>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
-                <div style={{ fontSize:10, fontWeight:700, color:'#8b949e', textTransform:'uppercase', letterSpacing:'0.5px' }}>{s.label}</div>
-                <div style={{ width:28, height:28, borderRadius:7, background:s.bg,
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                  fontSize:12, color:s.color, fontWeight:700 }}>{s.icon}</div>
-              </div>
-              <div style={{ fontSize:Math.min(32,window.innerWidth>768?32:24), fontWeight:800, color: s.value>0 ? s.color : '#ffffff',
-                letterSpacing:'-1px', lineHeight:1, marginBottom:4,
-                transition:'color 0.3s' }}>{s.value}</div>
+            <div key={s.label} style={{
+              background:'#161b22',
+              border:`1px solid ${s.border}`,
+              borderRadius:8,
+              padding:'18px 20px',
+              position:'relative',
+              animation:`fadeSlideUp 0.35s ease both`,
+              animationDelay:`${i*50}ms`,
+            }}>
+              <div style={{ fontSize:11, fontWeight:500, color:'#8b949e', marginBottom:10, letterSpacing:'0.01em' }}>{s.label}</div>
+              <div style={{ fontSize:28, fontWeight:700, color:s.value>0?s.color:'#6e7681', letterSpacing:'-0.5px', lineHeight:1, marginBottom:6 }}>{s.value}</div>
               <div style={{ fontSize:11, color:'#484f58' }}>{s.sub}</div>
             </div>
           ))}
@@ -2788,7 +2784,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               display:'flex', alignItems:'center', gap:8, flexWrap:'wrap',
               background:'#0a0a0a' }}>
               {/* Filter tabs */}
-              <div style={{ display:'flex', gap:2, background:'#1c2128', borderRadius:6, padding:3 }}>
+              <div style={{ display:'flex', gap:2, background:'transparent', borderRadius:0, padding:0, borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
                 {[
                   { key:'all',      label:'All',      count:total },
                   { key:'healthy',  label:'Healthy',  count:healthy },
@@ -2798,13 +2794,18 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                   <button key={f.key} onClick={() => setFilter(f.key)}
                     style={{ padding:'5px 12px', borderRadius:6, fontSize:11, fontWeight:600,
                       cursor:'pointer', fontFamily:'inherit', border:'none', transition:'all .15s',
-                      background: filter===f.key ? '#388bfd' : 'transparent',
-                      color: filter===f.key ? '#ffffff' : '#8b949e',
+                      background: 'transparent',
+                      borderBottom: filter===f.key ? '2px solid #388bfd' : '2px solid transparent',
+                      borderRadius: 0,
+                      color: filter===f.key ? '#e6edf3' : '#8b949e',
+                      paddingBottom: '10px', marginBottom: '-1px',
                       boxShadow: filter===f.key ? '0 1px 3px rgba(255,255,255,0.08)' : 'none' }}>
                     {f.label}
                     <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                      background: 'rgba(255,255,255,0.08)',
-                      color: '#8b949e', transition:'all .15s' }}>
+                      background: 'rgba(255,255,255,0.07)',
+                      color: '#6e7681',
+                      borderRadius: 10,
+                      marginLeft: 4, transition:'all .15s' }}>
                       {f.count}
                     </span>
                   </button>
@@ -2813,7 +2814,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
                 <div style={{ position:'relative' }}>
                   <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search domains..."
-                    style={{ background:'#0d1117', border:'1px solid rgba(63,185,80,0.2)', borderRadius:8, color:'#ffffff',
+                    style={{ background:'#161b22', border:'1px solid rgba(63,185,80,0.2)', borderRadius:8, color:'#ffffff',
                       fontSize:12, padding:'6px 10px 6px 30px', width:190, outline:'none', fontFamily:'inherit',
                       transition:'border-color .15s' }}
                     onFocus={e=>e.target.style.borderColor='#388bfd'}
@@ -2889,7 +2890,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               { icon:Zap,       color:'#ffffff', bg:'rgba(239,68,68,0.08)', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
             ].map(({ icon:Icon, color, bg, label, desc, action }, i) => (
               <button key={label} onClick={action}
-                style={{ background:'#0d1117', border:'0.5px solid #e6fbf5', borderRadius:12, padding:'16px',
+                style={{ background:'#161b22', border:'0.5px solid #e6fbf5', borderRadius:12, padding:'16px',
                   textAlign:'left', cursor:'pointer', fontFamily:'inherit', transition:'all .2s',
                   boxShadow:'0 1px 3px rgba(0,0,0,0.04)',
                   animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}
@@ -2910,7 +2911,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         {recentEvents.length > 0 && (
           <div style={{ marginTop:24 }}>
             <div style={{ fontSize:10, fontWeight:700, color:'#484f58', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:10 }}>Recent activity</div>
-            <div style={{ background:'#0d1117', border:'0.5px solid #e6fbf5', borderRadius:12,
+            <div style={{ background:'#161b22', border:'0.5px solid #e6fbf5', borderRadius:12,
               overflow:'hidden', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
               {recentEvents.map((ev, i) => {
                 const evColors = {
