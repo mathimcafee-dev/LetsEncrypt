@@ -733,60 +733,68 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                 }
               } catch(e) { console.warn('Failed to resolve cert/method:', e) }
 
-              // ── Dispatch install via agent_jobs (works for both VPS + cPanel) ──
-              // The bash agent polls agent_jobs and handles install locally.
-              // For cPanel: agent calls uapi on localhost — no network needed.
-              if (method === 'agent' || method === 'cpanel') {
+              // ── cPanel: direct edge function call (credentials already saved) ──
+              if (method === 'cpanel') {
+                try {
+                  const { data: creds } = await supabase
+                    .from('server_credentials')
+                    .select('id')
+                    .eq('server_type', 'cpanel')
+                    .contains('domains', [cert.domain])
+                    .limit(1)
+                  const credId = creds?.[0]?.id
+                  if (!credId) {
+                    installDetail = '⚠️ No cPanel credential found — go to Install tab to add one'
+                  } else {
+                    const cpRes = await fetch(SB_URL + '/functions/v1/cpanel-install', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+                      body: JSON.stringify({ action: 'install', cert_id: dispatchCertId, domain: cert.domain, credential_id: credId }),
+                    })
+                    const cpData = await cpRes.json().catch(() => ({}))
+                    if (cpData.ok) {
+                      installOk = true
+                      installDetail = '🌐 Installed on cPanel — confirmed'
+                      if (cpData.serial) setModalSerial(cpData.serial)
+                      setModalLiveConfirmed(true)
+                    } else {
+                      installDetail = `⚠️ ${cpData.error || 'cPanel install failed'} — cert issued, install manually`
+                    }
+                  }
+                } catch(cpErr) {
+                  installDetail = `⚠️ cPanel dispatch error — cert issued, install manually`
+                }
+              // ── VPS agent: queue job, agent picks up within 5 min ────────────
+              } else if (method === 'agent') {
                 try {
                   const { data: serverRows } = await supabase
                     .from('server_credentials')
-                    .select('id, agent_id, server_type')
+                    .select('id, agent_id')
                     .contains('domains', [cert.domain])
                     .not('agent_id', 'is', null)
                   for (const row of (serverRows || [])) {
                     const { data: existing } = await supabase
-                      .from('agent_jobs')
-                      .select('id')
-                      .eq('agent_id', row.agent_id)
-                      .eq('cert_id', dispatchCertId)
-                      .in('status', ['queued', 'claimed'])
-                      .maybeSingle()
+                      .from('agent_jobs').select('id')
+                      .eq('agent_id', row.agent_id).eq('cert_id', dispatchCertId)
+                      .in('status', ['queued', 'claimed']).maybeSingle()
                     if (!existing) {
-                      // Fetch cert + key for job payload
-                      const { data: certData } = await supabase
-                        .from('certificates')
-                        .select('cert_pem, ca_pem')
-                        .eq('id', dispatchCertId)
-                        .single()
-                      const { data: keyData } = await supabase
-                        .from('keylocker_keys')
-                        .select('private_key_pem')
-                        .eq('cert_id', dispatchCertId)
-                        .single()
+                      const { data: certData } = await supabase.from('certificates').select('cert_pem, ca_pem').eq('id', dispatchCertId).single()
+                      const { data: keyData } = await supabase.from('keylocker_keys').select('private_key_pem').eq('cert_id', dispatchCertId).single()
                       await supabase.from('agent_jobs').insert({
-                        agent_id: row.agent_id,
-                        user_id: session.user.id,
-                        cert_id: dispatchCertId,
-                        job_type: isReissue ? 'reissue' : 'renew',
-                        status: 'queued',
-                        cert_pem: certData?.cert_pem || '',
-                        key_pem: keyData?.private_key_pem || '',
+                        agent_id: row.agent_id, user_id: session.user.id, cert_id: dispatchCertId,
+                        job_type: isReissue ? 'reissue' : 'renew', status: 'queued',
+                        cert_pem: certData?.cert_pem || '', key_pem: keyData?.private_key_pem || '',
                         domain: cert.domain,
                       })
-                      installOk = true
-                    } else {
-                      installOk = true // already queued
                     }
                   }
-                  installDetail = method === 'cpanel'
-                    ? '🌐 Install job queued — cPanel agent will apply within 5 min'
-                    : '🖥 Install job queued — VPS agent will apply within 5 min'
-                } catch(dispatchErr) {
-                  installDetail = `⚠️ Failed to queue install job: ${dispatchErr.message}`
-                  console.warn('agent_jobs dispatch error:', dispatchErr)
+                  installOk = true
+                  installDetail = '🖥 Install job queued — VPS agent will apply within 5 min'
+                } catch(agentErr) {
+                  installDetail = `⚠️ Failed to queue agent job: ${agentErr.message}`
                 }
               } else {
-                installDetail = 'No server connected — install manually'
+                installDetail = 'No server connected — go to Install tab to set one up'
               }
 
               const dispatchElapsed = Date.now() - certIssueStart

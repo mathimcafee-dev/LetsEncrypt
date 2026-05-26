@@ -696,9 +696,9 @@ serve(async (req) => {
             }).eq('id', cert.id)
 
             // Dispatch install based on install_method
-            // Both agent (VPS) and cpanel use the agent_jobs polling pattern.
-            // The bash agent handles cPanel installs locally via uapi — no edge fn needed.
-            if (cert.install_method === 'agent' || cert.install_method === 'cpanel') {
+            // agent (VPS): queue agent_jobs, bash agent picks up within 5 min
+            // cpanel: call cpanel-install edge fn directly over HTTPS:2083
+            if (cert.install_method === 'agent') {
               const { data: serverRows } = await adminDb()
                 .from('server_credentials')
                 .select('id, agent_id')
@@ -717,6 +717,13 @@ serve(async (req) => {
                   })
                 }
               }
+            } else if (cert.install_method === 'cpanel' && cert.install_server_id) {
+              const CPANEL_URL = `${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`
+              fetch(CPANEL_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
+                body: JSON.stringify({ action: 'install', cert_id: cert.id, domain: order.domain, credential_id: cert.install_server_id }),
+              }).catch((e: any) => console.warn('cpanel-install dispatch (non-fatal):', e.message))
             }
           }
 
