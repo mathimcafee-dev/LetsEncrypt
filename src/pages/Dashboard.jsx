@@ -690,7 +690,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             return
           }
 
-          if (latest?.status === 'active') {
+          if (latest?.status === 'active' || latest?.status === 'issued') {
             clearInterval(timer)
             const dcvElapsed = stepStartTimes.current[3] ? Date.now() - stepStartTimes.current[3] : null
             const certIssueStart = Date.now()
