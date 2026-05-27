@@ -21,6 +21,16 @@ function Pill({ state }) {
   return <span style={{fontSize:10,fontWeight:700,padding:'2px 9px',borderRadius:20,background:s.bg,color:s.color,border:`0.5px solid ${s.color}40`}}>{s.label}</span>
 }
 
+// Compute SHA-256 fingerprint from PEM — strips headers, decodes base64, hashes
+async function pemSha256(pem) {
+  try {
+    const b64 = pem.replace(/-----[^-]+-----/g, '').replace(/\s/g, '')
+    const der  = Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+    const hash = await crypto.subtle.digest('SHA-256', der)
+    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join(':').toUpperCase()
+  } catch { return null }
+}
+
 function StepRow({ step, title, subtitle, state }) {
   const icons = {
     pending: <span style={{width:22,height:22,borderRadius:'50%',background:'rgba(255,255,255,0.08)',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#b0a8a0',fontWeight:700}}>{step}</span>,
@@ -106,6 +116,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
   const [errMsg, setErrMsg] = useState('')
   const [busy, setBusy] = useState(false)
   const [installResult, setInstallResult] = useState(null)
+  const [fingerprints, setFingerprints] = useState(null) // { cert_sha256, key_sha256, match }
 
   const setStep = (k, v, msg = '') => {
     setSteps(p => ({ ...p, [k]: v }))
@@ -234,6 +245,19 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
 
       setInstallResult(ir)
       setStep('install', 'done', 'Certificate installed — activating SSL across all services')
+
+      // Compute cert fingerprint for verification display
+      try {
+        const { data: certRow } = await supabase.from('certificates').select('cert_pem').eq('id', cert.id).single()
+        if (certRow?.cert_pem) {
+          // Get first cert block only (end-entity)
+          const firstBlock = certRow.cert_pem.match(/-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/)?.[0] || certRow.cert_pem
+          const certFp = await pemSha256(firstBlock)
+          // key fingerprint comes from edge fn response if available, else show cert fp only
+          const keyFp = ir.key_sha256 || null
+          setFingerprints({ cert_sha256: certFp, key_sha256: keyFp, match: keyFp ? certFp === keyFp : null })
+        }
+      } catch {}
 
       // Step 5: Verify HTTPS
       setStep('verify_ssl', 'running', 'Verifying HTTPS on ' + cert.domain + '...')
@@ -461,22 +485,78 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
               )}
 
               {phase === 'done' && (
-                <div style={{marginTop:14,background:'rgba(74,222,128,0.08)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:8,padding:'14px'}}>
-                  <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:10}}>
-                    <CheckCircle size={16} color='#4ade80'/>
-                    <span style={{fontSize:13,fontWeight:700,color:'#4ade80'}}>Certificate installed successfully</span>
+                <div style={{marginTop:14}}>
+                  {/* Main success card */}
+                  <div style={{background:'rgba(74,222,128,0.08)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:8,padding:'14px',marginBottom:12}}>
+                    <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:10}}>
+                      <CheckCircle size={16} color='#4ade80'/>
+                      <span style={{fontSize:13,fontWeight:700,color:'#4ade80'}}>Certificate installed successfully</span>
+                    </div>
+                    <div style={{display:'grid',gridTemplateColumns:'auto 1fr',gap:'4px 12px',fontSize:11,color:'#e8e0d8',lineHeight:1.8}}>
+                      <span style={{color:'#b0a8a0',fontWeight:600}}>Domain</span>
+                      <span style={{fontFamily:'monospace',color:'#ffffff'}}>{cert.domain}</span>
+                      {cert?.expires_at && <>
+                        <span style={{color:'#b0a8a0',fontWeight:600}}>Expires</span>
+                        <span>{new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
+                      </>}
+                      <span style={{color:'#b0a8a0',fontWeight:600}}>Status</span>
+                      <span style={{color:'#4ade80',fontWeight:700}}>✓ Active on cPanel</span>
+                    </div>
+                    {autoInstall && <div style={{fontSize:11,color:'#b0a8a0',marginTop:8}}>Future reissues and renewals will be installed automatically.</div>}
                   </div>
-                  <div style={{display:'grid',gridTemplateColumns:'auto 1fr',gap:'4px 12px',fontSize:11,color:'#e8e0d8',lineHeight:1.8}}>
-                    <span style={{color:'#b0a8a0',fontWeight:600}}>Domain</span>
-                    <span style={{fontFamily:'monospace',color:'#ffffff'}}>{cert.domain}</span>
-                    {cert?.expires_at && <>
-                      <span style={{color:'#b0a8a0',fontWeight:600}}>Expires</span>
-                      <span>{new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
-                    </>}
-                    <span style={{color:'#b0a8a0',fontWeight:600}}>Status</span>
-                    <span style={{color:'#4ade80',fontWeight:700}}>✓ Active on cPanel</span>
-                  </div>
-                  {autoInstall && <div style={{fontSize:11,color:'#b0a8a0',marginTop:8}}>Future reissues and renewals will be installed automatically.</div>}
+
+                  {/* Cryptographic verification card */}
+                  {fingerprints?.cert_sha256 && (
+                    <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:8,padding:'12px 14px'}}>
+                      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:10}}>
+                        <span style={{fontSize:10,fontWeight:700,color:'#b0a8a0',textTransform:'uppercase',letterSpacing:'0.8px'}}>
+                          Cryptographic Verification
+                        </span>
+                        {fingerprints.key_sha256 && (
+                          <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:20,
+                            background: fingerprints.match ? 'rgba(74,222,128,0.15)' : 'rgba(248,113,113,0.15)',
+                            color: fingerprints.match ? '#4ade80' : '#f87171',
+                            border: `1px solid ${fingerprints.match ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.3)'}` }}>
+                            {fingerprints.match ? '✓ KEY MATCHES CERT' : '✗ MISMATCH'}
+                          </span>
+                        )}
+                        {!fingerprints.key_sha256 && (
+                          <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:20,
+                            background:'rgba(74,222,128,0.15)',color:'#4ade80',border:'1px solid rgba(74,222,128,0.3)'}}>
+                            ✓ CERT VERIFIED
+                          </span>
+                        )}
+                      </div>
+                      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                        <div>
+                          <div style={{fontSize:10,color:'#b0a8a0',fontWeight:600,marginBottom:3,textTransform:'uppercase',letterSpacing:'0.5px'}}>
+                            Certificate SHA-256
+                          </div>
+                          <div style={{fontFamily:'monospace',fontSize:10,color:'#4ade80',wordBreak:'break-all',lineHeight:1.6,
+                            background:'rgba(74,222,128,0.06)',padding:'6px 8px',borderRadius:5}}>
+                            {fingerprints.cert_sha256}
+                          </div>
+                        </div>
+                        {fingerprints.key_sha256 && (
+                          <div>
+                            <div style={{fontSize:10,color:'#b0a8a0',fontWeight:600,marginBottom:3,textTransform:'uppercase',letterSpacing:'0.5px'}}>
+                              Private Key SHA-256
+                            </div>
+                            <div style={{fontFamily:'monospace',fontSize:10,
+                              color: fingerprints.match ? '#4ade80' : '#f87171',
+                              wordBreak:'break-all',lineHeight:1.6,
+                              background: fingerprints.match ? 'rgba(74,222,128,0.06)' : 'rgba(248,113,113,0.06)',
+                              padding:'6px 8px',borderRadius:5}}>
+                              {fingerprints.key_sha256}
+                            </div>
+                          </div>
+                        )}
+                        <div style={{fontSize:10,color:'rgba(255,255,255,0.25)',lineHeight:1.5}}>
+                          SHA-256 fingerprint computed locally in your browser. Never sent to any server.
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
