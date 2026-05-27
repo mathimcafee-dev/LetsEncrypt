@@ -58,25 +58,28 @@ async function cpanelFetch(
     client,
     signal: AbortSignal.timeout(30000),
   })
-  if (!res.ok) throw new Error(`HTTP ${res.status} from ${url}`)
-  return res.json()
+  const text = await res.text()
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`)
+  try { return JSON.parse(text) } catch { throw new Error(`Bad JSON: ${text.slice(0, 200)}`) }
 }
 
-// ── Install AND activate certificate on cPanel domain ────────────────
+// ── Install AND activate SSL certificate on cPanel domain ────────────
 //
-// Three-step process required to fully activate a cert on cPanel:
+// cPanel has two APIs. We use BOTH to guarantee activation:
 //
-//   Step 1 — UAPI SSL/install_ssl:
-//     Uploads the cert+key+cabundle into cPanel's certificate store.
-//     Does NOT activate it as the serving cert for the domain.
+//   Step 1 — WHM API1 style via json-api (API2 SSL::installssl)
+//     The ORIGINAL activation call. Binds cert+key to the Apache vhost.
+//     This is exactly what cPanel's own UI does when you click "Install".
+//     Endpoint: /json-api/cpanel?cpanel_jsonapi_version=2&cpanel_jsonapi_module=SSL&cpanel_jsonapi_func=installssl
+//     Params: domain, user (cpanel username), crt, key, cab
 //
-//   Step 2 — API2 SSL/installssl:
-//     Actually activates the certificate on the domain's Apache vhost.
-//     THIS is the step that replaces Let's Encrypt / old cert.
-//     Without this, the cert just sits in the store unused.
+//   Step 2 — UAPI SSL/install_ssl (backup / modern cPanel)
+//     For newer cPanel versions that deprecated API2.
+//     Endpoint: /execute/SSL/install_ssl
+//     Params: domain, cert, key, cabundle
 //
-//   Step 3 — UAPI SSL/rebuild_mail_sni (non-fatal):
-//     Activates the cert for mail services (IMAP, SMTP, etc).
+//   Step 3 — UAPI SSL/rebuild_mail_sni (non-fatal)
+//     Activates cert for mail services.
 //
 async function cpanelInstallSSL(
   host: string,
@@ -90,37 +93,11 @@ async function cpanelInstallSSL(
 ): Promise<{ ok: boolean; error?: string; debug?: Record<string, any> }> {
 
   const debug: Record<string, any> = {}
+  let activated = false
 
-  // ── Step 1: UAPI SSL/install_ssl — upload cert to store ──────────
-  try {
-    const uapiParams = new URLSearchParams({
-      domain,
-      cert:     certPem,
-      key:      keyPem,
-      cabundle: caBundlePem,
-    })
-    const uapiData = await cpanelFetch(
-      host, port, username, apiToken,
-      `https://${host}:${port}/execute/SSL/install_ssl`,
-      uapiParams
-    )
-    debug.s1_uapi = { status: uapiData?.result?.status, errors: uapiData?.result?.errors }
-    const s1status = uapiData?.result?.status ?? uapiData?.status
-    if (s1status !== 1 && s1status !== true) {
-      const s1err = uapiData?.result?.errors?.[0] || uapiData?.errors?.[0] || `UAPI status ${s1status}`
-      // Non-fatal if cert already in store — continue to activation step
-      console.warn('[cpanel-install] UAPI install_ssl warning:', s1err)
-    }
-  } catch (e: any) {
-    debug.s1_uapi = { error: e.message }
-    // Non-fatal — cert may already be in store, try activation anyway
-    console.warn('[cpanel-install] Step 1 UAPI error (non-fatal):', e.message)
-  }
-
-  // ── Step 2: API2 SSL/installssl — ACTIVATE cert on domain vhost ──
-  // This is the critical step that actually makes the cert serve.
-  // Uses the older JSON-API (API2) which is what cPanel uses internally
-  // when you click "Install" in the SSL/TLS manager UI.
+  // ── Step 1: API2 SSL/installssl — primary activation ─────────────
+  // This is the definitive cPanel cert activation call.
+  // It both stores AND binds the cert to the domain vhost in one shot.
   try {
     const api2Params = new URLSearchParams({
       cpanel_jsonapi_version: '2',
@@ -137,33 +114,84 @@ async function cpanelInstallSSL(
       `https://${host}:${port}/json-api/cpanel`,
       api2Params
     )
-    debug.s2_api2 = { raw: JSON.stringify(api2Data).slice(0, 500) }
+    debug.s1_api2 = { raw: JSON.stringify(api2Data).slice(0, 600) }
 
-    // API2 response: { cpanelresult: { data: [...], error: "..." } }
-    const cpResult = api2Data?.cpanelresult
-    const api2Err  = cpResult?.error || cpResult?.data?.[0]?.reason
-    const api2Ok   = !api2Err || cpResult?.data?.[0]?.result === 1
+    // API2 response shape: { cpanelresult: { data: [{ result: 1, reason: "OK" }], error: "" } }
+    const cpResult  = api2Data?.cpanelresult
+    const dataItem  = cpResult?.data?.[0]
+    const api2Err   = cpResult?.error || (dataItem?.result === 0 ? dataItem?.reason : null)
+    const api2Ok    = dataItem?.result === 1 || (!api2Err && cpResult?.event?.result === 1)
 
-    if (!api2Ok) {
-      return { ok: false, error: `API2 failed: ${api2Err || JSON.stringify(api2Data).slice(0,200)}`, debug }
+    debug.s1_api2_parsed = { result: dataItem?.result, reason: dataItem?.reason, err: api2Err, ok: api2Ok }
+
+    if (api2Ok) {
+      activated = true
+      console.log('[cpanel-install] API2 installssl succeeded')
+    } else {
+      console.warn('[cpanel-install] API2 installssl failed:', api2Err)
+      debug.s1_api2_warning = api2Err
     }
   } catch (e: any) {
-    debug.s2_api2 = { error: e.message }
-    return { ok: false, error: `API2 activation failed: ${e.message}`, debug }
+    debug.s1_api2 = { error: e.message }
+    console.warn('[cpanel-install] Step 1 API2 error:', e.message)
+  }
+
+  // ── Step 2: UAPI SSL/install_ssl — fallback / modern cPanel ──────
+  // Try regardless — some cPanel versions need this instead of API2.
+  // Also serves as a second activation attempt if API2 failed.
+  try {
+    const uapiParams = new URLSearchParams({
+      domain,
+      cert:     certPem,
+      key:      keyPem,
+      cabundle: caBundlePem,
+    })
+    const uapiData = await cpanelFetch(
+      host, port, username, apiToken,
+      `https://${host}:${port}/execute/SSL/install_ssl`,
+      uapiParams
+    )
+    debug.s2_uapi = { raw: JSON.stringify(uapiData).slice(0, 400) }
+
+    const uapiStatus = uapiData?.result?.status ?? uapiData?.status
+    const uapiErrors = uapiData?.result?.errors ?? uapiData?.errors ?? []
+    const uapiErr    = Array.isArray(uapiErrors) && uapiErrors.length > 0 ? uapiErrors[0] : null
+
+    debug.s2_uapi_parsed = { status: uapiStatus, error: uapiErr }
+
+    if (uapiStatus === 1 || uapiStatus === true) {
+      activated = true
+      console.log('[cpanel-install] UAPI install_ssl succeeded')
+    } else if (!activated) {
+      // Only treat as fatal if API2 also failed
+      return {
+        ok: false,
+        error: uapiErr || `Both API2 and UAPI install failed. Full debug: ${JSON.stringify(debug)}`,
+        debug,
+      }
+    }
+  } catch (e: any) {
+    debug.s2_uapi = { error: e.message }
+    if (!activated) {
+      return { ok: false, error: `cPanel install failed: ${e.message}. Debug: ${JSON.stringify(debug)}`, debug }
+    }
+  }
+
+  if (!activated) {
+    return { ok: false, error: `Certificate was not activated. Debug: ${JSON.stringify(debug)}`, debug }
   }
 
   // ── Step 3: UAPI SSL/rebuild_mail_sni — activate for mail (non-fatal) ──
   try {
     const mailParams = new URLSearchParams({ domain })
-    await cpanelFetch(
+    const mailData = await cpanelFetch(
       host, port, username, apiToken,
       `https://${host}:${port}/execute/SSL/rebuild_mail_sni`,
       mailParams
     )
-    debug.s3_mail_sni = 'ok'
+    debug.s3_mail_sni = { status: mailData?.result?.status }
   } catch (e: any) {
     debug.s3_mail_sni = `non-fatal: ${e.message}`
-    console.warn('[cpanel-install] rebuild_mail_sni non-fatal:', e.message)
   }
 
   return { ok: true, debug }
