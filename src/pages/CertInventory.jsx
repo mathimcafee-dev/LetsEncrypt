@@ -29,7 +29,7 @@ function statusInfo(days, status) {
   if (days != null && days < 0)     return { label:'Expired',    color:'#f87171', bg:'#fef2f2', border:'#fecaca' }
   if (days != null && days <= 7)    return { label:'Exp. Soon',  color:'#C45A4A', bg:'#fefce8', border:'#F2C4BC' }
   if (days != null && days <= 30)   return { label:'Expiring',   color:'#ffffff', bg:'#fff7ed', border:'#fed7aa' }
-  if (status === 'active')          return { label:'Active',     color:'#ffffff', bg:'#111111', border:'#A8E6DE' }
+  if (status === 'active')          return { label:'Active',     color:'#ffffff', bg:'#111111', border:'rgba(192,57,43,0.3)' }
   return                                   { label:'Pending',    color:'#C45A4A', bg:'#fefce8', border:'#F2C4BC' }
 }
 
@@ -125,7 +125,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
           <span style={{ fontSize:mono?11:12, color:color||'var(--v2-text)', fontFamily:mono?"'SF Mono','Menlo',monospace":'inherit', wordBreak:'break-all' }}>{value || '—'}</span>
           {copiable && value && (
             <button onClick={() => copy(value, label)} style={{ flexShrink:0, background:'none', border:'none', cursor:'pointer', color:'var(--v2-text-3)', padding:0 }}>
-              {copiedField===label ? <Check size={12} color="#0d9488"/> : <Copy size={12}/>}
+              {copiedField===label ? <Check size={12} color="#c0392b"/> : <Copy size={12}/>}
             </button>
           )}
         </div>
@@ -143,7 +143,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
   )
 
   return (
-    <div style={{ borderTop:'2px solid #0d9488', background:'var(--v2-bg)' }}>
+    <div style={{ borderTop:'2px solid #c0392b', background:'var(--v2-bg)' }}>
       {/* Header */}
       <div style={{ padding:'14px 20px', background:'var(--v2-surface)', borderBottom:'0.5px solid var(--v2-border)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div>
@@ -179,7 +179,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 <InfoRow label="Order Date"     value={fmtDateFull(order?.created_at || cert.created_at)}/>
                 <InfoRow label="Order Expiration" value={order?.years ? fmtDate(new Date(new Date(order.created_at).getTime() + order.years*365*86400000).toISOString()) : '—'}/>
                 <InfoRow label="Validity"       value={order?.years ? `${order.years} Year${order.years>1?'s':''}` : '1 Year'}/>
-                <InfoRow label="Vendor Status"  value={(order?.minor_status||cert.status||'').toUpperCase()} color="#0d9488"/>
+                <InfoRow label="Vendor Status"  value={(order?.minor_status||cert.status||'').toUpperCase()} color="#c0392b"/>
                 <InfoRow label="Install Method" value={cert.install_method ? cert.install_method.toUpperCase() : '—'}/>
                 <InfoRow label="Install Status" value={cert.install_status === 'success' ? (cert.install_verified ? '✓ Verified Live' : 'Installed') : (cert.install_status||'Not installed')} color={cert.install_status==='success'?'#ffffff':'#737373'}/>
                 <InfoRow label="Environment"    value={cert.is_sandbox?'Sandbox':'Production'} color={cert.is_sandbox?'#C45A4A':'#ffffff'}/>

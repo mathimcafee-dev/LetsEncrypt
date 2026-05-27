@@ -27,18 +27,18 @@ import CertBind from './CertBind'
 import Pricing from './Pricing'
 
 // ── Design tokens ──────────────────────────────────────────────────────
-const F = "'Inter',system-ui,sans-serif"
+const F = "'Montserrat',system-ui,sans-serif"
 const NAVY  = '#0d2b2b'   // page bg
 const CARD  = '#1a4040'   // card / topbar bg
 const CARD2 = '#0f3535'   // elevated card
 const CARD3 = '#133d3d'   // input / hover
-const LINE  = 'rgba(45,212,191,0.15)'
-const LINE2 = 'rgba(45,212,191,0.25)'
-const INK   = '#e8f5f4'
+const LINE  = 'rgba(192,57,43,0.15)'
+const LINE2 = 'rgba(192,57,43,0.25)'
+const INK   = 'rgba(192,57,43,0.1)'
 const BODY  = 'rgba(232,245,244,0.7)'
 const MUTED = 'rgba(232,245,244,0.4)'
-const BLUE  = '#2dd4bf'
-const BLUEH = '#14b8a6'
+const BLUE  = '#e07060'
+const BLUEH = '#e07060'
 const GREEN = '#4ade80'
 const RED   = '#f87171'
 const AMBER = '#fbbf24'
@@ -333,7 +333,7 @@ export default function CLMHome({ user, nav }) {
 
       <style>{`
         @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-        body{font-family:'Inter',system-ui,sans-serif;background:#0d1117}
+        body{font-family:'Montserrat',system-ui,sans-serif;background:#0d1117}
         ::-webkit-scrollbar{width:5px;height:5px}
         ::-webkit-scrollbar-track{background:#161b22}
         ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:99px}

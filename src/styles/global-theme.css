@@ -36,11 +36,11 @@ html, body { font-family: var(--f); background: radial-gradient(ellipse at 65% 4
 
 .v2-page, [class*="v2-"] { font-family: var(--f) !important; }
 
-.v2-btn-primary, button[style*="#1A7A72"], button[style*="#3DBFB0"] {
+.v2-btn-primary, button[style*="#c0392b"], button[style*="#e07060"] {
   background: #c0392b !important;
   border-color: #c0392b !important;
 }
-.v2-btn-primary:hover, button[style*="#1A7A72"]:hover { background: #a93226 !important; }
+.v2-btn-primary:hover, button[style*="#c0392b"]:hover { background: #a93226 !important; }
 
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }

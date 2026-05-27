@@ -37,11 +37,11 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
       <div style={{ padding:'12px 16px', borderBottom:'0.5px solid rgba(15,23,42,0.06)',
         display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-          <Shield size={14} color="#3DBFB0"/>
+          <Shield size={14} color="#e07060"/>
           <span style={{ fontSize:13, fontWeight:600, color:'#0f172a' }}>Fleet overview</span>
           {allClear && (
             <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20,
-              background:'#E8F8F6', color:'#16a34a', border:'0.5px solid #A8E6DE' }}>
+              background:'rgba(192,57,43,0.1)', color:'#16a34a', border:'0.5px solid rgba(192,57,43,0.3)' }}>
               All clear ✓
             </span>
           )}
@@ -52,10 +52,10 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
       {/* Stats row */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:0 }}>
         {[
-          { val: healthy.length,  label:'Healthy',       color:'#16a34a', bg:'#E8F8F6', icon: <Shield size={13} color="#16a34a"/> },
+          { val: healthy.length,  label:'Healthy',       color:'#16a34a', bg:'rgba(192,57,43,0.1)', icon: <Shield size={13} color="#16a34a"/> },
           { val: expiring.length, label:'Expiring soon', color: expiring.length>0?'#E8897A':'#94a3b8', bg: expiring.length>0?'#FDF0EE':'#fafaf9', icon: <AlertTriangle size={13} color={expiring.length>0?'#E8897A':'#94a3b8'}/> },
           { val: expired.length,  label:'Expired',       color: expired.length>0?'#dc2626':'#94a3b8',  bg: expired.length>0?'#fef2f2':'#fafaf9',  icon: <XCircle size={13} color={expired.length>0?'#dc2626':'#94a3b8'}/> },
-          { val: activeAgents,    label:'Agents active', color:'#1A7A72', bg:'#E8F8F6', icon: <Server size={13} color="#1A7A72"/> },
+          { val: activeAgents,    label:'Agents active', color:'#c0392b', bg:'rgba(192,57,43,0.1)', icon: <Server size={13} color="#c0392b"/> },
         ].map((s, i) => (
           <div key={s.label} style={{ padding:'14px 16px', background:s.bg,
             borderRight: i < 3 ? '0.5px solid rgba(15,23,42,0.06)' : 'none' }}>

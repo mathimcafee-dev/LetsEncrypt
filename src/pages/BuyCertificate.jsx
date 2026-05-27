@@ -34,7 +34,7 @@ function CopyBtn({ text }) {
   return (
     <button onClick={() => { navigator.clipboard.writeText(text); setOk(true); setTimeout(() => setOk(false), 1800) }}
       style={{ background: 'rgba(255,255,255,0.07)', border: '0.5px solid rgba(255,255,255,0.1)',
-        borderRadius: 4, cursor: 'pointer', color: ok ? '#34d399' : 'rgba(255,255,255,0.35)',
+        borderRadius: 4, cursor: 'pointer', color: ok ? '#e07060' : 'rgba(255,255,255,0.35)',
         display: 'flex', alignItems: 'center', gap: 4, fontSize:10, padding: '3px 8px', fontFamily: 'inherit' }}>
       {ok ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
     </button>
@@ -51,7 +51,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
   return (
     <div style={{ background: 'transparent', border: '1px solid rgba(14,127,192,0.3)',
       borderRadius: 10, overflow: 'hidden', fontFamily: 'var(--v2-font-mono)' }}>
-      <div style={{ background: 'linear-gradient(135deg, #0d9488 0%, #1a56db 100%)',
+      <div style={{ background: 'linear-gradient(135deg, #c0392b 0%, #1a56db 100%)',
         padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 10 }}>
         <ShieldCheck size={20} color="white" strokeWidth={2}/>
         <div>
@@ -79,14 +79,14 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
           <div key={label} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 8 }}>
             <span style={{ fontSize: 9, fontWeight: 600, color: '#4b5563',
               textTransform: 'uppercase', letterSpacing: '0.4px', paddingTop: 1 }}>{label}</span>
-            <span style={{ fontSize:11, color: highlight ? '#34d399' : 'rgba(255,255,255,0.35)',
+            <span style={{ fontSize:11, color: highlight ? '#e07060' : 'rgba(255,255,255,0.35)',
               wordBreak: 'break-all', fontWeight: highlight ? 600 : 400 }}>{value}</span>
           </div>
         ))}
       </div>
       <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
         display: 'flex', alignItems: 'center', gap: 6 }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399',
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#e07060',
           boxShadow: '0 0 0 3px rgba(52,211,153,0.2)' }}/>
         <span style={{ fontSize:10, color: '#4b5563' }}>
           {domain ? 'Ready to issue' : 'Enter domain to preview'}
@@ -281,7 +281,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ width: 56, height: 56, background: 'rgba(14,127,192,0.15)',
           border: '1px solid rgba(14,127,192,0.3)', borderRadius: 14,
           display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-          <Shield size={24} color="#0d9488"/>
+          <Shield size={24} color="#c0392b"/>
         </div>
         <h2 style={{ fontSize:22, fontWeight: 800, color: '#ffffff', marginBottom: 8, letterSpacing: '-0.4px' }}>
           Sign in to continue
@@ -307,7 +307,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
         padding: '0 32px', display: embedded ? 'none' : 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg,#0d9488,#1a56db)',
+          <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg,#c0392b,#1a56db)',
             borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Shield size={14} color="white"/>
           </div>
@@ -361,12 +361,12 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 {PRODUCTS.map(p => (
                   <div key={p.code} onClick={() => setProduct(p.code)}
                     style={{ flex: 1, padding: '12px 16px', borderRadius: 8, cursor: 'pointer',
-                      border: product === p.code ? '1.5px solid #0d9488' : '0.5px solid rgba(255,255,255,0.08)',
+                      border: product === p.code ? '1.5px solid #c0392b' : '0.5px solid rgba(255,255,255,0.08)',
                       background: product === p.code ? 'rgba(14,127,192,0.1)' : 'rgba(255,255,255,0.02)',
                       transition: 'all 0.12s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <div style={{ width: 14, height: 14, borderRadius: '50%',
-                        border: product === p.code ? '4px solid #0d9488' : '1.5px solid rgba(255,255,255,0.14)',
+                        border: product === p.code ? '4px solid #c0392b' : '1.5px solid rgba(255,255,255,0.14)',
                         transition: 'all 0.12s' }}/>
                       <span style={{ fontSize:13, fontWeight: 600, color: 'rgba(255,255,255,0.12)' }}>{p.name}</span>
                       <span style={{ fontSize: 9, fontWeight: 700, background: 'rgba(14,127,192,0.2)',
@@ -416,7 +416,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   Validity period
                 </label>
                 <div style={{ padding: '10px 14px', borderRadius: 7,
-                  border: '1.5px solid #0d9488', background: 'rgba(14,127,192,0.1)' }}>
+                  border: '1.5px solid #c0392b', background: 'rgba(14,127,192,0.1)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize:13, fontWeight: 600, color: 'rgba(255,255,255,0.12)' }}>1 year</span>
                     <span style={{ fontSize:11, color: '#ffffff' }}>✓ Selected</span>
@@ -502,7 +502,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             </div>
             <div style={{ padding: '12px 18px 16px' }}>
               <button onClick={place} disabled={busy}
-                style={{ width: '100%', background: busy ? '#1f2937' : 'linear-gradient(135deg,#0d9488,#1a56db)',
+                style={{ width: '100%', background: busy ? '#1f2937' : 'linear-gradient(135deg,#c0392b,#1a56db)',
                   color: busy ? '#4b5563' : '#000000', border: 'none', borderRadius: 8,
                   padding: '13px', fontSize:14, fontWeight: 700, cursor: busy ? 'not-allowed' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -531,7 +531,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     <div style={{ minHeight: '100vh', background: 'transparent' }}>
       <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
         padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Shield size={16} color="#0d9488"/>
+        <Shield size={16} color="#c0392b"/>
         <span style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>Validate Domain Ownership</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, alignItems: 'center' }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ffffff',
@@ -594,7 +594,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 <span style={{ fontSize:10, fontWeight: 700, color: '#ffffff',
                   textTransform: 'uppercase', letterSpacing: '0.4px' }}>{k}</span>
                 <span style={{ fontSize:12, fontFamily: 'monospace',
-                  color: loading ? '#ffffff' : accent ? '#34d399' : 'rgba(255,255,255,0.35)',
+                  color: loading ? '#ffffff' : accent ? '#e07060' : 'rgba(255,255,255,0.35)',
                   wordBreak: 'break-all', lineHeight: 1.5 }}>
                   {loading
                     ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -612,9 +612,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               background: res.dns_auto.ok ? 'rgba(52,211,153,0.06)' : 'rgba(220,38,38,0.06)',
               display: 'flex', alignItems: 'flex-start', gap: 8 }}>
               {res.dns_auto.ok
-                ? <Check size={12} style={{ color: '#34d399', flexShrink: 0, marginTop: 1 }}/>
+                ? <Check size={12} style={{ color: '#e07060', flexShrink: 0, marginTop: 1 }}/>
                 : <AlertTriangle size={12} style={{ color: '#f87171', flexShrink: 0, marginTop: 1 }}/>}
-              <span style={{ fontSize:11, color: res.dns_auto.ok ? '#34d399' : '#f87171', lineHeight: 1.5 }}>
+              <span style={{ fontSize:11, color: res.dns_auto.ok ? '#e07060' : '#f87171', lineHeight: 1.5 }}>
                 {res.dns_auto.ok
                   ? `Record added via ${res.dns_auto.provider}. Checking automatically every 5 seconds…`
                   : res.dns_auto.message}
@@ -637,7 +637,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(52,211,153,0.1)',
                 border: '0.5px solid rgba(52,211,153,0.3)', borderRadius: 7, padding: '10px 18px',
-                fontSize:13, color: '#34d399', fontWeight: 500 }}>
+                fontSize:13, color: '#e07060', fontWeight: 500 }}>
                 <RefreshCw size={13} className="spin"/> DNS validated via {ord.dns_provider || 'provider'} — auto-checking every 5s, certificate will appear automatically
               </div>
             ) : (
@@ -689,7 +689,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ width: 72, height: 72, borderRadius: '50%',
           background: 'rgba(52,211,153,0.1)', border: '1.5px solid rgba(52,211,153,0.3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-          <ShieldCheck size={32} color="#34d399" strokeWidth={2}/>
+          <ShieldCheck size={32} color="#e07060" strokeWidth={2}/>
         </div>
         <h2 style={{ fontSize:28, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.6px', marginBottom: 8 }}>
           Certificate Issued
@@ -703,7 +703,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
           <button onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              background: 'linear-gradient(135deg,#0d9488,#1a56db)', color: '#ffffff',
+              background: 'linear-gradient(135deg,#c0392b,#1a56db)', color: '#ffffff',
               border: 'none', borderRadius: 8, padding: '13px', fontSize:14,
               fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
             <Server size={15}/> Go to Dashboard

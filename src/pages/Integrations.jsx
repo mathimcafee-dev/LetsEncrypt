@@ -42,7 +42,7 @@ const CA_DEFS = {
     docs: 'https://sectigo.com/knowledge-base/detail/Sectigo-Certificate-Manager-API/kA01N000000bvOx',
   },
   sslcom: {
-    name: 'SSL.com', color: '#ffffff', bg: '#D4F5EF', border: '#A8E6DE', logo: 'SL',
+    name: 'SSL.com', color: '#ffffff', bg: 'rgba(192,57,43,0.1)', border: 'rgba(192,57,43,0.3)', logo: 'SL',
     desc: 'Pull all issued certificates from your SSL.com reseller account. Monitoring only — no private keys needed.',
     fields: [
       { key: 'account_key', label: 'Account Key', type: 'password', placeholder: 'Your SSL.com account key', required: true },
@@ -105,7 +105,7 @@ const SERVER_TYPES = {
       { key: 'api_token', label: 'cPanel API Token',     type: 'password', placeholder: 'Paste API token here', help: 'cPanel → Manage API Tokens → Create → SSL permission' },
     ]
   },
-  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#ffffff', bg: '#111111', border: '#A8E6DE',
+  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#ffffff', bg: '#111111', border: 'rgba(192,57,43,0.3)',
     desc: 'Ubuntu, Debian, CentOS, Amazon Linux',
     fields: [
       { key: 'host',     label: 'Server IP / Hostname', type: 'text',     placeholder: '134.209.x.x',                         help: 'Public IP or hostname' },
@@ -254,7 +254,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
 
   const tagBg = hasBoth ? 'rgba(255,255,255,0.7)' : dnsOnly ? '#4ade80' : 'rgba(255,255,255,0.7)'
   const tagLabel = hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'
-  const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#0d9488)' : dnsOnly ? p?.color : t?.color || 'rgba(255,255,255,0.7)'
+  const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#c0392b)' : dnsOnly ? p?.color : t?.color || 'rgba(255,255,255,0.7)'
   const dotColor = rowDot==='green'?'#4ade80':rowDot==='amber'?'#ffffff':'rgba(255,255,255,0.2)'
   return (
     <div onClick={() => onSelect(domain)}
@@ -495,7 +495,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       {isVPS && !agent ? (
         <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
           style={{ fontSize:11, color:'#ffffff', background:'transparent',
-            border:'0.5px solid #A8E6DE', borderRadius:6, cursor:'pointer',
+            border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:6, cursor:'pointer',
             padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
             fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>
           Install agent <ChevronRight size={11} strokeWidth={2}/>
@@ -1279,7 +1279,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 border: '0.5px solid var(--v2-green-border)', display: 'inline-flex',
                 alignItems: 'center', justifyContent: 'center', marginBottom: 12
               }}>
-                <Check size={22} strokeWidth={2.2} color="#0d9488" />
+                <Check size={22} strokeWidth={2.2} color="#c0392b" />
               </div>
               <div style={{ fontSize:14, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>Agent registered</div>
               <div style={{ fontSize:12, color: 'var(--v2-text-2)' }}>{server.nickname} is now fully automated</div>
@@ -1308,7 +1308,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 <label className="v2-label">SSH into your server and run</label>
                 <div style={{ background: '#ffffff', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                padding: '7px 12px', borderBottom: '0.5px solid #e6fbf5' }}>
+                                padding: '7px 12px', borderBottom: '0.5px solid rgba(192,57,43,0.08)' }}>
                     <div style={{ display: 'flex', gap: 5 }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f87171' }} />
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#ffffff' }} />
@@ -1678,8 +1678,8 @@ export default function Integrations({ nav }) {
               style={{
                 padding:'10px 20px', fontSize:13, fontWeight: tab===id ? 600 : 400,
                 fontFamily:'inherit', border:'none', cursor:'pointer',
-                background:'transparent', color: tab===id ? 'var(--v2-accent,#0d9488)' : 'var(--v2-text-3)',
-                borderBottom: tab===id ? '2px solid var(--v2-accent,#0d9488)' : '2px solid transparent',
+                background:'transparent', color: tab===id ? 'var(--v2-accent,#c0392b)' : 'var(--v2-text-3)',
+                borderBottom: tab===id ? '2px solid var(--v2-accent,#c0392b)' : '2px solid transparent',
                 marginBottom:-1, transition:'all .12s', display:'flex', alignItems:'center', gap:8
               }}>
               {label}
@@ -1687,7 +1687,7 @@ export default function Integrations({ nav }) {
                 <span style={{
                   fontSize:11, fontWeight:600, padding:'1px 7px', borderRadius:10,
                   background: tab===id ? 'rgba(14,127,192,0.12)' : 'var(--v2-surface-2)',
-                  color: tab===id ? 'var(--v2-accent,#0d9488)' : 'var(--v2-text-3)',
+                  color: tab===id ? 'var(--v2-accent,#c0392b)' : 'var(--v2-text-3)',
                 }}>{count}</span>
               )}
             </button>
@@ -1740,7 +1740,7 @@ export default function Integrations({ nav }) {
                   const p = PROVIDERS[cred.provider] || { name: cred.provider, mono:'?', color:'rgba(255,255,255,0.6)' }
                   const st = credStatus[cred.id] || 'untested'
                   const statusStyles = {
-                    healthy:  { color:'#ffffff', bg:'#111111', border:'#A8E6DE', label:'Active' },
+                    healthy:  { color:'#ffffff', bg:'#111111', border:'rgba(192,57,43,0.3)', label:'Active' },
                     expired:  { color:'#991b1b', bg:'#fef2f2', border:'#fecaca', label:'Error' },
                     untested: { color:'rgba(255,255,255,0.7)', bg:'var(--v2-surface-2)', border:'var(--v2-border)', label:'Untested' }
                   }
@@ -1880,7 +1880,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                   const agentOnline = minsAgo !== null && minsAgo < 15
                   const agentStatus = !agent ? 'none' : agentOnline ? 'online' : 'offline'
                   const agentUI = {
-                    online:  { color:'#ffffff', bg:'#111111', border:'#A8E6DE', label:'Online' },
+                    online:  { color:'#ffffff', bg:'#111111', border:'rgba(192,57,43,0.3)', label:'Online' },
                     offline: { color:'#C45A4A', bg:'rgba(239,68,68,0.08)', border:'#F2C4BC', label:'Offline' },
                     none:    { color:'rgba(255,255,255,0.7)', bg:'var(--v2-surface-2)', border:'var(--v2-border)', label:'No agent' },
                   }
@@ -2043,7 +2043,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                           fontSize:12, fontWeight:500, padding:'4px 10px', borderRadius:4,
                           background: isActive ? '#111111' : '#fef2f2',
                           color: isActive ? '#ffffff' : '#991b1b',
-                          border: `0.5px solid ${isActive ? '#A8E6DE' : '#fecaca'}` }}>
+                          border: `0.5px solid ${isActive ? 'rgba(192,57,43,0.3)' : '#fecaca'}` }}>
                           <span style={{ width:6, height:6, borderRadius:'50%',
                             background: isActive ? '#ffffff' : '#f87171' }}/>
                           {isActive ? 'Connected' : 'Error'}
@@ -2249,7 +2249,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                     ) : importResult.ok ? (
                       <div style={{ textAlign:'center', padding:'10px 0' }}>
                         <div style={{ width:48, height:48, borderRadius:'50%', background:'transparent',
-                          border:'1.5px solid #A8E6DE', display:'flex', alignItems:'center',
+                          border:'1.5px solid rgba(192,57,43,0.3)', display:'flex', alignItems:'center',
                           justifyContent:'center', margin:'0 auto 14px' }}>
                           <Check size={20} style={{ color:'#4ade80' }}/>
                         </div>

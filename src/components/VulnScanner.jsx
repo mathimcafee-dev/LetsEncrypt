@@ -6,9 +6,9 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 function GradeBadge({ grade }) {
   const map = {
-    'A+': { bg:'#E8F8F6', color:'#1A7A72' },
-    'A':  { bg:'#E8F8F6', color:'#16a34a' },
-    'B':  { bg:'#E8F8F6', color:'#2563eb' },
+    'A+': { bg:'rgba(192,57,43,0.1)', color:'#c0392b' },
+    'A':  { bg:'rgba(192,57,43,0.1)', color:'#16a34a' },
+    'B':  { bg:'rgba(192,57,43,0.1)', color:'#2563eb' },
     'C':  { bg:'#fefce8', color:'#ca8a04' },
     'D':  { bg:'#FDF0EE', color:'#E8897A' },
     'F':  { bg:'#fef2f2', color:'#dc2626' },
@@ -46,10 +46,10 @@ function VulnRow({ v }) {
     ? <CheckCircle  size={13} color="#16a34a" style={{ flexShrink:0 }}/>
     : v.status === 'vulnerable'
     ? <XCircle      size={13} color="#dc2626" style={{ flexShrink:0 }}/>
-    : <Info         size={13} color="#1A7A72" style={{ flexShrink:0 }}/>
+    : <Info         size={13} color="#c0392b" style={{ flexShrink:0 }}/>
   const label = v.status === 'safe' ? { text:'Not vulnerable', color:'#16a34a' }
     : v.status === 'vulnerable' ? { text:'Vulnerable', color:'#dc2626' }
-    : { text:'Manual check', color:'#1A7A72' }
+    : { text:'Manual check', color:'#c0392b' }
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0',
       borderBottom:'0.5px solid rgba(15,23,42,0.06)' }}>
@@ -176,7 +176,7 @@ export default function VulnScanner({ domain, session }) {
           {/* Cipher strength */}
           <p style={{ margin:'0 0 8px', fontSize:11, fontWeight:700, color:'#94a3b8',
             textTransform:'uppercase', letterSpacing:'0.5px' }}>Cipher strength</p>
-          <CipherBar label="Strong" count={result.ciphers.strong} total={totalCiphers} color="#3DBFB0"/>
+          <CipherBar label="Strong" count={result.ciphers.strong} total={totalCiphers} color="#e07060"/>
           <CipherBar label="Medium" count={result.ciphers.medium} total={totalCiphers} color="#E8897A"/>
           <CipherBar label="Weak"   count={result.ciphers.weak}   total={totalCiphers} color="#ef4444"/>
 

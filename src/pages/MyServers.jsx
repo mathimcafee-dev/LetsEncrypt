@@ -36,7 +36,7 @@ const DNS_PROVIDERS = {
   digitalocean: { name: 'DigitalOcean',  color: '#0080ff', initials: 'DO' },
   namecheap:    { name: 'Namecheap',     color: '#de3723', initials: 'NC' },
   porkbun:      { name: 'Porkbun',       color: '#ef6c6c', initials: 'PB' },
-  gandi:        { name: 'Gandi',         color: '#00b6a0', initials: 'GA' },
+  gandi:        { name: 'Gandi',         color: '#c0392b', initials: 'GA' },
   hetzner:      { name: 'Hetzner DNS',   color: '#d50c2d', initials: 'HZ' },
   linode:       { name: 'Linode',        color: '#00a95c', initials: 'LN' },
   vultr:        { name: 'Vultr',         color: '#007bfc', initials: 'VU' },
@@ -89,7 +89,7 @@ function ServerCard({ agent, certs }) {
           <div style={{
             width: 40, height: 40, borderRadius: 10,
             background: online ? '#111111' : '#000000',
-            border: `1px solid ${online ? '#A8E6DE' : 'rgba(255,255,255,0.12)'}`,
+            border: `1px solid ${online ? 'rgba(192,57,43,0.3)' : 'rgba(255,255,255,0.12)'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <Server size={18} color={online ? '#4ade80' : 'rgba(255,255,255,0.35)'} />
@@ -134,7 +134,7 @@ function ServerCard({ agent, certs }) {
           )}
           <div style={{
             padding: '4px 10px', borderRadius: 20,
-            background: 'transparent', border: '1px solid #A8E6DE',
+            background: 'transparent', border: '1px solid rgba(192,57,43,0.3)',
             fontSize:11, fontWeight: 600, color: '#ffffff',
           }}>
             {certCount} cert{certCount !== 1 ? 's' : ''}
@@ -150,7 +150,7 @@ function ServerCard({ agent, certs }) {
 
       {/* Expanded: cert list */}
       {expanded && (
-        <div style={{ borderTop: '1px solid #f0fdf9' }}>
+        <div style={{ borderTop: '1px solid rgba(192,57,43,0.08)' }}>
           {certs.length === 0 ? (
             <div style={{ padding: '16px 20px', fontSize:13, color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>
               No certificates installed on this server yet
@@ -161,7 +161,7 @@ function ServerCard({ agent, certs }) {
               return (
                 <div key={cert.id} style={{
                   padding: '12px 20px',
-                  borderBottom: '1px solid #f0fdf9',
+                  borderBottom: '1px solid rgba(192,57,43,0.08)',
                   display: 'flex', alignItems: 'center', gap: 12,
                 }}>
                   <Shield size={13} color={d !== null && d <= 30 ? '#ffffff' : '#ffffff'} />
@@ -187,7 +187,7 @@ function ServerCard({ agent, certs }) {
           {(agent.cpu_pct || agent.mem_pct) && (
             <div style={{
               padding: '10px 20px',
-              background: 'transparent', borderTop: '1px solid #f0fdf9',
+              background: 'transparent', borderTop: '1px solid rgba(192,57,43,0.08)',
               display: 'flex', gap: 20, fontSize:11, color: 'var(--v2-text-3)',
             }}>
               {agent.cpu_pct && <span>CPU: <b style={{color:'var(--v2-text-2)'}}>{agent.cpu_pct}%</b></span>}
@@ -316,7 +316,7 @@ function AddServerModal({ onClose, userId }) {
                   { icon: Lock, text: 'Private keys never leave your server' },
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} style={{ display: 'flex', gap: 10, marginBottom: 8, alignItems: 'flex-start' }}>
-                    <Icon size={13} color="#0d9488" style={{ marginTop: 1, flexShrink: 0 }} />
+                    <Icon size={13} color="#c0392b" style={{ marginTop: 1, flexShrink: 0 }} />
                     <span style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.5 }}>{text}</span>
                   </div>
                 ))}
@@ -342,12 +342,12 @@ function AddServerModal({ onClose, userId }) {
           ) : (
             <>
               <div style={{
-                background: 'transparent', border: '1px solid #A8E6DE',
+                background: 'transparent', border: '1px solid rgba(192,57,43,0.3)',
                 borderRadius: 8, padding: '10px 14px', marginBottom: 16,
                 fontSize:12, color: '#ffffff', fontWeight: 500,
                 display: 'flex', gap: 8, alignItems: 'center',
               }}>
-                <CheckCircle size={13} color="#0d9488" />
+                <CheckCircle size={13} color="#c0392b" />
                 Command ready — paste this on your server as root or with sudo
               </div>
 
@@ -544,10 +544,10 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
     }}>
       <div style={{
         width: 56, height: 56, borderRadius: 14, background: 'transparent',
-        border: '1px solid #A8E6DE', display: 'flex', alignItems: 'center',
+        border: '1px solid rgba(192,57,43,0.3)', display: 'flex', alignItems: 'center',
         justifyContent: 'center', margin: '0 auto 20px',
       }}>
-        <Server size={24} color="#0d9488" />
+        <Server size={24} color="#c0392b" />
       </div>
       <div style={{ fontSize:18, fontWeight: 700, color: 'var(--v2-text)', marginBottom: 8 }}>
         Set up your first server
@@ -574,7 +574,7 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
         ].map(step => (
           <div key={step.num} style={{
             padding: '16px', borderRadius: 10,
-            border: `1px solid ${step.done ? '#A8E6DE' : 'rgba(255,255,255,0.12)'}`,
+            border: `1px solid ${step.done ? 'rgba(192,57,43,0.3)' : 'rgba(255,255,255,0.12)'}`,
             background: step.done ? '#111111' : 'var(--v2-bg)',
             textAlign: 'left',
           }}>
@@ -719,7 +719,7 @@ function AddHostingModal({ onClose, onSaved, userId }) {
               'Auto-renews just like VPS — no manual uploads ever',
             ].map(t => (
               <div key={t} style={{ display:'flex', gap:8, marginBottom:5, alignItems:'flex-start' }}>
-                <CheckCircle size={11} color="#0d9488" style={{ marginTop:1, flexShrink:0 }} />
+                <CheckCircle size={11} color="#c0392b" style={{ marginTop:1, flexShrink:0 }} />
                 <span style={{ fontSize:11, color:'var(--v2-text-2)', lineHeight:1.5 }}>{t}</span>
               </div>
             ))}
@@ -750,8 +750,8 @@ function AddHostingModal({ onClose, onSaved, userId }) {
           <input value={apiToken} onChange={e=>setApiToken(e.target.value)} type="password" placeholder="Paste your cPanel API token" style={inp} />
 
           {testOk && (
-            <div style={{ padding:'8px 12px', background:'transparent', border:'1px solid #A8E6DE', borderRadius:6, fontSize:12, color:'#ffffff', marginBottom:12, display:'flex', gap:6, alignItems:'center' }}>
-              <CheckCircle size={12} color="#0d9488" /> Connection successful!
+            <div style={{ padding:'8px 12px', background:'transparent', border:'1px solid rgba(192,57,43,0.3)', borderRadius:6, fontSize:12, color:'#ffffff', marginBottom:12, display:'flex', gap:6, alignItems:'center' }}>
+              <CheckCircle size={12} color="#c0392b" /> Connection successful!
             </div>
           )}
           {error && <div style={{ padding:'8px 12px', background:'#fef2f2', border:'1px solid #fecaca', borderRadius:6, fontSize:12, color:'#f87171', marginBottom:12 }}>{error}</div>}
@@ -1038,7 +1038,7 @@ export default function MyServers({ user }) {
               <div>
                 {/* Why DNS explanation */}
                 <div style={{
-                  background: 'transparent', border: '1px solid #A8E6DE',
+                  background: 'transparent', border: '1px solid rgba(192,57,43,0.3)',
                   borderRadius: 10, padding: '12px 16px', marginBottom: 16,
                   fontSize:12, color: '#ffffff', lineHeight: 1.6,
                 }}>

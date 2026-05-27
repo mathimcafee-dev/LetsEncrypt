@@ -20,9 +20,9 @@ export default function AboutInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Mission block */}
-      <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #0d9488' }}>
+      <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #c0392b' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
-          <Heart size={14} color="#0d9488"/>
+          <Heart size={14} color="#c0392b"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Mission</span>
         </div>
         <p style={{ fontSize:20, fontWeight:500, color:'#ffffff', lineHeight:1.5, letterSpacing:'-.3px', margin:'0 0 14px', maxWidth:680 }}>
@@ -40,8 +40,8 @@ export default function AboutInner({ nav }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:16 }}>
         {PILLARS.map(({ icon:Icon, title, body }) => (
           <div key={title} style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
-            <div style={{ width:32, height:32, background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
-              <Icon size={15} color="#0d9488"/>
+            <div style={{ width:32, height:32, background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
+              <Icon size={15} color="#c0392b"/>
             </div>
             <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:6 }}>{title}</div>
             <div style={{ fontSize:12, color:'rgba(255,255,255,0.6)', lineHeight:1.7 }}>{body}</div>
@@ -61,7 +61,7 @@ export default function AboutInner({ nav }) {
             ['Agent', 'Bash daemon, systemd'],
             ['DNS', 'Cloudflare · Vercel · cPanel'],
           ].map(([k, v]) => (
-            <div key={k} style={{ padding:'10px 12px', background:'transparent', borderRadius:6, border:'0.5px solid #e6fbf5' }}>
+            <div key={k} style={{ padding:'10px 12px', background:'transparent', borderRadius:6, border:'0.5px solid rgba(192,57,43,0.08)' }}>
               <div style={{ fontSize:9, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.4px', marginBottom:4 }}>{k}</div>
               <div style={{ fontSize:12, color:'#ffffff', fontFamily:"'SF Mono',monospace" }}>{v}</div>
             </div>

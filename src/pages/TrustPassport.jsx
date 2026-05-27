@@ -7,9 +7,9 @@ const FONT = "'Segoe UI',-apple-system,system-ui,sans-serif"
 const MONO = "'JetBrains Mono','SF Mono',monospace"
 
 const VERDICT_CONFIG = {
-  trusted:    { color: '#4ade80', bg: '#111111', border: '#A8E6DE', label: 'Trusted',    icon: <CheckCircle  size={18} color="#16a34a"/> },
+  trusted:    { color: '#4ade80', bg: '#111111', border: 'rgba(192,57,43,0.3)', label: 'Trusted',    icon: <CheckCircle  size={18} color="#16a34a"/> },
   caution:    { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC', label: 'Caution',    icon: <AlertTriangle size={18} color="#f07059"/> },
-  new:        { color: '#ffffff', bg: '#111111', border: '#A8E6DE', label: 'New Site',   icon: <Clock         size={18} color="#0d9488"/> },
+  new:        { color: '#ffffff', bg: '#111111', border: 'rgba(192,57,43,0.3)', label: 'New Site',   icon: <Clock         size={18} color="#c0392b"/> },
   suspicious: { color: '#f87171', bg: '#fef2f2', border: '#fecaca', label: 'Suspicious', icon: <XCircle       size={18} color="#dc2626"/> },
   blocked:    { color: '#f87171', bg: '#fef2f2', border: '#fecaca', label: 'Blocked',    icon: <XCircle       size={18} color="#dc2626"/> },
 }
@@ -138,7 +138,7 @@ export default function TrustPassport({ nav }) {
       <div className="tp-hero">
         <div style={{ maxWidth:720, margin:'0 auto', textAlign:'center' }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(255,255,255,.05)', border:'0.5px solid rgba(255,255,255,.1)', borderRadius:100, padding:'5px 14px', marginBottom:20 }}>
-            <Shield size={12} color="#0d9488"/>
+            <Shield size={12} color="#c0392b"/>
             <span style={{ fontSize:11, color:'rgba(255,255,255,.5)', fontFamily:MONO }}>SSLVault Trust Passport · Public Tool</span>
           </div>
           <h1 style={{ fontSize:'clamp(28px,4vw,44px)', fontWeight:700, letterSpacing:'-1px', lineHeight:1.1, color:'rgba(255,255,255,.95)', marginBottom:14 }}>
@@ -278,7 +278,7 @@ export default function TrustPassport({ nav }) {
           {/* Embed section */}
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:12, padding:'18px 20px', marginBottom:12 }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
-              <Zap size={14} color="#0d9488"/>
+              <Zap size={14} color="#c0392b"/>
               <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>Add Trust Passport to {result.domain}</span>
             </div>
             <p style={{ fontSize:12, color:'var(--v2-text-3)', marginBottom:10, lineHeight:1.6 }}>
@@ -291,7 +291,7 @@ export default function TrustPassport({ nav }) {
           {/* Public API */}
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:12, padding:'18px 20px', marginBottom:12 }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
-              <Shield size={14} color="#0d9488"/>
+              <Shield size={14} color="#c0392b"/>
               <span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>Public API — free, no auth required</span>
             </div>
             <div className="api-box">
@@ -317,9 +317,9 @@ export default function TrustPassport({ nav }) {
         <div style={{ maxWidth:720, margin:'32px auto 48px', padding:'0 clamp(16px,4vw,48px)' }}>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:12 }}>
             {[
-              { icon:<Clock size={16} color="#0d9488"/>, title:'Time is the currency', body:'Phishing sites are spun up in hours. A domain with 5 years of clean CT log history cannot be faked — no matter how much money an attacker has.' },
+              { icon:<Clock size={16} color="#c0392b"/>, title:'Time is the currency', body:'Phishing sites are spun up in hours. A domain with 5 years of clean CT log history cannot be faked — no matter how much money an attacker has.' },
               { icon:<Shield size={16} color="#16a34a"/>, title:'Works for every site', body:'No EV certificate needed. No OV. No paid plan. A free Let\'s Encrypt cert on a 7-year-old blog scores just as high as an EV cert on a new domain.' },
-              { icon:<Globe size={16} color="#0d9488"/>, title:'Fully open data', body:'All sources are public: Certificate Transparency logs (RFC 9162), RDAP, DNS, and public blocklists. Nobody controls the score except time and clean operation.' },
+              { icon:<Globe size={16} color="#c0392b"/>, title:'Fully open data', body:'All sources are public: Certificate Transparency logs (RFC 9162), RDAP, DNS, and public blocklists. Nobody controls the score except time and clean operation.' },
               { icon:<Zap size={16} color="#f07059"/>, title:'Built for AI agents', body:'In 2026, AI agents browse and transact on your behalf. The public API lets any agent check domain trust in milliseconds before proceeding.' },
             ].map(c => (
               <div key={c.title} style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:12, padding:'16px 18px' }}>

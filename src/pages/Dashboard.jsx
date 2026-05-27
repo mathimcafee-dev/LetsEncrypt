@@ -83,7 +83,7 @@ function ImportedCertsSection({ certs, onDelete }) {
   const sourceLabel = s => ({ digicert:'DigiCert', sectigo:'Sectigo', entrust:'Entrust', globalsign:'GlobalSign' }[s] || s || 'CA Connector')
   const daysLeft = exp => { if (!exp) return null; return Math.floor((new Date(exp) - Date.now()) / 86400000) }
   return (
-    <div style={{ marginTop:20, border:'1px solid rgba(20,184,166,0.2)', borderRadius:14, overflow:'hidden', background:'transparent', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
+    <div style={{ marginTop:20, border:'1px solid rgba(192,57,43,0.2)', borderRadius:14, overflow:'hidden', background:'transparent', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
       <button onClick={() => setOpen(o => !o)}
         style={{ width:'100%', padding:'14px 18px', display:'flex', alignItems:'center', gap:10,
           background:'transparent', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}>
@@ -101,11 +101,11 @@ function ImportedCertsSection({ certs, onDelete }) {
             const isExpiring = d != null && d >= 0 && d < 30
             const dotColor = isExpired ? '#f87171' : isExpiring ? '#ffffff' : '#4ade80'
             return (
-              <div key={c.id} style={{ padding:'12px 18px', borderTop:'1px solid rgba(45,212,191,0.15)',
+              <div key={c.id} style={{ padding:'12px 18px', borderTop:'1px solid rgba(192,57,43,0.15)',
                 display:'flex', alignItems:'center', gap:12, background:'transparent' }}>
                 <div style={{ width:8, height:8, borderRadius:'50%', background:dotColor, flexShrink:0 }}/>
                 <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:13, fontWeight:600, color:'#e8f5f4', display:'flex', alignItems:'center', gap:8 }}>
+                  <div style={{ fontSize:13, fontWeight:600, color:'rgba(192,57,43,0.1)', display:'flex', alignItems:'center', gap:8 }}>
                     {c.domain}
                     <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:4,
                       background:'transparent', color:'rgba(232,245,244,0.7)' }}>
@@ -215,7 +215,7 @@ function DvPendingCard({ order, onRefresh }) {
         <span style={{ fontSize:12, fontWeight:700, color:'#C45A4A' }}>DNS Validation Pending</span>
         <span style={{ fontFamily:'monospace', fontSize:11, color:'#C45A4A', marginLeft:'auto' }}>GGS #{order.ggs_order_id}</span>
       </div>
-      <div style={{ fontSize:13, fontWeight:600, color:'#e8f5f4', marginBottom:10, fontFamily:'monospace' }}>{order.domain}</div>
+      <div style={{ fontSize:13, fontWeight:600, color:'rgba(192,57,43,0.1)', marginBottom:10, fontFamily:'monospace' }}>{order.domain}</div>
       <div style={{ background:'transparent', borderRadius:8, padding:'10px 14px', marginBottom:10, fontSize:11, fontFamily:'monospace' }}>
         <div style={{ display:'grid', gridTemplateColumns:'60px 1fr auto', gap:'6px 10px', alignItems:'center' }}>
           <span style={{ color:'rgba(232,245,244,0.7)', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Name</span>
@@ -224,26 +224,26 @@ function DvPendingCard({ order, onRefresh }) {
           </span>
           {hasDcv && <CopyBtn text={dcvName}/>}
           <span style={{ color:'rgba(232,245,244,0.7)', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Type</span>
-          <span style={{ color:'#34d399' }}>TXT</span><span/>
+          <span style={{ color:'#e07060' }}>TXT</span><span/>
           <span style={{ color:'rgba(232,245,244,0.7)', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Value</span>
           <span style={{ color:'#fbbf24', wordBreak:'break-all' }}>
             {hasDcv ? dcvValue : <span style={{ color:'rgba(255,255,255,0.6)' }}>⟳ Fetching...</span>}
           </span>
           {hasDcv && <CopyBtn text={dcvValue}/>}
           <span style={{ color:'rgba(232,245,244,0.7)', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>TTL</span>
-          <span style={{ color:'#e8f5f4' }}>300</span><span/>
+          <span style={{ color:'rgba(192,57,43,0.1)' }}>300</span><span/>
         </div>
       </div>
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
         <button onClick={autoDns} disabled={addingDns || !hasDcv}
-          style={{ display:'flex', alignItems:'center', gap:6, background:'transparent', color:'#e8f5f4',
+          style={{ display:'flex', alignItems:'center', gap:6, background:'transparent', color:'rgba(192,57,43,0.1)',
             border:'none', borderRadius:6, padding:'7px 14px', fontSize:11, fontWeight:600,
             cursor: !hasDcv||addingDns ? 'not-allowed':'pointer', opacity: !hasDcv ? 0.4:1, fontFamily:'inherit' }}>
           <Zap size={11}/> {addingDns ? 'Adding...' : 'Auto-Add DNS Record'}
         </button>
         <button onClick={checkStatus} disabled={checking}
           style={{ display:'flex', alignItems:'center', gap:6, background:'transparent',
-            border:'1px solid rgba(255,255,255,0.12)', color:'#e8f5f4', borderRadius:6,
+            border:'1px solid rgba(255,255,255,0.12)', color:'rgba(192,57,43,0.1)', borderRadius:6,
             padding:'7px 14px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
           <RefreshCw size={11} style={{ animation: checking ? 'spin 0.8s linear infinite':'none' }}/>
           {checking ? 'Checking...' : 'Check Status'}
@@ -259,12 +259,12 @@ function DvPendingCard({ order, onRefresh }) {
           <div style={{ display:'flex', gap:6, alignItems:'center', marginLeft:'auto' }}>
             <span style={{ fontSize:11, color:'#C45A4A' }}>Remove from dashboard?</span>
             <button onClick={dismissOrder} disabled={dismissing}
-              style={{ background:'#f87171', color:'#e8f5f4', border:'none', borderRadius:6,
+              style={{ background:'#f87171', color:'rgba(192,57,43,0.1)', border:'none', borderRadius:6,
                 padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
               {dismissing ? 'Removing...' : 'Yes, remove'}
             </button>
             <button onClick={() => setConfirmDismiss(false)}
-              style={{ background:'transparent', color:'#e8f5f4', border:'1px solid rgba(255,255,255,0.12)', borderRadius:6,
+              style={{ background:'transparent', color:'rgba(192,57,43,0.1)', border:'1px solid rgba(255,255,255,0.12)', borderRadius:6,
                 padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
               Cancel
             </button>
@@ -346,7 +346,7 @@ function RingGauge({ days, total, expiresAt, issuedAt }) {
       {/* Ring */}
       <div style={{ position:'relative', width:82, height:82 }}>
         <svg width="82" height="82" viewBox="0 0 82 82" style={{ transform:'rotate(-90deg)' }}>
-          <circle cx="41" cy="41" r={r} fill="none" stroke="#e6fbf5" strokeWidth="8"/>
+          <circle cx="41" cy="41" r={r} fill="none" stroke="rgba(192,57,43,0.08)" strokeWidth="8"/>
           <circle cx="41" cy="41" r={r} fill="none" stroke={color} strokeWidth="8"
             strokeLinecap="round"
             strokeDasharray={circ}
@@ -422,7 +422,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
   useEffect(() => { const t = setTimeout(() => setAnimated(true), 120); return () => clearTimeout(t) }, [])
 
   return (
-    <div style={{ padding:'16px 18px', borderBottom:'1px solid rgba(45,212,191,0.15)' }}>
+    <div style={{ padding:'16px 18px', borderBottom:'1px solid rgba(192,57,43,0.15)' }}>
       {/* Header */}
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
         <span style={{ fontSize:10, fontWeight:700, color:'rgba(232,245,244,0.4)', textTransform:'uppercase', letterSpacing:'0.6px' }}>
@@ -450,7 +450,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
           transition:'width 1.4s cubic-bezier(0.16,1,0.3,1)',
           display:'flex', alignItems:'center', justifyContent:'center' }}>
           {certPct > 20 && (
-            <span style={{ fontSize:9, fontWeight:700, color:'#e8f5f4',
+            <span style={{ fontSize:9, fontWeight:700, color:'rgba(192,57,43,0.1)',
               letterSpacing:'0.5px', textShadow:'0 1px 2px rgba(0,0,0,0.2)' }}>
               CURRENT
             </span>
@@ -471,7 +471,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
           borderLeft: '2px solid '+certColor,
           display:'flex', alignItems:'center', justifyContent:'center' }}>
           {(100 - certPct) > 15 && (
-            <span style={{ fontSize:9, fontWeight:700, color:'#e8f5f4',
+            <span style={{ fontSize:9, fontWeight:700, color:'rgba(192,57,43,0.1)',
               letterSpacing:'0.5px' }}>
               AVAILABLE
             </span>
@@ -503,7 +503,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
           <div style={{ fontSize:9, color:'rgba(232,245,244,0.4)', marginTop:2 }}>SSL valid till</div>
         </div>
         <div style={{ textAlign:'right' }}>
-          <div style={{ fontSize:10, fontWeight:700, color:'#e8f5f4', fontFamily:'monospace' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'rgba(192,57,43,0.1)', fontFamily:'monospace' }}>
             {fmtShort(subEnd)}
           </div>
           <div style={{ fontSize:9, color:'rgba(232,245,244,0.4)', marginTop:2 }}>Subscription ends</div>
@@ -917,9 +917,9 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
   // Step status icon
   const stepIcon = (status) => {
-    if (status === 'done')    return <span style={{color:'#e8f5f4',fontWeight:700}}>✓</span>
+    if (status === 'done')    return <span style={{color:'rgba(192,57,43,0.1)',fontWeight:700}}>✓</span>
     if (status === 'error')   return <span style={{color:'#f87171',fontWeight:700}}>✗</span>
-    if (status === 'active')  return <span style={{display:'inline-block',width:12,height:12,borderRadius:'50%',border:'2px solid #0d9488',borderTopColor:'transparent',animation:'spin .7s linear infinite',verticalAlign:'middle'}}/>
+    if (status === 'active')  return <span style={{display:'inline-block',width:12,height:12,borderRadius:'50%',border:'2px solid #c0392b',borderTopColor:'transparent',animation:'spin .7s linear infinite',verticalAlign:'middle'}}/>
     return <span style={{color:'#D8D0C0',fontWeight:700}}>○</span>
   }
 
@@ -947,19 +947,19 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             fontSize:11, fontWeight:500, padding:'5px 14px', border:'none', background:'none',
             cursor:'pointer', fontFamily:'inherit',
             color: tab===k ? '#ffffff' : 'var(--v2-text-3)',
-            borderBottom: tab===k ? '2px solid #0d9488' : '2px solid transparent',
+            borderBottom: tab===k ? '2px solid #c0392b' : '2px solid transparent',
             marginBottom:-1
           }}>
             {l}
             {k==='reissues' && reissues.length > 0 && (
               <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                background: tab===k ? 'rgba(45,212,191,0.15)' : 'transparent', color: tab===k ? '#ffffff' : 'rgba(255,255,255,0.5)' }}>
+                background: tab===k ? 'rgba(192,57,43,0.15)' : 'transparent', color: tab===k ? '#ffffff' : 'rgba(255,255,255,0.5)' }}>
                 {reissues.length}
               </span>
             )}
             {k==='renewals' && renewals.length > 0 && (
               <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                background: tab===k ? 'rgba(45,212,191,0.15)' : 'transparent', color: tab===k ? '#ffffff' : 'rgba(255,255,255,0.5)' }}>
+                background: tab===k ? 'rgba(192,57,43,0.15)' : 'transparent', color: tab===k ? '#ffffff' : 'rgba(255,255,255,0.5)' }}>
                 {renewals.length}
               </span>
             )}
@@ -984,7 +984,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                 {/* Reissue number badge */}
                 <div style={{ width:26, height:26, borderRadius:6, background:'transparent',
                   display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:'#e8f5f4' }}>R{i+1}</span>
+                  <span style={{ fontSize:11, fontWeight:700, color:'rgba(192,57,43,0.1)' }}>R{i+1}</span>
                 </div>
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)', display:'flex', alignItems:'center', gap:8 }}>
@@ -1040,7 +1040,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   {(r.auto_install_status || r.auto_install_error) && (
                     <div style={{ marginTop:10, padding:'8px 10px', borderRadius:6,
                       background: r.auto_install_status==='success' ? '#111111' : 'rgba(248,113,113,0.12)',
-                      border: '1px solid '+(r.auto_install_status==='success' ? '#A8E6DE' : '#fecaca') }}>
+                      border: '1px solid '+(r.auto_install_status==='success' ? 'rgba(192,57,43,0.3)' : '#fecaca') }}>
                       <div style={{ fontSize:11, fontWeight:600, color: r.auto_install_status==='success' ? '#4ade80' : '#f87171' }}>
                         Auto-install: {r.auto_install_status}
                       </div>
@@ -1123,7 +1123,7 @@ function ScanPqcButton({ onDone }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:6 }}>
       <button onClick={run} disabled={scanning}
-        style={{ display:'flex', alignItems:'center', gap:5, background:'transparent', color:'#e8f5f4',
+        style={{ display:'flex', alignItems:'center', gap:5, background:'transparent', color:'rgba(192,57,43,0.1)',
           border:'none', borderRadius:6, padding:'6px 12px', fontSize:11, fontWeight:600,
           cursor:scanning?'wait':'pointer', fontFamily:'inherit', opacity:scanning?0.8:1 }}>
         {scanning
@@ -1133,7 +1133,7 @@ function ScanPqcButton({ onDone }) {
       {result && (
         <span style={{ fontSize:11, color: result.ok ? '#4ade80' : '#f87171',
           background: result.ok ? '#111111' : '#fef2f2',
-          border: `0.5px solid ${result.ok ? '#A8E6DE' : '#fecaca'}`,
+          border: `0.5px solid ${result.ok ? 'rgba(192,57,43,0.3)' : '#fecaca'}`,
           borderRadius:5, padding:'3px 8px' }}>
           {result.ok ? `✓ ${result.scanned} cert${result.scanned!==1?'s':''} scanned` : `✗ ${result.error||'Failed'}`}
         </span>
@@ -1144,9 +1144,9 @@ function ScanPqcButton({ onDone }) {
 
 // ── PQC Readiness row ─────────────────────────────────────────────────
 const PQC_RISK_MAP = {
-  ready:  { color:'#4ade80', bg:'#111111', border:'#A8E6DE', label:'PQC Ready',     icon:'✓' },
-  low:    { color:'#e8f5f4', bg:'#111111', border:'#A8E6DE', label:'Low risk',       icon:'~' },
-  medium: { color:'#e8f5f4', bg:'rgba(248,113,113,0.12)', border:'#F2C4BC', label:'Medium risk',    icon:'!' },
+  ready:  { color:'#4ade80', bg:'#111111', border:'rgba(192,57,43,0.3)', label:'PQC Ready',     icon:'✓' },
+  low:    { color:'rgba(192,57,43,0.1)', bg:'#111111', border:'rgba(192,57,43,0.3)', label:'Low risk',       icon:'~' },
+  medium: { color:'rgba(192,57,43,0.1)', bg:'rgba(248,113,113,0.12)', border:'#F2C4BC', label:'Medium risk',    icon:'!' },
   high:   { color:'#f87171', bg:'#fef2f2', border:'#fecaca', label:'High risk',      icon:'✗' },
 }
 
@@ -1214,7 +1214,7 @@ function PqcRow({ cert, onRefresh }) {
           {!noPem && (
             <button onClick={runCheck} disabled={checking}
               style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
-                color:'#e8f5f4', background:'rgba(248,113,113,0.12)', border:'0.5px solid #F2C4BC',
+                color:'rgba(192,57,43,0.1)', background:'rgba(248,113,113,0.12)', border:'0.5px solid #F2C4BC',
                 borderRadius:6, padding:'4px 10px', cursor:checking?'wait':'pointer',
                 fontFamily:'inherit', fontWeight:500, flexShrink:0 }}>
               {checking
@@ -1278,7 +1278,7 @@ function PqcRow({ cert, onRefresh }) {
                 <div style={{ fontSize:11, color:'var(--v2-text-3)', lineHeight:1.6, borderTop:'0.5px solid var(--v2-border)', paddingTop:10, marginTop:4 }}>
                   NIST finalized ML-DSA (CRYSTALS-Dilithium), SLH-DSA (SPHINCS+), and ML-KEM (CRYSTALS-Kyber) in August 2024.
                   RSA and ECDSA will be deprecated for sensitive data by 2030–2035.{' '}
-                  <span style={{ color:'#e8f5f4', cursor:'pointer' }}
+                  <span style={{ color:'rgba(192,57,43,0.1)', cursor:'pointer' }}
                     onClick={()=>window.open('https://csrc.nist.gov/projects/post-quantum-cryptography','_blank')}>
                     NIST PQC standards ↗
                   </span>
@@ -1343,7 +1343,7 @@ function TlsPostureRow({ cert, onRefresh }) {
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
           <div style={{ width:34, height:34, borderRadius:8, background:'transparent',
             display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-            <Activity size={16} color="#0d9488"/>
+            <Activity size={16} color="#c0392b"/>
           </div>
           <div>
             <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)' }}>Check TLS posture</div>
@@ -1362,7 +1362,7 @@ function TlsPostureRow({ cert, onRefresh }) {
           )}
           <button onClick={runCheck} disabled={checking}
             style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
-              color:'#e8f5f4', background:'transparent', border:'1px solid rgba(63,185,80,0.2)',
+              color:'rgba(192,57,43,0.1)', background:'transparent', border:'1px solid rgba(63,185,80,0.2)',
               borderRadius:6, padding:'4px 10px', cursor:checking?'wait':'pointer',
               fontFamily:'inherit', fontWeight:500, flexShrink:0 }}>
             {checking
@@ -1447,7 +1447,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const isWarn    = (days ?? 0) >= 0 && (days ?? 0) < 30
   const statusColor = isExpired ? '#f87171' : isWarn ? '#ffffff' : '#4ade80'
   const statusBg    = isExpired ? '#fef2f2' : isWarn ? 'rgba(248,113,113,0.12)' : '#111111'
-  const statusBorder= isExpired ? '#fecaca' : isWarn ? '#F2C4BC' : '#A8E6DE'
+  const statusBorder= isExpired ? '#fecaca' : isWarn ? '#F2C4BC' : 'rgba(192,57,43,0.3)'
   const statusLabel = isExpired ? 'Expired' : isWarn ? days+'d left' : 'Active'
 
   const doDeleteKey = async () => {
@@ -1511,7 +1511,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         style={{ background:'none', border:'0.5px solid var(--v2-border)', borderRadius:4, cursor:'pointer',
           padding:'2px 6px', fontSize:10, color: ok ? '#4ade80' : 'var(--v2-text-3)',
           fontFamily:'inherit', transition:'all 0.12s', display:'inline-flex', alignItems:'center', gap:3,
-          ...(ok ? { borderColor:'#A8E6DE', background:'transparent' } : {}) }}>
+          ...(ok ? { borderColor:'rgba(192,57,43,0.3)', background:'transparent' } : {}) }}>
         {ok ? <><Check size={9}/></> : <><Copy size={9}/></>}
       </button>
     )
@@ -1578,24 +1578,24 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
   return (
     <div style={{ background:'transparent', border:'1px solid rgba(63,185,80,0.2)', borderRadius:14,
-      overflow:'hidden', boxShadow:'0 4px 20px rgba(45,212,191,0.15)',
+      overflow:'hidden', boxShadow:'0 4px 20px rgba(192,57,43,0.15)',
       position:'sticky', top:20, animation:'fadeSlideUp 0.3s ease both' }}>
 
       {/* ── Hero header ─── */}
       <div style={{ padding:'20px 20px 16px', background:'transparent',
-        borderBottom:'1px solid rgba(45,212,191,0.15)' }}>
+        borderBottom:'1px solid rgba(192,57,43,0.15)' }}>
         <div style={{ display:'flex', alignItems:'flex-start', gap:16 }}>
           <RingGauge days={days} expiresAt={cert.expires_at} issuedAt={cert.issued_at}/>
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
               <span style={{ fontSize:14, fontWeight:700, wordBreak:'break-all',
-                color:'#e8f5f4', fontFamily:'monospace', lineHeight:1.3 }}>{cert.domain}</span>
+                color:'rgba(192,57,43,0.1)', fontFamily:'monospace', lineHeight:1.3 }}>{cert.domain}</span>
               <button onClick={onClose}
                 style={{ background:'transparent', border:'1px solid rgba(63,185,80,0.2)', cursor:'pointer',
                   color:'rgba(232,245,244,0.4)', padding:'5px', borderRadius:7, display:'flex', flexShrink:0,
                   marginLeft:8, transition:'all .15s' }}
                 onMouseEnter={e=>{e.currentTarget.style.background='rgba(248,113,113,0.12)';e.currentTarget.style.color='#f87171';e.currentTarget.style.borderColor='#fecaca'}}
-                onMouseLeave={e=>{e.currentTarget.style.background='rgba(45,212,191,0.15)';e.currentTarget.style.color='rgba(255,255,255,0.6)';e.currentTarget.style.borderColor='rgba(255,255,255,0.2)'}}>
+                onMouseLeave={e=>{e.currentTarget.style.background='rgba(192,57,43,0.15)';e.currentTarget.style.color='rgba(255,255,255,0.6)';e.currentTarget.style.borderColor='rgba(255,255,255,0.2)'}}>
                 <X size={13} strokeWidth={2}/>
               </button>
             </div>
@@ -1626,7 +1626,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
       {/* ── Metric strip ─── */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',
-        borderBottom:'1px solid rgba(45,212,191,0.15)', background:'transparent' }}>
+        borderBottom:'1px solid rgba(192,57,43,0.15)', background:'transparent' }}>
         {(() => {
           // ── Date logic ─────────────────────────────────────────────────
           //
@@ -1699,7 +1699,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             },
           ].map(({ top, bottom, color, mono, tip }, i) => (
             <div key={i} title={tip||''} style={{ padding:'12px 16px',
-              borderRight: i < 2 ? '1px solid rgba(45,212,191,0.15)' : 'none',
+              borderRight: i < 2 ? '1px solid rgba(192,57,43,0.15)' : 'none',
               cursor: tip ? 'help' : 'default' }}>
               <div style={{ fontSize: i===0 ? 20 : 13, fontWeight:800, color,
                 fontFamily: mono ? 'monospace' : 'inherit',
@@ -1725,7 +1725,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       )}
 
       {/* ── Tabs ─── */}
-      <div style={{ display:'flex', padding:'0 16px', borderBottom:'1px solid rgba(45,212,191,0.15)', gap:0 }}>
+      <div style={{ display:'flex', padding:'0 16px', borderBottom:'1px solid rgba(192,57,43,0.15)', gap:0 }}>
         {['details','actions','files','history'].map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
             style={{ fontSize:11, fontWeight:700, padding:'11px 14px',
@@ -1770,19 +1770,19 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             <div style={{ fontSize:12, padding:'8px 10px', borderRadius:6, marginBottom:12,
               background: refreshMsg.includes('Error') ? '#fef2f2' : '#111111',
               color: refreshMsg.includes('Error') ? '#f87171' : '#4ade80',
-              border:'0.5px solid '+(refreshMsg.includes('Error') ? '#fecaca' : '#A8E6DE') }}>
+              border:'0.5px solid '+(refreshMsg.includes('Error') ? '#fecaca' : 'rgba(192,57,43,0.3)') }}>
               {refreshMsg}
             </div>
           )}
-          <ActionRow icon={RotateCcw} iconColor="#16a34a" iconBg="#ccfbf1"
-            hoverBorder="#A8E6DE" hoverBg="#ccfbf1"
+          <ActionRow icon={RotateCcw} iconColor="#16a34a" iconBg="rgba(192,57,43,0.12)"
+            hoverBorder="rgba(192,57,43,0.3)" hoverBg="rgba(192,57,43,0.12)"
             title="Reissue certificate" subtitle="New cert, same order period · auto DNS"
             onClick={() => certHistoryRef.current?.doAction('reissue')}
             disabled={!session}/>
           {/* Renew only visible within 30 days of order expiry (issued_at + period), not cert expiry */}
           {cert._daysToRenewal != null && cert._daysToRenewal <= 30 && (
-            <ActionRow icon={RefreshCw} iconColor="#0d9488" iconBg="#ccfbf1"
-              hoverBorder="#A8E6DE" hoverBg="#ccfbf1"
+            <ActionRow icon={RefreshCw} iconColor="#c0392b" iconBg="rgba(192,57,43,0.12)"
+              hoverBorder="rgba(192,57,43,0.3)" hoverBg="rgba(192,57,43,0.12)"
               title="Renew for another year" subtitle="New GGS order · new cert row"
               onClick={() => certHistoryRef.current?.doAction('renew')}
               disabled={!session}/>
@@ -1833,7 +1833,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                     This will cancel GGS order #{cert.ggs_order_id} and request a refund. Are you sure?
                   </div>
                   <button onClick={doCancel} disabled={cancelling}
-                    style={{ fontSize:11, fontWeight:600, color:'#e8f5f4', background:'#DC2626',
+                    style={{ fontSize:11, fontWeight:600, color:'rgba(192,57,43,0.1)', background:'#DC2626',
                       border:'none', borderRadius:6, padding:'5px 12px',
                       cursor: cancelling ? 'not-allowed' : 'pointer', fontFamily:'inherit', opacity: cancelling ? 0.7 : 1 }}>
                     {cancelling ? 'Cancelling...' : 'Yes, cancel'}
@@ -1858,7 +1858,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                   <X size={11}/> Delete certificate
                 </button>
               : <button onClick={() => onDelete(cert.id)}
-                  style={{ fontSize:11, color:'#e8f5f4', background:'#f87171', border:'none',
+                  style={{ fontSize:11, color:'rgba(192,57,43,0.1)', background:'#f87171', border:'none',
                     borderRadius:6, padding:'4px 12px', cursor:'pointer', fontFamily:'inherit', fontWeight:500 }}>
                   Confirm delete
                 </button>
@@ -1880,7 +1880,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               <div style={{ display:'flex', alignItems:'center', gap:9 }}>
                 <div style={{ width:30, height:30, borderRadius:7, background:'transparent',
                   display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <FileText size={14} color="#0d9488"/>
+                  <FileText size={14} color="#c0392b"/>
                 </div>
                 <div>
                   <div style={{ fontSize:12, fontWeight:500, fontFamily:'monospace', color:'var(--v2-text)' }}>cert.pem</div>
@@ -1898,7 +1898,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           {/* private key */}
           {cert.tls_grade && (
             <span style={{ fontSize:9, fontWeight:700, color: cert.tls_grade==='A'?'#4ade80':cert.tls_grade==='B'?'#65a30d':cert.tls_grade==='C'?'#ffffff':'#f87171',
-              background: cert.tls_grade==='A'?'#111111':cert.tls_grade==='B'?'#f7fee7':cert.tls_grade==='C'?'rgba(248,113,113,0.12)':'#fef2f2',
+              background: cert.tls_grade==='A'?'#111111':cert.tls_grade==='B'?'rgba(192,57,43,0.06)':cert.tls_grade==='C'?'rgba(248,113,113,0.12)':'#fef2f2',
               border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.8 }}>
               {cert.tls_grade}
             </span>
@@ -2183,12 +2183,12 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
         {/* Domain info */}
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3, flexWrap:'wrap' }}>
-            <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace', color:'#e8f5f4' }}>
+            <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace', color:'rgba(192,57,43,0.1)' }}>
               {primary.domain}
             </span>
             <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
               background: s.dot==='green'?'#111111':s.dot==='amber'?'#FAEEDA':'#FCEBEB',
-              color: s.dot==='green'?'#0F6E56':s.dot==='amber'?'#854F0B':'#A32D2D' }}>
+              color: s.dot==='green'?'#a93226':s.dot==='amber'?'#854F0B':'#A32D2D' }}>
               {days != null ? `${days}d left` : primary.status}
             </span>
             {primary.install_method && (
@@ -2214,7 +2214,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
         <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
           <div style={{ textAlign:'right' }}>
             <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>Expires</div>
-            <div style={{ fontSize:12, fontWeight:600, color:'#e8f5f4' }}>{fmtDate(primary.expires_at)}</div>
+            <div style={{ fontSize:12, fontWeight:600, color:'rgba(192,57,43,0.1)' }}>{fmtDate(primary.expires_at)}</div>
           </div>
           {(hasVersions || hasMultipleSubs) && (
             <button onClick={e => { e.stopPropagation(); setExpanded(!expanded) }}
@@ -2230,10 +2230,10 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
 
       {/* Validity progress bar */}
       {days != null && (
-        <div style={{ height:4, background:'rgba(45,212,191,0.12)', borderRadius:4 }}>
+        <div style={{ height:4, background:'rgba(192,57,43,0.12)', borderRadius:4 }}>
           <div style={{ height:'100%',
             width:`${Math.min(100, Math.max(0, (days/398)*100))}%`,
-            background:`linear-gradient(90deg, #0d9488, #0d9488)` }}/>
+            background:`linear-gradient(90deg, #c0392b, #c0392b)` }}/>
         </div>
       )}
 
@@ -2251,8 +2251,8 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
             const ggsOrder    = subNewest.ggs_order_id
 
             // Subscription left-border colour:
-            // Active original → dark teal #0d9488
-            // Renewal         → mint teal #0d9488
+            // Active original → dark teal #c0392b
+            // Renewal         → mint teal #c0392b
             // Older           → muted cream
             const borderColor = isActiveSub && !isRenewal ? '#ffffff'
               : isRenewal ? '#ffffff'
@@ -2261,8 +2261,8 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
             const headerBg    = isActiveSub && !isRenewal ? '#111111'
               : isRenewal ? '#111111'
               : '#000000'
-            const headerBorder = isActiveSub && !isRenewal ? '#A8E6DE'
-              : isRenewal ? '#A8E6DE'
+            const headerBorder = isActiveSub && !isRenewal ? 'rgba(192,57,43,0.3)'
+              : isRenewal ? 'rgba(192,57,43,0.3)'
               : '#D4C9B0'
 
             // Sub type label
@@ -2295,18 +2295,18 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                       </span>
                       {isActiveSub && (
                         <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
-                          background:isRenewal?'#ffffff':'#ffffff', color:'#e8f5f4' }}>
+                          background:isRenewal?'#ffffff':'#ffffff', color:'rgba(192,57,43,0.1)' }}>
                           {isRenewal ? '↻ Active renewal' : 'Active'}
                         </span>
                       )}
                       {ggsOrder && (
                         <span style={{ fontSize:10, padding:'2px 7px', borderRadius:20,
-                          background:'transparent', color:'#e8f5f4', border:`0.5px solid ${headerBorder}`,
+                          background:'transparent', color:'rgba(192,57,43,0.1)', border:`0.5px solid ${headerBorder}`,
                           fontFamily:'monospace' }}>
                           GGS #{ggsOrder}
                         </span>
                       )}
-                      <span style={{ fontSize:10, color:'#6B7B79', marginLeft:'auto' }}>
+                      <span style={{ fontSize:10, color:'#605850', marginLeft:'auto' }}>
                         {subVersions.length} version{subVersions.length!==1?'s':''}
                       </span>
                     </div>
@@ -2314,7 +2314,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                     {/* Timeline bar */}
                     {subStart && (
                       <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-                        <span style={{ fontSize:9, color:'#6B7B79', width:54, flexShrink:0 }}>
+                        <span style={{ fontSize:9, color:'#605850', width:54, flexShrink:0 }}>
                           {subStart.toLocaleDateString('en-US',{month:'short',year:'numeric'})}
                         </span>
                         <div style={{ flex:1, height:6, background:'rgba(255,255,255,0.6)', borderRadius:6,
@@ -2336,7 +2336,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                               border:'1.5px solid white' }}/>
                           )}
                         </div>
-                        <span style={{ fontSize:9, color:'#6B7B79', width:54, textAlign:'right', flexShrink:0 }}>
+                        <span style={{ fontSize:9, color:'#605850', width:54, textAlign:'right', flexShrink:0 }}>
                           {subEnd ? subEnd.toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '—'}
                         </span>
                       </div>
@@ -2345,11 +2345,11 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                       <div style={{ display:'flex', gap:14, marginTop:4 }}>
                         <div style={{ display:'flex', alignItems:'center', gap:4 }}>
                           <div style={{ width:6, height:6, borderRadius:'50%', background:'transparent' }}/>
-                          <span style={{ fontSize:9, color:'#6B7B79' }}>Today</span>
+                          <span style={{ fontSize:9, color:'#605850' }}>Today</span>
                         </div>
                         <div style={{ display:'flex', alignItems:'center', gap:4 }}>
                           <div style={{ width:6, height:6, borderRadius:'50%', background:'transparent' }}/>
-                          <span style={{ fontSize:9, color:'#6B7B79' }}>Auto-reissue trigger point</span>
+                          <span style={{ fontSize:9, color:'#605850' }}>Auto-reissue trigger point</span>
                         </div>
                       </div>
                     )}
@@ -2391,7 +2391,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                         background: isLive ? '#111111' : selected===v.id ? '#111111' : 'var(--v2-surface)',
                         cursor:'pointer',
                         opacity: isLive ? 1 : wasInstalled ? 0.5 : neverInstalled && vi > 0 ? 0.4 : 1,
-                        borderLeft: isLive ? '3px solid #0d9488' : wasInstalled ? '3px solid #E5E7EB' : neverInstalled && vi===0 ? '3px solid #0d9488' : '3px solid transparent',
+                        borderLeft: isLive ? '3px solid #c0392b' : wasInstalled ? '3px solid #E5E7EB' : neverInstalled && vi===0 ? '3px solid #c0392b' : '3px solid transparent',
                         transition:'background .15s' }}
                       onMouseEnter={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-bg)' }}
                       onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background='transparent' }}>
@@ -2400,7 +2400,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                       <div style={{ width:28, height:28, borderRadius:8, flexShrink:0,
                         display:'flex', alignItems:'center', justifyContent:'center',
                         background: isLive ? '#ffffff' : wasInstalled ? '#ffffff' : neverInstalled && vi===0 ? '#111111' : '#ffffff',
-                        border: isLive ? 'none' : wasInstalled ? '1.5px solid #E5E7EB' : vi===0 ? '1.5px dashed #0d9488' : '1.5px solid #E5E7EB',
+                        border: isLive ? 'none' : wasInstalled ? '1.5px solid #E5E7EB' : vi===0 ? '1.5px dashed #c0392b' : '1.5px solid #E5E7EB',
                         position:'relative', overflow: wasInstalled ? 'hidden' : 'visible' }}>
                         {isLive && <Globe size={14} color="white"/>}
                         {wasInstalled && (
@@ -2409,7 +2409,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                             <div style={{ position:'absolute', top:'50%', left:3, right:3, height:1.5, background:'#9CA3AF', transform:'rotate(-25deg)', transformOrigin:'center' }}/>
                           </>
                         )}
-                        {!isLive && !wasInstalled && vi===0 && <Clock size={11} color="#0d9488"/>}
+                        {!isLive && !wasInstalled && vi===0 && <Clock size={11} color="#c0392b"/>}
                         {!isLive && !wasInstalled && vi>0 && <span style={{fontSize:11,color:'#D1D5DB',lineHeight:1}}>—</span>}
                       </div>
 
@@ -2419,7 +2419,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                           <span style={{ fontSize:10, fontWeight:600, padding:'1px 7px', borderRadius:20,
                             background: isLive ? '#ffffff' : wasInstalled ? '#ffffff' : vi===0 ? '#111111' : '#ffffff',
                             color: isLive ? '#000000' : wasInstalled ? '#6B7280' : vi===0 ? '#ffffff' : '#9CA3AF',
-                            border: isLive ? 'none' : `0.5px solid ${wasInstalled?'#E5E7EB':vi===0?'#A8E6DE':'#E5E7EB'}`,
+                            border: isLive ? 'none' : `0.5px solid ${wasInstalled?'#E5E7EB':vi===0?'rgba(192,57,43,0.3)':'#E5E7EB'}`,
                             fontWeight: isLive ? 600 : 500,
                             flexShrink:0 }}>
                             {statusLabel}
@@ -2440,7 +2440,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                         return (
                           <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
                             background: d==null?'var(--v2-bg)':d>30?'#111111':d>=0?'#FAEEDA':'#FCEBEB',
-                            color: d==null?'var(--v2-text-3)':d>30?'#0F6E56':d>=0?'#854F0B':'#A32D2D',
+                            color: d==null?'var(--v2-text-3)':d>30?'#a93226':d>=0?'#854F0B':'#A32D2D',
                             flexShrink:0 }}>
                             {d==null?'—':d<=0?'Expired':`${d}d left`}
                           </span>
@@ -2470,19 +2470,19 @@ function CertRow({ cert, selected, onClick, index }) {
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
         cursor:'pointer', transition:'all .15s',
         background: selected ? '#f0f7ff' : '#000000',
-        borderLeft: selected ? '3px solid #0d9488' : '3px solid transparent',
-        borderBottom:'1px solid rgba(45,212,191,0.15)' }}
+        borderLeft: selected ? '3px solid #c0392b' : '3px solid transparent',
+        borderBottom:'1px solid rgba(192,57,43,0.15)' }}
       onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='rgba(255,107,91,0.07)';e.currentTarget.style.borderLeftColor='#ff6b5b'}}}
       onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='#000000';e.currentTarget.style.borderLeftColor='transparent'}}}>
       {/* Row index */}
-      <div style={{ width:22, textAlign:'right', fontSize:11, fontWeight:600, color:'#7A9E9B', flexShrink:0, fontVariantNumeric:'tabular-nums' }}>
+      <div style={{ width:22, textAlign:'right', fontSize:11, fontWeight:600, color:'#807870', flexShrink:0, fontVariantNumeric:'tabular-nums' }}>
         {index}
       </div>
       {/* Avatar with status dot */}
       <div style={{ position:'relative', flexShrink:0 }}>
         <div style={{ width:38, height:38, borderRadius:10, background:iconBg,
           display:'flex', alignItems:'center', justifyContent:'center',
-          fontSize:12, fontWeight:700, color:'#e8f5f4', letterSpacing:'0.5px' }}>
+          fontSize:12, fontWeight:700, color:'rgba(192,57,43,0.1)', letterSpacing:'0.5px' }}>
           {initials}
         </div>
         <span style={{ position:'absolute', bottom:-2, right:-2, width:10, height:10,
@@ -2494,7 +2494,7 @@ function CertRow({ cert, selected, onClick, index }) {
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
           <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace',
-            color:'#e8f5f4', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+            color:'rgba(192,57,43,0.1)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
             {cert.domain}
           </span>
           <StatusPill days={days} status={cert.status}/>
@@ -2512,7 +2512,7 @@ function CertRow({ cert, selected, onClick, index }) {
           {cert.tls_grade && (
             <span style={{ fontSize:9, fontWeight:700, padding:'2px 5px', borderRadius:4,
               color: cert.tls_grade==='A'?'#4ade80':cert.tls_grade==='B'?'#65a30d':cert.tls_grade==='C'?'#ffffff':'#f87171',
-              background: cert.tls_grade==='A'?'#111111':cert.tls_grade==='B'?'#f7fee7':cert.tls_grade==='C'?'rgba(248,113,113,0.12)':'#fef2f2',
+              background: cert.tls_grade==='A'?'#111111':cert.tls_grade==='B'?'rgba(192,57,43,0.06)':cert.tls_grade==='C'?'rgba(248,113,113,0.12)':'#fef2f2',
               border:'0.5px solid currentColor' }}>
               TLS {cert.tls_grade}
             </span>
@@ -2563,7 +2563,7 @@ function CertRow({ cert, selected, onClick, index }) {
                 fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20,
                 background: method==='agent' ? '#111111' : '#000000',
                 color: method==='agent' ? '#ffffff' : '#8B5E3C',
-                border: `1px solid ${method==='agent' ? '#A8E6DE' : '#D8C8A8'}`,
+                border: `1px solid ${method==='agent' ? 'rgba(192,57,43,0.3)' : '#D8C8A8'}`,
               }}>
                 {method==='agent' ? '🖥 VPS' : '🌐 cPanel'}
               </span>
@@ -2572,8 +2572,8 @@ function CertRow({ cert, selected, onClick, index }) {
                 display:'inline-flex', alignItems:'center', gap:3,
                 fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20,
                 background: isVerified ? '#111111' : isAlert ? 'rgba(248,113,113,0.12)' : '#000000',
-                color: isVerified ? '#ffffff' : isAlert ? '#C45A4A' : '#7A9E9B',
-                border: `1px solid ${isVerified ? '#A8E6DE' : isAlert ? '#F2C4BC' : '#D8D0C0'}`,
+                color: isVerified ? '#ffffff' : isAlert ? '#C45A4A' : '#807870',
+                border: `1px solid ${isVerified ? 'rgba(192,57,43,0.3)' : isAlert ? '#F2C4BC' : '#D8D0C0'}`,
               }}>
                 {isVerified ? '✓ Live & verified' : isAlert ? '⚠ Check needed' : '○ Not verified'}
                 {timeAgo && !isAlert && <span style={{opacity:0.6}}> · {timeAgo}</span>}
@@ -2759,12 +2759,12 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
   return (
-    <div style={{ background:'transparent', minHeight:'100vh', fontFamily:"'Inter',system-ui,sans-serif" }}>
+    <div style={{ background:'transparent', minHeight:'100vh', fontFamily:"'Montserrat',system-ui,sans-serif" }}>
       <div style={{ maxWidth:1280, margin:'0 auto', padding:'28px 24px 80px' }}>
 
         <div style={{ marginBottom:24, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
           <div>
-            <h1 style={{ fontSize:20, fontWeight:700, color:'#e8f5f4', letterSpacing:'-0.3px', marginBottom:4, display:'flex', alignItems:'center', gap:10 }}>
+            <h1 style={{ fontSize:20, fontWeight:700, color:'rgba(192,57,43,0.1)', letterSpacing:'-0.3px', marginBottom:4, display:'flex', alignItems:'center', gap:10 }}>
               Certificate Dashboard
               {healthy === total && total > 0 && (
                 <span style={{ fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:20,
@@ -2789,7 +2789,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             }}
             style={{ display:'flex', alignItems:'center', gap:6, background:'transparent',
               border:'1px solid rgba(63,185,80,0.2)', borderRadius:8, padding:'7px 14px',
-              fontSize:11, fontWeight:600, color:'#e8f5f4', cursor:'pointer', fontFamily:'inherit' }}>
+              fontSize:11, fontWeight:600, color:'rgba(192,57,43,0.1)', cursor:'pointer', fontFamily:'inherit' }}>
             <Share2 size={12} color="#8b949e"/>
             {shareMsg || 'Share SSL status'}
           </button>
@@ -2797,11 +2797,11 @@ function LoggedInDashboard({ user, nav, onIssue }) {
 
         <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:24 }}>
           {[
-            { label:'Total certificates', value:total,    color:'#2dd4bf', border:'rgba(45,212,191,0.25)',   sub:'managed by SSLVault' },
+            { label:'Total certificates', value:total,    color:'#e07060', border:'rgba(192,57,43,0.25)',   sub:'managed by SSLVault' },
             { label:'Healthy',            value:healthy,  color:'#4ade80', border:'rgba(63,185,80,0.25)',    sub:healthy>0?'All valid':'No active certs' },
-            { label:'Expiring ≤30d',      value:expiring, color:expiring>0?'#fbbf24':'#6e7681', border:expiring>0?'rgba(210,153,34,0.25)':'rgba(45,212,191,0.15)', sub:expiring>0?'Needs attention':'None expiring' },
-            { label:'Pending DCV',        value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#f87171':'#6e7681', border:orders.filter(o=>o.status==='dv_pending').length>0?'rgba(248,81,73,0.25)':'rgba(45,212,191,0.15)', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None pending' },
-            { label:'Expired',            value:expired,  color:expired>0?'#f87171':'#6e7681', border:expired>0?'rgba(248,81,73,0.3)':'rgba(45,212,191,0.15)', sub:expired>0?'Renew immediately':'None expired' },
+            { label:'Expiring ≤30d',      value:expiring, color:expiring>0?'#fbbf24':'#6e7681', border:expiring>0?'rgba(210,153,34,0.25)':'rgba(192,57,43,0.15)', sub:expiring>0?'Needs attention':'None expiring' },
+            { label:'Pending DCV',        value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#f87171':'#6e7681', border:orders.filter(o=>o.status==='dv_pending').length>0?'rgba(248,81,73,0.25)':'rgba(192,57,43,0.15)', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None pending' },
+            { label:'Expired',            value:expired,  color:expired>0?'#f87171':'#6e7681', border:expired>0?'rgba(248,81,73,0.3)':'rgba(192,57,43,0.15)', sub:expired>0?'Renew immediately':'None expired' },
           ].map((s,i) => (
             <div key={s.label} style={{
               background:'transparent',
@@ -2840,13 +2840,13 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         )}
 
         <div style={{ display:'grid', gridTemplateColumns: (!isMobile && selectedCert) ? 'minmax(0,1fr) clamp(280px,35vw,400px)':'1fr', gap:16, alignItems:'start' }}>
-          <div style={{ background:'transparent', border:'1px solid rgba(20,184,166,0.2)', borderRadius:8,
+          <div style={{ background:'transparent', border:'1px solid rgba(192,57,43,0.2)', borderRadius:8,
             overflow:'hidden' }}>
-            <div style={{ padding:'14px 16px', borderBottom:'1px solid rgba(45,212,191,0.15)',
+            <div style={{ padding:'14px 16px', borderBottom:'1px solid rgba(192,57,43,0.15)',
               display:'flex', alignItems:'center', gap:8, flexWrap:'wrap',
               background:'transparent' }}>
               {/* Filter tabs */}
-              <div style={{ display:'flex', gap:2, background:'transparent', borderRadius:0, padding:0, borderBottom:'1px solid rgba(45,212,191,0.15)' }}>
+              <div style={{ display:'flex', gap:2, background:'transparent', borderRadius:0, padding:0, borderBottom:'1px solid rgba(192,57,43,0.15)' }}>
                 {[
                   { key:'all',      label:'All',      count:total },
                   { key:'healthy',  label:'Healthy',  count:healthy },
@@ -2861,7 +2861,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                       borderRadius: 0,
                       color: filter===f.key ? '#e6edf3' : '#8b949e',
                       paddingBottom: '10px', marginBottom: '-1px',
-                      boxShadow: filter===f.key ? '0 1px 3px rgba(45,212,191,0.15)' : 'none' }}>
+                      boxShadow: filter===f.key ? '0 1px 3px rgba(192,57,43,0.15)' : 'none' }}>
                     {f.label}
                     <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
                       background: 'rgba(255,255,255,0.07)',
@@ -2876,16 +2876,16 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
                 <div style={{ position:'relative' }}>
                   <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search domains..."
-                    style={{ background:'transparent', border:'1px solid rgba(63,185,80,0.2)', borderRadius:8, color:'#e8f5f4',
+                    style={{ background:'transparent', border:'1px solid rgba(63,185,80,0.2)', borderRadius:8, color:'rgba(192,57,43,0.1)',
                       fontSize:12, padding:'6px 10px 6px 30px', width:190, outline:'none', fontFamily:'inherit',
                       transition:'border-color .15s' }}
-                    onFocus={e=>e.target.style.borderColor='#2dd4bf'}
-                    onBlur={e=>e.target.style.borderColor='rgba(45,212,191,0.15)'}/>
+                    onFocus={e=>e.target.style.borderColor='#e07060'}
+                    onBlur={e=>e.target.style.borderColor='rgba(192,57,43,0.15)'}/>
                   <Globe size={12} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'rgba(232,245,244,0.4)', pointerEvents:'none' }}/>
                 </div>
                 <ScanPqcButton onDone={load}/>
                 <button onClick={() => onIssue ? onIssue() : nav('/buy')}
-                  style={{ display:'flex', alignItems:'center', gap:5, background:'transparent', color:'#e8f5f4',
+                  style={{ display:'flex', alignItems:'center', gap:5, background:'transparent', color:'rgba(192,57,43,0.1)',
                     border:'none', borderRadius:8, padding:'7px 14px', fontSize:11, fontWeight:700,
                     cursor:'pointer', fontFamily:'inherit', boxShadow:'0 2px 6px rgba(14,127,192,0.3)',
                     transition:'all .15s' }}
@@ -2903,12 +2903,12 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               </div>
             ) : visible.length === 0 ? (
               <div style={{ padding:'clamp(16px,16vw,48px) 16px', textAlign:'center' }}>
-                <Shield size={24} style={{ color:'#e8f5f4', marginBottom:12 }}/>
+                <Shield size={24} style={{ color:'rgba(192,57,43,0.1)', marginBottom:12 }}/>
                 <div style={{ fontSize:13, fontWeight:600, color:'rgba(232,245,244,0.4)', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
                 <div style={{ fontSize:12, color:'rgba(232,245,244,0.4)', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
                 {total===0 && (
                   <button onClick={() => onIssue ? onIssue() : nav('/buy')}
-                    style={{ background:'transparent', color:'#e8f5f4', border:'none', borderRadius:7,
+                    style={{ background:'transparent', color:'rgba(192,57,43,0.1)', border:'none', borderRadius:7,
                       padding:'9px 18px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
                     Issue your first certificate
                   </button>
@@ -2946,13 +2946,13 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           <div style={{ fontSize:10, fontWeight:700, color:'rgba(232,245,244,0.4)', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Quick actions</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:10 }}>
             {[
-              { icon:Shield,    color:'#e8f5f4', bg:'#111111', label:'Issue Certificate', desc:'RapidSSL DV · RapidSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
+              { icon:Shield,    color:'rgba(192,57,43,0.1)', bg:'#111111', label:'Issue Certificate', desc:'RapidSSL DV · RapidSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
               { icon:Download,  color:'#4ade80', bg:'#111111', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
-              { icon:Activity,  color:'#e8f5f4', bg:'rgba(248,113,113,0.12)', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
-              { icon:Zap,       color:'#e8f5f4', bg:'rgba(248,113,113,0.12)', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
+              { icon:Activity,  color:'rgba(192,57,43,0.1)', bg:'rgba(248,113,113,0.12)', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
+              { icon:Zap,       color:'rgba(192,57,43,0.1)', bg:'rgba(248,113,113,0.12)', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
             ].map(({ icon:Icon, color, bg, label, desc, action }, i) => (
               <button key={label} onClick={action}
-                style={{ background:'transparent', border:'1px solid rgba(45,212,191,0.15)', borderRadius:12, padding:'16px',
+                style={{ background:'transparent', border:'1px solid rgba(192,57,43,0.15)', borderRadius:12, padding:'16px',
                   textAlign:'left', cursor:'pointer', fontFamily:'inherit', transition:'all .2s',
                   boxShadow:'0 1px 3px rgba(0,0,0,0.04)',
                   animation:`fadeSlideUp 0.4s ease both`, animationDelay:`${i*60}ms` }}
@@ -2962,7 +2962,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                   display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
                   <Icon size={16} color={color} strokeWidth={1.8}/>
                 </div>
-                <div style={{ fontSize:12, fontWeight:700, color:'#e8f5f4', marginBottom:4 }}>{label}</div>
+                <div style={{ fontSize:12, fontWeight:700, color:'rgba(192,57,43,0.1)', marginBottom:4 }}>{label}</div>
                 <div style={{ fontSize:11, color:'rgba(232,245,244,0.4)', lineHeight:1.5 }}>{desc}</div>
               </button>
             ))}
@@ -2973,15 +2973,15 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         {recentEvents.length > 0 && (
           <div style={{ marginTop:24 }}>
             <div style={{ fontSize:10, fontWeight:700, color:'rgba(232,245,244,0.4)', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:10 }}>Recent activity</div>
-            <div style={{ background:'transparent', border:'1px solid rgba(45,212,191,0.15)', borderRadius:12,
+            <div style={{ background:'transparent', border:'1px solid rgba(192,57,43,0.15)', borderRadius:12,
               overflow:'hidden', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
               {recentEvents.map((ev, i) => {
                 const evColors = {
                   issued:          { color:'#4ade80', bg:'#111111', dot:'#4ade80' },
-                  renewed:         { color:'#e8f5f4', bg:'#111111', dot:'#ffffff' },
+                  renewed:         { color:'rgba(192,57,43,0.1)', bg:'#111111', dot:'#ffffff' },
                   revoked:         { color:'#f87171', bg:'#fef2f2', dot:'#f87171' },
-                  agent_installed: { color:'#e8f5f4', bg:'rgba(248,113,113,0.12)', dot:'#ffffff' },
-                  private_key_copied: { color:'#e8f5f4', bg:'rgba(248,113,113,0.12)', dot:'#ffffff' },
+                  agent_installed: { color:'rgba(192,57,43,0.1)', bg:'rgba(248,113,113,0.12)', dot:'#ffffff' },
+                  private_key_copied: { color:'rgba(192,57,43,0.1)', bg:'rgba(248,113,113,0.12)', dot:'#ffffff' },
                 }
                 const cfg = evColors[ev.event_type] || { color:'rgba(232,245,244,0.7)', bg:'#000000', dot:'rgba(255,255,255,0.38)' }
                 const secs = Math.floor((Date.now() - new Date(ev.created_at)) / 1000)
@@ -2989,10 +2989,10 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                           : secs < 86400 ? `${Math.floor(secs/3600)}h ago` : `${Math.floor(secs/86400)}d ago`
                 return (
                   <div key={ev.id} style={{ display:'flex', alignItems:'center', gap:12,
-                    padding:'10px 16px', borderBottom: i < recentEvents.length-1 ? '1px solid rgba(45,212,191,0.15)' : 'none' }}>
+                    padding:'10px 16px', borderBottom: i < recentEvents.length-1 ? '1px solid rgba(192,57,43,0.15)' : 'none' }}>
                     <div style={{ width:8, height:8, borderRadius:'50%', background:cfg.dot, flexShrink:0 }}/>
                     <div style={{ flex:1, minWidth:0 }}>
-                      <span style={{ fontSize:12, color:'#e8f5f4', fontWeight:500 }}>
+                      <span style={{ fontSize:12, color:'rgba(192,57,43,0.1)', fontWeight:500 }}>
                         {ev.event_type.replace(/_/g,' ')}
                       </span>
                       <span style={{ fontSize:12, color:'rgba(232,245,244,0.4)' }}> — {ev.domain}</span>

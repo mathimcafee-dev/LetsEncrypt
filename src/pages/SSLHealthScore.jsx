@@ -32,9 +32,9 @@ function gradeStyle(grade) {
   if (!grade || grade === 'F') return { color: '#f87171', bg: '#fef2f2', border: '#fecaca' }
   if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC' }
   if (grade === 'C') return { color: '#ca8a04', bg: '#fefce8', border: '#fef08a' }
-  if (grade === 'B') return { color: '#ffffff', bg: '#111111', border: '#A8E6DE' }
-  if (grade === 'A') return { color: '#4ade80', bg: '#111111', border: '#A8E6DE' }
-  if (grade === 'A+') return { color: '#ffffff', bg: '#111111', border: '#6ee7b7' }
+  if (grade === 'B') return { color: '#ffffff', bg: '#111111', border: 'rgba(192,57,43,0.3)' }
+  if (grade === 'A') return { color: '#4ade80', bg: '#111111', border: 'rgba(192,57,43,0.3)' }
+  if (grade === 'A+') return { color: '#ffffff', bg: '#111111', border: '#e07060' }
   return { color: 'rgba(255,255,255,0.7)', bg: '#000000', border: '#ffffff' }
 }
 

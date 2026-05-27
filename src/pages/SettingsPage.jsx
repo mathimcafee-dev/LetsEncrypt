@@ -39,7 +39,7 @@ function Toggle({ on, onClick, disabled }) {
   return (
     <button onClick={disabled ? undefined : onClick} style={{
       width: 36, height: 20, borderRadius: 10, border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-      background: on ? '#2dd4bf' : 'rgba(232,245,244,0.15)', position: 'relative',
+      background: on ? '#e07060' : 'rgba(232,245,244,0.15)', position: 'relative',
       transition: 'background .18s', flexShrink: 0, opacity: disabled ? 0.5 : 1,
     }}>
       <span style={{
@@ -56,8 +56,8 @@ function Section({ title, icon: Icon, children, collapsible = false }) {
   return (
     <div style={{ background: 'transparent', border: '0.5px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
       <div onClick={collapsible ? () => setOpen(v => !v) : undefined}
-        style={{ padding: '11px 18px', borderBottom: open ? '1px solid rgba(45,212,191,0.15)' : 'none',
-          fontSize:10, fontWeight: 700, color: 'rgba(45,212,191,0.8)', textTransform: 'uppercase',
+        style={{ padding: '11px 18px', borderBottom: open ? '1px solid rgba(192,57,43,0.15)' : 'none',
+          fontSize:10, fontWeight: 700, color: 'rgba(192,57,43,0.8)', textTransform: 'uppercase',
           letterSpacing: '.6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           cursor: collapsible ? 'pointer' : 'default' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -74,7 +74,7 @@ function Section({ title, icon: Icon, children, collapsible = false }) {
 function Row({ label, desc, children, last }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
-      padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid #f0fdf9' }}>
+      padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid rgba(192,57,43,0.08)' }}>
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 1 }}>{label}</div>
         {desc && <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{desc}</div>}
@@ -94,12 +94,12 @@ function LogRow({ log }) {
     pqc_risk: { icon: '⚛️', color: '#ffffff' }, no_dns_warning: { icon: '⚠️', color: '#ffffff' },
     weekly_digest: { icon: '📊', color: '#0f2545' },
   }
-  const m = meta[log.alert_type] || { icon: '📧', color: 'rgba(45,212,191,0.8)' }
+  const m = meta[log.alert_type] || { icon: '📧', color: 'rgba(192,57,43,0.8)' }
   const ts = new Date(log.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
   const domain = log.metadata?.domain || '—'
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 80px 70px', gap: 12,
-      padding: '9px 0', borderBottom: '1px solid rgba(45,212,191,0.12)', alignItems: 'center', fontSize:12 }}>
+      padding: '9px 0', borderBottom: '1px solid rgba(192,57,43,0.12)', alignItems: 'center', fontSize:12 }}>
       <span style={{ fontSize:14 }}>{m.icon}</span>
       <div>
         <div style={{ fontWeight: 500, color: 'var(--v2-text)', fontSize:12 }}>
@@ -107,7 +107,7 @@ function LogRow({ log }) {
         </div>
         <div style={{ fontSize:10, color: 'var(--v2-text-3)', fontFamily: 'monospace' }}>{domain}</div>
       </div>
-      <div style={{ color: 'rgba(45,212,191,0.8)', fontSize:11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <div style={{ color: 'rgba(192,57,43,0.8)', fontSize:11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {log.recipient}
       </div>
       <div style={{ fontSize:10, color: 'var(--v2-text-3)' }}>{ts}</div>
@@ -190,7 +190,7 @@ function ApiKeysPanel({ user }) {
 
       {/* New key revealed */}
       {newKey && (
-        <div style={{ background: 'transparent', border: '0.5px solid #A8E6DE', borderRadius: 8,
+        <div style={{ background: 'transparent', border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 8,
           padding: '12px 14px', marginBottom: 16 }}>
           <div style={{ fontSize:11, fontWeight: 600, color: '#ffffff', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
@@ -271,7 +271,7 @@ function ApiKeysPanel({ user }) {
 
       <div style={{ marginTop: 14, padding: '10px 12px', background: 'var(--v2-surface-3)',
         borderRadius: 7, fontSize:11, color: 'var(--v2-text-3)', lineHeight: 1.6 }}>
-        Use your key in requests: <span style={{ fontFamily: 'monospace', color: 'rgba(45,212,191,0.8)' }}>
+        Use your key in requests: <span style={{ fontFamily: 'monospace', color: 'rgba(192,57,43,0.8)' }}>
           Authorization: Bearer sv_live_…
         </span>
       </div>
@@ -454,9 +454,9 @@ export default function SettingsPage({ user }) {
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
               borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize:12, fontWeight: 600,
               fontFamily: 'inherit', transition: 'all .15s',
-              background: activeTab === id ? 'rgba(45,212,191,0.12)' : 'transparent',
+              background: activeTab === id ? 'rgba(192,57,43,0.12)' : 'transparent',
               color: activeTab === id ? '#ffffff' : 'rgba(255,255,255,0.38)',
-              borderBottom: activeTab === id ? '2px solid #0d9488' : '2px solid transparent',
+              borderBottom: activeTab === id ? '2px solid #c0392b' : '2px solid transparent',
             }}>
             <Icon size={12}/>{label}
           </button>
@@ -470,14 +470,14 @@ export default function SettingsPage({ user }) {
           {/* Account */}
           <Section title="Account" icon={User}>
             <Row label="Email address" desc="Your sign-in email">
-              <span style={{ fontSize:12, color: 'rgba(45,212,191,0.8)', fontFamily: 'monospace' }}>{email}</span>
+              <span style={{ fontSize:12, color: 'rgba(192,57,43,0.8)', fontFamily: 'monospace' }}>{email}</span>
             </Row>
             <Row label="Member since">
-              <span style={{ fontSize:12, color: 'rgba(45,212,191,0.8)' }}>{createdAt}</span>
+              <span style={{ fontSize:12, color: 'rgba(192,57,43,0.8)' }}>{createdAt}</span>
             </Row>
             <Row label="Plan" desc="Free for personal and indie use" last>
               <span style={{ fontSize:11, fontWeight: 600, color: '#ffffff', background: 'transparent',
-                border: '0.5px solid #A8E6DE', borderRadius: 4, padding: '3px 8px' }}>Free</span>
+                border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 4, padding: '3px 8px' }}>Free</span>
             </Row>
           </Section>
 
@@ -494,7 +494,7 @@ export default function SettingsPage({ user }) {
                 {ALERT_TYPE_DEFS.map(({ id, label, desc, color }) => (
                   <div key={id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     gap: 12, padding: '8px 12px', borderRadius: 8,
-                    background: alertTypes.includes(id) ? 'rgba(45,212,191,0.08)' : 'rgba(232,245,244,0.03)',
+                    background: alertTypes.includes(id) ? 'rgba(192,57,43,0.08)' : 'rgba(232,245,244,0.03)',
                     border: `1px solid ${alertTypes.includes(id) ? '#ffffff' : 'transparent'}`,
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all .15s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
@@ -523,9 +523,9 @@ export default function SettingsPage({ user }) {
                   style={{ padding: '6px 14px', borderRadius: 6, fontSize:12, fontWeight: 500,
                     cursor: emailAlerts ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all 0.15s',
-                    background: alertDays.includes(d) ? 'rgba(45,212,191,0.2)' : 'rgba(232,245,244,0.06)',
+                    background: alertDays.includes(d) ? 'rgba(192,57,43,0.2)' : 'rgba(232,245,244,0.06)',
                     color: alertDays.includes(d) ? '#0e7490' : 'rgba(255,255,255,0.38)',
-                    border: alertDays.includes(d) ? '1px solid #a5f3fc' : '1px solid #99f6e4' }}>
+                    border: alertDays.includes(d) ? '1px solid #a5f3fc' : '1px solid rgba(192,57,43,0.2)' }}>
                   {d} {d === 1 ? 'day' : 'days'}
                 </button>
               ))}
@@ -539,7 +539,7 @@ export default function SettingsPage({ user }) {
             </div>
             {extraEmails.map(e => (
               <div key={e} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '7px 10px', background: 'var(--v2-surface-3)', border: '1px solid #99f6e4',
+                padding: '7px 10px', background: 'var(--v2-surface-3)', border: '1px solid rgba(192,57,43,0.2)',
                 borderRadius: 7, marginBottom: 6 }}>
                 <span style={{ fontSize:12, color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace' }}>{e}</span>
                 <button onClick={() => removeExtraEmail(e)}
@@ -572,7 +572,7 @@ export default function SettingsPage({ user }) {
             </div>
             <input value={slackWebhook} onChange={e => setSlackWebhook(e.target.value)}
               placeholder="https://hooks.slack.com/services/..."
-              style={{ width: '100%', padding: '8px 10px', border: '1px solid #99f6e4',
+              style={{ width: '100%', padding: '8px 10px', border: '1px solid rgba(192,57,43,0.2)',
                 borderRadius: 7, fontSize:11, fontFamily: 'monospace', outline: 'none',
                 boxSizing: 'border-box' }}/>
           </Section>
@@ -591,7 +591,7 @@ export default function SettingsPage({ user }) {
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
               <select value={testType} onChange={e => setTestType(e.target.value)}
-                style={{ flex: 1, minWidth: 180, padding: '7px 10px', border: '1px solid #99f6e4',
+                style={{ flex: 1, minWidth: 180, padding: '7px 10px', border: '1px solid rgba(192,57,43,0.2)',
                   borderRadius: 7, fontSize:12, fontFamily: 'inherit', outline: 'none', background: 'transparent' }}>
                 {ALERT_TYPE_DEFS.map(({ id, label }) => (
                   <option key={id} value={id}>{TYPE_ICONS[id]} {label}</option>
@@ -599,7 +599,7 @@ export default function SettingsPage({ user }) {
               </select>
               <button onClick={sendTestEmail} disabled={testSending}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px',
-                  background: testSending ? 'rgba(45,212,191,0.3)' : 'rgba(45,212,191,0.15)', color: '#e8f5f4',
+                  background: testSending ? 'rgba(192,57,43,0.3)' : 'rgba(192,57,43,0.15)', color: 'rgba(192,57,43,0.1)',
                   border: 'none', borderRadius: 7, fontSize:12, fontWeight: 600,
                   cursor: testSending ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
                 {testSending ? <><RefreshCw size={11} className="spin"/> Sending…</> : <><Send size={11}/> Send test</>}
@@ -609,7 +609,7 @@ export default function SettingsPage({ user }) {
               <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 7, fontSize:12,
                 background: testResult.ok ? '#111111' : '#fef2f2',
                 color: testResult.ok ? '#ffffff' : '#f87171',
-                border: `1px solid ${testResult.ok ? '#6ee7b7' : '#fecaca'}` }}>
+                border: `1px solid ${testResult.ok ? '#e07060' : '#fecaca'}` }}>
                 {testResult.ok ? '✓ ' : '✗ '}{testResult.msg}
               </div>
             )}
@@ -618,7 +618,7 @@ export default function SettingsPage({ user }) {
           {/* Security */}
           <Section title="Security" icon={Shield}>
             <Row label="Authentication" desc="Managed via Supabase Auth">
-              <span style={{ fontSize:11, color: 'rgba(45,212,191,0.8)' }}>Magic link</span>
+              <span style={{ fontSize:11, color: 'rgba(192,57,43,0.8)' }}>Magic link</span>
             </Row>
             <Row label="Private key storage" desc="AES-256-GCM encrypted at rest" last>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#ffffff' }}>
@@ -632,7 +632,7 @@ export default function SettingsPage({ user }) {
             <Row label="Sign out" desc="Sign out on this device">
               <button onClick={handleSignOut}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent',
-                  color: 'rgba(45,212,191,0.8)', border: '0.5px solid var(--v2-border)', borderRadius: 6,
+                  color: 'rgba(192,57,43,0.8)', border: '0.5px solid var(--v2-border)', borderRadius: 6,
                   padding: '6px 12px', fontSize:11, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <LogOut size={11}/> Sign out
               </button>
@@ -665,22 +665,22 @@ export default function SettingsPage({ user }) {
         {activeTab === 'log' && (
           <div style={{ background: 'transparent', border: '0.5px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden' }}>
             {/* Header */}
-            <div style={{ padding: '12px 18px', borderBottom: '1px solid rgba(45,212,191,0.12)',
+            <div style={{ padding: '12px 18px', borderBottom: '1px solid rgba(192,57,43,0.12)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-              <div style={{ fontSize:10, fontWeight: 700, color: 'rgba(45,212,191,0.8)', textTransform: 'uppercase', letterSpacing: '.6px' }}>
+              <div style={{ fontSize:10, fontWeight: 700, color: 'rgba(192,57,43,0.8)', textTransform: 'uppercase', letterSpacing: '.6px' }}>
                 Alert log {logsTotal > 0 && `(${logsTotal} total)`}
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <select value={logsTypeFilter} onChange={e => { setLogsTypeFilter(e.target.value); setLogsPage(0) }}
-                  style={{ padding: '5px 8px', border: '1px solid #99f6e4', borderRadius: 6,
+                  style={{ padding: '5px 8px', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 6,
                     fontSize:11, fontFamily: 'inherit', outline: 'none', background: 'transparent' }}>
                   <option value="">All types</option>
                   {ALERT_TYPE_DEFS.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}
                 </select>
                 <button onClick={() => loadLogs(logsPage, logsTypeFilter)}
                   style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px',
-                    background: 'var(--v2-surface-3)', border: '1px solid #99f6e4', borderRadius: 6,
-                    fontSize:11, cursor: 'pointer', fontFamily: 'inherit', color: 'rgba(45,212,191,0.8)' }}>
+                    background: 'var(--v2-surface-3)', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 6,
+                    fontSize:11, cursor: 'pointer', fontFamily: 'inherit', color: 'rgba(192,57,43,0.8)' }}>
                   <RefreshCw size={10}/> Refresh
                 </button>
               </div>
@@ -689,7 +689,7 @@ export default function SettingsPage({ user }) {
             {/* Column headers */}
             <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 80px 70px', gap: 12,
               padding: '8px 18px', fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
-              textTransform: 'uppercase', letterSpacing: '.5px', borderBottom: '1px solid rgba(45,212,191,0.12)' }}>
+              textTransform: 'uppercase', letterSpacing: '.5px', borderBottom: '1px solid rgba(192,57,43,0.12)' }}>
               <div/>
               <div>Type / Domain</div>
               <div>Recipient</div>
@@ -719,24 +719,24 @@ export default function SettingsPage({ user }) {
 
             {/* Pagination */}
             {logsTotal > 20 && (
-              <div style={{ padding: '10px 18px', borderTop: '0.5px solid #e6fbf5',
+              <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(192,57,43,0.08)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
                   Showing {logsPage * 20 + 1}–{Math.min((logsPage + 1) * 20, logsTotal)} of {logsTotal}
                 </span>
                 <div style={{ display: 'flex', gap: 6 }}>
                   <button onClick={() => setLogsPage(p => Math.max(0, p - 1))} disabled={logsPage === 0}
-                    style={{ padding: '4px 10px', border: '1px solid #99f6e4', borderRadius: 5,
+                    style={{ padding: '4px 10px', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 5,
                       fontSize:11, cursor: logsPage === 0 ? 'not-allowed' : 'pointer',
-                      background: 'rgba(45,212,191,0.08)',
+                      background: 'rgba(192,57,43,0.08)',
                       color: logsPage === 0 ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.6)', fontFamily: 'inherit' }}>
                     ← Prev
                   </button>
                   <button onClick={() => setLogsPage(p => p + 1)}
                     disabled={(logsPage + 1) * 20 >= logsTotal}
-                    style={{ padding: '4px 10px', border: '1px solid #99f6e4', borderRadius: 5,
+                    style={{ padding: '4px 10px', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 5,
                       fontSize:11, cursor: (logsPage + 1) * 20 >= logsTotal ? 'not-allowed' : 'pointer',
-                      background: 'rgba(45,212,191,0.08)',
+                      background: 'rgba(192,57,43,0.08)',
                       color: (logsPage + 1) * 20 >= logsTotal ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.6)', fontFamily: 'inherit' }}>
                     Next →
                   </button>

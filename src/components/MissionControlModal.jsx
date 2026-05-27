@@ -74,7 +74,7 @@ function FloatingPill({ action, domain, elapsedMs, onExpand }) {
         width: 8, height: 8, borderRadius: '50%', background: '#10b981',
         animation: 'mc-pulse 1.4s ease-in-out infinite',
       }}/>
-      <span style={{ fontSize: 13, fontWeight: 600, color: '#e8f5f4', fontFamily: 'inherit' }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(192,57,43,0.1)', fontFamily: 'inherit' }}>
         {action === 'reissue' ? '🔐' : '♻️'} {action === 'reissue' ? 'Reissuing' : 'Renewing'} {domain}
       </span>
       <span style={{ fontSize: 12, color: '#10b981', fontFamily: 'monospace', fontWeight: 700 }}>
@@ -110,7 +110,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
         </svg>
       </div>
 
-      <div style={{ fontSize: 20, fontWeight: 800, color: '#e8f5f4', marginBottom: 4 }}>
+      <div style={{ fontSize: 20, fontWeight: 800, color: 'rgba(192,57,43,0.1)', marginBottom: 4 }}>
         Certificate {action === 'reissue' ? 'Reissued' : 'Renewed'}
       </div>
       <div style={{ fontSize: 13, color: 'rgba(232,245,244,0.5)', marginBottom: 24, fontFamily: 'monospace' }}>
@@ -141,7 +141,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
             {isProbing ? '⏳' : certIssued ? '🔐' : '❓'}
           </div>
           <div style={{ flex: 1, textAlign: 'left' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: certIssued ? '#e8f5f4' : 'rgba(232,245,244,0.5)', marginBottom: 4 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: certIssued ? 'rgba(192,57,43,0.1)' : 'rgba(232,245,244,0.5)', marginBottom: 4 }}>
               Certificate Issued
             </div>
             {isProbing && (
@@ -188,7 +188,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
             {isProbing ? '⏳' : reachable ? '🌐' : '⚠️'}
           </div>
           <div style={{ flex: 1, textAlign: 'left' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: reachable ? '#e8f5f4' : 'rgba(232,245,244,0.5)', marginBottom: 4 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: reachable ? 'rgba(192,57,43,0.1)' : 'rgba(232,245,244,0.5)', marginBottom: 4 }}>
               Live Server Check
             </div>
             {isProbing && (
@@ -260,7 +260,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
         <button onClick={onDone} style={{
           fontSize: 13, fontWeight: 600, padding: '10px 20px', borderRadius: 8,
           background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
-          color: '#e8f5f4', cursor: 'pointer', fontFamily: 'inherit',
+          color: 'rgba(192,57,43,0.1)', cursor: 'pointer', fontFamily: 'inherit',
         }}
           onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
           onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.07)'}>
@@ -376,7 +376,7 @@ export default function MissionControlModal({
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: 18 }}>{actionIcon}</span>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#e8f5f4' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(192,57,43,0.1)' }}>
                   {actionLabel} in progress
                 </div>
                 <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.5)', fontFamily: 'monospace', marginTop: 1 }}>
@@ -403,7 +403,7 @@ export default function MissionControlModal({
                   color: 'rgba(232,245,244,0.4)', fontSize: 16, lineHeight: 1,
                   transition: 'color 0.15s',
                 }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#e8f5f4'}
+                  onMouseEnter={e => e.currentTarget.style.color = 'rgba(192,57,43,0.1)'}
                   onMouseLeave={e => e.currentTarget.style.color = 'rgba(232,245,244,0.4)'}
                   title="Minimise — runs in background">
                   ↙
@@ -415,7 +415,7 @@ export default function MissionControlModal({
                   color: 'rgba(232,245,244,0.4)', fontSize: 18, lineHeight: 1,
                   padding: 4, transition: 'color 0.15s',
                 }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#e8f5f4'}
+                  onMouseEnter={e => e.currentTarget.style.color = 'rgba(192,57,43,0.1)'}
                   onMouseLeave={e => e.currentTarget.style.color = 'rgba(232,245,244,0.4)'}>
                   ×
                 </button>
@@ -430,7 +430,7 @@ export default function MissionControlModal({
               width: `${progress}%`,
               background: hasError
                 ? 'linear-gradient(90deg, #f87171, #fca5a5)'
-                : 'linear-gradient(90deg, #10b981, #34d399)',
+                : 'linear-gradient(90deg, #10b981, #e07060)',
               transition: 'width 0.6s cubic-bezier(.16,1,.3,1)',
               borderRadius: '0 2px 2px 0',
             }}/>
@@ -497,8 +497,8 @@ export default function MissionControlModal({
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{
                           fontSize: 13, fontWeight: isActive || isDoneStep ? 600 : 500,
-                          color: isDoneStep ? '#e8f5f4'
-                            : isActive     ? '#e8f5f4'
+                          color: isDoneStep ? 'rgba(192,57,43,0.1)'
+                            : isActive     ? 'rgba(192,57,43,0.1)'
                             : isErr        ? '#f87171'
                             : isSkipped    ? 'rgba(232,245,244,0.3)'
                             : 'rgba(232,245,244,0.35)',

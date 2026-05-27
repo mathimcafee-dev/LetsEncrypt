@@ -106,7 +106,7 @@ export default function AdminAnalytics({ user }) {
           </div>
           {actionMsg && (
             <div style={{padding:'8px 12px',borderRadius:6,background:actionMsg.startsWith('Error')?'#fef2f2':'#111111',
-              border:`0.5px solid ${actionMsg.startsWith('Error')?'#fecaca':'#A8E6DE'}`,
+              border:`0.5px solid ${actionMsg.startsWith('Error')?'#fecaca':'rgba(192,57,43,0.3)'}`,
               color:actionMsg.startsWith('Error')?'#f87171':'#4ade80',fontSize:12,marginBottom:10,
               display:'flex',alignItems:'center',justifyContent:'space-between'}}>
               {actionMsg}
@@ -137,7 +137,7 @@ export default function AdminAnalytics({ user }) {
                     <span style={{fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:20,
                       background:req.status==='pending'?'rgba(239,68,68,0.08)':req.status==='approved'?'#111111':'#fef2f2',
                       color:req.status==='pending'?'#ffffff':req.status==='approved'?'#4ade80':'#f87171',
-                      border:`0.5px solid ${req.status==='pending'?'#F2C4BC':req.status==='approved'?'#A8E6DE':'#fecaca'}`}}>
+                      border:`0.5px solid ${req.status==='pending'?'#F2C4BC':req.status==='approved'?'rgba(192,57,43,0.3)':'#fecaca'}`}}>
                       {req.status}
                     </span>
                   </div>
@@ -147,7 +147,7 @@ export default function AdminAnalytics({ user }) {
                   <div style={{display:'flex',gap:6}}>
                     {req.status==='pending' && (<>
                       <button onClick={()=>handleApprove(req.user_id)}
-                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #A8E6DE',
+                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid rgba(192,57,43,0.3)',
                           background:'transparent',color:'#4ade80',cursor:'pointer',fontWeight:600}}>
                         ✓ Approve
                       </button>

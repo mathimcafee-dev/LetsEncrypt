@@ -53,13 +53,13 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 
 function Tick({ ok }) {
   return ok
-    ? <CheckCircle size={14} color="#0d9488" style={{ flexShrink:0 }}/>
+    ? <CheckCircle size={14} color="#c0392b" style={{ flexShrink:0 }}/>
     : <XCircle    size={14} color="#C04040" style={{ flexShrink:0 }}/>
 }
 
 function StatusPill({ status }) {
   const map = {
-    'Ready':      { bg:'#111111', color:'#0F6E56', border:'#A8E6DE' },
+    'Ready':      { bg:'#111111', color:'#a93226', border:'rgba(192,57,43,0.3)' },
     'At risk':    { bg:'#FAEEDA', color:'#854F0B', border:'#F0C490' },
     'Will break': { bg:'#FCEBEB', color:'#A32D2D', border:'#F7C1C1' },
   }
@@ -73,7 +73,7 @@ function StatusPill({ status }) {
 }
 
 function ScoreBadge({ score }) {
-  const color = score >= 90 ? '#0F6E56' : score >= 60 ? '#854F0B' : '#A32D2D'
+  const color = score >= 90 ? '#a93226' : score >= 60 ? '#854F0B' : '#A32D2D'
   return (
     <span style={{ fontSize:12, fontWeight:700, color, fontFamily:'monospace' }}>{score}</span>
   )
@@ -203,9 +203,9 @@ export default function ReadinessDashboard({ user }) {
         {/* Summary strip */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))', gap:8, marginBottom:16 }}>
           {[
-            { label:'Fleet score',  value:fleetScore, unit:'/ 100', color: fleetScore>=90?'#0F6E56':fleetScore>=60?'#854F0B':'#A32D2D' },
+            { label:'Fleet score',  value:fleetScore, unit:'/ 100', color: fleetScore>=90?'#a93226':fleetScore>=60?'#854F0B':'#A32D2D' },
             { label:'Domains',      value:rows.length, unit:'total',    color:'var(--v2-text-1)' },
-            { label:'Ready',        value:ready,        unit:'domains',  color:'#0F6E56' },
+            { label:'Ready',        value:ready,        unit:'domains',  color:'#a93226' },
             { label:'At risk',      value:atRisk,       unit:'domains',  color:'#854F0B' },
             { label:'Will break',   value:willBreak,    unit:'domains',  color:'#A32D2D' },
           ].map(s => (
@@ -240,8 +240,8 @@ export default function ReadinessDashboard({ user }) {
                 </div>
                 <span style={{ fontSize:11, fontWeight:600, padding:'2px 8px', borderRadius:20,
                   background: past ? (i===0?'#FAEEDA':'var(--v2-bg)') : '#111111',
-                  color: past ? (i===0?'#854F0B':'var(--v2-text-3)') : '#0F6E56',
-                  border:`0.5px solid ${past?(i===0?'#F0C490':'var(--v2-border)'):'#A8E6DE'}` }}>
+                  color: past ? (i===0?'#854F0B':'var(--v2-text-3)') : '#a93226',
+                  border:`0.5px solid ${past?(i===0?'#F0C490':'var(--v2-border)'):'rgba(192,57,43,0.3)'}` }}>
                   {past ? 'In effect' : `${d}d`}
                 </span>
               </div>
@@ -316,8 +316,8 @@ export default function ReadinessDashboard({ user }) {
                             {cert.source === 'gogetssl' ? (
                               <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px',
                                 borderRadius:4, whiteSpace:'nowrap', flexShrink:0,
-                                background:'transparent', color:'#0F6E56',
-                                border:'0.5px solid #A8E6DE' }}>
+                                background:'transparent', color:'#a93226',
+                                border:'0.5px solid rgba(192,57,43,0.3)' }}>
                                 SSLVault
                               </span>
                             ) : cert.source ? (

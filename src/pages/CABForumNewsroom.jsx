@@ -113,18 +113,18 @@ function Pill({ color, bg, border, children }) {
 }
 
 const STATUS_STYLE = {
-  passed:   { color:'#ffffff', bg:'#111111', border:'#A8E6DE' },
-  adopted:  { color:'#ffffff', bg:'#111111', border:'#A8E6DE' },
+  passed:   { color:'#ffffff', bg:'#111111', border:'rgba(192,57,43,0.3)' },
+  adopted:  { color:'#ffffff', bg:'#111111', border:'rgba(192,57,43,0.3)' },
   withdrawn:{ color:'#C45A4A', bg:'rgba(239,68,68,0.08)', border:'#F2C4BC' },
   failed:   { color:'#C45A4A', bg:'rgba(239,68,68,0.08)', border:'#F2C4BC' },
   draft:    { color:'#C45A4A', bg:'rgba(239,68,68,0.08)', border:'#F2C4BC' },
 }
 const WG_STYLE = {
-  'Server Cert WG': { color:'#ffffff', bg:'#111111', border:'#A8E6DE' },
+  'Server Cert WG': { color:'#ffffff', bg:'#111111', border:'rgba(192,57,43,0.3)' },
   'S/MIME WG':      { color:'#C45A4A', bg:'rgba(239,68,68,0.08)', border:'#F2C4BC' },
   'Code Signing WG':{ color:'#C45A4A', bg:'rgba(239,68,68,0.08)', border:'#F2C4BC' },
-  'NetSec WG':      { color:'#ffffff', bg:'#111111', border:'#A8E6DE' },
-  'Forum':          { color:'#7A9E9B', bg:'#000000', border:'#EDE8DE' },
+  'NetSec WG':      { color:'#ffffff', bg:'#111111', border:'rgba(192,57,43,0.3)' },
+  'Forum':          { color:'#807870', bg:'#000000', border:'#EDE8DE' },
 }
 const IMPACT_STYLE = {
   critical: { color:'#f87171', bg:'#fef2f2', border:'#fecaca' },
@@ -134,8 +134,8 @@ const IMPACT_STYLE = {
 function BallotRow({ b, onClick }) {
   const imp = b.impact_level ? IMPACT_STYLE[b.impact_level.toLowerCase()] : null
   const impLabel = b.impact_level === 'critical' ? 'Critical' : b.impact_level === 'high' ? 'High impact' : null
-  const st = STATUS_STYLE[(b.status||'').toLowerCase()] || { color:'#7A9E9B', bg:'#000000', border:'#EDE8DE' }
-  const wg = WG_STYLE[b.working_group] || { color:'#7A9E9B', bg:'#000000', border:'#EDE8DE' }
+  const st = STATUS_STYLE[(b.status||'').toLowerCase()] || { color:'#807870', bg:'#000000', border:'#EDE8DE' }
+  const wg = WG_STYLE[b.working_group] || { color:'#807870', bg:'#000000', border:'#EDE8DE' }
 
   return (
     <div onClick={() => onClick(b)} style={{
@@ -263,7 +263,7 @@ export default function CABForumNewsroom({ nav }) {
         .hero-band { background:var(--v2-border-focus,#0a0a0a);padding:32px 24px 28px;color:#fff }
         .hero-eyebrow { font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase;font-weight:500;margin-bottom:8px }
         .hero-h1 { font-size:26px;font-weight:600;letter-spacing:-.4px;color:#fff;line-height:1.2;margin-bottom:10px }
-        .hero-h1 em { color:#0d9488;font-style:normal }
+        .hero-h1 em { color:#c0392b;font-style:normal }
         .hero-sub { font-size:13px;color:rgba(255,255,255,.55);max-width:min(640px,100%);line-height:1.7;margin-bottom:20px }
         .hero-stats { display:flex;gap:28px;flex-wrap:wrap }
         .hstat-n { font-size:22px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums;line-height:1 }
@@ -355,7 +355,7 @@ export default function CABForumNewsroom({ nav }) {
         .chip-green { background:var(--v2-green-bg);color:var(--v2-green-text);border:0.5px solid var(--v2-green-border) }
         .chip-amber { background:var(--v2-amber-bg);color:var(--v2-amber-text);border:0.5px solid var(--v2-amber-border) }
         .chip-red { background:var(--v2-red-bg);color:var(--v2-red-text);border:0.5px solid var(--v2-red-border) }
-        .chip-blue { background:#ccfbf1;color:#0d9488;border:0.5px solid #A8E6DE }
+        .chip-blue { background:rgba(192,57,43,0.12);color:#c0392b;border:0.5px solid rgba(192,57,43,0.3) }
         .chip-grey { background:var(--v2-surface-3,var(--v2-hover));color:var(--v2-text-3);border:0.5px solid var(--v2-border) }
         /* ── Callouts ──────────────────────────────────────── */
         .v2-callout { padding:12px 14px;border-radius:var(--v2-r-lg);border:0.5px solid var(--v2-border);margin-bottom:10px }

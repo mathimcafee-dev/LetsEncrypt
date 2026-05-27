@@ -9,7 +9,7 @@ const C = {
   bg:'#000000', bg2:'#000000', bg3:'#000000',
   border:'rgba(255,255,255,0.12)', border2:'rgba(255,255,255,0.2)',
   heading:'#ffffff', body:'#4b5563', muted:'rgba(255,255,255,0.35)',
-  teal:'#ffffff', tealDk:'#ffffff', tealBg:'#111111', tealBd:'#A8E6DE',
+  teal:'#ffffff', tealDk:'#ffffff', tealBg:'#111111', tealBd:'rgba(192,57,43,0.3)',
   green:'#ffffff', greenBg:'#111111',
   purple:'#ffffff', purpleBg:'#faf5ff',
   amber:'#ffffff', amberBg:'rgba(239,68,68,0.08)',
@@ -50,7 +50,7 @@ function Note({ type = 'tip', children }) {
   const styles = {
     tip:     { bg:C.tealBg,   bd:C.tealBd,        color:C.tealDk,  label:'TIP',     icon:'💡' },
     warning: { bg:C.amberBg,  bd:'#F2C4BC',        color:C.amber,   label:'WARNING', icon:'⚠️' },
-    info:    { bg:C.greenBg,  bd:'#A8E6DE',        color:C.green,   label:'INFO',    icon:'ℹ️' },
+    info:    { bg:C.greenBg,  bd:'rgba(192,57,43,0.3)',        color:C.green,   label:'INFO',    icon:'ℹ️' },
     danger:  { bg:C.redBg,    bd:'#fecaca',        color:C.red,     label:'IMPORTANT',icon:'🔴' },
   }[type]
   return (

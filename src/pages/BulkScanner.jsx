@@ -86,7 +86,7 @@ export default function BulkScanner({ nav }) {
         justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
-          <Shield size={18} color="#0d9488" />
+          <Shield size={18} color="#c0392b" />
           <span style={{ fontSize:14, fontWeight: 600, color: 'var(--v2-text)' }}>SSLVault</span>
           <span style={{ fontSize:11, color: 'var(--v2-text-3)', fontWeight: 400 }}>· Bulk Scanner</span>
         </div>

@@ -298,7 +298,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                     width:'100%', padding:'11px', borderRadius:8, cursor:'pointer',
                     background: copied ? '#111111' : '#ffffff', fontFamily:'inherit',
                     color: copied ? '#4ade80' : '#000000',
-                    border: copied ? '1px solid #A8E6DE' : 'none',
+                    border: copied ? '1px solid rgba(192,57,43,0.3)' : 'none',
                     fontSize:13, fontWeight:600,
                     display:'flex', alignItems:'center', justifyContent:'center', gap:8,
                     transition:'all .2s',
@@ -331,7 +331,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
 function AuditRow({ entry }) {
   const icons = {
     created:  <Shield size={12} color="#f07059"/>,
-    fetched:  <Eye size={12} color="#0d9488"/>,
+    fetched:  <Eye size={12} color="#c0392b"/>,
     rotated:  <RotateCcw size={12} color="#f07059"/>,
     archived: <Clock size={12} color="rgba(0,0,0,0.36)"/>,
     deleted:  <Trash2 size={12} color="#dc2626"/>,
@@ -731,7 +731,7 @@ export default function CertVault({ nav }) {
           </div>
         )}
         {rotateSuccess && (
-          <div style={{ background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:8,
+          <div style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:8,
             padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#ffffff' }}>
             <CheckCircle size={13} style={{ flexShrink:0 }}/>
@@ -756,7 +756,7 @@ export default function CertVault({ nav }) {
             }}
               style={{ padding:'8px 14px', fontSize:12, fontWeight:tab===t.key?500:400,
                 cursor:'pointer', fontFamily:'inherit', background:'none', border:'none',
-                borderBottom:tab===t.key?'2px solid #0d9488':'2px solid transparent',
+                borderBottom:tab===t.key?'2px solid #c0392b':'2px solid transparent',
                 color:tab===t.key?'#ffffff':'var(--v2-text-3)', marginBottom:'-0.5px',
                 display:'flex', alignItems:'center', gap:6 }}>
               {t.label}
@@ -886,7 +886,7 @@ export default function CertVault({ nav }) {
                 </div>
               </div>
               <div style={{ padding:'16px 20px' }}>
-                <div style={{ background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:8,
+                <div style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:8,
                   padding:'10px 12px', marginBottom:14, fontSize:11, color:'rgba(255,255,255,0.7)' }}>
                   <CheckCircle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
                   <strong>Zero downtime</strong> — new cert installs before old key is archived.

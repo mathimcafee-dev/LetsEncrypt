@@ -271,7 +271,7 @@ function InstallModal({ onClose }) {
 
             </div>
           ))}
-          <div style={{ background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:7, padding:'10px 12px' }}>
+          <div style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:7, padding:'10px 12px' }}>
             <div style={{ fontSize:11, color:'#ffffff', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and appears in this list within 1–2 minutes.
             </div>
@@ -327,7 +327,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
     setTimeout(() => setCopied(false), 1500)
   }
 
-  const borderColor = st.label === 'Online' ? '#A8E6DE'
+  const borderColor = st.label === 'Online' ? 'rgba(192,57,43,0.3)'
     : st.label === 'Offline' ? '#fecaca'
     : 'var(--v2-border)'
   const headerBg = st.label === 'Online' ? '#111111'
@@ -421,7 +421,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
               <button key={id} onClick={() => setTab(id)}
                 style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px',
                   fontSize:11, fontWeight:tab===id?500:400, cursor:'pointer', fontFamily:'inherit',
-                  background:'none', border:'none', borderBottom:tab===id?'2px solid #0d9488':'2px solid transparent',
+                  background:'none', border:'none', borderBottom:tab===id?'2px solid #c0392b':'2px solid transparent',
                   color:tab===id?'#ffffff':'var(--v2-text-3)', transition:'all .15s',
                   marginBottom:'-0.5px' }}>
                 <Icon size={12}/>{label}

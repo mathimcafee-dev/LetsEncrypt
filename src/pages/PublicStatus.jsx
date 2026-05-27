@@ -8,9 +8,9 @@ function gradeStyle(grade) {
   if (!grade || grade === 'F') return { color: '#f87171', bg: '#fef2f2', border: '#fecaca' }
   if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC' }
   if (grade === 'C') return { color: '#ca8a04', bg: '#fefce8', border: '#fef08a' }
-  if (grade === 'B') return { color: '#ffffff', bg: '#111111', border: '#A8E6DE' }
-  if (grade === 'A') return { color: '#4ade80', bg: '#111111', border: '#A8E6DE' }
-  if (grade === 'A+') return { color: '#ffffff', bg: '#111111', border: '#6ee7b7' }
+  if (grade === 'B') return { color: '#ffffff', bg: '#111111', border: 'rgba(192,57,43,0.3)' }
+  if (grade === 'A') return { color: '#4ade80', bg: '#111111', border: 'rgba(192,57,43,0.3)' }
+  if (grade === 'A+') return { color: '#ffffff', bg: '#111111', border: '#e07060' }
   return { color: 'rgba(255,255,255,0.7)', bg: '#000000', border: '#ffffff' }
 }
 
@@ -64,12 +64,12 @@ export default function PublicStatus({ username: propUsername, nav }) {
   return (
     <div style={{ minHeight: '100vh', background: 'transparent' }}>
       {/* Nav */}
-      <div style={{ background: '#fff', borderBottom: '0.5px solid #99f6e4',
+      <div style={{ background: '#fff', borderBottom: '0.5px solid rgba(192,57,43,0.2)',
         padding: '0 24px', height: 52, display: 'flex', alignItems: 'center',
         justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
-          <Shield size={18} color="#0d9488" />
+          <Shield size={18} color="#c0392b" />
           <span style={{ fontSize:14, fontWeight: 600, color: '#ffffff' }}>SSLVault</span>
         </div>
         <span style={{ fontSize:11, color: 'rgba(255,255,255,0.38)' }}>
@@ -191,7 +191,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
               <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
                 style={{ fontSize:12, color: 'rgba(255,255,255,0.38)', textDecoration: 'none',
                   display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                <Shield size={12} color="#0d9488" />
+                <Shield size={12} color="#c0392b" />
                 Secured & monitored by SSLVault · easysecurity.in
               </a>
             </div>

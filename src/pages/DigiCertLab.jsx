@@ -501,7 +501,7 @@ export default function DigiCertLab({ nav }) {
                 return (
                   <div key={cert.order_id || i}
                     style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-                      padding: '10px 16px', borderBottom: i < certs.length - 1 ? '0.5px solid #f0fdf9' : 'none',
+                      padding: '10px 16px', borderBottom: i < certs.length - 1 ? '0.5px solid rgba(192,57,43,0.08)' : 'none',
                       alignItems: 'center', transition: 'background .12s' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-bg)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
@@ -530,7 +530,7 @@ export default function DigiCertLab({ nav }) {
                       <button onClick={() => { setSelectedCert(cert); setSection('reissue') }}
                         title="Reissue"
                         style={{ fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 5,
-                          background: 'transparent', color: '#4ade80', border: '0.5px solid #A8E6DE',
+                          background: 'transparent', color: '#4ade80', border: '0.5px solid rgba(192,57,43,0.3)',
                           cursor: 'pointer', fontFamily: 'inherit' }}>
                         Reissue
                       </button>
@@ -596,7 +596,7 @@ export default function DigiCertLab({ nav }) {
                     </div>
                     {certs.filter(c => pqcRisk(c) === 'high').map((cert, i) => (
                       <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-                        padding: '10px 16px', borderBottom: '0.5px solid #f0fdf9', alignItems: 'center' }}>
+                        padding: '10px 16px', borderBottom: '0.5px solid rgba(192,57,43,0.08)', alignItems: 'center' }}>
                         <div style={{ fontSize:12, fontFamily: 'monospace', color: '#ffffff' }}>{cert.common_name}</div>
                         <Badge text={`RSA-${cert.key_size || 2048}`} color="#f07059" bg="#fde8e4"/>
                         <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{fmt(cert.valid_till)}</div>
@@ -628,8 +628,8 @@ export default function DigiCertLab({ nav }) {
                   { label: '🔴 Expired',        color: '#f87171', bg: '#fef2f2', border: '#fecaca', filter: c => daysLeft(c.valid_till) !== null && daysLeft(c.valid_till) < 0 },
                   { label: '🟠 Expires in 0–7d',  color: '#ea580c', bg: '#fff7ed', border: '#fed7aa', filter: c => { const d = daysLeft(c.valid_till); return d !== null && d >= 0 && d <= 7 } },
                   { label: '🟡 Expires in 8–30d', color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC', filter: c => { const d = daysLeft(c.valid_till); return d !== null && d > 7 && d <= 30 } },
-                  { label: '🟢 Expires in 31–90d',color: '#4ade80', bg: '#111111', border: '#A8E6DE', filter: c => { const d = daysLeft(c.valid_till); return d !== null && d > 30 && d <= 90 } },
-                  { label: '✅ Healthy (>90d)',   color: '#ffffff', bg: '#111111', border: '#A8E6DE', filter: c => { const d = daysLeft(c.valid_till); return d !== null && d > 90 } },
+                  { label: '🟢 Expires in 31–90d',color: '#4ade80', bg: '#111111', border: 'rgba(192,57,43,0.3)', filter: c => { const d = daysLeft(c.valid_till); return d !== null && d > 30 && d <= 90 } },
+                  { label: '✅ Healthy (>90d)',   color: '#ffffff', bg: '#111111', border: 'rgba(192,57,43,0.3)', filter: c => { const d = daysLeft(c.valid_till); return d !== null && d > 90 } },
                 ].map(({ label, color, bg, border, filter }) => {
                   const bucket = certs.filter(filter)
                   if (!bucket.length) return null
@@ -693,7 +693,7 @@ export default function DigiCertLab({ nav }) {
                     letterSpacing: '0.4px', marginBottom: 6 }}>API call preview</div>
                   <div style={{ background: 'var(--v2-text)', borderRadius: 8, padding: '12px 14px', fontFamily: 'monospace', fontSize:11, color: 'rgba(255,255,255,0.12)', lineHeight: 1.6 }}>
                     <span style={{ color: '#ffffff' }}>POST</span>{' '}
-                    <span style={{ color: '#34d399' }}>https://www.digicert.com/services/v2</span>
+                    <span style={{ color: '#e07060' }}>https://www.digicert.com/services/v2</span>
                     <span style={{ color: '#fbbf24' }}>/order/certificate/{selectedCert.order_id}/reissue</span>
                     <br/>
                     <span style={{ color: 'var(--v2-text-3)' }}>X-DC-DEVKEY: </span>
@@ -705,7 +705,7 @@ export default function DigiCertLab({ nav }) {
 
                 {actionResult?.type === 'reissue' && (
                   <div style={{ marginBottom: 16, background: actionResult.ok ? '#111111' : '#fef2f2',
-                    border: `0.5px solid ${actionResult.ok ? '#A8E6DE' : '#fecaca'}`,
+                    border: `0.5px solid ${actionResult.ok ? 'rgba(192,57,43,0.3)' : '#fecaca'}`,
                     borderRadius: 8, padding: '12px 14px', fontSize:12,
                     color: actionResult.ok ? '#166534' : '#f87171' }}>
                     {actionResult.ok
@@ -780,7 +780,7 @@ export default function DigiCertLab({ nav }) {
                   <div style={{ background: 'var(--v2-text)', borderRadius: 8, padding: '12px 14px',
                     fontFamily: 'monospace', fontSize:11, color: 'rgba(255,255,255,0.12)', lineHeight: 1.6 }}>
                     <span style={{ color: '#ffffff' }}>PUT</span>{' '}
-                    <span style={{ color: '#34d399' }}>https://www.digicert.com/services/v2</span>
+                    <span style={{ color: '#e07060' }}>https://www.digicert.com/services/v2</span>
                     <span style={{ color: '#f87171' }}>/certificate/{selectedCert.certificate_id || '{cert_id}'}/revoke</span>
                     <br/>
                     <span style={{ color: 'var(--v2-text-3)' }}>{`{ "skip_approval": true, "reason": "Superseded" }`}</span>
@@ -789,7 +789,7 @@ export default function DigiCertLab({ nav }) {
 
                 {actionResult?.type === 'revoke' && (
                   <div style={{ marginBottom: 16, background: actionResult.ok ? '#111111' : '#fef2f2',
-                    border: `0.5px solid ${actionResult.ok ? '#A8E6DE' : '#fecaca'}`,
+                    border: `0.5px solid ${actionResult.ok ? 'rgba(192,57,43,0.3)' : '#fecaca'}`,
                     borderRadius: 8, padding: '12px 14px', fontSize:12,
                     color: actionResult.ok ? '#166534' : '#f87171' }}>
                     {actionResult.ok

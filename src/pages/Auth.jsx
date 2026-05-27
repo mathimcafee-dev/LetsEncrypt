@@ -114,7 +114,7 @@ export default function Auth({ nav }) {
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
               <div style={{ width:40, height:40, background:'#c0392b', borderRadius:'var(--v2-r-lg)',
                              display:'flex', alignItems:'center', justifyContent:'center',
-                             boxShadow:'0 0 0 4px rgba(13,148,136,0.15)' }}>
+                             boxShadow:'0 0 0 4px rgba(192,57,43,0.15)' }}>
                 <Shield size={18} color='#000000' />
               </div>
               <div>

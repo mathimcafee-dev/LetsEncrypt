@@ -9,7 +9,7 @@ const call = async (action, body, tok) => {
 }
 
 function Pill({ state }) {
-  const map = { pending:{bg:'#f1f5f9',color:'#64748b',label:'Pending'}, running:{bg:'#E8F8F6',color:'#2563eb',label:'In progress...'}, done:{bg:'#E8F8F6',color:'#16a34a',label:'Done'}, error:{bg:'#fef2f2',color:'#dc2626',label:'Failed'}, skipped:{bg:'#f1f5f9',color:'#94a3b8',label:'Skipped'} }
+  const map = { pending:{bg:'#f1f5f9',color:'#64748b',label:'Pending'}, running:{bg:'rgba(192,57,43,0.1)',color:'#2563eb',label:'In progress...'}, done:{bg:'rgba(192,57,43,0.1)',color:'#16a34a',label:'Done'}, error:{bg:'#fef2f2',color:'#dc2626',label:'Failed'}, skipped:{bg:'#f1f5f9',color:'#94a3b8',label:'Skipped'} }
   const s = map[state]||map.pending
   return <span style={{fontSize:10,fontWeight:600,padding:'2px 8px',borderRadius:20,background:s.bg,color:s.color}}>{s.label}</span>
 }
@@ -51,7 +51,7 @@ const inp = {width:'100%',boxSizing:'border-box',padding:'9px 12px',borderRadius
 
 function ServerTypeCard({icon,title,description,selected,onClick}) {
   return (
-    <button onClick={onClick} style={{flex:1,textAlign:'left',padding:'12px 14px',borderRadius:8,cursor:'pointer',fontFamily:'inherit',border:selected?'2px solid #2563eb':'1.5px solid #e2e8f0',background:selected?'#E8F8F6':'white',transition:'all 0.15s'}}>
+    <button onClick={onClick} style={{flex:1,textAlign:'left',padding:'12px 14px',borderRadius:8,cursor:'pointer',fontFamily:'inherit',border:selected?'2px solid #2563eb':'1.5px solid #e2e8f0',background:selected?'rgba(192,57,43,0.1)':'white',transition:'all 0.15s'}}>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
         <span style={{fontSize:18}}>{icon}</span>
         <span style={{fontSize:13,fontWeight:700,color:selected?'#1d4ed8':'#111827'}}>{title}</span>
@@ -187,11 +187,11 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
             {savedServers.length>0 && <div style={{marginBottom:14}}>
               <label style={{display:'block',fontSize:11,fontWeight:600,color:'#374151',marginBottom:5,textTransform:'uppercase',letterSpacing:'0.4px'}}>Saved Servers</label>
               <div style={{display:'flex',flexDirection:'column',gap:6}}>
-                {savedServers.map(s=>(<button key={s.id} onClick={()=>{setSelectedServer(s.id);setUseNew(false)}} style={{textAlign:'left',padding:'10px 12px',borderRadius:7,cursor:'pointer',fontFamily:'inherit',border:selectedServer===s.id&&!useNew?'2px solid #2563eb':'1px solid #e2e8f0',background:selectedServer===s.id&&!useNew?'#E8F8F6':'white'}}>
+                {savedServers.map(s=>(<button key={s.id} onClick={()=>{setSelectedServer(s.id);setUseNew(false)}} style={{textAlign:'left',padding:'10px 12px',borderRadius:7,cursor:'pointer',fontFamily:'inherit',border:selectedServer===s.id&&!useNew?'2px solid #2563eb':'1px solid #e2e8f0',background:selectedServer===s.id&&!useNew?'rgba(192,57,43,0.1)':'white'}}>
                   <div style={{display:'flex',alignItems:'center',gap:8}}><Server size={13} color={selectedServer===s.id&&!useNew?'#2563eb':'#6b7280'}/><span style={{fontSize:12,fontWeight:600,color:'#111827'}}>{s.label||s.cpanel_user+'@'+s.hostname}</span>{selectedServer===s.id&&!useNew&&<Check size={13} color='#2563eb' style={{marginLeft:'auto'}}/>}</div>
                   <div style={{fontSize:11,color:'#6b7280',marginLeft:21}}>{s.hostname}:{s.port}</div>
                 </button>))}
-                <button onClick={()=>{setUseNew(true);setSelectedServer(null)}} style={{textAlign:'left',padding:'10px 12px',borderRadius:7,cursor:'pointer',fontFamily:'inherit',border:useNew?'2px solid #2563eb':'1px dashed #cbd5e1',background:useNew?'#E8F8F6':'#f8fafc',color:'#374151',fontSize:12,fontWeight:500}}>+ Add new server</button>
+                <button onClick={()=>{setUseNew(true);setSelectedServer(null)}} style={{textAlign:'left',padding:'10px 12px',borderRadius:7,cursor:'pointer',fontFamily:'inherit',border:useNew?'2px solid #2563eb':'1px dashed #cbd5e1',background:useNew?'rgba(192,57,43,0.1)':'#f8fafc',color:'#374151',fontSize:12,fontWeight:500}}>+ Add new server</button>
               </div>
             </div>}
             {(useNew||savedServers.length===0) && <div style={{background:'transparent',border:'1px solid #e2e8f0',borderRadius:8,padding:'16px',marginTop:4}}>
@@ -212,7 +212,7 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
                 <label style={{display:'flex',alignItems:'flex-start',gap:8,cursor:'pointer'}}><input type='checkbox' checked={autoInstallFuture} onChange={e=>setAutoInstallFuture(e.target.checked)} style={{marginTop:2}}/><span style={{fontSize:12,color:'#374151',lineHeight:1.5}}>Auto-install when cert is reissued or renewed</span></label>
               </div>
             </div>}
-            <div style={{marginTop:16,marginBottom:20,background:'#E8F8F6',border:'1px solid #A8E6DE',borderRadius:8,padding:'12px 14px'}}>
+            <div style={{marginTop:16,marginBottom:20,background:'rgba(192,57,43,0.1)',border:'1px solid rgba(192,57,43,0.3)',borderRadius:8,padding:'12px 14px'}}>
               <div style={{fontSize:11,fontWeight:700,color:'#15803d',marginBottom:8}}>What happens during installation</div>
               {['SSLVault connects to your cPanel server over HTTPS (no SSH needed)','Uploads the 3-block fullchain PEM - end-entity + intermediate + root CA','Calls cPanel rebuild_mail_sni to activate SSL across all services','Enables automatic HTTP to HTTPS redirect','Verifies the live domain is serving your new certificate'].map((t,i)=>(<div key={i} style={{display:'flex',gap:6,marginBottom:4,fontSize:11,color:'#166534'}}><span style={{color:'#16a34a',flexShrink:0}}>&#10004;</span>{t}</div>))}
             </div>
@@ -235,7 +235,7 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
               <XCircle size={14} color='#dc2626' style={{flexShrink:0,marginTop:1}}/>
               <div><div style={{fontSize:12,fontWeight:600,color:'#991b1b'}}>Installation failed</div><div style={{fontSize:11,color:'#b91c1c',marginTop:3,lineHeight:1.5}}>{errMsg}</div></div>
             </div>}
-            {phase==='done' && <div style={{marginTop:16,background:'#E8F8F6',border:'1px solid #A8E6DE',borderRadius:8,padding:'14px'}}>
+            {phase==='done' && <div style={{marginTop:16,background:'rgba(192,57,43,0.1)',border:'1px solid rgba(192,57,43,0.3)',borderRadius:8,padding:'14px'}}>
               <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:10}}><CheckCircle size={16} color='#16a34a'/><span style={{fontSize:13,fontWeight:700,color:'#15803d'}}>Certificate installed successfully</span></div>
               <div style={{display:'grid',gridTemplateColumns:'auto 1fr',gap:'4px 12px',fontSize:11,color:'#166534',lineHeight:1.8,marginBottom:8}}>
                 <span style={{fontWeight:600}}>Domain</span><span style={{fontFamily:'monospace'}}>{cert.domain}</span>

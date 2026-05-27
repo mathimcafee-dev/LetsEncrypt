@@ -77,7 +77,7 @@ const PROVIDERS = {
     note: 'Enable API access in your Porkbun account settings.'
   },
   gandi: {
-    name: 'Gandi', mono: 'GA', color: '#00B6A0',
+    name: 'Gandi', mono: 'GA', color: '#c0392b',
     fields: [
       { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'your-gandi-api-key', help: 'Account → Security → API Key', optional: false },
     ],
@@ -167,7 +167,7 @@ const SERVER_TYPES = {
       { key: 'api_token', label: 'cPanel API Token',     type: 'password', placeholder: 'Paste API token here', help: 'cPanel → Manage API Tokens → Create → SSL permission' },
     ]
   },
-  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#ffffff', bg: '#111111', border: '#A8E6DE',
+  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#ffffff', bg: '#111111', border: 'rgba(192,57,43,0.3)',
     desc: 'Ubuntu, Debian, CentOS, Amazon Linux',
     fields: [
       { key: 'host',     label: 'Server IP / Hostname', type: 'text',     placeholder: '134.209.x.x',                         help: 'Public IP or hostname' },
@@ -315,7 +315,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
 
   const tagBg = hasBoth ? 'rgba(255,255,255,0.7)' : dnsOnly ? '#4ade80' : 'rgba(255,255,255,0.7)'
   const tagLabel = hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'
-  const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#0d9488)' : dnsOnly ? p?.color : t?.color || 'rgba(255,255,255,0.7)'
+  const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#c0392b)' : dnsOnly ? p?.color : t?.color || 'rgba(255,255,255,0.7)'
   const dotColor = rowDot==='green'?'#4ade80':rowDot==='amber'?'#ffffff':'rgba(255,255,255,0.2)'
   return (
     <div onClick={() => onSelect(domain)}
@@ -556,7 +556,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       {isVPS && !agent ? (
         <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
           style={{ fontSize:11, color:'#ffffff', background:'transparent',
-            border:'0.5px solid #A8E6DE', borderRadius:6, cursor:'pointer',
+            border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:6, cursor:'pointer',
             padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
             fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>
           Install agent <ChevronRight size={11} strokeWidth={2}/>
@@ -1441,7 +1441,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 border: '0.5px solid var(--v2-green-border)', display: 'inline-flex',
                 alignItems: 'center', justifyContent: 'center', marginBottom: 12
               }}>
-                <Check size={22} strokeWidth={2.2} color="#0d9488" />
+                <Check size={22} strokeWidth={2.2} color="#c0392b" />
               </div>
               <div style={{ fontSize:14, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>Agent registered</div>
               <div style={{ fontSize:12, color: 'var(--v2-text-2)' }}>{server.nickname} is now fully automated</div>
@@ -1470,7 +1470,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 <label className="v2-label">SSH into your server and run</label>
                 <div style={{ background: '#ffffff', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                padding: '7px 12px', borderBottom: '0.5px solid #e6fbf5' }}>
+                                padding: '7px 12px', borderBottom: '0.5px solid rgba(192,57,43,0.08)' }}>
                     <div style={{ display: 'flex', gap: 5 }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f87171' }} />
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#ffffff' }} />
@@ -1774,7 +1774,7 @@ export default function DnsProviders({ nav }) {
                 {/* DNS + Server group */}
                 {domainGroups.filter(g => g.dns && g.server).length > 0 && (
                   <ListPanel>
-                    <SectionLabel label="DNS + Server · Full automation" icon={Zap} color="#0f766e"
+                    <SectionLabel label="DNS + Server · Full automation" icon={Zap} color="#a93226"
                       count={domainGroups.filter(g=>g.dns&&g.server).length}/>
                     <div style={{ padding:'8px 10px 10px' }}>
                       {domainGroups.filter(g => g.dns && g.server).map(g => (

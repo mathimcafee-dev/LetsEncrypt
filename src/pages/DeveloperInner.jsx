@@ -27,7 +27,7 @@ export default function DeveloperInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Profile card */}
-      <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:14, borderLeft:'3px solid #0d9488' }}>
+      <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:14, borderLeft:'3px solid #c0392b' }}>
         <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:24, alignItems:'start' }}>
           <img src={portrait} alt="Mathivanan Kathirvel"
             style={{ width:80, height:80, borderRadius:8, objectFit:'cover', border:'0.5px solid #e8edf2', flexShrink:0 }}/>
@@ -60,7 +60,7 @@ export default function DeveloperInner({ nav }) {
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
             {CERTS.map(c => (
               <div key={c} style={{ display:'flex', alignItems:'flex-start', gap:10, fontSize:12, color:'rgba(255,255,255,0.6)' }}>
-                <Award size={13} color="#0d9488" style={{ flexShrink:0, marginTop:1 }}/>
+                <Award size={13} color="#c0392b" style={{ flexShrink:0, marginTop:1 }}/>
                 {c}
               </div>
             ))}
@@ -80,7 +80,7 @@ export default function DeveloperInner({ nav }) {
         {/* SSLVault story */}
         <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px', gridColumn:'span 2' }}>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
-            <Shield size={13} color="#0d9488"/>
+            <Shield size={13} color="#c0392b"/>
             <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Why SSLVault</span>
           </div>
           <p style={{ fontSize:12, color:'rgba(255,255,255,0.6)', lineHeight:1.8, margin:'0 0 10px' }}>

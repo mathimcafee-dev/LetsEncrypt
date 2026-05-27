@@ -472,7 +472,7 @@ export default function SectigoIntelligence({ nav }) {
           </div>
           {creds && (
             <span style={{ marginLeft: 'auto', fontSize:10, fontWeight: 700, padding: '2px 8px',
-              borderRadius: 20, background: 'transparent', color: '#4ade80', border: '0.5px solid #A8E6DE',
+              borderRadius: 20, background: 'transparent', color: '#4ade80', border: '0.5px solid rgba(192,57,43,0.3)',
               display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}/>
               Connected

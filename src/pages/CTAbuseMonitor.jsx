@@ -37,7 +37,7 @@ const STATUS_CONFIG = {
   unknown:    { label: 'Unknown',    color: '#f87171', bg: '#fef2f2', border: '#fecaca', leftBorder: '#f87171' },
   phishing:   { label: 'Phishing',   color: '#ffffff', bg: '#fdf4ff', border: '#e9d5ff', leftBorder: '#ffffff' },
   suspicious: { label: 'Suspicious', color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC', leftBorder: '#ffffff' },
-  known:      { label: 'Known',      color: '#4ade80', bg: '#111111', border: '#A8E6DE', leftBorder: '#4ade80' },
+  known:      { label: 'Known',      color: '#4ade80', bg: '#111111', border: 'rgba(192,57,43,0.3)', leftBorder: '#4ade80' },
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
@@ -104,7 +104,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
           <button className="v2-btn v2-btn-sm" onClick={() => onDismiss(shadow.id)}
             disabled={dismissing === shadow.id}
             style={{ display: 'flex', alignItems: 'center', gap: 5,
-              borderColor: '#A8E6DE', color: '#4ade80' }}>
+              borderColor: 'rgba(192,57,43,0.3)', color: '#4ade80' }}>
             <Check size={11}/>
             {dismissing === shadow.id ? 'Marking…' : 'Mark as known'}
           </button>
@@ -245,7 +245,7 @@ export default function CTAbuseMonitor({ user }) {
         )}
 
         {flagged === 0 && !loading && shadows.length > 0 && (
-          <div style={{ background: 'transparent', border: '0.5px solid #A8E6DE', borderRadius: 10,
+          <div style={{ background: 'transparent', border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
             <Shield size={15} color="#16a34a" style={{ flexShrink: 0 }}/>
             <div style={{ fontSize:13, color: '#ffffff', fontWeight: 500 }}>

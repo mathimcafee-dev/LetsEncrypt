@@ -579,7 +579,7 @@ function PQCLayer({ apiKey }) {
 
       {/* 47-day readiness */}
       <div className="v2-card v2-card-pad" style={{ background: noAutoRenew.length > 0 ? 'rgba(239,68,68,0.08)' : '#111111',
-        border: `0.5px solid ${noAutoRenew.length > 0 ? '#F2C4BC' : '#A8E6DE'}` }}>
+        border: `0.5px solid ${noAutoRenew.length > 0 ? '#F2C4BC' : 'rgba(192,57,43,0.3)'}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <Clock size={14} strokeWidth={2} style={{ color: noAutoRenew.length > 0 ? '#ffffff' : '#4ade80' }}/>
           <span style={{ fontWeight: 600, fontSize:13, color: 'var(--v2-text)' }}>
@@ -622,7 +622,7 @@ function ReissueLayer({ apiKey }) {
 
   return (
     <div>
-      <SectionHeader icon={RotateCcw} color="#0d9488" title="Reissue History"
+      <SectionHeader icon={RotateCcw} color="#c0392b" title="Reissue History"
         sub="Full reissue audit trail per order — see every reissue reason, CSR change, and certificate ID."
         badge="Audit"/>
       <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
@@ -803,7 +803,7 @@ function CTLogLayer({ apiKey }) {
 
   return (
     <div>
-      <SectionHeader icon={Globe} color="#0d9488" title="CT Log History"
+      <SectionHeader icon={Globe} color="#c0392b" title="CT Log History"
         sub="Certificate Transparency log submission records per order — see which logs each cert was submitted to and SCT timestamps."
         badge="Transparency"/>
 
@@ -900,7 +900,7 @@ export default function DigiCertIntelligence({ nav }) {
           </div>
           {apiKey && (
             <span style={{ marginLeft: 'auto', fontSize:10, fontWeight: 700, padding: '2px 8px',
-              borderRadius: 20, background: 'transparent', color: '#4ade80', border: '0.5px solid #A8E6DE',
+              borderRadius: 20, background: 'transparent', color: '#4ade80', border: '0.5px solid rgba(192,57,43,0.3)',
               display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}/>
               Connected

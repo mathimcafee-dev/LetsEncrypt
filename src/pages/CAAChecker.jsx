@@ -11,7 +11,7 @@ function StatusIcon({ status }) {
   if (status === 'pass')    return <CheckCircle  size={15} color="#16a34a" style={{ flexShrink:0 }} />
   if (status === 'fail')    return <XCircle      size={15} color="#dc2626" style={{ flexShrink:0 }} />
   if (status === 'warn')    return <AlertTriangle size={15} color="#f07059" style={{ flexShrink:0 }} />
-  return                           <Info         size={15} color="#0d9488" style={{ flexShrink:0 }} />
+  return                           <Info         size={15} color="#c0392b" style={{ flexShrink:0 }} />
 }
 
 function StatusBadge({ status }) {
@@ -36,7 +36,7 @@ function CopySnippet({ text }) {
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(()=>setCopied(false),1800) }}
       style={{ display:'flex', alignItems:'center', gap:5, background:'transparent',
-        border:'0.5px solid #99f6e4', borderRadius:4, padding:'4px 9px',
+        border:'0.5px solid rgba(192,57,43,0.2)', borderRadius:4, padding:'4px 9px',
         fontSize:12, color:'rgba(255,255,255,0.6)', cursor:'pointer', fontFamily:'monospace' }}>
       {copied ? <Check size={11} color="#16a34a"/> : <Copy size={11}/>}
       {text}
@@ -85,7 +85,7 @@ export default function CAAChecker({ nav }) {
           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
             <div style={{ width:36, height:36, borderRadius:8, background:'transparent',
               display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Shield size={18} color="#0d9488"/>
+              <Shield size={18} color="#c0392b"/>
             </div>
             <h1 className="v2-h1">CAA Record Checker</h1>
           </div>
@@ -127,7 +127,7 @@ export default function CAAChecker({ nav }) {
             {/* Summary banner */}
             <div style={{
               background: result.safeToIssue ? '#111111' : '#fef2f2',
-              border: `0.5px solid ${result.safeToIssue ? '#A8E6DE' : '#fecaca'}`,
+              border: `0.5px solid ${result.safeToIssue ? 'rgba(192,57,43,0.3)' : '#fecaca'}`,
               borderRadius:10, padding:'14px 16px', marginBottom:16,
               display:'flex', alignItems:'flex-start', gap:10,
             }}>

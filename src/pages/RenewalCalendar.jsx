@@ -421,7 +421,7 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
                 <span style={{ fontSize:10, fontWeight:700, padding:'1px 7px', borderRadius:20,
                   background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'#fef2f2':m.warning>0?'rgba(239,68,68,0.08)':'#111111',
                   color: m.certs.length===0 ? 'var(--v2-text-3)' : m.expired>0?RED:m.warning>0?AMBER:GREEN,
-                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'#fca5a5':m.warning>0?'#F2C4BC':'#A8E6DE'}` }}>
+                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'#fca5a5':m.warning>0?'#F2C4BC':'rgba(192,57,43,0.3)'}` }}>
                   {m.certs.length}
                 </span>
               </div>
