@@ -153,14 +153,14 @@ html, body {
 
 /* Dark text */
 .v2-page [style*="color:'rgba(192,57,43,0.12)'"],
-.v2-page [style*="color:'#f0ede8'"],
-.v2-page [style*='color:"#f0ede8"'] { color: var(--ink) !important; }
-.v2-page [style*="color:'rgba(240,237,232,0.45)'"],
-.v2-page [style*="color:'rgba(240,237,232,0.6)'"] { color: var(--body) !important; }
-.v2-page [style*="color:'rgba(240,237,232,0.4)'"],
+.v2-page [style*="color:'#f5f0eb'"],
+.v2-page [style*='color:"#f5f0eb"'] { color: var(--ink) !important; }
+.v2-page [style*="color:'#9a918a'"],
+.v2-page [style*="color:'#d4cdc6'"] { color: var(--body) !important; }
+.v2-page [style*="color:'#9a918a'"],
 .v2-page [style*="color:'#484f58'"],
-.v2-page [style*="color:'rgba(240,237,232,0.35)'"],
-.v2-page [style*="color:'rgba(240,237,232,0.5)'"] { color: var(--muted) !important; }
+.v2-page [style*="color:'#9a918a'"],
+.v2-page [style*="color:'#b5aea8'"] { color: var(--muted) !important; }
 
 /* Borders */
 .v2-page [style*="rgba(255,255,255,0.08)"] { border-color: var(--line) !important; }
@@ -262,8 +262,8 @@ html, body {
 .v2-page button[style*="2px solid #388bfd"] { color: var(--teal) !important; border-bottom-color: var(--teal) !important; }
 
 /* Teal leftover */
-.v2-page [style*="color:'#e07060'"],
-.v2-page [style*="color:'#e07060'"] { color: var(--teal) !important; }
+.v2-page [style*="color:'#ff8c7a'"],
+.v2-page [style*="color:'#ff8c7a'"] { color: var(--teal) !important; }
 .v2-page [style*="background:'rgba(20,184,166"] { background: var(--teal-bg) !important; }
 .v2-page [style*="borderColor:'rgba(192,57,43,0.3)'"],
 .v2-page [style*="border:'0.5px solid rgba(192,57,43,0.3)'"] { border-color: var(--teal-bd) !important; }

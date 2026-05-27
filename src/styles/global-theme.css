@@ -10,9 +10,9 @@
   --dark2:   #c9c0bb;
   --line:    rgba(192,57,43,0.2);
   --line2:   rgba(192,57,43,0.3);
-  --ink:     #f0ede8;
-  --body:    #c9c0bb;
-  --faint:   #807870;
+  --ink:     #f5f0eb;
+  --body:    #d4cdc6;
+  --faint:   #9a918a;
   --green:   #27ae60;
   --greenLt: #4ade80;
   --greenBg: rgba(39,174,96,0.12);
@@ -28,7 +28,7 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { font-family: var(--f); background: radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%); color: var(--ink); }
-::selection { background: rgba(192,57,43,0.3); color: #f0ede8; }
+::selection { background: rgba(192,57,43,0.3); color: #f5f0eb; }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--page); }

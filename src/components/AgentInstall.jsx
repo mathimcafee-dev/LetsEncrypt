@@ -188,11 +188,11 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
             </div>
             <div>
               <div style={{ fontSize:14, fontWeight:600, color:'transparent' }}>Install Certificate</div>
-              <div style={{ fontSize:11, color:'rgba(240,237,232,0.45)', fontFamily:'monospace' }}>{cert.domain}</div>
+              <div style={{ fontSize:11, color:'#9a918a', fontFamily:'monospace' }}>{cert.domain}</div>
             </div>
           </div>
           <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer',
-            color:'rgba(240,237,232,0.45)', fontSize:20, lineHeight:1, padding:'2px 6px' }}>×</button>
+            color:'#9a918a', fontSize:20, lineHeight:1, padding:'2px 6px' }}>×</button>
         </div>
 
         {/* Host type tabs */}
@@ -209,7 +209,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
             }}>
               <div style={{ color: hostType===t.key ? '#c0392b' : 'rgba(240,237,232,0.5)', marginBottom:6 }}>{t.icon}</div>
               <div style={{ fontSize:13, fontWeight:600, color: hostType===t.key ? '#c0392b' : 'transparent' }}>{t.label}</div>
-              <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', marginTop:2 }}>{t.sub}</div>
+              <div style={{ fontSize:11, color:'#b5aea8', marginTop:2 }}>{t.sub}</div>
             </button>
           ))}
         </div>
@@ -266,7 +266,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                           ) : (
                             <div style={{ width:20, height:20, borderRadius:'50%', background:'transparent',
                               border:'1.5px solid #e2e8f0', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                              <span style={{ fontSize:9, fontWeight:700, color:'rgba(240,237,232,0.5)' }}>{i+1}</span>
+                              <span style={{ fontSize:9, fontWeight:700, color:'#b5aea8' }}>{i+1}</span>
                             </div>
                           )}
                         </div>
@@ -275,7 +275,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                             color: step.done ? 'transparent' : step.active ? '#a93226' : 'rgba(240,237,232,0.5)' }}>
                             {step.label}
                           </div>
-                          <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', fontFamily:'monospace', marginTop:2 }}>
+                          <div style={{ fontSize:11, color:'#b5aea8', fontFamily:'monospace', marginTop:2 }}>
                             {step.sub}
                           </div>
                         </div>
@@ -288,9 +288,9 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                       padding:'14px', marginBottom:16 }}>
                       <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:8 }}>
                         <CheckCircle size={16} color="#16a34a"/>
-                        <span style={{ fontSize:13, fontWeight:700, color:'#15803d' }}>Certificate installed successfully</span>
+                        <span style={{ fontSize:13, fontWeight:700, color:'#5edb8a' }}>Certificate installed successfully</span>
                       </div>
-                      <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:'3px 12px', fontSize:11, color:'#166534', lineHeight:1.8 }}>
+                      <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:'3px 12px', fontSize:11, color:'#5edb8a', lineHeight:1.8 }}>
                         <span style={{ fontWeight:600 }}>Domain</span><span style={{ fontFamily:'monospace' }}>{cert.domain}</span>
                         {cert.expires_at && <><span style={{ fontWeight:600 }}>Expires</span><span>{new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span></>}
                         <span style={{ fontWeight:600 }}>Installed by</span><span>SSLVault persistent agent</span>
@@ -306,7 +306,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                       <div style={{ fontSize:12, color:'#7f1d1d', marginBottom:8 }}>
                         {jobError || 'Unknown error'}
                       </div>
-                      <div style={{ fontSize:11, fontFamily:'monospace', color:'rgba(240,237,232,0.5)' }}>
+                      <div style={{ fontSize:11, fontFamily:'monospace', color:'#b5aea8' }}>
                         Check logs: journalctl -u sslvault-agent -n 30
                       </div>
                     </div>
@@ -322,7 +322,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                 </div>
               ) : agents.length > 0 ? (
                 <div>
-                  <div style={{ fontSize:12, fontWeight:500, color:'rgba(240,237,232,0.5)', marginBottom:10 }}>
+                  <div style={{ fontSize:12, fontWeight:500, color:'#b5aea8', marginBottom:10 }}>
                     Select agent to install on:
                   </div>
                   {agents.map(a => {
@@ -343,7 +343,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                             whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
                             {a.hostname || a.nickname || 'Agent ' + a.id.slice(0,8)}
                           </div>
-                          <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)' }}>
+                          <div style={{ fontSize:11, color:'#b5aea8' }}>
                             {a.web_server || 'unknown'} · {isActive ? `active · ${mins}m ago` : `offline · ${mins}m ago`}
                           </div>
                         </div>
@@ -371,7 +371,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
 
                   {/* Nickname field — lets user label the server */}
                   <div style={{ marginBottom:10 }}>
-                    <label style={{ fontSize:11, fontWeight:500, color:'rgba(240,237,232,0.5)', display:'block', marginBottom:4 }}>
+                    <label style={{ fontSize:11, fontWeight:500, color:'#b5aea8', display:'block', marginBottom:4 }}>
                       Server label (shows in your dashboard)
                     </label>
                     <input
@@ -410,8 +410,8 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                     </button>
                   )}
 
-                  <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', lineHeight:1.7, marginTop:12 }}>
-                    After install, this dialog will auto-detect your server. Then click <strong style={{ color:'rgba(240,237,232,0.5)' }}>Install on this server</strong> to deploy the certificate.
+                  <div style={{ fontSize:11, color:'#b5aea8', lineHeight:1.7, marginTop:12 }}>
+                    After install, this dialog will auto-detect your server. Then click <strong style={{ color:'#b5aea8' }}>Install on this server</strong> to deploy the certificate.
                     The token in the command is single-use and tied to your account.
                   </div>
                 </div>

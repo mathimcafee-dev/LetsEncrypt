@@ -8,8 +8,8 @@ const MONO = "'JetBrains Mono','JetBrains Mono',monospace"
 
 const VERDICT_CONFIG = {
   trusted:    { color: '#4ade80', bg: 'transparent', border: 'rgba(192,57,43,0.3)', label: 'Trusted',    icon: <CheckCircle  size={18} color="#16a34a"/> },
-  caution:    { color: '#f0ede8', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)', label: 'Caution',    icon: <AlertTriangle size={18} color="#e07060"/> },
-  new:        { color: '#f0ede8', bg: 'transparent', border: 'rgba(192,57,43,0.3)', label: 'New Site',   icon: <Clock         size={18} color="#c0392b"/> },
+  caution:    { color: '#f5f0eb', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)', label: 'Caution',    icon: <AlertTriangle size={18} color="#e07060"/> },
+  new:        { color: '#f5f0eb', bg: 'transparent', border: 'rgba(192,57,43,0.3)', label: 'New Site',   icon: <Clock         size={18} color="#c0392b"/> },
   suspicious: { color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)', label: 'Suspicious', icon: <XCircle       size={18} color="#c0392b"/> },
   blocked:    { color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)', label: 'Blocked',    icon: <XCircle       size={18} color="#c0392b"/> },
 }
@@ -143,7 +143,7 @@ export default function TrustPassport({ nav }) {
           </div>
           <h1 style={{ fontSize:'clamp(28px,4vw,44px)', fontWeight:700, letterSpacing:'-1px', lineHeight:1.1, color:'rgba(255,255,255,.95)', marginBottom:14 }}>
             Does this site<br/>
-            <span style={{ color:'#f0ede8' }}>deserve your trust?</span>
+            <span style={{ color:'#f5f0eb' }}>deserve your trust?</span>
           </h1>
           <p style={{ fontSize:15, color:'rgba(255,255,255,.4)', lineHeight:1.8, maxWidth:520, margin:'0 auto 0' }}>
             SSL certificates are free for everyone — including phishing sites. Trust Passport looks deeper: CT log history, domain age, DNS infrastructure, and abuse signals. Time cannot be faked.
@@ -166,7 +166,7 @@ export default function TrustPassport({ nav }) {
             />
             <button onClick={() => check()}
               disabled={loading}
-              style={{ display:'flex', alignItems:'center', gap:7, background:'#f0ede8', color:'#f0ede8', border:'none',
+              style={{ display:'flex', alignItems:'center', gap:7, background:'#f0ede8', color:'#f5f0eb', border:'none',
                 borderRadius:8, padding:'9px 20px', fontSize:13, fontWeight:600, cursor:loading?'not-allowed':'pointer',
                 opacity:loading?0.6:1, fontFamily:'inherit', flexShrink:0 }}>
               {loading
@@ -214,7 +214,7 @@ export default function TrustPassport({ nav }) {
               <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6, flexWrap:'wrap' }}>
                 {v.icon}
                 <span style={{ fontSize:20, fontWeight:700, color:v.color }}>{result.domain}</span>
-                <span style={{ fontSize:12, fontWeight:600, padding:'3px 10px', borderRadius:20, background:v.color, color:'#f0ede8' }}>{v.label}</span>
+                <span style={{ fontSize:12, fontWeight:600, padding:'3px 10px', borderRadius:20, background:v.color, color:'#f5f0eb' }}>{v.label}</span>
               </div>
               <p style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.7, margin:'0 0 10px' }}>{result.summary}</p>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -296,8 +296,8 @@ export default function TrustPassport({ nav }) {
             </div>
             <div className="api-box">
               <div><span style={{color:'#7ee787'}}>POST</span> <span style={{color:'#79c0ff'}}>https://frthcwkntciaakqsppss.supabase.co/functions/v1/trust-passport</span></div>
-              <div style={{color:'rgba(240,237,232,0.45)'}}>{"{ \"domain\": \"" + result.domain + "\" }"}</div>
-              <div style={{color:'rgba(240,237,232,0.45)', marginTop:4}}>→ score: {result.score}  grade: "{result.grade}"  verdict: "{result.verdict}"</div>
+              <div style={{color:'#9a918a'}}>{"{ \"domain\": \"" + result.domain + "\" }"}</div>
+              <div style={{color:'#9a918a', marginTop:4}}>→ score: {result.score}  grade: "{result.grade}"  verdict: "{result.verdict}"</div>
             </div>
             <p style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:8, lineHeight:1.6 }}>
               Build it into your security tools, AI agents, or browser extensions. The Trust Passport API is open — no API key needed for domain lookups.

@@ -16,13 +16,13 @@ export default function Privacy({ nav }) {
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'transparent',border:'1px solid rgba(192,57,43,0.2)',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
             <span style={{width:7,height:7,borderRadius:'50%',background:'#f0ede8',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
-            <span style={{fontSize:11,fontWeight:700,color:'rgba(240,237,232,0.6)',letterSpacing:'0.4px',textTransform:'uppercase'}}>Privacy Policy</span>
+            <span style={{fontSize:11,fontWeight:700,color:'#d4cdc6',letterSpacing:'0.4px',textTransform:'uppercase'}}>Privacy Policy</span>
           </div>
-          <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#f0ede8'}}>
+          <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#f5f0eb'}}>
             Your data,<br/>
             <span style={{background:'linear-gradient(135deg,#c0392b,#f07059,#c0392b)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>your control.</span>
           </h1>
-          <p style={{fontSize:15,color:'rgba(240,237,232,0.7)',marginTop:14}}>Last updated: <strong style={{color:'#f0ede8'}}>{updated}</strong></p>
+          <p style={{fontSize:15,color:'#d4cdc6',marginTop:14}}>Last updated: <strong style={{color:'#f5f0eb'}}>{updated}</strong></p>
         </div>
       </section>
 
@@ -31,17 +31,17 @@ export default function Privacy({ nav }) {
         <div style={{maxWidth:1080,margin:'0 auto',padding:'0 24px'}}>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14}}>
             {[
-              {icon:Lock,title:'Private keys stay yours',desc:'When you use the persistent agent, private keys are generated and stored on your server. We never see them.',color:'#f0ede8',bg:'transparent'},
-              {icon:Database,title:'Minimum metadata',desc:'We store only what\'s required to issue and renew certificates: domain, expiry, owner email.',color:'#f0ede8',bg:'rgba(192,57,43,0.12)'},
-              {icon:Eye,title:'No tracking',desc:'No third-party analytics, no advertising pixels, no behavioural profiling.',color:'#f0ede8',bg:'#ede9fe'},
-              {icon:Mail,title:'Email only for service',desc:'Renewal alerts, account notices. No marketing. No newsletters you didn\'t subscribe to.',color:'#f0ede8',bg:'rgba(239,68,68,0.08)'},
+              {icon:Lock,title:'Private keys stay yours',desc:'When you use the persistent agent, private keys are generated and stored on your server. We never see them.',color:'#f5f0eb',bg:'transparent'},
+              {icon:Database,title:'Minimum metadata',desc:'We store only what\'s required to issue and renew certificates: domain, expiry, owner email.',color:'#f5f0eb',bg:'rgba(192,57,43,0.12)'},
+              {icon:Eye,title:'No tracking',desc:'No third-party analytics, no advertising pixels, no behavioural profiling.',color:'#f5f0eb',bg:'#ede9fe'},
+              {icon:Mail,title:'Email only for service',desc:'Renewal alerts, account notices. No marketing. No newsletters you didn\'t subscribe to.',color:'#f5f0eb',bg:'rgba(239,68,68,0.08)'},
             ].map(({icon:Icon,title,desc,color,bg})=>(
               <div key={title} style={{background:'transparent',borderRadius:16,padding:'22px 22px',border:'1px solid rgba(192,57,43,0.2)',boxShadow:'0 2px 10px rgba(15,23,42,0.04)'}}>
                 <div style={{width:38,height:38,borderRadius:10,background:bg,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:12}}>
                   <Icon size={18} color={color}/>
                 </div>
-                <div style={{fontSize:14,fontWeight:800,color:'#f0ede8',marginBottom:6,letterSpacing:'-0.2px'}}>{title}</div>
-                <div style={{fontSize:12,color:'rgba(240,237,232,0.7)',lineHeight:1.6}}>{desc}</div>
+                <div style={{fontSize:14,fontWeight:800,color:'#f5f0eb',marginBottom:6,letterSpacing:'-0.2px'}}>{title}</div>
+                <div style={{fontSize:12,color:'#d4cdc6',lineHeight:1.6}}>{desc}</div>
               </div>
             ))}
           </div>
@@ -125,10 +125,10 @@ export default function Privacy({ nav }) {
       {/* FOOTER LINKS */}
       <section style={{position:'relative',padding:'0 0 80px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
-          <button onClick={()=>nav('/terms')} style={{background:'transparent',color:'#f0ede8',border:'1.5px solid rgba(192,57,43,0.2)',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/terms')} style={{background:'transparent',color:'#f5f0eb',border:'1.5px solid rgba(192,57,43,0.2)',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <FileText size={14}/> Terms of Service
           </button>
-          <button onClick={()=>nav('/contact')} style={{background:'#f0ede8',color:'#f0ede8',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/contact')} style={{background:'#f0ede8',color:'#f5f0eb',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <Mail size={14}/> Contact us <ArrowRight size={13}/>
           </button>
         </div>
@@ -137,14 +137,14 @@ export default function Privacy({ nav }) {
   )
 }
 
-const p = {fontSize:14,color:'rgba(240,237,232,0.6)',lineHeight:1.75,marginBottom:12}
-const ul = {fontSize:14,color:'rgba(240,237,232,0.6)',lineHeight:1.85,paddingLeft:22,marginBottom:14}
-const a = {color:'#f0ede8',fontWeight:700,textDecoration:'none'}
+const p = {fontSize:14,color:'#d4cdc6',lineHeight:1.75,marginBottom:12}
+const ul = {fontSize:14,color:'#d4cdc6',lineHeight:1.85,paddingLeft:22,marginBottom:14}
+const a = {color:'#f5f0eb',fontWeight:700,textDecoration:'none'}
 
 function Section({title, children, last}) {
   return (
     <div style={{paddingBottom:last?0:28,marginBottom:last?0:24,borderBottom:last?'none':'1px dashed rgba(192,57,43,0.2)'}}>
-      <h3 style={{fontFamily:'Georgia, serif',fontSize:20,fontWeight:800,color:'#f0ede8',letterSpacing:'-0.4px',marginBottom:14}}>{title}</h3>
+      <h3 style={{fontFamily:'Georgia, serif',fontSize:20,fontWeight:800,color:'#f5f0eb',letterSpacing:'-0.4px',marginBottom:14}}>{title}</h3>
       {typeof children === 'string' ? <p style={p}>{children}</p> : children}
     </div>
   )

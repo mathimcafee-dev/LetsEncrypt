@@ -30,12 +30,12 @@ function timeAgo(iso) {
 // Grade colour map
 function gradeStyle(grade) {
   if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)' }
-  if (grade === 'D') return { color: '#f0ede8', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)' }
+  if (grade === 'D') return { color: '#f5f0eb', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)' }
   if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)', border: 'rgba(230,126,34,0.2)' }
-  if (grade === 'B') return { color: '#f0ede8', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
+  if (grade === 'B') return { color: '#f5f0eb', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
   if (grade === 'A') return { color: '#4ade80', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
-  if (grade === 'A+') return { color: '#f0ede8', bg: 'transparent', border: '#e07060' }
-  return { color: 'rgba(240,237,232,0.7)', bg: '#000000', border: '#f0ede8' }
+  if (grade === 'A+') return { color: '#f5f0eb', bg: 'transparent', border: '#e07060' }
+  return { color: '#d4cdc6', bg: '#000000', border: '#f0ede8' }
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}

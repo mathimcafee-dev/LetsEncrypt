@@ -113,7 +113,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
       <div style={{ fontSize: 20, fontWeight: 800, color: 'rgba(192,57,43,0.1)', marginBottom: 4 }}>
         Certificate {action === 'reissue' ? 'Reissued' : 'Renewed'}
       </div>
-      <div style={{ fontSize: 13, color: 'rgba(232,245,244,0.5)', marginBottom: 24, fontFamily: 'monospace' }}>
+      <div style={{ fontSize: 13, color: '#b5aea8', marginBottom: 24, fontFamily: 'monospace' }}>
         {domain}
       </div>
 
@@ -145,18 +145,18 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
               Certificate Issued
             </div>
             {isProbing && (
-              <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>Parsing certificate…</div>
+              <div style={{ fontSize: 11, color: '#9a918a' }}>Parsing certificate…</div>
             )}
             {certIssued && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#c0392b', wordBreak: 'break-all' }}>
                   Serial: {p.cert.serial}
                 </div>
-                <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>
+                <div style={{ fontSize: 11, color: '#9a918a' }}>
                   {p.cert.algorithm}{p.cert.key_size ? ` ${p.cert.key_size}-bit` : ''} · valid {p.cert.not_before} → {p.cert.not_after}
                 </div>
                 {p.cert.issuer && (
-                  <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: 11, color: '#9a918a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {p.cert.issuer.replace(/CN=/g,'').split(',')[0].trim()}
                   </div>
                 )}
@@ -194,7 +194,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
             {isProbing && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', border: '1.5px solid #10b981', borderTopColor: 'transparent', animation: 'mc-spin 0.7s linear infinite' }}/>
-                <span style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>Connecting to {domain}…</span>
+                <span style={{ fontSize: 11, color: '#9a918a' }}>Connecting to {domain}…</span>
               </div>
             )}
             {reachable && (
@@ -202,7 +202,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
                 <div style={{ fontSize: 11, color: '#c0392b', fontWeight: 600 }}>
                   HTTPS responding · {p.https.latency_ms}ms
                 </div>
-                <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>
+                <div style={{ fontSize: 11, color: '#9a918a' }}>
                   HTTP {p.https.status_code}{p.https.hsts ? ' · HSTS ✓' : ''}
                 </div>
               </div>
@@ -379,7 +379,7 @@ export default function MissionControlModal({
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(192,57,43,0.1)' }}>
                   {actionLabel} in progress
                 </div>
-                <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.5)', fontFamily: 'monospace', marginTop: 1 }}>
+                <div style={{ fontSize: 11, color: '#b5aea8', fontFamily: 'monospace', marginTop: 1 }}>
                   {domain}
                 </div>
               </div>
@@ -400,7 +400,7 @@ export default function MissionControlModal({
               {!isDone && busy && (
                 <button onClick={() => setMinimised(true)} title="Run in background" style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: 4,
-                  color: 'rgba(232,245,244,0.4)', fontSize: 16, lineHeight: 1,
+                  color: '#9a918a', fontSize: 16, lineHeight: 1,
                   transition: 'color 0.15s',
                 }}
                   onMouseEnter={e => e.currentTarget.style.color = 'rgba(192,57,43,0.1)'}
@@ -412,7 +412,7 @@ export default function MissionControlModal({
               {(isDone || hasError) && (
                 <button onClick={onDismiss} style={{
                   background: 'none', border: 'none', cursor: 'pointer',
-                  color: 'rgba(232,245,244,0.4)', fontSize: 18, lineHeight: 1,
+                  color: '#9a918a', fontSize: 18, lineHeight: 1,
                   padding: 4, transition: 'color 0.15s',
                 }}
                   onMouseEnter={e => e.currentTarget.style.color = 'rgba(192,57,43,0.1)'}
@@ -452,11 +452,11 @@ export default function MissionControlModal({
 
               {/* Step counter */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <span style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>
+                <span style={{ fontSize: 11, color: '#9a918a' }}>
                   {hasError ? 'Failed at step' : `Step ${Math.min(doneCount + 1, steps.length)} of ${steps.length}`}
                 </span>
                 {activeIdx >= 0 && (
-                  <span style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)', fontFamily: 'monospace' }}>
+                  <span style={{ fontSize: 11, color: '#9a918a', fontFamily: 'monospace' }}>
                     {steps[activeIdx]?.label}
                   </span>
                 )}
@@ -537,7 +537,7 @@ export default function MissionControlModal({
               <div style={{ marginTop: 16 }}>
                 {busy && !hasError && (
                   <div style={{
-                    fontSize: 11, color: 'rgba(232,245,244,0.35)',
+                    fontSize: 11, color: '#9a918a',
                     display: 'flex', alignItems: 'center', gap: 6,
                   }}>
                     <div style={{

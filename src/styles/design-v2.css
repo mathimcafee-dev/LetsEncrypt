@@ -24,20 +24,20 @@
 
   /* ── Mint teal (primary — healthy, secure, active) ── */
   --v2-green:        #27ae60;
-  --v2-green-text:   #4ade80;
-  --v2-green-text-2: #22c55e;
+  --v2-green-text:   #5edb8a;
+  --v2-green-text-2: #4ade80;
   --v2-green-bg:     rgba(39,174,96,0.12);
   --v2-green-border: rgba(39,174,96,0.35);
 
   /* ── Coral (warning, expiring, action needed) ── */
   --v2-amber:        #e67e22;
-  --v2-amber-text:   #f59e0b;
+  --v2-amber-text:   #fbbf24;
   --v2-amber-bg:     rgba(230,126,34,0.12);
   --v2-amber-border: rgba(230,126,34,0.35);
 
   /* ── Red (danger, delete) ── */
   --v2-red:        #c0392b;
-  --v2-red-text:   #ef5350;
+  --v2-red-text:   #f87171;
   --v2-red-bg:     rgba(192,57,43,0.12);
   --v2-red-border: rgba(192,57,43,0.35);
 
@@ -120,7 +120,7 @@
 .v2-btn-primary {
   background: #c0392b;
   border-color: #c0392b;
-  color: #f0ede8;
+  color: #f5f0eb;
 }
 .v2-btn-primary:hover {
   background: #a93226;
@@ -158,7 +158,7 @@
 }
 .v2-badge-green {
   background: var(--v2-green-bg);
-  color: #e07060;
+  color: #ff8c7a;
   border: 1px solid var(--v2-green-border);
 }
 .v2-badge-amber {
@@ -303,17 +303,17 @@
 }
 .v2-nav-item.active {
   background: rgba(192,57,43,0.18);
-  color: #e07060;
+  color: #ff8c7a;
   font-weight: 600;
 }
-.v2-nav-item.active svg { color: #e07060; }
+.v2-nav-item.active svg { color: #ff8c7a; }
 
 .v2-nav-section-label {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: rgba(240,237,232,0.3);
+  color: #9a918a;
   padding: 0 10px;
   margin: 14px 0 4px;
 }
@@ -752,10 +752,10 @@ html.is-tablet .v2-card {
   flex-shrink: 0;
   line-height: 1.4;
 }
-.chip-green  { background: var(--v2-green-bg);    color: #e07060;  border: 0.5px solid var(--v2-green-border); }
+.chip-green  { background: var(--v2-green-bg);    color: #ff8c7a;  border: 0.5px solid var(--v2-green-border); }
 .chip-amber  { background: var(--v2-amber-bg);    color: var(--v2-amber-text);  border: 0.5px solid var(--v2-amber-border); }
 .chip-red    { background: var(--v2-red-bg);      color: var(--v2-red-text);    border: 0.5px solid var(--v2-red-border); }
-.chip-blue   { background: rgba(192,57,43,0.1);               color: #e07060;               border: 0.5px solid rgba(192,57,43,0.3); }
+.chip-blue   { background: rgba(192,57,43,0.1);               color: #ff8c7a;               border: 0.5px solid rgba(192,57,43,0.3); }
 .chip-grey   { background: var(--v2-surface-3, var(--v2-hover)); color: var(--v2-text-3); border: 0.5px solid var(--v2-border); }
 
 /* ── Callout boxes ───────────────────────────────────────────────────── */
@@ -769,7 +769,7 @@ html.is-tablet .v2-card {
 .v2-callout-title {
   font-size: 11px;
   font-weight: 700;
-  color: #e07060;
+  color: #ff8c7a;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 5px;
@@ -815,9 +815,9 @@ html.is-tablet .v2-card {
   --v2-border:      rgba(192,57,43,0.18);
   --v2-border-strong: rgba(192,57,43,0.32);
   --v2-border-focus: #c0392b;
-  --v2-text:        #f0ede8;
-  --v2-text-2:      #c9c0bb;
-  --v2-text-3:      #807870;
+  --v2-text:        #f5f0eb;
+  --v2-text-2:      #d4cdc6;
+  --v2-text-3:      #9a918a;
   --v2-green:       #27ae60;
   --v2-green-text:  #4ade80;
   --v2-green-text-2:#22c55e;

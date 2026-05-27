@@ -35,8 +35,8 @@ function classifyCert(shadow, knownDomains) {
 
 const STATUS_CONFIG = {
   unknown:    { label: 'Unknown',    color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)', leftBorder: '#f87171' },
-  phishing:   { label: 'Phishing',   color: '#f0ede8', bg: 'rgba(30,0,0,0.4)', border: 'rgba(192,57,43,0.1)', leftBorder: '#f0ede8' },
-  suspicious: { label: 'Suspicious', color: '#f0ede8', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)', leftBorder: '#f0ede8' },
+  phishing:   { label: 'Phishing',   color: '#f5f0eb', bg: 'rgba(30,0,0,0.4)', border: 'rgba(192,57,43,0.1)', leftBorder: '#f0ede8' },
+  suspicious: { label: 'Suspicious', color: '#f5f0eb', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)', leftBorder: '#f0ede8' },
   known:      { label: 'Known',      color: '#4ade80', bg: 'transparent', border: 'rgba(192,57,43,0.3)', leftBorder: '#4ade80' },
 }
 
@@ -248,7 +248,7 @@ export default function CTAbuseMonitor({ user }) {
           <div style={{ background: 'transparent', border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
             <Shield size={15} color="#16a34a" style={{ flexShrink: 0 }}/>
-            <div style={{ fontSize:13, color: '#f0ede8', fontWeight: 500 }}>
+            <div style={{ fontSize:13, color: '#f5f0eb', fontWeight: 500 }}>
               All detected certs are known and accounted for
             </div>
           </div>
@@ -259,7 +259,7 @@ export default function CTAbuseMonitor({ user }) {
           {[
             { label: 'Total detected', val: classified.length,            color: 'var(--v2-text)' },
             { label: 'Flagged',        val: flagged,                       color: '#f87171'         },
-            { label: 'Suspicious',     val: counts.suspicious || 0,        color: '#f0ede8'         },
+            { label: 'Suspicious',     val: counts.suspicious || 0,        color: '#f5f0eb'         },
             { label: 'Known / safe',   val: counts.known || 0,             color: '#4ade80'         },
           ].map(({ label, val, color }) => (
             <div key={label} className="v2-card" style={{ padding: '12px 14px', cursor: 'pointer' }}

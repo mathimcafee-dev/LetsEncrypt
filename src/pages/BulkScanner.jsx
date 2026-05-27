@@ -16,11 +16,11 @@ async function bulkScan(domains) {
 
 function gradeStyle(grade) {
   if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(192,57,43,0.12)' }
-  if (grade === 'D') return { color: '#f0ede8', bg: 'rgba(239,68,68,0.08)' }
+  if (grade === 'D') return { color: '#f5f0eb', bg: 'rgba(239,68,68,0.08)' }
   if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)' }
   if (grade === 'B') return { color: 'var(--v2-green-text)', bg: 'var(--v2-green-bg)' }
   if (grade === 'A') return { color: '#4ade80', bg: 'transparent' }
-  if (grade === 'A+') return { color: '#f0ede8', bg: 'transparent' }
+  if (grade === 'A+') return { color: '#f5f0eb', bg: 'transparent' }
   return { color: 'var(--v2-text-3)', bg: 'var(--v2-bg)' }
 }
 
@@ -184,7 +184,7 @@ export default function BulkScanner({ nav }) {
                 justifyContent: 'center' }}>
                 <button onClick={() => exportCSV(results)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer',
-                    color: '#f0ede8', fontSize:12, display: 'flex', alignItems: 'center', gap: 5 }}>
+                    color: '#f5f0eb', fontSize:12, display: 'flex', alignItems: 'center', gap: 5 }}>
                   <Download size={12} /> Export CSV
                 </button>
               </div>

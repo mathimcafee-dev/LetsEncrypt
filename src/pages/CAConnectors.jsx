@@ -48,13 +48,13 @@ function ExpiryBadge({ expiresAt }) {
 function SourceBadge({ source }) {
   const map = {
     digicert:   { label: 'DigiCert',       color: '#f87171', bg: 'rgba(192,57,43,0.12)' },
-    sectigo:    { label: 'Sectigo',        color: '#f0ede8', bg: 'rgba(239,68,68,0.08)' },
-    sslcom:     { label: 'SSL.com',        color: '#f0ede8', bg: 'rgba(192,57,43,0.1)' },
-    imported:   { label: 'Manual',         color: 'rgba(240,237,232,0.7)', bg: '#000000' },
+    sectigo:    { label: 'Sectigo',        color: '#f5f0eb', bg: 'rgba(239,68,68,0.08)' },
+    sslcom:     { label: 'SSL.com',        color: '#f5f0eb', bg: 'rgba(192,57,43,0.1)' },
+    imported:   { label: 'Manual',         color: '#d4cdc6', bg: '#000000' },
     rapidssl:   { label: 'RapidSSL',       color: '#4ade80', bg: 'transparent' },
-    letsencrypt:{ label: "Let's Encrypt",  color: '#f0ede8', bg: 'transparent' },
+    letsencrypt:{ label: "Let's Encrypt",  color: '#f5f0eb', bg: 'transparent' },
   }
-  const s = map[source] || { label: source || 'Unknown', color: 'rgba(240,237,232,0.7)', bg: '#000000' }
+  const s = map[source] || { label: source || 'Unknown', color: '#d4cdc6', bg: '#000000' }
   return (
     <span style={{ fontSize:10, fontWeight: 500, padding: '2px 7px', borderRadius: 4,
       background: s.bg, color: s.color }}>
@@ -77,7 +77,7 @@ const CA_DEFS = {
   },
   sectigo: {
     name: 'Sectigo SCM',
-    color: '#f0ede8', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)',
+    color: '#f5f0eb', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)',
     logo: 'SC',
     desc: 'Pull all certificates from Sectigo Certificate Manager. Monitoring only — no private keys needed.',
     fields: [
@@ -89,7 +89,7 @@ const CA_DEFS = {
   },
   sslcom: {
     name: 'SSL.com',
-    color: '#f0ede8', bg: 'rgba(192,57,43,0.1)', border: 'rgba(192,57,43,0.3)',
+    color: '#f5f0eb', bg: 'rgba(192,57,43,0.1)', border: 'rgba(192,57,43,0.3)',
     logo: 'SL',
     desc: 'Pull all issued certificates from your SSL.com reseller account. Monitoring only — no private keys needed.',
     fields: [
@@ -274,7 +274,7 @@ export default function CAConnectors({ nav }) {
           {[
             { val: connections.length, label: 'CAs connected',   color: '#4ade80' },
             { val: certs.length,       label: 'Certs tracked',   color: 'var(--v2-text)' },
-            { val: expiring30.length,  label: 'Expiring in 30d', color: '#f0ede8' },
+            { val: expiring30.length,  label: 'Expiring in 30d', color: '#f5f0eb' },
             { val: expired.length,     label: 'Expired',         color: '#f87171' },
           ].map(({ val, label, color }) => (
             <div key={label} className="v2-card" style={{ padding: '12px 14px' }}>
@@ -288,8 +288,8 @@ export default function CAConnectors({ nav }) {
         {expiring30.length > 0 && (
           <div style={{ background: 'rgba(239,68,68,0.08)', border: '0.5px solid #F2C4BC', borderRadius: 10,
             padding: '12px 16px', marginBottom: 20, display: 'flex', gap: 10, alignItems: 'center' }}>
-            <AlertTriangle size={15} style={{ color: '#f0ede8', flexShrink: 0 }}/>
-            <div style={{ fontSize:12, color: '#e07060' }}>
+            <AlertTriangle size={15} style={{ color: '#f5f0eb', flexShrink: 0 }}/>
+            <div style={{ fontSize:12, color: '#ff8c7a' }}>
               <strong>{expiring30.length} certificate{expiring30.length !== 1 ? 's' : ''}</strong> expiring
               within 30 days: {expiring30.map(c => c.domain).join(', ')}
             </div>
@@ -397,7 +397,7 @@ export default function CAConnectors({ nav }) {
               <div style={{ textAlign: 'center' }}>
                 <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(239,68,68,0.08)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 700, fontSize:12, color: '#f0ede8', margin: '0 auto 8px' }}>SC</div>
+                  fontWeight: 700, fontSize:12, color: '#f5f0eb', margin: '0 auto 8px' }}>SC</div>
                 <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text-2)' }}>Connect Sectigo</div>
                 <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 2 }}>SCM API</div>
               </div>
@@ -491,7 +491,7 @@ export default function CAConnectors({ nav }) {
                   onClick={() => openRenewModal(cert)}
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 4,
                     fontSize:10, fontWeight: 600, padding: '4px 9px', borderRadius: 6,
-                    background: 'transparent', color: '#f0ede8',
+                    background: 'transparent', color: '#f5f0eb',
                     border: '0.5px solid rgba(192,57,43,0.3)', cursor: 'pointer',
                     fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'all .15s' }}
                   onMouseEnter={e => { e.currentTarget.style.background='#f0ede8'; e.currentTarget.style.color='#000000' }}
@@ -752,7 +752,7 @@ export default function CAConnectors({ nav }) {
                 <div style={{ fontSize:13, color: 'var(--v2-text-2)', marginBottom: 16, lineHeight: 1.6 }}>
                   This CA connection will be disconnected and will no longer sync.
                   {connCertCount > 0 && (
-                    <span style={{ color: '#f0ede8', fontWeight: 500 }}> {connCertCount} certificate{connCertCount !== 1 ? 's' : ''} are linked to this connection.</span>
+                    <span style={{ color: '#f5f0eb', fontWeight: 500 }}> {connCertCount} certificate{connCertCount !== 1 ? 's' : ''} are linked to this connection.</span>
                   )}
                 </div>
                 {connCertCount > 0 && (
@@ -777,7 +777,7 @@ export default function CAConnectors({ nav }) {
                   <button className="v2-btn" style={{ flex: 1, justifyContent: 'center' }}
                     onClick={() => { setDelConn(null); setDelCerts(true) }}>Cancel</button>
                   <button onClick={() => deleteConn(delConn)}
-                    style={{ flex: 1, background: '#f87171', color: '#f0ede8', border: 'none',
+                    style={{ flex: 1, background: '#f87171', color: '#f5f0eb', border: 'none',
                       borderRadius: 8, padding: '9px', cursor: 'pointer', fontFamily: 'inherit',
                       fontWeight: 600, fontSize:13, display: 'flex', alignItems: 'center',
                       justifyContent: 'center', gap: 6 }}>
@@ -815,21 +815,21 @@ export default function CAConnectors({ nav }) {
                         display:'flex', alignItems:'center', justifyContent:'center' }}>
                         <RotateCcw size={13} color="#c0392b"/>
                       </div>
-                      <span style={{ fontSize:14, fontWeight:700, color:'#f0ede8' }}>Renew certificate</span>
+                      <span style={{ fontSize:14, fontWeight:700, color:'#f5f0eb' }}>Renew certificate</span>
                     </div>
-                    <div style={{ fontSize:11, color:'rgba(240,237,232,0.38)', marginTop:4, marginLeft:36,
+                    <div style={{ fontSize:11, color:'#9a918a', marginTop:4, marginLeft:36,
                       fontFamily:'monospace' }}>{renewModal.domain}</div>
                   </div>
                   <button onClick={() => setRenewModal(null)}
                     style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.2)', borderRadius:7,
-                      cursor:'pointer', color:'rgba(240,237,232,0.38)', padding:'5px', display:'flex' }}>
+                      cursor:'pointer', color:'#9a918a', padding:'5px', display:'flex' }}>
                     <X size={14}/>
                   </button>
                 </div>
 
                 {/* Two options */}
                 <div style={{ padding:'16px 20px 20px', display:'flex', flexDirection:'column', gap:10 }}>
-                  <div style={{ fontSize:12, color:'rgba(240,237,232,0.7)', marginBottom:4 }}>
+                  <div style={{ fontSize:12, color:'#d4cdc6', marginBottom:4 }}>
                     How would you like to renew this certificate?
                   </div>
 
@@ -845,15 +845,15 @@ export default function CAConnectors({ nav }) {
                       <ExternalLink size={15} color="rgba(0,0,0,0.55)"/>
                     </div>
                     <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ fontSize:13, fontWeight:700, color:'#f0ede8', marginBottom:3 }}>
+                      <div style={{ fontSize:13, fontWeight:700, color:'#f5f0eb', marginBottom:3 }}>
                         Renew via {caName}
                       </div>
-                      <div style={{ fontSize:11, color:'rgba(240,237,232,0.7)', lineHeight:1.5 }}>
+                      <div style={{ fontSize:11, color:'#d4cdc6', lineHeight:1.5 }}>
                         Log into {caUrl ? caName : 'your original CA'} and renew there.
                         Once renewed, re-import or re-sync to update SSLVault.
                       </div>
                       {caUrl && (
-                        <div style={{ fontSize:10, color:'rgba(240,237,232,0.38)', marginTop:4, fontFamily:'monospace',
+                        <div style={{ fontSize:10, color:'#9a918a', marginTop:4, fontFamily:'monospace',
                           overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{caUrl}</div>
                       )}
                     </div>
@@ -871,13 +871,13 @@ export default function CAConnectors({ nav }) {
                       <Shield size={15} color="#16a34a"/>
                     </div>
                     <div style={{ flex:1 }}>
-                      <div style={{ fontSize:13, fontWeight:700, color:'#f0ede8', marginBottom:3 }}>
+                      <div style={{ fontSize:13, fontWeight:700, color:'#f5f0eb', marginBottom:3 }}>
                         Renew via SSLVault
                         <span style={{ marginLeft:7, fontSize:9, fontWeight:700, padding:'2px 7px',
                           borderRadius:20, background:'transparent', color:'#4ade80',
                           border:'0.5px solid rgba(192,57,43,0.3)' }}>Recommended</span>
                       </div>
-                      <div style={{ fontSize:11, color:'rgba(240,237,232,0.7)', lineHeight:1.5 }}>
+                      <div style={{ fontSize:11, color:'#d4cdc6', lineHeight:1.5 }}>
                         Issue a fresh RapidSSL DV certificate through SSLVault — RapidSSL CA API,
                         auto-DNS validation, auto-install on your servers. Domain pre-filled.
                       </div>
@@ -889,7 +889,7 @@ export default function CAConnectors({ nav }) {
                   </button>
 
                   <button onClick={() => setRenewModal(null)}
-                    style={{ fontSize:12, color:'rgba(240,237,232,0.38)', background:'none', border:'none',
+                    style={{ fontSize:12, color:'#9a918a', background:'none', border:'none',
                       cursor:'pointer', fontFamily:'inherit', padding:'6px 0', textAlign:'center' }}>
                     Cancel
                   </button>
@@ -917,8 +917,8 @@ export default function CAConnectors({ nav }) {
                   <Trash2 size={16} color="#c0392b"/>
                 </div>
                 <div>
-                  <div style={{ fontSize:14, fontWeight:700, color:'#f0ede8' }}>Delete all tracked certificates?</div>
-                  <div style={{ fontSize:11, color:'rgba(240,237,232,0.38)', marginTop:2 }}>{certs.length} certificate{certs.length!==1?'s':''} will be permanently removed</div>
+                  <div style={{ fontSize:14, fontWeight:700, color:'#f5f0eb' }}>Delete all tracked certificates?</div>
+                  <div style={{ fontSize:11, color:'#9a918a', marginTop:2 }}>{certs.length} certificate{certs.length!==1?'s':''} will be permanently removed</div>
                 </div>
               </div>
 
@@ -956,7 +956,7 @@ export default function CAConnectors({ nav }) {
                   </button>
                   <button onClick={doDeleteAll} disabled={deletingAll}
                     style={{ flex:2, padding:'9px', background: deletingAll?'rgba(240,237,232,0.38)':'#f87171',
-                      color:'#f0ede8', border:'none', borderRadius:8, fontSize:12, fontWeight:700,
+                      color:'#f5f0eb', border:'none', borderRadius:8, fontSize:12, fontWeight:700,
                       cursor: deletingAll?'wait':'pointer', fontFamily:'inherit',
                       display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
                     {deletingAll

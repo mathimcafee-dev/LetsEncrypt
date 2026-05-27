@@ -7,13 +7,13 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 function GradeBadge({ grade }) {
   const map = {
     'A+': { bg:'rgba(192,57,43,0.1)', color:'#c0392b' },
-    'A':  { bg:'rgba(192,57,43,0.1)', color:'#16a34a' },
+    'A':  { bg:'rgba(192,57,43,0.1)', color:'#5edb8a' },
     'B':  { bg:'rgba(192,57,43,0.1)', color:'#c0392b' },
     'C':  { bg:'rgba(230,126,34,0.08)', color:'#e67e22' },
-    'D':  { bg:'rgba(192,57,43,0.1)', color:'#e07060' },
+    'D':  { bg:'rgba(192,57,43,0.1)', color:'#ff8c7a' },
     'F':  { bg:'rgba(192,57,43,0.12)', color:'#c0392b' },
   }
-  const s = map[grade] || { bg:'rgba(26,0,0,0.5)', color:'rgba(240,237,232,0.45)' }
+  const s = map[grade] || { bg:'rgba(26,0,0,0.5)', color:'#9a918a' }
   return (
     <div style={{ width:48, height:48, borderRadius:10, background:s.bg,
       display:'flex', alignItems:'center', justifyContent:'center',
@@ -47,7 +47,7 @@ function VulnRow({ v }) {
     : v.status === 'vulnerable'
     ? <XCircle      size={13} color="#c0392b" style={{ flexShrink:0 }}/>
     : <Info         size={13} color="#c0392b" style={{ flexShrink:0 }}/>
-  const label = v.status === 'safe' ? { text:'Not vulnerable', color:'#16a34a' }
+  const label = v.status === 'safe' ? { text:'Not vulnerable', color:'#5edb8a' }
     : v.status === 'vulnerable' ? { text:'Vulnerable', color:'#c0392b' }
     : { text:'Manual check', color:'#c0392b' }
   return (
@@ -64,12 +64,12 @@ function CipherBar({ label, count, total, color }) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0
   return (
     <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-      <span style={{ fontSize:12, color:'rgba(240,237,232,0.45)', width:60 }}>{label}</span>
+      <span style={{ fontSize:12, color:'#9a918a', width:60 }}>{label}</span>
       <div style={{ flex:1, height:5, borderRadius:3, background:'transparent', overflow:'hidden' }}>
         <div style={{ width:`${pct}%`, height:'100%', background:color, borderRadius:3,
           transition:'width 0.6s cubic-bezier(0.16,1,0.3,1)' }}/>
       </div>
-      <span style={{ fontSize:12, color:'rgba(240,237,232,0.5)', width:32, textAlign:'right' }}>{pct}%</span>
+      <span style={{ fontSize:12, color:'#b5aea8', width:32, textAlign:'right' }}>{pct}%</span>
     </div>
   )
 }
@@ -109,13 +109,13 @@ export default function VulnScanner({ domain, session }) {
         borderRadius: result ? '8px 8px 0 0' : 8 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <Bug size={14} color="rgba(240,237,232,0.45)"/>
-          <span style={{ fontSize:13, fontWeight:500, color:'rgba(240,237,232,0.6)' }}>SSL Vulnerability Scan</span>
+          <span style={{ fontSize:13, fontWeight:500, color:'#d4cdc6' }}>SSL Vulnerability Scan</span>
           {result && <GradeBadge grade={result.grade}/>}
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           {result && (
             <button onClick={() => setExpanded(e=>!e)}
-              style={{ background:'none', border:'none', cursor:'pointer', color:'rgba(240,237,232,0.5)', display:'flex', alignItems:'center' }}>
+              style={{ background:'none', border:'none', cursor:'pointer', color:'#b5aea8', display:'flex', alignItems:'center' }}>
               {expanded ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
             </button>
           )}
@@ -153,35 +153,35 @@ export default function VulnScanner({ domain, session }) {
               <p style={{ margin:0, fontSize:13, fontWeight:600, color:'transparent' }}>
                 Score: {result.score}/100
               </p>
-              <p style={{ margin:'2px 0 0', fontSize:11, color:'rgba(240,237,232,0.5)' }}>
+              <p style={{ margin:'2px 0 0', fontSize:11, color:'#b5aea8' }}>
                 {result.hsts ? '✓ HSTS' : '✗ HSTS missing'} · {result.caa ? '✓ CAA' : '✗ CAA missing'}
               </p>
             </div>
           </div>
 
           {/* Protocols */}
-          <p style={{ margin:'0 0 4px', fontSize:11, fontWeight:700, color:'rgba(240,237,232,0.5)',
+          <p style={{ margin:'0 0 4px', fontSize:11, fontWeight:700, color:'#b5aea8',
             textTransform:'uppercase', letterSpacing:'0.5px' }}>Protocol support</p>
           <div style={{ marginBottom:14 }}>
             {result.protocols.map(p => <ProtoRow key={p.name} proto={p}/>)}
           </div>
 
           {/* Vulnerabilities */}
-          <p style={{ margin:'0 0 4px', fontSize:11, fontWeight:700, color:'rgba(240,237,232,0.5)',
+          <p style={{ margin:'0 0 4px', fontSize:11, fontWeight:700, color:'#b5aea8',
             textTransform:'uppercase', letterSpacing:'0.5px' }}>Known vulnerabilities</p>
           <div style={{ marginBottom:14 }}>
             {result.vulns.map(v => <VulnRow key={v.name} v={v}/>)}
           </div>
 
           {/* Cipher strength */}
-          <p style={{ margin:'0 0 8px', fontSize:11, fontWeight:700, color:'rgba(240,237,232,0.5)',
+          <p style={{ margin:'0 0 8px', fontSize:11, fontWeight:700, color:'#b5aea8',
             textTransform:'uppercase', letterSpacing:'0.5px' }}>Cipher strength</p>
           <CipherBar label="Strong" count={result.ciphers.strong} total={totalCiphers} color="#e07060"/>
           <CipherBar label="Medium" count={result.ciphers.medium} total={totalCiphers} color="#e07060"/>
           <CipherBar label="Weak"   count={result.ciphers.weak}   total={totalCiphers} color="#c0392b"/>
 
           {result.note && (
-            <p style={{ margin:'10px 0 0', fontSize:11, color:'rgba(240,237,232,0.5)',
+            <p style={{ margin:'10px 0 0', fontSize:11, color:'#b5aea8',
               paddingTop:10, borderTop:'0.5px solid rgba(15,23,42,0.06)' }}>
               ℹ {result.note}
             </p>

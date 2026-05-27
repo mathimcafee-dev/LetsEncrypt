@@ -46,13 +46,13 @@ export default function IETFIntelligence({ nav }) {
   return (
     <div className="v2-page" style={{ fontFamily: FONT }}>
       <style>{`
-        .ii-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#f0ede8}
+        .ii-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#f5f0eb}
         .ii-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
-        .ii-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#f0ede8;line-height:1.15;margin-bottom:10px}
-        .ii-h1 em{color:#e07060;font-style:normal}
+        .ii-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#f5f0eb;line-height:1.15;margin-bottom:10px}
+        .ii-h1 em{color:#ff8c7a;font-style:normal}
         .ii-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .ii-stats{display:flex;gap:28px;flex-wrap:wrap}
-        .ii-sn{font-size:22px;font-weight:600;color:#f0ede8;line-height:1}
+        .ii-sn{font-size:22px;font-weight:600;color:#f5f0eb;line-height:1}
         .ii-sl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
         .ii-tabs{background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
         .ii-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}

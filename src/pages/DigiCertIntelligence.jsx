@@ -249,8 +249,8 @@ function PortfolioLayer({ apiKey }) {
   const BANDS = [
     { key: 'expired',  label: 'Expired',      color: '#f87171', bg: 'rgba(192,57,43,0.12)' },
     { key: 'critical', label: '≤7 days',       color: '#c0392b', bg: 'rgba(230,126,34,0.1)' },
-    { key: 'warning',  label: '8–30 days',     color: '#f0ede8', bg: 'rgba(239,68,68,0.08)' },
-    { key: 'upcoming', label: '31–90 days',    color: '#f0ede8', bg: 'transparent' },
+    { key: 'warning',  label: '8–30 days',     color: '#f5f0eb', bg: 'rgba(239,68,68,0.08)' },
+    { key: 'upcoming', label: '31–90 days',    color: '#f5f0eb', bg: 'transparent' },
     { key: 'healthy',  label: '>90 days',      color: '#4ade80', bg: 'transparent' },
   ]
 

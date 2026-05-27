@@ -6,12 +6,12 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 function gradeStyle(grade) {
   if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)' }
-  if (grade === 'D') return { color: '#f0ede8', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)' }
+  if (grade === 'D') return { color: '#f5f0eb', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)' }
   if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)', border: 'rgba(230,126,34,0.2)' }
-  if (grade === 'B') return { color: '#f0ede8', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
+  if (grade === 'B') return { color: '#f5f0eb', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
   if (grade === 'A') return { color: '#4ade80', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
-  if (grade === 'A+') return { color: '#f0ede8', bg: 'transparent', border: '#e07060' }
-  return { color: 'rgba(240,237,232,0.7)', bg: '#000000', border: '#f0ede8' }
+  if (grade === 'A+') return { color: '#f5f0eb', bg: 'transparent', border: '#e07060' }
+  return { color: '#d4cdc6', bg: '#000000', border: '#f0ede8' }
 }
 
 function timeAgo(iso) {
@@ -70,26 +70,26 @@ export default function PublicStatus({ username: propUsername, nav }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
           <Shield size={18} color="#c0392b" />
-          <span style={{ fontSize:14, fontWeight: 600, color: '#f0ede8' }}>SSLVault</span>
+          <span style={{ fontSize:14, fontWeight: 600, color: '#f5f0eb' }}>SSLVault</span>
         </div>
-        <span style={{ fontSize:11, color: 'rgba(240,237,232,0.38)' }}>
+        <span style={{ fontSize:11, color: '#9a918a' }}>
           Powered by <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
-            style={{ color: '#f0ede8', textDecoration: 'none' }}>easysecurity.in</a>
+            style={{ color: '#f5f0eb', textDecoration: 'none' }}>easysecurity.in</a>
         </span>
       </div>
 
       <div style={{ maxWidth: 680, margin: '0 auto', padding:'min(40px,5vw) min(24px,4vw)' }}>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(240,237,232,0.38)' }}>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: '#9a918a' }}>
             <RefreshCw size={24} style={{ animation: 'spin .8s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             Loading status…
           </div>
         ) : error ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
             <XCircle size={32} style={{ color: '#f87171', margin: '0 auto 12px', display: 'block' }} />
-            <div style={{ fontSize:15, fontWeight: 500, color: '#f0ede8', marginBottom: 6 }}>{error}</div>
-            <div style={{ fontSize:13, color: 'rgba(240,237,232,0.38)' }}>This status page may not be public or doesn't exist.</div>
+            <div style={{ fontSize:15, fontWeight: 500, color: '#f5f0eb', marginBottom: 6 }}>{error}</div>
+            <div style={{ fontSize:13, color: '#9a918a' }}>This status page may not be public or doesn't exist.</div>
           </div>
         ) : (
           <>
@@ -101,10 +101,10 @@ export default function PublicStatus({ username: propUsername, nav }) {
                   <Shield size={20} color="#16a34a" />
                 </div>
                 <div>
-                  <div style={{ fontSize:18, fontWeight: 600, color: '#f0ede8' }}>
+                  <div style={{ fontSize:18, fontWeight: 600, color: '#f5f0eb' }}>
                     {data?.display_name || username}
                   </div>
-                  <div style={{ fontSize:12, color: 'rgba(240,237,232,0.38)' }}>SSL status page</div>
+                  <div style={{ fontSize:12, color: '#9a918a' }}>SSL status page</div>
                 </div>
               </div>
 
@@ -118,7 +118,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
                     {scores.length} domain{scores.length !== 1 ? 's' : ''} monitored
                   </div>
                 </div>
-                <div style={{ marginLeft: 'auto', fontSize:11, color: 'rgba(240,237,232,0.38)' }}>
+                <div style={{ marginLeft: 'auto', fontSize:11, color: '#9a918a' }}>
                   Updated {scores.length > 0 ? timeAgo(scores[0].scanned_at) : '—'}
                 </div>
               </div>
@@ -126,7 +126,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
 
             {/* Domain list */}
             {scores.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '32px 0', fontSize:13, color: 'rgba(240,237,232,0.38)' }}>
+              <div style={{ textAlign: 'center', padding: '32px 0', fontSize:13, color: '#9a918a' }}>
                 No public domains to display.
               </div>
             ) : (
@@ -146,12 +146,12 @@ export default function PublicStatus({ username: propUsername, nav }) {
 
                       {/* Domain */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize:13, fontWeight: 500, color: '#f0ede8',
+                        <div style={{ fontSize:13, fontWeight: 500, color: '#f5f0eb',
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           display: 'flex', alignItems: 'center', gap: 6 }}>
                           {s.domain}
                           <a href={`https://${s.domain}`} target="_blank" rel="noreferrer"
-                            style={{ color: 'rgba(240,237,232,0.38)', display: 'flex' }}
+                            style={{ color: '#9a918a', display: 'flex' }}
                             onClick={e => e.stopPropagation()}>
                             <ExternalLink size={11} />
                           </a>
@@ -189,7 +189,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
             {/* Footer */}
             <div style={{ textAlign: 'center', marginTop: 32 }}>
               <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
-                style={{ fontSize:12, color: 'rgba(240,237,232,0.38)', textDecoration: 'none',
+                style={{ fontSize:12, color: '#9a918a', textDecoration: 'none',
                   display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                 <Shield size={12} color="#c0392b" />
                 Secured & monitored by SSLVault · easysecurity.in
