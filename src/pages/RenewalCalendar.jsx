@@ -15,8 +15,8 @@ const GREEN  = '#4ade80'
 
 const STATUS = {
   expired: { color: RED,   bg: 'rgba(192,57,43,0.12)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#f87171' },
-  warning: { color: AMBER, bg: 'rgba(239,68,68,0.08)', border: '#fcd34d', bar: AMBER, text: '#e07060' },
-  healthy: { color: GREEN, bg: 'transparent', border: '#86efac', bar: GREEN, text: '#166534' },
+  warning: { color: AMBER, bg: 'rgba(239,68,68,0.08)', border: '#fcd34d', bar: AMBER, text: '#fbbf24' },
+  healthy: { color: GREEN, bg: 'transparent', border: '#86efac', bar: GREEN, text: '#4ade80' },
   today:   { color: ACCENT,bg: 'transparent', border: 'rgba(192,57,43,0.3)', bar: ACCENT,text: '#a93226' },
 }
 
@@ -61,7 +61,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
         padding: '7px 7px 6px',
         background: hasCerts
           ? (st ? st.bg : 'var(--v2-surface)')
-          : isToday ? 'transparent' : 'var(--v2-surface)',
+          : isToday ? 'transparent' : 'rgba(255,255,255,0.04)',
         border: isSelected
           ? `2px solid ${accentColor || ACCENT}`
           : hasCerts
@@ -70,7 +70,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
         borderLeft: accentColor ? `3px solid ${accentColor}` : undefined,
         cursor:    hasCerts ? 'pointer' : 'default',
         transition:'box-shadow .15s ease',
-        opacity:   !hasCerts && !isToday ? 0.55 : 1,
+        opacity: 1,
       }}
       onMouseEnter={e => { if (hasCerts) e.currentTarget.style.boxShadow='0 2px 10px rgba(0,0,0,0.10)' }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow='none' }}
@@ -79,9 +79,9 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
       <div style={{
         width: 22, height: 22, borderRadius: '50%', marginBottom: 5,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: isToday ? ACCENT : 'transparent',
+        background: isToday ? '#c0392b' : 'transparent',
         fontSize:11, fontWeight: hasCerts || isToday ? 700 : 400,
-        color: isToday ? '#f0ede8' : hasCerts ? (st ? st.text : 'var(--v2-text)') : 'var(--v2-text-3)',
+        color: isToday ? '#ffffff' : hasCerts ? (st ? st.text : '#ffffff') : '#6b5a5a',
       }}>
         {day}
       </div>
@@ -145,7 +145,7 @@ function DetailPanel({ label, certs, onClose }) {
           <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
             padding:'9px 14px', alignItems:'center',
             borderBottom: i<certs.length-1 ? '0.5px solid var(--v2-border)' : 'none',
-            background: 'var(--v2-surface)',
+            background: 'rgba(255,255,255,0.04)',
           }}>
             <div>
               <div style={{ fontSize:12, fontWeight:500, color:'#ffffff',
@@ -200,14 +200,14 @@ function MonthView({ certs, viewYear, viewMonth, today }) {
     <div>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:3, marginBottom:3 }}>
         {DAYS_S.map(d => (
-          <div key={d} style={{ fontSize:9, fontWeight:600, color:'#b0a8a0',
-            textAlign:'center', padding:'4px 0', textTransform:'uppercase', letterSpacing:'0.4px' }}>{d}</div>
+          <div key={d} style={{ fontSize:9, fontWeight:700, color:'#c8c0b8',
+            textAlign:'center', padding:'4px 0', textTransform:'uppercase', letterSpacing:'0.8px' }}>{d}</div>
         ))}
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:3 }}>
         {Array.from({length:firstDow}).map((_,i) => (
-          <div key={`e${i}`} style={{ minHeight:72, borderRadius:8,
-            background:'var(--v2-surface-3)', opacity:0.4 }}/>
+          <div key={`e${i}`} style={{ minHeight:78, borderRadius:8,
+            background:'rgba(255,255,255,0.02)', opacity:1 }}/>
         ))}
         {Array.from({length:daysCount}).map((_,i) => {
           const day = i+1
@@ -275,7 +275,7 @@ function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
               <div style={{ fontSize:9, color:'#b0a8a0', textTransform:'uppercase',
                 letterSpacing:'0.3px', marginBottom:2 }}>{DAYS_S[d.getDay()]}</div>
               <div style={{ fontSize:18, fontWeight:600,
-                color: isToday ? ACCENT : st ? st.text : 'var(--v2-text)' }}>{d.getDate()}</div>
+                color: isToday ? '#ffffff' : st ? st.text : '#ffffff' }}>{d.getDate()}</div>
               {dc.length>0 && (
                 <div style={{ display:'flex', justifyContent:'center', gap:2, marginTop:4 }}>
                   {dc.slice(0,3).map((_,ci) => (
@@ -387,7 +387,7 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
                 )}
               </div>
               <div style={{ fontSize:9, marginTop:5, fontWeight: isCurrent?600:400,
-                color: isCurrent?ACCENT:'var(--v2-text-3)' }}>{MONTHS_S[mi]}</div>
+                color: isCurrent?ACCENT:'#b0a8a0' }}>{MONTHS_S[mi]}</div>
               {total>0 && (
                 <div style={{ display:'flex', justifyContent:'center', gap:2, marginTop:2 }}>
                   {m.expired>0&&<div style={{ width:4,height:4,borderRadius:'50%',background:RED }}/>}
@@ -532,7 +532,7 @@ export default function RenewalCalendar({ user }) {
                     background: view===v?'var(--v2-surface)':'transparent',
                     border: view===v?'0.5px solid var(--v2-border)':'none',
                     borderRadius:6, cursor:'pointer', fontFamily:'inherit',
-                    color: view===v?'var(--v2-text)':'var(--v2-text-3)',
+                    color: view===v?'#ffffff':'#b0a8a0',
                     transition:'all .15s' }}>
                   {l}
                 </button>

@@ -133,7 +133,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
   const locked = attempts >= 3
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(240,237,232,0.65)', zIndex:300,
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:300,
       display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'var(--v2-surface)', borderRadius:14, width:'100%', maxWidth:480,
         boxShadow:'0 28px 72px rgba(0,0,0,0.35)', overflow:'hidden',
@@ -166,9 +166,9 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
         {/* Progress indicator */}
         <div style={{ height:2, background:'var(--v2-surface-3)', display:'flex' }}>
           {step === 'auth' ? (
-            <div style={{ width:'50%', background:'#f0ede8', transition:'width .3s' }}/>
+            <div style={{ width:'50%', background:'#c0392b', transition:'width .3s' }}/>
           ) : (
-            <div style={{ width:`${pct}%`, background:'#f0ede8', transition:'width 1s linear' }}/>
+            <div style={{ width:`${pct}%`, background:'#c0392b', transition:'width 1s linear' }}/>
           )}
         </div>
 
@@ -184,8 +184,8 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                 <div style={{ width:20, height:20, borderRadius:'50%', flexShrink:0,
                   display:'flex', alignItems:'center', justifyContent:'center',
                   fontSize:10, fontWeight:700,
-                  background: done ? '#f0ede8' : (step==='auth'&&n===1)||(step==='key'&&n===2) ? '#f0ede8' : 'var(--v2-surface-3)',
-                  color: done||(step==='auth'&&n===1)||(step==='key'&&n===2) ? '#000000' : 'var(--v2-text-3)',
+                  background: done ? '#c0392b' : (step==='auth'&&n===1)||(step==='key'&&n===2) ? '#c0392b' : 'rgba(255,255,255,0.08)',
+                  color: done||(step==='auth'&&n===1)||(step==='key'&&n===2) ? '#ffffff' : '#b0a8a0',
                 }}>
                   {done ? <Check size={10}/> : n}
                 </div>
@@ -235,7 +235,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
               </div>
 
               {authError && (
-                <div style={{ background:'rgba(192,57,43,0.12)', border:'0.5px solid #fecaca', borderRadius:7,
+                <div style={{ background:'rgba(192,57,43,0.12)', border:'0.5px solid rgba(248,113,113,0.3)', borderRadius:7,
                   padding:'9px 12px', marginBottom:12, fontSize:11, color:'#f87171',
                   display:'flex', alignItems:'center', gap:7 }}>
                   <AlertTriangle size={12} style={{ flexShrink:0 }}/>
@@ -244,7 +244,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
               )}
 
               {locked ? (
-                <div style={{ background:'rgba(192,57,43,0.12)', border:'0.5px solid #fecaca', borderRadius:7,
+                <div style={{ background:'rgba(192,57,43,0.12)', border:'0.5px solid rgba(248,113,113,0.3)', borderRadius:7,
                   padding:'10px 12px', fontSize:12, color:'#f87171', textAlign:'center' }}>
                   Access locked after 3 failed attempts. Close and try again later.
                 </div>

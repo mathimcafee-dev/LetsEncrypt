@@ -17,7 +17,7 @@ async function callCertBind(action, extra = {}) {
 }
 
 const STATUS_MAP = {
-  bound:          { label: 'Live',          color: '#ffffff', dot: '#f0ede8', bg: 'rgba(16,185,129,0.08)',  border: 'rgba(16,185,129,0.2)',  icon: CheckCircle2,    priority: 0 },
+  bound:          { label: 'Live',          color: '#4ade80', dot: '#4ade80', bg: 'rgba(74,222,128,0.08)', border: 'rgba(74,222,128,0.2)',  icon: CheckCircle2,    priority: 0 },
   key_mismatch:   { label: 'Key Mismatch',  color: '#f87171', dot: '#f87171', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
   cert_mismatch:  { label: 'Wrong Cert',    color: '#f87171', dot: '#f87171', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
   chain_anomaly:  { label: 'Chain Issue',   color: '#ff8c7a', dot: '#e07060', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.2)', icon: AlertTriangle,   priority: 2 },
@@ -129,14 +129,14 @@ function CertRow({ cert, onCheck, checking }) {
         style={{
           display: 'flex', alignItems: 'center', gap: 5,
           padding: '6px 12px', borderRadius: 7,
-          background: canCheck && !isChecking ? 'var(--v2-text)' : '#000000',
-          color: canCheck && !isChecking ? 'var(--v2-surface)' : 'rgba(240,237,232,0.35)',
+          background: canCheck && !isChecking ? '#c0392b' : 'rgba(255,255,255,0.06)',
+          color: canCheck && !isChecking ? '#ffffff' : 'rgba(255,255,255,0.3)',
           border: 'none', fontWeight: 600, fontSize:11,
           cursor: canCheck && !isChecking ? 'pointer' : 'not-allowed',
           transition: 'all .15s', fontFamily: 'inherit',
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={e => { if(canCheck && !isChecking) e.currentTarget.style.background = '#222' }}
+        onMouseEnter={e => { if(canCheck && !isChecking) e.currentTarget.style.background = '#a93226' }}
         onMouseLeave={e => { if(canCheck && !isChecking) e.currentTarget.style.background = 'var(--v2-text)' }}
       >
         <RefreshCw size={10} />
@@ -242,11 +242,11 @@ export default function CertBind() {
             style={{
               display:'flex', alignItems:'center', gap:6,
               padding:'8px 14px', borderRadius:8,
-              background:'var(--v2-surface)', border:'1px solid #e5e7eb',
+              background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)',
               color:'#e8e0d8', fontWeight:600, fontSize:12,
               cursor:'pointer', transition:'all .15s', fontFamily:'inherit',
             }}
-            onMouseEnter={e => e.currentTarget.style.background='#000000'}
+            onMouseEnter={e => e.currentTarget.style.background='rgba(192,57,43,0.15)'}
             onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}
           >
             <RefreshCw size={12} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
