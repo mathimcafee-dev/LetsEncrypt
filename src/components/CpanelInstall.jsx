@@ -9,7 +9,7 @@ const call = async (action, body, tok) => {
 }
 
 function Pill({ state }) {
-  const map = { pending:{bg:'#f1f5f9',color:'#64748b',label:'Pending'}, running:{bg:'rgba(192,57,43,0.1)',color:'#2563eb',label:'In progress...'}, done:{bg:'rgba(192,57,43,0.1)',color:'#16a34a',label:'Done'}, error:{bg:'#fef2f2',color:'#dc2626',label:'Failed'}, skipped:{bg:'#f1f5f9',color:'#94a3b8',label:'Skipped'} }
+  const map = { pending:{bg:'rgba(192,57,43,0.1)',color:'#64748b',label:'Pending'}, running:{bg:'rgba(192,57,43,0.1)',color:'#2563eb',label:'In progress...'}, done:{bg:'rgba(192,57,43,0.1)',color:'#16a34a',label:'Done'}, error:{bg:'#fef2f2',color:'#dc2626',label:'Failed'}, skipped:{bg:'rgba(192,57,43,0.1)',color:'#94a3b8',label:'Skipped'} }
   const s = map[state]||map.pending
   return <span style={{fontSize:10,fontWeight:600,padding:'2px 8px',borderRadius:20,background:s.bg,color:s.color}}>{s.label}</span>
 }
@@ -191,7 +191,7 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
                   <div style={{display:'flex',alignItems:'center',gap:8}}><Server size={13} color={selectedServer===s.id&&!useNew?'#2563eb':'#6b7280'}/><span style={{fontSize:12,fontWeight:600,color:'#111827'}}>{s.label||s.cpanel_user+'@'+s.hostname}</span>{selectedServer===s.id&&!useNew&&<Check size={13} color='#2563eb' style={{marginLeft:'auto'}}/>}</div>
                   <div style={{fontSize:11,color:'#6b7280',marginLeft:21}}>{s.hostname}:{s.port}</div>
                 </button>))}
-                <button onClick={()=>{setUseNew(true);setSelectedServer(null)}} style={{textAlign:'left',padding:'10px 12px',borderRadius:7,cursor:'pointer',fontFamily:'inherit',border:useNew?'2px solid #2563eb':'1px dashed #cbd5e1',background:useNew?'rgba(192,57,43,0.1)':'#f8fafc',color:'#374151',fontSize:12,fontWeight:500}}>+ Add new server</button>
+                <button onClick={()=>{setUseNew(true);setSelectedServer(null)}} style={{textAlign:'left',padding:'10px 12px',borderRadius:7,cursor:'pointer',fontFamily:'inherit',border:useNew?'2px solid #2563eb':'1px dashed #cbd5e1',background:useNew?'rgba(192,57,43,0.1)':'rgba(26,0,0,0.5)',color:'#374151',fontSize:12,fontWeight:500}}>+ Add new server</button>
               </div>
             </div>}
             {(useNew||savedServers.length===0) && <div style={{background:'transparent',border:'1px solid #e2e8f0',borderRadius:8,padding:'16px',marginTop:4}}>

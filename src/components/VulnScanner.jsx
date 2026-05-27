@@ -13,7 +13,7 @@ function GradeBadge({ grade }) {
     'D':  { bg:'#FDF0EE', color:'#E8897A' },
     'F':  { bg:'#fef2f2', color:'#dc2626' },
   }
-  const s = map[grade] || { bg:'#f8fafc', color:'#64748b' }
+  const s = map[grade] || { bg:'rgba(26,0,0,0.5)', color:'#64748b' }
   return (
     <div style={{ width:48, height:48, borderRadius:10, background:s.bg,
       display:'flex', alignItems:'center', justifyContent:'center',

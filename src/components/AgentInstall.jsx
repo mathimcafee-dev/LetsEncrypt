@@ -315,7 +315,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                   <button onClick={onClose}
                     style={{ width:'100%', padding:'10px', fontSize:13, fontWeight:500, borderRadius:7,
                       border:'none', cursor:'pointer', fontFamily:'inherit',
-                      background: jobStatus === 'success' ? '#c0392b' : '#f1f5f9',
+                      background: jobStatus === 'success' ? '#c0392b' : 'rgba(192,57,43,0.1)',
                       color: jobStatus === 'success' ? 'white' : '#374151' }}>
                     {jobStatus === 'success' ? 'Done' : jobStatus === 'failed' ? 'Close' : 'Close (job continues in background)'}
                   </button>

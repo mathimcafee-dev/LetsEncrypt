@@ -5,12 +5,12 @@
 
 :root {
   /* ── Page backgrounds ── */
-  --v2-bg:        #1a0000;
-  --v2-bg-alt:    #150000;
+  --v2-bg:        transparent;
+  --v2-bg-alt:    transparent;
   --v2-surface:   #220808;
-  --v2-surface-2: #2d0f0f;
+  --v2-surface-2: rgba(40,5,5,0.7);
   --v2-surface-3: #3a1515;
-  --v2-hover:     rgba(192,57,43,0.08);
+  --v2-hover: rgba(192,57,43,0.1);
 
   /* ── Borders ── */
   --v2-border:        rgba(192,57,43,0.18);
@@ -806,12 +806,12 @@ html.is-tablet .v2-card {
 
 /* ── v6 Theme overrides — cream/forest/sienna ── */
 :root {
-  --v2-bg:          #1a0000;
-  --v2-bg-alt:      #150000;
+  --v2-bg:          transparent;
+  --v2-bg-alt:      transparent;
   --v2-surface:     #220808;
-  --v2-surface-2:   #2d0f0f;
-  --v2-surface-3:   #3a1515;
-  --v2-hover:       rgba(192,57,43,0.12);
+  --v2-surface-2:   rgba(40,5,5,0.7);
+  --v2-surface-3:   rgba(55,10,10,0.7);
+  --v2-hover: rgba(192,57,43,0.1);
   --v2-border:      rgba(192,57,43,0.18);
   --v2-border-strong: rgba(192,57,43,0.32);
   --v2-border-focus: #c0392b;
