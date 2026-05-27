@@ -19,9 +19,10 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
 
   if (!certs?.length) return null
 
-  const healthy  = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 })
-  const expiring = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 })
-  const expired  = certs.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 })
+  const activeCerts = certs.filter(c => c.status !== 'revoked' && c.status !== 'sandbox_revoked')
+  const healthy  = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 30 })
+  const expiring = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d >= 0 && d < 30 })
+  const expired  = activeCerts.filter(c => { const d = daysLeft(c.expires_at); return d != null && d < 0 })
   const activeAgents = agents?.length || 0
 
   const attention = [...expired, ...expiring].slice(0, 4)

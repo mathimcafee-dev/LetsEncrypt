@@ -2694,7 +2694,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   }
 
   // Split: issued certs (GGS) vs imported from CA connector
-  const issuedCerts   = certs.filter(c => (c.source === 'gogetssl' || c.source === 'rapidssl' || !c.source) && c.status !== 'cancelled')
+  const issuedCerts   = certs.filter(c => (c.source === 'gogetssl' || c.source === 'rapidssl' || !c.source) && c.status !== 'cancelled' && c.status !== 'revoked' && c.status !== 'sandbox_revoked')
   const importedCerts = certs.filter(c => c.source && c.source !== 'gogetssl' && c.source !== 'rapidssl')
 
   // Total cert count (all rows from GGS)
