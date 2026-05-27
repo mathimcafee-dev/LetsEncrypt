@@ -676,7 +676,7 @@ serve(async (req) => {
         await autoDns(req.headers.get('Authorization')!, user.id, cleanDomain, rdcvName, rdcvValue)
       }
 
-      // Insert new ssl_order row
+      // Insert new ssl_order row — private key goes to KeyLocker, NOT plain text here
       const { data: newOrder, error: ordErr } = await adminDb()
         .from('ssl_orders')
         .insert({
@@ -688,10 +688,41 @@ serve(async (req) => {
           dcv_txt_value: or.dcv_txt_value || null,
           dcv_cname_name: or.dcv_cname_name || null,
           dcv_cname_value: or.dcv_cname_value || null,
-          private_key_pem: privateKeyPem,
+          private_key_pem: null,  // never stored plain — KeyLocker owns it
         })
         .select().single()
       if (ordErr) return json({ error: ordErr.message }, 500)
+
+      // ── Store new private key in KeyLocker — CRITICAL for reissue ────────
+      // The old keylocker_key_id on the certificates row points to the OLD key.
+      // We must store the new key and update keylocker_key_id so cpanel-install
+      // and agent dispatch pick up the correct matching key after activation.
+      const reissueKlRes = await callKeyLocker(req.headers.get('Authorization')!, {
+        action:          'store',
+        private_key_pem: privateKeyPem,
+        domain:          cleanDomain,
+        order_id:        newOrder.id,
+        ggs_order_id:    or.order_id,
+        csr_pem:         csrPem,
+        product_name:    order?.product_code || 'RapidSSL',
+        algorithm:       'RSA',
+        key_size:        2048,
+      })
+      if (reissueKlRes.ok && reissueKlRes.key_id) {
+        // Persist keylocker_key_id on the new ssl_order so poll_pending can link it
+        await adminDb()
+          .from('ssl_orders')
+          .update({ keylocker_key_id: reissueKlRes.key_id })
+          .eq('id', newOrder.id)
+        newOrder.keylocker_key_id = reissueKlRes.key_id
+      } else {
+        // KeyLocker failed — fall back to temporary plain-text storage so the cert still works
+        console.error('[reissue] KeyLocker store failed — falling back to plain-text key:', reissueKlRes.error)
+        await adminDb()
+          .from('ssl_orders')
+          .update({ private_key_pem: privateKeyPem })
+          .eq('id', newOrder.id)
+      }
 
       // Log reissue event
       await adminDb().from('cert_reissues').insert({
@@ -763,8 +794,9 @@ serve(async (req) => {
             .single()
 
           if (cert) {
-            // Update certificate with new cert data
-            await adminDb().from('certificates').update({
+            // Build the cert update — always include keylocker_key_id if the new order has one,
+            // so cpanel-install and agent dispatch use the correct post-reissue key.
+            const certUpdate: Record<string, any> = {
               cert_pem: statusRes.crt_code,
               ca_pem: statusRes.ca_code || null,
               private_key_pem: privateKeyPem,
@@ -772,7 +804,14 @@ serve(async (req) => {
               issued_at: statusRes.valid_from || null,
               last_reissued_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
-            }).eq('id', cert.id)
+            }
+            // Update keylocker_key_id to the NEW vault entry from this reissue/renewal order.
+            // This is the critical fix: without it the old key_id stays on the cert row and
+            // cpanel-install retrieves the wrong (pre-reissue) private key → key mismatch error.
+            if (order.keylocker_key_id) {
+              certUpdate.keylocker_key_id = order.keylocker_key_id
+            }
+            await adminDb().from('certificates').update(certUpdate).eq('id', cert.id)
 
             // Dispatch install based on install_method
             if (cert.install_method === 'agent') {
