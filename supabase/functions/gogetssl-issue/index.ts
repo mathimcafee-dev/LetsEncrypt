@@ -795,8 +795,8 @@ serve(async (req) => {
     if (action === 'poll_pending') {
       const { data: pendingOrders } = await adminDb()
         .from('ssl_orders')
-        .select('id, user_id, domain, ggs_order_id, private_key_pem, keylocker_key_id')
-        .eq('status', 'dv_pending')
+        .select('id, user_id, domain, ggs_order_id, private_key_pem, keylocker_key_id, status')
+        .in('status', ['dv_pending', 'issued'])  // issued = GGS active but DB cert not yet updated
         .order('created_at', { ascending: true })
         .limit(20)
 
@@ -846,6 +846,7 @@ serve(async (req) => {
               private_key_pem: privateKeyPem,
               expires_at: statusRes.valid_till || null,
               issued_at: statusRes.valid_from || null,
+              serial_number: statusRes.serial_number || null,  // always sync serial from GGS
               last_reissued_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             }
