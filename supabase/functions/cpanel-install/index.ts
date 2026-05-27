@@ -41,7 +41,43 @@ async function fetchPrivateKey(authToken: string, keyId: string): Promise<string
   return data.ok ? (data.private_key_pem || null) : null
 }
 
-// Call cPanel UAPI over HTTPS — port 2083 standard cPanel SSL port
+// ── cPanel HTTP helper ───────────────────────────────────────────────
+async function cpanelFetch(
+  host: string, port: number, username: string, apiToken: string,
+  url: string, params: URLSearchParams
+): Promise<any> {
+  // @ts-ignore Deno-specific — skip TLS verification for cPanel self-signed certs
+  const client = Deno.createHttpClient({ certificateAuthority: null })
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `cpanel ${username}:${apiToken}`,
+      'Content-Type':  'application/x-www-form-urlencoded',
+    },
+    body: params.toString(),
+    client,
+    signal: AbortSignal.timeout(30000),
+  })
+  if (!res.ok) throw new Error(`HTTP ${res.status} from ${url}`)
+  return res.json()
+}
+
+// ── Install AND activate certificate on cPanel domain ────────────────
+//
+// Three-step process required to fully activate a cert on cPanel:
+//
+//   Step 1 — UAPI SSL/install_ssl:
+//     Uploads the cert+key+cabundle into cPanel's certificate store.
+//     Does NOT activate it as the serving cert for the domain.
+//
+//   Step 2 — API2 SSL/installssl:
+//     Actually activates the certificate on the domain's Apache vhost.
+//     THIS is the step that replaces Let's Encrypt / old cert.
+//     Without this, the cert just sits in the store unused.
+//
+//   Step 3 — UAPI SSL/rebuild_mail_sni (non-fatal):
+//     Activates the cert for mail services (IMAP, SMTP, etc).
+//
 async function cpanelInstallSSL(
   host: string,
   port: number,
@@ -51,46 +87,86 @@ async function cpanelInstallSSL(
   certPem: string,
   keyPem: string,
   caBundlePem: string,
-): Promise<{ ok: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string; debug?: Record<string, any> }> {
 
-  const url = `https://${host}:${port}/execute/SSL/install_ssl`
+  const debug: Record<string, any> = {}
 
-  // Build form body — cPanel UAPI accepts application/x-www-form-urlencoded
-  const params = new URLSearchParams({
-    domain,
-    cert:      certPem,
-    key:       keyPem,
-    cabundle:  caBundlePem,
-  })
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': `cpanel ${username}:${apiToken}`,
-      'Content-Type':  'application/x-www-form-urlencoded',
-    },
-    body: params.toString(),
-    // Skip TLS cert verification — cPanel servers often have self-signed certs on :2083
-    // @ts-ignore Deno-specific
-    client: Deno.createHttpClient({ certificateAuthority: null }),
-    signal: AbortSignal.timeout(30000),
-  })
-
-  if (!res.ok) {
-    return { ok: false, error: `HTTP ${res.status} from cPanel API` }
+  // ── Step 1: UAPI SSL/install_ssl — upload cert to store ──────────
+  try {
+    const uapiParams = new URLSearchParams({
+      domain,
+      cert:     certPem,
+      key:      keyPem,
+      cabundle: caBundlePem,
+    })
+    const uapiData = await cpanelFetch(
+      host, port, username, apiToken,
+      `https://${host}:${port}/execute/SSL/install_ssl`,
+      uapiParams
+    )
+    debug.s1_uapi = { status: uapiData?.result?.status, errors: uapiData?.result?.errors }
+    const s1status = uapiData?.result?.status ?? uapiData?.status
+    if (s1status !== 1 && s1status !== true) {
+      const s1err = uapiData?.result?.errors?.[0] || uapiData?.errors?.[0] || `UAPI status ${s1status}`
+      // Non-fatal if cert already in store — continue to activation step
+      console.warn('[cpanel-install] UAPI install_ssl warning:', s1err)
+    }
+  } catch (e: any) {
+    debug.s1_uapi = { error: e.message }
+    // Non-fatal — cert may already be in store, try activation anyway
+    console.warn('[cpanel-install] Step 1 UAPI error (non-fatal):', e.message)
   }
 
-  const data = await res.json()
+  // ── Step 2: API2 SSL/installssl — ACTIVATE cert on domain vhost ──
+  // This is the critical step that actually makes the cert serve.
+  // Uses the older JSON-API (API2) which is what cPanel uses internally
+  // when you click "Install" in the SSL/TLS manager UI.
+  try {
+    const api2Params = new URLSearchParams({
+      cpanel_jsonapi_version: '2',
+      cpanel_jsonapi_module:  'SSL',
+      cpanel_jsonapi_func:    'installssl',
+      domain,
+      user:    username,
+      crt:     certPem,
+      key:     keyPem,
+      cab:     caBundlePem,
+    })
+    const api2Data = await cpanelFetch(
+      host, port, username, apiToken,
+      `https://${host}:${port}/json-api/cpanel`,
+      api2Params
+    )
+    debug.s2_api2 = { raw: JSON.stringify(api2Data).slice(0, 500) }
 
-  // cPanel UAPI response: { result: { status: 1, errors: [], ... } }
-  const status  = data?.result?.status ?? data?.status
-  const errors  = data?.result?.errors ?? data?.errors ?? []
-  const errMsg  = Array.isArray(errors) && errors.length > 0 ? errors[0] : null
+    // API2 response: { cpanelresult: { data: [...], error: "..." } }
+    const cpResult = api2Data?.cpanelresult
+    const api2Err  = cpResult?.error || cpResult?.data?.[0]?.reason
+    const api2Ok   = !api2Err || cpResult?.data?.[0]?.result === 1
 
-  if (status === 1 || status === true) {
-    return { ok: true }
+    if (!api2Ok) {
+      return { ok: false, error: `API2 failed: ${api2Err || JSON.stringify(api2Data).slice(0,200)}`, debug }
+    }
+  } catch (e: any) {
+    debug.s2_api2 = { error: e.message }
+    return { ok: false, error: `API2 activation failed: ${e.message}`, debug }
   }
-  return { ok: false, error: errMsg || `cPanel returned status ${status}` }
+
+  // ── Step 3: UAPI SSL/rebuild_mail_sni — activate for mail (non-fatal) ──
+  try {
+    const mailParams = new URLSearchParams({ domain })
+    await cpanelFetch(
+      host, port, username, apiToken,
+      `https://${host}:${port}/execute/SSL/rebuild_mail_sni`,
+      mailParams
+    )
+    debug.s3_mail_sni = 'ok'
+  } catch (e: any) {
+    debug.s3_mail_sni = `non-fatal: ${e.message}`
+    console.warn('[cpanel-install] rebuild_mail_sni non-fatal:', e.message)
+  }
+
+  return { ok: true, debug }
 }
 
 // ── Credential decryption ────────────────────────────────────────────
