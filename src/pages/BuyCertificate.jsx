@@ -204,7 +204,16 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               const dnsRes = await dnsR.json()
               setDns(false)
               setRes({ dns_auto: dnsRes })
-              if (dnsRes.ok) setOrd(p => ({ ...p, dns_auto_added: true, dns_provider: dnsRes.provider || '' }))
+              if (dnsRes.ok) {
+                setOrd(p => ({ ...p, dns_auto_added: true, dns_provider: dnsRes.provider || '' }))
+                // Immediately check if cert already issued after DNS add
+                try {
+                  const s2 = await call('check_status', { order_id: ord.order_id })
+                  if (s2.status === 'active' || s2.status === 'issued' || s2.ggs_status === 'active') {
+                    setStep('done'); clearInterval(iv)
+                  }
+                } catch {}
+              }
             } catch { setDns(false) }
           }
         }
