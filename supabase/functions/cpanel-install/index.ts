@@ -93,6 +93,28 @@ async function cpanelInstallSSL(
   return { ok: false, error: errMsg || `cPanel returned status ${status}` }
 }
 
+// ── Credential decryption ────────────────────────────────────────────
+// Matches the encryption used by the server-credentials edge function:
+// PBKDF2(secret + userId, salt=userId, 100000 iter, SHA-256) → AES-GCM-256
+// Ciphertext format: base64(iv[12] + ciphertext)
+async function decryptCredential(encrypted: string, userId: string): Promise<string> {
+  const masterSecret = Deno.env.get('KEYLOCKER_MASTER_SECRET') || ''
+  if (!masterSecret) throw new Error('KEYLOCKER_MASTER_SECRET not set')
+  const enc = new TextEncoder()
+  const dec = new TextDecoder()
+
+  const rawBase = await crypto.subtle.importKey('raw', enc.encode(masterSecret + userId), 'PBKDF2', false, ['deriveKey'])
+  const key = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: enc.encode(userId), iterations: 100000, hash: 'SHA-256' },
+    rawBase, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+  )
+  const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0))
+  const iv   = combined.slice(0, 12)
+  const data = combined.slice(12)
+  const pt   = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data)
+  return dec.decode(pt)
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
@@ -155,9 +177,11 @@ serve(async (req) => {
     }
 
     // ── 3. Fetch cPanel credentials ──────────────────────────────────────────
+    // Actual schema columns: host, cpanel_hostname, port, cpanel_port, username,
+    // credentials_enc (encrypted JSON containing api_token), cpanel_api_token_enc
     const { data: cred, error: credErr } = await adminDb()
       .from('server_credentials')
-      .select('host, hostname, port, username, cpanel_user, api_token, password, server_type')
+      .select('host, cpanel_hostname, port, cpanel_port, username, server_type, credentials_enc, cpanel_api_token_enc, user_id')
       .eq('id', credential_id)
       .single()
 
@@ -166,18 +190,47 @@ serve(async (req) => {
       return json({ ok: false, error: `Credential type '${cred.server_type}' is not cPanel` })
     }
 
-    const host      = cred.hostname || cred.host
-    const port      = Number(cred.port) || 2083
-    const cpUser    = cred.cpanel_user || cred.username
-    const apiToken  = cred.api_token || cred.password
+    const host   = cred.cpanel_hostname || cred.host
+    const port   = Number(cred.cpanel_port || cred.port) || 2083
+    const cpUser = cred.username
 
-    if (!host || !cpUser || !apiToken) {
-      return json({ ok: false, error: 'Missing host, cpanel_user, or api_token in credential' })
+    // Decrypt credentials — stored as AES-GCM encrypted JSON via certvault encrypt scheme
+    // Format: PBKDF2(KEYLOCKER_MASTER_SECRET + user_id) → AES-GCM → base64(iv + ciphertext)
+    let apiToken: string | null = null
+
+    if (cred.cpanel_api_token_enc) {
+      // Dedicated encrypted token column
+      try { apiToken = await decryptCredential(cred.cpanel_api_token_enc, cred.user_id || user.id) } catch {}
+    }
+
+    if (!apiToken && cred.credentials_enc) {
+      // Encrypted JSON blob: { api_token: "...", password: "..." }
+      try {
+        const decrypted = await decryptCredential(cred.credentials_enc, cred.user_id || user.id)
+        const parsed = JSON.parse(decrypted)
+        apiToken = parsed.api_token || parsed.password || parsed.token || null
+      } catch {}
+    }
+
+    // Allow inline credentials from wizard (new server path: no credential saved yet)
+    if (!apiToken && body.api_token) {
+      apiToken = body.api_token
+    }
+    if (!host && body.hostname) {
+      // hostname is passed inline from wizard for new/unsaved servers
+    }
+    const finalHost   = host || body.hostname || null
+    const finalUser   = cpUser || body.cpanel_user || null
+    const finalToken  = apiToken || body.api_token || null
+    const finalPort   = port || body.port || 2083
+
+    if (!finalHost || !finalUser || !finalToken) {
+      return json({ ok: false, error: `Missing credentials — host:${!!finalHost} user:${!!finalUser} token:${!!finalToken}. Check server credentials in Integrations.` })
     }
 
     // ── 4. Call cPanel UAPI SSL/install_ssl ──────────────────────────────────
     const installResult = await cpanelInstallSSL(
-      host, port, cpUser, apiToken,
+      finalHost, finalPort, finalUser, finalToken,
       domain,
       cert.cert_pem,
       privateKey,
@@ -205,7 +258,7 @@ serve(async (req) => {
       cert_id,
       user_id:    user.id,
       event_type: 'cpanel_installed',
-      meta:       { domain, host, confirmed_by: 'cpanel_install' },
+      meta:       { domain, host: finalHost, confirmed_by: 'cpanel_install' },
       created_at: new Date().toISOString(),
     }).catch(() => {})
 
