@@ -14,7 +14,7 @@ export default function Privacy({ nav }) {
       {/* HERO */}
       <section style={{position:'relative',padding:'70px 0 30px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
-          <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'#000000',border:'1px solid #99f6e4',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'transparent',border:'1px solid #99f6e4',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
             <span style={{width:7,height:7,borderRadius:'50%',background:'#ffffff',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
             <span style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.6)',letterSpacing:'0.4px',textTransform:'uppercase'}}>Privacy Policy</span>
           </div>
@@ -36,7 +36,7 @@ export default function Privacy({ nav }) {
               {icon:Eye,title:'No tracking',desc:'No third-party analytics, no advertising pixels, no behavioural profiling.',color:'#ffffff',bg:'#ede9fe'},
               {icon:Mail,title:'Email only for service',desc:'Renewal alerts, account notices. No marketing. No newsletters you didn\'t subscribe to.',color:'#ffffff',bg:'rgba(239,68,68,0.08)'},
             ].map(({icon:Icon,title,desc,color,bg})=>(
-              <div key={title} style={{background:'#000000',borderRadius:16,padding:'22px 22px',border:'1px solid #99f6e4',boxShadow:'0 2px 10px rgba(15,23,42,0.04)'}}>
+              <div key={title} style={{background:'transparent',borderRadius:16,padding:'22px 22px',border:'1px solid #99f6e4',boxShadow:'0 2px 10px rgba(15,23,42,0.04)'}}>
                 <div style={{width:38,height:38,borderRadius:10,background:bg,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:12}}>
                   <Icon size={18} color={color}/>
                 </div>
@@ -51,7 +51,7 @@ export default function Privacy({ nav }) {
       {/* DETAILED POLICY */}
       <section style={{position:'relative',padding:'30px 0 80px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px'}}>
-          <div style={{background:'#000000',borderRadius:24,padding:'clamp(16px,16vw,48px) clamp(14px,16vw,50px)',boxShadow:'0 4px 24px rgba(15,23,42,0.06)',border:'1px solid #99f6e4'}}>
+          <div style={{background:'transparent',borderRadius:24,padding:'clamp(16px,16vw,48px) clamp(14px,16vw,50px)',boxShadow:'0 4px 24px rgba(15,23,42,0.06)',border:'1px solid #99f6e4'}}>
 
             <Section title='1. Who we are'>
               SSLVault (also operated under the names FreeEncryption and EasySecurity) is a personal,
@@ -125,7 +125,7 @@ export default function Privacy({ nav }) {
       {/* FOOTER LINKS */}
       <section style={{position:'relative',padding:'0 0 80px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
-          <button onClick={()=>nav('/terms')} style={{background:'#000000',color:'#ffffff',border:'1.5px solid #99f6e4',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/terms')} style={{background:'transparent',color:'#ffffff',border:'1.5px solid #99f6e4',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <FileText size={14}/> Terms of Service
           </button>
           <button onClick={()=>nav('/contact')} style={{background:'#ffffff',color:'#ffffff',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>

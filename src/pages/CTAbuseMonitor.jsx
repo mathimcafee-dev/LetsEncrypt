@@ -245,7 +245,7 @@ export default function CTAbuseMonitor({ user }) {
         )}
 
         {flagged === 0 && !loading && shadows.length > 0 && (
-          <div style={{ background: '#111111', border: '0.5px solid #A8E6DE', borderRadius: 10,
+          <div style={{ background: 'transparent', border: '0.5px solid #A8E6DE', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
             <Shield size={15} color="#16a34a" style={{ flexShrink: 0 }}/>
             <div style={{ fontSize:13, color: '#ffffff', fontWeight: 500 }}>

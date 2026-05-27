@@ -14,7 +14,7 @@ export default function Terms({ nav }) {
       {/* HERO */}
       <section style={{position:'relative',padding:'70px 0 30px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
-          <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'#000000',border:'1px solid #99f6e4',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'transparent',border:'1px solid #99f6e4',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
             <span style={{width:7,height:7,borderRadius:'50%',background:'#ffffff',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
             <span style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.6)',letterSpacing:'0.4px',textTransform:'uppercase'}}>Terms of Service</span>
           </div>
@@ -48,7 +48,7 @@ export default function Terms({ nav }) {
       {/* DETAILED TERMS */}
       <section style={{position:'relative',padding:'30px 0 80px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px'}}>
-          <div style={{background:'#000000',borderRadius:24,padding:'clamp(16px,16vw,48px) clamp(14px,16vw,50px)',boxShadow:'0 4px 24px rgba(15,23,42,0.06)',border:'1px solid #99f6e4'}}>
+          <div style={{background:'transparent',borderRadius:24,padding:'clamp(16px,16vw,48px) clamp(14px,16vw,50px)',boxShadow:'0 4px 24px rgba(15,23,42,0.06)',border:'1px solid #99f6e4'}}>
 
             <Section title='1. Acceptance'>
               By creating an SSLVault account or using any feature of the service, you agree to these
@@ -138,7 +138,7 @@ export default function Terms({ nav }) {
       {/* FOOTER LINKS */}
       <section style={{position:'relative',padding:'0 0 80px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
-          <button onClick={()=>nav('/privacy')} style={{background:'#000000',color:'#ffffff',border:'1.5px solid #99f6e4',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/privacy')} style={{background:'transparent',color:'#ffffff',border:'1.5px solid #99f6e4',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <Shield size={14}/> Privacy Policy
           </button>
           <button onClick={()=>nav('/contact')} style={{background:'#ffffff',color:'#ffffff',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>

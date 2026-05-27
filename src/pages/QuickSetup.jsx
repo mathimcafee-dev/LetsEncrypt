@@ -248,7 +248,7 @@ TTL     300`}</pre>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div className="v2-card v2-card-pad" style={{ border: '1.5px solid var(--v2-green)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <CheckCircle size={24} color="var(--v2-green)"/>
                 </div>
                 <div>

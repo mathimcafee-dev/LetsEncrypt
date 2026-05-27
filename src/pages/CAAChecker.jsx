@@ -35,7 +35,7 @@ function CopySnippet({ text }) {
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(()=>setCopied(false),1800) }}
-      style={{ display:'flex', alignItems:'center', gap:5, background:'#000000',
+      style={{ display:'flex', alignItems:'center', gap:5, background:'transparent',
         border:'0.5px solid #99f6e4', borderRadius:4, padding:'4px 9px',
         fontSize:12, color:'rgba(255,255,255,0.6)', cursor:'pointer', fontFamily:'monospace' }}>
       {copied ? <Check size={11} color="#16a34a"/> : <Copy size={11}/>}
@@ -83,7 +83,7 @@ export default function CAAChecker({ nav }) {
 
         <div style={{ marginBottom:28 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-            <div style={{ width:36, height:36, borderRadius:8, background:'#111111',
+            <div style={{ width:36, height:36, borderRadius:8, background:'transparent',
               display:'flex', alignItems:'center', justifyContent:'center' }}>
               <Shield size={18} color="#0d9488"/>
             </div>
@@ -95,7 +95,7 @@ export default function CAAChecker({ nav }) {
         </div>
 
         {/* Input */}
-        <div style={{ background:'#000000', border:'0.5px solid var(--v2-border)', borderRadius:10, padding:'16px 18px', marginBottom:16 }}>
+        <div style={{ background:'transparent', border:'0.5px solid var(--v2-border)', borderRadius:10, padding:'16px 18px', marginBottom:16 }}>
           <div style={{ display:'flex', gap:10, alignItems:'center' }}>
             <input
               value={domain}
@@ -146,7 +146,7 @@ export default function CAAChecker({ nav }) {
             </div>
 
             {/* Checks list */}
-            <div style={{ background:'#000000', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:16 }}>
+            <div style={{ background:'transparent', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:16 }}>
               <div style={{ padding:'10px 16px', borderBottom:'0.5px solid var(--v2-border)',
                 background:'var(--v2-bg)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                 <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-text-2)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Check results</span>
@@ -176,7 +176,7 @@ export default function CAAChecker({ nav }) {
 
             {/* Raw records */}
             {result.rawRecords?.length > 0 && (
-              <div style={{ background:'#000000', border:'0.5px solid var(--v2-border)', borderRadius:8, padding:'12px 14px' }}>
+              <div style={{ background:'transparent', border:'0.5px solid var(--v2-border)', borderRadius:8, padding:'12px 14px' }}>
                 <p style={{ margin:'0 0 6px', fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Raw CAA records</p>
                 {result.rawRecords.map((r, i) => (
                   <code key={i} style={{ display:'block', fontSize:12, color:'rgba(255,255,255,0.6)', padding:'2px 0' }}>{r}</code>

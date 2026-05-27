@@ -153,7 +153,7 @@ export default function TrustPassport({ nav }) {
 
       {/* Search */}
       <div className="tp-input-wrap" style={{ paddingTop:28 }}>
-        <div style={{ background:'#000000', border:'0.5px solid var(--v2-border-strong)', borderRadius:12, padding:'14px 16px', marginBottom:4 }}>
+        <div style={{ background:'transparent', border:'0.5px solid var(--v2-border-strong)', borderRadius:12, padding:'14px 16px', marginBottom:4 }}>
           <div style={{ display:'flex', gap:10, alignItems:'center' }}>
             <Globe size={16} color="var(--v2-text-3)" style={{ flexShrink:0 }}/>
             <input

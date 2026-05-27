@@ -134,7 +134,7 @@ function ServerCard({ agent, certs }) {
           )}
           <div style={{
             padding: '4px 10px', borderRadius: 20,
-            background: '#111111', border: '1px solid #A8E6DE',
+            background: 'transparent', border: '1px solid #A8E6DE',
             fontSize:11, fontWeight: 600, color: '#ffffff',
           }}>
             {certCount} cert{certCount !== 1 ? 's' : ''}
@@ -187,7 +187,7 @@ function ServerCard({ agent, certs }) {
           {(agent.cpu_pct || agent.mem_pct) && (
             <div style={{
               padding: '10px 20px',
-              background: '#000000', borderTop: '1px solid #f0fdf9',
+              background: 'transparent', borderTop: '1px solid #f0fdf9',
               display: 'flex', gap: 20, fontSize:11, color: 'var(--v2-text-3)',
             }}>
               {agent.cpu_pct && <span>CPU: <b style={{color:'var(--v2-text-2)'}}>{agent.cpu_pct}%</b></span>}
@@ -342,7 +342,7 @@ function AddServerModal({ onClose, userId }) {
           ) : (
             <>
               <div style={{
-                background: '#111111', border: '1px solid #A8E6DE',
+                background: 'transparent', border: '1px solid #A8E6DE',
                 borderRadius: 8, padding: '10px 14px', marginBottom: 16,
                 fontSize:12, color: '#ffffff', fontWeight: 500,
                 display: 'flex', gap: 8, alignItems: 'center',
@@ -543,7 +543,7 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
       maxWidth: 560, margin: '0 auto',
     }}>
       <div style={{
-        width: 56, height: 56, borderRadius: 14, background: '#111111',
+        width: 56, height: 56, borderRadius: 14, background: 'transparent',
         border: '1px solid #A8E6DE', display: 'flex', alignItems: 'center',
         justifyContent: 'center', margin: '0 auto 20px',
       }}>
@@ -750,7 +750,7 @@ function AddHostingModal({ onClose, onSaved, userId }) {
           <input value={apiToken} onChange={e=>setApiToken(e.target.value)} type="password" placeholder="Paste your cPanel API token" style={inp} />
 
           {testOk && (
-            <div style={{ padding:'8px 12px', background:'#111111', border:'1px solid #A8E6DE', borderRadius:6, fontSize:12, color:'#ffffff', marginBottom:12, display:'flex', gap:6, alignItems:'center' }}>
+            <div style={{ padding:'8px 12px', background:'transparent', border:'1px solid #A8E6DE', borderRadius:6, fontSize:12, color:'#ffffff', marginBottom:12, display:'flex', gap:6, alignItems:'center' }}>
               <CheckCircle size={12} color="#0d9488" /> Connection successful!
             </div>
           )}
@@ -1038,7 +1038,7 @@ export default function MyServers({ user }) {
               <div>
                 {/* Why DNS explanation */}
                 <div style={{
-                  background: '#111111', border: '1px solid #A8E6DE',
+                  background: 'transparent', border: '1px solid #A8E6DE',
                   borderRadius: 10, padding: '12px 16px', marginBottom: 16,
                   fontSize:12, color: '#ffffff', lineHeight: 1.6,
                 }}>

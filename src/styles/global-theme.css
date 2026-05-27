@@ -27,7 +27,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { font-family: var(--f); background: var(--page); color: var(--ink); }
+html, body { font-family: var(--f); background: radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%); color: var(--ink); }
 ::selection { background: rgba(192,57,43,0.3); color: #fff; }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }

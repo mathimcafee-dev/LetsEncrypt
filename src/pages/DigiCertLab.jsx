@@ -243,7 +243,7 @@ export default function DigiCertLab({ nav }) {
   const isConnected = connected || !!activeKey
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f0f4f8', fontFamily: "'Segoe UI',-apple-system,system-ui,sans-serif" }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'transparent', fontFamily: "'Segoe UI',-apple-system,system-ui,sans-serif" }}>
 
       {/* ── Sidebar ── */}
       <div style={{ width: 220, background: 'var(--v2-text)', display: 'flex', flexDirection: 'column',
@@ -480,7 +480,7 @@ export default function DigiCertLab({ nav }) {
             <Card>
               <div style={{ padding: '10px 16px', borderBottom: '0.5px solid var(--v2-border)',
                 display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-                background: '#000000' }}>
+                background: 'transparent' }}>
                 {['Domain', 'Product', 'Expires', 'Days left', 'Actions'].map(h => (
                   <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
                     textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
@@ -530,7 +530,7 @@ export default function DigiCertLab({ nav }) {
                       <button onClick={() => { setSelectedCert(cert); setSection('reissue') }}
                         title="Reissue"
                         style={{ fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 5,
-                          background: '#111111', color: '#4ade80', border: '0.5px solid #A8E6DE',
+                          background: 'transparent', color: '#4ade80', border: '0.5px solid #A8E6DE',
                           cursor: 'pointer', fontFamily: 'inherit' }}>
                         Reissue
                       </button>
@@ -678,7 +678,7 @@ export default function DigiCertLab({ nav }) {
             {selectedCert ? (
               <Card style={{ padding: '20px 22px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 9, background: '#111111',
+                  <div style={{ width: 36, height: 36, borderRadius: 9, background: 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <RotateCcw size={16} color="#16a34a"/>
                   </div>

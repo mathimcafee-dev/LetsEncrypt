@@ -113,7 +113,7 @@ export default function GetStarted({ nav }) {
                 Red "Not Secure" warning. Visitor data exposed. Lower Google ranking. Payments blocked.
               </p>
             </div>
-            <div style={{ background: '#111111', border: '1px solid #A8E6DE', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
+            <div style={{ background: 'transparent', border: '1px solid #A8E6DE', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
               <div style={{ fontSize:12, fontWeight: 600, color: '#4ade80', marginBottom: 6 }}>With SSL (HTTPS)</div>
               <p style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
                 Green padlock. All traffic encrypted. Trust signals for visitors and Google. Required for payments.

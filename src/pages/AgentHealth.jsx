@@ -161,7 +161,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
         <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)',
           display: 'flex', alignItems: 'center', gap: 12, position: 'sticky', top: 0,
           background: 'var(--v2-bg)', zIndex: 1 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 9, background: '#111111',
+          <div style={{ width: 36, height: 36, borderRadius: 9, background: 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Server size={16} color="#16a34a"/>
           </div>

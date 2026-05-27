@@ -148,7 +148,7 @@ export default function AdminAnalytics({ user }) {
                     {req.status==='pending' && (<>
                       <button onClick={()=>handleApprove(req.user_id)}
                         style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #A8E6DE',
-                          background:'#111111',color:'#4ade80',cursor:'pointer',fontWeight:600}}>
+                          background:'transparent',color:'#4ade80',cursor:'pointer',fontWeight:600}}>
                         ✓ Approve
                       </button>
                       <button onClick={()=>handleReject(req.user_id,req.email)}

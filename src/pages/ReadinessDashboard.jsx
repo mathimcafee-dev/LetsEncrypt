@@ -316,7 +316,7 @@ export default function ReadinessDashboard({ user }) {
                             {cert.source === 'gogetssl' ? (
                               <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px',
                                 borderRadius:4, whiteSpace:'nowrap', flexShrink:0,
-                                background:'#111111', color:'#0F6E56',
+                                background:'transparent', color:'#0F6E56',
                                 border:'0.5px solid #A8E6DE' }}>
                                 SSLVault
                               </span>

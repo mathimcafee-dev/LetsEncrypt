@@ -105,7 +105,7 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
           {expiring.length > 0 && (
             <button onClick={() => onRenew && onRenew(expiring)}
               style={{ display:'flex', alignItems:'center', gap:5, flex:1,
-                background:'#0a0a0a', color:'white', border:'none', borderRadius:6,
+                background:'transparent', color:'white', border:'none', borderRadius:6,
                 padding:'8px 14px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'inherit',
                 justifyContent:'center' }}>
               <RotateCcw size={12}/> Renew all expiring ({expiring.length})

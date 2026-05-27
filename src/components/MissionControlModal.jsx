@@ -60,7 +60,7 @@ function FloatingPill({ action, domain, elapsedMs, onExpand }) {
       onClick={onExpand}
       style={{
         position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
-        background: '#0a1a1a', border: '1px solid #10b981',
+        background: 'transparent', border: '1px solid #10b981',
         borderRadius: 32, padding: '10px 18px',
         display: 'flex', alignItems: 'center', gap: 10,
         cursor: 'pointer', boxShadow: '0 4px 24px rgba(16,185,129,0.25)',
@@ -357,7 +357,7 @@ export default function MissionControlModal({
       }}>
         <div style={{
           width: '100%', maxWidth: 480,
-          background: '#0d1f1f',
+          background: 'transparent',
           border: '1px solid rgba(16,185,129,0.25)',
           borderRadius: 16,
           boxShadow: '0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(16,185,129,0.1)',

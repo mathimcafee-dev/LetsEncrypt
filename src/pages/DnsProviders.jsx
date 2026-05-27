@@ -555,7 +555,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       </div>
       {isVPS && !agent ? (
         <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
-          style={{ fontSize:11, color:'#ffffff', background:'#111111',
+          style={{ fontSize:11, color:'#ffffff', background:'transparent',
             border:'0.5px solid #A8E6DE', borderRadius:6, cursor:'pointer',
             padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
             fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>

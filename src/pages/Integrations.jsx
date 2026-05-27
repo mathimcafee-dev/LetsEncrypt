@@ -494,7 +494,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       </div>
       {isVPS && !agent ? (
         <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
-          style={{ fontSize:11, color:'#ffffff', background:'#111111',
+          style={{ fontSize:11, color:'#ffffff', background:'transparent',
             border:'0.5px solid #A8E6DE', borderRadius:6, cursor:'pointer',
             padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
             fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>
@@ -2248,7 +2248,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                       </>
                     ) : importResult.ok ? (
                       <div style={{ textAlign:'center', padding:'10px 0' }}>
-                        <div style={{ width:48, height:48, borderRadius:'50%', background:'#111111',
+                        <div style={{ width:48, height:48, borderRadius:'50%', background:'transparent',
                           border:'1.5px solid #A8E6DE', display:'flex', alignItems:'center',
                           justifyContent:'center', margin:'0 auto 14px' }}>
                           <Check size={20} style={{ color:'#4ade80' }}/>

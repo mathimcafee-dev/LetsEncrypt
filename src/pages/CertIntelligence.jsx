@@ -280,7 +280,7 @@ function ExpiryTimeline({ tok }) {
       {/* Cert table */}
       <Card>
         <div style={{ display: 'grid', gridTemplateColumns: '28px 2fr 1fr 1fr 1fr 1fr 80px',
-          padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)', background: '#000000',
+          padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)', background: 'transparent',
           alignItems: 'center' }}>
           <div style={{ display:'flex', alignItems:'center', cursor:'pointer' }} onClick={toggleAll}>
             {selected.size > 0 && selected.size === certs.length
@@ -337,7 +337,7 @@ function ExpiryTimeline({ tok }) {
                   onClick={() => setRenewModal(cert)}
                   style={{ display:'inline-flex', alignItems:'center', gap:4,
                     fontSize:10, fontWeight:600, padding:'4px 9px', borderRadius:6,
-                    background:'#111111', color:'#ffffff',
+                    background:'transparent', color:'#ffffff',
                     border:'0.5px solid #A8E6DE', cursor:'pointer',
                     fontFamily:'inherit', whiteSpace:'nowrap', transition:'all .15s' }}
                   onMouseEnter={e => { e.currentTarget.style.background='#ffffff'; e.currentTarget.style.color='var(--v2-surface)' }}
@@ -384,7 +384,7 @@ function ExpiryTimeline({ tok }) {
                 display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                 <div>
                   <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <div style={{ width:28, height:28, borderRadius:7, background:'#111111',
+                    <div style={{ width:28, height:28, borderRadius:7, background:'transparent',
                       display:'flex', alignItems:'center', justifyContent:'center' }}>
                       <RotateCcw size={13} color="#0d9488"/>
                     </div>
@@ -433,7 +433,7 @@ function ExpiryTimeline({ tok }) {
                     cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor='#4ade80'; e.currentTarget.style.background='#111111' }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor='var(--v2-border)'; e.currentTarget.style.background='var(--v2-surface)' }}>
-                  <div style={{ width:34, height:34, borderRadius:8, background:'#111111',
+                  <div style={{ width:34, height:34, borderRadius:8, background:'transparent',
                     display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                     <Shield size={15} color="#16a34a"/>
                   </div>
@@ -441,7 +441,7 @@ function ExpiryTimeline({ tok }) {
                     <div style={{ fontSize:13, fontWeight:700, color:'#ffffff', marginBottom:3 }}>
                       Renew via SSLVault
                       <span style={{ marginLeft:7, fontSize:9, fontWeight:700, padding:'2px 7px',
-                        borderRadius:20, background:'#111111', color:'#4ade80',
+                        borderRadius:20, background:'transparent', color:'#4ade80',
                         border:'0.5px solid #A8E6DE' }}>Recommended</span>
                     </div>
                     <div style={{ fontSize:11, color:'var(--v2-text-3)', lineHeight:1.5 }}>
@@ -643,7 +643,7 @@ function ShadowScanner({ tok, nav }) {
 
       <Card>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto',
-          padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)', background: '#000000' }}>
+          padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)', background: 'transparent' }}>
           {['Domain', 'Product', 'Ordered by', 'Expires', 'Urgency', ''].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
               textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
@@ -684,7 +684,7 @@ function ShadowScanner({ tok, nav }) {
                 <button onClick={() => { sessionStorage.setItem('prefill_domain', s.domain); nav('/buy') }}
                   title="Import via SSLVault"
                   style={{ fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 5,
-                    background: '#111111', color: '#4ade80', border: '0.5px solid #A8E6DE',
+                    background: 'transparent', color: '#4ade80', border: '0.5px solid #A8E6DE',
                     cursor: 'pointer', fontFamily: 'inherit' }}>Import</button>
                 <button onClick={() => dismiss(s.id)} disabled={dismissing === s.id}
                   title="Dismiss this finding"
@@ -798,7 +798,7 @@ function ConsolidationAdvisor({ tok, nav }) {
           </div>
           <Card style={{ marginBottom: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto',
-              padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)', background: '#000000' }}>
+              padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)', background: 'transparent' }}>
               {['Domain', 'Current CA', 'Current product', 'Expires', 'Saving/yr', ''].map(h => (
                 <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
                   textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
@@ -827,7 +827,7 @@ function ConsolidationAdvisor({ tok, nav }) {
                 <div style={{ display: 'flex', gap: 4 }}>
                   <button onClick={() => migrate(opp)}
                     style={{ fontSize: 9, fontWeight: 700, padding: '4px 8px', borderRadius: 5,
-                      background: '#111111', color: '#4ade80', border: '0.5px solid #A8E6DE',
+                      background: 'transparent', color: '#4ade80', border: '0.5px solid #A8E6DE',
                       cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 3 }}>
                     <Zap size={8}/> Migrate
                   </button>
@@ -919,7 +919,7 @@ export default function CertIntelligence({ nav }) {
               CA Intelligence Suite
             </h1>
             <span style={{ fontSize:10, fontWeight: 700, padding: '3px 9px', borderRadius: 20,
-              background: '#111111', color: '#4ade80', border: '0.5px solid #A8E6DE' }}>
+              background: 'transparent', color: '#4ade80', border: '0.5px solid #A8E6DE' }}>
               Live
             </span>
           </div>

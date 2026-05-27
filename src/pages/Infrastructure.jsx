@@ -72,7 +72,7 @@ function CertPill({ cert }) {
       )}
       {cert.auto_renew_enabled && (
         <span style={{ fontSize:9, fontWeight:600, padding:'1px 5px', borderRadius:4,
-          background:'#111111', color:'#ffffff', flexShrink:0 }}>AUTO</span>
+          background:'transparent', color:'#ffffff', flexShrink:0 }}>AUTO</span>
       )}
     </div>
   )
@@ -135,7 +135,7 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
     }}>
       {/* Banner */}
       <div style={{
-        padding: '12px 20px', background: '#000000',
+        padding: '12px 20px', background: 'transparent',
         borderBottom: '1px solid #e8edf2',
         display: 'flex', alignItems: 'center', gap: 8,
       }}>
@@ -271,7 +271,7 @@ function InstallModal({ onClose }) {
 
             </div>
           ))}
-          <div style={{ background:'#111111', border:'0.5px solid #A8E6DE', borderRadius:7, padding:'10px 12px' }}>
+          <div style={{ background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:7, padding:'10px 12px' }}>
             <div style={{ fontSize:11, color:'#ffffff', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and appears in this list within 1–2 minutes.
             </div>

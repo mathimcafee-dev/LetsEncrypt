@@ -200,7 +200,7 @@ function InstallModal({ onClose }) {
           <CmdBlock cmd={cmd1} id="install"/>
           <div style={{ fontSize:11, fontWeight:500, color:'rgba(255,255,255,0.6)', margin:'14px 0 8px' }}>2. Verify it's running</div>
           <CmdBlock cmd={cmd2} id="verify"/>
-          <div style={{ background:'#111111', border:'0.5px solid #A8E6DE', borderRadius:6, padding:'10px 12px', marginTop:14 }}>
+          <div style={{ background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:6, padding:'10px 12px', marginTop:14 }}>
             <div style={{ fontSize:11, color:'#ffffff', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and reports its status here. It will appear in this list within 1–2 minutes of installation.
             </div>

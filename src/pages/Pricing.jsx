@@ -1,18 +1,18 @@
 import { useState } from 'react'
 
-const F    = "'Inter',system-ui,sans-serif"
+const F    = "'Montserrat',system-ui,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
-const BG   = '#0d2b2b'
-const CARD = '#1a4040'
-const CARD2= '#0f3535'
-const TEAL = '#2dd4bf'
+const BG   = 'transparent'
+const CARD = '#220808'
+const CARD2= '#220808'
+const TEAL = '#c0392b'
 const TEALH= '#14b8a6'
 const CORAL= '#ff6b5b'
-const INK  = '#e8f5f4'
+const INK = '#f0ede8'
 const BODY = 'rgba(232,245,244,0.65)'
 const MUTED= 'rgba(232,245,244,0.35)'
-const LINE = 'rgba(45,212,191,0.15)'
-const LINE2= 'rgba(45,212,191,0.28)'
+const LINE = 'rgba(192,57,43,0.2)'
+const LINE2= 'rgba(192,57,43,0.2)'
 const GREEN= '#4ade80'
 const AMBER= '#fbbf24'
 
@@ -27,7 +27,7 @@ function Tick({ color=TEAL }) {
 function Cross() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style={{flexShrink:0,marginTop:1}}>
-      <circle cx="12" cy="12" r="11" fill="rgba(45,212,191,0.04)"/>
+      <circle cx="12" cy="12" r="11" fill="rgba(192,57,43,0.04)"/>
       <path d="M8 8l8 8M16 8l-8 8" stroke="rgba(232,245,244,0.18)" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   )
@@ -48,7 +48,7 @@ function FAQ({ q, a }) {
 const PLANS = [
   {
     key:'starter', name:'Starter', price:'$5', per:'/month',
-    color:TEAL, glow:'rgba(45,212,191,0.15)', highlight:false,
+    color:TEAL, glow:'rgba(192,57,43,0.15)', highlight:false,
     cta:'Get started', badge:null,
     sub:'Perfect for individuals & small teams',
     certNote:'+ SSL certificates billed by usage',
@@ -173,7 +173,7 @@ export default function Pricing({ nav }) {
 
   return (
     <div style={{background:BG,minHeight:'100vh',color:INK,fontFamily:F}}>
-      <style>{`*{box-sizing:border-box}::selection{background:rgba(45,212,191,0.2);color:${TEAL}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
+      <style>{`*{box-sizing:border-box}::selection{background:rgba(192,57,43,0.2);color:${TEAL}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       <div style={{maxWidth:1080,margin:'0 auto',padding:`clamp(48px,8vw,80px) ${P} 100px`}}>
 
@@ -267,7 +267,7 @@ export default function Pricing({ nav }) {
           <button onClick={() => setShowComp(v=>!v)}
             style={{background:'transparent',border:`1px solid ${LINE2}`,color:TEAL,
               borderRadius:8,padding:'10px 24px',fontSize:13,cursor:'pointer',fontFamily:F,transition:'all .15s'}}
-            onMouseEnter={e=>e.currentTarget.style.background='rgba(45,212,191,0.08)'}
+            onMouseEnter={e=>e.currentTarget.style.background='rgba(192,57,43,0.08)'}
             onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
             {showComp ? '▲ Hide full comparison' : '▼ Full feature comparison'}
           </button>
@@ -287,7 +287,7 @@ export default function Pricing({ nav }) {
             </div>
             {FEATURES.map(sec => (
               <div key={sec.section}>
-                <div style={{padding:'9px 24px',background:'rgba(45,212,191,0.04)',borderTop:`1px solid ${LINE}`}}>
+                <div style={{padding:'9px 24px',background:'rgba(192,57,43,0.04)',borderTop:`1px solid ${LINE}`}}>
                   <span style={{fontSize:10,fontWeight:700,color:TEAL,textTransform:'uppercase',
                     letterSpacing:'1px',fontFamily:MONO}}>{sec.section}</span>
                 </div>
@@ -296,7 +296,7 @@ export default function Pricing({ nav }) {
                     style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr',
                       padding:'11px 24px',alignItems:'center',
                       borderBottom:i<sec.rows.length-1?`1px solid ${LINE}`:'none',transition:'background .1s'}}
-                    onMouseEnter={e=>e.currentTarget.style.background='rgba(45,212,191,0.04)'}
+                    onMouseEnter={e=>e.currentTarget.style.background='rgba(192,57,43,0.04)'}
                     onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
                     <span style={{fontSize:12,color:BODY,lineHeight:1.4}}>{row.label}</span>
                     {[['s',TEAL],['p',CORAL],['r',AMBER]].map(([k,c]) => (
@@ -314,7 +314,7 @@ export default function Pricing({ nav }) {
 
         {/* ── SSL USAGE NOTE ── */}
         <div style={{border:`1px solid ${LINE}`,borderRadius:12,padding:'28px 32px',marginBottom:72,
-          background:'rgba(45,212,191,0.04)',textAlign:'center'}}>
+          background:'rgba(192,57,43,0.04)',textAlign:'center'}}>
           <div style={{fontSize:10,fontWeight:700,color:TEAL,letterSpacing:'2px',
             textTransform:'uppercase',marginBottom:12,fontFamily:MONO}}>Certificate billing</div>
           <h3 style={{fontSize:20,fontWeight:700,color:INK,marginBottom:12,letterSpacing:'-0.3px'}}>
@@ -364,7 +364,7 @@ export default function Pricing({ nav }) {
             ].map((item, i) => (
               <div key={item.name} style={{padding:'28px 24px',
                 borderLeft:i>0?`1px solid ${LINE}`:'none',
-                background:item.hi?'rgba(45,212,191,0.04)':'transparent'}}>
+                background:item.hi?'rgba(192,57,43,0.04)':'transparent'}}>
                 <div style={{fontSize:10,fontWeight:700,color:item.color,letterSpacing:'0.5px',marginBottom:8,fontFamily:MONO}}>{item.name}</div>
                 <div style={{fontSize:30,fontWeight:900,color:item.color,letterSpacing:'-1px',marginBottom:3,lineHeight:1}}>{item.price}</div>
                 <div style={{fontSize:11,color:MUTED,marginBottom:18,fontFamily:MONO}}>{item.sub}</div>
@@ -392,7 +392,7 @@ export default function Pricing({ nav }) {
         <div style={{border:`1px solid ${LINE2}`,borderRadius:14,
           padding:'clamp(40px,6vw,60px) clamp(24px,5vw,48px)',
           textAlign:'center',
-          background:`linear-gradient(135deg,rgba(45,212,191,0.07) 0%,rgba(255,107,91,0.05) 100%)`}}>
+          background:`linear-gradient(135deg,rgba(192,57,43,0.07) 0%,rgba(255,107,91,0.05) 100%)`}}>
           <h2 style={{fontSize:'clamp(24px,3.5vw,42px)',fontWeight:900,letterSpacing:'-1px',marginBottom:14}}>
             Start managing your certificates today.
           </h2>
@@ -403,7 +403,7 @@ export default function Pricing({ nav }) {
             <button onClick={() => nav('/auth')}
               style={{background:`linear-gradient(135deg,${TEAL},${TEALH})`,border:'none',borderRadius:8,
                 color:'#fff',fontSize:15,fontWeight:700,padding:'14px 32px',cursor:'pointer',fontFamily:F,
-                boxShadow:`0 4px 24px rgba(45,212,191,0.25)`}}>
+                boxShadow:`0 4px 24px rgba(192,57,43,0.25)`}}>
               Get started →
             </button>
             <button onClick={() => window.location.href='mailto:mathimcafee@gmail.com'}

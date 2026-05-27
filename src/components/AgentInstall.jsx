@@ -264,7 +264,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                               <RefreshCw size={10} color="#1A7A72" style={{ animation:'spin 1s linear infinite' }}/>
                             </div>
                           ) : (
-                            <div style={{ width:20, height:20, borderRadius:'50%', background:'#f1f5f9',
+                            <div style={{ width:20, height:20, borderRadius:'50%', background:'transparent',
                               border:'1.5px solid #e2e8f0', display:'flex', alignItems:'center', justifyContent:'center' }}>
                               <span style={{ fontSize:9, fontWeight:700, color:'#94a3b8' }}>{i+1}</span>
                             </div>
@@ -385,7 +385,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                     />
                   </div>
 
-                  <div style={{ background:'#0f172a', borderRadius:8, overflow:'hidden', marginBottom:14 }}>
+                  <div style={{ background:'transparent', borderRadius:8, overflow:'hidden', marginBottom:14 }}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center',
                       padding:'8px 12px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
                       <span style={{ fontSize:10, color:'#475569' }}>bash · paste on your server as root</span>

@@ -503,7 +503,7 @@ function CTWatchTab({ tok, user }) {
       </div>
 
       {/* Explanation */}
-      <div style={{ background:'#111111', border:'0.5px solid #A8E6DE', borderRadius:10,
+      <div style={{ background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:10,
         padding:'12px 16px', marginBottom:16, display:'flex', gap:10 }}>
         <ShieldAlert size={16} color="#0d9488" style={{ flexShrink:0, marginTop:1 }}/>
         <div style={{ fontSize:12, color:'#0F6E56', lineHeight:1.6 }}>
@@ -598,7 +598,7 @@ function CTWatchTab({ tok, user }) {
                       <div style={{ display:'flex', gap:6 }}>
                         <button onClick={() => mark(s.id,'known')} disabled={marking===s.id}
                           style={{ fontSize:11, padding:'5px 12px', borderRadius:6,
-                            border:'0.5px solid #A8E6DE', background:'#111111',
+                            border:'0.5px solid #A8E6DE', background:'transparent',
                             cursor:'pointer', fontFamily:'inherit', color:'#0F6E56', fontWeight:500 }}>
                           Mark as safe
                         </button>

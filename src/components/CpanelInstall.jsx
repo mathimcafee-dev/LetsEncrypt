@@ -164,7 +164,7 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
           <button onClick={onClose} style={{background:'none',border:'none',cursor:'pointer',color:'#94a3b8',padding:4}}><X size={16}/></button>
         </div>
         <div style={{padding:'20px 24px 24px'}}>
-          <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'10px 14px',marginBottom:20,display:'flex',alignItems:'center',gap:12}}>
+          <div style={{background:'transparent',border:'1px solid #e2e8f0',borderRadius:8,padding:'10px 14px',marginBottom:20,display:'flex',alignItems:'center',gap:12}}>
             <CheckCircle size={14} color='#16a34a'/>
             <div><div style={{fontSize:12,fontWeight:600,color:'#111827'}}>Active Paid SSL Certificate</div><div style={{fontSize:11,color:'#6b7280'}}>Fullchain ready | Private key in CertVault | Expires {expStr}</div></div>
           </div>
@@ -194,7 +194,7 @@ export default function CpanelInstall({cert,userId,onClose,onSuccess}) {
                 <button onClick={()=>{setUseNew(true);setSelectedServer(null)}} style={{textAlign:'left',padding:'10px 12px',borderRadius:7,cursor:'pointer',fontFamily:'inherit',border:useNew?'2px solid #2563eb':'1px dashed #cbd5e1',background:useNew?'#E8F8F6':'#f8fafc',color:'#374151',fontSize:12,fontWeight:500}}>+ Add new server</button>
               </div>
             </div>}
-            {(useNew||savedServers.length===0) && <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:8,padding:'16px',marginTop:4}}>
+            {(useNew||savedServers.length===0) && <div style={{background:'transparent',border:'1px solid #e2e8f0',borderRadius:8,padding:'16px',marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,color:'#374151',marginBottom:14,textTransform:'uppercase',letterSpacing:'0.4px'}}>New cPanel Server</div>
               <Field label='Domain or Hostname' required hint='Enter your domain or cPanel hostname. SSLVault auto-detects the correct server.'>
                 <input value={hostname} onChange={e=>setHostname(e.target.value)} placeholder='freecerts.site or server11.host.com' style={inp}/>

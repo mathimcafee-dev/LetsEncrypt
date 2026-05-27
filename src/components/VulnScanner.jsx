@@ -65,7 +65,7 @@ function CipherBar({ label, count, total, color }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
       <span style={{ fontSize:12, color:'#64748b', width:60 }}>{label}</span>
-      <div style={{ flex:1, height:5, borderRadius:3, background:'#f1f5f9', overflow:'hidden' }}>
+      <div style={{ flex:1, height:5, borderRadius:3, background:'transparent', overflow:'hidden' }}>
         <div style={{ width:`${pct}%`, height:'100%', background:color, borderRadius:3,
           transition:'width 0.6s cubic-bezier(0.16,1,0.3,1)' }}/>
       </div>
@@ -120,7 +120,7 @@ export default function VulnScanner({ domain, session }) {
             </button>
           )}
           <button onClick={scan} disabled={loading}
-            style={{ display:'flex', alignItems:'center', gap:5, background:'#0a0a0a',
+            style={{ display:'flex', alignItems:'center', gap:5, background:'transparent',
               color:'white', border:'none', borderRadius:5, padding:'6px 12px',
               fontSize:12, fontWeight:600, cursor:loading?'not-allowed':'pointer',
               opacity:loading?0.6:1, fontFamily:'inherit' }}>

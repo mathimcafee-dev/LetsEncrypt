@@ -674,7 +674,7 @@ export default function CertVault({ nav }) {
         </div>
 
         {/* Security strip */}
-        <div style={{ background:'#111111', border:'0.5px solid #A8E6DE',
+        <div style={{ background:'transparent', border:'0.5px solid #A8E6DE',
           borderRadius:9, padding:'12px 16px', marginBottom:20,
           display:'flex', alignItems:'center', gap:10 }}>
           <Lock size={13} color="#f07059" style={{ flexShrink:0 }}/>
@@ -712,7 +712,7 @@ export default function CertVault({ nav }) {
           </div>
         )}
         {rotateSuccess && (
-          <div style={{ background:'#111111', border:'0.5px solid #A8E6DE', borderRadius:8,
+          <div style={{ background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:8,
             padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#ffffff' }}>
             <CheckCircle size={13} style={{ flexShrink:0 }}/>
@@ -867,7 +867,7 @@ export default function CertVault({ nav }) {
                 </div>
               </div>
               <div style={{ padding:'16px 20px' }}>
-                <div style={{ background:'#111111', border:'0.5px solid #A8E6DE', borderRadius:8,
+                <div style={{ background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:8,
                   padding:'10px 12px', marginBottom:14, fontSize:11, color:'rgba(255,255,255,0.7)' }}>
                   <CheckCircle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
                   <strong>Zero downtime</strong> — new cert installs before old key is archived.

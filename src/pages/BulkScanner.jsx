@@ -102,7 +102,7 @@ export default function BulkScanner({ nav }) {
 
         {/* Hero */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, background: '#111111',
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 14px' }}>
             <Scan size={22} color="#16a34a" />

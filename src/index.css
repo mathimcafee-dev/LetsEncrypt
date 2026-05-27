@@ -39,7 +39,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--bg);
+  background: radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%);
   color: var(--text);
   font-family: var(--font);
   min-height: 100vh;
@@ -198,7 +198,7 @@ nav {
 }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-track { background: radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%); }
 ::-webkit-scrollbar-thumb { background: rgba(192,57,43,0.3); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(192,57,43,0.5); }
 

@@ -62,7 +62,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
   const OverallIcon   = allHealthy ? CheckCircle : hasIssues ? XCircle : AlertTriangle
 
   return (
-    <div style={{ minHeight: '100vh', background: '#000000' }}>
+    <div style={{ minHeight: '100vh', background: 'transparent' }}>
       {/* Nav */}
       <div style={{ background: '#fff', borderBottom: '0.5px solid #99f6e4',
         padding: '0 24px', height: 52, display: 'flex', alignItems: 'center',
@@ -96,7 +96,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
             {/* Header */}
             <div style={{ marginBottom: 28 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: '#111111',
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Shield size={20} color="#16a34a" />
                 </div>

@@ -49,7 +49,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
   const exp    = new Date(Date.now() + years * 365 * 86400000).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
   const name   = [fn, ln].filter(Boolean).join(' ') || 'Your Name'
   return (
-    <div style={{ background: '#000000', border: '1px solid rgba(14,127,192,0.3)',
+    <div style={{ background: 'transparent', border: '1px solid rgba(14,127,192,0.3)',
       borderRadius: 10, overflow: 'hidden', fontFamily: 'var(--v2-font-mono)' }}>
       <div style={{ background: 'linear-gradient(135deg, #0d9488 0%, #1a56db 100%)',
         padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -275,7 +275,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   if (authLoading) return null
   if (!user) return (
-    <div style={{ minHeight: '100vh', background: '#000000', display: 'flex',
+    <div style={{ minHeight: '100vh', background: 'transparent', display: 'flex',
       alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ textAlign: 'center', maxWidth: 320 }}>
         <div style={{ width: 56, height: 56, background: 'rgba(14,127,192,0.15)',
@@ -301,7 +301,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   // ── FORM ────────────────────────────────────────────────────────────────────
   if (step === 'form') return (
-    <div style={{ minHeight: embedded ? 'auto' : '100vh', background: '#050a14' }}>
+    <div style={{ minHeight: embedded ? 'auto' : '100vh', background: 'transparent' }}>
 
       {/* Top bar — hidden when embedded inside CLM */}
       <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
@@ -482,7 +482,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <CertPreview domain={clean(domain)} fn={fn} ln={ln} em={em} product={product} years={years}/>
 
-          <div style={{ background: '#111827', border: '0.5px solid rgba(255,255,255,0.06)',
+          <div style={{ background: 'transparent', border: '0.5px solid rgba(255,255,255,0.06)',
             borderRadius: 10, overflow: 'hidden' }}>
             <div style={{ padding: '12px 18px', borderBottom: '0.5px solid rgba(0,0,0,0.04)' }}>
               <div style={{ fontSize:11, fontWeight: 700, color: '#4b5563',
@@ -528,7 +528,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   // ── DV ──────────────────────────────────────────────────────────────────────
   if (step === 'dv' && ord) return (
-    <div style={{ minHeight: '100vh', background: '#050a14' }}>
+    <div style={{ minHeight: '100vh', background: 'transparent' }}>
       <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
         padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 10 }}>
         <Shield size={16} color="#0d9488"/>
@@ -569,9 +569,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         </div>
 
         {/* DNS record card */}
-        <div style={{ background: '#000000', border: '0.5px solid rgba(255,255,255,0.08)',
+        <div style={{ background: 'transparent', border: '0.5px solid rgba(255,255,255,0.08)',
           borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
-          <div style={{ background: '#111827', padding: '10px 16px',
+          <div style={{ background: 'transparent', padding: '10px 16px',
             display: 'flex', alignItems: 'center', gap: 6, borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
             {['#ff5f56','#ffbd2e','#27c93f'].map(c => (
               <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, display: 'block' }}/>
@@ -683,7 +683,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   // ── DONE ────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight: '100vh', background: '#050a14', display: 'flex',
+    <div style={{ minHeight: '100vh', background: 'transparent', display: 'flex',
       alignItems: 'center', justifyContent: 'center', padding: 32 }}>
       <div style={{ maxWidth: 500, width: '100%', textAlign: 'center' }}>
         <div style={{ width: 72, height: 72, borderRadius: '50%',

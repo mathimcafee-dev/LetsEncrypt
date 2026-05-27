@@ -437,7 +437,7 @@ function RapidSSLTab({ tok, nav }) {
   return (
     <div>
       {/* Banner */}
-      <div style={{ background:'#111111', border:'0.5px solid #A8E6DE', borderRadius:10,
+      <div style={{ background:'transparent', border:'0.5px solid #A8E6DE', borderRadius:10,
         padding:'12px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
         <div>
           <div style={{ fontSize:13, fontWeight:600, color:'#0F6E56' }}>RapidSSL — SSLVault native CA</div>
@@ -839,7 +839,7 @@ function DigiCertTab({ tok, nav }) {
   return (
     <div>
       {/* Connection banner */}
-      <div style={{ background: '#111111', border: '0.5px solid #A8E6DE', borderRadius: 8,
+      <div style={{ background: 'transparent', border: '0.5px solid #A8E6DE', borderRadius: 8,
         padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ffffff', display: 'inline-block', boxShadow: '0 0 0 3px #A8E6DE' }}/>
@@ -853,7 +853,7 @@ function DigiCertTab({ tok, nav }) {
             {loadingPf ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync from DigiCert</>}
           </button>
           <button onClick={() => window.open('https://accounts.digicert.com/', '_blank')}
-            style={{ fontSize:11, padding: '4px 10px', borderRadius: 6, border: '0.5px solid #A8E6DE', background: '#000000', color: '#ffffff', cursor: 'pointer', fontWeight: 500 }}>
+            style={{ fontSize:11, padding: '4px 10px', borderRadius: 6, border: '0.5px solid #A8E6DE', background: 'transparent', color: '#ffffff', cursor: 'pointer', fontWeight: 500 }}>
             Open CertCentral ↗
           </button>
           <button className="v2-btn v2-btn-sm v2-btn-danger" onClick={disconnect}>Disconnect</button>
@@ -992,7 +992,7 @@ function DigiCertTab({ tok, nav }) {
                     ↻ SSLVault
                   </button>
                   <button onClick={() => window.open('https://accounts.digicert.com/', '_blank')}
-                    style={{ fontSize:10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid #A8E6DE', background: '#111111', color: '#ffffff', cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                    style={{ fontSize:10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid #A8E6DE', background: 'transparent', color: '#ffffff', cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     DC ↗
                   </button>
                   <button onClick={() => setSelected(c)}
@@ -1490,7 +1490,7 @@ function ConsolidationTab({ tok, nav }) {
 
       {/* Savings summary */}
       {totalSaving > 0 && (
-        <div style={{ background: '#111111', border: '0.5px solid #A8E6DE', borderRadius: 10,
+        <div style={{ background: 'transparent', border: '0.5px solid #A8E6DE', borderRadius: 10,
           padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ width: 36, height: 36, borderRadius: 9, background: '#dcfce7',
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1575,7 +1575,7 @@ function ConsolidationTab({ tok, nav }) {
                     <div style={{ display: 'flex', gap: 4 }}>
                       <button className="v2-btn v2-btn-sm"
                         onClick={() => { sessionStorage.setItem('prefill_domain', opp.domain); nav('/buy') }}
-                        style={{ fontSize:10, padding: '3px 8px', background: '#111111',
+                        style={{ fontSize:10, padding: '3px 8px', background: 'transparent',
                           color: '#4ade80', borderColor: '#A8E6DE',
                           display: 'flex', alignItems: 'center', gap: 3 }}>
                         <Zap size={9}/> Migrate
