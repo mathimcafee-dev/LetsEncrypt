@@ -8,16 +8,16 @@ const MONTHS   = ['January','February','March','April','May','June','July','Augu
 const MONTHS_S = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const DAYS_S   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
-const ACCENT = '#ffffff'
+const ACCENT = '#f0ede8'
 const RED    = '#f87171'
-const AMBER  = '#ffffff'
+const AMBER  = '#f0ede8'
 const GREEN  = '#4ade80'
 
 const STATUS = {
-  expired: { color: RED,   bg: '#fef2f2', border: '#fca5a5', bar: RED,   text: '#f87171' },
-  warning: { color: AMBER, bg: 'rgba(239,68,68,0.08)', border: '#fcd34d', bar: AMBER, text: '#C45A4A' },
-  healthy: { color: GREEN, bg: '#111111', border: '#86efac', bar: GREEN, text: '#166534' },
-  today:   { color: ACCENT,bg: '#111111', border: '#93c5fd', bar: ACCENT,text: '#1e40af' },
+  expired: { color: RED,   bg: 'rgba(192,57,43,0.12)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#f87171' },
+  warning: { color: AMBER, bg: 'rgba(239,68,68,0.08)', border: '#fcd34d', bar: AMBER, text: '#e07060' },
+  healthy: { color: GREEN, bg: 'transparent', border: '#86efac', bar: GREEN, text: '#166534' },
+  today:   { color: ACCENT,bg: 'transparent', border: 'rgba(192,57,43,0.3)', bar: ACCENT,text: '#a93226' },
 }
 
 function daysUntil(iso) {
@@ -61,7 +61,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
         padding: '7px 7px 6px',
         background: hasCerts
           ? (st ? st.bg : 'var(--v2-surface)')
-          : isToday ? '#111111' : 'var(--v2-surface)',
+          : isToday ? 'transparent' : 'var(--v2-surface)',
         border: isSelected
           ? `2px solid ${accentColor || ACCENT}`
           : hasCerts
@@ -81,7 +81,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: isToday ? ACCENT : 'transparent',
         fontSize:11, fontWeight: hasCerts || isToday ? 700 : 400,
-        color: isToday ? '#fff' : hasCerts ? (st ? st.text : 'var(--v2-text)') : 'var(--v2-text-3)',
+        color: isToday ? '#f0ede8' : hasCerts ? (st ? st.text : 'var(--v2-text)') : 'var(--v2-text-3)',
       }}>
         {day}
       </div>
@@ -94,7 +94,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
           <div key={i} style={{
             fontSize:10, fontWeight: 600, padding: '2px 5px', borderRadius: 4,
             marginBottom: 2, lineHeight: 1.4,
-            background: css.bar, color: '#fff',
+            background: css.bar, color: '#f0ede8',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {c.domain.replace(/^www\./, '').replace(/^(.{12}).*/, '$1…')}
@@ -306,7 +306,7 @@ function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
               const key = d.toDateString()
               return (
                 <div key={di} onClick={() => showCerts&&setSelectedDate(selectedDate===key?null:key)}
-                  style={{ background: isToday?'#f0f7ff':'transparent',
+                  style={{ background: isToday?'rgba(30,0,0,0.4)':'transparent',
                     borderRight:'0.5px solid var(--v2-border)',
                     padding:3, cursor:showCerts?'pointer':'default' }}>
                   {showCerts && dc.slice(0,2).map((c,ci) => {
@@ -419,9 +419,9 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
                   {MONTHS_S[mi]}
                 </span>
                 <span style={{ fontSize:10, fontWeight:700, padding:'1px 7px', borderRadius:20,
-                  background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'#fef2f2':m.warning>0?'rgba(239,68,68,0.08)':'#111111',
+                  background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'rgba(192,57,43,0.12)':m.warning>0?'rgba(239,68,68,0.08)':'transparent',
                   color: m.certs.length===0 ? 'var(--v2-text-3)' : m.expired>0?RED:m.warning>0?AMBER:GREEN,
-                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'#fca5a5':m.warning>0?'#F2C4BC':'rgba(192,57,43,0.3)'}` }}>
+                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'rgba(239,83,80,0.3)':m.warning>0?'rgba(192,57,43,0.25)':'rgba(192,57,43,0.3)'}` }}>
                   {m.certs.length}
                 </span>
               </div>
@@ -575,10 +575,10 @@ export default function RenewalCalendar({ user }) {
         {/* Legend */}
         <div style={{ display:'flex', gap:14, marginBottom:14, flexWrap:'wrap' }}>
           {[
-            { label:'Expired',        color:RED,   bg:'#fef2f2', border:'#fca5a5' },
+            { label:'Expired',        color:RED,   bg:'rgba(192,57,43,0.12)', border:'rgba(239,83,80,0.3)' },
             { label:'Expiring ≤30d',  color:AMBER, bg:'rgba(239,68,68,0.08)', border:'#fcd34d' },
-            { label:'Healthy (>30d)', color:GREEN, bg:'#111111', border:'#86efac' },
-            { label:'Today',          color:ACCENT,bg:'#111111', border:'#93c5fd' },
+            { label:'Healthy (>30d)', color:GREEN, bg:'transparent', border:'#86efac' },
+            { label:'Today',          color:ACCENT,bg:'transparent', border:'rgba(192,57,43,0.3)' },
           ].map(({label,color,bg,border})=>(
             <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
               <div style={{ width:10,height:10,borderRadius:2,background:bg,border:`0.5px solid ${border}` }}/>

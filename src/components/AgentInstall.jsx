@@ -12,7 +12,7 @@ function CopyBtn({ text }) {
   }
   return (
     <button onClick={copy} style={{ background:'none', border:'0.5px solid #e8edf2', borderRadius:5,
-      cursor:'pointer', color: ok ? '#c0392b' : '#64748b', display:'flex', alignItems:'center',
+      cursor:'pointer', color: ok ? '#c0392b' : 'rgba(240,237,232,0.45)', display:'flex', alignItems:'center',
       gap:4, fontSize:11, padding:'3px 8px', fontFamily:'inherit' }}>
       {ok ? <><Check size={11}/> Copied</> : <><Copy size={11}/> Copy</>}
     </button>
@@ -187,12 +187,12 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
               <Server size={16} color="white"/>
             </div>
             <div>
-              <div style={{ fontSize:14, fontWeight:600, color:'#0a0a0a' }}>Install Certificate</div>
-              <div style={{ fontSize:11, color:'#a3a3a3', fontFamily:'monospace' }}>{cert.domain}</div>
+              <div style={{ fontSize:14, fontWeight:600, color:'transparent' }}>Install Certificate</div>
+              <div style={{ fontSize:11, color:'rgba(240,237,232,0.45)', fontFamily:'monospace' }}>{cert.domain}</div>
             </div>
           </div>
           <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer',
-            color:'#a3a3a3', fontSize:20, lineHeight:1, padding:'2px 6px' }}>×</button>
+            color:'rgba(240,237,232,0.45)', fontSize:20, lineHeight:1, padding:'2px 6px' }}>×</button>
         </div>
 
         {/* Host type tabs */}
@@ -207,9 +207,9 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
               background: hostType===t.key ? 'rgba(192,57,43,0.1)' : 'white',
               cursor:'pointer', textAlign:'left', fontFamily:'inherit'
             }}>
-              <div style={{ color: hostType===t.key ? '#c0392b' : '#94a3b8', marginBottom:6 }}>{t.icon}</div>
-              <div style={{ fontSize:13, fontWeight:600, color: hostType===t.key ? '#c0392b' : '#0a0a0a' }}>{t.label}</div>
-              <div style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>{t.sub}</div>
+              <div style={{ color: hostType===t.key ? '#c0392b' : 'rgba(240,237,232,0.5)', marginBottom:6 }}>{t.icon}</div>
+              <div style={{ fontSize:13, fontWeight:600, color: hostType===t.key ? '#c0392b' : 'transparent' }}>{t.label}</div>
+              <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', marginTop:2 }}>{t.sub}</div>
             </button>
           ))}
         </div>
@@ -266,16 +266,16 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                           ) : (
                             <div style={{ width:20, height:20, borderRadius:'50%', background:'transparent',
                               border:'1.5px solid #e2e8f0', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                              <span style={{ fontSize:9, fontWeight:700, color:'#94a3b8' }}>{i+1}</span>
+                              <span style={{ fontSize:9, fontWeight:700, color:'rgba(240,237,232,0.5)' }}>{i+1}</span>
                             </div>
                           )}
                         </div>
                         <div>
                           <div style={{ fontSize:13, fontWeight: step.done || step.active ? 600 : 400,
-                            color: step.done ? '#0a0a0a' : step.active ? '#1d4ed8' : '#94a3b8' }}>
+                            color: step.done ? 'transparent' : step.active ? '#a93226' : 'rgba(240,237,232,0.5)' }}>
                             {step.label}
                           </div>
-                          <div style={{ fontSize:11, color:'#94a3b8', fontFamily:'monospace', marginTop:2 }}>
+                          <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', fontFamily:'monospace', marginTop:2 }}>
                             {step.sub}
                           </div>
                         </div>
@@ -300,13 +300,13 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                   )}
 
                   {jobStatus === 'failed' && (
-                    <div style={{ background:'#fef2f2', border:'1px solid #fecaca', borderRadius:8,
+                    <div style={{ background:'rgba(192,57,43,0.12)', border:'1px solid #fecaca', borderRadius:8,
                       padding:'12px 14px', marginBottom:16 }}>
-                      <div style={{ fontSize:13, fontWeight:600, color:'#dc2626', marginBottom:4 }}>Installation failed</div>
+                      <div style={{ fontSize:13, fontWeight:600, color:'#c0392b', marginBottom:4 }}>Installation failed</div>
                       <div style={{ fontSize:12, color:'#7f1d1d', marginBottom:8 }}>
                         {jobError || 'Unknown error'}
                       </div>
-                      <div style={{ fontSize:11, fontFamily:'monospace', color:'#94a3b8' }}>
+                      <div style={{ fontSize:11, fontFamily:'monospace', color:'rgba(240,237,232,0.5)' }}>
                         Check logs: journalctl -u sslvault-agent -n 30
                       </div>
                     </div>
@@ -316,13 +316,13 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                     style={{ width:'100%', padding:'10px', fontSize:13, fontWeight:500, borderRadius:7,
                       border:'none', cursor:'pointer', fontFamily:'inherit',
                       background: jobStatus === 'success' ? '#c0392b' : 'rgba(192,57,43,0.1)',
-                      color: jobStatus === 'success' ? 'white' : '#374151' }}>
+                      color: jobStatus === 'success' ? 'white' : 'rgba(240,237,232,0.6)' }}>
                     {jobStatus === 'success' ? 'Done' : jobStatus === 'failed' ? 'Close' : 'Close (job continues in background)'}
                   </button>
                 </div>
               ) : agents.length > 0 ? (
                 <div>
-                  <div style={{ fontSize:12, fontWeight:500, color:'#525252', marginBottom:10 }}>
+                  <div style={{ fontSize:12, fontWeight:500, color:'rgba(240,237,232,0.5)', marginBottom:10 }}>
                     Select agent to install on:
                   </div>
                   {agents.map(a => {
@@ -337,23 +337,23 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                           borderRadius:7, marginBottom:8, cursor:'pointer',
                           background: selectedAgent===a.id ? 'rgba(192,57,43,0.1)' : 'white' }}>
                         <div style={{ width:8, height:8, borderRadius:'50%', flexShrink:0,
-                          background: isActive ? '#c0392b' : '#e5e7eb' }}/>
+                          background: isActive ? '#c0392b' : 'rgba(192,57,43,0.15)' }}/>
                         <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontSize:13, fontWeight:500, color:'#0a0a0a',
+                          <div style={{ fontSize:13, fontWeight:500, color:'transparent',
                             whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
                             {a.hostname || a.nickname || 'Agent ' + a.id.slice(0,8)}
                           </div>
-                          <div style={{ fontSize:11, color:'#94a3b8' }}>
+                          <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)' }}>
                             {a.web_server || 'unknown'} · {isActive ? `active · ${mins}m ago` : `offline · ${mins}m ago`}
                           </div>
                         </div>
                       </div>
                     )
                   })}
-                  {error && <div style={{ fontSize:12, color:'#dc2626', marginBottom:10 }}>{error}</div>}
+                  {error && <div style={{ fontSize:12, color:'#c0392b', marginBottom:10 }}>{error}</div>}
                   <button onClick={dispatchToAgent} disabled={!selectedAgent || dispatching}
-                    style={{ width:'100%', background: selectedAgent ? '#c0392b' : '#e5e7eb',
-                      color: selectedAgent ? 'white' : '#94a3b8', border:'none', borderRadius:7,
+                    style={{ width:'100%', background: selectedAgent ? '#c0392b' : 'rgba(192,57,43,0.15)',
+                      color: selectedAgent ? 'white' : 'rgba(240,237,232,0.5)', border:'none', borderRadius:7,
                       padding:'10px', fontSize:13, fontWeight:500, cursor: selectedAgent ? 'pointer' : 'default',
                       fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
                     {dispatching
@@ -371,7 +371,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
 
                   {/* Nickname field — lets user label the server */}
                   <div style={{ marginBottom:10 }}>
-                    <label style={{ fontSize:11, fontWeight:500, color:'#525252', display:'block', marginBottom:4 }}>
+                    <label style={{ fontSize:11, fontWeight:500, color:'rgba(240,237,232,0.5)', display:'block', marginBottom:4 }}>
                       Server label (shows in your dashboard)
                     </label>
                     <input
@@ -391,7 +391,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                       <span style={{ fontSize:10, color:'#475569' }}>bash · paste on your server as root</span>
                       {pairingCmd && <CopyBtn text={pairingCmd}/>}
                     </div>
-                    <pre style={{ margin:0, padding:'12px 14px', color:'#e2e8f0', fontSize:11,
+                    <pre style={{ margin:0, padding:'12px 14px', color:'rgba(192,57,43,0.15)', fontSize:11,
                       fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all',
                       maxHeight:160, overflow:'auto' }}>
                       {pairingLoading
@@ -410,8 +410,8 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                     </button>
                   )}
 
-                  <div style={{ fontSize:11, color:'#94a3b8', lineHeight:1.7, marginTop:12 }}>
-                    After install, this dialog will auto-detect your server. Then click <strong style={{ color:'#525252' }}>Install on this server</strong> to deploy the certificate.
+                  <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', lineHeight:1.7, marginTop:12 }}>
+                    After install, this dialog will auto-detect your server. Then click <strong style={{ color:'rgba(240,237,232,0.5)' }}>Install on this server</strong> to deploy the certificate.
                     The token in the command is single-use and tied to your account.
                   </div>
                 </div>

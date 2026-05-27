@@ -36,13 +36,13 @@ function fmtDate(iso) {
 }
 
 function gradeStyle(g) {
-  if (!g || g==='F') return { color:'#A32D2D', bg:'#FCEBEB', border:'#F7C1C1' }
-  if (g==='D')       return { color:'#854F0B', bg:'#FAEEDA', border:'#F0C490' }
-  if (g==='C')       return { color:'#854F0B', bg:'#FAEEDA', border:'#F0C490' }
-  if (g==='B')       return { color:'#a93226', bg:'#111111', border:'rgba(192,57,43,0.3)' }
-  if (g==='A')       return { color:'#a93226', bg:'#111111', border:'rgba(192,57,43,0.3)' }
-  if (g==='A+')      return { color:'#ffffff', bg:'#111111', border:'#e07060' }
-  return { color:'#6B7280', bg:'var(--v2-bg)', border:'var(--v2-border)' }
+  if (!g || g==='F') return { color:'#a93226', bg:'rgba(192,57,43,0.1)', border:'rgba(192,57,43,0.2)' }
+  if (g==='D')       return { color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
+  if (g==='C')       return { color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
+  if (g==='B')       return { color:'#a93226', bg:'transparent', border:'rgba(192,57,43,0.3)' }
+  if (g==='A')       return { color:'#a93226', bg:'transparent', border:'rgba(192,57,43,0.3)' }
+  if (g==='A+')      return { color:'#f0ede8', bg:'transparent', border:'#e07060' }
+  return { color:'rgba(240,237,232,0.45)', bg:'var(--v2-bg)', border:'var(--v2-border)' }
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
@@ -63,15 +63,15 @@ function GradeBadge({ grade, size = 44 }) {
 function Tick({ ok, label }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-      {ok ? <CheckCircle size={11} color="#c0392b"/> : <XCircle size={11} color="#A32D2D"/>}
-      <span style={{ fontSize:11, color:ok?'#ffffff':'#A32D2D' }}>{label}</span>
+      {ok ? <CheckCircle size={11} color="#c0392b"/> : <XCircle size={11} color="#a93226"/>}
+      <span style={{ fontSize:11, color:ok?'#f0ede8':'#a93226' }}>{label}</span>
     </div>
   )
 }
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
-  const color = pct>=80?'#ffffff':pct>=60?'#a93226':pct>=50?'#854F0B':'#A32D2D'
+  const color = pct>=80?'#f0ede8':pct>=60?'#a93226':pct>=50?'#c0392b':'#a93226'
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
       <div style={{ flex:1, height:4, background:'var(--v2-border)', borderRadius:2, overflow:'hidden' }}>
@@ -152,8 +152,8 @@ function OverviewTab({ user }) {
   const { total=0, active=0, expiring30=0, expiring7=0, thisMonth=0,
           grades={}, bySource={}, deployed=0, keyVault=0 } = stats || {}
 
-  const gradeEntries = [['A+','#ffffff'],['A','#a93226'],['B','#a93226'],
-    ['C','#854F0B'],['D','#854F0B'],['F','#A32D2D'],['—','#9CA3AF']]
+  const gradeEntries = [['A+','#f0ede8'],['A','#a93226'],['B','#a93226'],
+    ['C','#c0392b'],['D','#c0392b'],['F','#a93226'],['—','rgba(240,237,232,0.45)']]
   const maxGrade = Math.max(...gradeEntries.map(([g]) => grades[g]||0), 1)
 
   return (
@@ -161,11 +161,11 @@ function OverviewTab({ user }) {
       {/* KPI strip */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Active certs" val={active} sub={`of ${total} total`}
-          color={active>0?'#ffffff':'var(--v2-text-1)'}/>
+          color={active>0?'#f0ede8':'var(--v2-text-1)'}/>
         <StatCard label="Expiring ≤ 30d" val={expiring30} sub={expiring7>0?`${expiring7} within 7 days`:'none critical'}
-          color={expiring30>0?'#854F0B':'var(--v2-text-1)'} bg={expiring30>0?'#FAEEDA':undefined}/>
+          color={expiring30>0?'#c0392b':'var(--v2-text-1)'} bg={expiring30>0?'rgba(230,126,34,0.12)':undefined}/>
         <StatCard label="Deployed to servers" val={deployed} sub="agent or cPanel"
-          color={deployed>0?'#ffffff':'var(--v2-text-1)'}/>
+          color={deployed>0?'#f0ede8':'var(--v2-text-1)'}/>
         <StatCard label="Keys in vault" val={keyVault} sub="AES-256 encrypted"
           color="#c0392b"/>
       </div>
@@ -215,7 +215,7 @@ function OverviewTab({ user }) {
                 <span style={{ fontSize:12, color:'var(--v2-text-1)', fontWeight:500, textTransform:'capitalize' }}>
                   {src === 'gogetssl' ? 'RapidSSL (SSLVault)' : src}
                 </span>
-                <span style={{ fontSize:13, fontWeight:700, color:'#ffffff', fontFamily:'monospace' }}>{count}</span>
+                <span style={{ fontSize:13, fontWeight:700, color:'#f0ede8', fontFamily:'monospace' }}>{count}</span>
               </div>
             ))}
           </div>
@@ -225,7 +225,7 @@ function OverviewTab({ user }) {
               letterSpacing:'0.4px', marginBottom:10 }}>Activity</div>
             <div style={{ display:'flex', gap:16 }}>
               <div>
-                <div style={{ fontSize:20, fontWeight:700, color:'#ffffff', fontFamily:'monospace' }}>{thisMonth}</div>
+                <div style={{ fontSize:20, fontWeight:700, color:'#f0ede8', fontFamily:'monospace' }}>{thisMonth}</div>
                 <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>orders this month</div>
               </div>
               <div>
@@ -245,9 +245,9 @@ function OverviewTab({ user }) {
             letterSpacing:'0.4px', marginBottom:12 }}>Fleet health</div>
           <div style={{ display:'flex', height:12, borderRadius:8, overflow:'hidden', gap:1 }}>
             {[
-              { n:expiring7,             color:'#A32D2D', label:'Critical' },
-              { n:expiring30-expiring7,  color:'#854F0B', label:'Expiring' },
-              { n:active-expiring30,     color:'#ffffff', label:'Healthy' },
+              { n:expiring7,             color:'#a93226', label:'Critical' },
+              { n:expiring30-expiring7,  color:'#c0392b', label:'Expiring' },
+              { n:active-expiring30,     color:'#f0ede8', label:'Healthy' },
             ].map(({ n, color, label }) => n > 0 && (
               <div key={label} title={`${label}: ${n}`}
                 style={{ flex:n, background:color, minWidth:4, transition:'flex .6s' }}/>
@@ -255,9 +255,9 @@ function OverviewTab({ user }) {
           </div>
           <div style={{ display:'flex', gap:16, marginTop:8 }}>
             {[
-              { label:'Critical (≤7d)', n:expiring7,  color:'#A32D2D' },
-              { label:'Expiring (≤30d)', n:expiring30, color:'#854F0B' },
-              { label:'Healthy',        n:active-expiring30, color:'#ffffff' },
+              { label:'Critical (≤7d)', n:expiring7,  color:'#a93226' },
+              { label:'Expiring (≤30d)', n:expiring30, color:'#c0392b' },
+              { label:'Healthy',        n:active-expiring30, color:'#f0ede8' },
             ].map(({ label, n, color }) => (
               <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
                 <div style={{ width:8, height:8, borderRadius:2, background:color }}/>
@@ -290,7 +290,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
             </span>
             {!s.cert_valid && (
               <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:4,
-                background:'#FCEBEB', color:'#A32D2D' }}>UNREACHABLE</span>
+                background:'rgba(192,57,43,0.1)', color:'#a93226' }}>UNREACHABLE</span>
             )}
           </div>
           <ScoreBar score={s.score}/>
@@ -301,7 +301,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
           <Tick ok={s.cert_valid} label="TLS"/>
           {s.expiry_days != null && (
             <span style={{ fontSize:11, fontWeight:600,
-              color:s.expiry_days<=0?'#A32D2D':s.expiry_days<=30?'#854F0B':'#ffffff' }}>
+              color:s.expiry_days<=0?'#a93226':s.expiry_days<=30?'#c0392b':'#f0ede8' }}>
               {s.expiry_days<=0?'Expired':`${s.expiry_days}d`}
             </span>
           )}
@@ -392,13 +392,13 @@ function TLSGradesTab({ tok, user }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
           <StatCard label="Domains tracked" val={scores.length}/>
           <StatCard label="Average score" val={avgScore}
-            color={avgScore>=80?'#ffffff':avgScore>=60?'#a93226':'#A32D2D'}/>
+            color={avgScore>=80?'#f0ede8':avgScore>=60?'#a93226':'#a93226'}/>
           <StatCard label="Grade A / A+"
             val={(scores.filter(s=>s.grade==='A'||s.grade==='A+').length)}
             color="#c0392b"/>
           <StatCard label="Need attention" val={issues.length}
-            color={issues.length>0?'#A32D2D':'#ffffff'}
-            bg={issues.length>0?'#FCEBEB':undefined}/>
+            color={issues.length>0?'#a93226':'#f0ede8'}
+            bg={issues.length>0?'rgba(192,57,43,0.1)':undefined}/>
         </div>
       )}
 
@@ -415,13 +415,13 @@ function TLSGradesTab({ tok, user }) {
               color:'var(--v2-text-1)' }}/>
           <button onClick={addDomain} disabled={adding || !newDomain.trim()}
             style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 12px',
-              borderRadius:7, border:'none', background:'var(--v2-green)', color:'#ffffff',
+              borderRadius:7, border:'none', background:'var(--v2-green)', color:'#f0ede8',
               cursor:adding||!newDomain.trim()?'not-allowed':'pointer', fontFamily:'inherit',
               fontWeight:600, opacity:adding||!newDomain.trim()?0.6:1 }}>
             {adding ? <><Spinner/> Scanning…</> : <><Plus size={11}/> Scan</>}
           </button>
         </div>
-        {addErr && <div style={{ fontSize:11, color:'#A32D2D', marginTop:6 }}>{addErr}</div>}
+        {addErr && <div style={{ fontSize:11, color:'#a93226', marginTop:6 }}>{addErr}</div>}
       </div>
 
       {/* List */}
@@ -452,10 +452,10 @@ function TLSGradesTab({ tok, user }) {
 // TAB 3 — CT WATCH
 // ══════════════════════════════════════════════════════════════════════
 const CT_STATUS = {
-  unknown:    { label:'Unknown',    color:'#A32D2D', bg:'#FCEBEB', border:'#F7C1C1' },
-  phishing:   { label:'Phishing',   color:'#854F0B', bg:'#FAEEDA', border:'#F0C490' },
-  suspicious: { label:'Suspicious', color:'#854F0B', bg:'#FAEEDA', border:'#F0C490' },
-  known:      { label:'Known',      color:'#ffffff', bg:'#111111', border:'rgba(192,57,43,0.3)' },
+  unknown:    { label:'Unknown',    color:'#a93226', bg:'rgba(192,57,43,0.1)', border:'rgba(192,57,43,0.2)' },
+  phishing:   { label:'Phishing',   color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
+  suspicious: { label:'Suspicious', color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
+  known:      { label:'Known',      color:'#f0ede8', bg:'transparent', border:'rgba(192,57,43,0.3)' },
 }
 
 function CTWatchTab({ tok, user }) {
@@ -497,8 +497,8 @@ function CTWatchTab({ tok, user }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Total findings" val={shadows.length}/>
         <StatCard label="Needs review" val={unknowns.length}
-          color={unknowns.length>0?'#A32D2D':'#ffffff'}
-          bg={unknowns.length>0?'#FCEBEB':undefined}/>
+          color={unknowns.length>0?'#a93226':'#f0ede8'}
+          bg={unknowns.length>0?'rgba(192,57,43,0.1)':undefined}/>
         <StatCard label="Confirmed safe" val={known.length} color="#c0392b"/>
       </div>
 
@@ -572,8 +572,8 @@ function CTWatchTab({ tok, user }) {
                       </button>
                       <button onClick={() => dismiss(s.id)} disabled={dismissing===s.id}
                         style={{ fontSize:10, padding:'3px 8px', borderRadius:5,
-                          border:'0.5px solid #F7C1C1', background:'#FCEBEB',
-                          cursor:'pointer', fontFamily:'inherit', color:'#A32D2D' }}>
+                          border:'0.5px solid #F7C1C1', background:'rgba(192,57,43,0.1)',
+                          cursor:'pointer', fontFamily:'inherit', color:'#a93226' }}>
                         {dismissing===s.id?<Spinner/>:'Dismiss'}
                       </button>
                     </div>
@@ -604,8 +604,8 @@ function CTWatchTab({ tok, user }) {
                         </button>
                         <button onClick={() => mark(s.id,'phishing')} disabled={marking===s.id}
                           style={{ fontSize:11, padding:'5px 12px', borderRadius:6,
-                            border:'0.5px solid #F7C1C1', background:'#FCEBEB',
-                            cursor:'pointer', fontFamily:'inherit', color:'#A32D2D', fontWeight:500 }}>
+                            border:'0.5px solid #F7C1C1', background:'rgba(192,57,43,0.1)',
+                            cursor:'pointer', fontFamily:'inherit', color:'#a93226', fontWeight:500 }}>
                           Flag as phishing
                         </button>
                       </div>
@@ -709,14 +709,14 @@ function MassScanTab() {
             )}
             <button onClick={doScan} disabled={scanning || !input.trim()}
               style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 14px',
-                borderRadius:7, border:'none', background:'var(--v2-green)', color:'#ffffff',
+                borderRadius:7, border:'none', background:'var(--v2-green)', color:'#f0ede8',
                 cursor:scanning||!input.trim()?'not-allowed':'pointer',
                 fontFamily:'inherit', fontWeight:600, opacity:scanning||!input.trim()?0.7:1 }}>
               {scanning ? <><Spinner/> Scanning…</> : <><Scan size={11}/> Run scan</>}
             </button>
           </div>
         </div>
-        {error && <div style={{ fontSize:11, color:'#A32D2D', marginTop:8 }}>{error}</div>}
+        {error && <div style={{ fontSize:11, color:'#a93226', marginTop:8 }}>{error}</div>}
 
         {/* Progress bar */}
         {scanning && (
@@ -733,10 +733,10 @@ function MassScanTab() {
           {/* Summary */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:12 }}>
             <StatCard label="Scanned" val={results.length} sub="domains"/>
-            <StatCard label="Passed" val={passCount} color="#c0392b" bg="#d1fae5"/>
+            <StatCard label="Passed" val={passCount} color="#c0392b" bg="rgba(39,174,96,0.1)"/>
             <StatCard label="Failed" val={failCount}
-              color={failCount>0?'#A32D2D':'var(--v2-text-1)'}
-              bg={failCount>0?'#FCEBEB':undefined}/>
+              color={failCount>0?'#a93226':'var(--v2-text-1)'}
+              bg={failCount>0?'rgba(192,57,43,0.1)':undefined}/>
           </div>
 
           {/* Filter */}
@@ -788,16 +788,16 @@ function MassScanTab() {
                   </div>
                   <div>{r.cert_valid
                     ? <CheckCircle size={13} color="#c0392b"/>
-                    : <XCircle size={13} color="#A32D2D"/>}</div>
+                    : <XCircle size={13} color="#a93226"/>}</div>
                   <div>{r.hsts
                     ? <CheckCircle size={13} color="#c0392b"/>
-                    : <XCircle size={13} color="#A32D2D"/>}</div>
+                    : <XCircle size={13} color="#a93226"/>}</div>
                   <div>{r.caa
                     ? <CheckCircle size={13} color="#c0392b"/>
-                    : <XCircle size={13} color="#A32D2D"/>}</div>
+                    : <XCircle size={13} color="#a93226"/>}</div>
                   <div style={{ fontSize:11,
-                    color: r.error?'#A32D2D':r.expiry_days!=null&&r.expiry_days<=0?'#A32D2D':
-                      r.expiry_days!=null&&r.expiry_days<=30?'#854F0B':'var(--v2-text-2)' }}>
+                    color: r.error?'#a93226':r.expiry_days!=null&&r.expiry_days<=0?'#a93226':
+                      r.expiry_days!=null&&r.expiry_days<=30?'#c0392b':'var(--v2-text-2)' }}>
                     {r.error ? r.error.slice(0,40)
                       : r.expiry_days!=null ? (r.expiry_days<=0?'Expired':`${r.expiry_days}d left`)
                       : r.issuer||'—'}

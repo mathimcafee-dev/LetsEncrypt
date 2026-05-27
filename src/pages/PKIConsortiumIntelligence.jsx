@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 
 const FONT = "'Segoe UI',-apple-system,system-ui,sans-serif"
-const MONO = "'JetBrains Mono','SF Mono',monospace"
+const MONO = "'JetBrains Mono','JetBrains Mono',monospace"
 
 const PQC_CONFERENCES = [
   { location:'Ottawa, Canada', year:2023, delegates:'1,200+', desc:'PKI Consortium\'s first major PQC conference. Brought together cryptographers, CA operators, government agencies, and enterprise PKI teams for the first serious industry-wide discussion of post-quantum migration planning.' },
@@ -41,13 +41,13 @@ export default function PKIConsortiumIntelligence({ nav }) {
   return (
     <div className="v2-page" style={{ fontFamily: FONT }}>
       <style>{`
-        .pkic-hero{background:#0a0a0a;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#fff}
+        .pkic-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#f0ede8}
         .pkic-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
-        .pkic-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#fff;line-height:1.15;margin-bottom:10px}
-        .pkic-h1 em{color:#a78bfa;font-style:normal}
+        .pkic-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#f0ede8;line-height:1.15;margin-bottom:10px}
+        .pkic-h1 em{color:#e07060;font-style:normal}
         .pkic-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .pkic-stats{display:flex;gap:28px;flex-wrap:wrap}
-        .pkic-sn{font-size:22px;font-weight:600;color:#fff;line-height:1}
+        .pkic-sn{font-size:22px;font-weight:600;color:#f0ede8;line-height:1}
         .pkic-sl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
         .pkic-tabs{background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
         .pkic-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}
@@ -62,7 +62,7 @@ export default function PKIConsortiumIntelligence({ nav }) {
         .init-card{background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px;margin-bottom:10px}
         .tl-row{display:flex;gap:12px;margin-bottom:14px}
         .tl-yr{font-family:${MONO};font-size:10px;font-weight:700;color:var(--v2-text-3);min-width:38px;text-align:right;padding-top:3px;flex-shrink:0}
-        .tl-dot{width:10px;height:10px;border-radius:50%;background:#a78bfa;flex-shrink:0;margin-top:3px}
+        .tl-dot{width:10px;height:10px;border-radius:50%;background:#e07060;flex-shrink:0;margin-top:3px}
         .tl-spine{display:flex;flex-direction:column;align-items:center;width:16px;flex-shrink:0}
         .tl-line{width:1px;background:var(--v2-border);flex:1;min-height:14px;margin-top:3px}
         .link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--v2-border)}

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 
 const FONT = "'Segoe UI',-apple-system,system-ui,sans-serif"
-const MONO = "'JetBrains Mono','SF Mono',monospace"
+const MONO = "'JetBrains Mono','JetBrains Mono',monospace"
 
 const API_ENDPOINTS = [
   { endpoint:'/csc/v2/info', desc:'Returns service provider information, supported API version, authentication types, and region.' },
@@ -43,13 +43,13 @@ export default function CSCIntelligence({ nav }) {
   return (
     <div className="v2-page" style={{ fontFamily: FONT }}>
       <style>{`
-        .csc-hero{background:#0a0a0a;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#fff}
+        .csc-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#f0ede8}
         .csc-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
-        .csc-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#fff;line-height:1.15;margin-bottom:10px}
-        .csc-h1 em{color:#fb923c;font-style:normal}
+        .csc-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#f0ede8;line-height:1.15;margin-bottom:10px}
+        .csc-h1 em{color:#e67e22;font-style:normal}
         .csc-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .csc-stats{display:flex;gap:28px;flex-wrap:wrap}
-        .csc-sn{font-size:22px;font-weight:600;color:#fff;line-height:1}
+        .csc-sn{font-size:22px;font-weight:600;color:#f0ede8;line-height:1}
         .csc-sl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
         .csc-tabs{background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
         .csc-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}
@@ -64,7 +64,7 @@ export default function CSCIntelligence({ nav }) {
         .adopter-card{background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px;margin-bottom:10px}
         .tl-row{display:flex;gap:12px;margin-bottom:14px}
         .tl-yr{font-family:${MONO};font-size:10px;font-weight:700;color:var(--v2-text-3);min-width:38px;text-align:right;padding-top:3px;flex-shrink:0}
-        .tl-dot{width:10px;height:10px;border-radius:50%;background:#fb923c;flex-shrink:0;margin-top:3px}
+        .tl-dot{width:10px;height:10px;border-radius:50%;background:#e67e22;flex-shrink:0;margin-top:3px}
         .tl-spine{display:flex;flex-direction:column;align-items:center;width:16px;flex-shrink:0}
         .tl-line{width:1px;background:var(--v2-border);flex:1;min-height:14px;margin-top:3px}
         .link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--v2-border)}

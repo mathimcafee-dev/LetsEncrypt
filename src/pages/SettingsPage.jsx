@@ -12,15 +12,15 @@ const FONT = "var(--v2-font, 'Segoe UI', system-ui, sans-serif)"
 // All configurable alert types
 const ALERT_TYPE_DEFS = [
   { id: 'cert_expiry',       label: 'Certificate expiring',     desc: 'Email at 30/14/7 days before cert expires',             color: '#f87171' },
-  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#ffffff' },
-  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#ffffff' },
-  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#ffffff' },
-  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#ffffff' },
+  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#f0ede8' },
+  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#f0ede8' },
+  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#f0ede8' },
+  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#f0ede8' },
   { id: 'renewal_failed',    label: 'Auto-renewal failed',      desc: 'Alert when auto-renewal fails (with retry info)',       color: '#f87171' },
   { id: 'agent_offline',     label: 'Agent offline',            desc: 'When a VPS agent stops responding (1h cooldown)',       color: '#f87171' },
-  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#ffffff' },
-  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#ffffff' },
-  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#ffffff' },
+  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#f0ede8' },
+  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#f0ede8' },
+  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#f0ede8' },
 ]
 
 const DEFAULT_TYPES = ['cert_expiry','order_renewal','cert_issued','cert_installed','renewal_succeeded','renewal_failed','agent_offline','shadow_found','pqc_risk']
@@ -87,11 +87,11 @@ function Row({ label, desc, children, last }) {
 // Alert log table row
 function LogRow({ log }) {
   const meta = {
-    cert_expiry: { icon: '⏰', color: '#f87171' }, order_renewal: { icon: '🔄', color: '#ffffff' },
-    cert_issued: { icon: '✅', color: '#ffffff' }, cert_installed: { icon: '🚀', color: '#ffffff' },
-    renewal_succeeded: { icon: '✅', color: '#ffffff' }, renewal_failed: { icon: '⚠️', color: '#f87171' },
-    agent_offline: { icon: '🔴', color: '#f87171' }, shadow_found: { icon: '🔍', color: '#ffffff' },
-    pqc_risk: { icon: '⚛️', color: '#ffffff' }, no_dns_warning: { icon: '⚠️', color: '#ffffff' },
+    cert_expiry: { icon: '⏰', color: '#f87171' }, order_renewal: { icon: '🔄', color: '#f0ede8' },
+    cert_issued: { icon: '✅', color: '#f0ede8' }, cert_installed: { icon: '🚀', color: '#f0ede8' },
+    renewal_succeeded: { icon: '✅', color: '#f0ede8' }, renewal_failed: { icon: '⚠️', color: '#f87171' },
+    agent_offline: { icon: '🔴', color: '#f87171' }, shadow_found: { icon: '🔍', color: '#f0ede8' },
+    pqc_risk: { icon: '⚛️', color: '#f0ede8' }, no_dns_warning: { icon: '⚠️', color: '#f0ede8' },
     weekly_digest: { icon: '📊', color: '#0f2545' },
   }
   const m = meta[log.alert_type] || { icon: '📧', color: 'rgba(192,57,43,0.8)' }
@@ -114,8 +114,8 @@ function LogRow({ log }) {
       <div>
         <span style={{
           fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,
-          background: log.status === 'sent' ? '#111111' : '#fef2f2',
-          color: log.status === 'sent' ? '#ffffff' : '#f87171',
+          background: log.status === 'sent' ? 'transparent' : 'rgba(192,57,43,0.12)',
+          color: log.status === 'sent' ? '#f0ede8' : '#f87171',
         }}>{log.status}</span>
       </div>
     </div>
@@ -192,17 +192,17 @@ function ApiKeysPanel({ user }) {
       {newKey && (
         <div style={{ background: 'transparent', border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 8,
           padding: '12px 14px', marginBottom: 16 }}>
-          <div style={{ fontSize:11, fontWeight: 600, color: '#ffffff', marginBottom: 6 }}>
+          <div style={{ fontSize:11, fontWeight: 600, color: '#f0ede8', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
           </div>
-          <div style={{ background: '#ffffff', borderRadius: 6, padding: '8px 10px',
-            fontFamily: 'monospace', fontSize:11, color: '#a3e635', wordBreak: 'break-all', marginBottom: 8 }}>
+          <div style={{ background: '#f0ede8', borderRadius: 6, padding: '8px 10px',
+            fontFamily: 'monospace', fontSize:11, color: '#e07060', wordBreak: 'break-all', marginBottom: 8 }}>
             {newKey}
           </div>
           <button onClick={() => { navigator.clipboard?.writeText(newKey); setCopied(true); setTimeout(()=>setCopied(false),2000) }}
             style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#4ade80',
               border: 'none', borderRadius: 6, padding: '6px 12px', fontSize:11,
-              color: '#ffffff', cursor: 'pointer', fontFamily: 'inherit' }}>
+              color: '#f0ede8', cursor: 'pointer', fontFamily: 'inherit' }}>
             {copied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy key</>}
           </button>
         </div>
@@ -455,7 +455,7 @@ export default function SettingsPage({ user }) {
               borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize:12, fontWeight: 600,
               fontFamily: 'inherit', transition: 'all .15s',
               background: activeTab === id ? 'rgba(192,57,43,0.12)' : 'transparent',
-              color: activeTab === id ? '#ffffff' : 'rgba(255,255,255,0.38)',
+              color: activeTab === id ? '#f0ede8' : 'rgba(240,237,232,0.38)',
               borderBottom: activeTab === id ? '2px solid #c0392b' : '2px solid transparent',
             }}>
             <Icon size={12}/>{label}
@@ -476,7 +476,7 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize:12, color: 'rgba(192,57,43,0.8)' }}>{createdAt}</span>
             </Row>
             <Row label="Plan" desc="Free for personal and indie use" last>
-              <span style={{ fontSize:11, fontWeight: 600, color: '#ffffff', background: 'transparent',
+              <span style={{ fontSize:11, fontWeight: 600, color: '#f0ede8', background: 'transparent',
                 border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 4, padding: '3px 8px' }}>Free</span>
             </Row>
           </Section>
@@ -495,7 +495,7 @@ export default function SettingsPage({ user }) {
                   <div key={id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     gap: 12, padding: '8px 12px', borderRadius: 8,
                     background: alertTypes.includes(id) ? 'rgba(192,57,43,0.08)' : 'rgba(232,245,244,0.03)',
-                    border: `1px solid ${alertTypes.includes(id) ? '#ffffff' : 'transparent'}`,
+                    border: `1px solid ${alertTypes.includes(id) ? '#f0ede8' : 'transparent'}`,
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all .15s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }}/>
@@ -524,7 +524,7 @@ export default function SettingsPage({ user }) {
                     cursor: emailAlerts ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all 0.15s',
                     background: alertDays.includes(d) ? 'rgba(192,57,43,0.2)' : 'rgba(232,245,244,0.06)',
-                    color: alertDays.includes(d) ? '#0e7490' : 'rgba(255,255,255,0.38)',
+                    color: alertDays.includes(d) ? '#0e7490' : 'rgba(240,237,232,0.38)',
                     border: alertDays.includes(d) ? '1px solid #a5f3fc' : '1px solid rgba(192,57,43,0.2)' }}>
                   {d} {d === 1 ? 'day' : 'days'}
                 </button>
@@ -541,7 +541,7 @@ export default function SettingsPage({ user }) {
               <div key={e} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '7px 10px', background: 'var(--v2-surface-3)', border: '1px solid rgba(192,57,43,0.2)',
                 borderRadius: 7, marginBottom: 6 }}>
-                <span style={{ fontSize:12, color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace' }}>{e}</span>
+                <span style={{ fontSize:12, color: 'rgba(240,237,232,0.6)', fontFamily: 'monospace' }}>{e}</span>
                 <button onClick={() => removeExtraEmail(e)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', padding: 2 }}>
                   <X size={12}/>
@@ -552,12 +552,12 @@ export default function SettingsPage({ user }) {
               <input value={newEmail} onChange={e => { setNewEmail(e.target.value); setEmailError('') }}
                 onKeyDown={e => e.key === 'Enter' && addExtraEmail()}
                 placeholder="name@example.com"
-                style={{ flex: 1, padding: '7px 10px', border: `1px solid ${emailError ? '#fecaca' : '#ffffff'}`,
+                style={{ flex: 1, padding: '7px 10px', border: `1px solid ${emailError ? 'rgba(192,57,43,0.25)' : '#f0ede8'}`,
                   borderRadius: 7, fontSize:12, fontFamily: 'monospace', outline: 'none',
-                  background: emailError ? 'rgba(248,113,113,0.1)' : '#1a4040' }}/>
+                  background: emailError ? 'rgba(248,113,113,0.1)' : 'transparent' }}/>
               <button onClick={addExtraEmail}
                 style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
-                  background: '#ffffff', color: '#ffffff', border: 'none', borderRadius: 7,
+                  background: '#f0ede8', color: '#f0ede8', border: 'none', borderRadius: 7,
                   fontSize:12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Plus size={11}/> Add
               </button>
@@ -607,9 +607,9 @@ export default function SettingsPage({ user }) {
             </div>
             {testResult && (
               <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 7, fontSize:12,
-                background: testResult.ok ? '#111111' : '#fef2f2',
-                color: testResult.ok ? '#ffffff' : '#f87171',
-                border: `1px solid ${testResult.ok ? '#e07060' : '#fecaca'}` }}>
+                background: testResult.ok ? 'transparent' : 'rgba(192,57,43,0.12)',
+                color: testResult.ok ? '#f0ede8' : '#f87171',
+                border: `1px solid ${testResult.ok ? '#e07060' : 'rgba(192,57,43,0.25)'}` }}>
                 {testResult.ok ? '✓ ' : '✗ '}{testResult.msg}
               </div>
             )}
@@ -621,7 +621,7 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize:11, color: 'rgba(192,57,43,0.8)' }}>Magic link</span>
             </Row>
             <Row label="Private key storage" desc="AES-256-GCM encrypted at rest" last>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#ffffff' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#f0ede8' }}>
                 <Shield size={11}/> Encrypted
               </span>
             </Row>
@@ -650,8 +650,8 @@ export default function SettingsPage({ user }) {
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
             <button onClick={handleSave} disabled={saving}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6,
-                background: saving ? '#ffffff' : saved ? '#4ade80' : '#ffffff',
-                color: saving ? 'rgba(255,255,255,0.38)' : '#000000', border: 'none', borderRadius: 7,
+                background: saving ? '#f0ede8' : saved ? '#4ade80' : '#f0ede8',
+                color: saving ? 'rgba(240,237,232,0.38)' : '#000000', border: 'none', borderRadius: 7,
                 padding: '10px 22px', fontSize:12, fontWeight: 700,
                 cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'background .2s' }}>
               {saving ? <><RefreshCw size={12} className="spin"/> Saving…</>
@@ -707,7 +707,7 @@ export default function SettingsPage({ user }) {
                 <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--v2-text-3)', fontSize:12 }}>
                   No alerts sent yet.{' '}
                   <button onClick={() => setActiveTab('preferences')}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ffffff',
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f0ede8',
                       fontSize:12, fontFamily: 'inherit', textDecoration: 'underline' }}>
                     Configure alerts →
                   </button>
@@ -729,7 +729,7 @@ export default function SettingsPage({ user }) {
                     style={{ padding: '4px 10px', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 5,
                       fontSize:11, cursor: logsPage === 0 ? 'not-allowed' : 'pointer',
                       background: 'rgba(192,57,43,0.08)',
-                      color: logsPage === 0 ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.6)', fontFamily: 'inherit' }}>
+                      color: logsPage === 0 ? 'rgba(240,237,232,0.38)' : 'rgba(240,237,232,0.6)', fontFamily: 'inherit' }}>
                     ← Prev
                   </button>
                   <button onClick={() => setLogsPage(p => p + 1)}
@@ -737,7 +737,7 @@ export default function SettingsPage({ user }) {
                     style={{ padding: '4px 10px', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 5,
                       fontSize:11, cursor: (logsPage + 1) * 20 >= logsTotal ? 'not-allowed' : 'pointer',
                       background: 'rgba(192,57,43,0.08)',
-                      color: (logsPage + 1) * 20 >= logsTotal ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.6)', fontFamily: 'inherit' }}>
+                      color: (logsPage + 1) * 20 >= logsTotal ? 'rgba(240,237,232,0.38)' : 'rgba(240,237,232,0.6)', fontFamily: 'inherit' }}>
                     Next →
                   </button>
                 </div>

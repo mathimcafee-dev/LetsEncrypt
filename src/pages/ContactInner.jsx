@@ -28,19 +28,19 @@ export default function ContactInner({ nav }) {
       <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #c0392b' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
           <Mail size={14} color="#c0392b"/>
-          <span style={{ fontSize:10, fontWeight:500, color:'#a3a3a3', textTransform:'uppercase', letterSpacing:'.5px' }}>Contact</span>
+          <span style={{ fontSize:10, fontWeight:500, color:'rgba(240,237,232,0.45)', textTransform:'uppercase', letterSpacing:'.5px' }}>Contact</span>
         </div>
-        <div style={{ fontSize:20, fontWeight:500, color:'#ffffff', letterSpacing:'-.3px', marginBottom:8 }}>
+        <div style={{ fontSize:20, fontWeight:500, color:'#f0ede8', letterSpacing:'-.3px', marginBottom:8 }}>
           Every message gets read.
         </div>
-        <p style={{ fontSize:13, color:'rgba(255,255,255,0.6)', lineHeight:1.7, margin:'0 0 20px', maxWidth:560 }}>
+        <p style={{ fontSize:13, color:'rgba(240,237,232,0.6)', lineHeight:1.7, margin:'0 0 20px', maxWidth:560 }}>
           SSLVault is built and maintained by a single developer. Bug reports, feature requests, and partnership ideas all land directly in one inbox — with a typical reply time of 1–2 days.
         </p>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <a href={`mailto:${email}`} style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#ffffff', color:'#ffffff', textDecoration:'none', borderRadius:6, padding:'9px 16px', fontSize:13, fontWeight:500 }}>
+          <a href={`mailto:${email}`} style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#f0ede8', color:'#f0ede8', textDecoration:'none', borderRadius:6, padding:'9px 16px', fontSize:13, fontWeight:500 }}>
             <Mail size={13}/> {email}
           </a>
-          <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'rgba(255,255,255,0.6)', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 12px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'rgba(240,237,232,0.6)', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 12px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
             {copied ? <><Check size={12}/> Copied</> : <><Copy size={12}/> Copy</>}
           </button>
         </div>
@@ -48,9 +48,9 @@ export default function ContactInner({ nav }) {
 
       {/* Response time note */}
       <div style={{ display:'flex', alignItems:'center', gap:8, background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'14px 18px', marginBottom:16 }}>
-        <Clock size={13} color="#a3a3a3"/>
-        <span style={{ fontSize:12, color:'rgba(255,255,255,0.6)' }}>Typical response time: <strong style={{ color:'#ffffff' }}>1–2 business days</strong></span>
-        <span style={{ marginLeft:'auto', fontSize:11, color:'#a3a3a3' }}>Based in Netherlands (CET)</span>
+        <Clock size={13} color="rgba(240,237,232,0.45)"/>
+        <span style={{ fontSize:12, color:'rgba(240,237,232,0.6)' }}>Typical response time: <strong style={{ color:'#f0ede8' }}>1–2 business days</strong></span>
+        <span style={{ marginLeft:'auto', fontSize:11, color:'rgba(240,237,232,0.45)' }}>Based in Netherlands (CET)</span>
       </div>
 
       {/* Topics grid */}
@@ -59,9 +59,9 @@ export default function ContactInner({ nav }) {
           <div key={label} style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'16px 18px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
               <Icon size={13} color="#c0392b"/>
-              <span style={{ fontSize:12, fontWeight:500, color:'#ffffff' }}>{label}</span>
+              <span style={{ fontSize:12, fontWeight:500, color:'#f0ede8' }}>{label}</span>
             </div>
-            <p style={{ fontSize:11, color:'rgba(255,255,255,0.6)', lineHeight:1.7, margin:0 }}>{body}</p>
+            <p style={{ fontSize:11, color:'rgba(240,237,232,0.6)', lineHeight:1.7, margin:0 }}>{body}</p>
           </div>
         ))}
       </div>

@@ -4,14 +4,14 @@ import '../styles/design-v2.css'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const FONT = "'Segoe UI',-apple-system,system-ui,sans-serif"
-const MONO = "'JetBrains Mono','SF Mono',monospace"
+const MONO = "'JetBrains Mono','JetBrains Mono',monospace"
 
 const VERDICT_CONFIG = {
-  trusted:    { color: '#4ade80', bg: '#111111', border: 'rgba(192,57,43,0.3)', label: 'Trusted',    icon: <CheckCircle  size={18} color="#16a34a"/> },
-  caution:    { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC', label: 'Caution',    icon: <AlertTriangle size={18} color="#f07059"/> },
-  new:        { color: '#ffffff', bg: '#111111', border: 'rgba(192,57,43,0.3)', label: 'New Site',   icon: <Clock         size={18} color="#c0392b"/> },
-  suspicious: { color: '#f87171', bg: '#fef2f2', border: '#fecaca', label: 'Suspicious', icon: <XCircle       size={18} color="#dc2626"/> },
-  blocked:    { color: '#f87171', bg: '#fef2f2', border: '#fecaca', label: 'Blocked',    icon: <XCircle       size={18} color="#dc2626"/> },
+  trusted:    { color: '#4ade80', bg: 'transparent', border: 'rgba(192,57,43,0.3)', label: 'Trusted',    icon: <CheckCircle  size={18} color="#16a34a"/> },
+  caution:    { color: '#f0ede8', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)', label: 'Caution',    icon: <AlertTriangle size={18} color="#e07060"/> },
+  new:        { color: '#f0ede8', bg: 'transparent', border: 'rgba(192,57,43,0.3)', label: 'New Site',   icon: <Clock         size={18} color="#c0392b"/> },
+  suspicious: { color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)', label: 'Suspicious', icon: <XCircle       size={18} color="#c0392b"/> },
+  blocked:    { color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)', label: 'Blocked',    icon: <XCircle       size={18} color="#c0392b"/> },
 }
 
 const EXAMPLE_DOMAINS = ['github.com', 'stripe.com', 'netflix.com', 'shopify.com', 'paypal.com']
@@ -65,7 +65,7 @@ function LayerBar({ label, score, max, color, expanded, onToggle, children }) {
 function FactRow({ icon, text, ok }) {
   return (
     <div style={{ display:'flex', gap:8, alignItems:'flex-start', padding:'4px 0' }}>
-      <span style={{ marginTop:1, flexShrink:0 }}>{ok === true ? <CheckCircle size={13} color="#16a34a"/> : ok === false ? <XCircle size={13} color="#dc2626"/> : <span style={{ fontSize:13, color:'var(--v2-text-3)' }}>·</span>}</span>
+      <span style={{ marginTop:1, flexShrink:0 }}>{ok === true ? <CheckCircle size={13} color="#16a34a"/> : ok === false ? <XCircle size={13} color="#c0392b"/> : <span style={{ fontSize:13, color:'var(--v2-text-3)' }}>·</span>}</span>
       <span style={{ fontSize:12, color:'var(--v2-text-2)' }}>{text}</span>
     </div>
   )
@@ -121,7 +121,7 @@ export default function TrustPassport({ nav }) {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg) } }
         @keyframes pulse-ring { 0%,100%{opacity:1} 50%{opacity:.4} }
-        .tp-hero { background: #0a0a0a; padding: clamp(40px,6vw,64px) clamp(20px,4vw,48px) clamp(32px,5vw,48px); }
+        .tp-hero { background: transparent; padding: clamp(40px,6vw,64px) clamp(20px,4vw,48px) clamp(32px,5vw,48px); }
         .tp-input-wrap { max-width: 720px; margin: 0 auto; padding: 0 clamp(16px,4vw,48px) clamp(24px,4vw,40px); }
         .tp-result { max-width: 720px; margin: 0 auto; padding: 0 clamp(16px,4vw,48px) 48px; }
         .tp-example { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
@@ -130,7 +130,7 @@ export default function TrustPassport({ nav }) {
           transition:all .15s; }
         .tp-chip:hover { background:rgba(255,255,255,.1); color:rgba(255,255,255,.8); }
         .verdict-card { border-radius:12px; padding:20px 22px; margin-bottom:16px; display:flex; gap:16px; align-items:flex-start; }
-        .api-box { background:#0a0a0a; border-radius:8px; padding:12px 16px; font-family:${MONO}; font-size:11px; color:rgba(255,255,255,.7); line-height:1.9; overflow-x:auto; }
+        .api-box { background:transparent; border-radius:8px; padding:12px 16px; font-family:${MONO}; font-size:11px; color:rgba(255,255,255,.7); line-height:1.9; overflow-x:auto; }
         .embed-box { background:var(--v2-surface-2); border:0.5px solid var(--v2-border); border-radius:8px; padding:12px 16px; font-family:${MONO}; font-size:11px; color:var(--v2-text-2); }
       `}</style>
 
@@ -143,7 +143,7 @@ export default function TrustPassport({ nav }) {
           </div>
           <h1 style={{ fontSize:'clamp(28px,4vw,44px)', fontWeight:700, letterSpacing:'-1px', lineHeight:1.1, color:'rgba(255,255,255,.95)', marginBottom:14 }}>
             Does this site<br/>
-            <span style={{ color:'#ffffff' }}>deserve your trust?</span>
+            <span style={{ color:'#f0ede8' }}>deserve your trust?</span>
           </h1>
           <p style={{ fontSize:15, color:'rgba(255,255,255,.4)', lineHeight:1.8, maxWidth:520, margin:'0 auto 0' }}>
             SSL certificates are free for everyone — including phishing sites. Trust Passport looks deeper: CT log history, domain age, DNS infrastructure, and abuse signals. Time cannot be faked.
@@ -166,7 +166,7 @@ export default function TrustPassport({ nav }) {
             />
             <button onClick={() => check()}
               disabled={loading}
-              style={{ display:'flex', alignItems:'center', gap:7, background:'#ffffff', color:'#ffffff', border:'none',
+              style={{ display:'flex', alignItems:'center', gap:7, background:'#f0ede8', color:'#f0ede8', border:'none',
                 borderRadius:8, padding:'9px 20px', fontSize:13, fontWeight:600, cursor:loading?'not-allowed':'pointer',
                 opacity:loading?0.6:1, fontFamily:'inherit', flexShrink:0 }}>
               {loading
@@ -214,7 +214,7 @@ export default function TrustPassport({ nav }) {
               <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6, flexWrap:'wrap' }}>
                 {v.icon}
                 <span style={{ fontSize:20, fontWeight:700, color:v.color }}>{result.domain}</span>
-                <span style={{ fontSize:12, fontWeight:600, padding:'3px 10px', borderRadius:20, background:v.color, color:'#ffffff' }}>{v.label}</span>
+                <span style={{ fontSize:12, fontWeight:600, padding:'3px 10px', borderRadius:20, background:v.color, color:'#f0ede8' }}>{v.label}</span>
               </div>
               <p style={{ fontSize:13, color:'var(--v2-text-2)', lineHeight:1.7, margin:'0 0 10px' }}>{result.summary}</p>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -230,7 +230,7 @@ export default function TrustPassport({ nav }) {
             <div style={{ fontSize:11, fontWeight:700, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'.06em', marginBottom:10 }}>Trust score breakdown</div>
 
             <LayerBar label="Certificate Transparency lineage" score={result.layers.ct_lineage.score} max={40}
-              color={result.layers.ct_lineage.score >= 28 ? '#4ade80' : result.layers.ct_lineage.score >= 14 ? '#ffffff' : '#f87171'}
+              color={result.layers.ct_lineage.score >= 28 ? '#4ade80' : result.layers.ct_lineage.score >= 14 ? '#f0ede8' : '#f87171'}
               expanded={expanded.ct} onToggle={() => toggle('ct')}>
               {result.layers.ct_lineage.data?.count > 0 ? (<>
                 <FactRow ok={true}  text={`${result.layers.ct_lineage.data.count} certificates found in public CT logs`}/>
@@ -242,7 +242,7 @@ export default function TrustPassport({ nav }) {
             </LayerBar>
 
             <LayerBar label="Domain age & registration" score={result.layers.domain_age.score} max={25}
-              color={result.layers.domain_age.score >= 18 ? '#4ade80' : result.layers.domain_age.score >= 10 ? '#ffffff' : '#f87171'}
+              color={result.layers.domain_age.score >= 18 ? '#4ade80' : result.layers.domain_age.score >= 10 ? '#f0ede8' : '#f87171'}
               expanded={expanded.age} onToggle={() => toggle('age')}>
               {result.layers.domain_age.data ? (<>
                 <FactRow ok={true}  text={`Domain registered: ${result.layers.domain_age.data.registeredDate}`}/>
@@ -255,7 +255,7 @@ export default function TrustPassport({ nav }) {
             </LayerBar>
 
             <LayerBar label="DNS infrastructure signals" score={result.layers.dns_infrastructure.score} max={20}
-              color={result.layers.dns_infrastructure.score >= 14 ? '#4ade80' : result.layers.dns_infrastructure.score >= 8 ? '#ffffff' : '#f87171'}
+              color={result.layers.dns_infrastructure.score >= 14 ? '#4ade80' : result.layers.dns_infrastructure.score >= 8 ? '#f0ede8' : '#f87171'}
               expanded={expanded.dns} onToggle={() => toggle('dns')}>
               {result.layers.dns_infrastructure.data && (<>
                 <FactRow ok={result.layers.dns_infrastructure.data.hasHTTPS}  text={`HTTPS: ${result.layers.dns_infrastructure.data.hasHTTPS ? 'Site responds over HTTPS' : 'No HTTPS response detected'}`}/>
@@ -296,8 +296,8 @@ export default function TrustPassport({ nav }) {
             </div>
             <div className="api-box">
               <div><span style={{color:'#7ee787'}}>POST</span> <span style={{color:'#79c0ff'}}>https://frthcwkntciaakqsppss.supabase.co/functions/v1/trust-passport</span></div>
-              <div style={{color:'#8b949e'}}>{"{ \"domain\": \"" + result.domain + "\" }"}</div>
-              <div style={{color:'#8b949e', marginTop:4}}>→ score: {result.score}  grade: "{result.grade}"  verdict: "{result.verdict}"</div>
+              <div style={{color:'rgba(240,237,232,0.45)'}}>{"{ \"domain\": \"" + result.domain + "\" }"}</div>
+              <div style={{color:'rgba(240,237,232,0.45)', marginTop:4}}>→ score: {result.score}  grade: "{result.grade}"  verdict: "{result.verdict}"</div>
             </div>
             <p style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:8, lineHeight:1.6 }}>
               Build it into your security tools, AI agents, or browser extensions. The Trust Passport API is open — no API key needed for domain lookups.
@@ -320,7 +320,7 @@ export default function TrustPassport({ nav }) {
               { icon:<Clock size={16} color="#c0392b"/>, title:'Time is the currency', body:'Phishing sites are spun up in hours. A domain with 5 years of clean CT log history cannot be faked — no matter how much money an attacker has.' },
               { icon:<Shield size={16} color="#16a34a"/>, title:'Works for every site', body:'No EV certificate needed. No OV. No paid plan. A free Let\'s Encrypt cert on a 7-year-old blog scores just as high as an EV cert on a new domain.' },
               { icon:<Globe size={16} color="#c0392b"/>, title:'Fully open data', body:'All sources are public: Certificate Transparency logs (RFC 9162), RDAP, DNS, and public blocklists. Nobody controls the score except time and clean operation.' },
-              { icon:<Zap size={16} color="#f07059"/>, title:'Built for AI agents', body:'In 2026, AI agents browse and transact on your behalf. The public API lets any agent check domain trust in milliseconds before proceeding.' },
+              { icon:<Zap size={16} color="#e07060"/>, title:'Built for AI agents', body:'In 2026, AI agents browse and transact on your behalf. The public API lets any agent check domain trust in milliseconds before proceeding.' },
             ].map(c => (
               <div key={c.title} style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:12, padding:'16px 18px' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>{c.icon}<span style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)' }}>{c.title}</span></div>

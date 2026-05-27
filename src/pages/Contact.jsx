@@ -50,7 +50,7 @@ export default function Contact({ nav }) {
           <div>
             <a href={`mailto:${email}`}
               style={{ display:'inline-flex', alignItems:'center', gap:8,
-                        background:'#ffffff', color:'#ffffff', padding:'11px 22px',
+                        background:'#f0ede8', color:'#f0ede8', padding:'11px 22px',
                         borderRadius:'var(--v2-r-md)', fontSize:14, fontWeight:500,
                         textDecoration:'none' }}>
               Compose email <ArrowRight size={13} />
@@ -81,11 +81,11 @@ export default function Contact({ nav }) {
             {[
               { icon:Wrench,       label:'Bug reports',       color:'var(--v2-red)',
                 body:'Domain affected, browser and OS, the exact error message, and steps to reproduce. A screenshot helps a lot.' },
-              { icon:Zap,          label:'Feature requests',  color:'#ffffff',
+              { icon:Zap,          label:'Feature requests',  color:'#f0ede8',
                 body:"What you're trying to accomplish, how SSLVault falls short today, and what the ideal outcome looks like for you." },
               { icon:Shield,       label:'Account help',      color:'var(--v2-green)',
                 body:"The email address tied to your account and a description of what you're stuck on. Never share passwords or API tokens." },
-              { icon:Users,        label:'Partnerships',      color:'#ffffff',
+              { icon:Users,        label:'Partnerships',      color:'#f0ede8',
                 body:"Who you are, what you're building, and how SSLVault might fit into the picture. Always happy to talk." },
             ].map(({ icon:Icon, label, body, color }) => (
               <div key={label} className="v2-card" style={{ padding:'20px 22px', display:'flex', gap:14, alignItems:'flex-start' }}>

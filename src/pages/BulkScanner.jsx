@@ -15,12 +15,12 @@ async function bulkScan(domains) {
 }
 
 function gradeStyle(grade) {
-  if (!grade || grade === 'F') return { color: '#f87171', bg: '#fef2f2' }
-  if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)' }
-  if (grade === 'C') return { color: '#ca8a04', bg: '#fefce8' }
+  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(192,57,43,0.12)' }
+  if (grade === 'D') return { color: '#f0ede8', bg: 'rgba(239,68,68,0.08)' }
+  if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)' }
   if (grade === 'B') return { color: 'var(--v2-green-text)', bg: 'var(--v2-green-bg)' }
-  if (grade === 'A') return { color: '#4ade80', bg: '#111111' }
-  if (grade === 'A+') return { color: '#ffffff', bg: '#111111' }
+  if (grade === 'A') return { color: '#4ade80', bg: 'transparent' }
+  if (grade === 'A+') return { color: '#f0ede8', bg: 'transparent' }
   return { color: 'var(--v2-text-3)', bg: 'var(--v2-bg)' }
 }
 
@@ -29,7 +29,7 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function Tick({ ok }) {
   return ok
     ? <CheckCircle size={12} color="#16a34a" style={{ flexShrink: 0 }} />
-    : <XCircle size={12} color="#dc2626" style={{ flexShrink: 0 }} />
+    : <XCircle size={12} color="#c0392b" style={{ flexShrink: 0 }} />
 }
 
 function exportCSV(results) {
@@ -142,7 +142,7 @@ export default function BulkScanner({ nav }) {
             </span>
             <button onClick={doScan} disabled={scanning || !input.trim()}
               style={{ fontSize:13, fontWeight: 500, padding: '9px 20px', borderRadius: 8,
-                background: scanning || !input.trim() ? 'var(--v2-border)' : '#ffffff',
+                background: scanning || !input.trim() ? 'var(--v2-border)' : '#f0ede8',
                 color: scanning || !input.trim() ? 'var(--v2-text-3)' : 'var(--v2-surface)',
                 border: 'none', cursor: scanning || !input.trim() ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 7, transition: 'background .15s' }}>
@@ -155,7 +155,7 @@ export default function BulkScanner({ nav }) {
           {/* Progress bar */}
           {scanning && (
             <div style={{ marginTop: 12, height: 3, background: 'var(--v2-border)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: '#ffffff', borderRadius: 2,
+              <div style={{ height: '100%', background: '#f0ede8', borderRadius: 2,
                 width: `${progress}%`, transition: 'width .4s ease' }} />
             </div>
           )}
@@ -169,7 +169,7 @@ export default function BulkScanner({ nav }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px,1fr))', gap: 8, marginBottom: 16 }}>
               {[
                 { label: 'Scanned', val: results.length, color: 'var(--v2-text-2)' },
-                { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#ffffff' : '#f87171' },
+                { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#f0ede8' : '#f87171' },
                 { label: 'A / A+', val: (grades['A']||0)+(grades['A+']||0), color: '#4ade80' },
                 { label: 'F / issues', val: (grades['F']||0), color: '#f87171' },
               ].map(({ label, val, color }) => (
@@ -184,7 +184,7 @@ export default function BulkScanner({ nav }) {
                 justifyContent: 'center' }}>
                 <button onClick={() => exportCSV(results)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer',
-                    color: '#ffffff', fontSize:12, display: 'flex', alignItems: 'center', gap: 5 }}>
+                    color: '#f0ede8', fontSize:12, display: 'flex', alignItems: 'center', gap: 5 }}>
                   <Download size={12} /> Export CSV
                 </button>
               </div>
@@ -233,7 +233,7 @@ export default function BulkScanner({ nav }) {
                     <div style={{ fontSize:11, fontWeight: 500,
                       color: r.expiry_days == null ? 'var(--v2-text-3)'
                            : r.expiry_days <= 7 ? '#f87171'
-                           : r.expiry_days <= 30 ? '#ffffff' : '#4ade80' }}>
+                           : r.expiry_days <= 30 ? '#f0ede8' : '#4ade80' }}>
                       {r.expiry_days != null ? (r.expiry_days <= 0 ? 'Expired' : `${r.expiry_days}d`) : '—'}
                     </div>
                   </div>

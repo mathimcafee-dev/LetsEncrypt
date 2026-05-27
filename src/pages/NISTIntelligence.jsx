@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 
 const FONT = "'Segoe UI',-apple-system,system-ui,sans-serif"
-const MONO = "'JetBrains Mono','SF Mono',monospace"
+const MONO = "'JetBrains Mono','JetBrains Mono',monospace"
 
 const PQC_STANDARDS = [
   { id:'FIPS 203', name:'ML-KEM (Kyber)', type:'Key Encapsulation', status:'Final', date:'Aug 2024', desc:'Post-quantum replacement for RSA and ECDH key exchange. Protects the TLS handshake from quantum attacks. Based on the hardness of the Module Learning With Errors (MLWE) problem. Fast, efficient, relatively small keys and ciphertexts. Already deployed by Cloudflare, Google, and Apple iMessage.' },
@@ -53,13 +53,13 @@ export default function NISTIntelligence({ nav }) {
   return (
     <div className="v2-page" style={{ fontFamily: FONT }}>
       <style>{`
-        .ni-hero{background:#0a0a0a;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#fff}
+        .ni-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#f0ede8}
         .ni-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
-        .ni-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#fff;line-height:1.15;margin-bottom:10px}
-        .ni-h1 em{color:#f07059;font-style:normal}
+        .ni-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#f0ede8;line-height:1.15;margin-bottom:10px}
+        .ni-h1 em{color:#e07060;font-style:normal}
         .ni-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .ni-stats{display:flex;gap:28px;flex-wrap:wrap}
-        .ni-sn{font-size:22px;font-weight:600;color:#fff;line-height:1}
+        .ni-sn{font-size:22px;font-weight:600;color:#f0ede8;line-height:1}
         .ni-sl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
         .ni-tabs{background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
         .ni-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}
@@ -177,7 +177,7 @@ export default function NISTIntelligence({ nav }) {
               <div key={e.year+i} className="tl-row">
                 <div className="tl-yr">{e.year}</div>
                 <div className="tl-spine">
-                  <div className="tl-dot" style={{ background:'#ffffff' }}/>
+                  <div className="tl-dot" style={{ background:'#f0ede8' }}/>
                   {i < TIMELINE.length-1 && <div className="tl-line"/>}
                 </div>
                 <div style={{ flex:1, paddingBottom:8 }}>

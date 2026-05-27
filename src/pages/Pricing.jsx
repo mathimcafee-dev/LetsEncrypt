@@ -7,7 +7,7 @@ const CARD = '#220808'
 const CARD2= '#220808'
 const TEAL = '#c0392b'
 const TEALH= '#e07060'
-const CORAL= '#ff6b5b'
+const CORAL= '#e07060'
 const INK = '#f0ede8'
 const BODY = 'rgba(232,245,244,0.65)'
 const MUTED= 'rgba(232,245,244,0.35)'
@@ -214,7 +214,7 @@ export default function Pricing({ nav }) {
               {plan.badge && (
                 <div style={{position:'absolute',top:-13,left:'50%',transform:'translateX(-50%)',
                   background:`linear-gradient(135deg,${CORAL},#ff9e8c)`,borderRadius:20,padding:'4px 16px',
-                  fontSize:10,fontWeight:800,color:'#fff',whiteSpace:'nowrap',letterSpacing:'0.5px',fontFamily:MONO}}>
+                  fontSize:10,fontWeight:800,color:'#f0ede8',whiteSpace:'nowrap',letterSpacing:'0.5px',fontFamily:MONO}}>
                   ★ {plan.badge}
                 </div>
               )}
@@ -241,11 +241,11 @@ export default function Pricing({ nav }) {
                 style={{width:'100%',padding:'13px',borderRadius:8,
                   border:`1px solid ${plan.color}`,
                   background: plan.highlight ? plan.color : 'transparent',
-                  color: plan.highlight ? '#fff' : plan.color,
+                  color: plan.highlight ? '#f0ede8' : plan.color,
                   fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:F,
                   marginBottom:26,transition:'all .15s'}}
-                onMouseEnter={e=>{e.currentTarget.style.background=plan.color;e.currentTarget.style.color='#fff'}}
-                onMouseLeave={e=>{e.currentTarget.style.background=plan.highlight?plan.color:'transparent';e.currentTarget.style.color=plan.highlight?'#fff':plan.color}}>
+                onMouseEnter={e=>{e.currentTarget.style.background=plan.color;e.currentTarget.style.color='#f0ede8'}}
+                onMouseLeave={e=>{e.currentTarget.style.background=plan.highlight?plan.color:'transparent';e.currentTarget.style.color=plan.highlight?'#f0ede8':plan.color}}>
                 {plan.cta} →
               </button>
 
@@ -402,7 +402,7 @@ export default function Pricing({ nav }) {
           <div style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap'}}>
             <button onClick={() => nav('/auth')}
               style={{background:`linear-gradient(135deg,${TEAL},${TEALH})`,border:'none',borderRadius:8,
-                color:'#fff',fontSize:15,fontWeight:700,padding:'14px 32px',cursor:'pointer',fontFamily:F,
+                color:'#f0ede8',fontSize:15,fontWeight:700,padding:'14px 32px',cursor:'pointer',fontFamily:F,
                 boxShadow:`0 4px 24px rgba(192,57,43,0.25)`}}>
               Get started →
             </button>

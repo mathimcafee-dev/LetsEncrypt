@@ -53,7 +53,7 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function MiniBar({ value, warn = 80, danger = 90 }) {
   if (value == null) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
   const pct   = Math.min(100, Math.max(0, value))
-  const color = pct >= danger ? '#f87171' : pct >= warn ? '#ffffff' : '#4ade80'
+  const color = pct >= danger ? '#f87171' : pct >= warn ? '#f0ede8' : '#4ade80'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
       <div style={{ flex: 1, height: 4, borderRadius: 2, background: 'var(--v2-border)', overflow: 'hidden' }}>
@@ -70,10 +70,10 @@ function MiniBar({ value, warn = 80, danger = 90 }) {
 // ── Status pill ───────────────────────────────────────────────────────
 function StatusPill({ status }) {
   const map = {
-    online:  { bg: '#111111', color: '#ffffff', label: 'Online',   dot: '#4ade80' },
-    offline: { bg: '#fef2f2', color: '#f87171', label: 'Offline',  dot: '#f87171' },
-    never:   { bg: '#000000', color: 'rgba(255,255,255,0.7)', label: 'Never',    dot: 'rgba(255,255,255,0.38)' },
-    unknown: { bg: 'rgba(239,68,68,0.08)', color: '#C45A4A', label: 'Unknown',  dot: '#ffffff' },
+    online:  { bg: 'transparent', color: '#f0ede8', label: 'Online',   dot: '#4ade80' },
+    offline: { bg: 'rgba(192,57,43,0.12)', color: '#f87171', label: 'Offline',  dot: '#f87171' },
+    never:   { bg: '#000000', color: 'rgba(240,237,232,0.7)', label: 'Never',    dot: 'rgba(240,237,232,0.38)' },
+    unknown: { bg: 'rgba(239,68,68,0.08)', color: '#e07060', label: 'Unknown',  dot: '#f0ede8' },
   }
   const s = map[status] || map.unknown
   return (
@@ -91,12 +91,12 @@ function StatusPill({ status }) {
 function JobBadge({ status }) {
   if (!status) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
   const map = {
-    success: { bg: '#111111', color: '#ffffff' },
-    failed:  { bg: '#fef2f2', color: '#f87171' },
-    queued:  { bg: 'rgba(239,68,68,0.08)', color: '#C45A4A' },
-    claimed: { bg: '#111111', color: 'rgba(255,255,255,0.7)' },
+    success: { bg: 'transparent', color: '#f0ede8' },
+    failed:  { bg: 'rgba(192,57,43,0.12)', color: '#f87171' },
+    queued:  { bg: 'rgba(239,68,68,0.08)', color: '#e07060' },
+    claimed: { bg: 'transparent', color: 'rgba(240,237,232,0.7)' },
   }
-  const s = map[status] || { bg: '#000000', color: 'rgba(255,255,255,0.7)' }
+  const s = map[status] || { bg: '#000000', color: 'rgba(240,237,232,0.7)' }
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 4,
       background: s.bg, color: s.color }}>
@@ -108,8 +108,8 @@ function JobBadge({ status }) {
 // ── Renewal badge (days until soonest cert expiry on this agent) ──────
 function RenewalBadge({ days }) {
   if (days == null) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
-  const color = days <= 7 ? '#f87171' : days <= 30 ? '#ffffff' : '#4ade80'
-  const bg    = days <= 7 ? '#fef2f2' : days <= 30 ? 'rgba(239,68,68,0.08)' : '#111111'
+  const color = days <= 7 ? '#f87171' : days <= 30 ? '#f0ede8' : '#4ade80'
+  const bg    = days <= 7 ? 'rgba(192,57,43,0.12)' : days <= 30 ? 'rgba(239,68,68,0.08)' : 'transparent'
   return (
     <span style={{ fontSize:11, fontWeight: 500, color, background: bg,
       padding: '2px 7px', borderRadius: 4 }}>
@@ -140,7 +140,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
     load()
   }, [agent.id])
 
-  const statusColor = { success: '#4ade80', failed: '#f87171', queued: '#ffffff', claimed: '#ffffff' }
+  const statusColor = { success: '#4ade80', failed: '#f87171', queued: '#f0ede8', claimed: '#f0ede8' }
   const eventIcon   = { online: '🟢', offline: '🔴', recovered: '✅', degraded: '🟡' }
 
   const copyCmd = () => {
@@ -151,7 +151,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
   return (
     <>
       {/* Backdrop */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.28)', zIndex: 40 }}/>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.28)', zIndex: 40 }}/>
       {/* Panel */}
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, zIndex: 50,
         background: 'var(--v2-bg)', borderLeft: '0.5px solid var(--v2-border)',
@@ -209,13 +209,13 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ fontSize:12, color: 'var(--v2-text-3)' }}>{label}</span>
                   <span style={{ fontSize:12, fontWeight: 500,
-                    color: value >= danger ? '#f87171' : value >= warn ? '#ffffff' : '#4ade80',
+                    color: value >= danger ? '#f87171' : value >= warn ? '#f0ede8' : '#4ade80',
                     fontFamily: 'monospace' }}>{Math.round(value)}%</span>
                 </div>
                 <div style={{ height: 5, borderRadius: 3, background: 'var(--v2-border)', overflow: 'hidden' }}>
                   <div style={{ height: '100%', borderRadius: 3, transition: 'width .6s',
                     width: `${Math.min(100, value)}%`,
-                    background: value >= danger ? '#f87171' : value >= warn ? '#ffffff' : '#4ade80' }}/>
+                    background: value >= danger ? '#f87171' : value >= warn ? '#f0ede8' : '#4ade80' }}/>
                 </div>
               </div>
             ))}
@@ -233,7 +233,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
             </button>
             <button className="v2-btn v2-btn-sm" onClick={() => onDelete(agent)}
               style={{ display: 'flex', alignItems: 'center', gap: 5,
-                borderColor: '#fecaca', color: '#f87171' }}>
+                borderColor: 'rgba(192,57,43,0.25)', color: '#f87171' }}>
               <Trash2 size={11}/>
               Delete agent
             </button>
@@ -277,8 +277,8 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 borderBottom: '0.5px solid var(--v2-border)', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
                   marginTop: 2, flexShrink: 0,
-                  background: (statusColor[job.status]||'rgba(255,255,255,0.7)')+'18',
-                  color: statusColor[job.status]||'rgba(255,255,255,0.7)' }}>
+                  background: (statusColor[job.status]||'rgba(240,237,232,0.7)')+'18',
+                  color: statusColor[job.status]||'rgba(240,237,232,0.7)' }}>
                   {job.status}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -361,14 +361,14 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.32)', zIndex: 60 }}/>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.32)', zIndex: 60 }}/>
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
         zIndex: 70, background: 'var(--v2-bg)', border: '0.5px solid var(--v2-border)',
         borderRadius: 12, padding: '24px', width: 360 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 9, background: '#fef2f2',
+          <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(192,57,43,0.12)',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trash2 size={16} color="#dc2626"/>
+            <Trash2 size={16} color="#c0392b"/>
           </div>
           <div style={{ fontSize:15, fontWeight: 500, color: 'var(--v2-text)' }}>Delete agent</div>
         </div>
@@ -380,7 +380,7 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button className="v2-btn v2-btn-sm" onClick={onClose}>Cancel</button>
           <button className="v2-btn v2-btn-sm" onClick={confirm} disabled={busy}
-            style={{ background: '#f87171', borderColor: '#f87171', color: '#fff' }}>
+            style={{ background: '#f87171', borderColor: '#f87171', color: '#f0ede8' }}>
             {busy ? 'Deleting…' : 'Delete'}
           </button>
         </div>
@@ -489,7 +489,7 @@ export default function AgentHealth({ user }) {
             { val: agents.length, label: 'Total agents', color: 'var(--v2-text)', filter: 'all' },
             { val: online.length,  label: 'Online',       color: '#4ade80', filter: 'online' },
             { val: offline.length, label: 'Offline',      color: '#f87171', filter: 'offline' },
-            { val: highLoad.length,label: 'High load',    color: '#ffffff', filter: 'all' },
+            { val: highLoad.length,label: 'High load',    color: '#f0ede8', filter: 'all' },
           ].map(({ val, label, color, filter }) => (
             <div key={label} className="v2-card"
               onClick={() => setFilterStatus(filter)}
@@ -503,10 +503,10 @@ export default function AgentHealth({ user }) {
 
         {/* ── Offline alert banner ── */}
         {offline.length > 0 && (
-          <div style={{ background: '#fef2f2', border: '0.5px solid #fecaca', borderRadius: 10,
+          <div style={{ background: 'rgba(192,57,43,0.12)', border: '0.5px solid #fecaca', borderRadius: 10,
             padding: '10px 14px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
-            <WifiOff size={14} color="#dc2626" style={{ flexShrink: 0 }}/>
-            <div style={{ fontSize:12, color: '#991b1b', flex: 1 }}>
+            <WifiOff size={14} color="#c0392b" style={{ flexShrink: 0 }}/>
+            <div style={{ fontSize:12, color: '#a93226', flex: 1 }}>
               <strong>{offline.length} agent{offline.length > 1 ? 's' : ''} offline:</strong>{' '}
               {offline.map(a => a.nickname).join(', ')} — last heartbeat missed by more than 12 minutes.
             </div>
@@ -596,9 +596,9 @@ export default function AgentHealth({ user }) {
                   {/* Server name + meta */}
                   <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-                      background: status === 'online' ? '#111111' : status === 'offline' ? '#fef2f2' : '#000000',
+                      background: status === 'online' ? 'transparent' : status === 'offline' ? 'rgba(192,57,43,0.12)' : '#000000',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                      <Server size={14} color={status === 'online' ? '#4ade80' : status === 'offline' ? '#f87171' : 'rgba(255,255,255,0.38)'}/>
+                      <Server size={14} color={status === 'online' ? '#4ade80' : status === 'offline' ? '#f87171' : 'rgba(240,237,232,0.38)'}/>
                       {status === 'online' && (
                         <span style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8,
                           borderRadius: '50%', background: '#4ade80', border: '1.5px solid var(--v2-bg)',
@@ -611,7 +611,7 @@ export default function AgentHealth({ user }) {
                         display: 'flex', alignItems: 'center', gap: 6 }}>
                         {agent.nickname}
                         {hasDeg && status === 'online' && (
-                          <AlertTriangle size={11} color="#f07059"/>
+                          <AlertTriangle size={11} color="#e07060"/>
                         )}
                       </div>
                       <div style={{ fontSize:11, color: 'var(--v2-text-3)',

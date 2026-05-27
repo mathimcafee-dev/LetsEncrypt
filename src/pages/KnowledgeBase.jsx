@@ -2,19 +2,19 @@
 // Owlish white · Inter · no CSS class dependencies
 import { useState, useRef, useEffect } from 'react'
 
-const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
+const F    = "'Inter var','Montserrat',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
   bg:'#000000', bg2:'#000000', bg3:'#000000',
-  border:'rgba(255,255,255,0.12)', border2:'rgba(255,255,255,0.2)',
-  heading:'#ffffff', body:'#4b5563', muted:'rgba(255,255,255,0.35)',
-  teal:'#ffffff', tealDk:'#ffffff', tealBg:'#111111', tealBd:'rgba(192,57,43,0.3)',
-  green:'#ffffff', greenBg:'#111111',
-  purple:'#ffffff', purpleBg:'#faf5ff',
-  amber:'#ffffff', amberBg:'rgba(239,68,68,0.08)',
-  red:'#f87171', redBg:'#fef2f2',
-  ink:'#ffffff',
+  border:'rgba(240,237,232,0.12)', border2:'rgba(240,237,232,0.2)',
+  heading:'#f0ede8', body:'rgba(240,237,232,0.5)', muted:'rgba(240,237,232,0.35)',
+  teal:'#f0ede8', tealDk:'#f0ede8', tealBg:'transparent', tealBd:'rgba(192,57,43,0.3)',
+  green:'#f0ede8', greenBg:'transparent',
+  purple:'#f0ede8', purpleBg:'rgba(30,0,0,0.4)',
+  amber:'#f0ede8', amberBg:'rgba(239,68,68,0.08)',
+  red:'#f87171', redBg:'rgba(192,57,43,0.12)',
+  ink:'#f0ede8',
 }
 
 // ── Code block ─────────────────────────────────────────────────────────
@@ -27,20 +27,20 @@ function Code({ code, lang = 'bash' }) {
     setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   return (
-    <div style={{ background:'#ffffff', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, overflow:'hidden', margin:'14px 0', fontFamily:MONO }}>
+    <div style={{ background:'#f0ede8', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, overflow:'hidden', margin:'14px 0', fontFamily:MONO }}>
       <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display:'flex', gap:5 }}>
-          {['#ff5f57','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
-          <span style={{ fontSize:10, color:'rgba(255,255,255,0.35)', marginLeft:8 }}>{lang}</span>
+          {['#c0392b','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
+          <span style={{ fontSize:10, color:'rgba(240,237,232,0.35)', marginLeft:8 }}>{lang}</span>
         </div>
-        <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'rgba(255,255,255,0.4)', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>
+        <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'rgba(240,237,232,0.4)', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>
           {copied
             ? <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg> Copied</>
             : <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</>
           }
         </button>
       </div>
-      <pre style={{ padding:'14px 16px', fontSize:12, lineHeight:1.9, color:'rgba(255,255,255,0.75)', overflowX:'auto', margin:0 }}>{code}</pre>
+      <pre style={{ padding:'14px 16px', fontSize:12, lineHeight:1.9, color:'rgba(240,237,232,0.75)', overflowX:'auto', margin:0 }}>{code}</pre>
     </div>
   )
 }
@@ -49,9 +49,9 @@ function Code({ code, lang = 'bash' }) {
 function Note({ type = 'tip', children }) {
   const styles = {
     tip:     { bg:C.tealBg,   bd:C.tealBd,        color:C.tealDk,  label:'TIP',     icon:'💡' },
-    warning: { bg:C.amberBg,  bd:'#F2C4BC',        color:C.amber,   label:'WARNING', icon:'⚠️' },
+    warning: { bg:C.amberBg,  bd:'rgba(192,57,43,0.25)',        color:C.amber,   label:'WARNING', icon:'⚠️' },
     info:    { bg:C.greenBg,  bd:'rgba(192,57,43,0.3)',        color:C.green,   label:'INFO',    icon:'ℹ️' },
-    danger:  { bg:C.redBg,    bd:'#fecaca',        color:C.red,     label:'IMPORTANT',icon:'🔴' },
+    danger:  { bg:C.redBg,    bd:'rgba(192,57,43,0.25)',        color:C.red,     label:'IMPORTANT',icon:'🔴' },
   }[type]
   return (
     <div style={{ background:styles.bg, border:`1px solid ${styles.bd}`, borderLeft:`3px solid ${styles.color}`, borderRadius:'0 8px 8px 0', padding:'12px 16px', margin:'14px 0', display:'flex', gap:10 }}>
@@ -65,7 +65,7 @@ function Note({ type = 'tip', children }) {
 function Step({ n, title, children }) {
   return (
     <div style={{ display:'flex', gap:16, marginBottom:22 }}>
-      <div style={{ width:28, height:28, borderRadius:8, background:C.teal, color:'#ffffff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, flexShrink:0, marginTop:1 }}>{n}</div>
+      <div style={{ width:28, height:28, borderRadius:8, background:C.teal, color:'#f0ede8', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, flexShrink:0, marginTop:1 }}>{n}</div>
       <div style={{ flex:1 }}>
         <div style={{ fontSize:14, fontWeight:600, color:C.heading, marginBottom:8 }}>{title}</div>
         <div style={{ fontSize:13.5, color:C.body, lineHeight:1.75 }}>{children}</div>
@@ -133,12 +133,12 @@ function Table({ headers, rows }) {
 const SECTIONS = [
   { id:'getting-started', icon:'⚡', title:'Getting started',          subtitle:'Issue your first cert in minutes',               badge:'Start here', badgeColor:C.teal   },
   { id:'agent',           icon:'🤖', title:'Persistent agent',         subtitle:'Zero-touch VPS installs and renewals',            badge:'VPS',        badgeColor:C.green  },
-  { id:'cpanel',          icon:'🏛', title:'cPanel / shared hosting',  subtitle:'No SSH needed — UAPI install',                   badge:'cPanel',     badgeColor:'#ffffff'},
-  { id:'dns',             icon:'🌐', title:'DNS providers',            subtitle:'Auto DCV via Cloudflare, Vercel, Route53…',       badge:'DNS-01',     badgeColor:'#06b6d4'},
+  { id:'cpanel',          icon:'🏛', title:'cPanel / shared hosting',  subtitle:'No SSH needed — UAPI install',                   badge:'cPanel',     badgeColor:'#f0ede8'},
+  { id:'dns',             icon:'🌐', title:'DNS providers',            subtitle:'Auto DCV via Cloudflare, Vercel, Route53…',       badge:'DNS-01',     badgeColor:'#e07060'},
   { id:'autorenew',       icon:'🔄', title:'Auto-renewal',             subtitle:'Set once, renew forever',                        badge:'Automation', badgeColor:C.amber  },
   { id:'certvault',       icon:'🔐', title:'CertVault',                subtitle:'AES-256-GCM private key vault',                  badge:'Security',   badgeColor:C.purple },
   { id:'readiness',       icon:'📋', title:'47-Day Readiness',         subtitle:'CA/B Forum 2026–2029 compliance',                badge:'CA/B Forum', badgeColor:C.red    },
-  { id:'health',          icon:'📈', title:'SSL Health Score',         subtitle:'Grade A+ to F per domain',                       badge:'Monitoring', badgeColor:'#ffffff'},
+  { id:'health',          icon:'📈', title:'SSL Health Score',         subtitle:'Grade A+ to F per domain',                       badge:'Monitoring', badgeColor:'#f0ede8'},
   { id:'discovery',       icon:'🔍', title:'CT Log Discovery',         subtitle:'Find every cert ever issued for your domains',   badge:'CT Logs',    badgeColor:C.green  },
   { id:'abuse',           icon:'🚨', title:'CT Abuse Monitor',         subtitle:'Detect unauthorised cert issuance',              badge:'Security',   badgeColor:C.red    },
   { id:'calendar',        icon:'📅', title:'Renewal Calendar',         subtitle:'Heatmap of upcoming renewals',                   badge:'Planning',   badgeColor:C.teal   },
@@ -166,12 +166,12 @@ export default function KnowledgeBase({ nav }) {
           <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.92)' }}>SSLVault</span>
-          <span style={{ fontSize:11, color:'rgba(255,255,255,0.38)', fontFamily:MONO }}>/ Knowledge Base</span>
+          <span style={{ fontSize:15, fontWeight:600, color:'rgba(240,237,232,0.92)' }}>SSLVault</span>
+          <span style={{ fontSize:11, color:'rgba(240,237,232,0.38)', fontFamily:MONO }}>/ Knowledge Base</span>
         </div>
         <div style={{ display:'flex', gap:8 }}>
-          <button onClick={() => nav('/install')} style={{ background:'none', border:`1px solid rgba(255,255,255,0.1)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'rgba(255,255,255,0.5)', padding:'6px 14px', borderRadius:100 }}>Install guide</button>
-          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'7px 18px', borderRadius:100 }}>Get started</button>
+          <button onClick={() => nav('/install')} style={{ background:'none', border:`1px solid rgba(240,237,232,0.1)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'rgba(240,237,232,0.5)', padding:'6px 14px', borderRadius:100 }}>Install guide</button>
+          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#f0ede8', padding:'7px 18px', borderRadius:100 }}>Get started</button>
         </div>
       </header>
 
@@ -502,7 +502,7 @@ export default function KnowledgeBase({ nav }) {
           </div>
           <div style={{ display:'flex', gap:10 }}>
             <button onClick={() => nav('/install')} style={{ background:C.bg, border:`1px solid ${C.border}`, cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:C.heading, padding:'8px 18px', borderRadius:100 }}>Install guide</button>
-            <button onClick={() => window.location.href='mailto:mathimcafee@gmail.com'} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'8px 18px', borderRadius:100 }}>Contact support</button>
+            <button onClick={() => window.location.href='mailto:mathimcafee@gmail.com'} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#f0ede8', padding:'8px 18px', borderRadius:100 }}>Contact support</button>
           </div>
         </div>
 

@@ -80,7 +80,7 @@ export default function AdminAnalytics({ user }) {
 
   if (loading) return <div className="v2-page"><div className="v2-container" style={{paddingTop:40,textAlign:'center',color:'var(--v2-text-3)'}}>Loading analytics…</div></div>
 
-  const gradeColor = {A:'#4ade80',B:'#65a30d',C:'#ffffff',D:'#ea580c',F:'#f87171',unknown:'rgba(255,255,255,0.38)'}
+  const gradeColor = {A:'#4ade80',B:'#65a30d',C:'#f0ede8',D:'#c0392b',F:'#f87171',unknown:'rgba(240,237,232,0.38)'}
 
   return (
     <div className="v2-page">
@@ -105,8 +105,8 @@ export default function AdminAnalytics({ user }) {
             </button>
           </div>
           {actionMsg && (
-            <div style={{padding:'8px 12px',borderRadius:6,background:actionMsg.startsWith('Error')?'#fef2f2':'#111111',
-              border:`0.5px solid ${actionMsg.startsWith('Error')?'#fecaca':'rgba(192,57,43,0.3)'}`,
+            <div style={{padding:'8px 12px',borderRadius:6,background:actionMsg.startsWith('Error')?'rgba(192,57,43,0.12)':'transparent',
+              border:`0.5px solid ${actionMsg.startsWith('Error')?'rgba(192,57,43,0.25)':'rgba(192,57,43,0.3)'}`,
               color:actionMsg.startsWith('Error')?'#f87171':'#4ade80',fontSize:12,marginBottom:10,
               display:'flex',alignItems:'center',justifyContent:'space-between'}}>
               {actionMsg}
@@ -135,9 +135,9 @@ export default function AdminAnalytics({ user }) {
                   <div style={{fontSize:12,fontWeight:500,color:'var(--v2-text)'}}>{req.email}</div>
                   <div>
                     <span style={{fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:20,
-                      background:req.status==='pending'?'rgba(239,68,68,0.08)':req.status==='approved'?'#111111':'#fef2f2',
-                      color:req.status==='pending'?'#ffffff':req.status==='approved'?'#4ade80':'#f87171',
-                      border:`0.5px solid ${req.status==='pending'?'#F2C4BC':req.status==='approved'?'rgba(192,57,43,0.3)':'#fecaca'}`}}>
+                      background:req.status==='pending'?'rgba(239,68,68,0.08)':req.status==='approved'?'transparent':'rgba(192,57,43,0.12)',
+                      color:req.status==='pending'?'#f0ede8':req.status==='approved'?'#4ade80':'#f87171',
+                      border:`0.5px solid ${req.status==='pending'?'rgba(192,57,43,0.25)':req.status==='approved'?'rgba(192,57,43,0.3)':'rgba(192,57,43,0.25)'}`}}>
                       {req.status}
                     </span>
                   </div>
@@ -153,7 +153,7 @@ export default function AdminAnalytics({ user }) {
                       </button>
                       <button onClick={()=>handleReject(req.user_id,req.email)}
                         style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #fecaca',
-                          background:'#fef2f2',color:'#f87171',cursor:'pointer',fontWeight:600}}>
+                          background:'rgba(192,57,43,0.12)',color:'#f87171',cursor:'pointer',fontWeight:600}}>
                         ✗ Reject
                       </button>
                     </>)}
@@ -173,9 +173,9 @@ export default function AdminAnalytics({ user }) {
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:10,marginBottom:20}}>
           {[
             {icon:Shield,      val:stats.active,      label:'Active certs',     color:'#4ade80'},
-            {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#ffffff'},
-            {icon:AlertTriangle,val:stats.expiring30, label:'Expiring in 30d',  color:'#ffffff'},
-            {icon:CheckCircle, val:stats.installed,   label:'Auto-installed',   color:'#ffffff'},
+            {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#f0ede8'},
+            {icon:AlertTriangle,val:stats.expiring30, label:'Expiring in 30d',  color:'#f0ede8'},
+            {icon:CheckCircle, val:stats.installed,   label:'Auto-installed',   color:'#f0ede8'},
           ].map(({icon:Icon,val,label,color})=>(
             <div key={label} className="v2-card" style={{padding:'14px 16px'}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
@@ -194,11 +194,11 @@ export default function AdminAnalytics({ user }) {
             {Object.entries(stats.grades).filter(([,v])=>v>0).map(([g,v])=>(
               <div key={g} style={{marginBottom:10}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
-                  <span style={{fontSize:12,fontWeight:500,color:gradeColor[g]||'rgba(255,255,255,0.7)',fontFamily:'monospace'}}>{g==='unknown'?'—':g}</span>
+                  <span style={{fontSize:12,fontWeight:500,color:gradeColor[g]||'rgba(240,237,232,0.7)',fontFamily:'monospace'}}>{g==='unknown'?'—':g}</span>
                   <span style={{fontSize:12,color:'var(--v2-text-2)'}}>{v} cert{v!==1?'s':''}</span>
                 </div>
                 <div style={{height:6,borderRadius:3,background:'var(--v2-surface-3)',overflow:'hidden'}}>
-                  <div style={{height:'100%',borderRadius:3,background:gradeColor[g]||'rgba(255,255,255,0.7)',width:`${Math.min(100,(v/Math.max(1,stats.active))*100)}%`,transition:'width .6s'}}/>
+                  <div style={{height:'100%',borderRadius:3,background:gradeColor[g]||'rgba(240,237,232,0.7)',width:`${Math.min(100,(v/Math.max(1,stats.active))*100)}%`,transition:'width .6s'}}/>
                 </div>
               </div>
             ))}
@@ -210,7 +210,7 @@ export default function AdminAnalytics({ user }) {
             <div className="v2-section-label" style={{marginBottom:14}}>Certificates by CA</div>
             {Object.entries(stats.bySource).sort((a,b)=>b[1]-a[1]).map(([src,cnt])=>{
               const labels = {rapidssl:'RapidSSL',tss:'RapidSSL',letsencrypt:"Let's Encrypt",zerossl:'ZeroSSL',buypass:'Buypass',acme:'ACME',unknown:'Unknown'}
-              const colors = {rapidssl:'#4ade80',tss:'#4ade80',letsencrypt:'#ffffff',zerossl:'#ffffff',buypass:'#ffffff',acme:'rgba(255,255,255,0.7)',unknown:'rgba(255,255,255,0.38)'}
+              const colors = {rapidssl:'#4ade80',tss:'#4ade80',letsencrypt:'#f0ede8',zerossl:'#f0ede8',buypass:'#f0ede8',acme:'rgba(240,237,232,0.7)',unknown:'rgba(240,237,232,0.38)'}
               return (
                 <div key={src} style={{marginBottom:10}}>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
@@ -218,7 +218,7 @@ export default function AdminAnalytics({ user }) {
                     <span style={{fontSize:12,color:'var(--v2-text-2)'}}>{cnt}</span>
                   </div>
                   <div style={{height:6,borderRadius:3,background:'var(--v2-surface-3)',overflow:'hidden'}}>
-                    <div style={{height:'100%',borderRadius:3,background:colors[src]||'rgba(255,255,255,0.7)',width:`${(cnt/Math.max(1,stats.active))*100}%`,transition:'width .6s'}}/>
+                    <div style={{height:'100%',borderRadius:3,background:colors[src]||'rgba(240,237,232,0.7)',width:`${(cnt/Math.max(1,stats.active))*100}%`,transition:'width .6s'}}/>
                   </div>
                 </div>
               )
@@ -228,10 +228,10 @@ export default function AdminAnalytics({ user }) {
 
         {/* Expiry urgency */}
         {stats.expiring7 > 0 && (
-          <div style={{background:'#fef2f2',border:'0.5px solid #fecaca',borderRadius:10,padding:'14px 18px',marginBottom:20,display:'flex',gap:12,alignItems:'flex-start'}}>
+          <div style={{background:'rgba(192,57,43,0.12)',border:'0.5px solid #fecaca',borderRadius:10,padding:'14px 18px',marginBottom:20,display:'flex',gap:12,alignItems:'flex-start'}}>
             <AlertTriangle size={16} style={{color:'#f87171',flexShrink:0,marginTop:2}}/>
             <div>
-              <div style={{fontSize:13,fontWeight:500,color:'#991b1b',marginBottom:3}}>{stats.expiring7} certificate{stats.expiring7!==1?'s':''} expiring within 7 days</div>
+              <div style={{fontSize:13,fontWeight:500,color:'#a93226',marginBottom:3}}>{stats.expiring7} certificate{stats.expiring7!==1?'s':''} expiring within 7 days</div>
               <div style={{fontSize:12,color:'#f87171'}}>Check the dashboard and renew immediately if auto-renew is not enabled.</div>
             </div>
           </div>

@@ -26,14 +26,14 @@ function formatStepTime(ms) {
 function StepIcon({ status }) {
   if (status === 'done') return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-      <circle cx="9" cy="9" r="9" fill="#10b981"/>
-      <path d="M5 9l3 3 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="9" cy="9" r="9" fill="#c0392b"/>
+      <path d="M5 9l3 3 5-5" stroke="#f0ede8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   )
   if (status === 'error') return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <circle cx="9" cy="9" r="9" fill="#f87171"/>
-      <path d="M6 6l6 6M12 6l-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="M6 6l6 6M12 6l-6 6" stroke="#f0ede8" strokeWidth="1.8" strokeLinecap="round"/>
     </svg>
   )
   if (status === 'active') return (
@@ -47,7 +47,7 @@ function StepIcon({ status }) {
   return (
     <div style={{
       width: 18, height: 18, borderRadius: '50%',
-      border: '2px solid rgba(255,255,255,0.15)', flexShrink: 0,
+      border: '2px solid rgba(240,237,232,0.15)', flexShrink: 0,
     }}/>
   )
 }
@@ -71,13 +71,13 @@ function FloatingPill({ action, domain, elapsedMs, onExpand }) {
       onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
     >
       <div style={{
-        width: 8, height: 8, borderRadius: '50%', background: '#10b981',
+        width: 8, height: 8, borderRadius: '50%', background: '#c0392b',
         animation: 'mc-pulse 1.4s ease-in-out infinite',
       }}/>
       <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(192,57,43,0.1)', fontFamily: 'inherit' }}>
         {action === 'reissue' ? '🔐' : '♻️'} {action === 'reissue' ? 'Reissuing' : 'Renewing'} {domain}
       </span>
-      <span style={{ fontSize: 12, color: '#10b981', fontFamily: 'monospace', fontWeight: 700 }}>
+      <span style={{ fontSize: 12, color: '#c0392b', fontFamily: 'monospace', fontWeight: 700 }}>
         {formatClock(elapsedMs)}
       </span>
     </div>
@@ -104,8 +104,8 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
       {/* Checkmark */}
       <div style={{ marginBottom: 20 }}>
         <svg width="72" height="72" viewBox="0 0 72 72" style={{ animation: 'mc-pop 0.4s cubic-bezier(.16,1,.3,1)' }}>
-          <circle cx="36" cy="36" r="34" fill="none" stroke={confirmed ? '#10b981' : '#10b981'} strokeWidth="2.5"/>
-          <path d="M22 36l10 10 18-18" stroke="#10b981" strokeWidth="3"
+          <circle cx="36" cy="36" r="34" fill="none" stroke={confirmed ? '#c0392b' : '#c0392b'} strokeWidth="2.5"/>
+          <path d="M22 36l10 10 18-18" stroke="#c0392b" strokeWidth="3"
             strokeLinecap="round" strokeLinejoin="round" fill="none"/>
         </svg>
       </div>
@@ -149,7 +149,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
             )}
             {certIssued && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#10b981', wordBreak: 'break-all' }}>
+                <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#c0392b', wordBreak: 'break-all' }}>
                   Serial: {p.cert.serial}
                 </div>
                 <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>
@@ -163,13 +163,13 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
               </div>
             )}
             {p && !certIssued && p.pem_error && (
-              <div style={{ fontSize: 11, color: '#fca5a5' }}>{p.pem_error}</div>
+              <div style={{ fontSize: 11, color: 'rgba(239,83,80,0.3)' }}>{p.pem_error}</div>
             )}
           </div>
           {certIssued && (
             <div style={{
               fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 20,
-              background: 'rgba(16,185,129,0.15)', color: '#10b981', flexShrink: 0,
+              background: 'rgba(16,185,129,0.15)', color: '#c0392b', flexShrink: 0,
             }}>VERIFIED</div>
           )}
         </div>
@@ -199,7 +199,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
             )}
             {reachable && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <div style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>
+                <div style={{ fontSize: 11, color: '#c0392b', fontWeight: 600 }}>
                   HTTPS responding · {p.https.latency_ms}ms
                 </div>
                 <div style={{ fontSize: 11, color: 'rgba(232,245,244,0.4)' }}>
@@ -208,7 +208,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
               </div>
             )}
             {p && !reachable && (
-              <div style={{ fontSize: 11, color: '#fca5a5' }}>
+              <div style={{ fontSize: 11, color: 'rgba(239,83,80,0.3)' }}>
                 {p.https?.error || 'Server not reachable over HTTPS'}
               </div>
             )}
@@ -216,7 +216,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
           {reachable && (
             <div style={{
               fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 20,
-              background: 'rgba(16,185,129,0.15)', color: '#10b981', flexShrink: 0,
+              background: 'rgba(16,185,129,0.15)', color: '#c0392b', flexShrink: 0,
             }}>LIVE</div>
           )}
         </div>
@@ -234,7 +234,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
               : 'rgba(248,113,113,0.08)',
           border: `1px solid ${confirmed ? 'rgba(16,185,129,0.3)' : certIssued && !reachable ? 'rgba(251,191,36,0.3)' : 'rgba(248,113,113,0.2)'}`,
           fontSize: 12, fontWeight: 600,
-          color: confirmed ? '#10b981' : certIssued && !reachable ? '#fbbf24' : '#fca5a5',
+          color: confirmed ? '#c0392b' : certIssued && !reachable ? '#fbbf24' : 'rgba(239,83,80,0.3)',
         }}>
           {confirmed
             ? '✓ Certificate issued and server is live over HTTPS'
@@ -251,7 +251,7 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
         <button onClick={onViewCert} style={{
           fontSize: 13, fontWeight: 600, padding: '10px 20px', borderRadius: 8,
           background: 'rgba(16,185,129,0.12)', border: '1px solid #10b981',
-          color: '#10b981', cursor: 'pointer', fontFamily: 'inherit',
+          color: '#c0392b', cursor: 'pointer', fontFamily: 'inherit',
         }}
           onMouseEnter={e => e.currentTarget.style.background='rgba(16,185,129,0.22)'}
           onMouseLeave={e => e.currentTarget.style.background='rgba(16,185,129,0.12)'}>
@@ -259,10 +259,10 @@ function SuccessScreen({ action, domain, serial, liveConfirmed, probeStatus, onD
         </button>
         <button onClick={onDone} style={{
           fontSize: 13, fontWeight: 600, padding: '10px 20px', borderRadius: 8,
-          background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
+          background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(240,237,232,0.12)',
           color: 'rgba(192,57,43,0.1)', cursor: 'pointer', fontFamily: 'inherit',
         }}
-          onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
+          onMouseEnter={e => e.currentTarget.style.background='rgba(240,237,232,0.12)'}
           onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.07)'}>
           Done
         </button>
@@ -389,7 +389,7 @@ export default function MissionControlModal({
               {busy && (
                 <div style={{
                   fontSize: 14, fontWeight: 700, fontFamily: 'monospace',
-                  color: '#10b981', background: 'rgba(16,185,129,0.1)',
+                  color: '#c0392b', background: 'rgba(16,185,129,0.1)',
                   padding: '4px 10px', borderRadius: 6,
                   border: '1px solid rgba(16,185,129,0.2)',
                   minWidth: 52, textAlign: 'center',
@@ -510,7 +510,7 @@ export default function MissionControlModal({
                           <div style={{
                             fontSize: 11, marginTop: 3,
                             fontFamily: 'monospace',
-                            color: isErr ? '#fca5a5'
+                            color: isErr ? 'rgba(239,83,80,0.3)'
                               : isActive ? 'rgba(16,185,129,0.8)'
                               : 'rgba(232,245,244,0.4)',
                             wordBreak: 'break-all',
@@ -541,7 +541,7 @@ export default function MissionControlModal({
                     display: 'flex', alignItems: 'center', gap: 6,
                   }}>
                     <div style={{
-                      width: 6, height: 6, borderRadius: '50%', background: '#10b981',
+                      width: 6, height: 6, borderRadius: '50%', background: '#c0392b',
                       animation: 'mc-pulse 1.4s ease-in-out infinite',
                     }}/>
                     DNS validation typically takes 1–3 minutes. You can minimise this and keep working.
@@ -566,7 +566,7 @@ export default function MissionControlModal({
                   <div style={{
                     padding: '12px 14px', borderRadius: 10,
                     background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)',
-                    fontSize: 12, color: '#fca5a5',
+                    fontSize: 12, color: 'rgba(239,83,80,0.3)',
                   }}>
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>Something went wrong</div>
                     <div style={{ opacity: 0.8 }}>
@@ -576,7 +576,7 @@ export default function MissionControlModal({
                       marginTop: 10, fontSize: 12, fontWeight: 600,
                       padding: '7px 14px', borderRadius: 7,
                       background: 'rgba(248,113,113,0.15)', border: '1px solid rgba(248,113,113,0.3)',
-                      color: '#fca5a5', cursor: 'pointer', fontFamily: 'inherit',
+                      color: 'rgba(239,83,80,0.3)', cursor: 'pointer', fontFamily: 'inherit',
                     }}>
                       Dismiss
                     </button>

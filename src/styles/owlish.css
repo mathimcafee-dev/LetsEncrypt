@@ -1,15 +1,15 @@
 /* SSLVault — Teal + Cream + Coral palette */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
 :root {
   /* ── Backgrounds ── */
-  --bg:        #0d2b2b;   /* mint-tinted page bg */
-  --bg2:       #1a4040;   /* white card surface */
-  --bg3:       #0f3535;   /* teal tint panels */
-  --bg4:       #133d3d;   /* deeper teal tint */
+  --bg:        transparent;   /* mint-tinted page bg */
+  --bg2:       transparent;   /* white card surface */
+  --bg3:       transparent;   /* teal tint panels */
+  --bg4:       transparent;   /* deeper teal tint */
 
   /* ── Sidebar ── */
-  --sb:        #0d2b2b;   /* deep teal sidebar */
+  --sb:        transparent;   /* deep teal sidebar */
   --sb2:       #236b6b;   /* sidebar hover */
   --sb-act:    #2d8080;   /* active item */
 
@@ -29,7 +29,7 @@
   --teal-bd:   rgba(192,57,43,0.3);
 
   /* ── Coral accent ── */
-  --coral:     #ff6b5b;
+  --coral:     #e07060;
   --coral-dim: #e85544;
   --coral-bg:  rgba(255,107,91,0.12);
   --coral-bd:  rgba(255,107,91,0.3);
@@ -49,7 +49,7 @@
   --blue-bd:   #90c0e8;
 
   --f:    'Montserrat', system-ui, sans-serif;
-  --mono: 'SF Mono','Menlo','Consolas',monospace;
+  --mono: 'JetBrains Mono','Menlo','Consolas',monospace;
   --r:    8px;
 }
 
@@ -90,7 +90,7 @@ html, body {
 
 .v2-btn { background: var(--bg3) !important; border: 1px solid var(--line2) !important; border-radius: var(--r) !important; color: var(--ink) !important; font-family: var(--f) !important; cursor: pointer; transition: all .15s; }
 .v2-btn:hover { background: var(--bg4) !important; border-color: var(--teal-bd) !important; }
-.v2-btn-primary { background: var(--teal) !important; color: #fff !important; border: none !important; font-weight: 600 !important; }
+.v2-btn-primary { background: var(--teal) !important; color: #f0ede8 !important; border: none !important; font-weight: 600 !important; }
 .v2-btn-primary:hover { background: var(--teal-dim) !important; }
 .v2-btn-sm { font-size: 11px !important; padding: 3px 9px !important; }
 
@@ -120,13 +120,13 @@ html, body {
 
 /* ── CSS var bridge for all design-v2 pages ── */
 :root {
-  --v2-bg: #0d2b2b; --v2-bg-alt: #0f3535; --v2-surface: #1a4040;
-  --v2-surface-2: #0f3535; --v2-surface-3: #133d3d; --v2-hover: #133d3d;
+  --v2-bg: transparent; --v2-bg-alt: transparent; --v2-surface: transparent;
+  --v2-surface-2: transparent; --v2-surface-3: transparent; --v2-hover: transparent;
   --v2-border: rgba(192,57,43,0.15); --v2-border-strong: rgba(192,57,43,0.25); --v2-border-focus: #e07060;
   --v2-text: rgba(192,57,43,0.1); --v2-text-2: rgba(232,245,244,0.7); --v2-text-3: rgba(232,245,244,0.4);
   --v2-green: #4ade80; --v2-green-text: #4ade80; --v2-green-text-2: #4ade80;
   --v2-green-bg: rgba(74,222,128,0.12); --v2-green-border: rgba(74,222,128,0.3);
-  --v2-amber: #c47a20; --v2-amber-text: #c47a20; --v2-amber-bg: #fef3d8; --v2-amber-border: #f0c060;
+  --v2-amber: #e67e22; --v2-amber-text: #e67e22; --v2-amber-bg: #fef3d8; --v2-amber-border: #f0c060;
   --v2-red: #f87171; --v2-red-text: #f87171; --v2-red-bg: rgba(248,113,113,0.12); --v2-red-border: rgba(248,113,113,0.3);
   --v2-shadow-sm: 0 1px 3px rgba(26,95,95,0.08);
   --v2-shadow-md: 0 4px 12px rgba(26,95,95,0.1);
@@ -139,28 +139,28 @@ html, body {
    ═══════════════════════════════════════════════════════ */
 
 /* Page bg */
-.v2-page div[style*="background:'#0d1117'"],
+.v2-page div[style*="background:'transparent'"],
 .v2-page div[style*="background:'#000000'"],
-.v2-page div[style*="background:'#0a0a0a'"] { background: var(--bg) !important; }
+.v2-page div[style*="background:'transparent'"] { background: var(--bg) !important; }
 
 /* Card surfaces */
-.v2-page div[style*="background:'#161b22'"],
-.v2-page div[style*="background:'#111111'"] { background: var(--bg2) !important; border-color: var(--line) !important; }
-.v2-page div[style*="background:'#1c2128'"],
-.v2-page div[style*="background:'#1a1a1a'"] { background: var(--bg3) !important; border-color: var(--line) !important; }
-.v2-page div[style*="background:'#21262d'"],
+.v2-page div[style*="background:'transparent'"],
+.v2-page div[style*="background:'transparent'"] { background: var(--bg2) !important; border-color: var(--line) !important; }
+.v2-page div[style*="background:'transparent'"],
+.v2-page div[style*="background:'transparent'"] { background: var(--bg3) !important; border-color: var(--line) !important; }
+.v2-page div[style*="background:'transparent'"],
 .v2-page div[style*="background:'#0d0d0d'"] { background: var(--bg4) !important; }
 
 /* Dark text */
-.v2-page [style*="color:'#e6edf3'"],
-.v2-page [style*="color:'#ffffff'"],
-.v2-page [style*='color:"#ffffff"'] { color: var(--ink) !important; }
-.v2-page [style*="color:'#8b949e'"],
-.v2-page [style*="color:'rgba(255,255,255,0.6)'"] { color: var(--body) !important; }
-.v2-page [style*="color:'#6e7681'"],
+.v2-page [style*="color:'rgba(192,57,43,0.12)'"],
+.v2-page [style*="color:'#f0ede8'"],
+.v2-page [style*='color:"#f0ede8"'] { color: var(--ink) !important; }
+.v2-page [style*="color:'rgba(240,237,232,0.45)'"],
+.v2-page [style*="color:'rgba(240,237,232,0.6)'"] { color: var(--body) !important; }
+.v2-page [style*="color:'rgba(240,237,232,0.4)'"],
 .v2-page [style*="color:'#484f58'"],
-.v2-page [style*="color:'rgba(255,255,255,0.35)'"],
-.v2-page [style*="color:'rgba(255,255,255,0.5)'"] { color: var(--muted) !important; }
+.v2-page [style*="color:'rgba(240,237,232,0.35)'"],
+.v2-page [style*="color:'rgba(240,237,232,0.5)'"] { color: var(--muted) !important; }
 
 /* Borders */
 .v2-page [style*="rgba(255,255,255,0.08)"] { border-color: var(--line) !important; }
@@ -184,7 +184,7 @@ html, body {
 .v2-page [style*="color:'#f87171'"]  { color: var(--red)   !important; }
 .v2-page [style*="color:'#d29922'"],
 .v2-page [style*="color:'#fbbf24'"]  { color: var(--amber) !important; }
-.v2-page [style*="color:'#388bfd'"],
+.v2-page [style*="color:'#c0392b'"],
 .v2-page [style*="color:'#58a6ff'"]  { color: var(--teal)  !important; }
 
 /* Status tint backgrounds */
@@ -195,21 +195,21 @@ html, body {
 .v2-page [style*="background:'rgba(74,222,128"] { background: var(--green-bg) !important; }
 
 /* New SSL / primary buttons */
-.v2-page button[style*="background:'#388bfd'"],
-.v2-page button[style*="background:'#0063b0'"] {
+.v2-page button[style*="background:'#c0392b'"],
+.v2-page button[style*="background:'#c0392b'"] {
   background: var(--teal) !important;
-  color: #fff !important;
+  color: #f0ede8 !important;
   border: none !important;
 }
-.v2-page button[style*="background:'#388bfd'"]:hover,
-.v2-page button[style*="background:'#0063b0'"]:hover { background: var(--teal-dim) !important; }
+.v2-page button[style*="background:'#c0392b'"]:hover,
+.v2-page button[style*="background:'#c0392b'"]:hover { background: var(--teal-dim) !important; }
 
 /* Quick action icon bg */
 .v2-page div[style*="background:'rgba(56,139,253,0.1)'"] { background: var(--teal-bg) !important; }
 
 /* Inputs */
-.v2-page input[style*="background:'#0d1117'"],
-.v2-page input[style*="background:'#1c2128'"],
+.v2-page input[style*="background:'transparent'"],
+.v2-page input[style*="background:'transparent'"],
 .v2-page input[style*="background:'#000000'"] {
   background: var(--bg2) !important;
   border: 1px solid var(--line2) !important;
@@ -217,9 +217,9 @@ html, body {
 }
 
 /* Action buttons */
-.v2-page button[style*="background:'#1c2128'"],
-.v2-page button[style*="background:'#21262d'"],
-.v2-page button[style*="background:'#111111'"] {
+.v2-page button[style*="background:'transparent'"],
+.v2-page button[style*="background:'transparent'"],
+.v2-page button[style*="background:'transparent'"] {
   background: var(--bg3) !important;
   border: 1px solid var(--line2) !important;
   color: var(--body) !important;

@@ -30,11 +30,11 @@ function fmtDays(d) {
 
 // Colour coding for expiry
 function expiryColor(d) {
-  if (d === null) return 'rgba(255,255,255,0.38)'
+  if (d === null) return 'rgba(240,237,232,0.38)'
   if (d <= 0)  return '#f87171'
-  if (d <= 7)  return '#ea580c'
-  if (d <= 30) return '#ffffff'
-  if (d <= 60) return '#ca8a04'
+  if (d <= 7)  return '#c0392b'
+  if (d <= 30) return '#f0ede8'
+  if (d <= 60) return '#e67e22'
   return '#4ade80'
 }
 
@@ -43,7 +43,7 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function ExpiryBadge({ iso }) {
   const d = dLeft(iso)
   const color = expiryColor(d)
-  const bg = d !== null && d <= 0 ? '#fef2f2' : d !== null && d <= 7 ? '#fff7ed' : d !== null && d <= 30 ? 'rgba(239,68,68,0.08)' : '#111111'
+  const bg = d !== null && d <= 0 ? 'rgba(192,57,43,0.12)' : d !== null && d <= 7 ? 'rgba(230,126,34,0.1)' : d !== null && d <= 30 ? 'rgba(239,68,68,0.08)' : 'transparent'
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
       background: bg, color, border: `0.5px solid ${color}44`, whiteSpace: 'nowrap' }}>
@@ -54,13 +54,13 @@ function ExpiryBadge({ iso }) {
 
 function StatusBadge({ status }) {
   const map = {
-    issued:   ['#4ade80', '#111111'],
-    expired:  ['#f87171', '#fef2f2'],
-    revoked:  ['rgba(255,255,255,0.7)', '#000000'],
-    pending:  ['#ffffff', 'rgba(239,68,68,0.08)'],
-    approved: ['#ffffff', '#111111'],
+    issued:   ['#4ade80', 'transparent'],
+    expired:  ['#f87171', 'rgba(192,57,43,0.12)'],
+    revoked:  ['rgba(240,237,232,0.7)', '#000000'],
+    pending:  ['#f0ede8', 'rgba(239,68,68,0.08)'],
+    approved: ['#f0ede8', 'transparent'],
   }
-  const [color, bg] = map[status?.toLowerCase()] || ['rgba(255,255,255,0.38)', '#000000']
+  const [color, bg] = map[status?.toLowerCase()] || ['rgba(240,237,232,0.38)', '#000000']
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
       background: bg, color, border: `0.5px solid ${color}44`, textTransform: 'capitalize' }}>
@@ -71,12 +71,12 @@ function StatusBadge({ status }) {
 
 function OrgBadge({ status }) {
   const map = {
-    active:   ['#4ade80', '#111111', 'Active'],
-    pending:  ['#ffffff', 'rgba(239,68,68,0.08)', 'Pending'],
-    expired:  ['#f87171', '#fef2f2', 'Expired'],
-    rejected: ['#f87171', '#fef2f2', 'Rejected'],
+    active:   ['#4ade80', 'transparent', 'Active'],
+    pending:  ['#f0ede8', 'rgba(239,68,68,0.08)', 'Pending'],
+    expired:  ['#f87171', 'rgba(192,57,43,0.12)', 'Expired'],
+    rejected: ['#f87171', 'rgba(192,57,43,0.12)', 'Rejected'],
   }
-  const [color, bg, label] = map[status?.toLowerCase()] || ['rgba(255,255,255,0.38)', '#000000', status || 'Unknown']
+  const [color, bg, label] = map[status?.toLowerCase()] || ['rgba(240,237,232,0.38)', '#000000', status || 'Unknown']
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
       background: bg, color, border: `0.5px solid ${color}44` }}>
@@ -159,7 +159,7 @@ function ApiKeyPanel({ onConnect }) {
   return (
     <div className="v2-card v2-card-pad" style={{ maxWidth: 480, margin: '48px auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{ width: 40, height: 40, borderRadius: 12, background: '#fef2f2',
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(192,57,43,0.12)',
           border: '1px solid #fecaca', display: 'flex', alignItems: 'center',
           justifyContent: 'center', fontWeight: 800, fontSize:14, color: '#f87171' }}>DC</div>
         <div>
@@ -247,16 +247,16 @@ function PortfolioLayer({ apiKey }) {
   })
 
   const BANDS = [
-    { key: 'expired',  label: 'Expired',      color: '#f87171', bg: '#fef2f2' },
-    { key: 'critical', label: '≤7 days',       color: '#ea580c', bg: '#fff7ed' },
-    { key: 'warning',  label: '8–30 days',     color: '#ffffff', bg: 'rgba(239,68,68,0.08)' },
-    { key: 'upcoming', label: '31–90 days',    color: '#ffffff', bg: '#111111' },
-    { key: 'healthy',  label: '>90 days',      color: '#4ade80', bg: '#111111' },
+    { key: 'expired',  label: 'Expired',      color: '#f87171', bg: 'rgba(192,57,43,0.12)' },
+    { key: 'critical', label: '≤7 days',       color: '#c0392b', bg: 'rgba(230,126,34,0.1)' },
+    { key: 'warning',  label: '8–30 days',     color: '#f0ede8', bg: 'rgba(239,68,68,0.08)' },
+    { key: 'upcoming', label: '31–90 days',    color: '#f0ede8', bg: 'transparent' },
+    { key: 'healthy',  label: '>90 days',      color: '#4ade80', bg: 'transparent' },
   ]
 
   return (
     <div>
-      <SectionHeader icon={Activity} color="#dc2626" title="Portfolio & Expiry Risk Map"
+      <SectionHeader icon={Activity} color="#c0392b" title="Portfolio & Expiry Risk Map"
         sub="All issued orders from CertCentral, bucketed by urgency. Click a band to filter."
         badge="Live"/>
 
@@ -369,7 +369,7 @@ function ValidationLayer({ apiKey }) {
 
   return (
     <div>
-      <SectionHeader icon={Building} color="#f07059" title="Org & Domain Validation Status"
+      <SectionHeader icon={Building} color="#e07060" title="Org & Domain Validation Status"
         sub="OV/EV org validation and DCV domain validation expiry — both lapse every ~13 months and block reissue."
         badge="Proactive"/>
 
@@ -531,11 +531,11 @@ function PQCLayer({ apiKey }) {
   }
 
   const score = riskScore()
-  const scoreColor = score >= 80 ? '#4ade80' : score >= 60 ? '#ffffff' : '#f87171'
+  const scoreColor = score >= 80 ? '#4ade80' : score >= 60 ? '#f0ede8' : '#f87171'
 
   return (
     <div>
-      <SectionHeader icon={Zap} color="#f07059" title="PQC & Crypto Agility Scanner"
+      <SectionHeader icon={Zap} color="#e07060" title="PQC & Crypto Agility Scanner"
         sub="Key algorithm distribution, hash strength, and 47-day renewal readiness across your full DigiCert portfolio."
         badge="Crypto Intelligence"/>
 
@@ -563,8 +563,8 @@ function PQCLayer({ apiKey }) {
             { label: 'ECDSA P-256 certs (good)', count: summary.ecdsaP256.length, risk: 'good' },
             { label: 'ECDSA P-384 certs (best)', count: summary.ecdsaP384.length, risk: 'good' },
           ].map(({ label, count, risk }) => {
-            const color = risk === 'critical' ? '#f87171' : risk === 'high' ? '#ea580c'
-                        : risk === 'medium' ? '#ffffff' : risk === 'low' ? '#ffffff' : '#4ade80'
+            const color = risk === 'critical' ? '#f87171' : risk === 'high' ? '#c0392b'
+                        : risk === 'medium' ? '#f0ede8' : risk === 'low' ? '#f0ede8' : '#4ade80'
             return (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10,
                 marginBottom: 8, opacity: count === 0 ? 0.4 : 1 }}>
@@ -578,10 +578,10 @@ function PQCLayer({ apiKey }) {
       </div>
 
       {/* 47-day readiness */}
-      <div className="v2-card v2-card-pad" style={{ background: noAutoRenew.length > 0 ? 'rgba(239,68,68,0.08)' : '#111111',
-        border: `0.5px solid ${noAutoRenew.length > 0 ? '#F2C4BC' : 'rgba(192,57,43,0.3)'}` }}>
+      <div className="v2-card v2-card-pad" style={{ background: noAutoRenew.length > 0 ? 'rgba(239,68,68,0.08)' : 'transparent',
+        border: `0.5px solid ${noAutoRenew.length > 0 ? 'rgba(192,57,43,0.25)' : 'rgba(192,57,43,0.3)'}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-          <Clock size={14} strokeWidth={2} style={{ color: noAutoRenew.length > 0 ? '#ffffff' : '#4ade80' }}/>
+          <Clock size={14} strokeWidth={2} style={{ color: noAutoRenew.length > 0 ? '#f0ede8' : '#4ade80' }}/>
           <span style={{ fontWeight: 600, fontSize:13, color: 'var(--v2-text)' }}>
             47-Day Certificate Readiness
           </span>
@@ -591,7 +591,7 @@ function PQCLayer({ apiKey }) {
           Certificates expiring within 200 days with no automatic renewal in SSLVault will require manual action
           on an increasingly frequent cycle.
         </p>
-        <div style={{ fontWeight: 600, fontSize:13, color: noAutoRenew.length > 0 ? '#ffffff' : '#4ade80' }}>
+        <div style={{ fontWeight: 600, fontSize:13, color: noAutoRenew.length > 0 ? '#f0ede8' : '#4ade80' }}>
           {noAutoRenew.length === 0
             ? '✓ All active certs are covered — 47-day ready'
             : `${noAutoRenew.length} certs within 200-day window without confirmed auto-renewal`}
@@ -697,7 +697,7 @@ function RevokeLayer({ apiKey }) {
 
   return (
     <div>
-      <SectionHeader icon={Shield} color="#dc2626" title="Revoke & Replace Workflow"
+      <SectionHeader icon={Shield} color="#c0392b" title="Revoke & Replace Workflow"
         sub="Guided revocation with reason codes. An admin approval request is submitted to DigiCert — not executed instantly."
         badge="Controlled"/>
 
@@ -741,7 +741,7 @@ function RevokeLayer({ apiKey }) {
               <div className="v2-code" style={{ margin: 0 }}>
                 <div className="v2-code-head">
                   <div className="v2-code-dots">
-                    <span style={{ background: '#f87171' }}/><span style={{ background: '#ffffff' }}/><span style={{ background: '#ffffff' }}/>
+                    <span style={{ background: '#f87171' }}/><span style={{ background: '#f0ede8' }}/><span style={{ background: '#f0ede8' }}/>
                   </div>
                 </div>
                 <pre>{`PUT https://www.digicert.com/services/v2/certificate/${certId || '{cert_id}'}/revoke
@@ -764,7 +764,7 @@ X-DC-DEVKEY: ••••••••••••••••
             </button>
             <button className="v2-btn" onClick={() => { setCertId(''); setPreview(false); setError('') }}
               style={{ fontSize:12 }}>Clear</button>
-            <button className="v2-btn" style={{ background: '#fef2f2', color: '#f87171',
+            <button className="v2-btn" style={{ background: 'rgba(192,57,43,0.12)', color: '#f87171',
               border: '0.5px solid #fecaca', fontSize:12 }}
               onClick={execute} disabled={busy || !certId.trim()}>
               {busy ? <Spinner/> : <Shield size={12}/>} Submit revocation request
@@ -811,10 +811,10 @@ function CTLogLayer({ apiKey }) {
       {ctStatus && (
         <div className="v2-card v2-card-pad" style={{ marginBottom: 20, display: 'flex', gap: 12, alignItems: 'center' }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-            background: ctStatus.ct_log_monitoring ? '#4ade80' : 'rgba(255,255,255,0.38)' }}/>
+            background: ctStatus.ct_log_monitoring ? '#4ade80' : 'rgba(240,237,232,0.38)' }}/>
           <div>
             <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)' }}>
-              Account CT log monitoring: <span style={{ color: ctStatus.ct_log_monitoring ? '#4ade80' : 'rgba(255,255,255,0.38)' }}>
+              Account CT log monitoring: <span style={{ color: ctStatus.ct_log_monitoring ? '#4ade80' : 'rgba(240,237,232,0.38)' }}>
                 {ctStatus.ct_log_monitoring ? 'Enabled' : 'Disabled'}
               </span>
             </div>
@@ -893,7 +893,7 @@ export default function DigiCertIntelligence({ nav }) {
           </button>
           <span style={{ color: 'var(--v2-border)', fontSize:12 }}>/</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            <div style={{ width: 22, height: 22, borderRadius: 6, background: '#fef2f2',
+            <div style={{ width: 22, height: 22, borderRadius: 6, background: 'rgba(192,57,43,0.12)',
               border: '1px solid #fecaca', display: 'flex', alignItems: 'center',
               justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#f87171' }}>DC</div>
             <span style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)' }}>DigiCert Intelligence</span>

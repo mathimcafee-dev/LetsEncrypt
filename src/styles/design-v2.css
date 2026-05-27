@@ -120,7 +120,7 @@
 .v2-btn-primary {
   background: #c0392b;
   border-color: #c0392b;
-  color: #fff;
+  color: #f0ede8;
 }
 .v2-btn-primary:hover {
   background: #a93226;
@@ -287,7 +287,7 @@
   border-radius: 7px;
   font-size: 13px;
   font-weight: 500;
-  color: rgba(255,255,255,0.65);
+  color: rgba(240,237,232,0.65);
   cursor: pointer;
   transition: all 0.12s;
   white-space: nowrap;
@@ -299,7 +299,7 @@
 }
 .v2-nav-item:hover {
   background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.9);
+  color: rgba(240,237,232,0.9);
 }
 .v2-nav-item.active {
   background: rgba(192,57,43,0.18);
@@ -313,7 +313,7 @@
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
+  color: rgba(240,237,232,0.3);
   padding: 0 10px;
   margin: 14px 0 4px;
 }

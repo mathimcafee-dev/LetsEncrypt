@@ -54,14 +54,14 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function Tick({ ok }) {
   return ok
     ? <CheckCircle size={14} color="#c0392b" style={{ flexShrink:0 }}/>
-    : <XCircle    size={14} color="#C04040" style={{ flexShrink:0 }}/>
+    : <XCircle    size={14} color="#c0392b" style={{ flexShrink:0 }}/>
 }
 
 function StatusPill({ status }) {
   const map = {
-    'Ready':      { bg:'#111111', color:'#a93226', border:'rgba(192,57,43,0.3)' },
-    'At risk':    { bg:'#FAEEDA', color:'#854F0B', border:'#F0C490' },
-    'Will break': { bg:'#FCEBEB', color:'#A32D2D', border:'#F7C1C1' },
+    'Ready':      { bg:'transparent', color:'#a93226', border:'rgba(192,57,43,0.3)' },
+    'At risk':    { bg:'rgba(230,126,34,0.12)', color:'#c0392b', border:'rgba(230,126,34,0.4)' },
+    'Will break': { bg:'rgba(192,57,43,0.1)', color:'#a93226', border:'rgba(192,57,43,0.2)' },
   }
   const s = map[status] || map['Will break']
   return (
@@ -73,7 +73,7 @@ function StatusPill({ status }) {
 }
 
 function ScoreBadge({ score }) {
-  const color = score >= 90 ? '#a93226' : score >= 60 ? '#854F0B' : '#A32D2D'
+  const color = score >= 90 ? '#a93226' : score >= 60 ? '#c0392b' : '#a93226'
   return (
     <span style={{ fontSize:12, fontWeight:700, color, fontFamily:'monospace' }}>{score}</span>
   )
@@ -203,11 +203,11 @@ export default function ReadinessDashboard({ user }) {
         {/* Summary strip */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(130px,1fr))', gap:8, marginBottom:16 }}>
           {[
-            { label:'Fleet score',  value:fleetScore, unit:'/ 100', color: fleetScore>=90?'#a93226':fleetScore>=60?'#854F0B':'#A32D2D' },
+            { label:'Fleet score',  value:fleetScore, unit:'/ 100', color: fleetScore>=90?'#a93226':fleetScore>=60?'#c0392b':'#a93226' },
             { label:'Domains',      value:rows.length, unit:'total',    color:'var(--v2-text-1)' },
             { label:'Ready',        value:ready,        unit:'domains',  color:'#a93226' },
-            { label:'At risk',      value:atRisk,       unit:'domains',  color:'#854F0B' },
-            { label:'Will break',   value:willBreak,    unit:'domains',  color:'#A32D2D' },
+            { label:'At risk',      value:atRisk,       unit:'domains',  color:'#c0392b' },
+            { label:'Will break',   value:willBreak,    unit:'domains',  color:'#a93226' },
           ].map(s => (
             <div key={s.label} style={{ padding:'10px 14px', borderRadius:8,
               background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)' }}>
@@ -229,19 +229,19 @@ export default function ReadinessDashboard({ user }) {
             return (
               <div key={m.label} style={{ padding:'9px 14px', borderRadius:8, display:'flex',
                 alignItems:'center', justifyContent:'space-between',
-                background: past && i===0 ? '#FAEEDA' : 'var(--v2-surface)',
-                border:`0.5px solid ${past && i===0 ? '#F0C490' : 'var(--v2-border)'}` }}>
+                background: past && i===0 ? 'rgba(230,126,34,0.12)' : 'var(--v2-surface)',
+                border:`0.5px solid ${past && i===0 ? 'rgba(230,126,34,0.4)' : 'var(--v2-border)'}` }}>
                 <div>
                   <span style={{ fontSize:12, fontWeight:600,
-                    color: past && i===0 ? '#854F0B' : 'var(--v2-text-1)' }}>{m.label}</span>
+                    color: past && i===0 ? '#c0392b' : 'var(--v2-text-1)' }}>{m.label}</span>
                   <span style={{ fontSize:11, color:'var(--v2-text-3)', marginLeft:8 }}>
                     max {m.days}-day validity
                   </span>
                 </div>
                 <span style={{ fontSize:11, fontWeight:600, padding:'2px 8px', borderRadius:20,
-                  background: past ? (i===0?'#FAEEDA':'var(--v2-bg)') : '#111111',
-                  color: past ? (i===0?'#854F0B':'var(--v2-text-3)') : '#a93226',
-                  border:`0.5px solid ${past?(i===0?'#F0C490':'var(--v2-border)'):'rgba(192,57,43,0.3)'}` }}>
+                  background: past ? (i===0?'rgba(230,126,34,0.12)':'var(--v2-bg)') : 'transparent',
+                  color: past ? (i===0?'#c0392b':'var(--v2-text-3)') : '#a93226',
+                  border:`0.5px solid ${past?(i===0?'rgba(230,126,34,0.4)':'var(--v2-border)'):'rgba(192,57,43,0.3)'}` }}>
                   {past ? 'In effect' : `${d}d`}
                 </span>
               </div>
@@ -296,7 +296,7 @@ export default function ReadinessDashboard({ user }) {
                     const { cert, checks, milestones, score, status, validity } = row
                     const expiry = fmtExpiry(cert.expires_at)
                     const expiryDays = expiry.days
-                    const expiryColor = expiryDays < 30 ? '#A32D2D' : expiryDays < 90 ? '#854F0B' : 'var(--v2-text-2)'
+                    const expiryColor = expiryDays < 30 ? '#a93226' : expiryDays < 90 ? '#c0392b' : 'var(--v2-text-2)'
                     return (
                       <tr key={cert.id}
                         style={{ borderTop:`0.5px solid var(--v2-border)`,
@@ -323,7 +323,7 @@ export default function ReadinessDashboard({ user }) {
                             ) : cert.source ? (
                               <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px',
                                 borderRadius:4, whiteSpace:'nowrap', flexShrink:0,
-                                background:'#FAEEDA', color:'#854F0B',
+                                background:'rgba(230,126,34,0.12)', color:'#c0392b',
                                 border:'0.5px solid #F0C490' }}>
                                 {cert.issuer || cert.source}
                               </span>

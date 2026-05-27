@@ -28,10 +28,10 @@ import Pricing from './Pricing'
 
 // ── Design tokens ──────────────────────────────────────────────────────
 const F = "'Montserrat',system-ui,sans-serif"
-const NAVY  = '#0d2b2b'   // page bg
-const CARD  = '#1a4040'   // card / topbar bg
-const CARD2 = '#0f3535'   // elevated card
-const CARD3 = '#133d3d'   // input / hover
+const NAVY  = 'transparent'   // page bg
+const CARD  = 'transparent'   // card / topbar bg
+const CARD2 = 'transparent'   // elevated card
+const CARD3 = 'transparent'   // input / hover
 const LINE  = 'rgba(192,57,43,0.15)'
 const LINE2 = 'rgba(192,57,43,0.25)'
 const INK   = 'rgba(192,57,43,0.1)'
@@ -171,7 +171,7 @@ export default function CLMHome({ user, nav }) {
       <div style={{padding:'16px 16px 14px',borderBottom:`1px solid ${LINE}`,flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{width:30,height:30,borderRadius:8,background:BLUE,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f0ede8" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <div>
             <div style={{fontSize:13,fontWeight:700,color:INK,letterSpacing:'-0.2px',lineHeight:1.2}}>SSLVault</div>
@@ -207,7 +207,7 @@ export default function CLMHome({ user, nav }) {
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,${BLUE},${BLUEH})`,
             display:'flex',alignItems:'center',justifyContent:'center',
-            fontSize:11,fontWeight:700,color:'#fff',flexShrink:0,letterSpacing:'-0.3px'}}>
+            fontSize:11,fontWeight:700,color:'#f0ede8',flexShrink:0,letterSpacing:'-0.3px'}}>
             {initials}
           </div>
           <div style={{flex:1,minWidth:0}}>
@@ -333,11 +333,11 @@ export default function CLMHome({ user, nav }) {
 
       <style>{`
         @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-        body{font-family:'Montserrat',system-ui,sans-serif;background:#0d1117}
+        body{font-family:'Montserrat',system-ui,sans-serif;background:transparent}
         ::-webkit-scrollbar{width:5px;height:5px}
-        ::-webkit-scrollbar-track{background:#161b22}
-        ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:99px}
-        ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.22)}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:rgba(240,237,232,0.12);border-radius:99px}
+        ::-webkit-scrollbar-thumb:hover{background:rgba(240,237,232,0.22)}
       `}</style>
     </div>
   )

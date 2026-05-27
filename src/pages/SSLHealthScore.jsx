@@ -29,20 +29,20 @@ function timeAgo(iso) {
 
 // Grade colour map
 function gradeStyle(grade) {
-  if (!grade || grade === 'F') return { color: '#f87171', bg: '#fef2f2', border: '#fecaca' }
-  if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: '#F2C4BC' }
-  if (grade === 'C') return { color: '#ca8a04', bg: '#fefce8', border: '#fef08a' }
-  if (grade === 'B') return { color: '#ffffff', bg: '#111111', border: 'rgba(192,57,43,0.3)' }
-  if (grade === 'A') return { color: '#4ade80', bg: '#111111', border: 'rgba(192,57,43,0.3)' }
-  if (grade === 'A+') return { color: '#ffffff', bg: '#111111', border: '#e07060' }
-  return { color: 'rgba(255,255,255,0.7)', bg: '#000000', border: '#ffffff' }
+  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)' }
+  if (grade === 'D') return { color: '#f0ede8', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)' }
+  if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)', border: 'rgba(230,126,34,0.2)' }
+  if (grade === 'B') return { color: '#f0ede8', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
+  if (grade === 'A') return { color: '#4ade80', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
+  if (grade === 'A+') return { color: '#f0ede8', bg: 'transparent', border: '#e07060' }
+  return { color: 'rgba(240,237,232,0.7)', bg: '#000000', border: '#f0ede8' }
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
-  const color = pct >= 80 ? '#4ade80' : pct >= 60 ? '#ffffff' : pct >= 50 ? '#ffffff' : '#f87171'
+  const color = pct >= 80 ? '#4ade80' : pct >= 60 ? '#f0ede8' : pct >= 50 ? '#f0ede8' : '#f87171'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{ flex: 1, height: 4, background: 'var(--v2-border)', borderRadius: 2, overflow: 'hidden' }}>
@@ -60,7 +60,7 @@ function Check({ ok, label }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
       {ok
         ? <CheckCircle size={11} color="#16a34a" />
-        : <XCircle size={11} color="#dc2626" />}
+        : <XCircle size={11} color="#c0392b" />}
       <span style={{ fontSize:11, color: ok ? '#4ade80' : '#f87171' }}>{label}</span>
     </div>
   )
@@ -94,7 +94,7 @@ function DomainRow({ score, onRescan, scanning }) {
             </span>
             {!score.cert_valid && (
               <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
-                background: '#fef2f2', color: '#f87171' }}>UNREACHABLE</span>
+                background: 'rgba(192,57,43,0.12)', color: '#f87171' }}>UNREACHABLE</span>
             )}
           </div>
           <ScoreBar score={score.score} />
@@ -107,7 +107,7 @@ function DomainRow({ score, onRescan, scanning }) {
           <Check ok={score.cert_valid} label="TLS" />
           {score.expiry_days != null && (
             <span style={{ fontSize:11, fontWeight: 500,
-              color: score.expiry_days <= 7 ? '#f87171' : score.expiry_days <= 30 ? '#ffffff' : '#4ade80' }}>
+              color: score.expiry_days <= 7 ? '#f87171' : score.expiry_days <= 30 ? '#f0ede8' : '#4ade80' }}>
               {score.expiry_days <= 0 ? 'Expired' : `${score.expiry_days}d`}
             </span>
           )}
@@ -235,7 +235,7 @@ export default function SSLHealthScore({ user }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
             {[
               { label: 'Domains', val: scores.length, color: 'var(--v2-text)' },
-              { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#ffffff' : '#f87171' },
+              { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#f0ede8' : '#f87171' },
               { label: 'A / A+', val: (gradeCount['A'] || 0) + (gradeCount['A+'] || 0), color: '#4ade80' },
               { label: 'Need attention', val: issues.length, color: issues.length > 0 ? '#f87171' : '#4ade80' },
             ].map(({ label, val, color }) => (

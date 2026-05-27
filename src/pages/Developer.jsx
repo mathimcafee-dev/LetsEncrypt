@@ -1,9 +1,9 @@
 // Developer.jsx — SSLVault developer / builder page
 import portrait from '../assets/mathi-portrait.jpg'
 
-const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
+const F    = "'Inter var','Montserrat',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
-const C    = { ink:'#ffffff', teal:'#ffffff', tealDk:'#ffffff', green:'#ffffff', purple:'#ffffff', border:'rgba(255,255,255,0.07)', text:'rgba(255,255,255,0.85)', textMid:'rgba(255,255,255,0.5)', textLt:'rgba(255,255,255,0.28)' }
+const C    = { ink:'#f0ede8', teal:'#f0ede8', tealDk:'#f0ede8', green:'#f0ede8', purple:'#f0ede8', border:'rgba(255,255,255,0.07)', text:'rgba(240,237,232,0.85)', textMid:'rgba(240,237,232,0.5)', textLt:'rgba(240,237,232,0.28)' }
 
 export default function Developer({ nav }) {
   return (
@@ -16,10 +16,10 @@ export default function Developer({ nav }) {
           <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.92)' }}>SSLVault</span>
+          <span style={{ fontSize:15, fontWeight:600, color:'rgba(240,237,232,0.92)' }}>SSLVault</span>
         </div>
         <button onClick={()=>nav('/auth')}
-          style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'7px 20px', borderRadius:100 }}>
+          style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#f0ede8', padding:'7px 20px', borderRadius:100 }}>
           Get started
         </button>
       </header>
@@ -32,7 +32,7 @@ export default function Developer({ nav }) {
         <div style={{ display:'flex', alignItems:'flex-start', gap:24, marginBottom:48, flexWrap:'wrap' }}>
           <img src={portrait} alt="Mathi" style={{ width:80, height:80, borderRadius:12, objectFit:'cover', border:`2px solid rgba(14,165,233,0.3)`, flexShrink:0 }}/>
           <div>
-            <h1 style={{ fontSize:'clamp(24px,4vw,40px)', fontWeight:800, letterSpacing:'-1px', lineHeight:1.15, marginBottom:8, color:'rgba(255,255,255,0.95)' }}>
+            <h1 style={{ fontSize:'clamp(24px,4vw,40px)', fontWeight:800, letterSpacing:'-1px', lineHeight:1.15, marginBottom:8, color:'rgba(240,237,232,0.95)' }}>
               Mathi (Spartan)
             </h1>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:12 }}>
@@ -75,11 +75,11 @@ export default function Developer({ nav }) {
         {/* Contact */}
         <div style={{ background:'rgba(255,255,255,0.03)', border:`1px solid ${C.border}`, borderRadius:10, padding:'24px 24px', marginBottom:48, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
           <div>
-            <div style={{ fontSize:14, fontWeight:600, color:'rgba(255,255,255,0.9)', marginBottom:4 }}>Get in touch</div>
+            <div style={{ fontSize:14, fontWeight:600, color:'rgba(240,237,232,0.9)', marginBottom:4 }}>Get in touch</div>
             <div style={{ fontSize:13, color:C.textMid }}>Feedback, enterprise enquiries, or PKI questions — always open.</div>
           </div>
           <a href="mailto:mathimcafee@gmail.com"
-            style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'9px 22px', borderRadius:100, textDecoration:'none', whiteSpace:'nowrap' }}>
+            style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#f0ede8', padding:'9px 22px', borderRadius:100, textDecoration:'none', whiteSpace:'nowrap' }}>
             Email Mathi →
           </a>
         </div>
@@ -89,7 +89,7 @@ export default function Developer({ nav }) {
           {[['← Back home','/'],['About SSLVault','/about'],['Pricing','/pricing'],['Knowledge Base','/knowledge-base']].map(([l,p])=>(
             <button key={l} onClick={()=>nav(p)}
               style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, color:C.textMid, padding:0, transition:'color .15s' }}
-              onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,0.8)'}
+              onMouseEnter={e=>e.currentTarget.style.color='rgba(240,237,232,0.8)'}
               onMouseLeave={e=>e.currentTarget.style.color=C.textMid}>
               {l}
             </button>

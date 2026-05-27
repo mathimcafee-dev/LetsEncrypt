@@ -60,14 +60,14 @@ export default function Auth({ nav }) {
 
   const perks = [
     { icon:<Zap size={15} />,    color:'var(--v2-amber)',       title:'Unlimited certificates',   desc:'No cap on domains or issuances — ever.' },
-    { icon:<Shield size={15} />, color:'#ffffff',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
-    { icon:<Lock size={15} />,   color:'var(--v2-green)',       title:'Private keys stay private', desc:'AES-256 at rest. Keys never leave your server.' },
-    { icon:<CheckCircle size={15} />, color:'#ffffff',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
+    { icon:<Shield size={15} />, color:'#f0ede8',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
+    { icon:<Lock size={15} />,   color:'#c0392b',       title:'Private keys stay private', desc:'AES-256 at rest. Keys never leave your server.' },
+    { icon:<CheckCircle size={15} />, color:'#f0ede8',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
   ]
 
   return (
     <div className="v2-page" style={{ minHeight:'calc(100vh - 60px)', display:'flex', alignItems:'center' }}>
-      <div style={{ position:'fixed', top:60, left:0, right:0, height:2, background:'var(--v2-green)', zIndex:10 }} />
+      <div style={{ position:'fixed', top:60, left:0, right:0, height:2, background:'#c0392b', zIndex:10 }} />
 
       <div style={{ maxWidth:1060, margin:'0 auto', padding:'clamp(24px,6vw,60px) clamp(14px,3vw,24px)',
                     display:'grid', gridTemplateColumns:'minmax(0,1fr) clamp(320px,35vw,420px)', gap:60,
@@ -76,15 +76,15 @@ export default function Auth({ nav }) {
         {/* Left: value prop */}
         <div>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8,
-                        background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
+                        background:'rgba(192,57,43,0.12)', border:'0.5px solid rgba(192,57,43,0.3)',
                         borderRadius:100, padding:'4px 14px', marginBottom:24 }}>
             <span className="v2-pulse" />
-            <span style={{ fontSize:11, fontWeight:500, color:'var(--v2-green-text)' }}>Free · Open · Trusted</span>
+            <span style={{ fontSize:11, fontWeight:500, color:'#e07060' }}>Free · Open · Trusted</span>
           </div>
           <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, color:'var(--v2-text)',
                         lineHeight:1.08, letterSpacing:'-1.4px', marginBottom:6 }}>One account.</h1>
           <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, lineHeight:1.08,
-                        letterSpacing:'-1.4px', marginBottom:20, color:'var(--v2-green)' }}>Every certificate.</h1>
+                        letterSpacing:'-1.4px', marginBottom:20, color:'#e07060' }}>Every certificate.</h1>
           <p style={{ fontSize:15, color:'var(--v2-text-2)', lineHeight:1.75, marginBottom:36, maxWidth:420 }}>
             Sign in to manage your certificates, set expiry alerts, and deploy with one click.
           </p>
@@ -115,7 +115,7 @@ export default function Auth({ nav }) {
               <div style={{ width:40, height:40, background:'#c0392b', borderRadius:'var(--v2-r-lg)',
                              display:'flex', alignItems:'center', justifyContent:'center',
                              boxShadow:'0 0 0 4px rgba(192,57,43,0.15)' }}>
-                <Shield size={18} color='#000000' />
+                <Shield size={18} color='#fff' />
               </div>
               <div>
                 <div style={{ fontSize:16, fontWeight:700, color:'var(--v2-text)', letterSpacing:'-0.3px' }}>
