@@ -29,14 +29,14 @@ import Pricing from './Pricing'
 // ── Design tokens ──────────────────────────────────────────────────────
 const F = "'Montserrat',system-ui,sans-serif"
 const NAVY  = 'transparent'   // page bg
-const CARD  = 'transparent'   // card / topbar bg
-const CARD2 = 'transparent'   // elevated card
-const CARD3 = 'transparent'   // input / hover
+const CARD  = 'rgba(192,57,43,0.15)'  // hover bg
+const CARD2 = 'rgba(255,255,255,0.06)'  // elevated card
+const CARD3 = 'rgba(255,255,255,0.08)'  // input bg
 const LINE  = 'rgba(192,57,43,0.15)'
 const LINE2 = 'rgba(192,57,43,0.25)'
-const INK   = 'rgba(192,57,43,0.1)'
-const BODY  = 'rgba(232,245,244,0.7)'
-const MUTED = 'rgba(232,245,244,0.4)'
+const INK   = 'rgba(192,57,43,0.2)'
+const BODY  = '#c8c0b8'
+const MUTED = '#b0a8a0'
 const BLUE  = '#e07060'
 const BLUEH = '#e07060'
 const GREEN = '#4ade80'
@@ -148,14 +148,14 @@ export default function CLMHome({ user, nav }) {
         padding:'8px 12px 8px 16px',
         width:'100%', textAlign:'left', fontFamily:F,
         fontSize:13, fontWeight:on?500:400,
-        color: on ? INK : BODY,
-        background: on ? CARD2 : 'transparent',
+        color: on ? '#ffffff' : BODY,
+        background: on ? 'rgba(192,57,43,0.18)' : 'transparent',
         borderLeft: `2px solid ${on ? BLUE : 'transparent'}`,
         border:'none', cursor:'pointer',
         borderRadius:'0 6px 6px 0',
         marginBottom:1, transition:'all 0.1s',
       }}
-        onMouseEnter={e=>{if(!on){e.currentTarget.style.background=CARD;e.currentTarget.style.color=INK}}}
+        onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(192,57,43,0.12)';e.currentTarget.style.color='#ffffff'}}}
         onMouseLeave={e=>{if(!on){e.currentTarget.style.background='transparent';e.currentTarget.style.color=BODY}}}>
         <Icon size={14} strokeWidth={on?2.2:1.8} color={on?BLUE:undefined} style={{flexShrink:0}}/>
         <span style={{flex:1}}>{label}</span>
@@ -262,7 +262,7 @@ export default function CLMHome({ user, nav }) {
               style={{background:'none',border:'none',cursor:'pointer',color:BODY,width:32,height:32,
                 display:'flex',alignItems:'center',justifyContent:'center',borderRadius:6,position:'relative',
                 transition:'all .12s'}}
-              onMouseEnter={e=>{e.currentTarget.style.background=CARD2;e.currentTarget.style.color=INK}}
+              onMouseEnter={e=>{e.currentTarget.style.background='rgba(192,57,43,0.12)';e.currentTarget.style.color='#ffffff'}}
               onMouseLeave={e=>{e.currentTarget.style.background='none';e.currentTarget.style.color=BODY}}>
               <Bell size={15}/>
               {unread>0&&<span style={{position:'absolute',top:5,right:5,width:6,height:6,
