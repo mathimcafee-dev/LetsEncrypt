@@ -158,7 +158,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         const s = await call('check_status', { order_id: ord.order_id })
 
         // Cert issued — go to done
-        if (s.status === 'active') { setStep('done'); clearInterval(iv); return }
+        if (s.status === 'active' || s.status === 'issued') { setStep('done'); clearInterval(iv); return }
 
         // Got DCV values — update UI
         if (s.dcv_txt_value || s.dcv_cname_value) {
@@ -242,7 +242,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     setChk(true); setRes(null)
     const r = await call('check_status', { order_id: ord.order_id })
     setChk(false); setRes(r)
-    if (r.status === 'active') setStep('done')
+    if (r.status === 'active' || r.status === 'issued') setStep('done')
     if (r.dcv_txt_value || r.dcv_cname_value) setOrd(p => ({ ...p,
       dcv_txt_name:    r.dcv_txt_name    || r.dcv_cname_name,
       dcv_txt_value:   r.dcv_txt_value   || r.dcv_cname_value,
