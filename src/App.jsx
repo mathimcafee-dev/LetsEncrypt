@@ -123,7 +123,7 @@ const _build = 1779297041 // cache bust
         : 'opacity 0.22s cubic-bezier(.16,1,.3,1), transform 0.22s cubic-bezier(.16,1,.3,1)',
       minHeight: '100vh',
       background: 'radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%)',
-      color: '#f5f0eb',
+      color: '#ffffff',
       fontFamily: "'Montserrat', system-ui, sans-serif",
       position: 'relative',
     }}>

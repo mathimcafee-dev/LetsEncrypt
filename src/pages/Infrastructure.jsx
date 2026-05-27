@@ -12,10 +12,10 @@ import '../styles/design-v2.css'
 
 // ── Helpers ───────────────────────────────────────────────────────────
 function agentStatus(last_seen_at, status) {
-  if (!last_seen_at) return { label:'Never seen', color:'#9a918a', dot:'rgba(240,237,232,0.12)', pulse:false }
+  if (!last_seen_at) return { label:'Never seen', color:'#b0a8a0', dot:'rgba(240,237,232,0.12)', pulse:false }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
   if (status === 'offline' || mins > 15) return { label:'Offline', color:'#f87171', dot:'#f87171', pulse:false }
-  if (mins > 6) return { label:'Idle',    color:'#f5f0eb', dot:'#f0ede8', pulse:false }
+  if (mins > 6) return { label:'Idle',    color:'#ffffff', dot:'#f0ede8', pulse:false }
   return { label:'Online', color:'#4ade80', dot:'#4ade80', pulse:true }
 }
 
@@ -72,7 +72,7 @@ function CertPill({ cert }) {
       )}
       {cert.auto_renew_enabled && (
         <span style={{ fontSize:9, fontWeight:600, padding:'1px 5px', borderRadius:4,
-          background:'transparent', color:'#f5f0eb', flexShrink:0 }}>AUTO</span>
+          background:'transparent', color:'#ffffff', flexShrink:0 }}>AUTO</span>
       )}
     </div>
   )
@@ -140,10 +140,10 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
         display: 'flex', alignItems: 'center', gap: 8,
       }}>
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#f0ede8', flexShrink: 0 }} />
-        <span style={{ fontSize:12, fontWeight: 600, color: '#f5f0eb' }}>
+        <span style={{ fontSize:12, fontWeight: 600, color: '#ffffff' }}>
           Complete VPS setup — {[hasDns, hasAgent].filter(Boolean).length} of 2 prerequisites done
         </span>
-        <span style={{ fontSize:11, color: '#9a918a', marginLeft: 4 }}>
+        <span style={{ fontSize:11, color: '#b0a8a0', marginLeft: 4 }}>
           DNS credentials + agent install are both needed for full auto-SSL
         </span>
       </div>
@@ -180,7 +180,7 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
               </div>
 
               {/* Desc */}
-              <div style={{ fontSize:11, color: '#9a918a', lineHeight: 1.6, marginBottom: step.action ? 12 : 0 }}>
+              <div style={{ fontSize:11, color: '#b0a8a0', lineHeight: 1.6, marginBottom: step.action ? 12 : 0 }}>
                 {step.desc}
               </div>
 
@@ -188,7 +188,7 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
               {step.action && !step.done && (
                 <button onClick={step.action} style={{
                   marginTop: 8,
-                  fontSize:11, fontWeight: 600, color: '#f5f0eb',
+                  fontSize:11, fontWeight: 600, color: '#ffffff',
                   background: 'none', border: 'none', cursor: 'pointer',
                   padding: 0, fontFamily: 'inherit',
                 }}>
@@ -272,7 +272,7 @@ function InstallModal({ onClose }) {
             </div>
           ))}
           <div style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:7, padding:'10px 12px' }}>
-            <div style={{ fontSize:11, color:'#f5f0eb', lineHeight:1.6 }}>
+            <div style={{ fontSize:11, color:'#ffffff', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and appears in this list within 1–2 minutes.
             </div>
           </div>
@@ -537,7 +537,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                     Restart command
                   </div>
                   <div style={{ background:'#f0ede8', borderRadius:7, padding:'8px 12px' }}>
-                    <code style={{ fontSize:10, color:'#f5f0eb', fontFamily:'monospace' }}>
+                    <code style={{ fontSize:10, color:'#ffffff', fontFamily:'monospace' }}>
                       sudo systemctl restart sslvault-agent
                     </code>
                   </div>
@@ -654,7 +654,7 @@ export default function Infrastructure({ user }) {
             </button>
             <button onClick={() => setShowInstall(true)}
               style={{ display:'flex', alignItems:'center', gap:6, background:'#f0ede8',
-                color:'#f5f0eb', border:'none', padding:'7px 14px', borderRadius:7,
+                color:'#ffffff', border:'none', padding:'7px 14px', borderRadius:7,
                 fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit',
                 transition:'opacity .15s' }}
               onMouseEnter={e=>e.currentTarget.style.opacity='0.88'}
@@ -670,7 +670,7 @@ export default function Infrastructure({ user }) {
             {[
               { label:'Servers online',  val:online,       color:'#4ade80' },
               { label:'Offline / idle',  val:offline,      color:offline>0?'#f87171':'var(--v2-text)' },
-              { label:'Certs protected', val:certs.length, color:'#f5f0eb' },
+              { label:'Certs protected', val:certs.length, color:'#ffffff' },
               { label:'Renewals ≤30d',   val:renewalsDue,  color:renewalsDue>0?'#f0ede8':'#4ade80' },
             ].map(({ label, val, color }) => (
               <div key={label} className="v2-card" style={{ padding:'11px 14px' }}>
@@ -701,7 +701,7 @@ export default function Infrastructure({ user }) {
             </div>
             <button onClick={() => setShowInstall(true)}
               style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8',
-                color:'#f5f0eb', border:'none', borderRadius:7, padding:'9px 20px',
+                color:'#ffffff', border:'none', borderRadius:7, padding:'9px 20px',
                 fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
               <Terminal size={13}/> Install agent
             </button>
@@ -734,7 +734,7 @@ export default function Infrastructure({ user }) {
                   Install the SSLVault agent in 60 seconds — auto-renewal works immediately after.
                 </div>
               </div>
-              <span style={{ fontSize:12, color:'#f5f0eb', fontWeight:500, flexShrink:0 }}>
+              <span style={{ fontSize:12, color:'#ffffff', fontWeight:500, flexShrink:0 }}>
                 Install agent →
               </span>
             </div>

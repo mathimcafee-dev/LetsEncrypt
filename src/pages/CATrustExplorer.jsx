@@ -8,10 +8,10 @@ const SYNC_FN = `${SUPABASE_URL}/functions/v1/ccadb-sync`
 const PAGE_SIZE = 10000
 
 const STORE_META = {
-  Chrome:    { icon: '🌐', color: '#d4cdc6' },
+  Chrome:    { icon: '🌐', color: '#e8e0d8' },
   Mozilla:   { icon: '🦊', color: '#c0392b' },
-  Apple:     { icon: '🍎', color: '#f5f0eb' },
-  Microsoft: { icon: '🪟', color: '#f5f0eb' },
+  Apple:     { icon: '🍎', color: '#ffffff' },
+  Microsoft: { icon: '🪟', color: '#ffffff' },
 }
 
 const ALL_STORES = ['Chrome', 'Mozilla', 'Apple', 'Microsoft']
@@ -81,7 +81,7 @@ function CertAvatar({ name, size = 30 }) {
     <div style={{
       width: size, height: size, borderRadius: 6, flexShrink: 0,
       background: avatarColor(name), display: 'flex', alignItems: 'center',
-      justifyContent: 'center', fontSize:11, fontWeight: 700, color: '#f5f0eb', letterSpacing: '0.2px'
+      justifyContent: 'center', fontSize:11, fontWeight: 700, color: '#ffffff', letterSpacing: '0.2px'
     }}>
       {initials(name)}
     </div>
@@ -561,7 +561,7 @@ export default function CATrustExplorer({ nav }) {
         .pem-block { background:transparent;border-radius:var(--v2-r-lg);overflow:hidden;border:0.5px solid #1a1a1a;margin-top:4px }
         .pem-head { display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:0.5px solid rgba(255,255,255,0.06);background:transparent }
         .pem-dots { display:flex;gap:4px }
-        .pem-body { padding:10px 12px;font-family:'JetBrains Mono','JetBrains Mono',monospace;font-size:10px;color:#9a918a;line-height:1.6;word-break:break-all;max-height:80px;overflow:hidden;position:relative }
+        .pem-body { padding:10px 12px;font-family:'JetBrains Mono','JetBrains Mono',monospace;font-size:10px;color:#b0a8a0;line-height:1.6;word-break:break-all;max-height:80px;overflow:hidden;position:relative }
         .pem-fade { position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(transparent,#0a0a0a) }
         .callout-warn { background:var(--v2-amber-bg);border:0.5px solid var(--v2-amber-border);border-left:2px solid var(--v2-amber);border-radius:var(--v2-r-md);padding:10px 12px;font-size:12px;color:var(--v2-amber-text);margin-bottom:14px }
         .callout-bad  { background:var(--v2-red-bg);border:0.5px solid var(--v2-red-border);border-left:2px solid var(--v2-red);border-radius:var(--v2-r-md);padding:10px 12px;font-size:12px;color:var(--v2-red-text);margin-bottom:14px }
@@ -630,7 +630,7 @@ export default function CATrustExplorer({ nav }) {
             { key: 'root',     val: counts.root,              label: 'Root CAs',          color: 'var(--v2-green)' },
             { key: 'inter',    val: counts.inter,             label: 'Intermediates',     color: 'var(--v2-grey-dot)' },
             { key: 'all4',     val: counts.all4,              label: 'All 4 stores',      color: 'var(--v2-green)' },
-            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#f5f0eb', valColor: '#e07060' },
+            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#ffffff', valColor: '#e07060' },
             { key: 'distrust', val: counts.distrust,          label: 'Distrusted',        color: 'var(--v2-red)', valColor: 'var(--v2-red-text)' },
           ].map(({ key, val, label, color, valColor }) => (
             <div key={key} className={`stat-tile${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
@@ -684,7 +684,7 @@ export default function CATrustExplorer({ nav }) {
                       width: 22, height: 22, borderRadius: 5, flexShrink: 0,
                       background: avatarColor(c.ca_owner || ''),
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 9, fontWeight: 700, color: '#f5f0eb'
+                      fontSize: 9, fontWeight: 700, color: '#ffffff'
                     }}>
                       {initials(c.ca_owner || c.common_name || '?')}
                     </div>
@@ -797,7 +797,7 @@ export default function CATrustExplorer({ nav }) {
                       }}>
                       <FileDown size={12} /> {pemDownloading ? 'Fetching…' : 'Download PEM'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" style={{ background: '#f0ede8', color: '#f5f0eb', borderColor: '#f0ede8', gap: 5 }}
+                    <button className="v2-btn v2-btn-sm" style={{ background: '#f0ede8', color: '#ffffff', borderColor: '#f0ede8', gap: 5 }}
                       onClick={() => {
                         const fp = selected?.sha256_fingerprint || selected?.fingerprint
                         if (fp) window.open(`https://crt.sh/?q=${encodeURIComponent(fp)}`, '_blank')
@@ -867,7 +867,7 @@ export default function CATrustExplorer({ nav }) {
                             <span style={{ background: '#27c93f', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
                           </div>
                           <button
-                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#9a918a', fontSize:11, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}
+                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#b0a8a0', fontSize:11, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}
                             onClick={() => copyText(selected.pem_info)}
                           >
                             <Copy size={11} /> Copy PEM

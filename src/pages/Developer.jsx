@@ -16,10 +16,10 @@ export default function Developer({ nav }) {
           <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{ fontSize:15, fontWeight:600, color:'#f5f0eb' }}>SSLVault</span>
+          <span style={{ fontSize:15, fontWeight:600, color:'#ffffff' }}>SSLVault</span>
         </div>
         <button onClick={()=>nav('/auth')}
-          style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#f5f0eb', padding:'7px 20px', borderRadius:100 }}>
+          style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'7px 20px', borderRadius:100 }}>
           Get started
         </button>
       </header>
@@ -32,7 +32,7 @@ export default function Developer({ nav }) {
         <div style={{ display:'flex', alignItems:'flex-start', gap:24, marginBottom:48, flexWrap:'wrap' }}>
           <img src={portrait} alt="Mathi" style={{ width:80, height:80, borderRadius:12, objectFit:'cover', border:`2px solid rgba(14,165,233,0.3)`, flexShrink:0 }}/>
           <div>
-            <h1 style={{ fontSize:'clamp(24px,4vw,40px)', fontWeight:800, letterSpacing:'-1px', lineHeight:1.15, marginBottom:8, color:'#f5f0eb' }}>
+            <h1 style={{ fontSize:'clamp(24px,4vw,40px)', fontWeight:800, letterSpacing:'-1px', lineHeight:1.15, marginBottom:8, color:'#ffffff' }}>
               Mathi (Spartan)
             </h1>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:12 }}>
@@ -79,7 +79,7 @@ export default function Developer({ nav }) {
             <div style={{ fontSize:13, color:C.textMid }}>Feedback, enterprise enquiries, or PKI questions — always open.</div>
           </div>
           <a href="mailto:mathimcafee@gmail.com"
-            style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#f5f0eb', padding:'9px 22px', borderRadius:100, textDecoration:'none', whiteSpace:'nowrap' }}>
+            style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'9px 22px', borderRadius:100, textDecoration:'none', whiteSpace:'nowrap' }}>
             Email Mathi →
           </a>
         </div>

@@ -23,15 +23,15 @@ export default function AboutInner({ nav }) {
       <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #c0392b' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
           <Heart size={14} color="#c0392b"/>
-          <span style={{ fontSize:10, fontWeight:500, color:'#9a918a', textTransform:'uppercase', letterSpacing:'.5px' }}>Mission</span>
+          <span style={{ fontSize:10, fontWeight:500, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.5px' }}>Mission</span>
         </div>
-        <p style={{ fontSize:20, fontWeight:500, color:'#f5f0eb', lineHeight:1.5, letterSpacing:'-.3px', margin:'0 0 14px', maxWidth:680 }}>
+        <p style={{ fontSize:20, fontWeight:500, color:'#ffffff', lineHeight:1.5, letterSpacing:'-.3px', margin:'0 0 14px', maxWidth:680 }}>
           The web should be encrypted by default — and managing that encryption should never be a barrier.
         </p>
-        <p style={{ fontSize:13, color:'#d4cdc6', lineHeight:1.8, margin:'0 0 10px', maxWidth:720 }}>
+        <p style={{ fontSize:13, color:'#e8e0d8', lineHeight:1.8, margin:'0 0 10px', maxWidth:720 }}>
           SSLVault is a certificate lifecycle management platform built on RapidSSL's API and designed for indie developers, SMBs, and non-profits who need enterprise-grade SSL management without enterprise pricing.
         </p>
-        <p style={{ fontSize:13, color:'#d4cdc6', lineHeight:1.8, margin:0, maxWidth:720 }}>
+        <p style={{ fontSize:13, color:'#e8e0d8', lineHeight:1.8, margin:0, maxWidth:720 }}>
           Enterprise CLM platforms solve this beautifully — but cost thousands per year and are built for security teams managing thousands of certificates. SSLVault brings that same capability to anyone running a site on a $5 VPS or shared hosting.
         </p>
       </div>
@@ -43,15 +43,15 @@ export default function AboutInner({ nav }) {
             <div style={{ width:32, height:32, background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
               <Icon size={15} color="#c0392b"/>
             </div>
-            <div style={{ fontSize:13, fontWeight:500, color:'#f5f0eb', marginBottom:6 }}>{title}</div>
-            <div style={{ fontSize:12, color:'#d4cdc6', lineHeight:1.7 }}>{body}</div>
+            <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:6 }}>{title}</div>
+            <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{body}</div>
           </div>
         ))}
       </div>
 
       {/* Stack */}
       <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 24px', marginBottom:16 }}>
-        <div style={{ fontSize:10, fontWeight:500, color:'#9a918a', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Stack & infrastructure</div>
+        <div style={{ fontSize:10, fontWeight:500, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Stack & infrastructure</div>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8 }}>
           {[
             ['Frontend', 'React 18 + Vite'],
@@ -62,8 +62,8 @@ export default function AboutInner({ nav }) {
             ['DNS', 'Cloudflare · Vercel · cPanel'],
           ].map(([k, v]) => (
             <div key={k} style={{ padding:'10px 12px', background:'transparent', borderRadius:6, border:'0.5px solid rgba(192,57,43,0.08)' }}>
-              <div style={{ fontSize:9, fontWeight:500, color:'#9a918a', textTransform:'uppercase', letterSpacing:'.4px', marginBottom:4 }}>{k}</div>
-              <div style={{ fontSize:12, color:'#f5f0eb', fontFamily:"'JetBrains Mono',monospace" }}>{v}</div>
+              <div style={{ fontSize:9, fontWeight:500, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.4px', marginBottom:4 }}>{k}</div>
+              <div style={{ fontSize:12, color:'#ffffff', fontFamily:"'JetBrains Mono',monospace" }}>{v}</div>
             </div>
           ))}
         </div>
@@ -71,10 +71,10 @@ export default function AboutInner({ nav }) {
 
       {/* CTA */}
       <div style={{ display:'flex', gap:10 }}>
-        <button onClick={() => nav('/developer')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8', color:'#f5f0eb', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+        <button onClick={() => nav('/developer')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8', color:'#ffffff', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
           <Code2 size={13}/> Meet the developer
         </button>
-        <button onClick={() => nav('/contact')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#f5f0eb', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+        <button onClick={() => nav('/contact')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#ffffff', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
           Contact us <ArrowRight size={12}/>
         </button>
       </div>

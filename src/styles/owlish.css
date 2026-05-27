@@ -153,13 +153,13 @@ html, body {
 
 /* Dark text */
 .v2-page [style*="color:'rgba(192,57,43,0.12)'"],
-.v2-page [style*="color:'#f5f0eb'"],
+.v2-page [style*="color:'#ffffff'"],
 .v2-page [style*='color:"#f5f0eb"'] { color: var(--ink) !important; }
-.v2-page [style*="color:'#9a918a'"],
-.v2-page [style*="color:'#d4cdc6'"] { color: var(--body) !important; }
-.v2-page [style*="color:'#9a918a'"],
+.v2-page [style*="color:'#b0a8a0'"],
+.v2-page [style*="color:'#e8e0d8'"] { color: var(--body) !important; }
+.v2-page [style*="color:'#b0a8a0'"],
 .v2-page [style*="color:'#484f58'"],
-.v2-page [style*="color:'#9a918a'"],
+.v2-page [style*="color:'#b0a8a0'"],
 .v2-page [style*="color:'#b5aea8'"] { color: var(--muted) !important; }
 
 /* Borders */

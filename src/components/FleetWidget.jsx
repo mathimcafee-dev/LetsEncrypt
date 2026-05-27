@@ -84,7 +84,7 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
                 {isExpired
                   ? <XCircle      size={13} color="#c0392b" style={{ flexShrink:0 }}/>
                   : <AlertTriangle size={13} color="#e07060" style={{ flexShrink:0 }}/>}
-                <span style={{ fontSize:13, flex:1, color:'#d4cdc6',
+                <span style={{ fontSize:13, flex:1, color:'#e8e0d8',
                   overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{c.domain}</span>
                 <span style={{ fontSize:11, fontWeight:600, flexShrink:0,
                   color: isExpired ? '#c0392b' : '#e07060',
@@ -113,7 +113,7 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
           )}
           <button onClick={() => nav && nav('/dashboard')}
             style={{ display:'flex', alignItems:'center', gap:5,
-              background:'white', color:'#d4cdc6', border:'0.5px solid rgba(15,23,42,0.12)',
+              background:'white', color:'#e8e0d8', border:'0.5px solid rgba(15,23,42,0.12)',
               borderRadius:6, padding:'8px 14px', fontSize:12, fontWeight:600,
               cursor:'pointer', fontFamily:'inherit', justifyContent:'center',
               ...(expiring.length > 0 ? {} : { flex:1 }) }}>

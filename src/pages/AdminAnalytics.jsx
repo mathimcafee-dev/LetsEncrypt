@@ -173,9 +173,9 @@ export default function AdminAnalytics({ user }) {
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:10,marginBottom:20}}>
           {[
             {icon:Shield,      val:stats.active,      label:'Active certs',     color:'#4ade80'},
-            {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#f5f0eb'},
-            {icon:AlertTriangle,val:stats.expiring30, label:'Expiring in 30d',  color:'#f5f0eb'},
-            {icon:CheckCircle, val:stats.installed,   label:'Auto-installed',   color:'#f5f0eb'},
+            {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#ffffff'},
+            {icon:AlertTriangle,val:stats.expiring30, label:'Expiring in 30d',  color:'#ffffff'},
+            {icon:CheckCircle, val:stats.installed,   label:'Auto-installed',   color:'#ffffff'},
           ].map(({icon:Icon,val,label,color})=>(
             <div key={label} className="v2-card" style={{padding:'14px 16px'}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>

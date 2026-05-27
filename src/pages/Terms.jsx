@@ -16,13 +16,13 @@ export default function Terms({ nav }) {
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'transparent',border:'1px solid rgba(192,57,43,0.2)',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
             <span style={{width:7,height:7,borderRadius:'50%',background:'#f0ede8',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
-            <span style={{fontSize:11,fontWeight:700,color:'#d4cdc6',letterSpacing:'0.4px',textTransform:'uppercase'}}>Terms of Service</span>
+            <span style={{fontSize:11,fontWeight:700,color:'#e8e0d8',letterSpacing:'0.4px',textTransform:'uppercase'}}>Terms of Service</span>
           </div>
-          <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#f5f0eb'}}>
+          <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#ffffff'}}>
             The fine print,<br/>
             <span style={{background:'linear-gradient(135deg,#c0392b,#f07059,#c0392b)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>kept short.</span>
           </h1>
-          <p style={{fontSize:15,color:'#d4cdc6',marginTop:14}}>Last updated: <strong style={{color:'#f5f0eb'}}>{updated}</strong></p>
+          <p style={{fontSize:15,color:'#e8e0d8',marginTop:14}}>Last updated: <strong style={{color:'#ffffff'}}>{updated}</strong></p>
         </div>
       </section>
 
@@ -103,7 +103,7 @@ export default function Terms({ nav }) {
             </Section>
 
             <Section title='7. Your data'>
-              <p style={p}>How we handle data is described in the <button onClick={()=>nav('/privacy')} style={{background:'none',border:'none',color:'#f5f0eb',fontWeight:700,cursor:'pointer',padding:0,fontSize:'inherit',fontFamily:'inherit'}}>Privacy Policy</button>. By using the service, you also accept that policy.</p>
+              <p style={p}>How we handle data is described in the <button onClick={()=>nav('/privacy')} style={{background:'none',border:'none',color:'#ffffff',fontWeight:700,cursor:'pointer',padding:0,fontSize:'inherit',fontFamily:'inherit'}}>Privacy Policy</button>. By using the service, you also accept that policy.</p>
             </Section>
 
             <Section title='8. Service changes & termination'>
@@ -138,10 +138,10 @@ export default function Terms({ nav }) {
       {/* FOOTER LINKS */}
       <section style={{position:'relative',padding:'0 0 80px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
-          <button onClick={()=>nav('/privacy')} style={{background:'transparent',color:'#f5f0eb',border:'1.5px solid rgba(192,57,43,0.2)',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/privacy')} style={{background:'transparent',color:'#ffffff',border:'1.5px solid rgba(192,57,43,0.2)',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <Shield size={14}/> Privacy Policy
           </button>
-          <button onClick={()=>nav('/contact')} style={{background:'#f0ede8',color:'#f5f0eb',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/contact')} style={{background:'#f0ede8',color:'#ffffff',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <Mail size={14}/> Contact us <ArrowRight size={13}/>
           </button>
         </div>
@@ -150,14 +150,14 @@ export default function Terms({ nav }) {
   )
 }
 
-const p = {fontSize:14,color:'#d4cdc6',lineHeight:1.75,marginBottom:12}
-const ul = {fontSize:14,color:'#d4cdc6',lineHeight:1.85,paddingLeft:22,marginBottom:14}
-const a = {color:'#f5f0eb',fontWeight:700,textDecoration:'none'}
+const p = {fontSize:14,color:'#e8e0d8',lineHeight:1.75,marginBottom:12}
+const ul = {fontSize:14,color:'#e8e0d8',lineHeight:1.85,paddingLeft:22,marginBottom:14}
+const a = {color:'#ffffff',fontWeight:700,textDecoration:'none'}
 
 function Section({title, children, last}) {
   return (
     <div style={{paddingBottom:last?0:28,marginBottom:last?0:24,borderBottom:last?'none':'1px dashed rgba(192,57,43,0.2)'}}>
-      <h3 style={{fontFamily:'Georgia, serif',fontSize:20,fontWeight:800,color:'#f5f0eb',letterSpacing:'-0.4px',marginBottom:14}}>{title}</h3>
+      <h3 style={{fontFamily:'Georgia, serif',fontSize:20,fontWeight:800,color:'#ffffff',letterSpacing:'-0.4px',marginBottom:14}}>{title}</h3>
       {typeof children === 'string' ? <p style={p}>{children}</p> : children}
     </div>
   )

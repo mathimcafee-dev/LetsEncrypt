@@ -70,9 +70,9 @@ function MiniBar({ value, warn = 80, danger = 90 }) {
 // ── Status pill ───────────────────────────────────────────────────────
 function StatusPill({ status }) {
   const map = {
-    online:  { bg: 'transparent', color: '#f5f0eb', label: 'Online',   dot: '#4ade80' },
+    online:  { bg: 'transparent', color: '#ffffff', label: 'Online',   dot: '#4ade80' },
     offline: { bg: 'rgba(192,57,43,0.12)', color: '#f87171', label: 'Offline',  dot: '#f87171' },
-    never:   { bg: '#000000', color: '#d4cdc6', label: 'Never',    dot: 'rgba(240,237,232,0.38)' },
+    never:   { bg: '#000000', color: '#e8e0d8', label: 'Never',    dot: 'rgba(240,237,232,0.38)' },
     unknown: { bg: 'rgba(239,68,68,0.08)', color: '#ff8c7a', label: 'Unknown',  dot: '#f0ede8' },
   }
   const s = map[status] || map.unknown
@@ -91,12 +91,12 @@ function StatusPill({ status }) {
 function JobBadge({ status }) {
   if (!status) return <span style={{ color: 'var(--v2-text-3)', fontSize:11 }}>—</span>
   const map = {
-    success: { bg: 'transparent', color: '#f5f0eb' },
+    success: { bg: 'transparent', color: '#ffffff' },
     failed:  { bg: 'rgba(192,57,43,0.12)', color: '#f87171' },
     queued:  { bg: 'rgba(239,68,68,0.08)', color: '#ff8c7a' },
-    claimed: { bg: 'transparent', color: '#d4cdc6' },
+    claimed: { bg: 'transparent', color: '#e8e0d8' },
   }
-  const s = map[status] || { bg: '#000000', color: '#d4cdc6' }
+  const s = map[status] || { bg: '#000000', color: '#e8e0d8' }
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 4,
       background: s.bg, color: s.color }}>
@@ -380,7 +380,7 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button className="v2-btn v2-btn-sm" onClick={onClose}>Cancel</button>
           <button className="v2-btn v2-btn-sm" onClick={confirm} disabled={busy}
-            style={{ background: '#f87171', borderColor: '#f87171', color: '#f5f0eb' }}>
+            style={{ background: '#f87171', borderColor: '#f87171', color: '#ffffff' }}>
             {busy ? 'Deleting…' : 'Delete'}
           </button>
         </div>
@@ -489,7 +489,7 @@ export default function AgentHealth({ user }) {
             { val: agents.length, label: 'Total agents', color: 'var(--v2-text)', filter: 'all' },
             { val: online.length,  label: 'Online',       color: '#4ade80', filter: 'online' },
             { val: offline.length, label: 'Offline',      color: '#f87171', filter: 'offline' },
-            { val: highLoad.length,label: 'High load',    color: '#f5f0eb', filter: 'all' },
+            { val: highLoad.length,label: 'High load',    color: '#ffffff', filter: 'all' },
           ].map(({ val, label, color, filter }) => (
             <div key={label} className="v2-card"
               onClick={() => setFilterStatus(filter)}

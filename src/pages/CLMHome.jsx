@@ -207,7 +207,7 @@ export default function CLMHome({ user, nav }) {
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,${BLUE},${BLUEH})`,
             display:'flex',alignItems:'center',justifyContent:'center',
-            fontSize:11,fontWeight:700,color:'#f5f0eb',flexShrink:0,letterSpacing:'-0.3px'}}>
+            fontSize:11,fontWeight:700,color:'#ffffff',flexShrink:0,letterSpacing:'-0.3px'}}>
             {initials}
           </div>
           <div style={{flex:1,minWidth:0}}>

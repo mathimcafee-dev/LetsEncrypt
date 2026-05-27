@@ -206,7 +206,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
               <div style={{ background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
                 borderRadius:9, padding:'12px 14px', marginBottom:14, fontSize:11,
                 color:'var(--v2-text-2)', lineHeight:1.6 }}>
-                <Lock size={11} style={{ verticalAlign:'-1px', marginRight:5, color:'#f5f0eb' }}/>
+                <Lock size={11} style={{ verticalAlign:'-1px', marginRight:5, color:'#ffffff' }}/>
                 This is a high-security action. Re-enter your SSLVault password to confirm you
                 are authorised to access this private key. This attempt will be logged.
               </div>
@@ -289,7 +289,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                   </div>
 
                   <div style={{ background:'#f0ede8', borderRadius:9, padding:'14px 16px',
-                    marginBottom:12, fontFamily:'monospace', fontSize:11, color:'#9a918a',
+                    marginBottom:12, fontFamily:'monospace', fontSize:11, color:'#b0a8a0',
                     lineHeight:1.8, whiteSpace:'pre', userSelect:'none' }}>
                     {masked}
                   </div>
@@ -390,7 +390,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
               </span>
               {keyEntry.status === 'active' && keyEntry.cert_status === 'active' && (
                 <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:9,
-                  color:'#f5f0eb', background:'rgba(124,58,237,0.07)',
+                  color:'#ffffff', background:'rgba(124,58,237,0.07)',
                   border:'0.5px solid rgba(124,58,237,0.2)', borderRadius:4, padding:'1px 7px', fontWeight:700 }}>
                   <Lock size={8}/> VAULT SECURED
                 </span>
@@ -447,7 +447,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
             <button onClick={() => onReveal(keyEntry)}
               style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 12px',
                 fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(124,58,237,0.08)', color:'#f5f0eb',
+                background:'rgba(124,58,237,0.08)', color:'#ffffff',
                 border:'0.5px solid rgba(124,58,237,0.25)', transition:'all .15s' }}
               onMouseEnter={e=>e.currentTarget.style.background='rgba(124,58,237,0.14)'}
               onMouseLeave={e=>e.currentTarget.style.background='rgba(124,58,237,0.08)'}>
@@ -675,7 +675,7 @@ export default function CertVault({ nav }) {
             <div>
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <h1 className="v2-h1">CertVault Vault</h1>
-                <span style={{ fontSize:9, fontWeight:700, color:'#f5f0eb',
+                <span style={{ fontSize:9, fontWeight:700, color:'#ffffff',
                   background:'rgba(124,58,237,0.08)', border:'0.5px solid rgba(124,58,237,0.2)',
                   borderRadius:4, padding:'2px 7px', textTransform:'uppercase',
                   letterSpacing:'0.4px' }}>PRO</span>
@@ -706,8 +706,8 @@ export default function CertVault({ nav }) {
         {/* Stats */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:20 }}>
           {[
-            { label:'Active keys',  val:activeKeys.length,   color:'#f5f0eb' },
-            { label:'Archived',     val:archivedKeys.length, color:'#f5f0eb' },
+            { label:'Active keys',  val:activeKeys.length,   color:'#ffffff' },
+            { label:'Archived',     val:archivedKeys.length, color:'#ffffff' },
             { label:'Audit events', val:audit.length,        color:'var(--v2-text)' },
             { label:'Encryption',   val:'AES-256',           color:'#4ade80' },
           ].map(({ label, val, color }) => (
@@ -733,12 +733,12 @@ export default function CertVault({ nav }) {
         {rotateSuccess && (
           <div style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:8,
             padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center',
-            gap:8, fontSize:12, color:'#f5f0eb' }}>
+            gap:8, fontSize:12, color:'#ffffff' }}>
             <CheckCircle size={13} style={{ flexShrink:0 }}/>
             <span style={{ flex:1 }}>{rotateSuccess}</span>
             <button onClick={() => setRotateSuccess('')}
               style={{ background:'none', border:'none', cursor:'pointer',
-                color:'#f5f0eb', fontSize:16, lineHeight:1 }}>×</button>
+                color:'#ffffff', fontSize:16, lineHeight:1 }}>×</button>
           </div>
         )}
 
@@ -887,7 +887,7 @@ export default function CertVault({ nav }) {
               </div>
               <div style={{ padding:'16px 20px' }}>
                 <div style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:8,
-                  padding:'10px 12px', marginBottom:14, fontSize:11, color:'#d4cdc6' }}>
+                  padding:'10px 12px', marginBottom:14, fontSize:11, color:'#e8e0d8' }}>
                   <CheckCircle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
                   <strong>Zero downtime</strong> — new cert installs before old key is archived.
                   30-day rollback window.
@@ -905,7 +905,7 @@ export default function CertVault({ nav }) {
                 <button onClick={() => handleRotate(rotateConfirm)}
                   style={{ display:'flex', alignItems:'center', gap:7, padding:'7px 16px',
                     background:'linear-gradient(135deg,#f07059,#C45A4A)',
-                    color:'#f5f0eb', border:'none', borderRadius:7, fontSize:12,
+                    color:'#ffffff', border:'none', borderRadius:7, fontSize:12,
                     fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
                   <RotateCcw size={12}/> Rotate now
                 </button>

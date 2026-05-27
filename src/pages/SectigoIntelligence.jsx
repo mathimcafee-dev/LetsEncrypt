@@ -128,7 +128,7 @@ function CredPanel({ onConnect }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(239,68,68,0.08)',
           border: '1px solid #F2C4BC', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', fontWeight: 800, fontSize:14, color: '#f5f0eb' }}>SC</div>
+          justifyContent: 'center', fontWeight: 800, fontSize:14, color: '#ffffff' }}>SC</div>
         <div>
           <div style={{ fontWeight: 600, fontSize:15, color: 'var(--v2-text)' }}>Connect Sectigo SCM</div>
           <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 1 }}>SCM REST API credentials</div>
@@ -467,7 +467,7 @@ export default function SectigoIntelligence({ nav }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
             <div style={{ width: 22, height: 22, borderRadius: 6, background: 'rgba(239,68,68,0.08)',
               border: '1px solid #F2C4BC', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#f5f0eb' }}>SC</div>
+              justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#ffffff' }}>SC</div>
             <span style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)' }}>Sectigo Intelligence</span>
           </div>
           {creds && (

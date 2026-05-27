@@ -47,13 +47,13 @@ export default function ETSIIntelligence({ nav }) {
   return (
     <div className="v2-page" style={{ fontFamily: FONT }}>
       <style>{`
-        .ei-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#f5f0eb}
+        .ei-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#ffffff}
         .ei-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
-        .ei-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#f5f0eb;line-height:1.15;margin-bottom:10px}
+        .ei-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#ffffff;line-height:1.15;margin-bottom:10px}
         .ei-h1 em{color:#c0392b;font-style:normal}
         .ei-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .ei-stats{display:flex;gap:28px;flex-wrap:wrap}
-        .ei-sn{font-size:22px;font-weight:600;color:#f5f0eb;line-height:1}
+        .ei-sn{font-size:22px;font-weight:600;color:#ffffff;line-height:1}
         .ei-sl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
         .ei-tabs{background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
         .ei-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}

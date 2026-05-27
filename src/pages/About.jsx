@@ -46,12 +46,12 @@ export default function About({ nav }) {
           <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{ fontSize:15, fontWeight:600, color:'#f5f0eb' }}>SSLVault</span>
-          <span style={{ fontSize:11, color:'#9a918a', fontFamily:MONO }}>/ About</span>
+          <span style={{ fontSize:15, fontWeight:600, color:'#ffffff' }}>SSLVault</span>
+          <span style={{ fontSize:11, color:'#b0a8a0', fontFamily:MONO }}>/ About</span>
         </div>
         <div style={{ display:'flex', gap:8 }}>
           <button onClick={() => nav('/pricing')} style={{ background:'none', border:'1px solid rgba(240,237,232,0.1)', cursor:'pointer', fontFamily:F, fontSize:12, color:'#b5aea8', padding:'6px 14px', borderRadius:100 }}>Pricing</button>
-          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#f5f0eb', padding:'7px 18px', borderRadius:100 }}>Get started</button>
+          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'7px 18px', borderRadius:100 }}>Get started</button>
         </div>
       </header>
 
@@ -60,10 +60,10 @@ export default function About({ nav }) {
         <div style={{ position:'absolute', top:'-20%', left:'50%', transform:'translateX(-50%)', width:800, height:400, background:`radial-gradient(ellipse 60% 55% at 50% 0%, rgba(14,165,233,0.1) 0%, transparent 100%)`, pointerEvents:'none' }}/>
         <div style={{ maxWidth:860, margin:'0 auto', position:'relative' }}>
           <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:18 }}>About SSLVault</div>
-          <h1 style={{ fontSize:'clamp(32px,5vw,56px)', fontWeight:700, letterSpacing:'-1.5px', lineHeight:1.08, color:'#f5f0eb', marginBottom:22, maxWidth:640 }}>
+          <h1 style={{ fontSize:'clamp(32px,5vw,56px)', fontWeight:700, letterSpacing:'-1.5px', lineHeight:1.08, color:'#ffffff', marginBottom:22, maxWidth:640 }}>
             Enterprise certificate lifecycle management. Built by a PKI engineer, for everyone.
           </h1>
-          <p style={{ fontSize:17, color:'#9a918a', lineHeight:1.85, maxWidth:580, marginBottom:36 }}>
+          <p style={{ fontSize:17, color:'#b0a8a0', lineHeight:1.85, maxWidth:580, marginBottom:36 }}>
             SSLVault automates the full SSL/TLS certificate lifecycle — from issuance through DNS validation, deployment, monitoring, and renewal. Built on open standards. No proprietary black boxes.
           </p>
           <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
@@ -264,7 +264,7 @@ export default function About({ nav }) {
             <div style={{ fontSize:14, color:C.body, maxWidth:440, lineHeight:1.7 }}>Enterprise-grade PKI controls — CertVault, 47-day readiness, CA intelligence — built in from day one.</div>
           </div>
           <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-            <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#f5f0eb', padding:'10px 24px', borderRadius:100 }}>Get started →</button>
+            <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'10px 24px', borderRadius:100 }}>Get started →</button>
             <button onClick={() => nav('/pricing')} style={{ background:C.bg, border:`1px solid ${C.border}`, cursor:'pointer', fontFamily:F, fontSize:13, color:C.heading, padding:'10px 24px', borderRadius:100 }}>View pricing</button>
           </div>
         </div>

@@ -41,8 +41,8 @@ function gradeStyle(g) {
   if (g==='C')       return { color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
   if (g==='B')       return { color:'#a93226', bg:'transparent', border:'rgba(192,57,43,0.3)' }
   if (g==='A')       return { color:'#a93226', bg:'transparent', border:'rgba(192,57,43,0.3)' }
-  if (g==='A+')      return { color:'#f5f0eb', bg:'transparent', border:'#e07060' }
-  return { color:'#9a918a', bg:'var(--v2-bg)', border:'var(--v2-border)' }
+  if (g==='A+')      return { color:'#ffffff', bg:'transparent', border:'#e07060' }
+  return { color:'#b0a8a0', bg:'var(--v2-bg)', border:'var(--v2-border)' }
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
@@ -215,7 +215,7 @@ function OverviewTab({ user }) {
                 <span style={{ fontSize:12, color:'var(--v2-text-1)', fontWeight:500, textTransform:'capitalize' }}>
                   {src === 'gogetssl' ? 'RapidSSL (SSLVault)' : src}
                 </span>
-                <span style={{ fontSize:13, fontWeight:700, color:'#f5f0eb', fontFamily:'monospace' }}>{count}</span>
+                <span style={{ fontSize:13, fontWeight:700, color:'#ffffff', fontFamily:'monospace' }}>{count}</span>
               </div>
             ))}
           </div>
@@ -225,7 +225,7 @@ function OverviewTab({ user }) {
               letterSpacing:'0.4px', marginBottom:10 }}>Activity</div>
             <div style={{ display:'flex', gap:16 }}>
               <div>
-                <div style={{ fontSize:20, fontWeight:700, color:'#f5f0eb', fontFamily:'monospace' }}>{thisMonth}</div>
+                <div style={{ fontSize:20, fontWeight:700, color:'#ffffff', fontFamily:'monospace' }}>{thisMonth}</div>
                 <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>orders this month</div>
               </div>
               <div>
@@ -247,7 +247,7 @@ function OverviewTab({ user }) {
             {[
               { n:expiring7,             color:'#a93226', label:'Critical' },
               { n:expiring30-expiring7,  color:'#c0392b', label:'Expiring' },
-              { n:active-expiring30,     color:'#f5f0eb', label:'Healthy' },
+              { n:active-expiring30,     color:'#ffffff', label:'Healthy' },
             ].map(({ n, color, label }) => n > 0 && (
               <div key={label} title={`${label}: ${n}`}
                 style={{ flex:n, background:color, minWidth:4, transition:'flex .6s' }}/>
@@ -257,7 +257,7 @@ function OverviewTab({ user }) {
             {[
               { label:'Critical (≤7d)', n:expiring7,  color:'#a93226' },
               { label:'Expiring (≤30d)', n:expiring30, color:'#c0392b' },
-              { label:'Healthy',        n:active-expiring30, color:'#f5f0eb' },
+              { label:'Healthy',        n:active-expiring30, color:'#ffffff' },
             ].map(({ label, n, color }) => (
               <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
                 <div style={{ width:8, height:8, borderRadius:2, background:color }}/>
@@ -415,7 +415,7 @@ function TLSGradesTab({ tok, user }) {
               color:'var(--v2-text-1)' }}/>
           <button onClick={addDomain} disabled={adding || !newDomain.trim()}
             style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 12px',
-              borderRadius:7, border:'none', background:'var(--v2-green)', color:'#f5f0eb',
+              borderRadius:7, border:'none', background:'var(--v2-green)', color:'#ffffff',
               cursor:adding||!newDomain.trim()?'not-allowed':'pointer', fontFamily:'inherit',
               fontWeight:600, opacity:adding||!newDomain.trim()?0.6:1 }}>
             {adding ? <><Spinner/> Scanning…</> : <><Plus size={11}/> Scan</>}
@@ -455,7 +455,7 @@ const CT_STATUS = {
   unknown:    { label:'Unknown',    color:'#a93226', bg:'rgba(192,57,43,0.1)', border:'rgba(192,57,43,0.2)' },
   phishing:   { label:'Phishing',   color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
   suspicious: { label:'Suspicious', color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
-  known:      { label:'Known',      color:'#f5f0eb', bg:'transparent', border:'rgba(192,57,43,0.3)' },
+  known:      { label:'Known',      color:'#ffffff', bg:'transparent', border:'rgba(192,57,43,0.3)' },
 }
 
 function CTWatchTab({ tok, user }) {
@@ -709,7 +709,7 @@ function MassScanTab() {
             )}
             <button onClick={doScan} disabled={scanning || !input.trim()}
               style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 14px',
-                borderRadius:7, border:'none', background:'var(--v2-green)', color:'#f5f0eb',
+                borderRadius:7, border:'none', background:'var(--v2-green)', color:'#ffffff',
                 cursor:scanning||!input.trim()?'not-allowed':'pointer',
                 fontFamily:'inherit', fontWeight:600, opacity:scanning||!input.trim()?0.7:1 }}>
               {scanning ? <><Spinner/> Scanning…</> : <><Scan size={11}/> Run scan</>}

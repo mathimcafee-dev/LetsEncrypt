@@ -12,15 +12,15 @@ const FONT = "var(--v2-font, 'Segoe UI', system-ui, sans-serif)"
 // All configurable alert types
 const ALERT_TYPE_DEFS = [
   { id: 'cert_expiry',       label: 'Certificate expiring',     desc: 'Email at 30/14/7 days before cert expires',             color: '#f87171' },
-  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#f5f0eb' },
-  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#f5f0eb' },
-  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#f5f0eb' },
-  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#f5f0eb' },
+  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#ffffff' },
+  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#ffffff' },
+  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#ffffff' },
+  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#ffffff' },
   { id: 'renewal_failed',    label: 'Auto-renewal failed',      desc: 'Alert when auto-renewal fails (with retry info)',       color: '#f87171' },
   { id: 'agent_offline',     label: 'Agent offline',            desc: 'When a VPS agent stops responding (1h cooldown)',       color: '#f87171' },
-  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#f5f0eb' },
-  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#f5f0eb' },
-  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#f5f0eb' },
+  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#ffffff' },
+  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#ffffff' },
+  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#ffffff' },
 ]
 
 const DEFAULT_TYPES = ['cert_expiry','order_renewal','cert_issued','cert_installed','renewal_succeeded','renewal_failed','agent_offline','shadow_found','pqc_risk']
@@ -87,11 +87,11 @@ function Row({ label, desc, children, last }) {
 // Alert log table row
 function LogRow({ log }) {
   const meta = {
-    cert_expiry: { icon: '⏰', color: '#f87171' }, order_renewal: { icon: '🔄', color: '#f5f0eb' },
-    cert_issued: { icon: '✅', color: '#f5f0eb' }, cert_installed: { icon: '🚀', color: '#f5f0eb' },
-    renewal_succeeded: { icon: '✅', color: '#f5f0eb' }, renewal_failed: { icon: '⚠️', color: '#f87171' },
-    agent_offline: { icon: '🔴', color: '#f87171' }, shadow_found: { icon: '🔍', color: '#f5f0eb' },
-    pqc_risk: { icon: '⚛️', color: '#f5f0eb' }, no_dns_warning: { icon: '⚠️', color: '#f5f0eb' },
+    cert_expiry: { icon: '⏰', color: '#f87171' }, order_renewal: { icon: '🔄', color: '#ffffff' },
+    cert_issued: { icon: '✅', color: '#ffffff' }, cert_installed: { icon: '🚀', color: '#ffffff' },
+    renewal_succeeded: { icon: '✅', color: '#ffffff' }, renewal_failed: { icon: '⚠️', color: '#f87171' },
+    agent_offline: { icon: '🔴', color: '#f87171' }, shadow_found: { icon: '🔍', color: '#ffffff' },
+    pqc_risk: { icon: '⚛️', color: '#ffffff' }, no_dns_warning: { icon: '⚠️', color: '#ffffff' },
     weekly_digest: { icon: '📊', color: '#0f2545' },
   }
   const m = meta[log.alert_type] || { icon: '📧', color: '#ff8c7a' }
@@ -192,7 +192,7 @@ function ApiKeysPanel({ user }) {
       {newKey && (
         <div style={{ background: 'transparent', border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 8,
           padding: '12px 14px', marginBottom: 16 }}>
-          <div style={{ fontSize:11, fontWeight: 600, color: '#f5f0eb', marginBottom: 6 }}>
+          <div style={{ fontSize:11, fontWeight: 600, color: '#ffffff', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
           </div>
           <div style={{ background: '#f0ede8', borderRadius: 6, padding: '8px 10px',
@@ -202,7 +202,7 @@ function ApiKeysPanel({ user }) {
           <button onClick={() => { navigator.clipboard?.writeText(newKey); setCopied(true); setTimeout(()=>setCopied(false),2000) }}
             style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#4ade80',
               border: 'none', borderRadius: 6, padding: '6px 12px', fontSize:11,
-              color: '#f5f0eb', cursor: 'pointer', fontFamily: 'inherit' }}>
+              color: '#ffffff', cursor: 'pointer', fontFamily: 'inherit' }}>
             {copied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy key</>}
           </button>
         </div>
@@ -476,7 +476,7 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize:12, color: '#ff8c7a' }}>{createdAt}</span>
             </Row>
             <Row label="Plan" desc="Free for personal and indie use" last>
-              <span style={{ fontSize:11, fontWeight: 600, color: '#f5f0eb', background: 'transparent',
+              <span style={{ fontSize:11, fontWeight: 600, color: '#ffffff', background: 'transparent',
                 border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 4, padding: '3px 8px' }}>Free</span>
             </Row>
           </Section>
@@ -541,7 +541,7 @@ export default function SettingsPage({ user }) {
               <div key={e} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '7px 10px', background: 'var(--v2-surface-3)', border: '1px solid rgba(192,57,43,0.2)',
                 borderRadius: 7, marginBottom: 6 }}>
-                <span style={{ fontSize:12, color: '#d4cdc6', fontFamily: 'monospace' }}>{e}</span>
+                <span style={{ fontSize:12, color: '#e8e0d8', fontFamily: 'monospace' }}>{e}</span>
                 <button onClick={() => removeExtraEmail(e)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', padding: 2 }}>
                   <X size={12}/>
@@ -557,7 +557,7 @@ export default function SettingsPage({ user }) {
                   background: emailError ? 'rgba(248,113,113,0.1)' : 'transparent' }}/>
               <button onClick={addExtraEmail}
                 style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
-                  background: '#f0ede8', color: '#f5f0eb', border: 'none', borderRadius: 7,
+                  background: '#f0ede8', color: '#ffffff', border: 'none', borderRadius: 7,
                   fontSize:12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Plus size={11}/> Add
               </button>
@@ -621,7 +621,7 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize:11, color: '#ff8c7a' }}>Magic link</span>
             </Row>
             <Row label="Private key storage" desc="AES-256-GCM encrypted at rest" last>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#f5f0eb' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#ffffff' }}>
                 <Shield size={11}/> Encrypted
               </span>
             </Row>
@@ -707,7 +707,7 @@ export default function SettingsPage({ user }) {
                 <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--v2-text-3)', fontSize:12 }}>
                   No alerts sent yet.{' '}
                   <button onClick={() => setActiveTab('preferences')}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f5f0eb',
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ffffff',
                       fontSize:12, fontFamily: 'inherit', textDecoration: 'underline' }}>
                     Configure alerts →
                   </button>

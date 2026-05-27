@@ -18,8 +18,8 @@ function StatusBadge({ status }) {
   const map = {
     pass: { bg:'transparent', color:'#4ade80', label:'Pass' },
     fail: { bg:'rgba(192,57,43,0.12)', color:'#f87171', label:'Fail' },
-    warn: { bg:'rgba(239,68,68,0.08)', color:'#f5f0eb', label:'Warning' },
-    info: { bg:'transparent', color:'#f5f0eb', label:'Info' },
+    warn: { bg:'rgba(239,68,68,0.08)', color:'#ffffff', label:'Warning' },
+    info: { bg:'transparent', color:'#ffffff', label:'Info' },
   }
   const s = map[status] || map.info
   return (
@@ -37,7 +37,7 @@ function CopySnippet({ text }) {
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(()=>setCopied(false),1800) }}
       style={{ display:'flex', alignItems:'center', gap:5, background:'transparent',
         border:'0.5px solid rgba(192,57,43,0.2)', borderRadius:4, padding:'4px 9px',
-        fontSize:12, color:'#d4cdc6', cursor:'pointer', fontFamily:'monospace' }}>
+        fontSize:12, color:'#e8e0d8', cursor:'pointer', fontFamily:'monospace' }}>
       {copied ? <Check size={11} color="#16a34a"/> : <Copy size={11}/>}
       {text}
     </button>
@@ -110,7 +110,7 @@ export default function CAAChecker({ nav }) {
               onClick={check}
               disabled={loading}
               style={{ display:'flex', alignItems:'center', gap:6, background:'#f0ede8',
-                color:'#f5f0eb', border:'none', borderRadius:6, padding:'9px 18px',
+                color:'#ffffff', border:'none', borderRadius:6, padding:'9px 18px',
                 fontSize:13, fontWeight:600, cursor:loading?'not-allowed':'pointer',
                 opacity:loading?0.6:1, fontFamily:'inherit', whiteSpace:'nowrap' }}>
               {loading ? <RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }}/> : <Search size={14}/>}
@@ -138,7 +138,7 @@ export default function CAAChecker({ nav }) {
                 <p style={{ margin:0, fontSize:13, fontWeight:600,
                   color: result.safeToIssue ? '#f0ede8' : '#f87171' }}>{result.summary}</p>
                 {result.checkedDomain !== result.domain && (
-                  <p style={{ margin:'3px 0 0', fontSize:12, color:'#d4cdc6' }}>
+                  <p style={{ margin:'3px 0 0', fontSize:12, color:'#e8e0d8' }}>
                     CAA inherited from parent: <code style={{ fontSize:11 }}>{result.checkedDomain}</code>
                   </p>
                 )}
@@ -179,7 +179,7 @@ export default function CAAChecker({ nav }) {
               <div style={{ background:'transparent', border:'0.5px solid var(--v2-border)', borderRadius:8, padding:'12px 14px' }}>
                 <p style={{ margin:'0 0 6px', fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>Raw CAA records</p>
                 {result.rawRecords.map((r, i) => (
-                  <code key={i} style={{ display:'block', fontSize:12, color:'#d4cdc6', padding:'2px 0' }}>{r}</code>
+                  <code key={i} style={{ display:'block', fontSize:12, color:'#e8e0d8', padding:'2px 0' }}>{r}</code>
                 ))}
               </div>
             )}

@@ -94,7 +94,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
           <div key={i} style={{
             fontSize:10, fontWeight: 600, padding: '2px 5px', borderRadius: 4,
             marginBottom: 2, lineHeight: 1.4,
-            background: css.bar, color: '#f5f0eb',
+            background: css.bar, color: '#ffffff',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {c.domain.replace(/^www\./, '').replace(/^(.{12}).*/, '$1…')}
