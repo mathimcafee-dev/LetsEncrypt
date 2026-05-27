@@ -210,7 +210,23 @@ export default function Home({ nav }) {
   const P = 'clamp(20px,5vw,48px)'
 
   return (
-    <div style={{fontFamily:F,background:BG,color:T1,overflowX:'hidden'}}>
+    <div style={{fontFamily:F,position:'relative',background:`radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%)`,color:T1,overflowX:'hidden'}}>
+      {/* Comodo-style concentric ring overlay */}
+      <div style={{position:'fixed',top:0,right:'-10%',width:'80vw',height:'100vh',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
+        {[600,500,400,320,240,160,90].map((s,i)=>(
+          <div key={i} style={{
+            position:'absolute',top:'50%',right:'5%',
+            width:s+'px',height:s+'px',
+            borderRadius:'50%',
+            transform:'translateY(-50%)',
+            border:`1.5px solid rgba(180,20,20,${0.12+i*0.04})`,
+            background:'transparent'
+          }}/>
+        ))}
+        {/* Radial glow spots */}
+        <div style={{position:'absolute',top:'30%',right:'20%',width:'300px',height:'300px',borderRadius:'50%',background:'radial-gradient(circle, rgba(150,0,0,0.25) 0%, transparent 70%)'}}/>
+        <div style={{position:'absolute',top:'55%',right:'5%',width:'200px',height:'200px',borderRadius:'50%',background:'radial-gradient(circle, rgba(180,0,0,0.2) 0%, transparent 70%)'}}/>
+      </div>
       <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(255,255,255,0.15);color:#fff}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       {/* ── NAV ── */}
@@ -252,7 +268,7 @@ export default function Home({ nav }) {
       </header>
 
       {/* ── HERO ── */}
-      <section style={{background:BG,padding:`clamp(72px,10vw,120px) ${P} clamp(64px,8vw,100px)`,borderBottom:`1px solid ${LN}`}}>
+      <section style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:`clamp(72px,10vw,120px) ${P} clamp(64px,8vw,100px)`,borderBottom:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?48:72,alignItems:'center'}}>
             <div>
@@ -313,7 +329,7 @@ export default function Home({ nav }) {
       </div>
 
       {/* ── PLATFORM ── */}
-      <section id="platform" style={{background:BG,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="platform" style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start',marginBottom:48}}>
@@ -360,7 +376,7 @@ export default function Home({ nav }) {
               {icon:'🏛',title:'Industry Intelligence',specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker'],badge:'PKI Hub'},
               {icon:'🔬',title:'CA Trust Store',specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm','CSV export · PEM download'],badge:'CCADB'},
             ].map(f=>(
-              <div key={f.title} style={{background:BG,padding:'20px'}}>
+              <div key={f.title} style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:'20px'}}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:12}}>
                     <span style={{fontSize:20}}>{f.icon}</span>
                     <Tag>{f.badge}</Tag>
@@ -377,7 +393,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── SECURITY CONTROLS ── */}
-      <section style={{background:BG,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
@@ -416,7 +432,7 @@ export default function Home({ nav }) {
               </div>
               <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
                 {[{spec:'AES-256-GCM',title:'Key encryption',desc:'DEK wrapped with KEK. Keys never in plaintext.'},{spec:'RFC 8555',title:'ACME v2',desc:'DNS-01 challenge. Auto-validated via provider API.'},{spec:'CT monitoring',title:'Cert transparency',desc:'crt.sh queries for every cert ever issued.'},{spec:'CAA + HSTS',title:'DNS security',desc:'CAA prevents unauthorised CA issuance.'},{spec:'TLS 1.2 / 1.3',title:'TLS posture',desc:'ECDHE + PFS. HSTS max-age verified.'},{spec:'Append-only',title:'Audit trail',desc:'Every access logged. CSV export for SOC 2.'}].map(s=>(
-                  <div key={s.spec} style={{background:BG,padding:'14px'}}>
+                  <div key={s.spec} style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:'14px'}}>
                     <div style={{fontSize:9.5,fontWeight:600,color:T3,fontFamily:MONO,letterSpacing:'0.05em',marginBottom:5}}>{s.spec}</div>
                     <div style={{fontSize:12,fontWeight:600,color:T1,marginBottom:4}}>{s.title}</div>
                     <div style={{fontSize:11.5,color:T2,lineHeight:1.6}}>{s.desc}</div>
@@ -447,7 +463,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── DNS ── */}
-      <section style={{background:BG,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'center'}}>
             <FadeUp>
@@ -520,7 +536,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── INDUSTRY INTELLIGENCE ── */}
-      <section style={{background:BG,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
@@ -531,7 +547,7 @@ export default function Home({ nav }) {
           </FadeUp>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden',marginBottom:12}}>
             {[{icon:'🏛',title:'CA Trust Store',sub:'6,200+ root & intermediate CAs',desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert.',badge:'CCADB Live',path:'/ca-trust-explorer',stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']]},{icon:'⚖️',title:'CAB Forum Intelligence',sub:'Ballots, timelines & compliance',desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',badge:'Live sync',path:'/cab-forum',stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']]},{icon:'🌍',title:'Global PKI Hub',sub:'12 bodies · 22 standards · PQC tracker',desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',badge:'PQC Ready',path:'/pki-hub',stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']]}].map(item=>(
-              <div key={item.title} onClick={()=>nav(item.path)} style={{background:BG,padding:'22px',cursor:'pointer',transition:'background .12s',height:'100%',display:'flex',flexDirection:'column',gap:14}}
+              <div key={item.title} onClick={()=>nav(item.path)} style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:'22px',cursor:'pointer',transition:'background .12s',height:'100%',display:'flex',flexDirection:'column',gap:14}}
                   onMouseEnter={e=>e.currentTarget.style.background=BG3} onMouseLeave={e=>e.currentTarget.style.background=BG}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
                     <span style={{fontSize:26}}>{item.icon}</span>
@@ -642,7 +658,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── MISSION ── */}
-      <section style={{background:BG,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start'}}>
             <FadeUp>
@@ -706,7 +722,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{background:BG,borderTop:`1px solid ${LN}`,padding:`clamp(36px,5vw,52px) ${P} clamp(22px,3vw,32px)`}}>
+      <footer style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',borderTop:`1px solid ${LN}`,padding:`clamp(36px,5vw,52px) ${P} clamp(22px,3vw,32px)`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:32,paddingBottom:24,borderBottom:`1px solid ${LN}`}}>
             <div style={{width:20,height:20,background:'rgba(255,255,255,0.1)',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center'}}>
