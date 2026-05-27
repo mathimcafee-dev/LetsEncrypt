@@ -141,13 +141,13 @@ export default function NISTIntelligence({ nav }) {
             {PQC_STANDARDS.map(s => (
               <div key={s.id} className="pqc-card">
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6, flexWrap:'wrap' }}>
-                  <span style={{ fontFamily:MONO, fontSize:11, fontWeight:700, color:'var(--v2-text-2)' }}>{s.id}</span>
+                  <span style={{ fontFamily:MONO, fontSize:11, fontWeight:700, color:'#e8e0d8' }}>{s.id}</span>
                   <span className={`v2-chip ${s.status==='Final'?'chip-green':s.status==='Draft'?'chip-amber':'chip-blue'}`} style={{ fontSize:9 }}>{s.status}</span>
                   <span className="v2-chip chip-grey" style={{ fontSize:9 }}>{s.type}</span>
                   <span className="v2-chip chip-grey" style={{ fontSize:9 }}>{s.date}</span>
                 </div>
-                <div style={{ fontSize:14, fontWeight:600, color:'var(--v2-text)', marginBottom:5 }}>{s.name}</div>
-                <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.7 }}>{s.desc}</div>
+                <div style={{ fontSize:14, fontWeight:600, color:'#ffffff', marginBottom:5 }}>{s.name}</div>
+                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{s.desc}</div>
               </div>
             ))}
           </>
@@ -159,12 +159,12 @@ export default function NISTIntelligence({ nav }) {
             {CLASSICAL_STANDARDS.map(s => (
               <div key={s.id} className="pqc-card">
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
-                  <span style={{ fontFamily:MONO, fontSize:11, fontWeight:700, color:'var(--v2-text-2)' }}>{s.id}</span>
+                  <span style={{ fontFamily:MONO, fontSize:11, fontWeight:700, color:'#e8e0d8' }}>{s.id}</span>
                   <span className="v2-chip chip-green" style={{ fontSize:9 }}>{s.status}</span>
                   <span className="v2-chip chip-grey" style={{ fontSize:9 }}>{s.year}</span>
                 </div>
-                <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)', marginBottom:5 }}>{s.title}</div>
-                <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.7 }}>{s.desc}</div>
+                <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:5 }}>{s.title}</div>
+                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{s.desc}</div>
               </div>
             ))}
           </>
@@ -181,8 +181,8 @@ export default function NISTIntelligence({ nav }) {
                   {i < TIMELINE.length-1 && <div className="tl-line"/>}
                 </div>
                 <div style={{ flex:1, paddingBottom:8 }}>
-                  <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
-                  <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.65 }}>{e.desc}</div>
+                  <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
+                  <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.65 }}>{e.desc}</div>
                 </div>
               </div>
             ))}
@@ -195,8 +195,8 @@ export default function NISTIntelligence({ nav }) {
             {CURRENT_INITIATIVES.map(init => (
               <div key={init.title} className="init-card">
                 <span className={`v2-chip ${init.status==='Active'?'chip-blue':'chip-amber'}`} style={{ fontSize:9 }}>{init.status}</span>
-                <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)', marginTop:6, marginBottom:6 }}>{init.title}</div>
-                <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.7 }}>{init.desc}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginTop:6, marginBottom:6 }}>{init.title}</div>
+                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{init.desc}</div>
               </div>
             ))}
           </>
@@ -214,8 +214,8 @@ export default function NISTIntelligence({ nav }) {
             ].map(l => (
               <div key={l.label} className="link-row">
                 <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:500, color:'var(--v2-text)', fontSize:13 }}>{l.label}</div>
-                  <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>{l.desc}</div>
+                  <div style={{ fontWeight:500, color:'#ffffff', fontSize:13 }}>{l.label}</div>
+                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{l.desc}</div>
                 </div>
                 <a href={l.url} target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ gap:4, textDecoration:'none', flexShrink:0 }}>
                   <ExternalLink size={11}/> Visit ↗

@@ -21,7 +21,7 @@ function gradeStyle(grade) {
   if (grade === 'B') return { color: 'var(--v2-green-text)', bg: 'var(--v2-green-bg)' }
   if (grade === 'A') return { color: '#4ade80', bg: 'transparent' }
   if (grade === 'A+') return { color: '#ffffff', bg: 'transparent' }
-  return { color: 'var(--v2-text-3)', bg: 'var(--v2-bg)' }
+  return { color: '#b0a8a0', bg: 'var(--v2-bg)' }
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
@@ -87,13 +87,13 @@ export default function BulkScanner({ nav }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
           <Shield size={18} color="#c0392b" />
-          <span style={{ fontSize:14, fontWeight: 600, color: 'var(--v2-text)' }}>SSLVault</span>
-          <span style={{ fontSize:11, color: 'var(--v2-text-3)', fontWeight: 400 }}>· Bulk Scanner</span>
+          <span style={{ fontSize:14, fontWeight: 600, color: '#ffffff' }}>SSLVault</span>
+          <span style={{ fontSize:11, color: '#b0a8a0', fontWeight: 400 }}>· Bulk Scanner</span>
         </div>
         <button onClick={() => nav && nav('/auth')}
           style={{ fontSize:12, padding: '6px 14px', borderRadius: 7,
             border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface)',
-            color: 'var(--v2-text-2)', cursor: 'pointer' }}>
+            color: '#e8e0d8', cursor: 'pointer' }}>
           Sign in
         </button>
       </div>
@@ -107,9 +107,9 @@ export default function BulkScanner({ nav }) {
             margin: '0 auto 14px' }}>
             <Scan size={22} color="#16a34a" />
           </div>
-          <h1 style={{ fontSize:26, fontWeight: 600, color: 'var(--v2-text)', margin: '0 0 8px',
+          <h1 style={{ fontSize:26, fontWeight: 600, color: '#ffffff', margin: '0 0 8px',
             letterSpacing: '-0.4px' }}>Bulk SSL scanner</h1>
-          <p style={{ fontSize:14, color: 'var(--v2-text-3)', margin: 0 }}>
+          <p style={{ fontSize:14, color: '#b0a8a0', margin: 0 }}>
             Paste up to 100 domains — get instant SSL grades, expiry, HSTS and CAA checks. No account needed.
           </p>
         </div>
@@ -117,12 +117,12 @@ export default function BulkScanner({ nav }) {
         {/* Input */}
         <div style={{ background: 'var(--v2-surface)', border: '1px solid var(--v2-border)', borderRadius: 'var(--v2-r-lg)', padding: 20, marginBottom: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <label style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text-2)' }}>
+            <label style={{ fontSize:12, fontWeight: 500, color: '#e8e0d8' }}>
               Domains — one per line
             </label>
             {input && (
               <button onClick={() => { setInput(''); setResults(null) }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', padding: 0, display: 'flex' }}>
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#b0a8a0', padding: 0, display: 'flex' }}>
                 <X size={14} />
               </button>
             )}
@@ -134,10 +134,10 @@ export default function BulkScanner({ nav }) {
             rows={6}
             style={{ width: '100%', fontSize:13, fontFamily: 'monospace', resize: 'vertical',
               border: '0.5px solid var(--v2-border)', borderRadius: 8, padding: '10px 12px',
-              color: 'var(--v2-text)', background: 'var(--v2-bg)', boxSizing: 'border-box', outline: 'none' }}
+              color: '#ffffff', background: 'var(--v2-bg)', boxSizing: 'border-box', outline: 'none' }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-            <span style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
+            <span style={{ fontSize:11, color: '#b0a8a0' }}>
               {input.split('\n').filter(l => l.trim()).length} domain{input.split('\n').filter(l=>l.trim()).length !== 1 ? 's' : ''} entered
             </span>
             <button onClick={doScan} disabled={scanning || !input.trim()}
@@ -168,7 +168,7 @@ export default function BulkScanner({ nav }) {
             {/* Summary */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px,1fr))', gap: 8, marginBottom: 16 }}>
               {[
-                { label: 'Scanned', val: results.length, color: 'var(--v2-text-2)' },
+                { label: 'Scanned', val: results.length, color: '#e8e0d8' },
                 { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#f0ede8' : '#f87171' },
                 { label: 'A / A+', val: (grades['A']||0)+(grades['A+']||0), color: '#4ade80' },
                 { label: 'F / issues', val: (grades['F']||0), color: '#f87171' },
@@ -176,7 +176,7 @@ export default function BulkScanner({ nav }) {
                 <div key={label} style={{ background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)',
                   borderRadius: 10, padding: '10px 12px' }}>
                   <div style={{ fontSize:20, fontWeight: 600, color, fontFamily: 'monospace' }}>{val}</div>
-                  <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 2 }}>{label}</div>
+                  <div style={{ fontSize:11, color: '#b0a8a0', marginTop: 2 }}>{label}</div>
                 </div>
               ))}
               <div style={{ background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)',
@@ -197,7 +197,7 @@ export default function BulkScanner({ nav }) {
                 padding: '8px 14px', background: 'var(--v2-bg)',
                 borderBottom: '0.5px solid var(--v2-border)' }}>
                 {['Domain', 'Grade', 'Score', 'TLS', 'HSTS', 'CAA', 'Expiry'].map(h => (
-                  <div key={h} style={{ fontSize:10, fontWeight: 600, color: 'var(--v2-text-3)',
+                  <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#b0a8a0',
                     letterSpacing: '0.3px', textTransform: 'uppercase' }}>{h}</div>
                 ))}
               </div>
@@ -209,7 +209,7 @@ export default function BulkScanner({ nav }) {
                     gridTemplateColumns: '1fr 52px 60px 52px 52px 52px 70px',
                     padding: '10px 14px', alignItems: 'center',
                     borderBottom: isLast ? 'none' : '0.5px solid var(--v2-border)' }}>
-                    <div style={{ fontSize:12, color: 'var(--v2-text)', fontWeight: 500,
+                    <div style={{ fontSize:12, color: '#ffffff', fontWeight: 500,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {r.domain}
                       {r.error && (
@@ -241,7 +241,7 @@ export default function BulkScanner({ nav }) {
               })}
             </div>
 
-            <p style={{ fontSize:11, color: 'var(--v2-text-3)', textAlign: 'center', marginTop: 12 }}>
+            <p style={{ fontSize:11, color: '#b0a8a0', textAlign: 'center', marginTop: 12 }}>
               Grades: A+ (90–100) · A (80–89) · B (70–79) · C (60–69) · D (50–59) · F (&lt;50 or unreachable)
             </p>
           </>

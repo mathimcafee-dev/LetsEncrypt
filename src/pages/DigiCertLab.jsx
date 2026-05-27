@@ -70,7 +70,7 @@ function SectionHead({ title, sub }) {
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontSize:13, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.2px' }}>{title}</div>
-      {sub && <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 2 }}>{sub}</div>}
+      {sub && <div style={{ fontSize:11, color: '#b0a8a0', marginTop: 2 }}>{sub}</div>}
     </div>
   )
 }
@@ -257,7 +257,7 @@ export default function DigiCertLab({ nav }) {
               fontSize:11, fontWeight: 800, color: 'var(--v2-surface)' }}>DC</div>
             <div>
               <div style={{ fontSize:13, fontWeight: 700, color: 'var(--v2-surface)' }}>DigiCert Lab</div>
-              <div style={{ fontSize: 9, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Automation Sandbox</div>
+              <div style={{ fontSize: 9, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Automation Sandbox</div>
             </div>
           </div>
           {isConnected && connInfo && (
@@ -268,7 +268,7 @@ export default function DigiCertLab({ nav }) {
                   boxShadow: '0 0 0 2px rgba(22,163,74,0.2)' }}/>
                 <span style={{ fontSize:10, color: '#4ade80', fontWeight: 600 }}>Connected</span>
               </div>
-              <div style={{ fontSize: 9, color: 'var(--v2-text-3)', marginTop: 2 }}>{connInfo.account_name || 'CertCentral'}</div>
+              <div style={{ fontSize: 9, color: '#b0a8a0', marginTop: 2 }}>{connInfo.account_name || 'CertCentral'}</div>
             </div>
           )}
         </div>
@@ -309,7 +309,7 @@ export default function DigiCertLab({ nav }) {
           <button onClick={() => nav('/integrations')}
             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8,
               padding: '7px 10px', borderRadius: 7, border: 'none', cursor: 'pointer',
-              background: 'transparent', color: 'var(--v2-text-3)', fontSize:11,
+              background: 'transparent', color: '#b0a8a0', fontSize:11,
               fontFamily: 'inherit', marginTop: 4 }}>
             <ChevronRight size={12}/> Back to CA Connectors
           </button>
@@ -326,7 +326,7 @@ export default function DigiCertLab({ nav }) {
               <h1 style={{ fontSize:20, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px', marginBottom: 4 }}>
                 DigiCert CertCentral Lab
               </h1>
-              <p style={{ fontSize:13, color: 'var(--v2-text-3)', lineHeight: 1.6 }}>
+              <p style={{ fontSize:13, color: '#b0a8a0', lineHeight: 1.6 }}>
                 A sandboxed workspace to experiment with DigiCert API automation. Your existing RapidSSL certs and agents are completely unaffected.
               </p>
             </div>
@@ -342,7 +342,7 @@ export default function DigiCertLab({ nav }) {
             <Card style={{ padding: '20px 22px' }}>
               <SectionHead title="CertCentral API Credentials" sub="Stored in session memory only — never written to disk or database"/>
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize:11, fontWeight: 700, color: 'var(--v2-text-2)',
+                <label style={{ display: 'block', fontSize:11, fontWeight: 700, color: '#e8e0d8',
                   textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>
                   API Key <span style={{ color: '#f87171' }}>*</span>
                 </label>
@@ -355,14 +355,14 @@ export default function DigiCertLab({ nav }) {
                     placeholder="Your CertCentral API key"
                     style={{ width: '100%', boxSizing: 'border-box', padding: '9px 36px 9px 12px',
                       borderRadius: 8, border: '1px solid var(--v2-border)', fontSize:13,
-                      fontFamily: 'inherit', outline: 'none', color: 'var(--v2-text)' }}/>
+                      fontFamily: 'inherit', outline: 'none', color: '#ffffff' }}/>
                   <button onClick={() => setApiKeyVis(v => !v)}
                     style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
                       background: 'none', border: 'none', cursor: 'pointer', color: '#b0a8a0', padding: 0 }}>
                     {apiKeyVis ? <EyeOff size={14}/> : <Eye size={14}/>}
                   </button>
                 </div>
-                <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 4 }}>
+                <div style={{ fontSize:11, color: '#b0a8a0', marginTop: 4 }}>
                   Generate at: Settings → API Keys in CertCentral.{' '}
                   <a href="https://dev.digicert.com/en/certcentral-apis/creating-an-api-key.html"
                     target="_blank" rel="noopener"
@@ -373,9 +373,9 @@ export default function DigiCertLab({ nav }) {
               </div>
 
               <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize:11, fontWeight: 700, color: 'var(--v2-text-2)',
+                <label style={{ display: 'block', fontSize:11, fontWeight: 700, color: '#e8e0d8',
                   textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 5 }}>
-                  Account / Division ID <span style={{ color: 'var(--v2-text-3)', fontWeight: 500, textTransform: 'none' }}>(optional)</span>
+                  Account / Division ID <span style={{ color: '#b0a8a0', fontWeight: 500, textTransform: 'none' }}>(optional)</span>
                 </label>
                 <input
                   value={accountId}
@@ -383,7 +383,7 @@ export default function DigiCertLab({ nav }) {
                   placeholder="Leave blank for default account"
                   style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px',
                     borderRadius: 8, border: '1px solid var(--v2-border)', fontSize:13,
-                    fontFamily: 'inherit', outline: 'none', color: 'var(--v2-text)' }}/>
+                    fontFamily: 'inherit', outline: 'none', color: '#ffffff' }}/>
               </div>
 
               {connError && (
@@ -409,7 +409,7 @@ export default function DigiCertLab({ nav }) {
 
             {/* What you can do */}
             <div style={{ marginTop: 24 }}>
-              <div style={{ fontSize:11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase',
+              <div style={{ fontSize:11, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase',
                 letterSpacing: '0.6px', marginBottom: 12 }}>What this lab lets you do</div>
               {[
                 { icon: Activity,    color: '#ffffff', label: 'Portfolio Overview',  desc: 'Pull all issued certs across your account. Count, status, expiry distribution.' },
@@ -427,7 +427,7 @@ export default function DigiCertLab({ nav }) {
                   </div>
                   <div>
                     <div style={{ fontSize:12, fontWeight: 600, color: '#ffffff', marginBottom: 2 }}>{label}</div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-3)', lineHeight: 1.5 }}>{desc}</div>
+                    <div style={{ fontSize:11, color: '#b0a8a0', lineHeight: 1.5 }}>{desc}</div>
                   </div>
                 </div>
               ))}
@@ -441,12 +441,12 @@ export default function DigiCertLab({ nav }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
               <div>
                 <h1 style={{ fontSize:20, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px', marginBottom: 4 }}>Portfolio Overview</h1>
-                <p style={{ fontSize:12, color: 'var(--v2-text-3)' }}>Live pull from DigiCert CertCentral — read only</p>
+                <p style={{ fontSize:12, color: '#b0a8a0' }}>Live pull from DigiCert CertCentral — read only</p>
               </div>
               <button onClick={loadPortfolio} disabled={loading}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
                   background: 'var(--v2-surface)', border: '1px solid var(--v2-border)', borderRadius: 'var(--v2-r-lg)',
-                  fontSize:12, fontWeight: 600, color: 'var(--v2-text-2)', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  fontSize:12, fontWeight: 600, color: '#e8e0d8', cursor: 'pointer', fontFamily: 'inherit' }}>
                 <RefreshCw size={12} style={{ animation: loading ? 'spin .8s linear infinite' : 'none' }}/> Refresh
               </button>
             </div>
@@ -460,7 +460,7 @@ export default function DigiCertLab({ nav }) {
                 { label: 'RSA-2048 (PQC)', value: highPqc,  color: '#ffffff', bg: 'rgba(239,68,68,0.08)' },
               ].map(s => (
                 <Card key={s.label} style={{ padding: '14px 16px', borderTop: `3px solid ${s.color}` }}>
-                  <div style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase',
+                  <div style={{ fontSize:10, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase',
                     letterSpacing: '0.4px', marginBottom: 6 }}>{s.label}</div>
                   <div style={{ fontSize:28, fontWeight: 800, color: s.value > 0 ? s.color : '#f0ede8',
                     letterSpacing: '-0.5px', lineHeight: 1 }}>{loading ? '…' : s.value}</div>
@@ -482,17 +482,17 @@ export default function DigiCertLab({ nav }) {
                 display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
                 background: 'transparent' }}>
                 {['Domain', 'Product', 'Expires', 'Days left', 'Actions'].map(h => (
-                  <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
+                  <div key={h} style={{ fontSize:10, fontWeight: 700, color: '#b0a8a0',
                     textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
                 ))}
               </div>
               {loading ? (
-                <div style={{ padding:'min(40px,5vw) min(16px,4vw)', textAlign: 'center', color: 'var(--v2-text-3)', fontSize:13 }}>
+                <div style={{ padding:'min(40px,5vw) min(16px,4vw)', textAlign: 'center', color: '#b0a8a0', fontSize:13 }}>
                   <RefreshCw size={16} style={{ animation: 'spin .8s linear infinite', marginBottom: 8, display: 'block', margin: '0 auto 8px' }}/>
                   Loading portfolio…
                 </div>
               ) : certs.length === 0 ? (
-                <div style={{ padding:'min(40px,5vw) min(16px,4vw)', textAlign: 'center', color: 'var(--v2-text-3)', fontSize:13 }}>
+                <div style={{ padding:'min(40px,5vw) min(16px,4vw)', textAlign: 'center', color: '#b0a8a0', fontSize:13 }}>
                   No certificates found. Check your API key permissions.
                 </div>
               ) : certs.slice(0, 50).map((cert, i) => {
@@ -516,13 +516,13 @@ export default function DigiCertLab({ nav }) {
                         </div>
                       )}
                     </div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
+                    <div style={{ fontSize:11, color: '#b0a8a0' }}>
                       {cert.product_name_id || cert.type || '—'}
                     </div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{fmt(cert.valid_till)}</div>
+                    <div style={{ fontSize:11, color: '#b0a8a0' }}>{fmt(cert.valid_till)}</div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <StatusDot d={d}/>
-                      <span style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
+                      <span style={{ fontSize:11, color: '#b0a8a0' }}>
                         {d === null ? '—' : d < 0 ? 'Expired' : `${d}d`}
                       </span>
                     </div>
@@ -546,7 +546,7 @@ export default function DigiCertLab({ nav }) {
                 )
               })}
               {certs.length > 50 && (
-                <div style={{ padding: '10px 16px', fontSize:11, color: 'var(--v2-text-3)', textAlign: 'center' }}>
+                <div style={{ padding: '10px 16px', fontSize:11, color: '#b0a8a0', textAlign: 'center' }}>
                   Showing 50 of {certs.length} certificates
                 </div>
               )}
@@ -558,11 +558,11 @@ export default function DigiCertLab({ nav }) {
         {section === 'pqc' && (
           <div>
             <h1 style={{ fontSize:20, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px', marginBottom: 4 }}>PQC Risk Scanner</h1>
-            <p style={{ fontSize:12, color: 'var(--v2-text-3)', marginBottom: 24 }}>Every certificate in your DigiCert portfolio scored against NIST PQC timeline. RSA-2048 must be migrated by 2030.</p>
+            <p style={{ fontSize:12, color: '#b0a8a0', marginBottom: 24 }}>Every certificate in your DigiCert portfolio scored against NIST PQC timeline. RSA-2048 must be migrated by 2030.</p>
 
             {certs.length === 0 ? (
               <Card style={{ padding: 32, textAlign: 'center' }}>
-                <div style={{ fontSize:13, color: 'var(--v2-text-3)' }}>Load portfolio first → Portfolio Overview</div>
+                <div style={{ fontSize:13, color: '#b0a8a0' }}>Load portfolio first → Portfolio Overview</div>
               </Card>
             ) : (
               <>
@@ -578,7 +578,7 @@ export default function DigiCertLab({ nav }) {
                       <Card key={risk} style={{ padding: '16px', borderLeft: `4px solid ${color}` }}>
                         <div style={{ fontSize:28, fontWeight: 800, color, letterSpacing: '-0.5px', lineHeight: 1, marginBottom: 6 }}>{count}</div>
                         <div style={{ fontSize:12, fontWeight: 600, color: '#ffffff', marginBottom: 2 }}>{label}</div>
-                        <div style={{ fontSize:10, color: 'var(--v2-text-3)' }}>{note}</div>
+                        <div style={{ fontSize:10, color: '#b0a8a0' }}>{note}</div>
                       </Card>
                     )
                   })}
@@ -599,7 +599,7 @@ export default function DigiCertLab({ nav }) {
                         padding: '10px 16px', borderBottom: '0.5px solid rgba(192,57,43,0.08)', alignItems: 'center' }}>
                         <div style={{ fontSize:12, fontFamily: 'monospace', color: '#ffffff' }}>{cert.common_name}</div>
                         <Badge text={`RSA-${cert.key_size || 2048}`} color="#e07060" bg="rgba(192,57,43,0.1)"/>
-                        <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{fmt(cert.valid_till)}</div>
+                        <div style={{ fontSize:11, color: '#b0a8a0' }}>{fmt(cert.valid_till)}</div>
                         <div style={{ fontSize:11, color: '#f87171', fontWeight: 600 }}>
                           Migrate before 2030
                         </div>
@@ -616,11 +616,11 @@ export default function DigiCertLab({ nav }) {
         {section === 'expiry' && (
           <div>
             <h1 style={{ fontSize:20, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px', marginBottom: 4 }}>Expiry Risk Map</h1>
-            <p style={{ fontSize:12, color: 'var(--v2-text-3)', marginBottom: 24 }}>Certificates bucketed by urgency. Load portfolio first if empty.</p>
+            <p style={{ fontSize:12, color: '#b0a8a0', marginBottom: 24 }}>Certificates bucketed by urgency. Load portfolio first if empty.</p>
 
             {certs.length === 0 ? (
               <Card style={{ padding: 32, textAlign: 'center' }}>
-                <div style={{ fontSize:13, color: 'var(--v2-text-3)' }}>Load portfolio first → Portfolio Overview</div>
+                <div style={{ fontSize:13, color: '#b0a8a0' }}>Load portfolio first → Portfolio Overview</div>
               </Card>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -649,7 +649,7 @@ export default function DigiCertLab({ nav }) {
                           </div>
                         ))}
                         {bucket.length > 10 && (
-                          <div style={{ fontSize:11, color: 'var(--v2-text-3)', paddingTop: 6 }}>
+                          <div style={{ fontSize:11, color: '#b0a8a0', paddingTop: 6 }}>
                             +{bucket.length - 10} more
                           </div>
                         )}
@@ -666,7 +666,7 @@ export default function DigiCertLab({ nav }) {
         {section === 'reissue' && (
           <div style={{ maxWidth: 560 }}>
             <h1 style={{ fontSize:20, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px', marginBottom: 4 }}>Zero-touch Reissue</h1>
-            <p style={{ fontSize:12, color: 'var(--v2-text-3)', marginBottom: 20 }}>
+            <p style={{ fontSize:12, color: '#b0a8a0', marginBottom: 20 }}>
               Trigger a DigiCert reissue via API. For OV/EV certs, org validation is already done — the API queues the reissue immediately.
             </p>
 
@@ -684,22 +684,22 @@ export default function DigiCertLab({ nav }) {
                   </div>
                   <div>
                     <div style={{ fontSize:13, fontWeight: 700, color: '#ffffff' }}>{selectedCert.common_name}</div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>Order #{selectedCert.order_id} · expires {fmt(selectedCert.valid_till)}</div>
+                    <div style={{ fontSize:11, color: '#b0a8a0' }}>Order #{selectedCert.order_id} · expires {fmt(selectedCert.valid_till)}</div>
                   </div>
                 </div>
 
                 <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize:11, fontWeight: 700, color: 'var(--v2-text-2)', textTransform: 'uppercase',
+                  <div style={{ fontSize:11, fontWeight: 700, color: '#e8e0d8', textTransform: 'uppercase',
                     letterSpacing: '0.4px', marginBottom: 6 }}>API call preview</div>
                   <div style={{ background: 'var(--v2-text)', borderRadius: 8, padding: '12px 14px', fontFamily: 'monospace', fontSize:11, color: '#b0a8a0', lineHeight: 1.6 }}>
                     <span style={{ color: '#ffffff' }}>POST</span>{' '}
                     <span style={{ color: '#ff8c7a' }}>https://www.digicert.com/services/v2</span>
                     <span style={{ color: '#fbbf24' }}>/order/certificate/{selectedCert.order_id}/reissue</span>
                     <br/>
-                    <span style={{ color: 'var(--v2-text-3)' }}>X-DC-DEVKEY: </span>
+                    <span style={{ color: '#b0a8a0' }}>X-DC-DEVKEY: </span>
                     <span style={{ color: '#ffffff' }}>{'*'.repeat(16)}…</span>
                     <br/><br/>
-                    <span style={{ color: 'var(--v2-text-3)' }}>{`{ "certificate": { "common_name": "${selectedCert.common_name}", "dns_names": ["${selectedCert.common_name}"] } }`}</span>
+                    <span style={{ color: '#b0a8a0' }}>{`{ "certificate": { "common_name": "${selectedCert.common_name}", "dns_names": ["${selectedCert.common_name}"] } }`}</span>
                   </div>
                 </div>
 
@@ -732,7 +732,7 @@ export default function DigiCertLab({ nav }) {
             ) : (
               <Card style={{ padding: '24px', textAlign: 'center' }}>
                 <RotateCcw size={24} color="var(--v2-border)" style={{ marginBottom: 12 }}/>
-                <div style={{ fontSize:13, color: 'var(--v2-text-3)' }}>Select a cert from Portfolio Overview to reissue</div>
+                <div style={{ fontSize:13, color: '#b0a8a0' }}>Select a cert from Portfolio Overview to reissue</div>
                 <button onClick={() => setSection('portfolio')}
                   style={{ marginTop: 12, fontSize:12, color: '#ffffff', background: 'none',
                     border: 'none', cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'underline' }}>
@@ -747,7 +747,7 @@ export default function DigiCertLab({ nav }) {
         {section === 'revoke' && (
           <div style={{ maxWidth: 560 }}>
             <h1 style={{ fontSize:20, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px', marginBottom: 4 }}>Revoke & Replace</h1>
-            <p style={{ fontSize:12, color: 'var(--v2-text-3)', marginBottom: 20 }}>
+            <p style={{ fontSize:12, color: '#b0a8a0', marginBottom: 20 }}>
               Revoke a compromised or expired DigiCert cert. Optionally issue a replacement RapidSSL DV cert through SSLVault.
             </p>
 
@@ -768,14 +768,14 @@ export default function DigiCertLab({ nav }) {
                   </div>
                   <div>
                     <div style={{ fontSize:13, fontWeight: 700, color: '#ffffff' }}>{selectedCert.common_name}</div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
+                    <div style={{ fontSize:11, color: '#b0a8a0' }}>
                       Certificate ID: {selectedCert.certificate_id || selectedCert.order_id} · expires {fmt(selectedCert.valid_till)}
                     </div>
                   </div>
                 </div>
 
                 <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize:11, fontWeight: 700, color: 'var(--v2-text-2)', textTransform: 'uppercase',
+                  <div style={{ fontSize:11, fontWeight: 700, color: '#e8e0d8', textTransform: 'uppercase',
                     letterSpacing: '0.4px', marginBottom: 6 }}>API call that will be executed</div>
                   <div style={{ background: 'var(--v2-text)', borderRadius: 8, padding: '12px 14px',
                     fontFamily: 'monospace', fontSize:11, color: '#b0a8a0', lineHeight: 1.6 }}>
@@ -783,7 +783,7 @@ export default function DigiCertLab({ nav }) {
                     <span style={{ color: '#ff8c7a' }}>https://www.digicert.com/services/v2</span>
                     <span style={{ color: '#f87171' }}>/certificate/{selectedCert.certificate_id || '{cert_id}'}/revoke</span>
                     <br/>
-                    <span style={{ color: 'var(--v2-text-3)' }}>{`{ "skip_approval": true, "reason": "Superseded" }`}</span>
+                    <span style={{ color: '#b0a8a0' }}>{`{ "skip_approval": true, "reason": "Superseded" }`}</span>
                   </div>
                 </div>
 
@@ -829,7 +829,7 @@ export default function DigiCertLab({ nav }) {
             ) : (
               <Card style={{ padding: '24px', textAlign: 'center' }}>
                 <Trash2 size={24} color="var(--v2-border)" style={{ marginBottom: 12 }}/>
-                <div style={{ fontSize:13, color: 'var(--v2-text-3)' }}>Select a cert from Portfolio Overview to revoke</div>
+                <div style={{ fontSize:13, color: '#b0a8a0' }}>Select a cert from Portfolio Overview to revoke</div>
                 <button onClick={() => setSection('portfolio')}
                   style={{ marginTop: 12, fontSize:12, color: '#ffffff', background: 'none',
                     border: 'none', cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'underline' }}>
@@ -844,13 +844,13 @@ export default function DigiCertLab({ nav }) {
         {section === 'reports' && (
           <div style={{ maxWidth: 560 }}>
             <h1 style={{ fontSize:20, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px', marginBottom: 4 }}>Portfolio Report</h1>
-            <p style={{ fontSize:12, color: 'var(--v2-text-3)', marginBottom: 24 }}>
+            <p style={{ fontSize:12, color: '#b0a8a0', marginBottom: 24 }}>
               Export your full DigiCert portfolio as CSV — domain, product, expiry, key size, PQC risk, organisation.
             </p>
 
             <Card style={{ padding: '20px 22px' }}>
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize:11, fontWeight: 700, color: 'var(--v2-text-2)', textTransform: 'uppercase',
+                <div style={{ fontSize:11, fontWeight: 700, color: '#e8e0d8', textTransform: 'uppercase',
                   letterSpacing: '0.4px', marginBottom: 8 }}>CSV columns included</div>
                 {[
                   'Domain (common name)', 'Order ID', 'Product name', 'Status',
@@ -858,7 +858,7 @@ export default function DigiCertLab({ nav }) {
                   'Key size', 'PQC risk level', 'Organisation', 'Serial number'
                 ].map(col => (
                   <div key={col} style={{ display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '4px 0', fontSize:12, color: 'var(--v2-text-2)' }}>
+                    padding: '4px 0', fontSize:12, color: '#e8e0d8' }}>
                     <Check size={11} color="#16a34a" style={{ flexShrink: 0 }}/>{col}
                   </div>
                 ))}
@@ -870,7 +870,7 @@ export default function DigiCertLab({ nav }) {
                   {certs.length > 0 ? `${certs.length} certificates ready to export` : 'Load portfolio first to generate report'}
                 </div>
                 {certs.length > 0 && (
-                  <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
+                  <div style={{ fontSize:11, color: '#b0a8a0' }}>
                     {certs.filter(c => pqcRisk(c) === 'high').length} high PQC risk ·{' '}
                     {certs.filter(c => { const d = daysLeft(c.valid_till); return d !== null && d <= 30 && d >= 0 }).length} expiring within 30 days
                   </div>

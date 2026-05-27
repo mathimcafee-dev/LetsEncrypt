@@ -211,7 +211,7 @@ function ChainView({ cert }) {
           <div className="chain-card">
             <div className="cc-top">
               <span className="v2-chip chip-blue">Root CA</span>
-              <span className="cc-name" style={{ fontSize:11, color: 'var(--v2-text-2)' }}>
+              <span className="cc-name" style={{ fontSize:11, color: '#e8e0d8' }}>
                 Issuing root — {cert?.ca_owner}
               </span>
             </div>
@@ -231,9 +231,9 @@ function ChainView({ cert }) {
           </div>
           <div className="cc-meta">
             <span>{cert?.ca_owner}</span>
-            <span style={{ color: 'var(--v2-text-3)' }}>·</span>
+            <span style={{ color: '#b0a8a0' }}>·</span>
             <span>{cert?.key_algorithm}</span>
-            <span style={{ color: 'var(--v2-text-3)' }}>·</span>
+            <span style={{ color: '#b0a8a0' }}>·</span>
             <span>{fmtDate(cert?.valid_from)} → {fmtDate(cert?.valid_to)}</span>
           </div>
         </div>
@@ -583,9 +583,9 @@ export default function CATrustExplorer({ nav }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span className="live-dot" />
           <span>CCADB data · synced {syncAge}</span>
-          <span style={{ color: 'var(--v2-text-3)' }}>·</span>
+          <span style={{ color: '#b0a8a0' }}>·</span>
           <span>{totalCount ? totalCount.toLocaleString() : '—'} certificates indexed</span>
-          <span style={{ color: 'var(--v2-text-3)' }}>·</span>
+          <span style={{ color: '#b0a8a0' }}>·</span>
           <span>Sources: Mozilla · Apple · Chrome · Microsoft root stores</span>
           {syncMsg && <span style={{ color: 'var(--v2-amber-text)', fontWeight: 500 }}>{syncMsg}</span>}
         </div>
@@ -664,7 +664,7 @@ export default function CATrustExplorer({ nav }) {
         {/* Popular CAs strip */}
         {popularCAs.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize:11, letterSpacing: '0.4px', color: 'var(--v2-text-3)', textTransform: 'uppercase', fontWeight: 500, marginBottom: 10 }}>
+            <div style={{ fontSize:11, letterSpacing: '0.4px', color: '#b0a8a0', textTransform: 'uppercase', fontWeight: 500, marginBottom: 10 }}>
               Popular CAs
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -754,7 +754,7 @@ export default function CATrustExplorer({ nav }) {
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>
                             {c.ca_owner}
                           </span>
-                          <span style={{ color: 'var(--v2-text-3)' }}>·</span>
+                          <span style={{ color: '#b0a8a0' }}>·</span>
                           <span className={`v2-chip ${c.cert_type === 'Root CA' ? 'chip-blue' : 'chip-grey'}`} style={{ fontSize: 9 }}>
                             {c.cert_type === 'Root CA' ? 'Root' : 'Int.'}
                           </span>
@@ -886,9 +886,9 @@ export default function CATrustExplorer({ nav }) {
               </>
             ) : (
               <div className="empty-state">
-                <ShieldCheck size={32} style={{ marginBottom: 12, color: 'var(--v2-text-3)' }} />
-                <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text-2)' }}>Select a certificate</div>
-                <div style={{ fontSize:12, color: 'var(--v2-text-3)', marginTop: 4 }}>Click any row in the list to inspect it</div>
+                <ShieldCheck size={32} style={{ marginBottom: 12, color: '#b0a8a0' }} />
+                <div style={{ fontSize:13, fontWeight: 500, color: '#e8e0d8' }}>Select a certificate</div>
+                <div style={{ fontSize:12, color: '#b0a8a0', marginTop: 4 }}>Click any row in the list to inspect it</div>
               </div>
             )}
           </div>

@@ -17,8 +17,8 @@ const COMPLIANCE_DEADLINES = [
   { title: '100-day max validity', date: '2027-03-15', ballot: 'SC081v3', color: 'var(--v2-amber)', status: 'plan', action: 'Manual renewal every 100 days is operationally unsustainable. Start deploying ACME automation now.' },
   { title: '47-day max validity', date: '2029-03-15', ballot: 'SC081v3', color: 'var(--v2-green-text)', status: 'future', action: 'Full zero-touch automation required. Human-in-the-loop renewal processes will fail at this cadence.' },
   { title: 'DCV reuse max 10 days', date: '2027-03-15', ballot: 'SC081v3', color: 'var(--v2-amber)', status: 'plan', action: 'Domain control validation reuse drops to 10 days — requiring near-continuous automated re-validation.' },
-  { title: 'SHA-1 fully prohibited', date: '2026-01-01', ballot: 'SC097', color: 'var(--v2-text-3)', status: 'passed', action: 'Already in effect. Any cert or CRL with SHA-1 signatures must be revoked. Check your intermediates.' },
-  { title: 'Multi-perspective DCV', date: '2025-03-15', ballot: 'SC067v3', color: 'var(--v2-text-3)', status: 'passed', action: 'Already in effect. CAs must validate from multiple network perspectives. Affects all new issuances.' },
+  { title: 'SHA-1 fully prohibited', date: '2026-01-01', ballot: 'SC097', color: '#b0a8a0', status: 'passed', action: 'Already in effect. Any cert or CRL with SHA-1 signatures must be revoked. Check your intermediates.' },
+  { title: 'Multi-perspective DCV', date: '2025-03-15', ballot: 'SC067v3', color: '#b0a8a0', status: 'passed', action: 'Already in effect. CAs must validate from multiple network perspectives. Affects all new issuances.' },
 ]
 
 const TIMELINE = [
@@ -140,7 +140,7 @@ function BallotRow({ b, onClick }) {
   return (
     <div onClick={() => onClick(b)} style={{
       cursor:'pointer', padding:'12px 16px',
-      borderBottom:'0.5px solid var(--v2-border)',
+      borderBottom:'0.5px solid rgba(255,255,255,0.08)',
       transition:'background .1s',
     }}
     onMouseEnter={e => e.currentTarget.style.background='var(--v2-hover)'}
@@ -149,8 +149,8 @@ function BallotRow({ b, onClick }) {
       {/* ID + Title + Impact chip */}
       <div style={{ display:'flex', alignItems:'flex-start', gap:8, flexWrap:'wrap', marginBottom:5 }}>
         <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, fontWeight:700,
-          color:'var(--v2-text-3)', flexShrink:0, paddingTop:2 }}>{b.ballot_id}</span>
-        <span style={{ fontSize:14, fontWeight:600, color:'var(--v2-text)', lineHeight:1.3, flex:1, minWidth:0 }}>
+          color:'#b0a8a0', flexShrink:0, paddingTop:2 }}>{b.ballot_id}</span>
+        <span style={{ fontSize:14, fontWeight:600, color:'#ffffff', lineHeight:1.3, flex:1, minWidth:0 }}>
           {b.title}
         </span>
         {imp && impLabel && <Pill {...imp}>{impLabel}</Pill>}
@@ -158,7 +158,7 @@ function BallotRow({ b, onClick }) {
 
       {/* Description */}
       {b.plain_english && (
-        <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.6, marginBottom:8, paddingLeft:0 }}>
+        <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.6, marginBottom:8, paddingLeft:0 }}>
           {b.plain_english}
         </div>
       )}
@@ -167,12 +167,12 @@ function BallotRow({ b, onClick }) {
       <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
         <Pill {...wg}>{b.working_group}</Pill>
         {b.proposed_by && (
-          <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>
+          <span style={{ fontSize:11, color:'#b0a8a0' }}>
             {b.proposed_by}{b.proposed_org ? ` · ${b.proposed_org}` : ''}
           </span>
         )}
         {b.voting_closed && (
-          <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>{fmtDate(b.voting_closed)}</span>
+          <span style={{ fontSize:11, color:'#b0a8a0' }}>{fmtDate(b.voting_closed)}</span>
         )}
         {b.br_version && (
           <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10,
@@ -446,18 +446,18 @@ export default function CABForumNewsroom({ nav }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border-strong)', borderRadius: 'var(--v2-r-md)', padding: '5px 10px', flex: 1 }}>
                   <Search size={13} color="var(--v2-text-3)" />
                   <input type="text" placeholder="Search ballots…" value={query} onChange={e => setQuery(e.target.value)}
-                    style={{ border: 'none', outline: 'none', background: 'transparent', fontSize:12, color: 'var(--v2-text)', fontFamily: S.font, width: 160 }} />
+                    style={{ border: 'none', outline: 'none', background: 'transparent', fontSize:12, color: '#ffffff', fontFamily: S.font, width: 160 }} />
                 </div>
               </div>
             </div>
             <div className="filter-bar">
-              <span style={{ fontSize:11, color: 'var(--v2-text-3)', marginRight: 4 }}>WG:</span>
+              <span style={{ fontSize:11, color: '#b0a8a0', marginRight: 4 }}>WG:</span>
               {['all','Server Cert WG','S/MIME WG','Code Signing WG','NetSec WG','Forum'].map(f => (
                 <button key={f} className={`fchip${wgFilter === f ? ' on' : ''}`} onClick={() => setWgFilter(f)}>
                   {f === 'all' ? 'All' : f}
                 </button>
               ))}
-              <span style={{ fontSize:11, color: 'var(--v2-text-3)', marginLeft: 8, marginRight: 4 }}>Status:</span>
+              <span style={{ fontSize:11, color: '#b0a8a0', marginLeft: 8, marginRight: 4 }}>Status:</span>
               {[['all','All'],['passed','Passed'],['active','Active'],['failed','Failed/Withdrawn']].map(([k,l]) => (
                 <button key={k} className={`fchip${statusFilter === k ? ' on' : ''}`} onClick={() => setStatusFilter(k)}>{l}</button>
               ))}
@@ -532,10 +532,10 @@ export default function CABForumNewsroom({ nav }) {
                 {criticalBallots.slice(0, 5).map(b => (
                   <div key={b.ballot_id} onClick={() => setSelectedBallot(b)} style={{ padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                      <span style={{ fontFamily: S.mono, fontSize:10, fontWeight: 600, color: 'var(--v2-text-2)' }}>{b.ballot_id}</span>
+                      <span style={{ fontFamily: S.mono, fontSize:10, fontWeight: 600, color: '#e8e0d8' }}>{b.ballot_id}</span>
                       <Chip cls="chip-red">Critical</Chip>
                     </div>
-                    <div style={{ fontSize:11, fontWeight: 500, color: 'var(--v2-text)', lineHeight: 1.4 }}>{b.title}</div>
+                    <div style={{ fontSize:11, fontWeight: 500, color: '#ffffff', lineHeight: 1.4 }}>{b.title}</div>
                   </div>
                 ))}
               </div>
@@ -553,8 +553,8 @@ export default function CABForumNewsroom({ nav }) {
                 ].map(({ name, version, date, ballot }) => (
                   <div key={name} style={{ padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontSize:11, fontWeight: 500, color: 'var(--v2-text)' }}>{name}</div>
-                      <div style={{ fontSize:10, color: 'var(--v2-text-3)' }}>{date} · {ballot}</div>
+                      <div style={{ fontSize:11, fontWeight: 500, color: '#ffffff' }}>{name}</div>
+                      <div style={{ fontSize:10, color: '#b0a8a0' }}>{date} · {ballot}</div>
                     </div>
                     <Chip cls="chip-green">{version}</Chip>
                   </div>
@@ -575,8 +575,8 @@ export default function CABForumNewsroom({ nav }) {
                   { role: 'Code Signing WG Chair', name: 'Martijn Katerbarg', org: 'Sectigo' },
                 ].map(({ role, name, org }) => (
                   <div key={role} style={{ padding: '7px 0', borderBottom: '0.5px solid var(--v2-border)' }}>
-                    <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginBottom: 2 }}>{role}</div>
-                    <div style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)' }}>{name} <span style={{ fontWeight: 400, color: 'var(--v2-text-2)' }}>· {org}</span></div>
+                    <div style={{ fontSize:10, color: '#b0a8a0', marginBottom: 2 }}>{role}</div>
+                    <div style={{ fontSize:12, fontWeight: 500, color: '#ffffff' }}>{name} <span style={{ fontWeight: 400, color: '#e8e0d8' }}>· {org}</span></div>
                   </div>
                 ))}
               </div>
@@ -600,19 +600,19 @@ export default function CABForumNewsroom({ nav }) {
                 <div key={d.title} className="v2-card v2-card-pad" style={{ borderLeft: `3px solid ${d.color}`, borderRadius: '0 var(--v2-r-xl) var(--v2-r-xl) 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize:14, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 3 }}>{d.title}</div>
+                      <div style={{ fontSize:14, fontWeight: 600, color: '#ffffff', marginBottom: 3 }}>{d.title}</div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        <span style={{ fontFamily: S.mono, fontSize:11, color: 'var(--v2-text-3)' }}>{d.date}</span>
+                        <span style={{ fontFamily: S.mono, fontSize:11, color: '#b0a8a0' }}>{d.date}</span>
                         <Chip cls="chip-grey">{d.ballot}</Chip>
                       </div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 12 }}>
                       {isPast ? (
-                        <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text-3)' }}>In effect</div>
+                        <div style={{ fontSize:13, fontWeight: 600, color: '#b0a8a0' }}>In effect</div>
                       ) : (
                         <>
                           <div style={{ fontSize:24, fontWeight: 700, color: d.color, fontFamily: S.mono, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{days}</div>
-                          <div style={{ fontSize:10, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '.04em' }}>days left</div>
+                          <div style={{ fontSize:10, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '.04em' }}>days left</div>
                         </>
                       )}
                     </div>
@@ -694,13 +694,13 @@ export default function CABForumNewsroom({ nav }) {
                 <div className="wg-top">
                   <div className="wg-badge" style={{ background: wg.color }}>{wg.short}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize:14, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 3 }}>{wg.name}</div>
-                    <div style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.5 }}>{wg.desc}</div>
+                    <div style={{ fontSize:14, fontWeight: 600, color: '#ffffff', marginBottom: 3 }}>{wg.name}</div>
+                    <div style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.5 }}>{wg.desc}</div>
                   </div>
                 </div>
                 <div className="wg-meta">
-                  <div><div className="wm-k">Chair</div><div className="wm-v">{wg.chair} <span style={{ fontWeight: 400, color: 'var(--v2-text-2)' }}>· {wg.chairOrg}</span></div></div>
-                  <div><div className="wm-k">Vice Chair</div><div className="wm-v">{wg.vchair} <span style={{ fontWeight: 400, color: 'var(--v2-text-2)' }}>{wg.vchairOrg ? '· ' + wg.vchairOrg : ''}</span></div></div>
+                  <div><div className="wm-k">Chair</div><div className="wm-v">{wg.chair} <span style={{ fontWeight: 400, color: '#e8e0d8' }}>· {wg.chairOrg}</span></div></div>
+                  <div><div className="wm-k">Vice Chair</div><div className="wm-v">{wg.vchair} <span style={{ fontWeight: 400, color: '#e8e0d8' }}>{wg.vchairOrg ? '· ' + wg.vchairOrg : ''}</span></div></div>
                   <div><div className="wm-k">Latest standard</div><div className="wm-v" style={{ fontFamily: S.mono, fontSize:11, color: 'var(--v2-green-text)' }}>{wg.latestBR}</div></div>
                   <div><div className="wm-k">Latest ballot</div><div className="wm-v" style={{ fontFamily: S.mono, fontSize:11 }}>{wg.latestBallot}</div></div>
                   <div><div className="wm-k">Members</div><div className="wm-v">{wg.members}+</div></div>
@@ -729,7 +729,7 @@ export default function CABForumNewsroom({ nav }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 14 }}>
             <div className="v2-card">
               <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)' }}>Certification Authorities</div>
+                <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>Certification Authorities</div>
                 <Chip cls="chip-blue">{CA_MEMBERS.length} CAs</Chip>
               </div>
               <div style={{ padding: 14 }}>
@@ -740,7 +740,7 @@ export default function CABForumNewsroom({ nav }) {
             </div>
             <div className="v2-card">
               <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)' }}>Certificate Consumers (Browsers & OS)</div>
+                <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>Certificate Consumers (Browsers & OS)</div>
                 <Chip cls="chip-green">{BROWSER_MEMBERS.length} consumers</Chip>
               </div>
               <div style={{ padding: 14 }}>
@@ -754,7 +754,7 @@ export default function CABForumNewsroom({ nav }) {
             </div>
             <div className="v2-card">
               <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)' }}>
-                <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)' }}>Associates & Interested Parties</div>
+                <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>Associates & Interested Parties</div>
               </div>
               <div style={{ padding: 14 }}>
                 <div className="member-grid">
@@ -769,7 +769,7 @@ export default function CABForumNewsroom({ nav }) {
             </div>
             <div className="v2-card">
               <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)' }}>
-                <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)' }}>How membership works</div>
+                <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>How membership works</div>
               </div>
               <div style={{ padding: 14 }}>
                 {[
@@ -779,8 +779,8 @@ export default function CABForumNewsroom({ nav }) {
                   { title: 'Interested Parties', desc: 'Individual experts and organisations who contribute to discussions without voting rights. EFF, Cloudflare, ICANN, Netflix are examples.' },
                 ].map(({ title, desc }) => (
                   <div key={title} style={{ padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)' }}>
-                    <div style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 3 }}>{title}</div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-2)', lineHeight: 1.5 }}>{desc}</div>
+                    <div style={{ fontSize:12, fontWeight: 500, color: '#ffffff', marginBottom: 3 }}>{title}</div>
+                    <div style={{ fontSize:11, color: '#e8e0d8', lineHeight: 1.5 }}>{desc}</div>
                   </div>
                 ))}
               </div>

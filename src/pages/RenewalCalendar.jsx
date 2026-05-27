@@ -121,19 +121,19 @@ function DetailPanel({ label, certs, onClose }) {
     }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
         padding:'9px 14px', background:'var(--v2-surface-3)',
-        borderBottom:'0.5px solid var(--v2-border)' }}>
-        <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-text)' }}>
+        borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+        <span style={{ fontSize:12, fontWeight:500, color:'#ffffff' }}>
           {certs.length} cert{certs.length!==1?'s':''} — {label}
         </span>
         <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer',
-          color:'var(--v2-text-3)', fontSize:16, lineHeight:1, padding:'0 4px' }}>×</button>
+          color:'#b0a8a0', fontSize:16, lineHeight:1, padding:'0 4px' }}>×</button>
       </div>
       {/* Col headers */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
         padding:'6px 14px', background:'var(--v2-surface-3)',
-        borderBottom:'0.5px solid var(--v2-border)' }}>
+        borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
         {['Domain','Issuer','Expires','Days'].map(h => (
-          <div key={h} style={{ fontSize:9, fontWeight:600, color:'var(--v2-text-3)',
+          <div key={h} style={{ fontSize:9, fontWeight:600, color:'#b0a8a0',
             textTransform:'uppercase', letterSpacing:'0.3px' }}>{h}</div>
         ))}
       </div>
@@ -148,11 +148,11 @@ function DetailPanel({ label, certs, onClose }) {
             background: 'var(--v2-surface)',
           }}>
             <div>
-              <div style={{ fontSize:12, fontWeight:500, color:'var(--v2-text)',
+              <div style={{ fontSize:12, fontWeight:500, color:'#ffffff',
                 overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                 {c.domain}
               </div>
-              <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>
+              <div style={{ fontSize:10, color:'#b0a8a0', marginTop:1 }}>
                 {c.cert_type || 'DV'}
                 {c.auto_renew_enabled && (
                   <span style={{ marginLeft:5, fontSize:9, fontWeight:600,
@@ -160,10 +160,10 @@ function DetailPanel({ label, certs, onClose }) {
                 )}
               </div>
             </div>
-            <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>
+            <div style={{ fontSize:11, color:'#e8e0d8' }}>
               {c.issuer || c.external_issuer || 'RapidSSL'}
             </div>
-            <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>{fmtDate(c.expires_at)}</div>
+            <div style={{ fontSize:11, color:'#e8e0d8' }}>{fmtDate(c.expires_at)}</div>
             <div>
               <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:4,
                 background:css.bg, color:css.text }}>
@@ -200,7 +200,7 @@ function MonthView({ certs, viewYear, viewMonth, today }) {
     <div>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:3, marginBottom:3 }}>
         {DAYS_S.map(d => (
-          <div key={d} style={{ fontSize:9, fontWeight:600, color:'var(--v2-text-3)',
+          <div key={d} style={{ fontSize:9, fontWeight:600, color:'#b0a8a0',
             textAlign:'center', padding:'4px 0', textTransform:'uppercase', letterSpacing:'0.4px' }}>{d}</div>
         ))}
       </div>
@@ -272,7 +272,7 @@ function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
               background: st ? st.bg : 'var(--v2-surface-3)',
               border:`0.5px solid ${st ? st.border : 'var(--v2-border)'}`,
               borderRadius:8 }}>
-              <div style={{ fontSize:9, color:'var(--v2-text-3)', textTransform:'uppercase',
+              <div style={{ fontSize:9, color:'#b0a8a0', textTransform:'uppercase',
                 letterSpacing:'0.3px', marginBottom:2 }}>{DAYS_S[d.getDay()]}</div>
               <div style={{ fontSize:18, fontWeight:600,
                 color: isToday ? ACCENT : st ? st.text : 'var(--v2-text)' }}>{d.getDate()}</div>
@@ -293,8 +293,8 @@ function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
       <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
         {Array.from({length:10}, (_,i) => i+8).map(hour => (
           <div key={hour} style={{ display:'grid', gridTemplateColumns:'50px repeat(auto-fill,minmax(100px,1fr))',
-            borderBottom:'0.5px solid var(--v2-border)', minHeight:48 }}>
-            <div style={{ fontSize:9, color:'var(--v2-text-3)', padding:'5px 8px',
+            borderBottom:'0.5px solid rgba(255,255,255,0.08)', minHeight:48 }}>
+            <div style={{ fontSize:9, color:'#b0a8a0', padding:'5px 8px',
               borderRight:'0.5px solid var(--v2-border)', background:'var(--v2-surface-3)',
               display:'flex', alignItems:'flex-start', justifyContent:'flex-end' }}>
               {hour}:00
@@ -383,7 +383,7 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
                 {total>0 && (
                   <div style={{ position:'absolute', top:'50%', left:'50%',
                     transform:'translate(-50%,-50%)',
-                    fontSize:15, fontWeight:600, color:'var(--v2-text)' }}>{total}</div>
+                    fontSize:15, fontWeight:600, color:'#ffffff' }}>{total}</div>
                 )}
               </div>
               <div style={{ fontSize:9, marginTop:5, fontWeight: isCurrent?600:400,
@@ -518,7 +518,7 @@ export default function RenewalCalendar({ user }) {
           marginBottom:16, paddingTop:8, gap:12, flexWrap:'wrap' }}>
           <div>
             <h1 className="v2-h1" style={{ fontSize:22 }}>Renewal calendar</h1>
-            <p style={{ fontSize:13, color:'var(--v2-text-3)', marginTop:4 }}>
+            <p style={{ fontSize:13, color:'#b0a8a0', marginTop:4 }}>
               {certs.length} certificate{certs.length!==1?'s':''} tracked · click any day to inspect
             </p>
           </div>
@@ -544,7 +544,7 @@ export default function RenewalCalendar({ user }) {
                 style={{ display:'flex', alignItems:'center', padding:'6px 8px' }}>
                 <ChevronLeft size={14}/>
               </button>
-              <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)',
+              <div style={{ fontSize:13, fontWeight:500, color:'#ffffff',
                 minWidth:view==='year'?50:150, textAlign:'center' }}>
                 {navLabel}
               </div>
@@ -560,14 +560,14 @@ export default function RenewalCalendar({ user }) {
         {/* Stats */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:14 }}>
           {[
-            { label:'Total',         val:certs.length, color:'var(--v2-text)' },
+            { label:'Total',         val:certs.length, color:'#ffffff' },
             { label:'Expired',       val:allExpired,   color:RED   },
             { label:'Expiring ≤30d', val:allWarning,   color:AMBER },
             { label:'Healthy',       val:allHealthy,   color:GREEN },
           ].map(({label,val,color})=>(
             <div key={label} className="v2-card" style={{ padding:'12px 14px' }}>
               <div style={{ fontSize:22, fontWeight:500, color, fontFamily:'monospace' }}>{val}</div>
-              <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:3 }}>{label}</div>
+              <div style={{ fontSize:11, color:'#b0a8a0', marginTop:3 }}>{label}</div>
             </div>
           ))}
         </div>
@@ -582,10 +582,10 @@ export default function RenewalCalendar({ user }) {
           ].map(({label,color,bg,border})=>(
             <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
               <div style={{ width:10,height:10,borderRadius:2,background:bg,border:`0.5px solid ${border}` }}/>
-              <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>{label}</span>
+              <span style={{ fontSize:11, color:'#b0a8a0' }}>{label}</span>
             </div>
           ))}
-          <div style={{ marginLeft:'auto', fontSize:11, color:'var(--v2-text-3)' }}>
+          <div style={{ marginLeft:'auto', fontSize:11, color:'#b0a8a0' }}>
             Hover to enlarge · click to inspect
           </div>
         </div>
@@ -593,18 +593,18 @@ export default function RenewalCalendar({ user }) {
         {/* Calendar */}
         <div className="v2-card" style={{ padding:14, overflow:'hidden' }}>
           {loading ? (
-            <div style={{ textAlign:'center', padding:'48px 0', color:'var(--v2-text-3)' }}>
+            <div style={{ textAlign:'center', padding:'48px 0', color:'#b0a8a0' }}>
               <RefreshCw size={22} style={{ animation:'spin .8s linear infinite',
                 margin:'0 auto 10px', display:'block' }}/>
               Loading certificates…
             </div>
           ) : certs.length===0 ? (
             <div style={{ textAlign:'center', padding:'48px 0' }}>
-              <Calendar size={32} style={{ color:'var(--v2-text-3)', margin:'0 auto 12px', display:'block' }}/>
-              <div style={{ fontSize:14, fontWeight:500, color:'var(--v2-text-2)', marginBottom:6 }}>
+              <Calendar size={32} style={{ color:'#b0a8a0', margin:'0 auto 12px', display:'block' }}/>
+              <div style={{ fontSize:14, fontWeight:500, color:'#e8e0d8', marginBottom:6 }}>
                 No certificates yet
               </div>
-              <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>
+              <div style={{ fontSize:12, color:'#b0a8a0' }}>
                 Issue your first certificate to see it on the calendar.
               </div>
             </div>
@@ -620,7 +620,7 @@ export default function RenewalCalendar({ user }) {
         {/* Upcoming strip */}
         {!loading && upcoming.length>0 && (
           <div style={{ marginTop:16 }}>
-            <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)',
+            <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
               textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>
               Upcoming — next 90 days
             </div>
@@ -634,11 +634,11 @@ export default function RenewalCalendar({ user }) {
                   <div key={i} className="v2-card" style={{ padding:'10px 14px',
                     borderLeft:`3px solid ${css.color}`, borderRadius:'0 8px 8px 0' }}>
                     <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:6 }}>
-                      <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-text)', flex:1,
+                      <span style={{ fontSize:12, fontWeight:500, color:'#ffffff', flex:1,
                         overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                         {c.domain}
                       </span>
-                      <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>
+                      <span style={{ fontSize:11, color:'#b0a8a0' }}>
                         {c.issuer||'RapidSSL'}
                       </span>
                       <span style={{ fontSize:11, fontWeight:600, color:css.color, flexShrink:0 }}>

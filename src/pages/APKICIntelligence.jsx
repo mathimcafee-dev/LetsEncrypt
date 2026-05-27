@@ -109,9 +109,9 @@ export default function APKICIntelligence({ nav }) {
               <div className="ap-sh">Governance and structure</div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'6px 16px' }}>
                 {[['Founded','2001'],['HQ','Hong Kong (rotating host)'],['Chair','Eva Chan'],['Category','Regional Consortium'],['Region','Asia / Oceania'],['Members','11+ economies'],['Funding','Membership contributions'],['Secretariat','Rotating among member economies']].map(([k,v])=>(
-                  <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid var(--v2-border)', fontSize:12 }}>
-                    <span style={{ color:'var(--v2-text-3)', minWidth:100, flexShrink:0 }}>{k}</span>
-                    <span style={{ color:'var(--v2-text)', fontWeight:500 }}>{v}</span>
+                  <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(255,255,255,0.08)', fontSize:12 }}>
+                    <span style={{ color:'#b0a8a0', minWidth:100, flexShrink:0 }}>{k}</span>
+                    <span style={{ color:'#ffffff', fontWeight:500 }}>{v}</span>
                   </div>
                 ))}
               </div>
@@ -127,8 +127,8 @@ export default function APKICIntelligence({ nav }) {
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
                   <span className="v2-chip chip-grey" style={{ fontSize:9 }}>{o.year}</span>
                 </div>
-                <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)', marginBottom:5 }}>{o.title}</div>
-                <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.7 }}>{o.desc}</div>
+                <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:5 }}>{o.title}</div>
+                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{o.desc}</div>
               </div>
             ))}
           </>
@@ -139,7 +139,7 @@ export default function APKICIntelligence({ nav }) {
             <p className="ap-p">APKIC draws membership from 11+ Asia-Pacific economies spanning Northeast Asia, Southeast Asia, and Oceania.</p>
             <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:20 }}>
               {MEMBERS.map(m => (
-                <div key={m} style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:'var(--v2-r-xl)', padding:'10px 16px', fontSize:13, fontWeight:500, color:'var(--v2-text)' }}>{m}</div>
+                <div key={m} style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:'var(--v2-r-xl)', padding:'10px 16px', fontSize:13, fontWeight:500, color:'#ffffff' }}>{m}</div>
               ))}
             </div>
             <div className="v2-callout tip">
@@ -160,8 +160,8 @@ export default function APKICIntelligence({ nav }) {
                   {i < TIMELINE.length-1 && <div className="tl-line"/>}
                 </div>
                 <div style={{ flex:1, paddingBottom:8 }}>
-                  <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
-                  <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.65 }}>{e.desc}</div>
+                  <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
+                  <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.65 }}>{e.desc}</div>
                 </div>
               </div>
             ))}
@@ -179,8 +179,8 @@ export default function APKICIntelligence({ nav }) {
             ].map(init => (
               <div key={init.title} className="out-card">
                 <span className={`v2-chip ${init.status==='Active'?'chip-blue':'chip-amber'}`} style={{ fontSize:9 }}>{init.status}</span>
-                <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)', marginTop:6, marginBottom:6 }}>{init.title}</div>
-                <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.7 }}>{init.desc}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginTop:6, marginBottom:6 }}>{init.title}</div>
+                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{init.desc}</div>
               </div>
             ))}
           </>
@@ -195,8 +195,8 @@ export default function APKICIntelligence({ nav }) {
             ].map(l => (
               <div key={l.label} className="link-row">
                 <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:500, color:'var(--v2-text)', fontSize:13 }}>{l.label}</div>
-                  <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:2 }}>{l.desc}</div>
+                  <div style={{ fontWeight:500, color:'#ffffff', fontSize:13 }}>{l.label}</div>
+                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{l.desc}</div>
                 </div>
                 <a href={l.url} target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ gap:4, textDecoration:'none', flexShrink:0 }}>
                   <ExternalLink size={11}/> Visit ↗

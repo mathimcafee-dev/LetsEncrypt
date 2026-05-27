@@ -58,7 +58,7 @@ function FAQ({ q, a }) {
         <span className="v2-accordion-title" style={{ flex: 1 }}>{q}</span>
         {open ? <ChevronUp size={14} strokeWidth={1.8}/> : <ChevronDown size={14} strokeWidth={1.8}/>}
       </button>
-      {open && <div className="v2-accordion-body" style={{ paddingTop: 10 }}><p style={{ margin: 0, fontSize:13, lineHeight: 1.7, color: 'var(--v2-text-2)' }}>{a}</p></div>}
+      {open && <div className="v2-accordion-body" style={{ paddingTop: 10 }}><p style={{ margin: 0, fontSize:13, lineHeight: 1.7, color: '#e8e0d8' }}>{a}</p></div>}
     </div>
   )
 }
@@ -70,7 +70,7 @@ function Divider({ label, title }) {
         <span className="v2-section-label">{label}</span>
         <div style={{ flex: 1, height: 1, background: 'var(--v2-border)' }} />
       </div>
-      <h2 style={{ fontSize:16, fontWeight: 600, color: 'var(--v2-text)', letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
+      <h2 style={{ fontSize:16, fontWeight: 600, color: '#ffffff', letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
     </div>
   )
 }
@@ -102,20 +102,20 @@ export default function GetStarted({ nav }) {
         {/* WHAT IS SSL */}
         <Divider label="BASICS" title="What is SSL?" />
         <div className="v2-card v2-card-pad" style={{ marginBottom: 8 }}>
-          <p style={{ fontSize:14, color: 'var(--v2-text-2)', lineHeight: 1.8, marginBottom: 16 }}>
+          <p style={{ fontSize:14, color: '#e8e0d8', lineHeight: 1.8, marginBottom: 16 }}>
             SSL (Secure Sockets Layer) encrypts the connection between your website and your visitors.
             When it's active, your browser shows <strong>https://</strong> and a padlock. Without it — a red "Not Secure" warning.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 16 }}>
             <div style={{ background: 'rgba(192,57,43,0.12)', border: '1px solid #fecaca', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
               <div style={{ fontSize:12, fontWeight: 600, color: '#f87171', marginBottom: 6 }}>Without SSL (HTTP)</div>
-              <p style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
+              <p style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.65, margin: 0 }}>
                 Red "Not Secure" warning. Visitor data exposed. Lower Google ranking. Payments blocked.
               </p>
             </div>
             <div style={{ background: 'transparent', border: '1px solid rgba(192,57,43,0.3)', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
               <div style={{ fontSize:12, fontWeight: 600, color: '#4ade80', marginBottom: 6 }}>With SSL (HTTPS)</div>
-              <p style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.65, margin: 0 }}>
+              <p style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.65, margin: 0 }}>
                 Green padlock. All traffic encrypted. Trust signals for visitors and Google. Required for payments.
               </p>
             </div>
@@ -138,8 +138,8 @@ export default function GetStarted({ nav }) {
             <div key={title} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
               <span className={`v2-badge ${badge === 'Yes' ? 'v2-badge-green' : 'v2-badge-amber'}`} style={{ flexShrink: 0, marginTop: 2 }}>{badge}</span>
               <div>
-                <div style={{ fontWeight: 600, fontSize:13, color: 'var(--v2-text)', marginBottom: 2 }}>{title}</div>
-                <div style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{desc}</div>
+                <div style={{ fontWeight: 600, fontSize:13, color: '#ffffff', marginBottom: 2 }}>{title}</div>
+                <div style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.6 }}>{desc}</div>
               </div>
             </div>
           ))}
@@ -150,14 +150,14 @@ export default function GetStarted({ nav }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 8, marginBottom: 8 }}>
           {[
             { type: 'DV (Domain Validated)', time: '~5 minutes', use: 'Blogs, APIs, personal sites, SaaS', color: 'var(--v2-green)' },
-            { type: 'OV (Org Validated)', time: '1–3 business days', use: 'Business websites, portals', color: 'var(--v2-text-2)' },
-            { type: 'EV (Extended Validation)', time: '2–7 business days', use: 'E-commerce, banks, high trust', color: 'var(--v2-text-2)' },
+            { type: 'OV (Org Validated)', time: '1–3 business days', use: 'Business websites, portals', color: '#e8e0d8' },
+            { type: 'EV (Extended Validation)', time: '2–7 business days', use: 'E-commerce, banks, high trust', color: '#e8e0d8' },
             { type: 'Wildcard DV', time: '~5 minutes', use: '*.yourdomain.com — all subdomains', color: 'var(--v2-green)' },
           ].map(({ type, time, use, color }) => (
             <div key={type} className="v2-card v2-card-pad">
-              <div style={{ fontSize:12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>{type}</div>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>{type}</div>
               <div style={{ fontSize:11, color, marginBottom: 3, fontWeight: 500 }}>{time}</div>
-              <div style={{ fontSize:11, color: 'var(--v2-text-3)', lineHeight: 1.55 }}>{use}</div>
+              <div style={{ fontSize:11, color: '#b0a8a0', lineHeight: 1.55 }}>{use}</div>
             </div>
           ))}
         </div>
@@ -167,7 +167,7 @@ export default function GetStarted({ nav }) {
 
         {/* CHOOSE YOUR PATH */}
         <Divider label="YOUR SITUATION" title="Choose your setup path" />
-        <p style={{ fontSize:13, color: 'var(--v2-text-2)', marginBottom: 14, lineHeight: 1.7 }}>Pick the one that matches your hosting setup:</p>
+        <p style={{ fontSize:13, color: '#e8e0d8', marginBottom: 14, lineHeight: 1.7 }}>Pick the one that matches your hosting setup:</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 }}>
           {[
             { id: 'vps', icon: Server, title: 'VPS or cloud server (DigitalOcean, AWS, Hetzner, Linode)', desc: 'SSH access available. Install the persistent agent once — all future installs and renewals are fully automatic.', badge: 'Recommended' },
@@ -179,13 +179,13 @@ export default function GetStarted({ nav }) {
               <div className="v2-card v2-card-pad" style={{ cursor: 'pointer', border: path === p.id ? '1.5px solid var(--v2-border-strong)' : undefined }}
                    onClick={() => setPath(path === p.id ? null : p.id)}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <p.icon size={15} strokeWidth={1.8} style={{ color: 'var(--v2-text-2)', flexShrink: 0 }}/>
+                  <p.icon size={15} strokeWidth={1.8} style={{ color: '#e8e0d8', flexShrink: 0 }}/>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 2 }}>
-                      <span style={{ fontWeight: 600, fontSize:13, color: 'var(--v2-text)' }}>{p.title}</span>
+                      <span style={{ fontWeight: 600, fontSize:13, color: '#ffffff' }}>{p.title}</span>
                       <span className="v2-badge v2-badge-green">{p.badge}</span>
                     </div>
-                    <p style={{ fontSize:12, color: 'var(--v2-text-2)', margin: 0, lineHeight: 1.6 }}>{p.desc}</p>
+                    <p style={{ fontSize:12, color: '#e8e0d8', margin: 0, lineHeight: 1.6 }}>{p.desc}</p>
                   </div>
                   {path === p.id ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
                 </div>
@@ -237,7 +237,7 @@ export default function GetStarted({ nav }) {
                         <span className="v2-callout-title">Good news — Vercel and Netlify handle SSL automatically</span><br/>
                         <span style={{ fontSize:12 }}>Just add your custom domain in their project settings and SSL is provisioned automatically.</span>
                       </div>
-                      <p style={{ fontSize:13, color: 'var(--v2-text-2)', lineHeight: 1.7 }}>
+                      <p style={{ fontSize:13, color: '#e8e0d8', lineHeight: 1.7 }}>
                         If you have a <strong>backend server, API, or external domain</strong> that these platforms don't manage, issue a certificate via SSLVault and install it on that server using the persistent agent or manual steps.
                       </p>
                       <button className="v2-btn" onClick={() => nav('/buy')} style={{ marginTop: 4, fontSize:12 }}>
@@ -305,14 +305,14 @@ export default function GetStarted({ nav }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginTop: 8 }}>
             {[
               { icon: Bot, label: 'Persistent Agent', desc: 'VPS — dispatches to your connected server automatically', color: 'var(--v2-green)' },
-              { icon: Cloud, label: 'cPanel / Shared', desc: 'PHP agent install via cPanel UAPI — no SSH', color: 'var(--v2-text-2)' },
-              { icon: Server, label: 'Manual', desc: 'Download PEM files and follow the server install guide', color: 'var(--v2-text-2)' },
+              { icon: Cloud, label: 'cPanel / Shared', desc: 'PHP agent install via cPanel UAPI — no SSH', color: '#e8e0d8' },
+              { icon: Server, label: 'Manual', desc: 'Download PEM files and follow the server install guide', color: '#e8e0d8' },
             ].map(({ icon: Icon, label, desc, color }) => (
               <div key={label} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 10 }}>
                 <Icon size={14} strokeWidth={1.8} style={{ color, flexShrink: 0, marginTop: 2 }}/>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize:12, color: 'var(--v2-text)', marginBottom: 2 }}>{label}</div>
-                  <div style={{ fontSize:11, color: 'var(--v2-text-2)', lineHeight: 1.55 }}>{desc}</div>
+                  <div style={{ fontWeight: 600, fontSize:12, color: '#ffffff', marginBottom: 2 }}>{label}</div>
+                  <div style={{ fontSize:11, color: '#e8e0d8', lineHeight: 1.55 }}>{desc}</div>
                 </div>
               </div>
             ))}
@@ -342,7 +342,7 @@ export default function GetStarted({ nav }) {
           ].map(([term, def]) => (
             <div key={term} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 16 }}>
               <span className="v2-mono" style={{ fontSize:12, fontWeight: 600, color: 'var(--v2-green)', minWidth: 160, flexShrink: 0 }}>{term}</span>
-              <span style={{ fontSize:12, color: 'var(--v2-text-2)', lineHeight: 1.6 }}>{def}</span>
+              <span style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.6 }}>{def}</span>
             </div>
           ))}
         </div>
@@ -370,10 +370,10 @@ export default function GetStarted({ nav }) {
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>
-          <h3 style={{ fontSize:18, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6, letterSpacing: '-0.3px' }}>
+          <h3 style={{ fontSize:18, fontWeight: 600, color: '#ffffff', marginBottom: 6, letterSpacing: '-0.3px' }}>
             Ready to secure your domains?
           </h3>
-          <p style={{ color: 'var(--v2-text-2)', fontSize:13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
+          <p style={{ color: '#e8e0d8', fontSize:13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
             Issue DV, OV, EV or Wildcard certificates via RapidSSL. Auto-renew. Deploy with one command.
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>

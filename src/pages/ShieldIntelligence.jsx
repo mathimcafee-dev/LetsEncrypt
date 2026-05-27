@@ -88,10 +88,10 @@ function StatCard({ label, val, sub, color, bg }) {
   return (
     <div style={{ padding:'12px 14px', borderRadius:10,
       background:bg||'var(--v2-surface)', border:'0.5px solid var(--v2-border)' }}>
-      <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:4 }}>{label}</div>
+      <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:4 }}>{label}</div>
       <div style={{ fontSize:22, fontWeight:700, color:color||'var(--v2-text-1)',
         fontFamily:'monospace', lineHeight:1 }}>{val}</div>
-      {sub && <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:4 }}>{sub}</div>}
+      {sub && <div style={{ fontSize:10, color:'#b0a8a0', marginTop:4 }}>{sub}</div>}
     </div>
   )
 }
@@ -144,7 +144,7 @@ function OverviewTab({ user }) {
   }, [user])
 
   if (loading) return (
-    <div style={{ textAlign:'center', padding:60, color:'var(--v2-text-3)' }}>
+    <div style={{ textAlign:'center', padding:60, color:'#b0a8a0' }}>
       <Spinner/><span style={{ marginLeft:8 }}>Loading analytics…</span>
     </div>
   )
@@ -175,7 +175,7 @@ function OverviewTab({ user }) {
         {/* TLS grade distribution */}
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
           borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
-          <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+          <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
             letterSpacing:'0.4px', marginBottom:14 }}>TLS grade distribution</div>
           {gradeEntries.map(([g, color]) => (
             <div key={g} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:9 }}>
@@ -193,7 +193,7 @@ function OverviewTab({ user }) {
                 )}
                 {(grades[g]||0) === 0 && (
                   <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)',
-                    fontSize:10, color:'var(--v2-text-3)' }}>0</span>
+                    fontSize:10, color:'#b0a8a0' }}>0</span>
                 )}
               </div>
             </div>
@@ -204,10 +204,10 @@ function OverviewTab({ user }) {
         <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
             borderRadius:10, padding:'14px 16px', flex:1 , overflowX:'auto'}}>
-            <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+            <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
               letterSpacing:'0.4px', marginBottom:12 }}>Certificate sources</div>
             {Object.entries(bySource).length === 0 ? (
-              <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>No certificates yet</div>
+              <div style={{ fontSize:12, color:'#b0a8a0' }}>No certificates yet</div>
             ) : Object.entries(bySource).map(([src, count]) => (
               <div key={src} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
                 marginBottom:8, padding:'7px 10px', borderRadius:8, background:'var(--v2-bg)',
@@ -221,16 +221,16 @@ function OverviewTab({ user }) {
           </div>
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
             borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
-            <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+            <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
               letterSpacing:'0.4px', marginBottom:10 }}>Activity</div>
             <div style={{ display:'flex', gap:16 }}>
               <div>
                 <div style={{ fontSize:20, fontWeight:700, color:'#ffffff', fontFamily:'monospace' }}>{thisMonth}</div>
-                <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>orders this month</div>
+                <div style={{ fontSize:10, color:'#b0a8a0' }}>orders this month</div>
               </div>
               <div>
                 <div style={{ fontSize:20, fontWeight:700, color:'var(--v2-text-1)', fontFamily:'monospace' }}>{active}</div>
-                <div style={{ fontSize:10, color:'var(--v2-text-3)' }}>certs active</div>
+                <div style={{ fontSize:10, color:'#b0a8a0' }}>certs active</div>
               </div>
             </div>
           </div>
@@ -241,7 +241,7 @@ function OverviewTab({ user }) {
       {active > 0 && (
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
           borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
-          <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+          <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
             letterSpacing:'0.4px', marginBottom:12 }}>Fleet health</div>
           <div style={{ display:'flex', height:12, borderRadius:8, overflow:'hidden', gap:1 }}>
             {[
@@ -261,7 +261,7 @@ function OverviewTab({ user }) {
             ].map(({ label, n, color }) => (
               <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
                 <div style={{ width:8, height:8, borderRadius:2, background:color }}/>
-                <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>{label}: </span>
+                <span style={{ fontSize:10, color:'#b0a8a0' }}>{label}: </span>
                 <span style={{ fontSize:10, fontWeight:600, color }}>{n}</span>
               </div>
             ))}
@@ -310,10 +310,10 @@ function DomainScoreRow({ s, scanning, onRescan }) {
           disabled={scanning===s.domain}
           style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, padding:'4px 10px',
             borderRadius:6, border:'0.5px solid var(--v2-border)', background:'var(--v2-bg)',
-            cursor:'pointer', fontFamily:'inherit', color:'var(--v2-text-2)' }}>
+            cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8' }}>
           <RefreshCw size={10} style={scanning===s.domain?{animation:'spin .8s linear infinite'}:{}}/> Rescan
         </button>
-        <div style={{ color:'var(--v2-text-3)', flexShrink:0 }}>
+        <div style={{ color:'#b0a8a0', flexShrink:0 }}>
           {expanded ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
         </div>
       </div>
@@ -331,7 +331,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
             ['Last scanned',timeAgo(s.scanned_at)],
           ].map(([label, val]) => (
             <div key={label}>
-              <div style={{ fontSize:10, color:'var(--v2-text-3)', marginBottom:2,
+              <div style={{ fontSize:10, color:'#b0a8a0', marginBottom:2,
                 fontWeight:600, textTransform:'uppercase', letterSpacing:'0.3px' }}>{label}</div>
               <div style={{ fontSize:12, color:'var(--v2-text-1)', fontWeight:500 }}>{val}</div>
             </div>
@@ -426,21 +426,21 @@ function TLSGradesTab({ tok, user }) {
 
       {/* List */}
       {loading ? (
-        <div style={{ textAlign:'center', padding:60, color:'var(--v2-text-3)' }}>
+        <div style={{ textAlign:'center', padding:60, color:'#b0a8a0' }}>
           <Spinner/><span style={{ marginLeft:8 }}>Loading grades…</span>
         </div>
       ) : scores.length === 0 ? (
         <div style={{ textAlign:'center', padding:60, background:'var(--v2-surface)',
           border:'0.5px solid var(--v2-border)', borderRadius:10 }}>
-          <Trophy size={28} style={{ color:'var(--v2-text-3)', margin:'0 auto 10px', display:'block' }}/>
-          <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text-2)', marginBottom:4 }}>No domains scanned yet</div>
-          <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>Enter a domain above to get your first TLS grade.</div>
+          <Trophy size={28} style={{ color:'#b0a8a0', margin:'0 auto 10px', display:'block' }}/>
+          <div style={{ fontSize:13, fontWeight:500, color:'#e8e0d8', marginBottom:4 }}>No domains scanned yet</div>
+          <div style={{ fontSize:12, color:'#b0a8a0' }}>Enter a domain above to get your first TLS grade.</div>
         </div>
       ) : scores.map(s => (
         <DomainScoreRow key={s.id || s.domain} s={s} scanning={scanning} onRescan={rescan}/>
       ))}
       {scores.length > 0 && (
-        <div style={{ fontSize:11, color:'var(--v2-text-3)', textAlign:'center', marginTop:8 }}>
+        <div style={{ fontSize:11, color:'#b0a8a0', textAlign:'center', marginTop:8 }}>
           A+ ≥90 · A ≥80 · B ≥70 · C ≥60 · D ≥50 · F &lt;50
         </div>
       )}
@@ -513,15 +513,15 @@ function CTWatchTab({ tok, user }) {
       </div>
 
       {loading ? (
-        <div style={{ textAlign:'center', padding:60, color:'var(--v2-text-3)' }}>
+        <div style={{ textAlign:'center', padding:60, color:'#b0a8a0' }}>
           <Spinner/><span style={{ marginLeft:8 }}>Loading CT findings…</span>
         </div>
       ) : shadows.length === 0 ? (
         <div style={{ textAlign:'center', padding:60, background:'var(--v2-surface)',
           border:'0.5px solid var(--v2-border)', borderRadius:10 }}>
-          <Shield size={28} style={{ color:'var(--v2-text-3)', margin:'0 auto 10px', display:'block', opacity:.5 }}/>
-          <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text-2)', marginBottom:4 }}>No shadow certs found</div>
-          <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>Your domains have no unauthorized certificates in CT logs.</div>
+          <Shield size={28} style={{ color:'#b0a8a0', margin:'0 auto 10px', display:'block', opacity:.5 }}/>
+          <div style={{ fontSize:13, fontWeight:500, color:'#e8e0d8', marginBottom:4 }}>No shadow certs found</div>
+          <div style={{ fontSize:12, color:'#b0a8a0' }}>Your domains have no unauthorized certificates in CT logs.</div>
         </div>
       ) : (
         <div>
@@ -530,7 +530,7 @@ function CTWatchTab({ tok, user }) {
             padding:'8px 14px', background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
             borderRadius:'10px 10px 0 0', marginBottom:0 }}>
             {['Domain','Product','Expires','Status',''].map(h => (
-              <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
+              <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0',
                 textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
             ))}
           </div>
@@ -553,10 +553,10 @@ function CTWatchTab({ tok, user }) {
                         color:'var(--v2-text-1)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                         {s.domain}
                       </div>
-                      {s.org_name && <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:2 }}>{s.org_name}</div>}
+                      {s.org_name && <div style={{ fontSize:10, color:'#b0a8a0', marginTop:2 }}>{s.org_name}</div>}
                     </div>
-                    <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>{s.product||'—'}</div>
-                    <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>{fmtDate(s.expires_at)}</div>
+                    <div style={{ fontSize:11, color:'#e8e0d8' }}>{s.product||'—'}</div>
+                    <div style={{ fontSize:11, color:'#e8e0d8' }}>{fmtDate(s.expires_at)}</div>
                     <div>
                       <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:20,
                         background:cfg.bg, color:cfg.color, border:`0.5px solid ${cfg.border}` }}>
@@ -567,7 +567,7 @@ function CTWatchTab({ tok, user }) {
                       <button onClick={() => setExpanded(isExp?null:s.id)}
                         style={{ fontSize:10, padding:'3px 8px', borderRadius:5,
                           border:'0.5px solid var(--v2-border)', background:'var(--v2-bg)',
-                          cursor:'pointer', fontFamily:'inherit', color:'var(--v2-text-2)' }}>
+                          cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8' }}>
                         {isExp?'Hide':'Details'}
                       </button>
                       <button onClick={() => dismiss(s.id)} disabled={dismissing===s.id}
@@ -589,7 +589,7 @@ function CTWatchTab({ tok, user }) {
                           ['CA',         s.ca||'—'],
                         ].map(([label,val]) => (
                           <div key={label}>
-                            <div style={{ fontSize:10, color:'var(--v2-text-3)', fontWeight:600,
+                            <div style={{ fontSize:10, color:'#b0a8a0', fontWeight:600,
                               textTransform:'uppercase', letterSpacing:'0.3px', marginBottom:2 }}>{label}</div>
                             <div style={{ fontSize:12, color:'var(--v2-text-1)' }}>{val}</div>
                           </div>
@@ -687,7 +687,7 @@ function MassScanTab() {
       {/* Input */}
       <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
         borderRadius:10, padding:'14px 16px', marginBottom:14 , overflowX:'auto'}}>
-        <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+        <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
           letterSpacing:'0.4px', marginBottom:10 }}>Paste up to 100 domains</div>
         <textarea value={input} onChange={e => setInput(e.target.value)}
           rows={6} placeholder={'example.com\ngoogle.com\ngithub.com'}
@@ -695,7 +695,7 @@ function MassScanTab() {
             borderRadius:8, border:'0.5px solid var(--v2-border)', padding:'10px 12px',
             background:'var(--v2-bg)', color:'var(--v2-text-1)', outline:'none', boxSizing:'border-box' }}/>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:10 }}>
-          <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>
+          <span style={{ fontSize:11, color:'#b0a8a0' }}>
             {input.split('\n').filter(l=>l.trim()).length} domains · one per line
           </span>
           <div style={{ display:'flex', gap:8 }}>
@@ -703,7 +703,7 @@ function MassScanTab() {
               <button onClick={exportCSV}
                 style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 12px',
                   borderRadius:7, border:'0.5px solid var(--v2-border)', background:'var(--v2-bg)',
-                  cursor:'pointer', fontFamily:'inherit', color:'var(--v2-text-2)' }}>
+                  cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8' }}>
                 <Download size={11}/> Export CSV
               </button>
             )}
@@ -751,7 +751,7 @@ function MassScanTab() {
                 {lbl}
               </button>
             ))}
-            <span style={{ marginLeft:'auto', fontSize:11, color:'var(--v2-text-3)' }}>
+            <span style={{ marginLeft:'auto', fontSize:11, color:'#b0a8a0' }}>
               {filtered?.length} results
             </span>
           </div>
@@ -759,9 +759,9 @@ function MassScanTab() {
           {/* Table */}
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'visible' }}>
             <div style={{ display:'grid', gridTemplateColumns:'2fr 60px 60px 60px 60px 80px 1fr',
-              padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)' }}>
+              padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
               {['Domain','Grade','Score','TLS','HSTS','CAA','Expiry / Issue'].map(h => (
-                <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
+                <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0',
                   textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
               ))}
             </div>
@@ -846,14 +846,14 @@ export default function ShieldIntelligence({ user }) {
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
             <div>
               <h1 className="v2-h1" style={{ fontSize:20, marginBottom:3 }}>Shield Intelligence</h1>
-              <p style={{ fontSize:12, color:'var(--v2-text-3)', margin:0 }}>
+              <p style={{ fontSize:12, color:'#b0a8a0', margin:0 }}>
                 Analytics · TLS grading · CT log monitoring · bulk scanning — all in one place
               </p>
             </div>
           </div>
 
           {/* Tab bar */}
-          <div style={{ display:'flex', gap:2, borderBottom:'0.5px solid var(--v2-border)', marginBottom:20 }}>
+          <div style={{ display:'flex', gap:2, borderBottom:'0.5px solid rgba(255,255,255,0.08)', marginBottom:20 }}>
             {TABS.map(({ id, label, icon:Icon }) => (
               <button key={id} onClick={() => setTab(id)}
                 style={{ display:'flex', alignItems:'center', gap:6,

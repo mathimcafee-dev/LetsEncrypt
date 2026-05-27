@@ -20,11 +20,11 @@ export default function Contact({ nav }) {
             </span>
           </div>
           <h1 style={{ fontSize:'clamp(32px,5vw,52px)', fontWeight:700, letterSpacing:'-1.2px',
-                        lineHeight:1.1, margin:'0 0 14px', color:'var(--v2-text)' }}>
+                        lineHeight:1.1, margin:'0 0 14px', color:'#ffffff' }}>
             Have a question?<br />
             <span style={{ color:'var(--v2-green)' }}>Drop us a line.</span>
           </h1>
-          <p style={{ fontSize:16, color:'var(--v2-text-2)', maxWidth:500, margin:'0 auto', lineHeight:1.7 }}>
+          <p style={{ fontSize:16, color:'#e8e0d8', maxWidth:500, margin:'0 auto', lineHeight:1.7 }}>
             Bug reports, feature requests, partnership ideas, or just saying hi —
             we typically reply within 1–2 days.
           </p>
@@ -41,7 +41,7 @@ export default function Contact({ nav }) {
           <div className="v2-section-label" style={{ marginBottom:8 }}>Email</div>
           <a href={`mailto:${email}`}
             style={{ display:'inline-block', fontSize:'clamp(18px,3vw,26px)', fontWeight:600,
-                      color:'var(--v2-text)', textDecoration:'none', letterSpacing:'-0.4px',
+                      color:'#ffffff', textDecoration:'none', letterSpacing:'-0.4px',
                       marginBottom:24, fontFamily:'var(--mono, monospace)' }}
             onMouseEnter={e => e.currentTarget.style.color = 'var(--v2-green)'}
             onMouseLeave={e => e.currentTarget.style.color = 'var(--v2-text)'}>
@@ -64,7 +64,7 @@ export default function Contact({ nav }) {
               { icon:<Shield size={12} />, label:'No tracking, no ads' },
             ].map(({ icon, label }) => (
               <div key={label} style={{ display:'flex', alignItems:'center', gap:6,
-                                        fontSize:12, color:'var(--v2-text-3)', fontWeight:500 }}>
+                                        fontSize:12, color:'#b0a8a0', fontWeight:500 }}>
                 {icon} {label}
               </div>
             ))}
@@ -96,8 +96,8 @@ export default function Contact({ nav }) {
                   <Icon size={14} />
                 </div>
                 <div>
-                  <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)', marginBottom:4 }}>{label}</div>
-                  <div style={{ fontSize:12, color:'var(--v2-text-2)', lineHeight:1.65 }}>{body}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginBottom:4 }}>{label}</div>
+                  <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.65 }}>{body}</div>
                 </div>
               </div>
             ))}
@@ -119,8 +119,8 @@ export default function Contact({ nav }) {
 
         {/* ── OTHER CHANNELS ────────────────────────────────────────── */}
         <div className="v2-card" style={{ overflow:'hidden' }}>
-          <div style={{ padding:'16px 20px', borderBottom:'0.5px solid var(--v2-border)',
-                        fontSize:12, fontWeight:600, color:'var(--v2-text)' }}>
+          <div style={{ padding:'16px 20px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                        fontSize:12, fontWeight:600, color:'#ffffff' }}>
             Other ways to reach us
           </div>
           {[
@@ -134,16 +134,16 @@ export default function Contact({ nav }) {
               cta:'Browse docs' },
           ].map(({ icon, label, sub, href, action, cta }) => (
             <div key={label} style={{ display:'flex', alignItems:'center', gap:14,
-                                       padding:'14px 20px', borderBottom:'0.5px solid var(--v2-border)' }}>
+                                       padding:'14px 20px', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
               <div className="v2-icontile">{icon}</div>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)' }}>{label}</div>
-                <div style={{ fontSize:11, color:'var(--v2-text-3)' }}>{sub}</div>
+                <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{label}</div>
+                <div style={{ fontSize:11, color:'#b0a8a0' }}>{sub}</div>
               </div>
               {href
                 ? <a href={href} target='_blank' rel='noreferrer'
                     style={{ display:'inline-flex', alignItems:'center', gap:5,
-                              fontSize:12, color:'var(--v2-text-2)', textDecoration:'none',
+                              fontSize:12, color:'#e8e0d8', textDecoration:'none',
                               whiteSpace:'nowrap' }}
                     className="v2-btn v2-btn-sm">
                     {cta} <ArrowRight size={10} />

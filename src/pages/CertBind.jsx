@@ -23,8 +23,8 @@ const STATUS_MAP = {
   chain_anomaly:  { label: 'Chain Issue',   color: '#ff8c7a', dot: '#e07060', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.2)', icon: AlertTriangle,   priority: 2 },
   partial_deploy: { label: 'Partial',       color: '#ffffff', dot: '#f0ede8', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
   unreachable:    { label: 'Unreachable',   color: '#ffffff', dot: '#f0ede8', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
-  pending:        { label: 'Checking',      color: 'var(--v2-text-3)', dot: 'var(--v2-text-3)', bg: 'rgba(240,237,232,0.06)', border: 'rgba(240,237,232,0.15)', icon: Clock,           priority: 1 },
-  null:           { label: 'Not checked',   color: 'var(--v2-text-3)', dot: 'var(--v2-text-2)', bg: 'rgba(240,237,232,0.04)', border: 'rgba(240,237,232,0.1)',  icon: Clock,           priority: 1 },
+  pending:        { label: 'Checking',      color: '#b0a8a0', dot: 'var(--v2-text-3)', bg: 'rgba(240,237,232,0.06)', border: 'rgba(240,237,232,0.15)', icon: Clock,           priority: 1 },
+  null:           { label: 'Not checked',   color: '#b0a8a0', dot: 'var(--v2-text-2)', bg: 'rgba(240,237,232,0.04)', border: 'rgba(240,237,232,0.1)',  icon: Clock,           priority: 1 },
 }
 
 function getStatus(s) { return STATUS_MAP[s] || STATUS_MAP['null'] }
@@ -86,17 +86,17 @@ function CertRow({ cert, onCheck, checking }) {
 
       {/* Domain + meta */}
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontWeight: 600, fontSize:14, color: 'var(--v2-text)', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div style={{ fontWeight: 600, fontSize:14, color: '#ffffff', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {cert.domain}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
           {cert.install_method === 'agent' && (
-            <span style={{ display:'flex', alignItems:'center', gap:3, fontSize:11, color:'var(--v2-text-3)' }}>
+            <span style={{ display:'flex', alignItems:'center', gap:3, fontSize:11, color:'#b0a8a0' }}>
               <Server size={10} /> VPS Agent
             </span>
           )}
           {cert.install_method === 'cpanel' && (
-            <span style={{ display:'flex', alignItems:'center', gap:3, fontSize:11, color:'var(--v2-text-3)' }}>
+            <span style={{ display:'flex', alignItems:'center', gap:3, fontSize:11, color:'#b0a8a0' }}>
               <Globe size={10} /> cPanel
             </span>
           )}
@@ -229,10 +229,10 @@ export default function CertBind() {
         {/* Header */}
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom: 28, animation: 'fadeUp .35s ease both' }}>
           <div>
-            <div style={{ fontSize:22, fontWeight: 700, color: 'var(--v2-text)', letterSpacing: '-0.5px', marginBottom: 4 }}>
+            <div style={{ fontSize:22, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.5px', marginBottom: 4 }}>
               Live Certificate Status
             </div>
-            <div style={{ fontSize:13, color: 'var(--v2-text-3)' }}>
+            <div style={{ fontSize:13, color: '#b0a8a0' }}>
               Verify your certificates are active on your servers in real-time
             </div>
           </div>
@@ -243,7 +243,7 @@ export default function CertBind() {
               display:'flex', alignItems:'center', gap:6,
               padding:'8px 14px', borderRadius:8,
               background:'var(--v2-surface)', border:'1px solid #e5e7eb',
-              color:'var(--v2-text-2)', fontWeight:600, fontSize:12,
+              color:'#e8e0d8', fontWeight:600, fontSize:12,
               cursor:'pointer', transition:'all .15s', fontFamily:'inherit',
             }}
             onMouseEnter={e => e.currentTarget.style.background='#000000'}
@@ -257,10 +257,10 @@ export default function CertBind() {
         {/* Summary cards */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:10, marginBottom:24, animation:'fadeUp .35s ease .05s both' }}>
           {[
-            { num: certs.length, label: 'Total domains',   color: 'var(--v2-text-2)', bg: 'var(--v2-surface)',           border: 'rgba(240,237,232,0.12)' },
+            { num: certs.length, label: 'Total domains',   color: '#e8e0d8', bg: 'var(--v2-surface)',           border: 'rgba(240,237,232,0.12)' },
             { num: live,         label: 'Verified live',   color: '#ffffff', bg: 'transparent',        border: 'transparent' },
             { num: alerts,       label: 'Need attention',  color: '#f87171', bg: 'rgba(192,57,43,0.12)',        border: 'rgba(239,68,68,0.08)' },
-            { num: unchecked,    label: 'Not checked',     color: 'var(--v2-text-3)', bg: '#000000',        border: 'rgba(240,237,232,0.06)' },
+            { num: unchecked,    label: 'Not checked',     color: '#b0a8a0', bg: '#000000',        border: 'rgba(240,237,232,0.06)' },
           ].map(({ num, label, color, bg, border }) => (
             <div key={label} style={{
               background: bg, border: `1px solid ${border}`,
@@ -281,7 +281,7 @@ export default function CertBind() {
             marginBottom:20, animation:'fadeUp .35s ease .1s both',
           }}>
             <PulseDot color={onlineAgents > 0 ? '#f0ede8' : 'rgba(240,237,232,0.35)'} animate={onlineAgents > 0} />
-            <span style={{ fontSize:12, color:'var(--v2-text-2)', fontWeight:500 }}>
+            <span style={{ fontSize:12, color:'#e8e0d8', fontWeight:500 }}>
               {onlineAgents} of {agents.length} agent{agents.length !== 1 ? 's' : ''} online
             </span>
             {agents.slice(0,3).map(a => (
@@ -324,7 +324,7 @@ export default function CertBind() {
             background:'var(--v2-surface)', borderRadius:12, border:'1px solid #f0f0f0',
           }}>
             <Shield size={32} color="rgba(192,57,43,0.15)" style={{ marginBottom:12 }} />
-            <div style={{ fontSize:14, fontWeight:600, color:'var(--v2-text-2)', marginBottom:6 }}>No active certificates</div>
+            <div style={{ fontSize:14, fontWeight:600, color:'#e8e0d8', marginBottom:6 }}>No active certificates</div>
             <div style={{ fontSize:12, color:'#b0a8a0' }}>Issue your first certificate to start monitoring</div>
           </div>
         ) : (

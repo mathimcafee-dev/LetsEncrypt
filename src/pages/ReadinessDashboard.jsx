@@ -165,9 +165,9 @@ export default function ReadinessDashboard({ user }) {
 
   const TH = ({ col }) => (
     <th onClick={() => col.sortable && toggleSort(col.key)}
-      style={{ padding:'9px 12px', fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
+      style={{ padding:'9px 12px', fontSize:10, fontWeight:600, color:'#b0a8a0',
         textTransform:'uppercase', letterSpacing:'0.4px', textAlign:'left',
-        background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)',
+        background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
         cursor:col.sortable?'pointer':'default', userSelect:'none', whiteSpace:'nowrap',
         width:col.width }}>
       <span style={{ display:'flex', alignItems:'center', gap:3 }}>
@@ -188,7 +188,7 @@ export default function ReadinessDashboard({ user }) {
           marginBottom:16, paddingTop:8 }}>
           <div>
             <h1 className="v2-h1" style={{ fontSize:20, marginBottom:3 }}>47-day readiness</h1>
-            <p style={{ fontSize:12, color:'var(--v2-text-3)', margin:0 }}>
+            <p style={{ fontSize:12, color:'#b0a8a0', margin:0 }}>
               CA/B Forum SC-081v3 — how ready is your fleet for shorter cert lifetimes?
             </p>
           </div>
@@ -211,10 +211,10 @@ export default function ReadinessDashboard({ user }) {
           ].map(s => (
             <div key={s.label} style={{ padding:'10px 14px', borderRadius:8,
               background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)' }}>
-              <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:4 }}>{s.label}</div>
+              <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:4 }}>{s.label}</div>
               <div style={{ fontSize:20, fontWeight:700, color:s.color, fontFamily:'monospace', lineHeight:1 }}>
                 {s.value}
-                <span style={{ fontSize:11, fontWeight:400, color:'var(--v2-text-3)',
+                <span style={{ fontSize:11, fontWeight:400, color:'#b0a8a0',
                   marginLeft:4 }}>{s.unit}</span>
               </div>
             </div>
@@ -234,7 +234,7 @@ export default function ReadinessDashboard({ user }) {
                 <div>
                   <span style={{ fontSize:12, fontWeight:600,
                     color: past && i===0 ? '#c0392b' : 'var(--v2-text-1)' }}>{m.label}</span>
-                  <span style={{ fontSize:11, color:'var(--v2-text-3)', marginLeft:8 }}>
+                  <span style={{ fontSize:11, color:'#b0a8a0', marginLeft:8 }}>
                     max {m.days}-day validity
                   </span>
                 </div>
@@ -270,14 +270,14 @@ export default function ReadinessDashboard({ user }) {
 
         {/* Table */}
         {loading ? (
-          <div style={{ textAlign:'center', padding:'48px', color:'var(--v2-text-3)' }}>
+          <div style={{ textAlign:'center', padding:'48px', color:'#b0a8a0' }}>
             <RefreshCw size={18} style={{ animation:'spin .8s linear infinite',
               margin:'0 auto 10px', display:'block' }}/>
             Analysing fleet…
           </div>
         ) : sorted.length === 0 ? (
           <div style={{ textAlign:'center', padding:'32px', fontSize:12,
-            color:'var(--v2-text-3)', background:'var(--v2-surface)',
+            color:'#b0a8a0', background:'var(--v2-surface)',
             borderRadius:10, border:'0.5px solid var(--v2-border)' }}>
             No certificates match this filter.
           </div>
@@ -346,14 +346,14 @@ export default function ReadinessDashboard({ user }) {
                           <div style={{ fontSize:11, fontWeight:500, color:expiryColor }}>
                             {expiry.label}
                           </div>
-                          <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:1 }}>
+                          <div style={{ fontSize:10, color:'#b0a8a0', marginTop:1 }}>
                             {expiryDays > 0 ? `${expiryDays}d left` : 'Expired'}
                           </div>
                         </td>
 
                         {/* Validity */}
                         <td style={{ padding:'10px 12px', textAlign:'center',
-                          fontSize:11, color:'var(--v2-text-2)', fontFamily:'monospace' }}>
+                          fontSize:11, color:'#e8e0d8', fontFamily:'monospace' }}>
                           {validity ?? '—'}d
                         </td>
 
@@ -388,10 +388,10 @@ export default function ReadinessDashboard({ user }) {
             <div style={{ padding:'8px 14px', borderTop:'0.5px solid var(--v2-border)',
               background:'var(--v2-bg)', display:'flex', alignItems:'center',
               justifyContent:'space-between' }}>
-              <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>
+              <span style={{ fontSize:11, color:'#b0a8a0' }}>
                 {sorted.length} domain{sorted.length!==1?'s':''} · Click column headers to sort
               </span>
-              <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>
+              <span style={{ fontSize:11, color:'#b0a8a0' }}>
                 Score = auto-renew 30pt · DNS 25pt · install 20pt · validity 15pt · key 10pt
               </span>
             </div>
@@ -399,7 +399,7 @@ export default function ReadinessDashboard({ user }) {
         )}
 
         {/* Footer note */}
-        <div style={{ marginTop:12, fontSize:11, color:'var(--v2-text-3)', lineHeight:1.6,
+        <div style={{ marginTop:12, fontSize:11, color:'#b0a8a0', lineHeight:1.6,
           padding:'8px 12px', borderRadius:8, background:'var(--v2-bg)',
           border:'0.5px solid var(--v2-border)' }}>
           CA/B Forum SC-081v3 (passed Apr 2025) · 200-day max from Mar 15 2026 · 100-day from Mar 15 2027 · 47-day from Mar 15 2029 · DCV reuse drops to 10 days · Manual renewal will be operationally impossible

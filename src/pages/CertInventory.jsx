@@ -118,13 +118,13 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
   }
 
   const InfoRow = ({ label, value, mono, color, copiable }) => (
-    <tr style={{ borderBottom:'0.5px solid var(--v2-border)' }}>
+    <tr style={{ borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
       <td style={{ padding:'9px 16px 9px 0', fontSize:12, color:'#b0a8a0', whiteSpace:'nowrap', width:160, verticalAlign:'middle' }}>{label}</td>
       <td style={{ padding:'9px 0', verticalAlign:'middle' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <span style={{ fontSize:mono?11:12, color:color||'var(--v2-text)', fontFamily:mono?"'JetBrains Mono','Menlo',monospace":'inherit', wordBreak:'break-all' }}>{value || '—'}</span>
           {copiable && value && (
-            <button onClick={() => copy(value, label)} style={{ flexShrink:0, background:'none', border:'none', cursor:'pointer', color:'var(--v2-text-3)', padding:0 }}>
+            <button onClick={() => copy(value, label)} style={{ flexShrink:0, background:'none', border:'none', cursor:'pointer', color:'#b0a8a0', padding:0 }}>
               {copiedField===label ? <Check size={12} color="#c0392b"/> : <Copy size={12}/>}
             </button>
           )}
@@ -145,12 +145,12 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
   return (
     <div style={{ borderTop:'2px solid #c0392b', background:'var(--v2-bg)' }}>
       {/* Header */}
-      <div style={{ padding:'14px 20px', background:'var(--v2-surface)', borderBottom:'0.5px solid var(--v2-border)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+      <div style={{ padding:'14px 20px', background:'var(--v2-surface)', borderBottom:'0.5px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div>
-          <div style={{ fontSize:14, fontWeight:600, color:'var(--v2-text)' }}>{productName(order?.product_code, cert.cert_type)}</div>
+          <div style={{ fontSize:14, fontWeight:600, color:'#ffffff' }}>{productName(order?.product_code, cert.cert_type)}</div>
           <div style={{ fontSize:12, color:'#b0a8a0', marginTop:2, fontFamily:"'JetBrains Mono','Menlo',monospace" }}>{cert.domain}</div>
         </div>
-        <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--v2-text-3)', padding:4 }}><X size={16}/></button>
+        <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#b0a8a0', padding:4 }}><X size={16}/></button>
       </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) clamp(220px,23vw,280px)' }}>
@@ -200,19 +200,19 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                   { label:'Private Key',       key:'private_key_pem',  icon:Key,      filename:`${cert.domain}-key.pem`, sensitive:true },
                 ].map(({ label, key, icon:Icon, filename, sensitive }) => (
                   <div key={key} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 12px', border:'0.5px solid var(--v2-border)', borderRadius:6, fontSize:12 }}>
-                    <span style={{ display:'flex', alignItems:'center', gap:8, color:'var(--v2-text)' }}>
+                    <span style={{ display:'flex', alignItems:'center', gap:8, color:'#ffffff' }}>
                       <Icon size={13} color="rgba(240,237,232,0.4)"/> {label}
                       {sensitive && keyDeleted && <span style={{ fontSize:9, fontWeight:500, color:'#e8e0d8', background:'var(--v2-border)', padding:'1px 6px', borderRadius:3 }}>DELETED</span>}
                     </span>
                     {sensitive && keyDeleted ? (
-                      <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>Removed from vault</span>
+                      <span style={{ fontSize:11, color:'#b0a8a0' }}>Removed from vault</span>
                     ) : cert[key] ? (
                       <div style={{ display:'flex', gap:6 }}>
                         {sensitive && <button onClick={() => setShowKey(v=>!v)} style={btnStyle}>{showKey?<><EyeOff size={11}/> Hide</>:<><Eye size={11}/> Show</>}</button>}
                         <button onClick={() => copy(cert[key], key)} style={btnStyle}>{copiedField===key?<><Check size={11}/> Copied</>:<><Copy size={11}/> Copy</>}</button>
                         <button onClick={() => dl(cert[key], filename)} style={btnStyle}><Download size={11}/></button>
                       </div>
-                    ) : <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>Not available</span>}
+                    ) : <span style={{ fontSize:11, color:'#b0a8a0' }}>Not available</span>}
                   </div>
                 ))}
                 {showKey && cert.private_key_pem && !keyDeleted && (
@@ -257,7 +257,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
 
         {/* Actions sidebar */}
         <div style={{ padding:16 }}>
-          <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:10 }}>Actions</div>
+          <div style={{ fontSize:10, fontWeight:500, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:10 }}>Actions</div>
           <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
             <ActionBtn icon={Download}  label="Download Certificate" onClick={downloadZip}/>
             <ActionBtn icon={RotateCcw} label="Renew Certificate"    onClick={() => { sessionStorage.setItem('prefill_domain',cert.domain); onIssue?.() }} disabled={isRevoked}/>
@@ -292,7 +292,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
             <div style={{ marginTop:16, padding:14, background:si.bg, border:`0.5px solid ${si.border}`, borderRadius:8, textAlign:'center' }}>
               <div style={{ fontSize:28, fontWeight:700, color:si.color, lineHeight:1 }}>{Math.max(0,days)}</div>
               <div style={{ fontSize:11, color:si.color, marginTop:4 }}>days remaining</div>
-              {days > 0 && <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:4 }}>Expires {fmtDate(cert.expires_at)}</div>}
+              {days > 0 && <div style={{ fontSize:10, color:'#b0a8a0', marginTop:4 }}>Expires {fmtDate(cert.expires_at)}</div>}
             </div>
           )}
         </div>
@@ -436,8 +436,8 @@ export default function CertInventory({ user, nav, onIssue }) {
       {/* Header */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
         <div>
-          <h2 style={{ fontSize:20, fontWeight:600, color:'var(--v2-text)', margin:0, letterSpacing:'-0.3px' }}>Orders</h2>
-          <div style={{ fontSize:11, color:'var(--v2-text-3)', marginTop:4 }}>{total} certificate{total!==1?'s':''} in inventory</div>
+          <h2 style={{ fontSize:20, fontWeight:600, color:'#ffffff', margin:0, letterSpacing:'-0.3px' }}>Orders</h2>
+          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:4 }}>{total} certificate{total!==1?'s':''} in inventory</div>
         </div>
         <div style={{ display:'flex', gap:8 }}>
           <button onClick={downloadCSV} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'var(--v2-surface)', color:'#e8e0d8', border:'0.5px solid var(--v2-border)', borderRadius:6, padding:'8px 14px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
@@ -453,7 +453,7 @@ export default function CertInventory({ user, nav, onIssue }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:16, marginBottom:20 }}>
         {/* Certificate alerts */}
         <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'16px 20px' }}>
-          <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)', marginBottom:14 }}>Certificate alerts</div>
+          <div style={{ fontSize:12, fontWeight:600, color:'#ffffff', marginBottom:14 }}>Certificate alerts</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:0 }}>
             {[
               { label:'Expired in last 7 days',  val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=-7&&d<0 }).length, color:'#f87171', filter:'Exp7' },
@@ -462,7 +462,7 @@ export default function CertInventory({ user, nav, onIssue }) {
               { label:'Expires in 61–90 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>60&&d<=90&&c.status==='active' }).length, color:'#ffffff', filter:'Exp90' },
             ].map(({ label, val, color, filter:f }, i) => (
               <div key={label} style={{ padding:'0 16px 0 0', borderRight: i<3 ? '0.5px solid var(--v2-border)' : 'none', marginRight: i<3 ? 16 : 0 }}>
-                <div style={{ fontSize:9, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'.3px', marginBottom:6, lineHeight:1.4 }}>{label}</div>
+                <div style={{ fontSize:9, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.3px', marginBottom:6, lineHeight:1.4 }}>{label}</div>
                 <div style={{ display:'flex', alignItems:'baseline', gap:6 }}>
                   <span style={{ fontSize:26, fontWeight:700, color, lineHeight:1 }}>{loading?'—':val}</span>
                   {val > 0 && (
@@ -476,7 +476,7 @@ export default function CertInventory({ user, nav, onIssue }) {
 
         {/* Order alerts */}
         <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'16px 20px' }}>
-          <div style={{ fontSize:12, fontWeight:600, color:'var(--v2-text)', marginBottom:14 }}>Order alerts</div>
+          <div style={{ fontSize:12, fontWeight:600, color:'#ffffff', marginBottom:14 }}>Order alerts</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:0 }}>
             {[
               { label:'Expired in last 7 days',  val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>=-7&&d<0 }).length, color:'#f87171', filter:'Exp7' },
@@ -485,7 +485,7 @@ export default function CertInventory({ user, nav, onIssue }) {
               { label:'Expires in 61–90 days',   val: certs.filter(c=>{ const d=daysLeft(c.expires_at); return d!=null&&d>60&&d<=90&&c.status==='active' }).length, color:'#ffffff', filter:'Exp90' },
             ].map(({ label, val, color, filter:f }, i) => (
               <div key={label} style={{ padding:'0 16px 0 0', borderRight: i<3 ? '0.5px solid var(--v2-border)' : 'none', marginRight: i<3 ? 16 : 0 }}>
-                <div style={{ fontSize:9, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'.3px', marginBottom:6, lineHeight:1.4 }}>{label}</div>
+                <div style={{ fontSize:9, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.3px', marginBottom:6, lineHeight:1.4 }}>{label}</div>
                 <div style={{ display:'flex', alignItems:'baseline', gap:6 }}>
                   <span style={{ fontSize:26, fontWeight:700, color, lineHeight:1 }}>{loading?'—':val}</span>
                   {val > 0 && (
@@ -506,7 +506,7 @@ export default function CertInventory({ user, nav, onIssue }) {
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <span style={{ fontSize:12, color:'#e8e0d8' }}>Status:</span>
           <div style={{ position:'relative', zIndex:50 }}>
-            <button onClick={() => setShowDrop(v=>!v)} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 12px', fontSize:12, background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer', fontFamily:'inherit', color:'var(--v2-text)', minWidth:160 }}>
+            <button onClick={() => setShowDrop(v=>!v)} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 12px', fontSize:12, background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', minWidth:160 }}>
               {STATUS_FILTERS.find(f=>f.id===statusFilter)?.label||'ALL'}
               <ChevronDown size={12} style={{ marginLeft:'auto' }}/>
             </button>
@@ -539,7 +539,7 @@ export default function CertInventory({ user, nav, onIssue }) {
       <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', overflow:'hidden' }}>
         <div style={{ overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
         {/* Header */}
-        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)', fontSize:11, fontWeight:600, color:'#b0a8a0', letterSpacing:'.3px', textTransform:'uppercase', minWidth:0 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)', fontSize:11, fontWeight:600, color:'#b0a8a0', letterSpacing:'.3px', textTransform:'uppercase', minWidth:0 }}>
           <div>Domain</div>
           <div>Order ID</div>
           <div>Product</div>
@@ -551,12 +551,12 @@ export default function CertInventory({ user, nav, onIssue }) {
         </div>
 
         {loading ? (
-          <div style={{ padding:'clamp(16px,16vw,48px) 20px', textAlign:'center', color:'var(--v2-text-3)', fontSize:12 }}>Loading…</div>
+          <div style={{ padding:'clamp(16px,16vw,48px) 20px', textAlign:'center', color:'#b0a8a0', fontSize:12 }}>Loading…</div>
         ) : filtered.length === 0 ? (
           <div style={{ padding:'clamp(16px,18vw,56px) 20px', textAlign:'center' }}>
             <Shield size={32} color="rgba(240,237,232,0.15)" strokeWidth={1.5} style={{ marginBottom:10 }}/>
-            <div style={{ fontSize:13, fontWeight:500, color:'var(--v2-text)', marginBottom:4 }}>{certs.length===0?'No certificates yet':'No matches'}</div>
-            <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:16 }}>{certs.length===0?'Issue your first SSL certificate to get started':'Try a different filter or search term'}</div>
+            <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:4 }}>{certs.length===0?'No certificates yet':'No matches'}</div>
+            <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:16 }}>{certs.length===0?'Issue your first SSL certificate to get started':'Try a different filter or search term'}</div>
             {certs.length===0 && <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8', color:'var(--v2-surface)', border:'none', borderRadius:6, padding:'8px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}><Plus size={12}/> Issue certificate</button>}
           </div>
         ) : filtered.map(cert => {
@@ -568,14 +568,14 @@ export default function CertInventory({ user, nav, onIssue }) {
             <div key={cert.id}>
               <div
                 onClick={() => setExpanded(isExpanded ? null : cert.id)}
-                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid var(--v2-border)', background:isExpanded?'transparent':'var(--v2-surface)', transition:'background 0.1s', minWidth:0 }}
+                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'0.5px solid rgba(255,255,255,0.08)', background:isExpanded?'transparent':'var(--v2-surface)', transition:'background 0.1s', minWidth:0 }}
                 onMouseEnter={e => { if(!isExpanded) e.currentTarget.style.background='#000000' }}
                 onMouseLeave={e => { if(!isExpanded) e.currentTarget.style.background='var(--v2-surface)' }}
               >
                 {/* Domain */}
                 <div style={{ display:'flex', flexDirection:'column', gap:3, minWidth:0 }}>
                   <span style={{ fontFamily:"'JetBrains Mono','Menlo',monospace", fontSize:12, color:'#ffffff', fontWeight:500, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</span>
-                  <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>{cert.is_sandbox?'Sandbox':'Production'}</span>
+                  <span style={{ fontSize:10, color:'#b0a8a0' }}>{cert.is_sandbox?'Sandbox':'Production'}</span>
                 </div>
                 {/* Order ID */}
                 <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
@@ -583,7 +583,7 @@ export default function CertInventory({ user, nav, onIssue }) {
                 </div>
                 {/* Product */}
                 <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
-                  <span style={{ fontSize:12, color:'var(--v2-text)', fontWeight:500 }}>{productName(order?.product_code, cert.cert_type)}</span>
+                  <span style={{ fontSize:12, color:'#ffffff', fontWeight:500 }}>{productName(order?.product_code, cert.cert_type)}</span>
 
                 </div>
                 {/* Status */}
@@ -594,7 +594,7 @@ export default function CertInventory({ user, nav, onIssue }) {
                 <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
                   {cert.issued_at && cert.expires_at
                     ? <span style={{ fontSize:11, color:'#e8e0d8' }}>{fmtDate(cert.issued_at)} → <span style={{ color:si.color, fontWeight:500 }}>{fmtDate(cert.expires_at)}</span></span>
-                    : <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>—</span>
+                    : <span style={{ fontSize:11, color:'#b0a8a0' }}>—</span>
                   }
                   {days != null && !['revoked','sandbox_revoked'].includes(cert.status) && (
                     <span style={{ fontSize:10, color: days < 0 ? '#f87171' : days <= 30 ? '#f0ede8' : 'var(--v2-text-3)' }}>
@@ -609,9 +609,9 @@ export default function CertInventory({ user, nav, onIssue }) {
                   {order?.years
                     ? <>
                         <span style={{ fontSize:11, color:'#e8e0d8' }}>{fmtDate(new Date(new Date(order.created_at).getTime() + order.years*365*86400000).toISOString())}</span>
-                        <span style={{ fontSize:10, color:'var(--v2-text-3)' }}>{order.years}-year plan</span>
+                        <span style={{ fontSize:10, color:'#b0a8a0' }}>{order.years}-year plan</span>
                       </>
-                    : <span style={{ fontSize:11, color:'var(--v2-text-3)' }}>—</span>
+                    : <span style={{ fontSize:11, color:'#b0a8a0' }}>—</span>
                   }
                 </div>
                 {/* Chevron */}

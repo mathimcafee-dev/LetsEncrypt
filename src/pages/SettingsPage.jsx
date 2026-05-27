@@ -76,8 +76,8 @@ function Row({ label, desc, children, last }) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
       padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid rgba(192,57,43,0.08)' }}>
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 1 }}>{label}</div>
-        {desc && <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{desc}</div>}
+        <div style={{ fontSize:12, fontWeight: 500, color: '#ffffff', marginBottom: 1 }}>{label}</div>
+        {desc && <div style={{ fontSize:11, color: '#b0a8a0' }}>{desc}</div>}
       </div>
       {children}
     </div>
@@ -102,15 +102,15 @@ function LogRow({ log }) {
       padding: '9px 0', borderBottom: '1px solid rgba(192,57,43,0.12)', alignItems: 'center', fontSize:12 }}>
       <span style={{ fontSize:14 }}>{m.icon}</span>
       <div>
-        <div style={{ fontWeight: 500, color: 'var(--v2-text)', fontSize:12 }}>
+        <div style={{ fontWeight: 500, color: '#ffffff', fontSize:12 }}>
           {log.alert_type.replace(/_/g, ' ')}
         </div>
-        <div style={{ fontSize:10, color: 'var(--v2-text-3)', fontFamily: 'monospace' }}>{domain}</div>
+        <div style={{ fontSize:10, color: '#b0a8a0', fontFamily: 'monospace' }}>{domain}</div>
       </div>
       <div style={{ color: '#ff8c7a', fontSize:11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {log.recipient}
       </div>
-      <div style={{ fontSize:10, color: 'var(--v2-text-3)' }}>{ts}</div>
+      <div style={{ fontSize:10, color: '#b0a8a0' }}>{ts}</div>
       <div>
         <span style={{
           fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,
@@ -183,8 +183,8 @@ function ApiKeysPanel({ user }) {
 
   return (
     <div style={{ padding: '16px 18px' }}>
-      <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>API Keys</div>
-      <div style={{ fontSize:12, color: 'var(--v2-text-3)', marginBottom: 16, lineHeight: 1.6 }}>
+      <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>API Keys</div>
+      <div style={{ fontSize:12, color: '#b0a8a0', marginBottom: 16, lineHeight: 1.6 }}>
         Use API keys to integrate SSLVault into your own tools and pipelines. Each key is shown once — store it securely.
       </div>
 
@@ -211,7 +211,7 @@ function ApiKeysPanel({ user }) {
       {/* Create new key */}
       <div style={{ background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)',
         borderRadius: 8, padding: '12px 14px', marginBottom: 16 }}>
-        <div style={{ fontSize:11, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 8 }}>Create new key</div>
+        <div style={{ fontSize:11, fontWeight: 600, color: '#ffffff', marginBottom: 8 }}>Create new key</div>
         <div style={{ display: 'flex', gap: 8 }}>
           <input value={label} onChange={e => setLabel(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && createKey()}
@@ -231,13 +231,13 @@ function ApiKeysPanel({ user }) {
 
       {/* Keys list */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--v2-text-3)', fontSize:12 }}>
+        <div style={{ textAlign: 'center', padding: '24px 0', color: '#b0a8a0', fontSize:12 }}>
           Loading…
         </div>
       ) : keys.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '24px 0' }}>
-          <Key size={24} style={{ color: 'var(--v2-text-3)', margin: '0 auto 8px', display: 'block' }} />
-          <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>No API keys yet.</div>
+          <Key size={24} style={{ color: '#b0a8a0', margin: '0 auto 8px', display: 'block' }} />
+          <div style={{ fontSize:12, color: '#b0a8a0' }}>No API keys yet.</div>
         </div>
       ) : (
         <div style={{ border: '0.5px solid var(--v2-border)', borderRadius: 8, overflow: 'hidden' }}>
@@ -249,8 +249,8 @@ function ApiKeysPanel({ user }) {
                 <Key size={13} color="var(--v2-text-3)" />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize:12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 2 }}>{k.label}</div>
-                <div style={{ display: 'flex', gap: 10, fontSize:10, color: 'var(--v2-text-3)' }}>
+                <div style={{ fontSize:12, fontWeight: 600, color: '#ffffff', marginBottom: 2 }}>{k.label}</div>
+                <div style={{ display: 'flex', gap: 10, fontSize:10, color: '#b0a8a0' }}>
                   <span style={{ fontFamily: 'monospace' }}>{k.key_prefix}…</span>
                   <span>Created {fmtDate(k.created_at)}</span>
                   {k.last_used_at && <span>Last used {fmtDate(k.last_used_at)}</span>}
@@ -270,7 +270,7 @@ function ApiKeysPanel({ user }) {
       )}
 
       <div style={{ marginTop: 14, padding: '10px 12px', background: 'var(--v2-surface-3)',
-        borderRadius: 7, fontSize:11, color: 'var(--v2-text-3)', lineHeight: 1.6 }}>
+        borderRadius: 7, fontSize:11, color: '#b0a8a0', lineHeight: 1.6 }}>
         Use your key in requests: <span style={{ fontFamily: 'monospace', color: '#ff8c7a' }}>
           Authorization: Bearer sv_live_…
         </span>
@@ -437,7 +437,7 @@ export default function SettingsPage({ user }) {
   const handleSignOut = async () => { await supabase.auth.signOut() }
 
   if (loading) return (
-    <div style={{ padding: 'clamp(16px,16vw,48px) 28px', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--v2-text-3)', fontSize:13, fontFamily: 'inherit' }}>
+    <div style={{ padding: 'clamp(16px,16vw,48px) 28px', display: 'flex', alignItems: 'center', gap: 8, color: '#b0a8a0', fontSize:13, fontFamily: 'inherit' }}>
       <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }}/> Loading…
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
@@ -487,7 +487,7 @@ export default function SettingsPage({ user }) {
               <Toggle on={emailAlerts} onClick={() => setEmailAlerts(v => !v)}/>
             </Row>
             <div style={{ paddingTop: 12 }}>
-              <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginBottom: 10 }}>
+              <div style={{ fontSize:11, color: '#b0a8a0', marginBottom: 10 }}>
                 Choose which events trigger an email:
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -500,8 +500,8 @@ export default function SettingsPage({ user }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }}/>
                       <div>
-                        <div style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)' }}>{label}</div>
-                        <div style={{ fontSize:10, color: 'var(--v2-text-3)' }}>{desc}</div>
+                        <div style={{ fontSize:12, fontWeight: 500, color: '#ffffff' }}>{label}</div>
+                        <div style={{ fontSize:10, color: '#b0a8a0' }}>{desc}</div>
                       </div>
                     </div>
                     <Toggle on={alertTypes.includes(id)} onClick={() => toggleType(id)} disabled={!emailAlerts}/>
@@ -513,7 +513,7 @@ export default function SettingsPage({ user }) {
 
           {/* Expiry thresholds */}
           <Section title="Expiry alert thresholds" icon={Clock}>
-            <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginBottom: 10 }}>
+            <div style={{ fontSize:11, color: '#b0a8a0', marginBottom: 10 }}>
               Alert when a certificate is within this many days of expiry:
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -534,7 +534,7 @@ export default function SettingsPage({ user }) {
 
           {/* Additional recipients */}
           <Section title="Additional recipients" icon={Mail}>
-            <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginBottom: 12 }}>
+            <div style={{ fontSize:11, color: '#b0a8a0', marginBottom: 12 }}>
               Send all alerts to these email addresses in addition to your account email.
             </div>
             {extraEmails.map(e => (
@@ -543,7 +543,7 @@ export default function SettingsPage({ user }) {
                 borderRadius: 7, marginBottom: 6 }}>
                 <span style={{ fontSize:12, color: '#e8e0d8', fontFamily: 'monospace' }}>{e}</span>
                 <button onClick={() => removeExtraEmail(e)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', padding: 2 }}>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#b0a8a0', padding: 2 }}>
                   <X size={12}/>
                 </button>
               </div>
@@ -567,7 +567,7 @@ export default function SettingsPage({ user }) {
 
           {/* Slack */}
           <Section title="Slack webhook" collapsible>
-            <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginBottom: 10 }}>
+            <div style={{ fontSize:11, color: '#b0a8a0', marginBottom: 10 }}>
               Get all alerts in Slack. Paste an Incoming Webhook URL from your Slack workspace.
             </div>
             <input value={slackWebhook} onChange={e => setSlackWebhook(e.target.value)}
@@ -586,7 +586,7 @@ export default function SettingsPage({ user }) {
 
           {/* Test send */}
           <Section title="Test alert" icon={Send}>
-            <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginBottom: 12 }}>
+            <div style={{ fontSize:11, color: '#b0a8a0', marginBottom: 12 }}>
               Send a test email to verify your alert settings are working.
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -688,7 +688,7 @@ export default function SettingsPage({ user }) {
 
             {/* Column headers */}
             <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 80px 70px', gap: 12,
-              padding: '8px 18px', fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
+              padding: '8px 18px', fontSize:10, fontWeight: 700, color: '#b0a8a0',
               textTransform: 'uppercase', letterSpacing: '.5px', borderBottom: '1px solid rgba(192,57,43,0.12)' }}>
               <div/>
               <div>Type / Domain</div>
@@ -699,12 +699,12 @@ export default function SettingsPage({ user }) {
 
             <div style={{ padding: '0 18px' }}>
               {logsLoading ? (
-                <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--v2-text-3)', fontSize:12 }}>
+                <div style={{ padding: '24px 0', textAlign: 'center', color: '#b0a8a0', fontSize:12 }}>
                   <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite', marginRight: 6 }}/>
                   Loading alert log…
                 </div>
               ) : logs.length === 0 ? (
-                <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--v2-text-3)', fontSize:12 }}>
+                <div style={{ padding: '32px 0', textAlign: 'center', color: '#b0a8a0', fontSize:12 }}>
                   No alerts sent yet.{' '}
                   <button onClick={() => setActiveTab('preferences')}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ffffff',
@@ -721,7 +721,7 @@ export default function SettingsPage({ user }) {
             {logsTotal > 20 && (
               <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(192,57,43,0.08)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
+                <span style={{ fontSize:11, color: '#b0a8a0' }}>
                   Showing {logsPage * 20 + 1}–{Math.min((logsPage + 1) * 20, logsTotal)} of {logsTotal}
                 </span>
                 <div style={{ display: 'flex', gap: 6 }}>

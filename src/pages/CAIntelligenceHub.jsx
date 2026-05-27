@@ -89,7 +89,7 @@ function WorkspaceRow({ icon: Icon, iconBg, iconColor, label, badge, badgeColor,
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Icon size={14} strokeWidth={1.8} color={iconColor}/>
         </div>
-        <span style={{ fontSize:12, fontWeight: 500, color: 'var(--v2-text)' }}>{label}</span>
+        <span style={{ fontSize:12, fontWeight: 500, color: '#ffffff' }}>{label}</span>
         {badge && (
           <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 20,
             background: badgeBg || 'rgba(239,68,68,0.08)', color: badgeColor || '#f0ede8',
@@ -106,7 +106,7 @@ function SectionCard({ title, children, style = {} }) {
     <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
       borderRadius:10, padding:'14px 16px', marginBottom:12, ...style }}>
       {title && (
-        <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+        <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
           letterSpacing:'0.4px', marginBottom:10 }}>{title}</div>
       )}
       {children}
@@ -158,7 +158,7 @@ function OverviewTab({ tok, onSwitchCA }) {
   useEffect(() => { load() }, [load])
 
   if (loading) return (
-    <div style={{ textAlign: 'center', padding: 60, color: 'var(--v2-text-3)', fontSize:13 }}>
+    <div style={{ textAlign: 'center', padding: 60, color: '#b0a8a0', fontSize:13 }}>
       <Spinner/><span style={{ marginLeft: 8 }}>Loading cross-CA overview…</span>
     </div>
   )
@@ -183,9 +183,9 @@ function OverviewTab({ tok, onSwitchCA }) {
         ].map(({ label, val, sub, color, bg }) => (
           <div key={label} style={{ padding:'12px 14px', borderRadius:10, background:bg||'var(--v2-surface)',
             border:'0.5px solid var(--v2-border)' }}>
-            <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:4 }}>{label}</div>
+            <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:4 }}>{label}</div>
             <div style={{ fontSize:22, fontWeight:700, color, fontFamily:'monospace', lineHeight:1 }}>{val}</div>
-            <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:4 }}>{sub}</div>
+            <div style={{ fontSize:10, color:'#b0a8a0', marginTop:4 }}>{sub}</div>
           </div>
         ))}
       </div>
@@ -194,7 +194,7 @@ function OverviewTab({ tok, onSwitchCA }) {
 
         {/* Portfolio by CA — visual bars */}
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, padding:'14px 16px' }}>
-          <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+          <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
             letterSpacing:'0.4px', marginBottom:14 }}>Portfolio by CA</div>
           {[
             { ca:'rapidssl', count:ggsCount, label:'RapidSSL', sub:'SSLVault native', clickable:true },
@@ -211,7 +211,7 @@ function OverviewTab({ tok, onSwitchCA }) {
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:5 }}>
                   <div>
                     <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-text-1)' }}>{label}</span>
-                    <span style={{ fontSize:10, color:'var(--v2-text-3)', marginLeft:6 }}>{sub}</span>
+                    <span style={{ fontSize:10, color:'#b0a8a0', marginLeft:6 }}>{sub}</span>
                   </div>
                   <span style={{ fontSize:13, fontWeight:700, color:CA_META[ca].accent, fontFamily:'monospace' }}>{count}</span>
                 </div>
@@ -229,7 +229,7 @@ function OverviewTab({ tok, onSwitchCA }) {
 
         {/* Expiry risk — horizontal bar chart */}
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, padding:'14px 16px' }}>
-          <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+          <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
             letterSpacing:'0.4px', marginBottom:14 }}>Expiry risk — all CAs</div>
           {[
             { label:'Expired',    n:expired, color:'#a93226', bg:'rgba(192,57,43,0.1)' },
@@ -239,7 +239,7 @@ function OverviewTab({ tok, onSwitchCA }) {
             { label:'Healthy',    n:healthy, color:'#a93226', bg:'transparent' },
           ].map(({ label, n, color, bg }) => (
             <div key={label} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
-              <span style={{ fontSize:11, color:'var(--v2-text-3)', width:72, flexShrink:0 }}>{label}</span>
+              <span style={{ fontSize:11, color:'#b0a8a0', width:72, flexShrink:0 }}>{label}</span>
               <div style={{ flex:1, height:24, background:'var(--v2-bg)', borderRadius:6, overflow:'hidden', position:'relative' }}>
                 {n > 0 && (
                   <div style={{ position:'absolute', left:0, top:0, bottom:0,
@@ -252,7 +252,7 @@ function OverviewTab({ tok, onSwitchCA }) {
                 )}
                 {n === 0 && (
                   <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)',
-                    fontSize:10, color:'var(--v2-text-3)' }}>0</span>
+                    fontSize:10, color:'#b0a8a0' }}>0</span>
                 )}
               </div>
             </div>
@@ -261,7 +261,7 @@ function OverviewTab({ tok, onSwitchCA }) {
       </div>
 
       {/* CA connection cards — live feel */}
-      <div style={{ fontSize:11, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase',
+      <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
         letterSpacing:'0.4px', marginBottom:10 }}>CA connections</div>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))', gap:10 }}>
         {[
@@ -296,7 +296,7 @@ function OverviewTab({ tok, onSwitchCA }) {
             </div>
             <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text-1)', marginBottom:3 }}>{label}</div>
             <div style={{ fontSize:11, color:conn?CA_META[ca].accent:'var(--v2-text-3)', marginBottom:6 }}>{sub}</div>
-            <div style={{ fontSize:10, fontWeight:500, color:'var(--v2-text-3)',
+            <div style={{ fontSize:10, fontWeight:500, color:'#b0a8a0',
               padding:'3px 8px', borderRadius:20, background:'var(--v2-bg)',
               border:'0.5px solid var(--v2-border)', display:'inline-block' }}>{extra}</div>
           </div>
@@ -316,9 +316,9 @@ function StatCard({ label, val, sub, color, bg, onClick }) {
     <div onClick={onClick} style={{ padding:'12px 14px', borderRadius:10,
       background:bg||'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
       cursor:onClick?'pointer':'default' }}>
-      <div style={{ fontSize:11, color:'var(--v2-text-3)', marginBottom:4 }}>{label}</div>
+      <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:4 }}>{label}</div>
       <div style={{ fontSize:22, fontWeight:700, color:color||'var(--v2-text-1)', fontFamily:'monospace', lineHeight:1 }}>{val}</div>
-      <div style={{ fontSize:10, color:'var(--v2-text-3)', marginTop:4 }}>{sub}</div>
+      <div style={{ fontSize:10, color:'#b0a8a0', marginTop:4 }}>{sub}</div>
     </div>
   )
 }
@@ -326,7 +326,7 @@ function StatCard({ label, val, sub, color, bg, onClick }) {
 function FilterBar({ filters, active, onSelect, count }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:4, padding:'10px 14px',
-      borderBottom:'0.5px solid var(--v2-border)', flexWrap:'wrap' }}>
+      borderBottom:'0.5px solid rgba(255,255,255,0.08)', flexWrap:'wrap' }}>
       {filters.map(([id, lbl]) => (
         <button key={id} onClick={() => onSelect(id)}
           style={{ padding:'4px 11px', borderRadius:6, fontSize:11, border:'none', fontFamily:'inherit',
@@ -337,7 +337,7 @@ function FilterBar({ filters, active, onSelect, count }) {
         </button>
       ))}
       {count !== undefined && (
-        <span style={{ marginLeft:'auto', fontSize:11, color:'var(--v2-text-3)' }}>{count} certs</span>
+        <span style={{ marginLeft:'auto', fontSize:11, color:'#b0a8a0' }}>{count} certs</span>
       )}
     </div>
   )
@@ -346,7 +346,7 @@ function FilterBar({ filters, active, onSelect, count }) {
 function TableHead({ cols }) {
   return (
     <div style={{ display:'grid', gridTemplateColumns:cols.join(' '),
-      padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)' }}>
+      padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
       {cols.map((_, i, arr) => null)}
     </div>
   )
@@ -356,18 +356,18 @@ function CertTable({ cols, headers, children, loading, empty }) {
   return (
     <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
       <div style={{ display:'grid', gridTemplateColumns:cols, padding:'8px 14px',
-        background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)' }}>
+        background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
         {headers.map(h => (
-          <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
+          <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0',
             textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
         ))}
       </div>
       {loading ? (
-        <div style={{ padding:40, textAlign:'center', color:'var(--v2-text-3)', fontSize:13 }}>
+        <div style={{ padding:40, textAlign:'center', color:'#b0a8a0', fontSize:13 }}>
           <Spinner/><span style={{ marginLeft:8 }}>Loading…</span>
         </div>
       ) : empty ? (
-        <div style={{ padding:'min(36px,5vw) min(24px,4vw)', textAlign:'center', fontSize:12, color:'var(--v2-text-3)' }}>{empty}</div>
+        <div style={{ padding:'min(36px,5vw) min(24px,4vw)', textAlign:'center', fontSize:12, color:'#b0a8a0' }}>{empty}</div>
       ) : children}
     </div>
   )
@@ -482,7 +482,7 @@ function RapidSSLTab({ tok, nav }) {
           const color = expiryColor(d)
           return (
             <div key={i} style={{ display:'grid', gridTemplateColumns:COLS, padding:'10px 14px',
-              borderBottom:'0.5px solid var(--v2-border)', alignItems:'center',
+              borderBottom:'0.5px solid rgba(255,255,255,0.08)', alignItems:'center',
               background: i%2===0?'var(--v2-surface)':'var(--v2-bg)',
               transition:'background .1s' }}
               onMouseEnter={e=>e.currentTarget.style.background='var(--v2-surface-3)'}
@@ -491,8 +491,8 @@ function RapidSSLTab({ tok, nav }) {
                 overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                 {c.common_name || c.domain || '—'}
               </div>
-              <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>{c.product_name||'RapidSSL'}</div>
-              <div style={{ fontSize:11, color:'var(--v2-text-2)' }}>{fmt(c.expiry_date)}</div>
+              <div style={{ fontSize:11, color:'#e8e0d8' }}>{c.product_name||'RapidSSL'}</div>
+              <div style={{ fontSize:11, color:'#e8e0d8' }}>{fmt(c.expiry_date)}</div>
               <div>
                 <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
                   background: d===null?'var(--v2-bg)':d<=0?'rgba(192,57,43,0.1)':d<=30?'rgba(230,126,34,0.12)':'transparent',
@@ -524,7 +524,7 @@ async function callLab(tok, body) {
 }
 
 function ExpiryPill({ days }) {
-  if (days === null) return <span style={{ fontSize:10, color: 'var(--v2-text-3)' }}>—</span>
+  if (days === null) return <span style={{ fontSize:10, color: '#b0a8a0' }}>—</span>
   const color = days < 0 ? '#f87171' : days <= 7 ? '#f87171' : days <= 30 ? '#f0ede8' : days <= 90 ? '#f0ede8' : '#4ade80'
   const bg    = days < 0 ? 'rgba(192,57,43,0.12)' : days <= 7 ? 'rgba(192,57,43,0.12)' : days <= 30 ? 'rgba(239,68,68,0.08)' : days <= 90 ? 'transparent' : 'transparent'
   const label = days < 0 ? `${Math.abs(days)}d ago` : `${days}d`
@@ -597,10 +597,10 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--v2-surface-2)' }}>
           <div>
-            <div style={{ fontSize:13, fontWeight: 700, color: 'var(--v2-text)', fontFamily: 'JetBrains Mono, monospace' }}>{cert.domain || '—'}</div>
-            <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 2 }}>DigiCert Order #{cert.external_order_id || '—'}</div>
+            <div style={{ fontSize:13, fontWeight: 700, color: '#ffffff', fontFamily: 'JetBrains Mono, monospace' }}>{cert.domain || '—'}</div>
+            <div style={{ fontSize:11, color: '#b0a8a0', marginTop: 2 }}>DigiCert Order #{cert.external_order_id || '—'}</div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', fontSize:18, lineHeight: 1 }}>×</button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#b0a8a0', fontSize:18, lineHeight: 1 }}>×</button>
         </div>
 
         <div style={{ padding: 20, flex: 1 }}>
@@ -614,7 +614,7 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
             </span>
             <ExpiryPill days={daysLeft}/>
             {cert.key_algorithm && (
-              <span style={{ fontSize:11, padding: '3px 10px', borderRadius: 20, background: 'var(--v2-surface-2)', color: 'var(--v2-text-2)', border: '0.5px solid var(--v2-border)' }}>
+              <span style={{ fontSize:11, padding: '3px 10px', borderRadius: 20, background: 'var(--v2-surface-2)', color: '#e8e0d8', border: '0.5px solid var(--v2-border)' }}>
                 {cert.key_algorithm}
               </span>
             )}
@@ -622,7 +622,7 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
 
           {/* Detail grid */}
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Certificate details</div>
+            <div style={{ fontSize:10, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Certificate details</div>
             {[
               ['Common name',   cert.domain || '—'],
               ['Product',       cert.cert_type_detail || '—'],
@@ -634,8 +634,8 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
               ['Issuer',        cert.issuer || 'DigiCert'],
             ].map(([label, val]) => (
               <div key={label} style={{ display: 'flex', borderBottom: '0.5px solid var(--v2-border)', padding: '7px 0' }}>
-                <div style={{ width: 130, fontSize:11, color: 'var(--v2-text-3)', flexShrink: 0 }}>{label}</div>
-                <div style={{ fontSize:11, color: 'var(--v2-text)', fontFamily: label === 'Serial number' || label === 'Order ID' ? 'JetBrains Mono, monospace' : 'inherit', wordBreak: 'break-all' }}>{val}</div>
+                <div style={{ width: 130, fontSize:11, color: '#b0a8a0', flexShrink: 0 }}>{label}</div>
+                <div style={{ fontSize:11, color: '#ffffff', fontFamily: label === 'Serial number' || label === 'Order ID' ? 'JetBrains Mono, monospace' : 'inherit', wordBreak: 'break-all' }}>{val}</div>
               </div>
             ))}
           </div>
@@ -643,10 +643,10 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
           {/* SANs */}
           {cert.san_list?.length > 0 && (
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>Subject alternative names ({cert.san_list.length})</div>
+              <div style={{ fontSize:10, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>Subject alternative names ({cert.san_list.length})</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {cert.san_list.map((s, i) => (
-                  <span key={i} style={{ fontSize:10, padding: '2px 7px', borderRadius: 4, background: 'var(--v2-surface-2)', border: '0.5px solid var(--v2-border)', fontFamily: 'JetBrains Mono, monospace', color: 'var(--v2-text-2)' }}>{s}</span>
+                  <span key={i} style={{ fontSize:10, padding: '2px 7px', borderRadius: 4, background: 'var(--v2-surface-2)', border: '0.5px solid var(--v2-border)', fontFamily: 'JetBrains Mono, monospace', color: '#e8e0d8' }}>{s}</span>
                 ))}
               </div>
             </div>
@@ -654,8 +654,8 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
 
           {/* PQC risk */}
           <div style={{ marginBottom: 20, padding: '10px 12px', borderRadius: 8, background: daysLeft !== null && daysLeft < 90 ? 'rgba(239,68,68,0.08)' : 'var(--v2-surface-2)', border: '0.5px solid var(--v2-border)' }}>
-            <div style={{ fontSize:11, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 4 }}>PQC Readiness</div>
-            <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>
+            <div style={{ fontSize:11, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>PQC Readiness</div>
+            <div style={{ fontSize:11, color: '#e8e0d8' }}>
               {cert.key_algorithm === 'RSA' ? 'RSA keys are vulnerable to future quantum attacks. Plan migration to ECDSA P-384 or P-256.' : 'ECDSA — better PQC posture than RSA-2048.'}
             </div>
           </div>
@@ -663,7 +663,7 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
           {/* PEM viewer */}
           {pem ? (
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>Certificate PEM</div>
+              <div style={{ fontSize:10, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>Certificate PEM</div>
               <div style={{ position: 'relative', background: '#f0ede8', borderRadius: 8, padding: '10px 12px' }}>
                 <textarea readOnly value={pem} rows={6}
                   style={{ width: '100%', background: 'transparent', border: 'none', color: '#86efac', fontSize:10, fontFamily: 'JetBrains Mono, monospace', resize: 'none', outline: 'none', lineHeight: 1.5 }}/>
@@ -674,7 +674,7 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
             </div>
           ) : cert.cert_pem ? (
             <div style={{ marginBottom: 20 }}>
-              <button onClick={() => setPem(cert.cert_pem)} style={{ fontSize:11, padding: '6px 14px', borderRadius: 6, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', cursor: 'pointer', color: 'var(--v2-text)', fontWeight: 500 }}>
+              <button onClick={() => setPem(cert.cert_pem)} style={{ fontSize:11, padding: '6px 14px', borderRadius: 6, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', cursor: 'pointer', color: '#ffffff', fontWeight: 500 }}>
                 View PEM certificate
               </button>
             </div>
@@ -682,10 +682,10 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
 
           {/* Actions */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Actions</div>
+            <div style={{ fontSize:10, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Actions</div>
             {!pem && (
               <button onClick={downloadPem} disabled={loadingPem}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, padding: '8px 14px', borderRadius: 7, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', cursor: loadingPem ? 'not-allowed' : 'pointer', color: 'var(--v2-text)', fontWeight: 500 }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, padding: '8px 14px', borderRadius: 7, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', cursor: loadingPem ? 'not-allowed' : 'pointer', color: '#ffffff', fontWeight: 500 }}>
                 {loadingPem ? <><RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }}/> Loading PEM…</> : <><Download size={12}/> Download / View PEM</>}
               </button>
             )}
@@ -819,13 +819,13 @@ function DigiCertTab({ tok, nav }) {
             onKeyDown={e => e.key === 'Enter' && connect()}
             placeholder="Paste your DigiCert API key…"/>
           <button onClick={() => setShowKey(v => !v)}
-            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)' }}>
+            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#b0a8a0' }}>
             {showKey ? <EyeOff size={13}/> : <Eye size={13}/>}
           </button>
         </div>
         <div className="v2-label-help" style={{ marginBottom: 12 }}>
           Get your key at <a href="https://dev.digicert.com/en/certcentral-apis/creating-an-api-key.html"
-            target="_blank" rel="noreferrer" style={{ color: 'var(--v2-text)', textDecoration: 'underline' }}>
+            target="_blank" rel="noreferrer" style={{ color: '#ffffff', textDecoration: 'underline' }}>
             dev.digicert.com</a>. Read-only scope is sufficient.
         </div>
         {error && <div className="v2-alert v2-alert-error" style={{ marginBottom: 10 }}>{error}</div>}
@@ -874,7 +874,7 @@ function DigiCertTab({ tok, nav }) {
       {/* Expiry timeline view */}
       {viewMode === 'timeline' && (
         <div className="v2-card" style={{ marginBottom: 16, padding: 16 }}>
-          <div style={{ fontSize:11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Expiry timeline</div>
+          <div style={{ fontSize:11, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>Expiry timeline</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
               { label: 'Expired',      certs: buckets.expired,  color: '#f87171', bg: 'rgba(192,57,43,0.12)' },
@@ -884,7 +884,7 @@ function DigiCertTab({ tok, nav }) {
               { label: 'Healthy > 90d', certs: buckets.healthy,  color: '#4ade80', bg: 'transparent' },
             ].map(({ label, certs, color, bg }) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 120, fontSize:11, color: 'var(--v2-text-2)', flexShrink: 0 }}>{label}</div>
+                <div style={{ width: 120, fontSize:11, color: '#e8e0d8', flexShrink: 0 }}>{label}</div>
                 <div style={{ flex: 1, height: 28, borderRadius: 6, background: 'var(--v2-surface-2)', overflow: 'hidden', position: 'relative' }}>
                   {certs.length > 0 && (
                     <div style={{ position: 'absolute', left: 0, top: 0, height: '100%',
@@ -904,15 +904,15 @@ function DigiCertTab({ tok, nav }) {
 
       {/* Search + filter bar */}
       <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflowX:'auto', WebkitOverflowScrolling:'touch', marginBottom:0 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 14px', borderBottom:'0.5px solid var(--v2-border)', flexWrap:'wrap' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)', flexWrap:'wrap' }}>
           {/* Search */}
           <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
-            <Search size={12} style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--v2-text-3)' }}/>
+            <Search size={12} style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: '#b0a8a0' }}/>
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search domain or product…"
               style={{ width: '100%', paddingLeft: 28, paddingRight: 10, height: 30, fontSize:12, borderRadius: 6,
-                border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', color: 'var(--v2-text)', outline: 'none' }}/>
-            {search && <button onClick={() => setSearch('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)', fontSize:14 }}>×</button>}
+                border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', color: '#ffffff', outline: 'none' }}/>
+            {search && <button onClick={() => setSearch('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#b0a8a0', fontSize:14 }}>×</button>}
           </div>
           {/* Status filter */}
           <div style={{ display: 'flex', gap: 4 }}>
@@ -939,23 +939,23 @@ function DigiCertTab({ tok, nav }) {
                 background: viewMode === 'timeline' ? 'var(--v2-green-bg)' : 'var(--v2-surface-2)',
                 color: viewMode === 'timeline' ? 'var(--v2-green-text)' : 'var(--v2-text-2)' }}>Timeline</button>
           </div>
-          <div style={{ fontSize:11, color: 'var(--v2-text-3)' }}>{filtered.length} of {portfolio.length}</div>
+          <div style={{ fontSize:11, color: '#b0a8a0' }}>{filtered.length} of {portfolio.length}</div>
         </div>
 
         {/* Table header */}
         <div style={{ display:'grid', gridTemplateColumns:'2fr 1.2fr 110px 90px 170px',minWidth:600,
-          padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid var(--v2-border)' }}>
+          padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
           {['Domain', 'Product', 'Expires', 'Status', 'Actions'].map(h => (
-            <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)', textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
+            <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
           ))}
         </div>
 
         {/* Table body */}
         <div style={{ maxHeight: 520, overflowY: 'auto' }}>
           {loadingPf && portfolio.length === 0 ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize:13 }}><Spinner/> Loading portfolio…</div>
+            <div style={{ padding: 40, textAlign: 'center', color: '#b0a8a0', fontSize:13 }}><Spinner/> Loading portfolio…</div>
           ) : filtered.length === 0 ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize:13 }}>
+            <div style={{ padding: 40, textAlign: 'center', color: '#b0a8a0', fontSize:13 }}>
               {portfolio.length === 0 ? 'Click "Sync from DigiCert" to load your portfolio.' : 'No certificates match your search.'}
             </div>
           ) : filtered.map((c, i) => {
@@ -969,10 +969,10 @@ function DigiCertTab({ tok, nav }) {
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-hover)'}
                 onMouseLeave={e => e.currentTarget.style.background = rowBg}
                 onClick={() => setSelected(c)}>
-                <div style={{ fontSize:12, fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', color: 'var(--v2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignSelf: 'center' }}>
+                <div style={{ fontSize:12, fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignSelf: 'center' }}>
                   {c.domain || '—'}
                 </div>
-                <div style={{ fontSize:11, color: 'var(--v2-text-2)', alignSelf: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize:11, color: '#e8e0d8', alignSelf: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {c.cert_type_detail || 'SSL'}
                 </div>
                 <div style={{ alignSelf: 'center' }}>
@@ -996,7 +996,7 @@ function DigiCertTab({ tok, nav }) {
                     DC ↗
                   </button>
                   <button onClick={() => setSelected(c)}
-                    style={{ fontSize:10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', color: 'var(--v2-text-2)', cursor: 'pointer', fontWeight: 500 }}>
+                    style={{ fontSize:10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)', color: '#e8e0d8', cursor: 'pointer', fontWeight: 500 }}>
                     Details
                   </button>
                 </div>
@@ -1090,7 +1090,7 @@ function SectigoTab({ tok }) {
               {key === 'pass' && (
                 <button onClick={() => setShowPass(v => !v)}
                   style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                    background: 'none', border: 'none', cursor: 'pointer', color: 'var(--v2-text-3)' }}>
+                    background: 'none', border: 'none', cursor: 'pointer', color: '#b0a8a0' }}>
                   {showPass ? <EyeOff size={13}/> : <Eye size={13}/>}
                 </button>
               )}
@@ -1134,7 +1134,7 @@ function SectigoTab({ tok }) {
       <div className="v2-card">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '10px 16px', borderBottom: '0.5px solid var(--v2-border)', background: 'var(--v2-surface-2)' }}>
-          <span style={{ fontSize:11, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+          <span style={{ fontSize:11, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
             Certificate inventory
           </span>
           <button className="v2-btn v2-btn-sm" onClick={syncInventory} disabled={syncing}
@@ -1145,15 +1145,15 @@ function SectigoTab({ tok }) {
         {syncError && <div className="v2-alert v2-alert-error" style={{ margin: 12 }}>{syncError}</div>}
         {inventory.length === 0 ? (
           <div style={{ padding:'min(40px,5vw) min(24px,4vw)', textAlign: 'center' }}>
-            <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 6 }}>Sectigo SCM connected</div>
-            <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>Click "Sync from Sectigo" to load your certificate inventory.</div>
+            <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff', marginBottom: 6 }}>Sectigo SCM connected</div>
+            <div style={{ fontSize:12, color: '#b0a8a0' }}>Click "Sync from Sectigo" to load your certificate inventory.</div>
           </div>
         ) : (
           <>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', minWidth:480,
               padding: '8px 16px', background: 'var(--v2-surface-2)', borderBottom: '0.5px solid var(--v2-border)' }}>
               {['Domain', 'Type', 'Expires', 'Status'].map(h => (
-                <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
+                <div key={h} style={{ fontSize:10, fontWeight: 700, color: '#b0a8a0',
                   textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
               ))}
             </div>
@@ -1165,12 +1165,12 @@ function SectigoTab({ tok }) {
                 return (
                   <div key={i} className={'v2-list-row status-' + s}
 style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 100px', minWidth:480, padding: '10px 16px', cursor: 'default' }}>
-                    <div style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace', color: 'var(--v2-text)',
+                    <div style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace', color: '#ffffff',
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignSelf: 'center' }}>
                       {c.commonName || c.cn || '—'}
                     </div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{c.type || c.certType || 'SSL'}</div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{fmt(expiry)}</div>
+                    <div style={{ fontSize:11, color: '#e8e0d8', alignSelf: 'center' }}>{c.type || c.certType || 'SSL'}</div>
+                    <div style={{ fontSize:11, color: '#e8e0d8', alignSelf: 'center' }}>{fmt(expiry)}</div>
                     <div style={{ alignSelf: 'center' }}><ExpiryBadge iso={expiry}/></div>
                   </div>
                 )
@@ -1248,10 +1248,10 @@ function ShadowITTab({ tok, nav }) {
           <Search size={17} strokeWidth={2} color="#e07060"/>
         </div>
         <div>
-          <h2 style={{ fontSize:16, fontWeight: 700, color: 'var(--v2-text)', margin: 0, letterSpacing: '-0.2px' }}>
+          <h2 style={{ fontSize:16, fontWeight: 700, color: '#ffffff', margin: 0, letterSpacing: '-0.2px' }}>
             Shadow IT Scanner
           </h2>
-          <p style={{ fontSize:12, color: 'var(--v2-text-3)', margin: '3px 0 0', lineHeight: 1.5 }}>
+          <p style={{ fontSize:12, color: '#b0a8a0', margin: '3px 0 0', lineHeight: 1.5 }}>
             Compares your DigiCert portfolio against SSLVault inventory. Finds certs issued outside your CLM — compliance risk, expiry blindspot.
           </p>
         </div>
@@ -1261,7 +1261,7 @@ function ShadowITTab({ tok, nav }) {
       <SectionCard style={{ marginBottom: 16 }}>
         <div className="v2-section-label" style={{ marginBottom: 12 }}>Run shadow scan</div>
         {conns.length === 0 ? (
-          <div style={{ fontSize:13, color: 'var(--v2-text-3)' }}>
+          <div style={{ fontSize:13, color: '#b0a8a0' }}>
             No active DigiCert connections found.{' '}
             <button onClick={() => nav('/integrations')} style={{ background: 'none', border: 'none', cursor: 'pointer',
               color: 'var(--v2-green)', fontSize:13, padding: 0, textDecoration: 'underline', fontFamily: 'inherit' }}>
@@ -1278,7 +1278,7 @@ function ShadowITTab({ tok, nav }) {
               </select>
             )}
             {conns.length === 1 && (
-              <div style={{ fontSize:12, color: 'var(--v2-text)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontSize:12, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80' }}/>
                 {conns[0].label || conns[0].ca_name}
               </div>
@@ -1290,7 +1290,7 @@ function ShadowITTab({ tok, nav }) {
                 display: 'flex', alignItems: 'center', gap: 6 }}>
               {scanning ? <><Spinner/> Scanning DigiCert…</> : <><Search size={12}/> Run Shadow Scan</>}
             </button>
-            <span style={{ fontSize:11, color: 'var(--v2-text-3)' }}>
+            <span style={{ fontSize:11, color: '#b0a8a0' }}>
               Compares your entire DigiCert order history vs SSLVault DB
             </span>
           </div>
@@ -1317,9 +1317,9 @@ function ShadowITTab({ tok, nav }) {
 
       {/* Shadow cert table */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)' }}>
+        <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>
           Shadow certificates
-          {!loading && <span style={{ fontSize:11, color: 'var(--v2-text-3)', marginLeft: 6,
+          {!loading && <span style={{ fontSize:11, color: '#b0a8a0', marginLeft: 6,
             background: shadows.length > 0 ? 'rgba(192,57,43,0.12)' : 'var(--v2-hover)',
             color: shadows.length > 0 ? '#f87171' : 'var(--v2-text-3)',
             padding: '1px 7px', borderRadius: 20, border: shadows.length > 0 ? '0.5px solid #fecaca' : '0.5px solid var(--v2-border)' }}>
@@ -1335,15 +1335,15 @@ function ShadowITTab({ tok, nav }) {
       <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
         {/* Table header */}
         <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 80px',minWidth:700,
-          padding:'8px 14px', borderBottom:'0.5px solid var(--v2-border)', background:'var(--v2-bg)' }}>
+          padding:'8px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)', background:'var(--v2-bg)' }}>
           {['Domain', 'Product', 'Ordered by', 'Expires', 'Urgency', ''].map(h => (
-            <div key={h} style={{ fontSize:10, fontWeight:600, color:'var(--v2-text-3)',
+            <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0',
               textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
           ))}
         </div>
 
         {loading ? (
-          <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize:13 }}>
+          <div style={{ padding: 40, textAlign: 'center', color: '#b0a8a0', fontSize:13 }}>
             <Spinner/><span style={{ marginLeft: 8 }}>Loading shadow findings…</span>
           </div>
         ) : shadows.length === 0 ? (
@@ -1353,10 +1353,10 @@ function ShadowITTab({ tok, nav }) {
               justifyContent: 'center', margin: '0 auto 12px' }}>
               <Shield size={20} color="var(--v2-text-3)"/>
             </div>
-            <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>
+            <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff', marginBottom: 4 }}>
               {result?.ok ? 'No shadow certs found — portfolio is fully accounted for.' : 'Run a scan to find shadow certificates.'}
             </div>
-            <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>
+            <div style={{ fontSize:12, color: '#b0a8a0' }}>
               {result?.ok ? 'Your DigiCert portfolio matches SSLVault exactly.' : 'Connect DigiCert and run a shadow scan above.'}
             </div>
           </div>
@@ -1368,15 +1368,15 @@ style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 80px', minWi
                 borderBottom: i < shadows.length - 1 ? '0.5px solid var(--v2-border)' : 'none', cursor: 'default' }}>
               <div>
                 <div style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace',
-                  color: 'var(--v2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {s.domain}
                 </div>
-                {s.org_name && <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginTop: 2 }}>{s.org_name}</div>}
+                {s.org_name && <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 2 }}>{s.org_name}</div>}
               </div>
-              <div style={{ fontSize:11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{s.product || '—'}</div>
-              <div style={{ fontSize:11, color: 'var(--v2-text-2)', alignSelf: 'center',
+              <div style={{ fontSize:11, color: '#e8e0d8', alignSelf: 'center' }}>{s.product || '—'}</div>
+              <div style={{ fontSize:11, color: '#e8e0d8', alignSelf: 'center',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.ordered_by || '—'}</div>
-              <div style={{ fontSize:11, color: 'var(--v2-text-2)', alignSelf: 'center' }}>{fmt(s.expires_at)}</div>
+              <div style={{ fontSize:11, color: '#e8e0d8', alignSelf: 'center' }}>{fmt(s.expires_at)}</div>
               <div style={{ alignSelf: 'center' }}>
                 <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
                   background: u.bg, color: u.color, border: `0.5px solid ${u.color}44` }}>{u.label}</span>
@@ -1446,10 +1446,10 @@ function ConsolidationTab({ tok, nav }) {
           <DollarSign size={17} strokeWidth={2} color="#16a34a"/>
         </div>
         <div>
-          <h2 style={{ fontSize:16, fontWeight: 700, color: 'var(--v2-text)', margin: 0, letterSpacing: '-0.2px' }}>
+          <h2 style={{ fontSize:16, fontWeight: 700, color: '#ffffff', margin: 0, letterSpacing: '-0.2px' }}>
             Consolidation Advisor
           </h2>
-          <p style={{ fontSize:12, color: 'var(--v2-text-3)', margin: '3px 0 0', lineHeight: 1.5 }}>
+          <p style={{ fontSize:12, color: '#b0a8a0', margin: '3px 0 0', lineHeight: 1.5 }}>
             Finds DV certificates at premium CAs that can be moved to RapidSSL to cut costs. Surfaces duplicate domains across CAs.
           </p>
         </div>
@@ -1460,7 +1460,7 @@ function ConsolidationTab({ tok, nav }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
           <div>
             <div className="v2-section-label" style={{ marginBottom: 4 }}>Cost analysis</div>
-            <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>
+            <div style={{ fontSize:12, color: '#b0a8a0' }}>
               Analyses your cross-CA portfolio for consolidation opportunities and duplicate certs.
             </div>
           </div>
@@ -1508,7 +1508,7 @@ function ConsolidationTab({ tok, nav }) {
       )}
 
       {loading ? (
-        <div style={{ padding: 40, textAlign: 'center', color: 'var(--v2-text-3)', fontSize:13 }}>
+        <div style={{ padding: 40, textAlign: 'center', color: '#b0a8a0', fontSize:13 }}>
           <Spinner/><span style={{ marginLeft: 8 }}>Loading opportunities…</span>
         </div>
       ) : opps.length === 0 ? (
@@ -1518,10 +1518,10 @@ function ConsolidationTab({ tok, nav }) {
             justifyContent: 'center', margin: '0 auto 12px' }}>
             <Check size={20} color="var(--v2-text-3)"/>
           </div>
-          <div style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)', marginBottom: 4 }}>
+          <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff', marginBottom: 4 }}>
             {result?.ok ? 'Portfolio already optimally consolidated.' : 'Run analysis to find cost-saving opportunities.'}
           </div>
-          <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>
+          <div style={{ fontSize:12, color: '#b0a8a0' }}>
             {result?.ok ? 'No cheaper alternatives found for your current certificates.' : 'Click "Run Analysis" above to scan your cross-CA portfolio.'}
           </div>
         </div>
@@ -1530,9 +1530,9 @@ function ConsolidationTab({ tok, nav }) {
           {/* CA Consolidation table */}
           {consolidation.length > 0 && (
             <>
-              <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 10 }}>
+              <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff', marginBottom: 10 }}>
                 CA Consolidation — move DV certs to RapidSSL
-                <span style={{ fontSize:11, fontWeight: 500, color: 'var(--v2-text-3)', marginLeft: 8 }}>
+                <span style={{ fontSize:11, fontWeight: 500, color: '#b0a8a0', marginLeft: 8 }}>
                   {consolidation.length} opportunity{consolidation.length !== 1 ? 'ies' : 'y'}
                 </span>
               </div>
@@ -1541,7 +1541,7 @@ function ConsolidationTab({ tok, nav }) {
                   padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)',
                   background: 'var(--v2-surface-2)' }}>
                   {['Domain', 'Current CA', 'Product', 'Expires', 'Saving/yr', ''].map(h => (
-                    <div key={h} style={{ fontSize:10, fontWeight: 700, color: 'var(--v2-text-3)',
+                    <div key={h} style={{ fontSize:10, fontWeight: 700, color: '#b0a8a0',
                       textTransform: 'uppercase', letterSpacing: '0.4px' }}>{h}</div>
                   ))}
                 </div>
@@ -1554,10 +1554,10 @@ function ConsolidationTab({ tok, nav }) {
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                     <div>
                       <div style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace',
-                        color: 'var(--v2-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {opp.domain}
                       </div>
-                      <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginTop: 2 }}>{opp.reason}</div>
+                      <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 2 }}>{opp.reason}</div>
                     </div>
                     <div>
                       <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
@@ -1567,8 +1567,8 @@ function ConsolidationTab({ tok, nav }) {
                         {opp.current_ca}
                       </span>
                     </div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>{opp.current_product || '—'}</div>
-                    <div style={{ fontSize:11, color: 'var(--v2-text-2)' }}>{fmt(opp.expires_at)}</div>
+                    <div style={{ fontSize:11, color: '#e8e0d8' }}>{opp.current_product || '—'}</div>
+                    <div style={{ fontSize:11, color: '#e8e0d8' }}>{fmt(opp.expires_at)}</div>
                     <div style={{ fontSize:14, fontWeight: 700, color: '#4ade80' }}>
                       ${(opp.estimated_saving_usd || 0).toFixed(0)}
                     </div>
@@ -1592,7 +1592,7 @@ function ConsolidationTab({ tok, nav }) {
           {/* Duplicates */}
           {duplicates.length > 0 && (
             <>
-              <div style={{ fontSize:13, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 10 }}>
+              <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff', marginBottom: 10 }}>
                 Duplicate domains across CAs
               </div>
               <div className="v2-card">
@@ -1602,8 +1602,8 @@ function ConsolidationTab({ tok, nav }) {
                     <AlertTriangle size={14} color="#e07060" style={{ flexShrink: 0 }}/>
                     <div style={{ flex: 1 }}>
                       <span style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace',
-                        color: 'var(--v2-text)' }}>{opp.domain}</span>
-                      <span style={{ fontSize:11, color: 'var(--v2-text-3)', marginLeft: 8 }}>{opp.reason}</span>
+                        color: '#ffffff' }}>{opp.domain}</span>
+                      <span style={{ fontSize:11, color: '#b0a8a0', marginLeft: 8 }}>{opp.reason}</span>
                     </div>
                     <button className="v2-btn v2-btn-sm" onClick={() => dismiss(opps.indexOf(opp))}>Dismiss</button>
                   </div>
@@ -1653,14 +1653,14 @@ export default function CAIntelligenceHub({ nav }) {
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
               <h1 className="v2-h1" style={{ fontSize:20, marginBottom:3 }}>CA Intelligence</h1>
-              <p style={{ fontSize:12, color:'var(--v2-text-3)', margin:0 }}>
+              <p style={{ fontSize:12, color:'#b0a8a0', margin:0 }}>
                 Unified certificate visibility across RapidSSL, DigiCert &amp; Sectigo
               </p>
             </div>
           </div>
 
           {/* Tab bar */}
-          <div style={{ display:'flex', gap:2, borderBottom:'0.5px solid var(--v2-border)', marginBottom:20 }}>
+          <div style={{ display:'flex', gap:2, borderBottom:'0.5px solid rgba(255,255,255,0.08)', marginBottom:20 }}>
             {TABS.map(({ id, label, dot, divider }) => (
               <div key={id} style={{ display:'flex', alignItems:'center' }}>
                 {divider && <div style={{ width:1, height:20, background:'var(--v2-border)', margin:'0 6px' }}/>}
@@ -1681,7 +1681,7 @@ export default function CAIntelligenceHub({ nav }) {
 
         {/* Content */}
         {!tok
-          ? <div style={{ textAlign:'center', padding:60, color:'var(--v2-text-3)', fontSize:13 }}>
+          ? <div style={{ textAlign:'center', padding:60, color:'#b0a8a0', fontSize:13 }}>
               <Spinner/><span style={{ marginLeft:8 }}>Loading session…</span>
             </div>
           : <>

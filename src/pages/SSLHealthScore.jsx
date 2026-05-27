@@ -88,7 +88,7 @@ function DomainRow({ score, onRescan, scanning }) {
         {/* Domain + score bar */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-            <span style={{ fontSize:13, fontWeight: 500, color: 'var(--v2-text)',
+            <span style={{ fontSize:13, fontWeight: 500, color: '#ffffff',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {score.domain}
             </span>
@@ -122,7 +122,7 @@ function DomainRow({ score, onRescan, scanning }) {
             Rescan
           </button>
         </div>
-        <div style={{ color: 'var(--v2-text-3)' }}>
+        <div style={{ color: '#b0a8a0' }}>
           {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </div>
       </div>
@@ -142,8 +142,8 @@ function DomainRow({ score, onRescan, scanning }) {
             { label: 'Last scanned',  val: timeAgo(score.scanned_at) },
           ].map(({ label, val }) => (
             <div key={label}>
-              <div style={{ fontSize:10, color: 'var(--v2-text-3)', marginBottom: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{label}</div>
-              <div style={{ fontSize:12, color: 'var(--v2-text)', fontWeight: 500 }}>{val}</div>
+              <div style={{ fontSize:10, color: '#b0a8a0', marginBottom: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{label}</div>
+              <div style={{ fontSize:12, color: '#ffffff', fontWeight: 500 }}>{val}</div>
             </div>
           ))}
           {score.error && (
@@ -219,7 +219,7 @@ export default function SSLHealthScore({ user }) {
           marginBottom: 20, paddingTop: 8, gap: 12 }}>
           <div>
             <h1 className="v2-h1" style={{ fontSize:22 }}>SSL health score</h1>
-            <p style={{ fontSize:13, color: 'var(--v2-text-3)', marginTop: 4 }}>
+            <p style={{ fontSize:13, color: '#b0a8a0', marginTop: 4 }}>
               Grade A–F across TLS reachability, HSTS, CAA records and expiry
             </p>
           </div>
@@ -234,14 +234,14 @@ export default function SSLHealthScore({ user }) {
         {scores.length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
             {[
-              { label: 'Domains', val: scores.length, color: 'var(--v2-text)' },
+              { label: 'Domains', val: scores.length, color: '#ffffff' },
               { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#f0ede8' : '#f87171' },
               { label: 'A / A+', val: (gradeCount['A'] || 0) + (gradeCount['A+'] || 0), color: '#4ade80' },
               { label: 'Need attention', val: issues.length, color: issues.length > 0 ? '#f87171' : '#4ade80' },
             ].map(({ label, val, color }) => (
               <div key={label} className="v2-card" style={{ padding: '12px 14px' }}>
                 <div style={{ fontSize:24, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
-                <div style={{ fontSize:11, color: 'var(--v2-text-3)', marginTop: 3 }}>{label}</div>
+                <div style={{ fontSize:11, color: '#b0a8a0', marginTop: 3 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -271,17 +271,17 @@ export default function SSLHealthScore({ user }) {
 
         {/* Domain list */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--v2-text-3)' }}>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: '#b0a8a0' }}>
             <RefreshCw size={24} style={{ animation: 'spin .8s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             Loading scores…
           </div>
         ) : scores.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 0' }}>
-            <Trophy size={32} style={{ color: 'var(--v2-text-3)', margin: '0 auto 12px', display: 'block' }} />
-            <div style={{ fontSize:14, fontWeight: 500, color: 'var(--v2-text-2)', marginBottom: 6 }}>
+            <Trophy size={32} style={{ color: '#b0a8a0', margin: '0 auto 12px', display: 'block' }} />
+            <div style={{ fontSize:14, fontWeight: 500, color: '#e8e0d8', marginBottom: 6 }}>
               No domains scanned yet
             </div>
-            <div style={{ fontSize:12, color: 'var(--v2-text-3)' }}>
+            <div style={{ fontSize:12, color: '#b0a8a0' }}>
               Enter a domain above to get your first SSL health grade.
             </div>
           </div>
@@ -290,7 +290,7 @@ export default function SSLHealthScore({ user }) {
             {scores.map(s => (
               <DomainRow key={s.id} score={s} onRescan={rescan} scanning={scanning} />
             ))}
-            <div style={{ fontSize:11, color: 'var(--v2-text-3)', textAlign: 'center', marginTop: 8 }}>
+            <div style={{ fontSize:11, color: '#b0a8a0', textAlign: 'center', marginTop: 8 }}>
               Grading: A+ (90–100) · A (80–89) · B (70–79) · C (60–69) · D (50–59) · F (&lt;50)
             </div>
           </div>

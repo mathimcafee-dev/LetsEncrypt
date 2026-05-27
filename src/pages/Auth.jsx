@@ -81,11 +81,11 @@ export default function Auth({ nav }) {
             <span className="v2-pulse" />
             <span style={{ fontSize:11, fontWeight:500, color:'#ff8c7a' }}>Free · Open · Trusted</span>
           </div>
-          <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, color:'var(--v2-text)',
+          <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, color:'#ffffff',
                         lineHeight:1.08, letterSpacing:'-1.4px', marginBottom:6 }}>One account.</h1>
           <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, lineHeight:1.08,
                         letterSpacing:'-1.4px', marginBottom:20, color:'#ff8c7a' }}>Every certificate.</h1>
-          <p style={{ fontSize:15, color:'var(--v2-text-2)', lineHeight:1.75, marginBottom:36, maxWidth:420 }}>
+          <p style={{ fontSize:15, color:'#e8e0d8', lineHeight:1.75, marginBottom:36, maxWidth:420 }}>
             Sign in to manage your certificates, set expiry alerts, and deploy with one click.
           </p>
           <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
@@ -96,14 +96,14 @@ export default function Auth({ nav }) {
                                display:'flex', alignItems:'center', justifyContent:'center',
                                flexShrink:0, color }}>{icon}</div>
                 <div>
-                  <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text)', marginBottom:2 }}>{title}</div>
-                  <div style={{ fontSize:12, color:'var(--v2-text-3)', lineHeight:1.55 }}>{desc}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginBottom:2 }}>{title}</div>
+                  <div style={{ fontSize:12, color:'#b0a8a0', lineHeight:1.55 }}>{desc}</div>
                 </div>
               </div>
             ))}
           </div>
           <div style={{ marginTop:36, paddingTop:24, borderTop:'0.5px solid var(--v2-border)',
-                        fontSize:11, color:'var(--v2-text-3)', lineHeight:1.6 }}>
+                        fontSize:11, color:'#b0a8a0', lineHeight:1.6 }}>
             Powered by RapidSSL · DigiCert trust chain · RFC 8555 ACME
           </div>
         </div>
@@ -118,10 +118,10 @@ export default function Auth({ nav }) {
                 <Shield size={18} color='#fff' />
               </div>
               <div>
-                <div style={{ fontSize:16, fontWeight:700, color:'var(--v2-text)', letterSpacing:'-0.3px' }}>
+                <div style={{ fontSize:16, fontWeight:700, color:'#ffffff', letterSpacing:'-0.3px' }}>
                   {mode === 'set_password' ? 'Set your password' : 'Sign in to SSLVault'}
                 </div>
-                <div style={{ fontSize:12, color:'var(--v2-text-3)' }}>
+                <div style={{ fontSize:12, color:'#b0a8a0' }}>
                   {mode === 'set_password' ? 'Choose a password to activate your account' : 'Welcome back'}
                 </div>
               </div>
@@ -143,7 +143,7 @@ export default function Auth({ nav }) {
                 <button onClick={() => setShowPw(v => !v)}
                   style={{ position:'absolute', right:11, top:'50%', transform:'translateY(-50%)',
                             background:'none', border:'none', cursor:'pointer',
-                            color:'var(--v2-text-3)', padding:2, display:'flex' }}>
+                            color:'#b0a8a0', padding:2, display:'flex' }}>
                   {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
@@ -169,11 +169,11 @@ export default function Auth({ nav }) {
                 : <>{mode === 'set_password' ? 'Set password & continue' : 'Sign in'} <ArrowRight size={13} /></>}
             </button>
 
-            <div style={{ textAlign:'center', fontSize:13, color:'var(--v2-text-3)' }}>
+            <div style={{ textAlign:'center', fontSize:13, color:'#b0a8a0' }}>
               New to SSLVault?{' '}
               <button onClick={() => nav('/auth')}
                 style={{ background:'none', border:'none', cursor:'pointer',
-                          color:'var(--v2-text)', fontWeight:600, fontSize:13,
+                          color:'#ffffff', fontWeight:600, fontSize:13,
                           padding:0, textDecoration:'underline', textUnderlineOffset:2 }}>
                 Contact us to get access
               </button>
@@ -181,7 +181,7 @@ export default function Auth({ nav }) {
           </div>
 
           <div style={{ marginTop:14, display:'flex', alignItems:'center', gap:7,
-                        justifyContent:'center', fontSize:11, color:'var(--v2-text-3)' }}>
+                        justifyContent:'center', fontSize:11, color:'#b0a8a0' }}>
             <Lock size={10} />
             Encrypted at rest · Private keys never uploaded · Row-level security
           </div>
