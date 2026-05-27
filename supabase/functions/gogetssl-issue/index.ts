@@ -503,11 +503,19 @@ serve(async (req) => {
           fingerprint_sha1: statusRes.md5           || null,
           common_name:      statusRes.common_name   || order.domain,
           private_key_pem:  null,                    // never stored here — use KeyLocker fetch
-          keylocker_key_id: order.keylocker_key_id || null,  // link to encrypted vault entry
           dcv_method:       'dns',
           san:              order.domain,
           updated_at:       new Date().toISOString(),
         }, { onConflict: 'user_id,domain' })
+
+        // If this order has a KeyLocker key, link it to the cert row now.
+        // Do NOT set keylocker_key_id inside the upsert — that would null it out for legacy orders
+        // that have no keylocker entry, wiping an existing vault link on the cert row.
+        if (order.keylocker_key_id) {
+          await adminDb().from('certificates')
+            .update({ keylocker_key_id: order.keylocker_key_id })
+            .eq('user_id', user.id).eq('domain', order.domain)
+        }
 
         // Update the KeyLocker vault entry with the cert_id now that the cert row exists
         if (order.keylocker_key_id) {
@@ -776,13 +784,11 @@ serve(async (req) => {
             updated_at: new Date().toISOString(),
           }).eq('id', order.id)
 
-          // Get private key from keylocker if needed
-          let privateKeyPem = order.private_key_pem || null
-          if (!privateKeyPem && order.keylocker_key_id) {
-            const { data: kl } = await adminDb()
-              .from('keylocker_keys').select('private_key_pem').eq('id', order.keylocker_key_id).single()
-            privateKeyPem = kl?.private_key_pem || null
-          }
+          // Get private key — only plain-text fallback (legacy orders before KeyLocker).
+          // For KeyLocker orders, the key stays null here; agent / cpanel-install fetch it
+          // at install time via keylocker_key_id. NEVER read private_key_pem from keylocker_keys —
+          // that table stores AES-encrypted ciphertext, not the plaintext.
+          const privateKeyPem = order.private_key_pem || null
 
           // Find the certificate row linked to this domain/user
           const { data: cert } = await adminDb()
@@ -834,10 +840,11 @@ serve(async (req) => {
                 }
               }
             } else if (cert.install_method === 'cpanel' && cert.install_server_id) {
+              // Use service role key — cpanel-install accepts it and trusts user_id from body
               fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-                body: JSON.stringify({ action: 'install', cert_id: cert.id, domain: order.domain, credential_id: cert.install_server_id }),
+                body: JSON.stringify({ action: 'install', cert_id: cert.id, domain: order.domain, credential_id: cert.install_server_id, _service_user_id: cert.user_id }),
               }).catch((e: any) => console.warn('cpanel-install (non-fatal):', e.message))
             }
           }

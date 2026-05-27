@@ -304,9 +304,13 @@ async function processCert(cert: Certificate): Promise<{ status: 'renewed' | 'fa
 
   await logEvent(cert.id, cert.user_id, 'renewal_started', { domain: cert.domain, is_sandbox: cert.is_sandbox })
 
-  const result = cert.is_sandbox
-    ? await renewSandboxTss(cert)
-    : await renewAcme(cert)
+  // Sandbox TSS certs (is_sandbox=true) are legacy test certs — TSS endpoint is decommissioned.
+  // GoGetSSL live certs are handled separately via the poll_pending call at the bottom of this cron.
+  // ACME-based certs (is_sandbox=false, no ggs_order_id) use the renewAcme path.
+  if (cert.is_sandbox) {
+    return { status: 'skipped', reason: 'sandbox_tss_decommissioned' }
+  }
+  const result = await renewAcme(cert)
 
   if (result.ok) {
     await logEvent(cert.id, cert.user_id, 'renewal_succeeded', {
