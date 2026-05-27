@@ -238,8 +238,14 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
       const ir = await callInstall(payload, tok)
 
       if (!ir.ok) {
+        // Build detailed error showing exact cPanel response
+        const debugStr = ir.debug ? JSON.stringify(ir.debug, null, 2) : ''
+        const s3raw = ir.debug?.s3_install?.raw || ''
+        const s4raw = ir.debug?.s4_reinstall?.raw || ''
+        const s5raw = ir.debug?.s5_api2?.raw || ''
+        const detailMsg = s3raw || s4raw || s5raw || debugStr || ir.error || 'Installation failed'
         setStep('install', 'error', ir.error || 'Installation failed')
-        setErrMsg(ir.error || 'Installation failed')
+        setErrMsg(detailMsg)
         setBusy(false); setPhase('error'); return
       }
 
