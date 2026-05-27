@@ -98,8 +98,20 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get('Authorization') || ''
-    const db = userDb(authHeader)
-    const { data: { user } } = await db.auth.getUser()
+    const body0 = await req.clone().json().catch(() => ({}))
+
+    // Support service-role calls from poll_pending (cron/automation context).
+    // In that case the caller passes _service_user_id in the body and uses the service role key.
+    const isServiceRole = authHeader.includes(SB_SERVICE.slice(0,20)) ||
+      (body0._service_user_id && authHeader.startsWith('Bearer '))
+    let user: { id: string } | null = null
+    if (isServiceRole && body0._service_user_id) {
+      user = { id: body0._service_user_id }
+    } else {
+      const db = userDb(authHeader)
+      const { data: { user: u } } = await db.auth.getUser()
+      user = u
+    }
     if (!user) return json({ ok: false, error: 'Unauthorized' }, 401)
 
     const body = await req.json()

@@ -6,7 +6,10 @@ const json = (d: unknown, s = 200) => new Response(JSON.stringify(d), { status: 
 
 const SB_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-const MASTER_SECRET = Deno.env.get('KEYLOCKER_MASTER_SECRET') || 'default-dev-secret-change-in-prod'
+const MASTER_SECRET = Deno.env.get('KEYLOCKER_MASTER_SECRET') || ''
+if (!MASTER_SECRET) {
+  console.error('[certvault] FATAL: KEYLOCKER_MASTER_SECRET env var is not set. All encrypt/decrypt operations will fail.')
+}
 
 function adminDb() { return createClient(SB_URL, SERVICE_KEY) }
 
