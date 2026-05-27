@@ -4,10 +4,10 @@ import { supabase } from '../lib/supabase'
 // ── Resend.com design tokens — pure black/white ────────────────────────
 const F    = "'Montserrat',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const BG   = '#0d0000'   // page background
-const BG2  = '#080000'   // alt section background
-const BG3  = '#160a08'   // card surface
-const BG4  = '#1f1210'   // deep card / input
+const BG   = '#1a0000'   // page background
+const BG2  = '#150000'   // alt section background
+const BG3  = '#220808'   // card surface
+const BG4  = '#2d0f0f'   // deep card / input
 const T1   = '#f0ede8'   // heading text
 const T2   = 'rgba(240,237,232,0.7)'   // body text
 const T3   = 'rgba(240,237,232,0.4)'  // muted text

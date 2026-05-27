@@ -3,9 +3,9 @@
 :root {
   --f:       'Montserrat', system-ui, sans-serif;
   --mono:    'JetBrains Mono', monospace;
-  --page:    #0d0000;
-  --surface: #160a08;
-  --alt:     #1f1210;
+  --page:    #1a0000;
+  --surface: #220808;
+  --alt:     #2d0f0f;
   --dark:    #f0ede8;
   --dark2:   #c9c0bb;
   --line:    rgba(192,57,43,0.2);
