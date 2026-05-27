@@ -748,11 +748,21 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   serialNumber = newCert?.[0]?.serial_number || null
                   if (newCert?.[0]?.id) dispatchCertId = newCert[0].id
                 } else {
-                  const { data: certRow } = await supabase
-                    .from('certificates')
-                    .select('id, install_method, serial_number')
-                    .eq('id', cert.id)
-                    .single()
+                  // For reissues: poll DB until serial_number changes from old value
+                  // poll_pending updates serial_number when the new cert activates
+                  const oldSerial = cert.serial_number || null
+                  let certRow = null
+                  for (let attempt = 0; attempt < 10; attempt++) {
+                    const { data: row } = await supabase
+                      .from('certificates')
+                      .select('id, install_method, serial_number, updated_at')
+                      .eq('id', cert.id)
+                      .single()
+                    certRow = row
+                    // If serial changed or no old serial to compare, we have fresh data
+                    if (row?.serial_number && row.serial_number !== oldSerial) break
+                    if (attempt < 9) await new Promise(r => setTimeout(r, 3000))
+                  }
                   method = certRow?.install_method
                   serialNumber = certRow?.serial_number || null
                 }
@@ -835,6 +845,27 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               })
               loadHistory()
               setBusy(false)
+
+              // ── Re-fetch serial from DB after install ─────────────────────
+              // The serial shown in the success modal must be the LATEST cert
+              // from DB — poll_pending may have just updated it.
+              // We query by domain + user + most recent, not by cert.id,
+              // because for reissues the cert row's serial_number gets updated
+              // by poll_pending after the new cert is issued by GGS.
+              try {
+                const { data: freshCert } = await supabase
+                  .from('certificates')
+                  .select('serial_number, cert_pem')
+                  .eq('user_id', session.user.id)
+                  .eq('domain', cert.domain)
+                  .eq('status', 'active')
+                  .order('updated_at', { ascending: false })
+                  .limit(1)
+                  .single()
+                if (freshCert?.serial_number) {
+                  setModalSerial(freshCert.serial_number)
+                }
+              } catch(e) { console.warn('Serial re-fetch failed:', e) }
 
               // ── Live TLS probe — real serial + HTTPS verification ──────────
               // For cPanel: small delay for install to apply
