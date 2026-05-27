@@ -650,8 +650,29 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       // For renew: poll by new GGS order ID (from d.ggs_order_id)
       // For reissue: poll by domain + latest order
       const pollStart = Date.now()
+      let lastGgsCheck = 0
       const timer = setInterval(async () => {
         try {
+          // Every 30s: actively call check_status to force GGS->DB sync
+          // Needed because GGS API lags behind actual cert issuance
+          if (Date.now() - lastGgsCheck >= 30000) {
+            lastGgsCheck = Date.now()
+            try {
+              const { data: chkOrders } = await supabase
+                .from('ssl_orders').select('id')
+                .eq('user_id', session.user.id).eq('domain', cert.domain)
+                .order('created_at', { ascending: false }).limit(1)
+              const chkOrderId = chkOrders?.[0]?.id
+              if (chkOrderId) {
+                await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
+                  body: JSON.stringify({ action: 'check_status', order_id: chkOrderId })
+                })
+              }
+            } catch {}
+          }
+
           let latest = null
           if (!isReissue && newGgsOrderId) {
             // Renew: poll by exact new GGS order ID
