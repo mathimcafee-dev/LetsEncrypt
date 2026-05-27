@@ -50,11 +50,24 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
     return data
   }
 
-  // Initial load: list agents
+  // Initial load: check for cpanel credential first, then list agents
   useEffect(() => {
     if (!userId) return
     ;(async () => {
       try {
+        // Check if domain has a saved cPanel server — if so, skip straight to cPanel wizard
+        const { data: cpanelCreds } = await supabase
+          .from('server_credentials')
+          .select('id, server_type')
+          .eq('user_id', userId)
+          .contains('domains', [cert.domain])
+          .in('server_type', ['cpanel', 'shared'])
+          .limit(1)
+        if (cpanelCreds?.length > 0 && onOpenCpanel) {
+          onOpenCpanel()
+          return
+        }
+        // No cpanel cred — list VPS agents as usual
         const data = await callDaemon({ action: 'list_agents', user_id: userId })
         const list = data.agents || []
         setAgents(list)
