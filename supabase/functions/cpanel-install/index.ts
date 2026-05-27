@@ -65,20 +65,20 @@ async function cpanelFetch(
 
 // ── Install AND activate SSL certificate on cPanel domain ────────────
 //
-// cPanel has two APIs. We use BOTH to guarantee activation:
+// The correct flow to replace an active cert (even Let's Encrypt):
 //
-//   Step 1 — WHM API1 style via json-api (API2 SSL::installssl)
-//     The ORIGINAL activation call. Binds cert+key to the Apache vhost.
-//     This is exactly what cPanel's own UI does when you click "Install".
-//     Endpoint: /json-api/cpanel?cpanel_jsonapi_version=2&cpanel_jsonapi_module=SSL&cpanel_jsonapi_func=installssl
-//     Params: domain, user (cpanel username), crt, key, cab
+//   Step 1 — Disable AutoSSL for domain (stops LE from fighting us)
+//     UAPI SSL/disable_autossl_for_domain
 //
-//   Step 2 — UAPI SSL/install_ssl (backup / modern cPanel)
-//     For newer cPanel versions that deprecated API2.
-//     Endpoint: /execute/SSL/install_ssl
-//     Params: domain, cert, key, cabundle
+//   Step 2 — UAPI SSL/install_ssl (THE activation call)
+//     This is the same call cPanel's "Update Certificate" button triggers.
+//     Replaces whatever cert is currently active on the domain vhost.
+//     Returns full errors — we check status === 1 strictly.
 //
-//   Step 3 — UAPI SSL/rebuild_mail_sni (non-fatal)
+//   Step 3 — Verify: UAPI SSL/fetch_ssl_vhost
+//     Confirm the new cert is actually serving by checking the issuer.
+//
+//   Step 4 — UAPI SSL/rebuild_mail_sni (non-fatal)
 //     Activates cert for mail services.
 //
 async function cpanelInstallSSL(
@@ -93,95 +93,77 @@ async function cpanelInstallSSL(
 ): Promise<{ ok: boolean; error?: string; debug?: Record<string, any> }> {
 
   const debug: Record<string, any> = {}
-  let activated = false
 
-  // ── Step 1: API2 SSL/installssl — primary activation ─────────────
-  // This is the definitive cPanel cert activation call.
-  // It both stores AND binds the cert to the domain vhost in one shot.
+  // ── Step 1: Disable AutoSSL for domain ───────────────────────────
+  // Prevents Let's Encrypt AutoSSL from overriding our cert immediately.
   try {
-    const api2Params = new URLSearchParams({
-      cpanel_jsonapi_version: '2',
-      cpanel_jsonapi_module:  'SSL',
-      cpanel_jsonapi_func:    'installssl',
-      domain,
-      user:    username,
-      crt:     certPem,
-      key:     keyPem,
-      cab:     caBundlePem,
-    })
-    const api2Data = await cpanelFetch(
+    const autoSslParams = new URLSearchParams({ domain })
+    const autoSslData = await cpanelFetch(
       host, port, username, apiToken,
-      `https://${host}:${port}/json-api/cpanel`,
-      api2Params
+      `https://${host}:${port}/execute/SSL/disable_autossl_for_domain`,
+      autoSslParams
     )
-    debug.s1_api2 = { raw: JSON.stringify(api2Data).slice(0, 600) }
-
-    // API2 response shape: { cpanelresult: { data: [{ result: 1, reason: "OK" }], error: "" } }
-    const cpResult  = api2Data?.cpanelresult
-    const dataItem  = cpResult?.data?.[0]
-    const api2Err   = cpResult?.error || (dataItem?.result === 0 ? dataItem?.reason : null)
-    const api2Ok    = dataItem?.result === 1 || (!api2Err && cpResult?.event?.result === 1)
-
-    debug.s1_api2_parsed = { result: dataItem?.result, reason: dataItem?.reason, err: api2Err, ok: api2Ok }
-
-    if (api2Ok) {
-      activated = true
-      console.log('[cpanel-install] API2 installssl succeeded')
-    } else {
-      console.warn('[cpanel-install] API2 installssl failed:', api2Err)
-      debug.s1_api2_warning = api2Err
-    }
+    debug.s1_disable_autossl = { status: autoSslData?.result?.status, errors: autoSslData?.result?.errors }
   } catch (e: any) {
-    debug.s1_api2 = { error: e.message }
-    console.warn('[cpanel-install] Step 1 API2 error:', e.message)
+    // Non-fatal — older cPanel versions may not have this endpoint
+    debug.s1_disable_autossl = `non-fatal: ${e.message}`
   }
 
-  // ── Step 2: UAPI SSL/install_ssl — fallback / modern cPanel ──────
-  // Try regardless — some cPanel versions need this instead of API2.
-  // Also serves as a second activation attempt if API2 failed.
+  // ── Step 2: UAPI SSL/install_ssl — activate cert on domain ───────
+  // This is the definitive activation call that replaces the active cert.
+  // Same as clicking "Update Certificate" in cPanel's SSL/TLS Installation UI.
+  let installData: any
   try {
-    const uapiParams = new URLSearchParams({
+    const installParams = new URLSearchParams({
       domain,
       cert:     certPem,
       key:      keyPem,
       cabundle: caBundlePem,
     })
-    const uapiData = await cpanelFetch(
+    installData = await cpanelFetch(
       host, port, username, apiToken,
       `https://${host}:${port}/execute/SSL/install_ssl`,
-      uapiParams
+      installParams
     )
-    debug.s2_uapi = { raw: JSON.stringify(uapiData).slice(0, 400) }
-
-    const uapiStatus = uapiData?.result?.status ?? uapiData?.status
-    const uapiErrors = uapiData?.result?.errors ?? uapiData?.errors ?? []
-    const uapiErr    = Array.isArray(uapiErrors) && uapiErrors.length > 0 ? uapiErrors[0] : null
-
-    debug.s2_uapi_parsed = { status: uapiStatus, error: uapiErr }
-
-    if (uapiStatus === 1 || uapiStatus === true) {
-      activated = true
-      console.log('[cpanel-install] UAPI install_ssl succeeded')
-    } else if (!activated) {
-      // Only treat as fatal if API2 also failed
-      return {
-        ok: false,
-        error: uapiErr || `Both API2 and UAPI install failed. Full debug: ${JSON.stringify(debug)}`,
-        debug,
-      }
-    }
+    debug.s2_install = { raw: JSON.stringify(installData).slice(0, 600) }
   } catch (e: any) {
-    debug.s2_uapi = { error: e.message }
-    if (!activated) {
-      return { ok: false, error: `cPanel install failed: ${e.message}. Debug: ${JSON.stringify(debug)}`, debug }
-    }
+    return { ok: false, error: `SSL install_ssl call failed: ${e.message}`, debug }
   }
 
-  if (!activated) {
-    return { ok: false, error: `Certificate was not activated. Debug: ${JSON.stringify(debug)}`, debug }
+  // Strict status check — status must be exactly 1
+  const installStatus = installData?.result?.status
+  const installErrors = installData?.result?.errors ?? []
+  const installErr    = Array.isArray(installErrors) && installErrors.length > 0
+    ? installErrors.join('; ')
+    : null
+
+  debug.s2_install_parsed = { status: installStatus, error: installErr }
+
+  if (installStatus !== 1) {
+    const errMsg = installErr || `install_ssl returned status ${installStatus}. Full response: ${JSON.stringify(installData).slice(0, 400)}`
+    return { ok: false, error: errMsg, debug }
   }
 
-  // ── Step 3: UAPI SSL/rebuild_mail_sni — activate for mail (non-fatal) ──
+  // ── Step 3: Verify cert is now active ────────────────────────────
+  // Fetch the active cert details to confirm it's no longer Let's Encrypt.
+  try {
+    await new Promise(r => setTimeout(r, 2000)) // brief pause for Apache to reload
+    const verifyParams = new URLSearchParams({ domain })
+    const verifyData = await cpanelFetch(
+      host, port, username, apiToken,
+      `https://${host}:${port}/execute/SSL/fetch_ssl_vhost`,
+      verifyParams
+    )
+    const vhost   = verifyData?.result?.data
+    const issuer  = vhost?.issuer || vhost?.certificate?.issuer || 'unknown'
+    const subject = vhost?.subject || vhost?.certificate?.subject || ''
+    debug.s3_verify = { issuer, subject, raw: JSON.stringify(verifyData).slice(0, 300) }
+    console.log('[cpanel-install] Active cert issuer after install:', issuer)
+  } catch (e: any) {
+    debug.s3_verify = `non-fatal: ${e.message}`
+  }
+
+  // ── Step 4: rebuild_mail_sni (non-fatal) ─────────────────────────
   try {
     const mailParams = new URLSearchParams({ domain })
     const mailData = await cpanelFetch(
@@ -189,9 +171,9 @@ async function cpanelInstallSSL(
       `https://${host}:${port}/execute/SSL/rebuild_mail_sni`,
       mailParams
     )
-    debug.s3_mail_sni = { status: mailData?.result?.status }
+    debug.s4_mail_sni = { status: mailData?.result?.status }
   } catch (e: any) {
-    debug.s3_mail_sni = `non-fatal: ${e.message}`
+    debug.s4_mail_sni = `non-fatal: ${e.message}`
   }
 
   return { ok: true, debug }
