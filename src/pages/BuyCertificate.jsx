@@ -152,13 +152,28 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     if (step !== 'dv' || !ord?.order_id) return
     let n = 0
     let dnsAttempted = false
+    // Immediate check on mount — don't wait 5s if cert already issued
+    ;(async () => {
+      try {
+        const s = await call('check_status', { order_id: ord.order_id })
+        if (s.status === 'active' || s.status === 'issued' || s.ggs_status === 'active') { setStep('done'); return }
+        if (s.dcv_txt_value || s.dcv_cname_value) {
+          setOrd(p => ({ ...p,
+            dcv_txt_name:   s.dcv_txt_name   || s.dcv_cname_name  || p.dcv_txt_name,
+            dcv_txt_value:  s.dcv_txt_value  || s.dcv_cname_value || p.dcv_txt_value,
+            dcv_cname_name: s.dcv_cname_name || p.dcv_cname_name,
+            dcv_cname_value:s.dcv_cname_value|| p.dcv_cname_value,
+          }))
+        }
+      } catch {}
+    })()
     const iv = setInterval(async () => {
       n++
       try {
         const s = await call('check_status', { order_id: ord.order_id })
 
         // Cert issued — go to done
-        if (s.status === 'active' || s.status === 'issued') { setStep('done'); clearInterval(iv); return }
+        if (s.status === 'active' || s.status === 'issued' || s.ggs_status === 'active') { setStep('done'); clearInterval(iv); return }
 
         // Got DCV values — update UI
         if (s.dcv_txt_value || s.dcv_cname_value) {
@@ -230,7 +245,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       dcv_txt_value: r.dcv_txt_value || r.dcv_cname_value,
     }
     setOrd(ordData)
-    if (r.auto_issued || r.status === 'active') {
+    if (r.auto_issued || r.status === 'active' || r.status === 'issued') {
       setStep('done')
     } else {
       setStep('dv')
@@ -242,7 +257,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     setChk(true); setRes(null)
     const r = await call('check_status', { order_id: ord.order_id })
     setChk(false); setRes(r)
-    if (r.status === 'active' || r.status === 'issued') setStep('done')
+    if (r.status === 'active' || r.status === 'issued' || r.ggs_status === 'active') setStep('done')
     if (r.dcv_txt_value || r.dcv_cname_value) setOrd(p => ({ ...p,
       dcv_txt_name:    r.dcv_txt_name    || r.dcv_cname_name,
       dcv_txt_value:   r.dcv_txt_value   || r.dcv_cname_value,
@@ -307,7 +322,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       <div style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)',
         padding: '0 32px', display: embedded ? 'none' : 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg,#c0392b,#1a56db)',
+          <div style={{ width: 28, height: 28, background: '#c0392b',
             borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Shield size={14} color="white"/>
           </div>
@@ -637,12 +652,12 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(52,211,153,0.1)',
                 border: '0.5px solid rgba(52,211,153,0.3)', borderRadius: 7, padding: '10px 18px',
-                fontSize:13, color: '#ff8c7a', fontWeight: 500 }}>
-                <RefreshCw size={13} className="spin"/> DNS validated via {ord.dns_provider || 'provider'} — auto-checking every 5s, certificate will appear automatically
+                fontSize:13, color: '#4ade80', fontWeight: 500 }}>
+                <RefreshCw size={13} className="spin" style={{color:'#4ade80'}}/> DNS record added via {ord.dns_provider || 'provider'} · checking every 5s…
               </div>
             ) : (
               <button onClick={addDns} disabled={dns || !(ord.dcv_txt_value || ord.dcv_cname_value)}
-                style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#f0ede8',
+                style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#c0392b',
                   color: '#ffffff', border: 'none', borderRadius: 7, padding: '10px 18px',
                   fontSize:13, fontWeight: 600, cursor: dns || !(ord.dcv_txt_value || ord.dcv_cname_value) ? 'not-allowed' : 'pointer',
                   opacity: !(ord.dcv_txt_value || ord.dcv_cname_value) ? 0.4 : 1, fontFamily: 'inherit' }}>
@@ -663,9 +678,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           </button>
         </div>
 
-        <div style={{ background: 'rgba(14,127,192,0.08)', border: '0.5px solid rgba(14,127,192,0.2)',
+        <div style={{ background: 'rgba(192,57,43,0.08)', border: '0.5px solid rgba(192,57,43,0.2)',
           borderRadius: 8, padding: '12px 16px', display: 'flex', gap: 10 }}>
-          <Zap size={14} style={{ color: '#ffffff', flexShrink: 0, marginTop: 1 }}/>
+          <Zap size={14} style={{ color: '#ff8c7a', flexShrink: 0, marginTop: 1 }}/>
           <div style={{ fontSize:12, color: '#b5aea8', lineHeight: 1.6 }}>
             <strong style={{ color: '#b0a8a0' }}>Fully automatic:</strong> If your DNS provider is connected under{' '}
             <strong style={{ color: '#b0a8a0' }}>More → DNS Providers</strong>, click{' '}
@@ -703,7 +718,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
           <button onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              background: 'linear-gradient(135deg,#c0392b,#1a56db)', color: '#ffffff',
+              background: '#c0392b', color: '#ffffff',
               border: 'none', borderRadius: 8, padding: '13px', fontSize:14,
               fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
             <Server size={15}/> Go to Dashboard
