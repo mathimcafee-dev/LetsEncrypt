@@ -604,6 +604,44 @@ serve(async (req) => {
         .single()
       if (!cert) return json({ error: 'Certificate not found' }, 404)
 
+      // ── Guard: block if a reissue is already pending for this cert ──────────
+      // GoGetSSL rejects a second reissue while the first is still pending.
+      // Check our cert_reissues table first — auto-complete any stale rows where
+      // the GGS order is already active/issued so we don't block unnecessarily.
+      const { data: pendingReissues } = await adminDb()
+        .from('cert_reissues')
+        .select('id, new_ggs_order_id, created_at')
+        .eq('cert_id', cert_id)
+        .eq('status', 'dv_pending')
+        .order('created_at', { ascending: false })
+
+      if (pendingReissues && pendingReissues.length > 0) {
+        // Check GGS status on each pending reissue — if already active, auto-complete them
+        const authKeyCheck = await ggsAuth()
+        let allResolved = true
+        for (const pr of pendingReissues) {
+          if (!pr.new_ggs_order_id) continue
+          try {
+            const st = await ggsGet(authKeyCheck, `/orders/status/${pr.new_ggs_order_id}`)
+            if (st.status === 'active' || st.status === 'issued') {
+              // GGS order is done — mark our row completed
+              await adminDb().from('cert_reissues')
+                .update({ status: 'completed', installed_at: new Date().toISOString() })
+                .eq('id', pr.id)
+            } else {
+              // Still genuinely pending on GGS side
+              allResolved = false
+            }
+          } catch { allResolved = false }
+        }
+        if (!allResolved) {
+          return json({
+            error: 'A reissue is already in progress for this certificate. Please wait for it to complete before requesting another.',
+            code: 'REISSUE_IN_PROGRESS',
+          }, 409)
+        }
+      }
+
       const { data: order } = await adminDb()
         .from('ssl_orders')
         .select('*')
@@ -849,9 +887,9 @@ serve(async (req) => {
             }
           }
 
-          // Mark cert_reissues row as completed
+          // Mark cert_reissues row as completed (column is installed_at, not completed_at)
           await adminDb().from('cert_reissues')
-            .update({ status: 'completed', completed_at: new Date().toISOString() })
+            .update({ status: 'completed', installed_at: new Date().toISOString() })
             .eq('new_ggs_order_id', order.ggs_order_id)
             .eq('status', 'dv_pending')
 

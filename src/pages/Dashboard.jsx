@@ -602,7 +602,11 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       })
 
       if (!fetchOk) {
-        const errMsg = fetchErr || (fetchData === null ? 'GGS request timed out — the certificate may still be issuing. Refresh in 2 minutes.' : 'Request failed')
+        // Special case: reissue blocked because one is already in progress
+        const isInProgress = fetchData?.code === 'REISSUE_IN_PROGRESS'
+        const errMsg = isInProgress
+          ? 'A reissue is already in progress for this certificate. Please wait a few minutes for it to complete, then try again.'
+          : fetchErr || (fetchData === null ? 'GGS request timed out — the certificate may still be issuing. Refresh in 2 minutes.' : fetchData?.error || 'Request failed')
         setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: errMsg }) }))
         setMsg(''); setBusy(false); return
       }
@@ -799,12 +803,14 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                       .eq('agent_id', row.agent_id).eq('cert_id', dispatchCertId)
                       .in('status', ['queued', 'claimed']).maybeSingle()
                     if (!existing) {
-                      const { data: certData } = await supabase.from('certificates').select('cert_pem, ca_pem').eq('id', dispatchCertId).single()
-                      const { data: keyData } = await supabase.from('keylocker_keys').select('private_key_pem').eq('cert_id', dispatchCertId).single()
+                      const { data: certData } = await supabase.from('certificates').select('cert_pem, ca_pem, keylocker_key_id').eq('id', dispatchCertId).single()
+                      // Note: keylocker_keys stores AES-encrypted key material, never plain text.
+                      // The agent daemon fetches the key itself via keylocker edge fn at execution time.
+                      // We pass cert_pem and keylocker_key_id so the agent has everything it needs.
                       await supabase.from('agent_jobs').insert({
                         agent_id: row.agent_id, user_id: session.user.id, cert_id: dispatchCertId,
                         job_type: isReissue ? 'reissue' : 'renew', status: 'queued',
-                        cert_pem: certData?.cert_pem || '', key_pem: keyData?.private_key_pem || '',
+                        cert_pem: certData?.cert_pem || '', key_pem: '',
                         domain: cert.domain,
                       })
                     }
