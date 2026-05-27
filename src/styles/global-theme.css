@@ -1,46 +1,46 @@
-/* SSLVault Global Theme v6 — Warm Cream / Forest / Sienna */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --f:       'Space Grotesk','DM Sans',system-ui,sans-serif;
-  --mono:    'Space Mono','JetBrains Mono','Menlo',monospace;
-  --page:    #F5F0E8;
-  --surface: #FFFDF8;
-  --alt:     #EDE8DC;
-  --dark:    #1C2B1F;
-  --dark2:   #243528;
-  --line:    #D8D0C0;
-  --line2:   #C4BAA8;
-  --ink:     #1C2B1F;
-  --body:    #4A5E4E;
-  --faint:   #8A9E8E;
-  --green:   #2D6A4F;
-  --greenLt: #52B788;
-  --greenBg: #D8F3DC;
-  --greenBd: #95D5B2;
-  --sienna:  #C1440E;
-  --siennaBg:#FDECD8;
-  --siennaBd:#F4A96A;
-  --amber:   #B5652A;
-  --amberBg: #FDF0DC;
-  --red:     #C0392B;
-  --redBg:   #FCE8E6;
+  --f:       'Montserrat', system-ui, sans-serif;
+  --mono:    'JetBrains Mono', monospace;
+  --page:    #0d0000;
+  --surface: #160a08;
+  --alt:     #1f1210;
+  --dark:    #f0ede8;
+  --dark2:   #c9c0bb;
+  --line:    rgba(192,57,43,0.2);
+  --line2:   rgba(192,57,43,0.3);
+  --ink:     #f0ede8;
+  --body:    #c9c0bb;
+  --faint:   #807870;
+  --green:   #27ae60;
+  --greenLt: #4ade80;
+  --greenBg: rgba(39,174,96,0.12);
+  --greenBd: rgba(39,174,96,0.3);
+  --sienna:  #c0392b;
+  --siennaBg:rgba(192,57,43,0.12);
+  --siennaBd:rgba(192,57,43,0.35);
+  --amber:   #e67e22;
+  --amberBg: rgba(230,126,34,0.12);
+  --red:     #c0392b;
+  --redBg:   rgba(192,57,43,0.12);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { font-family: var(--f); background: var(--page); color: var(--ink); }
-::selection { background: #D8F3DC; color: #2D6A4F; }
+::selection { background: rgba(192,57,43,0.3); color: #fff; }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--alt); }
-::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 99px; }
+::-webkit-scrollbar-track { background: var(--page); }
+::-webkit-scrollbar-thumb { background: rgba(192,57,43,0.3); border-radius: 99px; }
 
-/* Design-v2 overrides — bring old classes into new theme */
 .v2-page, [class*="v2-"] { font-family: var(--f) !important; }
 
-/* Override old dark teal colours across entire app */
-.v2-btn-primary, button[style*="#1A7A72"], button[style*="#3DBFB0"] { background: var(--green) !important; }
+.v2-btn-primary, button[style*="#1A7A72"], button[style*="#3DBFB0"] {
+  background: #c0392b !important;
+  border-color: #c0392b !important;
+}
+.v2-btn-primary:hover, button[style*="#1A7A72"]:hover { background: #a93226 !important; }
 
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
