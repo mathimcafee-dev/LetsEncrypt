@@ -12,15 +12,15 @@ const FONT = "var(--v2-font, 'Segoe UI', system-ui, sans-serif)"
 // All configurable alert types
 const ALERT_TYPE_DEFS = [
   { id: 'cert_expiry',       label: 'Certificate expiring',     desc: 'Email at 30/14/7 days before cert expires',             color: '#f87171' },
-  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#ffffff' },
-  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#ffffff' },
-  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#ffffff' },
-  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#ffffff' },
+  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#ff8c7a' },
+  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#4ade80' },
+  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#4ade80' },
+  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#4ade80' },
   { id: 'renewal_failed',    label: 'Auto-renewal failed',      desc: 'Alert when auto-renewal fails (with retry info)',       color: '#f87171' },
   { id: 'agent_offline',     label: 'Agent offline',            desc: 'When a VPS agent stops responding (1h cooldown)',       color: '#f87171' },
-  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#ffffff' },
-  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#ffffff' },
-  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#ffffff' },
+  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#fbbf24' },
+  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#fbbf24' },
+  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#fbbf24' },
 ]
 
 const DEFAULT_TYPES = ['cert_expiry','order_renewal','cert_issued','cert_installed','renewal_succeeded','renewal_failed','agent_offline','shadow_found','pqc_risk']
@@ -39,13 +39,13 @@ function Toggle({ on, onClick, disabled }) {
   return (
     <button onClick={disabled ? undefined : onClick} style={{
       width: 36, height: 20, borderRadius: 10, border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-      background: on ? '#e07060' : 'rgba(232,245,244,0.15)', position: 'relative',
+      background: on ? '#c0392b' : 'rgba(255,255,255,0.15)', position: 'relative',
       transition: 'background .18s', flexShrink: 0, opacity: disabled ? 0.5 : 1,
     }}>
       <span style={{
         position: 'absolute', top: 2, left: on ? 18 : 2, width: 16, height: 16,
-        borderRadius: '50%', background: 'transparent', transition: 'left .18s',
-        boxShadow: '0 1px 3px rgba(0,0,0,.15)',
+        borderRadius: '50%', background: '#ffffff', transition: 'left .18s',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.4)',
       }}/>
     </button>
   )
@@ -74,7 +74,7 @@ function Section({ title, icon: Icon, children, collapsible = false }) {
 function Row({ label, desc, children, last }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
-      padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid rgba(192,57,43,0.08)' }}>
+      padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid rgba(255,255,255,0.07)' }}>
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize:12, fontWeight: 500, color: '#ffffff', marginBottom: 1 }}>{label}</div>
         {desc && <div style={{ fontSize:11, color: '#b0a8a0' }}>{desc}</div>}
@@ -494,8 +494,8 @@ export default function SettingsPage({ user }) {
                 {ALERT_TYPE_DEFS.map(({ id, label, desc, color }) => (
                   <div key={id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     gap: 12, padding: '8px 12px', borderRadius: 8,
-                    background: alertTypes.includes(id) ? 'rgba(192,57,43,0.08)' : 'rgba(232,245,244,0.03)',
-                    border: `1px solid ${alertTypes.includes(id) ? '#f0ede8' : 'transparent'}`,
+                    background: alertTypes.includes(id) ? 'rgba(192,57,43,0.12)' : 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${alertTypes.includes(id) ? 'rgba(192,57,43,0.5)' : 'rgba(255,255,255,0.08)'}`,
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all .15s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }}/>

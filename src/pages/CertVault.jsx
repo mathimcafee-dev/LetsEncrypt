@@ -338,7 +338,7 @@ function AuditRow({ entry }) {
     viewed:   <Eye size={12} color="rgba(0,0,0,0.36)"/>,
   }
   const actionColors = {
-    created:'#f0ede8', fetched:'#f0ede8', rotated:'#f0ede8',
+    created:'#ff8c7a', fetched:'#ff8c7a', rotated:'#fbbf24',
     archived:'rgba(240,237,232,0.38)', deleted:'#f87171', viewed:'rgba(240,237,232,0.38)',
   }
   return (
@@ -436,10 +436,10 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
             <button onClick={() => onReveal(keyEntry)}
               style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 12px',
                 fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(239,68,68,0.08)', color:'#ffffff',
-                border:'0.5px solid #F2C4BC', transition:'all .15s' }}
-              onMouseEnter={e=>e.currentTarget.style.background='#FAECE7'}
-              onMouseLeave={e=>e.currentTarget.style.background='rgba(239,68,68,0.08)'}>
+                background:'rgba(192,57,43,0.15)', color:'#ffffff',
+                border:'1px solid rgba(192,57,43,0.4)', transition:'all .15s' }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(192,57,43,0.28)'}
+              onMouseLeave={e=>e.currentTarget.style.background='rgba(192,57,43,0.15)'}>
               <Eye size={11}/> Reveal key
             </button>
 
