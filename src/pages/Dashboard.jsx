@@ -250,69 +250,149 @@ function DvPendingCard({ order, onRefresh }) {
     setConfirmDismiss(false)
   }
 
+  // Elapsed time formatted
+  const elMins = Math.floor(elapsed / 60)
+  const elSecs = elapsed % 60
+  const elStr = elMins > 0 ? `${elMins}m ${elSecs}s` : `${elSecs}s`
+
+  // 4 pipeline steps — each has a clear done/active/pending state
+  const steps = [
+    {
+      label: 'Reissue submitted to GoGetSSL',
+      done: true, // if the order exists it was submitted
+      detail: `GGS order #${liveOrder.ggs_order_id}`,
+    },
+    {
+      label: 'New private key & CSR generated',
+      done: true,
+      detail: 'RSA-2048 key pair created securely',
+    },
+    {
+      label: 'TXT record added to your DNS',
+      done: hasDcv,
+      active: !hasDcv,
+      detail: hasDcv
+        ? `${dcvName} → ${dcvValue.slice(0,22)}…`
+        : 'Waiting for GGS to generate DCV value — auto-adds when ready',
+    },
+    {
+      label: 'GGS validates DNS ownership',
+      done: false,
+      active: hasDcv,
+      detail: hasDcv
+        ? `DNS record found · GGS is checking… ${elStr} elapsed`
+        : 'Waiting for DNS record first',
+    },
+  ]
+
   return (
-    <div style={{ background:'rgba(248,113,113,0.12)', border:'1px solid #F2C4BC', borderRadius:10, padding:'14px 16px', marginBottom:12 }}>
-      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
-        <Clock size={13} color="#e07060" style={{ flexShrink:0 }}/>
-        <span style={{ fontSize:12, fontWeight:700, color:'#ff8c7a' }}>DNS Validation Pending</span>
-        <span style={{ fontFamily:'monospace', fontSize:11, color:'#ff8c7a', marginLeft:'auto' }}>GGS #{order.ggs_order_id}</span>
-      </div>
-      <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginBottom:10, fontFamily:'monospace' }}>{order.domain}</div>
-      <div style={{ background:'transparent', borderRadius:8, padding:'10px 14px', marginBottom:10, fontSize:11, fontFamily:'monospace' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'60px 1fr auto', gap:'6px 10px', alignItems:'center' }}>
-          <span style={{ color:'#e8e0d8', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Name</span>
-          <span style={{ color:'#b0a8a0', wordBreak:'break-all' }}>
-            {hasDcv ? dcvName : <span style={{ color:'#b0a8a0', fontStyle:'italic' }}>Loading — refresh in a moment</span>}
-          </span>
-          {hasDcv && <CopyBtn text={dcvName}/>}
-          <span style={{ color:'#e8e0d8', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Type</span>
-          <span style={{ color:'#ff8c7a' }}>TXT</span><span/>
-          <span style={{ color:'#e8e0d8', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Value</span>
-          <span style={{ color:'#fbbf24', wordBreak:'break-all' }}>
-            {hasDcv ? dcvValue : <span style={{ color:'#b0a8a0', fontStyle:'italic' }}>Waiting for GGS to generate DCV value…</span>}
-          </span>
-          {hasDcv && <CopyBtn text={dcvValue}/>}
-          <span style={{ color:'#e8e0d8', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>TTL</span>
-          <span style={{ color:'#ff8c7a' }}>300</span><span/>
+    <div style={{ background:'rgba(20,10,8,0.7)', border:'1px solid rgba(251,191,36,0.25)', borderRadius:12, padding:'16px 18px', marginBottom:12 }}>
+
+      {/* Header */}
+      <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
+        <div style={{ width:8, height:8, borderRadius:'50%', background:'#fbbf24', animation:'v3pulse 1s ease infinite', flexShrink:0 }}/>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:13, fontWeight:700, color:'#fbbf24' }}>Reissue in Progress</div>
+          <div style={{ fontSize:12, color:'#ffffff', fontWeight:600, fontFamily:'monospace', marginTop:1 }}>
+            {liveOrder.domain}
+            <span style={{ fontSize:11, color:'rgba(240,237,232,0.4)', fontWeight:400, marginLeft:10 }}>GGS #{liveOrder.ggs_order_id}</span>
+          </div>
+        </div>
+        <div style={{ fontSize:11, color:'#b0a8a0', textAlign:'right' }}>
+          <div>{elStr} elapsed</div>
+          <div style={{ fontSize:10, color:'rgba(240,237,232,0.3)', marginTop:2 }}>Auto-checking every 30s</div>
         </div>
       </div>
+
+      {/* Timeline steps */}
+      <div style={{ marginBottom:14 }}>
+        {steps.map((s, i) => (
+          <div key={i} style={{ display:'flex', gap:12, marginBottom: i < steps.length-1 ? 12 : 0 }}>
+            {/* Step indicator + connector line */}
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', flexShrink:0 }}>
+              <div style={{ width:22, height:22, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
+                background: s.done ? 'rgba(74,222,128,0.15)' : s.active ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.04)',
+                border: `1.5px solid ${s.done ? 'rgba(74,222,128,0.4)' : s.active ? 'rgba(251,191,36,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                fontSize:11, fontWeight:700,
+                color: s.done ? '#4ade80' : s.active ? '#fbbf24' : 'rgba(240,237,232,0.2)' }}>
+                {s.done ? '✓' : s.active ? <span style={{ display:'inline-block', width:8, height:8, borderRadius:'50%', border:'2px solid #fbbf24', borderTopColor:'transparent', animation:'spin .8s linear infinite' }}/> : <span style={{ width:6, height:6, borderRadius:'50%', background:'rgba(255,255,255,0.15)' }}/>}
+              </div>
+              {i < steps.length-1 && (
+                <div style={{ width:1.5, flex:1, minHeight:12, marginTop:3,
+                  background: s.done ? 'rgba(74,222,128,0.3)' : 'rgba(255,255,255,0.08)' }}/>
+              )}
+            </div>
+            {/* Step text */}
+            <div style={{ paddingBottom: i < steps.length-1 ? 0 : 0, flex:1, minWidth:0 }}>
+              <div style={{ fontSize:12, fontWeight:600, color: s.done ? '#4ade80' : s.active ? '#fbbf24' : 'rgba(240,237,232,0.35)', marginBottom:2 }}>
+                {s.label}
+              </div>
+              <div style={{ fontSize:11, color: s.done ? 'rgba(240,237,232,0.5)' : s.active ? 'rgba(251,191,36,0.7)' : 'rgba(240,237,232,0.25)', wordBreak:'break-all' }}>
+                {s.detail}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* TXT record details — only show when we have them */}
+      {hasDcv && (
+        <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:8, padding:'10px 12px', marginBottom:12, border:'1px solid rgba(255,255,255,0.07)' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:8 }}>DNS TXT Record (added automatically)</div>
+          <div style={{ display:'grid', gridTemplateColumns:'auto 1fr auto', gap:'4px 10px', alignItems:'center', fontFamily:'monospace' }}>
+            <span style={{ fontSize:10, color:'#b0a8a0' }}>Name</span>
+            <span style={{ fontSize:11, color:'#f0ede8', wordBreak:'break-all' }}>{dcvName}</span>
+            <CopyBtn text={dcvName}/>
+            <span style={{ fontSize:10, color:'#b0a8a0' }}>Value</span>
+            <span style={{ fontSize:11, color:'#fbbf24', wordBreak:'break-all' }}>{dcvValue}</span>
+            <CopyBtn text={dcvValue}/>
+            <span style={{ fontSize:10, color:'#b0a8a0' }}>TTL</span>
+            <span style={{ fontSize:11, color:'#f0ede8' }}>300</span>
+            <span/>
+          </div>
+        </div>
+      )}
+
+      {/* Action buttons */}
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-        <button onClick={autoDns} disabled={addingDns || !hasDcv}
-          style={{ display:'flex', alignItems:'center', gap:6, background:'transparent', color:'#ff8c7a',
-            border:'none', borderRadius:6, padding:'7px 14px', fontSize:11, fontWeight:600,
-            cursor: !hasDcv||addingDns ? 'not-allowed':'pointer', opacity: !hasDcv ? 0.4:1, fontFamily:'inherit' }}>
-          <Zap size={11}/> {addingDns ? 'Adding...' : 'Auto-Add DNS Record'}
-        </button>
+        {hasDcv && (
+          <button onClick={autoDns} disabled={addingDns}
+            style={{ display:'flex', alignItems:'center', gap:6, background:'transparent', color:'#fbbf24',
+              border:'1px solid rgba(251,191,36,0.25)', borderRadius:6, padding:'6px 12px',
+              fontSize:11, fontWeight:600, cursor: addingDns ? 'not-allowed':'pointer', fontFamily:'inherit', opacity: addingDns ? 0.6:1 }}>
+            <Zap size={11}/> {addingDns ? 'Adding...' : 'Re-add DNS Record'}
+          </button>
+        )}
         <button onClick={checkStatus} disabled={checking}
           style={{ display:'flex', alignItems:'center', gap:6, background:'transparent',
-            border:'1px solid rgba(240,237,232,0.12)', color:'#ff8c7a', borderRadius:6,
-            padding:'7px 14px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
-          <RefreshCw size={11} style={{ animation: (checking || elapsed > 0) ? 'spin 0.8s linear infinite':'none' }}/>
-          {checking ? 'Checking...' : 'Check Status'}
+            border:'1px solid rgba(240,237,232,0.12)', color:'#b0a8a0', borderRadius:6,
+            padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+          <RefreshCw size={11} style={{ animation: checking ? 'spin 0.8s linear infinite':'none' }}/>
+          {checking ? 'Checking…' : 'Check Status Now'}
         </button>
         {!confirmDismiss ? (
           <button onClick={() => setConfirmDismiss(true)}
-            style={{ display:'flex', alignItems:'center', gap:5, background:'transparent',
-              border:'1px solid #fca5a5', color:'#f87171', borderRadius:6,
-              padding:'7px 14px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit', marginLeft:'auto' }}>
-            <X size={11}/> Dismiss
+            style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:5, background:'transparent',
+              border:'1px solid rgba(248,113,113,0.2)', color:'rgba(248,113,113,0.6)', borderRadius:6,
+              padding:'6px 12px', fontSize:11, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+            <X size={10}/> Dismiss
           </button>
         ) : (
           <div style={{ display:'flex', gap:6, alignItems:'center', marginLeft:'auto' }}>
-            <span style={{ fontSize:11, color:'#ff8c7a' }}>Remove from dashboard?</span>
+            <span style={{ fontSize:11, color:'#ff8c7a' }}>Remove this card?</span>
             <button onClick={dismissOrder} disabled={dismissing}
-              style={{ background:'#f87171', color:'#ff8c7a', border:'none', borderRadius:6,
-                padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
-              {dismissing ? 'Removing...' : 'Yes, remove'}
+              style={{ background:'rgba(248,113,113,0.15)', color:'#f87171', border:'1px solid rgba(248,113,113,0.3)', borderRadius:6,
+                padding:'5px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+              {dismissing ? 'Removing…' : 'Yes, remove'}
             </button>
             <button onClick={() => setConfirmDismiss(false)}
-              style={{ background:'transparent', color:'#ff8c7a', border:'1px solid rgba(240,237,232,0.12)', borderRadius:6,
-                padding:'6px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+              style={{ background:'transparent', color:'#b0a8a0', border:'1px solid rgba(240,237,232,0.1)', borderRadius:6,
+                padding:'5px 12px', fontSize:11, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
               Cancel
             </button>
           </div>
         )}
-        {msg && <span style={{ fontSize:11, color: msg.startsWith('✅') ? '#f0ede8' : msg.startsWith('❌') ? '#f87171' : '#e07060' }}>{msg}</span>}
+        {msg && <span style={{ fontSize:11, color: msg.startsWith('✅') ? '#4ade80' : msg.startsWith('❌') ? '#f87171' : '#fbbf24', marginLeft:4 }}>{msg}</span>}
       </div>
     </div>
   )
@@ -833,15 +913,18 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
   const statusBadge = (s) => {
     const map = {
-      issued:   { bg:'rgba(39,174,96,0.12)', color:'#4ade80', label:'Issued' },
-      active:   { bg:'rgba(39,174,96,0.12)', color:'#4ade80', label:'Active' },
-      installed:{ bg:'rgba(39,174,96,0.12)', color:'#4ade80', label:'Installed' },
-      pending:  { bg:'rgba(230,126,34,0.1)', color:'#c0392b', label:'Pending DV' },
-      pending_validation: { bg:'rgba(230,126,34,0.1)', color:'#c0392b', label:'Pending DV' },
-      failed:   { bg:'rgba(248,113,113,0.12)', color:'#f87171', label:'Failed' },
+      completed:          { bg:'rgba(39,174,96,0.12)',   color:'#4ade80', label:'✓ Completed',       dot:true },
+      issued:             { bg:'rgba(39,174,96,0.12)',   color:'#4ade80', label:'✓ Issued',           dot:true },
+      active:             { bg:'rgba(39,174,96,0.12)',   color:'#4ade80', label:'✓ Active',           dot:true },
+      installed:          { bg:'rgba(39,174,96,0.12)',   color:'#4ade80', label:'✓ Installed',        dot:true },
+      dv_pending:         { bg:'rgba(230,126,34,0.12)',  color:'#fbbf24', label:'⏳ Validating DNS',   dot:false },
+      pending:            { bg:'rgba(230,126,34,0.12)',  color:'#fbbf24', label:'⏳ Pending',          dot:false },
+      pending_validation: { bg:'rgba(230,126,34,0.12)',  color:'#fbbf24', label:'⏳ Validating DNS',   dot:false },
+      superseded:         { bg:'rgba(192,57,43,0.1)',    color:'#b0a8a0', label:'↩ Superseded',       dot:false },
+      failed:             { bg:'rgba(248,113,113,0.12)', color:'#f87171', label:'✗ Failed',           dot:false },
     }
-    const t = map[s] || { bg:'#f0ede8', color:'#e8e0d8', label: s||'—' }
-    return <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4, background:t.bg, color:t.color }}>{t.label}</span>
+    const t = map[s] || { bg:'rgba(192,57,43,0.08)', color:'#b0a8a0', label: s||'—', dot:false }
+    return <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4, background:t.bg, color:t.color, whiteSpace:'nowrap' }}>{t.label}</span>
   }
 
   const triggeredLabel = (t) => {
@@ -916,25 +999,33 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             <div key={r.id} style={{ border:'1px solid var(--v2-border)', borderRadius:8, marginBottom:8, overflow:'hidden' }}>
               {/* Row header — always visible */}
               <div onClick={() => toggleExpand(r.id)}
-                style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px',
-                  background: expanded[r.id] ? 'var(--v2-surface-2)' : '#000000',
-                  cursor:'pointer', userSelect:'none' }}>
-                {/* Reissue number badge */}
-                <div style={{ width:26, height:26, borderRadius:6, background:'transparent',
-                  display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:'#ff8c7a' }}>R{i+1}</span>
+                style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
+                  background: expanded[r.id] ? 'rgba(192,57,43,0.06)' : 'transparent',
+                  cursor:'pointer', userSelect:'none', borderLeft: r.status==='dv_pending' ? '3px solid #fbbf24' : r.status==='completed'||r.status==='active' ? '3px solid #4ade80' : r.status==='failed' ? '3px solid #f87171' : '3px solid transparent' }}>
+                {/* Reissue number circle */}
+                <div style={{ width:32, height:32, borderRadius:'50%', flexShrink:0,
+                  background: r.status==='completed'||r.status==='active'||r.status==='issued' ? 'rgba(39,174,96,0.12)' : r.status==='dv_pending' ? 'rgba(251,191,36,0.1)' : 'rgba(192,57,43,0.1)',
+                  display:'flex', alignItems:'center', justifyContent:'center', border:'1px solid',
+                  borderColor: r.status==='completed'||r.status==='active'||r.status==='issued' ? 'rgba(74,222,128,0.3)' : r.status==='dv_pending' ? 'rgba(251,191,36,0.3)' : 'rgba(192,57,43,0.2)' }}>
+                  <span style={{ fontSize:11, fontWeight:700, color: r.status==='completed'||r.status==='active'||r.status==='issued' ? '#4ade80' : r.status==='dv_pending' ? '#fbbf24' : '#ff8c7a' }}>R{reissues.length - i}</span>
                 </div>
+                {/* Main content */}
                 <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:12, fontWeight:600, color:'#ffffff', display:'flex', alignItems:'center', gap:8 }}>
-                    Reissue #{r.reissue_number||i+1}
+                  <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:3 }}>
+                    <span style={{ fontSize:12, fontWeight:600, color:'#ffffff' }}>Reissue #{reissues.length - i}</span>
                     {statusBadge(r.status)}
+                    {r.status === 'dv_pending' && (
+                      <span style={{ fontSize:10, color:'#fbbf24', animation:'pulse 1.5s ease infinite' }}>DNS validation in progress…</span>
+                    )}
                   </div>
-                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>
-                    {fmtDate(r.created_at)} · {triggeredLabel(r.triggered_by)}
-                    {r.expires_at && <span> · Expires {fmtDate(r.expires_at)}</span>}
+                  <div style={{ fontSize:11, color:'#b0a8a0', display:'flex', flexWrap:'wrap', gap:'0 12px' }}>
+                    <span>📅 {fmtDate(r.created_at)}</span>
+                    <span>{triggeredLabel(r.triggered_by)}</span>
+                    {r.expires_at && <span style={{ color:'#4ade80' }}>🔒 Valid until {fmtDate(r.expires_at)}</span>}
+                    {!r.expires_at && r.status==='dv_pending' && <span style={{ color:'#fbbf24' }}>⏳ Waiting for GGS to validate DNS…</span>}
                   </div>
                 </div>
-                <ChevronRight size={14} color="var(--v2-text-3)"
+                <ChevronRight size={14} color="rgba(240,237,232,0.3)"
                   style={{ transform: expanded[r.id] ? 'rotate(90deg)' : 'none', transition:'transform .15s', flexShrink:0 }}/>
               </div>
 
@@ -2175,7 +2266,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
 }
 
 
-function CertRow({ cert, selected, onClick, index }) {
+function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
   const days      = daysLeft(cert.expires_at)
   const isExpired = (days ?? 0) < 0
   const isWarn    = (days ?? 0) >= 0 && (days ?? 0) < 30
@@ -2224,6 +2315,15 @@ function CertRow({ cert, selected, onClick, index }) {
           {cert.install_method && (
             <span style={{ fontSize:10, color: cert.install_method==='agent' ? '#93c5fd' : '#fbbf24' }}>
               {cert.install_method==='agent' ? '🖥' : '🌐'}
+            </span>
+          )}
+          {hasPendingReissue && (
+            <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4,
+              background:'rgba(251,191,36,0.1)', color:'#fbbf24', display:'inline-flex',
+              alignItems:'center', gap:4, animation:'v3pulse 1.5s ease infinite' }}>
+              <span style={{ width:6, height:6, borderRadius:'50%', background:'#fbbf24',
+                animation:'v3pulse 1s ease infinite' }}/>
+              Reissue in progress
             </span>
           )}
         </div>
@@ -2585,13 +2685,20 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                   <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px', textAlign:'right', paddingRight:24 }}>Expires</span>
                   <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px', textAlign:'right', paddingRight:10 }}>Status</span>
                 </div>
-                {domainGroups.map((cert, idx) => (
+                {domainGroups.map((cert, idx) => {
+                  // Check if this cert has an active pending/issued reissue order
+                  const hasPendingReissue = orders.some(o =>
+                    o.ggs_order_id === cert.ggs_order_id &&
+                    (o.status === 'dv_pending' || o.status === 'issued')
+                  )
+                  return (
                 <div key={cert.id}>
                   <CertRow
                     cert={cert}
                     index={idx + 1}
                     selected={selected === cert.id}
                     onClick={() => setSelected(selected === cert.id ? null : cert.id)}
+                    hasPendingReissue={hasPendingReissue}
                   />
                   {selected === cert.id && (
                     <div style={{ padding:'0 8px 8px' }}>
@@ -2603,7 +2710,8 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                     </div>
                   )}
                 </div>
-              ))}
+              )
+                })}
               </>
             )}
           </div>
