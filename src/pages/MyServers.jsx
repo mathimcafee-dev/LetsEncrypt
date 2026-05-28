@@ -286,8 +286,8 @@ function AddServerModal({ onClose, userId }) {
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.45)',
-      zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+      zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
     }}>
       <div style={{
         background: 'var(--v2-surface)', borderRadius: 14, width: '100%', maxWidth: 500,
@@ -456,7 +456,7 @@ function AddDnsModal({ onClose, onSaved, userId }) {
   const p = DNS_PROVIDERS[provider]
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(240,237,232,0.45)', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'var(--v2-surface)', borderRadius:14, width:'100%', maxWidth:460, boxShadow:'0 20px 60px rgba(0,0,0,0.15)', overflow:'hidden' }}>
         <div style={{ padding:'20px 24px', borderBottom:'1px solid #f0f0f0' }}>
           <div style={{ fontSize:16, fontWeight:700, color:'#ffffff', letterSpacing:'-0.3px' }}>Connect DNS provider</div>
@@ -723,7 +723,7 @@ function AddHostingModal({ onClose, onSaved, userId }) {
   }
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(240,237,232,0.45)', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'var(--v2-surface)', borderRadius:14, width:'100%', maxWidth:480, boxShadow:'0 20px 60px rgba(0,0,0,0.15)', overflow:'hidden' }}>
         <div style={{ padding:'20px 24px', borderBottom:'1px solid #f0f0f0' }}>
           <div style={{ fontSize:16, fontWeight:700, color:'#ffffff' }}>Connect shared hosting</div>
