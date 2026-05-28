@@ -460,6 +460,33 @@ async function runPollPending() {
     }
   }
 
+  // ── Retry install for active certs not yet live ────────────────────
+  // Catches: cPanel downtime, token expiry, first attempt timing out.
+  // Re-fires install for certs that are active but not installed,
+  // where last attempt was >5 min ago (or never attempted).
+  try {
+    const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+    const { data: retryList } = await adminDb()
+      .from('certificates')
+      .select('id, user_id, domain, install_method, install_server_id')
+      .eq('status', 'active')
+      .eq('is_live_on_server', false)
+      .not('install_method', 'is', null)
+      .not('install_server_id', 'is', null)
+      .or(`install_pending_since.is.null,install_pending_since.lt.${fiveMinsAgo}`)
+      .limit(5)
+    for (const cert of (retryList || [])) {
+      if (cert.install_method !== 'cpanel' || !cert.install_server_id) continue
+      await adminDb().from('certificates').update({ install_pending_since: new Date().toISOString() }).eq('id', cert.id)
+      fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
+        body: JSON.stringify({ action: 'install', cert_id: cert.id, domain: cert.domain, credential_id: cert.install_server_id, _service_user_id: cert.user_id }),
+      }).catch(() => {})
+      console.log('[poll] retry install for', cert.domain)
+    }
+  } catch (e: any) { console.warn('[poll] retry install error:', e.message) }
+
   return json({ ok: true, checked: pendingOrders.length, activated })
 }
 
@@ -826,6 +853,9 @@ serve(async (req) => {
 
       const now = new Date().toISOString()
 
+      // Reset live flag so retry logic re-installs after new cert issues
+      await adminDb().from('certificates').update({ is_live_on_server: false, install_pending_since: null }).eq('id', cert_id).catch(() => {})
+
       // Update EXISTING ssl_orders row in place (NOT insert — reissue = same order)
       await adminDb().from('ssl_orders').update({
         status:          'dv_pending',
@@ -1130,28 +1160,21 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
         }
       }
     } else if (installMethod === 'cpanel' && installCredId) {
-      // Fire-and-forget — do NOT await cpanel-install from within gogetssl-issue.
-      // Awaiting a 30s cPanel install inside poll_pending causes wall-clock timeout
-      // and silently kills the entire activation. cpanel-install runs independently.
+      // Stamp install_pending_since so retry loop knows when to re-fire
+      await adminDb().from('certificates').update({ install_pending_since: new Date().toISOString() }).eq('id', cert.id).catch(() => {})
+      // Fire-and-forget — never await (wall-clock limit in poll_pending)
       const installPayload = JSON.stringify({
         action: 'install', cert_id: cert.id, domain,
         credential_id: installCredId, _service_user_id: userId,
       })
-      // Trigger via pg_net so it runs outside this function's wall-clock budget
-      adminDb().rpc('trigger_cpanel_install', {
-        payload: installPayload,
-        fn_url: `${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`,
-        svc_key: Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '',
-      }).then(() => {
-        console.log('[dispatch] cPanel install triggered via pg_net for', domain)
-      }).catch(() => {
-        // pg_net fallback: fire via fetch without awaiting
-        fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-          body: installPayload,
-        }).catch((e: any) => console.error('[dispatch] cPanel fire-and-forget failed:', e.message))
-      })
+      fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
+        body: installPayload,
+      }).then(r => r.json()).then(result => {
+        if (result.ok) console.log('[dispatch] cPanel install SUCCESS for', domain)
+        else console.error('[dispatch] cPanel install FAILED for', domain, ':', result.error)
+      }).catch((e: any) => console.error('[dispatch] cPanel install exception:', e.message))
     } else {
       console.log('[dispatch] no install method for', domain, '— customer must install manually')
     }
