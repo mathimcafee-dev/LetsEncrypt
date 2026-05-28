@@ -894,11 +894,18 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             // Poll is_live_on_server for up to 3 minutes
             const certId = cert.id
             const installPollStart = Date.now()
+            // Poll every 8s for up to 10 minutes.
+            // install-cron runs every 2 minutes and will auto-install.
             const installTimer = setInterval(async () => {
               try {
                 const { data: certRow } = await supabase
-                  .from('certificates').select('is_live_on_server')
+                  .from('certificates').select('is_live_on_server, install_pending_since')
                   .eq('id', certId).single()
+
+                const elapsed = Math.round((Date.now() - installPollStart) / 1000)
+                const elapsedStr = elapsed >= 60 ? `${Math.floor(elapsed/60)}m ${elapsed%60}s` : `${elapsed}s`
+                const nextCronIn = Math.max(0, 120 - (elapsed % 120))
+
                 if (certRow?.is_live_on_server) {
                   clearInterval(installTimer)
                   setProgress(p => ({
@@ -908,15 +915,27 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                     })
                   }))
                   setBusy(false)
-                } else if (Date.now() - installPollStart > 3 * 60 * 1000) {
+                } else if (Date.now() - installPollStart > 10 * 60 * 1000) {
+                  // 10 min timeout — tell user cron will keep retrying
                   clearInterval(installTimer)
                   setProgress(p => ({
                     ...p, steps: updateStep(p.steps, 5, {
                       status: 'skipped',
-                      detail: 'Not yet installed — use Install tab to install manually',
+                      detail: 'Auto-install cron is running every 2 min — cert will install automatically. Check dashboard in a few minutes.',
                     })
                   }))
                   setBusy(false)
+                } else {
+                  // Update progress detail with countdown to next cron attempt
+                  const hasPendingSince = certRow?.install_pending_since
+                  setProgress(p => ({
+                    ...p, steps: updateStep(p.steps, 5, {
+                      status: 'active',
+                      detail: hasPendingSince
+                        ? `Install in progress… ${elapsedStr} elapsed`
+                        : `Waiting for install cron · next attempt in ~${nextCronIn}s`,
+                    })
+                  }))
                 }
               } catch { clearInterval(installTimer); setBusy(false) }
             }, 8000)

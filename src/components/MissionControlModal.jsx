@@ -32,6 +32,12 @@ function StepIcon({ status }) {
       animation:'mc-spin 0.7s linear infinite', flexShrink:0,
     }}/>
   )
+  if (status === 'skipped') return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="9" r="8" stroke="#fbbf24" strokeWidth="1.5" fill="rgba(251,191,36,0.1)"/>
+      <path d="M9 5v4l2.5 2.5" stroke="#fbbf24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
   return (
     <div style={{
       width:18, height:18, borderRadius:'50%',
@@ -364,8 +370,8 @@ export default function MissionControlModal({
                     <div key={i} style={{
                       display:'flex', alignItems:'flex-start', gap:12,
                       padding:'10px 12px', borderRadius:10,
-                      background: isActive ? 'rgba(192,57,43,0.1)' : isErr ? 'rgba(248,113,113,0.08)' : 'transparent',
-                      border: isActive ? '1px solid rgba(192,57,43,0.25)' : isErr ? '1px solid rgba(248,113,113,0.2)' : '1px solid transparent',
+                      background: isActive ? 'rgba(192,57,43,0.1)' : isErr ? 'rgba(248,113,113,0.08)' : isSkipped ? 'rgba(251,191,36,0.06)' : 'transparent',
+                      border: isActive ? '1px solid rgba(192,57,43,0.25)' : isErr ? '1px solid rgba(248,113,113,0.2)' : isSkipped ? '1px solid rgba(251,191,36,0.2)' : '1px solid transparent',
                       transition:'all 0.3s ease',
                       animation: isActive ? 'mc-slidein 0.25s ease' : 'none',
                     }}>
@@ -378,7 +384,7 @@ export default function MissionControlModal({
                           color: isDoneStep ? '#ffffff'
                             : isActive  ? '#ffffff'
                             : isErr     ? '#f87171'
-                            : isSkipped ? 'rgba(255,255,255,0.3)'
+                            : isSkipped ? '#fbbf24'
                             : '#b0a8a0',
                           transition:'color 0.3s',
                         }}>
@@ -406,12 +412,18 @@ export default function MissionControlModal({
 
               {/* Footer */}
               <div style={{ marginTop:16 }}>
-                {busy && !hasError && (
-                  <div style={{ fontSize:11, color:'#b0a8a0', display:'flex', alignItems:'center', gap:6 }}>
-                    <div style={{ width:6, height:6, borderRadius:'50%', background:'#c0392b', animation:'mc-pulse 1.4s ease-in-out infinite' }}/>
-                    DNS validation typically takes 1–3 minutes. You can minimise this and keep working.
-                  </div>
-                )}
+                {busy && !hasError && (() => {
+                  const installStep = steps[5]
+                  const isInstalling = installStep?.status === 'active'
+                  return (
+                    <div style={{ fontSize:11, color:'#b0a8a0', display:'flex', alignItems:'center', gap:6 }}>
+                      <div style={{ width:6, height:6, borderRadius:'50%', background:'#c0392b', animation:'mc-pulse 1.4s ease-in-out infinite' }}/>
+                      {isInstalling
+                        ? 'Install cron runs every 2 min — pushing cert to your server automatically.'
+                        : 'DNS validation typically takes 1–3 minutes. You can minimise this and keep working.'}
+                    </div>
+                  )
+                })()}
                 {backgroundProcessing && (
                   <div style={{
                     padding:'12px 14px', borderRadius:10,
