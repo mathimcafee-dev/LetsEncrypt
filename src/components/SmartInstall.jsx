@@ -58,6 +58,10 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
   const [cpUser, setCpUser] = useState('')
   const [cpToken, setCpToken] = useState('')
   const [cpSave, setCpSave] = useState(true)
+  // Token-only prompt — when saved credential exists but token is missing
+  const [needToken, setNeedToken] = useState(false)
+  const [tokenInput, setTokenInput] = useState('')
+  const [savingToken, setSavingToken] = useState(false)
 
   const callFn = async (fn, body) => {
     const r = await fetch(`${SB_URL}/functions/v1/${fn}`, {
@@ -78,7 +82,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
       try {
         // Check for cPanel credential for this domain
         const { data: cpCreds } = await supabase.from('server_credentials')
-          .select('id, host, username, nickname, label, domains, server_type')
+          .select('id, host, username, nickname, label, domains, server_type, cpanel_api_token_enc, credentials_enc')
           .eq('user_id', userId)
           .in('server_type', ['cpanel', 'shared'])
         const cpMatch = (cpCreds || []).find(c => c.domains?.includes(cert.domain)) || cpCreds?.[0]
@@ -86,7 +90,10 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
         if (cpMatch) {
           setDetectedMethod('cpanel')
           setDetectedCred(cpMatch)
+          // Check if token is stored — if not, we'll ask for it before installing
+          const hasToken = !!(cpMatch.cpanel_api_token_enc || cpMatch.credentials_enc)
           setPhase('ready')
+          if (!hasToken) setNeedToken(true)
           return
         }
 
@@ -420,11 +427,60 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                 SSLVault will install the certificate on your server automatically.
                 {detectedMethod === 'agent' && ' The VPS agent will pick up the job within 1–2 minutes.'}
               </div>
-              <button onClick={install} style={btn(true)}>
-                Install now
+              <button onClick={install} disabled={needToken}
+                style={{...btn(true), ...(needToken ? {opacity:0.4,cursor:'not-allowed'} : {})}}>
+                {needToken ? 'Enter API token first ↓' : 'Install now'}
               </button>
               <button onClick={() => setPhase('no_creds')} style={btn(false)}>
                 Use a different server
+              </button>
+            </div>
+          )}
+
+          {/* TOKEN NEEDED — saved cPanel cred but no token stored */}
+          {phase === 'ready' && needToken && (
+            <div style={{ marginTop:12, padding:'12px 14px', borderRadius:8,
+              background:'rgba(251,191,36,0.06)', border:'1px solid rgba(251,191,36,0.2)' }}>
+              <div style={{ fontSize:12, fontWeight:600, color:'#fbbf24', marginBottom:6 }}>
+                API token needed
+              </div>
+              <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', marginBottom:10, lineHeight:1.6 }}>
+                Your cPanel server is saved but the API token was not stored.
+                Enter it once and it will be saved securely for all future installs.
+              </div>
+              <input type="password" value={tokenInput}
+                onChange={e => setTokenInput(e.target.value)}
+                placeholder="cPanel API token"
+                style={{ width:'100%', padding:'8px 10px', fontSize:12, borderRadius:6, boxSizing:'border-box',
+                  border:'1px solid rgba(255,255,255,0.12)', background:'rgba(255,255,255,0.04)',
+                  color:'#f0ede8', fontFamily:'inherit', outline:'none', marginBottom:8 }}/>
+              <button
+                disabled={!tokenInput || savingToken}
+                onClick={async () => {
+                  if (!tokenInput) return
+                  setSavingToken(true)
+                  try {
+                    const r = await callFn('cpanel-install', {
+                      action: 'save_credential',
+                      host: detectedCred.host,
+                      username: detectedCred.username,
+                      api_token: tokenInput,
+                      domain: cert.domain,
+                      cert_id: cert.id,
+                    })
+                    if (r.ok) {
+                      setDetectedCred(prev => ({ ...prev, cpanel_api_token_enc: 'stored' }))
+                      setNeedToken(false)
+                    } else {
+                      setErrorMsg(r.error || 'Failed to save token')
+                    }
+                  } catch(e) { setErrorMsg(e.message) }
+                  setSavingToken(false)
+                }}
+                style={{ width:'100%', padding:'8px', fontSize:12, fontWeight:600,
+                  borderRadius:6, border:'none', background: tokenInput ? '#c0392b' : 'rgba(192,57,43,0.3)',
+                  color:'white', cursor: tokenInput ? 'pointer' : 'default', fontFamily:'inherit' }}>
+                {savingToken ? 'Saving…' : 'Save token & install'}
               </button>
             </div>
           )}

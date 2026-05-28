@@ -201,6 +201,24 @@ async function decryptCredential(encrypted: string, userId: string): Promise<str
   return dec.decode(pt)
 }
 
+// Encrypt a string using same scheme as decryptCredential
+async function encryptCredential(plaintext: string, userId: string): Promise<string> {
+  const masterSecret = Deno.env.get('KEYLOCKER_MASTER_SECRET') || ''
+  if (!masterSecret) throw new Error('KEYLOCKER_MASTER_SECRET not set')
+  const enc = new TextEncoder()
+  const rawBase = await crypto.subtle.importKey('raw', enc.encode(masterSecret + userId), 'PBKDF2', false, ['deriveKey'])
+  const key = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: enc.encode(userId), iterations: 100000, hash: 'SHA-256' },
+    rawBase, { name: 'AES-GCM', length: 256 }, false, ['encrypt']
+  )
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(plaintext))
+  const combined = new Uint8Array(12 + ciphertext.byteLength)
+  combined.set(iv, 0)
+  combined.set(new Uint8Array(ciphertext), 12)
+  return btoa(String.fromCharCode(...combined))
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
@@ -224,6 +242,57 @@ serve(async (req) => {
 
     const body = await req.json()
     const { action, cert_id, domain, credential_id } = body
+
+    // ── save_credential: encrypt and store cPanel API token ─────────────────
+    if (action === 'save_credential') {
+      const { host, username, api_token, nickname, domain: dom, cert_id: cid } = body
+      if (!host || !username || !api_token) {
+        return json({ ok: false, error: 'host, username and api_token required' })
+      }
+      const encrypted = await encryptCredential(api_token, user.id)
+      // Upsert: update existing row if found for this user+host, else insert
+      const { data: existing } = await adminDb()
+        .from('server_credentials')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('host', host)
+        .eq('username', username)
+        .limit(1)
+        .single()
+      if (existing) {
+        await adminDb().from('server_credentials').update({
+          cpanel_api_token_enc: encrypted,
+          updated_at: new Date().toISOString(),
+          ...(dom ? { domains: adminDb().rpc } : {}), // handled separately
+        }).eq('id', existing.id)
+        // Also add domain to the domains array if not present
+        if (dom) {
+          const { data: row } = await adminDb().from('server_credentials').select('domains').eq('id', existing.id).single()
+          const doms: string[] = row?.domains || []
+          if (!doms.includes(dom)) {
+            await adminDb().from('server_credentials').update({ domains: [...doms, dom] }).eq('id', existing.id)
+          }
+        }
+        if (cid) await adminDb().from('certificates').update({ install_method: 'cpanel', install_server_id: existing.id }).eq('id', cid)
+        return json({ ok: true, credential_id: existing.id, action: 'updated' })
+      } else {
+        const { data: inserted } = await adminDb().from('server_credentials').insert({
+          user_id: user.id,
+          server_type: 'cpanel',
+          host,
+          port: body.port || 2083,
+          username,
+          cpanel_api_token_enc: encrypted,
+          nickname: nickname || (username + '@' + host),
+          domains: dom ? [dom] : [],
+          auto_install_enabled: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }).select('id').single()
+        if (cid && inserted) await adminDb().from('certificates').update({ install_method: 'cpanel', install_server_id: inserted.id }).eq('id', cid)
+        return json({ ok: true, credential_id: inserted?.id, action: 'inserted' })
+      }
+    }
 
     if (action !== 'install') return json({ ok: false, error: `Unknown action: ${action}` })
     if (!cert_id || !domain || !credential_id) {
