@@ -207,9 +207,9 @@ function DvPendingCard({ order, onRefresh }) {
         body: JSON.stringify({
           action:    'auto_add',
           user_id:   session.user.id,
-          domain:    order.domain,
-          txt_name:  order.dcv_txt_name  || order.dcv_cname_name  || order.domain,
-          txt_value: order.dcv_txt_value || order.dcv_cname_value,
+          domain:    liveOrder.domain,
+          txt_name:  liveOrder.dcv_txt_name  || liveOrder.dcv_cname_name  || liveOrder.domain,
+          txt_value: liveOrder.dcv_txt_value || liveOrder.dcv_cname_value,
         })
       })
       const d = await r.json()
@@ -218,9 +218,21 @@ function DvPendingCard({ order, onRefresh }) {
     setAddingDns(false)
   }
 
-  const hasDcv = !!(order.dcv_txt_value || order.dcv_cname_value)
-  const dcvName  = order.dcv_txt_name  || order.dcv_cname_name  || '—'
-  const dcvValue = order.dcv_txt_value || order.dcv_cname_value || '—'
+  // Live-refresh order data every 10s to pick up dcv_txt_value if it wasn't ready on initial load
+  const [liveOrder, setLiveOrder] = useState(order)
+  useEffect(() => {
+    const t = setInterval(async () => {
+      try {
+        const { data } = await supabase.from('ssl_orders').select('*').eq('id', order.id).single()
+        if (data) setLiveOrder(data)
+      } catch {}
+    }, 10000)
+    return () => clearInterval(t)
+  }, [order.id])
+
+  const hasDcv = !!(liveOrder.dcv_txt_value || liveOrder.dcv_cname_value)
+  const dcvName  = liveOrder.dcv_txt_name  || liveOrder.dcv_cname_name  || '—'
+  const dcvValue = liveOrder.dcv_txt_value || liveOrder.dcv_cname_value || '—'
 
   const [dismissing, setDismissing] = useState(false)
   const [confirmDismiss, setConfirmDismiss] = useState(false)
@@ -250,14 +262,14 @@ function DvPendingCard({ order, onRefresh }) {
         <div style={{ display:'grid', gridTemplateColumns:'60px 1fr auto', gap:'6px 10px', alignItems:'center' }}>
           <span style={{ color:'#e8e0d8', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Name</span>
           <span style={{ color:'#b0a8a0', wordBreak:'break-all' }}>
-            {hasDcv ? dcvName : <span style={{ color:'#e8e0d8' }}>⟳ Fetching...</span>}
+            {hasDcv ? dcvName : <span style={{ color:'#b0a8a0', fontStyle:'italic' }}>Loading — refresh in a moment</span>}
           </span>
           {hasDcv && <CopyBtn text={dcvName}/>}
           <span style={{ color:'#e8e0d8', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Type</span>
           <span style={{ color:'#ff8c7a' }}>TXT</span><span/>
           <span style={{ color:'#e8e0d8', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>Value</span>
           <span style={{ color:'#fbbf24', wordBreak:'break-all' }}>
-            {hasDcv ? dcvValue : <span style={{ color:'#e8e0d8' }}>⟳ Fetching...</span>}
+            {hasDcv ? dcvValue : <span style={{ color:'#b0a8a0', fontStyle:'italic' }}>Waiting for GGS to generate DCV value…</span>}
           </span>
           {hasDcv && <CopyBtn text={dcvValue}/>}
           <span style={{ color:'#e8e0d8', fontWeight:700, textTransform:'uppercase', fontSize:9 }}>TTL</span>
@@ -2273,7 +2285,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         .select('cert_id, created_at')
         .eq('user_id', user.id).eq('job_type', 'install').eq('status', 'success')
         .order('created_at', { ascending:false }).limit(100),
-      supabase.from('ssl_orders').select('*').eq('user_id', user.id).eq('status', 'dv_pending').order('created_at', { ascending:false }),
+      supabase.from('ssl_orders').select('*').eq('user_id', user.id).in('status', ['dv_pending','issued']).order('created_at', { ascending:false }),
     ])
 
     // Build cert_id → latest agent install time (Layer 2 fallback)
