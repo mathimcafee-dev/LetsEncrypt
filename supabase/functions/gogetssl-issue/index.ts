@@ -431,7 +431,8 @@ serve(async (req) => {
     // poll_pending is called by cron with service role key — allow without user JWT
     const SVC_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
     if (action === 'poll_pending') {
-      if (!authHeader.includes(SVC_KEY.slice(0, 20))) return json({ error: 'Unauthorized' }, 401)
+      const bearerToken = authHeader.replace(/^Bearer\s+/i, '').trim()
+      if (bearerToken !== SVC_KEY) return json({ error: 'Unauthorized' }, 401)
       const res = await runPollPending()
       return json(res)
     }
@@ -557,12 +558,12 @@ serve(async (req) => {
       }
 
       // Poll GGS for DCV info — retry up to 5x (GGS takes a few seconds to generate DCV)
-      let dcvName = '', dcvValue = ''
+      let dcvName = '', dcvValue = '', lastStatusRes: any = {}
       for (let attempt = 0; attempt < 5; attempt++) {
         await new Promise(r => setTimeout(r, 2000))
-        const statusRes = await ggsGet(authKey, `/orders/status/${orderRes.order_id}`)
+        lastStatusRes = await ggsGet(authKey, `/orders/status/${orderRes.order_id}`)
         const fromOrder = extractDcv(orderRes)
-        const fromStatus = extractDcv(statusRes)
+        const fromStatus = extractDcv(lastStatusRes)
         dcvName = fromOrder.name || fromStatus.name
         dcvValue = fromOrder.value || fromStatus.value
         if (dcvValue) break
@@ -575,7 +576,7 @@ serve(async (req) => {
           dcv_txt_value:   dcvValue,
           dcv_cname_name:  dcvName,
           dcv_cname_value: dcvValue,
-          ggs_status:      statusRes.status || 'dv_pending',
+          ggs_status:      lastStatusRes.status || 'dv_pending',
           updated_at:      new Date().toISOString(),
         }).eq('id', saved.id)
       }

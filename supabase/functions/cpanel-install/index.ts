@@ -243,7 +243,7 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get('Authorization') || ''
-    const body0 = await req.clone().json().catch(() => ({}))
+    const body0 = await req.json().catch(() => ({}))
 
     // Support service-role calls from poll_pending (cron/automation context).
     // In that case the caller passes _service_user_id in the body and uses the service role key.
@@ -259,7 +259,7 @@ serve(async (req) => {
     }
     if (!user) return json({ ok: false, error: 'Unauthorized' }, 401)
 
-    const body = await req.json()
+    const body = body0
     const { action, cert_id, domain, credential_id } = body
 
     // ── save_credential: encrypt and store cPanel API token ─────────────────
