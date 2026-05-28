@@ -676,126 +676,126 @@ function HostingCard({ cred, onDelete, deletingId }) {
 
 // ── Add Hosting Modal ─────────────────────────────────────────────────
 function AddHostingModal({ onClose, onSaved, userId }) {
-  const [label, setLabel]       = useState('')
   const [hostname, setHostname] = useState('')
   const [port, setPort]         = useState('2083')
   const [username, setUsername] = useState('')
   const [apiToken, setApiToken] = useState('')
   const [saving, setSaving]     = useState(false)
   const [error, setError]       = useState('')
-  const [testing, setTesting]   = useState(false)
-  const [testOk, setTestOk]     = useState(false)
-
-  async function testConnection() {
-    if (!hostname || !username || !apiToken) { setError('Fill in all fields first'); return }
-    setTesting(true); setError(''); setTestOk(false)
-    try {
-      const r = await fetch(`${SB}/functions/v1/cpanel-install`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'test_connection', user_id: userId, hostname, port: parseInt(port)||2083, cpanel_user: username, api_token: apiToken }),
-      })
-      const d = await r.json()
-      if (d.ok) setTestOk(true)
-      else setError(d.error || d.message || 'Connection failed — check hostname, username and API token')
-    } catch(e) { setError('Connection failed') }
-    setTesting(false)
-  }
+  const [saved, setSaved]       = useState(false)
 
   async function save() {
-    if (!hostname || !username || !apiToken) { setError('All fields are required'); return }
+    if (!hostname || !username || !apiToken) { setError('Hostname, username and API token are required'); return }
     setSaving(true); setError('')
     try {
+      const { data: { session } } = await supabase.auth.getSession()
       const r = await fetch(`${SB}/functions/v1/cpanel-install`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'save_credential', user_id: userId, label: label || hostname, hostname, port: parseInt(port)||2083, cpanel_user: username, api_token: apiToken }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({
+          action: 'save_credential',
+          host: hostname,
+          username,
+          api_token: apiToken,
+          port: parseInt(port) || 2083,
+          nickname: username + '@' + hostname,
+        }),
       })
       const d = await r.json()
-      if (d.ok) { onSaved(); onClose() }
-      else setError(d.error || d.message || 'Failed to save')
-    } catch(e) { setError('Failed to save') }
+      if (d.ok) { setSaved(true); setTimeout(() => { onSaved(); onClose() }, 800) }
+      else setError(d.error || 'Failed to save — check your credentials')
+    } catch(e) { setError('Failed to save: ' + e.message) }
     setSaving(false)
   }
 
   const inp = {
-    width: '100%', padding: '9px 12px', borderRadius: 8,
-    border: '1px solid #e5e7eb', fontSize:13, outline: 'none',
-    fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 14,
+    width: '100%', padding: '10px 12px', borderRadius: 7,
+    border: '1px solid rgba(255,255,255,0.12)', fontSize: 13, outline: 'none',
+    fontFamily: 'inherit', boxSizing: 'border-box',
+    background: 'rgba(255,255,255,0.05)', color: '#f0ede8',
   }
+  const lbl = { fontSize: 11, fontWeight: 600, color: 'rgba(240,237,232,0.6)',
+    textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: 5 }
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
-      <div style={{ background:'var(--v2-surface)', borderRadius:14, width:'100%', maxWidth:480, boxShadow:'0 20px 60px rgba(0,0,0,0.15)', overflow:'hidden' }}>
-        <div style={{ padding:'20px 24px', borderBottom:'1px solid #f0f0f0' }}>
-          <div style={{ fontSize:16, fontWeight:700, color:'#ffffff' }}>Connect shared hosting</div>
-          <div style={{ fontSize:13, color:'#b0a8a0', marginTop:4 }}>Supports cPanel, WHM and compatible control panels</div>
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.8)', zIndex:9999,
+      display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={{ background:'#0d0505', border:'1px solid rgba(255,255,255,0.12)',
+        borderRadius:12, width:'100%', maxWidth:440,
+        boxShadow:'0 24px 80px rgba(0,0,0,0.6)', overflow:'hidden' }}>
+
+        {/* Header */}
+        <div style={{ padding:'18px 22px', borderBottom:'1px solid rgba(255,255,255,0.08)',
+          display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div>
+            <div style={{ fontSize:15, fontWeight:700, color:'#ffffff' }}>Connect cPanel hosting</div>
+            <div style={{ fontSize:12, color:'rgba(240,237,232,0.45)', marginTop:2 }}>
+              Certificates install and renew automatically
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer',
+            color:'rgba(240,237,232,0.4)', fontSize:20, lineHeight:1, padding:'2px 4px' }}>×</button>
         </div>
-        <div style={{ padding:24 }}>
 
-          {/* How it works */}
-          <div style={{ background:'var(--v2-bg)', border:'1px solid var(--v2-border)', borderRadius:10, padding:'12px 14px', marginBottom:20 }}>
-            <div style={{ fontSize:11, fontWeight:600, color:'#e8e0d8', marginBottom:8 }}>How shared hosting SSL works:</div>
-            {[
-              'SSLVault connects to your cPanel via its API — no SSH needed',
-              'Certificates install directly into your hosting account',
-              'Auto-renews just like VPS — no manual uploads ever',
-            ].map(t => (
-              <div key={t} style={{ display:'flex', gap:8, marginBottom:5, alignItems:'flex-start' }}>
-                <CheckCircle size={11} color="#c0392b" style={{ marginTop:1, flexShrink:0 }} />
-                <span style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.5 }}>{t}</span>
-              </div>
-            ))}
+        {/* Form */}
+        <div style={{ padding:'22px 22px 18px' }}>
+          <div style={{ marginBottom:14 }}>
+            <label style={lbl}>cPanel Hostname</label>
+            <input value={hostname} onChange={e=>setHostname(e.target.value)}
+              placeholder="server.yourhostingprovider.com" style={inp} autoFocus/>
           </div>
 
-          <label style={{ fontSize:12, fontWeight:600, color:'#e8e0d8', display:'block', marginBottom:6 }}>Label <span style={{fontWeight:400,color:'#b0a8a0'}}>(nickname)</span></label>
-          <input value={label} onChange={e=>setLabel(e.target.value)} placeholder="e.g. Bluehost, GoDaddy cPanel" style={inp} />
-
-          <label style={{ fontSize:12, fontWeight:600, color:'#e8e0d8', display:'block', marginBottom:6 }}>cPanel hostname</label>
-          <input value={hostname} onChange={e=>setHostname(e.target.value)} placeholder="server.yourhostingprovider.com" style={inp} />
-
-          <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) clamp(220px,10vw,120px)', gap:10 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 100px', gap:12, marginBottom:14 }}>
             <div>
-              <label style={{ fontSize:12, fontWeight:600, color:'#e8e0d8', display:'block', marginBottom:6 }}>cPanel username</label>
-              <input value={username} onChange={e=>setUsername(e.target.value)} placeholder="your-cpanel-username" style={{...inp, marginBottom:0}} />
+              <label style={lbl}>cPanel Username</label>
+              <input value={username} onChange={e=>setUsername(e.target.value)}
+                placeholder="your-username" style={inp}/>
             </div>
             <div>
-              <label style={{ fontSize:12, fontWeight:600, color:'#e8e0d8', display:'block', marginBottom:6 }}>Port</label>
-              <input value={port} onChange={e=>setPort(e.target.value)} placeholder="2083" style={{...inp, marginBottom:0}} />
+              <label style={lbl}>Port</label>
+              <input value={port} onChange={e=>setPort(e.target.value)}
+                placeholder="2083" style={inp}/>
             </div>
           </div>
-          <div style={{ marginBottom:14 }} />
 
-          <label style={{ fontSize:12, fontWeight:600, color:'#e8e0d8', display:'block', marginBottom:4 }}>API Token</label>
-          <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:6 }}>
-            cPanel → Security → Manage API Tokens → Create token
+          <div style={{ marginBottom:18 }}>
+            <label style={lbl}>API Token</label>
+            <div style={{ fontSize:11, color:'rgba(240,237,232,0.35)', marginBottom:5 }}>
+              cPanel → Security → Manage API Tokens → Create token
+            </div>
+            <input value={apiToken} onChange={e=>setApiToken(e.target.value)}
+              type="password" placeholder="Paste your API token here" style={inp}/>
           </div>
-          <input value={apiToken} onChange={e=>setApiToken(e.target.value)} type="password" placeholder="Paste your cPanel API token" style={inp} />
 
-          {testOk && (
-            <div style={{ padding:'8px 12px', background:'transparent', border:'1px solid rgba(192,57,43,0.3)', borderRadius:6, fontSize:12, color:'#ffffff', marginBottom:12, display:'flex', gap:6, alignItems:'center' }}>
-              <CheckCircle size={12} color="#c0392b" /> Connection successful!
+          {saved && (
+            <div style={{ padding:'10px 14px', background:'rgba(74,222,128,0.08)',
+              border:'1px solid rgba(74,222,128,0.25)', borderRadius:7,
+              fontSize:12, color:'#4ade80', marginBottom:14, display:'flex', gap:8, alignItems:'center' }}>
+              <CheckCircle size={13}/> Server saved successfully!
             </div>
           )}
-          {error && <div style={{ padding:'8px 12px', background:'rgba(192,57,43,0.12)', border:'1px solid #fecaca', borderRadius:6, fontSize:12, color:'#f87171', marginBottom:12 }}>{error}</div>}
+          {error && (
+            <div style={{ padding:'10px 14px', background:'rgba(248,113,113,0.08)',
+              border:'1px solid rgba(248,113,113,0.25)', borderRadius:7,
+              fontSize:12, color:'#f87171', marginBottom:14 }}>{error}</div>
+          )}
 
-          <div style={{ display:'flex', gap:8 }}>
-            <button onClick={onClose} style={{ flex:1, padding:'10px', borderRadius:8, border:'1px solid #e5e7eb', background:'var(--v2-surface)', fontSize:13, fontWeight:600, color:'#e8e0d8', cursor:'pointer', fontFamily:'inherit' }}>Cancel</button>
-            <button onClick={testConnection} disabled={testing} style={{
-              flex:1, padding:'10px', borderRadius:8,
-              border:'1px solid #e5e7eb', background:'var(--v2-bg)',
-              fontSize:13, fontWeight:600, color:'#e8e0d8',
-              cursor:'pointer', fontFamily:'inherit',
-              display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-            }}>
-              {testing ? <><RefreshCw size={11} style={{animation:'spin .8s linear infinite'}}/> Testing…</> : 'Test connection'}
-            </button>
-            <button onClick={save} disabled={saving||!hostname||!username||!apiToken} style={{
-              flex:2, padding:'10px', borderRadius:8, border:'none',
-              background: saving||!hostname||!username||!apiToken ? '#000000' : 'var(--v2-text)',
-              color: saving||!hostname||!username||!apiToken ? 'rgba(240,237,232,0.35)' : 'var(--v2-surface)',
-              fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit',
-              display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-            }}>
-              {saving ? <><RefreshCw size={11} style={{animation:'spin .8s linear infinite'}}/> Saving…</> : 'Save'}
+          <div style={{ display:'flex', gap:10 }}>
+            <button onClick={onClose} style={{ flex:1, padding:'10px', borderRadius:7,
+              border:'1px solid rgba(255,255,255,0.1)', background:'transparent',
+              fontSize:13, fontWeight:500, color:'rgba(240,237,232,0.6)',
+              cursor:'pointer', fontFamily:'inherit' }}>Cancel</button>
+            <button onClick={save}
+              disabled={saving || !hostname || !username || !apiToken}
+              style={{ flex:2, padding:'10px', borderRadius:7, border:'none',
+                background: (!hostname||!username||!apiToken) ? 'rgba(192,57,43,0.3)' : '#c0392b',
+                color: (!hostname||!username||!apiToken) ? 'rgba(255,255,255,0.4)' : '#ffffff',
+                fontSize:13, fontWeight:600, cursor: (!hostname||!username||!apiToken) ? 'default' : 'pointer',
+                fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+              {saving
+                ? <><RefreshCw size={12} style={{animation:'spin .8s linear infinite'}}/> Saving…</>
+                : saved ? '✓ Saved' : 'Save server'}
             </button>
           </div>
         </div>
