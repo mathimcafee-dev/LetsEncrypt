@@ -702,8 +702,9 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
     try {
       // ── Step 0: Call GGS reissue/renew API ────────────────────────────────
-      // This takes ~12s (5×2s DCV polling inside the edge function)
-      // Wait up to 30s for the API to respond before showing timeout
+      // Edge function returns in ~4s (1x2s DCV check + GGS API calls).
+      // We wait up to 60s, but if it times out the order was still submitted —
+      // poll_pending cron handles DCV + activation in the background.
       let fetchDone = false, fetchOk = false, fetchErr = null, fetchData = null
 
       fetch(SB_URL+'/functions/v1/gogetssl-issue', {
@@ -716,22 +717,43 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         if (!fetchOk) fetchErr = d.error || d.message || 'Request failed'
       }).catch(e => { fetchDone = true; fetchOk = false; fetchErr = e.message })
 
-      // Wait for response — 30s timeout
+      // Wait up to 60s for response
       await new Promise(resolve => {
         const t = setInterval(() => { if (fetchDone) { clearInterval(t); resolve() } }, 300)
-        setTimeout(() => { clearInterval(t); resolve() }, 30000)
+        setTimeout(() => { clearInterval(t); resolve() }, 60000)
       })
 
       // ── Handle API failure ────────────────────────────────────────────────
       if (!fetchOk) {
         const isInProgress = fetchData?.code === 'REISSUE_IN_PROGRESS'
-        const errMsg = isInProgress
-          ? 'A reissue is already in progress for this certificate. Wait a few minutes then try again.'
-          : fetchData === null
-            ? 'GGS did not respond in 30s — the certificate may still be issuing in the background. Check back in 2 minutes.'
-            : fetchErr || fetchData?.error || 'Request failed'
-        setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: errMsg }) }))
-        setBusy(false); return
+        if (isInProgress) {
+          // Already running — just switch to polling mode
+          const pollGgsId = isReissue ? cert.ggs_order_id : null
+          if (pollGgsId) {
+            setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, {
+              status: 'done', detail: 'Reissue already in progress — monitoring…'
+            })}))
+            // fall through to polling below with fetchData = { ok: true, ggs_order_id: pollGgsId }
+            fetchOk = true
+            fetchData = { ok: true, ggs_order_id: pollGgsId, dcv_txt_value: null }
+          } else {
+            setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, {
+              status: 'error', detail: 'A reissue is already in progress. Wait a few minutes then try again.'
+            })}))
+            setBusy(false); return
+          }
+        } else if (fetchData === null) {
+          // Timed out — order was submitted, background processing taking over
+          setProgress(p => ({ ...p, backgroundProcessing: true, steps: updateStep(p.steps, 0, {
+            status: 'done', detail: 'Order submitted — processing in background (this is normal)'
+          })}))
+          fetchOk = true
+          fetchData = { ok: true, ggs_order_id: isReissue ? cert.ggs_order_id : null, dcv_txt_value: null }
+        } else {
+          const errMsg = fetchErr || fetchData?.error || 'Request failed'
+          setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: errMsg }) }))
+          setBusy(false); return
+        }
       }
 
       const d = fetchData
