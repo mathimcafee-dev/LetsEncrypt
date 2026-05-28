@@ -397,11 +397,18 @@ serve(async (req) => {
         console.error('[place_order] KeyLocker store failed:', klRes.error)
       }
 
-      // Poll GGS immediately for DCV info (wait 2s for GGS to process)
-      await new Promise(r => setTimeout(r, 2000))
-      const statusRes = await ggsGet(authKey, `/orders/status/${orderRes.order_id}`)
-      let { name: dcvName, value: dcvValue } = extractDcv(orderRes)
-      if (!dcvValue) { const s = extractDcv(statusRes); dcvName = s.name; dcvValue = s.value }
+      // Poll GGS for DCV info — retry up to 5x (GGS takes a few seconds to generate DCV)
+      let dcvName = '', dcvValue = ''
+      for (let attempt = 0; attempt < 5; attempt++) {
+        await new Promise(r => setTimeout(r, 2000))
+        const statusRes = await ggsGet(authKey, `/orders/status/${orderRes.order_id}`)
+        const fromOrder = extractDcv(orderRes)
+        const fromStatus = extractDcv(statusRes)
+        dcvName = fromOrder.name || fromStatus.name
+        dcvValue = fromOrder.value || fromStatus.value
+        if (dcvValue) break
+        console.log(`[place_order] DCV not yet available, attempt ${attempt + 1}/5`)
+      }
 
       if (dcvValue) {
         await adminDb().from('ssl_orders').update({
@@ -538,7 +545,33 @@ serve(async (req) => {
       for (const order of pendingOrders) {
         try {
           const statusRes = await ggsGet(authKey, `/orders/status/${order.ggs_order_id}`)
-          if (statusRes.status !== 'active' || !statusRes.crt_code) continue
+
+          // If still processing: ensure DCV record exists in DNS (catches missed auto-add)
+          if (statusRes.status !== 'active' || !statusRes.crt_code) {
+            // Pick up DCV values if we don't have them yet
+            if (!order.dcv_txt_value) {
+              const { name: dn, value: dv } = extractDcv(statusRes)
+              if (dv) {
+                await adminDb().from('ssl_orders').update({
+                  dcv_txt_name: dn, dcv_txt_value: dv,
+                  dcv_cname_name: dn, dcv_cname_value: dv,
+                  updated_at: new Date().toISOString(),
+                }).eq('id', order.id)
+                order.dcv_txt_name = dn; order.dcv_txt_value = dv
+              }
+            }
+            // Always try to add DNS record — dns-provider is idempotent (CF rejects duplicates silently)
+            if (order.dcv_txt_value) {
+              try {
+                await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
+                  body: JSON.stringify({ action: 'auto_add', user_id: order.user_id, domain: order.domain, txt_name: order.dcv_txt_name, txt_value: order.dcv_txt_value }),
+                })
+              } catch {}
+            }
+            continue
+          }
 
           const now = new Date().toISOString()
           const keyId = order.keylocker_key_id
@@ -677,10 +710,17 @@ serve(async (req) => {
         return json({ error: reissueRes.description || reissueRes.message || JSON.stringify(reissueRes) }, 500)
       }
 
-      // Wait briefly then fetch new DCV info (same order_id, new DCV TXT required)
-      await new Promise(r => setTimeout(r, 1500))
-      const statusRes = await ggsGet(authKey, `/orders/status/${cert.ggs_order_id}`)
-      let { name: dcvName, value: dcvValue } = extractDcv(statusRes)
+      // Poll GGS for DCV info — retry up to 5x with 2s gaps (GGS takes a few seconds after reissue)
+      let dcvName = '', dcvValue = '', statusRes: any = {}
+      for (let attempt = 0; attempt < 5; attempt++) {
+        await new Promise(r => setTimeout(r, 2000))
+        statusRes = await ggsGet(authKey, `/orders/status/${cert.ggs_order_id}`)
+        const dcv = extractDcv(statusRes)
+        dcvName = dcv.name; dcvValue = dcv.value
+        if (dcvValue) break
+        console.log(`[reissue] DCV not yet available, attempt ${attempt + 1}/5`)
+      }
+      if (!dcvValue) console.warn('[reissue] DCV values still empty after 5 attempts — cron will retry DNS add')
 
       // Store NEW private key in KeyLocker immediately
       // This key matches the new CSR we just submitted to GGS
