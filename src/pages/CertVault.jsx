@@ -521,7 +521,7 @@ export default function CertVault({ nav }) {
       const { data: cert } = await supabase
         .from('certificates')
         .select('id, domain, dns_provider_id, install_method')
-        .eq('certvault_key_id', keyEntry.id)
+        .eq('keylocker_key_id', keyEntry.id)
         .eq('user_id', user.id)
         .maybeSingle()
 
