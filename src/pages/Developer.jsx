@@ -1,98 +1,133 @@
-// Developer.jsx — SSLVault developer / builder page
+// Developer.jsx — SSLVault builder page
 import portrait from '../assets/mathi-portrait.jpg'
 
-const F    = "'Inter var','Montserrat',system-ui,-apple-system,sans-serif"
-const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
-const C    = { ink:'#f0ede8', teal:'#f0ede8', tealDk:'#f0ede8', green:'#f0ede8', purple:'#f0ede8', border:'rgba(255,255,255,0.07)', text:'rgba(240,237,232,0.85)', textMid:'rgba(240,237,232,0.5)', textLt:'rgba(240,237,232,0.28)' }
+const F    = "'Montserrat',system-ui,sans-serif"
+const MONO = "'SF Mono','Menlo','Consolas',monospace"
+const BG   = '#120000'
+const BG2  = '#1a0404'
+const BG3  = '#220808'
+const T1   = '#f0ede8'
+const T2   = 'rgba(240,237,232,0.65)'
+const T3   = 'rgba(240,237,232,0.35)'
+const LN   = 'rgba(192,57,43,0.2)'
+const LN2  = 'rgba(192,57,43,0.35)'
+const RED  = '#c0392b'
+const GRN  = '#4ade80'
+const AMB  = '#fbbf24'
+const PRP  = '#a78bfa'
 
 export default function Developer({ nav }) {
   return (
-    <div style={{ minHeight:'100vh', background:C.ink, fontFamily:F, color:C.text }}>
+    <div style={{ minHeight:'100vh', background:`radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%)`, fontFamily:F, color:T1 }}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0}`}</style>
 
       {/* Nav */}
-      <header style={{ borderBottom:`1px solid ${C.border}`, padding:'0 clamp(20px,5vw,48px)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }} onClick={()=>nav('/')}>
-          <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <header style={{ background:'rgba(13,0,0,0.92)', backdropFilter:'blur(12px)', borderBottom:`1px solid ${LN}`, height:52, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(20px,5vw,48px)', position:'sticky', top:0, zIndex:100 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer' }} onClick={() => nav('/')}>
+          <div style={{ width:22, height:22, background:RED, borderRadius:4, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{ fontSize:15, fontWeight:600, color:'#ffffff' }}>SSLVault</span>
+          <span style={{ fontSize:13, fontWeight:600, color:T1 }}>SSLVault</span>
+          <span style={{ fontSize:11, color:T3, fontFamily:MONO }}> / Developer</span>
         </div>
-        <button onClick={()=>nav('/auth')}
-          style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'7px 20px', borderRadius:100 }}>
+        <button onClick={() => nav('/auth')} style={{ background:RED, border:'none', cursor:'pointer', fontFamily:F, fontSize:12, fontWeight:600, color:'#fff', padding:'7px 16px', borderRadius:5 }}>
           Get started
         </button>
       </header>
 
-      <div style={{ maxWidth:860, margin:'0 auto', padding:'72px clamp(20px,5vw,48px) 100px' }}>
+      <div style={{ maxWidth:860, margin:'0 auto', padding:'64px clamp(20px,5vw,48px) 100px' }}>
 
-        <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:16 }}>The builder</div>
+        {/* Eyebrow */}
+        <div style={{ fontSize:10, fontWeight:500, color:T3, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:16 }}>The builder</div>
 
         {/* Profile */}
-        <div style={{ display:'flex', alignItems:'flex-start', gap:24, marginBottom:48, flexWrap:'wrap' }}>
-          <img src={portrait} alt="Mathi" style={{ width:80, height:80, borderRadius:12, objectFit:'cover', border:`2px solid rgba(14,165,233,0.3)`, flexShrink:0 }}/>
+        <div style={{ display:'flex', alignItems:'flex-start', gap:28, marginBottom:56, flexWrap:'wrap' }}>
+          <img src={portrait} alt="Mathi" style={{ width:90, height:90, borderRadius:10, objectFit:'cover', border:`2px solid ${LN2}`, flexShrink:0 }}/>
           <div>
-            <h1 style={{ fontSize:'clamp(24px,4vw,40px)', fontWeight:800, letterSpacing:'-1px', lineHeight:1.15, marginBottom:8, color:'#ffffff' }}>
+            <h1 style={{ fontSize:'clamp(26px,4vw,42px)', fontWeight:700, letterSpacing:'-1.2px', lineHeight:1.1, marginBottom:12, color:T1 }}>
               Mathi (Spartan)
             </h1>
-            <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:12 }}>
-              {['Certified PKI Specialist','PKI Industry Professional','Netherlands 🇳🇱'].map(t=>(
-                <span key={t} style={{ fontSize:11, fontWeight:600, color:C.teal, background:'rgba(14,165,233,0.08)', border:'1px solid rgba(14,165,233,0.18)', borderRadius:6, padding:'3px 10px', fontFamily:MONO }}>{t}</span>
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:14 }}>
+              {[['Certified PKI Specialist', GRN],['PKI Industry Professional', AMB],['Netherlands 🇳🇱', PRP]].map(([t, c]) => (
+                <span key={t} style={{ fontSize:11, fontWeight:500, color:c, background:`${c}18`, border:`1px solid ${c}40`, borderRadius:4, padding:'3px 10px', fontFamily:MONO }}>{t}</span>
               ))}
             </div>
-            <p style={{ fontSize:15, color:C.textMid, lineHeight:1.8, maxWidth:520 }}>
-              MSc from Kongu Engineering College. Working in the PKI industry with deep expertise in certificate lifecycle management, CA/B Forum standards, and automation.
+            <p style={{ fontSize:14, color:T2, lineHeight:1.85, maxWidth:520 }}>
+              MSc from Kongu Engineering College. Deep expertise in certificate lifecycle management, CA/B Forum standards, DCV methods, and PKI automation. Based in the Netherlands.
             </p>
           </div>
         </div>
 
-        {/* Why section */}
-        <div style={{ marginBottom:48 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:C.textLt, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:16 }}>Why SSLVault exists</div>
-          <p style={{ fontSize:16, color:C.textMid, lineHeight:1.85, marginBottom:16, maxWidth:640 }}>
+        {/* Divider */}
+        <div style={{ height:1, background:LN, marginBottom:48 }}/>
+
+        {/* Why it exists */}
+        <div style={{ marginBottom:52 }}>
+          <div style={{ fontSize:10, fontWeight:500, color:T3, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:14 }}>Why SSLVault exists</div>
+          <p style={{ fontSize:15, color:T2, lineHeight:1.85, marginBottom:16, maxWidth:660 }}>
             Working as a PKI specialist, I saw the same problem everywhere — certificate management was either expensive enterprise tooling (Venafi at $250k+/yr), or completely manual. Nothing in between.
           </p>
-          <p style={{ fontSize:16, color:C.textMid, lineHeight:1.85, maxWidth:640 }}>
-            SSLVault is the platform I wished existed: enterprise-grade CLM without the enterprise price tag. Built on open standards (RFC 8555, AES-256-GCM), CA/B Forum compliant, and designed for the CA/B mandate changes coming in 2026–2029.
+          <p style={{ fontSize:15, color:T2, lineHeight:1.85, maxWidth:660 }}>
+            SSLVault is the platform I wished existed: enterprise-grade CLM without the enterprise price tag. Built on open standards — RFC 8555, AES-256-GCM — CA/B Forum compliant, and designed for the 47-day mandate world coming in 2029.
           </p>
         </div>
 
-        {/* Expertise cards */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:10, marginBottom:48 }}>
-          {[
-            { spec:'PKI / X.509', color:C.teal,   desc:'Certificate lifecycle, CA/B Forum standards, DCV methods, trust chain architecture' },
-            { spec:'RapidSSL / PKI', color:C.green,  desc:'Deep knowledge of certificate products, CA issuance pipelines, and PKI operations' },
-            { spec:'ACME · RFC 8555', color:C.purple, desc:'Protocol implementation, DNS-01 challenge automation, certificate transparency' },
-            { spec:'Security automation', color:C.teal,   desc:'AES-256-GCM, key vault design, audit logging, zero-trust certificate deployment' },
-          ].map(e=>(
-            <div key={e.spec} style={{ background:'rgba(255,255,255,0.03)', border:`1px solid ${C.border}`, borderLeft:`3px solid ${e.color}`, borderRadius:8, padding:'16px 16px' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:e.color, fontFamily:MONO, marginBottom:6 }}>{e.spec}</div>
-              <div style={{ fontSize:12, color:C.textMid, lineHeight:1.65 }}>{e.desc}</div>
-            </div>
-          ))}
+        {/* Expertise */}
+        <div style={{ marginBottom:52 }}>
+          <div style={{ fontSize:10, fontWeight:500, color:T3, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:14 }}>Areas of expertise</div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:1, background:LN, border:`1px solid ${LN}`, borderRadius:6, overflow:'hidden' }}>
+            {[
+              { spec:'PKI / X.509',          color:GRN, desc:'Certificate lifecycle, CA/B Forum standards, DCV methods, trust chain architecture' },
+              { spec:'RapidSSL / GoGetSSL',   color:AMB, desc:'CA issuance pipelines, order management, reissue flows, and PKI operations' },
+              { spec:'ACME · RFC 8555',        color:PRP, desc:'DNS-01 challenge automation, certificate transparency, ACME v2 implementation' },
+              { spec:'Security automation',    color:RED,  desc:'AES-256-GCM key vault design, audit logging, zero-touch certificate deployment' },
+            ].map(e => (
+              <div key={e.spec} style={{ background:BG3, padding:'18px 20px' }}>
+                <div style={{ fontSize:11, fontWeight:600, color:e.color, fontFamily:MONO, marginBottom:7 }}>{e.spec}</div>
+                <div style={{ fontSize:12.5, color:T2, lineHeight:1.65 }}>{e.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* What I built */}
+        <div style={{ marginBottom:52 }}>
+          <div style={{ fontSize:10, fontWeight:500, color:T3, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:14 }}>What SSLVault does</div>
+          <div style={{ display:'flex', flexDirection:'column', gap:0, border:`1px solid ${LN}`, borderRadius:6, overflow:'hidden' }}>
+            {[
+              { n:'01', title:'Issue',   desc:'RapidSSL DV via GoGetSSL. DNS-01 auto-validated via Cloudflare, Vercel, Route53, and 5+ providers. Issued in under 5 minutes.' },
+              { n:'02', title:'Install', desc:'VPS persistent agent deploys to Nginx/Apache automatically. cPanel auto-install via UAPI. Both paths cron-triggered every 2 minutes.' },
+              { n:'03', title:'Monitor', desc:'TLS health score A+ to F. Expiry tracking, CT log monitoring, HSTS and CAA checks, CA/B Forum 47-day compliance scoring.' },
+              { n:'04', title:'Renew',   desc:'Auto-renews 30 days before expiry. DCV re-validated, cert re-issued, deployed to server — zero manual steps, forever.' },
+            ].map((s, i, arr) => (
+              <div key={s.n} style={{ display:'flex', gap:16, padding:'16px 20px', background:BG2, borderBottom:i < arr.length - 1 ? `1px solid ${LN}` : 'none' }}>
+                <span style={{ fontSize:10, color:T3, fontFamily:MONO, width:24, flexShrink:0, marginTop:2 }}>/ {s.n}</span>
+                <div>
+                  <div style={{ fontSize:13, fontWeight:600, color:T1, marginBottom:4 }}>{s.title}</div>
+                  <div style={{ fontSize:12.5, color:T2, lineHeight:1.65 }}>{s.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Contact */}
-        <div style={{ background:'rgba(255,255,255,0.03)', border:`1px solid ${C.border}`, borderRadius:10, padding:'24px 24px', marginBottom:48, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
+        <div style={{ background:BG3, border:`1px solid ${LN2}`, borderRadius:8, padding:'24px', marginBottom:48, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
           <div>
-            <div style={{ fontSize:14, fontWeight:600, color:'rgba(240,237,232,0.9)', marginBottom:4 }}>Get in touch</div>
-            <div style={{ fontSize:13, color:C.textMid }}>Feedback, enterprise enquiries, or PKI questions — always open.</div>
+            <div style={{ fontSize:14, fontWeight:600, color:T1, marginBottom:4 }}>Get in touch</div>
+            <div style={{ fontSize:12.5, color:T2 }}>Feedback, enterprise enquiries, or PKI questions — always open.</div>
           </div>
-          <a href="mailto:mathimcafee@gmail.com"
-            style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'9px 22px', borderRadius:100, textDecoration:'none', whiteSpace:'nowrap' }}>
+          <a href="mailto:mathimcafee@gmail.com" style={{ background:RED, border:'none', cursor:'pointer', fontFamily:F, fontSize:12, fontWeight:600, color:'#fff', padding:'9px 22px', borderRadius:5, textDecoration:'none', whiteSpace:'nowrap' }}>
             Email Mathi →
           </a>
         </div>
 
         {/* Footer row */}
-        <div style={{ marginTop:16, paddingTop:24, borderTop:`1px solid ${C.border}`, display:'flex', gap:20, flexWrap:'wrap' }}>
-          {[['← Back home','/'],['About SSLVault','/about'],['Pricing','/pricing'],['Knowledge Base','/knowledge-base']].map(([l,p])=>(
-            <button key={l} onClick={()=>nav(p)}
-              style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:13, color:C.textMid, padding:0, transition:'color .15s' }}
-              onMouseEnter={e=>e.currentTarget.style.color='rgba(240,237,232,0.8)'}
-              onMouseLeave={e=>e.currentTarget.style.color=C.textMid}>
-              {l}
-            </button>
+        <div style={{ paddingTop:24, borderTop:`1px solid ${LN}`, display:'flex', gap:20, flexWrap:'wrap' }}>
+          {[['← Home','/'],['About SSLVault','/about'],['Pricing','/pricing'],['Knowledge Base','/knowledge-base']].map(([l, p]) => (
+            <button key={l} onClick={() => nav(p)} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:12, color:T3, padding:0, transition:'color .15s' }}
+              onMouseEnter={e => e.currentTarget.style.color = T1}
+              onMouseLeave={e => e.currentTarget.style.color = T3}>{l}</button>
           ))}
         </div>
 
