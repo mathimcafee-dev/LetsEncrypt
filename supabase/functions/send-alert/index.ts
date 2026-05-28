@@ -53,7 +53,7 @@ serve(async (req) => {
 
     // Log alert
     const db = createClient(SB_URL, SERVICE_KEY)
-    await db.from('alert_log').insert({ user_id: user.id, type, domain: domain || null, sent_at: new Date().toISOString(), sent }).catch(() => {})
+    try { await db.from('alert_log').insert({ user_id: user.id, type, domain: domain || null, sent_at: new Date().toISOString(), sent }) } catch {}
 
     return json({ ok: true, sent, email_sent_to: email })
   } catch (e: any) {

@@ -79,10 +79,10 @@ serve(async (req) => {
       catch { return json({ error: 'Failed to decrypt key. Contact support.' }, 500) }
 
       // Log access
-      await db.from('keylocker_audit').insert({
+      try { await db.from('keylocker_audit').insert({
         user_id: user.id, key_id, action: 'reveal', triggered_by: triggered_by || 'user_reveal',
-      }).catch(() => {})
-      await db.from('keylocker_keys').update({ last_accessed_at: new Date().toISOString() }).eq('id', key_id).catch(() => {})
+      }) } catch {}
+      try { await db.from('keylocker_keys').update({ last_accessed_at: new Date().toISOString() }).eq('id', key_id) } catch {}
 
       return json({ ok: true, pem })
     }
@@ -114,10 +114,11 @@ serve(async (req) => {
       // Find first active agent for user
       const { data: agents } = await db.from('persistent_agents').select('id').eq('user_id', user.id).eq('status', 'online').limit(1)
       if (!agents || agents.length === 0) return json({ ok: false, error: 'No active agents found. Install the SSLVault agent on your server.' })
-      const { data: job } = await db.from('agent_jobs').insert({
+      let job: any = null
+      try { const { data: j } = await db.from('agent_jobs').insert({
         agent_id: agents[0].id, user_id: user.id, job_type: job_type || 'install_cert',
         domain: d, cert_id: cert_id || null, status: 'queued', created_at: new Date().toISOString(),
-      }).select().single().catch(() => ({ data: null }))
+      }).select().single(); job = j } catch {}
       return json({ ok: true, job_id: job?.id })
     }
 

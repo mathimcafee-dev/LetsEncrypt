@@ -854,7 +854,7 @@ serve(async (req) => {
       const now = new Date().toISOString()
 
       // Reset live flag so retry logic re-installs after new cert issues
-      await adminDb().from('certificates').update({ is_live_on_server: false, install_pending_since: null }).eq('id', cert_id).catch(() => {})
+      try { await adminDb().from('certificates').update({ is_live_on_server: false, install_pending_since: null }).eq('id', cert_id) } catch {}
 
       // Update EXISTING ssl_orders row in place (NOT insert — reissue = same order)
       await adminDb().from('ssl_orders').update({
@@ -1161,7 +1161,7 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
       }
     } else if (installMethod === 'cpanel' && installCredId) {
       // Stamp install_pending_since so retry loop knows when to re-fire
-      await adminDb().from('certificates').update({ install_pending_since: new Date().toISOString() }).eq('id', cert.id).catch(() => {})
+      try { await adminDb().from('certificates').update({ install_pending_since: new Date().toISOString() }).eq('id', cert.id) } catch {}
       // Fire-and-forget — never await (wall-clock limit in poll_pending)
       const installPayload = JSON.stringify({
         action: 'install', cert_id: cert.id, domain,
