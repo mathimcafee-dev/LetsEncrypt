@@ -251,7 +251,7 @@ export default function Home({ nav }) {
               Industry Intelligence <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div className="id" style={{position:'absolute',top:'calc(100% + 6px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:'#1f1210',border:'1px solid rgba(192,57,43,0.25)',borderRadius:6,padding:'5px',minWidth:200,boxShadow:'0 8px 32px rgba(0,0,0,0.6)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
-              {[{label:'CA Trust Store',path:'/ca-trust-explorer',desc:'6,200+ root & intermediate CAs'},{label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},{label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'},{label:'Trust Passport',path:'/trust-passport',desc:'Is this site safe?'}].map(it=>(
+              {[{label:'CA Trust Store',path:'/ca-trust-explorer',desc:'6,200+ root & intermediate CAs'},{label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},{label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'}].map(it=>(
                 <button key={it.path} onClick={()=>nav(it.path)} style={{display:'block',width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',fontFamily:F,padding:'7px 10px',borderRadius:4,transition:'background .1s'}}
                   onMouseEnter={e=>e.currentTarget.style.background='rgba(192,57,43,0.1)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
                   <div style={{fontSize:12,fontWeight:500,color:T1,marginBottom:1}}>{it.label}</div>

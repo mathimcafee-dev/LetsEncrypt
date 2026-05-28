@@ -21,7 +21,6 @@ export default function Nav({ nav, page }) {
     {label:'CA Trust Store',path:'/ca-trust-explorer',desc:'6,200+ root & intermediate CAs'},
     {label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},
     {label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'},
-    {label:'Trust Passport',path:'/trust-passport',desc:'Is this site safe? Time-based trust'},
   ]
   const go=h=>h.startsWith('/')?nav(h):document.querySelector(h)?.scrollIntoView({behavior:'smooth'})
 
