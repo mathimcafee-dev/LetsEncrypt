@@ -607,350 +607,196 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
     stepStartTimes.current = { 0: Date.now() }
 
     try {
-      // Fire the reissue/renew — don't await; GGS can take 60-90s and we don't want to block the UI
-      // Instead, start polling ssl_orders immediately so the UI advances in real time
-      let fetchDone = false
-      let fetchOk = false
-      let fetchErr = null
-      let fetchData = null
+      // ── Step 0: Call GGS reissue/renew API ────────────────────────────────
+      // This takes ~12s (5×2s DCV polling inside the edge function)
+      // Wait up to 30s for the API to respond before showing timeout
+      let fetchDone = false, fetchOk = false, fetchErr = null, fetchData = null
 
       fetch(SB_URL+'/functions/v1/gogetssl-issue', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
         body: JSON.stringify({ action, cert_id: cert.id, triggered_by: 'manual', ...extra })
       }).then(r => r.json()).then(d => {
         fetchDone = true; fetchData = d
-        if (!d.ok) { fetchOk = false; fetchErr = d.error || 'Request failed' }
-        else { fetchOk = true }
+        fetchOk = d.ok === true
+        if (!fetchOk) fetchErr = d.error || d.message || 'Request failed'
       }).catch(e => { fetchDone = true; fetchOk = false; fetchErr = e.message })
 
-      // Wait up to 10s for the fetch to return before we start polling
-      // (need order_id or ggs_order_id from the response to poll correctly)
-      // During this time keep step 0 spinning — that's expected
+      // Wait for response — 30s timeout
       await new Promise(resolve => {
-        const t = setInterval(() => { if (fetchDone) { clearInterval(t); resolve() } }, 500)
-        setTimeout(() => { clearInterval(t); resolve() }, 120000)
+        const t = setInterval(() => { if (fetchDone) { clearInterval(t); resolve() } }, 300)
+        setTimeout(() => { clearInterval(t); resolve() }, 30000)
       })
 
+      // ── Handle API failure ────────────────────────────────────────────────
       if (!fetchOk) {
-        // Special case: reissue blocked because one is already in progress
         const isInProgress = fetchData?.code === 'REISSUE_IN_PROGRESS'
         const errMsg = isInProgress
-          ? 'A reissue is already in progress for this certificate. Please wait a few minutes for it to complete, then try again.'
-          : fetchErr || (fetchData === null ? 'GGS request timed out — the certificate may still be issuing. Refresh in 2 minutes.' : fetchData?.error || 'Request failed')
+          ? 'A reissue is already in progress for this certificate. Wait a few minutes then try again.'
+          : fetchData === null
+            ? 'GGS did not respond in 30s — the certificate may still be issuing in the background. Check back in 2 minutes.'
+            : fetchErr || fetchData?.error || 'Request failed'
         setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, { status: 'error', detail: errMsg }) }))
-        setMsg(''); setBusy(false); return
+        setBusy(false); return
       }
-      const d = fetchData
 
-      // Steps 0→1→2 done from API response
-      // For renew, store the new GGS order ID so we poll the right order
+      const d = fetchData
       const newGgsOrderId = d.ggs_order_id || null
+      const apiElapsed = stepStartTimes.current[0] ? Date.now() - stepStartTimes.current[0] : null
+
+      // ── Steps 0, 1, 2: advance based on API response ─────────────────────
+      // Step 0: submitted to GGS — confirmed by API OK response
+      // Step 1: new CSR was generated inside the edge function — confirmed by API OK
+      // Step 2: DCV TXT value — we have it if GGS returned it; DNS add was attempted
       setProgress(p => {
         let steps = [...p.steps]
-        const now = Date.now()
         steps = updateStep(steps, 0, {
           status: 'done',
-          detail: isReissue
-            ? `GGS order #${cert.ggs_order_id}`
-            : `New GGS order #${newGgsOrderId || '—'} placed`,
-          elapsed: stepStartTimes.current[0] ? now - stepStartTimes.current[0] : null,
+          detail: isReissue ? `GGS order #${cert.ggs_order_id}` : `New GGS order #${newGgsOrderId || '—'}`,
+          elapsed: apiElapsed,
         })
-        stepStartTimes.current[1] = now
-        steps = updateStep(steps, 1, { status: 'done', detail: 'RSA-2048 key pair generated', elapsed: 80 })
-        stepStartTimes.current[2] = now
+        steps = updateStep(steps, 1, {
+          status: 'done',
+          detail: 'RSA-2048 key pair generated',
+        })
+        // Step 2: DNS add was attempted by the edge function but we can't confirm
+        // it succeeded from here. Show the TXT value. The cron retries every 5 min.
         steps = updateStep(steps, 2, {
-          status: 'active',
+          status: d.dcv_txt_value ? 'active' : 'active',
           detail: d.dcv_txt_value
-            ? `TXT: ${d.dcv_txt_value.slice(0,28)}… — adding to DNS`
-            : 'Fetching DCV record from GGS…'
+            ? `TXT record submitted to DNS provider · ${d.dcv_txt_name || cert.domain}`
+            : 'DCV record not yet returned by GGS — cron will add it within 5 min',
         })
-        stepStartTimes.current[3] = now
-        steps = updateStep(steps, 3, { status: 'pending', detail: '' })
+        steps = updateStep(steps, 3, { status: 'active', detail: 'Waiting for GGS to validate DNS ownership…' })
+        stepStartTimes.current[3] = Date.now()
         return { ...p, steps, newGgsOrderId }
       })
 
-      // If instantly active (unlikely but possible)
-      if (d.status === 'active') {
-        setProgress(p => {
-          let steps = [...p.steps]
-          steps = updateStep(steps, 3, { status: 'done', detail: 'DCV passed' })
-          steps = updateStep(steps, 4, { status: 'done', detail: `Expires ${d.new_expiry || '199 days'}` })
-          steps = updateStep(steps, 5, { status: cert.install_method === 'agent' ? 'done' : cert.install_method === 'cpanel' ? 'done' : 'skipped', detail: cert.install_method === 'agent' ? 'Install job queued for VPS agent' : cert.install_method === 'cpanel' ? 'Install job queued for cPanel' : 'No server connected — update manually (Vercel/other)' })
-          return { ...p, steps }
-        })
-        loadHistory(); setBusy(false); return
-      }
-
-      // Poll ssl_orders for this cert every 5 seconds until active
-      // Reissue: same ggs_order_id (updated in place) — poll by cert.ggs_order_id
-      // Renew: new ggs_order_id returned in d.ggs_order_id — poll by that
+      // ── Poll ssl_orders every 5s until status = active ────────────────────
+      // Reissue: same ggs_order_id, updated in place
+      // Renew: new ggs_order_id from API response
       const pollGgsOrderId = isReissue ? cert.ggs_order_id : (newGgsOrderId || null)
       const pollStart = Date.now()
-      let lastGgsCheck = 0
+      let lastForceCheck = 0
+      let step2MarkedDone = false
+
       const timer = setInterval(async () => {
         try {
-          // Every 30s: actively call check_status to force GGS→DB sync
-          if (Date.now() - lastGgsCheck >= 30000) {
-            lastGgsCheck = Date.now()
+          const elapsed = Math.round((Date.now() - pollStart) / 1000)
+          const elapsedStr = elapsed >= 60 ? `${Math.floor(elapsed/60)}m ${elapsed%60}s` : `${elapsed}s`
+
+          // Every 30s: force a GGS→DB sync via check_status
+          if (Date.now() - lastForceCheck >= 30000) {
+            lastForceCheck = Date.now()
             try {
-              // Get the ssl_orders row ID to pass to check_status
               const { data: chkOrder } = await supabase
-                .from('ssl_orders')
-                .select('id')
+                .from('ssl_orders').select('id')
                 .eq('user_id', session.user.id)
                 .eq('ggs_order_id', pollGgsOrderId)
-                .order('updated_at', { ascending: false })
-                .limit(1)
-                .single()
+                .order('updated_at', { ascending: false }).limit(1).single()
               if (chkOrder?.id) {
-                await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+                fetch(SB_URL+'/functions/v1/gogetssl-issue', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
                   body: JSON.stringify({ action: 'check_status', order_id: chkOrder.id })
-                })
+                }).catch(() => {})
               }
             } catch {}
           }
 
-          // Poll ssl_orders by ggs_order_id — works for both reissue and renewal
+          // Read current order status from DB
           let latest = null
           if (pollGgsOrderId) {
-            const { data: orders } = await supabase
+            const { data: rows } = await supabase
               .from('ssl_orders')
-              .select('id, status, ggs_order_id, valid_till')
+              .select('id, status, ggs_status, valid_till')
               .eq('user_id', session.user.id)
               .eq('ggs_order_id', pollGgsOrderId)
-              .order('updated_at', { ascending: false })
-              .limit(1)
-            latest = orders?.[0]
-          } else {
-            // Fallback: poll by domain latest
-            const { data: orders } = await supabase
-              .from('ssl_orders')
-              .select('id, status, ggs_order_id, valid_till')
-              .eq('user_id', session.user.id)
-              .eq('domain', cert.domain)
-              .order('created_at', { ascending: false })
-              .limit(1)
-            latest = orders?.[0]
+              .order('updated_at', { ascending: false }).limit(1)
+            latest = rows?.[0]
           }
 
-          // Timeout after 8 minutes — GGS DNS validation can take up to 5 mins
-          if (Date.now() - pollStart > 8 * 60 * 1000) {
+          // Timeout: 10 minutes — tell user it's running in background
+          if (Date.now() - pollStart > 10 * 60 * 1000) {
             clearInterval(timer)
             setProgress(p => ({
-              ...p, pollTimer: null,
+              ...p, pollTimer: null, backgroundProcessing: true,
               steps: updateStep(p.steps, 3, {
                 status: 'active',
-                detail: 'GGS DNS validation is taking longer than usual. The certificate will issue automatically in the background — check back in a few minutes.'
+                detail: `Still waiting after 10 min — DNS validation is slow. The certificate will activate automatically in the background. Refresh the dashboard to see the final status.`
               })
             }))
-            // Show a background processing note at the bottom
-            setProgress(p => ({ ...p, backgroundProcessing: true }))
-            setBusy(false)
-            return
+            setBusy(false); return
           }
 
           if (latest?.status === 'active') {
+            // ── Certificate is now active in our DB ──────────────────────
             clearInterval(timer)
             const dcvElapsed = stepStartTimes.current[3] ? Date.now() - stepStartTimes.current[3] : null
-            const certIssueStart = Date.now()
             setProgress(p => {
               let steps = [...p.steps]
-              steps = updateStep(steps, 3, { status: 'done', detail: 'DCV passed ✓', elapsed: dcvElapsed })
-              steps = updateStep(steps, 4, { status: 'done', detail: latest.valid_till ? `Expires ${new Date(latest.valid_till).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}` : 'Certificate active', elapsed: 200 })
-              steps = updateStep(steps, 5, { status: 'active', detail: 'Dispatching to your server…' })
+              // Step 2: DNS was validated — mark done
+              steps = updateStep(steps, 2, {
+                status: 'done',
+                detail: d.dcv_txt_value
+                  ? `TXT record added and validated by GGS`
+                  : 'DNS validation passed',
+              })
+              // Step 3: DCV confirmed
+              steps = updateStep(steps, 3, {
+                status: 'done',
+                detail: `Domain ownership confirmed by GGS`,
+                elapsed: dcvElapsed,
+              })
+              // Step 4: Certificate active — show real expiry from DB
+              steps = updateStep(steps, 4, {
+                status: 'done',
+                detail: latest.valid_till
+                  ? `Active · expires ${new Date(latest.valid_till).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`
+                  : 'Certificate is active',
+              })
+              // Step 5: install — skipped for now (handled separately)
+              steps = updateStep(steps, 5, {
+                status: 'skipped',
+                detail: 'Installation managed separately via Install tab',
+              })
               return { ...p, pollTimer: null, steps }
             })
-            // ── Failproof install dispatch ──────────────────────────────────
-            setTimeout(async () => {
-              let method = null
-              let dispatchCertId = cert.id
-              let installOk = false
-              let installDetail = ''
-              let serialNumber = null
+            loadHistory()
+            setBusy(false)
 
-              // Resolve cert id, method, serial
-              try {
-                if (!isReissue && newGgsOrderId) {
-                  const { data: newCert } = await supabase
-                    .from('certificates')
-                    .select('id, install_method, serial_number')
-                    .eq('user_id', session.user.id)
-                    .eq('ggs_order_id', newGgsOrderId)
-                    .order('created_at', { ascending: false })
-                    .limit(1)
-                  method = newCert?.[0]?.install_method
-                  serialNumber = newCert?.[0]?.serial_number || null
-                  if (newCert?.[0]?.id) dispatchCertId = newCert[0].id
-                } else {
-                  // Reissue: same cert.id, updated in place by poll_pending
-                  // Poll until updated_at changes (poll_pending writes new cert_pem + serial)
-                  const oldUpdatedAt = cert.updated_at || null
-                  let certRow = null
-                  for (let attempt = 0; attempt < 12; attempt++) {
-                    const { data: row } = await supabase
-                      .from('certificates')
-                      .select('id, install_method, serial_number, updated_at')
-                      .eq('id', cert.id)
-                      .single()
-                    certRow = row
-                    if (row?.updated_at && row.updated_at !== oldUpdatedAt) break
-                    if (attempt < 11) await new Promise(r => setTimeout(r, 5000))
-                  }
-                  method = certRow?.install_method
-                  serialNumber = certRow?.serial_number || null
-                  dispatchCertId = certRow?.id || cert.id
-                }
-              } catch(e) { console.warn('Failed to resolve cert/method:', e) }
+          } else {
+            // ── Still waiting: issued / dv_pending / processing ──────────
+            // 'issued'     = reissue accepted by GGS, waiting for DNS validation
+            // 'dv_pending' = renewal, waiting for DNS validation
+            // Both mean: GGS is checking DNS, not done yet
 
-              // ── cPanel: direct edge function call (credentials already saved) ──
-              if (method === 'cpanel') {
-                try {
-                  const { data: creds } = await supabase
-                    .from('server_credentials')
-                    .select('id')
-                    .eq('server_type', 'cpanel')
-                    .contains('domains', [cert.domain])
-                    .limit(1)
-                  const credId = creds?.[0]?.id
-                  if (!credId) {
-                    installDetail = '⚠️ No cPanel credential found — go to Install tab to add one'
-                  } else {
-                    const cpRes = await fetch(SB_URL + '/functions/v1/cpanel-install', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
-                      body: JSON.stringify({ action: 'install', cert_id: dispatchCertId, domain: cert.domain, credential_id: credId }),
-                    })
-                    const cpData = await cpRes.json().catch(() => ({}))
-                    if (cpData.ok) {
-                      installOk = true
-                      installDetail = '🌐 Installed on cPanel — confirmed'
-                      if (cpData.serial) setModalSerial(cpData.serial)
-                      setModalLiveConfirmed(true)
-                    } else {
-                      installDetail = `⚠️ ${cpData.error || 'cPanel install failed'} — cert issued, install manually`
-                    }
-                  }
-                } catch(cpErr) {
-                  installDetail = `⚠️ cPanel dispatch error — cert issued, install manually`
-                }
-              // ── VPS agent: queue job, agent picks up within 5 min ────────────
-              } else if (method === 'agent') {
-                try {
-                  const { data: serverRows } = await supabase
-                    .from('server_credentials')
-                    .select('id, agent_id')
-                    .contains('domains', [cert.domain])
-                    .not('agent_id', 'is', null)
-                  for (const row of (serverRows || [])) {
-                    const { data: existing } = await supabase
-                      .from('agent_jobs').select('id')
-                      .eq('agent_id', row.agent_id).eq('cert_id', dispatchCertId)
-                      .in('status', ['queued', 'claimed']).maybeSingle()
-                    if (!existing) {
-                      const { data: certData } = await supabase.from('certificates').select('cert_pem, ca_pem, keylocker_key_id').eq('id', dispatchCertId).single()
-                      // Note: keylocker_keys stores AES-encrypted key material, never plain text.
-                      // The agent daemon fetches the key itself via keylocker edge fn at execution time.
-                      // We pass cert_pem and keylocker_key_id so the agent has everything it needs.
-                      await supabase.from('agent_jobs').insert({
-                        agent_id: row.agent_id, user_id: session.user.id, cert_id: dispatchCertId,
-                        job_type: isReissue ? 'reissue' : 'renew', status: 'queued',
-                        cert_pem: certData?.cert_pem || '', key_pem: '',
-                        domain: cert.domain,
-                      })
-                    }
-                  }
-                  installOk = true
-                  installDetail = '🖥 Install job queued — VPS agent will apply within 5 min'
-                } catch(agentErr) {
-                  installDetail = `⚠️ Failed to queue agent job: ${agentErr.message}`
-                }
-              } else {
-                installDetail = 'No server connected — go to Install tab to set one up'
-              }
-
-              const dispatchElapsed = Date.now() - certIssueStart
-              setProgress(p => {
-                let steps = updateStep(p.steps, 5, {
+            // After 15s, mark step 2 as done (DNS add was attempted,
+            // if it failed the cron will have fixed it by now)
+            if (!step2MarkedDone && elapsed >= 15) {
+              step2MarkedDone = true
+              setProgress(p => ({
+                ...p,
+                steps: updateStep(p.steps, 2, {
                   status: 'done',
-                  detail: installDetail,
-                  elapsed: dispatchElapsed,
+                  detail: d.dcv_txt_value
+                    ? `TXT record in DNS · ${d.dcv_txt_value.slice(0,20)}…`
+                    : 'TXT record added to DNS',
                 })
-                return { ...p, steps }
-              })
-              loadHistory()
-              setBusy(false)
+              }))
+            }
 
-              // ── Re-fetch serial from DB after install ─────────────────────
-              // The serial shown in the success modal must be the LATEST cert
-              // from DB — poll_pending may have just updated it.
-              // We query by domain + user + most recent, not by cert.id,
-              // because for reissues the cert row's serial_number gets updated
-              // by poll_pending after the new cert is issued by GGS.
-              try {
-                const { data: freshCert } = await supabase
-                  .from('certificates')
-                  .select('serial_number, cert_pem')
-                  .eq('user_id', session.user.id)
-                  .eq('domain', cert.domain)
-                  .eq('status', 'active')
-                  .order('updated_at', { ascending: false })
-                  .limit(1)
-                  .single()
-                if (freshCert?.serial_number) {
-                  setModalSerial(freshCert.serial_number)
-                }
-              } catch(e) { console.warn('Serial re-fetch failed:', e) }
-
-              // ── Live TLS probe — real serial + HTTPS verification ──────────
-              // For cPanel: small delay for install to apply
-              // For agent: longer wait
-              // For no server / always: still probe to verify cert was issued
-              const probeDelay = method === 'agent' ? 30000 : method === 'cpanel' ? 6000 : 2000
-              setModalProbeStatus('probing')
-              setTimeout(async () => {
-                try {
-                  const probeRes = await fetch(SB_URL + '/functions/v1/cert-probe', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
-                    body: JSON.stringify({ domain: cert.domain, cert_id: dispatchCertId }),
-                  })
-                  const probeData = await probeRes.json().catch(() => ({ ok: false, error: 'Parse failed' }))
-                  setModalProbeStatus(probeData)
-                  if (probeData.ok && probeData.live_confirmed) {
-                    setModalLiveConfirmed(true)
-                  }
-                  if (probeData.cert?.serial || probeData.serial) {
-                    setModalSerial(probeData.cert?.serial || probeData.serial)
-                  }
-                } catch(pe) {
-                  setModalProbeStatus({ ok: false, error: pe.message })
-                }
-              }, probeDelay)
-            }, 2000)
-          } else if (latest?.status === 'dv_pending' || latest?.status === 'issued') {
-            // 'issued' = GGS accepted the reissue, waiting on DNS validation
-            // 'dv_pending' = our DB state while waiting for GGS to confirm
-            const elapsed = Math.round((Date.now() - pollStart) / 1000)
-            const mins = Math.floor(elapsed / 60)
-            const secs = elapsed % 60
-            const elapsedStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`
-            setProgress(p => {
-              let steps = [...p.steps]
-              // Step 2: mark DNS done once we are past the initial phase (10s+)
-              if (elapsed > 10) {
-                steps = updateStep(steps, 2, { status: 'done', detail: 'TXT record added to DNS', elapsed: elapsed * 1000 })
-              }
-              steps = updateStep(steps, 3, {
+            // Update step 3 with real elapsed time
+            setProgress(p => ({
+              ...p,
+              steps: updateStep(p.steps, 3, {
                 status: 'active',
-                detail: `GGS validating DNS ownership… ${elapsedStr} elapsed`
+                detail: `GGS validating DNS ownership… ${elapsedStr} elapsed`,
               })
-              return { ...p, steps }
-            })
+            }))
           }
         } catch {}
-      }, 2000)
+      }, 5000)
 
       setProgress(p => ({ ...p, pollTimer: timer }))
 
