@@ -239,7 +239,7 @@ export default function About({ nav }) {
 
         {/* Footer links */}
         <div style={{ marginTop:36, paddingTop:24, borderTop:`1px solid ${LN}`, display:'flex', gap:20, flexWrap:'wrap' }}>
-          {[['← Home','/'],['Developer','/developer'],['Pricing','/pricing'],['Knowledge Base','/knowledge-base'],['Install Guide','/install']].map(([l, p]) => (
+          {[['← Home','/'],['Pricing','/pricing'],['Knowledge Base','/knowledge-base'],['Install Guide','/install']].map(([l, p]) => (
             <button key={l} onClick={() => nav(p)} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:12, color:T3, padding:0 }}
               onMouseEnter={e => e.currentTarget.style.color = T1}
               onMouseLeave={e => e.currentTarget.style.color = T3}>{l}</button>
