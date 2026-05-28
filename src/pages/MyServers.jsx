@@ -231,17 +231,32 @@ function DnsCard({ cred, onDelete }) {
         <CheckCircle size={11} />
         Connected
       </div>
-      <button onClick={() => onDelete(cred.id)} style={{
-        background: 'none', border: '1px solid rgba(248,113,113,0.25)', cursor: 'pointer',
-        color: '#f87171', padding: '4px 8px', borderRadius: 6, transition: 'all .15s',
-        fontSize: 11, display: 'flex', alignItems: 'center', gap: 4,
-      }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.1)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
-        title="Remove this server"
-      >
-        <Trash2 size={11} /> Remove
-      </button>
+      {isConfirming ? (
+        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <span style={{ fontSize:11, color:'#f87171' }}>Remove?</span>
+          <button onClick={() => onDelete(cred.id)} style={{
+            background:'rgba(248,113,113,0.15)', border:'1px solid rgba(248,113,113,0.4)',
+            cursor:'pointer', color:'#f87171', padding:'4px 10px', borderRadius:6,
+            fontSize:11, fontWeight:600, fontFamily:'inherit'
+          }}>Yes</button>
+          <button onClick={() => onDelete('cancel')} style={{
+            background:'none', border:'1px solid rgba(255,255,255,0.1)',
+            cursor:'pointer', color:'#b0a8a0', padding:'4px 10px', borderRadius:6,
+            fontSize:11, fontFamily:'inherit'
+          }}>No</button>
+        </div>
+      ) : (
+        <button onClick={() => onDelete(cred.id)} style={{
+          background: 'none', border: '1px solid rgba(248,113,113,0.25)', cursor: 'pointer',
+          color: '#f87171', padding: '4px 8px', borderRadius: 6, transition: 'all .15s',
+          fontSize: 11, display: 'flex', alignItems: 'center', gap: 4,
+        }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.1)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+        >
+          <Trash2 size={11} /> Remove
+        </button>
+      )}
     </div>
   )
 }
@@ -609,7 +624,8 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
 
 
 // ── Hosting credential card ───────────────────────────────────────────
-function HostingCard({ cred, onDelete }) {
+function HostingCard({ cred, onDelete, deletingId }) {
+  const isConfirming = deletingId === cred.id
   const domainCount = (cred.domains || []).length
   return (
     <div style={{
@@ -838,8 +854,11 @@ export default function MyServers({ user }) {
     load()
   }
 
+  const [deletingCpanelId, setDeletingCpanelId] = useState(null)
   async function deleteCpanel(id, source) {
-    if (!confirm('Remove this hosting account?')) return
+    if (id === 'cancel') { setDeletingCpanelId(null); return }
+    if (deletingCpanelId !== id) { setDeletingCpanelId(id); return }
+    setDeletingCpanelId(null)
     if (source === 'server_credentials') {
       await supabase.from('server_credentials').delete().eq('id', id).eq('user_id', user.id)
     } else {
@@ -1021,7 +1040,7 @@ export default function MyServers({ user }) {
                 ) : (
                   <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                     {cpanelCreds.map(cred => (
-                      <HostingCard key={cred.id} cred={cred} onDelete={(id) => deleteCpanel(id, cred._source)} />
+                      <HostingCard key={cred.id} cred={cred} deletingId={deletingCpanelId} onDelete={(id) => deleteCpanel(id, cred._source)} />
                     ))}
                     <button onClick={() => setShowAddHosting(true)} style={{
                       padding:'12px', borderRadius:10,
