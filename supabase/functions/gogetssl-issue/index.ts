@@ -557,32 +557,35 @@ serve(async (req) => {
         console.error('[place_order] KeyLocker store failed:', klRes.error)
       }
 
-      // Poll GGS for DCV info — retry up to 5x (GGS takes a few seconds to generate DCV)
-      let dcvName = '', dcvValue = '', lastStatusRes: any = {}
-      for (let attempt = 0; attempt < 5; attempt++) {
+      // ONE quick DCV check after 2s. We do NOT loop/retry here —
+      // Supabase edge functions have a wall-clock CPU limit and sleeping
+      // 10s (5×2s) causes the function to be killed, leaving dcv_txt_value null.
+      // The poll_pending cron (every 2 min) picks up DCV automatically if missed.
+      // The frontend check_status loop (every 5s) also rescues it.
+      let dcvName = '', dcvValue = ''
+      try {
         await new Promise(r => setTimeout(r, 2000))
-        lastStatusRes = await ggsGet(authKey, `/orders/status/${orderRes.order_id}`)
+        const quickStatus = await ggsGet(authKey, `/orders/status/${orderRes.order_id}`)
         const fromOrder = extractDcv(orderRes)
-        const fromStatus = extractDcv(lastStatusRes)
+        const fromStatus = extractDcv(quickStatus)
         dcvName = fromOrder.name || fromStatus.name
         dcvValue = fromOrder.value || fromStatus.value
-        if (dcvValue) break
-        console.log(`[place_order] DCV not yet available, attempt ${attempt + 1}/5`)
+        if (dcvValue) {
+          await adminDb().from('ssl_orders').update({
+            dcv_txt_name:    dcvName,
+            dcv_txt_value:   dcvValue,
+            dcv_cname_name:  dcvName,
+            dcv_cname_value: dcvValue,
+            ggs_status:      quickStatus.status || 'dv_pending',
+            updated_at:      new Date().toISOString(),
+          }).eq('id', saved.id)
+          await autoDns(authHeader, user.id, cleanDomain, dcvName, dcvValue)
+        } else {
+          console.log('[place_order] DCV not ready after 2s — poll_pending cron will pick it up')
+        }
+      } catch (e: any) {
+        console.warn('[place_order] quick DCV check failed (non-fatal):', e.message)
       }
-
-      if (dcvValue) {
-        await adminDb().from('ssl_orders').update({
-          dcv_txt_name:    dcvName,
-          dcv_txt_value:   dcvValue,
-          dcv_cname_name:  dcvName,
-          dcv_cname_value: dcvValue,
-          ggs_status:      lastStatusRes.status || 'dv_pending',
-          updated_at:      new Date().toISOString(),
-        }).eq('id', saved.id)
-      }
-
-      // Auto-add DNS TXT record
-      await autoDns(authHeader, user.id, cleanDomain, dcvName, dcvValue)
 
       return json({
         ok:            true,
@@ -919,28 +922,26 @@ serve(async (req) => {
         newOrder.keylocker_key_id = klRes.key_id
       }
 
-      // Poll GGS for DCV info — retry up to 5x with 2s gaps (same as place_order)
-      let dcvName = '', dcvValue = '', renewStatus: any = {}
-      for (let attempt = 0; attempt < 5; attempt++) {
+      // ONE quick DCV check — do not loop, same wall-clock limit applies
+      let dcvName = '', dcvValue = ''
+      try {
         await new Promise(r => setTimeout(r, 2000))
-        renewStatus = await ggsGet(authKey, `/orders/status/${renewRes.order_id}`)
+        const renewStatus = await ggsGet(authKey, `/orders/status/${renewRes.order_id}`)
         const fromOrder = extractDcv(renewRes)
         const fromStatus = extractDcv(renewStatus)
         dcvName = fromOrder.name || fromStatus.name
         dcvValue = fromOrder.value || fromStatus.value
-        if (dcvValue) break
-        console.log(`[renew] DCV not yet available, attempt ${attempt + 1}/5`)
+        if (dcvValue) {
+          await adminDb().from('ssl_orders').update({
+            dcv_txt_name: dcvName, dcv_txt_value: dcvValue,
+            dcv_cname_name: dcvName, dcv_cname_value: dcvValue,
+            ggs_status: renewStatus.status || 'dv_pending', updated_at: new Date().toISOString(),
+          }).eq('id', newOrder.id)
+          await autoDns(authHeader, user.id, cleanDomain, dcvName, dcvValue)
+        }
+      } catch (e: any) {
+        console.warn('[renew] quick DCV check failed (non-fatal):', e.message)
       }
-
-      if (dcvValue) {
-        await adminDb().from('ssl_orders').update({
-          dcv_txt_name: dcvName, dcv_txt_value: dcvValue,
-          dcv_cname_name: dcvName, dcv_cname_value: dcvValue,
-          ggs_status: renewStatus.status || 'dv_pending', updated_at: new Date().toISOString(),
-        }).eq('id', newOrder.id)
-      }
-
-      await autoDns(authHeader, user.id, cleanDomain, dcvName, dcvValue)
 
       // Log renewal in cert_reissues (for history display)
       await adminDb().from('cert_reissues').insert({
