@@ -142,78 +142,29 @@ function extractDcv(resp: any): { name: string; value: string } {
 
 // ── Auto-add DNS TXT record ────────────────────────────────────────────
 
-// ── Direct Cloudflare DNS operations ─────────────────────────────────
-// No inter-function HTTP calls — direct CF API from this function.
-// Failures are logged clearly, not swallowed silently.
-
-const SB_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-
-async function cfDecrypt(b64: string): Promise<Record<string, string>> {
-  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(SB_SERVICE_KEY))
-  const key  = await crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['decrypt'])
-  const buf  = Uint8Array.from(atob(b64), c => c.charCodeAt(0))
-  const pt   = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: buf.slice(0, 12) }, key, buf.slice(12))
-  return JSON.parse(new TextDecoder().decode(pt))
-}
-
-function cfApex(domain: string): string {
-  return domain.replace(/^[*][.]/, '').split('.').slice(-2).join('.')
-}
-
-async function cfGetToken(userId: string, domain: string): Promise<string | null> {
-  const apex = cfApex(domain)
-  const { data: rows } = await adminDb()
-    .from('dns_credentials')
-    .select('credentials_enc, domain_pattern, provider')
-    .eq('user_id', userId)
-    .eq('provider', 'cloudflare')
-    .order('created_at', { ascending: false })
-  if (!rows?.length) { console.error('[dns] No cloudflare credential for user', userId); return null }
-  const match = rows.find((r: any) => {
-    const p = (r.domain_pattern || '').toLowerCase()
-    return p === domain.toLowerCase() || p === apex || p === `*.${apex}` || p === ''
-  }) || rows[0]
-  try {
-    const creds = await cfDecrypt(match.credentials_enc)
-    const token = creds.apiToken || creds.api_token || creds.token || null
-    if (!token) console.error('[dns] Token field missing from decrypted credential')
-    return token
-  } catch (e: any) {
-    console.error('[dns] Decrypt failed — token may be re-encrypted incorrectly:', e.message)
-    return null
-  }
-}
-
-async function cfGetZone(token: string, domain: string): Promise<string | null> {
-  const apex = cfApex(domain)
-  const r = await fetch(`https://api.cloudflare.com/client/v4/zones?name=${apex}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  const d = await r.json()
-  const zoneId = d.result?.[0]?.id || null
-  if (!zoneId) console.error('[dns] No CF zone for', apex, '— errors:', JSON.stringify(d.errors))
-  return zoneId
-}
+// ── DNS helpers — call dns-provider using SERVICE ROLE KEY ───────────
+// Using service role key (not user JWT) makes the inter-function call
+// reliable — it bypasses JWT expiry and auth issues.
+// dns-provider handles ALL providers: Cloudflare, Vercel, GoDaddy,
+// DigitalOcean, Hetzner, Porkbun, Linode, DNSimple, Namecheap, Route53
 
 async function autoDns(_authHeader: string, userId: string, domain: string, txtName: string, txtValue: string): Promise<void> {
   if (!txtValue) { console.warn('[dns] autoDns: empty txtValue — skipping'); return }
   try {
-    const token = await cfGetToken(userId, domain)
-    if (!token) { console.error('[dns] autoDns: no token — record NOT added for', domain); return }
-    const zoneId = await cfGetZone(token, domain)
-    if (!zoneId) { console.error('[dns] autoDns: no zone — record NOT added for', domain); return }
-    const r = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`, {
+    const r = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'TXT', name: txtName || domain, content: txtValue, ttl: 300 })
+      headers: {
+        'Content-Type': 'application/json',
+        // Service role key — always valid, not tied to user session
+        Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+      },
+      body: JSON.stringify({ action: 'auto_add', user_id: userId, domain, txt_name: txtName, txt_value: txtValue }),
     })
     const d = await r.json()
-    if (d.success) {
-      console.log('[dns] TXT added:', txtName, txtValue.slice(0, 12) + '...')
+    if (d.ok) {
+      console.log('[dns] TXT added via', d.provider || 'unknown provider', ':', txtName)
     } else {
-      const exists = d.errors?.some((e: any) => e.code === 81057)
-      if (exists) { console.log('[dns] TXT already exists (ok):', txtName) }
-      else { console.error('[dns] CF rejected TXT add:', JSON.stringify(d.errors)) }
+      console.error('[dns] auto_add failed:', d.message, '— user may need to add TXT record manually')
     }
   } catch (e: any) {
     console.error('[dns] autoDns exception:', e.message)
@@ -223,24 +174,16 @@ async function autoDns(_authHeader: string, userId: string, domain: string, txtN
 async function autoDeleteDns(_authHeader: string, userId: string, domain: string, txtName: string, txtValue: string): Promise<void> {
   if (!txtValue) return
   try {
-    const token = await cfGetToken(userId, domain)
-    if (!token) return
-    const zoneId = await cfGetZone(token, domain)
-    if (!zoneId) return
-    const r = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records?type=TXT&name=${encodeURIComponent(txtName)}`, {
-      headers: { Authorization: `Bearer ${token}` }
+    await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+      },
+      body: JSON.stringify({ action: 'auto_delete', user_id: userId, domain, txt_name: txtName, txt_value: txtValue }),
     })
-    const d = await r.json()
-    for (const rec of (d.result || [])) {
-      if (rec.content === txtValue) {
-        await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${rec.id}`, {
-          method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
-        })
-        console.log('[dns] TXT deleted:', txtName)
-      }
-    }
   } catch (e: any) {
-    console.error('[dns] autoDeleteDns exception:', e.message)
+    console.warn('[dns] autoDeleteDns exception:', e.message)
   }
 }
 
