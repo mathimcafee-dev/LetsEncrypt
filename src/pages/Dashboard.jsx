@@ -138,6 +138,41 @@ function DvPendingCard({ order, onRefresh }) {
   const [checking, setChecking] = useState(false)
   const [addingDns, setAddingDns] = useState(false)
   const [msg, setMsg] = useState('')
+  const [elapsed, setElapsed] = useState(0)
+  const pollRef = useRef(null)
+
+  // Auto-poll every 30s — no manual click needed
+  useEffect(() => {
+    let secs = 0
+    const tick = setInterval(() => { secs++; setElapsed(secs) }, 1000)
+
+    const doPoll = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) return
+        const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
+          body: JSON.stringify({ action: 'check_status', order_id: order.id })
+        })
+        const d = await r.json()
+        if (d.status === 'active' || d.ggs_status === 'active') {
+          clearInterval(tick)
+          clearInterval(pollRef.current)
+          setMsg('✅ Certificate issued!')
+          setTimeout(() => onRefresh(), 1000)
+        }
+      } catch {}
+    }
+
+    // First poll after 15s (DNS TTL), then every 30s
+    const firstPoll = setTimeout(() => {
+      doPoll()
+      pollRef.current = setInterval(doPoll, 30000)
+    }, 15000)
+
+    return () => { clearInterval(tick); clearTimeout(firstPoll); clearInterval(pollRef.current) }
+  }, [order.id])
 
   const checkStatus = async () => {
     setChecking(true); setMsg('')
@@ -151,17 +186,12 @@ function DvPendingCard({ order, onRefresh }) {
       const d = await r.json()
       if (d.status === 'active' || d.ggs_status === 'active') {
         setMsg('✅ Certificate issued! Refreshing...')
-        // Log cert event
-        try {
-          const { data: { session: s } } = await supabase.auth.getSession()
-          if (s) await supabase.from('cert_events').insert({
-            user_id: s.user.id, cert_id: order.id, domain: order.domain,
-            event_type: 'issued', meta: { product: order.cert_type || 'DV', source: 'rapidssl' }
-          })
-        } catch (_) {}
-        setTimeout(() => onRefresh(), 1500)
+        setTimeout(() => onRefresh(), 1000)
       } else {
-        setMsg('Status: '+(d.ggs_status||'pending')+' — DNS may still be propagating')
+        const mins = Math.floor(elapsed / 60)
+        const secs = elapsed % 60
+        const elStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`
+        setMsg(`Status: ${d.ggs_status || 'pending'} — DNS propagating (${elStr} elapsed)`)
       }
     } catch(e) { setMsg('Error: '+e.message) }
     setChecking(false)
@@ -245,7 +275,7 @@ function DvPendingCard({ order, onRefresh }) {
           style={{ display:'flex', alignItems:'center', gap:6, background:'transparent',
             border:'1px solid rgba(240,237,232,0.12)', color:'#ff8c7a', borderRadius:6,
             padding:'7px 14px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
-          <RefreshCw size={11} style={{ animation: checking ? 'spin 0.8s linear infinite':'none' }}/>
+          <RefreshCw size={11} style={{ animation: (checking || elapsed > 0) ? 'spin 0.8s linear infinite':'none' }}/>
           {checking ? 'Checking...' : 'Check Status'}
         </button>
         {!confirmDismiss ? (
@@ -651,47 +681,52 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       }
 
       // Poll ssl_orders for this cert every 5 seconds until active
-      // For renew: poll by new GGS order ID (from d.ggs_order_id)
-      // For reissue: poll by domain + latest order
+      // Reissue: same ggs_order_id (updated in place) — poll by cert.ggs_order_id
+      // Renew: new ggs_order_id returned in d.ggs_order_id — poll by that
+      const pollGgsOrderId = isReissue ? cert.ggs_order_id : (newGgsOrderId || null)
       const pollStart = Date.now()
       let lastGgsCheck = 0
       const timer = setInterval(async () => {
         try {
-          // Every 30s: actively call check_status to force GGS->DB sync
-          // Needed because GGS API lags behind actual cert issuance
+          // Every 30s: actively call check_status to force GGS→DB sync
           if (Date.now() - lastGgsCheck >= 30000) {
             lastGgsCheck = Date.now()
             try {
-              const { data: chkOrders } = await supabase
-                .from('ssl_orders').select('id')
-                .eq('user_id', session.user.id).eq('domain', cert.domain)
-                .order('created_at', { ascending: false }).limit(1)
-              const chkOrderId = chkOrders?.[0]?.id
-              if (chkOrderId) {
+              // Get the ssl_orders row ID to pass to check_status
+              const { data: chkOrder } = await supabase
+                .from('ssl_orders')
+                .select('id')
+                .eq('user_id', session.user.id)
+                .eq('ggs_order_id', pollGgsOrderId)
+                .order('updated_at', { ascending: false })
+                .limit(1)
+                .single()
+              if (chkOrder?.id) {
                 await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+session.access_token },
-                  body: JSON.stringify({ action: 'check_status', order_id: chkOrderId })
+                  body: JSON.stringify({ action: 'check_status', order_id: chkOrder.id })
                 })
               }
             } catch {}
           }
 
+          // Poll ssl_orders by ggs_order_id — works for both reissue and renewal
           let latest = null
-          if (!isReissue && newGgsOrderId) {
-            // Renew: poll by exact new GGS order ID
+          if (pollGgsOrderId) {
             const { data: orders } = await supabase
               .from('ssl_orders')
-              .select('id, status, ggs_order_id, valid_till, install_method')
+              .select('id, status, ggs_order_id, valid_till')
               .eq('user_id', session.user.id)
-              .eq('ggs_order_id', newGgsOrderId)
+              .eq('ggs_order_id', pollGgsOrderId)
+              .order('updated_at', { ascending: false })
               .limit(1)
             latest = orders?.[0]
           } else {
-            // Reissue: poll domain's latest order
+            // Fallback: poll by domain latest
             const { data: orders } = await supabase
               .from('ssl_orders')
-              .select('id, status, ggs_order_id, valid_till, install_method')
+              .select('id, status, ggs_order_id, valid_till')
               .eq('user_id', session.user.id)
               .eq('domain', cert.domain)
               .order('created_at', { ascending: false })
@@ -748,23 +783,23 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   serialNumber = newCert?.[0]?.serial_number || null
                   if (newCert?.[0]?.id) dispatchCertId = newCert[0].id
                 } else {
-                  // For reissues: poll DB until serial_number changes from old value
-                  // poll_pending updates serial_number when the new cert activates
-                  const oldSerial = cert.serial_number || null
+                  // Reissue: same cert.id, updated in place by poll_pending
+                  // Poll until updated_at changes (poll_pending writes new cert_pem + serial)
+                  const oldUpdatedAt = cert.updated_at || null
                   let certRow = null
-                  for (let attempt = 0; attempt < 10; attempt++) {
+                  for (let attempt = 0; attempt < 12; attempt++) {
                     const { data: row } = await supabase
                       .from('certificates')
                       .select('id, install_method, serial_number, updated_at')
                       .eq('id', cert.id)
                       .single()
                     certRow = row
-                    // If serial changed or no old serial to compare, we have fresh data
-                    if (row?.serial_number && row.serial_number !== oldSerial) break
-                    if (attempt < 9) await new Promise(r => setTimeout(r, 3000))
+                    if (row?.updated_at && row.updated_at !== oldUpdatedAt) break
+                    if (attempt < 11) await new Promise(r => setTimeout(r, 5000))
                   }
                   method = certRow?.install_method
                   serialNumber = certRow?.serial_number || null
+                  dispatchCertId = certRow?.id || cert.id
                 }
               } catch(e) { console.warn('Failed to resolve cert/method:', e) }
 
