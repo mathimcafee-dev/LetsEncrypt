@@ -59,18 +59,37 @@ async function ggsAuth(): Promise<string> {
   return data.key
 }
 
-async function ggsPost(authKey: string, path: string, body: Record<string, string>) {
-  const res = await fetch(`${GGS_API}${path}?auth_key=${authKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(body),
-  })
-  return res.json()
+async function ggsPost(authKey: string, path: string, body: Record<string, string>, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(`${GGS_API}${path}?auth_key=${authKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(body),
+        signal: AbortSignal.timeout(30000),
+      })
+      return res.json()
+    } catch (e: any) {
+      console.warn(`[ggs] POST ${path} attempt ${i+1}/${retries} failed:`, e.message)
+      if (i < retries - 1) await new Promise(r => setTimeout(r, 2000 * (i + 1)))
+      else throw e
+    }
+  }
 }
 
-async function ggsGet(authKey: string, path: string) {
-  const res = await fetch(`${GGS_API}${path}?auth_key=${authKey}`)
-  return res.json()
+async function ggsGet(authKey: string, path: string, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(`${GGS_API}${path}?auth_key=${authKey}`, {
+        signal: AbortSignal.timeout(30000),
+      })
+      return res.json()
+    } catch (e: any) {
+      console.warn(`[ggs] GET ${path} attempt ${i+1}/${retries} failed:`, e.message)
+      if (i < retries - 1) await new Promise(r => setTimeout(r, 2000 * (i + 1)))
+      else throw e
+    }
+  }
 }
 
 // ── Product resolution ────────────────────────────────────────────────
@@ -1048,11 +1067,29 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
         }
       }
     } else if (installMethod === 'cpanel' && installCredId) {
-      fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-        body: JSON.stringify({ action: 'install', cert_id: cert.id, domain, credential_id: installCredId, _service_user_id: userId }),
-      }).catch((e: any) => console.warn('[dispatch] cpanel fire-and-forget:', e.message))
+      // Await the install — same path as manual install, no fire-and-forget
+      try {
+        const res = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
+          body: JSON.stringify({ action: 'install', cert_id: cert.id, domain, credential_id: installCredId, _service_user_id: userId }),
+        })
+        const result = await res.json()
+        if (result.ok) {
+          console.log('[dispatch] cPanel install SUCCESS for', domain)
+        } else {
+          console.error('[dispatch] cPanel install FAILED for', domain, ':', result.error)
+          // Log failure to cert_reissues so customer can see it
+          await adminDb().from('cert_reissues')
+            .update({ auto_install_status: 'failed', auto_install_error: result.error })
+            .eq('ggs_order_id', ggsOrderId)
+            .eq('status', 'completed')
+            .order('created_at', { ascending: false })
+            .limit(1)
+        }
+      } catch (e: any) {
+        console.error('[dispatch] cPanel install exception for', domain, ':', e.message)
+      }
     } else {
       console.log('[dispatch] no install method for', domain, '— customer must install manually')
     }
