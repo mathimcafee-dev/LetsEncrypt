@@ -143,19 +143,48 @@ async function resolveProductId(authKey: string, code: string): Promise<{ id: nu
 
 function extractDcv(resp: any): { name: string; value: string } {
   if (!resp) return { name: '', value: '' }
-  // Direct fields
+
+  // Log raw GGS response shape so we can diagnose missing fields
+  console.log('[extractDcv] keys:', Object.keys(resp).join(','), '| sample:', JSON.stringify(resp).slice(0, 400))
+
+  // Shape 1: top-level dcv_txt_name / dcv_txt_value  (add_ssl_order response)
   const directName  = resp.dcv_txt_name  || resp.dcv_cname_name  || ''
   const directValue = resp.dcv_txt_value || resp.dcv_cname_value || ''
   if (directValue) return { name: directName, value: directValue }
-  // Nested domains object
+
+  // Shape 2: top-level dns_txt_* / txt_* variants
+  const dns2Value = resp.dns_txt_value || resp.txt_value || resp.txt_record || ''
+  const dns2Name  = resp.dns_txt_name  || resp.txt_name  || ''
+  if (dns2Value) return { name: dns2Name, value: dns2Value }
+
+  // Shape 3: top-level validation object
+  if (resp.validation && typeof resp.validation === 'object') {
+    const v = resp.validation
+    const vValue = v.dcv_txt_value || v.dns_txt_value || v.txt_value || v.txt_record || v.cname_value || ''
+    const vName  = v.dcv_txt_name  || v.dns_txt_name  || v.txt_name  || v.cname_name  || ''
+    if (vValue) return { name: vName, value: vValue }
+  }
+
+  // Shape 4: nested domains object (orders/status response)
   if (resp.domains && typeof resp.domains === 'object') {
     const d = Object.values(resp.domains)[0] as any
     if (d) {
-      const name  = d.txt_record_name  || d.cname_name  || d.validation?.cname_name  || ''
-      const value = d.txt_record_value || d.cname_value || d.validation?.cname_value || ''
+      console.log('[extractDcv] domains[0] keys:', Object.keys(d).join(','), '| sample:', JSON.stringify(d).slice(0, 300))
+      const name  = d.txt_record_name  || d.dcv_txt_name  || d.dns_txt_name  || d.cname_name  || d.validation?.cname_name  || ''
+      const value = d.txt_record_value || d.dcv_txt_value || d.dns_txt_value || d.txt_value   || d.txt_record || d.cname_value || d.validation?.cname_value || ''
       if (value) return { name, value }
     }
   }
+
+  // Shape 5: dns_records array
+  if (Array.isArray(resp.dns_records) && resp.dns_records.length > 0) {
+    const r = resp.dns_records[0]
+    const value = r.value || r.txt_value || r.content || ''
+    const name  = r.name  || r.host || ''
+    if (value) return { name, value }
+  }
+
+  console.warn('[extractDcv] no DCV found. Full response:', JSON.stringify(resp).slice(0, 500))
   return { name: '', value: '' }
 }
 
