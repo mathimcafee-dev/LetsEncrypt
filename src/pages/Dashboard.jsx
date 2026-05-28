@@ -658,13 +658,14 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         stepStartTimes.current[1] = now
         steps = updateStep(steps, 1, { status: 'done', detail: 'RSA-2048 key pair generated', elapsed: 80 })
         stepStartTimes.current[2] = now
-        if (d.dcv_txt_value) {
-          steps = updateStep(steps, 2, { status: 'done', detail: `TXT: ${d.dcv_txt_value.slice(0,28)}… · auto-added to DNS`, elapsed: 120 })
-        } else {
-          steps = updateStep(steps, 2, { status: 'active', detail: 'Waiting for DCV record from GGS — cron will add to DNS' })
-        }
+        steps = updateStep(steps, 2, {
+          status: 'active',
+          detail: d.dcv_txt_value
+            ? `TXT: ${d.dcv_txt_value.slice(0,28)}… — adding to DNS`
+            : 'Fetching DCV record from GGS…'
+        })
         stepStartTimes.current[3] = now
-        steps = updateStep(steps, 3, { status: 'active', detail: 'Waiting for GGS to confirm DCV…' })
+        steps = updateStep(steps, 3, { status: 'pending', detail: '' })
         return { ...p, steps, newGgsOrderId }
       })
 
@@ -750,7 +751,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             return
           }
 
-          if (latest?.status === 'active' || latest?.status === 'issued') {
+          if (latest?.status === 'active') {
             clearInterval(timer)
             const dcvElapsed = stepStartTimes.current[3] ? Date.now() - stepStartTimes.current[3] : null
             const certIssueStart = Date.now()
@@ -928,18 +929,25 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                 }
               }, probeDelay)
             }, 2000)
-          } else if (latest?.status === 'dv_pending') {
+          } else if (latest?.status === 'dv_pending' || latest?.status === 'issued') {
+            // 'issued' = GGS accepted the reissue, waiting on DNS validation
+            // 'dv_pending' = our DB state while waiting for GGS to confirm
             const elapsed = Math.round((Date.now() - pollStart) / 1000)
             const mins = Math.floor(elapsed / 60)
             const secs = elapsed % 60
             const elapsedStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`
-            setProgress(p => ({
-              ...p,
-              steps: updateStep(p.steps, 3, {
+            setProgress(p => {
+              let steps = [...p.steps]
+              // Step 2: mark DNS done once we are past the initial phase (10s+)
+              if (elapsed > 10) {
+                steps = updateStep(steps, 2, { status: 'done', detail: 'TXT record added to DNS', elapsed: elapsed * 1000 })
+              }
+              steps = updateStep(steps, 3, {
                 status: 'active',
-                detail: `Waiting for GGS DNS check… ${elapsedStr} elapsed`
+                detail: `GGS validating DNS ownership… ${elapsedStr} elapsed`
               })
-            }))
+              return { ...p, steps }
+            })
           }
         } catch {}
       }, 2000)
