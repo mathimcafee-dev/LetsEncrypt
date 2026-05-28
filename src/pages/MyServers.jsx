@@ -290,11 +290,11 @@ function AddServerModal({ onClose, userId }) {
       zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
     }}>
       <div style={{
-        background: 'var(--v2-surface)', borderRadius: 14, width: '100%', maxWidth: 500,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.15)', overflow: 'hidden',
+        background: '#1a0404', borderRadius: 14, width: '100%', maxWidth: 500,
+        border: '1px solid rgba(192,57,43,0.3)', boxShadow: '0 24px 64px rgba(0,0,0,0.6)', overflow: 'hidden',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(192,57,43,0.2)' }}>
           <div style={{ fontSize:16, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.3px' }}>
             Connect your server
           </div>
@@ -317,13 +317,13 @@ function AddServerModal({ onClose, userId }) {
                   width: '100%', padding: '10px 12px', borderRadius: 8,
                   border: '1px solid rgba(192,57,43,0.25)', fontSize:14,
                   outline: 'none', fontFamily: 'inherit', marginBottom: 20,
-                  boxSizing: 'border-box',
+                  boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', color: '#f0ede8',
                 }}
                 onKeyDown={e => e.key === 'Enter' && domain && generate()}
               />
               {/* What this does */}
               <div style={{
-                background: 'var(--v2-bg)', border: '1px solid var(--v2-border)',
+                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(192,57,43,0.2)',
                 borderRadius: 10, padding: 16, marginBottom: 20,
               }}>
                 <div style={{ fontSize:12, fontWeight: 600, color: '#e8e0d8', marginBottom: 10 }}>What happens when you connect:</div>
@@ -342,14 +342,14 @@ function AddServerModal({ onClose, userId }) {
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={onClose} style={{
                   flex: 1, padding: '10px', borderRadius: 8,
-                  border: '1px solid rgba(192,57,43,0.25)', background: 'var(--v2-surface)',
+                  border: '1px solid rgba(192,57,43,0.25)', background: 'rgba(255,255,255,0.04)',
                   fontSize:13, fontWeight: 600, color: '#e8e0d8',
                   cursor: 'pointer', fontFamily: 'inherit',
                 }}>Cancel</button>
                 <button onClick={generate} disabled={loading} style={{
                   flex: 2, padding: '10px', borderRadius: 8,
-                  border: 'none', background: 'var(--v2-text)',
-                  fontSize:13, fontWeight: 600, color: 'var(--v2-surface)',
+                  border: 'none', background: '#c0392b',
+                  fontSize:13, fontWeight: 600, color: '#ffffff',
                   cursor: 'pointer', fontFamily: 'inherit',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 }}>
@@ -371,7 +371,7 @@ function AddServerModal({ onClose, userId }) {
 
               {/* Command box */}
               <div style={{
-                background: '#f0ede8', borderRadius: 10, overflow: 'hidden', marginBottom: 16,
+                background: '#0d0000', border: '1px solid rgba(192,57,43,0.25)', borderRadius: 10, overflow: 'hidden', marginBottom: 16,
               }}>
                 <div style={{
                   padding: '8px 14px',
@@ -403,14 +403,14 @@ function AddServerModal({ onClose, userId }) {
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => setStep(1)} style={{
                   flex: 1, padding: '10px', borderRadius: 8,
-                  border: '1px solid rgba(192,57,43,0.25)', background: 'var(--v2-surface)',
+                  border: '1px solid rgba(192,57,43,0.25)', background: 'rgba(255,255,255,0.04)',
                   fontSize:13, fontWeight: 600, color: '#e8e0d8',
                   cursor: 'pointer', fontFamily: 'inherit',
                 }}>← Back</button>
                 <button onClick={onClose} style={{
                   flex: 2, padding: '10px', borderRadius: 8,
-                  border: 'none', background: 'var(--v2-text)',
-                  fontSize:13, fontWeight: 600, color: 'var(--v2-surface)',
+                  border: 'none', background: '#c0392b',
+                  fontSize:13, fontWeight: 600, color: '#ffffff',
                   cursor: 'pointer', fontFamily: 'inherit',
                 }}>Done — I ran the command</button>
               </div>
