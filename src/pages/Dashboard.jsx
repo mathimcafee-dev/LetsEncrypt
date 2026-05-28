@@ -1565,11 +1565,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           <ABtn icon={RefreshCw} label="Renew order"
             onClick={() => certHistoryRef.current?.doAction('renew')} disabled={!session}/>
         )}
-        <ABtn icon={Server} label="Install"
-          onClick={() => onInstall(cert)}
-          disabled={cert.is_current === false}
-          title={cert.is_current === false ? 'This is an older certificate — only the current certificate can be installed' : 'Install certificate on your server'}
-        />
+        <ABtn icon={Server} label="Install" onClick={() => onInstall(cert)}/>
         <ABtn icon={RefreshCw} label={refreshing ? 'Syncing…' : 'Sync status'} onClick={doRefresh} disabled={refreshing}/>
         <ABtn icon={Download} label="Certificate" onClick={() => cert.cert_pem && dl(cert.cert_pem, cert.domain+'-cert.pem')} disabled={!cert.cert_pem}/>
         {canCancel && !cancelConfirm && !cancelMsg && (
