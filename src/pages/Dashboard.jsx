@@ -991,95 +991,54 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       {/* ── REISSUE HISTORY ── */}
       {tab==='reissues' && (
         <div>
-          {reissues.length === 0 ? (
-            <div style={{ fontSize:12, color:'#b0a8a0', padding:'12px 0', textAlign:'center' }}>
-              No reissues yet. Use the Reissue button above to regenerate this certificate.
-            </div>
-          ) : reissues.map((r, i) => (
-            <div key={r.id} style={{ border:'1px solid var(--v2-border)', borderRadius:8, marginBottom:8, overflow:'hidden' }}>
-              {/* Row header — always visible */}
-              <div onClick={() => toggleExpand(r.id)}
-                style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
-                  background: expanded[r.id] ? 'rgba(192,57,43,0.06)' : 'transparent',
-                  cursor:'pointer', userSelect:'none', borderLeft: r.status==='dv_pending' ? '3px solid #fbbf24' : r.status==='completed'||r.status==='active' ? '3px solid #4ade80' : r.status==='failed' ? '3px solid #f87171' : '3px solid transparent' }}>
-                {/* Reissue number circle */}
-                <div style={{ width:32, height:32, borderRadius:'50%', flexShrink:0,
-                  background: r.status==='completed'||r.status==='active'||r.status==='issued' ? 'rgba(39,174,96,0.12)' : r.status==='dv_pending' ? 'rgba(251,191,36,0.1)' : 'rgba(192,57,43,0.1)',
-                  display:'flex', alignItems:'center', justifyContent:'center', border:'1px solid',
-                  borderColor: r.status==='completed'||r.status==='active'||r.status==='issued' ? 'rgba(74,222,128,0.3)' : r.status==='dv_pending' ? 'rgba(251,191,36,0.3)' : 'rgba(192,57,43,0.2)' }}>
-                  <span style={{ fontSize:11, fontWeight:700, color: r.status==='completed'||r.status==='active'||r.status==='issued' ? '#4ade80' : r.status==='dv_pending' ? '#fbbf24' : '#ff8c7a' }}>R{reissues.length - i}</span>
-                </div>
-                {/* Main content */}
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:3 }}>
-                    <span style={{ fontSize:12, fontWeight:600, color:'#ffffff' }}>Reissue #{reissues.length - i}</span>
-                    {statusBadge(r.status)}
-                    {r.status === 'dv_pending' && (
-                      <span style={{ fontSize:10, color:'#fbbf24', animation:'pulse 1.5s ease infinite' }}>DNS validation in progress…</span>
-                    )}
-                  </div>
-                  <div style={{ fontSize:11, color:'#b0a8a0', display:'flex', flexWrap:'wrap', gap:'0 12px' }}>
-                    <span>📅 {fmtDate(r.created_at)}</span>
-                    <span>{triggeredLabel(r.triggered_by)}</span>
-                    {r.expires_at && <span style={{ color:'#4ade80' }}>🔒 Valid until {fmtDate(r.expires_at)}</span>}
-                    {!r.expires_at && r.status==='dv_pending' && <span style={{ color:'#fbbf24' }}>⏳ Waiting for GGS to validate DNS…</span>}
-                  </div>
-                </div>
-                <ChevronRight size={14} color="rgba(240,237,232,0.3)"
-                  style={{ transform: expanded[r.id] ? 'rotate(90deg)' : 'none', transition:'transform .15s', flexShrink:0 }}/>
-              </div>
-
-              {/* Expanded details */}
-              {expanded[r.id] && (
-                <div style={{ borderTop:'1px solid var(--v2-border)', padding:'12px 14px', background:'var(--v2-surface)' }}>
-                  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:'8px 16px', marginBottom:12 }}>
-                    {[
-                      ['Reissue #',     r.reissue_number||i+1],
-                      ['Triggered by',  triggeredLabel(r.triggered_by)],
-                      ['Status',        r.status||'—'],
-                      ['Date',          fmtDate(r.created_at)],
-                      ['GGS Order',     r.ggs_order_id ? '#'+r.ggs_order_id : '—'],
-                      ['Install status', r.install_status||'—'],
-                      ['Install method', r.install_method||'—'],
-                      ['Installed at',   r.installed_at ? fmtDate(r.installed_at) : '—'],
-                      ['Valid from',     r.issued_at  ? fmtDate(r.issued_at)  : '—'],
-                      ['Valid until',    r.expires_at ? fmtDate(r.expires_at) : '—'],
-                    ].map(([label, val]) => (
-                      <div key={label}>
-                        <div style={{ fontSize:10, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:2 }}>{label}</div>
-                        <div style={{ fontSize:12, color:'#ffffff', fontFamily: label==='GGS Order' ? 'monospace' : 'inherit' }}>{String(val)}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Cert PEM preview */}
-                  {r.cert_pem && (
-                    <div>
-                      <div style={{ fontSize:10, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:6 }}>Reissued Certificate PEM</div>
-                      <div style={{ background:'transparent', borderRadius:6, padding:'10px 12px', position:'relative' }}>
-                        <pre style={{ fontSize:10, color:'#b0a8a0', margin:0, overflow:'hidden', maxHeight:80, fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all' }}>
-                          {r.cert_pem.slice(0,300)}...
-                        </pre>
-                        <CopyBtn text={r.cert_pem} label="Copy PEM"/>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Auto-install details */}
-                  {(r.auto_install_status || r.auto_install_error) && (
-                    <div style={{ marginTop:10, padding:'8px 10px', borderRadius:6,
-                      background: r.auto_install_status==='success' ? 'transparent' : 'rgba(248,113,113,0.12)',
-                      border: '1px solid '+(r.auto_install_status==='success' ? 'rgba(192,57,43,0.3)' : 'rgba(192,57,43,0.25)') }}>
-                      <div style={{ fontSize:11, fontWeight:600, color: r.auto_install_status==='success' ? '#4ade80' : '#f87171' }}>
-                        Auto-install: {r.auto_install_status}
-                      </div>
-                      {r.auto_install_error && <div style={{ fontSize:11, color:'#f87171', marginTop:2 }}>{r.auto_install_error}</div>}
-                    </div>
-                  )}
-                </div>
+          {/* Summary line */}
+          {reissues.length > 0 && (
+            <div style={{ fontSize:12, color:'#b0a8a0', marginBottom:12 }}>
+              This certificate has been reissued <strong style={{ color:'#f0ede8' }}>{reissues.length} time{reissues.length!==1?'s':''}</strong>.
+              {reissues.some(r => r.status==='dv_pending') && (
+                <span style={{ marginLeft:8, color:'#fbbf24' }}>⏳ One reissue is currently in progress.</span>
               )}
             </div>
-          ))}
+          )}
+
+          {reissues.length === 0 ? (
+            <div style={{ fontSize:12, color:'#b0a8a0', padding:'12px 0' }}>
+              No reissues yet. Use the Reissue SSL button above to regenerate this certificate with a fresh key pair.
+            </div>
+          ) : reissues.map((r, i) => {
+            const isDone    = r.status==='completed' || r.status==='active' || r.status==='issued'
+            const isPending = r.status==='dv_pending'
+            const isFailed  = r.status==='failed'
+            const dotColor  = isDone ? '#4ade80' : isPending ? '#fbbf24' : isFailed ? '#f87171' : '#b0a8a0'
+            return (
+              <div key={r.id} style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 0',
+                borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+                {/* Status dot */}
+                <div style={{ width:8, height:8, borderRadius:'50%', flexShrink:0, background:dotColor,
+                  animation: isPending ? 'v3pulse 1.5s ease infinite' : 'none' }}/>
+                {/* Main info */}
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <span style={{ fontSize:12, fontWeight:600, color:'#f0ede8' }}>
+                      {isDone ? '✓ Reissued successfully' : isPending ? '⏳ Reissue in progress' : isFailed ? '✗ Reissue failed' : 'Reissue'}
+                    </span>
+                    {isPending && (
+                      <span style={{ fontSize:10, color:'#fbbf24' }}>DNS validation underway</span>
+                    )}
+                  </div>
+                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>
+                    {fmtDate(r.created_at)}
+                    {r.expires_at && <span style={{ color:'#4ade80', marginLeft:10 }}>Valid until {fmtDate(r.expires_at)}</span>}
+                    {isPending && <span style={{ color:'#fbbf24', marginLeft:10 }}>Certificate will activate automatically — no action needed</span>}
+                  </div>
+                </div>
+                {/* Certificate PEM download — only when done */}
+                {isDone && r.cert_pem && (
+                  <CopyBtn text={r.cert_pem} label="Copy cert"/>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
 
