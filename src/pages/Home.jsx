@@ -196,7 +196,7 @@ function ReadinessMockup() {
   )
 }
 
-const TICKER=['RFC 8555 · ACME v2','RapidSSL Partner','AES-256-GCM','TLS 1.3','DNS-01 Challenge','CT Log Monitor','CAA Records','HSTS Verified','SHA-256','CA/B Forum 2026','Zero-touch Renewal','CertVault','47-Day Ready','ML-KEM · PQC Ready','6,200+ Root CAs','CCADB Indexed','PKI Hub Live','eIDAS 2.0 Tracked','NIST FIPS 203/204/205']
+const TICKER=['RFC 8555 · ACME v2','RapidSSL Partner','AES-256-GCM','TLS 1.3','DNS-01 Challenge','CT Log Monitor','CAA Records','HSTS Verified','SHA-256','CA/B Forum 2026','Zero-touch Renewal','CertVault','47-Day Ready','ML-KEM · PQC Ready','6,200+ Root CAs','CCADB Indexed','PKI Hub Live','eIDAS 2.0 Tracked','NIST FIPS 203/204/205','cPanel Auto-Install','VPS Agent · 60s Poll','Install Cron · 2 min','GoGetSSL CA Partner','200-Day · IN EFFECT']
 
 export default function Home({ nav }) {
   const {isMobile,isTablet}=useIsMobile()
@@ -303,10 +303,10 @@ export default function Home({ nav }) {
                 {text:'↳ Adding TXT _acme-challenge...',c:T3,indent:true},
                 {prompt:'›',text:'[21:05:15] DNS propagated · DCV validated ✓',c:GRN},
                 {prompt:'›',text:'[21:05:16] Cert issued · RapidSSL TLS RSA CA 2022',c:GRN},
-                {text:'↳ CN=easysecurity.in  valid 180d  grade A+',c:T3,indent:true},
+                {text:'↳ CN=easysecurity.in  valid 47d  grade A+',c:T3,indent:true},
                 {prompt:'›',text:'[21:05:17] nginx -t OK · systemctl reload nginx ✓',c:GRN},
                 {prompt:'›',text:'[21:05:18] CertVault: AES-256-GCM encrypted ✓',c:T2},
-                {prompt:'›',text:'[21:05:18] ✓ Complete · next run: 21:10:18',c:GRN},
+                {prompt:'›',text:'[21:05:18] ✓ Complete · next run: 21:07:18',c:GRN},
               ]}/>
               {!isMobile&&<div style={{marginTop:6,display:'inline-flex',alignItems:'center',gap:8,border:`1px solid ${LN}`,borderRadius:4,padding:'8px 12px',background:BG3,fontFamily:MONO}}>
                 <div style={{width:6,height:6,borderRadius:'50%',background:GRN}}/>
@@ -339,7 +339,7 @@ export default function Home({ nav }) {
                 <Body>From initial CSR generation through DNS validation, installation, monitoring, and renewal — SSLVault handles every step. Connect once, manage forever.</Body>
               </div>
               <div>
-                {[{n:'/ 01',t:'Issue',d:'Submit to RapidSSL via ACME v2. DNS-01 auto-validated via your provider API.'},{n:'/ 02',t:'Install',d:'Agent deploys to Nginx/Apache. cPanel UAPI install. Zero SSH after setup.'},{n:'/ 03',t:'Monitor',d:'Expiry tracking, health scoring A–F, CT log abuse detection, CA/B Forum compliance.'},{n:'/ 04',t:'Renew',d:'Auto-renews 30 days before expiry. New cert deployed before old one expires.'}].map((s,i)=>(
+                {[{n:'/ 01',t:'Issue',d:'Submit to RapidSSL via ACME v2. DNS-01 auto-validated via your provider API.'},{n:'/ 02',t:'Install',d:'VPS agent deploys to Nginx/Apache. cPanel auto-install via UAPI. Both paths are zero-touch — cron runs every 2 minutes.'},{n:'/ 03',t:'Monitor',d:'Expiry tracking, health scoring A–F, CT log abuse detection, CA/B Forum compliance.'},{n:'/ 04',t:'Renew',d:'Auto-renews 30 days before expiry. New cert deployed before old one expires.'}].map((s,i)=>(
                   <div key={s.n} style={{display:'flex',gap:16,padding:'16px 0',borderBottom:i<3?`1px solid ${LN}`:'none'}}>
                     <span style={{fontSize:11,color:T3,width:32,flexShrink:0,marginTop:1,fontFamily:MONO}}>{s.n}</span>
                     <div><div style={{fontSize:13,fontWeight:600,color:T1,marginBottom:4}}>{s.t}</div><div style={{fontSize:12.5,color:T2,lineHeight:1.65}}>{s.d}</div></div>
@@ -366,13 +366,13 @@ export default function Home({ nav }) {
           </FadeUp>
           <div style={{display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
             {[{icon:'⚡',title:'Certificate issuance',specs:['DV, OV, EV, Wildcard, SAN','RapidSSL · DigiCert trust chain','ACME v2 · RFC 8555','Issued in < 5 minutes'],badge:'ACME v2'},
-              {icon:'🤖',title:'Persistent agent',specs:['systemd daemon · polls every 5 min','Nginx + Apache auto-detect','Config test before reload','Outbound HTTPS only'],badge:'systemd'},
+              {icon:'🤖',title:'VPS persistent agent',specs:['systemd daemon · polls every 60s','Nginx + Apache auto-detect','Config test before reload','Cron dispatches jobs every 2 min'],badge:'systemd'},
               {icon:'🌐',title:'DNS automation',specs:['Cloudflare · Vercel · Route53','Namecheap · GoDaddy · DigitalOcean','Auto TXT/CNAME challenge','Cleanup after DCV completes'],badge:'DNS-01'},
-              {icon:'🏛',title:'cPanel install',specs:['UAPI-based installation','No SSH or agent required','API token auth','Auto-renew via cPanel'],badge:'UAPI'},
+              {icon:'🏛',title:'cPanel auto-install',specs:['UAPI-based installation','No SSH or agent required','API token auth','Cron auto-installs within 2 min'],badge:'UAPI'},
               {icon:'🔐',title:'CertVault',specs:['AES-256-GCM · envelope encryption','Password re-auth before reveal','30-day rotation archive','Immutable audit log → CSV'],badge:'AES-256'},
               {icon:'📋',title:'47-day readiness',specs:['Scores every cert 0–100','200d → 100d → 47d timeline','Per-cert automation checklist','Fleet-wide compliance report'],badge:'CA/B 2026'},
               {icon:'🔍',title:'Discovery & monitoring',specs:['CT log scan via crt.sh','CT abuse monitor — unknown CAs','SSL health score A+ to F','HSTS · CAA · TLS 1.3 checks'],badge:'CT Logs'},
-              {icon:'📈',title:'CA intelligence',specs:['DigiCert CertCentral sync','Sectigo SCM portfolio sync','Shadow IT detection','Policy engine · fleet compliance'],badge:'Multi-CA'},
+              {icon:'📈',title:'CA intelligence',specs:['GoGetSSL · RapidSSL · DigiCert chain','cPanel + VPS agent auto-install','Zero-touch renewal pipeline','Fleet expiry & compliance view'],badge:'Multi-CA'},
               {icon:'🏛',title:'Industry Intelligence',specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker'],badge:'PKI Hub'},
               {icon:'🔬',title:'CA Trust Store',specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm','CSV export · PEM download'],badge:'CCADB'},
             ].map(f=>(
@@ -448,7 +448,7 @@ export default function Home({ nav }) {
                 <span style={{fontSize:12,fontWeight:600,color:T1}}>CA/B Forum maximum validity mandate — action required now</span>
               </div>
               <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:isMobile?20:0}}>
-                {[{date:'March 15, 2026',limit:'200 days',status:'IMMINENT',color:RED,action:'Certificates issued with validity > 200 days will be rejected by all major browsers.'},{date:'March 15, 2027',limit:'100 days',status:'UPCOMING',color:AMB,action:'Manual renewal every 100 days is operationally unsustainable. Automation becomes a hard requirement.'},{date:'March 15, 2029',limit:'47 days',status:'PLANNED',color:GRN,action:"Full zero-touch automation required. SSLVault's agent + DNS automation handles this end-to-end today."}].map((m,i)=>(
+                {[{date:'March 15, 2026',limit:'200 days',status:'IN EFFECT',color:RED,action:'200-day maximum is now enforced. Certificates issued with longer validity are rejected by all major browsers.'},{date:'March 15, 2027',limit:'100 days',status:'UPCOMING',color:AMB,action:'Manual renewal every 100 days is operationally unsustainable. Automation becomes a hard requirement.'},{date:'March 15, 2029',limit:'47 days',status:'PLANNED',color:GRN,action:"Full zero-touch automation required. SSLVault's agent + DNS automation handles this end-to-end today."}].map((m,i)=>(
                   <div key={m.date} style={{padding:isMobile?'14px 0':'0 24px',borderLeft:!isMobile&&i>0?`1px solid ${LN}`:'none'}}>
                     <div style={{fontSize:9.5,fontWeight:700,color:m.color,fontFamily:MONO,letterSpacing:'0.08em',marginBottom:6}}>{m.status}</div>
                     <div style={{fontSize:10,color:T3,fontFamily:MONO,marginBottom:4}}>{m.date}</div>
@@ -521,7 +521,7 @@ export default function Home({ nav }) {
               })}
             </div>
             <div style={{display:'grid',gridTemplateColumns:`repeat(${isMobile?1:5},1fr)`,gap:isMobile?8:0,alignItems:'center'}}>
-              {[null,{n:'/ 05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Zero manual steps.'},null,{n:'/ 04',icon:'⚡',title:'Auto-install',desc:'Agent deploys to Nginx/Apache. Config tested. Service reloaded.'},null].map((s,i)=>{
+              {[null,{n:'/ 05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Zero manual steps.'},null,{n:'/ 04',icon:'⚡',title:'Auto-install',desc:'VPS agent deploys to Nginx/Apache, or cPanel UAPI — both fully automatic within 2 minutes.'},null].map((s,i)=>{
                 if(!s)return <div key={i}/>
                 return <Card key={s.n} style={{textAlign:'center',padding:'18px'}}>
                   <div style={{fontSize:22,marginBottom:8}}>{s.icon}</div>
