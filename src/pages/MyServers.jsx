@@ -232,13 +232,15 @@ function DnsCard({ cred, onDelete }) {
         Connected
       </div>
       <button onClick={() => onDelete(cred.id)} style={{
-        background: 'none', border: 'none', cursor: 'pointer',
-        color: '#b0a8a0', padding: 4, transition: 'color .15s',
+        background: 'none', border: '1px solid rgba(248,113,113,0.25)', cursor: 'pointer',
+        color: '#f87171', padding: '4px 8px', borderRadius: 6, transition: 'all .15s',
+        fontSize: 11, display: 'flex', alignItems: 'center', gap: 4,
       }}
-        onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
-        onMouseLeave={e => e.currentTarget.style.color = 'rgba(240,237,232,0.2)'}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.1)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+        title="Remove this server"
       >
-        <Trash2 size={13} />
+        <Trash2 size={11} /> Remove
       </button>
     </div>
   )
@@ -641,13 +643,15 @@ function HostingCard({ cred, onDelete }) {
         </div>
       )}
       <button onClick={() => onDelete(cred.id)} style={{
-        background: 'none', border: 'none', cursor: 'pointer',
-        color: '#b0a8a0', padding: 4, transition: 'color .15s',
+        background: 'none', border: '1px solid rgba(248,113,113,0.25)', cursor: 'pointer',
+        color: '#f87171', padding: '4px 8px', borderRadius: 6, transition: 'all .15s',
+        fontSize: 11, display: 'flex', alignItems: 'center', gap: 4,
       }}
-        onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
-        onMouseLeave={e => e.currentTarget.style.color = 'rgba(240,237,232,0.2)'}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.1)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+        title="Remove this server"
       >
-        <Trash2 size={13} />
+        <Trash2 size={11} /> Remove
       </button>
     </div>
   )
