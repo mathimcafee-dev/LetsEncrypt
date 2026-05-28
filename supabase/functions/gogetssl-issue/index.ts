@@ -799,17 +799,16 @@ serve(async (req) => {
         return json({ error: reissueRes.description || reissueRes.message || JSON.stringify(reissueRes) }, 500)
       }
 
-      // Poll GGS for DCV info — retry up to 5x with 2s gaps (GGS takes a few seconds after reissue)
+      // ONE quick DCV check after 2s (same wall-clock limit as place_order)
+      // poll_pending cron rescues if DCV not ready in time
       let dcvName = '', dcvValue = '', statusRes: any = {}
-      for (let attempt = 0; attempt < 5; attempt++) {
+      try {
         await new Promise(r => setTimeout(r, 2000))
         statusRes = await ggsGet(authKey, `/orders/status/${cert.ggs_order_id}`)
         const dcv = extractDcv(statusRes)
         dcvName = dcv.name; dcvValue = dcv.value
-        if (dcvValue) break
-        console.log(`[reissue] DCV not yet available, attempt ${attempt + 1}/5`)
-      }
-      if (!dcvValue) console.warn('[reissue] DCV values still empty after 5 attempts — cron will retry DNS add')
+        if (!dcvValue) console.log('[reissue] DCV not ready after 2s — poll_pending cron will rescue')
+      } catch (e: any) { console.warn('[reissue] quick DCV check failed (non-fatal):', e.message) }
 
       // Store NEW private key in KeyLocker immediately
       // This key matches the new CSR we just submitted to GGS

@@ -860,14 +860,44 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   ? `Active · expires ${new Date(latest.valid_till).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`
                   : 'Certificate is active',
               })
-              // Step 5: install — skipped for now (handled separately)
+              // Step 5: install — show as active; poll is_live_on_server separately below
               steps = updateStep(steps, 5, {
-                status: 'skipped',
-                detail: 'Installation managed separately via Install tab',
+                status: 'active',
+                detail: 'Auto-installing on server…',
               })
               return { ...p, pollTimer: null, steps }
             })
             loadHistory()
+
+            // Poll is_live_on_server for up to 3 minutes
+            const certId = cert.id
+            const installPollStart = Date.now()
+            const installTimer = setInterval(async () => {
+              try {
+                const { data: certRow } = await supabase
+                  .from('certificates').select('is_live_on_server')
+                  .eq('id', certId).single()
+                if (certRow?.is_live_on_server) {
+                  clearInterval(installTimer)
+                  setProgress(p => ({
+                    ...p, steps: updateStep(p.steps, 5, {
+                      status: 'done',
+                      detail: 'Certificate installed on server ✓',
+                    })
+                  }))
+                  setBusy(false)
+                } else if (Date.now() - installPollStart > 3 * 60 * 1000) {
+                  clearInterval(installTimer)
+                  setProgress(p => ({
+                    ...p, steps: updateStep(p.steps, 5, {
+                      status: 'skipped',
+                      detail: 'Not yet installed — use Install tab to install manually',
+                    })
+                  }))
+                  setBusy(false)
+                }
+              } catch { clearInterval(installTimer); setBusy(false) }
+            }, 8000)
             setBusy(false)
 
           } else {
