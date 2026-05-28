@@ -310,22 +310,139 @@ async function upsertCert(ggsOrderId: number, data: Record<string, any>): Promis
 
 // ── Main handler ──────────────────────────────────────────────────────
 
+async function runPollPending() {
+// ── POLL PENDING ──────────────────────────────────────────────────
+// Called by cron every 2 min. Checks all dv_pending/issued orders.
+// No user auth check needed here — called with service role from cron.
+  const { data: pendingOrders } = await adminDb()
+    .from('ssl_orders')
+    .select('id, user_id, domain, ggs_order_id, keylocker_key_id, private_key_pem, status, period, product_name, order_purpose, dcv_txt_name, dcv_txt_value')
+    .in('status', ['dv_pending', 'issued'])
+    .order('created_at', { ascending: true })
+    .limit(30)
+
+  if (!pendingOrders?.length) return json({ ok: true, checked: 0, activated: 0 })
+
+  const authKey = await ggsAuth()
+  let activated = 0
+
+  for (const order of pendingOrders) {
+    try {
+      const statusRes = await ggsGet(authKey, `/orders/status/${order.ggs_order_id}`)
+
+      // If still processing: ensure DCV record exists in DNS (catches missed auto-add)
+      if (statusRes.status !== 'active' || !statusRes.crt_code) {
+        // Pick up DCV values if we don't have them yet
+        if (!order.dcv_txt_value) {
+          const { name: dn, value: dv } = extractDcv(statusRes)
+          if (dv) {
+            await adminDb().from('ssl_orders').update({
+              dcv_txt_name: dn, dcv_txt_value: dv,
+              dcv_cname_name: dn, dcv_cname_value: dv,
+              updated_at: new Date().toISOString(),
+            }).eq('id', order.id)
+            order.dcv_txt_name = dn; order.dcv_txt_value = dv
+          }
+        }
+
+        if (order.dcv_txt_value) {
+          // Direct CF call — no inter-function hop
+          await autoDns('', order.user_id, order.domain, order.dcv_txt_name, order.dcv_txt_value)
+        }
+        continue
+      }
+
+      const now = new Date().toISOString()
+      const keyId = order.keylocker_key_id
+
+      // Update ssl_orders → active
+      await adminDb().from('ssl_orders').update({
+        status:     'active',
+        crt_code:   statusRes.crt_code,
+        ca_code:    statusRes.ca_code || null,
+        valid_from: statusRes.valid_from || null,
+        valid_till: statusRes.valid_till || null,
+        cert_pem:   statusRes.crt_code,
+        ca_pem:     statusRes.ca_code || null,
+        updated_at: now,
+      }).eq('id', order.id)
+
+      // Insert or update certificate row by ggs_order_id
+      const certData: Record<string, any> = {
+        user_id:               order.user_id,
+        domain:                order.domain,
+        status:                'active',
+        cert_pem:              statusRes.crt_code,
+        ca_pem:                statusRes.ca_code || null,
+        expires_at:            statusRes.valid_till || null,
+        issued_at:             statusRes.valid_from || null,
+        subscription_end_date: calcSubscriptionEnd(statusRes.valid_from || now, order.period || 12),
+        issuer:                order.product_name || 'RapidSSL',
+        cert_type:             order.product_name || 'RapidSSL DV',
+        source:                'gogetssl',
+        ggs_order_id:          order.ggs_order_id,
+        serial_number:         statusRes.serial_number || null,
+        private_key_pem:       order.private_key_pem || null,
+        order_type:            order.order_purpose || 'original',
+        is_current:            true,
+      }
+      if (keyId) certData.keylocker_key_id = keyId
+
+      const certId = await upsertCert(order.ggs_order_id, certData)
+
+      // Link keylocker entry → cert
+      if (keyId && certId) {
+        await adminDb().from('keylocker_keys').update({ cert_id: certId, expires_at: statusRes.valid_till }).eq('id', keyId)
+      }
+
+      // Complete any pending cert_reissues rows for this order
+      await adminDb().from('cert_reissues')
+        .update({ status: 'completed', installed_at: now, expires_at: statusRes.valid_till, cert_pem: statusRes.crt_code })
+        .eq('ggs_order_id', order.ggs_order_id)
+        .eq('status', 'dv_pending')
+
+      // Clean up DCV TXT from DNS
+      if (order.dcv_txt_name && order.dcv_txt_value) {
+        await autoDeleteDns('', order.user_id, order.domain, order.dcv_txt_name, order.dcv_txt_value)
+      }
+
+      // Dispatch installation job
+      await dispatchInstall(order.user_id, order.domain, order.ggs_order_id, keyId)
+
+      activated++
+      console.log(`[poll_pending] Activated ${order.domain} (GGS #${order.ggs_order_id})`)
+    } catch (e: any) {
+      console.error(`[poll_pending] Error on ${order.domain}:`, e.message)
+    }
+  }
+
+  return json({ ok: true, checked: pendingOrders.length, activated })
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   try {
     // Auth — all actions require a valid user
+    const authHeader = req.headers.get('Authorization') || ''
+    const body = await req.json()
+    const { action } = body
+
+    // poll_pending is called by cron with service role key — allow without user JWT
+    const SVC_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+    if (action === 'poll_pending') {
+      if (!authHeader.includes(SVC_KEY.slice(0, 20))) return json({ error: 'Unauthorized' }, 401)
+      const res = await runPollPending()
+      return json(res)
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
+      { global: { headers: { Authorization: authHeader } } }
     )
     const { data: { user }, error: authErr } = await supabase.auth.getUser()
     if (authErr || !user) return json({ error: 'Unauthorized' }, 401)
-
-    const body   = await req.json()
-    const { action } = body
-    const authHeader  = req.headers.get('Authorization')!
 
     // ── PLACE ORDER ───────────────────────────────────────────────────
     if (action === 'place_order') {
@@ -568,114 +685,7 @@ serve(async (req) => {
       })
     }
 
-    // ── POLL PENDING ──────────────────────────────────────────────────
-    // Called by cron every 2 min. Checks all dv_pending/issued orders.
-    // No user auth check needed here — called with service role from cron.
-    if (action === 'poll_pending') {
-      const { data: pendingOrders } = await adminDb()
-        .from('ssl_orders')
-        .select('id, user_id, domain, ggs_order_id, keylocker_key_id, private_key_pem, status, period, product_name, order_purpose, dcv_txt_name, dcv_txt_value')
-        .in('status', ['dv_pending', 'issued'])
-        .order('created_at', { ascending: true })
-        .limit(30)
 
-      if (!pendingOrders?.length) return json({ ok: true, checked: 0, activated: 0 })
-
-      const authKey = await ggsAuth()
-      let activated = 0
-
-      for (const order of pendingOrders) {
-        try {
-          const statusRes = await ggsGet(authKey, `/orders/status/${order.ggs_order_id}`)
-
-          // If still processing: ensure DCV record exists in DNS (catches missed auto-add)
-          if (statusRes.status !== 'active' || !statusRes.crt_code) {
-            // Pick up DCV values if we don't have them yet
-            if (!order.dcv_txt_value) {
-              const { name: dn, value: dv } = extractDcv(statusRes)
-              if (dv) {
-                await adminDb().from('ssl_orders').update({
-                  dcv_txt_name: dn, dcv_txt_value: dv,
-                  dcv_cname_name: dn, dcv_cname_value: dv,
-                  updated_at: new Date().toISOString(),
-                }).eq('id', order.id)
-                order.dcv_txt_name = dn; order.dcv_txt_value = dv
-              }
-            }
-
-            if (order.dcv_txt_value) {
-              // Direct CF call — no inter-function hop
-              await autoDns('', order.user_id, order.domain, order.dcv_txt_name, order.dcv_txt_value)
-            }
-            continue
-          }
-
-          const now = new Date().toISOString()
-          const keyId = order.keylocker_key_id
-
-          // Update ssl_orders → active
-          await adminDb().from('ssl_orders').update({
-            status:     'active',
-            crt_code:   statusRes.crt_code,
-            ca_code:    statusRes.ca_code || null,
-            valid_from: statusRes.valid_from || null,
-            valid_till: statusRes.valid_till || null,
-            cert_pem:   statusRes.crt_code,
-            ca_pem:     statusRes.ca_code || null,
-            updated_at: now,
-          }).eq('id', order.id)
-
-          // Insert or update certificate row by ggs_order_id
-          const certData: Record<string, any> = {
-            user_id:               order.user_id,
-            domain:                order.domain,
-            status:                'active',
-            cert_pem:              statusRes.crt_code,
-            ca_pem:                statusRes.ca_code || null,
-            expires_at:            statusRes.valid_till || null,
-            issued_at:             statusRes.valid_from || null,
-            subscription_end_date: calcSubscriptionEnd(statusRes.valid_from || now, order.period || 12),
-            issuer:                order.product_name || 'RapidSSL',
-            cert_type:             order.product_name || 'RapidSSL DV',
-            source:                'gogetssl',
-            ggs_order_id:          order.ggs_order_id,
-            serial_number:         statusRes.serial_number || null,
-            private_key_pem:       order.private_key_pem || null,
-            order_type:            order.order_purpose || 'original',
-            is_current:            true,
-          }
-          if (keyId) certData.keylocker_key_id = keyId
-
-          const certId = await upsertCert(order.ggs_order_id, certData)
-
-          // Link keylocker entry → cert
-          if (keyId && certId) {
-            await adminDb().from('keylocker_keys').update({ cert_id: certId, expires_at: statusRes.valid_till }).eq('id', keyId)
-          }
-
-          // Complete any pending cert_reissues rows for this order
-          await adminDb().from('cert_reissues')
-            .update({ status: 'completed', installed_at: now, expires_at: statusRes.valid_till, cert_pem: statusRes.crt_code })
-            .eq('ggs_order_id', order.ggs_order_id)
-            .eq('status', 'dv_pending')
-
-          // Clean up DCV TXT from DNS
-          if (order.dcv_txt_name && order.dcv_txt_value) {
-            await autoDeleteDns('', order.user_id, order.domain, order.dcv_txt_name, order.dcv_txt_value)
-          }
-
-          // Dispatch installation job
-          await dispatchInstall(order.user_id, order.domain, order.ggs_order_id, keyId)
-
-          activated++
-          console.log(`[poll_pending] Activated ${order.domain} (GGS #${order.ggs_order_id})`)
-        } catch (e: any) {
-          console.error(`[poll_pending] Error on ${order.domain}:`, e.message)
-        }
-      }
-
-      return json({ ok: true, checked: pendingOrders.length, activated })
-    }
 
     // ── REISSUE ───────────────────────────────────────────────────────
     // Replace cert on SAME GGS order. Fresh keypair. NO new order_id.
