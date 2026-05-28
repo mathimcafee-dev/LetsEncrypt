@@ -1130,29 +1130,28 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
         }
       }
     } else if (installMethod === 'cpanel' && installCredId) {
-      // Await the install — same path as manual install, no fire-and-forget
-      try {
-        const res = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
+      // Fire-and-forget — do NOT await cpanel-install from within gogetssl-issue.
+      // Awaiting a 30s cPanel install inside poll_pending causes wall-clock timeout
+      // and silently kills the entire activation. cpanel-install runs independently.
+      const installPayload = JSON.stringify({
+        action: 'install', cert_id: cert.id, domain,
+        credential_id: installCredId, _service_user_id: userId,
+      })
+      // Trigger via pg_net so it runs outside this function's wall-clock budget
+      adminDb().rpc('trigger_cpanel_install', {
+        payload: installPayload,
+        fn_url: `${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`,
+        svc_key: Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '',
+      }).then(() => {
+        console.log('[dispatch] cPanel install triggered via pg_net for', domain)
+      }).catch(() => {
+        // pg_net fallback: fire via fetch without awaiting
+        fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-          body: JSON.stringify({ action: 'install', cert_id: cert.id, domain, credential_id: installCredId, _service_user_id: userId }),
-        })
-        const result = await res.json()
-        if (result.ok) {
-          console.log('[dispatch] cPanel install SUCCESS for', domain)
-        } else {
-          console.error('[dispatch] cPanel install FAILED for', domain, ':', result.error)
-          // Log failure to cert_reissues so customer can see it
-          await adminDb().from('cert_reissues')
-            .update({ auto_install_status: 'failed', auto_install_error: result.error })
-            .eq('ggs_order_id', ggsOrderId)
-            .eq('status', 'completed')
-            .order('created_at', { ascending: false })
-            .limit(1)
-        }
-      } catch (e: any) {
-        console.error('[dispatch] cPanel install exception for', domain, ':', e.message)
-      }
+          body: installPayload,
+        }).catch((e: any) => console.error('[dispatch] cPanel fire-and-forget failed:', e.message))
+      })
     } else {
       console.log('[dispatch] no install method for', domain, '— customer must install manually')
     }

@@ -257,8 +257,10 @@ serve(async (req) => {
 
     // Support service-role calls from poll_pending (cron/automation context).
     // In that case the caller passes _service_user_id in the body and uses the service role key.
-    const isServiceRole = authHeader.includes(SB_SERVICE.slice(0,20)) ||
-      (body0._service_user_id && authHeader.startsWith('Bearer '))
+    // Service role auth: exact bearer token match OR body has _service_user_id with valid svc key
+    const bearerToken = authHeader.replace(/^Bearer\s+/i, '').trim()
+    const isServiceRole = bearerToken === SB_SERVICE ||
+      (body0._service_user_id && bearerToken === SB_SERVICE)
     let user: { id: string } | null = null
     if (isServiceRole && body0._service_user_id) {
       user = { id: body0._service_user_id }
