@@ -1497,42 +1497,31 @@ function TlsPostureRow({ cert, onRefresh }) {
 
 function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefresh, session }) {
   const days = daysLeft(cert.expires_at)
-  const [activeTab, setActiveTab] = useState('details')
+  const certHistoryRef = useRef(null)
 
-  const [keyTimer,   setKeyTimer]  = useState(0)     // countdown seconds remaining
-  const [keyCopied,  setKeyCopied] = useState(false)
-  const [keyTimerRef, setKeyTimerRef] = useState(null)
-  const [delConfirm, setDel]       = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+  const [refreshMsg, setRefreshMsg] = useState('')
+  const [delConfirm, setDel]        = useState(false)
   const [cancelConfirm, setCancelConfirm] = useState(false)
   const [cancelling, setCancelling]       = useState(false)
   const [cancelMsg, setCancelMsg]         = useState('')
-  const [keyDelConfirm, setKDC]    = useState(false)
-  const [keyDeleting, setKDing]    = useState(false)
-  const [keyChecks, setKC]         = useState({ downloaded:false, installed:false, understand:false })
-  const [keyDeleted, setKD]        = useState(!cert.private_key_pem)
-  const [refreshing, setRefreshing]= useState(false)
-  const [refreshMsg, setRefreshMsg]= useState('')
-  const allChecked = keyChecks.downloaded && keyChecks.installed && keyChecks.understand
-  const certHistoryRef = useRef(null)
+  const [activeSection, setActiveSection] = useState('details') // details | files | history | security
 
   const isExpired = (days ?? 0) < 0
   const isWarn    = (days ?? 0) >= 0 && (days ?? 0) < 30
   const statusColor = isExpired ? '#f87171' : isWarn ? '#f0ede8' : '#4ade80'
-  const statusBg    = isExpired ? 'rgba(192,57,43,0.12)' : isWarn ? 'rgba(248,113,113,0.12)' : 'transparent'
-  const statusBorder= isExpired ? 'rgba(192,57,43,0.25)' : isWarn ? 'rgba(192,57,43,0.25)' : 'rgba(192,57,43,0.3)'
-  const statusLabel = isExpired ? 'Expired' : isWarn ? days+'d left' : 'Active'
 
-  const doDeleteKey = async () => {
-    setKDing(true)
-    await supabase.from('certificates').update({ private_key_pem: null }).eq('id', cert.id)
-    setKDing(false); setKD(true); setKDC(false)
-  }
+  const daysSinceIssue = cert.issued_at
+    ? Math.floor((Date.now() - new Date(cert.issued_at).getTime()) / 86400000)
+    : 999
+  const canCancel = daysSinceIssue <= 30 && cert.status === 'active' && !!cert.ggs_order_id
+
   const doRefresh = async () => {
     setRefreshing(true); setRefreshMsg('')
     try {
       const { data: { session: sess } } = await supabase.auth.getSession()
       const { data: order } = await supabase.from('ssl_orders')
-        .select('id').eq('domain', cert.domain).eq('user_id', cert.user_id)
+        .select('id').eq('ggs_order_id', cert.ggs_order_id).eq('user_id', cert.user_id)
         .order('updated_at', { ascending: false }).limit(1).single()
       if (!order) { setRefreshMsg('No linked order found'); setRefreshing(false); return }
       const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
@@ -1541,17 +1530,11 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         body: JSON.stringify({ action: 'check_status', order_id: order.id })
       })
       const d = await r.json()
-      setRefreshMsg(d.ok ? 'Synced — '+(d.ggs_status||'active') : d.error||'Error')
-      if (d.ok) setTimeout(() => onRefresh(), 1000)
+      setRefreshMsg(d.ok ? '✓ Synced from RapidSSL' : d.error || 'Error')
+      if (d.ok) setTimeout(() => onRefresh(), 800)
     } catch(e) { setRefreshMsg(e.message) }
     setRefreshing(false)
   }
-
-  // ── Cancel order (within 30 days) ─────────────────────────────────────────
-  const daysSinceIssue = cert.issued_at
-    ? Math.floor((Date.now() - new Date(cert.issued_at).getTime()) / (1000*60*60*24))
-    : 999
-  const canCancel = daysSinceIssue <= 30 && cert.status === 'active' && !!cert.ggs_order_id
 
   const doCancel = async () => {
     setCancelling(true); setCancelMsg('')
@@ -1563,577 +1546,299 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         body: JSON.stringify({ action: 'cancel', cert_id: cert.id, reason: 'Requested by customer via SSLVault' })
       })
       const d = await r.json()
-      if (d.ok) {
-        setCancelMsg('Cancelled. Refund requested with GoGetSSL.')
-        setCancelConfirm(false)
-        setTimeout(() => onRefresh && onRefresh(), 2000)
-      } else {
-        setCancelMsg('Error: ' + (d.error || 'Unknown error'))
-        setCancelConfirm(false)
-      }
+      if (d.ok) { setCancelMsg('Cancelled. Refund requested.'); setCancelConfirm(false); setTimeout(() => onRefresh(), 2000) }
+      else { setCancelMsg('Error: ' + (d.error || 'Unknown')); setCancelConfirm(false) }
     } catch(e) { setCancelMsg('Error: ' + e.message); setCancelConfirm(false) }
     setCancelling(false)
   }
 
-  // ── Inline copy button ────────────────────────────────────────────────────
-  function InlineCopy({ text }) {
-    const [ok, setOk] = useState(false)
-    return (
-      <button onClick={() => { try { navigator.clipboard.writeText(text) } catch(e) {} setOk(true); setTimeout(() => setOk(false), 1800) }}
-        style={{ background:'none', border:'0.5px solid var(--v2-border)', borderRadius:4, cursor:'pointer',
-          padding:'2px 6px', fontSize:10, color: ok ? '#4ade80' : 'var(--v2-text-3)',
-          fontFamily:'inherit', transition:'all 0.12s', display:'inline-flex', alignItems:'center', gap:3,
-          ...(ok ? { borderColor:'rgba(192,57,43,0.3)', background:'transparent' } : {}) }}>
-        {ok ? <><Check size={9}/></> : <><Copy size={9}/></>}
-      </button>
-    )
-  }
+  // ── Validity timeline ─────────────────────────────────────────────
+  const certStart  = cert.issued_at  ? new Date(cert.issued_at)  : null
+  const certEnd    = cert.expires_at ? new Date(cert.expires_at) : null
+  const subEnd     = certStart ? (() => { const d = new Date(certStart); d.setMonth(d.getMonth() + (cert._order?.period || 12)); return d })() : null
+  const totalMs    = certStart && subEnd ? subEnd - certStart : 1
+  const certPct    = certStart && certEnd ? Math.min(100, ((certEnd - certStart) / totalMs) * 100) : 0
+  const todayPct   = certStart ? Math.max(0, Math.min(100, ((Date.now() - certStart) / totalMs) * 100)) : 0
+  const fmtD       = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—'
 
-  // ── Field row ─────────────────────────────────────────────────────────────
-  function FieldRow({ label, value, copyable, accent }) {
+  // ── Action button style ───────────────────────────────────────────
+  const ABtn = ({ icon: Icon, label, onClick, color='#ff8c7a', disabled }) => (
+    <button onClick={disabled ? undefined : onClick} disabled={disabled}
+      style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px',
+        background:'transparent', border:'1px solid rgba(240,237,232,0.15)',
+        borderRadius:7, cursor: disabled ? 'not-allowed' : 'pointer',
+        color: disabled ? 'rgba(240,237,232,0.25)' : color,
+        fontFamily:'inherit', fontSize:12, fontWeight:600, transition:'all .15s',
+        opacity: disabled ? 0.5 : 1 }}
+      onMouseEnter={e => { if (!disabled) { e.currentTarget.style.background='rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor='rgba(240,237,232,0.3)' }}}
+      onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.borderColor='rgba(240,237,232,0.15)' }}>
+      {Icon && <Icon size={12}/>} {label}
+    </button>
+  )
+
+  // ── Field row ─────────────────────────────────────────────────────
+  const Field = ({ label, value, mono, copy }) => {
+    const [ok, setOk] = useState(false)
     if (!value) return null
     return (
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center',
-        padding:'8px 0', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
-        <span style={{ fontSize:12, fontWeight:500, color:'#b0a8a0', flexShrink:0, marginRight:12 }}>{label}</span>
-        <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-          <span style={{ fontSize:12, fontFamily:'JetBrains Mono, monospace',
-            fontWeight:600, color: accent ? statusColor : '#ffffff',
-            textAlign:'right', wordBreak:'break-all', maxWidth:220 }}>{value}</span>
-          {copyable && <InlineCopy text={value}/>}
+      <div style={{ display:'flex', flexDirection:'column', gap:2, padding:'8px 0', borderBottom:'0.5px solid rgba(255,255,255,0.06)' }}>
+        <span style={{ fontSize:10, color:'#b0a8a0', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.4px' }}>{label}</span>
+        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <span style={{ fontSize:12, color:'#ffffff', fontFamily: mono ? 'monospace' : 'inherit', wordBreak:'break-all' }}>{value}</span>
+          {copy && <button onClick={() => { navigator.clipboard.writeText(value); setOk(true); setTimeout(() => setOk(false), 1500) }}
+            style={{ background:'none', border:'0.5px solid rgba(255,255,255,0.12)', borderRadius:3, cursor:'pointer',
+              color: ok ? '#4ade80' : '#b0a8a0', fontSize:10, padding:'1px 6px', fontFamily:'inherit' }}>
+            {ok ? '✓' : 'Copy'}
+          </button>}
         </div>
       </div>
     )
   }
-
-  // ── Field group ───────────────────────────────────────────────────────────
-  function FieldGroup({ title, children }) {
-    return (
-      <div style={{ marginBottom:14 }}>
-        <div style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase',
-          letterSpacing:'1px', marginBottom:8, paddingBottom:6, borderBottom:'0.5px solid rgba(255,255,255,0.15)' }}>
-          {title}
-        </div>
-        {children}
-      </div>
-    )
-  }
-
-  // ── Action row ────────────────────────────────────────────────────────────
-  function ActionRow({ icon: Icon, iconColor, iconBg, hoverBorder, hoverBg, title, subtitle, onClick, disabled }) {
-    const [hov, setHov] = useState(false)
-    return (
-      <div onClick={disabled ? undefined : onClick}
-        onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-        style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-          padding:'11px 14px', borderRadius:10, cursor: disabled ? 'not-allowed' : 'pointer',
-          border:'0.5px solid '+(hov && !disabled ? hoverBorder : 'var(--v2-border)'),
-          background: hov && !disabled ? hoverBg : 'var(--v2-bg)',
-          transition:'all 0.15s', opacity: disabled ? 0.5 : 1, marginBottom:6 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <div style={{ width:34, height:34, borderRadius:8, background:iconBg,
-            display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-            <Icon size={16} color={iconColor}/>
-          </div>
-          <div>
-            <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{title}</div>
-            <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1, lineHeight:1.4 }}>{subtitle}</div>
-          </div>
-        </div>
-        <ChevronRight size={15} color="var(--v2-text-3)"
-          style={{ transition:'transform 0.15s', transform: hov && !disabled ? 'translateX(3px)' : 'none' }}/>
-      </div>
-    )
-  }
-
-  const period = cert._order?.period
-  const periodLabel = '1 year'
 
   return (
-    <div style={{ background:'transparent', border:'1px solid rgba(63,185,80,0.2)', borderRadius:14,
-      overflow:'hidden', boxShadow:'0 4px 20px rgba(192,57,43,0.15)',
-      position:'sticky', top:20, animation:'fadeSlideUp 0.3s ease both' }}>
+    <div style={{ background:'rgba(10,0,0,0.95)', border:'1px solid rgba(192,57,43,0.3)',
+      borderRadius:12, overflow:'hidden', marginTop:4, animation:'fadeSlideUp 0.2s ease both' }}>
 
-      {/* ── Hero header ─── */}
-      <div style={{ padding:'20px 20px 16px', background:'transparent',
-        borderBottom:'1px solid rgba(192,57,43,0.15)' }}>
-        <div style={{ display:'flex', alignItems:'flex-start', gap:16 }}>
-          <RingGauge days={days} expiresAt={cert.expires_at} issuedAt={cert.issued_at}/>
-          <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
-              <span style={{ fontSize:14, fontWeight:700, wordBreak:'break-all',
-                color:'#ffffff', fontFamily:'monospace', lineHeight:1.3 }}>{cert.domain}</span>
-              <button onClick={onClose}
-                style={{ background:'transparent', border:'1px solid rgba(63,185,80,0.2)', cursor:'pointer',
-                  color:'#b0a8a0', padding:'5px', borderRadius:7, display:'flex', flexShrink:0,
-                  marginLeft:8, transition:'all .15s' }}
-                onMouseEnter={e=>{e.currentTarget.style.background='rgba(248,113,113,0.12)';e.currentTarget.style.color='#f87171';e.currentTarget.style.borderColor='rgba(192,57,43,0.25)'}}
-                onMouseLeave={e=>{e.currentTarget.style.background='rgba(192,57,43,0.15)';e.currentTarget.style.color='rgba(240,237,232,0.6)';e.currentTarget.style.borderColor='rgba(240,237,232,0.2)'}}>
-                <X size={13} strokeWidth={2}/>
-              </button>
-            </div>
-            <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:10 }}>
-              Issued {fmtDate(cert.issued_at || cert.created_at)}
-            </div>
-            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-              <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:10, fontWeight:700,
-                padding:'3px 10px', borderRadius:20, background:statusBg,
-                border:'0.5px solid '+statusBorder, color:statusColor }}>
-                <span style={{ width:6, height:6, borderRadius:'50%', background:statusColor,
-                  animation: !isExpired && !isWarn ? 'v3pulse 2s ease infinite' : 'none',
-                  boxShadow: !isExpired && !isWarn ? '0 0 0 2px rgba(22,163,74,0.25)' : 'none' }}/>
-                {statusLabel}
-              </span>
-              <span style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20,
-                background:'transparent', color:'#c0392b', border:'0.5px solid #B5D4F4' }}>
-                RapidSSL
-              </span>
-              <span style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20,
-                background:'transparent', color:'#e8e0d8', border:'1px solid rgba(63,185,80,0.2)' }}>
-                {cert._order?.product_name || cert.cert_type || 'RapidSSL'}
-              </span>
-            </div>
+      {/* ── Status banner ── */}
+      <div style={{ padding:'10px 18px', display:'flex', alignItems:'center', gap:10,
+        background: isExpired ? 'rgba(192,57,43,0.2)' : isWarn ? 'rgba(230,100,0,0.15)' : 'rgba(22,163,74,0.12)',
+        borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
+        <span style={{ fontSize:18 }}>{isExpired ? '⚠️' : '✅'}</span>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:13, fontWeight:700, color: statusColor }}>
+            {isExpired ? 'Certificate expired' : isWarn ? `Expires in ${days} days` : 'SSL certificate is approved and issued'}
           </div>
+          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>
+            {isExpired ? 'Renew immediately to restore HTTPS' : isWarn ? 'Reissue soon to avoid expiry' : 'Certificate is ready to be installed. Download and follow installation guides.'}
+          </div>
+        </div>
+        <button onClick={onClose}
+          style={{ background:'none', border:'none', cursor:'pointer', color:'#b0a8a0',
+            fontSize:18, lineHeight:1, padding:'2px 6px' }}>×</button>
+      </div>
+
+      {/* ── Action buttons row — matches GoGetSSL toolbar ── */}
+      <div style={{ padding:'10px 18px', display:'flex', gap:8, flexWrap:'wrap',
+        borderBottom:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.02)' }}>
+        <ABtn icon={RotateCcw} label="Reissue SSL"
+          onClick={() => certHistoryRef.current?.doAction('reissue')} disabled={!session}/>
+        {cert._daysToRenewal != null && cert._daysToRenewal <= 30 && (
+          <ABtn icon={RefreshCw} label="Renew order"
+            onClick={() => certHistoryRef.current?.doAction('renew')} disabled={!session}/>
+        )}
+        <ABtn icon={Server} label="Install" onClick={() => onInstall(cert)}/>
+        <ABtn icon={RefreshCw} label={refreshing ? 'Syncing…' : 'Sync status'} onClick={doRefresh} disabled={refreshing}/>
+        <ABtn icon={Download} label="Certificate" onClick={() => cert.cert_pem && dl(cert.cert_pem, cert.domain+'-cert.pem')} disabled={!cert.cert_pem}/>
+        {canCancel && !cancelConfirm && !cancelMsg && (
+          <ABtn icon={ShieldOff} label="Cancel order" color='#f87171' onClick={() => setCancelConfirm(true)}/>
+        )}
+        {canCancel && cancelConfirm && (
+          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+            <span style={{ fontSize:11, color:'#f87171' }}>Cancel GGS #{cert.ggs_order_id}?</span>
+            <button onClick={doCancel} disabled={cancelling}
+              style={{ fontSize:11, fontWeight:600, color:'white', background:'#c0392b', border:'none',
+                borderRadius:5, padding:'5px 10px', cursor:'pointer', fontFamily:'inherit' }}>
+              {cancelling ? 'Cancelling…' : 'Yes'}
+            </button>
+            <button onClick={() => setCancelConfirm(false)}
+              style={{ fontSize:11, color:'#b0a8a0', background:'none', border:'0.5px solid rgba(255,255,255,0.15)',
+                borderRadius:5, padding:'5px 10px', cursor:'pointer', fontFamily:'inherit' }}>
+              No
+            </button>
+          </div>
+        )}
+        {cancelMsg && <span style={{ fontSize:11, color: cancelMsg.includes('Error') ? '#f87171' : '#4ade80', alignSelf:'center' }}>{cancelMsg}</span>}
+        {refreshMsg && <span style={{ fontSize:11, color: refreshMsg.includes('Error') || refreshMsg.includes('error') ? '#f87171' : '#4ade80', alignSelf:'center' }}>{refreshMsg}</span>}
+        <div style={{ marginLeft:'auto', display:'flex', gap:6 }}>
+          {!delConfirm
+            ? <ABtn icon={X} label="Delete" color='#b0a8a0' onClick={() => setDel(true)}/>
+            : <ABtn icon={X} label="Confirm delete" color='#f87171' onClick={() => onDelete(cert.id)}/>
+          }
         </div>
       </div>
 
-      {/* ── Metric strip ─── */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',
-        borderBottom:'1px solid rgba(192,57,43,0.15)', background:'transparent' }}>
-        {(() => {
-          // ── Date logic ─────────────────────────────────────────────────
-          //
-          // CERTIFICATE (DV cert, ~6 months):
-          //   issued_at  → expires_at (e.g. May 16 → Nov 30 2026)
-          //   Auto-REISSUE = 1 day before cert.expires_at = Nov 29 2026
-          //   Fresh DV cert issued, agents install it before old one dies.
-          //
-          // ORDER/SUBSCRIPTION (12 months):
-          //   Order placed on issued_at, runs for `period` months.
-          //   Order expires = issued_at + period months = May 16 2027
-          //   Auto-RENEWAL = 1 day before that = May 15 2027
-          //   Brand new order placed, completely new cert record.
-          //
-          // cert._order.valid_till is NOT order expiry — RapidSSL sets it
-          // to cert expiry. Real order expiry = issued_at + period months.
-
-          const daysLeftVal = Math.max(0, days ?? 0)
-          const certExpires = cert.expires_at ? new Date(cert.expires_at) : null
-
-          // Order expires = issued_at + period (months). Never use valid_till.
-          const orderPeriodMonths = cert._order?.period || 12
-          const orderExpires = cert.issued_at
-            ? (() => {
-                const d = new Date(cert.issued_at)
-                d.setMonth(d.getMonth() + orderPeriodMonths)
-                return d
-              })()
-            : null
-
-          const fmt = d => d
-            ? d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
-            : '—'
-
-          // Reissue = 1 day before cert.expires_at
-          const reissueDate    = certExpires  ? new Date(certExpires.getTime()  - 86400000) : null
-          const daysToReissue  = reissueDate  ? Math.ceil((reissueDate.getTime()  - Date.now()) / 86400000) : null
-          const reissueOverdue = daysToReissue !== null && daysToReissue <= 0
-
-          // Renewal = 1 day before order expires (issued_at + period months)
-          const renewalDate    = orderExpires ? new Date(orderExpires.getTime() - 86400000) : null
-          const daysToRenewal  = renewalDate  ? Math.ceil((renewalDate.getTime()  - Date.now()) / 86400000) : null
-          const renewalOverdue = daysToRenewal !== null && daysToRenewal <= 0
-
-          return [
-            {
-              top:    String(daysLeftVal),
-              bottom: 'Days left',
-              color:  statusColor,
-              mono:   true,
-              tip:    null,
-            },
-            {
-              top:    reissueOverdue ? 'Overdue' : fmt(reissueDate),
-              bottom: 'Auto-reissue',
-              color:  reissueOverdue ? '#f87171' : '#f0ede8',
-              mono:   false,
-              tip:    reissueDate
-                ? `Fires ${fmt(reissueDate)} — 1 day before cert expires (${fmt(certExpires)}). Fresh DV cert issued automatically, pushed to all agents.`
-                : '',
-            },
-            {
-              top:    renewalOverdue ? 'Overdue' : fmt(renewalDate),
-              bottom: 'Auto-renewal',
-              color:  renewalOverdue ? '#f87171' : '#f0ede8',
-              mono:   false,
-              tip:    renewalDate
-                ? `Fires ${fmt(renewalDate)} — 1 day before your ${orderPeriodMonths}-month order expires (${fmt(orderExpires)}). New annual order placed automatically.`
-                : '',
-            },
-          ].map(({ top, bottom, color, mono, tip }, i) => (
-            <div key={i} title={tip||''} style={{ padding:'12px 16px',
-              borderRight: i < 2 ? '1px solid rgba(192,57,43,0.15)' : 'none',
-              cursor: tip ? 'help' : 'default' }}>
-              <div style={{ fontSize: i===0 ? 20 : 13, fontWeight:800, color,
-                fontFamily: mono ? 'monospace' : 'inherit',
-                letterSpacing: i===0 ? '-0.5px' : '-0.2px', lineHeight:1.2 }}>
-                {top}
-              </div>
-              <div style={{ display:'flex', alignItems:'center', gap:3, marginTop:4 }}>
-                <span style={{ fontSize:10, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.4px' }}>{bottom}</span>
-                {tip && <span style={{ fontSize:11, color:'#b0a8a0', lineHeight:1 }}>ⓘ</span>}
-              </div>
-            </div>
-          ))
-        })()}
-      </div>
-
-      {/* ── Timeline ─────────────────────────────────────────────────────── */}
-      {cert.issued_at && cert.expires_at && (
-        <ValidityTimeline
-          issuedAt={cert.issued_at}
-          expiresAt={cert.expires_at}
-          orderPeriodMonths={cert._order?.period || 12}
-        />
+      {/* ── Validity timeline bar ── */}
+      {certStart && certEnd && (
+        <div style={{ padding:'12px 18px', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:'#b0a8a0', marginBottom:6 }}>
+            <span>{fmtD(cert.issued_at)} · SSL valid from</span>
+            <span style={{ color: isWarn || isExpired ? '#f87171' : '#4ade80', fontWeight:600 }}>
+              {isExpired ? 'Expired' : `Next reissue in ${days} days`}
+            </span>
+            {subEnd && <span>{fmtD(subEnd)} · Subscription ends</span>}
+          </div>
+          <div style={{ position:'relative', height:14, borderRadius:6, overflow:'hidden',
+            background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ position:'absolute', left:0, top:0, bottom:0,
+              width: certPct+'%', borderRadius:'6px 0 0 6px',
+              background: isExpired ? '#f87171' : isWarn ? '#f0ede8' : '#4ade80' }}/>
+            <div style={{ position:'absolute', top:0, bottom:0, left: certPct+'%', right:0,
+              backgroundImage:'repeating-linear-gradient(45deg,rgba(255,255,255,0.04) 0px,rgba(255,255,255,0.04) 4px,transparent 4px,transparent 8px)' }}/>
+            <div style={{ position:'absolute', top:0, bottom:0, left:'calc('+todayPct+'% - 1px)',
+              width:2, background:'white', borderRadius:1, opacity:0.7 }}/>
+          </div>
+          <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:'#b0a8a0', marginTop:4 }}>
+            <span>{fmtD(cert.issued_at)}</span>
+            <span style={{ fontWeight:600, color: isWarn || isExpired ? '#f87171' : '#f0ede8' }}>{fmtD(cert.expires_at)}</span>
+            {subEnd && <span>{fmtD(subEnd)}</span>}
+          </div>
+        </div>
       )}
 
-      {/* ── Tabs ─── */}
-      <div style={{ display:'flex', padding:'0 16px', borderBottom:'1px solid rgba(192,57,43,0.15)', gap:0 }}>
-        {['details','actions','files','history'].map(t => (
-          <button key={t} onClick={() => setActiveTab(t)}
-            style={{ fontSize:11, fontWeight:700, padding:'11px 14px',
-              background:'none', border:'none', cursor:'pointer', fontFamily:'inherit',
-              color: activeTab===t ? '#ffffff' : '#b0a8a0',
-              borderBottom:'2px solid '+(activeTab===t ? '#c0392b' : 'transparent'),
-              marginBottom:-1, transition:'all 0.15s', textTransform:'capitalize',
-              letterSpacing:'0.3px' }}>
-            {t}
+      {/* ── Section tabs ── */}
+      <div style={{ display:'flex', borderBottom:'1px solid rgba(255,255,255,0.08)', padding:'0 18px' }}>
+        {[['details','Details'], ['files','Files'], ['history','History'], ['security','Security']].map(([k,l]) => (
+          <button key={k} onClick={() => setActiveSection(k)}
+            style={{ fontSize:12, fontWeight:600, padding:'10px 14px', border:'none', background:'none',
+              cursor:'pointer', fontFamily:'inherit', marginBottom:-1,
+              color: activeSection===k ? '#ffffff' : '#b0a8a0',
+              borderBottom:'2px solid '+(activeSection===k ? '#c0392b' : 'transparent'),
+              transition:'all .15s' }}>
+            {l}
           </button>
         ))}
       </div>
 
-      {/* ── Tab: Details ─────────────────────────────────────────────────── */}
-      {activeTab === 'details' && (
-        <div style={{ padding:'14px 18px' }}>
-          <FieldGroup title="Certificate">
-            <FieldRow label="Domain"  value={cert.common_name || cert.domain} copyable/>
-            <FieldRow label="Status"  value={statusLabel} accent/>
-            <FieldRow label="Product" value={cert._order?.product_name || cert.cert_type || 'RapidSSL Standard'}/>
-            <FieldRow label="Validity" value={periodLabel}/>
-            <FieldRow label="DCV method" value={(cert.dcv_method || 'dns').toUpperCase()}/>
-          </FieldGroup>
-          <FieldGroup title="Dates">
-            <FieldRow label="Issued"  value={fmtDate(cert.issued_at || cert.created_at)}/>
-            <FieldRow label="Expires" value={fmtDate(cert.expires_at)}/>
-          </FieldGroup>
-          <FieldGroup title="Order">
-            <FieldRow label="API order ID" value={cert.ggs_order_id ? String(cert.ggs_order_id) : null} copyable/>
-            {cert._order?.ggs_invoice_id && <FieldRow label="Invoice ID" value={String(cert._order.ggs_invoice_id)}/>}
-            <FieldRow label="Admin name"  value={cert._order ? [cert._order.admin_first_name, cert._order.admin_last_name].filter(Boolean).join(' ') : null}/>
-            <FieldRow label="Admin email" value={cert._order?.admin_email} copyable/>
-            <FieldRow label="Admin phone" value={cert._order?.admin_phone}/>
-          </FieldGroup>
-        </div>
-      )}
-
-      {/* ── Tab: Actions ─────────────────────────────────────────────────── */}
-      {activeTab === 'actions' && (
-        <div style={{ padding:'14px 18px' }}>
-          {refreshMsg && (
-            <div style={{ fontSize:12, padding:'8px 10px', borderRadius:6, marginBottom:12,
-              background: refreshMsg.includes('Error') ? 'rgba(192,57,43,0.12)' : 'transparent',
-              color: refreshMsg.includes('Error') ? '#f87171' : '#4ade80',
-              border:'0.5px solid '+(refreshMsg.includes('Error') ? 'rgba(192,57,43,0.25)' : 'rgba(192,57,43,0.3)') }}>
-              {refreshMsg}
+      {/* ── Details section — GoGetSSL two-column grid ── */}
+      {activeSection === 'details' && (
+        <div style={{ padding:'18px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 32px' }}>
+          {/* Left — Main Details */}
+          <div>
+            <div style={{ fontSize:12, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
+              letterSpacing:'0.8px', marginBottom:10, paddingBottom:6, borderBottom:'1px solid rgba(255,107,91,0.2)' }}>
+              Main Details
             </div>
-          )}
-          <ActionRow icon={RotateCcw} iconColor="#16a34a" iconBg="rgba(192,57,43,0.12)"
-            hoverBorder="rgba(192,57,43,0.3)" hoverBg="rgba(192,57,43,0.12)"
-            title="Reissue certificate" subtitle="New cert, same order period · auto DNS"
-            onClick={() => certHistoryRef.current?.doAction('reissue')}
-            disabled={!session}/>
-          {/* Renew only visible within 30 days of order expiry (issued_at + period), not cert expiry */}
-          {cert._daysToRenewal != null && cert._daysToRenewal <= 30 && (
-            <ActionRow icon={RefreshCw} iconColor="#c0392b" iconBg="rgba(192,57,43,0.12)"
-              hoverBorder="rgba(192,57,43,0.3)" hoverBg="rgba(192,57,43,0.12)"
-              title="Renew for another year" subtitle="New GGS order · new cert row"
-              onClick={() => certHistoryRef.current?.doAction('renew')}
-              disabled={!session}/>
-          )}
-          <ActionRow icon={Server} iconColor="#e07060" iconBg="rgba(192,57,43,0.1)"
-            hoverBorder="rgba(192,57,43,0.25)" hoverBg="rgba(192,57,43,0.1)"
-            title="Install on server" subtitle="VPS agent or cPanel wizard"
-            onClick={() => onInstall(cert)}/>
-          <ActionRow icon={RefreshCw} iconColor="#e07060" iconBg="rgba(192,57,43,0.1)"
-            hoverBorder="rgba(192,57,43,0.25)" hoverBg="rgba(192,57,43,0.1)"
-            title={refreshing ? 'Syncing...' : 'Sync from RapidSSL'}
-            subtitle={refreshing ? 'Checking status...' : 'Pull latest order status'}
-            onClick={doRefresh} disabled={refreshing}/>
-          <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
-          <PqcRow cert={cert} onRefresh={onRefresh}/>
-          {/* Cancel order — only within 30 days of issue */}
-          {canCancel && (
-            <div style={{ marginTop:12, padding:'12px 14px', borderRadius:8,
-              border:'0.5px solid #FECACA', background:'#FFF5F5' }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
-                <div>
-                  <div style={{ fontSize:12, fontWeight:600, color:'#a93226' }}>Cancel & refund this order</div>
-                  <div style={{ fontSize:11, color:'#c0392b', marginTop:1 }}>
-                    Within 30-day window · {30 - daysSinceIssue} day{30 - daysSinceIssue !== 1 ? 's' : ''} remaining · GGS #{cert.ggs_order_id}
-                  </div>
-                </div>
-                {!cancelConfirm && !cancelMsg && (
-                  <button onClick={() => setCancelConfirm(true)}
-                    style={{ fontSize:11, fontWeight:600, color:'#a93226', background:'rgba(192,57,43,0.12)',
-                      border:'0.5px solid #FECACA', borderRadius:6, padding:'5px 12px',
-                      cursor:'pointer', fontFamily:'inherit' }}
-                    onMouseEnter={e => e.currentTarget.style.background='rgba(192,57,43,0.25)'}
-                    onMouseLeave={e => e.currentTarget.style.background='rgba(192,57,43,0.12)'}>
-                    Cancel order
-                  </button>
-                )}
-              </div>
-              {cancelMsg && (
-                <div style={{ fontSize:11, padding:'6px 10px', borderRadius:5, marginTop:4,
-                  background: cancelMsg.includes('Error') ? 'rgba(192,57,43,0.12)' : 'rgba(39,174,96,0.1)',
-                  color: cancelMsg.includes('Error') ? '#a93226' : '#065F46' }}>
-                  {cancelMsg}
-                </div>
-              )}
-              {cancelConfirm && !cancelMsg && (
-                <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:4 }}>
-                  <div style={{ fontSize:11, color:'#a93226', flex:1 }}>
-                    This will cancel GGS order #{cert.ggs_order_id} and request a refund. Are you sure?
-                  </div>
-                  <button onClick={doCancel} disabled={cancelling}
-                    style={{ fontSize:11, fontWeight:600, color:'#ff8c7a', background:'#c0392b',
-                      border:'none', borderRadius:6, padding:'5px 12px',
-                      cursor: cancelling ? 'not-allowed' : 'pointer', fontFamily:'inherit', opacity: cancelling ? 0.7 : 1 }}>
-                    {cancelling ? 'Cancelling...' : 'Yes, cancel'}
-                  </button>
-                  <button onClick={() => setCancelConfirm(false)} disabled={cancelling}
-                    style={{ fontSize:11, color:'#b0a8a0', background:'none', border:'0.5px solid #D1D5DB',
-                      borderRadius:6, padding:'5px 10px', cursor:'pointer', fontFamily:'inherit' }}>
-                    Keep it
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          <div style={{ display:'flex', justifyContent:'flex-end', marginTop:4 }}>
-            {!delConfirm
-              ? <button onClick={() => setDel(true)}
-                  style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'#b0a8a0',
-                    background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', padding:'2px 4px' }}
-                  onMouseEnter={e => e.currentTarget.style.color='#f87171'}
-                  onMouseLeave={e => e.currentTarget.style.color='var(--v2-text-3)'}>
-                  <X size={11}/> Delete certificate
-                </button>
-              : <button onClick={() => onDelete(cert.id)}
-                  style={{ fontSize:11, color:'#ff8c7a', background:'#f87171', border:'none',
-                    borderRadius:6, padding:'4px 12px', cursor:'pointer', fontFamily:'inherit', fontWeight:500 }}>
-                  Confirm delete
-                </button>
-            }
+            <Field label="Product Name" value={cert._order?.product_name || cert.cert_type || 'RapidSSL Standard'}/>
+            <Field label="Order Status"  value={cert.status === 'active' ? '✓ Issued' : cert.status}/>
+            <Field label="Order ID"      value={cert._order?.ggs_invoice_id ? `S${cert._order.ggs_invoice_id}` : null} mono/>
+            <Field label="API Order ID"  value={cert.ggs_order_id ? String(cert.ggs_order_id) : null} mono copy/>
+            <Field label="Subscription Period" value={`${cert._order?.period || 12} months`}/>
+            <Field label="Files Valid From" value={fmtD(cert.issued_at)}/>
+            <Field label="Files Valid Till" value={fmtD(cert.expires_at)}/>
+            <Field label="Domain"  value={cert.common_name || cert.domain} copy/>
+            <Field label="Order Type" value={cert.order_type === 'renewal' ? 'Renewal' : 'New'}/>
+            <Field label="DCV Method" value={(cert.dcv_method || 'DNS').toUpperCase()}/>
+            {cert.serial_number && <Field label="Serial Number" value={cert.serial_number} mono copy/>}
           </div>
-          {/* SSL Vulnerability Scanner */}
-          <VulnScanner domain={cert.domain} session={session} />
+          {/* Right — Contact */}
+          <div>
+            <div style={{ fontSize:12, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
+              letterSpacing:'0.8px', marginBottom:10, paddingBottom:6, borderBottom:'1px solid rgba(255,107,91,0.2)' }}>
+              Administrator Contact
+            </div>
+            <Field label="First Name" value={cert._order?.admin_first_name}/>
+            <Field label="Last Name"  value={cert._order?.admin_last_name}/>
+            <Field label="Email"      value={cert._order?.admin_email} copy/>
+            <Field label="Phone"      value={cert._order?.admin_phone}/>
+            <Field label="Title"      value={cert._order?.admin_title}/>
+            <div style={{ marginTop:20, fontSize:12, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
+              letterSpacing:'0.8px', marginBottom:10, paddingBottom:6, borderBottom:'1px solid rgba(255,107,91,0.2)' }}>
+              Technical Contact
+            </div>
+            <Field label="First Name" value={cert._order?.admin_first_name}/>
+            <Field label="Last Name"  value={cert._order?.admin_last_name}/>
+            <Field label="Email"      value={cert._order?.admin_email} copy/>
+            <Field label="Phone"      value={cert._order?.admin_phone}/>
+          </div>
         </div>
       )}
 
-      {/* ── Tab: Files ───────────────────────────────────────────────────── */}
-      {activeTab === 'files' && (
-        <div style={{ padding:'14px 18px' }}>
-          {/* cert.pem */}
-          {cert.cert_pem && (
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-              padding:'10px 12px', borderRadius:8, border:'0.5px solid var(--v2-border)',
-              background:'var(--v2-surface-3)', marginBottom:8 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-                <div style={{ width:30, height:30, borderRadius:7, background:'transparent',
-                  display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <FileText size={14} color="#c0392b"/>
-                </div>
-                <div>
-                  <div style={{ fontSize:12, fontWeight:500, fontFamily:'monospace', color:'#ffffff' }}>cert.pem</div>
-                  <div style={{ fontSize:10, color:'#b0a8a0', marginTop:1 }}>Fullchain · 3 blocks</div>
-                </div>
-              </div>
-              <div style={{ display:'flex', gap:6 }}>
-                <CopyBtn text={cert.cert_pem}/>
-                <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.cert_pem, cert.domain+'-cert.pem')}>
-                  <Download size={10}/> Save
-                </button>
-              </div>
-            </div>
-          )}
-          {/* private key */}
-          {cert.tls_grade && (
-            <span style={{ fontSize:9, fontWeight:700, color: cert.tls_grade==='A'?'#4ade80':cert.tls_grade==='B'?'#65a30d':cert.tls_grade==='C'?'#f0ede8':'#f87171',
-              background: cert.tls_grade==='A'?'transparent':cert.tls_grade==='B'?'rgba(192,57,43,0.06)':cert.tls_grade==='C'?'rgba(248,113,113,0.12)':'rgba(192,57,43,0.12)',
-              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.8 }}>
-              {cert.tls_grade}
-            </span>
-          )}
-          {cert.pqc_risk && (
-            <span title={cert.key_algorithm || 'PQC check'} style={{ fontSize:9, fontWeight:700,
-              color: cert.pqc_risk==='ready'?'#4ade80':cert.pqc_risk==='low'?'#f0ede8':cert.pqc_risk==='medium'?'#f0ede8':'#f87171',
-              background: cert.pqc_risk==='ready'?'transparent':cert.pqc_risk==='low'?'transparent':cert.pqc_risk==='medium'?'rgba(248,113,113,0.12)':'rgba(192,57,43,0.12)',
-              border: '0.5px solid currentColor', borderRadius:3, padding:'1px 5px', opacity:0.85 }}>
-              {cert.pqc_risk==='ready'?'PQC✓':cert.pqc_risk==='low'?'PQC~':cert.pqc_risk==='medium'?'PQC!':'PQC✗'}
-            </span>
-          )}
-          {cert.private_key_pem && (
-            <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8,
-              background:'var(--v2-surface-3)', marginBottom:8 }}>
+      {/* ── Files section ── */}
+      {activeSection === 'files' && (
+        <div style={{ padding:'18px', display:'flex', flexDirection:'column', gap:10 }}>
+          {cert.cert_pem ? (
+            <>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                padding:'10px 12px' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-                  <div style={{ width:30, height:30, borderRadius:7, background:'rgba(248,113,113,0.12)',
-                    display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <Lock size={14} color="#c0392b"/>
-                  </div>
+                padding:'12px 14px', borderRadius:8, border:'0.5px solid rgba(255,255,255,0.1)',
+                background:'rgba(255,255,255,0.03)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                  <FileText size={16} color="#ff8c7a"/>
                   <div>
-                    <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                      <span style={{ fontSize:12, fontWeight:500, fontFamily:'monospace', color:'#ffffff' }}>private key</span>
-                      <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:3,
-                        background:'rgba(248,113,113,0.12)', color:'#f87171', letterSpacing:'0.3px' }}>SENSITIVE</span>
-                    </div>
-                    <div style={{ fontSize:10, color:'#b0a8a0', marginTop:1 }}>
-                      {keyCopied && keyTimer > 0
-                        ? <span style={{ color:'#f87171' }}>Copied — clears in {keyTimer}s</span>
-                        : 'Copy only · never displayed'}
-                    </div>
+                    <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', fontFamily:'monospace' }}>Certificate (cert.pem)</div>
+                    <div style={{ fontSize:11, color:'#b0a8a0' }}>Fullchain · end-entity + intermediate</div>
                   </div>
                 </div>
-                <div style={{ display:'flex', gap:6, alignItems:'center' }}>
-                  {keyCopied && keyTimer > 0 && (
-                    <div style={{ height:3, width:80, background:'rgba(248,113,113,0.12)', borderRadius:3, overflow:'hidden' }}>
-                      <div style={{ height:'100%', background:'#f87171', borderRadius:3,
-                        width: `${(keyTimer/30)*100}%`, transition:'width 1s linear' }}/>
-                    </div>
-                  )}
-                  <button className="v2-btn v2-btn-sm" onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(cert.private_key_pem)
-                    } catch(e) {
-                      // fallback for older browsers
-                      const ta = document.createElement('textarea')
-                      ta.value = cert.private_key_pem
-                      ta.style.position = 'fixed'; ta.style.opacity = '0'
-                      document.body.appendChild(ta); ta.select()
-                      document.execCommand('copy'); document.body.removeChild(ta)
-                    }
-                    setKeyCopied(true)
-                    // Audit log
-                    try {
-                      const { data: { session: s } } = await supabase.auth.getSession()
-                      await supabase.from('audit_log').insert({
-                        user_id: cert.user_id, cert_id: cert.id,
-                        action: 'private_key_copied',
-                        actor_email: s?.user?.email || '',
-                        metadata: { domain: cert.domain, ip: 'browser' }
-                      })
-                    } catch(e) { console.error('audit log failed', e) }
-                    // 30s countdown then reset copied state
-                    if (keyTimerRef) { clearInterval(keyTimerRef); setKeyTimerRef(null) }
-                    setKeyTimer(30)
-                    let secs = 30
-                    const iv = setInterval(() => {
-                      secs -= 1
-                      setKeyTimer(secs)
-                      if (secs <= 0) {
-                        clearInterval(iv)
-                        setKeyCopied(false); setKeyTimer(0); setKeyTimerRef(null)
-                      }
-                    }, 1000)
-                    setKeyTimerRef(iv)
-                  }}>
-                    {keyCopied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy Key</>}
+                <div style={{ display:'flex', gap:6 }}>
+                  <CopyBtn text={cert.cert_pem} label="Copy"/>
+                  <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.cert_pem, cert.domain+'-cert.pem')}>
+                    <Download size={10}/> Download
                   </button>
                 </div>
               </div>
+              {cert.ca_pem && (
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+                  padding:'12px 14px', borderRadius:8, border:'0.5px solid rgba(255,255,255,0.1)',
+                  background:'rgba(255,255,255,0.03)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                    <FileText size={16} color="#b0a8a0"/>
+                    <div>
+                      <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', fontFamily:'monospace' }}>Intermediate CA (ca.pem)</div>
+                      <div style={{ fontSize:11, color:'#b0a8a0' }}>CA bundle for chain of trust</div>
+                    </div>
+                  </div>
+                  <div style={{ display:'flex', gap:6 }}>
+                    <CopyBtn text={cert.ca_pem} label="Copy"/>
+                    <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.ca_pem, cert.domain+'-ca.pem')}>
+                      <Download size={10}/> Download
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ fontSize:13, color:'#b0a8a0', textAlign:'center', padding:'24px 0' }}>
+              Certificate files not yet available — order may still be processing.
             </div>
           )}
-          {/* Key warning / deleted state */}
-          {cert.private_key_pem && !keyDeleted && !keyDelConfirm && (
-            <div style={{ background:'rgba(248,113,113,0.12)', border:'0.5px solid #F2C4BC', borderRadius:8,
-              padding:'10px 12px', marginBottom:10, display:'flex', gap:10, alignItems:'flex-start' }}>
-              <ShieldOff size={13} color="#e07060" style={{ flexShrink:0, marginTop:1 }}/>
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:12, fontWeight:500, color:'#ff8c7a', marginBottom:2 }}>Private key stored server-side</div>
-                <div style={{ fontSize:11, color:'#ff8c7a' }}>Download and delete from SSLVault after installing.</div>
-              </div>
-              <button className="v2-btn v2-btn-sm" onClick={() => setKDC(true)}
-                style={{ fontSize:10, borderColor:'#fcd34d', color:'#ff8c7a', flexShrink:0 }}>
-                <Trash2 size={9}/> Delete
-              </button>
+          {/* Private key via KeyLocker */}
+          <div style={{ padding:'12px 14px', borderRadius:8, border:'0.5px solid rgba(192,57,43,0.3)',
+            background:'rgba(192,57,43,0.05)', marginTop:4 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+              <Lock size={14} color="#ff8c7a"/>
+              <span style={{ fontSize:12, fontWeight:600, color:'#ff8c7a' }}>Private Key</span>
+              <span style={{ fontSize:10, padding:'1px 6px', borderRadius:3,
+                background:'rgba(248,113,113,0.12)', color:'#f87171', fontWeight:700 }}>VAULT</span>
             </div>
-          )}
-          {keyDeleted && (
-            <div style={{ background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
-              borderRadius:8, padding:'10px 12px', marginBottom:10, display:'flex', gap:8, alignItems:'center' }}>
-              <ShieldCheck size={13} color="var(--v2-green)"/>
-              <span style={{ fontSize:12, color:'var(--v2-green-text)', fontWeight:500 }}>Private key deleted from SSLVault servers.</span>
+            <div style={{ fontSize:11, color:'#b0a8a0' }}>
+              Private key is encrypted in KeyLocker. Go to CertVault to access it securely.
             </div>
-          )}
-          {keyDelConfirm && (
-            <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-amber-border)',
-              borderRadius:8, padding:14, marginBottom:10 }}>
-              <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:10 }}>
-                <AlertTriangle size={14} color="var(--v2-amber)"/>
-                <span style={{ fontSize:13, fontWeight:500 }}>Delete private key</span>
-              </div>
-              {[
-                { key:'downloaded', label:'I have downloaded key.pem to a safe local location' },
-                { key:'installed',  label:'My server has the certificate installed and working' },
-                { key:'understand', label:'I understand this is irreversible' },
-              ].map(({ key, label }) => (
-                <label key={key} style={{ display:'flex', gap:8, alignItems:'flex-start', marginBottom:8,
-                  cursor:'pointer', fontSize:12, color:'#e8e0d8', lineHeight:1.5 }}>
-                  <input type="checkbox" checked={keyChecks[key]}
-                    onChange={e => setKC(p => ({ ...p, [key]: e.target.checked }))}
-                    style={{ marginTop:2, flexShrink:0 }}/>
-                  {label}
-                </label>
-              ))}
-              <div style={{ display:'flex', gap:8, marginTop:12 }}>
-                <button className="v2-btn v2-btn-sm" onClick={() => { setKDC(false); setKC({downloaded:false,installed:false,understand:false}) }}>Cancel</button>
-                <button onClick={doDeleteKey} disabled={!allChecked || keyDeleting}
-                  style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
-                    background: allChecked ? 'var(--v2-red)' : 'var(--v2-surface-3)',
-                    color: allChecked ? '#000000' : 'var(--v2-text-3)',
-                    border:'none', borderRadius:'var(--v2-r-md)', padding:'5px 12px',
-                    cursor: allChecked ? 'pointer' : 'not-allowed', fontFamily:'inherit', fontWeight:500 }}>
-                  <Trash2 size={10}/> {keyDeleting ? 'Deleting...' : 'Permanently delete key'}
-                </button>
-              </div>
-            </div>
-          )}
+            <button onClick={() => nav('/certvault')}
+              style={{ marginTop:8, fontSize:11, fontWeight:600, color:'#ff8c7a',
+                background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)',
+                borderRadius:5, padding:'5px 12px', cursor:'pointer', fontFamily:'inherit' }}>
+              Open CertVault →
+            </button>
+          </div>
         </div>
       )}
 
-      {/* ── Tab: History ─────────────────────────────────────────────────── */}
-      {/* Always mounted so certHistoryRef is available for action buttons on other tabs */}
-      {session && (
-        <div style={{ display: activeTab === 'history' ? 'block' : 'none', padding:'14px 18px' }}>
+      {/* ── History section ── */}
+      {activeSection === 'history' && session && (
+        <div style={{ padding:'14px 18px', display:'none' }}>
           <CertHistory ref={certHistoryRef} cert={cert} session={session}/>
         </div>
       )}
-      {activeTab === 'history' && !session && (
-        <div style={{ padding:'14px 18px', fontSize:12, color:'#b0a8a0' }}>Sign in to view history.</div>
+      {/* Always mount CertHistory so certHistoryRef works for reissue/renew buttons */}
+      {session && (
+        <div style={{ display: activeSection === 'history' ? 'block' : 'none', padding:'14px 18px' }}>
+          <CertHistory ref={certHistoryRef} cert={cert} session={session}/>
+        </div>
       )}
 
-      {/* ── Tab: Embed ─────────────────────────────────────────────────── */}
+      {/* ── Security section ── */}
+      {activeSection === 'security' && (
+        <div style={{ padding:'14px 18px', display:'flex', flexDirection:'column', gap:8 }}>
+          <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
+          <PqcRow cert={cert} onRefresh={onRefresh}/>
+          <VulnScanner domain={cert.domain} session={session}/>
+        </div>
+      )}
 
-
-      <style>{`
-        @keyframes v3pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
-      `}</style>
+      <style>{`@keyframes fadeSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </div>
   )
 }
+
 
 function EmbedTab({ cert }) {
   const domain = cert.domain
@@ -2909,7 +2614,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           </div>
         )}
 
-        <div style={{ display:'grid', gridTemplateColumns: (!isMobile && selectedCert) ? 'minmax(0,1fr) clamp(280px,35vw,400px)':'1fr', gap:16, alignItems:'start' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:16, alignItems:'start' }}>
           <div style={{ background:'transparent', border:'1px solid rgba(192,57,43,0.2)', borderRadius:8,
             overflow:'hidden' }}>
             <div style={{ padding:'14px 16px', borderBottom:'1px solid rgba(192,57,43,0.15)',
@@ -2986,24 +2691,26 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               </div>
             ) : (
               domainGroups.map((cert, idx) => (
-                <CertRow
-                  key={cert.id}
-                  cert={cert}
-                  index={idx + 1}
-                  selected={selected === cert.id}
-                  onClick={() => setSelected(selected === cert.id ? null : cert.id)}
-                />
+                <div key={cert.id}>
+                  <CertRow
+                    cert={cert}
+                    index={idx + 1}
+                    selected={selected === cert.id}
+                    onClick={() => setSelected(selected === cert.id ? null : cert.id)}
+                  />
+                  {selected === cert.id && (
+                    <div style={{ padding:'0 8px 8px' }}>
+                      <CertDetail cert={cert} onClose={() => setSelected(null)}
+                        onDelete={handleDelete}
+                        onInstall={c => { setAgentCert(c) }}
+                        onCpanel={c => { setCpanelCert(c) }}
+                        nav={nav} onRefresh={load} session={session}/>
+                    </div>
+                  )}
+                </div>
               ))
             )}
           </div>
-
-          {selectedCert && (
-            <CertDetail cert={selectedCert} onClose={() => setSelected(null)}
-              onDelete={handleDelete}
-              onInstall={cert => { setAgentCert(cert) }}
-              onCpanel={cert => { setCpanelCert(cert) }}
-              nav={nav} onRefresh={load} session={session}/>
-          )}
         </div>
 
         {/* Imported certs from CA Connector — shown separately */}
