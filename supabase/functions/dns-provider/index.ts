@@ -76,6 +76,18 @@ async function cloudflareAdd(creds: Record<string, string>, domain: string, name
     zoneId = d.result?.[0]?.id || ''
     if (!zoneId) return { ok: false, message: `Cloudflare: no zone found for ${apex(domain)}. Errors: ${JSON.stringify(d.errors)}` }
   }
+  // Delete stale TXT records with this name before adding (prevents CF 81058 when value changed)
+  try {
+    const ex = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records?type=TXT&name=${encodeURIComponent(name || domain)}`, { headers: { Authorization: `Bearer ${token}` } })
+    const exData = await ex.json()
+    for (const rec of (exData.result || [])) {
+      if (rec.content !== value) {
+        await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${rec.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+        console.log('[cloudflare] deleted stale TXT:', rec.content)
+      }
+    }
+  } catch (e: any) { console.warn('[cloudflare] pre-add cleanup non-fatal:', e.message) }
+
   const r = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -83,7 +95,8 @@ async function cloudflareAdd(creds: Record<string, string>, domain: string, name
   })
   const d = await r.json()
   if (d.success) return { ok: true, provider: 'Cloudflare' }
-  if (d.errors?.some((e: any) => e.code === 81057)) return { ok: true, provider: 'Cloudflare', note: 'record already existed' }
+  // 81057 = already exists same value, 81058 = identical record — both mean success
+  if (d.errors?.some((e: any) => e.code === 81057 || e.code === 81058)) return { ok: true, provider: 'Cloudflare', note: 'record already existed' }
   return { ok: false, message: `Cloudflare: ${JSON.stringify(d.errors)}` }
 }
 
