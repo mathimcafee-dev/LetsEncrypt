@@ -868,6 +868,8 @@ export default function MyServers({ user }) {
     if (deletingCpanelId !== id) { setDeletingCpanelId(id); return }
     setDeletingCpanelId(null)
     if (source === 'server_credentials') {
+      // Clear FK reference in certificates first, then delete
+      await supabase.from('certificates').update({ install_server_id: null }).eq('install_server_id', id).eq('user_id', user.id)
       await supabase.from('server_credentials').delete().eq('id', id).eq('user_id', user.id)
     } else {
       await supabase.from('cpanel_credentials').delete().eq('id', id).eq('user_id', user.id)
