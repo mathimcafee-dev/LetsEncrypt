@@ -979,8 +979,8 @@ export default function MyServers({ user }) {
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '10px 16px', fontSize:13, fontWeight: 500,
                   background: 'none', border: 'none', cursor: 'pointer',
-                  color: activeTab === id ? 'var(--v2-text)' : 'var(--v2-text-3)',
-                  borderBottom: `2px solid ${activeTab === id ? 'var(--v2-text)' : 'transparent'}`,
+                  color: activeTab === id ? '#ffffff' : 'rgba(240,237,232,0.55)',
+                  borderBottom: `2px solid ${activeTab === id ? '#c0392b' : 'transparent'}`,
                   marginBottom: -1, fontFamily: 'inherit', transition: 'all .15s',
                 }}>
                   <Icon size={13} />
