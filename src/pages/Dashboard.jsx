@@ -992,22 +992,32 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       {tab==='reissues' && (
         <div>
           {/* Summary line */}
-          {reissues.length > 0 && (
-            <div style={{ fontSize:12, color:'#b0a8a0', marginBottom:12 }}>
-              This certificate has been reissued <strong style={{ color:'#f0ede8' }}>{reissues.length} time{reissues.length!==1?'s':''}</strong>.
-              {reissues.some(r => r.status==='dv_pending') && (
-                <span style={{ marginLeft:8, color:'#fbbf24' }}>⏳ One reissue is currently in progress.</span>
-              )}
-            </div>
-          )}
+          {reissues.length > 0 && (() => {
+            // A dv_pending reissue is only truly in-progress if the CERT itself
+            // is still not active. If cert.status === 'active', the order is done
+            // and the dv_pending row is just stale DB state.
+            const trulyPending = reissues.some(r =>
+              r.status === 'dv_pending' && cert.status !== 'active'
+            )
+            return (
+              <div style={{ fontSize:12, color:'#b0a8a0', marginBottom:12 }}>
+                This certificate has been reissued <strong style={{ color:'#f0ede8' }}>{reissues.length} time{reissues.length!==1?'s':''}</strong>.
+                {trulyPending && (
+                  <span style={{ marginLeft:8, color:'#fbbf24' }}>⏳ One reissue is currently in progress.</span>
+                )}
+              </div>
+            )
+          })()}
 
           {reissues.length === 0 ? (
             <div style={{ fontSize:12, color:'#b0a8a0', padding:'12px 0' }}>
               No reissues yet. Use the Reissue SSL button above to regenerate this certificate with a fresh key pair.
             </div>
           ) : reissues.map((r, i) => {
+            // Cross-check: if the cert itself is active, any dv_pending row is stale
             const isDone    = r.status==='completed' || r.status==='active' || r.status==='issued'
-            const isPending = r.status==='dv_pending'
+                           || (r.status==='dv_pending' && cert.status==='active')
+            const isPending = r.status==='dv_pending' && cert.status !== 'active'
             const isFailed  = r.status==='failed'
             const dotColor  = isDone ? '#4ade80' : isPending ? '#fbbf24' : isFailed ? '#f87171' : '#b0a8a0'
             return (
