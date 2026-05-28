@@ -5,6 +5,7 @@ import {
   Lock, AlertCircle, Wifi, WifiOff, Edit3, Zap
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
+import { supabase } from '../lib/supabase'
 
 const DNS_FN    = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/dns-provider'
 const SERVER_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/server-credentials'
@@ -1600,16 +1601,23 @@ export default function DnsProviders({ nav }) {
 
   const loadAll = async () => {
     setLoading(true)
-    await Promise.all([loadCredentials(), loadServers(), loadAgents()])
+    await Promise.all([
+      loadCredentials().catch(e => console.warn('loadCredentials:', e)),
+      loadServers().catch(e => console.warn('loadServers:', e)),
+      loadAgents().catch(e => console.warn('loadAgents:', e)),
+    ])
     setLoading(false)
   }
 
   const loadCredentials = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
     const res = await fetch(DNS_FN, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` },
       body: JSON.stringify({ action: 'list', user_id: user.id })
     })
-    const data = await res.json()
+    if (!res.ok) { setCredentials([]); return }
+    const data = await res.json().catch(() => ({}))
     const list = data.credentials || []
     setCredentials(list)
     const status = {}
@@ -1623,13 +1631,17 @@ export default function DnsProviders({ nav }) {
   }
 
   const loadServers = async () => {
-    const res = await fetch(SERVER_FN, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'list', user_id: user.id })
-    })
-    const data = await res.json()
-    const list = data.servers || []
-    setServers(list)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch(SERVER_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` },
+        body: JSON.stringify({ action: 'list', user_id: user.id })
+      })
+      if (!res.ok) { setServers([]); return }
+      const data = await res.json().catch(() => ({}))
+      setServers(data.servers || [])
+    } catch { setServers([]) }
   }
 
   const loadAgents = async () => {

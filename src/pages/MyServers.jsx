@@ -203,7 +203,8 @@ function ServerCard({ agent, certs }) {
 }
 
 // ── DNS Credential card ───────────────────────────────────────────────
-function DnsCard({ cred, onDelete }) {
+function DnsCard({ cred, onDelete, deletingId }) {
+  const isConfirming = deletingId === cred.id
   const p = DNS_PROVIDERS[cred.provider] || { name: cred.provider, color: '#b0a8a0', initials: cred.provider?.slice(0,2).toUpperCase() }
   return (
     <div style={{
@@ -845,16 +846,23 @@ export default function MyServers({ user }) {
 
   const refresh = async () => { setRefreshing(true); await load(); setRefreshing(false) }
 
+  // All hooks BEFORE any early returns or async functions
+  const [deletingDnsId, setDeletingDnsId] = useState(null)
+  const [deletingCpanelId, setDeletingCpanelId] = useState(null)
+
   async function deleteDns(id) {
-    if (!confirm('Remove this DNS provider?')) return
+    if (id === 'cancel') { setDeletingDnsId(null); return }
+    if (deletingDnsId !== id) { setDeletingDnsId(id); return }
+    setDeletingDnsId(null)
+    const { data: { session } } = await supabase.auth.getSession()
     await fetch(`${SB}/functions/v1/dns-provider`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
       body: JSON.stringify({ action: 'delete', id, user_id: user.id }),
     })
     load()
   }
 
-  const [deletingCpanelId, setDeletingCpanelId] = useState(null)
   async function deleteCpanel(id, source) {
     if (id === 'cancel') { setDeletingCpanelId(null); return }
     if (deletingCpanelId !== id) { setDeletingCpanelId(id); return }
@@ -1088,7 +1096,7 @@ export default function MyServers({ user }) {
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {dnsCredentials.map(cred => (
-                      <DnsCard key={cred.id} cred={cred} onDelete={deleteDns} />
+                      <DnsCard key={cred.id} cred={cred} deletingId={deletingDnsId} onDelete={deleteDns} />
                     ))}
                     <button onClick={() => setShowAddDns(true)} style={{
                       padding: '12px', borderRadius: 10,
