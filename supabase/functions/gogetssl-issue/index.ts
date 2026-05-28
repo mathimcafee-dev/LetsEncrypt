@@ -990,11 +990,45 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
       .single()
     if (!cert) return
 
-    if (cert.install_method === 'agent') {
+    let installMethod = cert.install_method
+    let installCredId  = cert.install_server_id
+
+    // Auto-detect if not set — look up saved credentials for this domain/user
+    if (!installMethod) {
+      // Check for cPanel credential first
+      const { data: cpCreds } = await adminDb()
+        .from('server_credentials')
+        .select('id, server_type, agent_id')
+        .eq('user_id', userId)
+        .in('server_type', ['cpanel', 'shared'])
+      const cpMatch = (cpCreds || []).find((c: any) => c.domains?.includes(domain)) || cpCreds?.[0]
+      if (cpMatch) {
+        installMethod = 'cpanel'
+        installCredId = cpMatch.id
+        // Save back to cert so future auto-installs work without detection
+        await adminDb().from('certificates').update({ install_method: 'cpanel', install_server_id: cpMatch.id }).eq('id', cert.id)
+        console.log('[dispatch] auto-detected cPanel for', domain)
+      } else {
+        // Check for VPS agent
+        const { data: agentRows } = await adminDb()
+          .from('server_credentials')
+          .select('id, agent_id')
+          .eq('user_id', userId)
+          .not('agent_id', 'is', null)
+        const agentRow = (agentRows || []).find((r: any) => r.agent_id)
+        if (agentRow) {
+          installMethod = 'agent'
+          await adminDb().from('certificates').update({ install_method: 'agent' }).eq('id', cert.id)
+          console.log('[dispatch] auto-detected agent for', domain)
+        }
+      }
+    }
+
+    if (installMethod === 'agent') {
       const { data: serverRows } = await adminDb()
         .from('server_credentials')
         .select('id, agent_id')
-        .contains('domains', [domain])
+        .eq('user_id', userId)
         .not('agent_id', 'is', null)
       for (const row of (serverRows || [])) {
         const { data: existing } = await adminDb().from('agent_jobs').select('id')
@@ -1008,17 +1042,19 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
             status:     'queued',
             cert_pem:   cert.cert_pem || '',
             ca_pem:     cert.ca_pem  || '',
-            key_pem:    '',           // agent fetches from KeyLocker via keylocker_key_id
+            key_pem:    '',
             domain,
           })
         }
       }
-    } else if (cert.install_method === 'cpanel' && cert.install_server_id) {
+    } else if (installMethod === 'cpanel' && installCredId) {
       fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/cpanel-install`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-        body: JSON.stringify({ action: 'install', cert_id: cert.id, domain, credential_id: cert.install_server_id, _service_user_id: userId }),
-      }).catch((e: any) => console.warn('[poll_pending] cpanel dispatch:', e.message))
+        body: JSON.stringify({ action: 'install', cert_id: cert.id, domain, credential_id: installCredId, _service_user_id: userId }),
+      }).catch((e: any) => console.warn('[dispatch] cpanel fire-and-forget:', e.message))
+    } else {
+      console.log('[dispatch] no install method for', domain, '— customer must install manually')
     }
   } catch (e: any) {
     console.warn('[dispatchInstall]', e.message)

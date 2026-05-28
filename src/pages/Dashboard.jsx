@@ -14,6 +14,7 @@ import CpanelInstall from '../components/CpanelInstall'
 import FleetWidget from '../components/FleetWidget'
 import VulnScanner from '../components/VulnScanner'
 import MissionControlModal from '../components/MissionControlModal'
+import SmartInstall from '../components/SmartInstall'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -2347,6 +2348,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   const [search,  setSearch] = useState('')
   const [agentCert,  setAgentCert]  = useState(null)
   const [cpanelCert, setCpanelCert] = useState(null)
+  const [smartInstallCert, setSmartInstallCert] = useState(null)
   const [session,    setSession]    = useState(null)
   const [healthScores, setHealthScores] = useState({})  // domain → {grade, score}
   const [recentEvents, setRecentEvents] = useState([])   // activity feed
@@ -2727,7 +2729,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                     <div style={{ padding:'0 8px 8px' }}>
                       <CertDetail cert={cert} onClose={() => setSelected(null)}
                         onDelete={handleDelete}
-                        onInstall={c => { setAgentCert(c) }}
+                        onInstall={c => { setSmartInstallCert(c) }}
                         onCpanel={c => { setCpanelCert(c) }}
                         nav={nav} onRefresh={load} session={session}/>
                     </div>
@@ -2821,6 +2823,17 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             setAgentCert(null)
             setCpanelCert(cert)
           }}
+        />
+      )}
+
+      {/* Smart Install modal — detects cPanel/agent and routes automatically */}
+      {smartInstallCert && (
+        <SmartInstall
+          cert={smartInstallCert}
+          userId={user.id}
+          session={session}
+          onClose={() => setSmartInstallCert(null)}
+          onSuccess={() => { setSmartInstallCert(null); load() }}
         />
       )}
 
