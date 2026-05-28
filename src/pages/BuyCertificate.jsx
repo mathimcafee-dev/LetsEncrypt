@@ -636,12 +636,12 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             ))}
           </div>
 
-          {ggsStatus === 'processing' && !(ord?.dcv_txt_value || ord?.dcv_cname_value) && (
+          {!(ord?.dcv_txt_value || ord?.dcv_cname_value) && (
             <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
               background: 'rgba(59,130,246,0.06)', display: 'flex', alignItems: 'center', gap: 8 }}>
               <RefreshCw size={11} className="spin" style={{ color: '#93c5fd', flexShrink: 0 }}/>
               <span style={{ fontSize:11, color: '#93c5fd', lineHeight: 1.5 }}>
-                GoGetSSL is provisioning your order (status: processing). DNS validation record will appear automatically in a few seconds…
+                RapidSSL is provisioning your DNS validation record. This typically takes 1–5 minutes. Checking automatically every 5 seconds — no action needed.
               </span>
             </div>
           )}
