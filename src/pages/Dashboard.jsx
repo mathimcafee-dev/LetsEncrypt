@@ -751,15 +751,26 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
           status: 'done',
           detail: 'RSA-2048 key pair generated',
         })
-        // Step 2: DNS add was attempted by the edge function but we can't confirm
-        // it succeeded from here. Show the TXT value. The cron retries every 5 min.
-        steps = updateStep(steps, 2, {
-          status: d.dcv_txt_value ? 'active' : 'active',
-          detail: d.dcv_txt_value
-            ? `TXT record submitted to DNS provider · ${d.dcv_txt_name || cert.domain}`
-            : 'DCV record not yet returned by GGS — cron will add it within 5 min',
-        })
-        steps = updateStep(steps, 3, { status: 'active', detail: 'Waiting for GGS to validate DNS ownership…' })
+        // Step 2: DNS — if we have the TXT value, it was submitted. Otherwise still waiting.
+        // Step 3: only starts after DNS is in place.
+        if (d.dcv_txt_value) {
+          steps = updateStep(steps, 2, {
+            status: 'active',
+            detail: `TXT record submitted to DNS · ${d.dcv_txt_name || cert.domain}`,
+          })
+          steps = updateStep(steps, 3, { status: 'active', detail: 'GGS validating DNS ownership…' })
+        } else {
+          // GGS hasn't returned DCV values yet — cron handles it automatically
+          steps = updateStep(steps, 2, {
+            status: 'active',
+            detail: 'GGS is generating the DCV record — cron will add it to DNS and complete validation automatically',
+          })
+          steps = updateStep(steps, 3, { status: 'pending', detail: '' })
+        }
+        // If no DCV values, mark as background so user knows they can close
+        if (!d.dcv_txt_value) {
+          return { ...p, steps, newGgsOrderId, backgroundProcessing: true }
+        }
         stepStartTimes.current[3] = Date.now()
         return { ...p, steps, newGgsOrderId }
       })
