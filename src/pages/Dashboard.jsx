@@ -1699,49 +1699,121 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         ))}
       </div>
 
-      {/* ── Details section — GoGetSSL two-column grid ── */}
-      {activeSection === 'details' && (
-        <div style={{ padding:'18px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 32px' }}>
-          {/* Left — Main Details */}
-          <div>
-            <div style={{ fontSize:12, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
-              letterSpacing:'0.8px', marginBottom:10, paddingBottom:6, borderBottom:'1px solid rgba(255,107,91,0.2)' }}>
-              Main Details
+      {/* ── Details section — GoGetSSL exact layout ── */}
+      {activeSection === 'details' && (() => {
+        // Subscription period = order placed date + period months (billing year)
+        const subStart = cert.issued_at ? new Date(cert.issued_at) : null
+        const subEnd   = cert.subscription_end_date
+          ? new Date(cert.subscription_end_date)
+          : subStart
+            ? (() => { const d = new Date(subStart); d.setMonth(d.getMonth() + (cert._order?.period || 12)); return d })()
+            : null
+        const fmt      = d => d ? new Date(d).toISOString().split('T')[0] : '—'
+        const fmtLong  = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—'
+
+        // Subscription period string: "12 months (2026-05-28 – 2027-05-27)"
+        const periodStr = subStart && subEnd
+          ? `${cert._order?.period || 12} months (${fmt(subStart)} – ${fmt(subEnd)})`
+          : `${cert._order?.period || 12} months`
+
+        return (
+          <div style={{ padding:'18px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 40px' }}>
+            {/* Left — Main Details */}
+            <div>
+              <div style={{ fontSize:11, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
+                letterSpacing:'0.8px', marginBottom:12, paddingBottom:8,
+                borderBottom:'1px solid rgba(255,107,91,0.2)', display:'flex', alignItems:'center', gap:6 }}>
+                📋 Main Details
+              </div>
+
+              {/* Each row: label left, value right — exactly like GGS */}
+              {[
+                ['Product Name',       cert._order?.product_name || cert.cert_type || 'RapidSSL Standard', false, false],
+                ['Order Status',       cert.status === 'active' ? '✓ Issued' : cert.status, false, false],
+                ['Order ID',           cert._order?.ggs_invoice_id ? `S${cert._order.ggs_invoice_id}` : null, true, false],
+                ['API Order ID',       cert.ggs_order_id ? String(cert.ggs_order_id) : null, true, true],
+                ['Vendor Order ID',    cert._order?.vendor_order_id || cert._order?.partner_order_id || null, true, false],
+                ['Subscription Period', periodStr, false, false],
+                ['Files Valid From',   fmt(cert.issued_at), false, false],
+                ['Files Valid Till',   fmt(cert.expires_at), false, false],
+                ['Domain',             cert.common_name || cert.domain, false, true],
+                ['Order Type',         cert.order_type === 'renewal' ? 'Renewal' : 'New', false, false],
+              ].filter(([,v]) => v).map(([label, value, mono, copy]) => (
+                <div key={label} style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
+                  padding:'9px 0', borderBottom:'1px solid rgba(255,255,255,0.05)', gap:16 }}>
+                  <span style={{ fontSize:12, color:'#b0a8a0', flexShrink:0, minWidth:140 }}>{label}</span>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, textAlign:'right' }}>
+                    <span style={{ fontSize:12, color: label==='Order Status' ? '#4ade80' : '#ffffff',
+                      fontFamily: mono ? 'monospace' : 'inherit' }}>
+                      {value}
+                    </span>
+                    {copy && value && (
+                      <button onClick={() => navigator.clipboard.writeText(value)}
+                        style={{ fontSize:10, color:'#b0a8a0', background:'none',
+                          border:'0.5px solid rgba(255,255,255,0.12)', borderRadius:3,
+                          padding:'1px 6px', cursor:'pointer', fontFamily:'inherit', flexShrink:0 }}>
+                        Copy
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {/* "Why shorter?" note below Files Valid Till */}
+              <div style={{ padding:'8px 0', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontSize:11, color:'rgba(240,237,232,0.35)', lineHeight:1.5 }}>
+                  ⓘ <strong style={{ color:'rgba(240,237,232,0.5)' }}>Why is cert validity shorter than subscription?</strong>
+                  {' '}Industry rules (effective March 2026) limit SSL certificates to 199 days max.
+                  Your subscription period is still {cert._order?.period || 12} months — reissue is free and auto-handled.
+                </div>
+              </div>
             </div>
-            <Field label="Product Name" value={cert._order?.product_name || cert.cert_type || 'RapidSSL Standard'}/>
-            <Field label="Order Status"  value={cert.status === 'active' ? '✓ Issued' : cert.status}/>
-            <Field label="Order ID"      value={cert._order?.ggs_invoice_id ? `S${cert._order.ggs_invoice_id}` : null} mono/>
-            <Field label="API Order ID"  value={cert.ggs_order_id ? String(cert.ggs_order_id) : null} mono copy/>
-            <Field label="Subscription Period" value={`${cert._order?.period || 12} months`}/>
-            <Field label="Files Valid From" value={fmtD(cert.issued_at)}/>
-            <Field label="Files Valid Till" value={fmtD(cert.expires_at)}/>
-            <Field label="Domain"  value={cert.common_name || cert.domain} copy/>
-            <Field label="Order Type" value={cert.order_type === 'renewal' ? 'Renewal' : 'New'}/>
-            <Field label="DCV Method" value={(cert.dcv_method || 'DNS').toUpperCase()}/>
-            {cert.serial_number && <Field label="Serial Number" value={cert.serial_number} mono copy/>}
+
+            {/* Right — Administrator Contact */}
+            <div>
+              <div style={{ fontSize:11, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
+                letterSpacing:'0.8px', marginBottom:12, paddingBottom:8,
+                borderBottom:'1px solid rgba(255,107,91,0.2)', display:'flex', alignItems:'center', gap:6 }}>
+                👤 Administrator Contact
+              </div>
+              {[
+                ['First Name', cert._order?.admin_first_name],
+                ['Last Name',  cert._order?.admin_last_name],
+                ['Email',      cert._order?.admin_email],
+                ['Phone',      cert._order?.admin_phone],
+                ['Title',      cert._order?.admin_title || 'Mr'],
+                ['City',       cert._order?.admin_city],
+                ['Country',    cert._order?.admin_country],
+              ].filter(([,v]) => v).map(([label, value]) => (
+                <div key={label} style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
+                  padding:'9px 0', borderBottom:'1px solid rgba(255,255,255,0.05)', gap:16 }}>
+                  <span style={{ fontSize:12, color:'#b0a8a0', flexShrink:0, minWidth:100 }}>{label}</span>
+                  <span style={{ fontSize:12, color:'#ffffff', textAlign:'right' }}>{value}</span>
+                </div>
+              ))}
+
+              {/* Technical Contact — same data for DV certs */}
+              <div style={{ fontSize:11, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
+                letterSpacing:'0.8px', margin:'20px 0 12px', paddingBottom:8,
+                borderBottom:'1px solid rgba(255,107,91,0.2)', display:'flex', alignItems:'center', gap:6 }}>
+                🔧 Technical Contact
+              </div>
+              {[
+                ['First Name', cert._order?.tech_first_name || cert._order?.admin_first_name],
+                ['Last Name',  cert._order?.tech_last_name  || cert._order?.admin_last_name],
+                ['Email',      cert._order?.tech_email      || cert._order?.admin_email],
+                ['Phone',      cert._order?.tech_phone      || cert._order?.admin_phone],
+              ].filter(([,v]) => v).map(([label, value]) => (
+                <div key={'t'+label} style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
+                  padding:'9px 0', borderBottom:'1px solid rgba(255,255,255,0.05)', gap:16 }}>
+                  <span style={{ fontSize:12, color:'#b0a8a0', flexShrink:0, minWidth:100 }}>{label}</span>
+                  <span style={{ fontSize:12, color:'#ffffff', textAlign:'right' }}>{value}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          {/* Right — Contact */}
-          <div>
-            <div style={{ fontSize:12, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
-              letterSpacing:'0.8px', marginBottom:10, paddingBottom:6, borderBottom:'1px solid rgba(255,107,91,0.2)' }}>
-              Administrator Contact
-            </div>
-            <Field label="First Name" value={cert._order?.admin_first_name}/>
-            <Field label="Last Name"  value={cert._order?.admin_last_name}/>
-            <Field label="Email"      value={cert._order?.admin_email} copy/>
-            <Field label="Phone"      value={cert._order?.admin_phone}/>
-            <Field label="Title"      value={cert._order?.admin_title}/>
-            <div style={{ marginTop:20, fontSize:12, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
-              letterSpacing:'0.8px', marginBottom:10, paddingBottom:6, borderBottom:'1px solid rgba(255,107,91,0.2)' }}>
-              Technical Contact
-            </div>
-            <Field label="First Name" value={cert._order?.admin_first_name}/>
-            <Field label="Last Name"  value={cert._order?.admin_last_name}/>
-            <Field label="Email"      value={cert._order?.admin_email} copy/>
-            <Field label="Phone"      value={cert._order?.admin_phone}/>
-          </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* ── Files section ── */}
       {activeSection === 'files' && (
@@ -2238,94 +2310,81 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
 
 
 function CertRow({ cert, selected, onClick, index }) {
-  const days = daysLeft(cert.expires_at)
+  const days      = daysLeft(cert.expires_at)
   const isExpired = (days ?? 0) < 0
   const isWarn    = (days ?? 0) >= 0 && (days ?? 0) < 30
   const isActive  = cert.status === 'active'
+  const statusColor = isExpired ? '#f87171' : isWarn ? '#fbbf24' : '#4ade80'
 
-  const statusLabel = isExpired ? 'Expired' : isWarn ? 'Expiring' : isActive ? 'Active' : cert.status || 'Pending'
-  const statusBg    = isExpired ? 'rgba(248,113,113,0.15)' : isWarn ? 'rgba(251,191,36,0.12)' : isActive ? 'rgba(22,163,74,0.12)' : 'rgba(255,255,255,0.06)'
-  const statusColor = isExpired ? '#f87171' : isWarn ? '#fbbf24' : isActive ? '#4ade80' : '#b0a8a0'
-  const statusDot   = isExpired ? '#f87171' : isWarn ? '#fbbf24' : isActive ? '#4ade80' : '#b0a8a0'
-
-  const domain = cert.domain || ''
-  const initials = domain.replace(/^www\./, '').slice(0,2).toUpperCase()
+  // Subscription period — order placed date + period months
+  const subStart = cert.issued_at ? new Date(cert.issued_at) : null
+  const subEnd   = cert.subscription_end_date ? new Date(cert.subscription_end_date)
+    : subStart ? (() => { const d = new Date(subStart); d.setMonth(d.getMonth() + (cert._order?.period || 12)); return d })()
+    : null
+  const fmtShort = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—'
 
   return (
     <div onClick={onClick}
-      style={{ display:'grid', gridTemplateColumns:'32px 44px 1fr auto auto auto',
-        alignItems:'center', gap:'0 16px', padding:'14px 18px',
+      style={{ display:'grid', gridTemplateColumns:'40px 1fr 180px 140px',
+        alignItems:'center', gap:'0 0', padding:'14px 20px',
         cursor:'pointer', transition:'background .12s',
-        background: selected ? 'rgba(192,57,43,0.08)' : 'transparent',
+        background: selected ? 'rgba(192,57,43,0.07)' : 'transparent',
         borderLeft: selected ? '3px solid #c0392b' : '3px solid transparent',
         borderBottom:'1px solid rgba(255,255,255,0.05)' }}
-      onMouseEnter={e=>{ if(!selected) e.currentTarget.style.background='rgba(255,255,255,0.03)' }}
+      onMouseEnter={e=>{ if(!selected) e.currentTarget.style.background='rgba(255,255,255,0.025)' }}
       onMouseLeave={e=>{ if(!selected) e.currentTarget.style.background='transparent' }}>
+
       {/* # */}
-      <span style={{ fontSize:12, color:'#b0a8a0', textAlign:'right', fontVariantNumeric:'tabular-nums' }}>{index}</span>
+      <span style={{ fontSize:12, color:'rgba(240,237,232,0.3)', fontVariantNumeric:'tabular-nums' }}>{index}</span>
 
-      {/* Avatar */}
-      <div style={{ width:36, height:36, borderRadius:9, flexShrink:0,
-        background:'linear-gradient(135deg, #8b0000 0%, #3d0000 100%)',
-        display:'flex', alignItems:'center', justifyContent:'center',
-        fontSize:13, fontWeight:700, color:'#ff8c7a', letterSpacing:0.5,
-        border:'1px solid rgba(192,57,43,0.3)' }}>
-        {initials}
-      </div>
-
-      {/* Domain + meta */}
+      {/* Description — matches GGS: domain bold, product orange, order ID + period below */}
       <div style={{ minWidth:0 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
-          <span style={{ fontSize:14, fontWeight:600, color:'#ffffff', fontFamily:'monospace',
-            overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-            {domain}
-          </span>
-          <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4,
-            background:'rgba(255,255,255,0.06)', color:'#b0a8a0', flexShrink:0 }}>
+        <div style={{ fontSize:14, fontWeight:600, color:'#ffffff', marginBottom:4,
+          overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+          {cert.domain}
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <span style={{ fontSize:11, fontWeight:600, color:'#e07060' }}>
             {cert.cert_type || 'RapidSSL Standard'}
           </span>
-        </div>
-        <div style={{ display:'flex', alignItems:'center', gap:12, fontSize:11, color:'#b0a8a0' }}>
           {cert.ggs_order_id && (
-            <span style={{ fontFamily:'monospace', color:'rgba(240,237,232,0.35)' }}>#{cert.ggs_order_id}</span>
+            <span style={{ fontSize:11, color:'rgba(240,237,232,0.3)', fontFamily:'monospace' }}>
+              S{cert.ggs_order_id}
+            </span>
           )}
-          <span>1 year</span>
+          <span style={{ fontSize:11, color:'rgba(240,237,232,0.3)' }}>
+            {cert._order?.period || 1} year
+          </span>
           {cert.install_method && (
-            <span style={{ color: cert.install_method==='agent' ? '#93c5fd' : '#fbbf24' }}>
-              {cert.install_method==='agent' ? '🖥 VPS' : '🌐 cPanel'}
+            <span style={{ fontSize:10, color: cert.install_method==='agent' ? '#93c5fd' : '#fbbf24' }}>
+              {cert.install_method==='agent' ? '🖥' : '🌐'}
             </span>
           )}
         </div>
       </div>
 
-      {/* Expiry */}
-      <div style={{ textAlign:'right', flexShrink:0 }}>
-        <div style={{ fontSize:13, fontWeight:600, color: isExpired?'#f87171':isWarn?'#fbbf24':'#ffffff' }}>
-          {fmtDate(cert.expires_at)}
+      {/* Expires — cert validity end (the shorter date, ~6 months) */}
+      <div style={{ textAlign:'right', paddingRight:24 }}>
+        <div style={{ fontSize:13, fontWeight:600, color:'#ffffff' }}>
+          {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB', { year:'numeric', month:'2-digit', day:'2-digit' }).split('/').reverse().join('-') : '—'}
         </div>
-        <div style={{ fontSize:11, color: isExpired?'#f87171':isWarn?'#fbbf24':'#b0a8a0', marginTop:2 }}>
-          {isExpired ? `${Math.abs(days)}d ago` : `+ ${days} days`}
+        <div style={{ fontSize:12, color: isExpired ? '#f87171' : isWarn ? '#fbbf24' : '#4ade80', marginTop:2, fontWeight:500 }}>
+          {isExpired ? `expired ${Math.abs(days)}d ago` : `+ ${days} days`}
         </div>
       </div>
 
-      {/* Issued */}
-      <div style={{ textAlign:'right', flexShrink:0 }}>
-        <div style={{ fontSize:12, color:'#b0a8a0' }}>{fmtDate(cert.issued_at)}</div>
-        <div style={{ fontSize:10, color:'rgba(240,237,232,0.25)', marginTop:2 }}>Issued</div>
-      </div>
-
-      {/* Status badge */}
-      <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+      {/* Status + chevron */}
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-end', gap:10 }}>
         <span style={{ display:'inline-flex', alignItems:'center', gap:6,
-          fontSize:12, fontWeight:600, padding:'4px 12px', borderRadius:20,
-          background:statusBg, color:statusColor }}>
-          <span style={{ width:6, height:6, borderRadius:'50%', background:statusDot,
-            boxShadow: isActive ? '0 0 0 3px rgba(22,163,74,0.2)' : 'none',
+          fontSize:12, fontWeight:600, padding:'5px 14px', borderRadius:20,
+          background: isExpired ? 'rgba(248,113,113,0.12)' : isWarn ? 'rgba(251,191,36,0.1)' : 'rgba(22,163,74,0.1)',
+          color: statusColor }}>
+          <span style={{ width:7, height:7, borderRadius:'50%', background:statusColor,
             animation: isActive ? 'v3pulse 2s ease infinite' : 'none' }}/>
-          {statusLabel}
+          {isExpired ? 'Expired' : isWarn ? 'Expiring' : isActive ? 'Active' : (cert.status || 'Pending')}
         </span>
         <ChevronRight size={14} color={selected ? '#c0392b' : 'rgba(240,237,232,0.2)'}
-          style={{ transform: selected ? 'rotate(90deg)' : 'none', transition:'transform .2s' }}/>
+          style={{ transform: selected ? 'rotate(90deg)' : 'none', transition:'transform .2s', flexShrink:0 }}/>
       </div>
     </div>
   )
@@ -2652,15 +2711,13 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             ) : (
               <>
                 {/* Table header */}
-                <div style={{ display:'grid', gridTemplateColumns:'32px 44px 1fr auto auto auto',
-                  gap:'0 16px', padding:'8px 18px',
+                <div style={{ display:'grid', gridTemplateColumns:'40px 1fr 180px 140px',
+                  gap:'0 0', padding:'8px 20px',
                   background:'rgba(255,255,255,0.02)', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
                   <span/>
-                  <span/>
                   <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px' }}>Description</span>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px', textAlign:'right' }}>Expires</span>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px', textAlign:'right' }}>Issued</span>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px' }}>Status</span>
+                  <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px', textAlign:'right', paddingRight:24 }}>Expires</span>
+                  <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px', textAlign:'right', paddingRight:10 }}>Status</span>
                 </div>
                 {domainGroups.map((cert, idx) => (
                 <div key={cert.id}>
