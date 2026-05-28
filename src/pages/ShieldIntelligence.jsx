@@ -452,7 +452,7 @@ function TLSGradesTab({ tok, user }) {
 // TAB 3 — CT WATCH
 // ══════════════════════════════════════════════════════════════════════
 const CT_STATUS = {
-  unknown:    { label:'Unknown',    color:'#a93226', bg:'rgba(192,57,43,0.1)', border:'rgba(192,57,43,0.2)' },
+  unknown:    { label:'Unknown',    color:'#f87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.3)' },
   phishing:   { label:'Phishing',   color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
   suspicious: { label:'Suspicious', color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
   known:      { label:'Known',      color:'#ffffff', bg:'transparent', border:'rgba(192,57,43,0.3)' },
@@ -543,31 +543,31 @@ function CTWatchTab({ tok, user }) {
               const cfg = CT_STATUS[status] || CT_STATUS.unknown
               const isExp = expanded === s.id
               return (
-                <div key={s.id} style={{ borderBottom: i<shadows.length-1?'1px solid rgba(192,57,43,0.15)':'none' }}>
+                <div key={s.id} style={{ borderBottom: i<shadows.length-1?'1px solid rgba(192,57,43,0.2)':'none' }}>
                   <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:640,
-                    padding:'10px 14px', alignItems:'center',
-                    background: i%2===0?'rgba(255,255,255,0.04)':'rgba(255,255,255,0.01)',
+                    padding:'12px 14px', alignItems:'center',
+                    background: i%2===0?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.15)',
                     borderLeft:`3px solid ${status==='known'?'transparent':cfg.color}` }}>
                     <div>
-                      <div style={{ fontSize:12, fontWeight:600, fontFamily:'monospace',
-                        color:'#f0ede8', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                      <div style={{ fontSize:13, fontWeight:700, fontFamily:'monospace',
+                        color:'#ffffff', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                         {s.domain}
                       </div>
-                      {s.org_name && <div style={{ fontSize:10, color:'#b0a8a0', marginTop:2 }}>{s.org_name}</div>}
+                      {s.org_name && <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', marginTop:2 }}>{s.org_name}</div>}
                     </div>
-                    <div style={{ fontSize:11, color:'#e8e0d8' }}>{s.product||'—'}</div>
-                    <div style={{ fontSize:11, color:'#e8e0d8' }}>{fmtDate(s.expires_at)}</div>
+                    <div style={{ fontSize:12, color:'#f0ede8' }}>{s.product||'—'}</div>
+                    <div style={{ fontSize:12, color:'#f0ede8' }}>{fmtDate(s.expires_at)}</div>
                     <div>
-                      <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:20,
-                        background:cfg.bg, color:cfg.color, border:`0.5px solid ${cfg.border}` }}>
+                      <span style={{ fontSize:11, fontWeight:700, padding:'3px 10px', borderRadius:20,
+                        background:cfg.bg, color:cfg.color, border:`1px solid ${cfg.border}` }}>
                         {cfg.label}
                       </span>
                     </div>
                     <div style={{ display:'flex', gap:4 }}>
                       <button onClick={() => setExpanded(isExp?null:s.id)}
                         style={{ fontSize:10, padding:'3px 8px', borderRadius:5,
-                          border:'1px solid rgba(192,57,43,0.2)', background:'rgba(255,255,255,0.04)',
-                          cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8' }}>
+                          border:'1px solid rgba(240,237,232,0.2)', background:'rgba(255,255,255,0.06)',
+                          cursor:'pointer', fontFamily:'inherit', color:'#f0ede8', fontWeight:500 }}>
                         {isExp?'Hide':'Details'}
                       </button>
                       <button onClick={() => dismiss(s.id)} disabled={dismissing===s.id}
@@ -770,7 +770,7 @@ function MassScanTab() {
               return (
                 <div key={r.domain} style={{ display:'grid',
                   gridTemplateColumns:'2fr 60px 60px 60px 60px 80px 1fr',
-                  padding:'10px 14px', alignItems:'center',
+                  padding:'12px 14px', alignItems:'center',
                   borderBottom:i<filtered.length-1?'0.5px solid var(--v2-border)':'none',
                   background:i%2===0?'var(--v2-surface)':'var(--v2-bg)' }}>
                   <div style={{ fontFamily:'monospace', fontSize:12, fontWeight:600,
