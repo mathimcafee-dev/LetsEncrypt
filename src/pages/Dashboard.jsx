@@ -2361,7 +2361,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     setSession(s)
     const [{ data: certsData }, { data: agentInstalls }, { data: ordersData }] = await Promise.all([
       supabase.from('certificates')
-        .select('*, order_type, is_live_on_server, live_confirmed_by, live_confirmed_at')
+        .select('*, order_type, is_live_on_server, live_confirmed_by, live_confirmed_at, is_current')
         .eq('user_id', user.id).neq('status', 'cancelled')
         .order('issued_at', { ascending:false }),
       supabase.from('agent_jobs')
@@ -2486,12 +2486,16 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     return true
   })
 
-  // Group by domain — each domain has one primary (latest issued_at) + older versions
+  // domainGroups: show only is_current certs (one per domain, matched key pair)
+  // Non-current = old reissue orders with archived keys — never installable
   const domainGroups = (() => {
-    // Flat list — one row per certificate (per GGS order), sorted newest first
-    return visible
+    const sorted = visible
       .map(c => ({ ...c, _healthGrade: healthScores[c.domain]?.grade || null }))
       .sort((a, b) => new Date(b.issued_at || b.created_at) - new Date(a.issued_at || a.created_at))
+    // If any cert has is_current flag, filter to only those
+    // Fall back to all if none are flagged (migration not yet run)
+    const hasCurrent = sorted.some(c => c.is_current === true)
+    return hasCurrent ? sorted.filter(c => c.is_current === true) : sorted
   })()
 
   const visibleWithHealth = visible.map(c => ({
