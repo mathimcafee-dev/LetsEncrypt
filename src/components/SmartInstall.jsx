@@ -85,7 +85,9 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
           .select('id, host, username, nickname, label, domains, server_type, cpanel_api_token_enc, credentials_enc')
           .eq('user_id', userId)
           .in('server_type', ['cpanel', 'shared'])
-        const cpMatch = (cpCreds || []).find(c => c.domains?.includes(cert.domain)) || cpCreds?.[0]
+        // Only match cPanel if domain is explicitly in the credential's domain list
+        // Never fall back to first cPanel — wrong server would be picked
+        const cpMatch = (cpCreds || []).find(c => c.domains?.includes(cert.domain))
 
         if (cpMatch) {
           setDetectedMethod('cpanel')

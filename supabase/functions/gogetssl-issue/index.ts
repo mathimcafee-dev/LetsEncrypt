@@ -1020,7 +1020,8 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
         .select('id, server_type, agent_id')
         .eq('user_id', userId)
         .in('server_type', ['cpanel', 'shared'])
-      const cpMatch = (cpCreds || []).find((c: any) => c.domains?.includes(domain)) || cpCreds?.[0]
+      // Only match cPanel if domain is explicitly listed — never fall back to first credential
+      const cpMatch = (cpCreds || []).find((c: any) => c.domains?.includes(domain))
       if (cpMatch) {
         installMethod = 'cpanel'
         installCredId = cpMatch.id
