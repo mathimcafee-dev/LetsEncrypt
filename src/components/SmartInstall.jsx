@@ -167,14 +167,25 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
       })
 
       if (!result.ok) {
-        setStep(2, 'error', result.error || 'cPanel install failed')
-        setErrorMsg(result.error || 'Installation failed. Check your cPanel credentials.')
-        setPhase('error')
-        return
+        const errMsg = result.error || 'cPanel install failed'
+        // cPanel quirk: sometimes returns success message in the error field
+        const isActuallySuccess =
+          errMsg.includes('SSL certificate is now installed') ||
+          errMsg.includes('ssl certificate is now installed') ||
+          errMsg.includes('Apache is restarting')
+        if (!isActuallySuccess) {
+          // Strip raw JSON blob from error for cleaner display
+          const cleanErr = errMsg.replace(/Full:.*$/s, '').trim() || errMsg
+          setStep(2, 'error', cleanErr)
+          setErrorMsg(cleanErr)
+          setPhase('error')
+          return
+        }
+        // It's actually a success — fall through
       }
 
       setStep(2, 'done', 'Certificate installed')
-      setStep(3, 'running', `Checking https://${cert.domain}…`)
+      setStep(3, 'running', `Checking https://${cert.domain}...`)
 
       let verified = false
       for (let i = 0; i < 3; i++) {
@@ -184,7 +195,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
           if (res.status < 500) { verified = true; break }
         } catch {}
       }
-      setStep(3, verified ? 'done' : 'done', verified ? `HTTPS live ✓` : 'Installed — HTTPS may take a minute to activate')
+      setStep(3, verified ? 'done' : 'done', verified ? 'HTTPS live ✓' : 'Installed — HTTPS may take a minute to activate')
       setPhase('done')
       onSuccess?.()
     } catch (e) {
@@ -649,7 +660,9 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
               <div style={{ marginTop:16, padding:'12px 14px', borderRadius:8,
                 background:'rgba(248,113,113,0.08)', border:'1px solid rgba(248,113,113,0.2)' }}>
                 <div style={{ fontSize:12, fontWeight:600, color:'#f87171', marginBottom:4 }}>Installation failed</div>
-                <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', lineHeight:1.6 }}>{errorMsg}</div>
+                <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', lineHeight:1.6 }}>
+                  {errorMsg.replace(/Full:\s*\{.*$/s, '').trim() || errorMsg}
+                </div>
               </div>
               <button onClick={() => { setPhase('no_creds'); setSteps([]); setErrorMsg('') }} style={btn(false)}>
                 Try again
