@@ -659,9 +659,9 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         steps = updateStep(steps, 1, { status: 'done', detail: 'RSA-2048 key pair generated', elapsed: 80 })
         stepStartTimes.current[2] = now
         if (d.dcv_txt_value) {
-          steps = updateStep(steps, 2, { status: 'done', detail: `${d.dcv_txt_name || '_pki-validation'} → ${d.dcv_txt_value.slice(0,24)}…`, elapsed: 120 })
+          steps = updateStep(steps, 2, { status: 'done', detail: `TXT: ${d.dcv_txt_value.slice(0,28)}… · auto-added to DNS`, elapsed: 120 })
         } else {
-          steps = updateStep(steps, 2, { status: 'done', detail: 'TXT record updated in DNS', elapsed: 120 })
+          steps = updateStep(steps, 2, { status: 'active', detail: 'Waiting for DCV record from GGS — cron will add to DNS' })
         }
         stepStartTimes.current[3] = now
         steps = updateStep(steps, 3, { status: 'active', detail: 'Waiting for GGS to confirm DCV…' })
