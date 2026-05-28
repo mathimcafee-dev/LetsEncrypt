@@ -2606,6 +2606,12 @@ function CertRow({ cert, selected, onClick, index }) {
             fontSize:9, padding:'2px 6px', borderRadius:4, border:'0.5px solid #B5D4F4' }}>
             {cert.cert_type||'RapidSSL DV'}
           </span>
+          {cert.ggs_order_id && (
+            <><span>·</span>
+            <span style={{ fontFamily:'monospace', fontSize:10, color:'rgba(240,237,232,0.4)' }}>
+              #{cert.ggs_order_id}
+            </span></>
+          )}
           {cert.issued_at && <><span>·</span><span>Issued {fmtDate(cert.issued_at)}</span></>}
         </div>
         {days != null && days <= 365 && (
@@ -2809,19 +2815,10 @@ function LoggedInDashboard({ user, nav, onIssue }) {
 
   // Group by domain — each domain has one primary (latest issued_at) + older versions
   const domainGroups = (() => {
-    const groups = {}
-    for (const c of visible) {
-      if (!groups[c.domain]) groups[c.domain] = []
-      groups[c.domain].push({ ...c, _healthGrade: healthScores[c.domain]?.grade || null })
-    }
-    // Sort each group: newest first
-    for (const d in groups) {
-      groups[d].sort((a, b) => new Date(b.issued_at) - new Date(a.issued_at))
-    }
-    // Return as array of { primary, versions } sorted by primary issued_at desc
-    return Object.values(groups)
-      .map(versions => ({ primary: versions[0], versions }))
-      .sort((a, b) => new Date(b.primary.issued_at) - new Date(a.primary.issued_at))
+    // Flat list — one row per certificate (per GGS order), sorted newest first
+    return visible
+      .map(c => ({ ...c, _healthGrade: healthScores[c.domain]?.grade || null }))
+      .sort((a, b) => new Date(b.issued_at || b.created_at) - new Date(a.issued_at || a.created_at))
   })()
 
   const visibleWithHealth = visible.map(c => ({
@@ -2847,7 +2844,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 </span>
               )}
             </h1>
-            <p style={{ fontSize:12, color:'#b0a8a0' }}>{user.email} · {domainGroups.length} domain{domainGroups.length!==1?'s':''} · {total} certificate{total!==1?'s':''}</p>
+            <p style={{ fontSize:12, color:'#b0a8a0' }}>{user.email} · {domainGroups.length} certificate{domainGroups.length!==1?'s':''}</p>
           </div>
           {/* Share SSL status button */}
           <button
@@ -2988,14 +2985,13 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 )}
               </div>
             ) : (
-              domainGroups.map(({ primary, versions }, idx) => (
-                <DomainGroup
-                  key={primary.domain}
+              domainGroups.map((cert, idx) => (
+                <CertRow
+                  key={cert.id}
+                  cert={cert}
                   index={idx + 1}
-                  primary={primary}
-                  versions={versions}
-                  selected={selected}
-                  onSelect={id => setSelected(selected === id ? null : id)}
+                  selected={selected === cert.id}
+                  onClick={() => setSelected(selected === cert.id ? null : cert.id)}
                 />
               ))
             )}
