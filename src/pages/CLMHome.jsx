@@ -52,7 +52,7 @@ function useIsMobile(bp=860) {
 export default function CLMHome({ user, nav }) {
   const [sec, setSec] = useState('dashboard')
   const [key, setKey] = useState(0)
-  const [open, setOpen] = useState({Certificates:true,Deployment:true,Shield:true,Intelligence:true})
+  const [open, setOpen] = useState({'Lifecycle':true,'Infrastructure':true,'Security Ops':true,'PKI Intel':true})
   const [sideOpen, setSideOpen] = useState(false)
   const isMobile = useIsMobile()
   const sideRef = useRef(null)

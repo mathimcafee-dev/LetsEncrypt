@@ -77,13 +77,13 @@
 .v2-btn {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 14px; border-radius: var(--v2-r-md);
-  border: 1px solid var(--v2-border);
-  background: rgba(255,255,255,0.07);
-  color: #e8e0d8; font-size: 12px; font-weight: 600;
+  border: 1px solid rgba(192,57,43,0.4);
+  background: rgba(255,255,255,0.08);
+  color: #f0ede8; font-size: 12px; font-weight: 600;
   cursor: pointer; font-family: inherit; transition: all 0.15s;
   white-space: nowrap; text-decoration: none;
 }
-.v2-btn:hover { background: rgba(255,255,255,0.12); border-color: var(--v2-border-strong); color: #ffffff; }
+.v2-btn:hover { background: rgba(192,57,43,0.15); border-color: rgba(192,57,43,0.6); color: #ffffff; }
 .v2-btn-primary { background: #c0392b; border-color: #c0392b; color: #fff; }
 .v2-btn-primary:hover { background: #a93226; border-color: #a93226; color: #fff; }
 .v2-btn-sm { padding: 5px 10px; font-size: 11px; }
