@@ -142,26 +142,106 @@ function extractDcv(resp: any): { name: string; value: string } {
 
 // ── Auto-add DNS TXT record ────────────────────────────────────────────
 
-async function autoDns(authHeader: string, userId: string, domain: string, txtName: string, txtValue: string): Promise<void> {
-  if (!txtValue) return
-  try {
-    await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: authHeader },
-      body: JSON.stringify({ action: 'auto_add', user_id: userId, domain, txt_name: txtName, txt_value: txtValue }),
-    })
-  } catch (e: any) { console.warn('[gogetssl] DNS auto-add (non-fatal):', e.message) }
+// ── Direct Cloudflare DNS operations ─────────────────────────────────
+// No inter-function HTTP calls — direct CF API from this function.
+// Failures are logged clearly, not swallowed silently.
+
+const SB_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+async function cfDecrypt(b64: string): Promise<Record<string, string>> {
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(SB_SERVICE_KEY))
+  const key  = await crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['decrypt'])
+  const buf  = Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+  const pt   = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: buf.slice(0, 12) }, key, buf.slice(12))
+  return JSON.parse(new TextDecoder().decode(pt))
 }
 
-async function autoDeleteDns(authHeader: string, userId: string, domain: string, txtName: string, txtValue: string): Promise<void> {
+function cfApex(domain: string): string {
+  return domain.replace(/^[*][.]/, '').split('.').slice(-2).join('.')
+}
+
+async function cfGetToken(userId: string, domain: string): Promise<string | null> {
+  const apex = cfApex(domain)
+  const { data: rows } = await adminDb()
+    .from('dns_credentials')
+    .select('credentials_enc, domain_pattern, provider')
+    .eq('user_id', userId)
+    .eq('provider', 'cloudflare')
+    .order('created_at', { ascending: false })
+  if (!rows?.length) { console.error('[dns] No cloudflare credential for user', userId); return null }
+  const match = rows.find((r: any) => {
+    const p = (r.domain_pattern || '').toLowerCase()
+    return p === domain.toLowerCase() || p === apex || p === `*.${apex}` || p === ''
+  }) || rows[0]
+  try {
+    const creds = await cfDecrypt(match.credentials_enc)
+    const token = creds.apiToken || creds.api_token || creds.token || null
+    if (!token) console.error('[dns] Token field missing from decrypted credential')
+    return token
+  } catch (e: any) {
+    console.error('[dns] Decrypt failed — token may be re-encrypted incorrectly:', e.message)
+    return null
+  }
+}
+
+async function cfGetZone(token: string, domain: string): Promise<string | null> {
+  const apex = cfApex(domain)
+  const r = await fetch(`https://api.cloudflare.com/client/v4/zones?name=${apex}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  const d = await r.json()
+  const zoneId = d.result?.[0]?.id || null
+  if (!zoneId) console.error('[dns] No CF zone for', apex, '— errors:', JSON.stringify(d.errors))
+  return zoneId
+}
+
+async function autoDns(_authHeader: string, userId: string, domain: string, txtName: string, txtValue: string): Promise<void> {
+  if (!txtValue) { console.warn('[dns] autoDns: empty txtValue — skipping'); return }
+  try {
+    const token = await cfGetToken(userId, domain)
+    if (!token) { console.error('[dns] autoDns: no token — record NOT added for', domain); return }
+    const zoneId = await cfGetZone(token, domain)
+    if (!zoneId) { console.error('[dns] autoDns: no zone — record NOT added for', domain); return }
+    const r = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'TXT', name: txtName || domain, content: txtValue, ttl: 300 })
+    })
+    const d = await r.json()
+    if (d.success) {
+      console.log('[dns] TXT added:', txtName, txtValue.slice(0, 12) + '...')
+    } else {
+      const exists = d.errors?.some((e: any) => e.code === 81057)
+      if (exists) { console.log('[dns] TXT already exists (ok):', txtName) }
+      else { console.error('[dns] CF rejected TXT add:', JSON.stringify(d.errors)) }
+    }
+  } catch (e: any) {
+    console.error('[dns] autoDns exception:', e.message)
+  }
+}
+
+async function autoDeleteDns(_authHeader: string, userId: string, domain: string, txtName: string, txtValue: string): Promise<void> {
   if (!txtValue) return
   try {
-    await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: authHeader },
-      body: JSON.stringify({ action: 'auto_delete', user_id: userId, domain, txt_name: txtName, txt_value: txtValue }),
+    const token = await cfGetToken(userId, domain)
+    if (!token) return
+    const zoneId = await cfGetZone(token, domain)
+    if (!zoneId) return
+    const r = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records?type=TXT&name=${encodeURIComponent(txtName)}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
-  } catch {}
+    const d = await r.json()
+    for (const rec of (d.result || [])) {
+      if (rec.content === txtValue) {
+        await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${rec.id}`, {
+          method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+        })
+        console.log('[dns] TXT deleted:', txtName)
+      }
+    }
+  } catch (e: any) {
+    console.error('[dns] autoDeleteDns exception:', e.message)
+  }
 }
 
 // ── KeyLocker helper ──────────────────────────────────────────────────
@@ -560,15 +640,10 @@ serve(async (req) => {
                 order.dcv_txt_name = dn; order.dcv_txt_value = dv
               }
             }
-            // Always try to add DNS record — dns-provider is idempotent (CF rejects duplicates silently)
+
             if (order.dcv_txt_value) {
-              try {
-                await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-                  body: JSON.stringify({ action: 'auto_add', user_id: order.user_id, domain: order.domain, txt_name: order.dcv_txt_name, txt_value: order.dcv_txt_value }),
-                })
-              } catch {}
+              // Direct CF call — no inter-function hop
+              await autoDns('', order.user_id, order.domain, order.dcv_txt_name, order.dcv_txt_value)
             }
             continue
           }
@@ -624,13 +699,7 @@ serve(async (req) => {
 
           // Clean up DCV TXT from DNS
           if (order.dcv_txt_name && order.dcv_txt_value) {
-            try {
-              await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/dns-provider`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-                body: JSON.stringify({ action: 'auto_delete', user_id: order.user_id, domain: order.domain, txt_name: order.dcv_txt_name, txt_value: order.dcv_txt_value }),
-              })
-            } catch {}
+            await autoDeleteDns('', order.user_id, order.domain, order.dcv_txt_name, order.dcv_txt_value)
           }
 
           // Dispatch installation job
