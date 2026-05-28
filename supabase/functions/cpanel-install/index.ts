@@ -31,13 +31,15 @@ function userDb(token: string) {
 }
 
 // Call KeyLocker fetch — this handles AES-GCM decryption properly
-async function fetchPrivateKey(authToken: string, keyId: string): Promise<string | null> {
+// user_id is required for service-role calls (keylocker validates it)
+async function fetchPrivateKey(authToken: string, keyId: string, userId: string): Promise<string | null> {
   const res = await fetch(`${SB_URL}/functions/v1/keylocker`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: authToken },
-    body: JSON.stringify({ action: 'fetch', key_id: keyId, triggered_by: 'cpanel_auto_install' }),
+    body: JSON.stringify({ action: 'fetch', key_id: keyId, user_id: userId, triggered_by: 'cpanel_auto_install' }),
   })
   const data = await res.json()
+  if (!data.ok) console.error('[cpanel] keylocker fetch failed:', data.error, 'key_id:', keyId, 'user_id:', userId)
   return data.ok ? (data.private_key_pem || null) : null
 }
 
@@ -184,20 +186,37 @@ async function cpanelInstallSSL(
 // PBKDF2(secret + userId, salt=userId, 100000 iter, SHA-256) → AES-GCM-256
 // Ciphertext format: base64(iv[12] + ciphertext)
 async function decryptCredential(encrypted: string, userId: string): Promise<string> {
-  const masterSecret = Deno.env.get('KEYLOCKER_MASTER_SECRET') || ''
-  if (!masterSecret) throw new Error('KEYLOCKER_MASTER_SECRET not set')
   const enc = new TextEncoder()
   const dec = new TextDecoder()
+  const deb64u = (s: string) => {
+    const b64 = s.replace(/-/g,'+').replace(/_/g,'/').padEnd(s.length+(4-s.length%4)%4,'=')
+    return Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+  }
 
+  // HKDF scheme — used by gogetssl-issue save_credential (TOKEN.iv.ct format)
+  if (encrypted.startsWith('TOKEN.')) {
+    const kekVal = Deno.env.get('KEYLOCKER_KEK') || Deno.env.get('KEYLOCKER_MASTER_SECRET') || ''
+    if (!kekVal) throw new Error('KEYLOCKER_KEK not set')
+    const [, ivS, ctS] = encrypted.split('.')
+    const base = await crypto.subtle.importKey('raw', enc.encode(kekVal), { name: 'HKDF' }, false, ['deriveKey'])
+    const kek = await crypto.subtle.deriveKey(
+      { name: 'HKDF', hash: 'SHA-256', salt: enc.encode('sslvault-kek-v1'), info: enc.encode(`kek:${userId}`) },
+      base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+    )
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: deb64u(ivS) }, kek, deb64u(ctS))
+    return dec.decode(pt)
+  }
+
+  // PBKDF2 scheme — legacy / credentials_enc column
+  const masterSecret = Deno.env.get('KEYLOCKER_MASTER_SECRET') || Deno.env.get('KEYLOCKER_KEK') || ''
+  if (!masterSecret) throw new Error('KEYLOCKER_MASTER_SECRET not set')
   const rawBase = await crypto.subtle.importKey('raw', enc.encode(masterSecret + userId), 'PBKDF2', false, ['deriveKey'])
   const key = await crypto.subtle.deriveKey(
     { name: 'PBKDF2', salt: enc.encode(userId), iterations: 100000, hash: 'SHA-256' },
     rawBase, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
   )
   const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0))
-  const iv   = combined.slice(0, 12)
-  const data = combined.slice(12)
-  const pt   = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data)
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: combined.slice(0,12) }, key, combined.slice(12))
   return dec.decode(pt)
 }
 
@@ -314,7 +333,7 @@ serve(async (req) => {
     let privateKey: string | null = null
 
     if (cert.keylocker_key_id) {
-      privateKey = await fetchPrivateKey(authHeader, cert.keylocker_key_id)
+      privateKey = await fetchPrivateKey(`Bearer ${SB_SERVICE}`, cert.keylocker_key_id, user.id)
     }
 
     // Fallback: legacy direct storage in certificates table
