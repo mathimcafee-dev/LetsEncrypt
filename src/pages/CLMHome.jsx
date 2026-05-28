@@ -85,22 +85,22 @@ export default function CLMHome({ user, nav }) {
   }
 
   const NAV = [
-    { group:'Certificates', items:[
-      {id:'dashboard',    label:'Fleet overview',  icon:LayoutDashboard},
-      {id:'issue',        label:'Issue certificate',icon:Plus},
-      {id:'readiness',    label:'47-day readiness', icon:ShieldCheck, badge:'NEW'},
-      {id:'renewal-calendar',label:'Renewal calendar',icon:CalendarDays},
+    { group:'Lifecycle', items:[
+      {id:'dashboard',    label:'Command center',  icon:LayoutDashboard},
+      {id:'issue',        label:'Issue cert',icon:Plus},
+      {id:'readiness',    label:'Crush 47', icon:ShieldCheck, badge:'NEW'},
+      {id:'renewal-calendar',label:'Renewal timeline',icon:CalendarDays},
     ]},
-    { group:'Deployment', items:[
-      {id:'my-servers',   label:'Servers',          icon:Server},
-      {id:'certvault',    label:'Key Vault',         icon:Lock},
+    { group:'Infrastructure', items:[
+      {id:'my-servers',   label:'Agent network',          icon:Server},
+      {id:'certvault',    label:'CertVault',         icon:Lock},
       {id:'certbind',     label:'CertBind',          icon:Shield},
     ]},
-    { group:'Shield', items:[
-      {id:'shield',       label:'Shield intelligence',icon:ShieldCheck},
-      {id:'cert-changelog',label:'Audit log',         icon:History},
+    { group:'Security Ops', items:[
+      {id:'shield',       label:'CT & TLS watch',icon:ShieldCheck},
+      {id:'cert-changelog',label:'Activity log',         icon:History},
     ]},
-    { group:'Intelligence', items:[
+    { group:'PKI Intel', items:[
       {id:'ca-intelligence',label:'CA Intelligence',  icon:TrendingUp},
     ]},
   ]
@@ -111,10 +111,10 @@ export default function CLMHome({ user, nav }) {
   ]
 
   const TITLES = {
-    dashboard:'Fleet overview', issue:'Issue certificate', readiness:'47-day readiness',
-    'renewal-calendar':'Renewal calendar', certvault:'Key Vault', certbind:'CertBind',
-    'my-servers':'Servers', integrations:'DNS providers', shield:'Shield Intelligence',
-    'cert-changelog':'Audit log', 'ca-intelligence':'CA Intelligence',
+    dashboard:'Command center', issue:'Issue cert', readiness:'Crush 47',
+    'renewal-calendar':'Renewal timeline', certvault:'CertVault', certbind:'CertBind',
+    'my-servers':'Agent network', integrations:'DNS providers', shield:'CT & TLS watch',
+    'cert-changelog':'Activity log', 'ca-intelligence':'CA Intelligence',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
   }
 
