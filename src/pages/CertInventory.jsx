@@ -43,9 +43,10 @@ function productName(code, certType) {
 }
 
 const btnStyle = {
-  fontSize:11, fontWeight:500, color:'#e8e0d8', padding:'5px 9px',
-  border:'0.5px solid var(--v2-border)', borderRadius:5, background:'var(--v2-surface)',
-  cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit'
+  fontSize:11, fontWeight:600, color:'#f0ede8', padding:'6px 12px',
+  border:'1px solid rgba(192,57,43,0.35)', borderRadius:6, background:'rgba(255,255,255,0.07)',
+  cursor:'pointer', display:'inline-flex', alignItems:'center', gap:5, fontFamily:'inherit',
+  whiteSpace:'nowrap'
 }
 
 // ── Detail panel ──────────────────────────────────────────────────────
@@ -194,14 +195,14 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
               <span style={{ color:'#ffffff' }}>{certOpen ? <ChevronDown size={14}/> : <Plus size={14}/>}</span>
             </button>
             {certOpen && (
-              <div style={{ padding:16, background:'var(--v2-surface)', display:'flex', flexDirection:'column', gap:8 }}>
+              <div style={{ padding:16, background:'rgba(255,255,255,0.02)', display:'flex', flexDirection:'column', gap:8 }}>
                 {[
                   { label:'Certificate (CRT)', key:'cert_pem',         icon:FileText, filename:`${cert.domain}-cert.pem` },
                   { label:'Private Key',       key:'private_key_pem',  icon:Key,      filename:`${cert.domain}-key.pem`, sensitive:true },
                 ].map(({ label, key, icon:Icon, filename, sensitive }) => (
-                  <div key={key} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 12px', border:'0.5px solid var(--v2-border)', borderRadius:6, fontSize:12 }}>
+                  <div key={key} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 14px', border:'1px solid rgba(192,57,43,0.2)', borderRadius:8, fontSize:12, background:'rgba(255,255,255,0.03)' }}>
                     <span style={{ display:'flex', alignItems:'center', gap:8, color:'#ffffff' }}>
-                      <Icon size={13} color="rgba(240,237,232,0.4)"/> {label}
+                      <Icon size={14} color="rgba(240,237,232,0.6)"/> {label}
                       {sensitive && keyDeleted && <span style={{ fontSize:9, fontWeight:500, color:'#e8e0d8', background:'var(--v2-border)', padding:'1px 6px', borderRadius:3 }}>DELETED</span>}
                     </span>
                     {sensitive && keyDeleted ? (
@@ -210,7 +211,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                       <div style={{ display:'flex', gap:6 }}>
                         {sensitive && <button onClick={() => setShowKey(v=>!v)} style={btnStyle}>{showKey?<><EyeOff size={11}/> Hide</>:<><Eye size={11}/> Show</>}</button>}
                         <button onClick={() => copy(cert[key], key)} style={btnStyle}>{copiedField===key?<><Check size={11}/> Copied</>:<><Copy size={11}/> Copy</>}</button>
-                        <button onClick={() => dl(cert[key], filename)} style={btnStyle}><Download size={11}/></button>
+                        <button onClick={() => dl(cert[key], filename)} style={btnStyle}><Download size={11}/> Download</button>
                       </div>
                     ) : <span style={{ fontSize:11, color:'#b0a8a0' }}>Not available</span>}
                   </div>
