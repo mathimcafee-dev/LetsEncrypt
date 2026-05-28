@@ -420,7 +420,7 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
   const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#e8e0d8' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
   return (
-    <div style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
         <div style={{ width:38, height:38, borderRadius:9, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, color:'#ffffff', flexShrink:0 }}>
@@ -535,7 +535,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
               {agentActive
                 ? <span style={{ width:6,height:6,borderRadius:'50%',background:'#4ade80',
                     boxShadow:'0 0 0 3px rgba(22,163,74,0.25)',animation:'v2-pulse 1.5s infinite' }}/>
-                : <span style={{ width:6,height:6,borderRadius:'50%',background:'#f0ede8' }}/>}
+                : <span style={{ width:6,height:6,borderRadius:'50%',background:'#0d0000' }}/>}
               {agentActive ? 'Agent active' : `Offline · ${lastSeenMin}m`}
             </span>
           ) : (
@@ -687,7 +687,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
     return `${Math.floor(m/60)}h ago`
   }
   return (
-    <div style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div style={{
@@ -870,7 +870,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16
         }}>
           <div style={{
-            background: 'var(--v2-bg)', borderRadius: 14, padding: 24, maxWidth: 480, width: '100%',
+            background:'rgba(255,255,255,0.03)', borderRadius: 14, padding: 24, maxWidth: 480, width: '100%',
             border: '0.5px solid var(--v2-border)', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
@@ -889,7 +889,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
               <div style={{ fontSize:11, fontWeight: 600, color: '#e8e0d8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Step 1 — Run on your server
               </div>
-              <div style={{ background: '#f0ede8', borderRadius: 8, padding: '10px 14px', position: 'relative' }}>
+              <div style={{ background:'#0d0000', borderRadius: 8, padding: '10px 14px', position: 'relative' }}>
                 <code style={{ fontSize:12, color: '#86efac', fontFamily: 'JetBrains Mono, monospace', userSelect: 'all', display: 'block', lineHeight: 1.6 }}>
                   sudo bash /usr/local/bin/sslvault-agent uninstall
                 </code>
@@ -1469,13 +1469,13 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
 
               <div style={{ marginBottom: 14 }}>
                 <label className="v2-label">SSH into your server and run</label>
-                <div style={{ background: '#f0ede8', borderRadius: 8, overflow: 'hidden' }}>
+                <div style={{ background:'#0d0000', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                                 padding: '7px 12px', borderBottom: '0.5px solid rgba(192,57,43,0.08)' }}>
                     <div style={{ display: 'flex', gap: 5 }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f87171' }} />
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f0ede8' }} />
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f0ede8' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#0d0000' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#0d0000' }} />
                     </div>
                     <button onClick={copy} style={{
                       background: 'transparent', border: 'none', cursor: 'pointer',
@@ -1553,7 +1553,7 @@ function LoggedOutView({ nav }) {
 
         <div className="v2-card" style={{ padding: 32, textAlign: 'center' }}>
           <div style={{
-            width: 44, height: 44, borderRadius: 10, background: 'var(--v2-text)',
+            width: 44, height: 44, borderRadius: 10, background:'#c0392b',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14
           }}>
             <Lock size={20} strokeWidth={2} color="white" />
@@ -1742,7 +1742,7 @@ export default function DnsProviders({ nav }) {
   )
 
   const ListPanel = ({ children }) => (
-    <div style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
       borderRadius:14, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       {children}
     </div>

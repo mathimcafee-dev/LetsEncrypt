@@ -241,7 +241,7 @@ function ExpiryTimeline({ tok }) {
           <button onClick={doSync} disabled={syncing}
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:11, fontWeight: 600,
               padding: '6px 12px', borderRadius: 7, border: 'none', background: syncing ? 'var(--v2-text-3)' : '#f0ede8',
-              color: 'var(--v2-surface)', cursor: syncing ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
+              color:'#ffffff', cursor: syncing ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
             {syncing ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync now</>}
           </button>
           <button onClick={load}
@@ -271,7 +271,7 @@ function ExpiryTimeline({ tok }) {
           <button onClick={() => setDelConfirm(true)}
             style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, fontWeight:700,
               padding:'5px 12px', borderRadius:7, border:'none',
-              background:'#f87171', color:'var(--v2-surface)', cursor:'pointer', fontFamily:'inherit' }}>
+              background:'#f87171', color:'#ffffff', cursor:'pointer', fontFamily:'inherit' }}>
             <Trash2 size={11}/> Delete {selected.size}
           </button>
         </div>
@@ -394,7 +394,7 @@ function ExpiryTimeline({ tok }) {
                     fontFamily:'monospace' }}>{renewModal.domain}</div>
                 </div>
                 <button onClick={() => setRenewModal(null)}
-                  style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)', borderRadius:7,
+                  style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)', borderRadius:7,
                     cursor:'pointer', color:'#b0a8a0', padding:'5px', display:'flex' }}>
                   <X size={14}/>
                 </button>
@@ -500,7 +500,7 @@ function ExpiryTimeline({ tok }) {
               </button>
               <button onClick={doDelete} disabled={deleting}
                 style={{ flex:2, padding:'9px', background: deleting ? 'var(--v2-text-3)' : '#f87171',
-                  color:'var(--v2-surface)', border:'none', borderRadius:8, fontSize:12, fontWeight:700,
+                  color:'#ffffff', border:'none', borderRadius:8, fontSize:12, fontWeight:700,
                   cursor: deleting ? 'wait' : 'pointer', fontFamily:'inherit',
                   display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
                 {deleting
@@ -600,7 +600,7 @@ function ShadowScanner({ tok, nav }) {
               style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, fontWeight: 700,
                 padding: '8px 16px', borderRadius: 8, border: 'none',
                 background: scanning || !selectedConn ? 'var(--v2-text-3)' : '#f0ede8',
-                color: 'var(--v2-surface)', cursor: scanning || !selectedConn ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
+                color:'#ffffff', cursor: scanning || !selectedConn ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
               {scanning ? <><Spinner/> Scanning DigiCert…</> : <><Search size={12}/> Run Shadow Scan</>}
             </button>
             <div style={{ fontSize:11, color: '#b0a8a0' }}>
@@ -689,7 +689,7 @@ function ShadowScanner({ tok, nav }) {
                 <button onClick={() => dismiss(s.id)} disabled={dismissing === s.id}
                   title="Dismiss this finding"
                   style={{ fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 5,
-                    background: 'var(--v2-bg)', color: '#b0a8a0', border: '0.5px solid var(--v2-border)',
+                    background:'rgba(255,255,255,0.03)', color: '#b0a8a0', border: '0.5px solid var(--v2-border)',
                     cursor: 'pointer', fontFamily: 'inherit' }}>
                   {dismissing === s.id ? <Spinner/> : 'Dismiss'}
                 </button>
@@ -759,7 +759,7 @@ function ConsolidationAdvisor({ tok, nav }) {
           <button onClick={runAnalysis} disabled={running}
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, fontWeight: 700,
               padding: '9px 18px', borderRadius: 8, border: 'none',
-              background: running ? 'var(--v2-text-3)' : '#4ade80', color: 'var(--v2-surface)',
+              background: running ? 'var(--v2-text-3)' : '#4ade80', color:'#ffffff',
               cursor: running ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
             {running ? <><Spinner/> Analysing…</> : <><TrendingDown size={13}/> Run Analysis</>}
           </button>
@@ -833,7 +833,7 @@ function ConsolidationAdvisor({ tok, nav }) {
                   </button>
                   <button onClick={() => dismiss(i)}
                     style={{ fontSize: 9, fontWeight: 700, padding: '4px 7px', borderRadius: 5,
-                      background: 'var(--v2-bg)', color: '#b0a8a0', border: '0.5px solid var(--v2-border)',
+                      background:'rgba(255,255,255,0.03)', color: '#b0a8a0', border: '0.5px solid var(--v2-border)',
                       cursor: 'pointer', fontFamily: 'inherit' }}>✕</button>
                 </div>
               </div>
@@ -859,7 +859,7 @@ function ConsolidationAdvisor({ tok, nav }) {
                 </div>
                 <button onClick={() => dismiss(consolidation.length + i)}
                   style={{ fontSize: 9, fontWeight: 700, padding: '4px 7px', borderRadius: 5,
-                    background: 'var(--v2-bg)', color: '#b0a8a0', border: '0.5px solid var(--v2-border)',
+                    background:'rgba(255,255,255,0.03)', color: '#b0a8a0', border: '0.5px solid var(--v2-border)',
                     cursor: 'pointer', fontFamily: 'inherit' }}>Dismiss</button>
               </div>
             ))}
@@ -911,7 +911,7 @@ export default function CertIntelligence({ nav }) {
         {/* Page header */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 9, background: '#f0ede8',
+            <div style={{ width: 36, height: 36, borderRadius: 9, background:'#0d0000',
               display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Activity size={18} color="var(--v2-surface)" strokeWidth={2}/>
             </div>

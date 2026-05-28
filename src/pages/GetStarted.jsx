@@ -203,7 +203,7 @@ export default function GetStarted({ nav }) {
                       <Step n={2} title="Go to Dashboard → expand cert → Install"><p>Click the <strong>Install</strong> button on your certificate row. If no agent is connected, the modal shows a one-line install command.</p></Step>
                       <Step n={3} title="Run the agent install on your server (one time only)">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#f87171' }}/><span style={{ background: '#f0ede8' }}/><span style={{ background: '#f0ede8' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#f87171' }}/><span style={{ background:'#0d0000' }}/><span style={{ background:'#0d0000' }}/></div></div>
                           <pre>curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash</pre>
                         </div>
                         <p>The agent registers with SSLVault. Your server appears as Online in <strong>Dashboard → Servers</strong>.</p>
@@ -221,7 +221,7 @@ export default function GetStarted({ nav }) {
                       <Step n={3} title="Download and upload the PHP agent"><p>Click <strong>Download PHP Agent</strong>. Upload the file to your <code className="v2-kbd">public_html</code> directory via cPanel File Manager.</p></Step>
                       <Step n={4} title="Visit the agent URL to activate">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#f87171' }}/><span style={{ background: '#f0ede8' }}/><span style={{ background: '#f0ede8' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#f87171' }}/><span style={{ background:'#0d0000' }}/><span style={{ background:'#0d0000' }}/></div></div>
                           <pre>https://yourdomain.com/sslvault-agent.php</pre>
                         </div>
                         <p>The script installs your certificate via cPanel's UAPI. <strong>Delete the file immediately after.</strong></p>
@@ -286,7 +286,7 @@ export default function GetStarted({ nav }) {
               <tr><td style={{ fontWeight: 600 }}>Email</td><td>Click a link sent to admin@, webmaster@, or hostmaster@ for your domain.</td></tr>
             </tbody>
           </table></div>
-          <div style={{ background: '#f0ede8', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
+          <div style={{ background:'#0d0000', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '6px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize:12 }}>
               <span style={{ color: '#e8e0d8', fontWeight: 600 }}>TYPE</span><span style={{ color: '#ffffff' }}>CNAME</span>
               <span style={{ color: '#e8e0d8', fontWeight: 600 }}>NAME</span><span style={{ color: '#ff8c7a' }}>_acme-challenge</span>
@@ -366,7 +366,7 @@ export default function GetStarted({ nav }) {
 
         {/* CTA */}
         <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--v2-text)',
+          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#c0392b',
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>

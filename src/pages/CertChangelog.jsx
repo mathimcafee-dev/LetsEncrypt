@@ -165,7 +165,7 @@ export default function CertChangelog({ user }) {
           </div>
           <select value={filter} onChange={e => setFilter(e.target.value)}
             style={{ fontSize:12, padding: '0 10px', borderRadius: 8,
-              border: '0.5px solid var(--v2-border)', background: 'var(--v2-bg)', color: '#ffffff' }}>
+              border: '0.5px solid var(--v2-border)', background:'rgba(255,255,255,0.03)', color: '#ffffff' }}>
             {eventTypes.map(t => (
               <option key={t} value={t}>{t === 'all' ? 'All events' : t.replace(/_/g, ' ')}</option>
             ))}

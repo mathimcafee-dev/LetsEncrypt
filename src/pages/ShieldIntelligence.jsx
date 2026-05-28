@@ -180,7 +180,7 @@ function OverviewTab({ user }) {
           {gradeEntries.map(([g, color]) => (
             <div key={g} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:9 }}>
               <span style={{ width:24, fontSize:11, fontWeight:700, color, fontFamily:'monospace', textAlign:'center' }}>{g}</span>
-              <div style={{ flex:1, height:22, background:'var(--v2-bg)', borderRadius:6, overflow:'hidden', position:'relative' }}>
+              <div style={{ flex:1, height:22, background:'rgba(255,255,255,0.03)', borderRadius:6, overflow:'hidden', position:'relative' }}>
                 {(grades[g]||0) > 0 && (
                   <div style={{ position:'absolute', left:0, top:0, bottom:0,
                     width:`${Math.max(8, Math.round(((grades[g]||0)/maxGrade)*100))}%`,
@@ -210,7 +210,7 @@ function OverviewTab({ user }) {
               <div style={{ fontSize:12, color:'#b0a8a0' }}>No certificates yet</div>
             ) : Object.entries(bySource).map(([src, count]) => (
               <div key={src} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                marginBottom:8, padding:'7px 10px', borderRadius:8, background:'var(--v2-bg)',
+                marginBottom:8, padding:'7px 10px', borderRadius:8, background:'rgba(255,255,255,0.03)',
                 border:'0.5px solid var(--v2-border)' }}>
                 <span style={{ fontSize:12, color:'var(--v2-text-1)', fontWeight:500, textTransform:'capitalize' }}>
                   {src === 'gogetssl' ? 'RapidSSL (SSLVault)' : src}
@@ -309,7 +309,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
         <button onClick={e => { e.stopPropagation(); onRescan(s.domain) }}
           disabled={scanning===s.domain}
           style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, padding:'4px 10px',
-            borderRadius:6, border:'0.5px solid var(--v2-border)', background:'var(--v2-bg)',
+            borderRadius:6, border:'0.5px solid var(--v2-border)', background:'rgba(255,255,255,0.03)',
             cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8' }}>
           <RefreshCw size={10} style={scanning===s.domain?{animation:'spin .8s linear infinite'}:{}}/> Rescan
         </button>
@@ -319,7 +319,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
       </div>
       {expanded && (
         <div style={{ padding:'12px 14px', borderTop:`0.5px solid ${style.border}`,
-          background:'var(--v2-bg)',
+          background:'rgba(255,255,255,0.03)',
           display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px,1fr))', gap:10 }}>
           {[
             ['Score',       `${Math.round(s.score||0)} / 100`],
@@ -527,7 +527,7 @@ function CTWatchTab({ tok, user }) {
         <div>
           {/* Table header */}
           <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:640,
-            padding:'8px 14px', background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)',
+            padding:'8px 14px', background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
             borderRadius:'10px 10px 0 0', marginBottom:0 }}>
             {['Domain','Product','Expires','Status',''].map(h => (
               <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0',
@@ -566,7 +566,7 @@ function CTWatchTab({ tok, user }) {
                     <div style={{ display:'flex', gap:4 }}>
                       <button onClick={() => setExpanded(isExp?null:s.id)}
                         style={{ fontSize:10, padding:'3px 8px', borderRadius:5,
-                          border:'0.5px solid var(--v2-border)', background:'var(--v2-bg)',
+                          border:'0.5px solid var(--v2-border)', background:'rgba(255,255,255,0.03)',
                           cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8' }}>
                         {isExp?'Hide':'Details'}
                       </button>
@@ -579,7 +579,7 @@ function CTWatchTab({ tok, user }) {
                     </div>
                   </div>
                   {isExp && (
-                    <div style={{ padding:'12px 14px', background:'var(--v2-bg)',
+                    <div style={{ padding:'12px 14px', background:'rgba(255,255,255,0.03)',
                       borderTop:'0.5px solid var(--v2-border)', borderLeft:`3px solid ${cfg.color}` }}>
                       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:10, marginBottom:12 }}>
                         {[
@@ -693,7 +693,7 @@ function MassScanTab() {
           rows={6} placeholder={'example.com\ngoogle.com\ngithub.com'}
           style={{ width:'100%', resize:'vertical', fontSize:13, fontFamily:'monospace',
             borderRadius:8, border:'0.5px solid var(--v2-border)', padding:'10px 12px',
-            background:'var(--v2-bg)', color:'var(--v2-text-1)', outline:'none', boxSizing:'border-box' }}/>
+            background:'rgba(255,255,255,0.03)', color:'var(--v2-text-1)', outline:'none', boxSizing:'border-box' }}/>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:10 }}>
           <span style={{ fontSize:11, color:'#b0a8a0' }}>
             {input.split('\n').filter(l=>l.trim()).length} domains · one per line
@@ -702,7 +702,7 @@ function MassScanTab() {
             {results && (
               <button onClick={exportCSV}
                 style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 12px',
-                  borderRadius:7, border:'0.5px solid var(--v2-border)', background:'var(--v2-bg)',
+                  borderRadius:7, border:'0.5px solid var(--v2-border)', background:'rgba(255,255,255,0.03)',
                   cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8' }}>
                 <Download size={11}/> Export CSV
               </button>
@@ -759,7 +759,7 @@ function MassScanTab() {
           {/* Table */}
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'visible' }}>
             <div style={{ display:'grid', gridTemplateColumns:'2fr 60px 60px 60px 60px 80px 1fr',
-              padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+              padding:'8px 14px', background:'rgba(255,255,255,0.03)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
               {['Domain','Grade','Score','TLS','HSTS','CAA','Expiry / Issue'].map(h => (
                 <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0',
                   textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>

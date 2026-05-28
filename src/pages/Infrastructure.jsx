@@ -130,7 +130,7 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
 
   return (
     <div style={{
-      background: '#f0ede8', border: '1px solid #e8edf2', borderRadius: 12,
+      background:'#0d0000', border: '1px solid #e8edf2', borderRadius: 12,
       marginBottom: 24, overflow: 'hidden',
     }}>
       {/* Banner */}
@@ -139,7 +139,7 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
         borderBottom: '1px solid #e8edf2',
         display: 'flex', alignItems: 'center', gap: 8,
       }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#f0ede8', flexShrink: 0 }} />
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background:'#0d0000', flexShrink: 0 }} />
         <span style={{ fontSize:12, fontWeight: 600, color: '#ffffff' }}>
           Complete VPS setup — {[hasDns, hasAgent].filter(Boolean).length} of 2 prerequisites done
         </span>
@@ -255,7 +255,7 @@ function InstallModal({ onClose }) {
           ].map(({ id, label, cmd }) => (
             <div key={id} style={{ marginBottom:14 }}>
               <div style={{ fontSize:11, fontWeight:500, color:'#e8e0d8', marginBottom:6 }}>{label}</div>
-              <div style={{ display:'flex', alignItems:'center', gap:8, background:'#f0ede8',
+              <div style={{ display:'flex', alignItems:'center', gap:8, background:'#0d0000',
                 borderRadius:7, padding:'10px 14px' }}>
                 <code style={{ fontSize:12, color: id==='install' && error ? '#f87171' : '#f0ede8', fontFamily:'monospace', flex:1,
                   overflow:'auto', whiteSpace:'nowrap' }}>{cmd}</code>
@@ -536,7 +536,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                     textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:8 }}>
                     Restart command
                   </div>
-                  <div style={{ background:'#f0ede8', borderRadius:7, padding:'8px 12px' }}>
+                  <div style={{ background:'#0d0000', borderRadius:7, padding:'8px 12px' }}>
                     <code style={{ fontSize:10, color:'#ffffff', fontFamily:'monospace' }}>
                       sudo systemctl restart sslvault-agent
                     </code>
@@ -653,7 +653,7 @@ export default function Infrastructure({ user }) {
               Refresh
             </button>
             <button onClick={() => setShowInstall(true)}
-              style={{ display:'flex', alignItems:'center', gap:6, background:'#f0ede8',
+              style={{ display:'flex', alignItems:'center', gap:6, background:'#0d0000',
                 color:'#ffffff', border:'none', padding:'7px 14px', borderRadius:7,
                 fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit',
                 transition:'opacity .15s' }}
@@ -700,7 +700,7 @@ export default function Infrastructure({ user }) {
               It will auto-renew your certificates and report status here.
             </div>
             <button onClick={() => setShowInstall(true)}
-              style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8',
+              style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d0000',
                 color:'#ffffff', border:'none', borderRadius:7, padding:'9px 20px',
                 fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
               <Terminal size={13}/> Install agent

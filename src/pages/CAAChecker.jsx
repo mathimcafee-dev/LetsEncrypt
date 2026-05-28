@@ -104,12 +104,12 @@ export default function CAAChecker({ nav }) {
               placeholder="easysecurity.in"
               style={{ flex:1, padding:'9px 12px', border:'0.5px solid var(--v2-border-strong)',
                 borderRadius:6, fontSize:14, fontFamily:'inherit', color:'#ffffff',
-                background:'var(--v2-bg)', outline:'none' }}
+                background:'rgba(255,255,255,0.03)', outline:'none' }}
             />
             <button
               onClick={check}
               disabled={loading}
-              style={{ display:'flex', alignItems:'center', gap:6, background:'#f0ede8',
+              style={{ display:'flex', alignItems:'center', gap:6, background:'#0d0000',
                 color:'#ffffff', border:'none', borderRadius:6, padding:'9px 18px',
                 fontSize:13, fontWeight:600, cursor:loading?'not-allowed':'pointer',
                 opacity:loading?0.6:1, fontFamily:'inherit', whiteSpace:'nowrap' }}>
@@ -148,7 +148,7 @@ export default function CAAChecker({ nav }) {
             {/* Checks list */}
             <div style={{ background:'transparent', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:16 }}>
               <div style={{ padding:'10px 16px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
-                background:'var(--v2-bg)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                background:'rgba(255,255,255,0.03)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                 <span style={{ fontSize:12, fontWeight:600, color:'#e8e0d8', textTransform:'uppercase', letterSpacing:'0.4px' }}>Check results</span>
                 <span style={{ fontSize:11, color:'#b0a8a0' }}>{result.domain}</span>
               </div>

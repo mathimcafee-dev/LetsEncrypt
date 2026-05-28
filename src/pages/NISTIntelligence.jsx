@@ -177,7 +177,7 @@ export default function NISTIntelligence({ nav }) {
               <div key={e.year+i} className="tl-row">
                 <div className="tl-yr">{e.year}</div>
                 <div className="tl-spine">
-                  <div className="tl-dot" style={{ background:'#f0ede8' }}/>
+                  <div className="tl-dot" style={{ background:'#0d0000' }}/>
                   {i < TIMELINE.length-1 && <div className="tl-line"/>}
                 </div>
                 <div style={{ flex:1, paddingBottom:8 }}>

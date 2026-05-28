@@ -42,7 +42,7 @@ export default function DeveloperInner({ nav }) {
               PKI specialist with a deep interest in digital trust and certificate lifecycle management. SSLVault is a personal project — a way to give back to the indie and non-profit community who need enterprise-grade CLM without the enterprise price tag.
             </p>
             <div style={{ display:'flex', gap:8 }}>
-              <a href="mailto:mathimcafee@gmail.com" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8', color:'#ffffff', textDecoration:'none', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
+              <a href="mailto:mathimcafee@gmail.com" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d0000', color:'#ffffff', textDecoration:'none', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
                 <Mail size={12}/> Contact
               </a>
               <a href="https://github.com/mathimcafee-dev" target="_blank" rel="noopener noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#ffffff', textDecoration:'none', border:'0.5px solid #e8edf2', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>

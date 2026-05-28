@@ -318,7 +318,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           Issue, manage and auto-renew SSL certificates from SSLVault.
         </p>
         <button onClick={() => nav('/auth')}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f0ede8',
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background:'#0d0000',
             color: '#ffffff', border: 'none', borderRadius: 8, padding: '12px 24px',
             fontSize:13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
           <Lock size={14}/> Sign in to SSLVault
@@ -340,7 +340,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             <Shield size={14} color="white"/>
           </div>
           <span style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>Issue SSL Certificate</span>
-          <span style={{ background: '#f0ede8', color: '#ffffff', fontSize: 9, fontWeight: 700,
+          <span style={{ background:'#0d0000', color: '#ffffff', fontSize: 9, fontWeight: 700,
             letterSpacing: '0.8px', textTransform: 'uppercase', borderRadius: 3, padding: '3px 7px' }}>
             LIVE
           </span>
@@ -562,7 +562,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <Shield size={16} color="#c0392b"/>
         <span style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>Validate Domain Ownership</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, alignItems: 'center' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#f0ede8',
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background:'#0d0000',
             boxShadow: '0 0 0 3px rgba(245,158,11,0.2)', animation: 'pulse 2s infinite' }}/>
           <span style={{ fontSize:11, color: '#ffffff', fontWeight: 500 }}>Awaiting DNS validation</span>
         </div>

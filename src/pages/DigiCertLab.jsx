@@ -246,7 +246,7 @@ export default function DigiCertLab({ nav }) {
     <div style={{ display: 'flex', minHeight: '100vh', background: 'transparent', fontFamily: "'Segoe UI',-apple-system,system-ui,sans-serif" }}>
 
       {/* ── Sidebar ── */}
-      <div style={{ width: 220, background: 'var(--v2-text)', display: 'flex', flexDirection: 'column',
+      <div style={{ width: 220, background:'#c0392b', display: 'flex', flexDirection: 'column',
         position: 'sticky', top: 0, height: '100vh', flexShrink: 0 }}>
 
         {/* Logo */}
@@ -254,9 +254,9 @@ export default function DigiCertLab({ nav }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <div style={{ width: 28, height: 28, borderRadius: 7, background: '#f87171',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize:11, fontWeight: 800, color: 'var(--v2-surface)' }}>DC</div>
+              fontSize:11, fontWeight: 800, color:'#ffffff' }}>DC</div>
             <div>
-              <div style={{ fontSize:13, fontWeight: 700, color: 'var(--v2-surface)' }}>DigiCert Lab</div>
+              <div style={{ fontSize:13, fontWeight: 700, color:'#ffffff' }}>DigiCert Lab</div>
               <div style={{ fontSize: 9, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Automation Sandbox</div>
             </div>
           </div>
@@ -396,7 +396,7 @@ export default function DigiCertLab({ nav }) {
 
               <button onClick={connect} disabled={connecting}
                 style={{ width: '100%', padding: '11px', background: connecting ? 'var(--v2-text-3)' : '#f87171',
-                  color: 'var(--v2-surface)', border: 'none', borderRadius: 8, fontSize:13, fontWeight: 700,
+                  color:'#ffffff', border: 'none', borderRadius: 8, fontSize:13, fontWeight: 700,
                   cursor: connecting ? 'wait' : 'pointer', fontFamily: 'inherit',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
                 {!tok
@@ -691,7 +691,7 @@ export default function DigiCertLab({ nav }) {
                 <div style={{ marginBottom: 16 }}>
                   <div style={{ fontSize:11, fontWeight: 700, color: '#e8e0d8', textTransform: 'uppercase',
                     letterSpacing: '0.4px', marginBottom: 6 }}>API call preview</div>
-                  <div style={{ background: 'var(--v2-text)', borderRadius: 8, padding: '12px 14px', fontFamily: 'monospace', fontSize:11, color: '#b0a8a0', lineHeight: 1.6 }}>
+                  <div style={{ background:'#c0392b', borderRadius: 8, padding: '12px 14px', fontFamily: 'monospace', fontSize:11, color: '#b0a8a0', lineHeight: 1.6 }}>
                     <span style={{ color: '#ffffff' }}>POST</span>{' '}
                     <span style={{ color: '#ff8c7a' }}>https://www.digicert.com/services/v2</span>
                     <span style={{ color: '#fbbf24' }}>/order/certificate/{selectedCert.order_id}/reissue</span>
@@ -722,7 +722,7 @@ export default function DigiCertLab({ nav }) {
                   </button>
                   <button onClick={() => doReissue(selectedCert)} disabled={working}
                     style={{ flex: 2, padding: '9px', background: working ? 'var(--v2-text-3)' : '#4ade80',
-                      color: 'var(--v2-surface)', border: 'none', borderRadius: 8, fontSize:12, fontWeight: 700,
+                      color:'#ffffff', border: 'none', borderRadius: 8, fontSize:12, fontWeight: 700,
                       cursor: working ? 'wait' : 'pointer', fontFamily: 'inherit',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                     {working ? <><RefreshCw size={11} style={{ animation: 'spin .8s linear infinite' }}/> Working…</> : <><RotateCcw size={11}/> Execute Reissue</>}
@@ -777,7 +777,7 @@ export default function DigiCertLab({ nav }) {
                 <div style={{ marginBottom: 16 }}>
                   <div style={{ fontSize:11, fontWeight: 700, color: '#e8e0d8', textTransform: 'uppercase',
                     letterSpacing: '0.4px', marginBottom: 6 }}>API call that will be executed</div>
-                  <div style={{ background: 'var(--v2-text)', borderRadius: 8, padding: '12px 14px',
+                  <div style={{ background:'#c0392b', borderRadius: 8, padding: '12px 14px',
                     fontFamily: 'monospace', fontSize:11, color: '#b0a8a0', lineHeight: 1.6 }}>
                     <span style={{ color: '#ffffff' }}>PUT</span>{' '}
                     <span style={{ color: '#ff8c7a' }}>https://www.digicert.com/services/v2</span>
@@ -806,7 +806,7 @@ export default function DigiCertLab({ nav }) {
                   </button>
                   <button onClick={doRevoke} disabled={working || actionResult?.ok}
                     style={{ flex: 2, padding: '9px', background: working ? 'var(--v2-text-3)' : '#f87171',
-                      color: 'var(--v2-surface)', border: 'none', borderRadius: 8, fontSize:12, fontWeight: 700,
+                      color:'#ffffff', border: 'none', borderRadius: 8, fontSize:12, fontWeight: 700,
                       cursor: working || actionResult?.ok ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                     {working ? <><RefreshCw size={11} style={{ animation: 'spin .8s linear infinite' }}/> Revoking…</> : <><Trash2 size={11}/> Revoke Certificate</>}
@@ -818,7 +818,7 @@ export default function DigiCertLab({ nav }) {
                     sessionStorage.setItem('prefill_domain', selectedCert.common_name)
                     nav('/buy')
                   }}
-                    style={{ width: '100%', padding: '10px', background: '#4ade80', color: 'var(--v2-surface)',
+                    style={{ width: '100%', padding: '10px', background: '#4ade80', color:'#ffffff',
                       border: 'none', borderRadius: 8, fontSize:12, fontWeight: 700,
                       cursor: 'pointer', fontFamily: 'inherit',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
@@ -864,7 +864,7 @@ export default function DigiCertLab({ nav }) {
                 ))}
               </div>
 
-              <div style={{ marginBottom: 16, background: 'var(--v2-bg)', border: '0.5px solid var(--v2-border)',
+              <div style={{ marginBottom: 16, background:'rgba(255,255,255,0.03)', border: '0.5px solid var(--v2-border)',
                 borderRadius: 8, padding: '12px 14px' }}>
                 <div style={{ fontSize:12, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>
                   {certs.length > 0 ? `${certs.length} certificates ready to export` : 'Load portfolio first to generate report'}
@@ -879,7 +879,7 @@ export default function DigiCertLab({ nav }) {
 
               <button onClick={downloadReport} disabled={working || certs.length === 0}
                 style={{ width: '100%', padding: '11px', background: working || certs.length === 0 ? 'var(--v2-text-3)' : '#f0ede8',
-                  color: 'var(--v2-surface)', border: 'none', borderRadius: 8, fontSize:13, fontWeight: 700,
+                  color:'#ffffff', border: 'none', borderRadius: 8, fontSize:13, fontWeight: 700,
                   cursor: working || certs.length === 0 ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
                 {working

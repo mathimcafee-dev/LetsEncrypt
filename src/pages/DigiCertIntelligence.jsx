@@ -741,7 +741,7 @@ function RevokeLayer({ apiKey }) {
               <div className="v2-code" style={{ margin: 0 }}>
                 <div className="v2-code-head">
                   <div className="v2-code-dots">
-                    <span style={{ background: '#f87171' }}/><span style={{ background: '#f0ede8' }}/><span style={{ background: '#f0ede8' }}/>
+                    <span style={{ background: '#f87171' }}/><span style={{ background:'#0d0000' }}/><span style={{ background:'#0d0000' }}/>
                   </div>
                 </div>
                 <pre>{`PUT https://www.digicert.com/services/v2/certificate/${certId || '{cert_id}'}/revoke

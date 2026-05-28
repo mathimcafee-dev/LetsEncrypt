@@ -933,8 +933,8 @@ export default function MyServers({ user }) {
             <button onClick={() => setShowAddServer(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5,
               padding: '8px 14px', borderRadius: 8,
-              border: 'none', background: 'var(--v2-text)',
-              fontSize:12, fontWeight: 600, color: 'var(--v2-surface)',
+              border: 'none', background:'#c0392b',
+              fontSize:12, fontWeight: 600, color:'#ffffff',
               cursor: 'pointer', fontFamily: 'inherit',
             }}>
               <Plus size={12} /> Add server
@@ -1003,7 +1003,7 @@ export default function MyServers({ user }) {
                     <div style={{ fontSize:13, color: '#b0a8a0', marginBottom: 16 }}>Connect your VPS to enable automatic cert installation</div>
                     <button onClick={() => setShowAddServer(true)} style={{
                       padding: '9px 18px', borderRadius: 8, border: 'none',
-                      background: 'var(--v2-text)', color: 'var(--v2-surface)', fontSize:13,
+                      background:'#c0392b', color:'#ffffff', fontSize:13,
                       fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                     }}>
@@ -1041,7 +1041,7 @@ export default function MyServers({ user }) {
                     <div style={{ fontSize:13, color:'#b0a8a0', marginBottom:16 }}>Connect your cPanel to install SSL automatically</div>
                     <button onClick={() => setShowAddHosting(true)} style={{
                       padding:'9px 18px', borderRadius:8, border:'none',
-                      background:'var(--v2-text)', color:'var(--v2-surface)', fontSize:13, fontWeight:600,
+                      background:'#c0392b', color:'#ffffff', fontSize:13, fontWeight:600,
                       cursor:'pointer', fontFamily:'inherit',
                       display:'inline-flex', alignItems:'center', gap:6,
                     }}>
@@ -1055,7 +1055,7 @@ export default function MyServers({ user }) {
                     ))}
                     <button onClick={() => setShowAddHosting(true)} style={{
                       padding:'12px', borderRadius:10,
-                      border:'1px dashed #d1d5db', background:'var(--v2-bg)',
+                      border:'1px dashed #d1d5db', background:'rgba(255,255,255,0.03)',
                       fontSize:12, fontWeight:600, color:'#b0a8a0',
                       cursor:'pointer', fontFamily:'inherit',
                       display:'flex', alignItems:'center', justifyContent:'center', gap:6,
@@ -1089,7 +1089,7 @@ export default function MyServers({ user }) {
                     <div style={{ fontSize:13, color: '#b0a8a0', marginBottom: 16 }}>Required before issuing your first certificate</div>
                     <button onClick={() => setShowAddDns(true)} style={{
                       padding: '9px 18px', borderRadius: 8, border: 'none',
-                      background: 'var(--v2-text)', color: 'var(--v2-surface)', fontSize:13,
+                      background:'#c0392b', color:'#ffffff', fontSize:13,
                       fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                     }}>
@@ -1103,7 +1103,7 @@ export default function MyServers({ user }) {
                     ))}
                     <button onClick={() => setShowAddDns(true)} style={{
                       padding: '12px', borderRadius: 10,
-                      border: '1px dashed #d1d5db', background: 'var(--v2-bg)',
+                      border: '1px dashed #d1d5db', background:'rgba(255,255,255,0.03)',
                       fontSize:12, fontWeight: 600, color: '#b0a8a0',
                       cursor: 'pointer', fontFamily: 'inherit',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,

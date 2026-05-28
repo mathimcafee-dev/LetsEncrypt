@@ -195,7 +195,7 @@ function ApiKeysPanel({ user }) {
           <div style={{ fontSize:11, fontWeight: 600, color: '#ffffff', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
           </div>
-          <div style={{ background: '#f0ede8', borderRadius: 6, padding: '8px 10px',
+          <div style={{ background:'#0d0000', borderRadius: 6, padding: '8px 10px',
             fontFamily: 'monospace', fontSize:11, color: '#ff8c7a', wordBreak: 'break-all', marginBottom: 8 }}>
             {newKey}
           </div>
@@ -557,7 +557,7 @@ export default function SettingsPage({ user }) {
                   background: emailError ? 'rgba(248,113,113,0.1)' : 'transparent' }}/>
               <button onClick={addExtraEmail}
                 style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
-                  background: '#f0ede8', color: '#ffffff', border: 'none', borderRadius: 7,
+                  background:'#0d0000', color: '#ffffff', border: 'none', borderRadius: 7,
                   fontSize:12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Plus size={11}/> Add
               </button>

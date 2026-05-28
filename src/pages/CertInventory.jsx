@@ -143,7 +143,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
   )
 
   return (
-    <div style={{ borderTop:'2px solid #c0392b', background:'var(--v2-bg)' }}>
+    <div style={{ borderTop:'2px solid #c0392b', background:'rgba(255,255,255,0.03)' }}>
       {/* Header */}
       <div style={{ padding:'14px 20px', background:'var(--v2-surface)', borderBottom:'0.5px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div>
@@ -189,9 +189,9 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
 
           {/* Certificate Details expandable */}
           <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden', marginBottom:16 }}>
-            <button onClick={() => setCertOpen(v=>!v)} style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', background:'var(--v2-text)', border:'none', cursor:'pointer', fontFamily:'inherit' }}>
-              <span style={{ fontSize:12, fontWeight:600, color:'var(--v2-surface)' }}>Certificate Details</span>
-              <span style={{ color:'var(--v2-surface)' }}>{certOpen ? <ChevronDown size={14}/> : <Plus size={14}/>}</span>
+            <button onClick={() => setCertOpen(v=>!v)} style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', background:'#c0392b', border:'none', cursor:'pointer', fontFamily:'inherit' }}>
+              <span style={{ fontSize:12, fontWeight:600, color:'#ffffff' }}>Certificate Details</span>
+              <span style={{ color:'#ffffff' }}>{certOpen ? <ChevronDown size={14}/> : <Plus size={14}/>}</span>
             </button>
             {certOpen && (
               <div style={{ padding:16, background:'var(--v2-surface)', display:'flex', flexDirection:'column', gap:8 }}>
@@ -216,7 +216,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                   </div>
                 ))}
                 {showKey && cert.private_key_pem && !keyDeleted && (
-                  <pre style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)', borderRadius:6, padding:10, fontSize:10, color:'#e8e0d8', overflow:'auto', maxHeight:120, margin:0, fontFamily:"'JetBrains Mono','Menlo',monospace" }}>{cert.private_key_pem}</pre>
+                  <pre style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)', borderRadius:6, padding:10, fontSize:10, color:'#e8e0d8', overflow:'auto', maxHeight:120, margin:0, fontFamily:"'JetBrains Mono','Menlo',monospace" }}>{cert.private_key_pem}</pre>
                 )}
                 {!keyDeleted && cert.private_key_pem && !keyDelOpen && (
                   <button onClick={() => setKeyDelOpen(true)} style={{ alignSelf:'flex-start', fontSize:10, color:'#b0a8a0', background:'none', border:'none', cursor:'pointer', padding:0, fontFamily:'inherit', textDecoration:'underline' }}>Delete private key after install</button>
@@ -234,7 +234,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                     })}
                     <div style={{ display:'flex', gap:6, marginTop:10 }}>
                       <button onClick={() => { setKeyDelOpen(false); setKeyChecks({downloaded:false,installed:false,understand:false}) }} style={btnStyle}>Cancel</button>
-                      <button onClick={doDeleteKey} disabled={!allChecked||keyDeleting} style={{ ...btnStyle, background:allChecked&&!keyDeleting?'#f87171':'rgba(239,83,80,0.3)', color:'var(--v2-surface)', border:'none' }}>{keyDeleting?'Deleting…':'Delete key permanently'}</button>
+                      <button onClick={doDeleteKey} disabled={!allChecked||keyDeleting} style={{ ...btnStyle, background:allChecked&&!keyDeleting?'#f87171':'rgba(239,83,80,0.3)', color:'#ffffff', border:'none' }}>{keyDeleting?'Deleting…':'Delete key permanently'}</button>
                     </div>
                   </div>
                 )}
@@ -249,7 +249,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
               {revokeError && <div style={{ fontSize:11, color:'#f87171', marginBottom:8 }}>{revokeError}</div>}
               <div style={{ display:'flex', gap:6 }}>
                 <button onClick={() => { setRevokeOpen(false); setRevokeErr('') }} style={btnStyle}>Cancel</button>
-                <button onClick={doRevoke} disabled={revoking} style={{ ...btnStyle, background:'#f87171', color:'var(--v2-surface)', border:'none', opacity:revoking?0.7:1 }}>{revoking?'Revoking…':'Confirm Revoke'}</button>
+                <button onClick={doRevoke} disabled={revoking} style={{ ...btnStyle, background:'#f87171', color:'#ffffff', border:'none', opacity:revoking?0.7:1 }}>{revoking?'Revoking…':'Confirm Revoke'}</button>
               </div>
             </div>
           )}
@@ -274,7 +274,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 <div style={{ display:'flex', gap:6 }}>
                   <button onClick={() => setDelConfirm(false)} style={btnStyle}>Cancel</button>
                   <button onClick={() => onDelete(cert.id)}
-                    style={{ ...btnStyle, background:'#f87171', color:'var(--v2-surface)', border:'none', flex:1, justifyContent:'center' }}>
+                    style={{ ...btnStyle, background:'#f87171', color:'#ffffff', border:'none', flex:1, justifyContent:'center' }}>
                     Yes, purge everything
                   </button>
                 </div>
@@ -443,7 +443,7 @@ export default function CertInventory({ user, nav, onIssue }) {
           <button onClick={downloadCSV} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'var(--v2-surface)', color:'#e8e0d8', border:'0.5px solid var(--v2-border)', borderRadius:6, padding:'8px 14px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Download size={13}/> Download CSV
           </button>
-          <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8', color:'var(--v2-surface)', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d0000', color:'#ffffff', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Plus size={13}/> Issue Certificate
           </button>
         </div>
@@ -539,7 +539,7 @@ export default function CertInventory({ user, nav, onIssue }) {
       <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', overflow:'hidden' }}>
         <div style={{ overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
         {/* Header */}
-        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)', fontSize:11, fontWeight:600, color:'#b0a8a0', letterSpacing:'.3px', textTransform:'uppercase', minWidth:0 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'rgba(255,255,255,0.03)', borderBottom:'0.5px solid rgba(255,255,255,0.08)', fontSize:11, fontWeight:600, color:'#b0a8a0', letterSpacing:'.3px', textTransform:'uppercase', minWidth:0 }}>
           <div>Domain</div>
           <div>Order ID</div>
           <div>Product</div>
@@ -557,7 +557,7 @@ export default function CertInventory({ user, nav, onIssue }) {
             <Shield size={32} color="rgba(240,237,232,0.15)" strokeWidth={1.5} style={{ marginBottom:10 }}/>
             <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:4 }}>{certs.length===0?'No certificates yet':'No matches'}</div>
             <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:16 }}>{certs.length===0?'Issue your first SSL certificate to get started':'Try a different filter or search term'}</div>
-            {certs.length===0 && <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8', color:'var(--v2-surface)', border:'none', borderRadius:6, padding:'8px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}><Plus size={12}/> Issue certificate</button>}
+            {certs.length===0 && <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d0000', color:'#ffffff', border:'none', borderRadius:6, padding:'8px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}><Plus size={12}/> Issue certificate</button>}
           </div>
         ) : filtered.map(cert => {
           const days = daysLeft(cert.expires_at)

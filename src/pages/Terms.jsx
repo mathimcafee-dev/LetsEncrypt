@@ -15,7 +15,7 @@ export default function Terms({ nav }) {
       <section style={{position:'relative',padding:'70px 0 30px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'transparent',border:'1px solid rgba(192,57,43,0.2)',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-            <span style={{width:7,height:7,borderRadius:'50%',background:'#f0ede8',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
+            <span style={{width:7,height:7,borderRadius:'50%',background:'#0d0000',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
             <span style={{fontSize:11,fontWeight:700,color:'#e8e0d8',letterSpacing:'0.4px',textTransform:'uppercase'}}>Terms of Service</span>
           </div>
           <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#ffffff'}}>
@@ -30,7 +30,7 @@ export default function Terms({ nav }) {
       <section style={{position:'relative',padding:'30px 0 50px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px'}}>
           <div style={{background:'linear-gradient(135deg,#fde8e4,#fef9c3)',borderRadius:18,padding:'min(28px,5vw) min(32px,4vw)',border:'1.5px solid #F2C4BC',display:'flex',gap:18,alignItems:'flex-start'}}>
-            <div style={{width:42,height:42,borderRadius:11,background:'#f0ede8',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(217,119,6,0.3)'}}>
+            <div style={{width:42,height:42,borderRadius:11,background:'#0d0000',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(217,119,6,0.3)'}}>
               <AlertTriangle size={20} color='#000000'/>
             </div>
             <div>
@@ -141,7 +141,7 @@ export default function Terms({ nav }) {
           <button onClick={()=>nav('/privacy')} style={{background:'transparent',color:'#ffffff',border:'1.5px solid rgba(192,57,43,0.2)',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <Shield size={14}/> Privacy Policy
           </button>
-          <button onClick={()=>nav('/contact')} style={{background:'#f0ede8',color:'#ffffff',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/contact')} style={{background:'#0d0000',color:'#ffffff',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <Mail size={14}/> Contact us <ArrowRight size={13}/>
           </button>
         </div>

@@ -134,7 +134,7 @@ export default function BulkScanner({ nav }) {
             rows={6}
             style={{ width: '100%', fontSize:13, fontFamily: 'monospace', resize: 'vertical',
               border: '0.5px solid var(--v2-border)', borderRadius: 8, padding: '10px 12px',
-              color: '#ffffff', background: 'var(--v2-bg)', boxSizing: 'border-box', outline: 'none' }}
+              color: '#ffffff', background:'rgba(255,255,255,0.03)', boxSizing: 'border-box', outline: 'none' }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
             <span style={{ fontSize:11, color: '#b0a8a0' }}>
@@ -155,7 +155,7 @@ export default function BulkScanner({ nav }) {
           {/* Progress bar */}
           {scanning && (
             <div style={{ marginTop: 12, height: 3, background: 'var(--v2-border)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: '#f0ede8', borderRadius: 2,
+              <div style={{ height: '100%', background:'#0d0000', borderRadius: 2,
                 width: `${progress}%`, transition: 'width .4s ease' }} />
             </div>
           )}
@@ -194,7 +194,7 @@ export default function BulkScanner({ nav }) {
             <div style={{ background: 'var(--v2-surface)', border: '1px solid var(--v2-border)', borderRadius: 'var(--v2-r-lg)', overflow: 'hidden' }}>
               {/* Head */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 52px 60px 52px 52px 52px 70px',
-                padding: '8px 14px', background: 'var(--v2-bg)',
+                padding: '8px 14px', background:'rgba(255,255,255,0.03)',
                 borderBottom: '0.5px solid var(--v2-border)' }}>
                 {['Domain', 'Grade', 'Score', 'TLS', 'HSTS', 'CAA', 'Expiry'].map(h => (
                   <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#b0a8a0',

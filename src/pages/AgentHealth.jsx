@@ -154,13 +154,13 @@ function Drawer({ agent, tok, onClose, onDelete }) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.28)', zIndex: 40 }}/>
       {/* Panel */}
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, zIndex: 50,
-        background: 'var(--v2-bg)', borderLeft: '0.5px solid var(--v2-border)',
+        background:'rgba(255,255,255,0.03)', borderLeft: '0.5px solid var(--v2-border)',
         display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
 
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)',
           display: 'flex', alignItems: 'center', gap: 12, position: 'sticky', top: 0,
-          background: 'var(--v2-bg)', zIndex: 1 }}>
+          background:'rgba(255,255,255,0.03)', zIndex: 1 }}>
           <div style={{ width: 36, height: 36, borderRadius: 9, background: 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Server size={16} color="#16a34a"/>
@@ -363,7 +363,7 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.32)', zIndex: 60 }}/>
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-        zIndex: 70, background: 'var(--v2-bg)', border: '0.5px solid var(--v2-border)',
+        zIndex: 70, background:'rgba(255,255,255,0.03)', border: '0.5px solid var(--v2-border)',
         borderRadius: 12, padding: '24px', width: 360 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
           <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(192,57,43,0.12)',

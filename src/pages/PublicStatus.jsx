@@ -64,7 +64,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
   return (
     <div style={{ minHeight: '100vh', background: 'transparent' }}>
       {/* Nav */}
-      <div style={{ background: '#f0ede8', borderBottom: '0.5px solid rgba(192,57,43,0.2)',
+      <div style={{ background:'#0d0000', borderBottom: '0.5px solid rgba(192,57,43,0.2)',
         padding: '0 24px', height: 52, display: 'flex', alignItems: 'center',
         justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
@@ -135,7 +135,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
                   const gs = gradeStyle(s.grade)
                   const domainHealthy = s.cert_valid && (s.expiry_days == null || s.expiry_days > 30)
                   return (
-                    <div key={s.domain} style={{ background: '#f0ede8', border: `0.5px solid ${gs.border}`,
+                    <div key={s.domain} style={{ background:'#0d0000', border: `0.5px solid ${gs.border}`,
                       borderRadius: 10, padding: '14px 16px',
                       display: 'flex', alignItems: 'center', gap: 14 }}>
 

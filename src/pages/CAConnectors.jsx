@@ -508,7 +508,7 @@ export default function CAConnectors({ nav }) {
           <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex',
             alignItems: 'center', justifyContent: 'center', padding: 20,
             background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}>
-            <div style={{ background: 'var(--v2-bg)', borderRadius: 14, width: '100%', maxWidth: 480,
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius: 14, width: '100%', maxWidth: 480,
               boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '0.5px solid var(--v2-border)' }}>
               <div style={{ padding: '18px 22px 14px', borderBottom: '0.5px solid var(--v2-border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -528,7 +528,7 @@ export default function CAConnectors({ nav }) {
                     {Object.entries(CA_DEFS).map(([key, def]) => (
                       <div key={key} onClick={() => { setAddCa(key); setAddLabel(def.name); setAddFields({}); setAddError('') }}
                         style={{ padding: '14px 16px', borderRadius: 10, border: '0.5px solid var(--v2-border)',
-                          background: 'var(--v2-bg)', cursor: 'pointer', display: 'flex',
+                          background:'rgba(255,255,255,0.03)', cursor: 'pointer', display: 'flex',
                           alignItems: 'center', gap: 12, transition: 'all .15s' }}
                         onMouseEnter={e => { e.currentTarget.style.borderColor = def.color; e.currentTarget.style.background = def.bg }}
                         onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--v2-border)'; e.currentTarget.style.background = 'var(--v2-bg)' }}>
@@ -634,7 +634,7 @@ export default function CAConnectors({ nav }) {
           <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex',
             alignItems: 'center', justifyContent: 'center', padding: 20,
             background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}>
-            <div style={{ background: 'var(--v2-bg)', borderRadius: 14, width: '100%', maxWidth: 480,
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius: 14, width: '100%', maxWidth: 480,
               boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '0.5px solid var(--v2-border)' }}>
               <div style={{ padding: '18px 22px 14px', borderBottom: '0.5px solid var(--v2-border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -738,7 +738,7 @@ export default function CAConnectors({ nav }) {
             <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex',
               alignItems: 'center', justifyContent: 'center', padding: 20,
               background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}>
-              <div style={{ background: 'var(--v2-bg)', borderRadius: 14, width: '100%', maxWidth: 400,
+              <div style={{ background:'rgba(255,255,255,0.03)', borderRadius: 14, width: '100%', maxWidth: 400,
                 padding: '24px', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '0.5px solid var(--v2-border)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                   <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(192,57,43,0.12)',
@@ -840,7 +840,7 @@ export default function CAConnectors({ nav }) {
                       cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor='#f0ede8'; e.currentTarget.style.background='transparent' }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor='#f0ede8'; e.currentTarget.style.background='#000000' }}>
-                    <div style={{ width:34, height:34, borderRadius:8, background:'#f0ede8',
+                    <div style={{ width:34, height:34, borderRadius:8, background:'#0d0000',
                       display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                       <ExternalLink size={15} color="rgba(0,0,0,0.55)"/>
                     </div>

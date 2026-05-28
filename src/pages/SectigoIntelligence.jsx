@@ -395,7 +395,7 @@ function AnalyticsLayer({ creds }) {
               <div style={{ flex: 1, fontSize:12, color: '#e8e0d8' }}>{type}</div>
               <div style={{ width: 120, height: 6, background: 'var(--v2-surface-3)', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${Math.round((count / data.total) * 100)}%`, height: '100%',
-                  background: '#f0ede8', borderRadius: 3 }}/>
+                  background:'#0d0000', borderRadius: 3 }}/>
               </div>
               <div className="v2-mono" style={{ fontSize:12, fontWeight: 700, color: '#ffffff', minWidth: 28, textAlign: 'right' }}>{count}</div>
             </div>

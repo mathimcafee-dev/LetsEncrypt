@@ -288,7 +288,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                     Never share this key. Do not save unencrypted. This access is logged.
                   </div>
 
-                  <div style={{ background:'#f0ede8', borderRadius:9, padding:'14px 16px',
+                  <div style={{ background:'#0d0000', borderRadius:9, padding:'14px 16px',
                     marginBottom:12, fontFamily:'monospace', fontSize:11, color:'#b0a8a0',
                     lineHeight:1.8, whiteSpace:'pre', userSelect:'none' }}>
                     {masked}
@@ -612,7 +612,7 @@ export default function CertVault({ nav }) {
     <div className="v2-page" style={{ display:'flex', alignItems:'center',
       justifyContent:'center', minHeight:'60vh' }}>
       <div style={{ textAlign:'center', maxWidth:380 }}>
-        <div style={{ width:48, height:48, background:'#f0ede8', borderRadius:12,
+        <div style={{ width:48, height:48, background:'#0d0000', borderRadius:12,
           display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
           <Lock size={22} color="white"/>
         </div>

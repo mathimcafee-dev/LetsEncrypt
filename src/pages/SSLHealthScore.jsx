@@ -74,7 +74,7 @@ function DomainRow({ score, onRescan, scanning }) {
     <div style={{ border: `0.5px solid ${gs.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 8 }}>
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
-        background: 'var(--v2-bg)', cursor: 'pointer' }}
+        background:'rgba(255,255,255,0.03)', cursor: 'pointer' }}
         onClick={() => setExpanded(v => !v)}>
 
         {/* Grade badge */}

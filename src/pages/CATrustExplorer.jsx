@@ -694,8 +694,8 @@ export default function CATrustExplorer({ nav }) {
                     <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
                       {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'rgba(240,237,232,0.7)',display:'inline-block',flexShrink:0}}/>}
                       {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#c0392b',display:'inline-block',flexShrink:0}}/>}
-                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#f0ede8',display:'inline-block',flexShrink:0}}/>}
-                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#f0ede8',display:'inline-block',flexShrink:0}}/>}
+                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#0d0000',display:'inline-block',flexShrink:0}}/>}
+                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0d0000',display:'inline-block',flexShrink:0}}/>}
                     </span>
                     {c.ev_capable && <span style={{fontSize:9,color:'#ff8c7a',fontWeight:600}}>EV</span>}
                   </button>
@@ -797,7 +797,7 @@ export default function CATrustExplorer({ nav }) {
                       }}>
                       <FileDown size={12} /> {pemDownloading ? 'Fetching…' : 'Download PEM'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" style={{ background: '#f0ede8', color: '#ffffff', borderColor: '#f0ede8', gap: 5 }}
+                    <button className="v2-btn v2-btn-sm" style={{ background:'#0d0000', color: '#ffffff', borderColor: '#f0ede8', gap: 5 }}
                       onClick={() => {
                         const fp = selected?.sha256_fingerprint || selected?.fingerprint
                         if (fp) window.open(`https://crt.sh/?q=${encodeURIComponent(fp)}`, '_blank')

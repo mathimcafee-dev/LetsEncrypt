@@ -1268,7 +1268,7 @@ function PqcRow({ cert, onRefresh }) {
     <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:6 }}>
       <div onClick={()=>risk&&setOpen(o=>!o)}
         style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-          padding:'11px 14px', background:'var(--v2-bg)',
+          padding:'11px 14px', background:'rgba(255,255,255,0.03)',
           cursor: risk ? 'pointer' : 'default', transition:'background .15s' }}
         onMouseEnter={e=>e.currentTarget.style.background='rgba(248,113,113,0.12)'}
         onMouseLeave={e=>e.currentTarget.style.background='var(--v2-bg)'}>
@@ -1342,7 +1342,7 @@ function PqcRow({ cert, onRefresh }) {
                     ['Risk level', d.label || '—'],
                     ['Deadline',   d.deadline || '—'],
                   ].map(([k,v])=>(
-                    <div key={k} style={{ background:'var(--v2-bg)', borderRadius:7, padding:'9px 11px', border:'0.5px solid var(--v2-border)' }}>
+                    <div key={k} style={{ background:'rgba(255,255,255,0.03)', borderRadius:7, padding:'9px 11px', border:'0.5px solid var(--v2-border)' }}>
                       <div style={{ fontSize:10, color:'#b0a8a0', marginBottom:3, textTransform:'uppercase', letterSpacing:'0.4px' }}>{k}</div>
                       <div style={{ fontSize:12, fontWeight:500, color: k==='Risk level'?riskDef.color:'#ffffff',
                         fontFamily: k==='Algorithm'||k==='Key size' ? 'monospace' : 'inherit' }}>{v}</div>
@@ -1420,7 +1420,7 @@ function TlsPostureRow({ cert, onRefresh }) {
       {/* Header row — always visible */}
       <div onClick={() => grade && setOpen(o => !o)}
         style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-          padding:'11px 14px', background:'var(--v2-bg)',
+          padding:'11px 14px', background:'rgba(255,255,255,0.03)',
           cursor: grade ? 'pointer' : 'default',
           transition:'background .15s' }}
         onMouseEnter={e => e.currentTarget.style.background='transparent'}
@@ -2064,7 +2064,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
               </span>
             )}
             <span style={{ fontSize:10, padding:'1px 7px', borderRadius:20,
-              background:'var(--v2-bg)', color:'#b0a8a0', border:'0.5px solid var(--v2-border)' }}>
+              background:'rgba(255,255,255,0.03)', color:'#b0a8a0', border:'0.5px solid var(--v2-border)' }}>
               {primary.cert_type || primary.issuer || 'RapidSSL Standard'}
             </span>
           </div>
@@ -2081,7 +2081,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
           </div>
           {(hasVersions || hasMultipleSubs) && (
             <button onClick={e => { e.stopPropagation(); setExpanded(!expanded) }}
-              style={{ background:'var(--v2-bg)', border:'0.5px solid var(--v2-border)', borderRadius:6,
+              style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)', borderRadius:6,
                 padding:'4px 8px', fontSize:10, color:'#e8e0d8', cursor:'pointer',
                 display:'flex', alignItems:'center', gap:3, fontFamily:'inherit', flexShrink:0 }}>
               {expanded ? '▲ Hide' : '▼ Expand'}

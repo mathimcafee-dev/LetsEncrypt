@@ -55,7 +55,7 @@ function StatusBadge({ status }) {
 function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.unknown
   return (
-    <div style={{ background: 'var(--v2-bg)', border: `0.5px solid ${cfg.border}`,
+    <div style={{ background:'rgba(255,255,255,0.03)', border: `0.5px solid ${cfg.border}`,
       borderLeft: `3px solid ${cfg.leftBorder}`,
       borderRadius: 10, padding: '14px 16px', marginTop: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>

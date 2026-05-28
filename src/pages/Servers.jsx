@@ -112,7 +112,7 @@ function AgentCard({ agent, onRefresh }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-bg)', padding:'16px 18px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:24 }}>
+        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'rgba(255,255,255,0.03)', padding:'16px 18px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:24 }}>
           {/* Server info */}
           <div>
             <div style={{ fontSize:10, fontWeight:500, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:10 }}>Server Info</div>
@@ -177,7 +177,7 @@ function InstallModal({ onClose }) {
   }
 
   const CmdBlock = ({ cmd, id }) => (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'var(--v2-text)', borderRadius:6, padding:'10px 14px', marginBottom:8 }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#c0392b', borderRadius:6, padding:'10px 14px', marginBottom:8 }}>
       <code style={{ fontSize:12, color:'#ffffff', fontFamily:'var(--font-mono, monospace)', flex:1, overflow:'auto' }}>{cmd}</code>
       <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, marginLeft:12, fontSize:10, fontWeight:500, color:'#e8e0d8', padding:'4px 8px', border:'0.5px solid rgba(240,237,232,0.14)', borderRadius:4, background:'none', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
         {copied===id ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
@@ -262,7 +262,7 @@ export default function ServersPage({ user }) {
           <button onClick={refresh} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'var(--v2-surface)', color:'#e8e0d8', border:'0.5px solid var(--v2-border)', padding:'7px 12px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <RefreshCw size={12} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }}/> Refresh
           </button>
-          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8', color:'var(--v2-surface)', border:'none', padding:'7px 14px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d0000', color:'#ffffff', border:'none', padding:'7px 14px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Plus size={12}/> Add server
           </button>
         </div>
@@ -305,7 +305,7 @@ export default function ServersPage({ user }) {
           <div style={{ fontSize:12, color:'#b0a8a0', marginBottom:20, maxWidth:340, margin:'0 auto 20px' }}>
             Install the SSLVault agent on any Linux VPS or cPanel server. It will auto-renew your certificates and report status here.
           </div>
-          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0ede8', color:'var(--v2-surface)', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d0000', color:'#ffffff', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Terminal size={13}/> Install agent
           </button>
         </div>

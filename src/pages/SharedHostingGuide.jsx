@@ -64,7 +64,7 @@ function TerminalMock({ lines }) {
     <div className="v2-code" style={{ marginBottom: 12 }}>
       <div className="v2-code-head">
         <div className="v2-code-dots">
-          <span style={{ background: '#f87171' }}/><span style={{ background: '#f0ede8' }}/><span style={{ background: '#f0ede8' }}/>
+          <span style={{ background: '#f87171' }}/><span style={{ background:'#0d0000' }}/><span style={{ background:'#0d0000' }}/>
           <span style={{ marginLeft: 8, fontSize:10, color: '#b0a8a0', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>browser output</span>
         </div>
       </div>
@@ -168,7 +168,7 @@ export default function SharedHostingGuide({ nav }) {
           <div className="v2-code" style={{ marginBottom: 10 }}>
             <div className="v2-code-head">
               <div className="v2-code-dots">
-                <span style={{ background: '#f87171' }}/><span style={{ background: '#f0ede8' }}/><span style={{ background: '#f0ede8' }}/>
+                <span style={{ background: '#f87171' }}/><span style={{ background:'#0d0000' }}/><span style={{ background:'#0d0000' }}/>
                 <span style={{ marginLeft: 8, fontSize:10, color: '#b0a8a0', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>File Manager — public_html</span>
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function SharedHostingGuide({ nav }) {
               'Wait for the upload to complete',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#c0392b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
                 <span style={{ fontSize:12, color: '#e8e0d8' }}>{t}</span>
               </div>
             ))}
@@ -230,7 +230,7 @@ export default function SharedHostingGuide({ nav }) {
               'Click Install Certificate',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--v2-text)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#c0392b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
                 <span style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.6 }}>{t}</span>
               </div>
             ))}
@@ -312,7 +312,7 @@ export default function SharedHostingGuide({ nav }) {
 
         {/* CTA */}
         <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--v2-text)',
+          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#c0392b',
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>

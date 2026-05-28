@@ -215,7 +215,7 @@ function OverviewTab({ tok, onSwitchCA }) {
                   </div>
                   <span style={{ fontSize:13, fontWeight:700, color:CA_META[ca].accent, fontFamily:'monospace' }}>{count}</span>
                 </div>
-                <div style={{ height:5, borderRadius:99, background:'var(--v2-bg)', overflow:'hidden' }}>
+                <div style={{ height:5, borderRadius:99, background:'rgba(255,255,255,0.03)', overflow:'hidden' }}>
                   <div style={{ height:'100%',
                     width:`${count>0?Math.max(8,Math.round((count/maxCount)*100)):0}%`,
                     background:CA_META[ca].accent, borderRadius:99,
@@ -240,7 +240,7 @@ function OverviewTab({ tok, onSwitchCA }) {
           ].map(({ label, n, color, bg }) => (
             <div key={label} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
               <span style={{ fontSize:11, color:'#b0a8a0', width:72, flexShrink:0 }}>{label}</span>
-              <div style={{ flex:1, height:24, background:'var(--v2-bg)', borderRadius:6, overflow:'hidden', position:'relative' }}>
+              <div style={{ flex:1, height:24, background:'rgba(255,255,255,0.03)', borderRadius:6, overflow:'hidden', position:'relative' }}>
                 {n > 0 && (
                   <div style={{ position:'absolute', left:0, top:0, bottom:0,
                     width:`${Math.max(total?Math.round((n/total)*100):0, 8)}%`,
@@ -297,7 +297,7 @@ function OverviewTab({ tok, onSwitchCA }) {
             <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text-1)', marginBottom:3 }}>{label}</div>
             <div style={{ fontSize:11, color:conn?CA_META[ca].accent:'var(--v2-text-3)', marginBottom:6 }}>{sub}</div>
             <div style={{ fontSize:10, fontWeight:500, color:'#b0a8a0',
-              padding:'3px 8px', borderRadius:20, background:'var(--v2-bg)',
+              padding:'3px 8px', borderRadius:20, background:'rgba(255,255,255,0.03)',
               border:'0.5px solid var(--v2-border)', display:'inline-block' }}>{extra}</div>
           </div>
         ))}
@@ -346,7 +346,7 @@ function FilterBar({ filters, active, onSelect, count }) {
 function TableHead({ cols }) {
   return (
     <div style={{ display:'grid', gridTemplateColumns:cols.join(' '),
-      padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+      padding:'8px 14px', background:'rgba(255,255,255,0.03)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
       {cols.map((_, i, arr) => null)}
     </div>
   )
@@ -356,7 +356,7 @@ function CertTable({ cols, headers, children, loading, empty }) {
   return (
     <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
       <div style={{ display:'grid', gridTemplateColumns:cols, padding:'8px 14px',
-        background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+        background:'rgba(255,255,255,0.03)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
         {headers.map(h => (
           <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0',
             textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
@@ -592,7 +592,7 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.5)', zIndex: 9999,
       display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ width: 480, height: '100vh', background: 'var(--v2-bg)', borderLeft: '0.5px solid var(--v2-border)',
+      <div style={{ width: 480, height: '100vh', background:'rgba(255,255,255,0.03)', borderLeft: '0.5px solid var(--v2-border)',
         overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--v2-surface-2)' }}>
@@ -664,7 +664,7 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
           {pem ? (
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontSize:10, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>Certificate PEM</div>
-              <div style={{ position: 'relative', background: '#f0ede8', borderRadius: 8, padding: '10px 12px' }}>
+              <div style={{ position: 'relative', background:'#0d0000', borderRadius: 8, padding: '10px 12px' }}>
                 <textarea readOnly value={pem} rows={6}
                   style={{ width: '100%', background: 'transparent', border: 'none', color: '#86efac', fontSize:10, fontFamily: 'JetBrains Mono, monospace', resize: 'none', outline: 'none', lineHeight: 1.5 }}/>
                 <button onClick={copyPem} style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(255,255,255,0.08)', border: '0.5px solid rgba(0,0,0,0.22)', borderRadius: 4, color: '#b0a8a0', fontSize:10, padding: '2px 8px', cursor: 'pointer' }}>
@@ -842,7 +842,7 @@ function DigiCertTab({ tok, nav }) {
       <div style={{ background: 'transparent', border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 8,
         padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f0ede8', display: 'inline-block', boxShadow: '0 0 0 3px rgba(192,57,43,0.3)' }}/>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background:'#0d0000', display: 'inline-block', boxShadow: '0 0 0 3px rgba(192,57,43,0.3)' }}/>
           <div>
             <div style={{ fontSize:13, fontWeight: 600, color: '#a93226' }}>DigiCert CertCentral connected</div>
             <div style={{ fontSize:11, color: '#ffffff' }}>API key active · {portfolio.length} certs loaded</div>
@@ -944,7 +944,7 @@ function DigiCertTab({ tok, nav }) {
 
         {/* Table header */}
         <div style={{ display:'grid', gridTemplateColumns:'2fr 1.2fr 110px 90px 170px',minWidth:600,
-          padding:'8px 14px', background:'var(--v2-bg)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+          padding:'8px 14px', background:'rgba(255,255,255,0.03)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
           {['Domain', 'Product', 'Expires', 'Status', 'Actions'].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
           ))}
@@ -1335,7 +1335,7 @@ function ShadowITTab({ tok, nav }) {
       <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
         {/* Table header */}
         <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr 80px',minWidth:700,
-          padding:'8px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)', background:'var(--v2-bg)' }}>
+          padding:'8px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.03)' }}>
           {['Domain', 'Product', 'Ordered by', 'Expires', 'Urgency', ''].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0',
               textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
