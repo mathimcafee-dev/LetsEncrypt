@@ -118,6 +118,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
   const [dns, setDns]         = useState(false)
   const [res, setRes]         = useState(null)
   const [polling, setPoll]    = useState(false)
+  const [ggsStatus, setGgsStatus] = useState('') // 'processing' | 'dv_pending' | ''
 
   useEffect(() => {
     const p = sessionStorage.getItem('prefill_domain')
@@ -152,11 +153,13 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     if (step !== 'dv' || !ord?.order_id) return
     let n = 0
     let dnsAttempted = false
+    setPoll(true)
     // Immediate check on mount — don't wait 5s if cert already issued
     ;(async () => {
       try {
         const s = await call('check_status', { order_id: ord.order_id })
-        if (s.status === 'active' || s.status === 'issued' || s.ggs_status === 'active') { setStep('done'); return }
+        setGgsStatus(s.ggs_status || '')
+        if (s.status === 'active' || s.status === 'issued' || s.ggs_status === 'active') { setStep('done'); setPoll(false); return }
         if (s.dcv_txt_value || s.dcv_cname_value) {
           setOrd(p => ({ ...p,
             dcv_txt_name:   s.dcv_txt_name   || s.dcv_cname_name  || p.dcv_txt_name,
@@ -171,9 +174,10 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       n++
       try {
         const s = await call('check_status', { order_id: ord.order_id })
+        setGgsStatus(s.ggs_status || '')
 
         // Cert issued — go to done
-        if (s.status === 'active' || s.status === 'issued' || s.ggs_status === 'active') { setStep('done'); clearInterval(iv); return }
+        if (s.status === 'active' || s.status === 'issued' || s.ggs_status === 'active') { setStep('done'); clearInterval(iv); setPoll(false); return }
 
         // Got DCV values — update UI
         if (s.dcv_txt_value || s.dcv_cname_value) {
@@ -218,9 +222,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           }
         }
       } catch {}
-      if (n >= 120) clearInterval(iv) // stop after 10 min
+      if (n >= 120) { clearInterval(iv); setPoll(false) } // stop after 10 min
     }, 5000)
-    return () => clearInterval(iv)
+    return () => { clearInterval(iv); setPoll(false) }
   }, [step, ord?.order_id])
 
   const call = async (action, extra = {}) => {
@@ -622,7 +626,8 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   wordBreak: 'break-all', lineHeight: 1.5 }}>
                   {loading
                     ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        <RefreshCw size={11} className="spin"/> {polling ? 'Fetching from RapidSSL…' : 'Waiting…'}
+                        <RefreshCw size={11} className="spin"/>
+                        {ggsStatus === 'processing' ? 'GGS processing order…' : polling ? 'Fetching from RapidSSL…' : 'Waiting…'}
                       </span>
                     : v}
                 </span>
@@ -631,6 +636,15 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             ))}
           </div>
 
+          {ggsStatus === 'processing' && !(ord?.dcv_txt_value || ord?.dcv_cname_value) && (
+            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
+              background: 'rgba(59,130,246,0.06)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <RefreshCw size={11} className="spin" style={{ color: '#93c5fd', flexShrink: 0 }}/>
+              <span style={{ fontSize:11, color: '#93c5fd', lineHeight: 1.5 }}>
+                GoGetSSL is provisioning your order (status: processing). DNS validation record will appear automatically in a few seconds…
+              </span>
+            </div>
+          )}
           {res?.dns_auto && (
             <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(255,255,255,0.06)',
               background: res.dns_auto.ok ? 'rgba(52,211,153,0.06)' : 'rgba(220,38,38,0.06)',
