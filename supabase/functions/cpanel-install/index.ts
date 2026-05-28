@@ -133,16 +133,26 @@ async function cpanelInstallSSL(
   }
 
   // Strict status check — status must be exactly 1
-  const installStatus = installData?.result?.status
-  const installErrors = installData?.result?.errors ?? []
-  const installErr    = Array.isArray(installErrors) && installErrors.length > 0
+  // cPanel UAPI returns data in either .result or .data depending on API version
+  const resultObj = installData?.result ?? installData?.data ?? installData ?? {}
+  const installStatus = resultObj?.status ?? resultObj?.result?.status
+  const installErrors = resultObj?.errors ?? resultObj?.result?.errors ?? []
+  const installMessages = resultObj?.messages ?? resultObj?.result?.messages ?? []
+  const installErr = Array.isArray(installErrors) && installErrors.length > 0
     ? installErrors.join('; ')
     : null
 
-  debug.s2_install_parsed = { status: installStatus, error: installErr }
+  debug.s2_install_parsed = { status: installStatus, errors: installErrors, messages: installMessages }
 
-  if (installStatus !== 1) {
-    const errMsg = installErr || `install_ssl returned status ${installStatus}. Full response: ${JSON.stringify(installData).slice(0, 400)}`
+  // status:1 = success even if errors array has informational messages
+  // status undefined but has html output = also success (cPanel quirk)
+  const hasSuccessIndicator =
+    installStatus === 1 ||
+    String(resultObj?.html || '').includes('SSL certificate is now installed') ||
+    String(resultObj?.statusmsg || '').includes('SSL certificate is now installed')
+
+  if (!hasSuccessIndicator && installStatus !== 1) {
+    const errMsg = installErr || `install_ssl returned status ${installStatus}. Full: ${JSON.stringify(installData).slice(0, 400)}`
     return { ok: false, error: errMsg, debug }
   }
 
