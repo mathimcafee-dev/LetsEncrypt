@@ -6,13 +6,13 @@ const F    = "'Inter var','Montserrat',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
-  bg:'#000000', bg2:'#000000', bg3:'#000000',
-  border:'rgba(240,237,232,0.12)', border2:'rgba(240,237,232,0.2)',
-  heading:'#f0ede8', body:'rgba(240,237,232,0.5)', muted:'rgba(240,237,232,0.35)',
-  teal:'#f0ede8', tealDk:'#f0ede8', tealBg:'transparent', tealBd:'rgba(192,57,43,0.3)',
-  green:'#f0ede8', greenBg:'transparent', greenBd:'rgba(192,57,43,0.3)',
-  purple:'#f0ede8', purpleBg:'rgba(30,0,0,0.4)',
-  amber:'#f0ede8', amberBg:'rgba(239,68,68,0.08)',
+  bg:'#120000', bg2:'#1a0404', bg3:'#220808',
+  border:'rgba(192,57,43,0.2)', border2:'rgba(192,57,43,0.35)',
+  heading:'#f0ede8', body:'rgba(240,237,232,0.65)', muted:'rgba(240,237,232,0.35)',
+  teal:'#4ade80', tealDk:'#4ade80', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(74,222,128,0.25)',
+  green:'#4ade80', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(74,222,128,0.25)',
+  purple:'#a78bfa', purpleBg:'rgba(167,139,250,0.06)',
+  amber:'#fbbf24', amberBg:'rgba(251,191,36,0.06)',
   red:'#f87171', redBg:'rgba(192,57,43,0.12)',
   ink:'#f0ede8',
 }
@@ -24,7 +24,7 @@ function Code({ code, lang = 'bash' }) {
     setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   return (
-    <div style={{ background:'#f0ede8', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
+    <div style={{ background:'#0d0000', border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
       <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display:'flex', gap:5, alignItems:'center' }}>
           {['#c0392b','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
@@ -101,7 +101,7 @@ export default function Install({ nav }) {
   const guide = GUIDES.find(g => g.id === active)
 
   return (
-    <div style={{ minHeight:'100vh', background:C.bg, fontFamily:F, color:C.heading }}>
+    <div style={{ minHeight:'100vh', background:`radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%)`, fontFamily:F, color:C.heading }}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0}`}</style>
 
       {/* Nav */}
@@ -192,7 +192,7 @@ export default function Install({ nav }) {
                 In <strong>Inventory</strong>, click Install on a cert row → select your server → click Dispatch. The agent installs the cert, updates your web server config, tests syntax, and reloads automatically.
               </Step>
 
-              <Note type="info">The agent makes outbound-only HTTPS connections — no inbound ports required. It polls every 5 minutes for pending jobs.</Note>
+              <Note type="info">The agent makes outbound-only HTTPS connections — no inbound ports required. It polls every 60 seconds for pending jobs.</Note>
 
               <div style={{ marginTop:28, padding:'20px', background:C.bg2, border:`1px solid ${C.border}`, borderRadius:10 }}>
                 <div style={{ fontSize:13, fontWeight:600, color:C.heading, marginBottom:14 }}>What the agent does automatically</div>
