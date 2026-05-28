@@ -12,7 +12,7 @@
 //
 // KEY INVARIANTS:
 //   - ssl_orders: one row per GGS order_id. Reissue updates in place, never inserts.
-//   - certificates: one active row per domain per user. Always upsert by (user_id, domain).
+//   - certificates: one row per GGS order_id. New order = INSERT new row. Reissue = UPDATE existing row by ggs_order_id.
 //   - keylocker: new key stored on every new order AND every reissue (fresh keypair each time).
 //   - After reissue/renewal activates: certificates.keylocker_key_id = new key's ID.
 
@@ -241,6 +241,31 @@ function calcSubscriptionEnd(issuedAt: string, periodMonths: number): string {
   return d.toISOString()
 }
 
+// ── Insert or update certificates row by ggs_order_id ────────────────
+// NEW ORDER / RENEWAL → no existing row for this ggs_order_id → INSERT
+// REISSUE / POLL on existing order → row exists for this ggs_order_id → UPDATE
+// This ensures each GoGetSSL order has its own certificates row,
+// allowing unlimited orders per domain to coexist.
+async function upsertCert(ggsOrderId: number, data: Record<string, any>): Promise<string | null> {
+  // Find existing cert row for this exact GGS order
+  const { data: existing } = await adminDb()
+    .from('certificates')
+    .select('id')
+    .eq('ggs_order_id', ggsOrderId)
+    .eq('user_id', data.user_id)
+    .single()
+
+  if (existing) {
+    // UPDATE existing row (reissue path or re-poll of same order)
+    await adminDb().from('certificates').update({ ...data, updated_at: new Date().toISOString() }).eq('id', existing.id)
+    return existing.id
+  } else {
+    // INSERT new row (new order or renewal)
+    const { data: inserted } = await adminDb().from('certificates').insert({ ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }).select('id').single()
+    return inserted?.id || null
+  }
+}
+
 // ── Main handler ──────────────────────────────────────────────────────
 
 serve(async (req) => {
@@ -445,37 +470,33 @@ serve(async (req) => {
         const { data: freshOrder } = await adminDb().from('ssl_orders').select('keylocker_key_id').eq('id', order_id).single()
         const keyId = freshOrder?.keylocker_key_id || order.keylocker_key_id
 
-        // Upsert certificate row
-        await adminDb().from('certificates').upsert({
-          user_id:              user.id,
-          domain:               order.domain,
-          status:               'active',
-          cert_pem:             statusRes.crt_code,
-          ca_pem:               statusRes.ca_code,
-          expires_at:           statusRes.valid_till,
-          issued_at:            statusRes.valid_from,
+        // Insert new cert row if first activation, or update if re-checking same order
+        const certId = await upsertCert(order.ggs_order_id, {
+          user_id:               user.id,
+          domain:                order.domain,
+          status:                'active',
+          cert_pem:              statusRes.crt_code,
+          ca_pem:                statusRes.ca_code,
+          expires_at:            statusRes.valid_till,
+          issued_at:             statusRes.valid_from,
           subscription_end_date: calcSubscriptionEnd(statusRes.valid_from || new Date().toISOString(), order.period || 12),
-          issuer:               order.product_name || 'RapidSSL',
-          cert_type:            order.product_name || 'RapidSSL DV',
-          source:               'gogetssl',
-          ggs_order_id:         order.ggs_order_id,
-          serial_number:        statusRes.serial_number || null,
-          fingerprint_sha1:     statusRes.md5 || null,
-          common_name:          statusRes.common_name || order.domain,
-          private_key_pem:      null,
-          keylocker_key_id:     keyId || null,
-          dcv_method:           'dns',
-          order_type:           order.order_purpose || 'original',
-          is_current:           true,
-          updated_at:           new Date().toISOString(),
-        }, { onConflict: 'user_id,domain' })
+          issuer:                order.product_name || 'RapidSSL',
+          cert_type:             order.product_name || 'RapidSSL DV',
+          source:                'gogetssl',
+          ggs_order_id:          order.ggs_order_id,
+          serial_number:         statusRes.serial_number || null,
+          fingerprint_sha1:      statusRes.md5 || null,
+          common_name:           statusRes.common_name || order.domain,
+          private_key_pem:       null,
+          keylocker_key_id:      keyId || null,
+          dcv_method:            'dns',
+          order_type:            order.order_purpose || 'original',
+          is_current:            true,
+        })
 
         // Link keylocker entry to cert row
-        if (keyId) {
-          const { data: certRow } = await adminDb().from('certificates').select('id').eq('user_id', user.id).eq('domain', order.domain).single()
-          if (certRow) {
-            await adminDb().from('keylocker_keys').update({ cert_id: certRow.id, expires_at: statusRes.valid_till }).eq('id', keyId)
-          }
+        if (keyId && certId) {
+          await adminDb().from('keylocker_keys').update({ cert_id: certId, expires_at: statusRes.valid_till }).eq('id', keyId)
         }
 
         // Clean up DCV TXT record from DNS
@@ -534,8 +555,8 @@ serve(async (req) => {
             updated_at: now,
           }).eq('id', order.id)
 
-          // Upsert certificate row
-          const certUpsert: Record<string, any> = {
+          // Insert or update certificate row by ggs_order_id
+          const certData: Record<string, any> = {
             user_id:               order.user_id,
             domain:                order.domain,
             status:                'active',
@@ -549,21 +570,17 @@ serve(async (req) => {
             source:                'gogetssl',
             ggs_order_id:          order.ggs_order_id,
             serial_number:         statusRes.serial_number || null,
-            private_key_pem:       order.private_key_pem || null, // plain text fallback only
+            private_key_pem:       order.private_key_pem || null,
             order_type:            order.order_purpose || 'original',
             is_current:            true,
-            updated_at:            now,
           }
-          if (keyId) certUpsert.keylocker_key_id = keyId
+          if (keyId) certData.keylocker_key_id = keyId
 
-          await adminDb().from('certificates').upsert(certUpsert, { onConflict: 'user_id,domain' })
+          const certId = await upsertCert(order.ggs_order_id, certData)
 
           // Link keylocker entry → cert
-          if (keyId) {
-            const { data: certRow } = await adminDb().from('certificates').select('id').eq('user_id', order.user_id).eq('domain', order.domain).single()
-            if (certRow) {
-              await adminDb().from('keylocker_keys').update({ cert_id: certRow.id, expires_at: statusRes.valid_till }).eq('id', keyId)
-            }
+          if (keyId && certId) {
+            await adminDb().from('keylocker_keys').update({ cert_id: certId, expires_at: statusRes.valid_till }).eq('id', keyId)
           }
 
           // Complete any pending cert_reissues rows for this order
@@ -917,7 +934,7 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
       .from('certificates')
       .select('id, install_method, install_server_id, cert_pem, ca_pem')
       .eq('user_id', userId)
-      .eq('domain', domain)
+      .eq('ggs_order_id', ggsOrderId)
       .single()
     if (!cert) return
 
