@@ -1565,7 +1565,11 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           <ABtn icon={RefreshCw} label="Renew order"
             onClick={() => certHistoryRef.current?.doAction('renew')} disabled={!session}/>
         )}
-        <ABtn icon={Server} label="Install" onClick={() => onInstall(cert)}/>
+        <ABtn icon={Server} label="Install"
+          onClick={() => onInstall(cert)}
+          disabled={cert.is_current === false}
+          title={cert.is_current === false ? 'This is an older certificate — only the current certificate can be installed' : 'Install certificate on your server'}
+        />
         <ABtn icon={RefreshCw} label={refreshing ? 'Syncing…' : 'Sync status'} onClick={doRefresh} disabled={refreshing}/>
         <ABtn icon={Download} label="Certificate" onClick={() => cert.cert_pem && dl(cert.cert_pem, cert.domain+'-cert.pem')} disabled={!cert.cert_pem}/>
         {canCancel && !cancelConfirm && !cancelMsg && (
@@ -2486,16 +2490,12 @@ function LoggedInDashboard({ user, nav, onIssue }) {
     return true
   })
 
-  // domainGroups: show only is_current certs (one per domain, matched key pair)
-  // Non-current = old reissue orders with archived keys — never installable
+  // domainGroups: show ALL certs (all GGS orders visible to customer)
+  // is_current flag controls which one has Install enabled — not visibility
   const domainGroups = (() => {
-    const sorted = visible
+    return visible
       .map(c => ({ ...c, _healthGrade: healthScores[c.domain]?.grade || null }))
       .sort((a, b) => new Date(b.issued_at || b.created_at) - new Date(a.issued_at || a.created_at))
-    // If any cert has is_current flag, filter to only those
-    // Fall back to all if none are flagged (migration not yet run)
-    const hasCurrent = sorted.some(c => c.is_current === true)
-    return hasCurrent ? sorted.filter(c => c.is_current === true) : sorted
   })()
 
   const visibleWithHealth = visible.map(c => ({
