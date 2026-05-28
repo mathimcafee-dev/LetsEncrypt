@@ -919,11 +919,18 @@ serve(async (req) => {
         newOrder.keylocker_key_id = klRes.key_id
       }
 
-      // Poll GGS for DCV info
-      await new Promise(r => setTimeout(r, 1500))
-      const renewStatus = await ggsGet(authKey, `/orders/status/${renewRes.order_id}`)
-      let { name: dcvName, value: dcvValue } = extractDcv(renewRes)
-      if (!dcvValue) { const s = extractDcv(renewStatus); dcvName = s.name; dcvValue = s.value }
+      // Poll GGS for DCV info — retry up to 5x with 2s gaps (same as place_order)
+      let dcvName = '', dcvValue = '', renewStatus: any = {}
+      for (let attempt = 0; attempt < 5; attempt++) {
+        await new Promise(r => setTimeout(r, 2000))
+        renewStatus = await ggsGet(authKey, `/orders/status/${renewRes.order_id}`)
+        const fromOrder = extractDcv(renewRes)
+        const fromStatus = extractDcv(renewStatus)
+        dcvName = fromOrder.name || fromStatus.name
+        dcvValue = fromOrder.value || fromStatus.value
+        if (dcvValue) break
+        console.log(`[renew] DCV not yet available, attempt ${attempt + 1}/5`)
+      }
 
       if (dcvValue) {
         await adminDb().from('ssl_orders').update({
@@ -1028,7 +1035,7 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
       // Check for cPanel credential first
       const { data: cpCreds } = await adminDb()
         .from('server_credentials')
-        .select('id, server_type, agent_id')
+        .select('id, server_type, agent_id, domains')
         .eq('user_id', userId)
         .in('server_type', ['cpanel', 'shared'])
       // Only match cPanel if domain is explicitly listed — never fall back to first credential
