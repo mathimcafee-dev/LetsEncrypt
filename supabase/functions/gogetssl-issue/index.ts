@@ -184,6 +184,21 @@ function extractDcv(resp: any): { name: string; value: string } {
     if (value) return { name, value }
   }
 
+  // Shape 6: approver_method.dns.record (confirmed GGS format for orders/status)
+  // Format: "freecerts.site.   IN   TXT   \"_u2z2z5ixp9jnz4t6bya5dfoisgxosvs\""
+  if (resp.approver_method?.dns?.record) {
+    const record: string = resp.approver_method.dns.record
+    // Parse: "NAME.   IN   TXT   \"VALUE\""
+    const txtMatch = record.match(/IN\s+TXT\s+"([^"]+)"/i)
+    const nameMatch = record.match(/^([^\s]+)/)
+    if (txtMatch) {
+      const value = txtMatch[1]
+      const name  = nameMatch ? nameMatch[1].replace(/\.$/, '') : ''
+      console.log('[extractDcv] found via approver_method.dns.record:', name, value)
+      return { name, value }
+    }
+  }
+
   console.warn('[extractDcv] no DCV found. Full response:', JSON.stringify(resp).slice(0, 500))
   return { name: '', value: '' }
 }
