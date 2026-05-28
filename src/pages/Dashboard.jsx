@@ -255,11 +255,11 @@ function DvPendingCard({ order, onRefresh }) {
   const elSecs = elapsed % 60
   const elStr = elMins > 0 ? `${elMins}m ${elSecs}s` : `${elSecs}s`
 
-  // 4 pipeline steps — each has a clear done/active/pending state
+  // 4 pipeline steps — labels and details always match the actual state
   const steps = [
     {
       label: 'Reissue submitted to GoGetSSL',
-      done: true, // if the order exists it was submitted
+      done: true,
       detail: `GGS order #${liveOrder.ggs_order_id}`,
     },
     {
@@ -268,20 +268,21 @@ function DvPendingCard({ order, onRefresh }) {
       detail: 'RSA-2048 key pair created securely',
     },
     {
-      label: 'TXT record added to your DNS',
+      // Label changes to match actual state — never says "added" when still waiting
+      label: hasDcv ? 'TXT record added to DNS' : 'Waiting for DNS TXT record',
       done: hasDcv,
       active: !hasDcv,
       detail: hasDcv
         ? `${dcvName} → ${dcvValue.slice(0,22)}…`
-        : 'Waiting for GGS to generate DCV value — auto-adds when ready',
+        : 'GGS is generating the validation record — will be added automatically',
     },
     {
-      label: 'GGS validates DNS ownership',
+      label: hasDcv ? 'GGS validating DNS ownership' : 'GGS DNS validation',
       done: false,
       active: hasDcv,
       detail: hasDcv
-        ? `DNS record found · GGS is checking… ${elStr} elapsed`
-        : 'Waiting for DNS record first',
+        ? `Checking… ${elStr} elapsed`
+        : 'Starts once TXT record is in DNS',
     },
   ]
 
@@ -2574,8 +2575,50 @@ function LoggedInDashboard({ user, nav, onIssue }) {
 
         {orders.length > 0 && (
           <div style={{ marginBottom:16 }}>
-            <div style={{ fontSize:11, fontWeight:700, color:'#e8e0d8', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>DNS Validation Pending ({orders.length})</div>
-            {orders.map(o => <DvPendingCard key={o.id} order={o} onRefresh={load}/>)}
+            <div style={{ fontSize:11, fontWeight:700, color:'#e8e0d8', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>
+              DNS Validation Pending ({orders.length})
+            </div>
+            {orders.length <= 2 ? (
+              // Full card for 1-2 orders
+              orders.map(o => <DvPendingCard key={o.id} order={o} onRefresh={load}/>)
+            ) : (
+              // Compact list for 3+ orders — one row per order, no clutter
+              <div style={{ background:'rgba(20,10,8,0.7)', border:'1px solid rgba(251,191,36,0.25)', borderRadius:10, overflow:'hidden' }}>
+                <div style={{ padding:'10px 14px', borderBottom:'1px solid rgba(255,255,255,0.06)',
+                  display:'flex', alignItems:'center', gap:8 }}>
+                  <div style={{ width:7, height:7, borderRadius:'50%', background:'#fbbf24', animation:'v3pulse 1s ease infinite' }}/>
+                  <span style={{ fontSize:12, fontWeight:600, color:'#fbbf24' }}>
+                    {orders.length} reissues in progress — DNS validation running automatically
+                  </span>
+                </div>
+                {orders.map(o => {
+                  const hasDcv = !!(o.dcv_txt_value || o.dcv_cname_value)
+                  return (
+                    <div key={o.id} style={{ display:'flex', alignItems:'center', gap:12, padding:'9px 14px',
+                      borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+                      <div style={{ width:6, height:6, borderRadius:'50%', flexShrink:0,
+                        background: hasDcv ? '#4ade80' : '#fbbf24',
+                        animation: !hasDcv ? 'v3pulse 1.2s ease infinite' : 'none' }}/>
+                      <span style={{ fontSize:12, fontWeight:600, color:'#f0ede8', flex:1, minWidth:0,
+                        overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                        {o.domain}
+                      </span>
+                      <span style={{ fontSize:11, color:'rgba(240,237,232,0.4)', fontFamily:'monospace', flexShrink:0 }}>
+                        #{o.ggs_order_id}
+                      </span>
+                      <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4, flexShrink:0,
+                        background: hasDcv ? 'rgba(74,222,128,0.1)' : 'rgba(251,191,36,0.1)',
+                        color: hasDcv ? '#4ade80' : '#fbbf24' }}>
+                        {hasDcv ? 'DNS ✓ — GGS validating' : 'Adding DNS record…'}
+                      </span>
+                    </div>
+                  )
+                })}
+                <div style={{ padding:'8px 14px', fontSize:11, color:'rgba(240,237,232,0.3)' }}>
+                  Certificates will activate automatically — no action needed.
+                </div>
+              </div>
+            )}
           </div>
         )}
 
