@@ -939,7 +939,10 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                 }
               } catch { clearInterval(installTimer); setBusy(false) }
             }, 8000)
-            setBusy(false)
+            // NOTE: do NOT setBusy(false) here.
+            // busy must stay true until installTimer resolves (done/skipped/error).
+            // Calling setBusy(false) here makes isDone=true prematurely,
+            // which closes the modal before install step finishes.
 
           } else {
             // ── Still waiting: issued / dv_pending / processing ──────────
