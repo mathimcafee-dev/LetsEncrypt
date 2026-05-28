@@ -30,18 +30,18 @@ function daysLeft(iso) {
 // ── DNS Provider logos (text) ─────────────────────────────────────────
 const DNS_PROVIDERS = {
   cloudflare:   { name: 'Cloudflare',    color: '#e67e22', initials: 'CF' },
-  vercel:       { name: 'Vercel',        color: '#000',    initials: '▲'  },
+  vercel:       { name: 'Vercel',        color: '#e8e0d8', initials: '▲'  },
   route53:      { name: 'Route 53',      color: '#ff9900', initials: 'R53' },
-  godaddy:      { name: 'GoDaddy',       color: '#c0392b', initials: 'GD' },
-  digitalocean: { name: 'DigitalOcean',  color: '#c0392b', initials: 'DO' },
-  namecheap:    { name: 'Namecheap',     color: '#c0392b', initials: 'NC' },
-  porkbun:      { name: 'Porkbun',       color: '#ff8c7a', initials: 'PB' },
-  gandi:        { name: 'Gandi',         color: '#c0392b', initials: 'GA' },
-  hetzner:      { name: 'Hetzner DNS',   color: '#c0392b', initials: 'HZ' },
-  linode:       { name: 'Linode',        color: '#5edb8a', initials: 'LN' },
-  vultr:        { name: 'Vultr',         color: '#c0392b', initials: 'VU' },
-  bunny:        { name: 'Bunny DNS',     color: '#ff8c7a', initials: 'BN' },
-  dnsimple:     { name: 'DNSimple',      color: '#5edb8a', initials: 'DS' },
+  godaddy:      { name: 'GoDaddy',       color: '#4ade80', initials: 'GD' },
+  digitalocean: { name: 'DigitalOcean',  color: '#38bdf8', initials: 'DO' },
+  namecheap:    { name: 'Namecheap',     color: '#fb923c', initials: 'NC' },
+  porkbun:      { name: 'Porkbun',       color: '#a78bfa', initials: 'PB' },
+  gandi:        { name: 'Gandi',         color: '#fbbf24', initials: 'GA' },
+  hetzner:      { name: 'Hetzner DNS',   color: '#f87171', initials: 'HZ' },
+  linode:       { name: 'Linode',        color: '#4ade80', initials: 'LN' },
+  vultr:        { name: 'Vultr',         color: '#a78bfa', initials: 'VU' },
+  bunny:        { name: 'Bunny DNS',     color: '#fb923c', initials: 'BN' },
+  dnsimple:     { name: 'DNSimple',      color: '#38bdf8', initials: 'DS' },
 }
 
 // ── Copy button ──────────────────────────────────────────────────────
@@ -457,8 +457,8 @@ function AddDnsModal({ onClose, onSaved, userId }) {
 
   return (
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
-      <div style={{ background:'var(--v2-surface)', borderRadius:14, width:'100%', maxWidth:460, boxShadow:'0 20px 60px rgba(0,0,0,0.15)', overflow:'hidden' }}>
-        <div style={{ padding:'20px 24px', borderBottom:'1px solid #f0f0f0' }}>
+      <div style={{ background:'#1a0404', borderRadius:14, width:'100%', maxWidth:460, border:'1px solid rgba(192,57,43,0.3)', boxShadow:'0 24px 64px rgba(0,0,0,0.6)', overflow:'hidden' }}>
+        <div style={{ padding:'20px 24px', borderBottom:'1px solid rgba(192,57,43,0.2)' }}>
           <div style={{ fontSize:16, fontWeight:700, color:'#ffffff', letterSpacing:'-0.3px' }}>Connect DNS provider</div>
           <div style={{ fontSize:13, color:'#b0a8a0', marginTop:4 }}>Needed so SSLVault can auto-validate your domain ownership when issuing certs</div>
         </div>
@@ -470,14 +470,15 @@ function AddDnsModal({ onClose, onSaved, userId }) {
               const info = DNS_PROVIDERS[id]
               return (
                 <button key={id} onClick={() => setProvider(id)} style={{
-                  padding:'10px 6px', borderRadius:8,
-                  border:`2px solid ${provider === id ? info.color : 'rgba(240,237,232,0.12)'}`,
-                  background: provider === id ? info.color + '10' : 'var(--v2-surface)',
+                  padding:'12px 10px', borderRadius:8,
+                  border:`1.5px solid ${provider === id ? info.color : 'rgba(192,57,43,0.2)'}`,
+                  background: provider === id ? info.color + '15' : 'rgba(255,255,255,0.03)',
                   cursor:'pointer', textAlign:'center',
                   transition:'all .15s',
+                  boxShadow: provider === id ? `0 0 0 3px ${info.color}20` : 'none',
                 }}>
-                  <div style={{ fontSize:13, fontWeight:700, color:provider===id?info.color:'#e8e0d8' }}>{info.initials}</div>
-                  <div style={{ fontSize:9, color:'#b0a8a0', marginTop:3 }}>{info.name}</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:provider===id?info.color:'rgba(240,237,232,0.45)', fontFamily:'monospace', marginBottom:4 }}>{info.initials}</div>
+                  <div style={{ fontSize:11, fontWeight:600, color:provider===id?info.color:'#e8e0d8', lineHeight:1.2 }}>{info.name}</div>
                 </button>
               )
             })}
@@ -538,8 +539,8 @@ function AddDnsModal({ onClose, onSaved, userId }) {
             <button onClick={onClose} style={{ flex:1, padding:'10px', borderRadius:8, border:'1px solid rgba(192,57,43,0.25)', background:'var(--v2-surface)', fontSize:13, fontWeight:600, color:'#e8e0d8', cursor:'pointer', fontFamily:'inherit' }}>Cancel</button>
             <button onClick={save} disabled={saving||!provider||!apiToken} style={{
               flex:2, padding:'10px', borderRadius:8, border:'none',
-              background: saving||!provider||!apiToken ? '#000000' : 'var(--v2-text)',
-              color: saving||!provider||!apiToken ? 'rgba(240,237,232,0.35)' : 'var(--v2-surface)',
+              background: saving||!provider||!apiToken ? 'rgba(255,255,255,0.06)' : '#c0392b',
+              color: saving||!provider||!apiToken ? 'rgba(240,237,232,0.3)' : '#ffffff',
               fontSize:13, fontWeight:600, cursor: saving||!provider||!apiToken ? 'not-allowed' : 'pointer',
               fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6,
             }}>
