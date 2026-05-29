@@ -1,7 +1,7 @@
-// CertBind.jsx v5 — Professional security monitoring design
+// CertBind.jsx v6 — Concept A: SOC-style table layout
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { RefreshCw, CheckCircle2, XCircle, AlertTriangle, Clock, Server, Globe, Wifi, Shield, ChevronRight } from 'lucide-react'
+import { RefreshCw, CheckCircle2, XCircle, AlertTriangle, Clock, Server, Globe, Shield, Play } from 'lucide-react'
 import '../styles/design-v2.css'
 
 const SB = 'https://frthcwkntciaakqsppss.supabase.co'
@@ -17,141 +17,133 @@ async function callCertBind(action, extra = {}) {
 }
 
 const STATUS_MAP = {
-  bound:          { label: 'Live',          color: '#4ade80', dot: '#4ade80', bg: 'rgba(74,222,128,0.08)', border: 'rgba(74,222,128,0.2)',  icon: CheckCircle2,    priority: 0 },
-  key_mismatch:   { label: 'Key Mismatch',  color: '#f87171', dot: '#f87171', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
-  cert_mismatch:  { label: 'Wrong Cert',    color: '#f87171', dot: '#f87171', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: XCircle,         priority: 3 },
-  chain_anomaly:  { label: 'Chain Issue',   color: '#ff8c7a', dot: '#e07060', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.2)', icon: AlertTriangle,   priority: 2 },
-  partial_deploy: { label: 'Partial',       color: '#ffffff', dot: '#f0ede8', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
-  unreachable:    { label: 'Unreachable',   color: '#ffffff', dot: '#f0ede8', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: AlertTriangle,   priority: 2 },
-  pending:        { label: 'Checking',      color: '#b0a8a0', dot: 'var(--v2-text-3)', bg: 'rgba(240,237,232,0.06)', border: 'rgba(240,237,232,0.15)', icon: Clock,           priority: 1 },
-  null:           { label: 'Not checked',   color: '#b0a8a0', dot: 'var(--v2-text-2)', bg: 'rgba(240,237,232,0.04)', border: 'rgba(240,237,232,0.1)',  icon: Clock,           priority: 1 },
+  bound:          { label: 'Live',          color: '#4ade80', bg: 'rgba(74,222,128,0.1)',   border: 'rgba(74,222,128,0.25)',  icon: CheckCircle2,  dot: '#4ade80',  priority: 0 },
+  key_mismatch:   { label: 'Key mismatch',  color: '#f87171', bg: 'rgba(248,113,113,0.1)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,       dot: '#f87171',  priority: 3 },
+  cert_mismatch:  { label: 'Wrong cert',    color: '#f87171', bg: 'rgba(248,113,113,0.1)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,       dot: '#f87171',  priority: 3 },
+  chain_anomaly:  { label: 'Chain issue',   color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',   border: 'rgba(251,191,36,0.25)', icon: AlertTriangle, dot: '#fbbf24',  priority: 2 },
+  partial_deploy: { label: 'Partial',       color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',   border: 'rgba(251,191,36,0.25)', icon: AlertTriangle, dot: '#fbbf24',  priority: 2 },
+  unreachable:    { label: 'Unreachable',   color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',   border: 'rgba(251,191,36,0.25)', icon: AlertTriangle, dot: '#fbbf24',  priority: 2 },
+  pending:        { label: 'Checking',      color: '#b0a8a0', bg: 'rgba(240,237,232,0.06)', border: 'rgba(240,237,232,0.15)', icon: Clock,        dot: '#b0a8a0',  priority: 1 },
+  null:           { label: 'Not checked',   color: '#b0a8a0', bg: 'rgba(240,237,232,0.04)', border: 'rgba(240,237,232,0.1)', icon: Clock,         dot: 'rgba(240,237,232,0.3)', priority: 1 },
 }
 
 function getStatus(s) { return STATUS_MAP[s] || STATUS_MAP['null'] }
 
-function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
-
 function PulseDot({ color, animate }) {
   return (
-    <span style={{ position: 'relative', display: 'inline-flex', width: 8, height: 8, flexShrink: 0 }}>
-      {animate && (
-        <span style={{
-          position: 'absolute', inset: 0, borderRadius: '50%',
-          background: color, opacity: 0.4,
-          animation: 'pulse-ring 1.5s cubic-bezier(0.4,0,0.6,1) infinite'
-        }} />
-      )}
-      <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, display: 'block' }} />
+    <span style={{ position:'relative', display:'inline-flex', width:8, height:8, flexShrink:0 }}>
+      {animate && <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:color, opacity:0.4, animation:'pulse-ring 1.5s ease-in-out infinite' }} />}
+      <span style={{ width:8, height:8, borderRadius:'50%', background:color, display:'block' }} />
     </span>
   )
+}
+
+function fmtChecked(iso) {
+  if (!iso) return '—'
+  const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins}m ago`
+  if (mins < 1440) return `${Math.round(mins/60)}h ago`
+  return new Date(iso).toLocaleDateString('en-GB', { day:'2-digit', month:'short' })
+}
+
+function fmtExpiry(iso) {
+  if (!iso) return null
+  const days = Math.ceil((new Date(iso) - Date.now()) / 86400000)
+  const date = new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+  return { date, days, urgent: days < 30 }
 }
 
 function CertRow({ cert, onCheck, checking }) {
   const s = getStatus(cert.certbind_status)
   const Icon = s.icon
   const isChecking = checking === cert.id
-  const canCheck = true // all active certs can be checked via TLS probe
   const isLive = cert.certbind_status === 'bound'
-  const isAlert = ['key_mismatch','cert_mismatch','chain_anomaly','partial_deploy','unreachable'].includes(cert.certbind_status)
-
-  const checkedAt = cert.certbind_checked_at
-    ? (() => {
-        const d = new Date(cert.certbind_checked_at)
-        const mins = Math.round((Date.now() - d.getTime()) / 60000)
-        if (mins < 1) return 'just now'
-        if (mins < 60) return `${mins}m ago`
-        if (mins < 1440) return `${Math.round(mins/60)}h ago`
-        return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short' })
-      })()
-    : null
+  const expiry = fmtExpiry(cert.expires_at)
 
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: '16px 1fr auto auto auto',
+      gridTemplateColumns: '24px 1fr 130px 110px 100px 100px',
       alignItems: 'center',
-      gap: 16,
-      padding: '14px 20px',
-      borderRadius: 10,
-      background: isAlert ? 'rgba(239,68,68,0.03)' : 'var(--v2-surface)',
-      border: `1px solid ${isAlert ? 'rgba(239,68,68,0.15)' : 'rgba(240,237,232,0.06)'}`,
-      transition: 'border-color .15s, box-shadow .15s',
-      cursor: 'default',
+      gap: 0,
+      padding: '0 20px',
+      height: 58,
+      borderBottom: '1px solid rgba(192,57,43,0.12)',
+      transition: 'background .12s',
+      background: cert.certbind_status && cert.certbind_status !== 'bound' ? 'rgba(248,113,113,0.03)' : 'transparent',
     }}
-    onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 12px rgba(255,255,255,0.07)'}
-    onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+    onMouseLeave={e => e.currentTarget.style.background = cert.certbind_status && cert.certbind_status !== 'bound' ? 'rgba(248,113,113,0.03)' : 'transparent'}
     >
-      {/* Status dot */}
-      <PulseDot color={s.dot} animate={isLive} />
+      {/* Pulse dot */}
+      <div style={{ display:'flex', alignItems:'center' }}>
+        <PulseDot color={s.dot} animate={isLive} />
+      </div>
 
-      {/* Domain + meta */}
-      <div style={{ minWidth: 0 }}>
-        <div style={{ fontWeight: 600, fontSize:14, color: '#ffffff', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      {/* Domain */}
+      <div style={{ paddingRight:16, minWidth:0 }}>
+        <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
           {cert.domain}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
-          {cert.install_method === 'agent' && (
-            <span style={{ display:'flex', alignItems:'center', gap:3, fontSize:11, color:'#b0a8a0' }}>
-              <Server size={10} /> VPS Agent
-            </span>
-          )}
-          {cert.install_method === 'cpanel' && (
-            <span style={{ display:'flex', alignItems:'center', gap:3, fontSize:11, color:'#b0a8a0' }}>
-              <Globe size={10} /> cPanel
-            </span>
-          )}
-          {!cert.install_method && (
-            <span style={{ fontSize:11, color:'#b0a8a0' }}>No agent — TLS only</span>
-          )}
-          {checkedAt && (
-            <span style={{ fontSize:11, color:'#b0a8a0' }}>· {checkedAt}</span>
-          )}
+        <div style={{ fontSize:11, color:'rgba(240,237,232,0.4)', marginTop:2, fontFamily:'inherit' }}>
+          {cert.issuer || 'RapidSSL'}
+          {expiry && <span style={{ marginLeft:8, color: expiry.urgent ? '#fbbf24' : 'rgba(240,237,232,0.35)' }}>
+            · expires {expiry.date}
+          </span>}
         </div>
+      </div>
+
+      {/* Install path */}
+      <div style={{ fontSize:12, color:'rgba(240,237,232,0.5)', display:'flex', alignItems:'center', gap:5 }}>
+        {cert.install_method === 'agent'  && <><Server size={11} style={{ flexShrink:0 }} /> VPS agent</>}
+        {cert.install_method === 'cpanel' && <><Globe  size={11} style={{ flexShrink:0 }} /> cPanel</>}
+        {!cert.install_method             && <span style={{ color:'rgba(240,237,232,0.25)' }}>—</span>}
+      </div>
+
+      {/* Last checked */}
+      <div style={{ fontSize:12, color:'rgba(240,237,232,0.4)', paddingRight:8 }}>
+        {fmtChecked(cert.certbind_checked_at)}
       </div>
 
       {/* Status badge */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 5,
-        padding: '4px 10px', borderRadius: 20,
-        background: s.bg, border: `1px solid ${s.border}`,
-        fontSize:11, fontWeight: 600, color: s.color,
-        whiteSpace: 'nowrap',
-      }}>
-        {isChecking ? <RefreshCw size={10} style={{ animation: 'spin 1s linear infinite' }} /> : <Icon size={10} />}
+      <div style={{ display:'flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:20, background:s.bg, border:`1px solid ${s.border}`, fontSize:11, fontWeight:600, color:s.color, whiteSpace:'nowrap', width:'fit-content' }}>
+        {isChecking ? <RefreshCw size={9} style={{ animation:'spin 1s linear infinite' }} /> : <Icon size={9} />}
         {isChecking ? 'Checking…' : s.label}
       </div>
 
-      {/* Check button */}
-      <button
-        onClick={() => canCheck && !isChecking && onCheck(cert)}
-        disabled={!canCheck || isChecking}
-        title='Run TLS verification check'
-        style={{
-          display: 'flex', alignItems: 'center', gap: 5,
-          padding: '6px 12px', borderRadius: 7,
-          background: canCheck && !isChecking ? '#c0392b' : 'rgba(255,255,255,0.06)',
-          color: canCheck && !isChecking ? '#ffffff' : 'rgba(255,255,255,0.3)',
-          border: 'none', fontWeight: 600, fontSize:11,
-          cursor: canCheck && !isChecking ? 'pointer' : 'not-allowed',
-          transition: 'all .15s', fontFamily: 'inherit',
-          whiteSpace: 'nowrap',
-        }}
-        onMouseEnter={e => { if(canCheck && !isChecking) e.currentTarget.style.background = '#a93226' }}
-        onMouseLeave={e => { if(canCheck && !isChecking) e.currentTarget.style.background = 'var(--v2-text)' }}
-      >
-        <RefreshCw size={10} />
-        Run check
-      </button>
+      {/* Action button */}
+      <div style={{ display:'flex', justifyContent:'flex-end' }}>
+        <button
+          onClick={() => !isChecking && onCheck(cert)}
+          disabled={isChecking}
+          style={{
+            display:'flex', alignItems:'center', gap:5,
+            padding:'5px 11px', borderRadius:6,
+            background: isChecking ? 'rgba(255,255,255,0.04)' : 'rgba(192,57,43,0.15)',
+            color: isChecking ? 'rgba(240,237,232,0.3)' : '#f0ede8',
+            border: `1px solid ${isChecking ? 'rgba(255,255,255,0.06)' : 'rgba(192,57,43,0.3)'}`,
+            fontSize:11, fontWeight:600, cursor: isChecking ? 'not-allowed' : 'pointer',
+            fontFamily:'inherit', whiteSpace:'nowrap', transition:'all .12s',
+          }}
+          onMouseEnter={e => { if(!isChecking) e.currentTarget.style.background='rgba(192,57,43,0.25)' }}
+          onMouseLeave={e => { if(!isChecking) e.currentTarget.style.background='rgba(192,57,43,0.15)' }}
+        >
+          <RefreshCw size={9} />
+          Run check
+        </button>
+      </div>
     </div>
   )
 }
 
 export default function CertBind() {
-  const [certs, setCerts] = useState([])
-  const [agents, setAgents] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [certs, setCerts]       = useState([])
+  const [agents, setAgents]     = useState([])
+  const [loading, setLoading]   = useState(true)
   const [checking, setChecking] = useState(null)
-  const [userId, setUserId] = useState(null)
+  const [running, setRunning]   = useState(false)
+  const [userId, setUserId]     = useState(null)
   const [lastRefresh, setLastRefresh] = useState(null)
 
   useEffect(() => {
@@ -164,19 +156,15 @@ export default function CertBind() {
     setLoading(true)
     const [{ data: certsData }, { data: agentsData }] = await Promise.all([
       supabase.from('certificates')
-        .select('id,domain,status,install_method,certbind_status,certbind_checked_at,ggs_order_id,issued_at')
-        .eq('user_id', uid)
-        .eq('status', 'active')
-        .neq('status', 'cancelled')
+        .select('id,domain,status,install_method,certbind_status,certbind_checked_at,issued_at,expires_at,issuer')
+        .eq('user_id', uid).eq('status', 'active')
         .order('issued_at', { ascending: false }),
-      supabase.from('persistent_agents').select('id,nickname,hostname,status,last_seen_at').eq('user_id', uid),
+      supabase.from('persistent_agents')
+        .select('id,nickname,hostname,status,last_seen_at').eq('user_id', uid),
     ])
-    // One row per domain — pick the newest issued_at (same logic as Fleet)
     const domainMap = {}
     for (const c of (certsData || [])) {
-      if (!domainMap[c.domain] || new Date(c.issued_at) > new Date(domainMap[c.domain].issued_at)) {
-        domainMap[c.domain] = c
-      }
+      if (!domainMap[c.domain] || new Date(c.issued_at) > new Date(domainMap[c.domain].issued_at)) domainMap[c.domain] = c
     }
     setCerts(Object.values(domainMap))
     setAgents(agentsData || [])
@@ -187,162 +175,155 @@ export default function CertBind() {
   async function runCheck(cert) {
     setChecking(cert.id)
     try {
-      // v10: edge function does TLS probe and returns result immediately
       const d = await callCertBind('request_bind_check', { user_id: userId, cert_id: cert.id })
-      // Update cert in local state immediately from response — no need to re-fetch
       if (d.ok && d.binding_status) {
-        setCerts(prev => prev.map(c =>
-          c.id === cert.id
-            ? { ...c, certbind_status: d.binding_status, certbind_checked_at: new Date().toISOString() }
-            : c
-        ))
-      } else {
-        // Fallback: reload from DB
-        await load(userId)
-      }
+        setCerts(prev => prev.map(c => c.id === cert.id ? { ...c, certbind_status: d.binding_status, certbind_checked_at: new Date().toISOString() } : c))
+      } else { await load(userId) }
     } catch { await load(userId) }
     setChecking(null)
   }
 
-  const live    = certs.filter(c => c.certbind_status === 'bound').length
-  const alerts  = certs.filter(c => ['key_mismatch','cert_mismatch','chain_anomaly','partial_deploy','unreachable'].includes(c.certbind_status)).length
+  async function runAllChecks() {
+    setRunning(true)
+    for (const cert of certs) {
+      setChecking(cert.id)
+      try {
+        const d = await callCertBind('request_bind_check', { user_id: userId, cert_id: cert.id })
+        if (d.ok && d.binding_status) {
+          setCerts(prev => prev.map(c => c.id === cert.id ? { ...c, certbind_status: d.binding_status, certbind_checked_at: new Date().toISOString() } : c))
+        }
+      } catch {}
+      setChecking(null)
+    }
+    setRunning(false)
+    setLastRefresh(new Date())
+  }
+
+  const live      = certs.filter(c => c.certbind_status === 'bound').length
+  const alerts    = certs.filter(c => ['key_mismatch','cert_mismatch','chain_anomaly','partial_deploy','unreachable'].includes(c.certbind_status)).length
   const unchecked = certs.filter(c => !c.certbind_status).length
   const onlineAgents = agents.filter(a => a.last_seen_at && (Date.now() - new Date(a.last_seen_at).getTime()) < 12 * 60 * 1000).length
 
-  // Sort: alerts first, then unchecked, then live
-  const sorted = [...certs].sort((a, b) => {
-    const pa = getStatus(a.certbind_status).priority
-    const pb = getStatus(b.certbind_status).priority
-    return pb - pa
-  })
+  const sorted = [...certs].sort((a, b) => getStatus(b.certbind_status).priority - getStatus(a.certbind_status).priority)
+
+  const allClear = alerts === 0 && unchecked === 0 && certs.length > 0
 
   return (
     <div className="v2-page">
       <style>{`
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        @keyframes pulse-ring { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(2.2);opacity:0} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes pulse-ring { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(2.4);opacity:0} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
       `}</style>
 
-      <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px', animation: 'fadeUp .3s ease both' }}>
 
-        {/* Header */}
-        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom: 28, animation: 'fadeUp .35s ease both' }}>
-          <div>
-            <div style={{ fontSize:22, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.5px', marginBottom: 4 }}>
-              Live Certificate Status
+        {/* ── Header ── */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ width:38, height:38, borderRadius:10, background:'rgba(192,57,43,0.12)', border:'1px solid rgba(192,57,43,0.25)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Shield size={18} color="#c0392b" />
             </div>
-            <div style={{ fontSize:13, color: '#b0a8a0' }}>
-              Verify your certificates are active on your servers in real-time
+            <div>
+              <div style={{ fontSize:18, fontWeight:700, color:'#ffffff', letterSpacing:'-0.4px' }}>Live certificate status</div>
+              <div style={{ fontSize:12, color:'rgba(240,237,232,0.4)', marginTop:1 }}>TLS binding verification · confirm the right cert is serving on each domain</div>
             </div>
           </div>
-          <button
-            onClick={() => userId && load(userId)}
-            disabled={loading}
-            style={{
-              display:'flex', alignItems:'center', gap:6,
-              padding:'8px 14px', borderRadius:8,
-              background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)',
-              color:'#e8e0d8', fontWeight:600, fontSize:12,
-              cursor:'pointer', transition:'all .15s', fontFamily:'inherit',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background='rgba(192,57,43,0.15)'}
-            onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}
-          >
-            <RefreshCw size={12} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
-            Refresh
-          </button>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            {allClear && (
+              <span style={{ fontSize:12, fontWeight:600, color:'#4ade80', background:'rgba(74,222,128,0.08)', border:'1px solid rgba(74,222,128,0.2)', borderRadius:20, padding:'4px 12px', display:'flex', alignItems:'center', gap:5 }}>
+                <CheckCircle2 size={11} /> All clear
+              </span>
+            )}
+            <button onClick={() => userId && load(userId)} disabled={loading}
+              style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 13px', borderRadius:7, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(192,57,43,0.25)', color:'#e8e0d8', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+              <RefreshCw size={11} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
+              Refresh
+            </button>
+          </div>
         </div>
 
-        {/* Summary cards */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:10, marginBottom:24, animation:'fadeUp .35s ease .05s both' }}>
+        {/* ── Stats ── */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, marginBottom:20, border:'1px solid rgba(192,57,43,0.2)', borderRadius:10, overflow:'hidden' }}>
           {[
-            { num: certs.length, label: 'Total domains',   color: '#e8e0d8', bg: 'var(--v2-surface)',           border: 'rgba(240,237,232,0.12)' },
-            { num: live,         label: 'Verified live',   color: '#ffffff', bg: 'transparent',        border: 'transparent' },
-            { num: alerts,       label: 'Need attention',  color: '#f87171', bg: 'rgba(192,57,43,0.12)',        border: 'rgba(239,68,68,0.08)' },
-            { num: unchecked,    label: 'Not checked',     color: '#b0a8a0', bg: '#000000',        border: 'rgba(240,237,232,0.06)' },
-          ].map(({ num, label, color, bg, border }) => (
-            <div key={label} style={{
-              background: bg, border: `1px solid ${border}`,
-              borderRadius: 10, padding: '14px 16px',
-            }}>
-              <div style={{ fontSize:26, fontWeight: 700, color, lineHeight: 1, letterSpacing: '-1px' }}>{num}</div>
-              <div style={{ fontSize:11, color, opacity: .7, marginTop: 5, fontWeight: 500 }}>{label}</div>
+            { num: certs.length, label: 'Total domains',  color: '#f0ede8' },
+            { num: live,         label: 'Verified live',  color: '#4ade80' },
+            { num: alerts,       label: 'Need attention', color: alerts > 0 ? '#f87171' : 'rgba(240,237,232,0.3)' },
+            { num: unchecked,    label: 'Not checked',    color: unchecked > 0 ? '#fbbf24' : 'rgba(240,237,232,0.3)' },
+          ].map(({ num, label, color }, i) => (
+            <div key={label} style={{ padding:'14px 18px', background:'rgba(255,255,255,0.02)', borderRight: i < 3 ? '1px solid rgba(192,57,43,0.15)' : 'none' }}>
+              <div style={{ fontSize:24, fontWeight:700, color, letterSpacing:'-1px', lineHeight:1 }}>{num}</div>
+              <div style={{ fontSize:11, color:'rgba(240,237,232,0.4)', marginTop:5, fontWeight:500 }}>{label}</div>
             </div>
           ))}
         </div>
 
-        {/* Agent bar */}
-        {agents.length > 0 && (
-          <div style={{
-            display:'flex', alignItems:'center', gap:8,
-            padding:'10px 14px', borderRadius:8,
-            background:'var(--v2-surface)', border:'1px solid #f0f0f0',
-            marginBottom:20, animation:'fadeUp .35s ease .1s both',
-          }}>
-            <PulseDot color={onlineAgents > 0 ? '#f0ede8' : 'rgba(240,237,232,0.35)'} animate={onlineAgents > 0} />
-            <span style={{ fontSize:12, color:'#e8e0d8', fontWeight:500 }}>
-              {onlineAgents} of {agents.length} agent{agents.length !== 1 ? 's' : ''} online
-            </span>
-            {agents.slice(0,3).map(a => (
-              <span key={a.id} style={{
-                fontSize:10, padding:'2px 8px', borderRadius:20,
-                background: (Date.now() - new Date(a.last_seen_at).getTime()) < 12*60*1000 ? 'rgba(16,185,129,0.08)' : '#000000',
-                color: (Date.now() - new Date(a.last_seen_at).getTime()) < 12*60*1000 ? '#f0ede8' : 'rgba(240,237,232,0.35)',
-                border: '1px solid transparent',
-                fontWeight: 500,
-              }}>
-                {a.nickname || a.hostname}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Alert banner */}
+        {/* ── Alert banner ── */}
         {alerts > 0 && (
-          <div style={{
-            display:'flex', alignItems:'center', gap:10,
-            padding:'12px 16px', borderRadius:10,
-            background:'rgba(239,68,68,0.06)', border:'1px solid rgba(239,68,68,0.2)',
-            marginBottom:16, animation:'fadeUp .35s ease .12s both',
-          }}>
-            <AlertTriangle size={14} color="#c0392b" />
+          <div style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 16px', borderRadius:8, background:'rgba(248,113,113,0.06)', border:'1px solid rgba(248,113,113,0.2)', marginBottom:16 }}>
+            <AlertTriangle size={13} color="#f87171" />
             <span style={{ fontSize:13, color:'#f87171', fontWeight:600 }}>
               {alerts} certificate{alerts !== 1 ? 's' : ''} {alerts === 1 ? 'needs' : 'need'} attention — check the highlighted rows below
             </span>
           </div>
         )}
 
-        {/* Cert table */}
-        {loading ? (
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'60px 0', gap:8, color:'#b0a8a0', fontSize:13 }}>
-            <RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }} /> Loading certificates…
+        {/* ── Main table ── */}
+        <div style={{ border:'1px solid rgba(192,57,43,0.2)', borderRadius:10, overflow:'hidden' }}>
+
+          {/* Table header */}
+          <div style={{ display:'grid', gridTemplateColumns:'24px 1fr 130px 110px 100px 100px', padding:'0 20px', height:38, alignItems:'center', background:'rgba(192,57,43,0.08)', borderBottom:'1px solid rgba(192,57,43,0.2)' }}>
+            <div />
+            <div style={{ fontSize:10, fontWeight:700, color:'#f0ede8', textTransform:'uppercase', letterSpacing:'0.8px' }}>Domain</div>
+            <div style={{ fontSize:10, fontWeight:700, color:'#f0ede8', textTransform:'uppercase', letterSpacing:'0.8px' }}>Install path</div>
+            <div style={{ fontSize:10, fontWeight:700, color:'#f0ede8', textTransform:'uppercase', letterSpacing:'0.8px' }}>Checked</div>
+            <div style={{ fontSize:10, fontWeight:700, color:'#f0ede8', textTransform:'uppercase', letterSpacing:'0.8px' }}>Status</div>
+            <div />
           </div>
-        ) : certs.length === 0 ? (
-          <div style={{
-            textAlign:'center', padding:'clamp(16px,20vw,60px) 24px',
-            background:'var(--v2-surface)', borderRadius:12, border:'1px solid #f0f0f0',
-          }}>
-            <Shield size={32} color="rgba(192,57,43,0.15)" style={{ marginBottom:12 }} />
-            <div style={{ fontSize:14, fontWeight:600, color:'#e8e0d8', marginBottom:6 }}>No active certificates</div>
-            <div style={{ fontSize:12, color:'#b0a8a0' }}>Issue your first certificate to start monitoring</div>
-          </div>
-        ) : (
-          <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-            {sorted.map((cert, i) => (
-              <div key={cert.id} style={{ animation: `fadeUp .3s ease ${.15 + i * .04}s both` }}>
+
+          {/* Rows */}
+          {loading ? (
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'48px 0', gap:8, color:'rgba(240,237,232,0.4)', fontSize:13 }}>
+              <RefreshCw size={13} style={{ animation:'spin 1s linear infinite' }} /> Loading certificates…
+            </div>
+          ) : certs.length === 0 ? (
+            <div style={{ textAlign:'center', padding:'48px 24px' }}>
+              <Shield size={28} color="rgba(192,57,43,0.2)" style={{ marginBottom:10 }} />
+              <div style={{ fontSize:14, fontWeight:600, color:'#e8e0d8', marginBottom:5 }}>No active certificates</div>
+              <div style={{ fontSize:12, color:'rgba(240,237,232,0.4)' }}>Issue your first certificate to start monitoring</div>
+            </div>
+          ) : (
+            sorted.map((cert, i) => (
+              <div key={cert.id} style={{ animation:`fadeUp .25s ease ${.05 + i*.04}s both` }}>
                 <CertRow cert={cert} onCheck={runCheck} checking={checking} />
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
 
-        {/* Footer */}
-        {lastRefresh && !loading && (
-          <div style={{ textAlign:'center', marginTop:20, fontSize:11, color:'#b0a8a0' }}>
-            Last refreshed {lastRefresh.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' })}
-          </div>
-        )}
+          {/* Table footer */}
+          {!loading && certs.length > 0 && (
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 20px', background:'rgba(255,255,255,0.02)', borderTop:'1px solid rgba(192,57,43,0.12)' }}>
+              <div style={{ fontSize:11, color:'rgba(240,237,232,0.35)' }}>
+                {lastRefresh ? `Last checked ${lastRefresh.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' })} UTC` : 'Not yet checked'}
+                {agents.length > 0 && (
+                  <span style={{ marginLeft:12 }}>
+                    <PulseDot color={onlineAgents > 0 ? '#4ade80' : 'rgba(240,237,232,0.2)'} animate={onlineAgents > 0} />
+                    <span style={{ marginLeft:5 }}>{onlineAgents}/{agents.length} agent{agents.length !== 1 ? 's' : ''} online</span>
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={runAllChecks}
+                disabled={running || !!checking}
+                style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 14px', borderRadius:6, background: running ? 'rgba(192,57,43,0.1)' : '#c0392b', color:'#ffffff', border:'none', fontSize:12, fontWeight:600, cursor: running ? 'not-allowed' : 'pointer', fontFamily:'inherit', transition:'all .12s' }}>
+                {running
+                  ? <><RefreshCw size={11} style={{ animation:'spin 1s linear infinite' }} /> Running…</>
+                  : <><Play size={11} /> Run all checks</>}
+              </button>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   )
