@@ -181,7 +181,65 @@ function ApiKeysPanel({ user }) {
 
   const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—'
 
+  // Coming soon — API endpoints not yet live
   return (
+    <div style={{ padding: '16px 18px' }}>
+      <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>API Keys</div>
+      <div style={{ fontSize:12, color: '#b0a8a0', marginBottom: 24, lineHeight: 1.6 }}>
+        Integrate SSLVault into your own tools, pipelines, and CI/CD workflows using API keys.
+      </div>
+      <div style={{ textAlign:'center', padding:'40px 20px', background:'rgba(255,255,255,0.02)',
+        border:'1px solid rgba(192,57,43,0.2)', borderRadius:12 }}>
+        <div style={{ width:48, height:48, borderRadius:12, background:'rgba(192,57,43,0.1)',
+          border:'1px solid rgba(192,57,43,0.25)', display:'flex', alignItems:'center',
+          justifyContent:'center', margin:'0 auto 16px' }}>
+          <Key size={22} color="#c0392b" />
+        </div>
+        <div style={{ fontSize:15, fontWeight:700, color:'#f0ede8', marginBottom:8 }}>
+          Coming Soon
+        </div>
+        <div style={{ fontSize:12, color:'rgba(240,237,232,0.45)', lineHeight:1.7, maxWidth:320, margin:'0 auto 20px' }}>
+          The SSLVault REST API is under development. You'll be able to issue certificates,
+          query cert status, and trigger renewals programmatically.
+        </div>
+        <div style={{ display:'flex', gap:8, justifyContent:'center', flexWrap:'wrap' }}>
+          {['Issue certificates','Query cert status','Trigger renewals','Webhook events'].map(f => (
+            <span key={f} style={{ fontSize:10, fontWeight:600, color:'rgba(240,237,232,0.4)',
+              background:'rgba(255,255,255,0.04)', border:'1px solid rgba(192,57,43,0.15)',
+              borderRadius:20, padding:'4px 10px', fontFamily:'monospace' }}>
+              {f}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── API Keys Panel (original — re-enable when API is live) ──────────────
+function ApiKeysPanelFull_DISABLED({ user }) {
+  const [keys,      setKeys]      = useState([])
+  const [loading,   setLoading]   = useState(true)
+  const [label,     setLabel]     = useState('')
+  const [creating,  setCreating]  = useState(false)
+  const [newKey,    setNewKey]    = useState(null)
+  const [copied,    setCopied]    = useState(false)
+  const [revoking,  setRevoking]  = useState(null)
+
+  const load = async () => {
+    if (!user) return
+    const { data } = await supabase.from('api_keys')
+      .select('id, label, key_prefix, last_used_at, calls_today, created_at, revoked_at')
+      .eq('user_id', user.id)
+      .is('revoked_at', null)
+      .order('created_at', { ascending: false })
+    setKeys(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [user])
+
+  const DISABLED_RETURN = (
     <div style={{ padding: '16px 18px' }}>
       <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>API Keys</div>
       <div style={{ fontSize:12, color: '#b0a8a0', marginBottom: 16, lineHeight: 1.6 }}>
