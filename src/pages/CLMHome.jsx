@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import {
   Shield, Plus, Server, TrendingUp, History, CalendarDays,
   ShieldCheck, LayoutDashboard, Settings, Lock, BookOpen,
-  LogOut, Bell, Menu, X, ChevronDown, ChevronRight
+  LogOut, Bell, Menu, X, ChevronDown, ChevronRight,
+  Globe, Activity
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import Dashboard from './Dashboard'
@@ -85,23 +86,25 @@ export default function CLMHome({ user, nav }) {
   }
 
   const NAV = [
-    { group:'Lifecycle', items:[
-      {id:'dashboard',    label:'Command center',  icon:LayoutDashboard},
-      {id:'issue',        label:'Issue cert',icon:Plus},
-      {id:'readiness',    label:'Crush 47', icon:ShieldCheck, badge:'NEW'},
-      {id:'renewal-calendar',label:'Renewal timeline',icon:CalendarDays},
+    { group:'Manage', items:[
+      {id:'dashboard',         label:'Dashboard',        icon:LayoutDashboard},
+      {id:'issue',             label:'Issue cert',       icon:Plus},
+      {id:'renewal-calendar',  label:'Renewal calendar', icon:CalendarDays},
+      {id:'cert-changelog',    label:'Activity log',     icon:History},
     ]},
-    { group:'Infrastructure', items:[
-      {id:'my-servers',   label:'Agent network',          icon:Server},
-      {id:'certvault',    label:'CertVault',         icon:Lock},
-      {id:'certbind',     label:'CertBind',          icon:Shield},
+    { group:'Automate', items:[
+      {id:'my-servers',        label:'Servers & agents', icon:Server},
+      {id:'integrations',      label:'DNS providers',    icon:Globe},
     ]},
-    { group:'Security Ops', items:[
-      {id:'shield',       label:'CT & TLS watch',icon:ShieldCheck},
-      {id:'cert-changelog',label:'Activity log',         icon:History},
+    { group:'Monitor', items:[
+      {id:'shield',            label:'CT Abuse Monitor', icon:ShieldCheck},
+      {id:'readiness',         label:'47-Day Readiness', icon:ShieldCheck, badge:'NEW'},
+      {id:'ssl-health',        label:'SSL Health Score', icon:Activity},
     ]},
-    { group:'PKI Intel', items:[
-      {id:'ca-intelligence',label:'CA Intelligence',  icon:TrendingUp},
+    { group:'Secure', items:[
+      {id:'certvault',         label:'CertVault',        icon:Lock},
+      {id:'certbind',          label:'CertBind',         icon:Shield},
+      {id:'ca-intelligence',   label:'PKI Intelligence', icon:TrendingUp},
     ]},
   ]
 
@@ -111,10 +114,11 @@ export default function CLMHome({ user, nav }) {
   ]
 
   const TITLES = {
-    dashboard:'Command center', issue:'Issue cert', readiness:'Crush 47',
-    'renewal-calendar':'Renewal timeline', certvault:'CertVault', certbind:'CertBind',
-    'my-servers':'Agent network', integrations:'DNS providers', shield:'CT & TLS watch',
-    'cert-changelog':'Activity log', 'ca-intelligence':'CA Intelligence',
+    dashboard:'Dashboard', issue:'Issue cert', readiness:'47-Day Readiness',
+    'renewal-calendar':'Renewal calendar', certvault:'CertVault', certbind:'CertBind',
+    'my-servers':'Servers & agents', integrations:'DNS providers', shield:'CT Abuse Monitor',
+    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence',
+    'ssl-health':'SSL Health Score',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
   }
 
@@ -135,6 +139,7 @@ export default function CLMHome({ user, nav }) {
     if(sec==='settings')         return <SettingsPage user={user}/>
     if(sec==='ca-intelligence')  return <CAIntelligenceHub nav={sideNav}/>
     if(sec==='shield')           return <ShieldIntelligence user={user}/>
+    if(sec==='ssl-health')       return <SSLHealthScore user={user}/>
     if(sec==='renewal-calendar') return <RenewalCalendar user={user}/>
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
     return null
