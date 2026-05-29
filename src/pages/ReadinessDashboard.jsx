@@ -106,9 +106,10 @@ const COL_DEFS = [
   { key:'dns',        label:'DNS',         width:'7%',  sortable:false },
   { key:'install',    label:'Install',     width:'7%',  sortable:false },
   { key:'key',        label:'Key',         width:'7%',  sortable:false },
+  { key:'actions',    label:'Actions',     width:'13%', sortable:false },
 ]
 
-export default function ReadinessDashboard({ user }) {
+export default function ReadinessDashboard({ user, onNav }) {
   const [certs,setCerts]           = useState([])
   const [hasAgent,setHasAgent]     = useState(false)
   const [hasDnsCreds,setHasDnsCreds] = useState(false)
@@ -116,6 +117,7 @@ export default function ReadinessDashboard({ user }) {
   const [filter,setFilter]         = useState('all')
   const [sortKey,setSortKey]       = useState('score')
   const [sortAsc,setSortAsc]       = useState(true)
+  const [togglingId,setTogglingId] = useState(null)
 
   useEffect(() => {
     if (!user) return
@@ -132,6 +134,19 @@ export default function ReadinessDashboard({ user }) {
       setCerts(unique); setHasAgent((ad||[]).length > 0); setHasDnsCreds((dd||[]).length > 0); setLoading(false)
     })
   }, [user])
+
+  const toggleAutoRenew = async (certId, currentVal) => {
+    setTogglingId(certId)
+    try {
+      await supabase.from('certificates')
+        .update({ auto_renew_enabled: !currentVal })
+        .eq('id', certId)
+      setCerts(prev => prev.map(c => c.id === certId ? { ...c, auto_renew_enabled: !currentVal } : c))
+    } catch (e) {
+      console.warn('[readiness] toggle auto-renew failed:', e.message)
+    }
+    setTogglingId(null)
+  }
 
   const rows = useMemo(() => certs.map(c => ({ cert:c, ...computeRow(c, hasAgent, hasDnsCreds) })), [certs, hasAgent, hasDnsCreds])
   const ready=rows.filter(r=>r.score>=90).length, atRisk=rows.filter(r=>r.score>=60&&r.score<90).length
@@ -384,6 +399,44 @@ export default function ReadinessDashboard({ user }) {
                         <td style={{ padding:'11px 12px', textAlign:'center' }}><Tick ok={checks.dns_provider}/></td>
                         <td style={{ padding:'11px 12px', textAlign:'center' }}><Tick ok={checks.install}/></td>
                         <td style={{ padding:'11px 12px', textAlign:'center' }}><Tick ok={checks.key_secured}/></td>
+
+                        {/* Fix-it actions */}
+                        <td style={{ padding:'8px 12px' }}>
+                          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                            {!checks.auto_renew && (
+                              <button
+                                disabled={togglingId === cert.id}
+                                onClick={() => toggleAutoRenew(cert.id, cert.auto_renew_enabled)}
+                                style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
+                                  background:'rgba(74,222,128,0.1)', border:'0.5px solid rgba(74,222,128,0.3)',
+                                  color:'#4ade80', fontFamily:'inherit', whiteSpace:'nowrap',
+                                  opacity: togglingId === cert.id ? 0.5 : 1 }}>
+                                {togglingId === cert.id ? '…' : '+ Auto-renew'}
+                              </button>
+                            )}
+                            {!checks.dns_provider && onNav && (
+                              <button
+                                onClick={() => onNav('integrations')}
+                                style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
+                                  background:'rgba(192,57,43,0.1)', border:'0.5px solid rgba(192,57,43,0.3)',
+                                  color:'#ff8c7a', fontFamily:'inherit', whiteSpace:'nowrap' }}>
+                                + DNS provider
+                              </button>
+                            )}
+                            {!checks.install && onNav && (
+                              <button
+                                onClick={() => onNav('my-servers')}
+                                style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
+                                  background:'rgba(192,57,43,0.1)', border:'0.5px solid rgba(192,57,43,0.3)',
+                                  color:'#ff8c7a', fontFamily:'inherit', whiteSpace:'nowrap' }}>
+                                + Install agent
+                              </button>
+                            )}
+                            {checks.auto_renew && checks.dns_provider && checks.install && (
+                              <span style={{ fontSize:10, color:'#4ade80', fontWeight:600 }}>✓ Ready</span>
+                            )}
+                          </div>
+                        </td>
                       </tr>
                     )
                   })}

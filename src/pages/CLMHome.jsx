@@ -124,7 +124,7 @@ export default function CLMHome({ user, nav }) {
 
   const content = () => {
     if(sec==='dashboard')        return <Dashboard nav={sideNav} onIssue={()=>go('issue')}/>
-    if(sec==='readiness')        return <ReadinessDashboard user={user}/>
+    if(sec==='readiness')        return <ReadinessDashboard user={user} onNav={go}/>
     if(sec==='issue')            return <BuyCertificate nav={sideNav} embedded onDashboard={()=>go('dashboard')} onIssueAnother={()=>go('issue')}/>
     if(sec==='integrations')     return <Integrations nav={sideNav}/>
     if(sec==='install')          return <Install nav={sideNav}/>
