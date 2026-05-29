@@ -150,6 +150,28 @@ export default function CTAbuseMonitor({ user }) {
     setShadows(shadowData || [])
     setKnownCerts(new Set((certData || []).map(c => c.domain)))
     setWatchDomains(watchData || [])
+
+    // Auto-add inventory domains not yet in ct_watch_domains
+    const existingWatched = new Set((watchData || []).map(w => w.domain))
+    const toAdd = (certData || []).map(c => c.domain).filter(d => d && !existingWatched.has(d))
+    if (toAdd.length > 0) {
+      try {
+        await Promise.all(toAdd.map(d =>
+          supabase.from('ct_watch_domains').upsert(
+            { user_id: user.id, domain: d, active: true },
+            { onConflict: 'user_id,domain' }
+          )
+        ))
+        // Refresh watch list to reflect new entries
+        const { data: refreshed } = await supabase.from('ct_watch_domains')
+          .select('*').eq('user_id', user.id).eq('active', true).order('created_at')
+        setWatchDomains(refreshed || [])
+      } catch (e) {
+        // Silent fail — manual add still works
+        console.warn('[CT auto-watch]', e.message)
+      }
+    }
+
     setLoading(false)
   }, [user])
 
