@@ -10,7 +10,7 @@ const DAYS_S   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
 const ACCENT = '#f0ede8'
 const RED    = '#f87171'
-const AMBER  = '#f0ede8'
+const AMBER  = '#fbbf24'
 const GREEN  = '#4ade80'
 
 const STATUS = {
@@ -56,12 +56,12 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
     <div
       onClick={() => hasCerts && onClick()}
       style={{
-        minHeight: 80,
+        minHeight: 90,
         borderRadius: 8,
         padding: '7px 7px 6px',
         background: hasCerts
-          ? (st ? st.bg : 'var(--v2-surface)')
-          : isToday ? 'transparent' : 'rgba(255,255,255,0.04)',
+          ? (st ? st.bg : 'rgba(255,255,255,0.04)')
+          : isToday ? 'rgba(192,57,43,0.06)' : 'rgba(255,255,255,0.02)',
         border: isSelected
           ? `2px solid ${accentColor || ACCENT}`
           : hasCerts
@@ -77,10 +77,10 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
     >
       {/* Day number */}
       <div style={{
-        width: 22, height: 22, borderRadius: '50%', marginBottom: 5,
+        width: 24, height: 24, borderRadius: '50%', marginBottom: 6,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: isToday ? '#c0392b' : 'transparent',
-        fontSize:11, fontWeight: hasCerts || isToday ? 700 : 400,
+        fontSize:12, fontWeight: hasCerts || isToday ? 700 : 400,
         color: isToday ? '#ffffff' : hasCerts ? (st ? st.text : '#ffffff') : '#6b5a5a',
       }}>
         {day}
@@ -94,7 +94,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
           <div key={i} style={{
             fontSize:10, fontWeight: 600, padding: '2px 5px', borderRadius: 4,
             marginBottom: 2, lineHeight: 1.4,
-            background: css.bar, color: '#ffffff',
+            background: css.bg, color: css.text, border: `0.5px solid ${css.border}`,
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {c.domain.replace(/^www\./, '').replace(/^(.{12}).*/, '$1…')}
@@ -198,13 +198,13 @@ function MonthView({ certs, viewYear, viewMonth, today }) {
 
   return (
     <div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:3, marginBottom:3 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:4, marginBottom:4 }}>
         {DAYS_S.map(d => (
-          <div key={d} style={{ fontSize:9, fontWeight:700, color:'#c8c0b8',
-            textAlign:'center', padding:'4px 0', textTransform:'uppercase', letterSpacing:'0.8px' }}>{d}</div>
+          <div key={d} style={{ fontSize:10, fontWeight:700, color:'rgba(240,237,232,0.5)',
+            textAlign:'center', padding:'6px 0', textTransform:'uppercase', letterSpacing:'1px' }}>{d}</div>
         ))}
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:3 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:4 }}>
         {Array.from({length:firstDow}).map((_,i) => (
           <div key={`e${i}`} style={{ minHeight:78, borderRadius:8,
             background:'rgba(255,255,255,0.02)', opacity:1 }}/>
@@ -524,16 +524,18 @@ export default function RenewalCalendar({ user }) {
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
             {/* View switcher */}
-            <div style={{ display:'flex', background:'var(--v2-surface-3)',
-              border:'0.5px solid var(--v2-border)', borderRadius:8, padding:2, gap:1 }}>
+            <div style={{ display:'flex', background:'rgba(255,255,255,0.04)',
+              border:'1px solid rgba(192,57,43,0.2)', borderRadius:8, padding:3, gap:2 }}>
               {[['month','Month'],['week','Week'],['year','Year']].map(([v,l])=>(
                 <button key={v} onClick={()=>{setView(v);setAnimKey(k=>k+1)}}
-                  style={{ padding:'5px 14px', fontSize:11, fontWeight:view===v?600:400,
-                    background: view===v?'var(--v2-surface)':'transparent',
-                    border: view===v?'0.5px solid var(--v2-border)':'none',
+                  style={{ padding:'6px 16px', fontSize:12, fontWeight: view===v ? 700 : 500,
+                    background: view===v ? '#c0392b' : 'transparent',
+                    border: 'none',
                     borderRadius:6, cursor:'pointer', fontFamily:'inherit',
-                    color: view===v?'#ffffff':'#b0a8a0',
-                    transition:'all .15s' }}>
+                    color: view===v ? '#ffffff' : 'rgba(240,237,232,0.4)',
+                    transition:'all .15s',
+                    boxShadow: view===v ? '0 1px 4px rgba(0,0,0,0.3)' : 'none',
+                  }}>
                   {l}
                 </button>
               ))}
@@ -558,22 +560,22 @@ export default function RenewalCalendar({ user }) {
         </div>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:14 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, marginBottom:16, border:'1px solid rgba(192,57,43,0.2)', borderRadius:10, overflow:'hidden' }}>
           {[
-            { label:'Total',         val:certs.length, color:'#ffffff' },
-            { label:'Expired',       val:allExpired,   color:RED   },
-            { label:'Expiring ≤30d', val:allWarning,   color:AMBER },
-            { label:'Healthy',       val:allHealthy,   color:GREEN },
-          ].map(({label,val,color})=>(
-            <div key={label} className="v2-card" style={{ padding:'12px 14px' }}>
-              <div style={{ fontSize:22, fontWeight:500, color, fontFamily:'monospace' }}>{val}</div>
-              <div style={{ fontSize:11, color:'#b0a8a0', marginTop:3 }}>{label}</div>
+            { label:'Total',         val:certs.length, color:'#f0ede8' },
+            { label:'Expired',       val:allExpired,   color: allExpired > 0 ? RED : 'rgba(240,237,232,0.3)' },
+            { label:'Expiring ≤30d', val:allWarning,   color: allWarning > 0 ? AMBER : 'rgba(240,237,232,0.3)' },
+            { label:'Healthy',       val:allHealthy,   color: allHealthy > 0 ? GREEN : 'rgba(240,237,232,0.3)' },
+          ].map(({label,val,color},i)=>(
+            <div key={label} style={{ padding:'14px 18px', background:'rgba(255,255,255,0.02)', borderRight: i<3 ? '1px solid rgba(192,57,43,0.15)' : 'none' }}>
+              <div style={{ fontSize:24, fontWeight:700, color, letterSpacing:'-1px', lineHeight:1 }}>{val}</div>
+              <div style={{ fontSize:11, color:'rgba(240,237,232,0.4)', marginTop:5, fontWeight:500 }}>{label}</div>
             </div>
           ))}
         </div>
 
         {/* Legend */}
-        <div style={{ display:'flex', gap:14, marginBottom:14, flexWrap:'wrap' }}>
+        <div style={{ display:'flex', gap:14, marginBottom:16, flexWrap:'wrap', alignItems:'center' }}>
           {[
             { label:'Expired',        color:RED,   bg:'rgba(192,57,43,0.12)', border:'rgba(239,83,80,0.3)' },
             { label:'Expiring ≤30d',  color:AMBER, bg:'rgba(239,68,68,0.08)', border:'#fcd34d' },
@@ -591,7 +593,7 @@ export default function RenewalCalendar({ user }) {
         </div>
 
         {/* Calendar */}
-        <div className="v2-card" style={{ padding:14, overflow:'hidden' }}>
+        <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(192,57,43,0.2)', borderRadius:10, overflow:'hidden' }}>
           {loading ? (
             <div style={{ textAlign:'center', padding:'48px 0', color:'#b0a8a0' }}>
               <RefreshCw size={22} style={{ animation:'spin .8s linear infinite',
