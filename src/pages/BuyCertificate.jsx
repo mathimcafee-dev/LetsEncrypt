@@ -327,6 +327,19 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     </div>
   )
 
+  // ── TEST MODE — preview only, remove before merging to main ─────────────────
+  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === 'done') {
+    return <CertIssuedScreen
+      domain="api.yourdomain.com"
+      product="rapidssl"
+      ord={{ ggs_order_id: '3551521', valid_till: new Date(Date.now() + 199*86400000).toISOString() }}
+      user={user}
+      onDashboard={() => {}}
+      onIssueAnother={() => {}}
+      nav={nav}
+    />
+  }
+
   // ── FORM ────────────────────────────────────────────────────────────────────
   if (step === 'form') return (
     <div style={{ minHeight: embedded ? 'auto' : '100vh', background: 'transparent' }}>
