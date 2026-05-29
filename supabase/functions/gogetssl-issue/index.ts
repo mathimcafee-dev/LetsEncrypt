@@ -744,6 +744,11 @@ serve(async (req) => {
         if (order.dcv_txt_name && order.dcv_txt_value) {
           await autoDeleteDns(authHeader, user.id, order.domain, order.dcv_txt_name, order.dcv_txt_value)
         }
+
+        // Dispatch auto-install — same as poll_pending does for reissues.
+        // dispatchInstall is silent-fail (try/catch inside) so cert activation
+        // is never affected if this errors. If no credentials found, exits cleanly.
+        await dispatchInstall(user.id, order.domain, order.ggs_order_id, keyId)
       }
 
       await adminDb().from('ssl_orders').update(upd).eq('id', order_id)
