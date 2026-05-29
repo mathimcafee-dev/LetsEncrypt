@@ -13,7 +13,6 @@ import '../styles/design-v2.css'
 
 const FN_CA     = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/ca-intelligence'
 const FN_IMPORT = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/ca-import'
-const FN_LAB    = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/digicert-lab'
 
 async function callCA(tok, body) {
   const r = await fetch(FN_CA, {

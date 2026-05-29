@@ -46,7 +46,6 @@ import Terms from './pages/Terms'
 import DnsProviders from './pages/DnsProviders'
 import Contact from './pages/Contact'
 import DigiCertIntelligence from './pages/DigiCertIntelligence'
-import DigiCertLab from './pages/DigiCertLab'
 import SectigoIntelligence from './pages/SectigoIntelligence'
 import CertIntelligence from './pages/CertIntelligence'
 import CTAbuseMonitor from './pages/CTAbuseMonitor'
@@ -187,7 +186,6 @@ const _build = 1779297041 // cache bust
       {page === '/privacy' && <Privacy nav={nav} />}
       {page === '/terms' && <Terms nav={nav} />}
       {page === '/contact' && <Contact nav={nav} />}
-      {page === '/digilab' && <DigiCertLab nav={nav} />}
       {page === '/digicert-intelligence' && <DigiCertIntelligence nav={nav} />}
       {page === '/sectigo-intelligence' && <SectigoIntelligence nav={nav} />}
       {page === '/cert-intelligence-hub' && <CertIntelligence nav={nav} />}
