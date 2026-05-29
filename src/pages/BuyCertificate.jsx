@@ -720,41 +720,311 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
   )
 
   // ── DONE ────────────────────────────────────────────────────────────────────
+  return <CertIssuedScreen
+    domain={clean(domain)}
+    product={product}
+    ord={ord}
+    user={user}
+    onDashboard={onDashboard}
+    onIssueAnother={reset}
+    nav={nav}
+  />
+}
+
+function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnother, nav }) {
+  const F = "'Montserrat',system-ui,sans-serif"
+  const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
+  const productName = PRODUCTS.find(p => p.code === product)?.name || 'RapidSSL DV'
+
+  // Detect install method — read agents and cPanel creds saved for this user
+  const [installMethod, setInstallMethod] = useState(null) // null=detecting, 'agent', 'cpanel', 'none'
+  const [agentName,     setAgentName]     = useState('')
+  const [cpanelHost,    setCpanelHost]    = useState('')
+  const [certCopied,    setCertCopied]    = useState(false)
+  const [keyVisible,    setKeyVisible]    = useState(false)
+
+  // Cert PEM from ord if available
+  const certPem = ord?.cert_pem || null
+  const expiryDate = ord?.valid_till
+    ? new Date(ord.valid_till).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+    : (() => { const d = new Date(); d.setDate(d.getDate() + 199); return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) })()
+  const issuedDate = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+  const ggsOrder = ord?.ggs_order_id || ord?.order_id || null
+
+  useEffect(() => {
+    if (!user) { setInstallMethod('none'); return }
+    const detect = async () => {
+      try {
+        // Check for registered agents
+        const { data: agents } = await supabase
+          .from('servers')
+          .select('id, nickname, hostname')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .limit(1)
+        if (agents && agents.length > 0) {
+          setInstallMethod('agent')
+          setAgentName(agents[0].nickname || agents[0].hostname || 'your server')
+          return
+        }
+        // Check for saved cPanel credentials
+        const { data: cpanel } = await supabase
+          .from('cpanel_credentials')
+          .select('id, hostname')
+          .eq('user_id', user.id)
+          .limit(1)
+        if (cpanel && cpanel.length > 0) {
+          setInstallMethod('cpanel')
+          setCpanelHost(cpanel[0].hostname || 'your cPanel server')
+          return
+        }
+        setInstallMethod('none')
+      } catch {
+        setInstallMethod('none')
+      }
+    }
+    detect()
+  }, [user])
+
+  const goToDashboard = () => {
+    sessionStorage.setItem('install_domain', domain)
+    if (onDashboard) onDashboard(); else nav('/dashboard')
+  }
+
+  const goToInstall = (method) => {
+    sessionStorage.setItem('install_domain', domain)
+    if (method === 'agent') sessionStorage.setItem('install_method_hint', 'agent')
+    if (method === 'cpanel') sessionStorage.setItem('install_method_hint', 'cpanel')
+    if (onDashboard) onDashboard(); else nav('/dashboard')
+  }
+
+  const copyCert = () => {
+    if (!certPem) return
+    try { navigator.clipboard.writeText(certPem) } catch {}
+    setCertCopied(true); setTimeout(() => setCertCopied(false), 2000)
+  }
+
+  const dl = () => {
+    if (!certPem) return
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(new Blob([certPem], { type: 'text/plain' }))
+    a.download = domain + '-cert.pem'; a.click()
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: 'transparent', display: 'flex',
-      alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-      <div style={{ maxWidth: 500, width: '100%', textAlign: 'center' }}>
-        <div style={{ width: 72, height: 72, borderRadius: '50%',
-          background: 'rgba(52,211,153,0.1)', border: '1.5px solid rgba(52,211,153,0.3)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-          <ShieldCheck size={32} color="#e07060" strokeWidth={2}/>
+      alignItems: 'center', justifyContent: 'center', padding: '32px 16px',
+      fontFamily: F }}>
+      <div style={{ maxWidth: 480, width: '100%', animation: 'fadeUp 0.3s ease both' }}>
+
+        {/* ── Header ── */}
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ width: 56, height: 56, borderRadius: 14, background: 'rgba(192,57,43,0.15)',
+            border: '1px solid rgba(192,57,43,0.35)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <ShieldCheck size={26} color="#ff8c7a" strokeWidth={2}/>
+          </div>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.4px',
+            margin: '0 0 6px' }}>
+            Certificate issued
+          </h2>
+          <p style={{ fontSize: 13, color: '#b0a8a0', margin: 0 }}>
+            {productName} · GoGetSSL / RapidSSL · auto-renewal active
+          </p>
         </div>
-        <h2 style={{ fontSize:28, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.6px', marginBottom: 8 }}>
-          Certificate Issued
-        </h2>
-        <div style={{ fontFamily: 'monospace', fontSize:15, color: '#ffffff', marginBottom: 8, fontWeight: 600 }}>
-          {clean(domain)}
+
+        {/* ── Cert card ── */}
+        <div style={{ border: '1px solid rgba(192,57,43,0.3)', borderRadius: 12,
+          overflow: 'hidden', marginBottom: 16, background: 'rgba(255,255,255,0.03)' }}>
+
+          {/* Card header bar */}
+          <div style={{ background: 'rgba(192,57,43,0.18)', borderBottom: '1px solid rgba(192,57,43,0.25)',
+            padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 7,
+              background: 'rgba(74,222,128,0.12)', border: '0.5px solid rgba(74,222,128,0.25)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <ShieldCheck size={14} color="#4ade80" strokeWidth={2}/>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff',
+                fontFamily: MONO, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {domain}
+              </div>
+              <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 1 }}>
+                SHA-256 · RSA 2048 · DV
+              </div>
+            </div>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5,
+              fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 20,
+              background: 'rgba(74,222,128,0.1)', color: '#4ade80',
+              border: '0.5px solid rgba(74,222,128,0.25)' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80',
+                animation: 'v2-pulse-anim 1.8s infinite' }}/>
+              Active
+            </span>
+          </div>
+
+          {/* Cert fields */}
+          {[
+            { label: 'Issued by',   value: 'GoGetSSL · RapidSSL Global TLS RSA4096', mono: true },
+            { label: 'Valid from',  value: issuedDate },
+            { label: 'Expires',     value: expiryDate + ' · 199 days', green: true },
+            ggsOrder ? { label: 'GGS order', value: '#' + ggsOrder, mono: true } : null,
+          ].filter(Boolean).map(({ label, value, mono, green }) => (
+            <div key={label} style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', padding: '8px 16px',
+              borderBottom: '0.5px solid rgba(255,255,255,0.06)', gap: 12 }}>
+              <span style={{ fontSize: 11, color: '#b0a8a0', flexShrink: 0 }}>{label}</span>
+              <span style={{ fontSize: 11, fontWeight: 600,
+                color: green ? '#4ade80' : '#ffffff',
+                fontFamily: mono ? MONO : F,
+                textAlign: 'right', wordBreak: 'break-all' }}>{value}</span>
+            </div>
+          ))}
+
+          {/* PEM actions */}
+          <div style={{ padding: '10px 16px', display: 'flex', gap: 8 }}>
+            <button onClick={copyCert} disabled={!certPem}
+              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                gap: 6, padding: '7px 10px', borderRadius: 7, fontSize: 11, fontWeight: 600,
+                cursor: certPem ? 'pointer' : 'not-allowed', fontFamily: F,
+                background: certCopied ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.06)',
+                border: certCopied ? '0.5px solid rgba(74,222,128,0.3)' : '0.5px solid rgba(255,255,255,0.1)',
+                color: certCopied ? '#4ade80' : certPem ? '#e8e0d8' : '#b0a8a0',
+                opacity: certPem ? 1 : 0.4, transition: 'all .15s' }}>
+              {certCopied
+                ? <><CheckCircle size={11}/> Copied</>
+                : <><Copy size={11}/> Copy PEM</>}
+            </button>
+            <button onClick={dl} disabled={!certPem}
+              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                gap: 6, padding: '7px 10px', borderRadius: 7, fontSize: 11, fontWeight: 600,
+                cursor: certPem ? 'pointer' : 'not-allowed', fontFamily: F,
+                background: 'rgba(255,255,255,0.06)', border: '0.5px solid rgba(255,255,255,0.1)',
+                color: certPem ? '#e8e0d8' : '#b0a8a0',
+                opacity: certPem ? 1 : 0.4 }}>
+              <ArrowRight size={11}/> Download
+            </button>
+          </div>
         </div>
-        <p style={{ fontSize:13, color: '#b5aea8', marginBottom: 32, lineHeight: 1.6 }}>
-          {PRODUCTS.find(p => p.code === product)?.name} issued via RapidSSL. Auto-renewal is active.
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
-          <button onClick={() => { sessionStorage.setItem('install_domain', clean(domain)); if (onDashboard) onDashboard(); else nav('/dashboard') }}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              background: '#c0392b', color: '#ffffff',
-              border: 'none', borderRadius: 8, padding: '13px', fontSize:14,
-              fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
-            <Server size={15}/> Go to Dashboard
+
+        {/* ── Smart install panel ── */}
+        {installMethod === null && (
+          <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10,
+            padding: '14px 16px', marginBottom: 16, display: 'flex', alignItems: 'center',
+            gap: 10, background: 'rgba(255,255,255,0.03)' }}>
+            <RefreshCw size={14} color="#b0a8a0"
+              style={{ animation: 'spin .8s linear infinite', flexShrink: 0 }}/>
+            <span style={{ fontSize: 12, color: '#b0a8a0' }}>Checking your install setup…</span>
+          </div>
+        )}
+
+        {installMethod === 'agent' && (
+          <div style={{ border: '1px solid rgba(74,222,128,0.25)', borderRadius: 10,
+            padding: '14px 16px', marginBottom: 16,
+            background: 'rgba(74,222,128,0.06)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80',
+                animation: 'v2-pulse-anim 1.8s infinite', flexShrink: 0 }}/>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#4ade80' }}>
+                Auto-installing on your server
+              </span>
+            </div>
+            <p style={{ fontSize: 12, color: '#4ade80', opacity: 0.75, margin: '0 0 10px', lineHeight: 1.6, paddingLeft: 15 }}>
+              Agent on <strong style={{ color: '#4ade80' }}>{agentName}</strong> will
+              install this cert within 5 minutes. No action needed.
+            </p>
+            <button onClick={goToDashboard}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+                borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: F,
+                background: 'rgba(74,222,128,0.12)', border: '0.5px solid rgba(74,222,128,0.3)',
+                color: '#4ade80' }}>
+              <Server size={11}/> View in dashboard
+            </button>
+          </div>
+        )}
+
+        {installMethod === 'cpanel' && (
+          <div style={{ border: '1px solid rgba(192,57,43,0.3)', borderRadius: 10,
+            padding: '14px 16px', marginBottom: 16,
+            background: 'rgba(192,57,43,0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ff8c7a',
+                animation: 'v2-pulse-anim 1.8s infinite', flexShrink: 0 }}/>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#ff8c7a' }}>
+                Auto-installing via cPanel
+              </span>
+            </div>
+            <p style={{ fontSize: 12, color: '#b0a8a0', margin: '0 0 10px', lineHeight: 1.6, paddingLeft: 15 }}>
+              cPanel cron will install via UAPI on <strong style={{ color: '#e8e0d8' }}>{cpanelHost}</strong>. No action needed.
+            </p>
+            <button onClick={goToDashboard}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+                borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: F,
+                background: 'rgba(192,57,43,0.12)', border: '0.5px solid rgba(192,57,43,0.3)',
+                color: '#ff8c7a' }}>
+              <Server size={11}/> View in dashboard
+            </button>
+          </div>
+        )}
+
+        {installMethod === 'none' && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#b0a8a0',
+              textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 10 }}>
+              How would you like to install?
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+              {[
+                { icon: Server,    label: 'VPS agent',  sub: 'Zero-touch · auto-renews', method: 'agent',  accent: false },
+                { icon: Globe,     label: 'cPanel',     sub: 'No SSH needed',            method: 'cpanel', accent: true  },
+                { icon: ArrowRight,label: 'Download',   sub: 'Manual install',           method: 'manual', accent: false },
+              ].map(({ icon: Icon, label, sub, method, accent }) => (
+                <button key={method}
+                  onClick={() => method === 'manual' ? goToDashboard() : goToInstall(method)}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    gap: 8, padding: '14px 10px', borderRadius: 10, cursor: 'pointer',
+                    fontFamily: F, textAlign: 'center', transition: 'all .15s',
+                    background: accent ? 'rgba(192,57,43,0.08)' : 'rgba(255,255,255,0.03)',
+                    border: accent ? '1px solid rgba(192,57,43,0.35)' : '0.5px solid rgba(255,255,255,0.1)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(192,57,43,0.12)'; e.currentTarget.style.borderColor = 'rgba(192,57,43,0.4)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = accent ? 'rgba(192,57,43,0.08)' : 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = accent ? 'rgba(192,57,43,0.35)' : 'rgba(255,255,255,0.1)' }}>
+                  <Icon size={20} color={accent ? '#ff8c7a' : '#b0a8a0'} strokeWidth={1.8}/>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#ffffff', marginBottom: 2 }}>{label}</div>
+                    <div style={{ fontSize: 10, color: '#b0a8a0', lineHeight: 1.4 }}>{sub}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Bottom actions ── */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={goToDashboard}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 7, padding: '11px', borderRadius: 8, fontSize: 13, fontWeight: 700,
+              cursor: 'pointer', fontFamily: F,
+              background: '#c0392b', border: 'none', color: '#ffffff' }}>
+            <Server size={14}/> Go to dashboard
           </button>
-          <button onClick={reset}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          <button onClick={onIssueAnother}
+            style={{ padding: '11px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+              cursor: 'pointer', fontFamily: F,
               background: 'rgba(255,255,255,0.06)', color: '#b0a8a0',
-              border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 8,
-              padding: '11px', fontSize:13, cursor: 'pointer', fontFamily: 'inherit' }}>
-            Issue Another Certificate
+              border: '0.5px solid rgba(255,255,255,0.1)' }}>
+            Issue another
           </button>
         </div>
+
       </div>
+      <style>{`
+        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+        @keyframes v2-pulse-anim { 0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,0.4)} 50%{box-shadow:0 0 0 5px rgba(74,222,128,0)} }
+      `}</style>
     </div>
   )
 }
