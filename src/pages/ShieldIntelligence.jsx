@@ -468,7 +468,7 @@ function CTWatchTab({ tok, user }) {
   const load = useCallback(async () => {
     setLoading(true)
     const r = await api('ca-intelligence', tok, { action:'get_shadow_certs' })
-    if (r.ok) setShadows(r.shadows || [])
+    if (r.ok) setShadows((r.shadows || []).filter(s => !s.expires_at || new Date(s.expires_at) > new Date()))
     setLoading(false)
   }, [tok])
 

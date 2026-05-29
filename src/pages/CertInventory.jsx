@@ -322,7 +322,7 @@ export default function CertInventory({ user, nav, onIssue }) {
   const [orders, setOrders]         = useState({})
   const [loading, setLoading]       = useState(true)
   const [expanded, setExpanded]     = useState(null)
-  const [statusFilter, setFilter]   = useState('ALL')
+  const [statusFilter, setFilter]   = useState('Active')
   const [domainSearch, setSearch]   = useState('')
   const [showDrop, setShowDrop]     = useState(false)
   const [agentCert, setAgentCert]   = useState(null)
