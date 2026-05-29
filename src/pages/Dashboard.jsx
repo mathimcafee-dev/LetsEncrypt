@@ -2614,21 +2614,25 @@ function LoggedInDashboard({ user, nav, onIssue }) {
 
         <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:24 }}>
           {[
-            { label:'Total certificates', value:total,    color:'#ff8c7a', border:'rgba(192,57,43,0.25)',   sub:'managed by SSLVault' },
-            { label:'Healthy',            value:healthy,  color:'#4ade80', border:'rgba(63,185,80,0.25)',    sub:healthy>0?'All valid':'No active certs' },
-            { label:'Expiring ≤30d',      value:expiring, color:expiring>0?'#fbbf24':'rgba(240,237,232,0.4)', border:expiring>0?'rgba(210,153,34,0.25)':'rgba(192,57,43,0.15)', sub:expiring>0?'Needs attention':'None expiring' },
-            { label:'Pending DCV',        value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#f87171':'rgba(240,237,232,0.4)', border:orders.filter(o=>o.status==='dv_pending').length>0?'rgba(248,81,73,0.25)':'rgba(192,57,43,0.15)', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None pending' },
-            { label:'Expired',            value:expired,  color:expired>0?'#f87171':'rgba(240,237,232,0.4)', border:expired>0?'rgba(248,81,73,0.3)':'rgba(192,57,43,0.15)', sub:expired>0?'Renew immediately':'None expired' },
+            { label:'Total certificates', value:total,    color:'#ff8c7a', border:'rgba(192,57,43,0.25)',   sub:'managed by SSLVault',  filterKey:'all' },
+            { label:'Healthy',            value:healthy,  color:'#4ade80', border:'rgba(63,185,80,0.25)',    sub:healthy>0?'All valid':'No active certs', filterKey:'healthy' },
+            { label:'Expiring ≤30d',      value:expiring, color:expiring>0?'#fbbf24':'rgba(240,237,232,0.4)', border:expiring>0?'rgba(210,153,34,0.25)':'rgba(192,57,43,0.15)', sub:expiring>0?'Needs attention':'None expiring', filterKey:'expiring' },
+            { label:'Pending DCV',        value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#f87171':'rgba(240,237,232,0.4)', border:orders.filter(o=>o.status==='dv_pending').length>0?'rgba(248,81,73,0.25)':'rgba(192,57,43,0.15)', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None pending', filterKey:'all' },
+            { label:'Expired',            value:expired,  color:expired>0?'#f87171':'rgba(240,237,232,0.4)', border:expired>0?'rgba(248,81,73,0.3)':'rgba(192,57,43,0.15)', sub:expired>0?'Renew immediately':'None expired', filterKey:'expired' },
           ].map((s,i) => (
-            <div key={s.label} style={{
+            <div key={s.label} onClick={() => setFilter(s.filterKey)} style={{
               background:'transparent',
-              border:`1px solid ${s.border}`,
+              border:`1px solid ${filter===s.filterKey && s.filterKey!=='all' ? s.color : s.border}`,
               borderRadius:8,
               padding:'18px 20px',
               position:'relative',
+              cursor:'pointer',
+              transition:'all .15s',
               animation:`fadeSlideUp 0.35s ease both`,
               animationDelay:`${i*50}ms`,
-            }}>
+            }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = s.color}
+            onMouseLeave={e => e.currentTarget.style.borderColor = filter===s.filterKey && s.filterKey!=='all' ? s.color : s.border}>
               <div style={{ fontSize:11, fontWeight:500, color:'#e8e0d8', marginBottom:10, letterSpacing:'0.01em' }}>{s.label}</div>
               <div style={{ fontSize:28, fontWeight:700, color:s.value>0?s.color:'#b0a8a0', letterSpacing:'-0.5px', lineHeight:1, marginBottom:6 }}>{s.value}</div>
               <div style={{ fontSize:11, color:'#b0a8a0' }}>{s.sub}</div>
