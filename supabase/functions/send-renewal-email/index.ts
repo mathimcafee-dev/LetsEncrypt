@@ -41,7 +41,7 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 })
 
 interface EmailRequest {
-  type: 'renewal_succeeded' | 'renewal_failed' | 'no_dns_warning'
+  type: 'renewal_succeeded' | 'renewal_failed' | 'no_dns_warning' | 'expiry_warning'
   to: string
   domain: string
   data?: Record<string, unknown>
@@ -93,12 +93,12 @@ function tplRenewalSucceeded(domain: string, data: Record<string, unknown>): { s
   const renewedAt = (data?.renewed_at as string) || new Date().toISOString()
   const renewedAtHuman = new Date(renewedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }) + ' UTC'
 
-  const subject = `✓ ${domain} renewed for 90 more days`
+  const subject = `✓ ${domain} renewed — valid for 199 days`
 
   const html = emailShell(`
     <span style="display:inline-block;background:#ecfdf5;color:#065f46;font-size:11px;font-weight:600;padding:4px 11px;border-radius:100px;border:1px solid #a7f3d0;letter-spacing:0.3px;margin-bottom:14px;">✓ RENEWED SUCCESSFULLY</span>
     <h1 style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin:0 0 8px;color:#0f172a;">Certificate renewed for ${domain}</h1>
-    <p style="font-size:14px;color:#64748b;line-height:1.6;margin:0 0 20px;">Your SSL certificate was automatically renewed. No action needed — your site stays secure for another 90 days.</p>
+    <p style="font-size:14px;color:#64748b;line-height:1.6;margin:0 0 20px;">Your SSL certificate was automatically renewed. No action needed — your site stays secure. The new certificate is valid for up to 199 days.</p>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:10px;border:1px solid #f1f5f9;">
       <tr>
         <td style="padding:12px 16px;font-size:13px;color:#64748b;width:120px;">Domain</td>
@@ -106,7 +106,7 @@ function tplRenewalSucceeded(domain: string, data: Record<string, unknown>): { s
       </tr>
       <tr>
         <td style="padding:0 16px 12px;font-size:13px;color:#64748b;">Issuer</td>
-        <td style="padding:0 16px 12px;font-size:13px;color:#0f172a;">Let's Encrypt</td>
+        <td style="padding:0 16px 12px;font-size:13px;color:#0f172a;">GoGetSSL / RapidSSL DV</td>
       </tr>
       <tr>
         <td style="padding:0 16px 12px;font-size:13px;color:#64748b;">Renewed at</td>
@@ -114,13 +114,13 @@ function tplRenewalSucceeded(domain: string, data: Record<string, unknown>): { s
       </tr>
       <tr>
         <td style="padding:0 16px 14px;font-size:13px;color:#64748b;">New expiry</td>
-        <td style="padding:0 16px 14px;font-size:13px;font-weight:600;color:#16a34a;">${newExpiryHuman} · 90 days</td>
+        <td style="padding:0 16px 14px;font-size:13px;font-weight:600;color:#16a34a;">${newExpiryHuman} · 199 days</td>
       </tr>
     </table>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:16px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;">
       <tr><td style="padding:12px 14px;font-size:12px;color:#78350f;line-height:1.6;">
-        <strong style="font-weight:600;">If you self-host</strong>, run your install agent to deploy the new certificate to your web server. If you use Vercel / Netlify / Cloudflare hosting, the new certificate is auto-deployed.
+        <strong style="font-weight:600;">Auto-install:</strong> If you have a VPS agent or cPanel credentials saved in SSLVault, the renewed certificate is being installed automatically. If you manage installation manually, download the new certificate from your dashboard.
       </td></tr>
     </table>
 
@@ -134,12 +134,12 @@ function tplRenewalSucceeded(domain: string, data: Record<string, unknown>): { s
 Your SSL certificate was automatically renewed by SSLVault. No action needed.
 
   Domain:      ${domain}
-  Issuer:      Let's Encrypt
+  Issuer:      GoGetSSL / RapidSSL DV
   Renewed at:  ${renewedAtHuman}
-  New expiry:  ${newExpiryHuman} (90 days)
+  New expiry:  ${newExpiryHuman} (199 days)
 
-If you self-host, run your install agent to deploy the new certificate.
-If you use Vercel/Netlify/Cloudflare, the new cert is auto-deployed.
+If you have a VPS agent or cPanel credentials saved, the cert is being installed automatically.
+Otherwise, download the new certificate from your SSLVault dashboard.
 
 View certificate: ${APP_URL}/dashboard
 
@@ -206,7 +206,7 @@ function tplRenewalFailed(domain: string, data: Record<string, unknown>): { subj
         <li>DNS provider API credentials expired or revoked</li>
         <li>DNS record was deleted manually</li>
         <li>Domain transferred to a different DNS provider</li>
-        <li>Let's Encrypt rate limit hit (try in a few hours)</li>
+        <li>GoGetSSL API or rate limit issue — contact SSLVault support</li>
       </ul>
     </div>
   `)
@@ -225,7 +225,7 @@ Common causes:
   - DNS provider API credentials expired or revoked
   - DNS record was deleted manually
   - Domain transferred to a different DNS provider
-  - Let's Encrypt rate limit hit
+  - GoGetSSL API issue — contact SSLVault support
 
 Fix it: ${APP_URL}/dashboard
 
@@ -239,7 +239,7 @@ SSLVault · Free SSL automation
 function tplNoDnsWarning(domain: string, data: Record<string, unknown>): { subject: string; html: string; text: string } {
   const daysLeft = (data?.days_left as number) ?? 0
 
-  const subject = `Connect DNS to auto-renew ${domain}`
+  const subject = `Action needed: connect DNS to auto-renew ${domain}`
 
   const html = emailShell(`
     <span style="display:inline-block;background:#fffbeb;color:#854d0e;font-size:11px;font-weight:600;padding:4px 11px;border-radius:100px;border:1px solid #fde68a;letter-spacing:0.3px;margin-bottom:14px;">⚙ ONE-TIME SETUP</span>
@@ -279,6 +279,78 @@ Without DNS connection, your cert will expire in ${daysLeft} days unless you ren
 Supported providers: Vercel · Cloudflare · GoDaddy · DigitalOcean
 
 Connect: ${APP_URL}/dns-providers
+
+---
+SSLVault · Free SSL automation
+`
+
+  return { subject, html, text }
+}
+
+// ============================================================================
+// EXPIRY WARNING TEMPLATE
+// ============================================================================
+
+function tplExpiryWarning(domain: string, data: Record<string, unknown>): { subject: string; html: string; text: string } {
+  const daysLeft    = (data?.days_left as number) ?? 0
+  const expiryDate  = (data?.expiry_date as string) || ''
+  const expiryHuman = expiryDate ? new Date(expiryDate).toLocaleDateString('en-US', { day:'2-digit', month:'short', year:'numeric' }) : '—'
+  const autoRenew   = (data?.auto_renew_enabled as boolean) ?? false
+
+  const urgency  = daysLeft <= 7 ? 'critical' : daysLeft <= 14 ? 'high' : 'medium'
+  const emoji    = urgency === 'critical' ? '🚨' : '⚠'
+  const labelBg  = urgency === 'critical' ? '#fef2f2' : '#fffbeb'
+  const labelClr = urgency === 'critical' ? '#dc2626' : '#d97706'
+  const labelBd  = urgency === 'critical' ? '#fecaca' : '#fde68a'
+  const labelTxt = urgency === 'critical' ? 'URGENT — EXPIRING SOON' : 'EXPIRY WARNING'
+
+  const subject = `${emoji} ${domain} expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`
+
+  const html = emailShell(`
+    <span style="display:inline-block;background:${labelBg};color:${labelClr};font-size:11px;font-weight:600;padding:4px 11px;border-radius:100px;border:1px solid ${labelBd};letter-spacing:0.3px;margin-bottom:14px;">${emoji} ${labelTxt}</span>
+    <h1 style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin:0 0 8px;color:#0f172a;">${domain} expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}</h1>
+    <p style="font-size:14px;color:#64748b;line-height:1.6;margin:0 0 20px;">${autoRenew
+      ? `Auto-renewal is enabled for this certificate. SSLVault will renew it automatically before it expires — no action needed unless you see a failure alert.`
+      : `Auto-renewal is <strong style="color:#0f172a;">not enabled</strong> for this certificate. Log in to SSLVault to reissue it before it expires.`
+    }</p>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:10px;border:1px solid #f1f5f9;">
+      <tr>
+        <td style="padding:12px 16px;font-size:13px;color:#64748b;width:120px;">Domain</td>
+        <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#0f172a;">${domain}</td>
+      </tr>
+      <tr>
+        <td style="padding:0 16px 12px;font-size:13px;color:#64748b;">Issuer</td>
+        <td style="padding:0 16px 12px;font-size:13px;color:#0f172a;">GoGetSSL / RapidSSL DV</td>
+      </tr>
+      <tr>
+        <td style="padding:0 16px 12px;font-size:13px;color:#64748b;">Expires</td>
+        <td style="padding:0 16px 12px;font-size:13px;font-weight:600;color:${urgency === 'critical' ? '#dc2626' : '#d97706'};">${expiryHuman} · ${daysLeft} days left</td>
+      </tr>
+      <tr>
+        <td style="padding:0 16px 14px;font-size:13px;color:#64748b;">Auto-renew</td>
+        <td style="padding:0 16px 14px;font-size:13px;font-weight:600;color:${autoRenew ? '#16a34a' : '#dc2626'};">${autoRenew ? 'Enabled ✓' : 'Disabled — manual action required'}</td>
+      </tr>
+    </table>
+
+    <div style="margin-top:24px;">
+      <a href="${APP_URL}/dashboard" style="display:inline-block;background:${urgency === 'critical' ? '#dc2626' : '#0f172a'};color:white;text-decoration:none;padding:11px 18px;border-radius:9px;font-size:13px;font-weight:600;">${autoRenew ? 'View dashboard →' : 'Reissue now →'}</a>
+    </div>
+  `)
+
+  const text = `${domain} expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}
+
+  Domain:      ${domain}
+  Issuer:      GoGetSSL / RapidSSL DV
+  Expires:     ${expiryHuman} (${daysLeft} days)
+  Auto-renew:  ${autoRenew ? 'Enabled' : 'Disabled — manual action required'}
+
+${autoRenew
+  ? 'Auto-renewal is enabled. SSLVault will renew this certificate automatically.'
+  : 'Auto-renewal is disabled. Log in to SSLVault and reissue this certificate before it expires.'
+}
+
+Dashboard: ${APP_URL}/dashboard
 
 ---
 SSLVault · Free SSL automation
@@ -357,6 +429,8 @@ Deno.serve(async (req) => {
       template = tplRenewalFailed(body.domain, body.data || {})
     } else if (body.type === 'no_dns_warning') {
       template = tplNoDnsWarning(body.domain, body.data || {})
+    } else if (body.type === 'expiry_warning') {
+      template = tplExpiryWarning(body.domain, body.data || {})
     } else {
       return new Response(JSON.stringify({ error: `unknown type: ${body.type}` }), {
         status: 400, headers: { 'Content-Type': 'application/json' }
