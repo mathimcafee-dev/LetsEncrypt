@@ -53,7 +53,7 @@ function useIsMobile(bp=860) {
 export default function CLMHome({ user, nav }) {
   const [sec, setSec] = useState('dashboard')
   const [key, setKey] = useState(0)
-  const [open, setOpen] = useState({'Lifecycle':true,'Infrastructure':true,'Security Ops':true,'PKI Intel':true})
+  const [open, setOpen] = useState({'Manage':true,'Automate':true,'Monitor':true,'Secure':true})
   const [sideOpen, setSideOpen] = useState(false)
   const isMobile = useIsMobile()
   const sideRef = useRef(null)
@@ -188,16 +188,11 @@ export default function CLMHome({ user, nav }) {
       {/* Nav */}
       <div style={{flex:1,overflowY:'auto',padding:'10px 8px 8px'}}>
         {NAV.map(({group,items})=>(
-          <div key={group} style={{marginBottom:6}}>
-            <button onClick={()=>setOpen(p=>({...p,[group]:!p[group]}))}
-              style={{width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',
-                padding:'4px 8px 4px 10px',background:'none',border:'none',cursor:'pointer',fontFamily:F}}>
+          <div key={group} style={{marginBottom:4}}>
+            <div style={{padding:'6px 8px 2px 10px'}}>
               <span style={{fontSize:10,fontWeight:600,letterSpacing:'0.06em',textTransform:'uppercase',color:MUTED}}>{group}</span>
-              {open[group]
-                ? <ChevronDown size={10} color={MUTED}/>
-                : <ChevronRight size={10} color={MUTED}/>}
-            </button>
-            {open[group]&&items.map(it=><NavItem key={it.id} {...it}/>)}
+            </div>
+            {items.map(it=><NavItem key={it.id} {...it}/>)}
           </div>
         ))}
       </div>
