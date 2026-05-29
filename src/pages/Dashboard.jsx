@@ -1700,7 +1700,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
       {/* ── Section tabs ── */}
       <div style={{ display:'flex', borderBottom:'1px solid rgba(255,255,255,0.08)', padding:'0 18px' }}>
-        {[['details','Details'], ['files','Files'], ['history','History'], ['security','Security']].map(([k,l]) => (
+        {[['details','Details'], ['files','Files'], ['history','History'], ['security','Security'], ['posture','Posture']].map(([k,l]) => (
           <button key={k} onClick={() => setActiveSection(k)}
             style={{ fontSize:12, fontWeight:600, padding:'10px 14px', border:'none', background:'none',
               cursor:'pointer', fontFamily:'inherit', marginBottom:-1,
@@ -1916,6 +1916,90 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
           <PqcRow cert={cert} onRefresh={onRefresh}/>
           <VulnScanner domain={cert.domain} session={session}/>
+        </div>
+      )}
+
+      {activeSection === 'posture' && (
+        <div style={{ padding:'16px 18px', display:'flex', flexDirection:'column', gap:8 }}>
+          {/* ── Cert Posture Panel — unified health view per cert ── */}
+          {[
+            {
+              label: 'Install status',
+              ok: cert.is_live_on_server,
+              okText: cert.live_confirmed_by === 'certbind_probe' ? 'TLS verified live' : 'Live on server',
+              failText: cert.install_method ? 'Install pending' : 'Not installed',
+              failColor: cert.install_method ? '#fbbf24' : '#f87171',
+            },
+            {
+              label: 'Auto-renew',
+              ok: !!cert.auto_renew_enabled,
+              okText: 'Enabled',
+              failText: 'Disabled — cert will expire without action',
+              failColor: '#f87171',
+            },
+            {
+              label: 'SSL health grade',
+              ok: ['A+','A','B'].includes(cert._healthGrade),
+              okText: cert._healthGrade || 'Not scanned yet',
+              failText: cert._healthGrade || 'Not scanned yet',
+              failColor: cert._healthGrade === 'F' ? '#f87171' : '#fbbf24',
+              neutral: !cert._healthGrade,
+            },
+            {
+              label: 'Private key (CertVault)',
+              ok: !!cert.keylocker_key_id,
+              okText: 'Stored in CertVault',
+              failText: 'Not in vault',
+              failColor: '#fbbf24',
+            },
+            {
+              label: 'DNS provider (auto-DCV)',
+              ok: !!cert.dns_provider_id,
+              okText: 'Connected — auto-renewal ready',
+              failText: 'Not connected — renewal requires manual DCV',
+              failColor: '#fbbf24',
+            },
+          ].map(({ label, ok, okText, failText, failColor, neutral }) => (
+            <div key={label} style={{
+              display:'flex', alignItems:'center', justifyContent:'space-between',
+              padding:'10px 14px', borderRadius:8,
+              background:'rgba(255,255,255,0.03)',
+              border:'0.5px solid rgba(255,255,255,0.08)',
+            }}>
+              <span style={{ fontSize:12, color:'#b0a8a0' }}>{label}</span>
+              <span style={{ fontSize:12, fontWeight:600,
+                color: neutral ? '#b0a8a0' : ok ? '#4ade80' : failColor }}>
+                {neutral ? okText : ok ? okText : failText}
+              </span>
+            </div>
+          ))}
+
+          {/* Readiness score */}
+          {(() => {
+            const checks = {
+              install:     cert.is_live_on_server,
+              auto_renew:  !!cert.auto_renew_enabled,
+              dns:         !!cert.dns_provider_id,
+              key_vault:   !!cert.keylocker_key_id,
+              health:      ['A+','A','B'].includes(cert._healthGrade),
+            }
+            const score = (checks.install?20:0)+(checks.auto_renew?25:0)+(checks.dns?25:0)+(checks.key_vault?15:0)+(checks.health?15:0)
+            const color = score>=80?'#4ade80':score>=50?'#fbbf24':'#f87171'
+            const label = score>=80?'Ready':'At risk'
+            return (
+              <div style={{ marginTop:4, padding:'12px 14px', borderRadius:8,
+                background:'rgba(255,255,255,0.03)', border:`0.5px solid ${color}22`,
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <span style={{ fontSize:12, color:'#b0a8a0' }}>Posture score</span>
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <div style={{ width:80, height:4, borderRadius:4, background:'rgba(255,255,255,0.08)', overflow:'hidden' }}>
+                    <div style={{ width:`${score}%`, height:'100%', borderRadius:4, background:color, transition:'width .4s ease' }}/>
+                  </div>
+                  <span style={{ fontSize:12, fontWeight:700, color }}>{score}/100 · {label}</span>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       )}
 
