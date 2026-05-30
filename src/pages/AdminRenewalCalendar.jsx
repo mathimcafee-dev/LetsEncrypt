@@ -230,7 +230,7 @@ export default function AdminRenewalCalendar({ user }) {
       const userIds = [...new Set((evData || []).map(e => e.user_id))]
       if (userIds.length > 0) {
         const { data: { users: authUsers } } = await supabase.auth.admin.listUsers({ perPage: 1000 })
-        const eMap: Record<string, string> = {}
+        const eMap = {}
         for (const u of (authUsers || [])) if (u.email) eMap[u.id] = u.email
         setUserEmails(eMap)
       }
