@@ -1,672 +1,547 @@
-// RenewalCalendar.jsx — Option A: GitHub heatmap style, month/week/year views
-import { useState, useEffect, useMemo } from 'react'
+// RenewalCalendar.jsx
+// Phase 3 — Customer Renewal Calendar
+// Shows per-cert renewal event schedule with live status.
+// Follows Design v2 system (v2-* CSS classes + --v2-* tokens).
+// Uses supabase client directly — no new edge functions needed.
+
+import { useState, useEffect, useCallback } from 'react'
+import {
+  Calendar, RefreshCw, CheckCircle, Clock, AlertTriangle,
+  RotateCcw, Shield, ChevronRight, Bell, BellOff, X,
+  AlertCircle, Check, Info, Zap, Globe
+} from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { ChevronLeft, ChevronRight, RefreshCw, Calendar, Shield, RotateCcw } from 'lucide-react'
-import '../styles/design-v2.css'
 
-const MONTHS   = ['January','February','March','April','May','June','July','August','September','October','November','December']
-const MONTHS_S = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-const DAYS_S   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+// ── Helpers ───────────────────────────────────────────────────────────
+const fmtDate = (iso) =>
+  iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
 
-const ACCENT = '#f0ede8'
-const RED    = '#f87171'
-const AMBER  = '#fbbf24'
-const GREEN  = '#4ade80'
+const fmtDateShort = (iso) =>
+  iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—'
 
-const STATUS = {
-  expired: { color: RED,   bg: 'rgba(192,57,43,0.12)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#f87171' },
-  warning: { color: AMBER, bg: 'rgba(239,68,68,0.08)', border: '#fcd34d', bar: AMBER, text: '#fbbf24' },
-  healthy: { color: GREEN, bg: 'transparent', border: '#86efac', bar: GREEN, text: '#4ade80' },
-  today:   { color: ACCENT,bg: 'transparent', border: 'rgba(192,57,43,0.3)', bar: ACCENT,text: '#a93226' },
+const daysFromNow = (dateStr) => {
+  if (!dateStr) return null
+  const diff = new Date(dateStr).getTime() - Date.now()
+  return Math.ceil(diff / 86400000)
 }
 
-function daysUntil(iso) {
-  if (!iso) return null
-  return Math.ceil((new Date(iso) - Date.now()) / 86400000)
-}
-function fmtDate(iso) {
-  if (!iso) return '—'
-  return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
-}
-function certStatus(expiresAt) {
-  const d = daysUntil(expiresAt)
-  if (d === null) return null
-  if (d < 0)   return 'expired'
-  if (d <= 30) return 'warning'
-  return 'healthy'
+const daysUntil = (dateStr) => {
+  const d = daysFromNow(dateStr)
+  if (d === null) return '—'
+  if (d < 0) return `${Math.abs(d)}d ago`
+  if (d === 0) return 'today'
+  if (d === 1) return 'tomorrow'
+  return `in ${d}d`
 }
 
-// ── Day cell used in month view ───────────────────────────────────────
-function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+// ── Event type metadata ───────────────────────────────────────────────
+const EVENT_META = {
+  cert_warning_30d: { label: 'Cert warning',    color: '#f59e0b', dot: '#f59e0b', icon: Bell,          urgency: 0 },
+  cert_warning_14d: { label: 'Cert warning',    color: '#f97316', dot: '#f97316', icon: Bell,          urgency: 1 },
+  cert_warning_7d:  { label: 'Cert warning',    color: '#ef4444', dot: '#ef4444', icon: Bell,          urgency: 2 },
+  cert_warning_1d:  { label: 'Final warning',   color: '#dc2626', dot: '#dc2626', icon: AlertTriangle, urgency: 3 },
+  cert_reissue:     { label: 'Auto-reissue',    color: '#10b981', dot: '#10b981', icon: RotateCcw,     urgency: 0 },
+  sub_warning_30d:  { label: 'Sub warning',     color: '#f59e0b', dot: '#f59e0b', icon: Calendar,      urgency: 0 },
+  sub_warning_14d:  { label: 'Sub warning',     color: '#f97316', dot: '#f97316', icon: Calendar,      urgency: 1 },
+  sub_warning_7d:   { label: 'Sub warning',     color: '#ef4444', dot: '#ef4444', icon: Calendar,      urgency: 2 },
+  sub_warning_1d:   { label: 'Sub ends tomorrow', color: '#dc2626', dot: '#dc2626', icon: AlertTriangle, urgency: 3 },
+  sub_end:          { label: 'Subscription ends', color: '#6b7280', dot: '#6b7280', icon: X,            urgency: 0 },
+}
 
-function DayCell({ day, certs, isToday, isSelected, onClick }) {
-  const worst = certs.reduce((w, c) => {
-    const s = certStatus(c.expires_at)
-    if (s === 'expired') return 'expired'
-    if (s === 'warning' && w !== 'expired') return 'warning'
-    if (s === 'healthy' && !w) return 'healthy'
-    return w
-  }, null)
+const STATUS_META = {
+  pending:   { label: 'Scheduled', color: '#3b82f6', bg: '#eff6ff', border: '#bfdbfe' },
+  executing: { label: 'Running',   color: '#f59e0b', bg: '#fffbeb', border: '#fde68a' },
+  sent:      { label: 'Done',      color: '#10b981', bg: '#f0fdf4', border: '#bbf7d0' },
+  skipped:   { label: 'Skipped',   color: '#9ca3af', bg: '#f9fafb', border: '#e5e7eb' },
+  failed:    { label: 'Failed',    color: '#ef4444', bg: '#fef2f2', border: '#fecaca' },
+}
 
-  const st       = isToday ? STATUS.today : worst ? STATUS[worst] : null
-  const hasCerts = certs.length > 0
-  const accentColor = worst ? STATUS[worst].bar : isToday ? ACCENT : null
+// ── Timeline event row ────────────────────────────────────────────────
+function EventRow({ ev, isToday, isPast }) {
+  const meta  = EVENT_META[ev.event_type] || { label: ev.event_type, color: '#6b7280', dot: '#6b7280', icon: Clock, urgency: 0 }
+  const sMeta = STATUS_META[ev.status] || STATUS_META.pending
+  const Icon  = meta.icon
+  const days  = daysFromNow(ev.scheduled_date)
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'flex-start', gap: 12, padding: '10px 0',
+      opacity: isPast && ev.status === 'skipped' ? 0.45 : 1,
+    }}>
+      {/* Timeline line + dot */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 24, flexShrink: 0 }}>
+        <div style={{
+          width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+          background: ev.status === 'sent' ? meta.dot : ev.status === 'failed' ? '#ef4444' : ev.status === 'executing' ? '#f59e0b' : isToday ? meta.dot : isPast ? '#d1d5db' : 'var(--v2-surface-2)',
+          border: `2px solid ${ev.status === 'sent' ? meta.dot : ev.status === 'failed' ? '#ef4444' : ev.status === 'executing' ? '#f59e0b' : isToday ? meta.dot : '#d1d5db'}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: isToday && ev.status === 'pending' ? `0 0 0 4px ${meta.dot}22` : 'none',
+        }}>
+          {ev.status === 'sent'
+            ? <Check size={10} strokeWidth={3} color="white" />
+            : ev.status === 'failed'
+            ? <X size={9} strokeWidth={2.5} color="white" />
+            : ev.status === 'executing'
+            ? <RefreshCw size={9} strokeWidth={2} color="white" style={{ animation: 'nm-spin 0.8s linear infinite' }} />
+            : <Icon size={9} strokeWidth={2} color={isToday || ev.status === 'pending' ? 'white' : '#9ca3af'} />
+          }
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 2 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)' }}>{meta.label}</span>
+          <span style={{
+            fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+            textTransform: 'uppercase', letterSpacing: '0.4px',
+            background: sMeta.bg, color: sMeta.color, border: `0.5px solid ${sMeta.border}`,
+          }}>{sMeta.label}</span>
+          {isToday && ev.status === 'pending' && (
+            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+              background: '#eff6ff', color: '#2563eb', border: '0.5px solid #bfdbfe',
+              textTransform: 'uppercase', letterSpacing: '0.3px' }}>Today</span>
+          )}
+        </div>
+        <div style={{ display: 'flex', align: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>
+            {fmtDate(ev.scheduled_date)}
+            {days !== null && <span style={{ color: 'var(--v2-text-3)', marginLeft: 4 }}>· {daysUntil(ev.scheduled_date)}</span>}
+          </span>
+          {ev.retry_count > 0 && (
+            <span style={{ fontSize: 10, color: '#ef4444' }}>· retry {ev.retry_count}/3</span>
+          )}
+        </div>
+        {ev.error_message && (
+          <div style={{ fontSize: 10, color: '#dc2626', marginTop: 3, fontFamily: 'JetBrains Mono, monospace',
+            background: '#fef2f2', padding: '3px 6px', borderRadius: 4, border: '0.5px solid #fecaca' }}>
+            {ev.error_message.slice(0, 100)}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Cert header card ──────────────────────────────────────────────────
+function CertCard({ cert, events, selected, onSelect }) {
+  const nextEvent = events.find(e => e.status === 'pending')
+  const hasFailure = events.some(e => e.status === 'failed')
+  const hasActionRequired = cert.action_required
+
+  const daysExpiry = daysFromNow(cert.expires_at)
+  const daysSubEnd = daysFromNow(cert.subscription_end_date)
+
+  const urgencyColor = hasActionRequired || (daysExpiry !== null && daysExpiry <= 7)
+    ? '#ef4444'
+    : daysExpiry !== null && daysExpiry <= 14
+    ? '#f59e0b'
+    : 'var(--v2-green)'
+
+  const rowStatus = hasActionRequired ? 'amber' : hasFailure ? 'amber' : daysExpiry !== null && daysExpiry <= 7 ? 'amber' : 'green'
 
   return (
     <div
-      onClick={() => hasCerts && onClick()}
-      style={{
-        minHeight: 90,
-        borderRadius: 8,
-        padding: '7px 7px 6px',
-        background: hasCerts
-          ? (st ? st.bg : 'rgba(255,255,255,0.04)')
-          : isToday ? 'rgba(192,57,43,0.06)' : 'rgba(255,255,255,0.02)',
-        border: isSelected
-          ? `2px solid ${accentColor || ACCENT}`
-          : hasCerts
-            ? `0.5px solid ${st ? st.border : 'var(--v2-border)'}`
-            : `0.5px solid var(--v2-border)`,
-        borderLeft: accentColor ? `3px solid ${accentColor}` : undefined,
-        cursor:    hasCerts ? 'pointer' : 'default',
-        transition:'box-shadow .15s ease',
-        opacity: 1,
-      }}
-      onMouseEnter={e => { if (hasCerts) e.currentTarget.style.boxShadow='0 2px 10px rgba(0,0,0,0.10)' }}
-      onMouseLeave={e => { e.currentTarget.style.boxShadow='none' }}
+      className={`v2-list-row status-${rowStatus} ${selected ? 'selected' : ''}`}
+      onClick={onSelect}
     >
-      {/* Day number */}
-      <div style={{
-        width: 24, height: 24, borderRadius: '50%', marginBottom: 6,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: isToday ? '#c0392b' : 'transparent',
-        fontSize:12, fontWeight: hasCerts || isToday ? 700 : 400,
-        color: isToday ? '#ffffff' : hasCerts ? (st ? st.text : '#ffffff') : '#6b5a5a',
-      }}>
-        {day}
+      <div className="v2-row-icon" style={{ background: hasActionRequired ? '#ef4444' : '#10b981' }}>
+        {hasActionRequired ? <AlertTriangle size={13} color="white" /> : <Shield size={13} color="white" />}
       </div>
-
-      {/* Cert pills — bigger, bolder */}
-      {certs.slice(0, 3).map((c, i) => {
-        const s   = certStatus(c.expires_at)
-        const css = s ? STATUS[s] : STATUS.healthy
-        return (
-          <div key={i} style={{
-            fontSize:10, fontWeight: 600, padding: '2px 5px', borderRadius: 4,
-            marginBottom: 2, lineHeight: 1.4,
-            background: css.bg, color: css.text, border: `0.5px solid ${css.border}`,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            {c.domain.replace(/^www\./, '').replace(/^(.{12}).*/, '$1…')}
-          </div>
-        )
-      })}
-      {certs.length > 3 && (
-        <div style={{ fontSize:10, color: st ? st.text : 'var(--v2-text-3)',
-          fontWeight: 600, marginTop: 1 }}>
-          +{certs.length - 3} more
+      <div className="v2-row-body">
+        <div className="v2-row-title-line">
+          <span className="v2-row-title v2-mono">{cert.domain}</span>
+          {hasActionRequired && (
+            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+              background: '#fef2f2', color: '#ef4444', border: '0.5px solid #fecaca',
+              textTransform: 'uppercase', letterSpacing: '0.3px' }}>Action required</span>
+          )}
         </div>
-      )}
+        <div className="v2-row-meta" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 10, color: urgencyColor, fontWeight: 600 }}>
+            {daysExpiry !== null
+              ? daysExpiry <= 0 ? 'Expired' : `Cert: ${daysExpiry}d left`
+              : 'No expiry'}
+          </span>
+          {daysSubEnd !== null && (
+            <>
+              <span className="v2-row-meta-sep">·</span>
+              <span style={{ fontSize: 10, color: 'var(--v2-text-3)' }}>Sub: {daysSubEnd}d</span>
+            </>
+          )}
+          {nextEvent && (
+            <>
+              <span className="v2-row-meta-sep">·</span>
+              <span style={{ fontSize: 10, color: 'var(--v2-text-3)' }}>
+                Next: {fmtDateShort(nextEvent.scheduled_date)}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+      <ChevronRight size={14} strokeWidth={1.8} style={{ color: 'var(--v2-text-3)', flexShrink: 0 }} />
     </div>
   )
 }
 
 // ── Detail panel ──────────────────────────────────────────────────────
-function DetailPanel({ label, certs, onClose }) {
+function CertDetail({ cert, events, prefs, onRefresh, onTogglePref }) {
+  if (!cert) return (
+    <div className="v2-detail" style={{ textAlign: 'center', padding: '40px 16px' }}>
+      <Calendar size={28} strokeWidth={1.4} style={{ color: 'var(--v2-text-3)', marginBottom: 8 }} />
+      <div style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>Select a certificate to see its renewal schedule</div>
+    </div>
+  )
+
+  const today = new Date().toISOString().split('T')[0]
+  const daysExpiry = daysFromNow(cert.expires_at)
+  const daysSubEnd = daysFromNow(cert.subscription_end_date)
+  const pendingCount = events.filter(e => e.status === 'pending').length
+  const sentCount    = events.filter(e => e.status === 'sent').length
+
+  // Group events: past (sent/skipped) | today | upcoming (pending/executing)
+  const todayEvents   = events.filter(e => e.scheduled_date === today)
+  const pastEvents    = events.filter(e => e.scheduled_date < today && e.status !== 'pending')
+  const upcomingEvents = events.filter(e => e.scheduled_date > today || (e.scheduled_date === today && e.status === 'pending'))
+
   return (
-    <div style={{
-      marginTop: 10, borderRadius: 10, overflow: 'hidden',
-      border: '0.5px solid var(--v2-border)',
-      animation: 'slideDown .18s ease',
-    }}>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-        padding:'9px 14px', background:'var(--v2-surface-3)',
-        borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
-        <span style={{ fontSize:12, fontWeight:500, color:'#ffffff' }}>
-          {certs.length} cert{certs.length!==1?'s':''} — {label}
-        </span>
-        <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer',
-          color:'#b0a8a0', fontSize:16, lineHeight:1, padding:'0 4px' }}>×</button>
-      </div>
-      {/* Col headers */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
-        padding:'6px 14px', background:'var(--v2-surface-3)',
-        borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
-        {['Domain','Issuer','Expires','Days'].map(h => (
-          <div key={h} style={{ fontSize:9, fontWeight:600, color:'#b0a8a0',
-            textTransform:'uppercase', letterSpacing:'0.3px' }}>{h}</div>
-        ))}
-      </div>
-      {certs.map((c, i) => {
-        const st  = certStatus(c.expires_at)
-        const css = st ? STATUS[st] : STATUS.healthy
-        const d   = daysUntil(c.expires_at)
-        return (
-          <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
-            padding:'9px 14px', alignItems:'center',
-            borderBottom: i<certs.length-1 ? '0.5px solid var(--v2-border)' : 'none',
-            background: 'rgba(255,255,255,0.04)',
-          }}>
-            <div>
-              <div style={{ fontSize:12, fontWeight:500, color:'#ffffff',
-                overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                {c.domain}
-              </div>
-              <div style={{ fontSize:10, color:'#b0a8a0', marginTop:1 }}>
-                {c.cert_type || 'DV'}
-                {c.auto_renew_enabled && (
-                  <span style={{ marginLeft:5, fontSize:9, fontWeight:600,
-                    color:ACCENT, background:'transparent', padding:'1px 5px', borderRadius:3 }}>AUTO</span>
-                )}
-              </div>
-            </div>
-            <div style={{ fontSize:11, color:'#e8e0d8' }}>
-              {c.issuer || c.external_issuer || 'RapidSSL'}
-            </div>
-            <div style={{ fontSize:11, color:'#e8e0d8' }}>{fmtDate(c.expires_at)}</div>
-            <div>
-              <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:4,
-                background:css.bg, color:css.text }}>
-                {d===null?'—':d<0?`${Math.abs(d)}d ago`:d===0?'Today':`${d}d`}
-              </span>
-            </div>
+    <div className="v2-detail mobile-collapse open">
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
+        <div style={{
+          width: 36, height: 36, borderRadius: 8, flexShrink: 0,
+          background: cert.action_required ? '#fef2f2' : '#f0fdf4',
+          border: `0.5px solid ${cert.action_required ? '#fecaca' : '#bbf7d0'}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Shield size={18} strokeWidth={1.8} color={cert.action_required ? '#ef4444' : '#10b981'} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--v2-text)', fontFamily: 'JetBrains Mono, monospace' }}>{cert.domain}</div>
+          <div style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>
+            {pendingCount} event{pendingCount !== 1 ? 's' : ''} scheduled · {sentCount} completed
           </div>
-        )
-      })}
-    </div>
-  )
-}
-
-// ══ MONTH VIEW ════════════════════════════════════════════════════════
-function MonthView({ certs, viewYear, viewMonth, today }) {
-  const [selectedDay, setSelectedDay] = useState(null)
-
-  const certsByDay = useMemo(() => {
-    const map = {}
-    certs.forEach(c => {
-      if (!c.expires_at) return
-      const d = new Date(c.expires_at)
-      if (d.getFullYear()!==viewYear || d.getMonth()!==viewMonth) return
-      const k = d.getDate(); if (!map[k]) map[k] = []; map[k].push(c)
-    })
-    return map
-  }, [certs, viewYear, viewMonth])
-
-  const firstDow  = new Date(viewYear, viewMonth, 1).getDay()
-  const daysCount = new Date(viewYear, viewMonth+1, 0).getDate()
-  const isToday   = d => d===today.getDate() && viewMonth===today.getMonth() && viewYear===today.getFullYear()
-
-  return (
-    <div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:4, marginBottom:4 }}>
-        {DAYS_S.map(d => (
-          <div key={d} style={{ fontSize:10, fontWeight:700, color:'rgba(240,237,232,0.5)',
-            textAlign:'center', padding:'6px 0', textTransform:'uppercase', letterSpacing:'1px' }}>{d}</div>
-        ))}
-      </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:4 }}>
-        {Array.from({length:firstDow}).map((_,i) => (
-          <div key={`e${i}`} style={{ minHeight:78, borderRadius:8,
-            background:'rgba(255,255,255,0.02)', opacity:1 }}/>
-        ))}
-        {Array.from({length:daysCount}).map((_,i) => {
-          const day = i+1
-          return (
-            <DayCell
-              key={day} day={day}
-              certs={certsByDay[day]||[]}
-              isToday={isToday(day)}
-              isSelected={selectedDay===day}
-              onClick={() => setSelectedDay(selectedDay===day?null:day)}
-            />
-          )
-        })}
+        </div>
+        <button className="v2-btn v2-btn-sm" onClick={onRefresh}>
+          <RefreshCw size={11} strokeWidth={2} /> Refresh
+        </button>
       </div>
 
-      {selectedDay && certsByDay[selectedDay] && (
-        <DetailPanel
-          label={`${MONTHS[viewMonth]} ${selectedDay}, ${viewYear}`}
-          certs={certsByDay[selectedDay]}
-          onClose={() => setSelectedDay(null)}
-        />
-      )}
-    </div>
-  )
-}
-
-// ══ WEEK VIEW ═════════════════════════════════════════════════════════
-function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
-  const [selectedDate, setSelectedDate] = useState(null)
-
-  const weekDates = useMemo(() => {
-    const first      = new Date(viewYear, viewMonth, 1)
-    const startOffset= (first.getDay() + 6) % 7
-    const weekStart  = new Date(viewYear, viewMonth, 1 + viewWeek*7 - startOffset)
-    return Array.from({length:7}, (_,i) => {
-      const d = new Date(weekStart); d.setDate(weekStart.getDate()+i); return d
-    })
-  }, [viewYear, viewMonth, viewWeek])
-
-  const certsByDate = useMemo(() => {
-    const map = {}
-    certs.forEach(c => {
-      if (!c.expires_at) return
-      const key = new Date(c.expires_at).toDateString()
-      if (!map[key]) map[key] = []; map[key].push(c)
-    })
-    return map
-  }, [certs])
-
-  return (
-    <div>
-      {/* Day headers */}
-      <div style={{ display:'grid', gridTemplateColumns:'50px repeat(auto-fill,minmax(100px,1fr))', gap:3, marginBottom:3 }}>
-        <div/>
-        {weekDates.map((d,i) => {
-          const isToday = d.toDateString()===today.toDateString()
-          const dc = certsByDate[d.toDateString()]||[]
-          const worst = dc.reduce((w,c)=>{const s=certStatus(c.expires_at);if(s==='expired')return 'expired';if(s==='warning'&&w!=='expired')return 'warning';return w}, dc.length>0?'healthy':null)
-          const st = isToday ? STATUS.today : worst ? STATUS[worst] : null
-          return (
-            <div key={i} style={{ textAlign:'center', padding:'8px 4px',
-              background: st ? st.bg : 'var(--v2-surface-3)',
-              border:`0.5px solid ${st ? st.border : 'var(--v2-border)'}`,
-              borderRadius:8 }}>
-              <div style={{ fontSize:9, color:'#b0a8a0', textTransform:'uppercase',
-                letterSpacing:'0.3px', marginBottom:2 }}>{DAYS_S[d.getDay()]}</div>
-              <div style={{ fontSize:18, fontWeight:600,
-                color: isToday ? '#ffffff' : st ? st.text : '#ffffff' }}>{d.getDate()}</div>
-              {dc.length>0 && (
-                <div style={{ display:'flex', justifyContent:'center', gap:2, marginTop:4 }}>
-                  {dc.slice(0,3).map((_,ci) => (
-                    <div key={ci} style={{ width:5, height:5, borderRadius:'50%',
-                      background: worst ? STATUS[worst].bar : GREEN }}/>
-                  ))}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Time rows */}
-      <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
-        {Array.from({length:10}, (_,i) => i+8).map(hour => (
-          <div key={hour} style={{ display:'grid', gridTemplateColumns:'50px repeat(auto-fill,minmax(100px,1fr))',
-            borderBottom:'0.5px solid rgba(255,255,255,0.08)', minHeight:48 }}>
-            <div style={{ fontSize:9, color:'#b0a8a0', padding:'5px 8px',
-              borderRight:'0.5px solid var(--v2-border)', background:'var(--v2-surface-3)',
-              display:'flex', alignItems:'flex-start', justifyContent:'flex-end' }}>
-              {hour}:00
-            </div>
-            {weekDates.map((d,di) => {
-              const isToday = d.toDateString()===today.toDateString()
-              const dc = certsByDate[d.toDateString()]||[]
-              const showCerts = hour===9 && dc.length>0
-              const key = d.toDateString()
-              return (
-                <div key={di} onClick={() => showCerts&&setSelectedDate(selectedDate===key?null:key)}
-                  style={{ background: isToday?'rgba(30,0,0,0.4)':'transparent',
-                    borderRight:'0.5px solid var(--v2-border)',
-                    padding:3, cursor:showCerts?'pointer':'default' }}>
-                  {showCerts && dc.slice(0,2).map((c,ci) => {
-                    const s = certStatus(c.expires_at)
-                    const css = s ? STATUS[s] : STATUS.healthy
-                    return (
-                      <div key={ci} style={{ fontSize:8, fontWeight:600,
-                        padding:'1px 3px', borderRadius:3, marginBottom:2,
-                        background:css.bg, color:css.text,
-                        overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                        {c.domain.replace('www.','')}
-                      </div>
-                    )
-                  })}
-                </div>
-              )
-            })}
-          </div>
-        ))}
-      </div>
-
-      {selectedDate && certsByDate[selectedDate] && (
-        <DetailPanel
-          label={new Date(selectedDate).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
-          certs={certsByDate[selectedDate]}
-          onClose={()=>setSelectedDate(null)}
-        />
-      )}
-    </div>
-  )
-}
-
-// ══ YEAR VIEW ═════════════════════════════════════════════════════════
-function YearView({ certs, viewYear, today, onDrillDown }) {
-  const certsByMonth = useMemo(() => {
-    return Array.from({length:12}, (_,mi) => {
-      const mc = certs.filter(c => {
-        if (!c.expires_at) return false
-        const d = new Date(c.expires_at)
-        return d.getFullYear()===viewYear && d.getMonth()===mi
-      })
-      const expired = mc.filter(c=>certStatus(c.expires_at)==='expired').length
-      const warning = mc.filter(c=>certStatus(c.expires_at)==='warning').length
-      return { certs:mc, expired, warning }
-    })
-  }, [certs, viewYear])
-
-  const maxCount = Math.max(...certsByMonth.map(m=>m.certs.length), 1)
-
-  return (
-    <div>
-      {/* Bar chart */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(60px,1fr))', gap:6, marginBottom:20 }}>
-        {certsByMonth.map((m,mi) => {
-          const isCurrent = mi===today.getMonth() && viewYear===today.getFullYear()
-          const total = m.certs.length
-          const barColor = m.expired>0 ? RED : m.warning>0 ? AMBER : total>0 ? GREEN : 'var(--v2-border)'
-          const pct = total>0 ? Math.max(14, (total/maxCount)*100) : 0
-
-          return (
-            <div key={mi}
-              onClick={() => total>0 && onDrillDown(mi)}
-              style={{ cursor:total>0?'pointer':'default', textAlign:'center' }}
-              onMouseEnter={e=>{ if(total>0) e.currentTarget.style.transform='translateY(-3px)' }}
-              onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)' }}>
-              <div style={{ height:80, borderRadius:7, background:'var(--v2-surface-3)',
-                border:`0.5px solid ${isCurrent?ACCENT:'var(--v2-border)'}`,
-                display:'flex', flexDirection:'column', justifyContent:'flex-end',
-                overflow:'hidden', position:'relative', transition:'all .15s' }}>
-                {total>0 && (
-                  <div style={{ height:`${pct}%`, background:barColor, opacity:0.85,
-                    borderRadius:'0 0 6px 6px', transition:'height .4s cubic-bezier(.16,1,.3,1)' }}/>
-                )}
-                {total>0 && (
-                  <div style={{ position:'absolute', top:'50%', left:'50%',
-                    transform:'translate(-50%,-50%)',
-                    fontSize:15, fontWeight:600, color:'#ffffff' }}>{total}</div>
-                )}
-              </div>
-              <div style={{ fontSize:9, marginTop:5, fontWeight: isCurrent?600:400,
-                color: isCurrent?ACCENT:'#b0a8a0' }}>{MONTHS_S[mi]}</div>
-              {total>0 && (
-                <div style={{ display:'flex', justifyContent:'center', gap:2, marginTop:2 }}>
-                  {m.expired>0&&<div style={{ width:4,height:4,borderRadius:'50%',background:RED }}/>}
-                  {m.warning>0&&<div style={{ width:4,height:4,borderRadius:'50%',background:AMBER }}/>}
-                  {m.certs.filter(c=>certStatus(c.expires_at)==='healthy').length>0&&<div style={{ width:4,height:4,borderRadius:'50%',background:GREEN }}/>}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Mini month grid — 12 months */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:10 }}>
-        {certsByMonth.map((m,mi) => {
-          const isCurrent = mi===today.getMonth() && viewYear===today.getFullYear()
-          const firstDow  = new Date(viewYear,mi,1).getDay()
-          const daysCount = new Date(viewYear,mi+1,0).getDate()
-
-          return (
-            <div key={mi}
-              onClick={() => onDrillDown(mi)}
-              style={{ background:'var(--v2-surface)', border:`0.5px solid ${isCurrent?ACCENT:'var(--v2-border)'}`,
-                borderRadius:9, padding:10, cursor:'pointer', transition:'all .15s' }}
-              onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-2px)' }}
-              onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)' }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:7 }}>
-                <span style={{ fontSize:11, fontWeight:600, color:isCurrent?ACCENT:'var(--v2-text)' }}>
-                  {MONTHS_S[mi]}
-                </span>
-                <span style={{ fontSize:10, fontWeight:700, padding:'1px 7px', borderRadius:20,
-                  background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'rgba(192,57,43,0.12)':m.warning>0?'rgba(239,68,68,0.08)':'transparent',
-                  color: m.certs.length===0 ? 'var(--v2-text-3)' : m.expired>0?RED:m.warning>0?AMBER:GREEN,
-                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'rgba(239,83,80,0.3)':m.warning>0?'rgba(192,57,43,0.25)':'rgba(192,57,43,0.3)'}` }}>
-                  {m.certs.length}
-                </span>
-              </div>
-              {/* Micro pixel grid */}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(7,minmax(0,1fr))', gap:1 }}>
-                {Array.from({length:firstDow}).map((_,i)=>(
-                  <div key={`e${i}`} style={{ height:6 }}/>
-                ))}
-                {Array.from({length:daysCount}).map((_,i) => {
-                  const day=i+1
-                  const d=new Date(viewYear,mi,day)
-                  const dc=m.certs.filter(c=>new Date(c.expires_at).getDate()===day)
-                  const isToday=d.toDateString()===today.toDateString()
-                  const st=dc.length>0?certStatus(dc[0].expires_at):null
-                  return (
-                    <div key={day} style={{
-                      height:6, borderRadius:1,
-                      background: isToday?ACCENT:st?STATUS[st].bar:'var(--v2-surface-3)',
-                      opacity: isToday||dc.length>0 ? 1 : 0.5,
-                      transition:'all .1s',
-                    }}/>
-                  )
-                })}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-// ══ MAIN ══════════════════════════════════════════════════════════════
-export default function RenewalCalendar({ user }) {
-  const isMobile = useIsMobile()
-  const today = useMemo(()=>new Date(),[])
-  const [certs,     setCerts]     = useState([])
-  const [loading,   setLoading]   = useState(true)
-  const [view,      setView]      = useState('month')
-  const [viewYear,  setViewYear]  = useState(today.getFullYear())
-  const [viewMonth, setViewMonth] = useState(today.getMonth())
-  const [viewWeek,  setViewWeek]  = useState(0)
-  const [animKey,   setAnimKey]   = useState(0) // triggers re-mount animation
-
-  useEffect(() => {
-    if (!user) return
-    supabase.from('certificates')
-      .select('id,domain,expires_at,issued_at,cert_type,issuer,external_issuer,status,auto_renew_enabled')
-      .eq('user_id', user.id).neq('status','revoked')
-      .order('expires_at', { ascending:true })
-      .then(({ data }) => { setCerts(data||[]); setLoading(false) })
-  }, [user])
-
-  const navigate = (dir) => {
-    setAnimKey(k=>k+1)
-    if (view==='year') {
-      setViewYear(y=>y+dir)
-    } else if (view==='month') {
-      let nm=viewMonth+dir, ny=viewYear
-      if(nm>11){nm=0;ny++} ; if(nm<0){nm=11;ny--}
-      setViewMonth(nm); setViewYear(ny)
-    } else {
-      const weeksInMonth = Math.ceil((new Date(viewYear,viewMonth,1).getDay()+new Date(viewYear,viewMonth+1,0).getDate())/7)
-      let nw=viewWeek+dir, nm=viewMonth, ny=viewYear
-      if(nw>=weeksInMonth){nw=0;nm++;if(nm>11){nm=0;ny++}}
-      if(nw<0){nm--;if(nm<0){nm=11;ny--};nw=Math.ceil((new Date(ny,nm,1).getDay()+new Date(ny,nm+1,0).getDate())/7)-1}
-      setViewWeek(nw); setViewMonth(nm); setViewYear(ny)
-    }
-  }
-
-  const goToday = () => {
-    setAnimKey(k=>k+1)
-    setViewYear(today.getFullYear()); setViewMonth(today.getMonth()); setViewWeek(0)
-  }
-
-  const drillDown = (month) => { setViewMonth(month); setView('month'); setAnimKey(k=>k+1) }
-
-  const allExpired = certs.filter(c=>certStatus(c.expires_at)==='expired').length
-  const allWarning = certs.filter(c=>certStatus(c.expires_at)==='warning').length
-  const allHealthy = certs.filter(c=>certStatus(c.expires_at)==='healthy').length
-
-  const upcoming = certs.filter(c=>{ const d=daysUntil(c.expires_at); return d!==null&&d>=0&&d<=90 }).slice(0,5)
-
-  const navLabel = view==='year' ? `${viewYear}`
-    : view==='month' ? `${MONTHS[viewMonth]} ${viewYear}`
-    : `Week ${viewWeek+1} · ${MONTHS_S[viewMonth]} ${viewYear}`
-
-  return (
-    <div className="v2-page">
-      <div className="v2-container" style={{ maxWidth:1060 }}>
-
-        {/* Header */}
-        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
-          marginBottom:16, paddingTop:8, gap:12, flexWrap:'wrap' }}>
+      {/* Action required banner */}
+      {cert.action_required && (
+        <div style={{
+          background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8,
+          padding: '10px 12px', marginBottom: 14, display: 'flex', gap: 8, alignItems: 'flex-start'
+        }}>
+          <AlertTriangle size={14} strokeWidth={2} color="#ef4444" style={{ flexShrink: 0, marginTop: 1 }} />
           <div>
-            <h1 className="v2-h1" style={{ fontSize:22 }}>Renewal calendar</h1>
-            <p style={{ fontSize:13, color:'#b0a8a0', marginTop:4 }}>
-              {certs.length} certificate{certs.length!==1?'s':''} tracked · click any day to inspect
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#dc2626', marginBottom: 2 }}>Manual action required</div>
+            <div style={{ fontSize: 11, color: '#ef4444', lineHeight: 1.5 }}>
+              {cert.action_required_reason || 'Auto-reissue failed after 3 attempts. Please manually reissue this certificate.'}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stats row */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
+        <div style={{ background: 'var(--v2-surface-2)', borderRadius: 8, padding: '10px 12px', border: '0.5px solid var(--v2-border)' }}>
+          <div style={{ fontSize: 10, color: 'var(--v2-text-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 4 }}>Cert expires</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: daysExpiry !== null && daysExpiry <= 7 ? '#ef4444' : daysExpiry !== null && daysExpiry <= 30 ? '#f59e0b' : 'var(--v2-text)' }}>
+            {daysExpiry !== null ? (daysExpiry <= 0 ? 'Expired' : `${daysExpiry}d`) : '—'}
+          </div>
+          <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 2 }}>{fmtDate(cert.expires_at)}</div>
+        </div>
+        <div style={{ background: 'var(--v2-surface-2)', borderRadius: 8, padding: '10px 12px', border: '0.5px solid var(--v2-border)' }}>
+          <div style={{ fontSize: 10, color: 'var(--v2-text-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 4 }}>Subscription</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: daysSubEnd !== null && daysSubEnd <= 30 ? '#f59e0b' : 'var(--v2-text)' }}>
+            {daysSubEnd !== null ? (daysSubEnd <= 0 ? 'Ended' : `${daysSubEnd}d`) : '—'}
+          </div>
+          <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 2 }}>{fmtDate(cert.subscription_end_date)}</div>
+        </div>
+      </div>
+
+      {/* Timeline */}
+      <div className="v2-section-label" style={{ marginBottom: 8 }}>Renewal schedule</div>
+
+      <div style={{ borderLeft: '1.5px solid var(--v2-border)', paddingLeft: 12, marginLeft: 10 }}>
+        {events.length === 0 && (
+          <div style={{ fontSize: 11, color: 'var(--v2-text-3)', padding: '12px 0' }}>No events scheduled.</div>
+        )}
+
+        {/* Today */}
+        {todayEvents.map(ev => (
+          <EventRow key={ev.id} ev={ev} isToday={true} isPast={false} />
+        ))}
+
+        {/* Upcoming */}
+        {upcomingEvents.filter(e => e.scheduled_date !== today).map(ev => (
+          <EventRow key={ev.id} ev={ev} isToday={false} isPast={false} />
+        ))}
+
+        {/* Past separator */}
+        {pastEvents.length > 0 && (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 4px', opacity: 0.5 }}>
+              <div style={{ flex: 1, height: '0.5px', background: 'var(--v2-border)' }} />
+              <span style={{ fontSize: 9, color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 700, flexShrink: 0 }}>Completed</span>
+              <div style={{ flex: 1, height: '0.5px', background: 'var(--v2-border)' }} />
+            </div>
+            {pastEvents.map(ev => (
+              <EventRow key={ev.id} ev={ev} isToday={false} isPast={true} />
+            ))}
+          </>
+        )}
+      </div>
+
+      {/* Notification preferences */}
+      {prefs && (
+        <>
+          <div className="v2-section-label" style={{ marginTop: 16, marginBottom: 8 }}>Email notifications</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {[
+              { key: 'notify_cert_expiry',    label: 'Certificate expiry warnings' },
+              { key: 'notify_cert_reissued',  label: 'Reissue confirmation' },
+              { key: 'notify_sub_expiry',     label: 'Subscription expiry warnings' },
+              { key: 'notify_reissue_failed', label: 'Failure alerts' },
+            ].map(({ key, label }) => (
+              <div key={key} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '7px 10px', borderRadius: 6, background: 'var(--v2-surface-2)',
+                border: '0.5px solid var(--v2-border)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  {prefs[key] !== false
+                    ? <Bell size={11} strokeWidth={2} color="var(--v2-accent)" />
+                    : <BellOff size={11} strokeWidth={2} color="var(--v2-text-3)" />}
+                  <span style={{ fontSize: 11, color: 'var(--v2-text-2)' }}>{label}</span>
+                </div>
+                <button
+                  onClick={() => onTogglePref(key, prefs[key] !== false)}
+                  style={{
+                    padding: '2px 10px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+                    cursor: 'pointer', border: 'none', fontFamily: 'inherit',
+                    background: prefs[key] !== false ? 'var(--v2-accent-bg)' : 'var(--v2-surface)',
+                    color: prefs[key] !== false ? 'var(--v2-accent)' : 'var(--v2-text-3)',
+                  }}
+                >
+                  {prefs[key] !== false ? 'On' : 'Off'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// ── Empty state ───────────────────────────────────────────────────────
+function EmptyState() {
+  return (
+    <div className="v2-empty">
+      <div className="v2-empty-icon"><Calendar size={26} strokeWidth={1.6} /></div>
+      <div className="v2-empty-title">No active certificates</div>
+      <div className="v2-empty-desc">Issue a certificate to see its renewal calendar here.</div>
+    </div>
+  )
+}
+
+// ── Main page ─────────────────────────────────────────────────────────
+export default function RenewalCalendar({ user }) {
+  const [certs, setCerts]         = useState([])
+  const [eventsMap, setEventsMap] = useState({}) // cert_id → events[]
+  const [prefs, setPrefs]         = useState(null)
+  const [loading, setLoading]     = useState(true)
+  const [selectedId, setSelectedId] = useState(null)
+  const [saving, setSaving]       = useState(false)
+  const [saveMsg, setSaveMsg]     = useState('')
+
+  const userId = user?.id
+
+  const load = useCallback(async () => {
+    if (!userId) return
+    setLoading(true)
+    try {
+      // Load active certs (is_current = true)
+      const { data: certsData } = await supabase
+        .from('certificates')
+        .select('id,domain,expires_at,subscription_end_date,status,action_required,action_required_reason,reissue_count')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .eq('is_current', true)
+        .order('expires_at', { ascending: true })
+
+      const certList = certsData || []
+      setCerts(certList)
+
+      if (certList.length > 0) {
+        // Load renewal events for all certs
+        const certIds = certList.map(c => c.id)
+        const { data: evData } = await supabase
+          .from('renewal_events')
+          .select('id,cert_id,event_type,scheduled_date,status,retry_count,error_message,triggered_by')
+          .in('cert_id', certIds)
+          .order('scheduled_date', { ascending: true })
+
+        const map = {}
+        for (const ev of (evData || [])) {
+          if (!map[ev.cert_id]) map[ev.cert_id] = []
+          map[ev.cert_id].push(ev)
+        }
+        setEventsMap(map)
+
+        if (!selectedId && certList.length > 0) setSelectedId(certList[0].id)
+      }
+
+      // Load notification prefs
+      const { data: prefData } = await supabase
+        .from('user_settings')
+        .select('notify_cert_expiry,notify_cert_reissued,notify_sub_expiry,notify_reissue_failed,email_alerts')
+        .eq('user_id', userId)
+        .single()
+
+      setPrefs(prefData || {
+        notify_cert_expiry: true, notify_cert_reissued: true,
+        notify_sub_expiry: true, notify_reissue_failed: true, email_alerts: true
+      })
+    } catch (e) {
+      console.error('[RenewalCalendar] load error:', e)
+    }
+    setLoading(false)
+  }, [userId])
+
+  useEffect(() => { load() }, [load])
+
+  const togglePref = async (key, currentlyOn) => {
+    const newVal = !currentlyOn
+    setSaving(true)
+    setPrefs(p => ({ ...p, [key]: newVal }))
+    try {
+      const { error } = await supabase.from('user_settings').upsert({
+        user_id: userId, [key]: newVal, updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' })
+      if (error) throw error
+      setSaveMsg('Saved')
+      setTimeout(() => setSaveMsg(''), 1500)
+    } catch (e) {
+      setPrefs(p => ({ ...p, [key]: currentlyOn }))
+      setSaveMsg('Error saving')
+      setTimeout(() => setSaveMsg(''), 2000)
+    }
+    setSaving(false)
+  }
+
+  const selCert   = certs.find(c => c.id === selectedId) || null
+  const selEvents = selectedId ? (eventsMap[selectedId] || []) : []
+
+  const actionRequiredCount = certs.filter(c => c.action_required).length
+  const nearExpiryCount = certs.filter(c => {
+    const d = daysFromNow(c.expires_at)
+    return d !== null && d <= 14 && d > 0
+  }).length
+
+  return (
+    <div style={{ background: '#f0f4f8', minHeight: '100vh' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 24px 80px' }}>
+
+        {/* Page header */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 4, flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h1 className="v2-h1">Renewal Calendar</h1>
+            <p className="v2-subtitle">
+              {certs.length} certificate{certs.length !== 1 ? 's' : ''} monitored
+              {actionRequiredCount > 0 && ` · ${actionRequiredCount} action required`}
+              {nearExpiryCount > 0 && ` · ${nearExpiryCount} expiring soon`}
             </p>
           </div>
-          <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
-            {/* View switcher */}
-            <div style={{ display:'flex', background:'rgba(255,255,255,0.04)',
-              border:'1px solid rgba(192,57,43,0.2)', borderRadius:8, padding:3, gap:2 }}>
-              {[['month','Month'],['week','Week'],['year','Year']].map(([v,l])=>(
-                <button key={v} onClick={()=>{setView(v);setAnimKey(k=>k+1)}}
-                  style={{ padding:'6px 16px', fontSize:12, fontWeight: view===v ? 700 : 500,
-                    background: view===v ? '#c0392b' : 'transparent',
-                    border: 'none',
-                    borderRadius:6, cursor:'pointer', fontFamily:'inherit',
-                    color: view===v ? '#ffffff' : 'rgba(240,237,232,0.4)',
-                    transition:'all .15s',
-                    boxShadow: view===v ? '0 1px 4px rgba(0,0,0,0.3)' : 'none',
-                  }}>
-                  {l}
-                </button>
-              ))}
-            </div>
-            {/* Nav */}
-            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              <button className="v2-btn v2-btn-sm" onClick={()=>navigate(-1)}
-                style={{ display:'flex', alignItems:'center', padding:'6px 8px' }}>
-                <ChevronLeft size={14}/>
-              </button>
-              <div style={{ fontSize:13, fontWeight:500, color:'#ffffff',
-                minWidth:view==='year'?50:150, textAlign:'center' }}>
-                {navLabel}
-              </div>
-              <button className="v2-btn v2-btn-sm" onClick={()=>navigate(1)}
-                style={{ display:'flex', alignItems:'center', padding:'6px 8px' }}>
-                <ChevronRight size={14}/>
-              </button>
-              <button className="v2-btn v2-btn-sm" onClick={goToday}>Today</button>
-            </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {saveMsg && (
+              <span style={{ fontSize: 11, color: saveMsg.includes('Error') ? '#ef4444' : '#10b981', fontWeight: 500 }}>
+                {saveMsg}
+              </span>
+            )}
+            <button className="v2-btn v2-btn-sm" onClick={load} disabled={loading}>
+              <RefreshCw size={11} strokeWidth={2} className={loading ? 'spin' : ''} />
+              Refresh
+            </button>
           </div>
         </div>
 
-        {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, marginBottom:16, border:'1px solid rgba(192,57,43,0.2)', borderRadius:10, overflow:'hidden' }}>
-          {[
-            { label:'Total',         val:certs.length, color:'#f0ede8' },
-            { label:'Expired',       val:allExpired,   color: allExpired > 0 ? RED : 'rgba(240,237,232,0.3)' },
-            { label:'Expiring ≤30d', val:allWarning,   color: allWarning > 0 ? AMBER : 'rgba(240,237,232,0.3)' },
-            { label:'Healthy',       val:allHealthy,   color: allHealthy > 0 ? GREEN : 'rgba(240,237,232,0.3)' },
-          ].map(({label,val,color},i)=>(
-            <div key={label} style={{ padding:'14px 18px', background:'rgba(255,255,255,0.02)', borderRight: i<3 ? '1px solid rgba(192,57,43,0.15)' : 'none' }}>
-              <div style={{ fontSize:24, fontWeight:700, color, letterSpacing:'-1px', lineHeight:1 }}>{val}</div>
-              <div style={{ fontSize:11, color:'rgba(240,237,232,0.4)', marginTop:5, fontWeight:500 }}>{label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Legend */}
-        <div style={{ display:'flex', gap:14, marginBottom:16, flexWrap:'wrap', alignItems:'center' }}>
-          {[
-            { label:'Expired',        color:RED,   bg:'rgba(192,57,43,0.12)', border:'rgba(239,83,80,0.3)' },
-            { label:'Expiring ≤30d',  color:AMBER, bg:'rgba(239,68,68,0.08)', border:'#fcd34d' },
-            { label:'Healthy (>30d)', color:GREEN, bg:'transparent', border:'#86efac' },
-            { label:'Today',          color:ACCENT,bg:'transparent', border:'rgba(192,57,43,0.3)' },
-          ].map(({label,color,bg,border})=>(
-            <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
-              <div style={{ width:10,height:10,borderRadius:2,background:bg,border:`0.5px solid ${border}` }}/>
-              <span style={{ fontSize:11, color:'#b0a8a0' }}>{label}</span>
-            </div>
-          ))}
-          <div style={{ marginLeft:'auto', fontSize:11, color:'#b0a8a0' }}>
-            Hover to enlarge · click to inspect
-          </div>
-        </div>
-
-        {/* Calendar */}
-        <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(192,57,43,0.2)', borderRadius:10, overflow:'hidden' }}>
-          {loading ? (
-            <div style={{ textAlign:'center', padding:'48px 0', color:'#b0a8a0' }}>
-              <RefreshCw size={22} style={{ animation:'spin .8s linear infinite',
-                margin:'0 auto 10px', display:'block' }}/>
-              Loading certificates…
-            </div>
-          ) : certs.length===0 ? (
-            <div style={{ textAlign:'center', padding:'48px 0' }}>
-              <Calendar size={32} style={{ color:'#b0a8a0', margin:'0 auto 12px', display:'block' }}/>
-              <div style={{ fontSize:14, fontWeight:500, color:'#e8e0d8', marginBottom:6 }}>
-                No certificates yet
-              </div>
-              <div style={{ fontSize:12, color:'#b0a8a0' }}>
-                Issue your first certificate to see it on the calendar.
-              </div>
-            </div>
-          ) : (
-            <div key={animKey} style={{ animation:'fadeSlide .2s ease' }}>
-              {view==='month' && <MonthView certs={certs} viewYear={viewYear} viewMonth={viewMonth} today={today}/>}
-              {view==='week'  && <WeekView  certs={certs} viewYear={viewYear} viewMonth={viewMonth} viewWeek={viewWeek} today={today}/>}
-              {view==='year'  && <YearView  certs={certs} viewYear={viewYear} today={today} onDrillDown={drillDown}/>}
-            </div>
-          )}
-        </div>
-
-        {/* Upcoming strip */}
-        {!loading && upcoming.length>0 && (
-          <div style={{ marginTop:16 }}>
-            <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
-              textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:10 }}>
-              Upcoming — next 90 days
-            </div>
-            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-              {upcoming.map((c,i) => {
-                const d   = daysUntil(c.expires_at)
-                const st  = certStatus(c.expires_at)
-                const css = st ? STATUS[st] : STATUS.healthy
-                const pct = Math.max(4, Math.min(100,(1-d/90)*100))
-                return (
-                  <div key={i} className="v2-card" style={{ padding:'10px 14px',
-                    borderLeft:`3px solid ${css.color}`, borderRadius:'0 8px 8px 0' }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:6 }}>
-                      <span style={{ fontSize:12, fontWeight:500, color:'#ffffff', flex:1,
-                        overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                        {c.domain}
-                      </span>
-                      <span style={{ fontSize:11, color:'#b0a8a0' }}>
-                        {c.issuer||'RapidSSL'}
-                      </span>
-                      <span style={{ fontSize:11, fontWeight:600, color:css.color, flexShrink:0 }}>
-                        {d===0?'Today':d===1?'Tomorrow':`${d} days`}
-                      </span>
-                      {c.auto_renew_enabled && (
-                        <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:3,
-                          background:'transparent', color:ACCENT }}>AUTO</span>
-                      )}
-                    </div>
-                    <div style={{ height:3, background:'var(--v2-surface-3)', borderRadius:2, overflow:'hidden' }}>
-                      <div style={{ height:'100%', width:`${pct}%`, background:css.bar,
-                        borderRadius:2, transition:'width .6s' }}/>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+        {/* Alert banners */}
+        {actionRequiredCount > 0 && (
+          <div className="v2-alert v2-alert-error" style={{ marginBottom: 16 }}>
+            <AlertTriangle size={13} strokeWidth={2} />
+            <span>
+              <strong>{actionRequiredCount} certificate{actionRequiredCount > 1 ? 's' : ''}</strong> require manual reissue — auto-reissue failed after 3 attempts.
+            </span>
           </div>
         )}
 
+        {/* Main split */}
+        <div className="v2-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
+
+          {/* Left: cert list */}
+          <div style={{ background: '#ffffff', border: '0.5px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
+            {loading ? (
+              <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>
+                Loading certificates…
+              </div>
+            ) : certs.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <>
+                {/* Action required group */}
+                {certs.filter(c => c.action_required).length > 0 && (
+                  <>
+                    <div style={{ padding: '10px 16px 4px', fontSize: 10, fontWeight: 700,
+                      color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.5px',
+                      borderBottom: '0.5px solid #fecaca', background: '#fef2f2' }}>
+                      Action required
+                    </div>
+                    {certs.filter(c => c.action_required).map(cert => (
+                      <CertCard key={cert.id} cert={cert} events={eventsMap[cert.id] || []}
+                        selected={selectedId === cert.id} onSelect={() => setSelectedId(cert.id)} />
+                    ))}
+                  </>
+                )}
+
+                {/* Normal certs */}
+                {certs.filter(c => !c.action_required).length > 0 && (
+                  <>
+                    {certs.filter(c => c.action_required).length > 0 && (
+                      <div style={{ padding: '10px 16px 4px', fontSize: 10, fontWeight: 700,
+                        color: 'var(--v2-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px',
+                        borderBottom: '0.5px solid var(--v2-border)', marginTop: 4 }}>
+                        Active
+                      </div>
+                    )}
+                    {certs.filter(c => !c.action_required).map(cert => (
+                      <CertCard key={cert.id} cert={cert} events={eventsMap[cert.id] || []}
+                        selected={selectedId === cert.id} onSelect={() => setSelectedId(cert.id)} />
+                    ))}
+                  </>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Right: detail */}
+          <div>
+            <CertDetail
+              cert={selCert}
+              events={selEvents}
+              prefs={prefs}
+              onRefresh={load}
+              onTogglePref={togglePref}
+            />
+          </div>
+        </div>
       </div>
+
       <style>{`
-        @keyframes spin       { from{transform:rotate(0)}to{transform:rotate(360deg)} }
-        @keyframes fadeSlide  { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
-        @keyframes slideDown  { from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)} }
+        .spin { animation: nm-spin 0.8s linear infinite; }
+        @keyframes nm-spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }
       `}</style>
     </div>
   )
