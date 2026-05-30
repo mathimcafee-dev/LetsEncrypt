@@ -97,7 +97,7 @@ export default function CLMHome({ user, nav }) {
       {id:'my-servers',        label:'Servers & agents', icon:Server},
     ]},
     { group:'Monitor', items:[
-      {id:'security-monitor',  label:'Security monitor',  icon:ShieldCheck},
+      {id:'shield',            label:'Security monitor',  icon:ShieldCheck},
       {id:'readiness',         label:'47-Day Readiness', icon:ShieldCheck, badge:'NEW'},
     ]},
     { group:'Secure', items:[
@@ -115,7 +115,7 @@ export default function CLMHome({ user, nav }) {
   const TITLES = {
     dashboard:'Dashboard', issue:'Issue cert', readiness:'47-Day Readiness',
     'renewal-calendar':'Renewal calendar', certvault:'CertVault', certbind:'CertBind',
-    'my-servers':'Servers & agents', 'security-monitor':'Security monitor',
+    'my-servers':'Servers & agents', shield:'Security monitor',
     'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence',
     'admin-calendar':'Admin Calendar',
     'cert-timeline':'Certificate Timeline',
@@ -138,7 +138,7 @@ export default function CLMHome({ user, nav }) {
     if(sec==='certbind')         return <CertBind nav={sideNav}/>
     if(sec==='settings')         return <SettingsPage user={user}/>
     if(sec==='ca-intelligence')  return <CAIntelligenceHub nav={sideNav}/>
-    if(sec==='security-monitor') return <SecurityMonitor user={user}/>
+    if(sec==='shield')           return <ShieldIntelligence user={user}/>
     if(sec==='cert-timeline')    return <CertTimeline user={user}/>
     if(sec==='renewal-calendar') return <RenewalCalendar user={user}/>
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
