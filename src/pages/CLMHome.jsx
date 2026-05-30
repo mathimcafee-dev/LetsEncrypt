@@ -97,9 +97,8 @@ export default function CLMHome({ user, nav }) {
       {id:'my-servers',        label:'Servers & agents', icon:Server},
     ]},
     { group:'Monitor', items:[
-      {id:'shield',            label:'CT Abuse Monitor', icon:ShieldCheck},
+      {id:'security-monitor',  label:'Security monitor',  icon:ShieldCheck},
       {id:'readiness',         label:'47-Day Readiness', icon:ShieldCheck, badge:'NEW'},
-      {id:'ssl-health',        label:'SSL Health Score', icon:Activity},
     ]},
     { group:'Secure', items:[
       {id:'certvault',         label:'CertVault',        icon:Lock},
@@ -116,9 +115,8 @@ export default function CLMHome({ user, nav }) {
   const TITLES = {
     dashboard:'Dashboard', issue:'Issue cert', readiness:'47-Day Readiness',
     'renewal-calendar':'Renewal calendar', certvault:'CertVault', certbind:'CertBind',
-    'my-servers':'Servers & agents', shield:'CT Abuse Monitor',
+    'my-servers':'Servers & agents', 'security-monitor':'Security monitor',
     'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence',
-    'ssl-health':'SSL Health Score',
     'admin-calendar':'Admin Calendar',
     'cert-timeline':'Certificate Timeline',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
@@ -140,8 +138,7 @@ export default function CLMHome({ user, nav }) {
     if(sec==='certbind')         return <CertBind nav={sideNav}/>
     if(sec==='settings')         return <SettingsPage user={user}/>
     if(sec==='ca-intelligence')  return <CAIntelligenceHub nav={sideNav}/>
-    if(sec==='shield')           return <ShieldIntelligence user={user}/>
-    if(sec==='ssl-health')       return <SSLHealthScore user={user}/>
+    if(sec==='security-monitor') return <SecurityMonitor user={user}/>
     if(sec==='cert-timeline')    return <CertTimeline user={user}/>
     if(sec==='renewal-calendar') return <RenewalCalendar user={user}/>
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
