@@ -158,7 +158,7 @@ function DomainRow({ score, onRescan, scanning }) {
   )
 }
 
-export default function SSLHealthScore({ user, embedded = false }) {
+export default function SSLHealthScore({ user }) {
   const isMobile = useIsMobile()
   const [tok, setTok] = useState('')
   const [scores, setScores] = useState([])
@@ -210,8 +210,9 @@ export default function SSLHealthScore({ user, embedded = false }) {
   const avgScore = scores.length ? Math.round(scores.reduce((a, s) => a + (s.score || 0), 0) / scores.length) : 0
   const issues = scores.filter(s => !s.hsts || !s.caa || (s.expiry_days != null && s.expiry_days <= 30))
 
-  const inner = (
-    <div>
+  return (
+    <div className="v2-page">
+      <div className="v2-container" style={{ maxWidth: 860 }}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
@@ -294,11 +295,8 @@ export default function SSLHealthScore({ user, embedded = false }) {
             </div>
           </div>
         )}
-    </div>
+      </div>
       <style>{`@keyframes spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }`}</style>
-  )
-  if (embedded) return inner
-  return (
-    <div className="v2-page"><div className="v2-container" style={{ maxWidth: 860 }}>{inner}</div></div>
+    </div>
   )
 }
