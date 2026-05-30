@@ -95,7 +95,6 @@ export default function CLMHome({ user, nav }) {
     ]},
     { group:'Automate', items:[
       {id:'my-servers',        label:'Servers & agents', icon:Server},
-      {id:'integrations',      label:'Integrations',     icon:Globe},
     ]},
     { group:'Monitor', items:[
       {id:'shield',            label:'CT Abuse Monitor', icon:ShieldCheck},
@@ -117,7 +116,7 @@ export default function CLMHome({ user, nav }) {
   const TITLES = {
     dashboard:'Dashboard', issue:'Issue cert', readiness:'47-Day Readiness',
     'renewal-calendar':'Renewal calendar', certvault:'CertVault', certbind:'CertBind',
-    'my-servers':'Servers & agents', integrations:'Integrations', shield:'CT Abuse Monitor',
+    'my-servers':'Servers & agents', shield:'CT Abuse Monitor',
     'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence',
     'ssl-health':'SSL Health Score',
     'admin-calendar':'Admin Calendar',
