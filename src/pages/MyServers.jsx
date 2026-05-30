@@ -598,9 +598,9 @@ function AddServerModal({ onClose, userId }) {
               </div>
             </>
           )}
-        </div>
-
         </>) /* end servers tab */}
+
+        </div>
 
         {/* ── CA CONNECTIONS TAB ───────────────────────────────────── */}
         {caTab === 'ca' && (
@@ -1154,9 +1154,9 @@ function AddDnsModal({ onClose, onSaved, userId }) {
               {saving ? <><RefreshCw size={12} style={{animation:'spin .8s linear infinite'}}/> Saving…</> : 'Save credentials'}
             </button>
           </div>
-        </div>
-
         </>) /* end servers tab */}
+
+        </div>
 
         {/* ── CA CONNECTIONS TAB ───────────────────────────────────── */}
         {caTab === 'ca' && (
@@ -2303,9 +2303,9 @@ function AddHostingModal({ onClose, onSaved, userId }) {
                 : saved ? '✓ Saved' : 'Save server'}
             </button>
           </div>
-        </div>
-
         </>) /* end servers tab */}
+
+        </div>
 
         {/* ── CA CONNECTIONS TAB ───────────────────────────────────── */}
         {caTab === 'ca' && (
