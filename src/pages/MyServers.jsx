@@ -6,7 +6,7 @@ import {
   Server, Globe, Plus, RefreshCw, CheckCircle, XCircle,
   Wifi, WifiOff, Copy, Check, ChevronDown, ChevronUp,
   Shield, Trash2, ExternalLink, AlertCircle, Terminal,
-  Zap, Lock, Clock, Upload, FileText, Info, Eye, EyeOff, ExternalLink, ChevronRight, AlertTriangle, Shield
+  Zap, Lock, Clock, Upload, FileText, Info, Eye, EyeOff, ChevronRight, AlertTriangle
 } from 'lucide-react'
 import '../styles/design-v2.css'
 import { differenceInMinutes, formatDistanceToNow } from 'date-fns'
