@@ -19,6 +19,7 @@ import CertChangelog from './CertChangelog'
 import BulkScanner from './BulkScanner'
 import RenewalCalendar from './RenewalCalendar'
 import AdminRenewalCalendar from './AdminRenewalCalendar'
+import CertTimeline from './CertTimeline'
 import CTAbuseMonitor from './CTAbuseMonitor'
 import ShieldIntelligence from './ShieldIntelligence'
 import ReadinessDashboard from './ReadinessDashboard'
@@ -90,9 +91,7 @@ export default function CLMHome({ user, nav }) {
     { group:'Manage', items:[
       {id:'dashboard',         label:'Dashboard',        icon:LayoutDashboard},
       {id:'issue',             label:'Issue cert',       icon:Plus},
-      {id:'renewal-calendar',  label:'Renewal calendar', icon:CalendarDays},
-      {id:'cert-changelog',    label:'Activity log',     icon:History},
-      {id:'admin-calendar',    label:'Admin Calendar',   icon:BarChart2},
+      {id:'cert-timeline',     label:'Certificate Timeline', icon:CalendarDays},
     ]},
     { group:'Automate', items:[
       {id:'my-servers',        label:'Servers & agents', icon:Server},
@@ -122,6 +121,7 @@ export default function CLMHome({ user, nav }) {
     'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence',
     'ssl-health':'SSL Health Score',
     'admin-calendar':'Admin Calendar',
+    'cert-timeline':'Certificate Timeline',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
   }
 
@@ -143,6 +143,7 @@ export default function CLMHome({ user, nav }) {
     if(sec==='ca-intelligence')  return <CAIntelligenceHub nav={sideNav}/>
     if(sec==='shield')           return <ShieldIntelligence user={user}/>
     if(sec==='ssl-health')       return <SSLHealthScore user={user}/>
+    if(sec==='cert-timeline')    return <CertTimeline user={user}/>
     if(sec==='renewal-calendar') return <RenewalCalendar user={user}/>
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
     if(sec==='admin-calendar')   return <AdminRenewalCalendar user={user}/>
