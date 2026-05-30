@@ -6,12 +6,53 @@ import {
   Server, Globe, Plus, RefreshCw, CheckCircle, XCircle,
   Wifi, WifiOff, Copy, Check, ChevronDown, ChevronUp,
   Shield, Trash2, ExternalLink, AlertCircle, Terminal,
-  Zap, Lock, Clock
+  Zap, Lock, Clock,
+  Upload, FileText, Info, Eye, EyeOff, ExternalLink, ChevronRight, AlertTriangle, AlertCircle
 } from 'lucide-react'
 import '../styles/design-v2.css'
 import { differenceInMinutes, formatDistanceToNow } from 'date-fns'
 
 const SB = import.meta.env.VITE_SUPABASE_URL || 'https://frthcwkntciaakqsppss.supabase.co'
+const CA_FN = SB + '/functions/v1/ca-import'
+async function callCA(tok, body) {
+  const r = await fetch(CA_FN, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tok}` },
+    body: JSON.stringify(body),
+  })
+  return r.json()
+}
+const CA_DEFS = {
+  digicert: {
+    name: 'DigiCert CertCentral', color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)', logo: 'DC',
+    desc: 'Pull all issued certificates from your CertCentral account. Monitoring only — no private keys needed.',
+    fields: [
+      { key: 'api_key',    label: 'API Key',               type: 'password', placeholder: 'Your CertCentral API key',             required: true  },
+      { key: 'account_id', label: 'Account ID (optional)', type: 'text',     placeholder: 'Division / sub-account ID (optional)', required: false },
+    ],
+    docs: 'https://dev.digicert.com/en/certcentral-apis/creating-an-api-key.html',
+  },
+  sectigo: {
+    name: 'Sectigo SCM', color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)', logo: 'SC',
+    desc: 'Pull all certificates from Sectigo Certificate Manager. Monitoring only — no private keys needed.',
+    fields: [
+      { key: 'customer_uri', label: 'Customer URI', type: 'text',     placeholder: 'your-company',          required: true },
+      { key: 'login',        label: 'Login',        type: 'text',     placeholder: 'admin@yourcompany.com', required: true },
+      { key: 'password',     label: 'Password',     type: 'password', placeholder: '••••••••',              required: true },
+    ],
+    docs: 'https://sectigo.com/knowledge-base/detail/Sectigo-Certificate-Manager-API/kA01N000000bvOx',
+  },
+  sslcom: {
+    name: 'SSL.com', color: '#ffffff', bg: 'rgba(192,57,43,0.1)', border: 'rgba(192,57,43,0.3)', logo: 'SL',
+    desc: 'Pull all issued certificates from your SSL.com reseller account. Monitoring only — no private keys needed.',
+    fields: [
+      { key: 'account_key', label: 'Account Key', type: 'password', placeholder: 'Your SSL.com account key', required: true },
+      { key: 'secret_key',  label: 'Secret Key',  type: 'password', placeholder: 'Your SSL.com secret key',  required: true },
+    ],
+    docs: 'https://www.ssl.com/restful_api',
+  },
+}
+
 
 // ── Helpers ──────────────────────────────────────────────────────────
 function agentOnline(a) {
@@ -75,6 +116,53 @@ function ServerCard({ agent, certs }) {
   const online = agentOnline(agent)
   const certCount = certs.length
   const expiringSoon = certs.filter(c => { const d = daysLeft(c.expires_at); return d !== null && d <= 30 && d >= 0 }).length
+
+  const loadCA = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const tok = session?.access_token || ''
+    setCaTok(tok)
+    if (!tok) return
+    setCaLoading(true)
+    const r = await callCA(tok, { action: 'list_connections' })
+    if (r.connections) setConnections(r.connections)
+    if (r.total_certs !== undefined) setCaCertCount(r.total_certs)
+    else if (r.certs) setCaCertCount(r.certs.length)
+    setCaLoading(false)
+  }
+
+  const openAdd = (ca) => { setAddCa(ca); setAddLabel(CA_DEFS[ca]?.name || ''); setAddFields({}); setAddError('') }
+
+  const saveConnection = async () => {
+    setAddSaving(true); setAddError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const freshTok = session?.access_token || caTok
+    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
+    const r = await callCA(freshTok, payload)
+    setAddSaving(false)
+    if (r.ok) { setShowAddCA(false); setAddCa(null); await loadCA() }
+    else setAddError(r.error || 'Connection failed')
+  }
+
+  const doSync = async (connId) => {
+    setSyncing(connId)
+    const r = await callCA(caTok, { action: 'sync', connection_id: connId })
+    setSyncResult(p => ({ ...p, [connId]: r }))
+    setSyncing(null)
+    await loadCA()
+  }
+
+  const deleteConn = async (connId) => {
+    await callCA(caTok, { action: 'delete_connection', connection_id: connId, delete_certs: delCerts })
+    setDelConn(null); setDelCerts(true)
+    await loadCA()
+  }
+
+  const doImport = async () => {
+    setImporting(true)
+    const r = await callCA(caTok, { action: 'manual_import', cert_pem: pemText.trim() })
+    setImportResult(r); setImporting(false)
+    if (r.ok) await loadCA()
+  }
 
   return (
     <div style={{
@@ -206,6 +294,53 @@ function ServerCard({ agent, certs }) {
 function DnsCard({ cred, onDelete, deletingId }) {
   const isConfirming = deletingId === cred.id
   const p = DNS_PROVIDERS[cred.provider] || { name: cred.provider, color: '#b0a8a0', initials: cred.provider?.slice(0,2).toUpperCase() }
+  const loadCA = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const tok = session?.access_token || ''
+    setCaTok(tok)
+    if (!tok) return
+    setCaLoading(true)
+    const r = await callCA(tok, { action: 'list_connections' })
+    if (r.connections) setConnections(r.connections)
+    if (r.total_certs !== undefined) setCaCertCount(r.total_certs)
+    else if (r.certs) setCaCertCount(r.certs.length)
+    setCaLoading(false)
+  }
+
+  const openAdd = (ca) => { setAddCa(ca); setAddLabel(CA_DEFS[ca]?.name || ''); setAddFields({}); setAddError('') }
+
+  const saveConnection = async () => {
+    setAddSaving(true); setAddError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const freshTok = session?.access_token || caTok
+    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
+    const r = await callCA(freshTok, payload)
+    setAddSaving(false)
+    if (r.ok) { setShowAddCA(false); setAddCa(null); await loadCA() }
+    else setAddError(r.error || 'Connection failed')
+  }
+
+  const doSync = async (connId) => {
+    setSyncing(connId)
+    const r = await callCA(caTok, { action: 'sync', connection_id: connId })
+    setSyncResult(p => ({ ...p, [connId]: r }))
+    setSyncing(null)
+    await loadCA()
+  }
+
+  const deleteConn = async (connId) => {
+    await callCA(caTok, { action: 'delete_connection', connection_id: connId, delete_certs: delCerts })
+    setDelConn(null); setDelCerts(true)
+    await loadCA()
+  }
+
+  const doImport = async () => {
+    setImporting(true)
+    const r = await callCA(caTok, { action: 'manual_import', cert_pem: pemText.trim() })
+    setImportResult(r); setImporting(false)
+    if (r.ok) await loadCA()
+  }
+
   return (
     <div style={{
       background: 'var(--v2-surface)', border: '1px solid rgba(192,57,43,0.25)', borderRadius: 10,
@@ -282,6 +417,53 @@ function AddServerModal({ onClose, userId }) {
       if (d.ok && d.command) { setCmd(d.command); setStep(2) }
     } catch {}
     setLoading(false)
+  }
+
+  const loadCA = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const tok = session?.access_token || ''
+    setCaTok(tok)
+    if (!tok) return
+    setCaLoading(true)
+    const r = await callCA(tok, { action: 'list_connections' })
+    if (r.connections) setConnections(r.connections)
+    if (r.total_certs !== undefined) setCaCertCount(r.total_certs)
+    else if (r.certs) setCaCertCount(r.certs.length)
+    setCaLoading(false)
+  }
+
+  const openAdd = (ca) => { setAddCa(ca); setAddLabel(CA_DEFS[ca]?.name || ''); setAddFields({}); setAddError('') }
+
+  const saveConnection = async () => {
+    setAddSaving(true); setAddError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const freshTok = session?.access_token || caTok
+    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
+    const r = await callCA(freshTok, payload)
+    setAddSaving(false)
+    if (r.ok) { setShowAddCA(false); setAddCa(null); await loadCA() }
+    else setAddError(r.error || 'Connection failed')
+  }
+
+  const doSync = async (connId) => {
+    setSyncing(connId)
+    const r = await callCA(caTok, { action: 'sync', connection_id: connId })
+    setSyncResult(p => ({ ...p, [connId]: r }))
+    setSyncing(null)
+    await loadCA()
+  }
+
+  const deleteConn = async (connId) => {
+    await callCA(caTok, { action: 'delete_connection', connection_id: connId, delete_certs: delCerts })
+    setDelConn(null); setDelCerts(true)
+    await loadCA()
+  }
+
+  const doImport = async () => {
+    setImporting(true)
+    const r = await callCA(caTok, { action: 'manual_import', cert_pem: pemText.trim() })
+    setImportResult(r); setImporting(false)
+    if (r.ok) await loadCA()
   }
 
   return (
@@ -417,6 +599,384 @@ function AddServerModal({ onClose, userId }) {
             </>
           )}
         </div>
+
+        </>) /* end servers tab */}
+
+        {/* ── CA CONNECTIONS TAB ───────────────────────────────────── */}
+        {caTab === 'ca' && (
+          <div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <div style={{ fontSize:13, color:'#e8e0d8' }}>
+                {connections.length} connection{connections.length !== 1 ? 's' : ''} · {caCertCount} certificates tracked
+              </div>
+              <div style={{ display:'flex', gap:8 }}>
+                <button onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:13,
+                    background:'var(--v2-surface)', border:'1px solid rgba(192,57,43,0.25)',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8', fontWeight:500 }}>
+                  <Upload size={14}/> Import PEM
+                </button>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', fontSize:13,
+                    fontWeight:600, background:'#c0392b', border:'none', borderRadius:8,
+                    cursor:'pointer', fontFamily:'inherit', color:'#ffffff' }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            </div>
+
+            {connections.length === 0 ? (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
+                padding:'60px 32px', textAlign:'center' }}>
+                <Shield size={36} style={{ color:'#b0a8a0', display:'block', margin:'0 auto 14px' }}/>
+                <div style={{ fontSize:15, fontWeight:500, color:'#ffffff', marginBottom:6 }}>No CA connections</div>
+                <div style={{ fontSize:13, color:'#b0a8a0', maxWidth:420, margin:'0 auto 20px' }}>
+                  Connect DigiCert CertCentral or Sectigo SCM to import your external certificate portfolio.
+                </div>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ padding:'9px 20px', fontSize:13, background:'#c0392b', border:'none',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600,
+                    display:'inline-flex', alignItems:'center', gap:6 }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            ) : (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto' }}>
+                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                  padding:'10px 20px', background:'var(--v2-surface-2)',
+                  borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+                  {['Certificate authority', 'Label', 'Certs', 'Status', 'Actions'].map(h => (
+                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
+                      textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
+                  ))}
+                </div>
+                {connections.map((conn, i) => {
+                  const def = CA_DEFS[conn.ca_type] || { name:conn.ca_type, color:'#e8e0d8', bg:'var(--v2-surface-2)', logo:conn.ca_type?.slice(0,2).toUpperCase() }
+                  const res = syncResult[conn.id]
+                  const isActive = conn.status === 'active'
+                  return (
+                    <div key={conn.id} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                      padding:'14px 20px', alignItems:'center',
+                      borderBottom: i < connections.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                      background:'var(--v2-surface)', transition:'background .1s' }}
+                      onMouseEnter={e => e.currentTarget.style.background='var(--v2-surface-2)'}
+                      onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
+                      <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                        <div style={{ width:34, height:34, borderRadius:7, background:def.color,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize:11, fontWeight:700, color:'#ffffff', flexShrink:0 }}>{def.logo}</div>
+                        <div>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>Certificate authority</div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.label || '—'}</div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.cert_count !== undefined ? conn.cert_count : '—'}</div>
+                      <div>
+                        <span style={{ display:'inline-flex', alignItems:'center', gap:5,
+                          fontSize:12, fontWeight:500, padding:'4px 10px', borderRadius:4,
+                          background: isActive ? 'transparent' : 'rgba(192,57,43,0.12)',
+                          color: isActive ? '#f0ede8' : '#a93226',
+                          border: `0.5px solid ${isActive ? 'rgba(192,57,43,0.3)' : 'rgba(192,57,43,0.25)'}` }}>
+                          <span style={{ width:6, height:6, borderRadius:'50%',
+                            background: isActive ? '#f0ede8' : '#f87171' }}/>
+                          {isActive ? 'Connected' : 'Error'}
+                        </span>
+                      </div>
+                      <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+                        <button onClick={() => doSync(conn.id)} disabled={syncing===conn.id}
+                          style={{ padding:'5px 10px', fontSize:12, background:'var(--v2-surface-2)',
+                            border:'1px solid rgba(192,57,43,0.25)', borderRadius:6, cursor:'pointer',
+                            fontFamily:'inherit', color:'#e8e0d8', display:'flex', alignItems:'center', gap:4 }}>
+                          <RefreshCw size={12} style={{ animation: syncing===conn.id ? 'spin .8s linear infinite' : 'none' }}/>
+                          {syncing===conn.id ? 'Syncing' : 'Sync'}
+                        </button>
+                        <button onClick={() => setDelConn(conn.id)}
+                          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center',
+                            background:'none', border:'0.5px solid #fecaca', borderRadius:5, cursor:'pointer', color:'#f87171' }}>
+                          <Trash2 size={12}/>
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+                {Object.entries(syncResult).filter(([,r]) => r).map(([id, r]) => (
+                  <div key={id} style={{ padding:'10px 20px', borderTop:'0.5px solid var(--v2-border)',
+                    background: r.ok ? 'transparent' : 'rgba(192,57,43,0.12)', display:'flex', alignItems:'center', gap:8 }}>
+                    {r.ok ? <Check size={13} style={{ color:'#ffffff' }}/> : <AlertCircle size={13} style={{ color:'#f87171' }}/>}
+                    <span style={{ fontSize:12, color: r.ok ? '#f0ede8' : '#f87171' }}>
+                      {r.ok ? `Sync complete — ${r.imported || 0} certificates imported` : r.error}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Connect CA modal ── */}
+        {showAddCA && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div style={{ fontSize:15, fontWeight:500 }}>Connect a CA</div>
+                <button onClick={() => { setShowAddCA(false); setAddCa(null) }} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!addCa ? (
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    <div style={{ fontSize:12, color:'#e8e0d8', marginBottom:4, lineHeight:1.6 }}>
+                      Choose a CA. SSLVault pulls your existing certificates for monitoring.
+                      <strong style={{ color:'#ffffff' }}> No private keys needed.</strong>
+                    </div>
+                    {Object.entries(CA_DEFS).map(([key, def]) => (
+                      <div key={key} onClick={() => openAdd(key)}
+                        style={{ padding:'14px 16px', borderRadius:10, border:'0.5px solid var(--v2-border)',
+                          background:'rgba(255,255,255,0.03)', cursor:'pointer', display:'flex',
+                          alignItems:'center', gap:12, transition:'all .15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor=def.color; e.currentTarget.style.background=def.bg }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor='var(--v2-border)'; e.currentTarget.style.background='rgba(255,255,255,0.03)' }}>
+                        <div style={{ width:36, height:36, borderRadius:8, background:def.bg, border:`0.5px solid ${def.border}`,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontWeight:700, fontSize:12, color:def.color, flexShrink:0 }}>{def.logo}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{def.desc}</div>
+                        </div>
+                        <ChevronRight size={14} style={{ color:'#b0a8a0' }}/>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16,
+                      padding:'10px 12px', borderRadius:8, background:'var(--v2-surface-2)',
+                      border:'0.5px solid var(--v2-border)' }}>
+                      <div style={{ width:30, height:30, borderRadius:7, background:CA_DEFS[addCa].bg,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontWeight:700, fontSize:11, color:CA_DEFS[addCa].color, flexShrink:0 }}>
+                        {CA_DEFS[addCa].logo}
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{CA_DEFS[addCa].name}</div>
+                      </div>
+                      {CA_DEFS[addCa].docs && (
+                        <a href={CA_DEFS[addCa].docs} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize:11, color:'#b0a8a0', display:'flex', alignItems:'center', gap:3 }}>
+                          Docs <ExternalLink size={11}/>
+                        </a>
+                      )}
+                    </div>
+                    <div style={{ background:'var(--v2-surface-2)', borderRadius:8, padding:'10px 12px',
+                      marginBottom:16, display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.6 }}>
+                        SSLVault reads certificate details only — expiry, domain, issuer, SANs. Private keys stay on your servers.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:5 }}>Label</label>
+                      <input value={addLabel} onChange={e => setAddLabel(e.target.value)}
+                        placeholder="e.g. Production DigiCert"
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box' }}/>
+                    </div>
+                    {CA_DEFS[addCa].fields.map(f => (
+                      <div key={f.key} style={{ marginBottom:12 }}>
+                        <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                          color:'#b0a8a0', display:'block', marginBottom:5 }}>
+                          {f.label}{f.required ? ' *' : ''}
+                        </label>
+                        <div style={{ position:'relative' }}>
+                          <input type={f.type==='password' && !showPwd[f.key] ? 'password' : 'text'}
+                            value={addFields[f.key] || ''}
+                            onChange={e => setAddFields(p => ({ ...p, [f.key]: e.target.value }))}
+                            placeholder={f.placeholder}
+                            style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                              background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                              color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box',
+                              paddingRight: f.type==='password' ? 36 : 12 }}/>
+                          {f.type==='password' && (
+                            <button type="button" onClick={() => setShowPwd(p => ({ ...p, [f.key]: !p[f.key] }))}
+                              style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)',
+                                background:'none', border:'none', cursor:'pointer', color:'#b0a8a0' }}>
+                              {showPwd[f.key] ? <EyeOff size={13}/> : <Eye size={13}/>}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {addError && (
+                      <div style={{ background:'rgba(192,57,43,0.12)', border:'0.5px solid #fecaca', borderRadius:7,
+                        padding:'9px 12px', marginBottom:12, fontSize:12, color:'#f87171',
+                        display:'flex', gap:7, alignItems:'flex-start' }}>
+                        <AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{addError}
+                      </div>
+                    )}
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => setAddCa(null)}
+                        style={{ padding:'9px 16px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Back</button>
+                      <button onClick={saveConnection} disabled={addSaving}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                          fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                        {addSaving
+                          ? <><RefreshCw size={12} style={{ animation:'spin .8s linear infinite' }}/> Connecting…</>
+                          : <><Check size={12}/> Connect &amp; sync</>}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── PEM import modal ── */}
+        {showImport && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div>
+                  <div style={{ fontSize:15, fontWeight:500 }}>Import certificate</div>
+                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>Paste cert PEM — domain, expiry &amp; issuer extracted automatically</div>
+                </div>
+                <button onClick={() => setShowImport(false)} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!importResult ? (
+                  <>
+                    <div style={{ background:'var(--v2-surface-2)', border:'0.5px solid var(--v2-border)',
+                      borderRadius:8, padding:'10px 12px', marginBottom:14,
+                      display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.6 }}>
+                        <strong>Only the certificate PEM is needed</strong> for tracking. Private key not required.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:16 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:6 }}>Certificate PEM *</label>
+                      <textarea rows={8} placeholder={'-----BEGIN CERTIFICATE-----
+MIIFaz...
+-----END CERTIFICATE-----'}
+                        value={pemText} onChange={e => setPemText(e.target.value)}
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:11,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'monospace', resize:'vertical', boxSizing:'border-box' }}/>
+                    </div>
+                    <button onClick={doImport} disabled={importing || !pemText.trim()}
+                      style={{ width:'100%', padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                        borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                        fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                      {importing
+                        ? <><RefreshCw size={13} style={{ animation:'spin .8s linear infinite' }}/> Parsing…</>
+                        : <><FileText size={13}/> Import certificate</>}
+                    </button>
+                  </>
+                ) : importResult.ok ? (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <Check size={20} style={{ color:'#4ade80', margin:'0 auto 14px', display:'block' }}/>
+                    <div style={{ fontSize:15, fontWeight:500, marginBottom:16 }}>Certificate imported</div>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => { setPemText(''); setImportResult(null) }}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Import another</button>
+                      <button onClick={() => setShowImport(false)}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600 }}>Done</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <AlertTriangle size={32} style={{ color:'#f87171', margin:'0 auto 12px', display:'block' }}/>
+                    <div style={{ fontSize:13, color:'#f87171', marginBottom:16 }}>{importResult.error}</div>
+                    <button onClick={() => setImportResult(null)}
+                      style={{ padding:'9px 20px', fontSize:13, background:'var(--v2-surface-2)',
+                        border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                        fontFamily:'inherit', color:'#e8e0d8' }}>Try again</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Delete connection modal ── */}
+        {delConn && (() => {
+          const conn = connections.find(c => c.id === delConn)
+          const connCertCount = conn?.cert_count || 0
+          return (
+            <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+              alignItems:'center', justifyContent:'center', padding:20,
+              background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+              <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:400,
+                padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+                  <div style={{ width:32, height:32, borderRadius:8, background:'rgba(192,57,43,0.12)',
+                    display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <Trash2 size={15} color="#c0392b"/>
+                  </div>
+                  <div style={{ fontSize:15, fontWeight:600 }}>Remove {conn?.label || 'connection'}?</div>
+                </div>
+                <div style={{ fontSize:13, color:'#e8e0d8', marginBottom:16, lineHeight:1.6 }}>
+                  This CA connection will be disconnected and will no longer sync.
+                  {connCertCount > 0 && <span style={{ color:'#ffffff', fontWeight:500 }}> {connCertCount} certificate{connCertCount!==1?'s':''} are linked.</span>}
+                </div>
+                {connCertCount > 0 && (
+                  <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer',
+                    padding:'10px 12px', borderRadius:8, marginBottom:16,
+                    background: delCerts ? 'rgba(192,57,43,0.12)' : 'var(--v2-surface-2)',
+                    border: `0.5px solid ${delCerts ? 'rgba(192,57,43,0.25)' : 'var(--v2-border)'}`,
+                    transition:'all .15s' }}>
+                    <input type="checkbox" checked={delCerts} onChange={e => setDelCerts(e.target.checked)}
+                      style={{ width:14, height:14, accentColor:'#f87171', flexShrink:0 }}/>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:600, color: delCerts ? '#f87171' : '#e8e0d8' }}>
+                        Also delete {connCertCount} imported certificate{connCertCount!==1?'s':''}
+                      </div>
+                      <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>
+                        {delCerts ? 'Certificates will be removed from inventory' : 'Certificates remain but stop syncing'}
+                      </div>
+                    </div>
+                  </label>
+                )}
+                <div style={{ display:'flex', gap:8 }}>
+                  <button onClick={() => { setDelConn(null); setDelCerts(true) }}
+                    style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                      border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                      fontFamily:'inherit', color:'#e8e0d8' }}>Cancel</button>
+                  <button onClick={() => deleteConn(delConn)}
+                    style={{ flex:1, background:'#f87171', color:'#ffffff', border:'none',
+                      borderRadius:8, padding:'9px', cursor:'pointer', fontFamily:'inherit',
+                      fontWeight:600, fontSize:13, display:'flex', alignItems:'center',
+                      justifyContent:'center', gap:6 }}>
+                    <Trash2 size={13}/>
+                    {delCerts && connCertCount > 0 ? `Remove + delete ${connCertCount} certs` : 'Remove connection'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
       </div>
     </div>
   )
@@ -454,6 +1014,53 @@ function AddDnsModal({ onClose, onSaved, userId }) {
   }
 
   const p = DNS_PROVIDERS[provider]
+
+  const loadCA = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const tok = session?.access_token || ''
+    setCaTok(tok)
+    if (!tok) return
+    setCaLoading(true)
+    const r = await callCA(tok, { action: 'list_connections' })
+    if (r.connections) setConnections(r.connections)
+    if (r.total_certs !== undefined) setCaCertCount(r.total_certs)
+    else if (r.certs) setCaCertCount(r.certs.length)
+    setCaLoading(false)
+  }
+
+  const openAdd = (ca) => { setAddCa(ca); setAddLabel(CA_DEFS[ca]?.name || ''); setAddFields({}); setAddError('') }
+
+  const saveConnection = async () => {
+    setAddSaving(true); setAddError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const freshTok = session?.access_token || caTok
+    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
+    const r = await callCA(freshTok, payload)
+    setAddSaving(false)
+    if (r.ok) { setShowAddCA(false); setAddCa(null); await loadCA() }
+    else setAddError(r.error || 'Connection failed')
+  }
+
+  const doSync = async (connId) => {
+    setSyncing(connId)
+    const r = await callCA(caTok, { action: 'sync', connection_id: connId })
+    setSyncResult(p => ({ ...p, [connId]: r }))
+    setSyncing(null)
+    await loadCA()
+  }
+
+  const deleteConn = async (connId) => {
+    await callCA(caTok, { action: 'delete_connection', connection_id: connId, delete_certs: delCerts })
+    setDelConn(null); setDelCerts(true)
+    await loadCA()
+  }
+
+  const doImport = async () => {
+    setImporting(true)
+    const r = await callCA(caTok, { action: 'manual_import', cert_pem: pemText.trim() })
+    setImportResult(r); setImporting(false)
+    if (r.ok) await loadCA()
+  }
 
   return (
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
@@ -548,6 +1155,384 @@ function AddDnsModal({ onClose, onSaved, userId }) {
             </button>
           </div>
         </div>
+
+        </>) /* end servers tab */}
+
+        {/* ── CA CONNECTIONS TAB ───────────────────────────────────── */}
+        {caTab === 'ca' && (
+          <div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <div style={{ fontSize:13, color:'#e8e0d8' }}>
+                {connections.length} connection{connections.length !== 1 ? 's' : ''} · {caCertCount} certificates tracked
+              </div>
+              <div style={{ display:'flex', gap:8 }}>
+                <button onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:13,
+                    background:'var(--v2-surface)', border:'1px solid rgba(192,57,43,0.25)',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8', fontWeight:500 }}>
+                  <Upload size={14}/> Import PEM
+                </button>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', fontSize:13,
+                    fontWeight:600, background:'#c0392b', border:'none', borderRadius:8,
+                    cursor:'pointer', fontFamily:'inherit', color:'#ffffff' }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            </div>
+
+            {connections.length === 0 ? (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
+                padding:'60px 32px', textAlign:'center' }}>
+                <Shield size={36} style={{ color:'#b0a8a0', display:'block', margin:'0 auto 14px' }}/>
+                <div style={{ fontSize:15, fontWeight:500, color:'#ffffff', marginBottom:6 }}>No CA connections</div>
+                <div style={{ fontSize:13, color:'#b0a8a0', maxWidth:420, margin:'0 auto 20px' }}>
+                  Connect DigiCert CertCentral or Sectigo SCM to import your external certificate portfolio.
+                </div>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ padding:'9px 20px', fontSize:13, background:'#c0392b', border:'none',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600,
+                    display:'inline-flex', alignItems:'center', gap:6 }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            ) : (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto' }}>
+                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                  padding:'10px 20px', background:'var(--v2-surface-2)',
+                  borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+                  {['Certificate authority', 'Label', 'Certs', 'Status', 'Actions'].map(h => (
+                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
+                      textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
+                  ))}
+                </div>
+                {connections.map((conn, i) => {
+                  const def = CA_DEFS[conn.ca_type] || { name:conn.ca_type, color:'#e8e0d8', bg:'var(--v2-surface-2)', logo:conn.ca_type?.slice(0,2).toUpperCase() }
+                  const res = syncResult[conn.id]
+                  const isActive = conn.status === 'active'
+                  return (
+                    <div key={conn.id} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                      padding:'14px 20px', alignItems:'center',
+                      borderBottom: i < connections.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                      background:'var(--v2-surface)', transition:'background .1s' }}
+                      onMouseEnter={e => e.currentTarget.style.background='var(--v2-surface-2)'}
+                      onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
+                      <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                        <div style={{ width:34, height:34, borderRadius:7, background:def.color,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize:11, fontWeight:700, color:'#ffffff', flexShrink:0 }}>{def.logo}</div>
+                        <div>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>Certificate authority</div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.label || '—'}</div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.cert_count !== undefined ? conn.cert_count : '—'}</div>
+                      <div>
+                        <span style={{ display:'inline-flex', alignItems:'center', gap:5,
+                          fontSize:12, fontWeight:500, padding:'4px 10px', borderRadius:4,
+                          background: isActive ? 'transparent' : 'rgba(192,57,43,0.12)',
+                          color: isActive ? '#f0ede8' : '#a93226',
+                          border: `0.5px solid ${isActive ? 'rgba(192,57,43,0.3)' : 'rgba(192,57,43,0.25)'}` }}>
+                          <span style={{ width:6, height:6, borderRadius:'50%',
+                            background: isActive ? '#f0ede8' : '#f87171' }}/>
+                          {isActive ? 'Connected' : 'Error'}
+                        </span>
+                      </div>
+                      <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+                        <button onClick={() => doSync(conn.id)} disabled={syncing===conn.id}
+                          style={{ padding:'5px 10px', fontSize:12, background:'var(--v2-surface-2)',
+                            border:'1px solid rgba(192,57,43,0.25)', borderRadius:6, cursor:'pointer',
+                            fontFamily:'inherit', color:'#e8e0d8', display:'flex', alignItems:'center', gap:4 }}>
+                          <RefreshCw size={12} style={{ animation: syncing===conn.id ? 'spin .8s linear infinite' : 'none' }}/>
+                          {syncing===conn.id ? 'Syncing' : 'Sync'}
+                        </button>
+                        <button onClick={() => setDelConn(conn.id)}
+                          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center',
+                            background:'none', border:'0.5px solid #fecaca', borderRadius:5, cursor:'pointer', color:'#f87171' }}>
+                          <Trash2 size={12}/>
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+                {Object.entries(syncResult).filter(([,r]) => r).map(([id, r]) => (
+                  <div key={id} style={{ padding:'10px 20px', borderTop:'0.5px solid var(--v2-border)',
+                    background: r.ok ? 'transparent' : 'rgba(192,57,43,0.12)', display:'flex', alignItems:'center', gap:8 }}>
+                    {r.ok ? <Check size={13} style={{ color:'#ffffff' }}/> : <AlertCircle size={13} style={{ color:'#f87171' }}/>}
+                    <span style={{ fontSize:12, color: r.ok ? '#f0ede8' : '#f87171' }}>
+                      {r.ok ? `Sync complete — ${r.imported || 0} certificates imported` : r.error}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Connect CA modal ── */}
+        {showAddCA && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div style={{ fontSize:15, fontWeight:500 }}>Connect a CA</div>
+                <button onClick={() => { setShowAddCA(false); setAddCa(null) }} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!addCa ? (
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    <div style={{ fontSize:12, color:'#e8e0d8', marginBottom:4, lineHeight:1.6 }}>
+                      Choose a CA. SSLVault pulls your existing certificates for monitoring.
+                      <strong style={{ color:'#ffffff' }}> No private keys needed.</strong>
+                    </div>
+                    {Object.entries(CA_DEFS).map(([key, def]) => (
+                      <div key={key} onClick={() => openAdd(key)}
+                        style={{ padding:'14px 16px', borderRadius:10, border:'0.5px solid var(--v2-border)',
+                          background:'rgba(255,255,255,0.03)', cursor:'pointer', display:'flex',
+                          alignItems:'center', gap:12, transition:'all .15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor=def.color; e.currentTarget.style.background=def.bg }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor='var(--v2-border)'; e.currentTarget.style.background='rgba(255,255,255,0.03)' }}>
+                        <div style={{ width:36, height:36, borderRadius:8, background:def.bg, border:`0.5px solid ${def.border}`,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontWeight:700, fontSize:12, color:def.color, flexShrink:0 }}>{def.logo}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{def.desc}</div>
+                        </div>
+                        <ChevronRight size={14} style={{ color:'#b0a8a0' }}/>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16,
+                      padding:'10px 12px', borderRadius:8, background:'var(--v2-surface-2)',
+                      border:'0.5px solid var(--v2-border)' }}>
+                      <div style={{ width:30, height:30, borderRadius:7, background:CA_DEFS[addCa].bg,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontWeight:700, fontSize:11, color:CA_DEFS[addCa].color, flexShrink:0 }}>
+                        {CA_DEFS[addCa].logo}
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{CA_DEFS[addCa].name}</div>
+                      </div>
+                      {CA_DEFS[addCa].docs && (
+                        <a href={CA_DEFS[addCa].docs} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize:11, color:'#b0a8a0', display:'flex', alignItems:'center', gap:3 }}>
+                          Docs <ExternalLink size={11}/>
+                        </a>
+                      )}
+                    </div>
+                    <div style={{ background:'var(--v2-surface-2)', borderRadius:8, padding:'10px 12px',
+                      marginBottom:16, display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.6 }}>
+                        SSLVault reads certificate details only — expiry, domain, issuer, SANs. Private keys stay on your servers.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:5 }}>Label</label>
+                      <input value={addLabel} onChange={e => setAddLabel(e.target.value)}
+                        placeholder="e.g. Production DigiCert"
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box' }}/>
+                    </div>
+                    {CA_DEFS[addCa].fields.map(f => (
+                      <div key={f.key} style={{ marginBottom:12 }}>
+                        <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                          color:'#b0a8a0', display:'block', marginBottom:5 }}>
+                          {f.label}{f.required ? ' *' : ''}
+                        </label>
+                        <div style={{ position:'relative' }}>
+                          <input type={f.type==='password' && !showPwd[f.key] ? 'password' : 'text'}
+                            value={addFields[f.key] || ''}
+                            onChange={e => setAddFields(p => ({ ...p, [f.key]: e.target.value }))}
+                            placeholder={f.placeholder}
+                            style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                              background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                              color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box',
+                              paddingRight: f.type==='password' ? 36 : 12 }}/>
+                          {f.type==='password' && (
+                            <button type="button" onClick={() => setShowPwd(p => ({ ...p, [f.key]: !p[f.key] }))}
+                              style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)',
+                                background:'none', border:'none', cursor:'pointer', color:'#b0a8a0' }}>
+                              {showPwd[f.key] ? <EyeOff size={13}/> : <Eye size={13}/>}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {addError && (
+                      <div style={{ background:'rgba(192,57,43,0.12)', border:'0.5px solid #fecaca', borderRadius:7,
+                        padding:'9px 12px', marginBottom:12, fontSize:12, color:'#f87171',
+                        display:'flex', gap:7, alignItems:'flex-start' }}>
+                        <AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{addError}
+                      </div>
+                    )}
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => setAddCa(null)}
+                        style={{ padding:'9px 16px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Back</button>
+                      <button onClick={saveConnection} disabled={addSaving}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                          fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                        {addSaving
+                          ? <><RefreshCw size={12} style={{ animation:'spin .8s linear infinite' }}/> Connecting…</>
+                          : <><Check size={12}/> Connect &amp; sync</>}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── PEM import modal ── */}
+        {showImport && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div>
+                  <div style={{ fontSize:15, fontWeight:500 }}>Import certificate</div>
+                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>Paste cert PEM — domain, expiry &amp; issuer extracted automatically</div>
+                </div>
+                <button onClick={() => setShowImport(false)} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!importResult ? (
+                  <>
+                    <div style={{ background:'var(--v2-surface-2)', border:'0.5px solid var(--v2-border)',
+                      borderRadius:8, padding:'10px 12px', marginBottom:14,
+                      display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.6 }}>
+                        <strong>Only the certificate PEM is needed</strong> for tracking. Private key not required.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:16 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:6 }}>Certificate PEM *</label>
+                      <textarea rows={8} placeholder={'-----BEGIN CERTIFICATE-----
+MIIFaz...
+-----END CERTIFICATE-----'}
+                        value={pemText} onChange={e => setPemText(e.target.value)}
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:11,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'monospace', resize:'vertical', boxSizing:'border-box' }}/>
+                    </div>
+                    <button onClick={doImport} disabled={importing || !pemText.trim()}
+                      style={{ width:'100%', padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                        borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                        fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                      {importing
+                        ? <><RefreshCw size={13} style={{ animation:'spin .8s linear infinite' }}/> Parsing…</>
+                        : <><FileText size={13}/> Import certificate</>}
+                    </button>
+                  </>
+                ) : importResult.ok ? (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <Check size={20} style={{ color:'#4ade80', margin:'0 auto 14px', display:'block' }}/>
+                    <div style={{ fontSize:15, fontWeight:500, marginBottom:16 }}>Certificate imported</div>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => { setPemText(''); setImportResult(null) }}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Import another</button>
+                      <button onClick={() => setShowImport(false)}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600 }}>Done</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <AlertTriangle size={32} style={{ color:'#f87171', margin:'0 auto 12px', display:'block' }}/>
+                    <div style={{ fontSize:13, color:'#f87171', marginBottom:16 }}>{importResult.error}</div>
+                    <button onClick={() => setImportResult(null)}
+                      style={{ padding:'9px 20px', fontSize:13, background:'var(--v2-surface-2)',
+                        border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                        fontFamily:'inherit', color:'#e8e0d8' }}>Try again</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Delete connection modal ── */}
+        {delConn && (() => {
+          const conn = connections.find(c => c.id === delConn)
+          const connCertCount = conn?.cert_count || 0
+          return (
+            <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+              alignItems:'center', justifyContent:'center', padding:20,
+              background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+              <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:400,
+                padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+                  <div style={{ width:32, height:32, borderRadius:8, background:'rgba(192,57,43,0.12)',
+                    display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <Trash2 size={15} color="#c0392b"/>
+                  </div>
+                  <div style={{ fontSize:15, fontWeight:600 }}>Remove {conn?.label || 'connection'}?</div>
+                </div>
+                <div style={{ fontSize:13, color:'#e8e0d8', marginBottom:16, lineHeight:1.6 }}>
+                  This CA connection will be disconnected and will no longer sync.
+                  {connCertCount > 0 && <span style={{ color:'#ffffff', fontWeight:500 }}> {connCertCount} certificate{connCertCount!==1?'s':''} are linked.</span>}
+                </div>
+                {connCertCount > 0 && (
+                  <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer',
+                    padding:'10px 12px', borderRadius:8, marginBottom:16,
+                    background: delCerts ? 'rgba(192,57,43,0.12)' : 'var(--v2-surface-2)',
+                    border: `0.5px solid ${delCerts ? 'rgba(192,57,43,0.25)' : 'var(--v2-border)'}`,
+                    transition:'all .15s' }}>
+                    <input type="checkbox" checked={delCerts} onChange={e => setDelCerts(e.target.checked)}
+                      style={{ width:14, height:14, accentColor:'#f87171', flexShrink:0 }}/>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:600, color: delCerts ? '#f87171' : '#e8e0d8' }}>
+                        Also delete {connCertCount} imported certificate{connCertCount!==1?'s':''}
+                      </div>
+                      <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>
+                        {delCerts ? 'Certificates will be removed from inventory' : 'Certificates remain but stop syncing'}
+                      </div>
+                    </div>
+                  </label>
+                )}
+                <div style={{ display:'flex', gap:8 }}>
+                  <button onClick={() => { setDelConn(null); setDelCerts(true) }}
+                    style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                      border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                      fontFamily:'inherit', color:'#e8e0d8' }}>Cancel</button>
+                  <button onClick={() => deleteConn(delConn)}
+                    style={{ flex:1, background:'#f87171', color:'#ffffff', border:'none',
+                      borderRadius:8, padding:'9px', cursor:'pointer', fontFamily:'inherit',
+                      fontWeight:600, fontSize:13, display:'flex', alignItems:'center',
+                      justifyContent:'center', gap:6 }}>
+                    <Trash2 size={13}/>
+                    {delCerts && connCertCount > 0 ? `Remove + delete ${connCertCount} certs` : 'Remove connection'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
       </div>
     </div>
   )
@@ -555,6 +1540,53 @@ function AddDnsModal({ onClose, onSaved, userId }) {
 
 // ── Empty state ───────────────────────────────────────────────────────
 function EmptyState({ hasDns, onAddServer, onAddDns }) {
+  const loadCA = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const tok = session?.access_token || ''
+    setCaTok(tok)
+    if (!tok) return
+    setCaLoading(true)
+    const r = await callCA(tok, { action: 'list_connections' })
+    if (r.connections) setConnections(r.connections)
+    if (r.total_certs !== undefined) setCaCertCount(r.total_certs)
+    else if (r.certs) setCaCertCount(r.certs.length)
+    setCaLoading(false)
+  }
+
+  const openAdd = (ca) => { setAddCa(ca); setAddLabel(CA_DEFS[ca]?.name || ''); setAddFields({}); setAddError('') }
+
+  const saveConnection = async () => {
+    setAddSaving(true); setAddError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const freshTok = session?.access_token || caTok
+    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
+    const r = await callCA(freshTok, payload)
+    setAddSaving(false)
+    if (r.ok) { setShowAddCA(false); setAddCa(null); await loadCA() }
+    else setAddError(r.error || 'Connection failed')
+  }
+
+  const doSync = async (connId) => {
+    setSyncing(connId)
+    const r = await callCA(caTok, { action: 'sync', connection_id: connId })
+    setSyncResult(p => ({ ...p, [connId]: r }))
+    setSyncing(null)
+    await loadCA()
+  }
+
+  const deleteConn = async (connId) => {
+    await callCA(caTok, { action: 'delete_connection', connection_id: connId, delete_certs: delCerts })
+    setDelConn(null); setDelCerts(true)
+    await loadCA()
+  }
+
+  const doImport = async () => {
+    setImporting(true)
+    const r = await callCA(caTok, { action: 'manual_import', cert_pem: pemText.trim() })
+    setImportResult(r); setImporting(false)
+    if (r.ok) await loadCA()
+  }
+
   return (
     <div style={{
       background: 'var(--v2-surface)', border: '1px solid rgba(192,57,43,0.25)', borderRadius: 14,
@@ -619,6 +1651,384 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
             </button>
           </div>
         ))}
+
+        </>) /* end servers tab */}
+
+        {/* ── CA CONNECTIONS TAB ───────────────────────────────────── */}
+        {caTab === 'ca' && (
+          <div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <div style={{ fontSize:13, color:'#e8e0d8' }}>
+                {connections.length} connection{connections.length !== 1 ? 's' : ''} · {caCertCount} certificates tracked
+              </div>
+              <div style={{ display:'flex', gap:8 }}>
+                <button onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:13,
+                    background:'var(--v2-surface)', border:'1px solid rgba(192,57,43,0.25)',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8', fontWeight:500 }}>
+                  <Upload size={14}/> Import PEM
+                </button>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', fontSize:13,
+                    fontWeight:600, background:'#c0392b', border:'none', borderRadius:8,
+                    cursor:'pointer', fontFamily:'inherit', color:'#ffffff' }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            </div>
+
+            {connections.length === 0 ? (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
+                padding:'60px 32px', textAlign:'center' }}>
+                <Shield size={36} style={{ color:'#b0a8a0', display:'block', margin:'0 auto 14px' }}/>
+                <div style={{ fontSize:15, fontWeight:500, color:'#ffffff', marginBottom:6 }}>No CA connections</div>
+                <div style={{ fontSize:13, color:'#b0a8a0', maxWidth:420, margin:'0 auto 20px' }}>
+                  Connect DigiCert CertCentral or Sectigo SCM to import your external certificate portfolio.
+                </div>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ padding:'9px 20px', fontSize:13, background:'#c0392b', border:'none',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600,
+                    display:'inline-flex', alignItems:'center', gap:6 }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            ) : (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto' }}>
+                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                  padding:'10px 20px', background:'var(--v2-surface-2)',
+                  borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+                  {['Certificate authority', 'Label', 'Certs', 'Status', 'Actions'].map(h => (
+                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
+                      textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
+                  ))}
+                </div>
+                {connections.map((conn, i) => {
+                  const def = CA_DEFS[conn.ca_type] || { name:conn.ca_type, color:'#e8e0d8', bg:'var(--v2-surface-2)', logo:conn.ca_type?.slice(0,2).toUpperCase() }
+                  const res = syncResult[conn.id]
+                  const isActive = conn.status === 'active'
+                  return (
+                    <div key={conn.id} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                      padding:'14px 20px', alignItems:'center',
+                      borderBottom: i < connections.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                      background:'var(--v2-surface)', transition:'background .1s' }}
+                      onMouseEnter={e => e.currentTarget.style.background='var(--v2-surface-2)'}
+                      onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
+                      <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                        <div style={{ width:34, height:34, borderRadius:7, background:def.color,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize:11, fontWeight:700, color:'#ffffff', flexShrink:0 }}>{def.logo}</div>
+                        <div>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>Certificate authority</div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.label || '—'}</div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.cert_count !== undefined ? conn.cert_count : '—'}</div>
+                      <div>
+                        <span style={{ display:'inline-flex', alignItems:'center', gap:5,
+                          fontSize:12, fontWeight:500, padding:'4px 10px', borderRadius:4,
+                          background: isActive ? 'transparent' : 'rgba(192,57,43,0.12)',
+                          color: isActive ? '#f0ede8' : '#a93226',
+                          border: `0.5px solid ${isActive ? 'rgba(192,57,43,0.3)' : 'rgba(192,57,43,0.25)'}` }}>
+                          <span style={{ width:6, height:6, borderRadius:'50%',
+                            background: isActive ? '#f0ede8' : '#f87171' }}/>
+                          {isActive ? 'Connected' : 'Error'}
+                        </span>
+                      </div>
+                      <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+                        <button onClick={() => doSync(conn.id)} disabled={syncing===conn.id}
+                          style={{ padding:'5px 10px', fontSize:12, background:'var(--v2-surface-2)',
+                            border:'1px solid rgba(192,57,43,0.25)', borderRadius:6, cursor:'pointer',
+                            fontFamily:'inherit', color:'#e8e0d8', display:'flex', alignItems:'center', gap:4 }}>
+                          <RefreshCw size={12} style={{ animation: syncing===conn.id ? 'spin .8s linear infinite' : 'none' }}/>
+                          {syncing===conn.id ? 'Syncing' : 'Sync'}
+                        </button>
+                        <button onClick={() => setDelConn(conn.id)}
+                          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center',
+                            background:'none', border:'0.5px solid #fecaca', borderRadius:5, cursor:'pointer', color:'#f87171' }}>
+                          <Trash2 size={12}/>
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+                {Object.entries(syncResult).filter(([,r]) => r).map(([id, r]) => (
+                  <div key={id} style={{ padding:'10px 20px', borderTop:'0.5px solid var(--v2-border)',
+                    background: r.ok ? 'transparent' : 'rgba(192,57,43,0.12)', display:'flex', alignItems:'center', gap:8 }}>
+                    {r.ok ? <Check size={13} style={{ color:'#ffffff' }}/> : <AlertCircle size={13} style={{ color:'#f87171' }}/>}
+                    <span style={{ fontSize:12, color: r.ok ? '#f0ede8' : '#f87171' }}>
+                      {r.ok ? `Sync complete — ${r.imported || 0} certificates imported` : r.error}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Connect CA modal ── */}
+        {showAddCA && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div style={{ fontSize:15, fontWeight:500 }}>Connect a CA</div>
+                <button onClick={() => { setShowAddCA(false); setAddCa(null) }} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!addCa ? (
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    <div style={{ fontSize:12, color:'#e8e0d8', marginBottom:4, lineHeight:1.6 }}>
+                      Choose a CA. SSLVault pulls your existing certificates for monitoring.
+                      <strong style={{ color:'#ffffff' }}> No private keys needed.</strong>
+                    </div>
+                    {Object.entries(CA_DEFS).map(([key, def]) => (
+                      <div key={key} onClick={() => openAdd(key)}
+                        style={{ padding:'14px 16px', borderRadius:10, border:'0.5px solid var(--v2-border)',
+                          background:'rgba(255,255,255,0.03)', cursor:'pointer', display:'flex',
+                          alignItems:'center', gap:12, transition:'all .15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor=def.color; e.currentTarget.style.background=def.bg }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor='var(--v2-border)'; e.currentTarget.style.background='rgba(255,255,255,0.03)' }}>
+                        <div style={{ width:36, height:36, borderRadius:8, background:def.bg, border:`0.5px solid ${def.border}`,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontWeight:700, fontSize:12, color:def.color, flexShrink:0 }}>{def.logo}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{def.desc}</div>
+                        </div>
+                        <ChevronRight size={14} style={{ color:'#b0a8a0' }}/>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16,
+                      padding:'10px 12px', borderRadius:8, background:'var(--v2-surface-2)',
+                      border:'0.5px solid var(--v2-border)' }}>
+                      <div style={{ width:30, height:30, borderRadius:7, background:CA_DEFS[addCa].bg,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontWeight:700, fontSize:11, color:CA_DEFS[addCa].color, flexShrink:0 }}>
+                        {CA_DEFS[addCa].logo}
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{CA_DEFS[addCa].name}</div>
+                      </div>
+                      {CA_DEFS[addCa].docs && (
+                        <a href={CA_DEFS[addCa].docs} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize:11, color:'#b0a8a0', display:'flex', alignItems:'center', gap:3 }}>
+                          Docs <ExternalLink size={11}/>
+                        </a>
+                      )}
+                    </div>
+                    <div style={{ background:'var(--v2-surface-2)', borderRadius:8, padding:'10px 12px',
+                      marginBottom:16, display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.6 }}>
+                        SSLVault reads certificate details only — expiry, domain, issuer, SANs. Private keys stay on your servers.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:5 }}>Label</label>
+                      <input value={addLabel} onChange={e => setAddLabel(e.target.value)}
+                        placeholder="e.g. Production DigiCert"
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box' }}/>
+                    </div>
+                    {CA_DEFS[addCa].fields.map(f => (
+                      <div key={f.key} style={{ marginBottom:12 }}>
+                        <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                          color:'#b0a8a0', display:'block', marginBottom:5 }}>
+                          {f.label}{f.required ? ' *' : ''}
+                        </label>
+                        <div style={{ position:'relative' }}>
+                          <input type={f.type==='password' && !showPwd[f.key] ? 'password' : 'text'}
+                            value={addFields[f.key] || ''}
+                            onChange={e => setAddFields(p => ({ ...p, [f.key]: e.target.value }))}
+                            placeholder={f.placeholder}
+                            style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                              background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                              color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box',
+                              paddingRight: f.type==='password' ? 36 : 12 }}/>
+                          {f.type==='password' && (
+                            <button type="button" onClick={() => setShowPwd(p => ({ ...p, [f.key]: !p[f.key] }))}
+                              style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)',
+                                background:'none', border:'none', cursor:'pointer', color:'#b0a8a0' }}>
+                              {showPwd[f.key] ? <EyeOff size={13}/> : <Eye size={13}/>}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {addError && (
+                      <div style={{ background:'rgba(192,57,43,0.12)', border:'0.5px solid #fecaca', borderRadius:7,
+                        padding:'9px 12px', marginBottom:12, fontSize:12, color:'#f87171',
+                        display:'flex', gap:7, alignItems:'flex-start' }}>
+                        <AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{addError}
+                      </div>
+                    )}
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => setAddCa(null)}
+                        style={{ padding:'9px 16px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Back</button>
+                      <button onClick={saveConnection} disabled={addSaving}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                          fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                        {addSaving
+                          ? <><RefreshCw size={12} style={{ animation:'spin .8s linear infinite' }}/> Connecting…</>
+                          : <><Check size={12}/> Connect &amp; sync</>}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── PEM import modal ── */}
+        {showImport && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div>
+                  <div style={{ fontSize:15, fontWeight:500 }}>Import certificate</div>
+                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>Paste cert PEM — domain, expiry &amp; issuer extracted automatically</div>
+                </div>
+                <button onClick={() => setShowImport(false)} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!importResult ? (
+                  <>
+                    <div style={{ background:'var(--v2-surface-2)', border:'0.5px solid var(--v2-border)',
+                      borderRadius:8, padding:'10px 12px', marginBottom:14,
+                      display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.6 }}>
+                        <strong>Only the certificate PEM is needed</strong> for tracking. Private key not required.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:16 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:6 }}>Certificate PEM *</label>
+                      <textarea rows={8} placeholder={'-----BEGIN CERTIFICATE-----
+MIIFaz...
+-----END CERTIFICATE-----'}
+                        value={pemText} onChange={e => setPemText(e.target.value)}
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:11,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'monospace', resize:'vertical', boxSizing:'border-box' }}/>
+                    </div>
+                    <button onClick={doImport} disabled={importing || !pemText.trim()}
+                      style={{ width:'100%', padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                        borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                        fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                      {importing
+                        ? <><RefreshCw size={13} style={{ animation:'spin .8s linear infinite' }}/> Parsing…</>
+                        : <><FileText size={13}/> Import certificate</>}
+                    </button>
+                  </>
+                ) : importResult.ok ? (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <Check size={20} style={{ color:'#4ade80', margin:'0 auto 14px', display:'block' }}/>
+                    <div style={{ fontSize:15, fontWeight:500, marginBottom:16 }}>Certificate imported</div>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => { setPemText(''); setImportResult(null) }}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Import another</button>
+                      <button onClick={() => setShowImport(false)}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600 }}>Done</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <AlertTriangle size={32} style={{ color:'#f87171', margin:'0 auto 12px', display:'block' }}/>
+                    <div style={{ fontSize:13, color:'#f87171', marginBottom:16 }}>{importResult.error}</div>
+                    <button onClick={() => setImportResult(null)}
+                      style={{ padding:'9px 20px', fontSize:13, background:'var(--v2-surface-2)',
+                        border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                        fontFamily:'inherit', color:'#e8e0d8' }}>Try again</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Delete connection modal ── */}
+        {delConn && (() => {
+          const conn = connections.find(c => c.id === delConn)
+          const connCertCount = conn?.cert_count || 0
+          return (
+            <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+              alignItems:'center', justifyContent:'center', padding:20,
+              background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+              <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:400,
+                padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+                  <div style={{ width:32, height:32, borderRadius:8, background:'rgba(192,57,43,0.12)',
+                    display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <Trash2 size={15} color="#c0392b"/>
+                  </div>
+                  <div style={{ fontSize:15, fontWeight:600 }}>Remove {conn?.label || 'connection'}?</div>
+                </div>
+                <div style={{ fontSize:13, color:'#e8e0d8', marginBottom:16, lineHeight:1.6 }}>
+                  This CA connection will be disconnected and will no longer sync.
+                  {connCertCount > 0 && <span style={{ color:'#ffffff', fontWeight:500 }}> {connCertCount} certificate{connCertCount!==1?'s':''} are linked.</span>}
+                </div>
+                {connCertCount > 0 && (
+                  <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer',
+                    padding:'10px 12px', borderRadius:8, marginBottom:16,
+                    background: delCerts ? 'rgba(192,57,43,0.12)' : 'var(--v2-surface-2)',
+                    border: `0.5px solid ${delCerts ? 'rgba(192,57,43,0.25)' : 'var(--v2-border)'}`,
+                    transition:'all .15s' }}>
+                    <input type="checkbox" checked={delCerts} onChange={e => setDelCerts(e.target.checked)}
+                      style={{ width:14, height:14, accentColor:'#f87171', flexShrink:0 }}/>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:600, color: delCerts ? '#f87171' : '#e8e0d8' }}>
+                        Also delete {connCertCount} imported certificate{connCertCount!==1?'s':''}
+                      </div>
+                      <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>
+                        {delCerts ? 'Certificates will be removed from inventory' : 'Certificates remain but stop syncing'}
+                      </div>
+                    </div>
+                  </label>
+                )}
+                <div style={{ display:'flex', gap:8 }}>
+                  <button onClick={() => { setDelConn(null); setDelCerts(true) }}
+                    style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                      border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                      fontFamily:'inherit', color:'#e8e0d8' }}>Cancel</button>
+                  <button onClick={() => deleteConn(delConn)}
+                    style={{ flex:1, background:'#f87171', color:'#ffffff', border:'none',
+                      borderRadius:8, padding:'9px', cursor:'pointer', fontFamily:'inherit',
+                      fontWeight:600, fontSize:13, display:'flex', alignItems:'center',
+                      justifyContent:'center', gap:6 }}>
+                    <Trash2 size={13}/>
+                    {delCerts && connCertCount > 0 ? `Remove + delete ${connCertCount} certs` : 'Remove connection'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
       </div>
     </div>
   )
@@ -629,6 +2039,53 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
 function HostingCard({ cred, onDelete, deletingId }) {
   const isConfirming = deletingId === cred.id
   const domainCount = (cred.domains || []).length
+  const loadCA = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const tok = session?.access_token || ''
+    setCaTok(tok)
+    if (!tok) return
+    setCaLoading(true)
+    const r = await callCA(tok, { action: 'list_connections' })
+    if (r.connections) setConnections(r.connections)
+    if (r.total_certs !== undefined) setCaCertCount(r.total_certs)
+    else if (r.certs) setCaCertCount(r.certs.length)
+    setCaLoading(false)
+  }
+
+  const openAdd = (ca) => { setAddCa(ca); setAddLabel(CA_DEFS[ca]?.name || ''); setAddFields({}); setAddError('') }
+
+  const saveConnection = async () => {
+    setAddSaving(true); setAddError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const freshTok = session?.access_token || caTok
+    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
+    const r = await callCA(freshTok, payload)
+    setAddSaving(false)
+    if (r.ok) { setShowAddCA(false); setAddCa(null); await loadCA() }
+    else setAddError(r.error || 'Connection failed')
+  }
+
+  const doSync = async (connId) => {
+    setSyncing(connId)
+    const r = await callCA(caTok, { action: 'sync', connection_id: connId })
+    setSyncResult(p => ({ ...p, [connId]: r }))
+    setSyncing(null)
+    await loadCA()
+  }
+
+  const deleteConn = async (connId) => {
+    await callCA(caTok, { action: 'delete_connection', connection_id: connId, delete_certs: delCerts })
+    setDelConn(null); setDelCerts(true)
+    await loadCA()
+  }
+
+  const doImport = async () => {
+    setImporting(true)
+    const r = await callCA(caTok, { action: 'manual_import', cert_pem: pemText.trim() })
+    setImportResult(r); setImporting(false)
+    if (r.ok) await loadCA()
+  }
+
   return (
     <div style={{
       background: 'var(--v2-surface)', border: '1px solid rgba(192,57,43,0.25)', borderRadius: 10,
@@ -718,6 +2175,53 @@ function AddHostingModal({ onClose, onSaved, userId }) {
   const lbl = { fontSize: 11, fontWeight: 600, color: 'rgba(240,237,232,0.6)',
     textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: 5 }
 
+  const loadCA = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const tok = session?.access_token || ''
+    setCaTok(tok)
+    if (!tok) return
+    setCaLoading(true)
+    const r = await callCA(tok, { action: 'list_connections' })
+    if (r.connections) setConnections(r.connections)
+    if (r.total_certs !== undefined) setCaCertCount(r.total_certs)
+    else if (r.certs) setCaCertCount(r.certs.length)
+    setCaLoading(false)
+  }
+
+  const openAdd = (ca) => { setAddCa(ca); setAddLabel(CA_DEFS[ca]?.name || ''); setAddFields({}); setAddError('') }
+
+  const saveConnection = async () => {
+    setAddSaving(true); setAddError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const freshTok = session?.access_token || caTok
+    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
+    const r = await callCA(freshTok, payload)
+    setAddSaving(false)
+    if (r.ok) { setShowAddCA(false); setAddCa(null); await loadCA() }
+    else setAddError(r.error || 'Connection failed')
+  }
+
+  const doSync = async (connId) => {
+    setSyncing(connId)
+    const r = await callCA(caTok, { action: 'sync', connection_id: connId })
+    setSyncResult(p => ({ ...p, [connId]: r }))
+    setSyncing(null)
+    await loadCA()
+  }
+
+  const deleteConn = async (connId) => {
+    await callCA(caTok, { action: 'delete_connection', connection_id: connId, delete_certs: delCerts })
+    setDelConn(null); setDelCerts(true)
+    await loadCA()
+  }
+
+  const doImport = async () => {
+    setImporting(true)
+    const r = await callCA(caTok, { action: 'manual_import', cert_pem: pemText.trim() })
+    setImportResult(r); setImporting(false)
+    if (r.ok) await loadCA()
+  }
+
   return (
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.8)', zIndex:9999,
       display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}
@@ -800,6 +2304,384 @@ function AddHostingModal({ onClose, onSaved, userId }) {
             </button>
           </div>
         </div>
+
+        </>) /* end servers tab */}
+
+        {/* ── CA CONNECTIONS TAB ───────────────────────────────────── */}
+        {caTab === 'ca' && (
+          <div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <div style={{ fontSize:13, color:'#e8e0d8' }}>
+                {connections.length} connection{connections.length !== 1 ? 's' : ''} · {caCertCount} certificates tracked
+              </div>
+              <div style={{ display:'flex', gap:8 }}>
+                <button onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:13,
+                    background:'var(--v2-surface)', border:'1px solid rgba(192,57,43,0.25)',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8', fontWeight:500 }}>
+                  <Upload size={14}/> Import PEM
+                </button>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', fontSize:13,
+                    fontWeight:600, background:'#c0392b', border:'none', borderRadius:8,
+                    cursor:'pointer', fontFamily:'inherit', color:'#ffffff' }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            </div>
+
+            {connections.length === 0 ? (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
+                padding:'60px 32px', textAlign:'center' }}>
+                <Shield size={36} style={{ color:'#b0a8a0', display:'block', margin:'0 auto 14px' }}/>
+                <div style={{ fontSize:15, fontWeight:500, color:'#ffffff', marginBottom:6 }}>No CA connections</div>
+                <div style={{ fontSize:13, color:'#b0a8a0', maxWidth:420, margin:'0 auto 20px' }}>
+                  Connect DigiCert CertCentral or Sectigo SCM to import your external certificate portfolio.
+                </div>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ padding:'9px 20px', fontSize:13, background:'#c0392b', border:'none',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600,
+                    display:'inline-flex', alignItems:'center', gap:6 }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            ) : (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto' }}>
+                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                  padding:'10px 20px', background:'var(--v2-surface-2)',
+                  borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+                  {['Certificate authority', 'Label', 'Certs', 'Status', 'Actions'].map(h => (
+                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
+                      textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
+                  ))}
+                </div>
+                {connections.map((conn, i) => {
+                  const def = CA_DEFS[conn.ca_type] || { name:conn.ca_type, color:'#e8e0d8', bg:'var(--v2-surface-2)', logo:conn.ca_type?.slice(0,2).toUpperCase() }
+                  const res = syncResult[conn.id]
+                  const isActive = conn.status === 'active'
+                  return (
+                    <div key={conn.id} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                      padding:'14px 20px', alignItems:'center',
+                      borderBottom: i < connections.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                      background:'var(--v2-surface)', transition:'background .1s' }}
+                      onMouseEnter={e => e.currentTarget.style.background='var(--v2-surface-2)'}
+                      onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
+                      <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                        <div style={{ width:34, height:34, borderRadius:7, background:def.color,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize:11, fontWeight:700, color:'#ffffff', flexShrink:0 }}>{def.logo}</div>
+                        <div>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>Certificate authority</div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.label || '—'}</div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.cert_count !== undefined ? conn.cert_count : '—'}</div>
+                      <div>
+                        <span style={{ display:'inline-flex', alignItems:'center', gap:5,
+                          fontSize:12, fontWeight:500, padding:'4px 10px', borderRadius:4,
+                          background: isActive ? 'transparent' : 'rgba(192,57,43,0.12)',
+                          color: isActive ? '#f0ede8' : '#a93226',
+                          border: `0.5px solid ${isActive ? 'rgba(192,57,43,0.3)' : 'rgba(192,57,43,0.25)'}` }}>
+                          <span style={{ width:6, height:6, borderRadius:'50%',
+                            background: isActive ? '#f0ede8' : '#f87171' }}/>
+                          {isActive ? 'Connected' : 'Error'}
+                        </span>
+                      </div>
+                      <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+                        <button onClick={() => doSync(conn.id)} disabled={syncing===conn.id}
+                          style={{ padding:'5px 10px', fontSize:12, background:'var(--v2-surface-2)',
+                            border:'1px solid rgba(192,57,43,0.25)', borderRadius:6, cursor:'pointer',
+                            fontFamily:'inherit', color:'#e8e0d8', display:'flex', alignItems:'center', gap:4 }}>
+                          <RefreshCw size={12} style={{ animation: syncing===conn.id ? 'spin .8s linear infinite' : 'none' }}/>
+                          {syncing===conn.id ? 'Syncing' : 'Sync'}
+                        </button>
+                        <button onClick={() => setDelConn(conn.id)}
+                          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center',
+                            background:'none', border:'0.5px solid #fecaca', borderRadius:5, cursor:'pointer', color:'#f87171' }}>
+                          <Trash2 size={12}/>
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+                {Object.entries(syncResult).filter(([,r]) => r).map(([id, r]) => (
+                  <div key={id} style={{ padding:'10px 20px', borderTop:'0.5px solid var(--v2-border)',
+                    background: r.ok ? 'transparent' : 'rgba(192,57,43,0.12)', display:'flex', alignItems:'center', gap:8 }}>
+                    {r.ok ? <Check size={13} style={{ color:'#ffffff' }}/> : <AlertCircle size={13} style={{ color:'#f87171' }}/>}
+                    <span style={{ fontSize:12, color: r.ok ? '#f0ede8' : '#f87171' }}>
+                      {r.ok ? `Sync complete — ${r.imported || 0} certificates imported` : r.error}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Connect CA modal ── */}
+        {showAddCA && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div style={{ fontSize:15, fontWeight:500 }}>Connect a CA</div>
+                <button onClick={() => { setShowAddCA(false); setAddCa(null) }} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!addCa ? (
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    <div style={{ fontSize:12, color:'#e8e0d8', marginBottom:4, lineHeight:1.6 }}>
+                      Choose a CA. SSLVault pulls your existing certificates for monitoring.
+                      <strong style={{ color:'#ffffff' }}> No private keys needed.</strong>
+                    </div>
+                    {Object.entries(CA_DEFS).map(([key, def]) => (
+                      <div key={key} onClick={() => openAdd(key)}
+                        style={{ padding:'14px 16px', borderRadius:10, border:'0.5px solid var(--v2-border)',
+                          background:'rgba(255,255,255,0.03)', cursor:'pointer', display:'flex',
+                          alignItems:'center', gap:12, transition:'all .15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor=def.color; e.currentTarget.style.background=def.bg }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor='var(--v2-border)'; e.currentTarget.style.background='rgba(255,255,255,0.03)' }}>
+                        <div style={{ width:36, height:36, borderRadius:8, background:def.bg, border:`0.5px solid ${def.border}`,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontWeight:700, fontSize:12, color:def.color, flexShrink:0 }}>{def.logo}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{def.desc}</div>
+                        </div>
+                        <ChevronRight size={14} style={{ color:'#b0a8a0' }}/>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16,
+                      padding:'10px 12px', borderRadius:8, background:'var(--v2-surface-2)',
+                      border:'0.5px solid var(--v2-border)' }}>
+                      <div style={{ width:30, height:30, borderRadius:7, background:CA_DEFS[addCa].bg,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontWeight:700, fontSize:11, color:CA_DEFS[addCa].color, flexShrink:0 }}>
+                        {CA_DEFS[addCa].logo}
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{CA_DEFS[addCa].name}</div>
+                      </div>
+                      {CA_DEFS[addCa].docs && (
+                        <a href={CA_DEFS[addCa].docs} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize:11, color:'#b0a8a0', display:'flex', alignItems:'center', gap:3 }}>
+                          Docs <ExternalLink size={11}/>
+                        </a>
+                      )}
+                    </div>
+                    <div style={{ background:'var(--v2-surface-2)', borderRadius:8, padding:'10px 12px',
+                      marginBottom:16, display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.6 }}>
+                        SSLVault reads certificate details only — expiry, domain, issuer, SANs. Private keys stay on your servers.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:5 }}>Label</label>
+                      <input value={addLabel} onChange={e => setAddLabel(e.target.value)}
+                        placeholder="e.g. Production DigiCert"
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box' }}/>
+                    </div>
+                    {CA_DEFS[addCa].fields.map(f => (
+                      <div key={f.key} style={{ marginBottom:12 }}>
+                        <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                          color:'#b0a8a0', display:'block', marginBottom:5 }}>
+                          {f.label}{f.required ? ' *' : ''}
+                        </label>
+                        <div style={{ position:'relative' }}>
+                          <input type={f.type==='password' && !showPwd[f.key] ? 'password' : 'text'}
+                            value={addFields[f.key] || ''}
+                            onChange={e => setAddFields(p => ({ ...p, [f.key]: e.target.value }))}
+                            placeholder={f.placeholder}
+                            style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                              background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                              color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box',
+                              paddingRight: f.type==='password' ? 36 : 12 }}/>
+                          {f.type==='password' && (
+                            <button type="button" onClick={() => setShowPwd(p => ({ ...p, [f.key]: !p[f.key] }))}
+                              style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)',
+                                background:'none', border:'none', cursor:'pointer', color:'#b0a8a0' }}>
+                              {showPwd[f.key] ? <EyeOff size={13}/> : <Eye size={13}/>}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {addError && (
+                      <div style={{ background:'rgba(192,57,43,0.12)', border:'0.5px solid #fecaca', borderRadius:7,
+                        padding:'9px 12px', marginBottom:12, fontSize:12, color:'#f87171',
+                        display:'flex', gap:7, alignItems:'flex-start' }}>
+                        <AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{addError}
+                      </div>
+                    )}
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => setAddCa(null)}
+                        style={{ padding:'9px 16px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Back</button>
+                      <button onClick={saveConnection} disabled={addSaving}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                          fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                        {addSaving
+                          ? <><RefreshCw size={12} style={{ animation:'spin .8s linear infinite' }}/> Connecting…</>
+                          : <><Check size={12}/> Connect &amp; sync</>}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── PEM import modal ── */}
+        {showImport && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div>
+                  <div style={{ fontSize:15, fontWeight:500 }}>Import certificate</div>
+                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>Paste cert PEM — domain, expiry &amp; issuer extracted automatically</div>
+                </div>
+                <button onClick={() => setShowImport(false)} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!importResult ? (
+                  <>
+                    <div style={{ background:'var(--v2-surface-2)', border:'0.5px solid var(--v2-border)',
+                      borderRadius:8, padding:'10px 12px', marginBottom:14,
+                      display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.6 }}>
+                        <strong>Only the certificate PEM is needed</strong> for tracking. Private key not required.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:16 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:6 }}>Certificate PEM *</label>
+                      <textarea rows={8} placeholder={'-----BEGIN CERTIFICATE-----
+MIIFaz...
+-----END CERTIFICATE-----'}
+                        value={pemText} onChange={e => setPemText(e.target.value)}
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:11,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'monospace', resize:'vertical', boxSizing:'border-box' }}/>
+                    </div>
+                    <button onClick={doImport} disabled={importing || !pemText.trim()}
+                      style={{ width:'100%', padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                        borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                        fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                      {importing
+                        ? <><RefreshCw size={13} style={{ animation:'spin .8s linear infinite' }}/> Parsing…</>
+                        : <><FileText size={13}/> Import certificate</>}
+                    </button>
+                  </>
+                ) : importResult.ok ? (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <Check size={20} style={{ color:'#4ade80', margin:'0 auto 14px', display:'block' }}/>
+                    <div style={{ fontSize:15, fontWeight:500, marginBottom:16 }}>Certificate imported</div>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => { setPemText(''); setImportResult(null) }}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Import another</button>
+                      <button onClick={() => setShowImport(false)}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600 }}>Done</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <AlertTriangle size={32} style={{ color:'#f87171', margin:'0 auto 12px', display:'block' }}/>
+                    <div style={{ fontSize:13, color:'#f87171', marginBottom:16 }}>{importResult.error}</div>
+                    <button onClick={() => setImportResult(null)}
+                      style={{ padding:'9px 20px', fontSize:13, background:'var(--v2-surface-2)',
+                        border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                        fontFamily:'inherit', color:'#e8e0d8' }}>Try again</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Delete connection modal ── */}
+        {delConn && (() => {
+          const conn = connections.find(c => c.id === delConn)
+          const connCertCount = conn?.cert_count || 0
+          return (
+            <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+              alignItems:'center', justifyContent:'center', padding:20,
+              background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+              <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:400,
+                padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+                  <div style={{ width:32, height:32, borderRadius:8, background:'rgba(192,57,43,0.12)',
+                    display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <Trash2 size={15} color="#c0392b"/>
+                  </div>
+                  <div style={{ fontSize:15, fontWeight:600 }}>Remove {conn?.label || 'connection'}?</div>
+                </div>
+                <div style={{ fontSize:13, color:'#e8e0d8', marginBottom:16, lineHeight:1.6 }}>
+                  This CA connection will be disconnected and will no longer sync.
+                  {connCertCount > 0 && <span style={{ color:'#ffffff', fontWeight:500 }}> {connCertCount} certificate{connCertCount!==1?'s':''} are linked.</span>}
+                </div>
+                {connCertCount > 0 && (
+                  <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer',
+                    padding:'10px 12px', borderRadius:8, marginBottom:16,
+                    background: delCerts ? 'rgba(192,57,43,0.12)' : 'var(--v2-surface-2)',
+                    border: `0.5px solid ${delCerts ? 'rgba(192,57,43,0.25)' : 'var(--v2-border)'}`,
+                    transition:'all .15s' }}>
+                    <input type="checkbox" checked={delCerts} onChange={e => setDelCerts(e.target.checked)}
+                      style={{ width:14, height:14, accentColor:'#f87171', flexShrink:0 }}/>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:600, color: delCerts ? '#f87171' : '#e8e0d8' }}>
+                        Also delete {connCertCount} imported certificate{connCertCount!==1?'s':''}
+                      </div>
+                      <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>
+                        {delCerts ? 'Certificates will be removed from inventory' : 'Certificates remain but stop syncing'}
+                      </div>
+                    </div>
+                  </label>
+                )}
+                <div style={{ display:'flex', gap:8 }}>
+                  <button onClick={() => { setDelConn(null); setDelCerts(true) }}
+                    style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                      border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                      fontFamily:'inherit', color:'#e8e0d8' }}>Cancel</button>
+                  <button onClick={() => deleteConn(delConn)}
+                    style={{ flex:1, background:'#f87171', color:'#ffffff', border:'none',
+                      borderRadius:8, padding:'9px', cursor:'pointer', fontFamily:'inherit',
+                      fontWeight:600, fontSize:13, display:'flex', alignItems:'center',
+                      justifyContent:'center', gap:6 }}>
+                    <Trash2 size={13}/>
+                    {delCerts && connCertCount > 0 ? `Remove + delete ${connCertCount} certs` : 'Remove connection'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
       </div>
     </div>
   )
@@ -812,6 +2694,28 @@ export default function MyServers({ user }) {
   const [certs, setCerts] = useState([])
   const [dnsCredentials, setDnsCredentials] = useState([])
   const [loading, setLoading] = useState(true)
+  // ── CA Connections state ────────────────────────────────────────────
+  const [caTab,         setCaTab]         = useState('servers') // 'servers' | 'ca'
+  const [caTok,         setCaTok]         = useState('')
+  const [connections,   setConnections]   = useState([])
+  const [caLoading,     setCaLoading]     = useState(false)
+  const [syncing,       setSyncing]       = useState(null)
+  const [syncResult,    setSyncResult]    = useState({})
+  const [delConn,       setDelConn]       = useState(null)
+  const [delCerts,      setDelCerts]      = useState(true)
+  const [showAddCA,     setShowAddCA]     = useState(false)
+  const [addCa,         setAddCa]         = useState(null)
+  const [addLabel,      setAddLabel]      = useState('')
+  const [addFields,     setAddFields]     = useState({})
+  const [addSaving,     setAddSaving]     = useState(false)
+  const [addError,      setAddError]      = useState('')
+  const [showPwd,       setShowPwd]       = useState({})
+  const [showImport,    setShowImport]    = useState(false)
+  const [pemText,       setPemText]       = useState('')
+  const [importing,     setImporting]     = useState(false)
+  const [importResult,  setImportResult]  = useState(null)
+  const [caCertCount,   setCaCertCount]   = useState(0)
+
   const [showAddServer, setShowAddServer] = useState(false)
   const [showAddDns, setShowAddDns] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
@@ -881,6 +2785,53 @@ export default function MyServers({ user }) {
   const onlineCount = agents.filter(agentOnline).length
   const hasSetup = agents.length > 0 || dnsCredentials.length > 0 || cpanelCreds.length > 0
 
+  const loadCA = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const tok = session?.access_token || ''
+    setCaTok(tok)
+    if (!tok) return
+    setCaLoading(true)
+    const r = await callCA(tok, { action: 'list_connections' })
+    if (r.connections) setConnections(r.connections)
+    if (r.total_certs !== undefined) setCaCertCount(r.total_certs)
+    else if (r.certs) setCaCertCount(r.certs.length)
+    setCaLoading(false)
+  }
+
+  const openAdd = (ca) => { setAddCa(ca); setAddLabel(CA_DEFS[ca]?.name || ''); setAddFields({}); setAddError('') }
+
+  const saveConnection = async () => {
+    setAddSaving(true); setAddError('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const freshTok = session?.access_token || caTok
+    const payload = { action: 'save_connection', ca_type: addCa, label: addLabel, ...addFields }
+    const r = await callCA(freshTok, payload)
+    setAddSaving(false)
+    if (r.ok) { setShowAddCA(false); setAddCa(null); await loadCA() }
+    else setAddError(r.error || 'Connection failed')
+  }
+
+  const doSync = async (connId) => {
+    setSyncing(connId)
+    const r = await callCA(caTok, { action: 'sync', connection_id: connId })
+    setSyncResult(p => ({ ...p, [connId]: r }))
+    setSyncing(null)
+    await loadCA()
+  }
+
+  const deleteConn = async (connId) => {
+    await callCA(caTok, { action: 'delete_connection', connection_id: connId, delete_certs: delCerts })
+    setDelConn(null); setDelCerts(true)
+    await loadCA()
+  }
+
+  const doImport = async () => {
+    setImporting(true)
+    const r = await callCA(caTok, { action: 'manual_import', cert_pem: pemText.trim() })
+    setImportResult(r); setImporting(false)
+    if (r.ok) await loadCA()
+  }
+
   return (
     <div className="v2-page">
       <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
@@ -895,10 +2846,10 @@ export default function MyServers({ user }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <h1 style={{ fontSize:22, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.5px', margin: 0 }}>
-              My Servers
+              Servers &amp; agents
             </h1>
             <p style={{ fontSize:13, color: '#b0a8a0', margin: '4px 0 0' }}>
-              Manage your servers and DNS connections for automatic SSL
+              Manage servers, DNS providers and CA connections
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -993,7 +2944,33 @@ export default function MyServers({ user }) {
             {/* Servers tab */}
             {activeTab === 'servers' && (
               <div>
-                {agents.length === 0 ? (
+        
+        {/* ── Tab bar ─────────────────────────────────────────────── */}
+        <div style={{ display:'flex', gap:0, borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:24, marginTop:8 }}>
+          {[
+            { id:'servers', label:'Servers & agents' },
+            { id:'ca',      label:'CA Connections', count: connections.length },
+          ].map(({ id, label, count }) => (
+            <button key={id} onClick={() => setCaTab(id)} style={{
+              padding:'10px 20px', fontSize:13, fontWeight: caTab===id ? 600 : 400,
+              background:'transparent', border:'none', cursor:'pointer', fontFamily:'inherit',
+              color: caTab===id ? 'var(--v2-accent,#c0392b)' : '#b0a8a0',
+              borderBottom: caTab===id ? '2px solid var(--v2-accent,#c0392b)' : '2px solid transparent',
+              display:'flex', alignItems:'center', gap:6, transition:'all .15s',
+            }}>
+              {label}
+              {count !== undefined && count > 0 && (
+                <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:10,
+                  background: caTab===id ? 'rgba(192,57,43,0.2)' : 'rgba(255,255,255,0.08)',
+                  color: caTab===id ? 'var(--v2-accent,#c0392b)' : '#b0a8a0' }}>{count}</span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* ── SERVERS TAB ─────────────────────────────────────────── */}
+        {caTab === 'servers' && (<>
+        {agents.length === 0 ? (
                   <div style={{
                     textAlign: 'center', padding:'min(40px,5vw) min(24px,4vw)',
                     background: 'var(--v2-surface)', borderRadius: 12, border: '1px solid rgba(192,57,43,0.25)',
@@ -1116,6 +3093,384 @@ export default function MyServers({ user }) {
             )}
           </>
         )}
+
+        </>) /* end servers tab */}
+
+        {/* ── CA CONNECTIONS TAB ───────────────────────────────────── */}
+        {caTab === 'ca' && (
+          <div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <div style={{ fontSize:13, color:'#e8e0d8' }}>
+                {connections.length} connection{connections.length !== 1 ? 's' : ''} · {caCertCount} certificates tracked
+              </div>
+              <div style={{ display:'flex', gap:8 }}>
+                <button onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:13,
+                    background:'var(--v2-surface)', border:'1px solid rgba(192,57,43,0.25)',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8', fontWeight:500 }}>
+                  <Upload size={14}/> Import PEM
+                </button>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', fontSize:13,
+                    fontWeight:600, background:'#c0392b', border:'none', borderRadius:8,
+                    cursor:'pointer', fontFamily:'inherit', color:'#ffffff' }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            </div>
+
+            {connections.length === 0 ? (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
+                padding:'60px 32px', textAlign:'center' }}>
+                <Shield size={36} style={{ color:'#b0a8a0', display:'block', margin:'0 auto 14px' }}/>
+                <div style={{ fontSize:15, fontWeight:500, color:'#ffffff', marginBottom:6 }}>No CA connections</div>
+                <div style={{ fontSize:13, color:'#b0a8a0', maxWidth:420, margin:'0 auto 20px' }}>
+                  Connect DigiCert CertCentral or Sectigo SCM to import your external certificate portfolio.
+                </div>
+                <button onClick={() => setShowAddCA(true)}
+                  style={{ padding:'9px 20px', fontSize:13, background:'#c0392b', border:'none',
+                    borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600,
+                    display:'inline-flex', alignItems:'center', gap:6 }}>
+                  <Plus size={14}/> Connect CA
+                </button>
+              </div>
+            ) : (
+              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto' }}>
+                <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                  padding:'10px 20px', background:'var(--v2-surface-2)',
+                  borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+                  {['Certificate authority', 'Label', 'Certs', 'Status', 'Actions'].map(h => (
+                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
+                      textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
+                  ))}
+                </div>
+                {connections.map((conn, i) => {
+                  const def = CA_DEFS[conn.ca_type] || { name:conn.ca_type, color:'#e8e0d8', bg:'var(--v2-surface-2)', logo:conn.ca_type?.slice(0,2).toUpperCase() }
+                  const res = syncResult[conn.id]
+                  const isActive = conn.status === 'active'
+                  return (
+                    <div key={conn.id} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px', minWidth:650,
+                      padding:'14px 20px', alignItems:'center',
+                      borderBottom: i < connections.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                      background:'var(--v2-surface)', transition:'background .1s' }}
+                      onMouseEnter={e => e.currentTarget.style.background='var(--v2-surface-2)'}
+                      onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
+                      <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                        <div style={{ width:34, height:34, borderRadius:7, background:def.color,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize:11, fontWeight:700, color:'#ffffff', flexShrink:0 }}>{def.logo}</div>
+                        <div>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>Certificate authority</div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.label || '—'}</div>
+                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.cert_count !== undefined ? conn.cert_count : '—'}</div>
+                      <div>
+                        <span style={{ display:'inline-flex', alignItems:'center', gap:5,
+                          fontSize:12, fontWeight:500, padding:'4px 10px', borderRadius:4,
+                          background: isActive ? 'transparent' : 'rgba(192,57,43,0.12)',
+                          color: isActive ? '#f0ede8' : '#a93226',
+                          border: `0.5px solid ${isActive ? 'rgba(192,57,43,0.3)' : 'rgba(192,57,43,0.25)'}` }}>
+                          <span style={{ width:6, height:6, borderRadius:'50%',
+                            background: isActive ? '#f0ede8' : '#f87171' }}/>
+                          {isActive ? 'Connected' : 'Error'}
+                        </span>
+                      </div>
+                      <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+                        <button onClick={() => doSync(conn.id)} disabled={syncing===conn.id}
+                          style={{ padding:'5px 10px', fontSize:12, background:'var(--v2-surface-2)',
+                            border:'1px solid rgba(192,57,43,0.25)', borderRadius:6, cursor:'pointer',
+                            fontFamily:'inherit', color:'#e8e0d8', display:'flex', alignItems:'center', gap:4 }}>
+                          <RefreshCw size={12} style={{ animation: syncing===conn.id ? 'spin .8s linear infinite' : 'none' }}/>
+                          {syncing===conn.id ? 'Syncing' : 'Sync'}
+                        </button>
+                        <button onClick={() => setDelConn(conn.id)}
+                          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center',
+                            background:'none', border:'0.5px solid #fecaca', borderRadius:5, cursor:'pointer', color:'#f87171' }}>
+                          <Trash2 size={12}/>
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+                {Object.entries(syncResult).filter(([,r]) => r).map(([id, r]) => (
+                  <div key={id} style={{ padding:'10px 20px', borderTop:'0.5px solid var(--v2-border)',
+                    background: r.ok ? 'transparent' : 'rgba(192,57,43,0.12)', display:'flex', alignItems:'center', gap:8 }}>
+                    {r.ok ? <Check size={13} style={{ color:'#ffffff' }}/> : <AlertCircle size={13} style={{ color:'#f87171' }}/>}
+                    <span style={{ fontSize:12, color: r.ok ? '#f0ede8' : '#f87171' }}>
+                      {r.ok ? `Sync complete — ${r.imported || 0} certificates imported` : r.error}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Connect CA modal ── */}
+        {showAddCA && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div style={{ fontSize:15, fontWeight:500 }}>Connect a CA</div>
+                <button onClick={() => { setShowAddCA(false); setAddCa(null) }} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!addCa ? (
+                  <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                    <div style={{ fontSize:12, color:'#e8e0d8', marginBottom:4, lineHeight:1.6 }}>
+                      Choose a CA. SSLVault pulls your existing certificates for monitoring.
+                      <strong style={{ color:'#ffffff' }}> No private keys needed.</strong>
+                    </div>
+                    {Object.entries(CA_DEFS).map(([key, def]) => (
+                      <div key={key} onClick={() => openAdd(key)}
+                        style={{ padding:'14px 16px', borderRadius:10, border:'0.5px solid var(--v2-border)',
+                          background:'rgba(255,255,255,0.03)', cursor:'pointer', display:'flex',
+                          alignItems:'center', gap:12, transition:'all .15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor=def.color; e.currentTarget.style.background=def.bg }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor='var(--v2-border)'; e.currentTarget.style.background='rgba(255,255,255,0.03)' }}>
+                        <div style={{ width:36, height:36, borderRadius:8, background:def.bg, border:`0.5px solid ${def.border}`,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontWeight:700, fontSize:12, color:def.color, flexShrink:0 }}>{def.logo}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{def.desc}</div>
+                        </div>
+                        <ChevronRight size={14} style={{ color:'#b0a8a0' }}/>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16,
+                      padding:'10px 12px', borderRadius:8, background:'var(--v2-surface-2)',
+                      border:'0.5px solid var(--v2-border)' }}>
+                      <div style={{ width:30, height:30, borderRadius:7, background:CA_DEFS[addCa].bg,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontWeight:700, fontSize:11, color:CA_DEFS[addCa].color, flexShrink:0 }}>
+                        {CA_DEFS[addCa].logo}
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{CA_DEFS[addCa].name}</div>
+                      </div>
+                      {CA_DEFS[addCa].docs && (
+                        <a href={CA_DEFS[addCa].docs} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize:11, color:'#b0a8a0', display:'flex', alignItems:'center', gap:3 }}>
+                          Docs <ExternalLink size={11}/>
+                        </a>
+                      )}
+                    </div>
+                    <div style={{ background:'var(--v2-surface-2)', borderRadius:8, padding:'10px 12px',
+                      marginBottom:16, display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.6 }}>
+                        SSLVault reads certificate details only — expiry, domain, issuer, SANs. Private keys stay on your servers.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:5 }}>Label</label>
+                      <input value={addLabel} onChange={e => setAddLabel(e.target.value)}
+                        placeholder="e.g. Production DigiCert"
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box' }}/>
+                    </div>
+                    {CA_DEFS[addCa].fields.map(f => (
+                      <div key={f.key} style={{ marginBottom:12 }}>
+                        <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                          color:'#b0a8a0', display:'block', marginBottom:5 }}>
+                          {f.label}{f.required ? ' *' : ''}
+                        </label>
+                        <div style={{ position:'relative' }}>
+                          <input type={f.type==='password' && !showPwd[f.key] ? 'password' : 'text'}
+                            value={addFields[f.key] || ''}
+                            onChange={e => setAddFields(p => ({ ...p, [f.key]: e.target.value }))}
+                            placeholder={f.placeholder}
+                            style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:13,
+                              background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                              color:'#e8e0d8', fontFamily:'inherit', boxSizing:'border-box',
+                              paddingRight: f.type==='password' ? 36 : 12 }}/>
+                          {f.type==='password' && (
+                            <button type="button" onClick={() => setShowPwd(p => ({ ...p, [f.key]: !p[f.key] }))}
+                              style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)',
+                                background:'none', border:'none', cursor:'pointer', color:'#b0a8a0' }}>
+                              {showPwd[f.key] ? <EyeOff size={13}/> : <Eye size={13}/>}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {addError && (
+                      <div style={{ background:'rgba(192,57,43,0.12)', border:'0.5px solid #fecaca', borderRadius:7,
+                        padding:'9px 12px', marginBottom:12, fontSize:12, color:'#f87171',
+                        display:'flex', gap:7, alignItems:'flex-start' }}>
+                        <AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{addError}
+                      </div>
+                    )}
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => setAddCa(null)}
+                        style={{ padding:'9px 16px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Back</button>
+                      <button onClick={saveConnection} disabled={addSaving}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                          fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                        {addSaving
+                          ? <><RefreshCw size={12} style={{ animation:'spin .8s linear infinite' }}/> Connecting…</>
+                          : <><Check size={12}/> Connect &amp; sync</>}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── PEM import modal ── */}
+        {showImport && (
+          <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+            alignItems:'center', justifyContent:'center', padding:20,
+            background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+              <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div>
+                  <div style={{ fontSize:15, fontWeight:500 }}>Import certificate</div>
+                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>Paste cert PEM — domain, expiry &amp; issuer extracted automatically</div>
+                </div>
+                <button onClick={() => setShowImport(false)} style={{ background:'none',
+                  border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                  color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+              </div>
+              <div style={{ padding:'18px 22px 22px' }}>
+                {!importResult ? (
+                  <>
+                    <div style={{ background:'var(--v2-surface-2)', border:'0.5px solid var(--v2-border)',
+                      borderRadius:8, padding:'10px 12px', marginBottom:14,
+                      display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
+                      <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.6 }}>
+                        <strong>Only the certificate PEM is needed</strong> for tracking. Private key not required.
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:16 }}>
+                      <label style={{ fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px',
+                        color:'#b0a8a0', display:'block', marginBottom:6 }}>Certificate PEM *</label>
+                      <textarea rows={8} placeholder={'-----BEGIN CERTIFICATE-----
+MIIFaz...
+-----END CERTIFICATE-----'}
+                        value={pemText} onChange={e => setPemText(e.target.value)}
+                        style={{ width:'100%', padding:'9px 12px', borderRadius:7, fontSize:11,
+                          background:'var(--v2-surface-2)', border:'1px solid rgba(192,57,43,0.25)',
+                          color:'#e8e0d8', fontFamily:'monospace', resize:'vertical', boxSizing:'border-box' }}/>
+                    </div>
+                    <button onClick={doImport} disabled={importing || !pemText.trim()}
+                      style={{ width:'100%', padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                        borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff',
+                        fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                      {importing
+                        ? <><RefreshCw size={13} style={{ animation:'spin .8s linear infinite' }}/> Parsing…</>
+                        : <><FileText size={13}/> Import certificate</>}
+                    </button>
+                  </>
+                ) : importResult.ok ? (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <Check size={20} style={{ color:'#4ade80', margin:'0 auto 14px', display:'block' }}/>
+                    <div style={{ fontSize:15, fontWeight:500, marginBottom:16 }}>Certificate imported</div>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <button onClick={() => { setPemText(''); setImportResult(null) }}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                          border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                          fontFamily:'inherit', color:'#e8e0d8' }}>Import another</button>
+                      <button onClick={() => setShowImport(false)}
+                        style={{ flex:1, padding:'9px', fontSize:13, background:'#c0392b', border:'none',
+                          borderRadius:8, cursor:'pointer', fontFamily:'inherit', color:'#ffffff', fontWeight:600 }}>Done</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign:'center', padding:'10px 0' }}>
+                    <AlertTriangle size={32} style={{ color:'#f87171', margin:'0 auto 12px', display:'block' }}/>
+                    <div style={{ fontSize:13, color:'#f87171', marginBottom:16 }}>{importResult.error}</div>
+                    <button onClick={() => setImportResult(null)}
+                      style={{ padding:'9px 20px', fontSize:13, background:'var(--v2-surface-2)',
+                        border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                        fontFamily:'inherit', color:'#e8e0d8' }}>Try again</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Delete connection modal ── */}
+        {delConn && (() => {
+          const conn = connections.find(c => c.id === delConn)
+          const connCertCount = conn?.cert_count || 0
+          return (
+            <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
+              alignItems:'center', justifyContent:'center', padding:20,
+              background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
+              <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:400,
+                padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+                  <div style={{ width:32, height:32, borderRadius:8, background:'rgba(192,57,43,0.12)',
+                    display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <Trash2 size={15} color="#c0392b"/>
+                  </div>
+                  <div style={{ fontSize:15, fontWeight:600 }}>Remove {conn?.label || 'connection'}?</div>
+                </div>
+                <div style={{ fontSize:13, color:'#e8e0d8', marginBottom:16, lineHeight:1.6 }}>
+                  This CA connection will be disconnected and will no longer sync.
+                  {connCertCount > 0 && <span style={{ color:'#ffffff', fontWeight:500 }}> {connCertCount} certificate{connCertCount!==1?'s':''} are linked.</span>}
+                </div>
+                {connCertCount > 0 && (
+                  <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer',
+                    padding:'10px 12px', borderRadius:8, marginBottom:16,
+                    background: delCerts ? 'rgba(192,57,43,0.12)' : 'var(--v2-surface-2)',
+                    border: `0.5px solid ${delCerts ? 'rgba(192,57,43,0.25)' : 'var(--v2-border)'}`,
+                    transition:'all .15s' }}>
+                    <input type="checkbox" checked={delCerts} onChange={e => setDelCerts(e.target.checked)}
+                      style={{ width:14, height:14, accentColor:'#f87171', flexShrink:0 }}/>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:600, color: delCerts ? '#f87171' : '#e8e0d8' }}>
+                        Also delete {connCertCount} imported certificate{connCertCount!==1?'s':''}
+                      </div>
+                      <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>
+                        {delCerts ? 'Certificates will be removed from inventory' : 'Certificates remain but stop syncing'}
+                      </div>
+                    </div>
+                  </label>
+                )}
+                <div style={{ display:'flex', gap:8 }}>
+                  <button onClick={() => { setDelConn(null); setDelCerts(true) }}
+                    style={{ flex:1, padding:'9px', fontSize:13, background:'var(--v2-surface-2)',
+                      border:'1px solid rgba(192,57,43,0.25)', borderRadius:8, cursor:'pointer',
+                      fontFamily:'inherit', color:'#e8e0d8' }}>Cancel</button>
+                  <button onClick={() => deleteConn(delConn)}
+                    style={{ flex:1, background:'#f87171', color:'#ffffff', border:'none',
+                      borderRadius:8, padding:'9px', cursor:'pointer', fontFamily:'inherit',
+                      fontWeight:600, fontSize:13, display:'flex', alignItems:'center',
+                      justifyContent:'center', gap:6 }}>
+                    <Trash2 size={13}/>
+                    {delCerts && connCertCount > 0 ? `Remove + delete ${connCertCount} certs` : 'Remove connection'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
       </div>
     </div>
   )
