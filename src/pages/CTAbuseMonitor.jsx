@@ -120,12 +120,15 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
             <AlertTriangle size={11}/> Report mis-issuance
           </button>
         )}
-      </div>
     </div>
+  )
+  if (embedded) return inner
+  return (
+    <div className="v2-page"><div className="v2-container" style={{ maxWidth: 960 }}>{inner}</div></div>
   )
 }
 
-export default function CTAbuseMonitor({ user }) {
+export default function CTAbuseMonitor({ user, embedded = false }) {
   const isMobile = useIsMobile()
   const [shadows,      setShadows]      = useState([])
   const [watchDomains, setWatchDomains] = useState([])
@@ -230,9 +233,8 @@ export default function CTAbuseMonitor({ user }) {
 
   const selectedShadow = selected ? classified.find(s => s.id === selected) : null
 
-  return (
-    <div className="v2-page">
-      <div className="v2-container" style={{ maxWidth: 960 }}>
+  const inner = (
+    <div style={{ maxWidth: embedded ? '100%' : 960, width: '100%' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
