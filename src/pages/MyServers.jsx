@@ -1323,9 +1323,7 @@ export default function MyServers({ user }) {
                       <>
                         <div style={{background:'rgba(192,57,43,0.06)',border:'1px solid rgba(192,57,43,0.15)',borderRadius:8,padding:'9px 12px',marginBottom:14,display:'flex',gap:8}}><Info size={12} style={{color:'#b0a8a0',flexShrink:0,marginTop:1}}/><div style={{fontSize:12,color:'#e8e0d8',lineHeight:1.6}}><strong>Only the certificate PEM needed</strong> — private key not required.</div></div>
                         <div style={{marginBottom:14}}><label style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.6px',color:'#b0a8a0',display:'block',marginBottom:6}}>Certificate PEM *</label>
-                          <textarea rows={7} placeholder={'-----BEGIN CERTIFICATE-----
-MIIFaz...
------END CERTIFICATE-----'} value={pemText} onChange={e=>setPemText(e.target.value)}
+                          <textarea rows={7} placeholder={"-----BEGIN CERTIFICATE-----" + "\n" + "MIIFaz..." + "\n" + "-----END CERTIFICATE-----"} value={pemText} onChange={e=>setPemText(e.target.value)}
                             style={{width:'100%',padding:'9px 12px',borderRadius:7,fontSize:11,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(192,57,43,0.25)',color:'#e8e0d8',fontFamily:'monospace',resize:'vertical',boxSizing:'border-box'}}/></div>
                         <button onClick={caImport} disabled={importing||!pemText.trim()} style={{width:'100%',padding:'9px',fontSize:13,background:'#c0392b',border:'none',borderRadius:8,cursor:'pointer',fontFamily:'inherit',color:'#ffffff',fontWeight:600,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
                           {importing?<><RefreshCw size={13} style={{animation:'spin .8s linear infinite'}}/> Parsing…</>:<><FileText size={13}/> Import certificate</>}
