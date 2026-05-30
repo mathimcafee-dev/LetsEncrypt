@@ -20,6 +20,7 @@ import BulkScanner from './BulkScanner'
 import RenewalCalendar from './RenewalCalendar'
 import AdminRenewalCalendar from './AdminRenewalCalendar'
 import CertTimeline from './CertTimeline'
+import AgenticSSL from './AgenticSSL'
 import CTAbuseMonitor from './CTAbuseMonitor'
 import ShieldIntelligence from './ShieldIntelligence'
 import ReadinessDashboard from './ReadinessDashboard'
@@ -92,6 +93,7 @@ export default function CLMHome({ user, nav }) {
       {id:'dashboard',         label:'Dashboard',        icon:LayoutDashboard},
       {id:'issue',             label:'Issue cert',       icon:Plus},
       {id:'cert-timeline',     label:'Certificate Timeline', icon:CalendarDays},
+      {id:'agentic-ssl',      label:'Agentic SSL',          icon:Zap, badge:'NEW'},
     ]},
     { group:'Automate', items:[
       {id:'my-servers',        label:'Servers & agents', icon:Server},
@@ -122,6 +124,7 @@ export default function CLMHome({ user, nav }) {
     'ssl-health':'SSL Health Score',
     'admin-calendar':'Admin Calendar',
     'cert-timeline':'Certificate Timeline',
+    'agentic-ssl':'Agentic SSL',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
   }
 
@@ -144,6 +147,7 @@ export default function CLMHome({ user, nav }) {
     if(sec==='shield')           return <ShieldIntelligence user={user}/>
     if(sec==='ssl-health')       return <SSLHealthScore user={user}/>
     if(sec==='cert-timeline')    return <CertTimeline user={user}/>
+    if(sec==='agentic-ssl')      return <AgenticSSL user={user}/>
     if(sec==='renewal-calendar') return <RenewalCalendar user={user}/>
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
     if(sec==='admin-calendar')   return <AdminRenewalCalendar user={user}/>
