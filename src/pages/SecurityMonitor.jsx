@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ShieldAlert, Activity } from 'lucide-react'
-import CTAbuseMonitor from './CTAbuseMonitor'
+import ShieldIntelligence from './ShieldIntelligence'
 import SSLHealthScore from './SSLHealthScore'
 import '../styles/design-v2.css'
 
@@ -51,7 +51,7 @@ export default function SecurityMonitor({ user }) {
 
         {/* Tab content — keep both mounted so state persists when switching */}
         <div style={{ display: tab === 'ct' ? 'block' : 'none' }}>
-          <CTAbuseMonitor user={user} embedded />
+          <ShieldIntelligence user={user} embedded />
         </div>
         <div style={{ display: tab === 'health' ? 'block' : 'none' }}>
           <SSLHealthScore user={user} embedded />
