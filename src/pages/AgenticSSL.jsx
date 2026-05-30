@@ -330,18 +330,20 @@ export default function AgenticSSL({ user }) {
           .single()
 
         if (order?.dcv_txt_value) setCurrentStep(s => Math.max(s, 2))
-        if (order?.status === 'active') setCurrentStep(s => Math.max(s, 3))
+        if (order?.status === 'active') {
+          setCurrentStep(s => Math.max(s, 3))
+        }
 
-        // Check certificate
+        // Check certificate — may not exist yet until poll_pending activates it
         const { data: cert } = await supabase
           .from('certificates')
-          .select('status,install_status,is_live_on_server,domain,expires_at,install_method')
+          .select('status,install_status,is_live_on_server,domain,expires_at,install_method,agent_id')
           .eq('ggs_order_id', ggsId)
           .eq('user_id', user?.id)
           .maybeSingle()
 
         if (cert?.status === 'active') setCurrentStep(s => Math.max(s, 3))
-        if (cert?.install_status === 'installing' || cert?.install_status === 'installed') {
+        if (cert?.install_status === 'installing' || cert?.install_status === 'installed' || cert?.agent_id) {
           setCurrentStep(s => Math.max(s, 4))
         }
         if (cert?.is_live_on_server === true) {
@@ -349,14 +351,18 @@ export default function AgenticSSL({ user }) {
           setCertResult({
             domain:         cert.domain,
             expires_at:     cert.expires_at,
-            install_method: cert.install_method,
+            install_method: cert.install_method || (cert.agent_id ? 'agent' : 'auto'),
             is_live:        true,
           })
           clearInterval(pollRef.current)
           setTimeout(() => setPhase('done'), 600)
         }
+        // If cert is active but not yet live — move to step 4 (installing)
+        if (cert?.status === 'active' && cert?.is_live_on_server !== true) {
+          setCurrentStep(s => Math.max(s, 4))
+        }
       } catch(e) { console.warn('[AgenticSSL] poll error:', e) }
-    }, 30000) // every 30s
+    }, 15000) // every 15s — faster for better UX
   }, [user?.id])
 
   // ── Cleanup on unmount ────────────────────────────────────────────
