@@ -1,23 +1,11 @@
-// AdminRenewalCalendar.jsx
-// Phase 3 — Admin Renewal Calendar Overview
-// Master view of all renewal events, upcoming actions, failures.
-// Restricted to master_admin role only.
-// Follows Design v2 system.
-// NOTE: uses service-role only for data fetch — no auth.admin API calls from browser.
-
+// AdminRenewalCalendar.jsx — Design v2 Dark Red Theme
 import { useState, useEffect, useCallback } from 'react'
-import {
-  Calendar, RefreshCw, AlertTriangle, CheckCircle,
-  Clock, RotateCcw, Shield, ChevronRight,
-  Bell, Check, X
-} from 'lucide-react'
+import { Calendar, RefreshCw, AlertTriangle, CheckCircle, Shield, Bell, Check } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import '../styles/design-v2.css'
 
-const fmtDateShort = (iso) =>
+const fmtShort = (iso) =>
   iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—'
-
-const fmtDate = (iso) =>
-  iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
 
 const timeAgo = (iso) => {
   if (!iso) return '—'
@@ -29,163 +17,244 @@ const timeAgo = (iso) => {
   return `${Math.floor(h / 24)}d ago`
 }
 
-const daysFromNow = (d) => {
-  if (!d) return null
-  return Math.ceil((new Date(d).getTime() - Date.now()) / 86400000)
-}
+const daysFromNow = (d) => d ? Math.ceil((new Date(d).getTime() - Date.now()) / 86400000) : null
 
 const EVENT_LABELS = {
   cert_warning_30d: '30d warning', cert_warning_14d: '14d warning',
-  cert_warning_7d: '7d warning',  cert_warning_1d: '1d warning',
-  cert_reissue: 'Auto-reissue',
-  sub_warning_30d: 'Sub 30d', sub_warning_14d: 'Sub 14d',
-  sub_warning_7d: 'Sub 7d',   sub_warning_1d: 'Sub 1d',
-  sub_end: 'Sub ends',
+  cert_warning_7d:  '7d warning',  cert_warning_1d:  '1d warning',
+  cert_reissue:     'Auto-reissue',
+  sub_warning_30d:  'Sub 30d',     sub_warning_14d:  'Sub 14d',
+  sub_warning_7d:   'Sub 7d',      sub_warning_1d:   'Sub 1d',
+  sub_end:          'Sub ends',
 }
 
-function StatCard({ label, value, subtext, color, icon: Icon }) {
+// ── Stat card ─────────────────────────────────────────────────────────
+function StatCard({ label, value, subtext, accentColor, icon: Icon }) {
   return (
-    <div className="v2-card v2-card-pad" style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+    <div style={{
+      background: 'rgba(255,255,255,0.05)',
+      border: '1px solid rgba(255,255,255,0.1)',
+      borderRadius: 12, padding: '16px 18px',
+      backdropFilter: 'blur(8px)',
+      display: 'flex', alignItems: 'flex-start', gap: 12,
+    }}>
       <div style={{
         width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-        background: `${color}18`, border: `0.5px solid ${color}44`,
+        background: `${accentColor}20`,
+        border: `1px solid ${accentColor}40`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <Icon size={18} strokeWidth={1.8} color={color} />
+        <Icon size={18} strokeWidth={1.8} color={accentColor} />
       </div>
       <div>
-        <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--v2-text)', lineHeight: 1.1 }}>{value}</div>
-        <div style={{ fontSize: 11, color: 'var(--v2-text-2)', marginTop: 2 }}>{label}</div>
-        {subtext && <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 1 }}>{subtext}</div>}
+        <div style={{ fontSize: 22, fontWeight: 700, color: '#ffffff', lineHeight: 1.1 }}>{value}</div>
+        <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 3, fontWeight: 500 }}>{label}</div>
+        {subtext && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{subtext}</div>}
       </div>
     </div>
   )
 }
 
-function AdminEventRow({ ev, cert }) {
-  const statusColor = ev.status === 'sent' ? '#10b981'
-    : ev.status === 'failed' ? '#ef4444'
-    : ev.status === 'executing' ? '#f59e0b'
-    : '#3b82f6'
+// ── Tab bar ───────────────────────────────────────────────────────────
+function TabBar({ tab, setTab, counts }) {
+  const tabs = [
+    { id: 'upcoming', label: 'Upcoming', count: counts.upcoming },
+    { id: 'today',    label: 'Today',    count: counts.today },
+    { id: 'failed',   label: 'Failed',   count: counts.failed, warn: true },
+    { id: 'alerts',   label: 'Alerts',   count: counts.alerts, warn: true },
+  ]
+  return (
+    <div style={{
+      display: 'flex', gap: 4, marginBottom: 16,
+      background: 'rgba(255,255,255,0.04)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      borderRadius: 8, padding: 4,
+    }}>
+      {tabs.map(t => (
+        <button key={t.id} onClick={() => setTab(t.id)} style={{
+          flex: 1, padding: '7px 12px', borderRadius: 6,
+          border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+          fontSize: 12, fontWeight: tab === t.id ? 600 : 500,
+          background: tab === t.id ? 'rgba(192,57,43,0.3)' : 'transparent',
+          color: tab === t.id ? '#ffffff' : '#b0a8a0',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          transition: 'all 0.15s',
+        }}>
+          {t.label}
+          {t.count > 0 && (
+            <span style={{
+              fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 10,
+              background: t.warn && tab !== t.id ? 'rgba(248,113,113,0.25)' : 'rgba(255,255,255,0.12)',
+              color: t.warn && tab !== t.id ? '#f87171' : 'rgba(255,255,255,0.7)',
+              border: t.warn && tab !== t.id ? '0.5px solid rgba(248,113,113,0.3)' : 'none',
+            }}>{t.count}</span>
+          )}
+        </button>
+      ))}
+    </div>
+  )
+}
 
+// ── Event row ─────────────────────────────────────────────────────────
+function EventRow({ ev, cert }) {
   const isReissue = ev.event_type === 'cert_reissue'
   const days = daysFromNow(ev.scheduled_date)
   const isToday = days === 0
+  const isPast = days !== null && days < 0
+
+  const statusColor = ev.status === 'sent' ? '#4ade80'
+    : ev.status === 'failed' ? '#f87171'
+    : ev.status === 'executing' ? '#fbbf24'
+    : '#60a5fa'
+
+  const statusBg = ev.status === 'sent' ? 'rgba(74,222,128,0.1)'
+    : ev.status === 'failed' ? 'rgba(248,113,113,0.1)'
+    : ev.status === 'executing' ? 'rgba(251,191,36,0.1)'
+    : 'rgba(96,165,250,0.1)'
 
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: 10, padding: '9px 16px',
-      borderBottom: '0.5px solid var(--v2-border)',
-      background: ev.status === 'failed' ? '#fef2f2' : ev.retry_count > 0 ? '#fffbeb' : 'transparent',
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '10px 16px',
+      borderBottom: '0.5px solid rgba(255,255,255,0.06)',
+      background: ev.status === 'failed' ? 'rgba(248,113,113,0.05)' : 'transparent',
     }}>
-      <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: statusColor }} />
-      <div style={{ width: 150, flexShrink: 0 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--v2-text)',
-          fontFamily: 'JetBrains Mono, monospace', overflow: 'hidden',
-          textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {cert?.domain || ev.cert_id?.slice(0, 12) + '…'}
+      {/* Status dot */}
+      <div style={{
+        width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+        background: statusColor,
+        boxShadow: `0 0 6px ${statusColor}60`,
+      }} />
+
+      {/* Domain */}
+      <div style={{ width: 155, flexShrink: 0 }}>
+        <div style={{
+          fontSize: 12, fontWeight: 600, color: '#ffffff',
+          fontFamily: 'JetBrains Mono, monospace',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          {cert?.domain || '—'}
         </div>
       </div>
-      <div style={{ width: 110, flexShrink: 0 }}>
+
+      {/* Event type chip */}
+      <div style={{ width: 115, flexShrink: 0 }}>
         <span style={{
-          fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 4,
-          background: isReissue ? '#f0fdf4' : '#eff6ff',
-          color: isReissue ? '#15803d' : '#1d4ed8',
-          border: `0.5px solid ${isReissue ? '#bbf7d0' : '#bfdbfe'}`,
+          fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
+          background: isReissue ? 'rgba(74,222,128,0.12)' : 'rgba(192,57,43,0.12)',
+          color: isReissue ? '#4ade80' : '#ff8c7a',
+          border: `0.5px solid ${isReissue ? 'rgba(74,222,128,0.25)' : 'rgba(255,140,122,0.25)'}`,
         }}>
           {EVENT_LABELS[ev.event_type] || ev.event_type}
         </span>
       </div>
+
+      {/* Date */}
       <div style={{ width: 90, flexShrink: 0 }}>
-        <div style={{ fontSize: 11,
-          color: isToday ? '#2563eb' : days < 0 ? 'var(--v2-text-3)' : 'var(--v2-text-2)',
-          fontWeight: isToday ? 700 : 400 }}>
-          {fmtDateShort(ev.scheduled_date)}
-          {isToday && <span style={{ fontSize: 9, color: '#2563eb', marginLeft: 3 }}>today</span>}
-        </div>
-      </div>
-      <div style={{ flex: 1 }}>
         <span style={{
-          fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
-          textTransform: 'uppercase', letterSpacing: '0.3px',
-          background: ev.status === 'sent' ? '#f0fdf4' : ev.status === 'failed' ? '#fef2f2'
-            : ev.status === 'executing' ? '#fffbeb' : '#eff6ff',
-          color: statusColor,
-          border: `0.5px solid ${ev.status === 'sent' ? '#bbf7d0' : ev.status === 'failed' ? '#fecaca'
-            : ev.status === 'executing' ? '#fde68a' : '#bfdbfe'}`,
+          fontSize: 11,
+          color: isToday ? '#ff8c7a' : isPast ? 'rgba(255,255,255,0.3)' : '#e8e0d8',
+          fontWeight: isToday ? 700 : 400,
         }}>
-          {ev.status}{ev.retry_count > 0 ? ` (retry ${ev.retry_count})` : ''}
+          {fmtShort(ev.scheduled_date)}
+        </span>
+        {isToday && (
+          <span style={{
+            marginLeft: 5, fontSize: 9, fontWeight: 700,
+            background: 'rgba(192,57,43,0.25)', color: '#ff8c7a',
+            padding: '1px 5px', borderRadius: 3,
+          }}>today</span>
+        )}
+      </div>
+
+      {/* Status badge */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{
+          fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 4,
+          textTransform: 'uppercase', letterSpacing: '0.4px',
+          background: statusBg, color: statusColor,
+          border: `0.5px solid ${statusColor}30`,
+        }}>
+          {ev.status}{ev.retry_count > 0 ? ` · retry ${ev.retry_count}` : ''}
         </span>
         {ev.error_message && (
-          <div style={{ fontSize: 10, color: '#dc2626', marginTop: 2,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>
-            {ev.error_message.slice(0, 80)}
-          </div>
+          <span style={{
+            fontSize: 10, color: '#f87171',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180,
+          }}>
+            {ev.error_message.slice(0, 70)}
+          </span>
         )}
       </div>
     </div>
   )
 }
 
-function AdminAlertRow({ alert, onResolve, resolving }) {
+// ── Alert row ─────────────────────────────────────────────────────────
+function AlertRow({ alert, onResolve, resolving }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 16px',
-      borderBottom: '0.5px solid #fecaca', background: '#fef2f2',
+      display: 'flex', alignItems: 'flex-start', gap: 10,
+      padding: '12px 16px',
+      borderBottom: '0.5px solid rgba(248,113,113,0.15)',
+      background: 'rgba(248,113,113,0.05)',
     }}>
-      <AlertTriangle size={13} strokeWidth={2} color="#ef4444" style={{ flexShrink: 0, marginTop: 1 }} />
+      <AlertTriangle size={13} strokeWidth={2} color="#f87171" style={{ flexShrink: 0, marginTop: 2 }} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 2 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#ffffff', marginBottom: 3 }}>
           {alert.domain || 'Unknown domain'}
         </div>
-        <div style={{ fontSize: 11, color: '#dc2626', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 11, color: '#f87171', lineHeight: 1.5 }}>
           {(alert.message || '').slice(0, 120)}
         </div>
-        <div style={{ fontSize: 10, color: 'var(--v2-text-3)', marginTop: 3 }}>{timeAgo(alert.created_at)}</div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>
+          {timeAgo(alert.created_at)}
+        </div>
       </div>
-      <button className="v2-btn v2-btn-sm" onClick={() => onResolve(alert.id)}
-        disabled={resolving === alert.id}
-        style={{ fontSize: 10, flexShrink: 0 }}>
-        <Check size={10} strokeWidth={2.5} /> {resolving === alert.id ? 'Saving…' : 'Resolve'}
+      <button onClick={() => onResolve(alert.id)} disabled={resolving === alert.id}
+        style={{
+          padding: '5px 12px', borderRadius: 6, fontSize: 10, fontWeight: 600,
+          border: '1px solid rgba(74,222,128,0.3)',
+          background: 'rgba(74,222,128,0.1)', color: '#4ade80',
+          cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0,
+          display: 'flex', alignItems: 'center', gap: 4,
+        }}>
+        <Check size={10} strokeWidth={2.5} />
+        {resolving === alert.id ? 'Saving…' : 'Resolve'}
       </button>
     </div>
   )
 }
 
+// ── Main ──────────────────────────────────────────────────────────────
 export default function AdminRenewalCalendar({ user }) {
-  const [loading, setLoading]   = useState(true)
-  const [isAdmin, setIsAdmin]   = useState(false)
-  const [events, setEvents]     = useState([])
-  const [certs, setCerts]       = useState([])
-  const [alerts, setAlerts]     = useState([])
-  const [tab, setTab]           = useState('upcoming')
+  const [loading, setLoading]     = useState(true)
+  const [isAdmin, setIsAdmin]     = useState(false)
+  const [events, setEvents]       = useState([])
+  const [certs, setCerts]         = useState([])
+  const [alerts, setAlerts]       = useState([])
+  const [tab, setTab]             = useState('upcoming')
   const [resolving, setResolving] = useState(null)
-  const userId = user?.id
 
   const load = useCallback(async () => {
-    if (!userId) return
+    if (!user?.id) return
     setLoading(true)
     try {
-      // Check admin role
       const { data: account } = await supabase
-        .from('accounts').select('role').eq('id', userId).single()
+        .from('accounts').select('role').eq('id', user.id).single()
       const admin = account?.role === 'master_admin'
       setIsAdmin(admin)
       if (!admin) { setLoading(false); return }
 
-      const today = new Date().toISOString().split('T')[0]
       const in7 = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
-
-      // Load events (upcoming 7 days + any failed)
       const { data: evData } = await supabase
         .from('renewal_events')
-        .select('id,cert_id,user_id,event_type,scheduled_date,status,retry_count,error_message,updated_at')
+        .select('id,cert_id,user_id,event_type,scheduled_date,status,retry_count,error_message')
         .or(`scheduled_date.lte.${in7},status.eq.failed`)
         .order('scheduled_date', { ascending: true })
         .limit(200)
       setEvents(evData || [])
 
-      // Load cert context
       const certIds = [...new Set((evData || []).map(e => e.cert_id).filter(Boolean))]
       if (certIds.length > 0) {
         const { data: certData } = await supabase
@@ -195,195 +264,190 @@ export default function AdminRenewalCalendar({ user }) {
         setCerts(certData || [])
       }
 
-      // Load open admin alerts
       const { data: alertData } = await supabase
         .from('admin_alerts')
-        .select('id,alert_type,cert_id,user_id,domain,message,status,created_at')
+        .select('id,domain,message,status,created_at')
         .eq('status', 'open')
         .order('created_at', { ascending: false })
         .limit(50)
       setAlerts(alertData || [])
-
     } catch (e) { console.error('[AdminRenewalCalendar]', e) }
     setLoading(false)
-  }, [userId])
+  }, [user?.id])
 
   useEffect(() => { load() }, [load])
 
   const resolveAlert = async (alertId) => {
     setResolving(alertId)
-    try {
-      await supabase.from('admin_alerts')
-        .update({ status: 'resolved', resolved_at: new Date().toISOString() })
-        .eq('id', alertId)
-      setAlerts(a => a.filter(x => x.id !== alertId))
-    } catch (e) { console.error(e) }
+    await supabase.from('admin_alerts')
+      .update({ status: 'resolved', resolved_at: new Date().toISOString() })
+      .eq('id', alertId)
+    setAlerts(a => a.filter(x => x.id !== alertId))
     setResolving(null)
   }
 
   if (!isAdmin && !loading) {
     return (
-      <div style={{ background: '#f0f4f8', minHeight: '100vh' }}>
-        <div style={{ maxWidth: 500, margin: '0 auto', textAlign: 'center', paddingTop: 80 }}>
-          <Shield size={32} strokeWidth={1.4} style={{ color: 'var(--v2-text-3)', marginBottom: 12 }} />
-          <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--v2-text)', marginBottom: 6 }}>
-            Admin access required
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--v2-text-2)' }}>
-            This page is only accessible to master administrators.
-          </div>
+      <div className="v2-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <Shield size={36} strokeWidth={1.2} color="rgba(255,255,255,0.2)" style={{ marginBottom: 12 }} />
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff', marginBottom: 6 }}>Admin access required</div>
+          <div style={{ fontSize: 12, color: '#b0a8a0' }}>Only master administrators can view this page.</div>
         </div>
       </div>
     )
   }
 
-  const today = new Date().toISOString().split('T')[0]
-  const certMap = Object.fromEntries(certs.map(c => [c.id, c]))
-  const todayEvs   = events.filter(e => e.scheduled_date === today)
-  const upcoming   = events.filter(e => e.scheduled_date > today && e.status === 'pending')
-  const failed     = events.filter(e => e.status === 'failed')
-  const openAlerts = alerts
-
-  const totalCerts    = new Set(events.map(e => e.cert_id)).size
-  const reissuesToday = todayEvs.filter(e => e.event_type === 'cert_reissue').length
-  const failedCount   = failed.length
-  const alertCount    = openAlerts.length
+  const today    = new Date().toISOString().split('T')[0]
+  const certMap  = Object.fromEntries(certs.map(c => [c.id, c]))
+  const todayEvs = events.filter(e => e.scheduled_date === today)
+  const upcoming = events.filter(e => e.scheduled_date > today && e.status === 'pending')
+  const failed   = events.filter(e => e.status === 'failed')
 
   const tabEvents = tab === 'today' ? todayEvs
     : tab === 'failed' ? failed
     : tab === 'alerts' ? []
     : upcoming
 
+  const counts = {
+    upcoming: upcoming.length, today: todayEvs.length,
+    failed: failed.length, alerts: alerts.length,
+  }
+
   return (
-    <div style={{ background: '#f0f4f8', minHeight: '100vh' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 24px 80px' }}>
+    <div className="v2-page" style={{ padding: '28px 28px 80px' }}>
 
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
-          marginBottom: 4, flexWrap: 'wrap', gap: 12 }}>
-          <div>
-            <h1 className="v2-h1">Admin Renewal Calendar</h1>
-            <p className="v2-subtitle">Platform-wide monitoring · All customers</p>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+        marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <h1 className="v2-h1" style={{ marginBottom: 4 }}>Admin Renewal Calendar</h1>
+          <p style={{ margin: 0, fontSize: 12, color: '#b0a8a0' }}>
+            Platform-wide monitoring · All customers
+          </p>
+        </div>
+        <button onClick={load} disabled={loading} style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+          border: '1px solid rgba(192,57,43,0.4)',
+          background: 'rgba(255,255,255,0.07)',
+          color: '#e8e0d8', cursor: 'pointer', fontFamily: 'inherit',
+        }}>
+          <RefreshCw size={12} strokeWidth={2} style={{ animation: loading ? 'spin 0.8s linear infinite' : 'none' }} />
+          Refresh
+        </button>
+      </div>
+
+      {/* Stats grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 24 }}>
+        <StatCard label="Certs monitored"  value={loading ? '…' : new Set(events.map(e=>e.cert_id)).size}
+          subtext="with scheduled events" accentColor="#4ade80" icon={Shield} />
+        <StatCard label="Events today"     value={loading ? '…' : todayEvs.length}
+          subtext={`${todayEvs.filter(e=>e.event_type==='cert_reissue').length} reissue(s)`}
+          accentColor="#60a5fa" icon={Calendar} />
+        <StatCard label="Failed events"    value={loading ? '…' : failed.length}
+          subtext="need retry or manual fix"
+          accentColor={failed.length > 0 ? '#f87171' : 'rgba(255,255,255,0.2)'} icon={AlertTriangle} />
+        <StatCard label="Open alerts"      value={loading ? '…' : alerts.length}
+          subtext="admin action needed"
+          accentColor={alerts.length > 0 ? '#f87171' : 'rgba(255,255,255,0.2)'} icon={Bell} />
+      </div>
+
+      {/* Open alert banner */}
+      {alerts.length > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '10px 14px', borderRadius: 8, marginBottom: 16,
+          background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)',
+          fontSize: 12, color: '#f87171',
+        }}>
+          <AlertTriangle size={14} strokeWidth={2} />
+          <span>
+            <strong>{alerts.length} open alert{alerts.length > 1 ? 's' : ''}</strong> — certificates
+            with exhausted auto-reissue retries require manual action.
+          </span>
+          <button onClick={() => setTab('alerts')} style={{
+            marginLeft: 'auto', background: 'transparent', border: 'none',
+            color: '#ff8c7a', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+          }}>View →</button>
+        </div>
+      )}
+
+      {/* Tabs */}
+      <TabBar tab={tab} setTab={setTab} counts={counts} />
+
+      {/* Table */}
+      <div style={{
+        background: 'rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255,255,255,0.09)',
+        borderRadius: 12, overflow: 'hidden',
+      }}>
+        {loading ? (
+          <div style={{ padding: '48px 16px', textAlign: 'center', color: '#b0a8a0', fontSize: 12 }}>
+            Loading…
           </div>
-          <button className="v2-btn v2-btn-sm" onClick={load} disabled={loading}>
-            <RefreshCw size={11} strokeWidth={2} className={loading ? 'spin' : ''} /> Refresh
-          </button>
-        </div>
-
-        {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 20 }}>
-          <StatCard label="Certs monitored" value={loading ? '…' : totalCerts}
-            subtext="with scheduled events" color="#10b981" icon={Shield} />
-          <StatCard label="Events today" value={loading ? '…' : todayEvs.length}
-            subtext={`${reissuesToday} reissue${reissuesToday !== 1 ? 's' : ''}`}
-            color="#3b82f6" icon={Calendar} />
-          <StatCard label="Failed events" value={loading ? '…' : failedCount}
-            subtext="need retry / manual fix"
-            color={failedCount > 0 ? '#ef4444' : '#9ca3af'} icon={AlertTriangle} />
-          <StatCard label="Open alerts" value={loading ? '…' : alertCount}
-            subtext="admin action needed"
-            color={alertCount > 0 ? '#dc2626' : '#9ca3af'} icon={Bell} />
-        </div>
-
-        {alertCount > 0 && (
-          <div className="v2-alert v2-alert-error" style={{ marginBottom: 16 }}>
-            <AlertTriangle size={13} />
-            <span>
-              <strong>{alertCount} open alert{alertCount > 1 ? 's' : ''}</strong> — certificates with
-              exhausted auto-reissue retries.
-            </span>
-            <button style={{ marginLeft: 'auto', background: 'transparent', border: 'none',
-              color: '#dc2626', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-              onClick={() => setTab('alerts')}>
-              View alerts →
-            </button>
-          </div>
-        )}
-
-        {/* Tabs */}
-        <div className="v2-segmented" style={{ margin: '0 0 16px' }}>
-          {[
-            { id: 'upcoming', label: 'Upcoming', count: upcoming.length },
-            { id: 'today',    label: 'Today',    count: todayEvs.length },
-            { id: 'failed',   label: 'Failed',   count: failedCount },
-            { id: 'alerts',   label: 'Alerts',   count: alertCount },
-          ].map(t => (
-            <button key={t.id}
-              className={`v2-segmented-btn ${tab === t.id ? 'active' : ''}`}
-              onClick={() => setTab(t.id)}>
-              {t.label}
-              {t.count > 0 && (
-                <span className="v2-tab-count" style={{
-                  background: (t.id === 'failed' || t.id === 'alerts') && tab !== t.id ? '#ef4444' : undefined,
-                  color: (t.id === 'failed' || t.id === 'alerts') && tab !== t.id ? 'white' : undefined,
-                }}>{t.count}</span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Content */}
-        <div style={{ background: '#fff', border: '0.5px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
-          {loading ? (
-            <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: 12, color: 'var(--v2-text-2)' }}>
-              Loading…
-            </div>
-          ) : tab === 'alerts' ? (
-            openAlerts.length === 0 ? (
-              <div className="v2-empty">
-                <div className="v2-empty-icon"><CheckCircle size={26} strokeWidth={1.6} /></div>
-                <div className="v2-empty-title">No open alerts</div>
-                <div className="v2-empty-desc">All certificates are healthy.</div>
-              </div>
-            ) : (
-              <>
-                <div style={{ padding: '10px 16px 6px', fontSize: 10, fontWeight: 700,
-                  color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.5px',
-                  borderBottom: '0.5px solid #fecaca', background: '#fff5f5' }}>
-                  Open alerts — {openAlerts.length}
-                </div>
-                {openAlerts.map(a => (
-                  <AdminAlertRow key={a.id} alert={a} onResolve={resolveAlert} resolving={resolving} />
-                ))}
-              </>
-            )
-          ) : tabEvents.length === 0 ? (
-            <div className="v2-empty">
-              <div className="v2-empty-icon"><Calendar size={26} strokeWidth={1.6} /></div>
-              <div className="v2-empty-title">
-                {tab === 'today' ? 'No events today'
-                  : tab === 'failed' ? 'No failed events'
-                  : 'No upcoming events'}
-              </div>
-              <div className="v2-empty-desc">
-                {tab === 'failed'
-                  ? 'All automations running cleanly.'
-                  : 'Events appear as certificates approach expiry.'}
-              </div>
+        ) : tab === 'alerts' ? (
+          alerts.length === 0 ? (
+            <div style={{ padding: '48px 16px', textAlign: 'center' }}>
+              <CheckCircle size={28} strokeWidth={1.4} color="rgba(74,222,128,0.4)" style={{ marginBottom: 10 }} />
+              <div style={{ fontSize: 13, color: '#ffffff', fontWeight: 600, marginBottom: 4 }}>No open alerts</div>
+              <div style={{ fontSize: 11, color: '#b0a8a0' }}>All certificates are healthy.</div>
             </div>
           ) : (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px',
-                fontSize: 10, fontWeight: 700, color: 'var(--v2-text-3)', textTransform: 'uppercase',
-                letterSpacing: '0.4px', borderBottom: '0.5px solid var(--v2-border)',
-                background: 'var(--v2-surface-2)' }}>
-                <div style={{ width: 8, flexShrink: 0 }} />
-                <div style={{ width: 150, flexShrink: 0 }}>Domain</div>
-                <div style={{ width: 110, flexShrink: 0 }}>Event</div>
-                <div style={{ width: 90, flexShrink: 0 }}>Date</div>
-                <div style={{ flex: 1 }}>Status</div>
+              <div style={{ padding: '8px 16px', fontSize: 10, fontWeight: 700, color: '#f87171',
+                textTransform: 'uppercase', letterSpacing: '0.5px',
+                borderBottom: '0.5px solid rgba(248,113,113,0.15)',
+                background: 'rgba(248,113,113,0.06)' }}>
+                Open alerts — {alerts.length}
               </div>
-              {tabEvents.map(ev => (
-                <AdminEventRow key={ev.id} ev={ev} cert={certMap[ev.cert_id]} />
+              {alerts.map(a => (
+                <AlertRow key={a.id} alert={a} onResolve={resolveAlert} resolving={resolving} />
               ))}
-              <div style={{ padding: '8px 16px', fontSize: 10, color: 'var(--v2-text-3)',
-                borderTop: '0.5px solid var(--v2-border)', textAlign: 'right' }}>
-                {tabEvents.length} event{tabEvents.length !== 1 ? 's' : ''}
-              </div>
             </>
-          )}
-        </div>
+          )
+        ) : tabEvents.length === 0 ? (
+          <div style={{ padding: '48px 16px', textAlign: 'center' }}>
+            <Calendar size={28} strokeWidth={1.4} color="rgba(255,255,255,0.15)" style={{ marginBottom: 10 }} />
+            <div style={{ fontSize: 13, color: '#ffffff', fontWeight: 600, marginBottom: 4 }}>
+              {tab === 'today' ? 'No events today'
+                : tab === 'failed' ? 'No failed events'
+                : 'No upcoming events in the next 7 days'}
+            </div>
+            <div style={{ fontSize: 11, color: '#b0a8a0' }}>
+              {tab === 'failed' ? 'All automations running cleanly.' : 'Events appear as certificates approach expiry.'}
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Table header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px',
+              fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)',
+              textTransform: 'uppercase', letterSpacing: '0.5px',
+              borderBottom: '0.5px solid rgba(255,255,255,0.08)',
+              background: 'rgba(255,255,255,0.02)',
+            }}>
+              <div style={{ width: 8, flexShrink: 0 }} />
+              <div style={{ width: 155, flexShrink: 0 }}>Domain</div>
+              <div style={{ width: 115, flexShrink: 0 }}>Event</div>
+              <div style={{ width: 90, flexShrink: 0 }}>Date</div>
+              <div style={{ flex: 1 }}>Status</div>
+            </div>
+            {tabEvents.map(ev => (
+              <EventRow key={ev.id} ev={ev} cert={certMap[ev.cert_id]} />
+            ))}
+            <div style={{
+              padding: '8px 16px', fontSize: 10, color: 'rgba(255,255,255,0.25)',
+              borderTop: '0.5px solid rgba(255,255,255,0.06)', textAlign: 'right',
+            }}>
+              {tabEvents.length} event{tabEvents.length !== 1 ? 's' : ''}
+            </div>
+          </>
+        )}
       </div>
-      <style>{`.spin{animation:nm-spin 0.8s linear infinite}@keyframes nm-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }
