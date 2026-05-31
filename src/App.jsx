@@ -54,6 +54,10 @@ import CertInventory from './pages/CertInventory'
 import Infrastructure from './pages/Infrastructure'
 import CertChangelog from './pages/CertChangelog'
 import DomainManager from './pages/DomainManager'
+import Vault from './pages/Vault'
+import AlertSettings from './pages/AlertSettings'
+import AlertHistory from './pages/AlertHistory'
+
 
 export default function App() {
   const _build_ts = 1779297560 // 
@@ -197,6 +201,9 @@ const _build = 1779297041 // cache bust
       {page === '/infrastructure' && <Infrastructure user={user} />}
       {page === '/cert-changelog' && <CertChangelog user={user} />}
       {page === '/domain-manager' && <DomainManager user={user} nav={nav} />}
+      {page === '/vault' && <Vault nav={nav} />}
+      {page === '/alert-settings' && <AlertSettings nav={nav} />}
+      {page === '/alerts' && <AlertHistory nav={nav} />}
       <VaultBrain />
     </div>
   )
