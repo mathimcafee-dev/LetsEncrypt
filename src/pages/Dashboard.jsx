@@ -1556,11 +1556,23 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       const r = await fetch(SB_URL+'/functions/v1/gogetssl-issue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer '+sess.access_token },
-        body: JSON.stringify({ action: 'cancel', cert_id: cert.id, reason: 'Requested by customer via SSLVault' })
+        body: JSON.stringify({ action: 'cancel_order', cert_id: cert.id })
       })
       const d = await r.json()
-      if (d.ok) { setCancelMsg('Cancelled. Refund requested.'); setCancelConfirm(false); setTimeout(() => onRefresh(), 2000) }
-      else { setCancelMsg('Error: ' + (d.error || 'Unknown')); setCancelConfirm(false) }
+      if (d.ok) {
+        setCancelMsg('Certificate cancelled and revoked on GoGetSSL.')
+        setCancelConfirm(false)
+        setTimeout(() => onRefresh(), 2000)
+      } else if (d.code === 'cancellation_not_eligible') {
+        setCancelMsg('Not eligible: cancellation is only available within 30 days of issuance.')
+        setCancelConfirm(false)
+      } else if (d.code === 'ggs_cancel_failed') {
+        setCancelMsg('GoGetSSL error: ' + (d.message || 'Could not cancel. Contact support.'))
+        setCancelConfirm(false)
+      } else {
+        setCancelMsg('Error: ' + (d.error || d.message || 'Unknown error'))
+        setCancelConfirm(false)
+      }
     } catch(e) { setCancelMsg('Error: ' + e.message); setCancelConfirm(false) }
     setCancelling(false)
   }
