@@ -172,19 +172,20 @@ function OverviewTab({ tok, onSwitchCA }) {
 
   return (
     <div>
-      {/* KPI strip */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
+      {/* ── Top KPI row — 5 metrics ── */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:8, marginBottom:18 }}>
         {[
-          { label:'Total certs',    val:total,   sub:'across all CAs',  color:'var(--v2-text-1)' },
-          { label:'Expiring ≤ 30d', val:exp30,   sub:'need attention',  color:exp30>0?'#c0392b':'var(--v2-text-1)', bg:exp30>0?'rgba(230,126,34,0.12)':'var(--v2-surface)' },
-          { label:'Expired',        val:expired,  sub:'act now',         color:expired>0?'#a93226':'var(--v2-text-1)', bg:expired>0?'rgba(192,57,43,0.1)':'var(--v2-surface)' },
-          { label:'CAs connected',  val:1+(dcConn?1:0)+(scConn?1:0), sub:'of 3 supported', color:'var(--v2-text-1)' },
-        ].map(({ label, val, sub, color, bg }) => (
-          <div key={label} style={{ padding:'12px 14px', borderRadius:10, background:bg||'var(--v2-surface)',
-            border:'0.5px solid var(--v2-border)' }}>
-            <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:4 }}>{label}</div>
-            <div style={{ fontSize:22, fontWeight:700, color, fontFamily:'monospace', lineHeight:1 }}>{val}</div>
-            <div style={{ fontSize:10, color:'#b0a8a0', marginTop:4 }}>{sub}</div>
+          { label:'Total certs',   val:total,   color:'#fff',    icon:'🔐' },
+          { label:'Expired',       val:expired, color:expired>0?'#f87171':'#b0a8a0', icon:'💀' },
+          { label:'≤ 7 days',      val:exp7,    color:exp7>0?'#ef4444':'#b0a8a0',    icon:'🔴' },
+          { label:'≤ 30 days',     val:exp30,   color:exp30>0?'#fbbf24':'#b0a8a0',   icon:'🟡' },
+          { label:'Healthy >90d',  val:healthy, color:'#4ade80', icon:'✅' },
+        ].map(({ label, val, color }) => (
+          <div key={label} style={{ padding:'14px 16px', borderRadius:10,
+            background: val>0&&color!=='#fff'&&color!=='#4ade80'&&color!=='#b0a8a0' ? `${color}10` : 'rgba(255,255,255,0.04)',
+            border:`0.5px solid ${val>0&&color!=='#fff'&&color!=='#4ade80'&&color!=='#b0a8a0' ? color+'40' : 'rgba(255,255,255,0.08)'}` }}>
+            <div style={{ fontSize:9, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.6px', marginBottom:6 }}>{label}</div>
+            <div style={{ fontSize:26, fontWeight:700, color, fontFamily:'monospace', letterSpacing:'-1px', lineHeight:1 }}>{val}</div>
           </div>
         ))}
       </div>
@@ -1619,195 +1620,128 @@ function ConsolidationTab({ tok, nav }) {
 // ══════════════════════════════════════════════════════════════════════
 // MAIN EXPORT — Hub shell
 // ══════════════════════════════════════════════════════════════════════
-// ── Nav item colours ──────────────────────────────────────────────────
-const NAV_COLORS = {
-  overview:      { color: '#c0392b',  bg: 'rgba(192,57,43,0.15)',  dot: null },
-  rapidssl:      { color: '#4ade80',  bg: 'rgba(74,222,128,0.12)', dot: '#4ade80' },
-  digicert:      { color: '#ff8c7a',  bg: 'rgba(192,57,43,0.12)',  dot: null },
-  sectigo:       { color: '#818cf8',  bg: 'rgba(129,140,248,0.12)',dot: null },
-  shadow:        { color: '#f87171',  bg: 'rgba(248,113,113,0.1)', dot: null },
-  consolidation: { color: '#4ade80',  bg: 'rgba(74,222,128,0.1)',  dot: null },
-}
-
 export default function CAIntelligenceHub({ nav }) {
-  const isMobile = useIsMobile()
-  const [tok, setTok] = useState('')
-  const [tab, setTab] = useState('overview')
-
-  // live stats for sidebar badges + sticky bar
-  const [liveStats, setLiveStats] = useState({ total: 0, expiring: 0, caCount: 1, exposure: 0 })
-  const [rapidCount, setRapidCount] = useState(0)
-  const [dcConnected, setDcConnected] = useState(false)
-  const [scConnected, setScConnected] = useState(false)
+  const [tok,  setTok]  = useState('')
+  const [tab,  setTab]  = useState('overview')
+  const [live, setLive] = useState({ total:0, exp30:0, caCount:1, exposure:0, rapidCount:0, dcConn:false, scConn:false })
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setTok(session.access_token)
-        // Load quick stats for sidebar
-        Promise.all([
-          supabase.from('ssl_orders').select('id,valid_till,status').eq('status','active'),
-          supabase.from('ca_connections').select('ca_type,status').eq('status','active'),
-          callCA(session.access_token, { action: 'get_shadow_certs' }),
-        ]).then(([orders, conns, shadows]) => {
-          const now = Date.now()
-          const ords = orders.data || []
-          const cs   = conns.data  || []
-          const shad = shadows.shadows || []
-          const exp30 = ords.filter(o => {
-            const d = o.valid_till ? Math.ceil((new Date(o.valid_till) - now) / 86400000) : null
-            return d !== null && d > 0 && d <= 30
-          }).length
-          setRapidCount(ords.length)
-          setDcConnected(cs.some(c => c.ca_type === 'digicert'))
-          setScConnected(cs.some(c => c.ca_type === 'sectigo'))
-          setLiveStats({
-            total:    ords.length,
-            expiring: exp30,
-            caCount:  1 + (cs.some(c=>c.ca_type==='digicert')?1:0) + (cs.some(c=>c.ca_type==='sectigo')?1:0),
-            exposure: shad.length,
-          })
-        }).catch(() => {})
-      }
+    supabase.auth.getSession().then(({ data:{ session } }) => {
+      if (!session) return
+      setTok(session.access_token)
+      Promise.all([
+        supabase.from('ssl_orders').select('id,valid_till,status').eq('status','active'),
+        supabase.from('ca_connections').select('ca_type,status').eq('status','active'),
+        callCA(session.access_token, { action:'get_shadow_certs' }),
+      ]).then(([orders, conns, shadows]) => {
+        const now  = Date.now()
+        const ords = orders.data || []
+        const cs   = conns.data  || []
+        const shad = (shadows.shadows || [])
+        const exp30 = ords.filter(o => {
+          const d = o.valid_till ? Math.ceil((new Date(o.valid_till)-now)/86400000) : null
+          return d!==null && d>0 && d<=30
+        }).length
+        const dc = cs.some(c=>c.ca_type==='digicert')
+        const sc = cs.some(c=>c.ca_type==='sectigo')
+        setLive({ total:ords.length, exp30, caCount:1+(dc?1:0)+(sc?1:0), exposure:shad.length, rapidCount:ords.length, dcConn:dc, scConn:sc })
+      }).catch(()=>{})
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-      setTok(s?.access_token || '')
-    })
+    const { data:{ subscription } } = supabase.auth.onAuthStateChange((_e,s)=>{ setTok(s?.access_token||'') })
     return () => subscription.unsubscribe()
   }, [])
 
-  const NAV = [
-    { group: 'Overview' },
-    { id: 'overview',     label: 'Mission Control', icon: BarChart2,  connDot: null },
-    { group: 'CA workspaces' },
-    { id: 'rapidssl',     label: 'RapidSSL',        icon: Shield,     connDot: '#4ade80', count: rapidCount },
-    { id: 'digicert',     label: 'DigiCert',        icon: Building,   connDot: dcConnected ? '#4ade80' : null },
-    { id: 'sectigo',      label: 'Sectigo',         icon: Lock,       connDot: scConnected ? '#4ade80' : null },
-    { group: 'Intelligence' },
-    { id: 'shadow',       label: 'Exposure scan',   icon: Search,     badge: liveStats.exposure > 0 ? { label: liveStats.exposure, color: '#f87171', bg: 'rgba(248,113,113,0.18)' } : null },
-    { id: 'consolidation',label: 'Cost advisor',    icon: TrendingUp, badge: { label: '$0', color: '#4ade80', bg: 'rgba(74,222,128,0.15)' } },
+  const TABS = [
+    { id:'overview',      label:'Overview',       icon: BarChart2,   color:'#c0392b',  bg:'rgba(192,57,43,0.18)',  count:null },
+    { id:'rapidssl',      label:'RapidSSL',       icon: Shield,      color:'#4ade80',  bg:'rgba(74,222,128,0.15)', count:live.rapidCount, dot:'#4ade80' },
+    { id:'digicert',      label:'DigiCert',       icon: Building,    color:'#ff8c7a',  bg:'rgba(192,57,43,0.15)',  count:null, dot:live.dcConn?'#4ade80':'#555' },
+    { id:'sectigo',       label:'Sectigo',        icon: Lock,        color:'#818cf8',  bg:'rgba(129,140,248,0.15)',count:null, dot:live.scConn?'#4ade80':'#555' },
+    { id:'shadow',        label:'Exposure',       icon: Search,      color:'#f87171',  bg:'rgba(248,113,113,0.15)',count:live.exposure>0?live.exposure:null },
+    { id:'consolidation', label:'Cost advisor',   icon: TrendingUp,  color:'#fbbf24',  bg:'rgba(251,191,36,0.15)', count:null },
   ]
 
-  const tc = NAV_COLORS[tab] || NAV_COLORS.overview
+  const active = TABS.find(t=>t.id===tab)
 
   return (
     <div className="v2-page">
       <style>{`
-        @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-        @keyframes capulse { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(2.5);opacity:0} }
-        .pki-shell { display:grid; grid-template-columns:210px 1fr; min-height:calc(100vh - 60px); }
-        .pki-sidebar { position:sticky; top:60px; height:calc(100vh - 60px); overflow-y:auto; background:rgba(0,0,0,0.28); border-right:0.5px solid rgba(255,255,255,0.07); padding:16px 0; display:flex; flex-direction:column; }
-        .pki-content { padding:22px 28px 60px; min-width:0; }
-        .pki-nav-item { display:flex; align-items:center; gap:9px; padding:8px 16px; cursor:pointer; font-size:12px; font-weight:500; color:#b0a8a0; transition:all .15s; border-left:2.5px solid transparent; }
-        .pki-nav-item:hover { color:#fff; background:rgba(255,255,255,0.04); }
-        .pki-nav-item.active { color:#fff; border-left-color:var(--tab-color); background:var(--tab-bg); }
-        .pki-group-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:rgba(255,255,255,0.22); padding:10px 16px 3px; }
-        .pki-sticky { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px; }
-        .pki-sbar { background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.08); border-radius:9px; padding:10px 13px; }
-        @media(max-width:767px){ .pki-shell{grid-template-columns:1fr} .pki-sidebar{display:none} .pki-sticky{grid-template-columns:repeat(2,1fr)} }
+        @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+        @keyframes capulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(2.8);opacity:0}}
+        .pki-tab{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;background:none;border:none;border-radius:8px 8px 0 0;transition:all .18s;color:#b0a8a0;border-bottom:2.5px solid transparent;white-space:nowrap}
+        .pki-tab:hover{color:#fff;background:rgba(255,255,255,0.05)}
+        .pki-tab.on{font-weight:700;border-bottom-color:var(--tc);color:var(--tc);background:var(--tb)}
+        .pki-count{font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;background:rgba(255,255,255,0.08);transition:all .18s}
+        .pki-tab.on .pki-count{background:var(--tb);color:var(--tc)}
       `}</style>
 
-      <div className="v2-container pki-shell" style={{ maxWidth:1140, padding:0 }}>
+      <div className="v2-container" style={{ maxWidth:1100, paddingTop:8, paddingBottom:60 }}>
 
-        {/* ── Sidebar ── */}
-        <div className="pki-sidebar">
-          <div style={{ padding:'0 16px 14px', borderBottom:'0.5px solid rgba(255,255,255,0.07)', marginBottom:6 }}>
-            <div style={{ fontSize:13, fontWeight:700, color:'#fff', letterSpacing:'-.2px' }}>PKI Command Center</div>
-            <div style={{ fontSize:10, color:'#b0a8a0', marginTop:2 }}>
-              {liveStats.total} cert{liveStats.total !== 1 ? 's' : ''} · {liveStats.caCount} CA{liveStats.caCount !== 1 ? 's' : ''} active
+        {/* ── Page header ── */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, flexWrap:'wrap', gap:12 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ width:40, height:40, borderRadius:10, background:'#c0392b', display:'flex', alignItems:'center', justifyContent:'center', position:'relative' }}>
+              <div style={{ position:'absolute', inset:-3, borderRadius:13, border:'1px solid rgba(192,57,43,0.35)' }}/>
+              <Activity size={19} color="white"/>
+            </div>
+            <div>
+              <h1 className="v2-h1" style={{ fontSize:20, marginBottom:2 }}>PKI Intelligence</h1>
+              <p style={{ fontSize:11, color:'#b0a8a0', margin:0 }}>Unified visibility across {live.caCount} of 3 CAs · {live.total} certificates tracked</p>
             </div>
           </div>
 
-          {NAV.map((item, i) => {
-            if (item.group) return <div key={item.group+i} className="pki-group-label">{item.group}</div>
-            const Icon = item.icon
-            const isActive = tab === item.id
-            const c = NAV_COLORS[item.id] || NAV_COLORS.overview
+          {/* Live health pill */}
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            {live.exp30 > 0 ? (
+              <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, color:'#fbbf24', background:'rgba(251,191,36,0.1)', border:'0.5px solid rgba(251,191,36,0.35)', borderRadius:20, padding:'5px 12px' }}>
+                <span style={{ width:6, height:6, borderRadius:'50%', background:'#fbbf24' }}/>
+                {live.exp30} expiring soon
+              </span>
+            ) : (
+              <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, color:'#4ade80', background:'rgba(74,222,128,0.08)', border:'0.5px solid rgba(74,222,128,0.3)', borderRadius:20, padding:'5px 12px' }}>
+                <span style={{ width:6, height:6, borderRadius:'50%', background:'#4ade80' }}/>
+                All certs healthy
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* ── Coloured pill tab bar ── */}
+        <div style={{ display:'flex', gap:2, borderBottom:'0.5px solid rgba(255,255,255,0.08)', marginBottom:24, overflowX:'auto' }}>
+          {TABS.map(t => {
+            const on = tab === t.id
             return (
-              <button key={item.id} className={'pki-nav-item' + (isActive ? ' active' : '')}
-                style={{ '--tab-color': c.color, '--tab-bg': c.bg, background:'none', border:'none', width:'100%', textAlign:'left', fontFamily:'inherit' }}
-                onClick={() => setTab(item.id)}>
-                <Icon size={14} style={{ flexShrink:0, color: isActive ? c.color : '#b0a8a0' }}/>
-                <span style={{ flex:1 }}>{item.label}</span>
-                {item.connDot && (
-                  <span style={{ position:'relative', width:8, height:8, flexShrink:0 }}>
-                    {item.connDot === '#4ade80' && <span style={{ position:'absolute', inset:-2, borderRadius:'50%', background:'rgba(74,222,128,0.3)', animation:'capulse 2.5s ease infinite' }}/>}
-                    <span style={{ position:'absolute', inset:0, borderRadius:'50%', background: item.connDot === '#4ade80' ? '#4ade80' : 'rgba(255,255,255,0.2)' }}/>
+              <button key={t.id} className={'pki-tab'+(on?' on':'')}
+                style={{ '--tc':t.color, '--tb':t.bg }}
+                onClick={() => setTab(t.id)}>
+                <t.icon size={12}/>
+                {t.label}
+                {t.dot && (
+                  <span style={{ position:'relative', width:7, height:7 }}>
+                    {t.dot==='#4ade80' && <span style={{ position:'absolute', inset:-2, borderRadius:'50%', background:'rgba(74,222,128,0.35)', animation:'capulse 2.5s ease infinite'}}/>}
+                    <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:t.dot }}/>
                   </span>
                 )}
-                {!item.connDot && item.count !== undefined && (
-                  <span style={{ fontSize:10, fontWeight:700, color:c.color, fontFamily:'monospace' }}>{item.count}</span>
-                )}
-                {item.badge && (
-                  <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:20, background:item.badge.bg, color:item.badge.color }}>{item.badge.label}</span>
-                )}
+                {t.count != null && <span className="pki-count">{t.count}</span>}
               </button>
             )
           })}
-
-          <div style={{ marginTop:'auto', padding:'12px 16px', borderTop:'0.5px solid rgba(255,255,255,0.07)' }}>
-            <div style={{ fontSize:9, color:'rgba(255,255,255,0.2)', textTransform:'uppercase', letterSpacing:'.6px', fontWeight:700 }}>Last sync</div>
-            <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>Just now</div>
-          </div>
         </div>
 
-        {/* ── Main content ── */}
-        <div className="pki-content">
-
-          {/* Sticky stats bar */}
-          <div className="pki-sticky">
-            {[
-              { label:'Total certs',    val: liveStats.total,    color:'#fff' },
-              { label:'Expiring ≤30d',  val: liveStats.expiring, color: liveStats.expiring > 0 ? '#fbbf24' : '#4ade80' },
-              { label:'CAs active',     val: liveStats.caCount,  color:'#818cf8' },
-              { label:'Exposure risks', val: liveStats.exposure, color: liveStats.exposure > 0 ? '#f87171' : '#4ade80' },
-            ].map(({ label, val, color }) => (
-              <div key={label} className="pki-sbar">
-                <div style={{ fontSize:20, fontWeight:700, color, fontFamily:'monospace', letterSpacing:'-1px', lineHeight:1 }}>{val}</div>
-                <div style={{ fontSize:9, fontWeight:700, textTransform:'uppercase', letterSpacing:'.5px', color:'#b0a8a0', marginTop:3 }}>{label}</div>
-              </div>
-            ))}
+        {/* ── Content ── */}
+        {!tok ? (
+          <div style={{ textAlign:'center', padding:60, color:'#b0a8a0', fontSize:13 }}>
+            <Spinner/><span style={{ marginLeft:8 }}>Loading session…</span>
           </div>
-
-          {/* Section header */}
-          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:18 }}>
-            <div style={{ width:4, height:20, borderRadius:2, background: tc.color }}/>
-            <div>
-              <h1 className="v2-h1" style={{ fontSize:18, marginBottom:2 }}>
-                {tab === 'overview'      ? 'Mission Control'
-                : tab === 'rapidssl'     ? 'RapidSSL workspace'
-                : tab === 'digicert'     ? 'DigiCert workspace'
-                : tab === 'sectigo'      ? 'Sectigo workspace'
-                : tab === 'shadow'       ? 'Exposure scanner'
-                : 'Cost advisor'}
-              </h1>
-              <p style={{ fontSize:11, color:'#b0a8a0', margin:0 }}>
-                {tab === 'overview'      ? 'PKI health across all connected certificate authorities'
-                : tab === 'rapidssl'     ? 'SSLVault native CA · live API connection'
-                : tab === 'digicert'     ? 'DigiCert CertCentral portfolio management'
-                : tab === 'sectigo'      ? 'Sectigo SCM credentials and inventory'
-                : tab === 'shadow'       ? 'Certs issued outside CLM — compliance risk & expiry blindspots'
-                : 'Move premium CA certs to RapidSSL · surface duplicates · cut spend'}
-              </p>
-            </div>
-          </div>
-
-          {/* Content */}
-          {!tok ? (
-            <div style={{ textAlign:'center', padding:60, color:'#b0a8a0', fontSize:13 }}>
-              <Spinner/><span style={{ marginLeft:8 }}>Loading session…</span>
-            </div>
-          ) : (
-            <>
-              {tab === 'overview'      && <OverviewTab      tok={tok} nav={nav} onSwitchCA={setTab}/>}
-              {tab === 'rapidssl'      && <RapidSSLTab      tok={tok} nav={nav}/>}
-              {tab === 'digicert'      && <DigiCertTab      tok={tok} nav={nav}/>}
-              {tab === 'sectigo'       && <SectigoTab       tok={tok}/>}
-              {tab === 'shadow'        && <ShadowITTab      tok={tok} nav={nav}/>}
-              {tab === 'consolidation' && <ConsolidationTab tok={tok} nav={nav}/>}
-            </>
-          )}
-        </div>
+        ) : (
+          <>
+            {tab==='overview'      && <OverviewTab      tok={tok} nav={nav} onSwitchCA={setTab}/>}
+            {tab==='rapidssl'      && <RapidSSLTab      tok={tok} nav={nav}/>}
+            {tab==='digicert'      && <DigiCertTab      tok={tok} nav={nav}/>}
+            {tab==='sectigo'       && <SectigoTab       tok={tok}/>}
+            {tab==='shadow'        && <ShadowITTab      tok={tok} nav={nav}/>}
+            {tab==='consolidation' && <ConsolidationTab tok={tok} nav={nav}/>}
+          </>
+        )}
       </div>
     </div>
   )
