@@ -363,7 +363,7 @@ function AuditRow({ entry }) {
 }
 
 // ── KeyCard — fixed with reveal + working view audit ──────────────────
-// ── Entropy dot visualiser — multi-colour flickering key bits ────────
+// ── Entropy dot visualiser ────────────────────────────────────────────
 const ENTROPY_COLORS = [
   '#4ade80','#22c55e','#86efac',
   '#fbbf24','#f97316','#fb923c',
@@ -373,7 +373,7 @@ const ENTROPY_COLORS = [
   '#c0392b','#ff8c7a',
 ]
 function EntropyDots() {
-  const N = 40
+  const N = 36
   const [dots, setDots] = useState(() =>
     Array.from({ length: N }, () => ({
       color:   ENTROPY_COLORS[Math.floor(Math.random() * ENTROPY_COLORS.length)],
@@ -397,14 +397,16 @@ function EntropyDots() {
   return (
     <div style={{ display:'flex', gap:3, flex:1, flexWrap:'nowrap', overflow:'hidden', alignItems:'center' }}>
       {dots.map((d, i) => (
-        <div key={i} style={{ width:8, height:8, borderRadius:'50%', flexShrink:0,
+        <div key={i} style={{ width:7, height:7, borderRadius:'50%', flexShrink:0,
           background: d.color, opacity: d.opacity, transition:'opacity .15s, background .15s' }} />
       ))}
     </div>
   )
 }
 
+// ── KeyCard — compact row, expands on click ───────────────────────────
 function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
+  const [open, setOpen] = useState(false)
   const days           = keyEntry.expires_at
     ? differenceInDays(new Date(keyEntry.expires_at), new Date()) : null
   const isExpiringSoon = days !== null && days < 30
@@ -418,156 +420,167 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
     : isExpiringSoon ? '#f87171' : '#4ade80'
 
   return (
-    <div style={{ border:'0.5px solid rgba(255,255,255,0.1)', borderRadius:12,
-      overflow:'hidden', position:'relative' }}>
+    <div style={{ border:'0.5px solid rgba(255,255,255,0.09)', borderRadius:10,
+      overflow:'hidden', position:'relative', transition:'border-color .15s',
+      ...(open ? { borderColor:'rgba(255,255,255,0.16)' } : {}) }}>
 
       {/* Left accent bar */}
       <div style={{ position:'absolute', left:0, top:0, bottom:0, width:3,
         background: accentColor, borderRadius:'3px 0 0 3px' }} />
 
-      <div style={{ padding:'16px 18px 16px 20px' }}>
+      {/* ── Compact header row — always visible ── */}
+      <div onClick={() => setOpen(v => !v)}
+        style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px 12px 20px',
+          cursor:'pointer', userSelect:'none',
+          background: open ? 'rgba(255,255,255,0.03)' : 'transparent',
+          transition:'background .15s' }}>
 
-        {/* Header row */}
-        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:12, marginBottom:12 }}>
-          <div style={{ minWidth:0 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5, flexWrap:'wrap' }}>
-              <span style={{ fontSize:14, fontWeight:700, color:'#ffffff',
-                fontFamily:'"JetBrains Mono","Menlo",monospace' }}>
-                {keyEntry.domain}
-              </span>
-              <span style={{ fontSize:9, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.3px',
-                color: accentColor, background:`${accentColor}15`,
-                border:`0.5px solid ${accentColor}40`, borderRadius:4, padding:'2px 7px' }}>
-                {keyEntry.status}
-              </span>
-              {keyEntry.status === 'active' && (
-                <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:9,
-                  color:'#ffffff', background:'rgba(192,57,43,0.12)',
-                  border:'0.5px solid rgba(192,57,43,0.4)', borderRadius:4,
-                  padding:'2px 7px', fontWeight:700 }}>
-                  <Lock size={8}/> VAULT SECURED
-                </span>
-              )}
-            </div>
-            <div style={{ fontSize:11, color:'#b0a8a0' }}>
-              {keyEntry.algorithm || 'RSA'} · {keyEntry.key_size || 2048}-bit
-            </div>
-          </div>
-          <div style={{ textAlign:'right', flexShrink:0 }}>
-            <div style={{ fontSize:9, fontWeight:700, textTransform:'uppercase',
-              letterSpacing:'0.5px', color:'#b0a8a0', marginBottom:3 }}>Created</div>
-            <div style={{ fontSize:12, fontWeight:600, color:'#e8e0d8' }}>
-              {fmtDate(keyEntry.created_at)}
-            </div>
-          </div>
-        </div>
-
-        {/* Expiry warning */}
-        {isExpiringSoon && keyEntry.status === 'active' && (
-          <div style={{ background:'rgba(248,113,113,0.08)', border:'0.5px solid rgba(248,113,113,0.3)',
-            borderRadius:8, padding:'9px 12px', marginBottom:12, fontSize:11, color:'#f87171' }}>
-            <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
-            <strong>Expiring in {days} days</strong> — rotate now to avoid disruption.
-          </div>
-        )}
-
-        {/* Entropy key visualisation */}
-        <div style={{ background:'#0d0000', border:'0.5px solid rgba(255,255,255,0.08)',
-          borderRadius:8, padding:'10px 14px', display:'flex', alignItems:'center',
-          gap:12, marginBottom:12 }}>
-          <Lock size={13} color="#b0a8a0" style={{ flexShrink:0 }}/>
-          <EntropyDots />
-          <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.8px',
-            color:'#b0a8a0', fontFamily:'"JetBrains Mono",monospace', flexShrink:0 }}>
-            ENCRYPTED
+        {/* Domain + badges */}
+        <div style={{ flex:1, minWidth:0, display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+          <span style={{ fontSize:13, fontWeight:700, color:'#ffffff',
+            fontFamily:'"JetBrains Mono","Menlo",monospace' }}>
+            {keyEntry.domain}
           </span>
+          <span style={{ fontSize:9, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.3px',
+            color: accentColor, background:`${accentColor}15`,
+            border:`0.5px solid ${accentColor}40`, borderRadius:4, padding:'2px 7px' }}>
+            {keyEntry.status}
+          </span>
+          {keyEntry.status === 'active' && (
+            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:9,
+              color:'#ffffff', background:'rgba(192,57,43,0.12)',
+              border:'0.5px solid rgba(192,57,43,0.4)', borderRadius:4,
+              padding:'2px 7px', fontWeight:700 }}>
+              <Lock size={8}/> VAULT SECURED
+            </span>
+          )}
         </div>
 
-        {/* Expiry progress bar */}
-        {lifetimePct !== null && (
-          <div style={{ marginBottom:14 }}>
-            <div style={{ display:'flex', justifyContent:'space-between',
-              fontSize:9, color:'#b0a8a0', marginBottom:5, fontWeight:600,
-              textTransform:'uppercase', letterSpacing:'0.5px' }}>
-              <span>Issued {fmtDate(keyEntry.created_at)}</span>
-              <span style={{ color: accentColor }}>
-                {days !== null ? `${days}d left · ` : ''}
-                {keyEntry.expires_at ? `Expires ${fmtDate(keyEntry.expires_at)}` : ''}
-              </span>
-            </div>
-            <div style={{ height:3, background:'rgba(255,255,255,0.07)',
-              borderRadius:2, overflow:'hidden' }}>
-              <div style={{ height:3, borderRadius:2, width:`${lifetimePct}%`,
-                background: accentColor, transition:'width .4s' }} />
-            </div>
-          </div>
-        )}
-
-        {/* Metrics */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:14 }}>
-          {[
-            { label:'Last accessed', value: keyEntry.last_accessed_at ? fmtAgo(keyEntry.last_accessed_at) : 'Never' },
-            { label:'Rotations',     value: keyEntry.rotation_count ?? 0 },
-            { label:'Key size',      value: `${keyEntry.key_size || 2048} bit` },
-          ].map(({ label, value }) => (
-            <div key={label} style={{ background:'rgba(255,255,255,0.04)',
-              borderRadius:8, padding:'9px 12px', border:'0.5px solid rgba(255,255,255,0.07)' }}>
-              <div style={{ fontSize:9, fontWeight:700, color:'#b0a8a0',
-                textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:4 }}>{label}</div>
-              <div style={{ fontSize:13, fontWeight:700, color:'#ffffff' }}>{String(value)}</div>
-            </div>
-          ))}
+        {/* Right meta — algo · days · chevron */}
+        <div style={{ display:'flex', alignItems:'center', gap:14, flexShrink:0 }}>
+          <span style={{ fontSize:11, color:'#b0a8a0' }}>
+            {keyEntry.algorithm || 'RSA'} · {keyEntry.key_size || 2048}-bit
+          </span>
+          {days !== null && (
+            <span style={{ fontSize:11, fontWeight:700, color: accentColor }}>
+              {days}d
+            </span>
+          )}
+          {open ? <ChevronUp size={13} color="#b0a8a0"/> : <ChevronDown size={13} color="#b0a8a0"/>}
         </div>
-
-        {/* Actions — active */}
-        {keyEntry.status === 'active' && (
-          <div style={{ display:'flex', gap:7, flexWrap:'wrap' }}>
-            <button onClick={() => onReveal(keyEntry)}
-              style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'7px 14px',
-                fontSize:11, fontWeight:700, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
-                background:'#c0392b', color:'#fff', border:'none', transition:'background .15s' }}
-              onMouseEnter={e=>e.currentTarget.style.background='#a93226'}
-              onMouseLeave={e=>e.currentTarget.style.background='#c0392b'}>
-              <Eye size={11}/> Reveal key
-            </button>
-            <button onClick={() => onRotate(keyEntry)}
-              disabled={rotating === keyEntry.id}
-              style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
-                fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(255,255,255,0.08)', color:'#e8e0d8',
-                border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s',
-                opacity: rotating === keyEntry.id ? 0.5 : 1 }}>
-              {rotating === keyEntry.id
-                ? <><RefreshCw size={10} style={{ animation:'spin .8s linear infinite' }}/> Rotating…</>
-                : <><RotateCcw size={10}/> Rotate key</>}
-            </button>
-            <button onClick={() => onViewAudit(keyEntry.domain)}
-              style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
-                fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(255,255,255,0.08)', color:'#e8e0d8',
-                border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s' }}>
-              <Activity size={10}/> View audit
-            </button>
-          </div>
-        )}
-
-        {/* Archived */}
-        {keyEntry.status === 'archived' && (
-          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-            <div style={{ fontSize:11, color:'#b0a8a0', flex:1 }}>
-              <Clock size={11} style={{ verticalAlign:'-1px', marginRight:4 }}/>
-              Archived {fmtAgo(keyEntry.archived_at)} · Auto-deleted 30 days after archiving
-            </div>
-            <button onClick={() => onViewAudit(keyEntry.domain)}
-              style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
-                fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(255,255,255,0.08)', color:'#e8e0d8',
-                border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s', flexShrink:0 }}>
-              <Activity size={10}/> View audit
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* ── Expanded panel ── */}
+      {open && (
+        <div style={{ borderTop:'0.5px solid rgba(255,255,255,0.07)', padding:'16px 16px 16px 20px' }}>
+
+          {/* Expiry warning */}
+          {isExpiringSoon && keyEntry.status === 'active' && (
+            <div style={{ background:'rgba(248,113,113,0.08)', border:'0.5px solid rgba(248,113,113,0.3)',
+              borderRadius:8, padding:'9px 12px', marginBottom:12, fontSize:11, color:'#f87171' }}>
+              <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
+              <strong>Expiring in {days} days</strong> — rotate now to avoid disruption.
+            </div>
+          )}
+
+          {/* Entropy visualisation */}
+          <div style={{ background:'#0d0000', border:'0.5px solid rgba(255,255,255,0.08)',
+            borderRadius:8, padding:'10px 14px', display:'flex', alignItems:'center',
+            gap:12, marginBottom:12 }}>
+            <Lock size={13} color="#b0a8a0" style={{ flexShrink:0 }}/>
+            <EntropyDots />
+            <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.8px',
+              color:'#b0a8a0', fontFamily:'"JetBrains Mono",monospace', flexShrink:0 }}>
+              ENCRYPTED
+            </span>
+          </div>
+
+          {/* Expiry progress bar */}
+          {lifetimePct !== null && (
+            <div style={{ marginBottom:14 }}>
+              <div style={{ display:'flex', justifyContent:'space-between',
+                fontSize:9, color:'#b0a8a0', marginBottom:5, fontWeight:600,
+                textTransform:'uppercase', letterSpacing:'0.5px' }}>
+                <span>Issued {fmtDate(keyEntry.created_at)}</span>
+                <span style={{ color: accentColor }}>
+                  {days !== null ? `${days}d left · ` : ''}
+                  {keyEntry.expires_at ? `Expires ${fmtDate(keyEntry.expires_at)}` : ''}
+                </span>
+              </div>
+              <div style={{ height:3, background:'rgba(255,255,255,0.07)',
+                borderRadius:2, overflow:'hidden' }}>
+                <div style={{ height:3, borderRadius:2, width:`${lifetimePct}%`,
+                  background: accentColor }} />
+              </div>
+            </div>
+          )}
+
+          {/* Metrics */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:14 }}>
+            {[
+              { label:'Last accessed', value: keyEntry.last_accessed_at ? fmtAgo(keyEntry.last_accessed_at) : 'Never' },
+              { label:'Rotations',     value: keyEntry.rotation_count ?? 0 },
+              { label:'Key size',      value: `${keyEntry.key_size || 2048} bit` },
+            ].map(({ label, value }) => (
+              <div key={label} style={{ background:'rgba(255,255,255,0.04)',
+                borderRadius:8, padding:'9px 12px', border:'0.5px solid rgba(255,255,255,0.07)' }}>
+                <div style={{ fontSize:9, fontWeight:700, color:'#b0a8a0',
+                  textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:4 }}>{label}</div>
+                <div style={{ fontSize:13, fontWeight:700, color:'#ffffff' }}>{String(value)}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Actions — active */}
+          {keyEntry.status === 'active' && (
+            <div style={{ display:'flex', gap:7, flexWrap:'wrap' }}>
+              <button onClick={() => onReveal(keyEntry)}
+                style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'7px 14px',
+                  fontSize:11, fontWeight:700, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
+                  background:'#c0392b', color:'#fff', border:'none', transition:'background .15s' }}
+                onMouseEnter={e=>e.currentTarget.style.background='#a93226'}
+                onMouseLeave={e=>e.currentTarget.style.background='#c0392b'}>
+                <Eye size={11}/> Reveal key
+              </button>
+              <button onClick={() => onRotate(keyEntry)}
+                disabled={rotating === keyEntry.id}
+                style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
+                  fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
+                  background:'rgba(255,255,255,0.08)', color:'#e8e0d8',
+                  border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s',
+                  opacity: rotating === keyEntry.id ? 0.5 : 1 }}>
+                {rotating === keyEntry.id
+                  ? <><RefreshCw size={10} style={{ animation:'spin .8s linear infinite' }}/> Rotating…</>
+                  : <><RotateCcw size={10}/> Rotate key</>}
+              </button>
+              <button onClick={() => onViewAudit(keyEntry.domain)}
+                style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
+                  fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
+                  background:'rgba(255,255,255,0.08)', color:'#e8e0d8',
+                  border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s' }}>
+                <Activity size={10}/> View audit
+              </button>
+            </div>
+          )}
+
+          {/* Archived */}
+          {keyEntry.status === 'archived' && (
+            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+              <div style={{ fontSize:11, color:'#b0a8a0', flex:1 }}>
+                <Clock size={11} style={{ verticalAlign:'-1px', marginRight:4 }}/>
+                Archived {fmtAgo(keyEntry.archived_at)} · Auto-deleted 30 days after archiving
+              </div>
+              <button onClick={() => onViewAudit(keyEntry.domain)}
+                style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
+                  fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
+                  background:'rgba(255,255,255,0.08)', color:'#e8e0d8',
+                  border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s', flexShrink:0 }}>
+                <Activity size={10}/> View audit
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
