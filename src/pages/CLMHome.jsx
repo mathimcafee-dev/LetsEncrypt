@@ -25,7 +25,6 @@ import ShieldIntelligence from './ShieldIntelligence'
 import ReadinessDashboard from './ReadinessDashboard'
 import Infrastructure from './Infrastructure'
 import MyServers from './MyServers'
-import DomainManager from './DomainManager'
 import CertVault from './CertVault'
 import CertBind from './CertBind'
 import Pricing from './Pricing'
@@ -133,12 +132,12 @@ export default function CLMHome({ user, nav }) {
     if(sec==='install')          return <Install nav={sideNav}/>
     if(sec==='kb')               return <KnowledgeBase nav={sideNav}/>
     if(sec==='pricing')          return <Pricing nav={sideNav}/>
-    // Domain Manager — replaces my-servers, infrastructure, servers, agent-health
-    if(sec==='domain-manager')   return <DomainManager user={user}/>
-    if(sec==='my-servers')       return <DomainManager user={user}/>
-    if(sec==='infrastructure')   return <DomainManager user={user}/>
-    if(sec==='servers')          return <DomainManager user={user}/>
-    if(sec==='agent-health')     return <DomainManager user={user}/>
+    // Domain Manager — MyServers with all features: VPS agents, DNS, cPanel, CA connectors
+    if(sec==='domain-manager')   return <MyServers user={user}/>
+    if(sec==='my-servers')       return <MyServers user={user}/>
+    if(sec==='infrastructure')   return <MyServers user={user}/>
+    if(sec==='servers')          return <MyServers user={user}/>
+    if(sec==='agent-health')     return <MyServers user={user}/>
     if(sec==='certvault')        return <CertVault nav={sideNav}/>
     if(sec==='certbind')         return <CertBind nav={sideNav}/>
     if(sec==='settings')         return <SettingsPage user={user}/>
