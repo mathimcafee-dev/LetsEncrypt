@@ -353,6 +353,8 @@ function TableHead({ cols }) {
 }
 
 function CertTable({ cols, headers, children, loading, empty }) {
+  // children is an array from .map() — check its actual length
+  const isEmpty = !children || (Array.isArray(children) && children.length === 0)
   return (
     <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
       <div style={{ display:'grid', gridTemplateColumns:cols, padding:'8px 14px',
@@ -366,7 +368,7 @@ function CertTable({ cols, headers, children, loading, empty }) {
         <div style={{ padding:40, textAlign:'center', color:'#b0a8a0', fontSize:13 }}>
           <Spinner/><span style={{ marginLeft:8 }}>Loading…</span>
         </div>
-      ) : empty ? (
+      ) : isEmpty ? (
         <div style={{ padding:'min(36px,5vw) min(24px,4vw)', textAlign:'center', fontSize:12, color:'#b0a8a0' }}>{empty}</div>
       ) : children}
     </div>
