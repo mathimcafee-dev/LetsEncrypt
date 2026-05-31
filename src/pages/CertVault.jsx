@@ -444,17 +444,24 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
             </button>
 
             {/* Rotate */}
-            <button className="v2-btn v2-btn-sm" onClick={() => onRotate(keyEntry)}
+            <button onClick={() => onRotate(keyEntry)}
               disabled={rotating === keyEntry.id}
-              style={{ display:'flex', alignItems:'center', gap:5 }}>
+              style={{ display:'flex', alignItems:'center', gap:5, padding:'5px 10px',
+                fontSize:11, fontWeight:600, borderRadius:8, cursor:'pointer', fontFamily:'inherit',
+                background:'rgba(255,255,255,0.12)', color:'#f0ede8',
+                border:'1px solid rgba(240,237,232,0.5)', transition:'all .15s',
+                opacity: rotating === keyEntry.id ? 0.6 : 1 }}>
               {rotating === keyEntry.id
                 ? <><RefreshCw size={10} style={{ animation:'spin .8s linear infinite' }}/> Rotating…</>
                 : <><RotateCcw size={10}/> Rotate key</>}
             </button>
 
-            {/* View audit — now wired up */}
-            <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
-              style={{ display:'flex', alignItems:'center', gap:5 }}>
+            {/* View audit */}
+            <button onClick={() => onViewAudit(keyEntry.domain)}
+              style={{ display:'flex', alignItems:'center', gap:5, padding:'5px 10px',
+                fontSize:11, fontWeight:600, borderRadius:8, cursor:'pointer', fontFamily:'inherit',
+                background:'rgba(255,255,255,0.12)', color:'#f0ede8',
+                border:'1px solid rgba(240,237,232,0.5)', transition:'all .15s' }}>
               <Activity size={10}/> View audit
             </button>
           </div>
@@ -467,8 +474,11 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
               <Clock size={11} style={{ verticalAlign:'-1px', marginRight:4 }}/>
               Archived {fmtAgo(keyEntry.archived_at)} · Auto-deleted 30 days after archiving
             </div>
-            <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
-              style={{ display:'flex', alignItems:'center', gap:5 }}>
+            <button onClick={() => onViewAudit(keyEntry.domain)}
+              style={{ display:'flex', alignItems:'center', gap:5, padding:'5px 10px',
+                fontSize:11, fontWeight:600, borderRadius:8, cursor:'pointer', fontFamily:'inherit',
+                background:'rgba(255,255,255,0.12)', color:'#f0ede8',
+                border:'1px solid rgba(240,237,232,0.5)', transition:'all .15s', flexShrink:0 }}>
               <Activity size={10}/> View audit
             </button>
           </div>
