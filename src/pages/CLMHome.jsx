@@ -25,6 +25,7 @@ import ShieldIntelligence from './ShieldIntelligence'
 import ReadinessDashboard from './ReadinessDashboard'
 import Infrastructure from './Infrastructure'
 import MyServers from './MyServers'
+import DomainManager from './DomainManager'
 import CertVault from './CertVault'
 import CertBind from './CertBind'
 import Pricing from './Pricing'
@@ -94,7 +95,7 @@ export default function CLMHome({ user, nav }) {
       {id:'cert-timeline',     label:'Certificate Timeline', icon:CalendarDays},
     ]},
     { group:'Automate', items:[
-      {id:'my-servers',        label:'Servers & agents', icon:Server},
+      {id:'domain-manager',    label:'Domain Manager',   icon:Globe},
     ]},
     { group:'Monitor', items:[
       {id:'shield',            label:'Security monitor',  icon:ShieldCheck},
@@ -115,7 +116,9 @@ export default function CLMHome({ user, nav }) {
   const TITLES = {
     dashboard:'Dashboard', issue:'Issue cert', readiness:'47-Day Readiness',
     'renewal-calendar':'Renewal calendar', certvault:'CertVault', certbind:'CertBind',
-    'my-servers':'Servers & agents', shield:'Security monitor',
+    'domain-manager':'Domain Manager', 'my-servers':'Domain Manager',
+    'infrastructure':'Domain Manager', 'servers':'Domain Manager', 'agent-health':'Domain Manager',
+    shield:'Security monitor',
     'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence',
     'admin-calendar':'Admin Calendar',
     'cert-timeline':'Certificate Timeline',
@@ -130,10 +133,12 @@ export default function CLMHome({ user, nav }) {
     if(sec==='install')          return <Install nav={sideNav}/>
     if(sec==='kb')               return <KnowledgeBase nav={sideNav}/>
     if(sec==='pricing')          return <Pricing nav={sideNav}/>
-    if(sec==='my-servers')       return <MyServers user={user}/>
-    if(sec==='infrastructure')   return <MyServers user={user}/>
-    if(sec==='servers')          return <Infrastructure user={user}/>
-    if(sec==='agent-health')     return <Infrastructure user={user}/>
+    // Domain Manager — replaces my-servers, infrastructure, servers, agent-health
+    if(sec==='domain-manager')   return <DomainManager user={user}/>
+    if(sec==='my-servers')       return <DomainManager user={user}/>
+    if(sec==='infrastructure')   return <DomainManager user={user}/>
+    if(sec==='servers')          return <DomainManager user={user}/>
+    if(sec==='agent-health')     return <DomainManager user={user}/>
     if(sec==='certvault')        return <CertVault nav={sideNav}/>
     if(sec==='certbind')         return <CertBind nav={sideNav}/>
     if(sec==='settings')         return <SettingsPage user={user}/>
