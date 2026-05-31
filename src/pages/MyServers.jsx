@@ -964,10 +964,10 @@ export default function MyServers({ user }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <h1 style={{ fontSize:22, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.5px', margin: 0 }}>
-              My Servers
+              Domain Manager
             </h1>
             <p style={{ fontSize:13, color: '#b0a8a0', margin: '4px 0 0' }}>
-              Manage your servers and DNS connections for automatic SSL
+              VPS agents, cPanel hosting, DNS providers and CA connectors — all in one place
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
