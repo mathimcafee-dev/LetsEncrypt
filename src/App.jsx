@@ -17,6 +17,7 @@ import Pricing from './pages/Pricing'
 import About from './pages/About'
 import CertVault from './pages/CertVault'
 import CertBind from './pages/CertBind'
+import KeyIntelligence from './pages/KeyIntelligence'
 import BuyCertificate from './pages/BuyCertificate'
 import AdminAnalytics from './pages/AdminAnalytics'
 import AgentHealth from './pages/AgentHealth'
@@ -155,8 +156,9 @@ const _build = 1779297041 // cache bust
       
       {page === '/pricing' && <Pricing nav={nav} />}
       {page === '/about' && <About nav={nav} />}
-      {page === '/certvault' && <CertVault nav={nav} />}
-      {page === '/certbind' && <CertBind nav={nav} />}
+      {page === '/certvault' && <KeyIntelligence nav={nav} />}
+      {page === '/certbind' && <KeyIntelligence nav={nav} />}
+      {page === '/key-intelligence' && <KeyIntelligence nav={nav} />}
       {page === '/buy' && <BuyCertificate nav={nav} />}
       
       {page === '/admin' && <AdminAnalytics nav={nav} />}

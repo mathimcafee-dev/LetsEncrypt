@@ -28,6 +28,7 @@ import MyServers from './MyServers'
 import DomainManager from './DomainManager'
 import CertVault from './CertVault'
 import CertBind from './CertBind'
+import KeyIntelligence from './KeyIntelligence'
 import Pricing from './Pricing'
 
 // ── Design tokens ──────────────────────────────────────────────────────
@@ -102,8 +103,7 @@ export default function CLMHome({ user, nav }) {
       {id:'readiness',         label:'47-Day Readiness', icon:ShieldCheck, badge:'NEW'},
     ]},
     { group:'Secure', items:[
-      {id:'certvault',         label:'CertVault',        icon:Lock},
-      {id:'certbind',          label:'CertBind',         icon:Shield},
+      {id:'key-intelligence',  label:'Key Intelligence', icon:Shield},
       {id:'ca-intelligence',   label:'PKI Intelligence', icon:TrendingUp},
     ]},
   ]
@@ -139,8 +139,9 @@ export default function CLMHome({ user, nav }) {
     if(sec==='infrastructure')   return <MyServers user={user}/>
     if(sec==='servers')          return <MyServers user={user}/>
     if(sec==='agent-health')     return <MyServers user={user}/>
-    if(sec==='certvault')        return <CertVault nav={sideNav}/>
-    if(sec==='certbind')         return <CertBind nav={sideNav}/>
+    if(sec==='certvault')        return <KeyIntelligence nav={sideNav}/>
+    if(sec==='certbind')         return <KeyIntelligence nav={sideNav}/>
+    if(sec==='key-intelligence') return <KeyIntelligence nav={sideNav}/>
     if(sec==='settings')         return <SettingsPage user={user}/>
     if(sec==='ca-intelligence')  return <CAIntelligenceHub nav={sideNav}/>
     if(sec==='shield')           return <ShieldIntelligence user={user}/>
