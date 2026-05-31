@@ -35,16 +35,28 @@ function expiryStyle(days) {
 
 function eventTypeLabel(type) {
   const map = {
-    '30d_warning':    { label: '30d warning',    color: '#fbbf24' },
-    '14d_warning':    { label: '14d warning',    color: '#f97316' },
-    '7d_warning':     { label: '7d warning',     color: '#f87171' },
-    'final_warning':  { label: 'Final warning',  color: '#ef4444' },
-    'auto_reissue':   { label: 'Auto-reissue',   color: '#818cf8' },
-    'sub_30d':        { label: 'Sub 30d',         color: '#fbbf24' },
-    'sub_14d':        { label: 'Sub 14d',         color: '#f87171' },
-    'renewal':        { label: 'Renewal',         color: '#4ade80' },
+    // DB event_type values
+    'cert_warning_30d': { label: 'Cert warning 30d', color: '#fbbf24' },
+    'cert_warning_14d': { label: 'Cert warning 14d', color: '#f97316' },
+    'cert_warning_7d':  { label: 'Cert warning 7d',  color: '#f87171' },
+    'cert_warning_1d':  { label: 'Cert warning 1d',  color: '#ef4444' },
+    'cert_reissue':     { label: 'Auto-reissue',     color: '#818cf8' },
+    'sub_warning_30d':  { label: 'Sub warning 30d',  color: '#fbbf24' },
+    'sub_warning_14d':  { label: 'Sub warning 14d',  color: '#f97316' },
+    'sub_warning_7d':   { label: 'Sub warning 7d',   color: '#f87171' },
+    'sub_warning_1d':   { label: 'Sub warning 1d',   color: '#ef4444' },
+    'sub_end':          { label: 'Subscription end', color: '#c0392b' },
+    // Legacy keys kept for backward compat
+    '30d_warning':    { label: 'Cert warning 30d', color: '#fbbf24' },
+    '14d_warning':    { label: 'Cert warning 14d', color: '#f97316' },
+    '7d_warning':     { label: 'Cert warning 7d',  color: '#f87171' },
+    'final_warning':  { label: 'Cert warning 1d',  color: '#ef4444' },
+    'auto_reissue':   { label: 'Auto-reissue',     color: '#818cf8' },
+    'sub_30d':        { label: 'Sub warning 30d',  color: '#fbbf24' },
+    'sub_14d':        { label: 'Sub warning 14d',  color: '#f87171' },
+    'renewal':        { label: 'Renewal',          color: '#4ade80' },
   }
-  return map[type] || { label: type || '—', color: '#b0a8a0' }
+  return map[type] || { label: type ? type.replace(/_/g,' ') : '—', color: '#b0a8a0' }
 }
 
 function StatusDot({ days }) {
