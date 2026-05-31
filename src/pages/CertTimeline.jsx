@@ -398,63 +398,139 @@ export default function CertTimeline({ user }) {
                         </>)}
                       </tr>
 
-                      {/* ── Expanded events panel ── */}
+                      {/* ── Expanded events panel — staggered lifecycle rail ── */}
                       {isOpen && (
                         <tr key={`${row.id}-expanded`}>
-                          <td colSpan={COLS.length} style={{ padding: '0 14px 14px', background: 'rgba(192,57,43,0.05)' }}>
-                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12 }}>
+                          <td colSpan={COLS.length} style={{ padding: '0 14px 16px', background: 'rgba(192,57,43,0.04)' }}>
+                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
 
-                              {/* Cert meta row */}
-                              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 12 }}>
+                              {/* Meta strip */}
+                              <div style={{ display: 'flex', gap: 0, marginBottom: 16, flexWrap: 'wrap' }}>
                                 {[
-                                  { label: 'Issuer',        value: row.issuer || 'RapidSSL' },
-                                  { label: 'Reissued',      value: row.reissue_count ? `${row.reissue_count}×` : '0×' },
-                                  { label: 'Last reissued', value: fmtDate(row.last_reissued_at) },
+                                  { label: 'Issuer',         value: row.issuer || 'RapidSSL' },
+                                  { label: 'Reissued',       value: row.reissue_count ? `${row.reissue_count}×` : '0×' },
+                                  { label: 'Last reissued',  value: fmtDate(row.last_reissued_at) },
                                   { label: 'Live on server', value: row.is_live_on_server ? '✓ Yes' : '✗ Not confirmed',
                                     color: row.is_live_on_server ? '#4ade80' : '#fbbf24' },
-                                ].map(m => (
-                                  <div key={m.label}>
-                                    <div style={{ fontSize: 9, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase',
-                                      letterSpacing: '0.7px', marginBottom: 2 }}>{m.label}</div>
-                                    <div style={{ fontSize: 12, color: m.color || '#e8e0d8', fontWeight: 500 }}>{m.value}</div>
+                                ].map((m, mi) => (
+                                  <div key={m.label} style={{ paddingRight: 20, marginRight: 20, borderRight: mi < 3 ? '0.5px solid rgba(255,255,255,0.08)' : 'none' }}>
+                                    <div style={{ fontSize: 9, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 3 }}>{m.label}</div>
+                                    <div style={{ fontSize: 12, color: m.color || '#e8e0d8', fontWeight: 600 }}>{m.value}</div>
                                   </div>
                                 ))}
                               </div>
 
-                              {/* Events schedule */}
+                              {/* Lifecycle rail */}
                               {row.events.length === 0 ? (
                                 <div style={{ fontSize: 12, color: '#b0a8a0' }}>No scheduled events.</div>
-                              ) : (
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                                  {row.events.map(ev => {
-                                    const { label, color } = eventTypeLabel(ev.event_type)
-                                    const d = daysFromNow(ev.scheduled_date)
-                                    const isPast = d !== null && d < 0
-                                    const isDone = ev.status === 'completed' || ev.status === 'sent'
-                                    return (
-                                      <div key={ev.id} style={{
-                                        padding: '7px 12px', borderRadius: 8, minWidth: 110,
-                                        background: isDone ? 'rgba(74,222,128,0.05)' : isPast ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.05)',
-                                        border: `1px solid ${isDone ? 'rgba(74,222,128,0.2)' : 'rgba(255,255,255,0.08)'}`,
-                                      }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 2 }}>
-                                          {isDone
-                                            ? <CheckCircle size={10} color="#4ade80"/>
-                                            : <Bell size={10} color={color} style={{ opacity: isPast ? 0.4 : 1 }}/>
-                                          }
-                                          <span style={{ fontSize: 10, fontWeight: 700, color: isDone ? '#4ade80' : isPast ? '#b0a8a0' : color }}>
-                                            {label}
-                                          </span>
+                              ) : (() => {
+                                const issued   = row.issued_at   ? new Date(row.issued_at)             : new Date(Date.now() - 30*86400000)
+                                const subEnd   = row.subscription_end_date ? new Date(row.subscription_end_date) : new Date(row.expires_at)
+                                const todayD   = new Date()
+                                const totalMs  = subEnd - issued
+                                const pct      = (d) => Math.min(98, Math.max(2, ((new Date(d) - issued) / totalMs) * 100))
+                                const todayPct = Math.min(98, Math.max(2, ((todayD - issued) / totalMs) * 100))
+                                const RAIL_MID = 58
+                                const upcoming = row.events.filter(ev => { const d = daysFromNow(ev.scheduled_date); return d !== null && d > 0 }).slice(0, 3)
+
+                                return (
+                                  <div>
+                                    {/* Rail SVG */}
+                                    <div style={{ position: 'relative', height: 130, margin: '0 4px 6px', userSelect: 'none' }}>
+
+                                      {/* Phase labels */}
+                                      {[
+                                        { label: 'Issued',    cx: 3 },
+                                        { label: 'Cert zone', cx: pct(row.expires_at) - 8 },
+                                        { label: 'Sub zone',  cx: Math.max(pct(row.expires_at) + 4, 60) },
+                                        { label: 'Sub end',   cx: 95 },
+                                      ].map(ph => (
+                                        <div key={ph.label} style={{ position: 'absolute', top: 30, left: ph.cx + '%', fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(255,255,255,0.2)', whiteSpace: 'nowrap', transform: 'translateX(-50%)' }}>
+                                          {ph.label}
                                         </div>
-                                        <div style={{ fontSize: 10, color: '#b0a8a0' }}>
-                                          {fmtDate(ev.scheduled_date)}
-                                          {d !== null && !isPast && <span style={{ color: '#e8e0d8', marginLeft: 4 }}>in {d}d</span>}
+                                      ))}
+
+                                      {/* Rail track */}
+                                      <div style={{ position: 'absolute', top: RAIL_MID, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 2 }} />
+
+                                      {/* Progress fill */}
+                                      <div style={{ position: 'absolute', top: RAIL_MID, left: 0, width: todayPct + '%', height: 3, background: 'rgba(192,57,43,0.5)', borderRadius: 2 }} />
+
+                                      {/* Today pin */}
+                                      <div style={{ position: 'absolute', top: RAIL_MID - 8, left: todayPct + '%', transform: 'translateX(-50%)', width: 2, height: 19, background: '#fff', borderRadius: 1 }} />
+                                      <div style={{ position: 'absolute', top: RAIL_MID + 13, left: todayPct + '%', transform: 'translateX(-50%)', fontSize: 8, fontWeight: 800, letterSpacing: '0.7px', color: '#fff', whiteSpace: 'nowrap' }}>TODAY</div>
+
+                                      {/* Event nodes — staggered above/below */}
+                                      {row.events.map((ev, idx) => {
+                                        const { label, color } = eventTypeLabel(ev.event_type)
+                                        const d      = daysFromNow(ev.scheduled_date)
+                                        const isPast = d !== null && d < 0
+                                        const isDone = ev.status === 'completed' || ev.status === 'sent'
+                                        const p      = pct(ev.scheduled_date)
+                                        const above  = idx % 2 === 0
+                                        const nodeTop  = above ? RAIL_MID - 34 : RAIL_MID + 18
+                                        const stemTop  = above ? nodeTop + 16 : RAIL_MID + 3
+                                        const stemH    = above ? RAIL_MID - nodeTop - 16 : nodeTop - RAIL_MID - 3
+                                        const dateLblT = above ? nodeTop - 15 : nodeTop + 19
+                                        const nodeColor = isDone ? '#4ade80' : color
+                                        const nodeBg    = isDone ? 'rgba(74,222,128,0.15)' : color + '18'
+
+                                        return (
+                                          <div key={ev.id}>
+                                            {/* Stem */}
+                                            <div style={{ position: 'absolute', left: p + '%', top: stemTop, width: 1.5, height: Math.abs(stemH), background: 'rgba(255,255,255,0.1)', transform: 'translateX(-50%)' }} />
+                                            {/* Date label */}
+                                            <div style={{ position: 'absolute', left: p + '%', top: dateLblT, fontSize: 8, color: '#b0a8a0', whiteSpace: 'nowrap', transform: 'translateX(-50%)', fontWeight: 600 }}>
+                                              {fmtDateShort(ev.scheduled_date)}
+                                            </div>
+                                            {/* Node */}
+                                            <div style={{ position: 'absolute', left: p + '%', top: nodeTop, width: 16, height: 16, borderRadius: '50%', border: `2px solid ${nodeColor}`, background: nodeBg, transform: 'translateX(-50%)', cursor: 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+                                              {(isDone || isPast) && <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80' }} />}
+                                            </div>
+                                          </div>
+                                        )
+                                      })}
+                                    </div>
+
+                                    {/* Legend */}
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 14, marginTop: 4 }}>
+                                      {[
+                                        { label: 'Completed',      color: '#4ade80' },
+                                        { label: 'Warning',        color: '#fbbf24' },
+                                        { label: 'Critical',       color: '#f87171' },
+                                        { label: 'Auto-reissue',   color: '#818cf8' },
+                                        { label: 'Subscription',   color: '#c0392b' },
+                                      ].map(l => (
+                                        <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#b0a8a0' }}>
+                                          <div style={{ width: 8, height: 8, borderRadius: '50%', border: `1.5px solid ${l.color}`, background: l.color + '20', flexShrink: 0 }} />
+                                          {l.label}
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* Next 3 upcoming cards */}
+                                    {upcoming.length > 0 && (
+                                      <div>
+                                        <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'rgba(255,255,255,0.28)', marginBottom: 8 }}>Next upcoming</div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                                          {upcoming.map(ev => {
+                                            const { label, color } = eventTypeLabel(ev.event_type)
+                                            const d = daysFromNow(ev.scheduled_date)
+                                            const urg = d !== null && d <= 7 ? '#f87171' : d !== null && d <= 30 ? '#fbbf24' : color
+                                            return (
+                                              <div key={ev.id} style={{ background: 'rgba(255,255,255,0.04)', border: `0.5px solid ${urg}40`, borderRadius: 8, padding: '9px 12px' }}>
+                                                <div style={{ fontSize: 10, fontWeight: 700, color: '#e8e0d8', marginBottom: 2 }}>{label}</div>
+                                                <div style={{ fontSize: 10, color: '#b0a8a0' }}>{fmtDate(ev.scheduled_date)}</div>
+                                                <div style={{ fontSize: 14, fontWeight: 700, color: urg, marginTop: 4 }}>in {d}d</div>
+                                              </div>
+                                            )
+                                          })}
                                         </div>
                                       </div>
-                                    )
-                                  })}
-                                </div>
-                              )}
+                                    )}
+                                  </div>
+                                )
+                              })()}
                             </div>
                           </td>
                         </tr>
