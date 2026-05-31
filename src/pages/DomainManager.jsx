@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow, differenceInMinutes, differenceInDays } from 'date-fns'
 import '../styles/design-v2.css'
+import AddDomainWizard from '../components/AddDomainWizard'
 
 const SB_URL = import.meta.env.VITE_SUPABASE_URL || 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -522,7 +523,7 @@ function UnlinkedAgents({ agents, onRefresh, onRemove }) {
 }
 
 // ══ MAIN ═══════════════════════════════════════════════════════════════
-export default function DomainManager({ user }) {
+export default function DomainManager({ user, nav }) {
   const isMobile = useIsMobile()
   const [certs,           setCerts]           = useState([])
   const [agents,          setAgents]          = useState([])
@@ -531,6 +532,7 @@ export default function DomainManager({ user }) {
   const [loading,         setLoading]         = useState(true)
   const [refreshing,      setRefreshing]      = useState(false)
   const [showInstall,     setShowInstall]     = useState(false)
+  const [showWizard,      setShowWizard]      = useState(false)
   const [search,          setSearch]          = useState('')
 
   const load = useCallback(async () => {
@@ -608,6 +610,7 @@ export default function DomainManager({ user }) {
       <div className="v2-container" style={{ maxWidth: 960 }}>
 
         {showInstall && <InstallModal onClose={() => setShowInstall(false)} />}
+        {showWizard && <AddDomainWizard user={user} onClose={() => { setShowWizard(false); load() }} nav={nav} />}
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20, paddingTop: 8, gap: 12, flexWrap: 'wrap' }}>
@@ -622,11 +625,11 @@ export default function DomainManager({ user }) {
               <RefreshCw size={11} style={refreshing ? { animation: 'spin .8s linear infinite' } : {}} />
               Refresh
             </button>
-            <button onClick={() => setShowInstall(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#0d0000', color: '#ffffff', border: 'none', padding: '7px 14px', borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', transition: 'opacity .15s' }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
-              <Plus size={12} /> Add server
+            <button onClick={() => setShowWizard(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#c0392b', color: '#ffffff', border: 'none', padding: '7px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'background .15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#a93226'}
+              onMouseLeave={e => e.currentTarget.style.background = '#c0392b'}>
+              <Plus size={12} /> Add domain
             </button>
           </div>
         </div>

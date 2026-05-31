@@ -52,6 +52,7 @@ import CTAbuseMonitor from './pages/CTAbuseMonitor'
 import CertInventory from './pages/CertInventory'
 import Infrastructure from './pages/Infrastructure'
 import CertChangelog from './pages/CertChangelog'
+import DomainManager from './pages/DomainManager'
 
 export default function App() {
   const _build_ts = 1779297560 // 
@@ -108,7 +109,7 @@ const _build = 1779297041 // cache bust
   }
 
   // Home page has its own nav built-in — exclude it to avoid duplicate
-  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness']
+  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness', '/domain-manager']
   const showPublicNav = !authLoading && !user && !SELF_NAV_PAGES.includes(page)
 
   return (
@@ -193,6 +194,7 @@ const _build = 1779297041 // cache bust
       {page === '/cert-inventory' && <CertInventory nav={nav} user={user} />}
       {page === '/infrastructure' && <Infrastructure user={user} />}
       {page === '/cert-changelog' && <CertChangelog user={user} />}
+      {page === '/domain-manager' && <DomainManager user={user} nav={nav} />}
       <VaultBrain />
     </div>
   )
