@@ -363,111 +363,195 @@ function AuditRow({ entry }) {
 }
 
 // ── KeyCard — fixed with reveal + working view audit ──────────────────
+// ── Entropy dot visualiser — multi-colour flickering key bits ────────
+const ENTROPY_COLORS = [
+  '#4ade80','#22c55e','#86efac',
+  '#fbbf24','#f97316','#fb923c',
+  '#f87171','#ef4444','#fca5a5',
+  '#818cf8','#a78bfa',
+  '#38bdf8','#67e8f9',
+  '#c0392b','#ff8c7a',
+]
+function EntropyDots() {
+  const N = 40
+  const [dots, setDots] = useState(() =>
+    Array.from({ length: N }, () => ({
+      color:   ENTROPY_COLORS[Math.floor(Math.random() * ENTROPY_COLORS.length)],
+      opacity: parseFloat((Math.random() * 0.65 + 0.15).toFixed(2)),
+    }))
+  )
+  useEffect(() => {
+    const id = setInterval(() => {
+      setDots(prev => {
+        const next = [...prev]
+        const idx = Math.floor(Math.random() * N)
+        next[idx] = {
+          color:   ENTROPY_COLORS[Math.floor(Math.random() * ENTROPY_COLORS.length)],
+          opacity: parseFloat((Math.random() * 0.65 + 0.15).toFixed(2)),
+        }
+        return next
+      })
+    }, 90)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <div style={{ display:'flex', gap:3, flex:1, flexWrap:'nowrap', overflow:'hidden', alignItems:'center' }}>
+      {dots.map((d, i) => (
+        <div key={i} style={{ width:8, height:8, borderRadius:'50%', flexShrink:0,
+          background: d.color, opacity: d.opacity, transition:'opacity .15s, background .15s' }} />
+      ))}
+    </div>
+  )
+}
+
 function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
   const days           = keyEntry.expires_at
     ? differenceInDays(new Date(keyEntry.expires_at), new Date()) : null
   const isExpiringSoon = days !== null && days < 30
+  const totalDays      = keyEntry.expires_at && keyEntry.created_at
+    ? differenceInDays(new Date(keyEntry.expires_at), new Date(keyEntry.created_at)) : null
+  const usedDays       = keyEntry.created_at
+    ? differenceInDays(new Date(), new Date(keyEntry.created_at)) : 0
+  const lifetimePct    = totalDays && totalDays > 0
+    ? Math.min(100, Math.round((usedDays / totalDays) * 100)) : null
+  const accentColor    = keyEntry.status === 'archived' ? '#b0a8a0'
+    : isExpiringSoon ? '#f87171' : '#4ade80'
 
   return (
-    <div style={{ border:`0.5px solid var(--v2-border)`, borderRadius:10, overflow:'hidden',
-      borderTop:`2px solid ${statusColor(keyEntry.status)}` }}>
+    <div style={{ border:'0.5px solid rgba(255,255,255,0.1)', borderRadius:12,
+      overflow:'hidden', position:'relative' }}>
 
-      <div style={{ padding:'16px 18px' }}>
-        {/* Domain header */}
-        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
-          gap:12, marginBottom:12 }}>
+      {/* Left accent bar */}
+      <div style={{ position:'absolute', left:0, top:0, bottom:0, width:3,
+        background: accentColor, borderRadius:'3px 0 0 3px' }} />
+
+      <div style={{ padding:'16px 18px 16px 20px' }}>
+
+        {/* Header row */}
+        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:12, marginBottom:12 }}>
           <div style={{ minWidth:0 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4, flexWrap:'wrap' }}>
-              <span style={{ fontSize:13, fontWeight:600, color:'#ffffff', fontFamily:'monospace' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5, flexWrap:'wrap' }}>
+              <span style={{ fontSize:14, fontWeight:700, color:'#ffffff',
+                fontFamily:'"JetBrains Mono","Menlo",monospace' }}>
                 {keyEntry.domain}
               </span>
               <span style={{ fontSize:9, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.3px',
-                color: statusColor(keyEntry.status),
-                background: `${statusColor(keyEntry.status)}12`,
-                border:`0.5px solid ${statusColor(keyEntry.status)}30`,
-                borderRadius:4, padding:'1px 7px' }}>
+                color: accentColor, background:`${accentColor}15`,
+                border:`0.5px solid ${accentColor}40`, borderRadius:4, padding:'2px 7px' }}>
                 {keyEntry.status}
               </span>
               {keyEntry.status === 'active' && (
                 <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:9,
-                  color:'#ffffff', background:'rgba(239,68,68,0.08)',
-                  border:'0.5px solid #F2C4BC', borderRadius:4, padding:'1px 7px', fontWeight:700 }}>
+                  color:'#ffffff', background:'rgba(192,57,43,0.12)',
+                  border:'0.5px solid rgba(192,57,43,0.4)', borderRadius:4,
+                  padding:'2px 7px', fontWeight:700 }}>
                   <Lock size={8}/> VAULT SECURED
                 </span>
               )}
             </div>
             <div style={{ fontSize:11, color:'#b0a8a0' }}>
-              {keyEntry.algorithm || 'RSA'} · {keyEntry.key_size || 2048}-bit ·
-              Created {fmtDate(keyEntry.created_at)}
-              {keyEntry.expires_at && ` · Expires ${fmtDate(keyEntry.expires_at)}`}
+              {keyEntry.algorithm || 'RSA'} · {keyEntry.key_size || 2048}-bit
+            </div>
+          </div>
+          <div style={{ textAlign:'right', flexShrink:0 }}>
+            <div style={{ fontSize:9, fontWeight:700, textTransform:'uppercase',
+              letterSpacing:'0.5px', color:'#b0a8a0', marginBottom:3 }}>Created</div>
+            <div style={{ fontSize:12, fontWeight:600, color:'#e8e0d8' }}>
+              {fmtDate(keyEntry.created_at)}
             </div>
           </div>
         </div>
 
         {/* Expiry warning */}
         {isExpiringSoon && keyEntry.status === 'active' && (
-          <div style={{ background:'rgba(239,68,68,0.08)', border:'0.5px solid #F2C4BC', borderRadius:8,
-            padding:'10px 12px', marginBottom:12, fontSize:11, color:'#ff8c7a' }}>
+          <div style={{ background:'rgba(248,113,113,0.08)', border:'0.5px solid rgba(248,113,113,0.3)',
+            borderRadius:8, padding:'9px 12px', marginBottom:12, fontSize:11, color:'#f87171' }}>
             <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
             <strong>Expiring in {days} days</strong> — rotate now to avoid disruption.
           </div>
         )}
 
+        {/* Entropy key visualisation */}
+        <div style={{ background:'#0d0000', border:'0.5px solid rgba(255,255,255,0.08)',
+          borderRadius:8, padding:'10px 14px', display:'flex', alignItems:'center',
+          gap:12, marginBottom:12 }}>
+          <Lock size={13} color="#b0a8a0" style={{ flexShrink:0 }}/>
+          <EntropyDots />
+          <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.8px',
+            color:'#b0a8a0', fontFamily:'"JetBrains Mono",monospace', flexShrink:0 }}>
+            ENCRYPTED
+          </span>
+        </div>
+
+        {/* Expiry progress bar */}
+        {lifetimePct !== null && (
+          <div style={{ marginBottom:14 }}>
+            <div style={{ display:'flex', justifyContent:'space-between',
+              fontSize:9, color:'#b0a8a0', marginBottom:5, fontWeight:600,
+              textTransform:'uppercase', letterSpacing:'0.5px' }}>
+              <span>Issued {fmtDate(keyEntry.created_at)}</span>
+              <span style={{ color: accentColor }}>
+                {days !== null ? `${days}d left · ` : ''}
+                {keyEntry.expires_at ? `Expires ${fmtDate(keyEntry.expires_at)}` : ''}
+              </span>
+            </div>
+            <div style={{ height:3, background:'rgba(255,255,255,0.07)',
+              borderRadius:2, overflow:'hidden' }}>
+              <div style={{ height:3, borderRadius:2, width:`${lifetimePct}%`,
+                background: accentColor, transition:'width .4s' }} />
+            </div>
+          </div>
+        )}
+
         {/* Metrics */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:14 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:14 }}>
           {[
             { label:'Last accessed', value: keyEntry.last_accessed_at ? fmtAgo(keyEntry.last_accessed_at) : 'Never' },
             { label:'Rotations',     value: keyEntry.rotation_count ?? 0 },
             { label:'Key size',      value: `${keyEntry.key_size || 2048} bit` },
           ].map(({ label, value }) => (
-            <div key={label} style={{ background:'var(--v2-surface-3)', borderRadius:7,
-              padding:'8px 10px', border:'0.5px solid var(--v2-border)' }}>
-              <div style={{ fontSize:9, fontWeight:600, color:'#b0a8a0',
-                textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:3 }}>{label}</div>
-              <div style={{ fontSize:12, fontWeight:500, color:'#ffffff' }}>{String(value)}</div>
+            <div key={label} style={{ background:'rgba(255,255,255,0.04)',
+              borderRadius:8, padding:'9px 12px', border:'0.5px solid rgba(255,255,255,0.07)' }}>
+              <div style={{ fontSize:9, fontWeight:700, color:'#b0a8a0',
+                textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:4 }}>{label}</div>
+              <div style={{ fontSize:13, fontWeight:700, color:'#ffffff' }}>{String(value)}</div>
             </div>
           ))}
         </div>
 
-        {/* Actions — active key */}
+        {/* Actions — active */}
         {keyEntry.status === 'active' && (
           <div style={{ display:'flex', gap:7, flexWrap:'wrap' }}>
-            {/* Reveal key — main security action */}
             <button onClick={() => onReveal(keyEntry)}
-              style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 12px',
-                fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(192,57,43,0.15)', color:'#ffffff',
-                border:'1px solid rgba(192,57,43,0.4)', transition:'all .15s' }}
-              onMouseEnter={e=>e.currentTarget.style.background='rgba(192,57,43,0.28)'}
-              onMouseLeave={e=>e.currentTarget.style.background='rgba(192,57,43,0.15)'}>
+              style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'7px 14px',
+                fontSize:11, fontWeight:700, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
+                background:'#c0392b', color:'#fff', border:'none', transition:'background .15s' }}
+              onMouseEnter={e=>e.currentTarget.style.background='#a93226'}
+              onMouseLeave={e=>e.currentTarget.style.background='#c0392b'}>
               <Eye size={11}/> Reveal key
             </button>
-
-            {/* Rotate */}
             <button onClick={() => onRotate(keyEntry)}
               disabled={rotating === keyEntry.id}
-              style={{ display:'flex', alignItems:'center', gap:5, padding:'5px 10px',
-                fontSize:11, fontWeight:600, borderRadius:8, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(255,255,255,0.12)', color:'#f0ede8',
-                border:'1px solid rgba(240,237,232,0.5)', transition:'all .15s',
-                opacity: rotating === keyEntry.id ? 0.6 : 1 }}>
+              style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
+                fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
+                background:'rgba(255,255,255,0.08)', color:'#e8e0d8',
+                border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s',
+                opacity: rotating === keyEntry.id ? 0.5 : 1 }}>
               {rotating === keyEntry.id
                 ? <><RefreshCw size={10} style={{ animation:'spin .8s linear infinite' }}/> Rotating…</>
                 : <><RotateCcw size={10}/> Rotate key</>}
             </button>
-
-            {/* View audit */}
             <button onClick={() => onViewAudit(keyEntry.domain)}
-              style={{ display:'flex', alignItems:'center', gap:5, padding:'5px 10px',
-                fontSize:11, fontWeight:600, borderRadius:8, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(255,255,255,0.12)', color:'#f0ede8',
-                border:'1px solid rgba(240,237,232,0.5)', transition:'all .15s' }}>
+              style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
+                fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
+                background:'rgba(255,255,255,0.08)', color:'#e8e0d8',
+                border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s' }}>
               <Activity size={10}/> View audit
             </button>
           </div>
         )}
 
-        {/* Archived key info */}
+        {/* Archived */}
         {keyEntry.status === 'archived' && (
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
             <div style={{ fontSize:11, color:'#b0a8a0', flex:1 }}>
@@ -475,10 +559,10 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
               Archived {fmtAgo(keyEntry.archived_at)} · Auto-deleted 30 days after archiving
             </div>
             <button onClick={() => onViewAudit(keyEntry.domain)}
-              style={{ display:'flex', alignItems:'center', gap:5, padding:'5px 10px',
-                fontSize:11, fontWeight:600, borderRadius:8, cursor:'pointer', fontFamily:'inherit',
-                background:'rgba(255,255,255,0.12)', color:'#f0ede8',
-                border:'1px solid rgba(240,237,232,0.5)', transition:'all .15s', flexShrink:0 }}>
+              style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
+                fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
+                background:'rgba(255,255,255,0.08)', color:'#e8e0d8',
+                border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s', flexShrink:0 }}>
               <Activity size={10}/> View audit
             </button>
           </div>
@@ -682,13 +766,16 @@ export default function CertVault({ nav }) {
         </div>
 
         {/* Security strip */}
-        <div style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)',
-          borderRadius:9, padding:'12px 16px', marginBottom:20,
+        <div style={{ background:'rgba(192,57,43,0.06)', border:'0.5px solid rgba(192,57,43,0.22)',
+          borderRadius:9, padding:'10px 16px', marginBottom:20,
           display:'flex', alignItems:'center', gap:10 }}>
-          <Lock size={13} color="#e07060" style={{ flexShrink:0 }}/>
-          <div style={{ fontSize:11, color:'#ffffff', fontWeight:500 }}>
-            AES-256-GCM encrypted · Envelope key hierarchy · Immutable audit log ·
-            Keys never stored in plaintext
+          <div style={{ position:'relative', flexShrink:0, width:8, height:8 }}>
+            <div style={{ position:'absolute', inset:'-3px', borderRadius:'50%',
+              background:'rgba(74,222,128,0.15)', animation:'dotpulse 2s ease infinite' }}/>
+            <div style={{ width:8, height:8, borderRadius:'50%', background:'#4ade80', position:'relative' }}/>
+          </div>
+          <div style={{ fontSize:11, color:'rgba(255,255,255,0.75)', fontWeight:500 }}>
+            AES-256-GCM encrypted · Envelope key hierarchy · Immutable audit log · Keys never stored in plaintext
           </div>
         </div>
 
