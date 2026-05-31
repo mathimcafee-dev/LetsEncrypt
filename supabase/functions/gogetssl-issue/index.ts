@@ -440,10 +440,20 @@ async function runPollPending() {
       }
 
       // Complete any pending cert_reissues rows for this order
-      await adminDb().from('cert_reissues')
+      const { data: completedReissues } = await adminDb().from('cert_reissues')
         .update({ status: 'completed', installed_at: now, expires_at: statusRes.valid_till, cert_pem: statusRes.crt_code })
         .eq('ggs_order_id', order.ggs_order_id)
         .eq('status', 'dv_pending')
+        .select('id')
+
+      // Stamp last_reissued_at + increment reissue_count so CertTimeline shows correct data
+      if (completedReissues && completedReissues.length > 0 && certId) {
+        const { data: existingCert } = await adminDb().from('certificates').select('reissue_count').eq('id', certId).single()
+        await adminDb().from('certificates').update({
+          last_reissued_at: now,
+          reissue_count: ((existingCert?.reissue_count || 0) + completedReissues.length),
+        }).eq('id', certId)
+      }
 
       // Clean up DCV TXT from DNS
       if (order.dcv_txt_name && order.dcv_txt_value) {
