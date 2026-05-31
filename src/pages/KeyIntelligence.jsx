@@ -157,10 +157,10 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
     setLoading(true)
     setFetchErr('')
     try {
-      const res = await callCertVault('reveal', { key_id: keyEntry.id })
+      const res = await callCertVault('fetch', { key_id: keyEntry.id, triggered_by: 'user_reveal' })
       if (res.error) throw new Error(res.error)
-      if (res.private_key_pem) {
-        setPem(res.private_key_pem)
+      if (res.pem) {
+        setPem(res.pem)
         timerRef.current = setInterval(() => setCountdown(c => { if (c <= 1) { clearInterval(timerRef.current); setPem(null); onClose(); return 0 } return c - 1 }), 1000)
       } else throw new Error('No key data returned')
     } catch (e) { setFetchErr(e.message || 'Failed to retrieve key') }
