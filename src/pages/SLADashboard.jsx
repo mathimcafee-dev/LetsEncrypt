@@ -58,7 +58,7 @@ export default function SLADashboard({ user, nav }) {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) { setLoading(false); return }
     const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` }
-    const SB = import.meta.env.VITE_SUPABASE_URL
+    const SB = 'https://frthcwkntciaakqsppss.supabase.co'
 
     const [s, r, a] = await Promise.all([
       fetch(`${SB}/functions/v1/sla-manage`, { method: 'POST', headers, body: JSON.stringify({ action: 'get_status' }) }).then(x => x.json()),
@@ -75,7 +75,7 @@ export default function SLADashboard({ user, nav }) {
     setGenLoading(true); setMsg('')
     const { data: { session } } = await supabase.auth.getSession()
     const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` }
-    const SB = import.meta.env.VITE_SUPABASE_URL
+    const SB = 'https://frthcwkntciaakqsppss.supabase.co'
     const r = await fetch(`${SB}/functions/v1/sla-manage`, { method: 'POST', headers, body: JSON.stringify({ action: 'request_report' }) }).then(x => x.json())
     setMsg(r.ok ? '✅ Report generated — check your email' : `Error: ${r.error}`)
     setGenLoading(false)
@@ -246,3 +246,4 @@ export default function SLADashboard({ user, nav }) {
     </div>
   )
 }
+
