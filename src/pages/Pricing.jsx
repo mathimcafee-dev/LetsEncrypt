@@ -350,6 +350,31 @@ export default function Pricing({ nav }) {
             <div style={{fontSize:9,fontWeight:700,color:TEAL,letterSpacing:'2px',
               textTransform:'uppercase',marginBottom:10,fontFamily:MONO}}>CLM market comparison</div>
             <h2 style={{fontSize:'clamp(18px,2.5vw,30px)',fontWeight:800,letterSpacing:'-0.5px'}}>
+
+          {/* ── SLA Premium callout ── */}
+          <div style={{maxWidth:860,margin:'0 auto 48px',background:'rgba(192,57,43,0.07)',border:'1px solid rgba(192,57,43,0.25)',borderRadius:12,padding:'20px 24px'}}>
+            <div style={{display:'flex',alignItems:'flex-start',gap:16,flexWrap:'wrap'}}>
+              <div style={{flex:1,minWidth:220}}>
+                <div style={{fontSize:10,fontWeight:700,color:TEAL,letterSpacing:'.12em',textTransform:'uppercase',marginBottom:6}}>Premium add-on · SLA Guarantee</div>
+                <div style={{fontSize:15,fontWeight:700,color:INK,marginBottom:8}}>47-Day CA/B Forum Compliance — Guaranteed</div>
+                <div style={{fontSize:12,color:BODY,lineHeight:1.75}}>Get a written SLA that guarantees all your certs renew before the CA/B Forum deadline — or you get a full refund. Includes monthly PDF compliance reports for SOC2 / ISO 27001 auditors.</div>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',gap:6,minWidth:200}}>
+                {[['Compliance score dashboard (0–100)','✓'],['Monthly PDF audit report','✓'],['Escalation alerts at 30d + 10d','✓'],['SOC2 / ISO 27001 evidence pack','✓'],['47-Day mandate guarantee','✓']].map(([f,v])=>(
+                  <div key={f} style={{display:'flex',gap:8,alignItems:'center'}}>
+                    <span style={{fontSize:11,color:GREEN,fontWeight:700}}>{v}</span>
+                    <span style={{fontSize:12,color:BODY}}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{display:'flex',flexDirection:'column',gap:6,alignItems:'flex-end',justifyContent:'center'}}>
+                <div style={{fontSize:11,color:MUTED,letterSpacing:'.06em',textTransform:'uppercase'}}>From</div>
+                <div style={{fontSize:28,fontWeight:800,color:TEAL,lineHeight:1}}>$999<span style={{fontSize:13,fontWeight:400,color:MUTED}}>/yr</span></div>
+                <div style={{fontSize:10,color:MUTED}}>Up to 10 domains</div>
+                <div style={{fontSize:10,color:BODY,marginTop:4,textAlign:'right'}}>Contact us to activate</div>
+              </div>
+            </div>
+          </div>
               Enterprise CLM without the enterprise price tag.
             </h2>
           </div>
@@ -424,3 +449,4 @@ export default function Pricing({ nav }) {
     </div>
   )
 }
+
