@@ -1,4 +1,4 @@
-// BUILD: 1778936649497
+// BUILD: 1780300599493
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
