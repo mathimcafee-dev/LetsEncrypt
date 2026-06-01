@@ -441,7 +441,7 @@ function TLSGradesTab({ tok, user }) {
       ))}
       {scores.length > 0 && (
         <div style={{ fontSize:11, color:'#b0a8a0', textAlign:'center', marginTop:8 }}>
-          A+ >=90 - A >=80 - B >=70 - C >=60 - D >=50 - F &lt;50
+          {'A+ >=90 - A >=80 - B >=70 - C >=60 - D >=50 - F <50'}
         </div>
       )}
     </div>
