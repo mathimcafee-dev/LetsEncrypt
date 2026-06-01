@@ -27,6 +27,7 @@ import Infrastructure from './Infrastructure'
 import MyServers from './MyServers'
 import DomainManager from './DomainManager'
 import CertVault from './CertVault'
+import SLADashboard from './SLADashboard'
 import CertBind from './CertBind'
 import KeyIntelligence from './KeyIntelligence'
 import Pricing from './Pricing'
@@ -105,6 +106,7 @@ export default function CLMHome({ user, nav }) {
     { group:'Secure', items:[
       {id:'key-intelligence',  label:'Key Intelligence', icon:Shield},
       {id:'ca-intelligence',   label:'PKI Intelligence', icon:TrendingUp},
+      {id:'sla-dashboard',     label:'SLA Coverage',     icon:Star, badge:'PREMIUM'},
     ]},
   ]
 
@@ -119,7 +121,7 @@ export default function CLMHome({ user, nav }) {
     'domain-manager':'Domain Manager', 'my-servers':'Domain Manager',
     'infrastructure':'Domain Manager', 'servers':'Domain Manager', 'agent-health':'Domain Manager',
     shield:'Security monitor',
-    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence',
+    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage',
     'admin-calendar':'Admin Calendar',
     'cert-timeline':'Certificate Timeline',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
@@ -349,3 +351,4 @@ export default function CLMHome({ user, nav }) {
     </div>
   )
 }
+
