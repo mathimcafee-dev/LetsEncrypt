@@ -105,7 +105,7 @@ export default function CLMHome({ user, nav }) {
       {id:'compliance-centre',  label:'Compliance Centre', icon:Shield, badge:'NEW'},
     ]},
     { group:'Secure', items:[
-      {id:'key-intelligence',  label:'Key Intelligence', icon:Shield},
+      {id:'key-intelligence',  label:'Vault Centre',     icon:Shield},
       {id:'ca-intelligence',   label:'PKI Intelligence', icon:TrendingUp},
     ]},
   ]
