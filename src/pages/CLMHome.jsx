@@ -28,6 +28,7 @@ import MyServers from './MyServers'
 import DomainManager from './DomainManager'
 import CertVault from './CertVault'
 import SLADashboard from './SLADashboard'
+import ComplianceCentre from './ComplianceCentre'
 import CertBind from './CertBind'
 import KeyIntelligence from './KeyIntelligence'
 import Pricing from './Pricing'
@@ -102,6 +103,7 @@ export default function CLMHome({ user, nav }) {
     { group:'Monitor', items:[
       {id:'shield',            label:'Security monitor',  icon:ShieldCheck},
       {id:'readiness',         label:'47-Day Readiness', icon:ShieldCheck, badge:'NEW'},
+      {id:'compliance-centre',  label:'Compliance Centre', icon:Shield, badge:'NEW'},
     ]},
     { group:'Secure', items:[
       {id:'key-intelligence',  label:'Key Intelligence', icon:Shield},
@@ -121,7 +123,7 @@ export default function CLMHome({ user, nav }) {
     'domain-manager':'Domain Manager', 'my-servers':'Domain Manager',
     'infrastructure':'Domain Manager', 'servers':'Domain Manager', 'agent-health':'Domain Manager',
     shield:'Security monitor',
-    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage',
+    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage', 'compliance-centre':'Compliance Centre',
     'admin-calendar':'Admin Calendar',
     'cert-timeline':'Certificate Timeline',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
@@ -151,6 +153,7 @@ export default function CLMHome({ user, nav }) {
     if(sec==='renewal-calendar') return <RenewalCalendar user={user}/>
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
     if(sec==='sla-dashboard')    return <SLADashboard nav={sideNav}/>
+    if(sec==='compliance-centre') return <ComplianceCentre nav={sideNav}/>
     if(sec==='admin-calendar')   return <AdminRenewalCalendar user={user}/>
     return null
   }
