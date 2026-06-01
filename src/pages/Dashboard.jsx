@@ -33,8 +33,8 @@ function statusOf(days, status) {
   return                           { cls: 'green', label: days+'d left',   dot: 'green' }
 }
 function fmtDate(iso) {
-  if (!iso) return '—'
-  try { return format(new Date(iso), 'MMM d, yyyy') } catch { return '—' }
+  if (!iso) return '--'
+  try { return format(new Date(iso), 'MMM d, yyyy') } catch { return '--' }
 }
 function dl(text, filename) {
   const a = document.createElement('a')
@@ -89,10 +89,10 @@ function ImportedCertsSection({ certs, onDelete }) {
         style={{ width:'100%', padding:'14px 18px', display:'flex', alignItems:'center', gap:10,
           background:'transparent', border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' }}>
         <span style={{ fontSize:11, fontWeight:700, color:'#e8e0d8', textTransform:'uppercase', letterSpacing:'0.5px', flex:1 }}>
-          CA Connector — Imported Certificates ({certs.length})
+          CA Connector -- Imported Certificates ({certs.length})
         </span>
-        <span style={{ fontSize:10, color:'#b0a8a0', marginRight:4 }}>Tracked only · not managed by SSLVault</span>
-        <span style={{ fontSize:12, color:'#b0a8a0' }}>{open ? '▲' : '▼'}</span>
+        <span style={{ fontSize:10, color:'#b0a8a0', marginRight:4 }}>Tracked only - not managed by SSLVault</span>
+        <span style={{ fontSize:12, color:'#b0a8a0' }}>{open ? '^' : '▼'}</span>
       </button>
       {open && (
         <div>
@@ -115,9 +115,9 @@ function ImportedCertsSection({ certs, onDelete }) {
                     {isExpired && <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:4, background:'rgba(248,113,113,0.12)', color:'#f87171' }}>EXPIRED</span>}
                   </div>
                   <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>
-                    {c.issuer || c.cert_type || 'Unknown issuer'} ·{' '}
-                    {isExpired ? `Expired ${Math.abs(d)}d ago` : `${d}d left`} ·{' '}
-                    Expires {c.expires_at ? new Date(c.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—'}
+                    {c.issuer || c.cert_type || 'Unknown issuer'} -{' '}
+                    {isExpired ? `Expired ${Math.abs(d)}d ago` : `${d}d left`} -{' '}
+                    Expires {c.expires_at ? new Date(c.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '--'}
                   </div>
                 </div>
                 <button onClick={() => onDelete(c.id)}
@@ -142,7 +142,7 @@ function DvPendingCard({ order, onRefresh }) {
   const [elapsed, setElapsed] = useState(0)
   const pollRef = useRef(null)
 
-  // Auto-poll every 30s — no manual click needed
+  // Auto-poll every 30s -- no manual click needed
   useEffect(() => {
     let secs = 0
     const tick = setInterval(() => { secs++; setElapsed(secs) }, 1000)
@@ -192,7 +192,7 @@ function DvPendingCard({ order, onRefresh }) {
         const mins = Math.floor(elapsed / 60)
         const secs = elapsed % 60
         const elStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`
-        setMsg(`Status: ${d.ggs_status || 'pending'} — DNS propagating (${elStr} elapsed)`)
+        setMsg(`Status: ${d.ggs_status || 'pending'} -- DNS propagating (${elStr} elapsed)`)
       }
     } catch(e) { setMsg('Error: '+e.message) }
     setChecking(false)
@@ -232,8 +232,8 @@ function DvPendingCard({ order, onRefresh }) {
   }, [order.id])
 
   const hasDcv = !!(liveOrder.dcv_txt_value || liveOrder.dcv_cname_value)
-  const dcvName  = liveOrder.dcv_txt_name  || liveOrder.dcv_cname_name  || '—'
-  const dcvValue = liveOrder.dcv_txt_value || liveOrder.dcv_cname_value || '—'
+  const dcvName  = liveOrder.dcv_txt_name  || liveOrder.dcv_cname_name  || '--'
+  const dcvValue = liveOrder.dcv_txt_value || liveOrder.dcv_cname_value || '--'
 
   const [dismissing, setDismissing] = useState(false)
   const [confirmDismiss, setConfirmDismiss] = useState(false)
@@ -256,7 +256,7 @@ function DvPendingCard({ order, onRefresh }) {
   const elSecs = elapsed % 60
   const elStr = elMins > 0 ? `${elMins}m ${elSecs}s` : `${elSecs}s`
 
-  // 4 pipeline steps — labels and details always match the actual state
+  // 4 pipeline steps -- labels and details always match the actual state
   const steps = [
     {
       label: 'Reissue submitted to GoGetSSL',
@@ -269,13 +269,13 @@ function DvPendingCard({ order, onRefresh }) {
       detail: 'RSA-2048 key pair created securely',
     },
     {
-      // Label changes to match actual state — never says "added" when still waiting
+      // Label changes to match actual state -- never says "added" when still waiting
       label: hasDcv ? 'TXT record added to DNS' : 'Waiting for DNS TXT record',
       done: hasDcv,
       active: !hasDcv,
       detail: hasDcv
         ? `${dcvName} → ${dcvValue.slice(0,22)}…`
-        : 'GGS is generating the validation record — will be added automatically',
+        : 'GGS is generating the validation record -- will be added automatically',
     },
     {
       label: hasDcv ? 'GGS validating DNS ownership' : 'GGS DNS validation',
@@ -337,7 +337,7 @@ function DvPendingCard({ order, onRefresh }) {
         ))}
       </div>
 
-      {/* TXT record details — only show when we have them */}
+      {/* TXT record details -- only show when we have them */}
       {hasDcv && (
         <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:8, padding:'10px 12px', marginBottom:12, border:'1px solid rgba(255,255,255,0.07)' }}>
           <div style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:8 }}>DNS TXT Record (added automatically)</div>
@@ -400,7 +400,7 @@ function DvPendingCard({ order, onRefresh }) {
   )
 }
 
-// ── Ring gauge that animates on mount ────────────────────────────────────────
+// -- Ring gauge that animates on mount ----------------------------------------
 // Live countdown: days + hours + minutes + seconds ticking every second
 function RingGauge({ days, total, expiresAt, issuedAt }) {
   const [animated, setAnimated] = useState(false)
@@ -490,7 +490,7 @@ function RingGauge({ days, total, expiresAt, issuedAt }) {
           </div>
         </div>
       </div>
-      {/* Live H:M:S ticker below ring — only shown after entry animation */}
+      {/* Live H:M:S ticker below ring -- only shown after entry animation */}
       {!isExpired && entryDone && (
         <div style={{ display:'flex', justifyContent:'center', gap:2, marginTop:5 }}>
           {[
@@ -512,7 +512,7 @@ function RingGauge({ days, total, expiresAt, issuedAt }) {
   )
 }
 
-// ── Slim progress bar for timeline ────────────────────────────────────────────
+// -- Slim progress bar for timeline --------------------------------------------
 function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
   // Mirrors RapidSSL's own timeline:
   //   |====== Current cert ======|==== Available (reissue window) ====|
@@ -540,8 +540,8 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
   const isWarn    = dLeft > 0 && dLeft < 30
   const certColor = isExpired ? '#f87171' : isWarn ? '#f0ede8' : '#4ade80'
 
-  const fmt = d => d ? new Date(d).toLocaleDateString('en-GB', { year:'numeric', month:'short', day:'numeric' }) : '—'
-  const fmtShort = d => d ? new Date(d).toLocaleDateString('en-GB', { month:'short', day:'numeric', year:'numeric' }) : '—'
+  const fmt = d => d ? new Date(d).toLocaleDateString('en-GB', { year:'numeric', month:'short', day:'numeric' }) : '--'
+  const fmtShort = d => d ? new Date(d).toLocaleDateString('en-GB', { month:'short', day:'numeric', year:'numeric' }) : '--'
 
   useEffect(() => { const t = setTimeout(() => setAnimated(true), 120); return () => clearTimeout(t) }, [])
 
@@ -562,7 +562,7 @@ function ValidityTimeline({ issuedAt, expiresAt, orderPeriodMonths = 12 }) {
         </span>
       </div>
 
-      {/* Bar — full subscription width */}
+      {/* Bar -- full subscription width */}
       <div style={{ position:'relative', height:20, borderRadius:6, overflow:'hidden',
         background:'transparent', border:'1px solid rgba(63,185,80,0.2)' }}>
 
@@ -701,9 +701,9 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
     stepStartTimes.current = { 0: Date.now() }
 
     try {
-      // ── Step 0: Call GGS reissue/renew API ────────────────────────────────
+      // -- Step 0: Call GGS reissue/renew API --------------------------------
       // Edge function returns in ~4s (1x2s DCV check + GGS API calls).
-      // We wait up to 60s, but if it times out the order was still submitted —
+      // We wait up to 60s, but if it times out the order was still submitted --
       // poll_pending cron handles DCV + activation in the background.
       let fetchDone = false, fetchOk = false, fetchErr = null, fetchData = null
 
@@ -723,15 +723,15 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         setTimeout(() => { clearInterval(t); resolve() }, 60000)
       })
 
-      // ── Handle API failure ────────────────────────────────────────────────
+      // -- Handle API failure ------------------------------------------------
       if (!fetchOk) {
         const isInProgress = fetchData?.code === 'REISSUE_IN_PROGRESS'
         if (isInProgress) {
-          // Already running — just switch to polling mode
+          // Already running -- just switch to polling mode
           const pollGgsId = isReissue ? cert.ggs_order_id : null
           if (pollGgsId) {
             setProgress(p => ({ ...p, steps: updateStep(p.steps, 0, {
-              status: 'done', detail: 'Reissue already in progress — monitoring…'
+              status: 'done', detail: 'Reissue already in progress -- monitoring…'
             })}))
             // fall through to polling below with fetchData = { ok: true, ggs_order_id: pollGgsId }
             fetchOk = true
@@ -743,9 +743,9 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             setBusy(false); return
           }
         } else if (fetchData === null) {
-          // Timed out — order was submitted, background processing taking over
+          // Timed out -- order was submitted, background processing taking over
           setProgress(p => ({ ...p, backgroundProcessing: true, steps: updateStep(p.steps, 0, {
-            status: 'done', detail: 'Order submitted — processing in background (this is normal)'
+            status: 'done', detail: 'Order submitted -- processing in background (this is normal)'
           })}))
           fetchOk = true
           fetchData = { ok: true, ggs_order_id: isReissue ? cert.ggs_order_id : null, dcv_txt_value: null }
@@ -760,34 +760,34 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       const newGgsOrderId = d.ggs_order_id || null
       const apiElapsed = stepStartTimes.current[0] ? Date.now() - stepStartTimes.current[0] : null
 
-      // ── Steps 0, 1, 2: advance based on API response ─────────────────────
-      // Step 0: submitted to GGS — confirmed by API OK response
-      // Step 1: new CSR was generated inside the edge function — confirmed by API OK
-      // Step 2: DCV TXT value — we have it if GGS returned it; DNS add was attempted
+      // -- Steps 0, 1, 2: advance based on API response ---------------------
+      // Step 0: submitted to GGS -- confirmed by API OK response
+      // Step 1: new CSR was generated inside the edge function -- confirmed by API OK
+      // Step 2: DCV TXT value -- we have it if GGS returned it; DNS add was attempted
       setProgress(p => {
         let steps = [...p.steps]
         steps = updateStep(steps, 0, {
           status: 'done',
-          detail: isReissue ? `GGS order #${cert.ggs_order_id}` : `New GGS order #${newGgsOrderId || '—'}`,
+          detail: isReissue ? `GGS order #${cert.ggs_order_id}` : `New GGS order #${newGgsOrderId || '--'}`,
           elapsed: apiElapsed,
         })
         steps = updateStep(steps, 1, {
           status: 'done',
           detail: 'RSA-2048 key pair generated',
         })
-        // Step 2: DNS — if we have the TXT value, it was submitted. Otherwise still waiting.
+        // Step 2: DNS -- if we have the TXT value, it was submitted. Otherwise still waiting.
         // Step 3: only starts after DNS is in place.
         if (d.dcv_txt_value) {
           steps = updateStep(steps, 2, {
             status: 'active',
-            detail: `TXT record submitted to DNS · ${d.dcv_txt_name || cert.domain}`,
+            detail: `TXT record submitted to DNS - ${d.dcv_txt_name || cert.domain}`,
           })
           steps = updateStep(steps, 3, { status: 'active', detail: 'GGS validating DNS ownership…' })
         } else {
-          // GGS hasn't returned DCV values yet — cron handles it automatically
+          // GGS hasn't returned DCV values yet -- cron handles it automatically
           steps = updateStep(steps, 2, {
             status: 'active',
-            detail: 'GGS is generating the DCV record — cron will add it to DNS and complete validation automatically',
+            detail: 'GGS is generating the DCV record -- cron will add it to DNS and complete validation automatically',
           })
           steps = updateStep(steps, 3, { status: 'pending', detail: '' })
         }
@@ -799,7 +799,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         return { ...p, steps, newGgsOrderId }
       })
 
-      // ── Poll ssl_orders every 5s until status = active ────────────────────
+      // -- Poll ssl_orders every 5s until status = active --------------------
       // Reissue: same ggs_order_id, updated in place
       // Renew: new ggs_order_id from API response
       const pollGgsOrderId = isReissue ? cert.ggs_order_id : (newGgsOrderId || null)
@@ -843,26 +843,26 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             latest = rows?.[0]
           }
 
-          // Timeout: 10 minutes — tell user it's running in background
+          // Timeout: 10 minutes -- tell user it's running in background
           if (Date.now() - pollStart > 10 * 60 * 1000) {
             clearInterval(timer)
             setProgress(p => ({
               ...p, pollTimer: null, backgroundProcessing: true,
               steps: updateStep(p.steps, 3, {
                 status: 'active',
-                detail: `Still waiting after 10 min — DNS validation is slow. The certificate will activate automatically in the background. Refresh the dashboard to see the final status.`
+                detail: `Still waiting after 10 min -- DNS validation is slow. The certificate will activate automatically in the background. Refresh the dashboard to see the final status.`
               })
             }))
             setBusy(false); return
           }
 
           if (latest?.status === 'active') {
-            // ── Certificate is now active in our DB ──────────────────────
+            // -- Certificate is now active in our DB ----------------------
             clearInterval(timer)
             const dcvElapsed = stepStartTimes.current[3] ? Date.now() - stepStartTimes.current[3] : null
             setProgress(p => {
               let steps = [...p.steps]
-              // Step 2: DNS was validated — mark done
+              // Step 2: DNS was validated -- mark done
               steps = updateStep(steps, 2, {
                 status: 'done',
                 detail: d.dcv_txt_value
@@ -875,14 +875,14 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                 detail: `Domain ownership confirmed by GGS`,
                 elapsed: dcvElapsed,
               })
-              // Step 4: Certificate active — show real expiry from DB
+              // Step 4: Certificate active -- show real expiry from DB
               steps = updateStep(steps, 4, {
                 status: 'done',
                 detail: latest.valid_till
-                  ? `Active · expires ${new Date(latest.valid_till).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`
+                  ? `Active - expires ${new Date(latest.valid_till).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`
                   : 'Certificate is active',
               })
-              // Step 5: install — show as active; poll is_live_on_server separately below
+              // Step 5: install -- show as active; poll is_live_on_server separately below
               steps = updateStep(steps, 5, {
                 status: 'active',
                 detail: 'Auto-installing on server…',
@@ -916,12 +916,12 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   }))
                   setBusy(false)
                 } else if (Date.now() - installPollStart > 10 * 60 * 1000) {
-                  // 10 min timeout — tell user cron will keep retrying
+                  // 10 min timeout -- tell user cron will keep retrying
                   clearInterval(installTimer)
                   setProgress(p => ({
                     ...p, steps: updateStep(p.steps, 5, {
                       status: 'skipped',
-                      detail: 'Auto-install cron is running every 2 min — cert will install automatically. Check dashboard in a few minutes.',
+                      detail: 'Auto-install cron is running every 2 min -- cert will install automatically. Check dashboard in a few minutes.',
                     })
                   }))
                   setBusy(false)
@@ -933,7 +933,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                       status: 'active',
                       detail: hasPendingSince
                         ? `Install in progress… ${elapsedStr} elapsed`
-                        : `Waiting for install cron · next attempt in ~${nextCronIn}s`,
+                        : `Waiting for install cron - next attempt in ~${nextCronIn}s`,
                     })
                   }))
                 }
@@ -945,7 +945,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             // which closes the modal before install step finishes.
 
           } else {
-            // ── Still waiting: issued / dv_pending / processing ──────────
+            // -- Still waiting: issued / dv_pending / processing ----------
             // 'issued'     = reissue accepted by GGS, waiting for DNS validation
             // 'dv_pending' = renewal, waiting for DNS validation
             // Both mean: GGS is checking DNS, not done yet
@@ -959,7 +959,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                 steps: updateStep(p.steps, 2, {
                   status: 'done',
                   detail: d.dcv_txt_value
-                    ? `TXT record in DNS · ${d.dcv_txt_value.slice(0,20)}…`
+                    ? `TXT record in DNS - ${d.dcv_txt_value.slice(0,20)}…`
                     : 'TXT record added to DNS',
                 })
               }))
@@ -1010,7 +1010,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       superseded:         { bg:'rgba(192,57,43,0.1)',    color:'#b0a8a0', label:'↩ Superseded',       dot:false },
       failed:             { bg:'rgba(248,113,113,0.12)', color:'#f87171', label:'✗ Failed',           dot:false },
     }
-    const t = map[s] || { bg:'rgba(192,57,43,0.08)', color:'#b0a8a0', label: s||'—', dot:false }
+    const t = map[s] || { bg:'rgba(192,57,43,0.08)', color:'#b0a8a0', label: s||'--', dot:false }
     return <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4, background:t.bg, color:t.color, whiteSpace:'nowrap' }}>{t.label}</span>
   }
 
@@ -1033,7 +1033,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
   return (
     <div style={{ marginTop:4 }}>
-      {/* Mission Control Modal — renders as full overlay */}
+      {/* Mission Control Modal -- renders as full overlay */}
       <MissionControlModal
         visible={modalVisible}
         action={progress?.action || 'reissue'}
@@ -1075,7 +1075,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         ))}
       </div>
 
-      {/* ── REISSUE HISTORY ── */}
+      {/* -- REISSUE HISTORY -- */}
       {tab==='reissues' && (
         <div>
           {/* Summary line */}
@@ -1126,10 +1126,10 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>
                     {fmtDate(r.created_at)}
                     {r.expires_at && <span style={{ color:'#4ade80', marginLeft:10 }}>Valid until {fmtDate(r.expires_at)}</span>}
-                    {isPending && <span style={{ color:'#fbbf24', marginLeft:10 }}>Certificate will activate automatically — no action needed</span>}
+                    {isPending && <span style={{ color:'#fbbf24', marginLeft:10 }}>Certificate will activate automatically -- no action needed</span>}
                   </div>
                 </div>
-                {/* Certificate PEM download — only when done */}
+                {/* Certificate PEM download -- only when done */}
                 {isDone && r.cert_pem && (
                   <CopyBtn text={r.cert_pem} label="Copy cert"/>
                 )}
@@ -1139,7 +1139,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
         </div>
       )}
 
-      {/* ── RENEWALS ── */}
+      {/* -- RENEWALS -- */}
       {tab==='renewals' && (
         <div>
           {renewals.length === 0 ? (
@@ -1151,7 +1151,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               background:'var(--v2-surface)', border:'1px solid var(--v2-border)' }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
                 <div style={{ fontSize:12, fontWeight:600, color:'#ffffff' }}>
-                  Renewal · GGS #{r.ggs_order_id||'—'}
+                  Renewal - GGS #{r.ggs_order_id||'--'}
                 </div>
                 <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4,
                   background: r.status==='active' ? 'rgba(74,222,128,0.12)' : 'transparent',
@@ -1160,9 +1160,9 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:'4px 12px' }}>
                 {[
                   ['Created',    fmtDate(r.created_at)],
-                  ['Valid from', r.issued_at  ? fmtDate(r.issued_at)  : '—'],
-                  ['Expires',    r.expires_at ? fmtDate(r.expires_at) : '—'],
-                  ['Version',    'v'+(r.cert_version||'—')],
+                  ['Valid from', r.issued_at  ? fmtDate(r.issued_at)  : '--'],
+                  ['Expires',    r.expires_at ? fmtDate(r.expires_at) : '--'],
+                  ['Version',    'v'+(r.cert_version||'--')],
                 ].map(([l,v]) => (
                   <div key={l}>
                     <span style={{ fontSize:10, color:'#b0a8a0' }}>{l}: </span>
@@ -1181,7 +1181,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
 
 
 
-// ── Scan PQC button with loading + result toast ───────────────────────
+// -- Scan PQC button with loading + result toast -----------------------
 function ScanPqcButton({ onDone }) {
   const [scanning, setScanning] = useState(false)
   const [result,   setResult]   = useState(null)  // {ok, scanned, results}
@@ -1227,7 +1227,7 @@ function ScanPqcButton({ onDone }) {
   )
 }
 
-// ── PQC Readiness row ─────────────────────────────────────────────────
+// -- PQC Readiness row -------------------------------------------------
 const PQC_RISK_MAP = {
   ready:  { color:'#4ade80', bg:'transparent', border:'rgba(192,57,43,0.3)', label:'PQC Ready',     icon:'✓' },
   low:    { color:'#ff8c7a', bg:'transparent', border:'rgba(192,57,43,0.3)', label:'Low risk',       icon:'~' },
@@ -1283,8 +1283,8 @@ function PqcRow({ cert, onRefresh }) {
             </div>
             <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>
               {cert.key_algorithm
-                ? <span>Algorithm: <strong style={{color:'#ffffff'}}>{cert.key_algorithm}</strong>{risk && <span> · click to {open?'collapse':'expand'}</span>}</span>
-                : noPem ? 'No cert PEM available — import or sync from CA first'
+                ? <span>Algorithm: <strong style={{color:'#ffffff'}}>{cert.key_algorithm}</strong>{risk && <span> - click to {open?'collapse':'expand'}</span>}</span>
+                : noPem ? 'No cert PEM available -- import or sync from CA first'
                 : 'Check what quantum threat this certificate faces'}
             </div>
           </div>
@@ -1337,10 +1337,10 @@ function PqcRow({ cert, onRefresh }) {
                 {/* Algorithm info */}
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:8, marginBottom:12 }}>
                   {[
-                    ['Algorithm',  d.algorithm || '—'],
-                    ['Key size',   d.bits ? `${d.bits} bits` : '—'],
-                    ['Risk level', d.label || '—'],
-                    ['Deadline',   d.deadline || '—'],
+                    ['Algorithm',  d.algorithm || '--'],
+                    ['Key size',   d.bits ? `${d.bits} bits` : '--'],
+                    ['Risk level', d.label || '--'],
+                    ['Deadline',   d.deadline || '--'],
                   ].map(([k,v])=>(
                     <div key={k} style={{ background:'rgba(255,255,255,0.03)', borderRadius:7, padding:'9px 11px', border:'0.5px solid var(--v2-border)' }}>
                       <div style={{ fontSize:10, color:'#b0a8a0', marginBottom:3, textTransform:'uppercase', letterSpacing:'0.4px' }}>{k}</div>
@@ -1377,7 +1377,7 @@ function PqcRow({ cert, onRefresh }) {
   )
 }
 
-// ── TLS Posture inline row with expandable results ────────────────────────
+// -- TLS Posture inline row with expandable results ------------------------
 function TlsPostureRow({ cert, onRefresh }) {
   const [open,     setOpen]     = useState(false)
   const [checking, setChecking] = useState(false)
@@ -1417,7 +1417,7 @@ function TlsPostureRow({ cert, onRefresh }) {
 
   return (
     <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:6 }}>
-      {/* Header row — always visible */}
+      {/* Header row -- always visible */}
       <div onClick={() => grade && setOpen(o => !o)}
         style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
           padding:'11px 14px', background:'rgba(255,255,255,0.03)',
@@ -1434,7 +1434,7 @@ function TlsPostureRow({ cert, onRefresh }) {
             <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>Check TLS posture</div>
             <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>
               {grade
-                ? <span>Last grade: <span style={{ color, fontWeight:600 }}>{grade}</span> · {score}% · click to {open?'collapse':'expand'}</span>
+                ? <span>Last grade: <span style={{ color, fontWeight:600 }}>{grade}</span> - {score}% - click to {open?'collapse':'expand'}</span>
                 : 'Grade this domain A–F on HTTPS, HSTS, chain & more'}
             </div>
           </div>
@@ -1577,16 +1577,16 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
     setCancelling(false)
   }
 
-  // ── Validity timeline ─────────────────────────────────────────────
+  // -- Validity timeline ---------------------------------------------
   const certStart  = cert.issued_at  ? new Date(cert.issued_at)  : null
   const certEnd    = cert.expires_at ? new Date(cert.expires_at) : null
   const subEnd     = certStart ? (() => { const d = new Date(certStart); d.setMonth(d.getMonth() + (cert._order?.period || 12)); return d })() : null
   const totalMs    = certStart && subEnd ? subEnd - certStart : 1
   const certPct    = certStart && certEnd ? Math.min(100, ((certEnd - certStart) / totalMs) * 100) : 0
   const todayPct   = certStart ? Math.max(0, Math.min(100, ((Date.now() - certStart) / totalMs) * 100)) : 0
-  const fmtD       = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—'
+  const fmtD       = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '--'
 
-  // ── Action button style ───────────────────────────────────────────
+  // -- Action button style -------------------------------------------
   const ABtn = ({ icon: Icon, label, onClick, color='#ff8c7a', disabled }) => (
     <button onClick={disabled ? undefined : onClick} disabled={disabled}
       style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px',
@@ -1601,7 +1601,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
     </button>
   )
 
-  // ── Field row ─────────────────────────────────────────────────────
+  // -- Field row -----------------------------------------------------
   const Field = ({ label, value, mono, copy }) => {
     const [ok, setOk] = useState(false)
     if (!value) return null
@@ -1624,7 +1624,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
     <div style={{ background:'rgba(10,0,0,0.95)', border:'1px solid rgba(192,57,43,0.3)',
       borderRadius:12, overflow:'hidden', marginTop:4, animation:'fadeSlideUp 0.2s ease both' }}>
 
-      {/* ── Status banner ── */}
+      {/* -- Status banner -- */}
       <div style={{ padding:'10px 18px', display:'flex', alignItems:'center', gap:10,
         background: isExpired ? 'rgba(192,57,43,0.2)' : isWarn ? 'rgba(230,100,0,0.15)' : 'rgba(22,163,74,0.12)',
         borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
@@ -1642,7 +1642,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             fontSize:18, lineHeight:1, padding:'2px 6px' }}>×</button>
       </div>
 
-      {/* ── Action buttons row — matches GoGetSSL toolbar ── */}
+      {/* -- Action buttons row -- matches GoGetSSL toolbar -- */}
       <div style={{ padding:'10px 18px', display:'flex', gap:8, flexWrap:'wrap',
         borderBottom:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.02)' }}>
         <ABtn icon={RotateCcw} label="Reissue SSL"
@@ -1682,15 +1682,15 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         </div>
       </div>
 
-      {/* ── Validity timeline bar ── */}
+      {/* -- Validity timeline bar -- */}
       {certStart && certEnd && (
         <div style={{ padding:'12px 18px', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
           <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:'#b0a8a0', marginBottom:6 }}>
-            <span>{fmtD(cert.issued_at)} · SSL valid from</span>
+            <span>{fmtD(cert.issued_at)} - SSL valid from</span>
             <span style={{ color: isWarn || isExpired ? '#f87171' : '#4ade80', fontWeight:600 }}>
               {isExpired ? 'Expired' : `Next reissue in ${days} days`}
             </span>
-            {subEnd && <span>{fmtD(subEnd)} · Subscription ends</span>}
+            {subEnd && <span>{fmtD(subEnd)} - Subscription ends</span>}
           </div>
           <div style={{ position:'relative', height:14, borderRadius:6, overflow:'hidden',
             background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)' }}>
@@ -1710,7 +1710,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         </div>
       )}
 
-      {/* ── Section tabs ── */}
+      {/* -- Section tabs -- */}
       <div style={{ display:'flex', borderBottom:'1px solid rgba(255,255,255,0.08)', padding:'0 18px' }}>
         {[['details','Details'], ['files','Files'], ['history','History'], ['security','Security'], ['posture','Posture']].map(([k,l]) => (
           <button key={k} onClick={() => setActiveSection(k)}
@@ -1724,7 +1724,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         ))}
       </div>
 
-      {/* ── Details section — GoGetSSL exact layout ── */}
+      {/* -- Details section -- GoGetSSL exact layout -- */}
       {activeSection === 'details' && (() => {
         // Subscription period = order placed date + period months (billing year)
         const subStart = cert.issued_at ? new Date(cert.issued_at) : null
@@ -1733,8 +1733,8 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           : subStart
             ? (() => { const d = new Date(subStart); d.setMonth(d.getMonth() + (cert._order?.period || 12)); return d })()
             : null
-        const fmt      = d => d ? new Date(d).toISOString().split('T')[0] : '—'
-        const fmtLong  = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—'
+        const fmt      = d => d ? new Date(d).toISOString().split('T')[0] : '--'
+        const fmtLong  = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '--'
 
         // Subscription period string: "12 months (2026-05-28 – 2027-05-27)"
         const periodStr = subStart && subEnd
@@ -1743,7 +1743,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
         return (
           <div style={{ padding:'18px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 40px' }}>
-            {/* Left — Main Details */}
+            {/* Left -- Main Details */}
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
                 letterSpacing:'0.8px', marginBottom:12, paddingBottom:8,
@@ -1751,7 +1751,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                 📋 Main Details
               </div>
 
-              {/* Each row: label left, value right — exactly like GGS */}
+              {/* Each row: label left, value right -- exactly like GGS */}
               {[
                 ['Product Name',       cert._order?.product_name || cert.cert_type || 'RapidSSL Standard', false, false],
                 ['Order Status',       cert.status === 'active' ? '✓ Issued' : cert.status, false, false],
@@ -1789,12 +1789,12 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                 <div style={{ fontSize:11, color:'rgba(240,237,232,0.35)', lineHeight:1.5 }}>
                   ⓘ <strong style={{ color:'rgba(240,237,232,0.5)' }}>Why is cert validity shorter than subscription?</strong>
                   {' '}Industry rules (effective March 2026) limit SSL certificates to 199 days max.
-                  Your subscription period is still {cert._order?.period || 12} months — reissue is free and auto-handled.
+                  Your subscription period is still {cert._order?.period || 12} months -- reissue is free and auto-handled.
                 </div>
               </div>
             </div>
 
-            {/* Right — Administrator Contact */}
+            {/* Right -- Administrator Contact */}
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
                 letterSpacing:'0.8px', marginBottom:12, paddingBottom:8,
@@ -1817,7 +1817,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                 </div>
               ))}
 
-              {/* Technical Contact — same data for DV certs */}
+              {/* Technical Contact -- same data for DV certs */}
               <div style={{ fontSize:11, fontWeight:700, color:'#ff8c7a', textTransform:'uppercase',
                 letterSpacing:'0.8px', margin:'20px 0 12px', paddingBottom:8,
                 borderBottom:'1px solid rgba(255,107,91,0.2)', display:'flex', alignItems:'center', gap:6 }}>
@@ -1840,7 +1840,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         )
       })()}
 
-      {/* ── Files section ── */}
+      {/* -- Files section -- */}
       {activeSection === 'files' && (
         <div style={{ padding:'18px', display:'flex', flexDirection:'column', gap:10 }}>
           {cert.cert_pem ? (
@@ -1852,7 +1852,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                   <FileText size={16} color="#ff8c7a"/>
                   <div>
                     <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', fontFamily:'monospace' }}>Certificate (cert.pem)</div>
-                    <div style={{ fontSize:11, color:'#b0a8a0' }}>Fullchain · end-entity + intermediate</div>
+                    <div style={{ fontSize:11, color:'#b0a8a0' }}>Fullchain - end-entity + intermediate</div>
                   </div>
                 </div>
                 <div style={{ display:'flex', gap:6 }}>
@@ -1884,7 +1884,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             </>
           ) : (
             <div style={{ fontSize:13, color:'#b0a8a0', textAlign:'center', padding:'24px 0' }}>
-              Certificate files not yet available — order may still be processing.
+              Certificate files not yet available -- order may still be processing.
             </div>
           )}
           {/* Private key via KeyLocker */}
@@ -1909,7 +1909,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         </div>
       )}
 
-      {/* ── History section ── */}
+      {/* -- History section -- */}
       {activeSection === 'history' && session && (
         <div style={{ padding:'14px 18px', display:'none' }}>
           <CertHistory ref={certHistoryRef} cert={cert} session={session}/>
@@ -1922,7 +1922,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         </div>
       )}
 
-      {/* ── Security section ── */}
+      {/* -- Security section -- */}
       {activeSection === 'security' && (
         <div style={{ padding:'14px 18px', display:'flex', flexDirection:'column', gap:8 }}>
           <TlsPostureRow cert={cert} onRefresh={onRefresh}/>
@@ -1933,7 +1933,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
       {activeSection === 'posture' && (
         <div style={{ padding:'16px 18px', display:'flex', flexDirection:'column', gap:8 }}>
-          {/* ── Cert Posture Panel — unified health view per cert ── */}
+          {/* -- Cert Posture Panel -- unified health view per cert -- */}
           {[
             {
               label: 'Install status',
@@ -1946,7 +1946,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               label: 'Auto-renew',
               ok: !!cert.auto_renew_enabled,
               okText: 'Enabled',
-              failText: 'Disabled — cert will expire without action',
+              failText: 'Disabled -- cert will expire without action',
               failColor: '#f87171',
             },
             {
@@ -1967,8 +1967,8 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             {
               label: 'DNS provider (auto-DCV)',
               ok: !!cert.dns_provider_id,
-              okText: 'Connected — auto-renewal ready',
-              failText: 'Not connected — renewal requires manual DCV',
+              okText: 'Connected -- auto-renewal ready',
+              failText: 'Not connected -- renewal requires manual DCV',
               failColor: '#fbbf24',
             },
           ].map(({ label, ok, okText, failText, failColor, neutral }) => (
@@ -2007,7 +2007,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                   <div style={{ width:80, height:4, borderRadius:4, background:'rgba(255,255,255,0.08)', overflow:'hidden' }}>
                     <div style={{ width:`${score}%`, height:'100%', borderRadius:4, background:color, transition:'width .4s ease' }}/>
                   </div>
-                  <span style={{ fontSize:12, fontWeight:700, color }}>{score}/100 · {label}</span>
+                  <span style={{ fontSize:12, fontWeight:700, color }}>{score}/100 - {label}</span>
                 </div>
               </div>
             )
@@ -2054,7 +2054,7 @@ function EmbedTab({ cert }) {
           Public SSL status page
         </div>
         <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:8, lineHeight:1.5 }}>
-          Share this link with clients — shows all your SSL grades publicly, no login needed.
+          Share this link with clients -- shows all your SSL grades publicly, no login needed.
         </div>
         <div style={{ background:'var(--v2-surface-3)', borderRadius:8, padding:'10px 12px',
           fontFamily:'monospace', fontSize:11, color:'#e8e0d8', wordBreak:'break-all', marginBottom:8 }}>
@@ -2077,7 +2077,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
   const initials = primary.domain.replace(/^www\./, '').slice(0,2).toUpperCase()
   const dotColor = s.dot==='green'?'#f0ede8':s.dot==='amber'?'#f0ede8':s.dot==='red'?'#f87171':'rgba(240,237,232,0.15)'
 
-  // Group versions by ggs_order_id — each unique order = one subscription
+  // Group versions by ggs_order_id -- each unique order = one subscription
   const subscriptionMap = {}
   for (const v of versions) {
     const key = v.ggs_order_id || v.id
@@ -2086,7 +2086,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
   }
   // Sort subscriptions: OLDEST first (chronological) so numbering is correct
   // Subscription 1 = first ever placed, Subscription 2 = renewal, etc.
-  // This matches customer expectations — Sub 1 is what they first ordered
+  // This matches customer expectations -- Sub 1 is what they first ordered
   const subscriptionsChron = Object.values(subscriptionMap).sort((a, b) => {
     const aMin = Math.min(...a.map(v => new Date(v.issued_at||0).getTime()))
     const bMin = Math.min(...b.map(v => new Date(v.issued_at||0).getTime()))
@@ -2103,7 +2103,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
   const hasMultipleSubs = subscriptions.length > 1
   const hasVersions     = versions.length > 1
 
-  // Find the ONE cert that is live right now — 3-layer priority:
+  // Find the ONE cert that is live right now -- 3-layer priority:
   // Layer 1: DB flag is_live_on_server=true (set by agent/cpanel/certbind)
   // Layer 2: precomputed map from agent_jobs latest install per domain
   // Layer 3: none found → no cert marked live (show unknown)
@@ -2114,14 +2114,14 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
   const liveCert = versions.find(v => v.id === liveCertId)
   const liveConfirmedBy = liveCert?.live_confirmed_by || null
 
-  const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'
+  const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '--'
 
   return (
     <div style={{ background:'var(--v2-surface)',
       border:`0.5px solid ${selected===primary.id ? '#f0ede8' : 'var(--v2-border)'}`,
       borderRadius:12, overflow:'hidden', transition:'border-color 0.15s' }}>
 
-      {/* ── LEVEL 1: Domain anchor row ── */}
+      {/* -- LEVEL 1: Domain anchor row -- */}
       <div onClick={() => onSelect(primary.id)}
         style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
           cursor:'pointer', transition:'background 0.15s', background:'var(--v2-surface)' }}
@@ -2165,7 +2165,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
             </span>
           </div>
           <div style={{ fontSize:11, color:'#b0a8a0' }}>
-            {subscriptions.length} subscription{subscriptions.length!==1?'s':''} · {versions.length} cert version{versions.length!==1?'s':''} · Expires {fmtDate(primary.expires_at)}
+            {subscriptions.length} subscription{subscriptions.length!==1?'s':''} - {versions.length} cert version{versions.length!==1?'s':''} - Expires {fmtDate(primary.expires_at)}
           </div>
         </div>
 
@@ -2180,7 +2180,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
               style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)', borderRadius:6,
                 padding:'4px 8px', fontSize:10, color:'#e8e0d8', cursor:'pointer',
                 display:'flex', alignItems:'center', gap:3, fontFamily:'inherit', flexShrink:0 }}>
-              {expanded ? '▲ Hide' : '▼ Expand'}
+              {expanded ? '^ Hide' : '▼ Expand'}
             </button>
           )}
           <ChevronRight size={14} style={{ color:'#b0a8a0', flexShrink:0 }}/>
@@ -2196,7 +2196,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
         </div>
       )}
 
-      {/* ── LEVELS 2 + 3: Subscription groups + version rows ── */}
+      {/* -- LEVELS 2 + 3: Subscription groups + version rows -- */}
       {expanded && (
         <div style={{ background:'transparent', padding:'10px 14px 14px' }}>
           <div style={{ fontSize:10, fontWeight:600, color:'#6B5A3E', textTransform:'uppercase',
@@ -2241,7 +2241,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                 style={{ border:`0.5px solid ${headerBorder}`, borderRadius:10, overflow:'hidden',
                   marginBottom: si < subscriptions.length - 1 ? 8 : 0, background:'var(--v2-surface)' }}>
 
-                {/* ── LEVEL 2: Subscription header ── */}
+                {/* -- LEVEL 2: Subscription header -- */}
                 <div style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 14px',
                   background:headerBg, borderBottom:`0.5px solid ${headerBorder}` }}>
                   {/* Left accent bar */}
@@ -2250,7 +2250,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                     <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:5 }}>
                       <span style={{ fontSize:10, fontWeight:600, textTransform:'uppercase',
                         letterSpacing:'0.4px', color: isRenewal?'#f0ede8': isActiveSub?'#f0ede8':'#6B5A3E' }}>
-                        Subscription {subNumberMap[subNewest.ggs_order_id || subNewest.id] || (si + 1)} · {subLabel}
+                        Subscription {subNumberMap[subNewest.ggs_order_id || subNewest.id] || (si + 1)} - {subLabel}
                       </span>
                       {isActiveSub && (
                         <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
@@ -2296,7 +2296,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                           )}
                         </div>
                         <span style={{ fontSize:9, color:'#b0a8a0', width:54, textAlign:'right', flexShrink:0 }}>
-                          {subEnd ? subEnd.toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '—'}
+                          {subEnd ? subEnd.toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '--'}
                         </span>
                       </div>
                     )}
@@ -2315,9 +2315,9 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                   </div>
                 </div>
 
-                {/* ── LEVEL 3: Version rows inside subscription ── */}
+                {/* -- LEVEL 3: Version rows inside subscription -- */}
                 {subVersions.map((v, vi) => {
-                  // ── DEFINITIVE LIVE STATE ──────────────────────────────────────────
+                  // -- DEFINITIVE LIVE STATE ------------------------------------------
                   // isLive: DB flag (layer 1) or agent_jobs map (layer 2)
                   const isLive        = liveCertId !== null && v.id === liveCertId
                   const wasInstalled  = !!v._installTime && !isLive
@@ -2331,13 +2331,13 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                       : 'Confirmed')
                     : null
 
-                  // Status labels — unambiguous, scannable
+                  // Status labels -- unambiguous, scannable
                   const statusLabel = isLive
-                    ? `Live · ${confirmSource}`
+                    ? `Live - ${confirmSource}`
                     : wasInstalled
                     ? 'Replaced on server'
                     : vi === 0
-                    ? 'Issued · not installed'
+                    ? 'Issued - not installed'
                     : 'Superseded'
 
                   const vLabel = `v${subVersions.length - vi}`
@@ -2355,7 +2355,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                       onMouseEnter={e => { if(selected!==v.id) e.currentTarget.style.background='var(--v2-bg)' }}
                       onMouseLeave={e => { if(selected!==v.id) e.currentTarget.style.background='transparent' }}>
 
-                      {/* Status icon — each state has a distinct visual */}
+                      {/* Status icon -- each state has a distinct visual */}
                       <div style={{ width:28, height:28, borderRadius:8, flexShrink:0,
                         display:'flex', alignItems:'center', justifyContent:'center',
                         background: isLive ? '#f0ede8' : wasInstalled ? '#f0ede8' : neverInstalled && vi===0 ? 'transparent' : '#f0ede8',
@@ -2369,7 +2369,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                           </>
                         )}
                         {!isLive && !wasInstalled && vi===0 && <Clock size={11} color="#c0392b"/>}
-                        {!isLive && !wasInstalled && vi>0 && <span style={{fontSize:11,color:'rgba(192,57,43,0.2)',lineHeight:1}}>—</span>}
+                        {!isLive && !wasInstalled && vi>0 && <span style={{fontSize:11,color:'rgba(192,57,43,0.2)',lineHeight:1}}>--</span>}
                       </div>
 
                       {/* Version info */}
@@ -2384,12 +2384,12 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                             {statusLabel}
                           </span>
                           <span style={{ fontSize:10, fontFamily:'monospace', color:'#b0a8a0' }}>
-                            {vLabel} · {v.issued_at ? new Date(v.issued_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'}
+                            {vLabel} - {v.issued_at ? new Date(v.issued_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '--'}
                           </span>
                         </div>
                         <div style={{ fontSize:11, color:'#b0a8a0' }}>
-                          SHA-256 · RSA 2048 ·
-                          {v.cert_type || v.issuer || ' RapidSSL'} · Expires {fmtDate(v.expires_at)}
+                          SHA-256 - RSA 2048 -
+                          {v.cert_type || v.issuer || ' RapidSSL'} - Expires {fmtDate(v.expires_at)}
                         </div>
                       </div>
 
@@ -2401,7 +2401,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                             background: d==null?'var(--v2-bg)':d>30?'transparent':d>=0?'rgba(230,126,34,0.12)':'rgba(192,57,43,0.1)',
                             color: d==null?'var(--v2-text-3)':d>30?'#a93226':d>=0?'#c0392b':'#a93226',
                             flexShrink:0 }}>
-                            {d==null?'—':d<=0?'Expired':`${d}d left`}
+                            {d==null?'--':d<=0?'Expired':`${d}d left`}
                           </span>
                         )
                       })()}
@@ -2425,12 +2425,12 @@ function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
   const isActive  = cert.status === 'active'
   const statusColor = isExpired ? '#f87171' : isWarn ? '#fbbf24' : '#4ade80'
 
-  // Subscription period — order placed date + period months
+  // Subscription period -- order placed date + period months
   const subStart = cert.issued_at ? new Date(cert.issued_at) : null
   const subEnd   = cert.subscription_end_date ? new Date(cert.subscription_end_date)
     : subStart ? (() => { const d = new Date(subStart); d.setMonth(d.getMonth() + (cert._order?.period || 12)); return d })()
     : null
-  const fmtShort = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—'
+  const fmtShort = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '--'
 
   return (
     <div onClick={onClick}
@@ -2446,7 +2446,7 @@ function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
       {/* # */}
       <span style={{ fontSize:12, color:'rgba(240,237,232,0.3)', fontVariantNumeric:'tabular-nums' }}>{index}</span>
 
-      {/* Description — matches GGS: domain bold, product orange, order ID + period below */}
+      {/* Description -- matches GGS: domain bold, product orange, order ID + period below */}
       <div style={{ minWidth:0 }}>
         <div style={{ fontSize:14, fontWeight:600, color:'#ffffff', marginBottom:4,
           overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
@@ -2481,10 +2481,10 @@ function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
         </div>
       </div>
 
-      {/* Expires — cert validity end (the shorter date, ~6 months) */}
+      {/* Expires -- cert validity end (the shorter date, ~6 months) */}
       <div style={{ textAlign:'right', paddingRight:24 }}>
         <div style={{ fontSize:13, fontWeight:600, color:'#ffffff' }}>
-          {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB', { year:'numeric', month:'2-digit', day:'2-digit' }).split('/').reverse().join('-') : '—'}
+          {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB', { year:'numeric', month:'2-digit', day:'2-digit' }).split('/').reverse().join('-') : '--'}
         </div>
         <div style={{ fontSize:12, color: isExpired ? '#f87171' : isWarn ? '#fbbf24' : '#4ade80', marginTop:2, fontWeight:500 }}>
           {isExpired ? `expired ${Math.abs(days)}d ago` : `+ ${days} days`}
@@ -2657,7 +2657,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   })
 
   // domainGroups: show ALL certs (all GGS orders visible to customer)
-  // is_current flag controls which one has Install enabled — not visibility
+  // is_current flag controls which one has Install enabled -- not visibility
   const domainGroups = (() => {
     return visible
       .map(c => ({ ...c, _healthGrade: healthScores[c.domain]?.grade || null }))
@@ -2687,7 +2687,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 </span>
               )}
             </h1>
-            <p style={{ fontSize:12, color:'#b0a8a0' }}>{user.email} · {domainGroups.length} certificate{domainGroups.length!==1?'s':''}</p>
+            <p style={{ fontSize:12, color:'#b0a8a0' }}>{user.email} - {domainGroups.length} certificate{domainGroups.length!==1?'s':''}</p>
           </div>
           {/* Share SSL status button */}
           <button
@@ -2739,7 +2739,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         {expired > 0 && (
           <div style={{ background:'rgba(248,113,113,0.12)', border:'0.5px solid rgba(220,38,38,0.3)', borderRadius:8, padding:'12px 16px', marginBottom:14, display:'flex', alignItems:'center', gap:12 }}>
             <AlertTriangle size={14} color="#f87171" style={{ flexShrink:0 }}/>
-            <span style={{ fontSize:12, color:'#f87171' }}><strong>{expired} expired certificate{expired!==1?'s':''}</strong> — renew immediately.</span>
+            <span style={{ fontSize:12, color:'#f87171' }}><strong>{expired} expired certificate{expired!==1?'s':''}</strong> -- renew immediately.</span>
           </div>
         )}
         {expiring > 0 && expired === 0 && (
@@ -2758,13 +2758,13 @@ function LoggedInDashboard({ user, nav, onIssue }) {
               // Full card for 1-2 orders
               orders.map(o => <DvPendingCard key={o.id} order={o} onRefresh={load}/>)
             ) : (
-              // Compact list for 3+ orders — one row per order, no clutter
+              // Compact list for 3+ orders -- one row per order, no clutter
               <div style={{ background:'rgba(20,10,8,0.7)', border:'1px solid rgba(251,191,36,0.25)', borderRadius:10, overflow:'hidden' }}>
                 <div style={{ padding:'10px 14px', borderBottom:'1px solid rgba(255,255,255,0.06)',
                   display:'flex', alignItems:'center', gap:8 }}>
                   <div style={{ width:7, height:7, borderRadius:'50%', background:'#fbbf24', animation:'v3pulse 1s ease infinite' }}/>
                   <span style={{ fontSize:12, fontWeight:600, color:'#fbbf24' }}>
-                    {orders.length} reissues in progress — DNS validation running automatically
+                    {orders.length} reissues in progress -- DNS validation running automatically
                   </span>
                 </div>
                 {orders.map(o => {
@@ -2785,18 +2785,213 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                       <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4, flexShrink:0,
                         background: hasDcv ? 'rgba(74,222,128,0.1)' : 'rgba(251,191,36,0.1)',
                         color: hasDcv ? '#4ade80' : '#fbbf24' }}>
-                        {hasDcv ? 'DNS ✓ — GGS validating' : 'Adding DNS record…'}
+                        {hasDcv ? 'DNS ✓ -- GGS validating' : 'Adding DNS record…'}
                       </span>
                     </div>
                   )
                 })}
                 <div style={{ padding:'8px 14px', fontSize:11, color:'rgba(240,237,232,0.3)' }}>
-                  Certificates will activate automatically — no action needed.
+                  Certificates will activate automatically -- no action needed.
                 </div>
               </div>
             )}
           </div>
         )}
+
+
+        {/* === COMMAND CENTRE + HEALTH WALL =================================== */}
+        {certs.length > 0 && (() => {
+          const activeCerts = certs.filter(c => c.status === 'active')
+          const needAction  = activeCerts.filter(c => {
+            const d = c.expires_at ? Math.ceil((new Date(c.expires_at) - Date.now()) / 86400000) : 999
+            return d <= 30 || !c.is_live_on_server
+          })
+          const allGreen = needAction.length === 0
+
+          return (
+            <>
+              {/* SECTION 1: COMMAND CENTRE */}
+              <div style={{ marginBottom:14 }}>
+                {allGreen ? (
+                  <div style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 16px',
+                    background:'rgba(74,222,128,0.06)', border:'1px solid rgba(74,222,128,0.2)',
+                    borderRadius:10, marginBottom:12 }}>
+                    <div className="v2-pulse" />
+                    <span style={{ fontSize:12, fontWeight:600, color:'#4ade80' }}>
+                      All {activeCerts.length} certificate{activeCerts.length !== 1 ? 's' : ''} healthy
+                    </span>
+                    <span style={{ fontSize:11, color:'#b0a8a0' }}>auto-pilot running</span>
+                  </div>
+                ) : (
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
+
+                    {/* Needs attention panel */}
+                    <div style={{ background:'transparent', border:'1px solid rgba(248,113,113,0.25)',
+                      borderRadius:10, overflow:'hidden' }}>
+                      <div style={{ padding:'9px 14px', borderBottom:'1px solid rgba(248,113,113,0.15)',
+                        display:'flex', alignItems:'center', gap:7 }}>
+                        <div style={{ width:6, height:6, borderRadius:'50%', background:'#f87171',
+                          boxShadow:'0 0 5px rgba(248,113,113,0.6)', flexShrink:0 }} />
+                        <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0',
+                          textTransform:'uppercase', letterSpacing:'0.6px' }}>
+                          Needs attention ({needAction.length})
+                        </span>
+                      </div>
+                      {needAction.slice(0,4).map((cert, i) => {
+                        const d = cert.expires_at
+                          ? Math.ceil((new Date(cert.expires_at) - Date.now()) / 86400000)
+                          : 999
+                        const notLive   = !cert.is_live_on_server
+                        const dotColor  = d <= 7 ? '#f87171' : d <= 30 ? '#fbbf24' : '#818cf8'
+                        return (
+                          <div key={cert.id}
+                            onClick={() => setSelected(cert.id === selected ? null : cert.id)}
+                            style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 14px',
+                              borderBottom: i < needAction.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                              cursor:'pointer', transition:'background .1s' }}
+                            onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.04)'}
+                            onMouseLeave={e => e.currentTarget.style.background='transparent'}>
+                            <div style={{ width:6, height:6, borderRadius:'50%',
+                              background:dotColor, flexShrink:0 }} />
+                            <span style={{ flex:1, fontSize:12, fontFamily:'monospace',
+                              color:'#e8e0d8', overflow:'hidden', textOverflow:'ellipsis',
+                              whiteSpace:'nowrap' }}>
+                              {cert.domain}
+                            </span>
+                            <span style={{ fontSize:11, fontWeight:600, flexShrink:0, color:dotColor }}>
+                              {notLive && d > 30 ? 'Not installed' : d <= 0 ? 'Expired' : `${d}d`}
+                            </span>
+                            {notLive && (
+                              <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:99,
+                                background:'rgba(129,140,248,0.12)', color:'#818cf8',
+                                border:'1px solid rgba(129,140,248,0.2)', flexShrink:0 }}>INSTALL</span>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Live activity panel */}
+                    <div style={{ background:'transparent', border:'1px solid rgba(192,57,43,0.2)',
+                      borderRadius:10, overflow:'hidden' }}>
+                      <div style={{ padding:'9px 14px', borderBottom:'1px solid rgba(192,57,43,0.15)',
+                        display:'flex', alignItems:'center', gap:7 }}>
+                        <div className="v2-pulse" />
+                        <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0',
+                          textTransform:'uppercase', letterSpacing:'0.6px' }}>Live activity</span>
+                      </div>
+                      {recentEvents.length === 0 ? (
+                        <div style={{ padding:'20px 14px', fontSize:12, color:'#b0a8a0', textAlign:'center' }}>
+                          No recent events
+                        </div>
+                      ) : recentEvents.slice(0,4).map((ev, i) => {
+                        const secs = Math.floor((Date.now() - new Date(ev.created_at)) / 1000)
+                        const ago  = secs < 60 ? `${secs}s` : secs < 3600
+                          ? `${Math.floor(secs/60)}m` : `${Math.floor(secs/3600)}h`
+                        const dotColor = ev.event_type === 'issued' ? '#4ade80'
+                                       : ev.event_type === 'revoked' ? '#f87171' : '#ff8c7a'
+                        return (
+                          <div key={ev.id} style={{ display:'flex', alignItems:'center', gap:10,
+                            padding:'8px 14px',
+                            borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                            <div style={{ width:6, height:6, borderRadius:'50%',
+                              background:dotColor, flexShrink:0 }} />
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <div style={{ fontSize:12, color:'#ff8c7a', fontWeight:500,
+                                overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                                {ev.event_type.replace(/_/g,' ')}
+                              </div>
+                              <div style={{ fontSize:11, color:'#b0a8a0', overflow:'hidden',
+                                textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                                {ev.domain}
+                              </div>
+                            </div>
+                            <span style={{ fontSize:10, color:'#b0a8a0', flexShrink:0 }}>{ago} ago</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* SECTION 2: HEALTH WALL */}
+                {activeCerts.length > 0 && (
+                  <div style={{ background:'transparent', border:'1px solid rgba(192,57,43,0.2)',
+                    borderRadius:10, overflow:'hidden', marginBottom:14 }}>
+                    <div style={{ padding:'9px 16px', borderBottom:'1px solid rgba(192,57,43,0.12)',
+                      display:'flex', alignItems:'center', justifyContent:'space-between',
+                      flexWrap:'wrap', gap:8 }}>
+                      <span style={{ fontSize:10, fontWeight:700, color:'#b0a8a0',
+                        textTransform:'uppercase', letterSpacing:'0.6px' }}>
+                        Domain Health -- {activeCerts.length} active
+                      </span>
+                      <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+                        {[['#4ade80','Safe'],['#fbbf24','Watch'],['#f87171','Act now'],['#818cf8','Install']].map(([col,lbl]) => (
+                          <span key={lbl} style={{ display:'flex', alignItems:'center', gap:4,
+                            fontSize:10, color:'#b0a8a0' }}>
+                            <span style={{ width:7, height:7, borderRadius:2, background:col,
+                              display:'inline-block' }} />
+                            {lbl}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ padding:10, display:'grid', gap:6,
+                      gridTemplateColumns:`repeat(${Math.min(Math.max(activeCerts.length, 1), 10)}, 1fr)` }}>
+                      {activeCerts.map(cert => {
+                        const d = cert.expires_at
+                          ? Math.ceil((new Date(cert.expires_at) - Date.now()) / 86400000)
+                          : null
+                        const notLive = !cert.is_live_on_server
+                        const col = notLive ? '#818cf8'
+                                  : d === null ? '#b0a8a0'
+                                  : d <= 0  ? '#f87171'
+                                  : d <= 7  ? '#f87171'
+                                  : d <= 30 ? '#fbbf24'
+                                  : '#4ade80'
+                        const bg = notLive ? 'rgba(129,140,248,0.08)'
+                                 : d === null ? 'rgba(255,255,255,0.03)'
+                                 : d <= 7  ? 'rgba(248,113,113,0.08)'
+                                 : d <= 30 ? 'rgba(251,191,36,0.08)'
+                                 : 'rgba(74,222,128,0.07)'
+                        const label = notLive ? 'Install'
+                                    : d === null ? '?' : d <= 0 ? 'EXP' : `${d}`
+                        const isSelected = cert.id === selected
+                        const shortName = cert.domain.replace(/^www\./,'').split('.')[0]
+                        return (
+                          <div key={cert.id}
+                            onClick={() => setSelected(cert.id === selected ? null : cert.id)}
+                            title={cert.domain}
+                            style={{ background: isSelected ? col + '22' : bg,
+                              border:`1px solid ${isSelected ? col : col + '44'}`,
+                              borderRadius:8, padding:'10px 6px', textAlign:'center',
+                              cursor:'pointer', transition:'all .12s', userSelect:'none' }}
+                            onMouseEnter={e => { e.currentTarget.style.transform='scale(1.05)'; e.currentTarget.style.borderColor=col }}
+                            onMouseLeave={e => { e.currentTarget.style.transform='scale(1)'; e.currentTarget.style.borderColor=isSelected?col:col+'44' }}>
+                            <div style={{ fontSize:16, fontWeight:800, color:col,
+                              lineHeight:1, fontFamily:'monospace', letterSpacing:'-0.5px' }}>
+                              {label}
+                            </div>
+                            {label !== 'Install' && label !== 'EXP' && label !== '?' && (
+                              <div style={{ fontSize:8, color:col, opacity:.65, marginTop:2,
+                                letterSpacing:'0.2px', textTransform:'uppercase' }}>days</div>
+                            )}
+                            <div style={{ fontSize:9, color:'#b0a8a0', marginTop:6,
+                              overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
+                              fontFamily:'monospace' }}>
+                              {shortName.length > 8 ? shortName.slice(0,7) + '..' : shortName}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )
+        })()}
+        {/* === END COMMAND CENTRE + HEALTH WALL =============================== */}
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:16, alignItems:'start' }}>
           <div style={{ background:'transparent', border:'1px solid rgba(192,57,43,0.2)', borderRadius:8,
@@ -2916,7 +3111,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           </div>
         </div>
 
-        {/* Imported certs from CA Connector — shown separately */}
+        {/* Imported certs from CA Connector -- shown separately */}
         {importedCerts.length > 0 && (
           <ImportedCertsSection certs={importedCerts} onDelete={handleDelete} />
         )}
@@ -2925,7 +3120,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           <div style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:12 }}>Quick actions</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:10 }}>
             {[
-              { icon:Shield,    color:'#ffffff', bg:'transparent', label:'Issue Certificate', desc:'RapidSSL DV · RapidSSL · ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
+              { icon:Shield,    color:'#ffffff', bg:'transparent', label:'Issue Certificate', desc:'RapidSSL DV - RapidSSL - ~5 min',    action:() => onIssue ? onIssue() : nav('/buy') },
               { icon:Download,  color:'#4ade80', bg:'transparent', label:'Install Guide',     desc:'Nginx, Apache, cPanel step-by-step', action:() => nav('/install') },
               { icon:Activity,  color:'#ffffff', bg:'rgba(248,113,113,0.12)', label:'Integrations',     desc:'Cloudflare, Vercel, agent setup',    action:() => nav('/integrations') },
               { icon:Zap,       color:'#ffffff', bg:'rgba(248,113,113,0.12)', label:'Knowledge Base',    desc:'Guides, FAQs, troubleshooting',      action:() => nav('/knowledge-base') },
@@ -2948,7 +3143,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           </div>
         </div>
 
-        {/* ── Recent activity feed ── */}
+        {/* -- Recent activity feed -- */}
         {recentEvents.length > 0 && (
           <div style={{ marginTop:24 }}>
             <div style={{ fontSize:10, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:10 }}>Recent activity</div>
@@ -2974,7 +3169,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                       <span style={{ fontSize:12, color:'#ff8c7a', fontWeight:500 }}>
                         {ev.event_type.replace(/_/g,' ')}
                       </span>
-                      <span style={{ fontSize:12, color:'#b0a8a0' }}> — {ev.domain}</span>
+                      <span style={{ fontSize:12, color:'#b0a8a0' }}> -- {ev.domain}</span>
                     </div>
                     <span style={{ fontSize:11, color:'#b0a8a0', flexShrink:0 }}>{ago}</span>
                   </div>
@@ -3000,7 +3195,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         />
       )}
 
-      {/* Smart Install modal — detects cPanel/agent and routes automatically */}
+      {/* Smart Install modal -- detects cPanel/agent and routes automatically */}
       {smartInstallCert && (
         <SmartInstall
           cert={smartInstallCert}
@@ -3039,7 +3234,7 @@ function MarketingDashboard({ nav }) {
           <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'var(--v2-green-bg)',
             border:'0.5px solid var(--v2-green-border)', borderRadius:100, padding:'4px 14px', marginBottom:20 }}>
             <span className="v2-pulse"/>
-            <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-green-text)' }}>Free · Open · Trusted</span>
+            <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-green-text)' }}>Free - Open - Trusted</span>
           </div>
           <h1 style={{ fontSize:Math.min(38,window.innerWidth>768?38:30), fontWeight:700, color:'#ffffff', letterSpacing:'-0.8px',
             lineHeight:1.15, margin:'0 0 14px', maxWidth:560, marginLeft:'auto', marginRight:'auto' }}>
@@ -3047,7 +3242,7 @@ function MarketingDashboard({ nav }) {
             <span style={{ color:'var(--v2-green)' }}>always under control</span>
           </h1>
           <p style={{ fontSize:16, color:'#e8e0d8', maxWidth:480, margin:'0 auto 32px', lineHeight:1.65 }}>
-            Issue free SSL certificates, monitor expiry, automate renewal — all from one clean dashboard.
+            Issue free SSL certificates, monitor expiry, automate renewal -- all from one clean dashboard.
           </p>
           <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
             <button className="v2-btn v2-btn-primary" style={{ padding:'11px 22px', fontSize:14 }} onClick={() => nav('/auth')}>
