@@ -97,15 +97,17 @@ export default function CLMHome({ user, nav }) {
       {id:'issue',             label:'Issue cert',       icon:Plus},
       {id:'cert-timeline',     label:'Certificate Timeline', icon:CalendarDays},
     ]},
-    { group:'Automate', items:[
-      {id:'domain-manager',    label:'Domain Manager',   icon:Globe},
-    ]},
     { group:'Monitor', items:[
-      {id:'shield',            label:'Security monitor',  icon:ShieldCheck},
-      {id:'compliance-centre',  label:'Compliance Centre', icon:Shield, badge:'NEW'},
+      {id:'shield',            label:'Security monitor', icon:ShieldCheck},
+      {id:'compliance-centre', label:'Compliance Centre', icon:Shield, badge:'NEW'},
     ]},
     { group:'Secure', items:[
       {id:'key-intelligence',  label:'Key Intelligence', icon:Shield},
+    ]},
+    { group:'Automate', items:[
+      {id:'domain-manager',    label:'Domain Manager',   icon:Globe},
+    ]},
+    { group:'Intelligence', items:[
       {id:'ca-intelligence',   label:'PKI Intelligence', icon:TrendingUp},
     ]},
   ]
