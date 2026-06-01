@@ -755,6 +755,94 @@ export default function Home({ nav }) {
         </div>
       </section>
 
+
+      {/* ── SLA / PREMIUM FEATURES ── */}
+      <section style={{background:`radial-gradient(ellipse at 30% 50%, #1a0808 0%, #0d0000 60%, #080000 100%)`,padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+        <div style={{maxWidth:1100,margin:'0 auto'}}>
+          <FadeUp>
+            <div style={{textAlign:'center',marginBottom:52}}>
+              <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'rgba(192,57,43,0.1)',border:`1px solid rgba(192,57,43,0.25)`,borderRadius:100,padding:'4px 14px',marginBottom:16}}>
+                <span style={{width:5,height:5,borderRadius:'50%',background:RED,animation:'blink 2s ease infinite'}}/>
+                <span style={{fontSize:11,color:'#ff8c7a',fontFamily:MONO,fontWeight:500}}>SSLVault Premium · New</span>
+              </div>
+              <h2 style={{fontSize:'clamp(24px,3.5vw,40px)',fontWeight:700,letterSpacing:'-0.8px',lineHeight:1.14,color:T1,marginBottom:12}}>
+                47-Day Compliance Guarantee
+              </h2>
+              <p style={{fontSize:14,color:T2,lineHeight:1.75,maxWidth:520,margin:'0 auto'}}>
+                CA/B Forum mandates 47-day max certificate validity by 2029. SSLVault Premium guarantees automated compliance — or your money back.
+              </p>
+            </div>
+          </FadeUp>
+
+          {/* Mandate timeline */}
+          <FadeUp delay={40}>
+            <div style={{display:'grid',gridTemplateColumns:`repeat(${isMobile?2:4},1fr)`,gap:8,marginBottom:48}}>
+              {[
+                {year:'Now',days:'398 days',col:GRN,note:'You are here'},
+                {year:'2027',days:'200 days',col:AMB,note:'Panic begins'},
+                {year:'2028',days:'100 days',col:RED,note:'Manual fails'},
+                {year:'2029',days:'47 days',col:RED,note:'Full automation required',hot:true},
+              ].map(({year,days,col,note,hot})=>(
+                <div key={year} style={{background:hot?'rgba(192,57,43,0.1)':BG3,border:`1px solid ${hot?'rgba(192,57,43,0.3)':LN}`,borderRadius:8,padding:'14px 16px',textAlign:'center'}}>
+                  <div style={{fontSize:10,fontWeight:700,color:T3,letterSpacing:'.08em',fontFamily:MONO,marginBottom:6}}>{year}</div>
+                  <div style={{fontSize:hot?20:18,fontWeight:800,color:col,marginBottom:4}}>{days}</div>
+                  <div style={{fontSize:10,color:T3,fontFamily:MONO}}>{note}</div>
+                  {hot&&<div style={{fontSize:9,fontWeight:700,color:RED,marginTop:6,letterSpacing:'.06em'}}>⚡ MANDATE DEADLINE</div>}
+                </div>
+              ))}
+            </div>
+          </FadeUp>
+
+          {/* Feature grid */}
+          <FadeUp delay={80}>
+            <div style={{display:'grid',gridTemplateColumns:`repeat(${isMobile?1:3},1fr)`,gap:16,marginBottom:40}}>
+              {[
+                {icon:'🛡️',title:'SLA Guarantee',desc:'Your certificates are guaranteed to renew before every CA/B Forum deadline. If we miss it, you get a full refund. No exceptions.'},
+                {icon:'📊',title:'Compliance Score Dashboard',desc:'Real-time 0–100 compliance score across all your domains. Green means compliant, red means action needed. Updated continuously.'},
+                {icon:'📄',title:'Monthly Audit Report',desc:'Automated PDF compliance report every month — ready for SOC2, ISO 27001, and PCI-DSS auditors. Zero manual work.'},
+                {icon:'🔔',title:'Escalation Alerts',desc:'30-day and 10-day warnings sent to your email if any cert is at risk. Critical alerts also notify our PKI team for manual intervention.'},
+                {icon:'📋',title:'SOC2 Evidence Pack',desc:'Every renewal event is timestamped and stored immutably. Export your audit trail for security reviews with one click.'},
+                {icon:'⚡',title:'47-Day Ready — Now',desc:'Built for the 2029 mandate today. When the deadline hits, you are already compliant. No scramble, no emergency renewals, no downtime.'},
+              ].map(({icon,title,desc})=>(
+                <div key={title} style={{background:BG3,border:`1px solid ${LN}`,borderRadius:10,padding:'18px 20px'}}>
+                  <div style={{fontSize:24,marginBottom:10}}>{icon}</div>
+                  <div style={{fontSize:14,fontWeight:600,color:T1,marginBottom:8}}>{title}</div>
+                  <div style={{fontSize:12,color:T2,lineHeight:1.75}}>{desc}</div>
+                </div>
+              ))}
+            </div>
+          </FadeUp>
+
+          {/* Pricing preview */}
+          <FadeUp delay={120}>
+            <div style={{display:'grid',gridTemplateColumns:`repeat(${isMobile?1:3},1fr)`,gap:12,maxWidth:860,margin:'0 auto'}}>
+              {[
+                {plan:'Starter',price:'$999/yr',domains:'Up to 10 domains',features:['Compliance score dashboard','Monthly audit report','Escalation alerts'],hot:false},
+                {plan:'Business',price:'$3,499/yr',domains:'Up to 50 domains',features:['Everything in Starter','SOC2 evidence pack','Priority support','SMS alerts'],hot:true},
+                {plan:'Enterprise',price:'$9,999/yr',domains:'Unlimited domains',features:['Everything in Business','Custom SLA contract','Dedicated PKI consultant','Annual audit review'],hot:false},
+              ].map(({plan,price,domains,features,hot})=>(
+                <div key={plan} style={{background:hot?'rgba(192,57,43,0.08)':BG3,border:`${hot?2:1}px solid ${hot?'rgba(192,57,43,0.5)':LN}`,borderRadius:10,padding:'20px 18px',position:'relative'}}>
+                  {hot&&<div style={{position:'absolute',top:-10,left:'50%',transform:'translateX(-50%)',background:RED,color:'#fff',fontSize:9,fontWeight:700,padding:'2px 12px',borderRadius:99,letterSpacing:'.06em',whiteSpace:'nowrap'}}>MOST POPULAR</div>}
+                  <div style={{fontSize:14,fontWeight:600,color:T1,marginBottom:4}}>{plan}</div>
+                  <div style={{fontSize:24,fontWeight:800,color:hot?RED:T1,marginBottom:2}}>{price}</div>
+                  <div style={{fontSize:11,color:T3,marginBottom:14,fontFamily:MONO}}>{domains}</div>
+                  {features.map(f=>(
+                    <div key={f} style={{display:'flex',gap:7,alignItems:'flex-start',marginBottom:7}}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GRN} strokeWidth="2.5" style={{flexShrink:0,marginTop:1}}><path d="M20 6L9 17l-5-5"/></svg>
+                      <span style={{fontSize:12,color:T2}}>{f}</span>
+                    </div>
+                  ))}
+                  <button onClick={()=>nav('/auth')} style={{width:'100%',marginTop:16,padding:'10px',background:hot?RED:'transparent',border:`1px solid ${hot?RED:LN}`,borderRadius:6,color:hot?'#fff':T2,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:F,transition:'all .15s'}}>
+                    Get started
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div style={{textAlign:'center',marginTop:16,fontSize:11,color:T3}}>All plans include full SSLVault CLM · No credit card required for trial · Contact us to activate</div>
+          </FadeUp>
+        </div>
+      </section>
+
       {/* ── MISSION ── */}
       <section style={{background:`radial-gradient(ellipse at 70% 50%, #8b0000 0%, #5c0000 25%, #2d0000 50%, #1a0000 70%, #0d0000 100%)`,backgroundSize:'cover',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
