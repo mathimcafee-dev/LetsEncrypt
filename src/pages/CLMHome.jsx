@@ -102,13 +102,11 @@ export default function CLMHome({ user, nav }) {
     ]},
     { group:'Monitor', items:[
       {id:'shield',            label:'Security monitor',  icon:ShieldCheck},
-      {id:'readiness',         label:'47-Day Readiness', icon:ShieldCheck, badge:'NEW'},
       {id:'compliance-centre',  label:'Compliance Centre', icon:Shield, badge:'NEW'},
     ]},
     { group:'Secure', items:[
       {id:'key-intelligence',  label:'Key Intelligence', icon:Shield},
       {id:'ca-intelligence',   label:'PKI Intelligence', icon:TrendingUp},
-      {id:'sla-dashboard',     label:'SLA Coverage',     icon:Star, badge:'PREMIUM'},
     ]},
   ]
 
@@ -153,7 +151,7 @@ export default function CLMHome({ user, nav }) {
     if(sec==='renewal-calendar') return <RenewalCalendar user={user}/>
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
     if(sec==='sla-dashboard')    return <SLADashboard nav={sideNav}/>
-    if(sec==='compliance-centre') return <ComplianceCentre nav={sideNav}/>
+    if(sec==='compliance-centre') return <ComplianceCentre nav={sideNav} user={user}/>
     if(sec==='admin-calendar')   return <AdminRenewalCalendar user={user}/>
     return null
   }
