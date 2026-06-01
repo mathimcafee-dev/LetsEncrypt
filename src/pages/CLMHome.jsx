@@ -333,7 +333,7 @@ export default function CLMHome({ user, nav }) {
         </nav>
 
         {/* Main */}
-        <div style={{flex:1,minWidth:0,background:NAVY,overflowY:'auto'}}>
+        <div style={{flex:1,minWidth:0,background:NAVY,overflowY:'auto',minHeight:'calc(100vh - 50px)'}}>
           <div key={key} style={{minHeight:'100%',animation:'fadein 0.18s ease'}}>
             {content()}
           </div>
@@ -351,4 +351,5 @@ export default function CLMHome({ user, nav }) {
     </div>
   )
 }
+
 
