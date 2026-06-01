@@ -2803,314 +2803,237 @@ function LoggedInDashboard({ user, nav, onIssue }) {
 
         {/* === WORLD CLASS DASHBOARD ========================================= */}
         {!loading && certs.length > 0 && (() => {
-
-          const activeCerts = certs.filter(c => c.status === 'active' || c.status === 'pending')
-          const allActive   = certs.filter(c => c.status === 'active')
-          const allHealthy  = allActive.every(c => {
+          const activeCerts = certs.filter(c => c.status === 'active')
+          const allHealthy  = activeCerts.every(c => {
             const d = daysLeft(c.expires_at)
             return d !== null && d > 30 && c.is_live_on_server
           })
 
-          // Arc geometry helpers
-          const arc = (pct, r) => {
-            const circ = 2 * Math.PI * r
-            const off  = circ * (1 - Math.min(Math.max(pct, 0), 1))
-            return { circ, off }
-          }
-
-          // Validity pct: days remaining / 200 days max
-          const validityPct = (cert) => {
-            const d = daysLeft(cert.expires_at)
-            if (d === null || d <= 0) return 0
-            return Math.min(d / 200, 1)
-          }
-
-          // Install pct: fraction of active certs installed
-          const installPct = allActive.length > 0
-            ? allActive.filter(c => c.is_live_on_server).length / allActive.length
+          // Arc maths
+          const fleetPct = activeCerts.length > 0
+            ? activeCerts.reduce((s, c) => {
+                const d = daysLeft(c.expires_at)
+                return s + Math.min(Math.max((d || 0) / 200, 0), 1)
+              }, 0) / activeCerts.length
             : 0
-
-          // Fleet validity pct: avg of all certs
-          const fleetPct = allActive.length > 0
-            ? allActive.reduce((s, c) => s + validityPct(c), 0) / allActive.length
+          const installPct = activeCerts.length > 0
+            ? activeCerts.filter(c => c.is_live_on_server).length / activeCerts.length
             : 0
+          const outerCirc = 2 * Math.PI * 52
+          const innerCirc = 2 * Math.PI * 40
+          const outerOff  = outerCirc * (1 - Math.min(fleetPct, 1))
+          const innerOff  = innerCirc * (1 - Math.min(installPct, 1))
+          const arcColor  = fleetPct > 0.5 ? '#4ade80' : fleetPct > 0.2 ? '#fbbf24' : '#f87171'
 
-          // Master arc values
-          const outerArc = arc(fleetPct, 70)
-          const innerArc = arc(installPct, 56)
-
-          // Selected cert
-          const selCert = selected ? certs.find(c => c.id === selected) : null
-
-          // Timeline: Jan to Dec of current year
+          // Timeline maths
           const now       = new Date()
           const yearStart = new Date(now.getFullYear(), 0, 1)
           const yearEnd   = new Date(now.getFullYear(), 11, 31)
           const yearSpan  = yearEnd - yearStart
-          const todayPct  = Math.min((now - yearStart) / yearSpan, 1)
+          const todayPct  = (now - yearStart) / yearSpan
+          const tlPct     = iso => iso ? Math.min(Math.max((new Date(iso) - yearStart) / yearSpan, 0), 1) : 0
           const months    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
-          const tlPct = (iso) => {
-            if (!iso) return 0
-            const d = new Date(iso)
-            return Math.min(Math.max((d - yearStart) / yearSpan, 0), 1)
-          }
+          const selCert = selected ? certs.find(c => c.id === selected) : null
 
           return (
             <>
-              {/*    HERO: ARC + DOMAIN ROWS                                 */}
+              {/*    ROW 1: ARC  +  DOMAIN ROWS                              */}
               <div style={{
-                display:'grid', gridTemplateColumns:'220px 1fr',
-                gap:0, marginBottom:16,
-                background:'transparent',
+                display:'grid', gridTemplateColumns:'180px 1fr',
                 border:'1px solid rgba(255,255,255,0.07)',
-                borderRadius:14, overflow:'hidden'
+                borderRadius:12, overflow:'hidden', marginBottom:14,
+                background:'rgba(0,0,0,0.12)'
               }}>
 
-                {/* Left: Master arc */}
+                {/* Arc panel */}
                 <div style={{
                   display:'flex', flexDirection:'column',
                   alignItems:'center', justifyContent:'center',
-                  padding:'22px 16px',
-                  borderRight:'1px solid rgba(255,255,255,0.07)',
-                  background:'rgba(0,0,0,0.15)'
+                  padding:'20px 12px',
+                  borderRight:'1px solid rgba(255,255,255,0.06)'
                 }}>
-                  <svg width="160" height="160" viewBox="0 0 160 160">
-                    {/* Outer ring track */}
-                    <circle cx="80" cy="80" r="70" fill="none"
-                      stroke="rgba(255,255,255,0.06)" strokeWidth="8"/>
-                    {/* Outer ring fill - fleet validity */}
-                    <circle cx="80" cy="80" r="70" fill="none"
-                      stroke={fleetPct > 0.5 ? '#4ade80' : fleetPct > 0.2 ? '#fbbf24' : '#f87171'}
-                      strokeWidth="8" strokeLinecap="round"
-                      strokeDasharray={outerArc.circ}
-                      strokeDashoffset={outerArc.off}
-                      transform="rotate(-90 80 80)"
-                      style={{ filter:`drop-shadow(0 0 5px ${fleetPct > 0.5 ? 'rgba(74,222,128,0.35)' : 'rgba(251,191,36,0.35)'})`}}/>
-                    {/* Inner ring track */}
-                    <circle cx="80" cy="80" r="56" fill="none"
-                      stroke="rgba(255,255,255,0.06)" strokeWidth="6"/>
-                    {/* Inner ring fill - install coverage */}
-                    <circle cx="80" cy="80" r="56" fill="none"
-                      stroke="#ff8c7a" strokeWidth="6" strokeLinecap="round"
-                      strokeDasharray={innerArc.circ}
-                      strokeDashoffset={innerArc.off}
-                      transform="rotate(-90 80 80)"
-                      style={{ opacity:0.75 }}/>
-                    {/* Center: cert count */}
-                    <text x="80" y="69" textAnchor="middle"
-                      fill="#ffffff" fontSize="32" fontWeight="900"
-                      fontFamily="monospace" letterSpacing="-2">
-                      {allActive.length}
+                  <svg width="120" height="120" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="52" fill="none"
+                      stroke="rgba(255,255,255,0.06)" strokeWidth="7"/>
+                    <circle cx="60" cy="60" r="52" fill="none"
+                      stroke={arcColor} strokeWidth="7" strokeLinecap="round"
+                      strokeDasharray={outerCirc} strokeDashoffset={outerOff}
+                      transform="rotate(-90 60 60)"
+                      style={{ filter:`drop-shadow(0 0 4px ${arcColor}66)` }}/>
+                    <circle cx="60" cy="60" r="40" fill="none"
+                      stroke="rgba(255,255,255,0.05)" strokeWidth="5"/>
+                    <circle cx="60" cy="60" r="40" fill="none"
+                      stroke="#ff8c7a" strokeWidth="5" strokeLinecap="round"
+                      strokeDasharray={innerCirc} strokeDashoffset={innerOff}
+                      transform="rotate(-90 60 60)" style={{ opacity:0.7 }}/>
+                    <text x="60" y="55" textAnchor="middle"
+                      fill="#fff" fontSize="24" fontWeight="900"
+                      fontFamily="monospace" letterSpacing="-1">
+                      {activeCerts.length}
                     </text>
-                    <text x="80" y="83" textAnchor="middle"
-                      fill="rgba(255,255,255,0.35)" fontSize="9" fontWeight="700"
-                      letterSpacing="1.5">
-                      CERTS
-                    </text>
-                    <text x="80" y="97" textAnchor="middle"
-                      fill={allHealthy ? '#4ade80' : '#fbbf24'} fontSize="9" fontWeight="700"
-                      letterSpacing="0.5">
+                    <text x="60" y="67" textAnchor="middle"
+                      fill="rgba(255,255,255,0.35)" fontSize="8" fontWeight="700"
+                      letterSpacing="1.2">CERTS</text>
+                    <text x="60" y="79" textAnchor="middle"
+                      fill={allHealthy ? '#4ade80' : '#fbbf24'} fontSize="8"
+                      fontWeight="700" letterSpacing="0.3">
                       {allHealthy ? 'ALL HEALTHY' : 'ACTION NEEDED'}
                     </text>
                   </svg>
-
-                  {/* Arc legend */}
-                  <div style={{ display:'flex', gap:14, marginTop:6 }}>
+                  <div style={{ display:'flex', gap:10, marginTop:8 }}>
                     {[['#4ade80','Validity'],['#ff8c7a','Install']].map(([col,lbl]) => (
-                      <div key={lbl} style={{ display:'flex', alignItems:'center', gap:5 }}>
-                        <div style={{ width:7, height:7, borderRadius:2, background:col, flexShrink:0 }}/>
-                        <span style={{ fontSize:10, color:'rgba(255,255,255,0.3)', fontWeight:500 }}>{lbl}</span>
+                      <div key={lbl} style={{ display:'flex', alignItems:'center', gap:4 }}>
+                        <div style={{ width:6, height:6, borderRadius:2, background:col }}/>
+                        <span style={{ fontSize:9, color:'rgba(255,255,255,0.3)', fontWeight:500 }}>{lbl}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Right: Domain rows */}
-                <div style={{ display:'flex', flexDirection:'column' }}>
-
-                  {/* Header */}
-                  <div style={{
-                    padding:'10px 18px',
-                    borderBottom:'1px solid rgba(255,255,255,0.06)',
-                    display:'flex', alignItems:'center', justifyContent:'space-between',
-                    background:'rgba(0,0,0,0.08)'
-                  }}>
-                    <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.8px',
-                      textTransform:'uppercase', color:'rgba(255,255,255,0.3)' }}>
+                {/* Domain rows */}
+                <div>
+                  <div style={{ padding:'10px 16px',
+                    borderBottom:'1px solid rgba(255,255,255,0.05)',
+                    display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                    <span style={{ fontSize:9, fontWeight:700, letterSpacing:'0.8px',
+                      textTransform:'uppercase', color:'rgba(255,255,255,0.28)' }}>
                       Fleet status
                     </span>
                     {allHealthy && (
-                      <div style={{ display:'flex', alignItems:'center', gap:6,
+                      <div style={{ display:'flex', alignItems:'center', gap:5,
                         background:'rgba(74,222,128,0.07)',
                         border:'1px solid rgba(74,222,128,0.18)',
-                        borderRadius:99, padding:'3px 10px' }}>
-                        <div style={{ width:6, height:6, borderRadius:'50%',
-                          background:'#4ade80', flexShrink:0,
+                        borderRadius:99, padding:'2px 9px' }}>
+                        <div style={{ width:5, height:5, borderRadius:'50%',
+                          background:'#4ade80',
                           animation:'v2-pulse-anim 2s ease infinite' }}/>
-                        <span style={{ fontSize:10, fontWeight:700, color:'#4ade80' }}>
+                        <span style={{ fontSize:9, fontWeight:700, color:'#4ade80' }}>
                           Auto-pilot active
                         </span>
                       </div>
                     )}
                   </div>
-
-                  {/* Cert rows */}
-                  <div style={{ flex:1, display:'flex', flexDirection:'column', justifyContent:'center',
-                    padding:'8px 0' }}>
-                    {activeCerts.map((cert, idx) => {
-                      const d        = daysLeft(cert.expires_at)
-                      const notLive  = !cert.is_live_on_server
-                      const vpct     = validityPct(cert)
-                      const isWarn   = d !== null && d <= 30
-                      const isExpire = d !== null && d <= 0
-                      const col      = notLive   ? '#818cf8'
-                                     : isExpire  ? '#f87171'
-                                     : isWarn    ? '#fbbf24'
-                                     : '#4ade80'
-                      const isSelected = cert.id === selected
-                      const miniArc  = arc(vpct, 14)
-
-                      return (
-                        <div key={cert.id}
-                          onClick={() => setSelected(cert.id === selected ? null : cert.id)}
-                          style={{
-                            display:'flex', alignItems:'center', gap:12,
-                            padding:'10px 18px',
-                            borderLeft: isSelected ? '3px solid #c0392b' : '3px solid transparent',
-                            borderBottom: idx < activeCerts.length - 1
-                              ? '1px solid rgba(255,255,255,0.05)' : 'none',
-                            background: isSelected ? 'rgba(192,57,43,0.12)' : 'transparent',
-                            cursor:'pointer', transition:'all .12s'
-                          }}
-                          onMouseEnter={e => { if(!isSelected) e.currentTarget.style.background='rgba(255,255,255,0.04)' }}
-                          onMouseLeave={e => { if(!isSelected) e.currentTarget.style.background='transparent' }}>
-
-                          {/* Mini arc */}
-                          <svg width="36" height="36" viewBox="0 0 36 36" style={{ flexShrink:0 }}>
-                            <circle cx="18" cy="18" r="14" fill="none"
-                              stroke="rgba(255,255,255,0.08)" strokeWidth="3.5"/>
-                            <circle cx="18" cy="18" r="14" fill="none"
-                              stroke={col} strokeWidth="3.5" strokeLinecap="round"
-                              strokeDasharray={miniArc.circ}
-                              strokeDashoffset={miniArc.off}
-                              transform="rotate(-90 18 18)"/>
-                          </svg>
-
-                          {/* Info */}
-                          <div style={{ flex:1, minWidth:0 }}>
-                            <div style={{ fontSize:13, fontWeight:700, color:'#ffffff',
-                              fontFamily:'monospace', letterSpacing:'-0.3px',
-                              overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                              {cert.domain}
-                            </div>
-                            <div style={{ fontSize:10, color:'rgba(255,255,255,0.35)', marginTop:2 }}>
-                              {cert.cert_type || 'RapidSSL DV'}
-                              {cert.install_method === 'cpanel' ? ' \u00b7 cPanel' :
-                               cert.install_method === 'agent'  ? ' \u00b7 Agent'  : ''}
-                              {cert.is_live_on_server ? ' \u00b7 Live' : ''}
-                            </div>
+                  {activeCerts.map((cert, i) => {
+                    const d        = daysLeft(cert.expires_at)
+                    const notLive  = !cert.is_live_on_server
+                    const col      = notLive              ? '#818cf8'
+                                   : d !== null && d <= 0 ? '#f87171'
+                                   : d !== null && d <= 30? '#fbbf24'
+                                   :                        '#4ade80'
+                    const vpct     = Math.min(Math.max((d || 0) / 200, 0), 1)
+                    const mc       = 2 * Math.PI * 11
+                    const mo       = mc * (1 - vpct)
+                    const isSel    = cert.id === selected
+                    return (
+                      <div key={cert.id}
+                        onClick={() => setSelected(isSel ? null : cert.id)}
+                        style={{
+                          display:'flex', alignItems:'center', gap:10,
+                          padding:'10px 16px',
+                          borderLeft: isSel ? '2px solid #c0392b' : '2px solid transparent',
+                          borderBottom: i < activeCerts.length - 1
+                            ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                          background: isSel ? 'rgba(192,57,43,0.1)' : 'transparent',
+                          cursor:'pointer', transition:'background .1s'
+                        }}
+                        onMouseEnter={e => { if(!isSel) e.currentTarget.style.background='rgba(255,255,255,0.03)' }}
+                        onMouseLeave={e => { if(!isSel) e.currentTarget.style.background='transparent' }}>
+                        {/* Mini arc */}
+                        <svg width="28" height="28" viewBox="0 0 28 28" style={{ flexShrink:0 }}>
+                          <circle cx="14" cy="14" r="11" fill="none"
+                            stroke="rgba(255,255,255,0.07)" strokeWidth="3"/>
+                          <circle cx="14" cy="14" r="11" fill="none"
+                            stroke={col} strokeWidth="3" strokeLinecap="round"
+                            strokeDasharray={mc} strokeDashoffset={mo}
+                            transform="rotate(-90 14 14)"/>
+                        </svg>
+                        {/* Text */}
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:13, fontWeight:700, color:'#fff',
+                            fontFamily:'monospace', overflow:'hidden',
+                            textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                            {cert.domain}
                           </div>
-
-                          {/* Days */}
-                          <div style={{ textAlign:'right', flexShrink:0 }}>
-                            <div style={{ fontSize:15, fontWeight:800, fontFamily:'monospace',
-                              letterSpacing:'-0.5px', color:col }}>
-                              {d === null ? '--' : d <= 0 ? 'EXP' : `${d}d`}
-                            </div>
-                            <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', marginTop:1 }}>
-                              {d !== null && d > 0 ? 'remaining' : ''}
-                            </div>
-                          </div>
-
-                          {/* Badge */}
-                          <div style={{ width:62, flexShrink:0, textAlign:'right' }}>
-                            {notLive ? (
-                              <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px',
-                                borderRadius:99, background:'rgba(129,140,248,0.12)',
-                                color:'#818cf8', border:'1px solid rgba(129,140,248,0.25)' }}>
-                                INSTALL
-                              </span>
-                            ) : isExpire ? (
-                              <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px',
-                                borderRadius:99, background:'rgba(248,113,113,0.12)',
-                                color:'#f87171', border:'1px solid rgba(248,113,113,0.25)' }}>
-                                EXPIRED
-                              </span>
-                            ) : isWarn ? (
-                              <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px',
-                                borderRadius:99, background:'rgba(251,191,36,0.1)',
-                                color:'#fbbf24', border:'1px solid rgba(251,191,36,0.25)' }}>
-                                EXPIRING
-                              </span>
-                            ) : (
-                              <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px',
-                                borderRadius:99, background:'rgba(74,222,128,0.08)',
-                                color:'#4ade80', border:'1px solid rgba(74,222,128,0.2)' }}>
-                                LIVE
-                              </span>
-                            )}
+                          <div style={{ fontSize:10, color:'rgba(255,255,255,0.32)', marginTop:1 }}>
+                            {cert.cert_type || 'RapidSSL DV'}
+                            {cert.install_method === 'cpanel' ? ' \u00b7 cPanel'
+                             : cert.install_method === 'agent' ? ' \u00b7 Agent' : ''}
+                            {cert.is_live_on_server ? ' \u00b7 Live' : ''}
                           </div>
                         </div>
-                      )
-                    })}
-
-                    {/* Add new cert hint */}
-                    <div
-                      onClick={() => nav('/issue-cert')}
-                      style={{ display:'flex', alignItems:'center', gap:12,
-                        padding:'9px 18px', borderTop:'1px solid rgba(255,255,255,0.05)',
-                        cursor:'pointer', opacity:0.4, transition:'opacity .12s' }}
-                      onMouseEnter={e => e.currentTarget.style.opacity='0.7'}
-                      onMouseLeave={e => e.currentTarget.style.opacity='0.4'}>
-                      <div style={{ width:36, height:36, border:'1px dashed rgba(255,255,255,0.2)',
-                        borderRadius:'50%', display:'flex', alignItems:'center',
-                        justifyContent:'center', flexShrink:0 }}>
-                        <span style={{ fontSize:20, color:'rgba(255,255,255,0.3)',
-                          fontWeight:300, lineHeight:1 }}>+</span>
+                        {/* Days */}
+                        <span style={{ fontSize:13, fontWeight:800,
+                          fontFamily:'monospace', color:col, flexShrink:0 }}>
+                          {d === null ? '--' : d <= 0 ? 'EXP' : `${d}d`}
+                        </span>
+                        {/* Badge */}
+                        <span style={{ fontSize:9, fontWeight:700, padding:'2px 8px',
+                          borderRadius:99, flexShrink:0,
+                          background: notLive ? 'rgba(129,140,248,0.1)' : d !== null && d <= 30 ? 'rgba(251,191,36,0.1)' : 'rgba(74,222,128,0.07)',
+                          color: notLive ? '#818cf8' : d !== null && d <= 30 ? '#fbbf24' : '#4ade80',
+                          border: `1px solid ${notLive ? 'rgba(129,140,248,0.25)' : d !== null && d <= 30 ? 'rgba(251,191,36,0.2)' : 'rgba(74,222,128,0.18)'}` }}>
+                          {notLive ? 'INSTALL' : d !== null && d <= 0 ? 'EXPIRED' : d !== null && d <= 30 ? 'EXPIRING' : 'LIVE'}
+                        </span>
                       </div>
-                      <span style={{ fontSize:12, color:'rgba(255,255,255,0.4)' }}>
-                        Issue new certificate
-                      </span>
+                    )
+                  })}
+                  {/* Issue new */}
+                  <div onClick={() => nav && nav('/issue-cert')}
+                    style={{ display:'flex', alignItems:'center', gap:10,
+                      padding:'8px 16px', cursor:'pointer',
+                      borderTop:'1px solid rgba(255,255,255,0.05)',
+                      opacity:0.35, transition:'opacity .12s' }}
+                    onMouseEnter={e => e.currentTarget.style.opacity='0.65'}
+                    onMouseLeave={e => e.currentTarget.style.opacity='0.35'}>
+                    <div style={{ width:28, height:28, flexShrink:0,
+                      border:'1px dashed rgba(255,255,255,0.2)',
+                      borderRadius:'50%', display:'flex',
+                      alignItems:'center', justifyContent:'center',
+                      fontSize:16, color:'rgba(255,255,255,0.35)', fontWeight:300 }}>
+                      +
                     </div>
+                    <span style={{ fontSize:12, color:'rgba(255,255,255,0.4)' }}>
+                      Issue new certificate
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/*    SELECTED CERT DETAIL STRIP                              */}
+              {/*    ROW 2: SELECTED DETAIL (only when cert clicked)          */}
               {selCert && (() => {
-                const d       = daysLeft(selCert.expires_at)
-                const notLive = !selCert.is_live_on_server
+                const d = daysLeft(selCert.expires_at)
                 return (
                   <div style={{
                     display:'grid', gridTemplateColumns:'repeat(5,1fr)',
-                    gap:1, marginBottom:16,
-                    background:'rgba(192,57,43,0.06)',
-                    border:'1px solid rgba(192,57,43,0.2)',
-                    borderRadius:12, overflow:'hidden'
+                    gap:1, marginBottom:14, borderRadius:10, overflow:'hidden',
+                    border:'1px solid rgba(192,57,43,0.18)',
+                    background:'rgba(192,57,43,0.05)'
                   }}>
                     {[
-                      { label:'Domain',    value: selCert.domain, mono:true, color:'#ffffff' },
-                      { label:'Expires',   value: selCert.expires_at
-                          ? new Date(selCert.expires_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})
+                      { lbl:'Domain',     val: selCert.domain,
+                        col:'#ffffff', mono:true },
+                      { lbl:'Expires',    val: selCert.expires_at
+                          ? new Date(selCert.expires_at).toLocaleDateString('en-GB',
+                              {day:'2-digit',month:'short',year:'numeric'})
                           : 'N/A',
-                        color: d !== null && d <= 30 ? '#fbbf24' : '#4ade80' },
-                      { label:'Server',    value: notLive ? 'Not installed' : 'Live on server',
-                        color: notLive ? '#f87171' : '#4ade80' },
-                      { label:'Auto-renew', value: selCert.auto_renew_enabled !== false ? 'Enabled' : 'Disabled',
-                        color: selCert.auto_renew_enabled !== false ? '#4ade80' : '#f87171' },
-                      { label:'Key vault',  value: selCert.keylocker_key_id ? 'Secured' : 'Not stored',
-                        color: selCert.keylocker_key_id ? '#4ade80' : '#fbbf24' },
-                    ].map(({ label, value, mono, color }) => (
-                      <div key={label} style={{ padding:'12px 16px',
-                        borderRight:'1px solid rgba(192,57,43,0.12)' }}>
-                        <div style={{ fontSize:9, fontWeight:700, letterSpacing:'0.7px',
-                          textTransform:'uppercase', color:'rgba(255,255,255,0.3)',
-                          marginBottom:5 }}>{label}</div>
-                        <div style={{ fontSize:12, fontWeight:700, color,
+                        col: d !== null && d <= 30 ? '#fbbf24' : '#4ade80' },
+                      { lbl:'Server',     val: selCert.is_live_on_server ? 'Live on server' : 'Not installed',
+                        col: selCert.is_live_on_server ? '#4ade80' : '#f87171' },
+                      { lbl:'Auto-renew', val: selCert.auto_renew_enabled !== false ? 'Enabled' : 'Disabled',
+                        col: selCert.auto_renew_enabled !== false ? '#4ade80' : '#f87171' },
+                      { lbl:'Key vault',  val: selCert.keylocker_key_id ? 'Secured' : 'Not stored',
+                        col: selCert.keylocker_key_id ? '#4ade80' : '#fbbf24' },
+                    ].map(({ lbl, val, col, mono }, i) => (
+                      <div key={lbl} style={{ padding:'11px 14px',
+                        borderRight: i < 4 ? '1px solid rgba(192,57,43,0.1)' : 'none' }}>
+                        <div style={{ fontSize:9, fontWeight:700, letterSpacing:'0.6px',
+                          textTransform:'uppercase', color:'rgba(255,255,255,0.28)',
+                          marginBottom:4 }}>{lbl}</div>
+                        <div style={{ fontSize:12, fontWeight:700, color:col,
                           fontFamily: mono ? 'monospace' : 'inherit',
                           overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                          {value}
+                          {val}
                         </div>
                       </div>
                     ))}
@@ -3118,134 +3041,108 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 )
               })()}
 
-              {/*    TIMELINE RIBBON                                         */}
+              {/*    ROW 3: TIMELINE (clean, minimal)                        */}
               <div style={{
-                background:'transparent',
                 border:'1px solid rgba(255,255,255,0.07)',
-                borderRadius:12, overflow:'hidden', marginBottom:16
+                borderRadius:10, overflow:'hidden',
+                marginBottom: recentEvents.length > 0 ? 14 : 16,
+                background:'rgba(0,0,0,0.1)'
               }}>
                 {/* Header */}
-                <div style={{ padding:'10px 18px',
-                  borderBottom:'1px solid rgba(255,255,255,0.06)',
-                  display:'flex', alignItems:'center', justifyContent:'space-between',
-                  background:'rgba(0,0,0,0.12)' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <div style={{ width:16, height:1, background:'rgba(255,255,255,0.2)' }}/>
-                    <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.8px',
-                      textTransform:'uppercase', color:'rgba(255,255,255,0.3)' }}>
-                      Certificate lifecycle {new Date().getFullYear()}
-                    </span>
-                  </div>
-                  <div style={{ display:'flex', gap:14 }}>
-                    {[['rgba(74,222,128,0.8)','Active'],['rgba(255,255,255,0.08)','Past'],['rgba(255,255,255,0.04)','Renewal']].map(([col,lbl]) => (
+                <div style={{ padding:'9px 16px',
+                  borderBottom:'1px solid rgba(255,255,255,0.05)',
+                  display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <span style={{ fontSize:9, fontWeight:700, letterSpacing:'0.8px',
+                    textTransform:'uppercase', color:'rgba(255,255,255,0.28)' }}>
+                    Lifecycle {now.getFullYear()}
+                  </span>
+                  <div style={{ display:'flex', gap:12 }}>
+                    {[['rgba(74,222,128,0.75)','Valid'],['rgba(74,222,128,0.2)','Remaining'],['rgba(255,255,255,0.06)','Past']].map(([bg,lbl]) => (
                       <span key={lbl} style={{ display:'flex', alignItems:'center', gap:4,
                         fontSize:9, color:'rgba(255,255,255,0.25)' }}>
-                        <span style={{ width:16, height:4, borderRadius:2,
-                          background:col, display:'inline-block' }}/>
+                        <span style={{ width:14, height:4, borderRadius:2,
+                          background:bg, display:'inline-block' }}/>
                         {lbl}
                       </span>
                     ))}
-                    <span style={{ display:'flex', alignItems:'center', gap:4,
-                      fontSize:9, color:'rgba(255,255,255,0.35)' }}>
-                      <span style={{ width:1, height:12, background:'rgba(255,255,255,0.3)',
-                        display:'inline-block' }}/>
-                      Today
-                    </span>
                   </div>
                 </div>
 
-                {/* Month labels */}
-                <div style={{ padding:'6px 18px 0',
-                  display:'flex', alignItems:'center', gap:10 }}>
-                  <div style={{ width:110, flexShrink:0 }}/>
+                {/* Month axis */}
+                <div style={{ display:'flex', alignItems:'center', gap:10,
+                  padding:'4px 16px 0' }}>
+                  <div style={{ width:96, flexShrink:0 }}/>
                   <div style={{ flex:1, display:'flex', justifyContent:'space-between',
-                    fontSize:8, color:'rgba(255,255,255,0.18)', paddingRight:114 }}>
-                    {months.map((m,i) => (
-                      <span key={m} style={{
+                    paddingRight:104 }}>
+                    {months.map((m, i) => (
+                      <span key={m} style={{ fontSize:8,
                         color: i === now.getMonth()
-                          ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.18)',
-                        fontWeight: i === now.getMonth() ? 700 : 400
-                      }}>{m}</span>
+                          ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)',
+                        fontWeight: i === now.getMonth() ? 700 : 400 }}>
+                        {m}
+                      </span>
                     ))}
                   </div>
                 </div>
 
                 {/* Timeline rows */}
-                <div style={{ padding:'8px 18px 14px' }}>
-                  {activeCerts.map((cert, idx) => {
-                    const d       = daysLeft(cert.expires_at)
-                    const notLive = !cert.is_live_on_server
-                    const col     = notLive   ? '#818cf8'
-                                  : d !== null && d <= 0   ? '#f87171'
-                                  : d !== null && d <= 30  ? '#fbbf24'
-                                  : '#4ade80'
-                    const issuedP  = cert.issued_at ? tlPct(cert.issued_at) : 0
-                    const expiryP  = cert.expires_at ? tlPct(cert.expires_at) : 1
-                    const renewalP = Math.min(expiryP + 0.12, 1)
-                    const activeW  = Math.max(todayPct - issuedP, 0)
+                <div style={{ padding:'8px 16px 12px' }}>
+                  {activeCerts.map((cert, i) => {
+                    const d        = daysLeft(cert.expires_at)
+                    const notLive  = !cert.is_live_on_server
+                    const col      = notLive              ? '#818cf8'
+                                   : d !== null && d <= 0 ? '#f87171'
+                                   : d !== null && d <= 30? '#fbbf24'
+                                   :                        '#4ade80'
+                    const issuedP  = tlPct(cert.issued_at)
+                    const expiryP  = tlPct(cert.expires_at)
+                    const pastW    = issuedP
+                    const activeW  = Math.max(Math.min(todayPct, expiryP) - issuedP, 0)
                     const futureW  = Math.max(expiryP - todayPct, 0)
-
+                    const shortName = cert.domain.replace(/^www\./,'').split('.').slice(0,-1).join('.') || cert.domain
                     return (
-                      <div key={cert.id} style={{ display:'flex', alignItems:'center',
-                        gap:10, marginBottom: idx < activeCerts.length-1 ? 8 : 0 }}>
-                        <div style={{ width:110, flexShrink:0 }}>
-                          <div style={{ fontSize:12, fontWeight:700, color:'#ffffff',
+                      <div key={cert.id}
+                        style={{ display:'flex', alignItems:'center', gap:10,
+                          marginBottom: i < activeCerts.length-1 ? 8 : 0 }}>
+                        <div style={{ width:96, flexShrink:0 }}>
+                          <div style={{ fontSize:11, fontWeight:700, color:'#fff',
                             fontFamily:'monospace', overflow:'hidden',
                             textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                            {cert.domain.replace(/^www\./,'').split('.')[0]}
-                          </div>
-                          <div style={{ fontSize:9, color:'rgba(255,255,255,0.3)', marginTop:1 }}>
-                            {cert.cert_type || 'RapidSSL'}
+                            {shortName.length > 10 ? shortName.slice(0,9)+'..' : shortName}
                           </div>
                         </div>
-
                         {/* Track */}
-                        <div style={{ flex:1, height:8, background:'rgba(255,255,255,0.04)',
-                          borderRadius:99, position:'relative', overflow:'visible' }}>
-                          {/* Past portion */}
-                          {issuedP > 0 && (
+                        <div style={{ flex:1, height:7, background:'rgba(255,255,255,0.04)',
+                          borderRadius:99, position:'relative', overflow:'hidden' }}>
+                          {pastW > 0 && (
                             <div style={{ position:'absolute', left:0, top:0, bottom:0,
-                              width:`${issuedP*100}%`, background:'rgba(255,255,255,0.07)',
-                              borderRadius:'99px 0 0 99px' }}/>
+                              width:`${pastW*100}%`, background:'rgba(255,255,255,0.06)' }}/>
                           )}
-                          {/* Active validity (past+future green) */}
                           <div style={{ position:'absolute',
                             left:`${issuedP*100}%`, top:0, bottom:0,
                             width:`${activeW*100}%`,
-                            background:`linear-gradient(90deg,rgba(74,222,128,0.4),${col})`,
-                            borderRadius: issuedP === 0 ? '99px 0 0 99px' : 0 }}/>
-                          {/* Future remaining */}
+                            background:`${col}CC` }}/>
                           <div style={{ position:'absolute',
-                            left:`${todayPct*100}%`, top:0, bottom:0,
+                            left:`${Math.min(todayPct,expiryP)*100}%`, top:0, bottom:0,
                             width:`${futureW*100}%`,
-                            background:`${col}33`,
-                            borderRadius: expiryP >= 0.98 ? '0 99px 99px 0' : 0 }}/>
-                          {/* Renewal window */}
-                          <div style={{ position:'absolute',
-                            left:`${expiryP*100}%`, top:0, bottom:0,
-                            width:`${(renewalP-expiryP)*100}%`,
-                            background:'rgba(255,255,255,0.04)',
-                            borderRadius:'0 99px 99px 0' }}/>
+                            background:`${col}33` }}/>
                           {/* Today line */}
-                          <div style={{ position:'absolute', top:-5, bottom:-5,
+                          <div style={{ position:'absolute', top:0, bottom:0,
                             left:`${todayPct*100}%`, width:1.5,
-                            background:'rgba(255,255,255,0.3)', borderRadius:1 }}/>
+                            background:'rgba(255,255,255,0.35)' }}/>
                         </div>
-
-                        {/* Days remaining */}
-                        <div style={{ width:44, textAlign:'right', flexShrink:0,
-                          fontSize:12, fontWeight:800, fontFamily:'monospace',
-                          letterSpacing:'-0.5px', color:col }}>
+                        {/* Days */}
+                        <div style={{ width:40, textAlign:'right', flexShrink:0,
+                          fontSize:11, fontWeight:800, fontFamily:'monospace', color:col }}>
                           {d === null ? '--' : d <= 0 ? 'EXP' : `${d}d`}
                         </div>
-
                         {/* Badge */}
-                        <div style={{ width:58, flexShrink:0, textAlign:'right' }}>
-                          <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px',
-                            borderRadius:99, display:'inline-block',
-                            background: notLive ? 'rgba(129,140,248,0.1)' : 'rgba(74,222,128,0.08)',
+                        <div style={{ width:52, flexShrink:0, textAlign:'right' }}>
+                          <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px',
+                            borderRadius:99,
+                            background: notLive ? 'rgba(129,140,248,0.1)' : 'rgba(74,222,128,0.07)',
                             color: notLive ? '#818cf8' : '#4ade80',
-                            border: `1px solid ${notLive ? 'rgba(129,140,248,0.25)' : 'rgba(74,222,128,0.2)'}` }}>
+                            border: `1px solid ${notLive ? 'rgba(129,140,248,0.2)' : 'rgba(74,222,128,0.18)'}` }}>
                             {notLive ? 'INSTALL' : 'LIVE'}
                           </span>
                         </div>
@@ -3255,49 +3152,48 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 </div>
               </div>
 
-              {/*    ACTIVITY STRIP                                          */}
+              {/*    ROW 4: ACTIVITY (only if events exist)                  */}
               {recentEvents.length > 0 && (
                 <div style={{ display:'flex', gap:8, marginBottom:16 }}>
-                  <div style={{ fontSize:10, fontWeight:700, letterSpacing:'0.8px',
-                    textTransform:'uppercase', color:'rgba(255,255,255,0.25)',
+                  <div style={{ fontSize:9, fontWeight:700, letterSpacing:'0.8px',
+                    textTransform:'uppercase', color:'rgba(255,255,255,0.22)',
                     writingMode:'vertical-rl', transform:'rotate(180deg)',
-                    paddingBottom:4, flexShrink:0, display:'flex',
-                    alignItems:'center', justifyContent:'center',
-                    minHeight:60 }}>
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    flexShrink:0 }}>
                     Recent
                   </div>
-                  <div style={{ flex:1, display:'flex', gap:6, flexWrap:'wrap' }}>
-                    {recentEvents.slice(0,4).map((ev, i) => {
+                  <div style={{ flex:1, display:'grid',
+                    gridTemplateColumns:`repeat(${Math.min(recentEvents.length,4)},1fr)`,
+                    gap:7 }}>
+                    {recentEvents.slice(0,4).map(ev => {
                       const secs = Math.floor((Date.now() - new Date(ev.created_at)) / 1000)
                       const ago  = secs < 60 ? `${secs}s`
                                  : secs < 3600 ? `${Math.floor(secs/60)}m`
                                  : secs < 86400 ? `${Math.floor(secs/3600)}h`
                                  : `${Math.floor(secs/86400)}d`
-                      const dotCol = ev.event_type === 'issued'  ? '#4ade80'
-                                   : ev.event_type === 'revoked' ? '#f87171' : '#ff8c7a'
+                      const col  = ev.event_type === 'issued'  ? '#4ade80'
+                                 : ev.event_type === 'revoked' ? '#f87171' : '#ff8c7a'
                       return (
-                        <div key={ev.id} style={{ flex:'1 1 120px',
-                          background:'rgba(255,255,255,0.03)',
-                          border:'1px solid rgba(255,255,255,0.07)',
-                          borderRadius:9, padding:'10px 12px',
-                          display:'flex', flexDirection:'column', gap:3,
-                          minHeight:62 }}>
-                          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                        <div key={ev.id} style={{
+                          background:'rgba(255,255,255,0.02)',
+                          border:'1px solid rgba(255,255,255,0.06)',
+                          borderRadius:8, padding:'9px 11px' }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:5,
+                            marginBottom:4 }}>
                             <div style={{ width:5, height:5, borderRadius:'50%',
-                              background:dotCol, flexShrink:0 }}/>
+                              background:col, flexShrink:0 }}/>
                             <span style={{ fontSize:11, fontWeight:600, color:'#ff8c7a',
                               overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                               {ev.event_type.replace(/_/g,' ')}
                             </span>
                           </div>
-                          <div style={{ fontSize:10, color:'rgba(255,255,255,0.35)',
-                            overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
-                            fontFamily:'monospace' }}>
+                          <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)',
+                            fontFamily:'monospace', overflow:'hidden',
+                            textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                             {ev.domain}
                           </div>
-                          <div style={{ fontSize:10, color:'rgba(255,255,255,0.2)', marginTop:'auto' }}>
-                            {ago} ago
-                          </div>
+                          <div style={{ fontSize:9, color:'rgba(255,255,255,0.2)',
+                            marginTop:4 }}>{ago} ago</div>
                         </div>
                       )
                     })}
