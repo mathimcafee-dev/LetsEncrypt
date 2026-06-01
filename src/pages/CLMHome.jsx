@@ -150,6 +150,7 @@ export default function CLMHome({ user, nav }) {
     if(sec==='cert-timeline')    return <CertTimeline user={user}/>
     if(sec==='renewal-calendar') return <RenewalCalendar user={user}/>
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
+    if(sec==='sla-dashboard')    return <SLADashboard nav={sideNav}/>
     if(sec==='admin-calendar')   return <AdminRenewalCalendar user={user}/>
     return null
   }
