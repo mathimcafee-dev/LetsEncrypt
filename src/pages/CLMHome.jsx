@@ -101,7 +101,7 @@ export default function CLMHome({ user, nav }) {
       {id:'domain-manager',    label:'Domain Manager',   icon:Globe},
     ]},
     { group:'Monitor', items:[
-      {id:'shield',            label:'Security monitor',  icon:ShieldCheck},
+      {id:'shield',            label:'Threat Intelligence', icon:ShieldCheck},
       {id:'compliance-centre',  label:'Compliance Centre', icon:Shield, badge:'NEW'},
     ]},
     { group:'Secure', items:[
