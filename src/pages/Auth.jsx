@@ -1,9 +1,108 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import React from 'react'
 import { supabase } from '../lib/supabase'
 import { Shield, Lock, CheckCircle, Zap, Eye, EyeOff, AlertTriangle, ArrowRight, RefreshCw } from 'lucide-react'
 import '../styles/design-v2.css'
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
+
+
+function SSLVaultTrustBadge({ compact = false }) {
+  const canvasRef = React.useRef(null)
+  React.useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const W = compact ? 26 : 34
+    const H = compact ? 38 : 50
+    const STEPS = 13
+    let f = 0, raf
+    function draw() {
+      ctx.clearRect(0, 0, W, H)
+      const t = f * 0.044
+      const pts1 = [], pts2 = []
+      for (let i = 0; i <= STEPS; i++) {
+        const y = 3 + (i / STEPS) * (H - 6)
+        const phase = (i / STEPS) * Math.PI * 2.4 + t
+        pts1.push({ x: W/2 + Math.sin(phase) * (W/2 - 3), y, phase })
+        pts2.push({ x: W/2 + Math.sin(phase + Math.PI) * (W/2 - 3), y, phase })
+      }
+      for (let i = 0; i <= STEPS; i += 2) {
+        const depth = (Math.sin(pts1[i].phase) + 1) / 2
+        ctx.beginPath(); ctx.moveTo(pts1[i].x, pts1[i].y); ctx.lineTo(pts2[i].x, pts2[i].y)
+        ctx.strokeStyle = `rgba(192,57,43,${(0.08 + depth * 0.15).toFixed(2)})`; ctx.lineWidth = 0.7; ctx.stroke()
+      }
+      const drawStrand = (pts, col) => {
+        ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y)
+        for (let i = 1; i <= STEPS; i++) {
+          const mx = (pts[i-1].x + pts[i].x)/2, my = (pts[i-1].y + pts[i].y)/2
+          ctx.quadraticCurveTo(pts[i-1].x, pts[i-1].y, mx, my)
+        }
+        ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke()
+      }
+      drawStrand(pts1, '#c0392b'); drawStrand(pts2, '#e85555')
+      for (let i = 0; i <= STEPS; i++) {
+        const depth = (Math.sin(pts1[i].phase) + 1) / 2
+        const r = 1.4 + depth * 1.8
+        ctx.beginPath(); ctx.arc(pts1[i].x, pts1[i].y, r, 0, Math.PI*2)
+        ctx.fillStyle = `rgba(220,80,60,${(0.35 + depth * 0.65).toFixed(2)})`; ctx.fill()
+      }
+      for (let i = 0; i <= STEPS; i++) {
+        const depth = (Math.sin(pts2[i].phase + Math.PI) + 1) / 2
+        const r = 1.4 + depth * 1.8
+        ctx.beginPath(); ctx.arc(pts2[i].x, pts2[i].y, r, 0, Math.PI*2)
+        ctx.fillStyle = `rgba(192,57,43,${(0.25 + depth * 0.5).toFixed(2)})`; ctx.fill()
+      }
+      f++; raf = requestAnimationFrame(draw)
+    }
+    draw()
+    return () => cancelAnimationFrame(raf)
+  }, [compact])
+  const W = compact ? 26 : 34, H = compact ? 38 : 50
+  return (
+    <div style={{
+      display:'inline-flex', alignItems:'center', gap: compact ? 8 : 11,
+      padding: compact ? '6px 12px 6px 8px' : '9px 16px 9px 10px',
+      background:'#1a0808',
+      border:'1px solid rgba(192,57,43,0.35)',
+      borderRadius:10, position:'relative', overflow:'hidden',
+      minWidth: compact ? 0 : 240,
+      animation:'sv-sweep-anim 3.5s ease-in-out infinite',
+    }}>
+      <canvas ref={canvasRef} width={W} height={H} style={{flexShrink:0}} />
+      <div style={{display:'flex',flexDirection:'column',gap:2,flex:1}}>
+        <span style={{fontSize:7,fontWeight:700,color:'#e85555',letterSpacing:'.14em',textTransform:'uppercase'}}>
+          {compact ? 'Secured by' : 'Cryptographically Secured'}
+        </span>
+        <div style={{fontSize: compact ? 13 : 15, fontWeight:800, color:'#ffffff', lineHeight:1, letterSpacing:'.01em'}}>
+          SSLVault <span style={{color:'#c0392b', fontSize: compact ? 10 : 11, fontWeight:500}}>® {compact ? 'PKI' : 'easysecurity.in'}</span>
+        </div>
+        <span style={{fontSize: compact ? 8 : 9, color:'#6a2a2a', letterSpacing:'.03em'}}>
+          {compact ? '256-bit TLS encryption' : 'Certified PKI · GoGetSSL · RapidSSL DV'}
+        </span>
+        <div style={{width:'100%',height:2,background:'#120505',borderRadius:1,marginTop:3,overflow:'hidden',position:'relative'}}>
+          <div style={{position:'absolute',left:'-60%',top:0,width:'40%',height:'100%',
+            background:'linear-gradient(90deg,transparent,#c0392b,rgba(220,60,40,.5),transparent)',
+            animation:'sv-scan-anim 2.4s linear infinite'}}/>
+        </div>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:1,flexShrink:0}}>
+        <span style={{fontSize: compact ? 14 : 18, fontWeight:900, color:'#e03030', lineHeight:1}}>256</span>
+        <span style={{fontSize:8,color:'#6a2a2a',letterSpacing:'.06em',textTransform:'uppercase'}}>Bit SSL</span>
+        {!compact && <div style={{display:'flex',alignItems:'center',gap:4,marginTop:4}}>
+          <div style={{width:5,height:5,borderRadius:'50%',background:'#ff6b6b',
+            animation:'sv-live-anim 1.2s ease-in-out infinite'}}/>
+          <span style={{fontSize:8,color:'#cc4444',fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase'}}>Live</span>
+        </div>}
+      </div>
+      <style>{`
+        @keyframes sv-sweep-anim{0%{box-shadow:inset -60px 0 30px -30px transparent}50%{box-shadow:inset -60px 0 30px -30px rgba(192,57,43,0.06)}100%{box-shadow:inset -60px 0 30px -30px transparent}}
+        @keyframes sv-scan-anim{0%{left:-60%}100%{left:120%}}
+        @keyframes sv-live-anim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.55)}}
+      `}</style>
+    </div>
+  )
+}
 
 export default function Auth({ nav }) {
   const isMobile = useIsMobile()
@@ -168,6 +267,10 @@ export default function Auth({ nav }) {
                 ? <><RefreshCw size={13} className="spin" /> {mode === 'set_password' ? 'Setting password…' : 'Signing in…'}</>
                 : <>{mode === 'set_password' ? 'Set password & continue' : 'Sign in'} <ArrowRight size={13} /></>}
             </button>
+
+            <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}>
+              <SSLVaultTrustBadge compact={true} />
+            </div>
 
             <div style={{ textAlign:'center', fontSize:13, color:'#b0a8a0' }}>
               New to SSLVault?{' '}
