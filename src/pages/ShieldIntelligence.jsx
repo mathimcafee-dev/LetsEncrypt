@@ -812,27 +812,6 @@ function MassScanTab() {
   )
 }
 
-// ======================================================================
-// MAIN EXPORT -- Shell
-// ======================================================================
-  ShieldAlert, RefreshCw, Check, X, AlertTriangle, Search,
-  Shield, ChevronDown, ChevronUp, Plus, Trash2, ExternalLink
-} from 'lucide-react'
-
-
-function timeAgo(iso) {
-  if (!iso) return '--'
-  const s = Math.floor((Date.now() - new Date(iso)) / 1000)
-  if (s < 60)    return `${s}s ago`
-  if (s < 3600)  return `${Math.floor(s / 60)}m ago`
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`
-  return `${Math.floor(s / 86400)}d ago`
-}
-
-function fmtDate(iso) {
-  if (!iso) return '--'
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-}
 
 // Classify a shadow cert against the user's known certs
 function classifyCert(shadow, knownDomains) {
@@ -850,8 +829,6 @@ const STATUS_CONFIG = {
   suspicious: { label: 'Suspicious', color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)', leftBorder: '#f0ede8' },
   known:      { label: 'Known',      color: '#4ade80', bg: 'transparent', border: 'rgba(192,57,43,0.3)', leftBorder: '#4ade80' },
 }
-
-function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
 function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.unknown
@@ -1045,8 +1022,6 @@ export default function ShieldIntelligence({ user }) {
     { id:'mass',     label:'Mass Scan',   icon:Scan       },
   ]
 
-  return (
-  // -- Threat Intelligence render: 4 sections, no tabs -----------------
   // Derived CT values
   const classified = shadows.map(s => ({ ...s, _status: classifyCert(s, knownCerts) }))
   const ctCounts = classified.reduce((a, s) => { a[s._status] = (a[s._status] || 0) + 1; return a }, {})
