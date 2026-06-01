@@ -3,7 +3,7 @@ import {
   Shield, Plus, Server, TrendingUp, History, CalendarDays, BarChart2,
   ShieldCheck, LayoutDashboard, Settings, Lock, BookOpen,
   LogOut, Bell, Menu, X, ChevronDown, ChevronRight,
-  Globe, Activity
+  Globe, Activity, Star
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import Dashboard from './Dashboard'
