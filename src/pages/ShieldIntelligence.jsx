@@ -21,9 +21,9 @@ async function api(fn, tok, body) {
   return r.json()
 }
 
-// ── shared helpers ────────────────────────────────────────────────────
+// -- shared helpers ----------------------------------------------------
 function timeAgo(iso) {
-  if (!iso) return '—'
+  if (!iso) return '--'
   const s = Math.floor((Date.now() - new Date(iso)) / 1000)
   if (s < 60)    return `${s}s ago`
   if (s < 3600)  return `${Math.floor(s/60)}m ago`
@@ -31,7 +31,7 @@ function timeAgo(iso) {
   return `${Math.floor(s/86400)}d ago`
 }
 function fmtDate(iso) {
-  if (!iso) return '—'
+  if (!iso) return '--'
   return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
 }
 
@@ -100,9 +100,9 @@ function Spinner() {
   return <RefreshCw size={13} style={{ animation:'spin .7s linear infinite', flexShrink:0 }}/>
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// TAB 1 — OVERVIEW (Analytics)
-// ══════════════════════════════════════════════════════════════════════
+// ======================================================================
+// TAB 1 -- OVERVIEW (Analytics)
+// ======================================================================
 function OverviewTab({ user }) {
   const [stats,   setStats]   = useState(null)
   const [loading, setLoading] = useState(true)
@@ -124,10 +124,10 @@ function OverviewTab({ user }) {
       const expiring7  = active.filter(c => c.expires_at && Math.ceil((new Date(c.expires_at)-now)/86400000) <= 7)
       const thisMonth  = orders.filter(o => new Date(o.created_at) > new Date(now.getFullYear(), now.getMonth(), 1))
 
-      const grades = { 'A+':0, A:0, B:0, C:0, D:0, F:0, '—':0 }
+      const grades = { 'A+':0, A:0, B:0, C:0, D:0, F:0, '--':0 }
       active.forEach(c => {
         if (c.tls_grade && grades[c.tls_grade] !== undefined) grades[c.tls_grade]++
-        else grades['—']++
+        else grades['--']++
       })
 
       const bySource = {}
@@ -145,7 +145,7 @@ function OverviewTab({ user }) {
 
   if (loading) return (
     <div style={{ textAlign:'center', padding:60, color:'#b0a8a0' }}>
-      <Spinner/><span style={{ marginLeft:8 }}>Loading analytics…</span>
+      <Spinner/><span style={{ marginLeft:8 }}>Loading analytics...</span>
     </div>
   )
 
@@ -153,7 +153,7 @@ function OverviewTab({ user }) {
           grades={}, bySource={}, deployed=0, keyVault=0 } = stats || {}
 
   const gradeEntries = [['A+','#f0ede8'],['A','#a93226'],['B','#a93226'],
-    ['C','#c0392b'],['D','#c0392b'],['F','#a93226'],['—','rgba(240,237,232,0.45)']]
+    ['C','#c0392b'],['D','#c0392b'],['F','#a93226'],['--','rgba(240,237,232,0.45)']]
   const maxGrade = Math.max(...gradeEntries.map(([g]) => grades[g]||0), 1)
 
   return (
@@ -162,7 +162,7 @@ function OverviewTab({ user }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Active certs" val={active} sub={`of ${total} total`}
           color={active>0?'#f0ede8':'var(--v2-text-1)'}/>
-        <StatCard label="Expiring ≤ 30d" val={expiring30} sub={expiring7>0?`${expiring7} within 7 days`:'none critical'}
+        <StatCard label="Expiring <= 30d" val={expiring30} sub={expiring7>0?`${expiring7} within 7 days`:'none critical'}
           color={expiring30>0?'#c0392b':'var(--v2-text-1)'} bg={expiring30>0?'rgba(230,126,34,0.12)':undefined}/>
         <StatCard label="Deployed to servers" val={deployed} sub="agent or cPanel"
           color={deployed>0?'#f0ede8':'var(--v2-text-1)'}/>
@@ -184,7 +184,7 @@ function OverviewTab({ user }) {
                 {(grades[g]||0) > 0 && (
                   <div style={{ position:'absolute', left:0, top:0, bottom:0,
                     width:`${Math.max(8, Math.round(((grades[g]||0)/maxGrade)*100))}%`,
-                    background:gradeStyle(g==='—'?'Z':g).bg,
+                    background:gradeStyle(g==='--'?'Z':g).bg,
                     borderRight:`2px solid ${color}`,
                     display:'flex', alignItems:'center', paddingLeft:8,
                     transition:'width .6s cubic-bezier(.16,1,.3,1)' }}>
@@ -255,8 +255,8 @@ function OverviewTab({ user }) {
           </div>
           <div style={{ display:'flex', gap:16, marginTop:8 }}>
             {[
-              { label:'Critical (≤7d)', n:expiring7,  color:'#a93226' },
-              { label:'Expiring (≤30d)', n:expiring30, color:'#c0392b' },
+              { label:'Critical (<=7d)', n:expiring7,  color:'#a93226' },
+              { label:'Expiring (<=30d)', n:expiring30, color:'#c0392b' },
               { label:'Healthy',        n:active-expiring30, color:'#ffffff' },
             ].map(({ label, n, color }) => (
               <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
@@ -272,7 +272,7 @@ function OverviewTab({ user }) {
   )
 }
 
-// ── TLS domain row (must be a component — no hooks inside .map) ──────
+// -- TLS domain row (must be a component -- no hooks inside .map) ------
 function DomainScoreRow({ s, scanning, onRescan }) {
   const [expanded, setExpanded] = useState(false)
   const style = gradeStyle(s.grade)
@@ -323,11 +323,11 @@ function DomainScoreRow({ s, scanning, onRescan }) {
           display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px,1fr))', gap:10 }}>
           {[
             ['Score',       `${Math.round(s.score||0)} / 100`],
-            ['Issuer',      s.issuer||'—'],
-            ['Expiry',      s.expiry_days!=null?(s.expiry_days<=0?'Expired':`${s.expiry_days} days`):'—'],
-            ['TLS valid',   s.cert_valid?'Yes ✓':'No ✗'],
-            ['HSTS',        s.hsts?'Enabled ✓':'Missing ✗'],
-            ['CAA record',  s.caa?'Present ✓':'Missing ✗'],
+            ['Issuer',      s.issuer||'--'],
+            ['Expiry',      s.expiry_days!=null?(s.expiry_days<=0?'Expired':`${s.expiry_days} days`):'--'],
+            ['TLS valid',   s.cert_valid?'Yes ok':'No x'],
+            ['HSTS',        s.hsts?'Enabled ok':'Missing x'],
+            ['CAA record',  s.caa?'Present ok':'Missing x'],
             ['Last scanned',timeAgo(s.scanned_at)],
           ].map(([label, val]) => (
             <div key={label}>
@@ -342,9 +342,9 @@ function DomainScoreRow({ s, scanning, onRescan }) {
   )
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// TAB 2 — TLS GRADES
-// ══════════════════════════════════════════════════════════════════════
+// ======================================================================
+// TAB 2 -- TLS GRADES
+// ======================================================================
 function TLSGradesTab({ tok, user }) {
   const [scores,  setScores]  = useState([])
   const [loading, setLoading] = useState(true)
@@ -410,7 +410,7 @@ function TLSGradesTab({ tok, user }) {
           <input ref={inputRef} value={newDomain}
             onChange={e => setNewDomain(e.target.value)}
             onKeyDown={e => e.key==='Enter' && addDomain()}
-            placeholder="Enter any domain to scan — e.g. example.com"
+            placeholder="Enter any domain to scan -- e.g. example.com"
             style={{ flex:1, fontSize:13, border:'none', outline:'none', background:'transparent',
               color:'#f0ede8' }}/>
           <button onClick={addDomain} disabled={adding || !newDomain.trim()}
@@ -418,7 +418,7 @@ function TLSGradesTab({ tok, user }) {
               borderRadius:7, border:'none', background:'var(--v2-green)', color:'#ffffff',
               cursor:adding||!newDomain.trim()?'not-allowed':'pointer', fontFamily:'inherit',
               fontWeight:600, opacity:adding||!newDomain.trim()?0.6:1 }}>
-            {adding ? <><Spinner/> Scanning…</> : <><Plus size={11}/> Scan</>}
+            {adding ? <><Spinner/> Scanning...</> : <><Plus size={11}/> Scan</>}
           </button>
         </div>
         {addErr && <div style={{ fontSize:11, color:'#a93226', marginTop:6 }}>{addErr}</div>}
@@ -427,7 +427,7 @@ function TLSGradesTab({ tok, user }) {
       {/* List */}
       {loading ? (
         <div style={{ textAlign:'center', padding:60, color:'#b0a8a0' }}>
-          <Spinner/><span style={{ marginLeft:8 }}>Loading grades…</span>
+          <Spinner/><span style={{ marginLeft:8 }}>Loading grades...</span>
         </div>
       ) : scores.length === 0 ? (
         <div style={{ textAlign:'center', padding:60, background:'var(--v2-surface)',
@@ -441,16 +441,16 @@ function TLSGradesTab({ tok, user }) {
       ))}
       {scores.length > 0 && (
         <div style={{ fontSize:11, color:'#b0a8a0', textAlign:'center', marginTop:8 }}>
-          A+ ≥90 - A ≥80 - B ≥70 - C ≥60 - D ≥50 - F &lt;50
+          A+ >=90 - A >=80 - B >=70 - C >=60 - D >=50 - F &lt;50
         </div>
       )}
     </div>
   )
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// TAB 3 — CT WATCH
-// ══════════════════════════════════════════════════════════════════════
+// ======================================================================
+// TAB 3 -- CT WATCH
+// ======================================================================
 const CT_STATUS = {
   unknown:    { label:'Unknown',    color:'#f87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.3)' },
   phishing:   { label:'Phishing',   color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
@@ -514,7 +514,7 @@ function CTWatchTab({ tok, user }) {
 
       {loading ? (
         <div style={{ textAlign:'center', padding:60, color:'#b0a8a0' }}>
-          <Spinner/><span style={{ marginLeft:8 }}>Loading CT findings…</span>
+          <Spinner/><span style={{ marginLeft:8 }}>Loading CT findings...</span>
         </div>
       ) : shadows.length === 0 ? (
         <div style={{ textAlign:'center', padding:60, background:'var(--v2-surface)',
@@ -555,7 +555,7 @@ function CTWatchTab({ tok, user }) {
                       </div>
                       {s.org_name && <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', marginTop:2 }}>{s.org_name}</div>}
                     </div>
-                    <div style={{ fontSize:12, color:'#f0ede8' }}>{s.product||'—'}</div>
+                    <div style={{ fontSize:12, color:'#f0ede8' }}>{s.product||'--'}</div>
                     <div style={{ fontSize:12, color:'#f0ede8' }}>{fmtDate(s.expires_at)}</div>
                     <div>
                       <span style={{ fontSize:11, fontWeight:700, padding:'3px 10px', borderRadius:20,
@@ -583,10 +583,10 @@ function CTWatchTab({ tok, user }) {
                       borderTop:'1px solid rgba(192,57,43,0.15)', borderLeft:`3px solid ${cfg.color}` }}>
                       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:10, marginBottom:12 }}>
                         {[
-                          ['Ordered by', s.ordered_by||'—'],
+                          ['Ordered by', s.ordered_by||'--'],
                           ['Issued',     fmtDate(s.issued_at||s.created_at)],
                           ['Expires',    fmtDate(s.expires_at)],
-                          ['CA',         s.ca||'—'],
+                          ['CA',         s.ca||'--'],
                         ].map(([label,val]) => (
                           <div key={label}>
                             <div style={{ fontSize:10, color:'#b0a8a0', fontWeight:600,
@@ -621,9 +621,9 @@ function CTWatchTab({ tok, user }) {
   )
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// TAB 4 — MASS SCAN
-// ══════════════════════════════════════════════════════════════════════
+// ======================================================================
+// TAB 4 -- MASS SCAN
+// ======================================================================
 function MassScanTab() {
   const [input,    setInput]    = useState('')
   const [scanning, setScanning] = useState(false)
@@ -712,7 +712,7 @@ function MassScanTab() {
                 borderRadius:7, border:'none', background:'var(--v2-green)', color:'#ffffff',
                 cursor:scanning||!input.trim()?'not-allowed':'pointer',
                 fontFamily:'inherit', fontWeight:600, opacity:scanning||!input.trim()?0.7:1 }}>
-              {scanning ? <><Spinner/> Scanning…</> : <><Scan size={11}/> Run scan</>}
+              {scanning ? <><Spinner/> Scanning...</> : <><Scan size={11}/> Run scan</>}
             </button>
           </div>
         </div>
@@ -784,7 +784,7 @@ function MassScanTab() {
                     </span>
                   </div>
                   <div style={{ fontSize:11, fontWeight:600, color:gs.color, fontFamily:'monospace' }}>
-                    {r.score!=null?Math.round(r.score):'—'}
+                    {r.score!=null?Math.round(r.score):'--'}
                   </div>
                   <div>{r.cert_valid
                     ? <CheckCircle size={13} color="#c0392b"/>
@@ -800,7 +800,7 @@ function MassScanTab() {
                       r.expiry_days!=null&&r.expiry_days<=30?'#c0392b':'var(--v2-text-2)' }}>
                     {r.error ? r.error.slice(0,40)
                       : r.expiry_days!=null ? (r.expiry_days<=0?'Expired':`${r.expiry_days}d left`)
-                      : r.issuer||'—'}
+                      : r.issuer||'--'}
                   </div>
                 </div>
               )
@@ -812,16 +812,16 @@ function MassScanTab() {
   )
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// MAIN EXPORT — Shell
-// ══════════════════════════════════════════════════════════════════════
+// ======================================================================
+// MAIN EXPORT -- Shell
+// ======================================================================
   ShieldAlert, RefreshCw, Check, X, AlertTriangle, Search,
   Shield, ChevronDown, ChevronUp, Plus, Trash2, ExternalLink
 } from 'lucide-react'
 
 
 function timeAgo(iso) {
-  if (!iso) return '—'
+  if (!iso) return '--'
   const s = Math.floor((Date.now() - new Date(iso)) / 1000)
   if (s < 60)    return `${s}s ago`
   if (s < 3600)  return `${Math.floor(s / 60)}m ago`
@@ -830,7 +830,7 @@ function timeAgo(iso) {
 }
 
 function fmtDate(iso) {
-  if (!iso) return '—'
+  if (!iso) return '--'
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
@@ -839,7 +839,7 @@ function classifyCert(shadow, knownDomains) {
   if (shadow.dismissed || shadow.status === 'known') return 'known'
   if (shadow.status === 'phishing') return 'phishing'
   if (shadow.status === 'suspicious') return 'suspicious'
-  // Auto-classify: if domain not in known inventory → flag as unknown
+  // Auto-classify: if domain not in known inventory -> flag as unknown
   if (!knownDomains.has(shadow.domain)) return 'unknown'
   return 'unknown'
 }
@@ -884,9 +884,9 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
       <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap: 0 }}>
         {[
           { label: 'Domain',        val: shadow.domain },
-          { label: 'Issuing CA',    val: shadow.ca_type || '—' },
-          { label: 'Organisation',  val: shadow.org_name || '—' },
-          { label: 'Serial number', val: shadow.serial_number || '—' },
+          { label: 'Issuing CA',    val: shadow.ca_type || '--' },
+          { label: 'Organisation',  val: shadow.org_name || '--' },
+          { label: 'Serial number', val: shadow.serial_number || '--' },
           { label: 'Issued',        val: fmtDate(shadow.issued_at) },
           { label: 'Expires',       val: fmtDate(shadow.expires_at) },
           { label: 'Detected',      val: timeAgo(shadow.found_at) },
@@ -917,7 +917,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
             style={{ display: 'flex', alignItems: 'center', gap: 5,
               borderColor: 'rgba(192,57,43,0.3)', color: '#4ade80' }}>
             <Check size={11}/>
-            {dismissing === shadow.id ? 'Marking…' : 'Mark as known'}
+            {dismissing === shadow.id ? 'Marking...' : 'Mark as known'}
           </button>
         )}
         <button className="v2-btn v2-btn-sm"
@@ -937,7 +937,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
 }
 
 
-// ── TISectionHeader ───────────────────────────────────────────────────
+// -- TISectionHeader ---------------------------------------------------
 function TISectionHeader({ color, title, subtitle, badge }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, paddingBottom: 10, borderBottom: '0.5px solid ' + color + '33' }}>
@@ -971,7 +971,7 @@ export default function ShieldIntelligence({ user }) {
   }, [])
 
 
-  // ── CT Abuse Monitor state and functions ─────────────────────────
+  // -- CT Abuse Monitor state and functions -------------------------
   const [shadows,        setShadows]        = useState([])
   const [watchDomains,   setWatchDomains]   = useState([])
   const [knownCerts,     setKnownCerts]     = useState(new Set())
