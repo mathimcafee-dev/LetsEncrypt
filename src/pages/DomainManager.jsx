@@ -100,8 +100,8 @@ function InstallModal({ onClose }) {
   }, [])
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ background: 'var(--v2-surface)', borderRadius: 12, width: '100%', maxWidth: 520, boxShadow: '0 20px 60px rgba(0,0,0,0.4)', overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{ background: '#ffffff', borderRadius: 14, width: '100%', maxWidth: 520, boxShadow: '0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)' }}>
         <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 500, color: '#1a1a1a' }}>Install SSLVault agent</div>
@@ -116,8 +116,8 @@ function InstallModal({ onClose }) {
           ].map(({ id, label, cmd }) => (
             <div key={id} style={{ marginBottom: 14 }}>
               <div style={{ fontSize: 11, fontWeight: 500, color: '#3d3d3d', marginBottom: 6 }}>{label}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f4f1ec', borderRadius: 7, padding: '10px 14px' }}>
-                <code style={{ fontSize: 12, color: id === 'install' && error ? '#1f5c4e' : '#111111', fontFamily: 'monospace', flex: 1, overflow: 'auto', whiteSpace: 'nowrap' }}>{cmd}</code>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f4f1ec', borderRadius: 8, padding: '11px 14px', border: '1px solid rgba(0,0,0,0.07)' }}>
+                <code style={{ fontSize: 12.5, color: id === 'install' && error ? '#c0392b' : '#111111', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', flex: 1, overflow: 'auto', whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}>{cmd}</code>
                 {!loading && !error && <CopyBtn text={cmd} size={10} />}
               </div>
             </div>

@@ -138,7 +138,7 @@ function AgentCard({ agent, onRefresh }) {
                 <code style={{ fontSize:10, color:'#3d3d3d', fontFamily:'var(--font-mono, monospace)', flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                   {agent.agent_token ? `${agent.agent_token.substring(0,24)}…` : '—'}
                 </code>
-                <button onClick={copyToken} style={{ flexShrink:0, fontSize:10, fontWeight:500, color:'#3d3d3d', padding:'4px 8px', border:'0.5px solid var(--v2-border)', borderRadius:4, background:'var(--v2-surface)', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
+                <button onClick={copyToken} style={{ flexShrink:0, fontSize:10, fontWeight:500, color:'#555555', padding:'4px 8px', border:'0.5px solid var(--v2-border)', borderRadius:4, background:'var(--v2-surface)', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
                   {copied ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
                 </button>
               </div>
@@ -177,17 +177,17 @@ function InstallModal({ onClose }) {
   }
 
   const CmdBlock = ({ cmd, id }) => (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#1f5c4e', borderRadius:6, padding:'10px 14px', marginBottom:8 }}>
-      <code style={{ fontSize:12, color:'#1a1a1a', fontFamily:'var(--font-mono, monospace)', flex:1, overflow:'auto' }}>{cmd}</code>
-      <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, marginLeft:12, fontSize:10, fontWeight:500, color:'#3d3d3d', padding:'4px 8px', border:'0.5px solid rgba(240,237,232,0.14)', borderRadius:4, background:'none', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#f4f1ec', borderRadius:8, padding:'11px 14px', marginBottom:8, border:'1px solid rgba(0,0,0,0.07)' }}>
+      <code style={{ fontSize:12.5, color:'#111111', fontFamily:'"JetBrains Mono","Menlo",monospace', flex:1, overflow:'auto' }}>{cmd}</code>
+      <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, marginLeft:12, fontSize:10, fontWeight:500, color:'#555555', padding:'4px 8px', border:'1px solid rgba(0,0,0,0.1)', borderRadius:4, background:'#ffffff', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
         {copied===id ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
       </button>
     </div>
   )
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'#666666', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
-      <div style={{ background:'var(--v2-surface)', borderRadius:10, width:'100%', maxWidth:540, boxShadow:'0 20px 60px rgba(0,0,0,0.2)', overflow:'hidden' }}>
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.45)', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+      <div style={{ background:'#ffffff', borderRadius:14, width:'100%', maxWidth:540, boxShadow:'0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08)', overflow:'hidden', border:'1px solid rgba(0,0,0,0.08)' }}>
         <div style={{ padding:'18px 22px', borderBottom:'0.5px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div>
             <div style={{ fontSize:14, fontWeight:500, color:'#1a1a1a' }}>Install SSLVault Agent</div>
