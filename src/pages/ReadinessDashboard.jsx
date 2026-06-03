@@ -10,7 +10,7 @@ const MILESTONES = [
   { date: new Date('2029-03-15'), days: 47,  label: 'Mar 2029' },
 ]
 
-const F = "'Montserrat', system-ui, sans-serif"
+const F = "'Inter', system-ui, sans-serif"
 const MONO = "'JetBrains Mono', monospace"
 
 function daysUntilDate(d) { return Math.ceil((d - Date.now()) / 86400000) }
@@ -53,9 +53,9 @@ function Tick({ ok }) {
 
 function StatusPill({ status }) {
   const map = {
-    'Ready':      { bg:'rgba(74,222,128,0.12)',  color:'#4ade80', border:'rgba(74,222,128,0.3)' },
-    'At risk':    { bg:'rgba(251,191,36,0.12)',  color:'#fbbf24', border:'rgba(251,191,36,0.3)' },
-    'Will break': { bg:'rgba(248,113,113,0.12)', color:'#f87171', border:'rgba(248,113,113,0.3)' },
+    'Ready':      { bg:'rgba(74,222,128,0.12)',  color:'#1e8a5e', border:'rgba(74,222,128,0.3)' },
+    'At risk':    { bg:'rgba(251,191,36,0.12)',  color:'#b87800', border:'rgba(251,191,36,0.3)' },
+    'Will break': { bg:'rgba(248,113,113,0.12)', color:'#2a6b5c', border:'rgba(248,113,113,0.3)' },
   }
   const s = map[status] || map['Will break']
   return (
@@ -69,7 +69,7 @@ function StatusPill({ status }) {
 
 function ScoreBadge({ score }) {
   const color = score >= 90 ? '#4ade80' : score >= 60 ? '#fbbf24' : '#f87171'
-  const bg    = score >= 90 ? 'rgba(74,222,128,0.1)' : score >= 60 ? 'rgba(251,191,36,0.1)' : 'rgba(248,113,113,0.1)'
+  const bg    = score >= 90 ? 'rgba(30,138,94,0.08)' : score >= 60 ? 'rgba(184,120,0,0.07)' : 'rgba(192,57,43,0.07)'
   return (
     <span style={{ fontSize:12, fontWeight:800, color, fontFamily:MONO,
       background:bg, padding:'2px 7px', borderRadius:6 }}>{score}</span>
@@ -82,7 +82,7 @@ function FleetScoreRing({ score }) {
   const pct = score / 100
   return (
     <svg width={72} height={72} style={{ flexShrink:0 }}>
-      <circle cx={36} cy={36} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={5}/>
+      <circle cx={36} cy={36} r={r} fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth={5}/>
       <circle cx={36} cy={36} r={r} fill="none" stroke={color} strokeWidth={5}
         strokeDasharray={circ} strokeDashoffset={circ*(1-pct)}
         strokeLinecap="round" transform="rotate(-90 36 36)"
@@ -175,9 +175,9 @@ export default function ReadinessDashboard({ user, onNav }) {
 
   const TH = ({ col }) => (
     <th onClick={() => col.sortable && toggleSort(col.key)}
-      style={{ padding:'10px 12px', fontSize:10, fontWeight:700, color:'#b0a8a0', fontFamily:F,
+      style={{ padding:'10px 12px', fontSize:10, fontWeight:700, color:'#6b6b6b', fontFamily:F,
         textTransform:'uppercase', letterSpacing:'0.8px', textAlign:'left',
-        background:'rgba(255,255,255,0.03)', borderBottom:'1px solid rgba(255,255,255,0.1)',
+        background:'rgba(255,255,255,0.03)', borderBottom:'1px solid rgba(0,0,0,0.07)',
         cursor:col.sortable?'pointer':'default', userSelect:'none', whiteSpace:'nowrap',
         width:col.width }}>
       <span style={{ display:'flex', alignItems:'center', gap:3 }}>
@@ -196,19 +196,19 @@ export default function ReadinessDashboard({ user, onNav }) {
           marginBottom:24, gap:16, flexWrap:'wrap' }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-              <div style={{ width:36, height:36, borderRadius:10, background:'rgba(192,57,43,0.2)',
+              <div style={{ width:36, height:36, borderRadius:10, background:'rgba(0,0,0,0.08)',
                 border:'1px solid rgba(192,57,43,0.4)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <Shield size={18} color="#ff8c7a"/>
               </div>
               <div>
                 <div style={{ fontSize:9, fontWeight:700, color:'#ff8c7a', letterSpacing:'1.5px',
                   textTransform:'uppercase', marginBottom:2 }}>CA/B Forum SC-081v3</div>
-                <h1 style={{ fontSize:22, fontWeight:800, color:'#ffffff', margin:0, letterSpacing:'-0.5px' }}>
+                <h1 style={{ fontSize:22, fontWeight:800, color:'#1a1a1a', margin:0, letterSpacing:'-0.5px' }}>
                   47-Day Readiness
                 </h1>
               </div>
             </div>
-            <p style={{ fontSize:13, color:'#b0a8a0', margin:0, maxWidth:480, lineHeight:1.6 }}>
+            <p style={{ fontSize:13, color:'#6b6b6b', margin:0, maxWidth:480, lineHeight:1.6 }}>
               How ready is your fleet for shorter certificate lifetimes?
             </p>
           </div>
@@ -216,7 +216,7 @@ export default function ReadinessDashboard({ user, onNav }) {
             target="_blank" rel="noreferrer"
             style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, fontWeight:600,
               color:'#ff8c7a', textDecoration:'none', padding:'7px 12px', borderRadius:8,
-              background:'rgba(192,57,43,0.1)', border:'1px solid rgba(192,57,43,0.25)',
+              background:'rgba(42,107,92,0.08)', border:'1px solid rgba(0,0,0,0.1)',
               transition:'all .15s', whiteSpace:'nowrap' }}>
             <ExternalLink size={12}/> View SC-081v3
           </a>
@@ -227,16 +227,16 @@ export default function ReadinessDashboard({ user, onNav }) {
 
           {/* Fleet score ring */}
           <div style={{ padding:'20px 24px', borderRadius:12, display:'flex', alignItems:'center', gap:20,
-            background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)',
+            background:'rgba(0,0,0,0.04)', border:'1px solid rgba(0,0,0,0.07)',
             backdropFilter:'blur(8px)', minWidth:200 }}>
             <FleetScoreRing score={fleetScore}/>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'#b0a8a0', textTransform:'uppercase',
+              <div style={{ fontSize:11, fontWeight:700, color:'#6b6b6b', textTransform:'uppercase',
                 letterSpacing:'0.8px', marginBottom:4 }}>Fleet Score</div>
-              <div style={{ fontSize:13, fontWeight:600, color:'#e8e0d8' }}>
+              <div style={{ fontSize:13, fontWeight:600, color:'#3d3d3d' }}>
                 {fleetScore >= 90 ? '🟢 Ready for 2029' : fleetScore >= 60 ? '🟡 Action needed' : '🔴 Will break'}
               </div>
-              <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>
+              <div style={{ fontSize:11, color:'#6b6b6b', marginTop:2 }}>
                 {rows.length} domain{rows.length!==1?'s':''} tracked
               </div>
             </div>
@@ -245,9 +245,9 @@ export default function ReadinessDashboard({ user, onNav }) {
           {/* Status breakdown */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
             {[
-              { label:'Will Break', value:willBreak, color:'#f87171', bg:'rgba(248,113,113,0.08)', border:'rgba(248,113,113,0.2)', desc:'< 60 pts' },
-              { label:'At Risk',    value:atRisk,    color:'#fbbf24', bg:'rgba(251,191,36,0.08)',  border:'rgba(251,191,36,0.2)',  desc:'60–89 pts' },
-              { label:'Ready',      value:ready,     color:'#4ade80', bg:'rgba(74,222,128,0.08)',  border:'rgba(74,222,128,0.2)',  desc:'≥ 90 pts' },
+              { label:'Will Break', value:willBreak, color:'#2a6b5c', bg:'rgba(248,113,113,0.08)', border:'rgba(248,113,113,0.2)', desc:'< 60 pts' },
+              { label:'At Risk',    value:atRisk,    color:'#b87800', bg:'rgba(184,120,0,0.06)',  border:'rgba(251,191,36,0.2)',  desc:'60–89 pts' },
+              { label:'Ready',      value:ready,     color:'#1e8a5e', bg:'rgba(30,138,94,0.06)',  border:'rgba(74,222,128,0.2)',  desc:'≥ 90 pts' },
             ].map(s => (
               <div key={s.label} style={{ padding:'16px 18px', borderRadius:12,
                 background:s.bg, border:`1px solid ${s.border}` }}>
@@ -270,23 +270,23 @@ export default function ReadinessDashboard({ user, onNav }) {
             const d = daysUntilDate(m.date)
             const past = d <= 0
             const colors = ['#f87171','#fbbf24','#4ade80']
-            const bgs = ['rgba(248,113,113,0.08)','rgba(251,191,36,0.08)','rgba(74,222,128,0.08)']
+            const bgs = ['rgba(248,113,113,0.08)','rgba(184,120,0,0.06)','rgba(30,138,94,0.06)']
             const borders = ['rgba(248,113,113,0.2)','rgba(251,191,36,0.2)','rgba(74,222,128,0.2)']
             return (
               <div key={m.label} style={{ padding:'12px 16px', borderRadius:10,
-                background: past ? bgs[0] : 'rgba(255,255,255,0.04)',
-                border:`1px solid ${past ? borders[0] : 'rgba(255,255,255,0.08)'}`,
+                background: past ? bgs[0] : 'rgba(0,0,0,0.03)',
+                border:`1px solid ${past ? borders[0] : 'rgba(0,0,0,0.06)'}`,
                 display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
                 <div>
-                  <div style={{ fontSize:13, fontWeight:700, color:'#ffffff', marginBottom:2 }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:'#1a1a1a', marginBottom:2 }}>
                     {m.label}
                   </div>
-                  <div style={{ fontSize:11, color:'#b0a8a0' }}>
-                    Max <strong style={{ color:'#e8e0d8' }}>{m.days}-day</strong> validity
+                  <div style={{ fontSize:11, color:'#6b6b6b' }}>
+                    Max <strong style={{ color:'#3d3d3d' }}>{m.days}-day</strong> validity
                   </div>
                 </div>
                 <span style={{ fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20,
-                  background: past ? bgs[0] : 'rgba(255,255,255,0.06)',
+                  background: past ? bgs[0] : 'rgba(0,0,0,0.05)',
                   color: past ? '#f87171' : colors[i],
                   border:`1px solid ${past ? borders[0] : borders[i]}`,
                   whiteSpace:'nowrap', flexShrink:0 }}>
@@ -298,9 +298,9 @@ export default function ReadinessDashboard({ user, onNav }) {
         </div>
 
         {/* ── Filter Tabs ── */}
-        <div style={{ display:'flex', gap:6, marginBottom:14, background:'rgba(255,255,255,0.04)',
+        <div style={{ display:'flex', gap:6, marginBottom:14, background:'rgba(0,0,0,0.03)',
           padding:'5px', borderRadius:10, width:'fit-content',
-          border:'1px solid rgba(255,255,255,0.08)' }}>
+          border:'1px solid rgba(0,0,0,0.06)' }}>
           {[
             { key:'all',        label:`All (${rows.length})` },
             { key:'will-break', label:`Will break (${willBreak})` },
@@ -310,7 +310,7 @@ export default function ReadinessDashboard({ user, onNav }) {
             <button key={f.key} onClick={() => setFilter(f.key)}
               style={{ padding:'6px 14px', borderRadius:7, fontSize:12, border:'none', fontFamily:F,
                 fontWeight: filter===f.key ? 700 : 500, cursor:'pointer',
-                background: filter===f.key ? '#c0392b' : 'transparent',
+                background: filter===f.key ? '#2a6b5c' : 'transparent',
                 color: filter===f.key ? '#ffffff' : '#b0a8a0',
                 transition:'all .15s' }}>
               {f.label}
@@ -320,17 +320,17 @@ export default function ReadinessDashboard({ user, onNav }) {
 
         {/* ── Table ── */}
         {loading ? (
-          <div style={{ textAlign:'center', padding:'64px', color:'#b0a8a0' }}>
+          <div style={{ textAlign:'center', padding:'64px', color:'#6b6b6b' }}>
             <RefreshCw size={20} style={{ animation:'spin .8s linear infinite', margin:'0 auto 12px', display:'block', color:'#ff8c7a' }}/>
             <div style={{ fontSize:13, fontWeight:500 }}>Analysing fleet…</div>
           </div>
         ) : sorted.length === 0 ? (
-          <div style={{ textAlign:'center', padding:'40px', fontSize:13, color:'#b0a8a0',
-            background:'rgba(255,255,255,0.04)', borderRadius:12, border:'1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ textAlign:'center', padding:'40px', fontSize:13, color:'#6b6b6b',
+            background:'rgba(0,0,0,0.03)', borderRadius:12, border:'1px solid rgba(0,0,0,0.06)' }}>
             No certificates match this filter.
           </div>
         ) : (
-          <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)',
+          <div style={{ background:'rgba(0,0,0,0.03)', border:'1px solid rgba(0,0,0,0.07)',
             borderRadius:12, overflow:'hidden', backdropFilter:'blur(8px)' }}>
             <div style={{ overflowX:'auto' }}>
               <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12, fontFamily:F }}>
@@ -344,7 +344,7 @@ export default function ReadinessDashboard({ user, onNav }) {
                     const expiryColor = expiry.days !== null && expiry.days < 30 ? '#f87171' : expiry.days !== null && expiry.days < 90 ? '#fbbf24' : '#e8e0d8'
                     return (
                       <tr key={cert.id}
-                        style={{ borderTop:'1px solid rgba(255,255,255,0.06)', transition:'background .1s',
+                        style={{ borderTop:'1px solid rgba(0,0,0,0.05)', transition:'background .1s',
                           background: idx%2===0 ? 'transparent' : 'rgba(255,255,255,0.02)' }}
                         onMouseEnter={e => e.currentTarget.style.background='rgba(192,57,43,0.07)'}
                         onMouseLeave={e => e.currentTarget.style.background=idx%2===0?'transparent':'rgba(255,255,255,0.02)'}>
@@ -353,15 +353,15 @@ export default function ReadinessDashboard({ user, onNav }) {
                         <td style={{ padding:'11px 12px', maxWidth:180 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
                             <span style={{ fontFamily:MONO, fontSize:12, fontWeight:600,
-                              color:'#ffffff', overflow:'hidden', textOverflow:'ellipsis',
+                              color:'#1a1a1a', overflow:'hidden', textOverflow:'ellipsis',
                               whiteSpace:'nowrap', maxWidth:130 }}>
                               {cert.domain}
                             </span>
                             <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:4,
                               whiteSpace:'nowrap', flexShrink:0,
-                              background: cert.source==='gogetssl' ? 'rgba(192,57,43,0.15)' : 'rgba(251,191,36,0.1)',
+                              background: cert.source==='gogetssl' ? 'rgba(0,0,0,0.07)' : 'rgba(184,120,0,0.07)',
                               color: cert.source==='gogetssl' ? '#ff8c7a' : '#fbbf24',
-                              border:`0.5px solid ${cert.source==='gogetssl'?'rgba(192,57,43,0.3)':'rgba(251,191,36,0.3)'}` }}>
+                              border:`0.5px solid ${cert.source==='gogetssl'?'rgba(42,107,92,0.2)':'rgba(251,191,36,0.3)'}` }}>
                               {cert.source==='gogetssl' ? 'SSLVault' : (cert.issuer || cert.source || 'CA')}
                             </span>
                           </div>
@@ -376,14 +376,14 @@ export default function ReadinessDashboard({ user, onNav }) {
                         {/* Expiry */}
                         <td style={{ padding:'11px 12px', whiteSpace:'nowrap' }}>
                           <div style={{ fontSize:12, fontWeight:600, color:expiryColor }}>{expiry.label}</div>
-                          <div style={{ fontSize:10, color:'#b0a8a0', marginTop:2 }}>
+                          <div style={{ fontSize:10, color:'#6b6b6b', marginTop:2 }}>
                             {expiry.days !== null ? (expiry.days > 0 ? `${expiry.days}d left` : 'Expired') : '—'}
                           </div>
                         </td>
 
                         {/* Validity */}
                         <td style={{ padding:'11px 12px', textAlign:'center',
-                          fontSize:12, fontWeight:600, color:'#e8e0d8', fontFamily:MONO }}>
+                          fontSize:12, fontWeight:600, color:'#3d3d3d', fontFamily:MONO }}>
                           {validity != null ? `${validity}d` : '—'}
                         </td>
 
@@ -408,8 +408,8 @@ export default function ReadinessDashboard({ user, onNav }) {
                                 disabled={togglingId === cert.id}
                                 onClick={() => toggleAutoRenew(cert.id, cert.auto_renew_enabled)}
                                 style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
-                                  background:'rgba(74,222,128,0.1)', border:'0.5px solid rgba(74,222,128,0.3)',
-                                  color:'#4ade80', fontFamily:'inherit', whiteSpace:'nowrap',
+                                  background:'rgba(30,138,94,0.08)', border:'0.5px solid rgba(74,222,128,0.3)',
+                                  color:'#1e8a5e', fontFamily:'inherit', whiteSpace:'nowrap',
                                   opacity: togglingId === cert.id ? 0.5 : 1 }}>
                                 {togglingId === cert.id ? '…' : '+ Auto-renew'}
                               </button>
@@ -418,7 +418,7 @@ export default function ReadinessDashboard({ user, onNav }) {
                               <button
                                 onClick={() => onNav('integrations')}
                                 style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
-                                  background:'rgba(192,57,43,0.1)', border:'0.5px solid rgba(192,57,43,0.3)',
+                                  background:'rgba(42,107,92,0.08)', border:'0.5px solid rgba(42,107,92,0.2)',
                                   color:'#ff8c7a', fontFamily:'inherit', whiteSpace:'nowrap' }}>
                                 + DNS provider
                               </button>
@@ -427,13 +427,13 @@ export default function ReadinessDashboard({ user, onNav }) {
                               <button
                                 onClick={() => onNav('my-servers')}
                                 style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
-                                  background:'rgba(192,57,43,0.1)', border:'0.5px solid rgba(192,57,43,0.3)',
+                                  background:'rgba(42,107,92,0.08)', border:'0.5px solid rgba(42,107,92,0.2)',
                                   color:'#ff8c7a', fontFamily:'inherit', whiteSpace:'nowrap' }}>
                                 + Install agent
                               </button>
                             )}
                             {checks.auto_renew && checks.dns_provider && checks.install && (
-                              <span style={{ fontSize:10, color:'#4ade80', fontWeight:600 }}>✓ Ready</span>
+                              <span style={{ fontSize:10, color:'#1e8a5e', fontWeight:600 }}>✓ Ready</span>
                             )}
                           </div>
                         </td>
@@ -443,10 +443,10 @@ export default function ReadinessDashboard({ user, onNav }) {
                 </tbody>
               </table>
             </div>
-            <div style={{ padding:'10px 16px', borderTop:'1px solid rgba(255,255,255,0.08)',
+            <div style={{ padding:'10px 16px', borderTop:'1px solid rgba(0,0,0,0.06)',
               display:'flex', alignItems:'center', justifyContent:'space-between',
               background:'rgba(255,255,255,0.02)' }}>
-              <span style={{ fontSize:11, color:'#b0a8a0', fontWeight:500 }}>
+              <span style={{ fontSize:11, color:'#6b6b6b', fontWeight:500 }}>
                 {sorted.length} domain{sorted.length!==1?'s':''} · Click headers to sort
               </span>
               <span style={{ fontSize:11, color:'rgba(255,255,255,0.25)' }}>
@@ -457,13 +457,13 @@ export default function ReadinessDashboard({ user, onNav }) {
         )}
 
         {/* ── Footer Note ── */}
-        <div style={{ marginTop:16, fontSize:11, color:'#b0a8a0', lineHeight:1.7,
+        <div style={{ marginTop:16, fontSize:11, color:'#6b6b6b', lineHeight:1.7,
           padding:'12px 16px', borderRadius:10,
-          background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)' }}>
+          background:'rgba(255,255,255,0.03)', border:'1px solid rgba(0,0,0,0.05)' }}>
           <strong style={{ color:'#ff8c7a' }}>CA/B Forum SC-081v3</strong> (passed Apr 2025) ·
-          200-day max from <strong style={{ color:'#e8e0d8' }}>Mar 15 2026</strong> ·
-          100-day from <strong style={{ color:'#e8e0d8' }}>Mar 15 2027</strong> ·
-          47-day from <strong style={{ color:'#e8e0d8' }}>Mar 15 2029</strong> ·
+          200-day max from <strong style={{ color:'#3d3d3d' }}>Mar 15 2026</strong> ·
+          100-day from <strong style={{ color:'#3d3d3d' }}>Mar 15 2027</strong> ·
+          47-day from <strong style={{ color:'#3d3d3d' }}>Mar 15 2029</strong> ·
           DCV reuse drops to 10 days · Manual renewal will be operationally impossible
         </div>
       </div>

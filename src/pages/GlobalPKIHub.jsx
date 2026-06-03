@@ -7,9 +7,9 @@ const FONT = "'Segoe UI',-apple-system,system-ui,sans-serif"
 
 // ── PQC data (Phase 3 intelligence) ─────────────────────────────────
 const PQC_ALGORITHMS = [
-  { id:'ML-KEM', name:'ML-KEM (Kyber)', fips:'FIPS 203', type:'Key Encapsulation', status:'Final', date:'Aug 2024', desc:'Post-quantum replacement for RSA/ECDH key exchange. Protects the TLS handshake. Fast, efficient, small keys.', replaces:'RSA/ECDH', adopters:['NIST','IETF','CAB Forum (planning)','Apple (iMessage)','Cloudflare','Google Chrome'], color:'#4ade80', risk:'low' },
-  { id:'ML-DSA', name:'ML-DSA (Dilithium)', fips:'FIPS 204', type:'Digital Signature', status:'Final', date:'Aug 2024', desc:'Post-quantum replacement for RSA/ECDSA signatures. Will replace signature algorithms in all X.509 certificates.', replaces:'RSA/ECDSA', adopters:['NIST','IETF (LAMPS drafting)','CAB Forum (planning)','IBM Research'], color:'#4ade80', risk:'low' },
-  { id:'SLH-DSA', name:'SLH-DSA (SPHINCS+)', fips:'FIPS 205', type:'Digital Signature Backup', status:'Final', date:'Aug 2024', desc:'Hash-based backup signature algorithm. Different mathematical basis to ML-DSA — fallback if lattice cryptography is broken.', replaces:'RSA/ECDSA (backup)', adopters:['NIST','IETF (LAMPS drafting)'], color:'#4ade80', risk:'low' },
+  { id:'ML-KEM', name:'ML-KEM (Kyber)', fips:'FIPS 203', type:'Key Encapsulation', status:'Final', date:'Aug 2024', desc:'Post-quantum replacement for RSA/ECDH key exchange. Protects the TLS handshake. Fast, efficient, small keys.', replaces:'RSA/ECDH', adopters:['NIST','IETF','CAB Forum (planning)','Apple (iMessage)','Cloudflare','Google Chrome'], color:'#1e8a5e', risk:'low' },
+  { id:'ML-DSA', name:'ML-DSA (Dilithium)', fips:'FIPS 204', type:'Digital Signature', status:'Final', date:'Aug 2024', desc:'Post-quantum replacement for RSA/ECDSA signatures. Will replace signature algorithms in all X.509 certificates.', replaces:'RSA/ECDSA', adopters:['NIST','IETF (LAMPS drafting)','CAB Forum (planning)','IBM Research'], color:'#1e8a5e', risk:'low' },
+  { id:'SLH-DSA', name:'SLH-DSA (SPHINCS+)', fips:'FIPS 205', type:'Digital Signature Backup', status:'Final', date:'Aug 2024', desc:'Hash-based backup signature algorithm. Different mathematical basis to ML-DSA — fallback if lattice cryptography is broken.', replaces:'RSA/ECDSA (backup)', adopters:['NIST','IETF (LAMPS drafting)'], color:'#1e8a5e', risk:'low' },
   { id:'FN-DSA', name:'FN-DSA (FALCON)', fips:'FIPS 206', type:'Digital Signature', status:'Draft', date:'2025 expected', desc:'Fourth NIST PQC algorithm. NTRU-lattice based. Smaller signatures than ML-DSA. Being standardised as FIPS 206.', replaces:'RSA/ECDSA', adopters:['NIST (in progress)'], color:'#ffffff', risk:'medium' },
   { id:'HQC', name:'HQC', fips:'In process', type:'Key Encapsulation Backup', status:'Selected 2025', date:'Selected 2025', desc:'Backup KEM selected by NIST in 2025 as an alternative to ML-KEM. Code-based cryptography — different mathematical approach.', replaces:'RSA/ECDH (backup)', adopters:['NIST (selected)'], color:'#ffffff', risk:'medium' },
 ]
@@ -34,22 +34,22 @@ const GLOBAL_TIMELINE = [
   { year:2001, org:'apkic', event:'Asia PKI Consortium founded in Hong Kong', desc:'APKIC established to promote PKI adoption and interoperability across Asia/Oceania. Initial members from Hong Kong, Japan, Taiwan, South Korea. Now 11+ economies.', type:'milestone', color:'#ffffff' },
   { year:2005, org:'cabf', event:'CA/Browser Forum founded — web PKI governance begins', desc:'Voluntary consortium formed between major CAs and browsers to establish industry standards. First meeting in San Francisco. Initial focus on EV guidelines.', type:'milestone', color:'#ffffff' },
   { year:2007, org:'cabf', event:'EV Guidelines v1.0 — first CAB Forum standard', desc:'Extended Validation certificate guidelines published. The green address bar era begins. High-assurance identity validation codified for the first time globally.', type:'milestone', color:'#ffffff' },
-  { year:2011, org:'cabf', event:'DigiNotar breach — CA trust crisis', desc:'Dutch CA DigiNotar compromised. 500+ fraudulent certificates for Google, Mozilla, and governments. DigiNotar bankrupt. Accelerated Baseline Requirements development.', type:'incident', color:'#f87171' },
+  { year:2011, org:'cabf', event:'DigiNotar breach — CA trust crisis', desc:'Dutch CA DigiNotar compromised. 500+ fraudulent certificates for Google, Mozilla, and governments. DigiNotar bankrupt. Accelerated Baseline Requirements development.', type:'incident', color:'#c0392b' },
   { year:2012, org:'cabf', event:'Baseline Requirements v1.0 — the constitution of web PKI', desc:'All publicly-trusted TLS certificates must now comply with the BRs. Governs key size, validity, revocation, DCV, and audit. The most important PKI document ever published.', type:'milestone', color:'#ffffff' },
-  { year:2012, org:'fido', event:'FIDO Alliance founded — passwordless authentication begins', desc:'Google, Lenovo, NXP, PayPal, and others found FIDO Alliance. Mission: reduce world\'s reliance on passwords. Leads to FIDO2/WebAuthn and passkeys.', type:'milestone', color:'#f87171' },
+  { year:2012, org:'fido', event:'FIDO Alliance founded — passwordless authentication begins', desc:'Google, Lenovo, NXP, PayPal, and others found FIDO Alliance. Mission: reduce world\'s reliance on passwords. Leads to FIDO2/WebAuthn and passkeys.', type:'milestone', color:'#c0392b' },
   { year:2014, org:'eidas', event:'eIDAS Regulation — EU digital identity framework created', desc:'EU Regulation 910/2014 creates pan-European framework for electronic signatures, seals, and timestamps. Makes qualified electronic signatures legally binding across all EU member states.', type:'milestone', color:'#e8e0d8' },
   { year:2016, org:'nist', event:'NIST begins 8-year PQC standardisation project', desc:'NIST releases call for post-quantum cryptographic algorithms. 69 candidates submitted globally. 8-year evaluation process begins. The biggest cryptographic transition since RSA.', type:'milestone', color:'#ff8c7a' },
-  { year:2018, org:'cabf', event:'Symantec distrusted by Chrome and Mozilla', desc:'After years of compliance failures and hundreds of misissued certificates, Google and Mozilla removed Symantec roots. DigiCert acquired Symantec PKI business.', type:'incident', color:'#f87171' },
+  { year:2018, org:'cabf', event:'Symantec distrusted by Chrome and Mozilla', desc:'After years of compliance failures and hundreds of misissued certificates, Google and Mozilla removed Symantec roots. DigiCert acquired Symantec PKI business.', type:'incident', color:'#c0392b' },
   { year:2019, org:'ietf', event:'RFC 8555 ACME published — certificate automation standardised', desc:'ACME protocol standardised by IETF. Let\'s Encrypt had pioneered it — now it is an official internet standard. Enables zero-touch certificate management.', type:'milestone', color:'#ffffff' },
   { year:2019, org:'cabf', event:'Working Group structure — CAB Forum restructured', desc:'Forum restructures into specialised Working Groups: Server Cert, Code Signing, NetSec — each with own charter and ballots. Improves governance quality.', type:'milestone', color:'#ffffff' },
   { year:2020, org:'cabf', event:'Apple enforces 1-year validity unilaterally — industry shock', desc:'A CAB Forum ballot to reduce validity failed. Apple bypassed the Forum and enforced 398-day certs in Safari. All browsers followed. S/MIME WG chartered.', type:'enforcement', color:'#ffffff' },
-  { year:2020, org:'fido', event:'FIDO2 and WebAuthn become W3C standards', desc:'WebAuthn published as W3C Recommendation. FIDO2 enables passwordless login using hardware keys, biometrics, and platform authenticators across all major browsers.', type:'milestone', color:'#f87171' },
+  { year:2020, org:'fido', event:'FIDO2 and WebAuthn become W3C standards', desc:'WebAuthn published as W3C Recommendation. FIDO2 enables passwordless login using hardware keys, biometrics, and platform authenticators across all major browsers.', type:'milestone', color:'#c0392b' },
   { year:2023, org:'cabf', event:'SC063 — OCSP optional, CRLs required. Privacy improvement.', desc:'Major privacy improvement: OCSP becomes optional while CRL availability is mandated. Reduces OCSP responders tracking which websites users visit.', type:'ballot', color:'#ffffff' },
-  { year:2024, org:'cabf', event:'Entrust distrusted — largest CA distrust event in history', desc:'Chrome and Mozilla remove Entrust from root stores after sustained compliance failures. 26M+ active certificates affected. Largest CA distrust event ever.', type:'incident', color:'#f87171' },
+  { year:2024, org:'cabf', event:'Entrust distrusted — largest CA distrust event in history', desc:'Chrome and Mozilla remove Entrust from root stores after sustained compliance failures. 26M+ active certificates affected. Largest CA distrust event ever.', type:'incident', color:'#c0392b' },
   { year:2024, org:'cabf', event:'SC067v3 — Multi-perspective DCV mandatory', desc:'CAs must validate domain control from multiple geographically-distributed network perspectives simultaneously. Prevents BGP hijacking attacks against certificate issuance.', type:'ballot', color:'#ffffff' },
   { year:2024, org:'nist', event:'FIPS 203, 204, 205 finalised — PQC era begins', desc:'NIST finalises ML-KEM, ML-DSA, and SLH-DSA — the three post-quantum standards that will replace RSA and ECC globally. The most significant crypto event since RSA publication.', type:'milestone', color:'#ff8c7a' },
   { year:2024, org:'eidas', event:'eIDAS 2.0 Regulation 2024/1183 — EU Digital Identity Wallet', desc:'eIDAS 2.0 published. Introduces EU Digital Identity Wallet (EUDIW) and mandates browsers trust government-issued QWAC certificates. Browser governance battle begins.', type:'milestone', color:'#e8e0d8' },
-  { year:2025, org:'cabf', event:'SC081v3 — The 47-day mandate. Most impactful ballot since BRs.', desc:'200-day validity by March 2026, 100-day by March 2027, 47-day by March 2029. Zero-touch automation becomes a legal requirement for all certificate issuance.', type:'ballot', color:'#f87171' },
+  { year:2025, org:'cabf', event:'SC081v3 — The 47-day mandate. Most impactful ballot since BRs.', desc:'200-day validity by March 2026, 100-day by March 2027, 47-day by March 2029. Zero-touch automation becomes a legal requirement for all certificate issuance.', type:'ballot', color:'#c0392b' },
   { year:2025, org:'pkic', event:'PQC Conference KL — 2500+ delegates. World\'s largest.', desc:'PKI Consortium hosts record-breaking PQC conference in Kuala Lumpur. 2500+ delegates from governments, CAs, and tech companies. PQC migration moves from planning to execution.', type:'milestone', color:'#ffffff' },
   { year:2026, org:'cabf', event:'SHA-1 fully prohibited in all certificates and CRLs', desc:'SC097 fully enforced. Every remaining SHA-1 use in certificate chains prohibited. Any Intermediate CA still signing with SHA-1 must be revoked immediately.', type:'enforcement', color:'#ffffff' },
 ]
@@ -175,7 +175,7 @@ export default function GlobalPKIHub({ nav }) {
         .hub-hero{background:transparent;padding:36px 24px 30px;color:#ffffff}
         .hub-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .hub-h1{font-size:28px;font-weight:600;letter-spacing:-.5px;color:#ffffff;line-height:1.15;margin-bottom:10px}
-        .hub-h1 em{color:#c0392b;font-style:normal}
+        .hub-h1 em{color:#2a6b5c;font-style:normal}
         .hub-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:22px}
         .hub-stats{display:flex;gap:30px;flex-wrap:wrap}
         .hub-sn{font-size:24px;font-weight:600;color:#ffffff;font-variant-numeric:tabular-nums;line-height:1}
@@ -342,7 +342,7 @@ export default function GlobalPKIHub({ nav }) {
                     { k:'Governance', v:selectedOrg.governance },
                     { k:'Membership', v:selectedOrg.membership_type },
                   ].map(({ k, v }) => v && (
-                    <div key={k} style={{ display:'flex', gap:10, padding:'5px 0', borderBottom:'0.5px solid rgba(255,255,255,0.08)', fontSize:11 }}>
+                    <div key={k} style={{ display:'flex', gap:10, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:11 }}>
                       <span style={{ color:'#b0a8a0', minWidth:80, flexShrink:0 }}>{k}</span>
                       <span style={{ color:'#ffffff', fontWeight:500, fontSize:11 }}>{v}</span>
                     </div>
@@ -468,7 +468,7 @@ export default function GlobalPKIHub({ nav }) {
                 { k:'Status', v:selectedStd.status },
                 { k:'Published', v:fmtDate(selectedStd.published_date) },
               ].filter(x=>x.v).map(({ k, v }) => (
-                <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(255,255,255,0.08)', fontSize:11 }}>
+                <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:11 }}>
                   <span style={{ color:'#b0a8a0', minWidth:70, flexShrink:0 }}>{k}</span>
                   <span style={{ color:'#ffffff', fontWeight:500 }}>{v}</span>
                 </div>

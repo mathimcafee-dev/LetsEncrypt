@@ -1,18 +1,18 @@
 import { useState } from 'react'
 
-const F    = "'Montserrat',system-ui,sans-serif"
+const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 const BG   = 'transparent'
 const CARD = '#220808'
 const CARD2= '#220808'
-const TEAL = '#c0392b'
+const TEAL = '#2a6b5c'
 const TEALH= '#e07060'
 const CORAL= '#e07060'
 const INK = '#f0ede8'
 const BODY = 'rgba(232,245,244,0.65)'
 const MUTED= 'rgba(232,245,244,0.35)'
-const LINE = 'rgba(192,57,43,0.2)'
-const LINE2= 'rgba(192,57,43,0.2)'
+const LINE = 'rgba(0,0,0,0.08)'
+const LINE2= 'rgba(0,0,0,0.08)'
 const GREEN= '#4ade80'
 const AMBER= '#fbbf24'
 
@@ -48,7 +48,7 @@ function FAQ({ q, a }) {
 const PLANS = [
   {
     key:'starter', name:'Starter', price:'$5', per:'/month',
-    color:TEAL, glow:'rgba(192,57,43,0.15)', highlight:false,
+    color:TEAL, glow:'rgba(0,0,0,0.07)', highlight:false,
     cta:'Get started', badge:null,
     sub:'Perfect for individuals & small teams',
     certNote:'+ SSL certificates billed by usage',
@@ -86,7 +86,7 @@ const PLANS = [
   },
   {
     key:'pro', name:'Pro', price:'$20', per:'/month',
-    color:AMBER, glow:'rgba(251,191,36,0.15)', highlight:false,
+    color:AMBER, glow:'rgba(184,120,0,0.12)', highlight:false,
     cta:'Start Pro', badge:null,
     sub:'For enterprises & resellers',
     certNote:'+ SSL certificates billed by usage',
@@ -173,7 +173,7 @@ export default function Pricing({ nav }) {
 
   return (
     <div style={{background:BG,minHeight:'100vh',color:INK,fontFamily:F}}>
-      <style>{`*{box-sizing:border-box}::selection{background:rgba(192,57,43,0.2);color:${TEAL}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
+      <style>{`*{box-sizing:border-box}::selection{background:rgba(0,0,0,0.08);color:${TEAL}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       <div style={{maxWidth:1080,margin:'0 auto',padding:`clamp(48px,8vw,80px) ${P} 100px`}}>
 
@@ -214,7 +214,7 @@ export default function Pricing({ nav }) {
               {plan.badge && (
                 <div style={{position:'absolute',top:-13,left:'50%',transform:'translateX(-50%)',
                   background:`linear-gradient(135deg,${CORAL},#ff9e8c)`,borderRadius:20,padding:'4px 16px',
-                  fontSize:10,fontWeight:800,color:'#ffffff',whiteSpace:'nowrap',letterSpacing:'0.5px',fontFamily:MONO}}>
+                  fontSize:10,fontWeight:800,color:'#1a1a1a',whiteSpace:'nowrap',letterSpacing:'0.5px',fontFamily:MONO}}>
                   ★ {plan.badge}
                 </div>
               )}
@@ -267,7 +267,7 @@ export default function Pricing({ nav }) {
           <button onClick={() => setShowComp(v=>!v)}
             style={{background:'transparent',border:`1px solid ${LINE2}`,color:TEAL,
               borderRadius:8,padding:'10px 24px',fontSize:13,cursor:'pointer',fontFamily:F,transition:'all .15s'}}
-            onMouseEnter={e=>e.currentTarget.style.background='rgba(192,57,43,0.08)'}
+            onMouseEnter={e=>e.currentTarget.style.background='rgba(42,107,92,0.07)'}
             onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
             {showComp ? '▲ Hide full comparison' : '▼ Full feature comparison'}
           </button>
@@ -352,7 +352,7 @@ export default function Pricing({ nav }) {
             <h2 style={{fontSize:'clamp(18px,2.5vw,30px)',fontWeight:800,letterSpacing:'-0.5px'}}>
 
           {/* ── SLA Premium callout ── */}
-          <div style={{maxWidth:860,margin:'0 auto 48px',background:'rgba(192,57,43,0.07)',border:'1px solid rgba(192,57,43,0.25)',borderRadius:12,padding:'20px 24px'}}>
+          <div style={{maxWidth:860,margin:'0 auto 48px',background:'rgba(192,57,43,0.07)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:12,padding:'20px 24px'}}>
             <div style={{display:'flex',alignItems:'flex-start',gap:16,flexWrap:'wrap'}}>
               <div style={{flex:1,minWidth:220}}>
                 <div style={{fontSize:10,fontWeight:700,color:TEAL,letterSpacing:'.12em',textTransform:'uppercase',marginBottom:6}}>Premium add-on · SLA Guarantee</div>
@@ -427,8 +427,8 @@ export default function Pricing({ nav }) {
           <div style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap'}}>
             <button onClick={() => nav('/auth')}
               style={{background:`linear-gradient(135deg,${TEAL},${TEALH})`,border:'none',borderRadius:8,
-                color:'#ffffff',fontSize:15,fontWeight:700,padding:'14px 32px',cursor:'pointer',fontFamily:F,
-                boxShadow:`0 4px 24px rgba(192,57,43,0.25)`}}>
+                color:'#1a1a1a',fontSize:15,fontWeight:700,padding:'14px 32px',cursor:'pointer',fontFamily:F,
+                boxShadow:`0 4px 24px rgba(0,0,0,0.1)`}}>
               Get started →
             </button>
             <button onClick={() => window.location.href='mailto:mathimcafee@gmail.com'}

@@ -11,7 +11,7 @@ const fmtDate = (iso) => iso ? format(new Date(iso), 'MMM d, yyyy HH:mm') : '—
 const fmtAgo  = (iso) => iso ? formatDistanceToNow(new Date(iso), { addSuffix: true }) : '—'
 
 const TYPE_META = {
-  cert_expiry:   { label:'Cert expiry',    color:'#f87171' },
+  cert_expiry:   { label:'Cert expiry',    color:'#c0392b' },
   order_renewal: { label:'Sub renewal',    color:'#fb923c' },
   pqc_risk:      { label:'PQC risk',       color:'#a78bfa' },
   test:          { label:'Test',           color:'#b0a8a0' },
@@ -92,12 +92,12 @@ export default function AlertHistory({ nav }) {
         </div>
 
         {/* Tabs */}
-        <div style={{ display:'flex', gap:1, borderBottom:'0.5px solid rgba(255,255,255,0.08)', marginBottom:20 }}>
+        <div style={{ display:'flex', gap:1, borderBottom:'0.5px solid rgba(0,0,0,0.06)', marginBottom:20 }}>
           {TABS.map(t => (
             <button key={t.key} onClick={() => { setFilter(t.key); setSelected(null) }}
               style={{ padding:'8px 14px', fontSize:12, fontWeight:filter===t.key?500:400,
                 cursor:'pointer', fontFamily:'inherit', background:'none', border:'none',
-                borderBottom:filter===t.key?'2px solid #c0392b':'2px solid transparent',
+                borderBottom:filter===t.key?'2px solid #2a6b5c':'2px solid transparent',
                 color:filter===t.key?'#f0ede8':'var(--v2-text-3)', marginBottom:'-0.5px',
                 display:'flex', alignItems:'center', gap:6 }}>
               {t.label}
@@ -128,9 +128,9 @@ export default function AlertHistory({ nav }) {
               const isSelected = selected?.id === a.id
               return (
                 <div key={a.id} onClick={() => setSelected(a)} style={{ padding:'10px 14px', cursor:'pointer',
-                  borderBottom:'0.5px solid rgba(255,255,255,0.05)',
-                  background: isSelected ? 'rgba(192,57,43,0.08)' : 'transparent',
-                  borderLeft: isSelected ? '2px solid #c0392b' : '2px solid transparent',
+                  borderBottom:'0.5px solid rgba(0,0,0,0.04)',
+                  background: isSelected ? 'rgba(42,107,92,0.07)' : 'transparent',
+                  borderLeft: isSelected ? '2px solid #2a6b5c' : '2px solid transparent',
                   transition:'all 0.12s' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
                     <span style={{ width:6, height:6, borderRadius:'50%', background:m.color, flexShrink:0 }}/>
@@ -182,7 +182,7 @@ export default function AlertHistory({ nav }) {
                   { label:'Cert ID',   value: selected.cert_id ? selected.cert_id.slice(0,20)+'…' : '—', mono: true },
                 ].map(({ label, value, mono }) => (
                   <div key={label} style={{ display:'flex', padding:'8px 0',
-                    borderBottom:'0.5px solid rgba(255,255,255,0.05)' }}>
+                    borderBottom:'0.5px solid rgba(0,0,0,0.04)' }}>
                     <span style={{ width:80, flexShrink:0, fontSize:11, color:'#b0a8a0' }}>{label}</span>
                     <span style={{ fontSize:12, color:'#e8e0d8', fontWeight:500,
                       fontFamily: mono ? 'monospace' : 'inherit' }}>{value}</span>

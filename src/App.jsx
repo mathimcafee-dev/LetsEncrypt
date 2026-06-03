@@ -134,25 +134,11 @@ const _build = 1779297041 // cache bust
         ? 'opacity 0.14s ease-in, transform 0.14s ease-in'
         : 'opacity 0.22s cubic-bezier(.16,1,.3,1), transform 0.22s cubic-bezier(.16,1,.3,1)',
       minHeight: '100vh',
-      background: 'radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%)',
-      color: '#ffffff',
-      fontFamily: "'Montserrat', system-ui, sans-serif",
+      background: '#f7f5f0',
+      color: '#1a1a1a',
+      fontFamily: "'Inter', system-ui, sans-serif",
       position: 'relative',
     }}>
-      {/* Comodo-style concentric ring overlay — fixed so it persists across all pages */}
-      <div style={{position:'fixed',top:0,right:'-5%',width:'75vw',height:'100vh',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
-        {[700,580,470,370,275,185,105].map((s,i)=>(
-          <div key={i} style={{
-            position:'absolute',top:'50%',right:'8%',
-            width:s+'px',height:s+'px',
-            borderRadius:'50%',
-            transform:'translateY(-50%)',
-            border:`1.5px solid rgba(180,20,20,${0.10+i*0.04})`,
-          }}/>
-        ))}
-        <div style={{position:'absolute',top:'25%',right:'18%',width:'350px',height:'350px',borderRadius:'50%',background:'radial-gradient(circle, rgba(140,0,0,0.22) 0%, transparent 70%)'}}/>
-        <div style={{position:'absolute',top:'60%',right:'4%',width:'220px',height:'220px',borderRadius:'50%',background:'radial-gradient(circle, rgba(160,0,0,0.18) 0%, transparent 70%)'}}/>
-      </div>
       {showPublicNav && <Nav nav={nav} page={page} />}
       {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="dashboard" /> : <Home nav={nav} />)}
       {page === '/issue-cert' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="issue" /> : <Auth nav={nav} />)}

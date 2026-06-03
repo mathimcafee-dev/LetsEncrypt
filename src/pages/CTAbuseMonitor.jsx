@@ -34,10 +34,10 @@ function classifyCert(shadow, knownDomains) {
 }
 
 const STATUS_CONFIG = {
-  unknown:    { label: 'Unknown',    color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)', leftBorder: '#f87171' },
-  phishing:   { label: 'Phishing',   color: '#ffffff', bg: 'rgba(30,0,0,0.4)', border: 'rgba(192,57,43,0.1)', leftBorder: '#f0ede8' },
-  suspicious: { label: 'Suspicious', color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)', leftBorder: '#f0ede8' },
-  known:      { label: 'Known',      color: '#4ade80', bg: 'transparent', border: 'rgba(192,57,43,0.3)', leftBorder: '#4ade80' },
+  unknown:    { label: 'Unknown',    color: '#f87171', bg: 'rgba(42,107,92,0.09)', border: 'rgba(0,0,0,0.1)', leftBorder: '#f87171' },
+  phishing:   { label: 'Phishing',   color: '#ffffff', bg: 'rgba(30,0,0,0.4)', border: 'rgba(42,107,92,0.08)', leftBorder: '#f0ede8' },
+  suspicious: { label: 'Suspicious', color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)', leftBorder: '#f0ede8' },
+  known:      { label: 'Known',      color: '#1e8a5e', bg: 'transparent', border: 'rgba(42,107,92,0.2)', leftBorder: '#4ade80' },
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
@@ -104,7 +104,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
           <button className="v2-btn v2-btn-sm" onClick={() => onDismiss(shadow.id)}
             disabled={dismissing === shadow.id}
             style={{ display: 'flex', alignItems: 'center', gap: 5,
-              borderColor: 'rgba(192,57,43,0.3)', color: '#4ade80' }}>
+              borderColor: 'rgba(42,107,92,0.2)', color: '#1e8a5e' }}>
             <Check size={11}/>
             {dismissing === shadow.id ? 'Marking…' : 'Mark as known'}
           </button>
@@ -116,7 +116,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
         </button>
         {status !== 'known' && (
           <button className="v2-btn v2-btn-sm" onClick={() => onMark(shadow.id, 'phishing')}
-            style={{ display: 'flex', alignItems: 'center', gap: 5, borderColor: 'rgba(192,57,43,0.25)', color: '#f87171' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 5, borderColor: 'rgba(0,0,0,0.1)', color: '#f87171' }}>
             <AlertTriangle size={11}/> Report mis-issuance
           </button>
         )}
@@ -252,9 +252,9 @@ export default function CTAbuseMonitor({ user }) {
 
         {/* Alert banner */}
         {flagged > 0 && (
-          <div style={{ background: 'rgba(192,57,43,0.12)', border: '0.5px solid #fecaca', borderRadius: 10,
+          <div style={{ background: 'rgba(42,107,92,0.09)', border: '0.5px solid #fecaca', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-            <ShieldAlert size={16} color="#c0392b" style={{ flexShrink: 0, marginTop: 1 }}/>
+            <ShieldAlert size={16} color="#2a6b5c" style={{ flexShrink: 0, marginTop: 1 }}/>
             <div>
               <div style={{ fontSize:13, fontWeight: 500, color: '#f87171' }}>
                 {flagged} unauthorised certificate{flagged !== 1 ? 's' : ''} detected
@@ -267,7 +267,7 @@ export default function CTAbuseMonitor({ user }) {
         )}
 
         {flagged === 0 && !loading && shadows.length > 0 && (
-          <div style={{ background: 'transparent', border: '0.5px solid rgba(192,57,43,0.3)', borderRadius: 10,
+          <div style={{ background: 'transparent', border: '0.5px solid rgba(42,107,92,0.2)', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
             <Shield size={15} color="#16a34a" style={{ flexShrink: 0 }}/>
             <div style={{ fontSize:13, color: '#ffffff', fontWeight: 500 }}>
@@ -282,7 +282,7 @@ export default function CTAbuseMonitor({ user }) {
             { label: 'Total detected', val: classified.length,            color: '#ffffff' },
             { label: 'Flagged',        val: flagged,                       color: '#f87171'         },
             { label: 'Suspicious',     val: counts.suspicious || 0,        color: '#ffffff'         },
-            { label: 'Known / safe',   val: counts.known || 0,             color: '#4ade80'         },
+            { label: 'Known / safe',   val: counts.known || 0,             color: '#1e8a5e'         },
           ].map(({ label, val, color }) => (
             <div key={label} className="v2-card" style={{ padding: '12px 14px', cursor: 'pointer' }}
               onClick={() => setFilter(label === 'Total detected' ? 'all'

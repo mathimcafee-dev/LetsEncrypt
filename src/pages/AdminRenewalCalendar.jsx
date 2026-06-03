@@ -32,8 +32,8 @@ const EVENT_LABELS = {
 function StatCard({ label, value, subtext, accentColor, icon: Icon }) {
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.05)',
-      border: '1px solid rgba(255,255,255,0.1)',
+      background: 'rgba(0,0,0,0.04)',
+      border: '1px solid rgba(0,0,0,0.07)',
       borderRadius: 12, padding: '16px 18px',
       backdropFilter: 'blur(8px)',
       display: 'flex', alignItems: 'flex-start', gap: 12,
@@ -66,8 +66,8 @@ function TabBar({ tab, setTab, counts }) {
   return (
     <div style={{
       display: 'flex', gap: 4, marginBottom: 16,
-      background: 'rgba(255,255,255,0.04)',
-      border: '1px solid rgba(255,255,255,0.08)',
+      background: 'rgba(0,0,0,0.03)',
+      border: '1px solid rgba(0,0,0,0.06)',
       borderRadius: 8, padding: 4,
     }}>
       {tabs.map(t => (
@@ -75,7 +75,7 @@ function TabBar({ tab, setTab, counts }) {
           flex: 1, padding: '7px 12px', borderRadius: 6,
           border: 'none', cursor: 'pointer', fontFamily: 'inherit',
           fontSize: 12, fontWeight: tab === t.id ? 600 : 500,
-          background: tab === t.id ? 'rgba(192,57,43,0.3)' : 'transparent',
+          background: tab === t.id ? 'rgba(42,107,92,0.2)' : 'transparent',
           color: tab === t.id ? '#ffffff' : '#b0a8a0',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           transition: 'all 0.15s',
@@ -84,7 +84,7 @@ function TabBar({ tab, setTab, counts }) {
           {t.count > 0 && (
             <span style={{
               fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 10,
-              background: t.warn && tab !== t.id ? 'rgba(248,113,113,0.25)' : 'rgba(255,255,255,0.12)',
+              background: t.warn && tab !== t.id ? 'rgba(192,57,43,0.2)' : 'rgba(0,0,0,0.08)',
               color: t.warn && tab !== t.id ? '#f87171' : 'rgba(255,255,255,0.7)',
               border: t.warn && tab !== t.id ? '0.5px solid rgba(248,113,113,0.3)' : 'none',
             }}>{t.count}</span>
@@ -107,16 +107,16 @@ function EventRow({ ev, cert }) {
     : ev.status === 'executing' ? '#fbbf24'
     : '#60a5fa'
 
-  const statusBg = ev.status === 'sent' ? 'rgba(74,222,128,0.1)'
-    : ev.status === 'failed' ? 'rgba(248,113,113,0.1)'
-    : ev.status === 'executing' ? 'rgba(251,191,36,0.1)'
+  const statusBg = ev.status === 'sent' ? 'rgba(30,138,94,0.08)'
+    : ev.status === 'failed' ? 'rgba(192,57,43,0.07)'
+    : ev.status === 'executing' ? 'rgba(184,120,0,0.07)'
     : 'rgba(96,165,250,0.1)'
 
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 10,
       padding: '10px 16px',
-      borderBottom: '0.5px solid rgba(255,255,255,0.06)',
+      borderBottom: '0.5px solid rgba(0,0,0,0.05)',
       background: ev.status === 'failed' ? 'rgba(248,113,113,0.05)' : 'transparent',
     }}>
       {/* Status dot */}
@@ -141,9 +141,9 @@ function EventRow({ ev, cert }) {
       <div style={{ width: 115, flexShrink: 0 }}>
         <span style={{
           fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
-          background: isReissue ? 'rgba(74,222,128,0.12)' : 'rgba(192,57,43,0.12)',
+          background: isReissue ? 'rgba(74,222,128,0.12)' : 'rgba(42,107,92,0.09)',
           color: isReissue ? '#4ade80' : '#ff8c7a',
-          border: `0.5px solid ${isReissue ? 'rgba(74,222,128,0.25)' : 'rgba(255,140,122,0.25)'}`,
+          border: `0.5px solid ${isReissue ? 'rgba(30,138,94,0.2)' : 'rgba(255,140,122,0.25)'}`,
         }}>
           {EVENT_LABELS[ev.event_type] || ev.event_type}
         </span>
@@ -161,7 +161,7 @@ function EventRow({ ev, cert }) {
         {isToday && (
           <span style={{
             marginLeft: 5, fontSize: 9, fontWeight: 700,
-            background: 'rgba(192,57,43,0.25)', color: '#ff8c7a',
+            background: 'rgba(0,0,0,0.1)', color: '#ff8c7a',
             padding: '1px 5px', borderRadius: 3,
           }}>today</span>
         )}
@@ -215,7 +215,7 @@ function AlertRow({ alert, onResolve, resolving }) {
         style={{
           padding: '5px 12px', borderRadius: 6, fontSize: 10, fontWeight: 600,
           border: '1px solid rgba(74,222,128,0.3)',
-          background: 'rgba(74,222,128,0.1)', color: '#4ade80',
+          background: 'rgba(30,138,94,0.08)', color: '#1e8a5e',
           cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0,
           display: 'flex', alignItems: 'center', gap: 4,
         }}>
@@ -330,7 +330,7 @@ export default function AdminRenewalCalendar({ user }) {
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
           border: '1px solid rgba(192,57,43,0.4)',
-          background: 'rgba(255,255,255,0.07)',
+          background: 'rgba(0,0,0,0.05)',
           color: '#e8e0d8', cursor: 'pointer', fontFamily: 'inherit',
         }}>
           <RefreshCw size={12} strokeWidth={2} style={{ animation: loading ? 'spin 0.8s linear infinite' : 'none' }} />
@@ -358,7 +358,7 @@ export default function AdminRenewalCalendar({ user }) {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 14px', borderRadius: 8, marginBottom: 16,
-          background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)',
+          background: 'rgba(192,57,43,0.07)', border: '1px solid rgba(192,57,43,0.2)',
           fontSize: 12, color: '#f87171',
         }}>
           <AlertTriangle size={14} strokeWidth={2} />
@@ -378,7 +378,7 @@ export default function AdminRenewalCalendar({ user }) {
 
       {/* Table */}
       <div style={{
-        background: 'rgba(255,255,255,0.04)',
+        background: 'rgba(0,0,0,0.03)',
         border: '1px solid rgba(255,255,255,0.09)',
         borderRadius: 12, overflow: 'hidden',
       }}>
@@ -408,7 +408,7 @@ export default function AdminRenewalCalendar({ user }) {
           )
         ) : tabEvents.length === 0 ? (
           <div style={{ padding: '48px 16px', textAlign: 'center' }}>
-            <Calendar size={28} strokeWidth={1.4} color="rgba(255,255,255,0.15)" style={{ marginBottom: 10 }} />
+            <Calendar size={28} strokeWidth={1.4} color="rgba(0,0,0,0.09)" style={{ marginBottom: 10 }} />
             <div style={{ fontSize: 13, color: '#ffffff', fontWeight: 600, marginBottom: 4 }}>
               {tab === 'today' ? 'No events today'
                 : tab === 'failed' ? 'No failed events'
@@ -425,7 +425,7 @@ export default function AdminRenewalCalendar({ user }) {
               display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px',
               fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)',
               textTransform: 'uppercase', letterSpacing: '0.5px',
-              borderBottom: '0.5px solid rgba(255,255,255,0.08)',
+              borderBottom: '0.5px solid rgba(0,0,0,0.06)',
               background: 'rgba(255,255,255,0.02)',
             }}>
               <div style={{ width: 8, flexShrink: 0 }} />
@@ -439,7 +439,7 @@ export default function AdminRenewalCalendar({ user }) {
             ))}
             <div style={{
               padding: '8px 16px', fontSize: 10, color: 'rgba(255,255,255,0.25)',
-              borderTop: '0.5px solid rgba(255,255,255,0.06)', textAlign: 'right',
+              borderTop: '0.5px solid rgba(0,0,0,0.05)', textAlign: 'right',
             }}>
               {tabEvents.length} event{tabEvents.length !== 1 ? 's' : ''}
             </div>

@@ -14,9 +14,9 @@ import '../styles/design-v2.css'
 function agentStatus(last_seen_at, status) {
   if (!last_seen_at) return { label:'Never seen', color:'#b0a8a0', dot:'rgba(240,237,232,0.12)', pulse:false }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
-  if (status === 'offline' || mins > 15) return { label:'Offline', color:'#f87171', dot:'#f87171', pulse:false }
+  if (status === 'offline' || mins > 15) return { label:'Offline', color:'#c0392b', dot:'#f87171', pulse:false }
   if (mins > 6) return { label:'Idle',    color:'#ffffff', dot:'#f0ede8', pulse:false }
-  return { label:'Online', color:'#4ade80', dot:'#4ade80', pulse:true }
+  return { label:'Online', color:'#1e8a5e', dot:'#4ade80', pulse:true }
 }
 
 function fmtRel(iso) {
@@ -52,13 +52,13 @@ function CertPill({ cert }) {
   const isExpired = d !== null && d <= 0
   const isWarn    = d !== null && d > 0 && d <= 30
   const color = isExpired ? '#f87171' : isWarn ? '#f0ede8' : '#4ade80'
-  const bg    = isExpired ? 'rgba(192,57,43,0.12)' : isWarn ? 'rgba(239,68,68,0.08)' : 'transparent'
+  const bg    = isExpired ? 'rgba(42,107,92,0.09)' : isWarn ? 'rgba(239,68,68,0.08)' : 'transparent'
 
   return (
     <div style={{
       display:'flex', alignItems:'center', gap:8, padding:'7px 10px',
       background:'var(--v2-surface-3)', borderRadius:7,
-      border:`0.5px solid ${isExpired?'rgba(192,57,43,0.25)':isWarn?'rgba(192,57,43,0.25)':'var(--v2-border)'}`,
+      border:`0.5px solid ${isExpired?'rgba(0,0,0,0.1)':isWarn?'rgba(0,0,0,0.1)':'var(--v2-border)'}`,
     }}>
       <span style={{ width:6, height:6, borderRadius:'50%', background:color, flexShrink:0 }}/>
       <span style={{ fontSize:12, fontWeight:500, color:'#ffffff', flex:1,
@@ -238,7 +238,7 @@ function InstallModal({ onClose }) {
       display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%', maxWidth:520,
         boxShadow:'0 20px 60px rgba(0,0,0,0.25)', overflow:'hidden' }}>
-        <div style={{ padding:'16px 20px', borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+        <div style={{ padding:'16px 20px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
           display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div>
             <div style={{ fontSize:14, fontWeight:500, color:'#ffffff' }}>Install SSLVault agent</div>
@@ -271,7 +271,7 @@ function InstallModal({ onClose }) {
 
             </div>
           ))}
-          <div style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:7, padding:'10px 12px' }}>
+          <div style={{ background:'transparent', border:'0.5px solid rgba(42,107,92,0.2)', borderRadius:7, padding:'10px 12px' }}>
             <div style={{ fontSize:11, color:'#ffffff', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and appears in this list within 1–2 minutes.
             </div>
@@ -327,11 +327,11 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
     setTimeout(() => setCopied(false), 1500)
   }
 
-  const borderColor = st.label === 'Online' ? 'rgba(192,57,43,0.3)'
-    : st.label === 'Offline' ? 'rgba(192,57,43,0.25)'
+  const borderColor = st.label === 'Online' ? 'rgba(42,107,92,0.2)'
+    : st.label === 'Offline' ? 'rgba(0,0,0,0.1)'
     : 'var(--v2-border)'
   const headerBg = st.label === 'Online' ? 'transparent'
-    : st.label === 'Offline' ? 'rgba(192,57,43,0.12)'
+    : st.label === 'Offline' ? 'rgba(42,107,92,0.09)'
     : 'var(--v2-surface-3)'
 
   const cpu  = agent.cpu_pct  || 0
@@ -385,7 +385,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
         {/* Cert count badge */}
         <div style={{ textAlign:'right', flexShrink:0 }}>
           {st.label === 'Offline' ? (
-            <span style={{ fontSize:11, color:'#f87171', fontWeight:500 }}>
+            <span style={{ fontSize:11, color:'#c0392b', fontWeight:500 }}>
               {myCerts.length > 0 ? `${myCerts.length} cert${myCerts.length>1?'s':''} at risk` : 'Offline'}
             </span>
           ) : (
@@ -397,7 +397,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
 
         {/* Status pill */}
         <span style={{ fontSize:10, fontWeight:700, padding:'2px 9px', borderRadius:10, flexShrink:0,
-          background: st.label==='Online'?'transparent':st.label==='Offline'?'rgba(192,57,43,0.12)':'rgba(239,68,68,0.08)',
+          background: st.label==='Online'?'transparent':st.label==='Offline'?'rgba(42,107,92,0.09)':'rgba(239,68,68,0.08)',
           color: st.color }}>
           {st.label}
         </span>
@@ -412,7 +412,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
 
           {/* Tab bar */}
           <div style={{ display:'flex', gap:1, padding:'10px 16px 0',
-            borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+            borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
             {[
               { id:'certs', label:'Certificates', icon:Shield },
               { id:'jobs',  label:'Recent jobs',  icon:Activity },
@@ -421,7 +421,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
               <button key={id} onClick={() => setTab(id)}
                 style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px',
                   fontSize:11, fontWeight:tab===id?500:400, cursor:'pointer', fontFamily:'inherit',
-                  background:'none', border:'none', borderBottom:tab===id?'2px solid #c0392b':'2px solid transparent',
+                  background:'none', border:'none', borderBottom:tab===id?'2px solid #2a6b5c':'2px solid transparent',
                   color:tab===id?'#f0ede8':'var(--v2-text-3)', transition:'all .15s',
                   marginBottom:'-0.5px' }}>
                 <Icon size={12}/>{label}
@@ -468,13 +468,13 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                         <div key={j.id} style={{ display:'flex', alignItems:'center', gap:10,
                           padding:'7px 10px', borderRadius:7, background:'var(--v2-surface-3)' }}>
                           {ok   ? <CheckCircle size={12} color="#16a34a"/>
-                          :fail ? <XCircle size={12} color="#c0392b"/>
+                          :fail ? <XCircle size={12} color="#2a6b5c"/>
                           :       <Clock size={12} color="#e07060"/>}
                           <span style={{ fontSize:11, color:'#e8e0d8', fontFamily:'monospace', flex:1 }}>
                             {j.job_type}{j.domain ? ` · ${j.domain}` : ''}
                           </span>
                           {j.error_message && (
-                            <span style={{ fontSize:10, color:'#f87171', maxWidth:200,
+                            <span style={{ fontSize:10, color:'#c0392b', maxWidth:200,
                               overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                               {j.error_message}
                             </span>
@@ -505,7 +505,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                     ['Connected',     fmtRel(agent.created_at)],
                   ].filter(([,v]) => v).map(([k,v]) => (
                     <div key={k} style={{ display:'flex', justifyContent:'space-between',
-                      padding:'5px 0', fontSize:12, borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+                      padding:'5px 0', fontSize:12, borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
                       <span style={{ color:'#b0a8a0' }}>{k}</span>
                       <span style={{ color:'#ffffff', fontFamily:'monospace', fontSize:11 }}>{v}</span>
                     </div>
@@ -561,7 +561,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
             <div style={{ flex:1 }}/>
             <button className="v2-btn v2-btn-sm"
               style={{ display:'flex', alignItems:'center', gap:5,
-                borderColor:'rgba(192,57,43,0.25)', color:'#f87171' }}
+                borderColor:'rgba(0,0,0,0.1)', color:'#c0392b' }}
               disabled={removing}
               onClick={async () => {
                 if (!window.confirm(`Remove "${agent.nickname || agent.hostname}" from SSLVault? This stops auto-renewal for this server.`)) return
@@ -668,7 +668,7 @@ export default function Infrastructure({ user }) {
         {!loading && agents.length > 0 && (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))', gap:8, marginBottom:20 }}>
             {[
-              { label:'Servers online',  val:online,       color:'#4ade80' },
+              { label:'Servers online',  val:online,       color:'#1e8a5e' },
               { label:'Offline / idle',  val:offline,      color:offline>0?'#f87171':'var(--v2-text)' },
               { label:'Certs protected', val:certs.length, color:'#ffffff' },
               { label:'Renewals ≤30d',   val:renewalsDue,  color:renewalsDue>0?'#f0ede8':'#4ade80' },

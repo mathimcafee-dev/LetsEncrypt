@@ -24,7 +24,7 @@ function MsgText({ text }) {
         const b = /^[-•]\s/.test(line.trimStart())
         return (
           <div key={i} style={{display:'flex',gap:6,marginBottom:1}}>
-            {b && <span style={{color:'#c0392b',flexShrink:0}}>•</span>}
+            {b && <span style={{color:'#2a6b5c',flexShrink:0}}>•</span>}
             <span>{b ? line.trimStart().replace(/^[-•]\s/,'') : line}</span>
           </div>
         )
@@ -38,7 +38,7 @@ function Dots() {
     <div style={{display:'flex',gap:4,alignItems:'center',padding:'3px 0'}}>
       {[0,1,2].map(i=>(
         <span key={i} style={{
-          width:5,height:5,borderRadius:'50%',background:'#c0392b',display:'inline-block',
+          width:5,height:5,borderRadius:'50%',background:'#2a6b5c',display:'inline-block',
           animation:`vbdot 1.1s ${i*0.17}s infinite ease-in-out`
         }}/>
       ))}
@@ -133,7 +133,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
   return (
     <div style={{
       width:300, flexShrink:0,
-      borderLeft:'1px solid rgba(192,57,43,0.2)',
+      borderLeft:'1px solid rgba(0,0,0,0.08)',
       background:'rgba(12,0,0,0.6)',
       display:'flex', flexDirection:'column',
       height:'calc(100vh - 50px)',
@@ -143,7 +143,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
       {/* Header */}
       <div style={{
         padding:'12px 14px 10px',
-        borderBottom:'1px solid rgba(255,255,255,0.05)',
+        borderBottom:'1px solid rgba(0,0,0,0.04)',
         display:'flex', alignItems:'center', gap:8, flexShrink:0,
       }}>
         <span style={{fontSize:15}}>🧠</span>
@@ -156,12 +156,12 @@ export default function VaultBrainPanel({ open, onClose, session }) {
         <div style={{display:'flex',gap:5}}>
           {msgs.length>0&&!busy&&(
             <button onClick={()=>{setMsgs([]);histRef.current=[];setStart(false);setPend(null)}} style={{
-              background:'none',border:'1px solid rgba(255,255,255,0.07)',
+              background:'none',border:'1px solid rgba(0,0,0,0.05)',
               borderRadius:5,cursor:'pointer',color:'#b0a8a0',fontSize:10,padding:'3px 7px',fontFamily:'inherit',
             }}>Clear</button>
           )}
           <button onClick={onClose} style={{
-            background:'none',border:'1px solid rgba(255,255,255,0.07)',
+            background:'none',border:'1px solid rgba(0,0,0,0.05)',
             borderRadius:5,cursor:'pointer',color:'#b0a8a0',
             width:24,height:24,display:'flex',alignItems:'center',justifyContent:'center',
           }}>
@@ -184,13 +184,13 @@ export default function VaultBrainPanel({ open, onClose, session }) {
             {CHIPS.map(c=>(
               <button key={c} onClick={()=>session&&send(c)} disabled={!session} style={{
                 display:'block',width:'100%',textAlign:'left',
-                background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',
+                background:'rgba(255,255,255,0.03)',border:'1px solid rgba(0,0,0,0.05)',
                 borderRadius:8,padding:'8px 11px',cursor:session?'pointer':'not-allowed',
                 fontFamily:'inherit',fontSize:12.5,color:'#c8c4c0',marginBottom:5,
                 opacity:session?1:0.4,transition:'background .1s,border-color .1s',
               }}
-              onMouseEnter={e=>{if(session){e.currentTarget.style.background='rgba(192,57,43,0.08)';e.currentTarget.style.borderColor='rgba(192,57,43,0.25)'}}}
-              onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.03)';e.currentTarget.style.borderColor='rgba(255,255,255,0.06)'}}>
+              onMouseEnter={e=>{if(session){e.currentTarget.style.background='rgba(42,107,92,0.07)';e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'}}}
+              onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.03)';e.currentTarget.style.borderColor='rgba(0,0,0,0.05)'}}>
                 <span style={{color:'rgba(192,57,43,0.5)',marginRight:6}}>›</span>{c}
               </button>
             ))}
@@ -211,8 +211,8 @@ export default function VaultBrainPanel({ open, onClose, session }) {
             {msg.role==='user'&&(
               <div style={{display:'flex',justifyContent:'flex-end',marginBottom:8}}>
                 <div style={{
-                  maxWidth:'85%',background:'rgba(192,57,43,0.1)',
-                  border:'1px solid rgba(192,57,43,0.18)',
+                  maxWidth:'85%',background:'rgba(42,107,92,0.08)',
+                  border:'1px solid rgba(42,107,92,0.12)',
                   borderRadius:'8px 8px 2px 8px',padding:'7px 10px',
                 }}>
                   <div style={{fontSize:12.5,color:'#f0ede8'}}>{msg.text}</div>
@@ -224,12 +224,12 @@ export default function VaultBrainPanel({ open, onClose, session }) {
               <div style={{display:'flex',gap:6,marginBottom:8,alignItems:'flex-start'}}>
                 <div style={{
                   width:20,height:20,borderRadius:'50%',flexShrink:0,marginTop:1,
-                  background:'rgba(192,57,43,0.1)',border:'1px solid rgba(192,57,43,0.22)',
+                  background:'rgba(42,107,92,0.08)',border:'1px solid rgba(192,57,43,0.22)',
                   display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,
                 }}>🧠</div>
                 <div style={{
                   flex:1,background:'rgba(255,255,255,0.03)',
-                  border:`1px solid ${msg.err?'rgba(248,113,113,0.2)':'rgba(255,255,255,0.06)'}`,
+                  border:`1px solid ${msg.err?'rgba(248,113,113,0.2)':'rgba(0,0,0,0.05)'}`,
                   borderRadius:'2px 8px 8px 8px',padding:'8px 10px',
                 }}>
                   {msg.loading ? <Dots/> : (
@@ -248,16 +248,16 @@ export default function VaultBrainPanel({ open, onClose, session }) {
                 background:'rgba(251,191,36,0.05)',border:'1px solid rgba(251,191,36,0.18)',
                 borderRadius:8,padding:'10px 12px',
               }}>
-                <div style={{fontSize:11,color:'#fbbf24',fontWeight:600,marginBottom:6}}>⚡ Confirm</div>
+                <div style={{fontSize:11,color:'#b87800',fontWeight:600,marginBottom:6}}>⚡ Confirm</div>
                 <div style={{fontSize:12,color:'#ddd9d4',marginBottom:8,lineHeight:1.5}}>{pend.message}</div>
                 <div style={{display:'flex',gap:6}}>
                   <button onClick={confirm} disabled={busy} style={{
-                    background:'#c0392b',color:'#fff',border:'none',
+                    background:'#2a6b5c',color:'#fff',border:'none',
                     borderRadius:6,padding:'5px 12px',cursor:busy?'wait':'pointer',
                     fontSize:11,fontWeight:600,fontFamily:'inherit',
                   }}>{busy?'⏳ Working…':'✅ Go ahead'}</button>
                   <button onClick={()=>{setPend(null);setMsgs(m=>[...m,{role:'ai',text:'Cancelled.',ts:ts()}])}} disabled={busy} style={{
-                    background:'none',border:'1px solid rgba(255,255,255,0.1)',
+                    background:'none',border:'1px solid rgba(0,0,0,0.07)',
                     borderRadius:6,padding:'5px 10px',cursor:'pointer',
                     fontSize:11,color:'#b0a8a0',fontFamily:'inherit',
                   }}>Cancel</button>
@@ -271,16 +271,16 @@ export default function VaultBrainPanel({ open, onClose, session }) {
 
       {/* Quick chips */}
       {msgs.length>1&&!busy&&!pend&&(
-        <div style={{padding:'4px 12px 6px',display:'flex',flexWrap:'wrap',gap:4,flexShrink:0,borderTop:'1px solid rgba(255,255,255,0.04)'}}>
+        <div style={{padding:'4px 12px 6px',display:'flex',flexWrap:'wrap',gap:4,flexShrink:0,borderTop:'1px solid rgba(0,0,0,0.03)'}}>
           {CHIPS.slice(0,3).map(c=>(
             <button key={c} onClick={()=>send(c)} style={{
-              background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',
+              background:'rgba(255,255,255,0.03)',border:'1px solid rgba(0,0,0,0.05)',
               borderRadius:20,padding:'3px 9px',cursor:'pointer',
               fontFamily:'inherit',fontSize:10.5,color:'#b0a8a0',
               transition:'color .1s,border-color .1s',
             }}
-            onMouseEnter={e=>{e.currentTarget.style.color='#f0ede8';e.currentTarget.style.borderColor='rgba(192,57,43,0.25)'}}
-            onMouseLeave={e=>{e.currentTarget.style.color='#b0a8a0';e.currentTarget.style.borderColor='rgba(255,255,255,0.06)'}}>
+            onMouseEnter={e=>{e.currentTarget.style.color='#f0ede8';e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'}}
+            onMouseLeave={e=>{e.currentTarget.style.color='#b0a8a0';e.currentTarget.style.borderColor='rgba(0,0,0,0.05)'}}>
               {c}
             </button>
           ))}
@@ -288,7 +288,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
       )}
 
       {/* Input */}
-      <div style={{padding:'8px 10px 10px',borderTop:'1px solid rgba(255,255,255,0.05)',flexShrink:0}}>
+      <div style={{padding:'8px 10px 10px',borderTop:'1px solid rgba(0,0,0,0.04)',flexShrink:0}}>
         <div style={{display:'flex',gap:6,alignItems:'flex-end'}}>
           <textarea
             ref={inputRef}
@@ -298,8 +298,8 @@ export default function VaultBrainPanel({ open, onClose, session }) {
             placeholder={session?'Ask anything…':'Sign in to use VaultBrain…'}
             rows={1} disabled={busy||!session}
             style={{
-              flex:1,background:'rgba(255,255,255,0.04)',
-              border:`1px solid ${input?'rgba(192,57,43,0.4)':'rgba(255,255,255,0.08)'}`,
+              flex:1,background:'rgba(0,0,0,0.03)',
+              border:`1px solid ${input?'rgba(192,57,43,0.4)':'rgba(0,0,0,0.06)'}`,
               borderRadius:8,padding:'7px 10px',
               color:'#f0ede8',fontSize:12.5,fontFamily:'inherit',
               resize:'none',outline:'none',lineHeight:1.5,
@@ -308,7 +308,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
           />
           <button onClick={submit} disabled={busy||!input.trim()||!session} style={{
             width:32,height:32,borderRadius:8,border:'none',flexShrink:0,
-            background:busy||!input.trim()||!session?'rgba(255,255,255,0.05)':'#c0392b',
+            background:busy||!input.trim()||!session?'rgba(0,0,0,0.04)':'#2a6b5c',
             cursor:busy||!input.trim()||!session?'not-allowed':'pointer',
             display:'flex',alignItems:'center',justifyContent:'center',
             opacity:busy||!input.trim()||!session?0.4:1,

@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { Menu, X } from 'lucide-react'
 
-const F = "'Montserrat',system-ui,sans-serif"
+const F = "'Inter',system-ui,sans-serif"
 const W = '#f0ede8', BK = 'transparent'
-const T1 = 'rgba(192,57,43,0.12)', T2 = 'rgba(240,237,232,0.55)', T3 = 'rgba(240,237,232,0.35)'
-const LN = 'rgba(192,57,43,0.15)', LN2 = 'rgba(192,57,43,0.25)'
+const T1 = 'rgba(42,107,92,0.09)', T2 = 'rgba(240,237,232,0.55)', T3 = 'rgba(240,237,232,0.35)'
+const LN = 'rgba(0,0,0,0.07)', LN2 = 'rgba(0,0,0,0.1)'
 
 function useW(bp=760){const[m,setM]=useState(window.innerWidth<=bp);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
@@ -64,8 +64,8 @@ export default function Nav({ nav, page }) {
 
         {/* Desktop CTA */}
         {!sm && <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
-          <button onClick={()=>nav('/dashboard')} style={{background:'rgba(192,57,43,0.12)',border:'1px solid rgba(192,57,43,0.3)',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#f87171',padding:'6px 13px',borderRadius:6,display:'flex',alignItems:'center',gap:5,transition:'background .12s'}}
-            onMouseEnter={e=>e.currentTarget.style.background='rgba(192,57,43,0.22)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(192,57,43,0.12)'}>🧠 Ask AI</button>
+          <button onClick={()=>nav('/dashboard')} style={{background:'rgba(42,107,92,0.09)',border:'1px solid rgba(42,107,92,0.2)',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#2a6b5c',padding:'6px 13px',borderRadius:6,display:'flex',alignItems:'center',gap:5,transition:'background .12s'}}
+            onMouseEnter={e=>e.currentTarget.style.background='rgba(192,57,43,0.22)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(42,107,92,0.09)'}>🧠 Ask AI</button>
           <button onClick={()=>nav('/auth')} style={{background:'none',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,color:T2,padding:'5px 10px',borderRadius:3,transition:'color .12s'}}
             onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>Sign in</button>
           <button onClick={()=>nav('/auth')} style={{background:BK,border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:W,padding:'6px 14px',borderRadius:3,transition:'background .12s'}}
@@ -73,7 +73,7 @@ export default function Nav({ nav, page }) {
         </div>}
 
         {/* Mobile burger */}
-        {sm && <button onClick={()=>setMob(o=>!o)} style={{background:'rgba(255,255,255,0.05)',border:`1px solid ${LN}`,borderRadius:3,width:32,height:32,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:T2,padding:0}}>
+        {sm && <button onClick={()=>setMob(o=>!o)} style={{background:'rgba(0,0,0,0.04)',border:`1px solid ${LN}`,borderRadius:3,width:32,height:32,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:T2,padding:0}}>
           {mob?<X size={15}/>:<Menu size={15}/>}
         </button>}
       </div>
@@ -87,8 +87,8 @@ export default function Nav({ nav, page }) {
                 onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>{l}</button>
             ))}
             <div style={{height:1,background:LN,margin:'7px 0 9px'}}/>
-            <button onClick={()=>{nav('/auth');setMob(false)}} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(255,255,255,0.05)',color:T1,border:`1px solid ${LN}`,padding:'10px 12px',borderRadius:3,fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:F,marginBottom:6}}>Sign in</button>
-            <button onClick={()=>{nav('/auth');setMob(false)}} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'#0d0000',color:'#ffffff',border:'none',padding:'10px 12px',borderRadius:3,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:F}}>Get started</button>
+            <button onClick={()=>{nav('/auth');setMob(false)}} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,0.04)',color:T1,border:`1px solid ${LN}`,padding:'10px 12px',borderRadius:3,fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:F,marginBottom:6}}>Sign in</button>
+            <button onClick={()=>{nav('/auth');setMob(false)}} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'#0d0000',color:'#1a1a1a',border:'none',padding:'10px 12px',borderRadius:3,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:F}}>Get started</button>
           </div>
         </div>
       )}

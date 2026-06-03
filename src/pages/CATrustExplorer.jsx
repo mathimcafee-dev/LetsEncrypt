@@ -9,7 +9,7 @@ const PAGE_SIZE = 10000
 
 const STORE_META = {
   Chrome:    { icon: '🌐', color: '#e8e0d8' },
-  Mozilla:   { icon: '🦊', color: '#c0392b' },
+  Mozilla:   { icon: '🦊', color: '#2a6b5c' },
   Apple:     { icon: '🍎', color: '#ffffff' },
   Microsoft: { icon: '🪟', color: '#ffffff' },
 }
@@ -36,7 +36,7 @@ const fmtDate = (iso) => {
 }
 
 const avatarColor = (name = '') => {
-  const colors = ['#f0ede8','#f0ede8','#f0ede8','#4ade80','#f87171','#f0ede8','#c0392b','#f0ede8','#e07060','#f0ede8']
+  const colors = ['#f0ede8','#f0ede8','#f0ede8','#4ade80','#f87171','#f0ede8','#2a6b5c','#f0ede8','#e07060','#f0ede8']
   let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff
   return colors[Math.abs(h) % colors.length]
 }
@@ -468,7 +468,7 @@ export default function CATrustExplorer({ nav }) {
         .fchip.on { background:var(--v2-surface);border-color:var(--v2-border-strong);color:var(--v2-text);box-shadow:var(--v2-shadow-sm) }
         .cert-list { max-height:520px;overflow-y:auto }
         .cert-list::-webkit-scrollbar { width:4px }
-        .cert-list::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08);border-radius:2px }
+        .cert-list::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.06);border-radius:2px }
         .list-row { position:relative;display:flex;align-items:center;gap:10px;padding:11px 14px 11px 16px;border-bottom:0.5px solid var(--v2-border);cursor:pointer;transition:background .1s }
         .list-row:last-child { border-bottom:none }
         .list-row:hover { background:var(--v2-surface-3) }
@@ -485,14 +485,14 @@ export default function CATrustExplorer({ nav }) {
         .chip-amber { color:var(--v2-amber-text);background:var(--v2-amber-bg);border-color:var(--v2-amber-border) }
         .chip-red { color:var(--v2-red-text);background:var(--v2-red-bg);border-color:var(--v2-red-border) }
         .chip-grey { color:var(--v2-text-2);background:var(--v2-hover);border-color:var(--v2-border) }
-        .chip-amber { color:#ff8c7a;background:rgba(192,57,43,0.1);border-color:rgba(192,57,43,0.25) }
+        .chip-amber { color:#ff8c7a;background:rgba(42,107,92,0.08);border-color:rgba(0,0,0,0.1) }
         .detail-panel { background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);overflow:hidden }
         .dp-header { padding:14px 16px;border-bottom:0.5px solid var(--v2-border);display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--v2-surface-2);flex-wrap:wrap }
         .dp-title { font-size:14px;font-weight:600;color:var(--v2-text);letter-spacing:-0.2px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 }
         .dp-actions { display:flex;gap:6px;flex-shrink:0 }
         .dp-body { padding:16px;max-height:480px;overflow-y:auto }
         .dp-body::-webkit-scrollbar { width:4px }
-        .dp-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08);border-radius:2px }
+        .dp-body::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.06);border-radius:2px }
         .score-banner { background:var(--v2-green-bg);border:0.5px solid var(--v2-green-border);border-radius:var(--v2-r-lg);padding:12px 14px;display:flex;align-items:center;gap:14px;margin-bottom:16px }
         .score-banner.amber { background:var(--v2-amber-bg);border-color:var(--v2-amber-border) }
         .score-banner.red { background:var(--v2-red-bg);border-color:var(--v2-red-border) }
@@ -548,7 +548,7 @@ export default function CATrustExplorer({ nav }) {
         .intel-title { font-size:11px;letter-spacing:0.4px;color:var(--v2-text-3);text-transform:uppercase;font-weight:500;margin-bottom:8px }
         .intel-row { display:flex;gap:8px;overflow-x:auto;padding-bottom:4px }
         .intel-row::-webkit-scrollbar { height:3px }
-        .intel-row::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08) }
+        .intel-row::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.06) }
         .intel-card { background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-lg);padding:9px 12px;flex-shrink:0;min-width:110px }
         .intel-card.warn { border-color:var(--v2-amber-border);background:var(--v2-amber-bg) }
         .intel-card.good { border-color:var(--v2-green-border);background:var(--v2-green-bg) }
@@ -559,7 +559,7 @@ export default function CATrustExplorer({ nav }) {
         .intel-card.good .ic-val { color:var(--v2-green-text) }
         .intel-card.bad  .ic-val { color:var(--v2-red-text) }
         .pem-block { background:transparent;border-radius:var(--v2-r-lg);overflow:hidden;border:0.5px solid #1a1a1a;margin-top:4px }
-        .pem-head { display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:0.5px solid rgba(255,255,255,0.06);background:transparent }
+        .pem-head { display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:0.5px solid rgba(0,0,0,0.05);background:transparent }
         .pem-dots { display:flex;gap:4px }
         .pem-body { padding:10px 12px;font-family:'JetBrains Mono','JetBrains Mono',monospace;font-size:10px;color:#b0a8a0;line-height:1.6;word-break:break-all;max-height:80px;overflow:hidden;position:relative }
         .pem-fade { position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(transparent,#0a0a0a) }
@@ -693,7 +693,7 @@ export default function CATrustExplorer({ nav }) {
                     </span>
                     <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
                       {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'rgba(240,237,232,0.7)',display:'inline-block',flexShrink:0}}/>}
-                      {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#c0392b',display:'inline-block',flexShrink:0}}/>}
+                      {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#2a6b5c',display:'inline-block',flexShrink:0}}/>}
                       {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#0d0000',display:'inline-block',flexShrink:0}}/>}
                       {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0d0000',display:'inline-block',flexShrink:0}}/>}
                     </span>
@@ -862,7 +862,7 @@ export default function CATrustExplorer({ nav }) {
                       <div className="pem-block">
                         <div className="pem-head">
                           <div className="pem-dots">
-                            <span style={{ background: '#c0392b', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
+                            <span style={{ background: '#2a6b5c', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
                             <span style={{ background: '#ffbd2e', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
                             <span style={{ background: '#27c93f', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
                           </div>

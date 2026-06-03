@@ -1,18 +1,18 @@
 // About.jsx — SSLVault company page
 import portrait from '../assets/mathi-portrait.jpg'
 
-const F    = "'Montserrat',system-ui,sans-serif"
+const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const BG   = '#120000'
+const BG   = '#f7f5f0'
 const BG2  = '#1a0404'
 const BG3  = '#220808'
 const BG4  = '#2d0f0f'
 const T1   = '#f0ede8'
 const T2   = 'rgba(240,237,232,0.65)'
 const T3   = 'rgba(240,237,232,0.35)'
-const LN   = 'rgba(192,57,43,0.2)'
-const LN2  = 'rgba(192,57,43,0.35)'
-const RED  = '#c0392b'
+const LN   = 'rgba(0,0,0,0.08)'
+const LN2  = 'rgba(42,107,92,0.25)'
+const RED  = '#2a6b5c'
 const GRN  = '#4ade80'
 const AMB  = '#fbbf24'
 const PRP  = '#a78bfa'
@@ -30,7 +30,7 @@ function Stat({ val, label, sub, color }) {
 
 export default function About({ nav }) {
   return (
-    <div style={{ minHeight:'100vh', background:`radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%)`, fontFamily:F, color:T1 }}>
+    <div style={{ minHeight:'100vh', background:`#f7f5f0`, fontFamily:F, color:T1 }}>
       <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}`}</style>
 
       {/* Nav */}

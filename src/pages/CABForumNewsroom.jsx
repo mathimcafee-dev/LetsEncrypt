@@ -113,22 +113,22 @@ function Pill({ color, bg, border, children }) {
 }
 
 const STATUS_STYLE = {
-  passed:   { color:'#ffffff', bg:'transparent', border:'rgba(192,57,43,0.3)' },
-  adopted:  { color:'#ffffff', bg:'transparent', border:'rgba(192,57,43,0.3)' },
-  withdrawn:{ color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(192,57,43,0.25)' },
-  failed:   { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(192,57,43,0.25)' },
-  draft:    { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(192,57,43,0.25)' },
+  passed:   { color:'#ffffff', bg:'transparent', border:'rgba(42,107,92,0.2)' },
+  adopted:  { color:'#ffffff', bg:'transparent', border:'rgba(42,107,92,0.2)' },
+  withdrawn:{ color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  failed:   { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  draft:    { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
 }
 const WG_STYLE = {
-  'Server Cert WG': { color:'#ffffff', bg:'transparent', border:'rgba(192,57,43,0.3)' },
-  'S/MIME WG':      { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(192,57,43,0.25)' },
-  'Code Signing WG':{ color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(192,57,43,0.25)' },
-  'NetSec WG':      { color:'#ffffff', bg:'transparent', border:'rgba(192,57,43,0.3)' },
+  'Server Cert WG': { color:'#ffffff', bg:'transparent', border:'rgba(42,107,92,0.2)' },
+  'S/MIME WG':      { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  'Code Signing WG':{ color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  'NetSec WG':      { color:'#ffffff', bg:'transparent', border:'rgba(42,107,92,0.2)' },
   'Forum':          { color:'#b0a8a0', bg:'#000000', border:'rgba(30,0,0,0.5)' },
 }
 const IMPACT_STYLE = {
-  critical: { color:'#f87171', bg:'rgba(192,57,43,0.12)', border:'rgba(192,57,43,0.25)' },
-  high:     { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(192,57,43,0.25)' },
+  critical: { color:'#c0392b', bg:'rgba(42,107,92,0.09)', border:'rgba(0,0,0,0.1)' },
+  high:     { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
 }
 
 function BallotRow({ b, onClick }) {
@@ -140,7 +140,7 @@ function BallotRow({ b, onClick }) {
   return (
     <div onClick={() => onClick(b)} style={{
       cursor:'pointer', padding:'12px 16px',
-      borderBottom:'0.5px solid rgba(255,255,255,0.08)',
+      borderBottom:'0.5px solid rgba(0,0,0,0.06)',
       transition:'background .1s',
     }}
     onMouseEnter={e => e.currentTarget.style.background='var(--v2-hover)'}
@@ -263,7 +263,7 @@ export default function CABForumNewsroom({ nav }) {
         .hero-band { background:var(--v2-border-focus,#0a0a0a);padding:32px 24px 28px;color:#ffffff }
         .hero-eyebrow { font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase;font-weight:500;margin-bottom:8px }
         .hero-h1 { font-size:26px;font-weight:600;letter-spacing:-.4px;color:#ffffff;line-height:1.2;margin-bottom:10px }
-        .hero-h1 em { color:#c0392b;font-style:normal }
+        .hero-h1 em { color:#2a6b5c;font-style:normal }
         .hero-sub { font-size:13px;color:rgba(255,255,255,.55);max-width:min(640px,100%);line-height:1.7;margin-bottom:20px }
         .hero-stats { display:flex;gap:28px;flex-wrap:wrap }
         .hstat-n { font-size:22px;font-weight:600;color:#ffffff;font-variant-numeric:tabular-nums;line-height:1 }
@@ -355,7 +355,7 @@ export default function CABForumNewsroom({ nav }) {
         .chip-green { background:var(--v2-green-bg);color:var(--v2-green-text);border:0.5px solid var(--v2-green-border) }
         .chip-amber { background:var(--v2-amber-bg);color:var(--v2-amber-text);border:0.5px solid var(--v2-amber-border) }
         .chip-red { background:var(--v2-red-bg);color:var(--v2-red-text);border:0.5px solid var(--v2-red-border) }
-        .chip-blue { background:rgba(192,57,43,0.12);color:#c0392b;border:0.5px solid rgba(192,57,43,0.3) }
+        .chip-blue { background:rgba(42,107,92,0.09);color:#2a6b5c;border:0.5px solid rgba(42,107,92,0.2) }
         .chip-grey { background:var(--v2-surface-3,var(--v2-hover));color:var(--v2-text-3);border:0.5px solid var(--v2-border) }
         /* ── Callouts ──────────────────────────────────────── */
         .v2-callout { padding:12px 14px;border-radius:var(--v2-r-lg);border:0.5px solid var(--v2-border);margin-bottom:10px }

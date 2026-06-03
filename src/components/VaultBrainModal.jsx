@@ -29,7 +29,7 @@ function MsgText({ text }) {
         const bullet = /^[-•]\s/.test(line.trimStart())
         return (
           <div key={i} style={{ display: 'flex', gap: 7, marginBottom: 1 }}>
-            {bullet && <span style={{ color: '#c0392b', flexShrink: 0, lineHeight: 1.7 }}>•</span>}
+            {bullet && <span style={{ color: '#2a6b5c', flexShrink: 0, lineHeight: 1.7 }}>•</span>}
             <span>{bullet ? line.trimStart().replace(/^[-•]\s/, '') : line}</span>
           </div>
         )
@@ -43,7 +43,7 @@ function Dots() {
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '2px 0' }}>
       {[0,1,2].map(i => (
         <span key={i} style={{
-          width: 6, height: 6, borderRadius: '50%', background: '#c0392b',
+          width: 6, height: 6, borderRadius: '50%', background: '#2a6b5c',
           display: 'inline-block',
           animation: `vbdot 1.1s ${i*0.17}s infinite ease-in-out`,
         }}/>
@@ -172,9 +172,9 @@ export default function VaultBrainModal({ open, onClose, session }) {
         width: 'min(640px, 96vw)', maxHeight: '80vh',
         zIndex: 2001,
         background: 'linear-gradient(160deg,#1c0404 0%,#120000 100%)',
-        border: '1px solid rgba(192,57,43,0.35)',
+        border: '1px solid rgba(42,107,92,0.25)',
         borderRadius: 16,
-        boxShadow: '0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(192,57,43,0.1)',
+        boxShadow: '0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(42,107,92,0.08)',
         display: 'flex', flexDirection: 'column',
         overflow: 'hidden',
         animation: 'vbmodalin .18s cubic-bezier(.16,1,.3,1)',
@@ -184,7 +184,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '13px 16px',
-          borderBottom: msgs.length > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+          borderBottom: msgs.length > 0 ? '1px solid rgba(0,0,0,0.05)' : 'none',
           flexShrink: 0,
         }}>
           <span style={{ fontSize: 18, flexShrink: 0 }}>🧠</span>
@@ -205,13 +205,13 @@ export default function VaultBrainModal({ open, onClose, session }) {
             {busy && <Dots />}
             {msgs.length > 0 && !busy && (
               <button onClick={() => { setMsgs([]); histRef.current = []; setStart(false); setPend(null) }} style={{
-                background: 'none', border: '1px solid rgba(255,255,255,0.08)',
+                background: 'none', border: '1px solid rgba(0,0,0,0.06)',
                 borderRadius: 5, cursor: 'pointer', color: '#b0a8a0',
                 fontSize: 11, padding: '3px 8px', fontFamily: 'inherit',
               }}>Clear</button>
             )}
             <button onClick={onClose} style={{
-              background: 'none', border: '1px solid rgba(255,255,255,0.08)',
+              background: 'none', border: '1px solid rgba(0,0,0,0.06)',
               borderRadius: 6, cursor: 'pointer', color: '#b0a8a0',
               width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -232,15 +232,15 @@ export default function VaultBrainModal({ open, onClose, session }) {
               {CHIPS.map(c => (
                 <button key={c} onClick={() => session && send(c)} disabled={!session} style={{
                   background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(0,0,0,0.05)',
                   borderRadius: 9, padding: '9px 13px', cursor: session ? 'pointer' : 'not-allowed',
                   fontFamily: 'inherit', fontSize: 13.5, color: '#d8d4d0', textAlign: 'left',
                   opacity: session ? 1 : 0.4,
                   transition: 'background .1s, border-color .1s',
                   display: 'flex', alignItems: 'center', gap: 8,
                 }}
-                onMouseEnter={e => { if (session) { e.currentTarget.style.background = 'rgba(192,57,43,0.08)'; e.currentTarget.style.borderColor = 'rgba(192,57,43,0.3)' } }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)' }}>
+                onMouseEnter={e => { if (session) { e.currentTarget.style.background = 'rgba(42,107,92,0.07)'; e.currentTarget.style.borderColor = 'rgba(42,107,92,0.2)' } }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)' }}>
                   <span style={{ color: 'rgba(192,57,43,0.5)', fontSize: 11 }}>›</span>
                   {c}
                 </button>
@@ -268,8 +268,8 @@ export default function VaultBrainModal({ open, onClose, session }) {
                 {msg.role === 'user' && (
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
                     <div style={{
-                      maxWidth: '78%', background: 'rgba(192,57,43,0.12)',
-                      border: '1px solid rgba(192,57,43,0.2)',
+                      maxWidth: '78%', background: 'rgba(42,107,92,0.09)',
+                      border: '1px solid rgba(0,0,0,0.08)',
                       borderRadius: '10px 10px 2px 10px', padding: '8px 13px',
                     }}>
                       <div style={{ fontSize: 13.5, color: '#f0ede8' }}>{msg.text}</div>
@@ -281,12 +281,12 @@ export default function VaultBrainModal({ open, onClose, session }) {
                   <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'flex-start' }}>
                     <div style={{
                       width: 24, height: 24, borderRadius: '50%', flexShrink: 0, marginTop: 1,
-                      background: 'rgba(192,57,43,0.1)', border: '1px solid rgba(192,57,43,0.25)',
+                      background: 'rgba(42,107,92,0.08)', border: '1px solid rgba(0,0,0,0.1)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
                     }}>🧠</div>
                     <div style={{
                       flex: 1, background: 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${msg.err ? 'rgba(248,113,113,0.25)' : 'rgba(255,255,255,0.07)'}`,
+                      border: `1px solid ${msg.err ? 'rgba(192,57,43,0.2)' : 'rgba(0,0,0,0.05)'}`,
                       borderRadius: '2px 10px 10px 10px', padding: '9px 13px',
                     }}>
                       {msg.loading ? <Dots /> : (
@@ -311,12 +311,12 @@ export default function VaultBrainModal({ open, onClose, session }) {
                     <div style={{ fontSize: 13, color: '#ddd9d4', marginBottom: 10, lineHeight: 1.6 }}>{pending.message}</div>
                     <div style={{ display: 'flex', gap: 7 }}>
                       <button onClick={confirm} disabled={busy} style={{
-                        background: '#c0392b', color: '#fff', border: 'none',
+                        background: '#2a6b5c', color: '#fff', border: 'none',
                         borderRadius: 7, padding: '7px 15px', cursor: busy ? 'wait' : 'pointer',
                         fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
                       }}>{busy ? '⏳ Working…' : '✅ Yes, go ahead'}</button>
                       <button onClick={() => { setPend(null); setMsgs(m => [...m, { role:'ai', text:'Cancelled.', ts: ts() }]) }} disabled={busy} style={{
-                        background: 'none', border: '1px solid rgba(255,255,255,0.1)',
+                        background: 'none', border: '1px solid rgba(0,0,0,0.07)',
                         borderRadius: 7, padding: '7px 12px', cursor: 'pointer',
                         fontSize: 12, color: '#b0a8a0', fontFamily: 'inherit',
                       }}>Cancel</button>
@@ -331,16 +331,16 @@ export default function VaultBrainModal({ open, onClose, session }) {
 
         {/* Quick chips after conversation */}
         {msgs.length > 1 && !busy && !pending && (
-          <div style={{ padding: '6px 16px 10px', display: 'flex', flexWrap: 'wrap', gap: 5, flexShrink: 0, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+          <div style={{ padding: '6px 16px 10px', display: 'flex', flexWrap: 'wrap', gap: 5, flexShrink: 0, borderTop: '1px solid rgba(0,0,0,0.03)' }}>
             {CHIPS.slice(0,3).map(c => (
               <button key={c} onClick={() => send(c)} style={{
-                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)',
+                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(0,0,0,0.05)',
                 borderRadius: 20, padding: '4px 11px', cursor: 'pointer',
                 fontFamily: 'inherit', fontSize: 11.5, color: '#b0a8a0',
                 transition: 'color .1s, border-color .1s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.color='#f0ede8'; e.currentTarget.style.borderColor='rgba(192,57,43,0.3)' }}
-              onMouseLeave={e => { e.currentTarget.style.color='#b0a8a0'; e.currentTarget.style.borderColor='rgba(255,255,255,0.07)' }}>
+              onMouseEnter={e => { e.currentTarget.style.color='#f0ede8'; e.currentTarget.style.borderColor='rgba(42,107,92,0.2)' }}
+              onMouseLeave={e => { e.currentTarget.style.color='#b0a8a0'; e.currentTarget.style.borderColor='rgba(0,0,0,0.05)' }}>
                 {c}
               </button>
             ))}

@@ -19,7 +19,7 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 // ── Tab accent colours ────────────────────────────────────────────────
 const TAB_COLORS = {
   vault:   { color: '#818cf8', bg: 'rgba(129,140,248,0.15)', border: 'rgba(129,140,248,0.35)' },
-  bind:    { color: '#4ade80', bg: 'rgba(74,222,128,0.15)',  border: 'rgba(74,222,128,0.35)'  },
+  bind:    { color: '#1e8a5e', bg: 'rgba(74,222,128,0.15)',  border: 'rgba(74,222,128,0.35)'  },
   archive: { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.35)'  },
   audit:   { color: '#38bdf8', bg: 'rgba(56,189,248,0.15)',  border: 'rgba(56,189,248,0.35)'  },
 }
@@ -71,12 +71,12 @@ function useIsMobile(bp = 768) {
 
 // ── CertBind status map ───────────────────────────────────────────────
 const STATUS_MAP = {
-  bound:          { label: 'Live',        color: '#4ade80', bg: 'rgba(74,222,128,0.1)',   border: 'rgba(74,222,128,0.25)',  icon: CheckCircle2, dot: '#4ade80',              priority: 0 },
-  key_mismatch:   { label: 'Key mismatch',color: '#f87171', bg: 'rgba(248,113,113,0.1)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,      dot: '#f87171',              priority: 3 },
-  cert_mismatch:  { label: 'Wrong cert',  color: '#f87171', bg: 'rgba(248,113,113,0.1)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,      dot: '#f87171',              priority: 3 },
-  chain_anomaly:  { label: 'Chain issue', color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',   border: 'rgba(251,191,36,0.25)', icon: AlertTriangle,dot: '#fbbf24',              priority: 2 },
-  partial_deploy: { label: 'Partial',     color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',   border: 'rgba(251,191,36,0.25)', icon: AlertTriangle,dot: '#fbbf24',              priority: 2 },
-  unreachable:    { label: 'Unreachable', color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',   border: 'rgba(251,191,36,0.25)', icon: AlertTriangle,dot: '#fbbf24',              priority: 2 },
+  bound:          { label: 'Live',        color: '#1e8a5e', bg: 'rgba(30,138,94,0.08)',   border: 'rgba(30,138,94,0.2)',  icon: CheckCircle2, dot: '#4ade80',              priority: 0 },
+  key_mismatch:   { label: 'Key mismatch',color: '#f87171', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,      dot: '#f87171',              priority: 3 },
+  cert_mismatch:  { label: 'Wrong cert',  color: '#f87171', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,      dot: '#f87171',              priority: 3 },
+  chain_anomaly:  { label: 'Chain issue', color: '#fbbf24', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#fbbf24',              priority: 2 },
+  partial_deploy: { label: 'Partial',     color: '#fbbf24', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#fbbf24',              priority: 2 },
+  unreachable:    { label: 'Unreachable', color: '#fbbf24', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#fbbf24',              priority: 2 },
   pending:        { label: 'Checking',    color: '#b0a8a0', bg: 'rgba(240,237,232,0.06)', border: 'rgba(240,237,232,0.15)',icon: Clock,        dot: '#b0a8a0',              priority: 1 },
   null:           { label: 'Not checked', color: '#b0a8a0', bg: 'rgba(240,237,232,0.04)', border: 'rgba(240,237,232,0.1)', icon: Clock,        dot: 'rgba(240,237,232,0.3)',priority: 1 },
 }
@@ -92,7 +92,7 @@ function PulseDot({ color, animate }) {
 }
 
 // ── Entropy dot visualiser ────────────────────────────────────────────
-const ENTROPY_COLORS = ['#4ade80','#22c55e','#86efac','#fbbf24','#f97316','#fb923c','#f87171','#ef4444','#fca5a5','#818cf8','#a78bfa','#38bdf8','#67e8f9','#c0392b','#ff8c7a']
+const ENTROPY_COLORS = ['#4ade80','#22c55e','#86efac','#fbbf24','#f97316','#fb923c','#f87171','#ef4444','#fca5a5','#818cf8','#a78bfa','#38bdf8','#67e8f9','#2a6b5c','#ff8c7a']
 function EntropyDots() {
   const N = 36
   const [dots, setDots] = useState(() =>
@@ -171,12 +171,12 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
 
   const locked = attempts >= 3
   const M = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }
-  const W = { background: '#0d0000', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, width: '100%', maxWidth: 480, overflow: 'hidden' }
+  const W = { background: '#0d0000', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 12, width: '100%', maxWidth: 480, overflow: 'hidden' }
 
   if (step === 'auth') return (
     <div style={M}>
       <div style={W}>
-        <div style={{ padding: '16px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Reveal private key</div>
             <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 2, fontFamily: 'monospace' }}>{keyEntry.domain}</div>
@@ -191,12 +191,12 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
             <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>Password</label>
             <input ref={inputRef} type="password" value={password} onChange={e => setPassword(e.target.value)} disabled={locked}
               placeholder="Your SSLVault password"
-              style={{ width: '100%', padding: '10px 14px', fontSize: 13, borderRadius: 7, background: 'rgba(255,255,255,0.08)', border: `1px solid ${authError ? '#f87171' : 'rgba(255,255,255,0.15)'}`, color: '#fff', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+              style={{ width: '100%', padding: '10px 14px', fontSize: 13, borderRadius: 7, background: 'rgba(0,0,0,0.06)', border: `1px solid ${authError ? '#f87171' : 'rgba(0,0,0,0.09)'}`, color: '#fff', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
             {authError && <div style={{ fontSize: 11, color: '#f87171', marginTop: 5 }}>{authError}</div>}
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button type="button" onClick={onClose} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: 'rgba(255,255,255,0.08)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
-            <button type="submit" disabled={verifying || locked} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 700, borderRadius: 7, background: locked ? 'rgba(255,255,255,0.05)' : '#c0392b', color: '#fff', border: 'none', cursor: locked ? 'not-allowed' : 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button type="button" onClick={onClose} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: 'rgba(0,0,0,0.06)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+            <button type="submit" disabled={verifying || locked} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 700, borderRadius: 7, background: locked ? 'rgba(0,0,0,0.04)' : '#2a6b5c', color: '#fff', border: 'none', cursor: locked ? 'not-allowed' : 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
               {verifying ? <><RefreshCw size={11} style={{ animation: 'spin .7s linear infinite' }} /> Verifying…</> : 'Confirm'}
             </button>
           </div>
@@ -208,7 +208,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
   return (
     <div style={M}>
       <div style={W}>
-        <div style={{ padding: '16px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Private key — {keyEntry.domain}</div>
             {pem && <div style={{ fontSize: 11, color: '#f87171', marginTop: 2 }}>Auto-closes in {countdown}s</div>}
@@ -220,10 +220,10 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
           {fetchErr && <div style={{ fontSize: 12, color: '#f87171', padding: '12px 0' }}>{fetchErr}</div>}
           {pem && (
             <>
-              <div style={{ position: 'relative', background: '#000', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '12px 14px', fontFamily: '"JetBrains Mono",monospace', fontSize: 11, color: '#4ade80', maxHeight: 200, overflow: 'auto', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{pem}</div>
+              <div style={{ position: 'relative', background: '#000', border: '0.5px solid rgba(0,0,0,0.07)', borderRadius: 8, padding: '12px 14px', fontFamily: '"JetBrains Mono",monospace', fontSize: 11, color: '#1e8a5e', maxHeight: 200, overflow: 'auto', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{pem}</div>
               <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                 <button onClick={() => { navigator.clipboard.writeText(pem); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: '#c0392b', color: '#fff', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: '#2a6b5c', color: '#fff', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
                   {copied ? <><Check size={12} /> Copied!</> : <><Copy size={12} /> Copy key</>}
                 </button>
               </div>
@@ -240,7 +240,7 @@ const auditColors = { reveal: '#818cf8', rotate: '#fbbf24', archive: '#f87171', 
 function AuditRow({ entry }) {
   const color = auditColors[entry.action] || '#b0a8a0'
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '0.5px solid rgba(255,255,255,0.06)', fontSize: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '0.5px solid rgba(0,0,0,0.05)', fontSize: 12 }}>
       <div style={{ width: 28, height: 28, borderRadius: 6, flexShrink: 0, background: `${color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Activity size={12} color={color} />
       </div>
@@ -285,13 +285,13 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
       </div>
 
       {open && (
-        <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.07)', padding: '16px 16px 16px 20px' }}>
+        <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.05)', padding: '16px 16px 16px 20px' }}>
           {isExpiringSoon && keyEntry.status === 'active' && (
             <div style={{ background: 'rgba(248,113,113,0.08)', border: '0.5px solid rgba(248,113,113,0.3)', borderRadius: 8, padding: '9px 12px', marginBottom: 12, fontSize: 11, color: '#f87171' }}>
               <AlertTriangle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }} /><strong>Expiring in {days} days</strong> — rotate now.
             </div>
           )}
-          <div style={{ background: '#0d0000', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          <div style={{ background: '#0d0000', border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
             <Lock size={13} color="#b0a8a0" style={{ flexShrink: 0 }} />
             <EntropyDots />
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.8px', color: '#b0a8a0', fontFamily: '"JetBrains Mono",monospace', flexShrink: 0 }}>ENCRYPTED</span>
@@ -302,7 +302,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
                 <span>Issued {fmtDate(keyEntry.created_at)}</span>
                 <span style={{ color: accentColor }}>{days !== null ? `${days}d left · ` : ''}{keyEntry.expires_at ? `Expires ${fmtDate(keyEntry.expires_at)}` : ''}</span>
               </div>
-              <div style={{ height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{ height: 3, background: 'rgba(0,0,0,0.05)', borderRadius: 2, overflow: 'hidden' }}>
                 <div style={{ height: 3, borderRadius: 2, width: `${lifetimePct}%`, background: accentColor }} />
               </div>
             </div>
@@ -313,7 +313,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
               { label: 'Rotations', value: keyEntry.rotation_count ?? 0 },
               { label: 'Key size', value: `${keyEntry.key_size || 2048} bit` },
             ].map(({ label, value }) => (
-              <div key={label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '9px 12px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
+              <div key={label} style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 8, padding: '9px 12px', border: '0.5px solid rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize: 9, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>{label}</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>{String(value)}</div>
               </div>
@@ -321,13 +321,13 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
           </div>
           {keyEntry.status === 'active' && (
             <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
-              <button onClick={() => onReveal(keyEntry)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 11, fontWeight: 700, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: '#c0392b', color: '#fff', border: 'none', transition: 'background .15s' }} onMouseEnter={e => e.currentTarget.style.background = '#a93226'} onMouseLeave={e => e.currentTarget.style.background = '#c0392b'}>
+              <button onClick={() => onReveal(keyEntry)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 11, fontWeight: 700, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: '#2a6b5c', color: '#fff', border: 'none', transition: 'background .15s' }} onMouseEnter={e => e.currentTarget.style.background = '#3d8c78'} onMouseLeave={e => e.currentTarget.style.background = '#2a6b5c'}>
                 <Eye size={11} /> Reveal key
               </button>
-              <button onClick={() => onRotate(keyEntry)} disabled={rotating === keyEntry.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(255,255,255,0.08)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', transition: 'all .15s', opacity: rotating === keyEntry.id ? 0.5 : 1 }}>
+              <button onClick={() => onRotate(keyEntry)} disabled={rotating === keyEntry.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', transition: 'all .15s', opacity: rotating === keyEntry.id ? 0.5 : 1 }}>
                 {rotating === keyEntry.id ? <><RefreshCw size={10} style={{ animation: 'spin .8s linear infinite' }} /> Rotating…</> : <><RotateCcw size={10} /> Rotate key</>}
               </button>
-              <button onClick={() => onViewAudit(keyEntry.domain)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(255,255,255,0.08)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', transition: 'all .15s' }}>
+              <button onClick={() => onViewAudit(keyEntry.domain)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', transition: 'all .15s' }}>
                 <Activity size={10} /> View audit
               </button>
             </div>
@@ -335,7 +335,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
           {keyEntry.status === 'archived' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ fontSize: 11, color: '#b0a8a0', flex: 1 }}><Clock size={11} style={{ verticalAlign: '-1px', marginRight: 4 }} />Archived {fmtAgo(keyEntry.archived_at)} · Auto-deleted 30 days after archiving</div>
-              <button onClick={() => onViewAudit(keyEntry.domain)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(255,255,255,0.08)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', flexShrink: 0 }}>
+              <button onClick={() => onViewAudit(keyEntry.domain)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', flexShrink: 0 }}>
                 <Activity size={10} /> View audit
               </button>
             </div>
@@ -353,7 +353,7 @@ function BindRow({ cert, onCheck, checking }) {
   const isChecking = checking === cert.id
   const expiry = fmtExpiry(cert.expires_at)
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 120px 100px 110px 90px', alignItems: 'center', gap: 0, padding: '0 18px', height: 54, borderBottom: '0.5px solid rgba(255,255,255,0.06)', transition: 'background .12s', background: cert.certbind_status && cert.certbind_status !== 'bound' ? 'rgba(248,113,113,0.03)' : 'transparent' }}
+    <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 120px 100px 110px 90px', alignItems: 'center', gap: 0, padding: '0 18px', height: 54, borderBottom: '0.5px solid rgba(0,0,0,0.05)', transition: 'background .12s', background: cert.certbind_status && cert.certbind_status !== 'bound' ? 'rgba(248,113,113,0.03)' : 'transparent' }}
       onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
       onMouseLeave={e => e.currentTarget.style.background = cert.certbind_status && cert.certbind_status !== 'bound' ? 'rgba(248,113,113,0.03)' : 'transparent'}>
       <div style={{ display: 'flex', alignItems: 'center' }}><PulseDot color={s.dot} animate={cert.certbind_status === 'bound'} /></div>
@@ -378,7 +378,7 @@ function BindRow({ cert, onCheck, checking }) {
       </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <button onClick={() => !isChecking && onCheck(cert)} disabled={isChecking}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, background: isChecking ? 'rgba(255,255,255,0.04)' : 'rgba(74,222,128,0.12)', color: isChecking ? '#b0a8a0' : '#4ade80', border: `1px solid ${isChecking ? 'rgba(255,255,255,0.06)' : 'rgba(74,222,128,0.3)'}`, fontSize: 10, fontWeight: 600, cursor: isChecking ? 'not-allowed' : 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, background: isChecking ? 'rgba(0,0,0,0.03)' : 'rgba(74,222,128,0.12)', color: isChecking ? '#b0a8a0' : '#4ade80', border: `1px solid ${isChecking ? 'rgba(0,0,0,0.05)' : 'rgba(74,222,128,0.3)'}`, fontSize: 10, fontWeight: 600, cursor: isChecking ? 'not-allowed' : 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
           <RefreshCw size={9} /> Run check
         </button>
       </div>
@@ -554,14 +554,14 @@ export default function KeyIntelligence({ nav }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 42, height: 42, borderRadius: 11, background: '#c0392b', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-              <div style={{ position: 'absolute', inset: -3, borderRadius: 14, border: '1px solid rgba(192,57,43,0.35)' }} />
+            <div style={{ width: 42, height: 42, borderRadius: 11, background: '#2a6b5c', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <div style={{ position: 'absolute', inset: -3, borderRadius: 14, border: '1px solid rgba(42,107,92,0.25)' }} />
               <Shield size={20} color="white" />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <h1 className="v2-h1">Key Intelligence</h1>
-                <span style={{ fontSize: 9, fontWeight: 800, color: '#fff', background: 'rgba(192,57,43,0.3)', border: '1px solid rgba(192,57,43,0.5)', borderRadius: 4, padding: '2px 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PRO</span>
+                <span style={{ fontSize: 9, fontWeight: 800, color: '#fff', background: 'rgba(42,107,92,0.2)', border: '1px solid rgba(192,57,43,0.5)', borderRadius: 4, padding: '2px 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PRO</span>
               </div>
               <p style={{ fontSize: 12, color: '#b0a8a0', marginTop: 2 }}>
                 {user.email} · {activeKeys.length} active key{activeKeys.length !== 1 ? 's' : ''} · {bindLive} verified live
@@ -588,7 +588,7 @@ export default function KeyIntelligence({ nav }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8, marginBottom: 20 }}>
           {[
             { label: 'Active keys',   val: activeKeys.length,   color: '#818cf8' },
-            { label: 'Verified live', val: bindLive,            color: '#4ade80' },
+            { label: 'Verified live', val: bindLive,            color: '#1e8a5e' },
             { label: 'Archived keys', val: archivedKeys.length, color: '#fbbf24' },
             { label: 'Bind alerts',   val: bindAlerts,          color: bindAlerts > 0 ? '#f87171' : '#b0a8a0' },
             { label: 'Encryption',    val: 'AES-256',           color: '#38bdf8' },
@@ -602,20 +602,20 @@ export default function KeyIntelligence({ nav }) {
 
         {/* Banners */}
         {rotateError && (
-          <div style={{ background: 'rgba(192,57,43,0.12)', border: '0.5px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#f87171' }}>
+          <div style={{ background: 'rgba(42,107,92,0.09)', border: '0.5px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#f87171' }}>
             <AlertTriangle size={13} style={{ flexShrink: 0 }} /><span style={{ flex: 1 }}>{rotateError}</span>
             <button onClick={() => setRotateError('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f87171', fontSize: 16, lineHeight: 1 }}>×</button>
           </div>
         )}
         {rotateSuccess && (
-          <div style={{ background: 'transparent', border: '0.5px solid rgba(74,222,128,0.3)', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#4ade80' }}>
+          <div style={{ background: 'transparent', border: '0.5px solid rgba(74,222,128,0.3)', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#1e8a5e' }}>
             <CheckCircle size={13} style={{ flexShrink: 0 }} /><span style={{ flex: 1 }}>{rotateSuccess}</span>
-            <button onClick={() => setRotateSuccess('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4ade80', fontSize: 16, lineHeight: 1 }}>×</button>
+            <button onClick={() => setRotateSuccess('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1e8a5e', fontSize: 16, lineHeight: 1 }}>×</button>
           </div>
         )}
 
         {/* Tab bar — bright distinct colours per tab */}
-        <div style={{ display: 'flex', gap: 1, borderBottom: '0.5px solid rgba(255,255,255,0.08)', marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 1, borderBottom: '0.5px solid rgba(0,0,0,0.06)', marginBottom: 20 }}>
           {[
             { key: 'vault',   label: 'Vault',      count: activeKeys.length,   icon: Lock,         color: TAB_COLORS.vault.color   },
             { key: 'bind',    label: 'Bind check',  count: bindCerts.length,    icon: CheckCircle2, color: TAB_COLORS.bind.color    },
@@ -628,7 +628,7 @@ export default function KeyIntelligence({ nav }) {
                 style={{ padding: '9px 16px', fontSize: 12, fontWeight: active ? 600 : 400, cursor: 'pointer', fontFamily: 'inherit', background: active ? `${t.color}10` : 'none', border: 'none', borderBottom: active ? `2.5px solid ${t.color}` : '2.5px solid transparent', color: active ? t.color : '#b0a8a0', marginBottom: '-0.5px', display: 'inline-flex', alignItems: 'center', gap: 7, borderRadius: active ? '8px 8px 0 0' : 0, transition: 'all .15s' }}>
                 <t.icon size={12} />
                 {t.label}
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 8, background: active ? `${t.color}20` : 'rgba(255,255,255,0.07)', color: active ? t.color : '#b0a8a0' }}>{t.count}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 8, background: active ? `${t.color}20` : 'rgba(0,0,0,0.05)', color: active ? t.color : '#b0a8a0' }}>{t.count}</span>
               </button>
             )
           })}
@@ -666,7 +666,7 @@ export default function KeyIntelligence({ nav }) {
               </div>
             )}
             <div style={{ border: '0.5px solid rgba(255,255,255,0.09)', borderRadius: 10, overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 120px 100px 110px 90px', padding: '0 18px', height: 36, alignItems: 'center', background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(255,255,255,0.07)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 120px 100px 110px 90px', padding: '0 18px', height: 36, alignItems: 'center', background: 'rgba(255,255,255,0.03)', borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
                 {['', 'Domain', 'Install path', 'Checked', 'Status', ''].map((h, i) => (
                   <div key={i} style={{ fontSize: 9, fontWeight: 700, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{h}</div>
                 ))}
@@ -677,7 +677,7 @@ export default function KeyIntelligence({ nav }) {
                 </div>
               ) : bindCerts.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px 24px' }}>
-                  <Shield size={28} color="rgba(255,255,255,0.1)" style={{ marginBottom: 10 }} />
+                  <Shield size={28} color="rgba(0,0,0,0.07)" style={{ marginBottom: 10 }} />
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e0d8', marginBottom: 4 }}>No active certificates</div>
                   <div style={{ fontSize: 11, color: '#b0a8a0' }}>Issue your first certificate to start monitoring</div>
                 </div>
@@ -685,13 +685,13 @@ export default function KeyIntelligence({ nav }) {
                 sortedBind.map(cert => <BindRow key={cert.id} cert={cert} onCheck={runCheck} checking={checking} />)
               )}
               {!bindLoading && bindCerts.length > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 18px', background: 'rgba(255,255,255,0.02)', borderTop: '0.5px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 18px', background: 'rgba(255,255,255,0.02)', borderTop: '0.5px solid rgba(0,0,0,0.05)' }}>
                   <div style={{ fontSize: 11, color: '#b0a8a0' }}>
                     {lastRefresh ? `Last checked ${lastRefresh.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}` : 'Not yet checked'}
                     {agents.length > 0 && <span style={{ marginLeft: 12 }}><PulseDot color={onlineAgents > 0 ? '#4ade80' : '#b0a8a0'} animate={onlineAgents > 0} /><span style={{ marginLeft: 5 }}>{onlineAgents}/{agents.length} agent{agents.length !== 1 ? 's' : ''} online</span></span>}
                   </div>
                   <button onClick={runAllChecks} disabled={running || !!checking}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', borderRadius: 7, background: running ? 'rgba(74,222,128,0.08)' : '#4ade80', color: running ? '#4ade80' : '#0d2010', border: 'none', fontSize: 12, fontWeight: 700, cursor: running ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', borderRadius: 7, background: running ? 'rgba(30,138,94,0.06)' : '#4ade80', color: running ? '#4ade80' : '#0d2010', border: 'none', fontSize: 12, fontWeight: 700, cursor: running ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
                     {running ? <><RefreshCw size={11} style={{ animation: 'spin 1s linear infinite' }} /> Running…</> : <><Play size={11} /> Run all checks</>}
                   </button>
                 </div>
@@ -727,7 +727,7 @@ export default function KeyIntelligence({ nav }) {
         {/* ── AUDIT TAB ── */}
         {tab === 'audit' && (
           <div className="v2-card" style={{ overflow: 'hidden' }}>
-            <div style={{ padding: '10px 16px', borderBottom: '0.5px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ padding: '10px 16px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ flex: 1, fontSize: 12, color: '#e8e0d8', fontWeight: 500 }}>
                 {auditFilter ? <>Audit log for <strong>{auditFilter}</strong><button onClick={() => setAuditFilter(null)} style={{ marginLeft: 8, fontSize: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#b0a8a0' }}>(clear)</button></> : `All events · ${audit.length} total`}
               </div>
@@ -747,19 +747,19 @@ export default function KeyIntelligence({ nav }) {
         {rotateConfirm && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
             <div style={{ background: 'var(--v2-surface)', borderRadius: 12, width: '100%', maxWidth: 440, overflow: 'hidden' }}>
-              <div style={{ padding: '16px 20px', borderBottom: '0.5px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ padding: '16px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff' }}>Rotate key for {rotateConfirm.domain}?</div>
                 <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 3 }}>A new certificate and key will be issued and deployed automatically</div>
               </div>
               <div style={{ padding: '16px 20px' }}>
-                <div style={{ background: 'rgba(74,222,128,0.06)', border: '0.5px solid rgba(74,222,128,0.2)', borderRadius: 8, padding: '10px 12px', marginBottom: 14, fontSize: 11, color: '#4ade80' }}>
+                <div style={{ background: 'rgba(74,222,128,0.06)', border: '0.5px solid rgba(74,222,128,0.2)', borderRadius: 8, padding: '10px 12px', marginBottom: 14, fontSize: 11, color: '#1e8a5e' }}>
                   <CheckCircle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }} /><strong>Zero downtime</strong> — new cert installs before old key is archived. 30-day rollback window.
                 </div>
                 <div style={{ fontSize: 13, color: '#e8e0d8', lineHeight: 1.6 }}>This dispatches a renew job for <strong>{rotateConfirm.domain}</strong>. The old key is archived immediately after the new key is stored.</div>
               </div>
-              <div style={{ padding: '12px 20px', borderTop: '0.5px solid rgba(255,255,255,0.08)', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <div style={{ padding: '12px 20px', borderTop: '0.5px solid rgba(0,0,0,0.06)', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                 <button className="v2-btn v2-btn-sm" onClick={() => setRotateConfirm(null)}>Cancel</button>
-                <button onClick={() => handleRotate(rotateConfirm)} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', background: '#c0392b', color: '#fff', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                <button onClick={() => handleRotate(rotateConfirm)} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', background: '#2a6b5c', color: '#fff', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                   <RotateCcw size={12} /> Rotate now
                 </button>
               </div>

@@ -14,10 +14,10 @@ const AMBER  = '#fbbf24'
 const GREEN  = '#4ade80'
 
 const STATUS = {
-  expired: { color: RED,   bg: 'rgba(192,57,43,0.12)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#f87171' },
+  expired: { color: RED,   bg: 'rgba(42,107,92,0.09)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#f87171' },
   warning: { color: AMBER, bg: 'rgba(239,68,68,0.08)', border: '#fcd34d', bar: AMBER, text: '#fbbf24' },
   healthy: { color: GREEN, bg: 'transparent', border: '#86efac', bar: GREEN, text: '#4ade80' },
-  today:   { color: ACCENT,bg: 'transparent', border: 'rgba(192,57,43,0.3)', bar: ACCENT,text: '#a93226' },
+  today:   { color: ACCENT,bg: 'transparent', border: 'rgba(42,107,92,0.2)', bar: ACCENT,text: '#3d8c78' },
 }
 
 function daysUntil(iso) {
@@ -60,7 +60,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
         borderRadius: 8,
         padding: '7px 7px 6px',
         background: hasCerts
-          ? (st ? st.bg : 'rgba(255,255,255,0.04)')
+          ? (st ? st.bg : 'rgba(0,0,0,0.03)')
           : isToday ? 'rgba(192,57,43,0.06)' : 'rgba(255,255,255,0.02)',
         border: isSelected
           ? `2px solid ${accentColor || ACCENT}`
@@ -79,7 +79,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
       <div style={{
         width: 24, height: 24, borderRadius: '50%', marginBottom: 6,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: isToday ? '#c0392b' : 'transparent',
+        background: isToday ? '#2a6b5c' : 'transparent',
         fontSize:12, fontWeight: hasCerts || isToday ? 700 : 400,
         color: isToday ? '#ffffff' : hasCerts ? (st ? st.text : '#ffffff') : '#6b5a5a',
       }}>
@@ -121,7 +121,7 @@ function DetailPanel({ label, certs, onClose }) {
     }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
         padding:'9px 14px', background:'var(--v2-surface-3)',
-        borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+        borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
         <span style={{ fontSize:12, fontWeight:500, color:'#ffffff' }}>
           {certs.length} cert{certs.length!==1?'s':''} — {label}
         </span>
@@ -131,7 +131,7 @@ function DetailPanel({ label, certs, onClose }) {
       {/* Col headers */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
         padding:'6px 14px', background:'var(--v2-surface-3)',
-        borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+        borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
         {['Domain','Issuer','Expires','Days'].map(h => (
           <div key={h} style={{ fontSize:9, fontWeight:600, color:'#b0a8a0',
             textTransform:'uppercase', letterSpacing:'0.3px' }}>{h}</div>
@@ -145,7 +145,7 @@ function DetailPanel({ label, certs, onClose }) {
           <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
             padding:'9px 14px', alignItems:'center',
             borderBottom: i<certs.length-1 ? '0.5px solid var(--v2-border)' : 'none',
-            background: 'rgba(255,255,255,0.04)',
+            background: 'rgba(0,0,0,0.03)',
           }}>
             <div>
               <div style={{ fontSize:12, fontWeight:500, color:'#ffffff',
@@ -293,7 +293,7 @@ function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
       <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
         {Array.from({length:10}, (_,i) => i+8).map(hour => (
           <div key={hour} style={{ display:'grid', gridTemplateColumns:'50px repeat(auto-fill,minmax(100px,1fr))',
-            borderBottom:'0.5px solid rgba(255,255,255,0.08)', minHeight:48 }}>
+            borderBottom:'0.5px solid rgba(0,0,0,0.06)', minHeight:48 }}>
             <div style={{ fontSize:9, color:'#b0a8a0', padding:'5px 8px',
               borderRight:'0.5px solid var(--v2-border)', background:'var(--v2-surface-3)',
               display:'flex', alignItems:'flex-start', justifyContent:'flex-end' }}>
@@ -419,9 +419,9 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
                   {MONTHS_S[mi]}
                 </span>
                 <span style={{ fontSize:10, fontWeight:700, padding:'1px 7px', borderRadius:20,
-                  background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'rgba(192,57,43,0.12)':m.warning>0?'rgba(239,68,68,0.08)':'transparent',
+                  background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'rgba(42,107,92,0.09)':m.warning>0?'rgba(239,68,68,0.08)':'transparent',
                   color: m.certs.length===0 ? 'var(--v2-text-3)' : m.expired>0?RED:m.warning>0?AMBER:GREEN,
-                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'rgba(239,83,80,0.3)':m.warning>0?'rgba(192,57,43,0.25)':'rgba(192,57,43,0.3)'}` }}>
+                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'rgba(239,83,80,0.3)':m.warning>0?'rgba(0,0,0,0.1)':'rgba(42,107,92,0.2)'}` }}>
                   {m.certs.length}
                 </span>
               </div>
@@ -524,12 +524,12 @@ export default function RenewalCalendar({ user }) {
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
             {/* View switcher */}
-            <div style={{ display:'flex', background:'rgba(255,255,255,0.04)',
-              border:'1px solid rgba(192,57,43,0.2)', borderRadius:8, padding:3, gap:2 }}>
+            <div style={{ display:'flex', background:'rgba(0,0,0,0.03)',
+              border:'1px solid rgba(0,0,0,0.08)', borderRadius:8, padding:3, gap:2 }}>
               {[['month','Month'],['week','Week'],['year','Year']].map(([v,l])=>(
                 <button key={v} onClick={()=>{setView(v);setAnimKey(k=>k+1)}}
                   style={{ padding:'6px 16px', fontSize:12, fontWeight: view===v ? 700 : 500,
-                    background: view===v ? '#c0392b' : 'transparent',
+                    background: view===v ? '#2a6b5c' : 'transparent',
                     border: 'none',
                     borderRadius:6, cursor:'pointer', fontFamily:'inherit',
                     color: view===v ? '#ffffff' : 'rgba(240,237,232,0.4)',
@@ -560,14 +560,14 @@ export default function RenewalCalendar({ user }) {
         </div>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, marginBottom:16, border:'1px solid rgba(192,57,43,0.2)', borderRadius:10, overflow:'hidden' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, marginBottom:16, border:'1px solid rgba(0,0,0,0.08)', borderRadius:10, overflow:'hidden' }}>
           {[
             { label:'Total',         val:certs.length, color:'#f0ede8' },
             { label:'Expired',       val:allExpired,   color: allExpired > 0 ? RED : 'rgba(240,237,232,0.3)' },
             { label:'Expiring ≤30d', val:allWarning,   color: allWarning > 0 ? AMBER : 'rgba(240,237,232,0.3)' },
             { label:'Healthy',       val:allHealthy,   color: allHealthy > 0 ? GREEN : 'rgba(240,237,232,0.3)' },
           ].map(({label,val,color},i)=>(
-            <div key={label} style={{ padding:'14px 18px', background:'rgba(255,255,255,0.02)', borderRight: i<3 ? '1px solid rgba(192,57,43,0.15)' : 'none' }}>
+            <div key={label} style={{ padding:'14px 18px', background:'rgba(255,255,255,0.02)', borderRight: i<3 ? '1px solid rgba(0,0,0,0.07)' : 'none' }}>
               <div style={{ fontSize:24, fontWeight:700, color, letterSpacing:'-1px', lineHeight:1 }}>{val}</div>
               <div style={{ fontSize:11, color:'rgba(240,237,232,0.4)', marginTop:5, fontWeight:500 }}>{label}</div>
             </div>
@@ -577,10 +577,10 @@ export default function RenewalCalendar({ user }) {
         {/* Legend */}
         <div style={{ display:'flex', gap:14, marginBottom:16, flexWrap:'wrap', alignItems:'center' }}>
           {[
-            { label:'Expired',        color:RED,   bg:'rgba(192,57,43,0.12)', border:'rgba(239,83,80,0.3)' },
+            { label:'Expired',        color:RED,   bg:'rgba(42,107,92,0.09)', border:'rgba(239,83,80,0.3)' },
             { label:'Expiring ≤30d',  color:AMBER, bg:'rgba(239,68,68,0.08)', border:'#fcd34d' },
             { label:'Healthy (>30d)', color:GREEN, bg:'transparent', border:'#86efac' },
-            { label:'Today',          color:ACCENT,bg:'transparent', border:'rgba(192,57,43,0.3)' },
+            { label:'Today',          color:ACCENT,bg:'transparent', border:'rgba(42,107,92,0.2)' },
           ].map(({label,color,bg,border})=>(
             <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
               <div style={{ width:10,height:10,borderRadius:2,background:bg,border:`0.5px solid ${border}` }}/>
@@ -593,7 +593,7 @@ export default function RenewalCalendar({ user }) {
         </div>
 
         {/* Calendar */}
-        <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(192,57,43,0.2)', borderRadius:10, overflow:'hidden' }}>
+        <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(0,0,0,0.08)', borderRadius:10, overflow:'hidden' }}>
           {loading ? (
             <div style={{ textAlign:'center', padding:'48px 0', color:'#b0a8a0' }}>
               <RefreshCw size={22} style={{ animation:'spin .8s linear infinite',

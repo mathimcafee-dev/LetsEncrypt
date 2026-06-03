@@ -22,7 +22,7 @@ function Spinner({ size = 16, color = '#ff8c7a' }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
-      border: `2px solid rgba(255,255,255,0.15)`,
+      border: `2px solid rgba(0,0,0,0.09)`,
       borderTopColor: color,
       animation: 'mcv2-spin 0.65s linear infinite',
       flexShrink: 0,
@@ -41,7 +41,7 @@ function StepRow({ step, index, isLast }) {
   const isSkipped = status === 'skipped'
   const isPending = status === 'pending'
 
-  const lineColor = isDone ? '#22c55e' : isActive ? '#ff8c7a' : 'rgba(255,255,255,0.08)'
+  const lineColor = isDone ? '#22c55e' : isActive ? '#ff8c7a' : 'rgba(0,0,0,0.06)'
 
   return (
     <div style={{ display: 'flex', gap: 0, position: 'relative' }}>
@@ -55,14 +55,14 @@ function StepRow({ step, index, isLast }) {
           background: isDone    ? 'rgba(34,197,94,0.15)'
                     : isActive  ? 'rgba(255,140,122,0.15)'
                     : isError   ? 'rgba(248,113,113,0.12)'
-                    : isSkipped ? 'rgba(251,191,36,0.1)'
-                    : 'rgba(255,255,255,0.04)',
+                    : isSkipped ? 'rgba(184,120,0,0.07)'
+                    : 'rgba(0,0,0,0.03)',
           border: `1.5px solid ${
             isDone    ? 'rgba(34,197,94,0.5)'
             : isActive  ? 'rgba(255,140,122,0.5)'
             : isError   ? 'rgba(248,113,113,0.4)'
             : isSkipped ? 'rgba(251,191,36,0.35)'
-            : 'rgba(255,255,255,0.1)'
+            : 'rgba(0,0,0,0.07)'
           }`,
           transition: 'all 0.4s ease',
           position: 'relative', zIndex: 1,
@@ -208,19 +208,19 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
       {(p || isProbing) && (
         <div style={{
           width: '100%', maxWidth: 360,
-          border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12,
+          border: '1px solid rgba(0,0,0,0.06)', borderRadius: 12,
           overflow: 'hidden', marginBottom: 20,
         }}>
           {/* Cert card */}
           <div style={{
             padding: '14px 16px',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid rgba(0,0,0,0.05)',
             background: certIssued ? 'rgba(34,197,94,0.06)' : 'rgba(255,255,255,0.02)',
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{
               width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-              background: certIssued ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.05)',
+              background: certIssued ? 'rgba(34,197,94,0.12)' : 'rgba(0,0,0,0.04)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15,
             }}>
               {isProbing ? '⏳' : certIssued ? '🔐' : '❓'}
@@ -257,7 +257,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
           }}>
             <div style={{
               width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-              background: reachable ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.04)',
+              background: reachable ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.03)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15,
             }}>
               {isProbing ? '⏳' : reachable ? '🌐' : '⚠️'}
@@ -297,7 +297,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
         }}>View Certificate</button>
         <button onClick={onDone} style={{
           fontSize: 13, fontWeight: 600, padding: '10px 22px', borderRadius: 8,
-          background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+          background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.08)',
           color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontFamily: 'inherit',
         }}>Done</button>
       </div>
@@ -376,7 +376,7 @@ export default function MissionControlModal({
         <div style={{
           width: '100%', maxWidth: 460,
           background: '#0c0505',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: '1px solid rgba(0,0,0,0.06)',
           borderRadius: 18,
           boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,140,122,0.06)',
           overflow: 'hidden',
@@ -387,7 +387,7 @@ export default function MissionControlModal({
           {/* Header */}
           <div style={{
             padding: '16px 20px',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid rgba(0,0,0,0.05)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -431,7 +431,7 @@ export default function MissionControlModal({
               {/* Minimise */}
               {busy && (
                 <button onClick={() => setMinimised(true)} title="Minimise" style={{
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.06)',
                   borderRadius: 6, cursor: 'pointer', padding: '5px 8px',
                   color: 'rgba(255,255,255,0.4)', fontSize: 11, lineHeight: 1,
                   fontFamily: 'inherit',
@@ -440,7 +440,7 @@ export default function MissionControlModal({
               {/* Close (only when done or error) */}
               {(isDone || hasError) && (
                 <button onClick={onDismiss} style={{
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.06)',
                   borderRadius: 6, cursor: 'pointer', padding: '5px 8px',
                   color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1,
                 }}>×</button>
@@ -449,7 +449,7 @@ export default function MissionControlModal({
           </div>
 
           {/* Progress bar */}
-          <div style={{ height: 2, background: 'rgba(255,255,255,0.05)' }}>
+          <div style={{ height: 2, background: 'rgba(0,0,0,0.04)' }}>
             <div style={{
               height: '100%',
               width: `${progressPct}%`,
@@ -457,7 +457,7 @@ export default function MissionControlModal({
                 ? 'linear-gradient(90deg, #f87171, #fca5a5)'
                 : isDone
                   ? 'linear-gradient(90deg, #22c55e, #86efac)'
-                  : 'linear-gradient(90deg, #c0392b, #ff8c7a)',
+                  : 'linear-gradient(90deg, #2a6b5c, #ff8c7a)',
               transition: 'width 0.8s cubic-bezier(.16,1,.3,1)',
             }}/>
           </div>
@@ -560,7 +560,7 @@ export default function MissionControlModal({
                     <div style={{ opacity: 0.75, marginBottom: 10 }}>Your existing certificate is still active.</div>
                     <button onClick={onDismiss} style={{
                       fontSize: 11, fontWeight: 600, padding: '6px 14px', borderRadius: 6,
-                      background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.25)',
+                      background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(192,57,43,0.2)',
                       color: '#f87171', cursor: 'pointer', fontFamily: 'inherit',
                     }}>Dismiss</button>
                   </div>

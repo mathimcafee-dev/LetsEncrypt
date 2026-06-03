@@ -71,7 +71,7 @@ function MiniBar({ value, warn = 80, danger = 90 }) {
 function StatusPill({ status }) {
   const map = {
     online:  { bg: 'transparent', color: '#ffffff', label: 'Online',   dot: '#4ade80' },
-    offline: { bg: 'rgba(192,57,43,0.12)', color: '#f87171', label: 'Offline',  dot: '#f87171' },
+    offline: { bg: 'rgba(42,107,92,0.09)', color: '#f87171', label: 'Offline',  dot: '#f87171' },
     never:   { bg: '#000000', color: '#e8e0d8', label: 'Never',    dot: 'rgba(240,237,232,0.38)' },
     unknown: { bg: 'rgba(239,68,68,0.08)', color: '#ff8c7a', label: 'Unknown',  dot: '#f0ede8' },
   }
@@ -92,7 +92,7 @@ function JobBadge({ status }) {
   if (!status) return <span style={{ color: '#b0a8a0', fontSize:11 }}>—</span>
   const map = {
     success: { bg: 'transparent', color: '#ffffff' },
-    failed:  { bg: 'rgba(192,57,43,0.12)', color: '#f87171' },
+    failed:  { bg: 'rgba(42,107,92,0.09)', color: '#f87171' },
     queued:  { bg: 'rgba(239,68,68,0.08)', color: '#ff8c7a' },
     claimed: { bg: 'transparent', color: '#e8e0d8' },
   }
@@ -109,7 +109,7 @@ function JobBadge({ status }) {
 function RenewalBadge({ days }) {
   if (days == null) return <span style={{ color: '#b0a8a0', fontSize:11 }}>—</span>
   const color = days <= 7 ? '#f87171' : days <= 30 ? '#f0ede8' : '#4ade80'
-  const bg    = days <= 7 ? 'rgba(192,57,43,0.12)' : days <= 30 ? 'rgba(239,68,68,0.08)' : 'transparent'
+  const bg    = days <= 7 ? 'rgba(42,107,92,0.09)' : days <= 30 ? 'rgba(239,68,68,0.08)' : 'transparent'
   return (
     <span style={{ fontSize:11, fontWeight: 500, color, background: bg,
       padding: '2px 7px', borderRadius: 4 }}>
@@ -233,7 +233,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
             </button>
             <button className="v2-btn v2-btn-sm" onClick={() => onDelete(agent)}
               style={{ display: 'flex', alignItems: 'center', gap: 5,
-                borderColor: 'rgba(192,57,43,0.25)', color: '#f87171' }}>
+                borderColor: 'rgba(0,0,0,0.1)', color: '#f87171' }}>
               <Trash2 size={11}/>
               Delete agent
             </button>
@@ -366,9 +366,9 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
         zIndex: 70, background:'rgba(255,255,255,0.03)', border: '0.5px solid var(--v2-border)',
         borderRadius: 12, padding: '24px', width: 360 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(192,57,43,0.12)',
+          <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(42,107,92,0.09)',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Trash2 size={16} color="#c0392b"/>
+            <Trash2 size={16} color="#2a6b5c"/>
           </div>
           <div style={{ fontSize:15, fontWeight: 500, color: '#ffffff' }}>Delete agent</div>
         </div>
@@ -487,7 +487,7 @@ export default function AgentHealth({ user }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
           {[
             { val: agents.length, label: 'Total agents', color: '#ffffff', filter: 'all' },
-            { val: online.length,  label: 'Online',       color: '#4ade80', filter: 'online' },
+            { val: online.length,  label: 'Online',       color: '#1e8a5e', filter: 'online' },
             { val: offline.length, label: 'Offline',      color: '#f87171', filter: 'offline' },
             { val: highLoad.length,label: 'High load',    color: '#ffffff', filter: 'all' },
           ].map(({ val, label, color, filter }) => (
@@ -503,10 +503,10 @@ export default function AgentHealth({ user }) {
 
         {/* ── Offline alert banner ── */}
         {offline.length > 0 && (
-          <div style={{ background: 'rgba(192,57,43,0.12)', border: '0.5px solid #fecaca', borderRadius: 10,
+          <div style={{ background: 'rgba(42,107,92,0.09)', border: '0.5px solid #fecaca', borderRadius: 10,
             padding: '10px 14px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
-            <WifiOff size={14} color="#c0392b" style={{ flexShrink: 0 }}/>
-            <div style={{ fontSize:12, color: '#a93226', flex: 1 }}>
+            <WifiOff size={14} color="#2a6b5c" style={{ flexShrink: 0 }}/>
+            <div style={{ fontSize:12, color: '#3d8c78', flex: 1 }}>
               <strong>{offline.length} agent{offline.length > 1 ? 's' : ''} offline:</strong>{' '}
               {offline.map(a => a.nickname).join(', ')} — last heartbeat missed by more than 12 minutes.
             </div>
@@ -596,7 +596,7 @@ export default function AgentHealth({ user }) {
                   {/* Server name + meta */}
                   <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-                      background: status === 'online' ? 'transparent' : status === 'offline' ? 'rgba(192,57,43,0.12)' : '#000000',
+                      background: status === 'online' ? 'transparent' : status === 'offline' ? 'rgba(42,107,92,0.09)' : '#000000',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                       <Server size={14} color={status === 'online' ? '#4ade80' : status === 'offline' ? '#f87171' : 'rgba(240,237,232,0.38)'}/>
                       {status === 'online' && (

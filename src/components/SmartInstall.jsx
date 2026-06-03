@@ -26,12 +26,12 @@ function StepRow({ icon, label, detail, state }) {
   return (
     <div style={{ display:'flex', gap:12, alignItems:'flex-start', marginBottom:10 }}>
       <div style={{ width:22, height:22, borderRadius:'50%', flexShrink:0, marginTop:1,
-        background: state==='done' ? 'rgba(74,222,128,0.12)' : state==='running' ? 'rgba(251,191,36,0.1)' : state==='error' ? 'rgba(248,113,113,0.12)' : 'rgba(255,255,255,0.04)',
+        background: state==='done' ? 'rgba(74,222,128,0.12)' : state==='running' ? 'rgba(184,120,0,0.07)' : state==='error' ? 'rgba(248,113,113,0.12)' : 'rgba(0,0,0,0.03)',
         border:`1.5px solid ${c}40`, display:'flex', alignItems:'center', justifyContent:'center' }}>
-        {state==='done' && <span style={{color:'#4ade80',fontSize:12,fontWeight:700}}>✓</span>}
+        {state==='done' && <span style={{color:'#1e8a5e',fontSize:12,fontWeight:700}}>✓</span>}
         {state==='running' && <span style={{display:'inline-block',width:8,height:8,borderRadius:'50%',border:'2px solid #fbbf24',borderTopColor:'transparent',animation:'spin .8s linear infinite'}}/>}
-        {state==='error' && <span style={{color:'#f87171',fontSize:12,fontWeight:700}}>✗</span>}
-        {state==='pending' && <span style={{width:6,height:6,borderRadius:'50%',background:'rgba(255,255,255,0.15)'}}/>}
+        {state==='error' && <span style={{color:'#c0392b',fontSize:12,fontWeight:700}}>✗</span>}
+        {state==='pending' && <span style={{width:6,height:6,borderRadius:'50%',background:'rgba(0,0,0,0.09)'}}/>}
       </div>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ fontSize:12, fontWeight:600, color: state==='pending' ? 'rgba(240,237,232,0.35)' : '#f0ede8', marginBottom:1 }}>{label}</div>
@@ -379,18 +379,18 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
   // ── RENDER ───────────────────────────────────────────────────────────
   const overlay = { position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', zIndex:500,
     display:'flex', alignItems:'center', justifyContent:'center', padding:20 }
-  const modal = { background:'#0a0000', border:'1px solid rgba(255,255,255,0.1)', borderRadius:12,
+  const modal = { background:'#0a0000', border:'1px solid rgba(0,0,0,0.07)', borderRadius:12,
     width:'100%', maxWidth:500, maxHeight:'90vh', overflow:'auto',
     boxShadow:'0 20px 60px rgba(0,0,0,0.6)' }
   const header = { display:'flex', alignItems:'center', justifyContent:'space-between',
-    padding:'16px 20px', borderBottom:'1px solid rgba(255,255,255,0.07)' }
+    padding:'16px 20px', borderBottom:'1px solid rgba(0,0,0,0.05)' }
   const body = { padding:'20px' }
   const inp = { width:'100%', padding:'8px 10px', fontSize:12, borderRadius:6, boxSizing:'border-box',
-    border:'1px solid rgba(255,255,255,0.12)', background:'rgba(255,255,255,0.04)',
+    border:'1px solid rgba(0,0,0,0.08)', background:'rgba(0,0,0,0.03)',
     color:'#f0ede8', fontFamily:'inherit', outline:'none' }
   const btn = (primary) => ({ width:'100%', padding:'10px', fontSize:13, fontWeight:600,
-    borderRadius:7, border: primary ? 'none' : '1px solid rgba(255,255,255,0.12)',
-    background: primary ? '#c0392b' : 'transparent',
+    borderRadius:7, border: primary ? 'none' : '1px solid rgba(0,0,0,0.08)',
+    background: primary ? '#2a6b5c' : 'transparent',
     color: primary ? 'white' : 'rgba(240,237,232,0.7)',
     cursor:'pointer', fontFamily:'inherit', marginTop:8 })
 
@@ -416,7 +416,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
           {/* DETECTING */}
           {phase === 'detecting' && (
             <div style={{ textAlign:'center', padding:'24px 0', color:'rgba(240,237,232,0.5)', fontSize:12 }}>
-              <div style={{ width:20, height:20, borderRadius:'50%', border:'2px solid #c0392b',
+              <div style={{ width:20, height:20, borderRadius:'50%', border:'2px solid #2a6b5c',
                 borderTopColor:'transparent', animation:'spin .8s linear infinite', margin:'0 auto 12px' }}/>
               Checking your saved servers…
             </div>
@@ -427,7 +427,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
             <div>
               <div style={{ background:'rgba(74,222,128,0.06)', border:'1px solid rgba(74,222,128,0.15)',
                 borderRadius:8, padding:'12px 14px', marginBottom:16 }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#4ade80', marginBottom:4 }}>
+                <div style={{ fontSize:12, fontWeight:600, color:'#1e8a5e', marginBottom:4 }}>
                   {detectedMethod === 'cpanel' ? '🌐 cPanel server found' : '🖥 VPS agent found'}
                 </div>
                 <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)' }}>
@@ -454,7 +454,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
           {phase === 'ready' && needToken && (
             <div style={{ marginTop:12, padding:'12px 14px', borderRadius:8,
               background:'rgba(251,191,36,0.06)', border:'1px solid rgba(251,191,36,0.2)' }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#fbbf24', marginBottom:6 }}>
+              <div style={{ fontSize:12, fontWeight:600, color:'#b87800', marginBottom:6 }}>
                 API token needed
               </div>
               <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', marginBottom:10, lineHeight:1.6 }}>
@@ -465,7 +465,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                 onChange={e => setTokenInput(e.target.value)}
                 placeholder="cPanel API token"
                 style={{ width:'100%', padding:'8px 10px', fontSize:12, borderRadius:6, boxSizing:'border-box',
-                  border:'1px solid rgba(255,255,255,0.12)', background:'rgba(255,255,255,0.04)',
+                  border:'1px solid rgba(0,0,0,0.08)', background:'rgba(0,0,0,0.03)',
                   color:'#f0ede8', fontFamily:'inherit', outline:'none', marginBottom:8 }}/>
               <button
                 disabled={!tokenInput || savingToken}
@@ -491,7 +491,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                   setSavingToken(false)
                 }}
                 style={{ width:'100%', padding:'8px', fontSize:12, fontWeight:600,
-                  borderRadius:6, border:'none', background: tokenInput ? '#c0392b' : 'rgba(192,57,43,0.3)',
+                  borderRadius:6, border:'none', background: tokenInput ? '#2a6b5c' : 'rgba(42,107,92,0.2)',
                   color:'white', cursor: tokenInput ? 'pointer' : 'default', fontFamily:'inherit' }}>
                 {savingToken ? 'Saving…' : 'Save token & install'}
               </button>
@@ -519,11 +519,11 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                   <button key={opt.key}
                     onClick={() => opt.key === 'manual' ? setPhase('manual') : setPhase('setup_'+opt.key)}
                     style={{ display:'flex', gap:12, alignItems:'flex-start', padding:'12px 14px',
-                      borderRadius:8, border:'1px solid rgba(255,255,255,0.1)', background:'rgba(255,255,255,0.03)',
+                      borderRadius:8, border:'1px solid rgba(0,0,0,0.07)', background:'rgba(255,255,255,0.03)',
                       cursor:'pointer', textAlign:'left', fontFamily:'inherit', width:'100%',
                       transition:'border-color .15s' }}
                     onMouseEnter={e => e.currentTarget.style.borderColor='rgba(192,57,43,0.5)'}
-                    onMouseLeave={e => e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'}>
+                    onMouseLeave={e => e.currentTarget.style.borderColor='rgba(0,0,0,0.07)'}>
                     <span style={{ fontSize:20, lineHeight:1, flexShrink:0 }}>{opt.icon}</span>
                     <div>
                       <div style={{ fontSize:13, fontWeight:600, color:'#f0ede8', marginBottom:2 }}>{opt.title}</div>
@@ -558,7 +558,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                 <input type="checkbox" checked={cpSave} onChange={e => setCpSave(e.target.checked)}/>
                 Save this server for future automatic installs
               </label>
-              {errorMsg && <div style={{ fontSize:11, color:'#f87171', marginBottom:12 }}>{errorMsg}</div>}
+              {errorMsg && <div style={{ fontSize:11, color:'#c0392b', marginBottom:12 }}>{errorMsg}</div>}
               <button onClick={installNewCpanel} style={btn(true)}>Install certificate</button>
               <button onClick={() => { setErrorMsg(''); setPhase('no_creds') }} style={btn(false)}>← Back</button>
             </div>
@@ -578,11 +578,11 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
               </div>
               <div style={{ background:'rgba(0,0,0,0.4)', borderRadius:8, overflow:'hidden', marginBottom:16 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center',
-                  padding:'8px 12px', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
+                  padding:'8px 12px', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
                   <span style={{ fontSize:10, color:'rgba(240,237,232,0.3)' }}>Paste on your server as root</span>
                   {pairingCmd && <CopyBtn text={pairingCmd}/>}
                 </div>
-                <pre style={{ margin:0, padding:'12px 14px', color:'#4ade80', fontSize:11,
+                <pre style={{ margin:0, padding:'12px 14px', color:'#1e8a5e', fontSize:11,
                   fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all', maxHeight:120, overflow:'auto' }}>
                   {pairingLoading ? 'Generating command…' : pairingCmd || '← Generate command below'}
                 </pre>
@@ -610,11 +610,11 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                 { label:'CA Bundle (chain.pem)', val:cert.ca_pem, filename:`${cert.domain}-chain.pem` },
               ].filter(f => f.val).map(f => (
                 <div key={f.label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center',
-                  padding:'10px 12px', borderRadius:7, border:'1px solid rgba(255,255,255,0.08)',
+                  padding:'10px 12px', borderRadius:7, border:'1px solid rgba(0,0,0,0.06)',
                   marginBottom:8, background:'rgba(255,255,255,0.02)' }}>
                   <span style={{ fontSize:12, color:'#f0ede8' }}>{f.label}</span>
                   <button onClick={() => { const a = document.createElement('a'); a.href = 'data:text/plain;charset=utf-8,'+encodeURIComponent(f.val); a.download = f.filename; a.click() }}
-                    style={{ fontSize:11, fontWeight:600, color:'#4ade80', background:'none',
+                    style={{ fontSize:11, fontWeight:600, color:'#1e8a5e', background:'none',
                       border:'1px solid rgba(74,222,128,0.2)', borderRadius:5, padding:'4px 10px',
                       cursor:'pointer', fontFamily:'inherit' }}>
                     Download
@@ -636,8 +636,8 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
               ))}
               {phase === 'done' && (
                 <div style={{ marginTop:16, padding:'12px 14px', borderRadius:8,
-                  background:'rgba(74,222,128,0.08)', border:'1px solid rgba(74,222,128,0.2)' }}>
-                  <div style={{ fontSize:13, fontWeight:700, color:'#4ade80', marginBottom:4 }}>
+                  background:'rgba(30,138,94,0.06)', border:'1px solid rgba(74,222,128,0.2)' }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:'#1e8a5e', marginBottom:4 }}>
                     {detectedMethod === 'agent' ? '✓ Install job dispatched' : '✓ Certificate installed successfully'}
                   </div>
                   <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', lineHeight:1.6 }}>
@@ -659,7 +659,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
               {steps.map((s, i) => <StepRow key={i} label={s.label} detail={s.detail} state={s.state}/>)}
               <div style={{ marginTop:16, padding:'12px 14px', borderRadius:8,
                 background:'rgba(248,113,113,0.08)', border:'1px solid rgba(248,113,113,0.2)' }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#f87171', marginBottom:4 }}>Installation failed</div>
+                <div style={{ fontSize:12, fontWeight:600, color:'#c0392b', marginBottom:4 }}>Installation failed</div>
                 <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', lineHeight:1.6 }}>
                   {errorMsg.replace(/Full:\s*\{.*$/s, '').trim() || errorMsg}
                 </div>

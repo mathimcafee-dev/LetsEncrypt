@@ -50,7 +50,7 @@ export default function ETSIIntelligence({ nav }) {
         .ei-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#ffffff}
         .ei-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .ei-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#ffffff;line-height:1.15;margin-bottom:10px}
-        .ei-h1 em{color:#c0392b;font-style:normal}
+        .ei-h1 em{color:#2a6b5c;font-style:normal}
         .ei-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .ei-stats{display:flex;gap:28px;flex-wrap:wrap}
         .ei-sn{font-size:22px;font-weight:600;color:#ffffff;line-height:1}
@@ -126,7 +126,7 @@ export default function ETSIIntelligence({ nav }) {
               <div className="ei-sh">Headquarters and governance</div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'6px 16px' }}>
                 {[['Founded','1988'],['HQ','Sophia Antipolis, France'],['Members','900+ organisations'],['Funding','EU Commission + membership fees'],['Technical body','ESI Technical Committee (TC ESI)'],['Region','Europe (standards adopted globally)'],['Chair','Various TC ESI chairs'],['Secretariat','ETSI Secretariat, Sophia Antipolis']].map(([k,v])=>(
-                  <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(255,255,255,0.08)', fontSize:12 }}>
+                  <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:12 }}>
                     <span style={{ color:'#b0a8a0', minWidth:100, flexShrink:0 }}>{k}</span>
                     <span style={{ color:'#ffffff', fontWeight:500 }}>{v}</span>
                   </div>

@@ -187,7 +187,7 @@ export default function SharedHostingGuide({ nav }) {
               'Wait for the upload to complete',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#c0392b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#2a6b5c', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
                 <span style={{ fontSize:12, color: '#e8e0d8' }}>{t}</span>
               </div>
             ))}
@@ -230,7 +230,7 @@ export default function SharedHostingGuide({ nav }) {
               'Click Install Certificate',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#c0392b', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#2a6b5c', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
                 <span style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.6 }}>{t}</span>
               </div>
             ))}
@@ -244,7 +244,7 @@ export default function SharedHostingGuide({ nav }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {['Go to cPanel File Manager', 'Navigate to public_html', 'Find sslvault-agent.php', 'Right-click → Delete → Confirm'].map((t, i) => (
-              <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '8px 14px', background: 'rgba(192,57,43,0.12)', border: '0.5px solid #fecaca' }}>
+              <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '8px 14px', background: 'rgba(42,107,92,0.09)', border: '0.5px solid #fecaca' }}>
                 <Trash2 size={12} style={{ color: '#f87171', flexShrink: 0 }}/>
                 <span style={{ fontSize:12, color: '#e8e0d8' }}>{t}</span>
               </div>
@@ -312,7 +312,7 @@ export default function SharedHostingGuide({ nav }) {
 
         {/* CTA */}
         <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#c0392b',
+          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#2a6b5c',
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>

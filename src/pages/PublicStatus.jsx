@@ -5,11 +5,11 @@ import { Shield, CheckCircle, XCircle, AlertTriangle, RefreshCw, ExternalLink } 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 function gradeStyle(grade) {
-  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(192,57,43,0.12)', border: 'rgba(192,57,43,0.25)' }
-  if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(192,57,43,0.25)' }
+  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(42,107,92,0.09)', border: 'rgba(0,0,0,0.1)' }
+  if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)' }
   if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)', border: 'rgba(230,126,34,0.2)' }
-  if (grade === 'B') return { color: '#ffffff', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
-  if (grade === 'A') return { color: '#4ade80', bg: 'transparent', border: 'rgba(192,57,43,0.3)' }
+  if (grade === 'B') return { color: '#ffffff', bg: 'transparent', border: 'rgba(42,107,92,0.2)' }
+  if (grade === 'A') return { color: '#1e8a5e', bg: 'transparent', border: 'rgba(42,107,92,0.2)' }
   if (grade === 'A+') return { color: '#ffffff', bg: 'transparent', border: '#e07060' }
   return { color: '#e8e0d8', bg: '#000000', border: '#f0ede8' }
 }
@@ -57,19 +57,19 @@ export default function PublicStatus({ username: propUsername, nav }) {
   const hasIssues  = scores.some(s => !s.cert_valid || (s.expiry_days != null && s.expiry_days <= 30))
 
   const overallColor  = allHealthy ? '#4ade80' : hasIssues ? '#f87171' : '#f0ede8'
-  const overallBg     = allHealthy ? 'transparent'  : hasIssues ? 'rgba(192,57,43,0.12)' : 'rgba(239,68,68,0.08)'
+  const overallBg     = allHealthy ? 'transparent'  : hasIssues ? 'rgba(42,107,92,0.09)' : 'rgba(239,68,68,0.08)'
   const overallLabel  = allHealthy ? 'All systems operational' : hasIssues ? 'Issues detected' : 'Monitoring'
   const OverallIcon   = allHealthy ? CheckCircle : hasIssues ? XCircle : AlertTriangle
 
   return (
     <div style={{ minHeight: '100vh', background: 'transparent' }}>
       {/* Nav */}
-      <div style={{ background:'#0d0000', borderBottom: '0.5px solid rgba(192,57,43,0.2)',
+      <div style={{ background:'#0d0000', borderBottom: '0.5px solid rgba(0,0,0,0.08)',
         padding: '0 24px', height: 52, display: 'flex', alignItems: 'center',
         justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
-          <Shield size={18} color="#c0392b" />
+          <Shield size={18} color="#2a6b5c" />
           <span style={{ fontSize:14, fontWeight: 600, color: '#ffffff' }}>SSLVault</span>
         </div>
         <span style={{ fontSize:11, color: '#b0a8a0' }}>
@@ -191,7 +191,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
               <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
                 style={{ fontSize:12, color: '#b0a8a0', textDecoration: 'none',
                   display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                <Shield size={12} color="#c0392b" />
+                <Shield size={12} color="#2a6b5c" />
                 Secured & monitored by SSLVault · easysecurity.in
               </a>
             </div>

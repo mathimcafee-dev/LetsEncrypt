@@ -109,7 +109,7 @@ export default function APKICIntelligence({ nav }) {
               <div className="ap-sh">Governance and structure</div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'6px 16px' }}>
                 {[['Founded','2001'],['HQ','Hong Kong (rotating host)'],['Chair','Eva Chan'],['Category','Regional Consortium'],['Region','Asia / Oceania'],['Members','11+ economies'],['Funding','Membership contributions'],['Secretariat','Rotating among member economies']].map(([k,v])=>(
-                  <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(255,255,255,0.08)', fontSize:12 }}>
+                  <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:12 }}>
                     <span style={{ color:'#b0a8a0', minWidth:100, flexShrink:0 }}>{k}</span>
                     <span style={{ color:'#ffffff', fontWeight:500 }}>{v}</span>
                   </div>

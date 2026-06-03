@@ -2,18 +2,18 @@
 // Owlish white · Inter · no CSS class dependencies
 import { useState } from 'react'
 
-const F    = "'Inter var','Montserrat',system-ui,-apple-system,sans-serif"
+const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
-  bg:'#120000', bg2:'#1a0404', bg3:'#220808',
-  border:'rgba(192,57,43,0.2)', border2:'rgba(192,57,43,0.35)',
+  bg:'#f7f5f0', bg2:'#1a0404', bg3:'#220808',
+  border:'rgba(0,0,0,0.08)', border2:'rgba(42,107,92,0.25)',
   heading:'#f0ede8', body:'rgba(240,237,232,0.65)', muted:'rgba(240,237,232,0.35)',
-  teal:'#4ade80', tealDk:'#4ade80', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(74,222,128,0.25)',
-  green:'#4ade80', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(74,222,128,0.25)',
+  teal:'#4ade80', tealDk:'#4ade80', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(30,138,94,0.2)',
+  green:'#4ade80', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(30,138,94,0.2)',
   purple:'#a78bfa', purpleBg:'rgba(167,139,250,0.06)',
   amber:'#fbbf24', amberBg:'rgba(251,191,36,0.06)',
-  red:'#f87171', redBg:'rgba(192,57,43,0.12)',
+  red:'#f87171', redBg:'rgba(42,107,92,0.09)',
   ink:'#f0ede8',
 }
 
@@ -25,10 +25,10 @@ function Code({ code, lang = 'bash' }) {
   }
   return (
     <div style={{ background:'#0d0000', border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
-      <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
         <div style={{ display:'flex', gap:5, alignItems:'center' }}>
-          {['#c0392b','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
-          <span style={{ fontSize:10, color:'#b0a8a0', marginLeft:8 }}>{lang}</span>
+          {['#2a6b5c','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
+          <span style={{ fontSize:10, color:'#6b6b6b', marginLeft:8 }}>{lang}</span>
         </div>
         <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'rgba(240,237,232,0.4)', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>
           {copied
@@ -45,7 +45,7 @@ function Code({ code, lang = 'bash' }) {
 function Note({ type = 'tip', children }) {
   const s = {
     tip:     { bg:C.tealBg,  bd:C.tealBd,   color:C.tealDk, label:'TIP',      icon:'💡' },
-    warning: { bg:C.amberBg, bd:'rgba(192,57,43,0.25)',   color:C.amber,  label:'WARNING',  icon:'⚠️' },
+    warning: { bg:C.amberBg, bd:'rgba(0,0,0,0.1)',   color:C.amber,  label:'WARNING',  icon:'⚠️' },
     info:    { bg:C.greenBg, bd:C.greenBd,   color:C.green,  label:'INFO',     icon:'ℹ️' },
   }[type]
   return (
@@ -59,7 +59,7 @@ function Note({ type = 'tip', children }) {
 function Step({ n, title, children }) {
   return (
     <div style={{ display:'flex', gap:16, marginBottom:24 }}>
-      <div style={{ width:30, height:30, borderRadius:8, background:C.teal, color:'#ffffff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, flexShrink:0, marginTop:1 }}>{n}</div>
+      <div style={{ width:30, height:30, borderRadius:8, background:C.teal, color:'#1a1a1a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, flexShrink:0, marginTop:1 }}>{n}</div>
       <div style={{ flex:1 }}>
         <div style={{ fontSize:14, fontWeight:600, color:C.heading, marginBottom:8 }}>{title}</div>
         <div style={{ fontSize:13.5, color:C.body, lineHeight:1.8 }}>{children}</div>
@@ -101,21 +101,21 @@ export default function Install({ nav }) {
   const guide = GUIDES.find(g => g.id === active)
 
   return (
-    <div style={{ minHeight:'100vh', background:`radial-gradient(ellipse at 65% 40%, #7a0000 0%, #4a0000 30%, #200000 60%, #120000 100%)`, fontFamily:F, color:C.heading }}>
+    <div style={{ minHeight:'100vh', background:`#f7f5f0`, fontFamily:F, color:C.heading }}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0}`}</style>
 
       {/* Nav */}
-      <header style={{ background:'rgba(8,12,20,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.06)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(16px,4vw,40px)', position:'sticky', top:0, zIndex:100 }}>
+      <header style={{ background:'rgba(8,12,20,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(0,0,0,0.05)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(16px,4vw,40px)', position:'sticky', top:0, zIndex:100 }}>
         <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }} onClick={() => nav('/')}>
           <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{ fontSize:15, fontWeight:600, color:'#ffffff' }}>SSLVault</span>
-          <span style={{ fontSize:11, color:'#b0a8a0', fontFamily:MONO }}>/ Install Guide</span>
+          <span style={{ fontSize:15, fontWeight:600, color:'#1a1a1a' }}>SSLVault</span>
+          <span style={{ fontSize:11, color:'#6b6b6b', fontFamily:MONO }}>/ Install Guide</span>
         </div>
         <div style={{ display:'flex', gap:8 }}>
           <button onClick={() => nav('/knowledge-base')} style={{ background:'none', border:`1px solid rgba(240,237,232,0.1)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'#b5aea8', padding:'6px 14px', borderRadius:100 }}>Knowledge base</button>
-          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#ffffff', padding:'7px 18px', borderRadius:100 }}>Get started</button>
+          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#1a1a1a', padding:'7px 18px', borderRadius:100 }}>Get started</button>
         </div>
       </header>
 

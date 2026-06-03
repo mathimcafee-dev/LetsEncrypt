@@ -36,13 +36,13 @@ function fmtDate(iso) {
 }
 
 function gradeStyle(g) {
-  if (!g || g==='F') return { color:'#a93226', bg:'rgba(192,57,43,0.1)', border:'rgba(192,57,43,0.2)' }
-  if (g==='D')       return { color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
-  if (g==='C')       return { color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
-  if (g==='B')       return { color:'#a93226', bg:'transparent', border:'rgba(192,57,43,0.3)' }
-  if (g==='A')       return { color:'#a93226', bg:'transparent', border:'rgba(192,57,43,0.3)' }
-  if (g==='A+')      return { color:'#ffffff', bg:'transparent', border:'#e07060' }
-  return { color:'#b0a8a0', bg:'var(--v2-bg)', border:'var(--v2-border)' }
+  if (!g || g==='F') return { color:'#3d8c78', bg:'rgba(42,107,92,0.08)', border:'rgba(0,0,0,0.08)' }
+  if (g==='D')       return { color:'#2a6b5c', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
+  if (g==='C')       return { color:'#2a6b5c', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
+  if (g==='B')       return { color:'#3d8c78', bg:'transparent', border:'rgba(42,107,92,0.2)' }
+  if (g==='A')       return { color:'#3d8c78', bg:'transparent', border:'rgba(42,107,92,0.2)' }
+  if (g==='A+')      return { color:'#1a1a1a', bg:'transparent', border:'#e07060' }
+  return { color:'#6b6b6b', bg:'var(--v2-bg)', border:'var(--v2-border)' }
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
@@ -63,15 +63,15 @@ function GradeBadge({ grade, size = 44 }) {
 function Tick({ ok, label }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-      {ok ? <CheckCircle size={11} color="#c0392b"/> : <XCircle size={11} color="#a93226"/>}
-      <span style={{ fontSize:11, color:ok?'#f0ede8':'#a93226' }}>{label}</span>
+      {ok ? <CheckCircle size={11} color="#2a6b5c"/> : <XCircle size={11} color="#3d8c78"/>}
+      <span style={{ fontSize:11, color:ok?'#f0ede8':'#3d8c78' }}>{label}</span>
     </div>
   )
 }
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
-  const color = pct>=80?'#f0ede8':pct>=60?'#a93226':pct>=50?'#c0392b':'#a93226'
+  const color = pct>=80?'#f0ede8':pct>=60?'#3d8c78':pct>=50?'#2a6b5c':'#3d8c78'
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
       <div style={{ flex:1, height:4, background:'var(--v2-border)', borderRadius:2, overflow:'hidden' }}>
@@ -88,10 +88,10 @@ function StatCard({ label, val, sub, color, bg }) {
   return (
     <div style={{ padding:'12px 14px', borderRadius:10,
       background:bg||'var(--v2-surface)', border:'0.5px solid var(--v2-border)' }}>
-      <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:4 }}>{label}</div>
+      <div style={{ fontSize:11, color:'#6b6b6b', marginBottom:4 }}>{label}</div>
       <div style={{ fontSize:22, fontWeight:700, color:color||'var(--v2-text-1)',
         fontFamily:'monospace', lineHeight:1 }}>{val}</div>
-      {sub && <div style={{ fontSize:10, color:'#b0a8a0', marginTop:4 }}>{sub}</div>}
+      {sub && <div style={{ fontSize:10, color:'#6b6b6b', marginTop:4 }}>{sub}</div>}
     </div>
   )
 }
@@ -144,7 +144,7 @@ function OverviewTab({ user }) {
   }, [user])
 
   if (loading) return (
-    <div style={{ textAlign:'center', padding:60, color:'#b0a8a0' }}>
+    <div style={{ textAlign:'center', padding:60, color:'#6b6b6b' }}>
       <Spinner/><span style={{ marginLeft:8 }}>Loading analytics…</span>
     </div>
   )
@@ -152,8 +152,8 @@ function OverviewTab({ user }) {
   const { total=0, active=0, expiring30=0, expiring7=0, thisMonth=0,
           grades={}, bySource={}, deployed=0, keyVault=0 } = stats || {}
 
-  const gradeEntries = [['A+','#f0ede8'],['A','#a93226'],['B','#a93226'],
-    ['C','#c0392b'],['D','#c0392b'],['F','#a93226'],['—','rgba(240,237,232,0.45)']]
+  const gradeEntries = [['A+','#f0ede8'],['A','#3d8c78'],['B','#3d8c78'],
+    ['C','#2a6b5c'],['D','#2a6b5c'],['F','#3d8c78'],['—','rgba(240,237,232,0.45)']]
   const maxGrade = Math.max(...gradeEntries.map(([g]) => grades[g]||0), 1)
 
   return (
@@ -163,11 +163,11 @@ function OverviewTab({ user }) {
         <StatCard label="Active certs" val={active} sub={`of ${total} total`}
           color={active>0?'#f0ede8':'var(--v2-text-1)'}/>
         <StatCard label="Expiring ≤ 30d" val={expiring30} sub={expiring7>0?`${expiring7} within 7 days`:'none critical'}
-          color={expiring30>0?'#c0392b':'var(--v2-text-1)'} bg={expiring30>0?'rgba(230,126,34,0.12)':undefined}/>
+          color={expiring30>0?'#2a6b5c':'var(--v2-text-1)'} bg={expiring30>0?'rgba(230,126,34,0.12)':undefined}/>
         <StatCard label="Deployed to servers" val={deployed} sub="agent or cPanel"
           color={deployed>0?'#f0ede8':'var(--v2-text-1)'}/>
         <StatCard label="Keys in vault" val={keyVault} sub="AES-256 encrypted"
-          color="#c0392b"/>
+          color="#2a6b5c"/>
       </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:12 }}>
@@ -175,7 +175,7 @@ function OverviewTab({ user }) {
         {/* TLS grade distribution */}
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
           borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
-          <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+          <div style={{ fontSize:11, fontWeight:600, color:'#6b6b6b', textTransform:'uppercase',
             letterSpacing:'0.4px', marginBottom:14 }}>TLS grade distribution</div>
           {gradeEntries.map(([g, color]) => (
             <div key={g} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:9 }}>
@@ -193,7 +193,7 @@ function OverviewTab({ user }) {
                 )}
                 {(grades[g]||0) === 0 && (
                   <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)',
-                    fontSize:10, color:'#b0a8a0' }}>0</span>
+                    fontSize:10, color:'#6b6b6b' }}>0</span>
                 )}
               </div>
             </div>
@@ -204,33 +204,33 @@ function OverviewTab({ user }) {
         <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
             borderRadius:10, padding:'14px 16px', flex:1 , overflowX:'auto'}}>
-            <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+            <div style={{ fontSize:11, fontWeight:600, color:'#6b6b6b', textTransform:'uppercase',
               letterSpacing:'0.4px', marginBottom:12 }}>Certificate sources</div>
             {Object.entries(bySource).length === 0 ? (
-              <div style={{ fontSize:12, color:'#b0a8a0' }}>No certificates yet</div>
+              <div style={{ fontSize:12, color:'#6b6b6b' }}>No certificates yet</div>
             ) : Object.entries(bySource).map(([src, count]) => (
               <div key={src} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
                 marginBottom:8, padding:'7px 10px', borderRadius:8, background:'rgba(255,255,255,0.03)',
                 border:'0.5px solid var(--v2-border)' }}>
-                <span style={{ fontSize:12, color:'#f0ede8', fontWeight:500, textTransform:'capitalize' }}>
+                <span style={{ fontSize:12, color:'#1a1a1a', fontWeight:500, textTransform:'capitalize' }}>
                   {src === 'gogetssl' ? 'RapidSSL (SSLVault)' : src}
                 </span>
-                <span style={{ fontSize:13, fontWeight:700, color:'#ffffff', fontFamily:'monospace' }}>{count}</span>
+                <span style={{ fontSize:13, fontWeight:700, color:'#1a1a1a', fontFamily:'monospace' }}>{count}</span>
               </div>
             ))}
           </div>
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
             borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
-            <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+            <div style={{ fontSize:11, fontWeight:600, color:'#6b6b6b', textTransform:'uppercase',
               letterSpacing:'0.4px', marginBottom:10 }}>Activity</div>
             <div style={{ display:'flex', gap:16 }}>
               <div>
-                <div style={{ fontSize:20, fontWeight:700, color:'#ffffff', fontFamily:'monospace' }}>{thisMonth}</div>
-                <div style={{ fontSize:10, color:'#b0a8a0' }}>orders this month</div>
+                <div style={{ fontSize:20, fontWeight:700, color:'#1a1a1a', fontFamily:'monospace' }}>{thisMonth}</div>
+                <div style={{ fontSize:10, color:'#6b6b6b' }}>orders this month</div>
               </div>
               <div>
-                <div style={{ fontSize:20, fontWeight:700, color:'#f0ede8', fontFamily:'monospace' }}>{active}</div>
-                <div style={{ fontSize:10, color:'#b0a8a0' }}>certs active</div>
+                <div style={{ fontSize:20, fontWeight:700, color:'#1a1a1a', fontFamily:'monospace' }}>{active}</div>
+                <div style={{ fontSize:10, color:'#6b6b6b' }}>certs active</div>
               </div>
             </div>
           </div>
@@ -241,13 +241,13 @@ function OverviewTab({ user }) {
       {active > 0 && (
         <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
           borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
-          <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+          <div style={{ fontSize:11, fontWeight:600, color:'#6b6b6b', textTransform:'uppercase',
             letterSpacing:'0.4px', marginBottom:12 }}>Fleet health</div>
           <div style={{ display:'flex', height:12, borderRadius:8, overflow:'hidden', gap:1 }}>
             {[
-              { n:expiring7,             color:'#a93226', label:'Critical' },
-              { n:expiring30-expiring7,  color:'#c0392b', label:'Expiring' },
-              { n:active-expiring30,     color:'#ffffff', label:'Healthy' },
+              { n:expiring7,             color:'#3d8c78', label:'Critical' },
+              { n:expiring30-expiring7,  color:'#2a6b5c', label:'Expiring' },
+              { n:active-expiring30,     color:'#1a1a1a', label:'Healthy' },
             ].map(({ n, color, label }) => n > 0 && (
               <div key={label} title={`${label}: ${n}`}
                 style={{ flex:n, background:color, minWidth:4, transition:'flex .6s' }}/>
@@ -255,13 +255,13 @@ function OverviewTab({ user }) {
           </div>
           <div style={{ display:'flex', gap:16, marginTop:8 }}>
             {[
-              { label:'Critical (≤7d)', n:expiring7,  color:'#a93226' },
-              { label:'Expiring (≤30d)', n:expiring30, color:'#c0392b' },
-              { label:'Healthy',        n:active-expiring30, color:'#ffffff' },
+              { label:'Critical (≤7d)', n:expiring7,  color:'#3d8c78' },
+              { label:'Expiring (≤30d)', n:expiring30, color:'#2a6b5c' },
+              { label:'Healthy',        n:active-expiring30, color:'#1a1a1a' },
             ].map(({ label, n, color }) => (
               <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
                 <div style={{ width:8, height:8, borderRadius:2, background:color }}/>
-                <span style={{ fontSize:10, color:'#b0a8a0' }}>{label}: </span>
+                <span style={{ fontSize:10, color:'#6b6b6b' }}>{label}: </span>
                 <span style={{ fontSize:10, fontWeight:600, color }}>{n}</span>
               </div>
             ))}
@@ -284,13 +284,13 @@ function DomainScoreRow({ s, scanning, onRescan }) {
         <GradeBadge grade={s.grade}/>
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5 }}>
-            <span style={{ fontSize:13, fontWeight:600, color:'#f0ede8',
+            <span style={{ fontSize:13, fontWeight:600, color:'#1a1a1a',
               fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
               {s.domain}
             </span>
             {!s.cert_valid && (
               <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:4,
-                background:'rgba(192,57,43,0.1)', color:'#a93226' }}>UNREACHABLE</span>
+                background:'rgba(42,107,92,0.08)', color:'#3d8c78' }}>UNREACHABLE</span>
             )}
           </div>
           <ScoreBar score={s.score}/>
@@ -301,7 +301,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
           <Tick ok={s.cert_valid} label="TLS"/>
           {s.expiry_days != null && (
             <span style={{ fontSize:11, fontWeight:600,
-              color:s.expiry_days<=0?'#a93226':s.expiry_days<=30?'#c0392b':'#f0ede8' }}>
+              color:s.expiry_days<=0?'#3d8c78':s.expiry_days<=30?'#2a6b5c':'#f0ede8' }}>
               {s.expiry_days<=0?'Expired':`${s.expiry_days}d`}
             </span>
           )}
@@ -309,11 +309,11 @@ function DomainScoreRow({ s, scanning, onRescan }) {
         <button onClick={e => { e.stopPropagation(); onRescan(s.domain) }}
           disabled={scanning===s.domain}
           style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, padding:'4px 10px',
-            borderRadius:6, border:'1px solid rgba(192,57,43,0.2)', background:'rgba(255,255,255,0.04)',
-            cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8' }}>
+            borderRadius:6, border:'1px solid rgba(0,0,0,0.08)', background:'rgba(0,0,0,0.03)',
+            cursor:'pointer', fontFamily:'inherit', color:'#3d3d3d' }}>
           <RefreshCw size={10} style={scanning===s.domain?{animation:'spin .8s linear infinite'}:{}}/> Rescan
         </button>
-        <div style={{ color:'#b0a8a0', flexShrink:0 }}>
+        <div style={{ color:'#6b6b6b', flexShrink:0 }}>
           {expanded ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
         </div>
       </div>
@@ -331,9 +331,9 @@ function DomainScoreRow({ s, scanning, onRescan }) {
             ['Last scanned',timeAgo(s.scanned_at)],
           ].map(([label, val]) => (
             <div key={label}>
-              <div style={{ fontSize:10, color:'#b0a8a0', marginBottom:2,
+              <div style={{ fontSize:10, color:'#6b6b6b', marginBottom:2,
                 fontWeight:600, textTransform:'uppercase', letterSpacing:'0.3px' }}>{label}</div>
-              <div style={{ fontSize:12, color:'#f0ede8', fontWeight:500 }}>{val}</div>
+              <div style={{ fontSize:12, color:'#1a1a1a', fontWeight:500 }}>{val}</div>
             </div>
           ))}
         </div>
@@ -392,13 +392,13 @@ function TLSGradesTab({ tok, user }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
           <StatCard label="Domains tracked" val={scores.length}/>
           <StatCard label="Average score" val={avgScore}
-            color={avgScore>=80?'#f0ede8':avgScore>=60?'#a93226':'#a93226'}/>
+            color={avgScore>=80?'#f0ede8':avgScore>=60?'#3d8c78':'#3d8c78'}/>
           <StatCard label="Grade A / A+"
             val={(scores.filter(s=>s.grade==='A'||s.grade==='A+').length)}
-            color="#c0392b"/>
+            color="#2a6b5c"/>
           <StatCard label="Need attention" val={issues.length}
-            color={issues.length>0?'#a93226':'#f0ede8'}
-            bg={issues.length>0?'rgba(192,57,43,0.1)':undefined}/>
+            color={issues.length>0?'#3d8c78':'#f0ede8'}
+            bg={issues.length>0?'rgba(42,107,92,0.08)':undefined}/>
         </div>
       )}
 
@@ -412,35 +412,35 @@ function TLSGradesTab({ tok, user }) {
             onKeyDown={e => e.key==='Enter' && addDomain()}
             placeholder="Enter any domain to scan — e.g. example.com"
             style={{ flex:1, fontSize:13, border:'none', outline:'none', background:'transparent',
-              color:'#f0ede8' }}/>
+              color:'#1a1a1a' }}/>
           <button onClick={addDomain} disabled={adding || !newDomain.trim()}
             style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 12px',
-              borderRadius:7, border:'none', background:'var(--v2-green)', color:'#ffffff',
+              borderRadius:7, border:'none', background:'var(--v2-green)', color:'#1a1a1a',
               cursor:adding||!newDomain.trim()?'not-allowed':'pointer', fontFamily:'inherit',
               fontWeight:600, opacity:adding||!newDomain.trim()?0.6:1 }}>
             {adding ? <><Spinner/> Scanning…</> : <><Plus size={11}/> Scan</>}
           </button>
         </div>
-        {addErr && <div style={{ fontSize:11, color:'#a93226', marginTop:6 }}>{addErr}</div>}
+        {addErr && <div style={{ fontSize:11, color:'#3d8c78', marginTop:6 }}>{addErr}</div>}
       </div>
 
       {/* List */}
       {loading ? (
-        <div style={{ textAlign:'center', padding:60, color:'#b0a8a0' }}>
+        <div style={{ textAlign:'center', padding:60, color:'#6b6b6b' }}>
           <Spinner/><span style={{ marginLeft:8 }}>Loading grades…</span>
         </div>
       ) : scores.length === 0 ? (
         <div style={{ textAlign:'center', padding:60, background:'var(--v2-surface)',
           border:'0.5px solid var(--v2-border)', borderRadius:10 }}>
-          <Trophy size={28} style={{ color:'#b0a8a0', margin:'0 auto 10px', display:'block' }}/>
-          <div style={{ fontSize:13, fontWeight:500, color:'#e8e0d8', marginBottom:4 }}>No domains scanned yet</div>
-          <div style={{ fontSize:12, color:'#b0a8a0' }}>Enter a domain above to get your first TLS grade.</div>
+          <Trophy size={28} style={{ color:'#6b6b6b', margin:'0 auto 10px', display:'block' }}/>
+          <div style={{ fontSize:13, fontWeight:500, color:'#3d3d3d', marginBottom:4 }}>No domains scanned yet</div>
+          <div style={{ fontSize:12, color:'#6b6b6b' }}>Enter a domain above to get your first TLS grade.</div>
         </div>
       ) : scores.map(s => (
         <DomainScoreRow key={s.id || s.domain} s={s} scanning={scanning} onRescan={rescan}/>
       ))}
       {scores.length > 0 && (
-        <div style={{ fontSize:11, color:'#b0a8a0', textAlign:'center', marginTop:8 }}>
+        <div style={{ fontSize:11, color:'#6b6b6b', textAlign:'center', marginTop:8 }}>
           A+ ≥90 · A ≥80 · B ≥70 · C ≥60 · D ≥50 · F &lt;50
         </div>
       )}
@@ -452,10 +452,10 @@ function TLSGradesTab({ tok, user }) {
 // TAB 3 — CT WATCH
 // ══════════════════════════════════════════════════════════════════════
 const CT_STATUS = {
-  unknown:    { label:'Unknown',    color:'#f87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.3)' },
-  phishing:   { label:'Phishing',   color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
-  suspicious: { label:'Suspicious', color:'#c0392b', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
-  known:      { label:'Known',      color:'#ffffff', bg:'transparent', border:'rgba(192,57,43,0.3)' },
+  unknown:    { label:'Unknown',    color:'#2a6b5c', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.3)' },
+  phishing:   { label:'Phishing',   color:'#2a6b5c', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
+  suspicious: { label:'Suspicious', color:'#2a6b5c', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
+  known:      { label:'Known',      color:'#1a1a1a', bg:'transparent', border:'rgba(42,107,92,0.2)' },
 }
 
 function CTWatchTab({ tok, user }) {
@@ -497,44 +497,44 @@ function CTWatchTab({ tok, user }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Total findings" val={shadows.length}/>
         <StatCard label="Needs review" val={unknowns.length}
-          color={unknowns.length>0?'#a93226':'#f0ede8'}
-          bg={unknowns.length>0?'rgba(192,57,43,0.1)':undefined}/>
-        <StatCard label="Confirmed safe" val={known.length} color="#c0392b"/>
+          color={unknowns.length>0?'#3d8c78':'#f0ede8'}
+          bg={unknowns.length>0?'rgba(42,107,92,0.08)':undefined}/>
+        <StatCard label="Confirmed safe" val={known.length} color="#2a6b5c"/>
       </div>
 
       {/* Explanation */}
-      <div style={{ background:'transparent', border:'0.5px solid rgba(192,57,43,0.3)', borderRadius:10,
+      <div style={{ background:'transparent', border:'0.5px solid rgba(42,107,92,0.2)', borderRadius:10,
         padding:'12px 16px', marginBottom:16, display:'flex', gap:10 }}>
-        <ShieldAlert size={16} color="#c0392b" style={{ flexShrink:0, marginTop:1 }}/>
-        <div style={{ fontSize:12, color:'#a93226', lineHeight:1.6 }}>
+        <ShieldAlert size={16} color="#2a6b5c" style={{ flexShrink:0, marginTop:1 }}/>
+        <div style={{ fontSize:12, color:'#3d8c78', lineHeight:1.6 }}>
           CT Watch monitors Certificate Transparency logs for any certificate issued for your domains
           outside of SSLVault. Unauthorised certs may indicate phishing or shadow IT.
         </div>
       </div>
 
       {loading ? (
-        <div style={{ textAlign:'center', padding:60, color:'#b0a8a0' }}>
+        <div style={{ textAlign:'center', padding:60, color:'#6b6b6b' }}>
           <Spinner/><span style={{ marginLeft:8 }}>Loading CT findings…</span>
         </div>
       ) : shadows.length === 0 ? (
         <div style={{ textAlign:'center', padding:60, background:'var(--v2-surface)',
           border:'0.5px solid var(--v2-border)', borderRadius:10 }}>
-          <Shield size={28} style={{ color:'#b0a8a0', margin:'0 auto 10px', display:'block', opacity:.5 }}/>
-          <div style={{ fontSize:13, fontWeight:500, color:'#e8e0d8', marginBottom:4 }}>No shadow certs found</div>
-          <div style={{ fontSize:12, color:'#b0a8a0' }}>Your domains have no unauthorized certificates in CT logs.</div>
+          <Shield size={28} style={{ color:'#6b6b6b', margin:'0 auto 10px', display:'block', opacity:.5 }}/>
+          <div style={{ fontSize:13, fontWeight:500, color:'#3d3d3d', marginBottom:4 }}>No shadow certs found</div>
+          <div style={{ fontSize:12, color:'#6b6b6b' }}>Your domains have no unauthorized certificates in CT logs.</div>
         </div>
       ) : (
         <div>
           {/* Table header */}
           <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:640,
-            padding:'10px 14px', background:'rgba(192,57,43,0.12)', border:'1px solid rgba(192,57,43,0.25)',
+            padding:'10px 14px', background:'rgba(42,107,92,0.09)', border:'1px solid rgba(0,0,0,0.1)',
             borderRadius:'10px 10px 0 0', marginBottom:0 }}>
             {['Domain','Product','Expires','Status',''].map(h => (
-              <div key={h} style={{ fontSize:10, fontWeight:700, color:'#f0ede8',
+              <div key={h} style={{ fontSize:10, fontWeight:700, color:'#1a1a1a',
                 textTransform:'uppercase', letterSpacing:'0.6px' }}>{h}</div>
             ))}
           </div>
-          <div style={{ border:'1px solid rgba(192,57,43,0.25)', borderTop:'none',
+          <div style={{ border:'1px solid rgba(0,0,0,0.1)', borderTop:'none',
             borderRadius:'0 0 10px 10px', overflowX:'auto' }}>
             {shadows.map((s, i) => {
               const status = s.status === 'known' || s.dismissed ? 'known'
@@ -543,20 +543,20 @@ function CTWatchTab({ tok, user }) {
               const cfg = CT_STATUS[status] || CT_STATUS.unknown
               const isExp = expanded === s.id
               return (
-                <div key={s.id} style={{ borderBottom: i<shadows.length-1?'1px solid rgba(192,57,43,0.2)':'none' }}>
+                <div key={s.id} style={{ borderBottom: i<shadows.length-1?'1px solid rgba(0,0,0,0.08)':'none' }}>
                   <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:640,
                     padding:'12px 14px', alignItems:'center',
-                    background: i%2===0?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.15)',
+                    background: i%2===0?'rgba(0,0,0,0.04)':'rgba(0,0,0,0.15)',
                     borderLeft:`3px solid ${status==='known'?'transparent':cfg.color}` }}>
                     <div>
                       <div style={{ fontSize:13, fontWeight:700, fontFamily:'monospace',
-                        color:'#ffffff', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                        color:'#1a1a1a', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                         {s.domain}
                       </div>
-                      {s.org_name && <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', marginTop:2 }}>{s.org_name}</div>}
+                      {s.org_name && <div style={{ fontSize:11, color:'#6b6b6b', marginTop:2 }}>{s.org_name}</div>}
                     </div>
-                    <div style={{ fontSize:12, color:'#f0ede8' }}>{s.product||'—'}</div>
-                    <div style={{ fontSize:12, color:'#f0ede8' }}>{fmtDate(s.expires_at)}</div>
+                    <div style={{ fontSize:12, color:'#1a1a1a' }}>{s.product||'—'}</div>
+                    <div style={{ fontSize:12, color:'#1a1a1a' }}>{fmtDate(s.expires_at)}</div>
                     <div>
                       <span style={{ fontSize:11, fontWeight:700, padding:'3px 10px', borderRadius:20,
                         background:cfg.bg, color:cfg.color, border:`1px solid ${cfg.border}` }}>
@@ -566,21 +566,21 @@ function CTWatchTab({ tok, user }) {
                     <div style={{ display:'flex', gap:4 }}>
                       <button onClick={() => setExpanded(isExp?null:s.id)}
                         style={{ fontSize:10, padding:'3px 8px', borderRadius:5,
-                          border:'1px solid rgba(240,237,232,0.2)', background:'rgba(255,255,255,0.06)',
-                          cursor:'pointer', fontFamily:'inherit', color:'#f0ede8', fontWeight:500 }}>
+                          border:'1px solid rgba(240,237,232,0.2)', background:'rgba(0,0,0,0.05)',
+                          cursor:'pointer', fontFamily:'inherit', color:'#1a1a1a', fontWeight:500 }}>
                         {isExp?'Hide':'Details'}
                       </button>
                       <button onClick={() => dismiss(s.id)} disabled={dismissing===s.id}
                         style={{ fontSize:10, padding:'3px 8px', borderRadius:5,
-                          border:'0.5px solid #F7C1C1', background:'rgba(192,57,43,0.1)',
-                          cursor:'pointer', fontFamily:'inherit', color:'#a93226' }}>
+                          border:'0.5px solid #F7C1C1', background:'rgba(42,107,92,0.08)',
+                          cursor:'pointer', fontFamily:'inherit', color:'#3d8c78' }}>
                         {dismissing===s.id?<Spinner/>:'Dismiss'}
                       </button>
                     </div>
                   </div>
                   {isExp && (
                     <div style={{ padding:'12px 14px', background:'rgba(192,57,43,0.06)',
-                      borderTop:'1px solid rgba(192,57,43,0.15)', borderLeft:`3px solid ${cfg.color}` }}>
+                      borderTop:'1px solid rgba(0,0,0,0.07)', borderLeft:`3px solid ${cfg.color}` }}>
                       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:10, marginBottom:12 }}>
                         {[
                           ['Ordered by', s.ordered_by||'—'],
@@ -589,23 +589,23 @@ function CTWatchTab({ tok, user }) {
                           ['CA',         s.ca||'—'],
                         ].map(([label,val]) => (
                           <div key={label}>
-                            <div style={{ fontSize:10, color:'#b0a8a0', fontWeight:600,
+                            <div style={{ fontSize:10, color:'#6b6b6b', fontWeight:600,
                               textTransform:'uppercase', letterSpacing:'0.3px', marginBottom:2 }}>{label}</div>
-                            <div style={{ fontSize:12, color:'#f0ede8' }}>{val}</div>
+                            <div style={{ fontSize:12, color:'#1a1a1a' }}>{val}</div>
                           </div>
                         ))}
                       </div>
                       <div style={{ display:'flex', gap:6 }}>
                         <button onClick={() => mark(s.id,'known')} disabled={marking===s.id}
                           style={{ fontSize:11, padding:'5px 12px', borderRadius:6,
-                            border:'0.5px solid rgba(192,57,43,0.3)', background:'transparent',
-                            cursor:'pointer', fontFamily:'inherit', color:'#a93226', fontWeight:500 }}>
+                            border:'0.5px solid rgba(42,107,92,0.2)', background:'transparent',
+                            cursor:'pointer', fontFamily:'inherit', color:'#3d8c78', fontWeight:500 }}>
                           Mark as safe
                         </button>
                         <button onClick={() => mark(s.id,'phishing')} disabled={marking===s.id}
                           style={{ fontSize:11, padding:'5px 12px', borderRadius:6,
-                            border:'0.5px solid #F7C1C1', background:'rgba(192,57,43,0.1)',
-                            cursor:'pointer', fontFamily:'inherit', color:'#a93226', fontWeight:500 }}>
+                            border:'0.5px solid #F7C1C1', background:'rgba(42,107,92,0.08)',
+                            cursor:'pointer', fontFamily:'inherit', color:'#3d8c78', fontWeight:500 }}>
                           Flag as phishing
                         </button>
                       </div>
@@ -687,36 +687,36 @@ function MassScanTab() {
       {/* Input */}
       <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
         borderRadius:10, padding:'14px 16px', marginBottom:14 , overflowX:'auto'}}>
-        <div style={{ fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+        <div style={{ fontSize:11, fontWeight:600, color:'#6b6b6b', textTransform:'uppercase',
           letterSpacing:'0.4px', marginBottom:10 }}>Paste up to 100 domains</div>
         <textarea value={input} onChange={e => setInput(e.target.value)}
           rows={6} placeholder={'example.com\ngoogle.com\ngithub.com'}
           style={{ width:'100%', resize:'vertical', fontSize:13, fontFamily:'monospace',
             borderRadius:8, border:'0.5px solid var(--v2-border)', padding:'10px 12px',
-            background:'rgba(255,255,255,0.03)', color:'#f0ede8', outline:'none', boxSizing:'border-box' }}/>
+            background:'rgba(255,255,255,0.03)', color:'#1a1a1a', outline:'none', boxSizing:'border-box' }}/>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:10 }}>
-          <span style={{ fontSize:11, color:'#b0a8a0' }}>
+          <span style={{ fontSize:11, color:'#6b6b6b' }}>
             {input.split('\n').filter(l=>l.trim()).length} domains · one per line
           </span>
           <div style={{ display:'flex', gap:8 }}>
             {results && (
               <button onClick={exportCSV}
                 style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 12px',
-                  borderRadius:7, border:'1px solid rgba(192,57,43,0.2)', background:'rgba(255,255,255,0.04)',
-                  cursor:'pointer', fontFamily:'inherit', color:'#e8e0d8' }}>
+                  borderRadius:7, border:'1px solid rgba(0,0,0,0.08)', background:'rgba(0,0,0,0.03)',
+                  cursor:'pointer', fontFamily:'inherit', color:'#3d3d3d' }}>
                 <Download size={11}/> Export CSV
               </button>
             )}
             <button onClick={doScan} disabled={scanning || !input.trim()}
               style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, padding:'5px 14px',
-                borderRadius:7, border:'none', background:'var(--v2-green)', color:'#ffffff',
+                borderRadius:7, border:'none', background:'var(--v2-green)', color:'#1a1a1a',
                 cursor:scanning||!input.trim()?'not-allowed':'pointer',
                 fontFamily:'inherit', fontWeight:600, opacity:scanning||!input.trim()?0.7:1 }}>
               {scanning ? <><Spinner/> Scanning…</> : <><Scan size={11}/> Run scan</>}
             </button>
           </div>
         </div>
-        {error && <div style={{ fontSize:11, color:'#a93226', marginTop:8 }}>{error}</div>}
+        {error && <div style={{ fontSize:11, color:'#3d8c78', marginTop:8 }}>{error}</div>}
 
         {/* Progress bar */}
         {scanning && (
@@ -733,10 +733,10 @@ function MassScanTab() {
           {/* Summary */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:12 }}>
             <StatCard label="Scanned" val={results.length} sub="domains"/>
-            <StatCard label="Passed" val={passCount} color="#c0392b" bg="rgba(39,174,96,0.1)"/>
+            <StatCard label="Passed" val={passCount} color="#2a6b5c" bg="rgba(39,174,96,0.1)"/>
             <StatCard label="Failed" val={failCount}
-              color={failCount>0?'#a93226':'var(--v2-text-1)'}
-              bg={failCount>0?'rgba(192,57,43,0.1)':undefined}/>
+              color={failCount>0?'#3d8c78':'var(--v2-text-1)'}
+              bg={failCount>0?'rgba(42,107,92,0.08)':undefined}/>
           </div>
 
           {/* Filter */}
@@ -751,7 +751,7 @@ function MassScanTab() {
                 {lbl}
               </button>
             ))}
-            <span style={{ marginLeft:'auto', fontSize:11, color:'#b0a8a0' }}>
+            <span style={{ marginLeft:'auto', fontSize:11, color:'#6b6b6b' }}>
               {filtered?.length} results
             </span>
           </div>
@@ -759,9 +759,9 @@ function MassScanTab() {
           {/* Table */}
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'visible' }}>
             <div style={{ display:'grid', gridTemplateColumns:'2fr 60px 60px 60px 60px 80px 1fr',
-              padding:'8px 14px', background:'rgba(255,255,255,0.03)', borderBottom:'0.5px solid rgba(255,255,255,0.08)' }}>
+              padding:'8px 14px', background:'rgba(255,255,255,0.03)', borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
               {['Domain','Grade','Score','TLS','HSTS','CAA','Expiry / Issue'].map(h => (
-                <div key={h} style={{ fontSize:10, fontWeight:600, color:'#b0a8a0',
+                <div key={h} style={{ fontSize:10, fontWeight:600, color:'#6b6b6b',
                   textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
               ))}
             </div>
@@ -774,7 +774,7 @@ function MassScanTab() {
                   borderBottom:i<filtered.length-1?'0.5px solid var(--v2-border)':'none',
                   background:i%2===0?'var(--v2-surface)':'var(--v2-bg)' }}>
                   <div style={{ fontFamily:'monospace', fontSize:12, fontWeight:600,
-                    color:'#f0ede8', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                    color:'#1a1a1a', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                     {r.domain}
                   </div>
                   <div>
@@ -787,17 +787,17 @@ function MassScanTab() {
                     {r.score!=null?Math.round(r.score):'—'}
                   </div>
                   <div>{r.cert_valid
-                    ? <CheckCircle size={13} color="#c0392b"/>
-                    : <XCircle size={13} color="#a93226"/>}</div>
+                    ? <CheckCircle size={13} color="#2a6b5c"/>
+                    : <XCircle size={13} color="#3d8c78"/>}</div>
                   <div>{r.hsts
-                    ? <CheckCircle size={13} color="#c0392b"/>
-                    : <XCircle size={13} color="#a93226"/>}</div>
+                    ? <CheckCircle size={13} color="#2a6b5c"/>
+                    : <XCircle size={13} color="#3d8c78"/>}</div>
                   <div>{r.caa
-                    ? <CheckCircle size={13} color="#c0392b"/>
-                    : <XCircle size={13} color="#a93226"/>}</div>
+                    ? <CheckCircle size={13} color="#2a6b5c"/>
+                    : <XCircle size={13} color="#3d8c78"/>}</div>
                   <div style={{ fontSize:11,
-                    color: r.error?'#a93226':r.expiry_days!=null&&r.expiry_days<=0?'#a93226':
-                      r.expiry_days!=null&&r.expiry_days<=30?'#c0392b':'var(--v2-text-2)' }}>
+                    color: r.error?'#3d8c78':r.expiry_days!=null&&r.expiry_days<=0?'#3d8c78':
+                      r.expiry_days!=null&&r.expiry_days<=30?'#2a6b5c':'var(--v2-text-2)' }}>
                     {r.error ? r.error.slice(0,40)
                       : r.expiry_days!=null ? (r.expiry_days<=0?'Expired':`${r.expiry_days}d left`)
                       : r.issuer||'—'}
@@ -846,14 +846,14 @@ export default function ShieldIntelligence({ user }) {
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
             <div>
               <h1 className="v2-h1" style={{ fontSize:20, marginBottom:3 }}>Shield Intelligence</h1>
-              <p style={{ fontSize:12, color:'#b0a8a0', margin:0 }}>
+              <p style={{ fontSize:12, color:'#6b6b6b', margin:0 }}>
                 Analytics · TLS grading · CT log monitoring · bulk scanning — all in one place
               </p>
             </div>
           </div>
 
           {/* Tab bar */}
-          <div style={{ display:'flex', gap:2, borderBottom:'0.5px solid rgba(255,255,255,0.08)', marginBottom:20 }}>
+          <div style={{ display:'flex', gap:2, borderBottom:'0.5px solid rgba(0,0,0,0.06)', marginBottom:20 }}>
             {TABS.map(({ id, label, icon:Icon }) => (
               <button key={id} onClick={() => setTab(id)}
                 style={{ display:'flex', alignItems:'center', gap:6,

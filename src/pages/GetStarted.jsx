@@ -107,14 +107,14 @@ export default function GetStarted({ nav }) {
             When it's active, your browser shows <strong>https://</strong> and a padlock. Without it — a red "Not Secure" warning.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 16 }}>
-            <div style={{ background: 'rgba(192,57,43,0.12)', border: '1px solid #fecaca', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
+            <div style={{ background: 'rgba(42,107,92,0.09)', border: '1px solid #fecaca', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
               <div style={{ fontSize:12, fontWeight: 600, color: '#f87171', marginBottom: 6 }}>Without SSL (HTTP)</div>
               <p style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.65, margin: 0 }}>
                 Red "Not Secure" warning. Visitor data exposed. Lower Google ranking. Payments blocked.
               </p>
             </div>
-            <div style={{ background: 'transparent', border: '1px solid rgba(192,57,43,0.3)', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
-              <div style={{ fontSize:12, fontWeight: 600, color: '#4ade80', marginBottom: 6 }}>With SSL (HTTPS)</div>
+            <div style={{ background: 'transparent', border: '1px solid rgba(42,107,92,0.2)', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#1e8a5e', marginBottom: 6 }}>With SSL (HTTPS)</div>
               <p style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.65, margin: 0 }}>
                 Green padlock. All traffic encrypted. Trust signals for visitors and Google. Required for payments.
               </p>
@@ -366,7 +366,7 @@ export default function GetStarted({ nav }) {
 
         {/* CTA */}
         <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#c0392b',
+          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#2a6b5c',
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>

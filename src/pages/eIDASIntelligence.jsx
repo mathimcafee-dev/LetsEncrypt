@@ -119,7 +119,7 @@ export default function eIDASIntelligence({ nav }) {
               <div className="cmp-card">
                 <div style={{ fontFamily:MONO, fontSize:10, fontWeight:700, color:'#b0a8a0', marginBottom:8 }}>eIDAS (910/2014)</div>
                 {['Qualified electronic signatures legally binding EU-wide','Qualified Trust Service Providers (QTSPs) regulated','EU Trusted Lists — machine-readable QTSP registries','QWAC certificates for website authentication (voluntary)','No digital identity wallet mandate','CAs could choose whether to pursue QTSP status'].map(p=>(
-                  <div key={p} style={{ display:'flex', gap:8, padding:'6px 0', borderBottom:'0.5px solid rgba(255,255,255,0.08)', fontSize:12, color:'#e8e0d8' }}>
+                  <div key={p} style={{ display:'flex', gap:8, padding:'6px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:12, color:'#e8e0d8' }}>
                     <span style={{ color:'#b0a8a0', flexShrink:0 }}>·</span>{p}
                   </div>
                 ))}

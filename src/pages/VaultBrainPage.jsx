@@ -9,22 +9,22 @@ const FN_URL = `${SB_URL}/functions/v1/vaultbrain-agent`
 // ── Design constants ──────────────────────────────────────────────────────────
 const C = {
   bg:       'transparent',
-  surface:  'rgba(255,255,255,0.05)',
+  surface:  'rgba(0,0,0,0.04)',
   surface2: 'rgba(255,255,255,0.03)',
-  border:   'rgba(192,57,43,0.25)',
-  border2:  'rgba(255,255,255,0.08)',
+  border:   'rgba(0,0,0,0.1)',
+  border2:  'rgba(0,0,0,0.06)',
   text:     '#f0ede8',
   muted:    '#b0a8a0',
-  accent:   '#c0392b',
-  accentBg: 'rgba(192,57,43,0.12)',
+  accent:   '#2a6b5c',
+  accentBg: 'rgba(42,107,92,0.09)',
   green:    '#4ade80',
-  greenBg:  'rgba(74,222,128,0.08)',
+  greenBg:  'rgba(30,138,94,0.06)',
   amber:    '#fbbf24',
   amberBg:  'rgba(251,191,36,0.08)',
   purple:   '#a78bfa',
   purpleBg: 'rgba(167,139,250,0.08)',
 }
-const F = "'Inter var','Montserrat',system-ui,sans-serif"
+const F = "'Inter var','Inter',system-ui,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono',monospace"
 
 // ── Suggested prompts — shown on fresh conversation start ─────────────────────
@@ -162,7 +162,7 @@ function Message({ msg }) {
       {isUser && (
         <div style={{
           width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-          background: 'rgba(255,255,255,0.06)', border: `1px solid ${C.border2}`,
+          background: 'rgba(0,0,0,0.05)', border: `1px solid ${C.border2}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 13, color: C.muted, marginTop: 2,
         }}>
