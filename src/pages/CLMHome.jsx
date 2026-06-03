@@ -32,6 +32,7 @@ import ComplianceCentre from './ComplianceCentre'
 import CertBind from './CertBind'
 import KeyIntelligence from './KeyIntelligence'
 import Pricing from './Pricing'
+import VaultBrainPanel from '../components/VaultBrainPanel'
 
 // ── Design tokens ──────────────────────────────────────────────────────
 const F = "'Montserrat',system-ui,sans-serif"
@@ -67,6 +68,8 @@ export default function CLMHome({ user, nav }) {
   const [notifs, setNotifs] = useState([])
   const [unread, setUnread] = useState(0)
   const [bellOpen, setBellOpen] = useState(false)
+  const [aiOpen, setAiOpen] = useState(false)
+  const [session, setSession] = useState(null)
   const email = user?.email || ''
   const initials = email.slice(0,2).toUpperCase()
 
@@ -79,6 +82,11 @@ export default function CLMHome({ user, nav }) {
   }
   useEffect(()=>{loadNotifs();const iv=setInterval(loadNotifs,60000);return()=>clearInterval(iv)},[user])
   useEffect(()=>{const h=e=>{if(bellRef.current&&!bellRef.current.contains(e.target))setBellOpen(false)};document.addEventListener('mousedown',h);return()=>document.removeEventListener('mousedown',h)},[])
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data})=>setSession(data.session))
+    const {data:{subscription}}=supabase.auth.onAuthStateChange((_,s)=>setSession(s))
+    return()=>subscription.unsubscribe()
+  },[])
   useEffect(()=>{
     if(!isMobile||!sideOpen)return
     const h=e=>{if(sideRef.current&&!sideRef.current.contains(e.target))setSideOpen(false)}
@@ -130,7 +138,7 @@ export default function CLMHome({ user, nav }) {
   }
 
   const content = () => {
-    if(sec==='dashboard')        return <Dashboard nav={sideNav} onIssue={()=>go('issue')}/>
+    if(sec==='dashboard')        return <Dashboard nav={sideNav} onIssue={()=>go('issue')} onOpenAI={()=>setAiOpen(true)}/>
     if(sec==='readiness')        return <ReadinessDashboard user={user} onNav={go}/>
     if(sec==='issue')            return <BuyCertificate nav={sideNav} embedded onDashboard={()=>go('dashboard')} onIssueAnother={()=>go('issue')}/>
     if(sec==='integrations')     return <Integrations nav={sideNav}/>
@@ -313,6 +321,22 @@ export default function CLMHome({ user, nav }) {
             onMouseLeave={e=>{e.currentTarget.style.borderColor=LINE;e.currentTarget.style.color=BODY}}>
             <LogOut size={12}/>{!isMobile&&' Sign out'}
           </button>
+          {/* VaultBrain AI toggle */}
+          <button
+            onClick={()=>setAiOpen(o=>!o)}
+            title="Ask VaultBrain AI"
+            style={{
+              display:'flex',alignItems:'center',gap:5,
+              background:aiOpen?'rgba(192,57,43,0.15)':'none',
+              border:`1px solid ${aiOpen?'rgba(192,57,43,0.4)':LINE}`,
+              cursor:'pointer',color:aiOpen?'#f87171':'#c8c0b8',
+              fontSize:12,fontFamily:F,padding:'5px 10px',borderRadius:6,
+              transition:'all .12s',
+            }}
+            onMouseEnter={e=>{if(!aiOpen){e.currentTarget.style.borderColor='rgba(192,57,43,0.35)';e.currentTarget.style.color='#f87171'}}}
+            onMouseLeave={e=>{if(!aiOpen){e.currentTarget.style.borderColor=LINE;e.currentTarget.style.color='#c8c0b8'}}}>
+            🧠{!isMobile&&<span style={{marginLeft:2}}>AI</span>}
+          </button>
         </div>
       </div>
 
@@ -342,6 +366,13 @@ export default function CLMHome({ user, nav }) {
             {content()}
           </div>
         </div>
+
+        {/* VaultBrain AI panel — third column, no backdrop, no z-index issues */}
+        <VaultBrainPanel
+          open={aiOpen}
+          onClose={()=>setAiOpen(false)}
+          session={session}
+        />
       </div>
 
       <style>{`

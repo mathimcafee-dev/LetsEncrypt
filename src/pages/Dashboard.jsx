@@ -15,7 +15,6 @@ import FleetWidget from '../components/FleetWidget'
 import VulnScanner from '../components/VulnScanner'
 import MissionControlModal from '../components/MissionControlModal'
 import SmartInstall from '../components/SmartInstall'
-import VaultBrainModal from '../components/VaultBrainModal'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -2509,7 +2508,7 @@ function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
   )
 }
 
-function LoggedInDashboard({ user, nav, onIssue }) {
+function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
   const isMobile = useIsMobile()
   const [certs,   setCerts]  = useState([])
   const [orders,  setOrders] = useState([])
@@ -2524,7 +2523,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   const [healthScores, setHealthScores] = useState({})  // domain → {grade, score}
   const [recentEvents, setRecentEvents] = useState([])   // activity feed
   const [shareMsg,   setShareMsg]   = useState('')        // share button feedback
-  const [aiPanelOpen, setAiPanelOpen] = useState(false)  // VaultBrain panel
+  const [aiPanelOpen, setAiPanelOpen] = useState(false)  // kept for thin bar click → bubble up via nav
 
   const load = useCallback(async () => {
     if (!user) return
@@ -2733,7 +2732,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             <>
             {/* VaultBrain thin command bar */}
             <div
-              onClick={() => setAiPanelOpen(true)}
+              onClick={() => onOpenAI?.()}
               style={{
                 background: 'rgba(192,57,43,0.06)',
                 border: '1px solid rgba(192,57,43,0.18)',
@@ -3702,13 +3701,6 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         />
       )}
 
-      {/* VaultBrain command modal */}
-      <VaultBrainModal
-        open={aiPanelOpen}
-        onClose={() => setAiPanelOpen(false)}
-        session={session}
-      />
-
       <style>{`
   @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
   @keyframes fadeSlideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -3751,7 +3743,7 @@ function MarketingDashboard({ nav }) {
   )
 }
 
-export default function Dashboard({ nav, onIssue }) {
+export default function Dashboard({ nav, onIssue, onOpenAI }) {
   const isMobile = useIsMobile()
   const { user, loading } = useAuth()
   if (loading) return (
@@ -3766,5 +3758,5 @@ export default function Dashboard({ nav, onIssue }) {
     </div>
   )
   if (!user) return <MarketingDashboard nav={nav}/>
-  return <LoggedInDashboard user={user} nav={nav} onIssue={onIssue}/>
+  return <LoggedInDashboard user={user} nav={nav} onIssue={onIssue} onOpenAI={onOpenAI}/>
 }
