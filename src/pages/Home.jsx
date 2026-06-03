@@ -103,16 +103,16 @@ function InventoryMockup() {
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>Inventory · 4 certificates</span>
       </div>
-      <div style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'6px 14px',borderBottom:`1px solid ${LN}`}}>
+      <div style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'6px 14px',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
         {['Domain','Days','Grade','CA','Auto','Status'].map(h=><div key={h} style={{fontSize:9.5,fontWeight:500,color:'rgba(255,255,255,0.4)',textTransform:'uppercase',letterSpacing:'0.05em',fontFamily:MONO}}>{h}</div>)}
       </div>
       {rows.map((r,i)=>(
-        <div key={r.d} style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'9px 14px',borderBottom:i<rows.length-1?`1px solid ${LN}`:'none',background:r.s==='critical'?'rgba(248,113,113,0.04)':r.s==='warning'?'rgba(251,191,36,0.04)':'transparent',alignItems:'center'}}>
-          <span style={{fontSize:11.5,fontWeight:500,color:T1,fontFamily:MONO}}>{r.d}</span>
+        <div key={r.d} style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'9px 14px',borderBottom:i<rows.length-1?'1px solid rgba(255,255,255,0.07)':'none',background:r.s==='critical'?'rgba(192,57,43,0.08)':r.s==='warning'?'rgba(154,100,0,0.08)':'transparent',alignItems:'center'}}>
+          <span style={{fontSize:11.5,fontWeight:500,color:'rgba(255,255,255,0.85)',fontFamily:MONO}}>{r.d}</span>
           <span style={{fontSize:11,fontWeight:600,color:sc(r.s),fontFamily:MONO}}>{r.days}d</span>
           <span style={{fontSize:11,fontWeight:700,color:gc(r.grade)}}>{r.grade}</span>
-          <span style={{fontSize:11,color:T2}}>{r.ca}</span>
-          <span style={{fontSize:10,fontWeight:500,color:r.auto?GRN:T3}}>{r.auto?'✓ ON':'— OFF'}</span>
+          <span style={{fontSize:11,color:'rgba(255,255,255,0.5)'}}>{r.ca}</span>
+          <span style={{fontSize:10,fontWeight:500,color:r.auto?GRN:'rgba(255,255,255,0.3)'}}>{r.auto?'✓ ON':'— OFF'}</span>
           <Pill status={r.s}/>
         </div>
       ))}
@@ -132,7 +132,7 @@ function CertVaultMockup() {
           AES-256-GCM · Envelope encryption · Immutable audit
         </div>
         {[{d:'easysecurity.in',alg:'RSA-2048',last:'2h ago'},{d:'api.shop.com',alg:'EC-384',last:'Never'}].map((k,i)=>(
-          <div key={k.d} style={{border:`1px solid ${LN}`,borderTop:`2px solid #111111`,borderRadius:4,padding:'11px',marginBottom:i===0?6:0,background:BG3}}>
+          <div key={k.d} style={{border:'1px solid rgba(255,255,255,0.1)',borderTop:'2px solid #1f5c4e',borderRadius:4,padding:'11px',marginBottom:i===0?6:0,background:BG3}}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
               <span style={{fontSize:12,fontWeight:500,color:T1,fontFamily:MONO}}>{k.d}</span>
               <span style={{fontSize:9,fontWeight:600,color:T3,background:'#f4f1ec',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>🔒 VAULT SECURED</span>
@@ -147,7 +147,7 @@ function CertVaultMockup() {
             </div>
             <div style={{display:'flex',gap:5}}>
               {['Reveal key','Rotate','Audit log'].map(t=>(
-                <button key={t} style={{fontSize:10,padding:'4px 9px',borderRadius:3,border:`1px solid ${t==='Reveal key'?LN2:LN}`,background:t==='Reveal key'?BG4:BG3,color:t==='Reveal key'?T1:T2,cursor:'pointer',fontFamily:F}}>{t}</button>
+                <button key={t} style={{fontSize:10,padding:'4px 9px',borderRadius:3,border:`1px solid ${t==='Reveal key'?'rgba(31,92,78,0.4)':'rgba(255,255,255,0.1)'}`,background:t==='Reveal key'?'rgba(31,92,78,0.3)':'rgba(255,255,255,0.08)',color:t==='Reveal key'?'#16a068':'rgba(255,255,255,0.55)',cursor:'pointer',fontFamily:F}}>{t}</button>
               ))}
             </div>
           </div>
@@ -179,14 +179,14 @@ function ReadinessMockup() {
           <div key={c.d} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',borderRadius:4,background:'#ffffff',marginBottom:5,border:`1px solid ${LN}`}}>
             <div style={{position:'relative',width:32,height:32,flexShrink:0}}>
               <svg width="32" height="32" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" r="14" fill="none" stroke={LN2} strokeWidth="3"/>
+                <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="3"/>
                 <circle cx="18" cy="18" r="14" fill="none" stroke={c.c} strokeWidth="3" strokeDasharray={`${2*Math.PI*14}`} strokeDashoffset={`${2*Math.PI*14*(1-c.s/100)}`} strokeLinecap="round" transform="rotate(-90 18 18)"/>
               </svg>
               <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:700,color:c.c}}>{c.s}</div>
             </div>
             <div style={{flex:1}}>
-              <div style={{fontSize:11,fontWeight:500,color:T1,fontFamily:MONO}}>{c.d}</div>
-              <div style={{fontSize:10,color:T3}}>Automation checklist</div>
+              <div style={{fontSize:11,fontWeight:500,color:'#111111',fontFamily:MONO}}>{c.d}</div>
+              <div style={{fontSize:10,color:'#888888'}}>Automation checklist</div>
             </div>
             <span style={{fontSize:10,fontWeight:500,color:c.c,background:c.c+'18',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>{c.label}</span>
           </div>
