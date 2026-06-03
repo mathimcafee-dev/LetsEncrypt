@@ -123,7 +123,7 @@ const _build = 1779297041 // cache bust
   }
 
   // Home page has its own nav built-in — exclude it to avoid duplicate
-  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness', '/domain-manager']
+  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness', '/domain-manager', '/issue-cert', '/cert-timeline', '/compliance-centre', '/security-monitor', '/posture', '/sla-dashboard']
   const showPublicNav = !authLoading && !user && !SELF_NAV_PAGES.includes(page)
 
   return (
@@ -154,7 +154,13 @@ const _build = 1779297041 // cache bust
         <div style={{position:'absolute',top:'60%',right:'4%',width:'220px',height:'220px',borderRadius:'50%',background:'radial-gradient(circle, rgba(160,0,0,0.18) 0%, transparent 70%)'}}/>
       </div>
       {showPublicNav && <Nav nav={nav} page={page} />}
-      {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} /> : <Home nav={nav} />)}
+      {page === '/' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="dashboard" /> : <Home nav={nav} />)}
+      {page === '/issue-cert' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="issue" /> : <Auth nav={nav} />)}
+      {page === '/cert-timeline' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="cert-timeline" /> : <Auth nav={nav} />)}
+      {page === '/compliance-centre' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="compliance-centre" /> : <Auth nav={nav} />)}
+      {page === '/security-monitor' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="shield" /> : <Auth nav={nav} />)}
+      {page === '/posture' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="posture" /> : <Auth nav={nav} />)}
+      {page === '/sla-dashboard' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="sla-dashboard" /> : <Auth nav={nav} />)}
       {page === '/dashboard' && <Dashboard nav={nav} />}
       {page === '/integrations' && <Integrations nav={nav} />}
       {page === '/install' && <Install nav={nav} />}

@@ -57,8 +57,8 @@ function useIsMobile(bp=860) {
   return m
 }
 
-export default function CLMHome({ user, nav }) {
-  const [sec, setSec] = useState('dashboard')
+export default function CLMHome({ user, nav, initialSection }) {
+  const [sec, setSec] = useState(initialSection || 'dashboard')
   const [key, setKey] = useState(0)
   const [open, setOpen] = useState({'Manage':true,'Automate':true,'Monitor':true,'Secure':true})
   const [sideOpen, setSideOpen] = useState(false)

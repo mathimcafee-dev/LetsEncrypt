@@ -151,7 +151,7 @@ export default function ComplianceCentre({ nav, user }) {
   var th   = { padding:'10px 12px', fontSize:10, fontWeight:700, color:'rgba(240,237,232,0.4)', letterSpacing:'.08em', textTransform:'uppercase', cursor:'pointer', userSelect:'none', whiteSpace:'nowrap' }
 
   if (loading) return (
-    <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, background:'#120000', display:'flex', alignItems:'center', justifyContent:'center', gap:10, fontFamily:F }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10, fontFamily:F, padding:60 }}>
       <RefreshCw size={15} color="#c0392b" style={{ animation:'spin 1s linear infinite' }}/>
       <span style={{ color:'rgba(240,237,232,0.5)', fontSize:13 }}>Loading...</span>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
@@ -159,7 +159,7 @@ export default function ComplianceCentre({ nav, user }) {
   )
 
   return (
-    <div style={{ position:'absolute', top:0, left:0, right:0, bottom:0, background:'#120000', overflowY:'auto', fontFamily:F }}>
+    <div style={{ minHeight:'100%', fontFamily:F }}>
       <div style={{ maxWidth:1100, margin:'0 auto', padding:'28px 24px 60px' }}>
         <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}`}</style>
 
@@ -246,7 +246,7 @@ export default function ComplianceCentre({ nav, user }) {
         </div>
 
         {/* -- SECTION 2: CERT TABLE -- */}
-        <div style={{ ...card, padding:0, overflow:'hidden', marginBottom:20 }}>
+        <div style={{ ...card, padding:0, overflow:'hidden', marginBottom:20, overflowX:'auto' }}>
 
           {/* Table header */}
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', borderBottom:'1px solid rgba(192,57,43,0.15)' }}>
@@ -254,7 +254,7 @@ export default function ComplianceCentre({ nav, user }) {
             <span style={{ fontSize:11, color:'rgba(240,237,232,0.35)' }}>{rows.length} domain{rows.length !== 1 ? 's' : ''}</span>
           </div>
 
-          <table style={{ width:'100%', borderCollapse:'collapse' }}>
+          <table style={{ width:'100%', minWidth:900, borderCollapse:'collapse' }}>
             <thead>
               <tr style={{ background:'rgba(192,57,43,0.06)' }}>
                 <th style={{ ...th, width:'22%' }} onClick={function(){ toggleSort('domain') }}>
