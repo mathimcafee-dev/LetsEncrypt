@@ -2676,21 +2676,22 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
     <div style={{ background:'transparent', minHeight:'100vh', fontFamily:"'Montserrat',system-ui,sans-serif" }}>
       <div style={{ maxWidth:1280, margin:'0 auto', padding:'28px 24px 80px' }}>
 
-        <div style={{ marginBottom:24, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+        <div style={{ marginBottom:18, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
           <div>
-            <h1 style={{ fontSize:20, fontWeight:700, color:'#ffffff', letterSpacing:'-0.3px', marginBottom:4, display:'flex', alignItems:'center', gap:10 }}>
-              Certificate Dashboard
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:3 }}>
+              <h1 style={{ fontSize:18, fontWeight:700, color:'#ffffff', letterSpacing:'-0.3px', margin:0 }}>
+                Certificate Dashboard
+              </h1>
               {healthy === total && total > 0 && (
-                <span style={{ fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:20,
-                  background:'rgba(74,222,128,0.12)', color:'#4ade80', border:'1px solid rgba(74,222,128,0.3)',
+                <span style={{ fontSize:10, fontWeight:600, padding:'2px 9px', borderRadius:20,
+                  background:'rgba(74,222,128,0.1)', color:'#4ade80', border:'0.5px solid rgba(74,222,128,0.3)',
                   animation:'fadeIn 0.5s ease' }}>
                   All healthy ✓
                 </span>
               )}
-            </h1>
-            <p style={{ fontSize:12, color:'#b0a8a0' }}>{user.email} · {domainGroups.length} certificate{domainGroups.length!==1?'s':''}</p>
+            </div>
+            <p style={{ fontSize:11, color:'rgba(240,237,232,0.3)', margin:0, letterSpacing:'0.01em' }}>{user.email} · {domainGroups.length} certificate{domainGroups.length!==1?'s':''}</p>
           </div>
-          {/* Share SSL status button */}
           <button
             onClick={async () => {
               const { data: { session: s } } = await supabase.auth.getSession()
@@ -2701,10 +2702,14 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               setShareMsg('Link copied!')
               setTimeout(() => setShareMsg(''), 2500)
             }}
-            style={{ display:'flex', alignItems:'center', gap:6, background:'transparent',
-              border:'1px solid rgba(63,185,80,0.2)', borderRadius:8, padding:'7px 14px',
-              fontSize:11, fontWeight:600, color:'#ff8c7a', cursor:'pointer', fontFamily:'inherit' }}>
-            <Share2 size={12} color="rgba(240,237,232,0.45)"/>
+            style={{ display:'flex', alignItems:'center', gap:6,
+              background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)',
+              borderRadius:8, padding:'7px 14px',
+              fontSize:11, fontWeight:500, color:'rgba(240,237,232,0.5)', cursor:'pointer', fontFamily:'inherit',
+              transition:'border-color .15s, color .15s' }}
+            onMouseEnter={e=>{ e.currentTarget.style.borderColor='rgba(255,255,255,0.18)'; e.currentTarget.style.color='#ffffff' }}
+            onMouseLeave={e=>{ e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.color='rgba(240,237,232,0.5)' }}>
+            <Share2 size={11} color="currentColor"/>
             {shareMsg || 'Share SSL status'}
           </button>
         </div>
@@ -2730,75 +2735,84 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
           ]
           return (
             <>
-            {/* VaultBrain thin command bar */}
-            <div
-              onClick={() => onOpenAI?.()}
-              style={{
-                background: 'rgba(192,57,43,0.06)',
-                border: '1px solid rgba(192,57,43,0.18)',
-                borderRadius: 10, padding: '9px 14px', marginBottom: 14,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                transition: 'border-color .15s, background .15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(192,57,43,0.38)'; e.currentTarget.style.background='rgba(192,57,43,0.1)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(192,57,43,0.18)'; e.currentTarget.style.background='rgba(192,57,43,0.06)' }}
-            >
-              <span style={{ fontSize: 15, flexShrink: 0 }}>🧠</span>
-              <span style={{ flex: 1, fontSize: 13, color: 'rgba(240,237,232,0.45)', fontStyle: 'italic' }}>
-                Ask VaultBrain anything about your certificates…
-              </span>
-              <span style={{ fontSize: 11, color: 'rgba(192,57,43,0.5)', background: 'rgba(192,57,43,0.08)', border: '1px solid rgba(192,57,43,0.15)', borderRadius: 5, padding: '2px 7px', flexShrink: 0 }}>
-                Gemini AI
-              </span>
-            </div>
-            <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr', gap:10, marginBottom:20 }}>
-              {/* Posture score */}
-              <div style={{ background:'rgba(15,5,5,0.6)', border:'1px solid rgba(192,57,43,0.22)', borderRadius:12, padding:'16px 18px', display:'flex', flexDirection:'column', gap:12 }}>
-                <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
-                  <div>
-                    <div style={{ fontSize:10, fontWeight:600, color:'rgba(240,237,232,0.35)', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:4 }}>Posture score</div>
-                    <div style={{ fontSize:40, fontWeight:700, color:scoreColor, lineHeight:1, marginBottom:3 }}>{postureScore}</div>
-                    <div style={{ fontSize:11, color:scoreColor }}>{scoreLabel} · {total} cert{total!==1?'s':''} · {issuedCerts.filter(c=>c.is_live_on_server).length} live</div>
-                  </div>
-                  <div style={{ textAlign:'right' }}>
-                    <div style={{ fontSize:10, color:'rgba(192,57,43,0.5)', marginBottom:4 }}>CA/B mandate</div>
-                    <div style={{ fontSize:11, color:'#4ade80', fontWeight:500 }}>2026 ready</div>
-                    <div style={{ marginTop:4, fontSize:10, background:'rgba(232,137,122,0.14)', color:'#ff8c7a', padding:'2px 7px', borderRadius:4, display:'inline-block' }}>2027 gap</div>
-                  </div>
+            {/* ── MODERN HERO BANNER ── */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(18,3,3,0.97) 0%, rgba(35,6,3,0.95) 100%)',
+              border: '1px solid rgba(192,57,43,0.22)',
+              borderRadius: 16, padding: '20px 24px', marginBottom: 14,
+              display: 'flex', alignItems: 'center', gap: 20,
+              boxShadow: '0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.03)',
+              position: 'relative', overflow: 'hidden',
+            }}>
+              <div style={{ position:'absolute', top:-60, left:-60, width:200, height:200, borderRadius:'50%', background:`radial-gradient(circle, ${scoreColor}14 0%, transparent 70%)`, pointerEvents:'none' }}/>
+              {/* Score ring */}
+              <div style={{ flexShrink:0, position:'relative', width:80, height:80 }}>
+                <svg width="80" height="80" viewBox="0 0 80 80" style={{ transform:'rotate(-90deg)', position:'absolute', top:0, left:0 }}>
+                  <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6"/>
+                  <circle cx="40" cy="40" r="33" fill="none" stroke={scoreColor} strokeWidth="6"
+                    strokeDasharray={`${2*Math.PI*33}`}
+                    strokeDashoffset={`${2*Math.PI*33*(1-postureScore/100)}`}
+                    strokeLinecap="round"
+                    style={{ filter:`drop-shadow(0 0 5px ${scoreColor}66)`, transition:'stroke-dashoffset 1.2s ease' }}/>
+                </svg>
+                <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
+                  <div style={{ fontSize:18, fontWeight:800, color:scoreColor, lineHeight:1, letterSpacing:'-1px' }}>{postureScore}</div>
+                  <div style={{ fontSize:7, color:'rgba(240,237,232,0.35)', textTransform:'uppercase', letterSpacing:'0.08em', marginTop:1 }}>score</div>
                 </div>
-                <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+              </div>
+              {/* Score details + bars */}
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+                  <span style={{ fontSize:15, fontWeight:700, color:'#ffffff', letterSpacing:'-0.2px' }}>{scoreLabel}</span>
+                  <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20, background:`${scoreColor}18`, color:scoreColor, border:`1px solid ${scoreColor}33` }}>{total} cert{total!==1?'s':''}</span>
+                  <span style={{ fontSize:10, color:'rgba(240,237,232,0.3)' }}>·</span>
+                  <span style={{ fontSize:10, color:'rgba(240,237,232,0.35)' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
+                </div>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', rowGap:3, columnGap:20 }}>
                   {bars.map(b => (
-                    <div key={b.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                      <span style={{ fontSize:10, color:'rgba(240,237,232,0.35)', width:72, flexShrink:0 }}>{b.label}</span>
-                      <div style={{ flex:1, height:3, background:'rgba(192,57,43,0.12)', borderRadius:2, overflow:'hidden' }}>
-                        <div style={{ height:'100%', width:`${b.pct}%`, background:b.color, borderRadius:2, transition:'width 0.8s ease' }}/>
+                    <div key={b.label} style={{ display:'flex', alignItems:'center', gap:6 }}>
+                      <span style={{ fontSize:9, color:'rgba(240,237,232,0.28)', width:52, flexShrink:0, textTransform:'uppercase', letterSpacing:'0.04em' }}>{b.label}</span>
+                      <div style={{ flex:1, height:2, background:'rgba(255,255,255,0.06)', borderRadius:1, overflow:'hidden' }}>
+                        <div style={{ height:'100%', width:`${b.pct}%`, background:b.pct===100?b.color:'#ff8c7a', borderRadius:1, transition:'width 1s ease' }}/>
                       </div>
-                      <span style={{ fontSize:10, color:b.pct===100?b.color:'#ff8c7a', width:28, textAlign:'right', flexShrink:0 }}>{b.pct}</span>
+                      <span style={{ fontSize:9, color:b.pct===100?b.color:'#ff8c7a', width:22, textAlign:'right', flexShrink:0, fontWeight:600 }}>{b.pct}%</span>
                     </div>
                   ))}
                 </div>
               </div>
-              {/* Active certs pill */}
-              <div onClick={()=>setFilter('healthy')} style={{ background:'rgba(15,5,5,0.6)', border:`1px solid ${filter==='healthy'?'#4ade80':'rgba(192,57,43,0.22)'}`, borderRadius:12, padding:'16px 18px', cursor:'pointer', transition:'border-color .15s' }}
-                onMouseEnter={e=>e.currentTarget.style.borderColor='#4ade80'} onMouseLeave={e=>e.currentTarget.style.borderColor=filter==='healthy'?'#4ade80':'rgba(192,57,43,0.22)'}>
-                <div style={{ width:32, height:32, borderRadius:8, background:'rgba(74,222,128,0.1)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:10 }}>
-                  <CheckCircle size={16} color="#4ade80"/>
-                </div>
-                <div style={{ fontSize:32, fontWeight:700, color:'#4ade80', lineHeight:1, marginBottom:4 }}>{healthy}</div>
-                <div style={{ fontSize:11, color:'rgba(240,237,232,0.4)' }}>Healthy certs</div>
-                <div style={{ fontSize:10, color:'#4ade80', marginTop:6 }}>↑ All valid</div>
+              {/* Divider */}
+              <div style={{ width:1, height:52, background:'rgba(255,255,255,0.06)', flexShrink:0 }}/>
+              {/* Stat pills */}
+              <div style={{ display:'flex', gap:8, flexShrink:0 }}>
+                {[
+                  { val:healthy, label:'Healthy', color:'#4ade80', bg:'rgba(74,222,128,0.07)', border:'rgba(74,222,128,0.18)', onClick:()=>setFilter('healthy') },
+                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#fbbf24':pendingDcv>0?'#ff8c7a':'rgba(240,237,232,0.25)', bg:'rgba(255,140,122,0.07)', border:'rgba(255,140,122,0.18)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
+                ].map(s => (
+                  <div key={s.label} onClick={s.onClick} style={{
+                    background:s.bg, border:`1px solid ${s.border}`,
+                    borderRadius:12, padding:'10px 14px', cursor:'pointer', textAlign:'center', minWidth:60,
+                    transition:'transform .15s, border-color .15s',
+                  }}
+                  onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.borderColor=s.color }}
+                  onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.borderColor=s.border }}>
+                    <div style={{ fontSize:24, fontWeight:800, color:s.val>0?s.color:'rgba(240,237,232,0.25)', lineHeight:1, letterSpacing:'-1px' }}>{s.val}</div>
+                    <div style={{ fontSize:9, color:'rgba(240,237,232,0.35)', marginTop:3, textTransform:'uppercase', letterSpacing:'0.05em' }}>{s.label}</div>
+                  </div>
+                ))}
               </div>
-              {/* Pending install / expiring pill */}
-              <div onClick={()=>setFilter(expiring>0?'expiring':'all')} style={{ background:'rgba(15,5,5,0.6)', border:`1px solid ${expiring>0||pendingDcv>0?'rgba(255,140,122,0.35)':'rgba(192,57,43,0.22)'}`, borderRadius:12, padding:'16px 18px', cursor:'pointer', transition:'border-color .15s' }}
-                onMouseEnter={e=>e.currentTarget.style.borderColor='#ff8c7a'} onMouseLeave={e=>e.currentTarget.style.borderColor=expiring>0||pendingDcv>0?'rgba(255,140,122,0.35)':'rgba(192,57,43,0.22)'}>
-                <div style={{ width:32, height:32, borderRadius:8, background:'rgba(255,140,122,0.1)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:10 }}>
-                  <Clock size={16} color="#ff8c7a"/>
-                </div>
-                <div style={{ fontSize:32, fontWeight:700, color: expiring>0||pendingDcv>0?'#ff8c7a':'rgba(240,237,232,0.4)', lineHeight:1, marginBottom:4 }}>{expiring+pendingDcv}</div>
-                <div style={{ fontSize:11, color:'rgba(240,237,232,0.4)' }}>Need attention</div>
-                <div style={{ fontSize:10, color: expiring>0?'#ff8c7a':pendingDcv>0?'#fbbf24':'rgba(240,237,232,0.3)', marginTop:6 }}>
-                  {expiring>0?`${expiring} expiring soon`:pendingDcv>0?`${pendingDcv} pending DCV`:'None pending'}
-                </div>
+              {/* Divider */}
+              <div style={{ width:1, height:52, background:'rgba(255,255,255,0.06)', flexShrink:0 }}/>
+              {/* AI button */}
+              <div onClick={()=>onOpenAI?.()} title="Ask VaultBrain AI" style={{
+                flexShrink:0, cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:3,
+                padding:'8px 10px', borderRadius:10,
+                border:'1px solid rgba(192,57,43,0.2)', background:'rgba(192,57,43,0.05)',
+                transition:'background .15s, border-color .15s, transform .15s',
+              }}
+              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(192,57,43,0.12)'; e.currentTarget.style.borderColor='rgba(192,57,43,0.4)'; e.currentTarget.style.transform='scale(1.05)' }}
+              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(192,57,43,0.05)'; e.currentTarget.style.borderColor='rgba(192,57,43,0.2)'; e.currentTarget.style.transform='scale(1)' }}>
+                <span style={{ fontSize:18 }}>🧠</span>
+                <span style={{ fontSize:8, color:'rgba(192,57,43,0.6)', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:700 }}>AI</span>
               </div>
             </div>
             </>
