@@ -288,7 +288,7 @@ function DvPendingCard({ order, onRefresh }) {
   ]
 
   return (
-    <div style={{ background:'rgba(20,10,8,0.7)', border:'1px solid rgba(184,120,0,0.2)', borderRadius:12, padding:'16px 18px', marginBottom:12 }}>
+    <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:'16px 18px', marginBottom:12, boxShadow:'0 1px 3px rgba(0,0,0,0.06)' }}>
 
       {/* Header */}
       <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
@@ -1061,13 +1061,13 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
             {l}
             {k==='reissues' && reissues.length > 0 && (
               <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                background: tab===k ? 'rgba(0,0,0,0.07)' : 'transparent', color: tab===k ? '#111111' : 'rgba(240,237,232,0.5)' }}>
+                background: tab===k ? 'rgba(0,0,0,0.07)' : 'transparent', color: tab===k ? '#111111' : '#888888' }}>
                 {reissues.length}
               </span>
             )}
             {k==='renewals' && renewals.length > 0 && (
               <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                background: tab===k ? 'rgba(0,0,0,0.07)' : 'transparent', color: tab===k ? '#111111' : 'rgba(240,237,232,0.5)' }}>
+                background: tab===k ? 'rgba(0,0,0,0.07)' : 'transparent', color: tab===k ? '#111111' : '#888888' }}>
                 {renewals.length}
               </span>
             )}
@@ -2737,18 +2737,18 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
             <>
             {/* ── MODERN HERO BANNER ── */}
             <div style={{
-              background: 'linear-gradient(135deg, rgba(18,3,3,0.97) 0%, rgba(35,6,3,0.95) 100%)',
-              border: '1px solid rgba(192,57,43,0.22)',
-              borderRadius: 16, padding: '20px 24px', marginBottom: 14,
+              background: '#111111',
+              border: '1px solid rgba(0,0,0,0.08)',
+              borderRadius: 14, padding: '20px 24px', marginBottom: 14,
               display: 'flex', alignItems: 'center', gap: 20,
-              boxShadow: '0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.03)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
               position: 'relative', overflow: 'hidden',
             }}>
-              <div style={{ position:'absolute', top:-60, left:-60, width:200, height:200, borderRadius:'50%', background:`radial-gradient(circle, ${scoreColor}14 0%, transparent 70%)`, pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:-60, left:-60, width:200, height:200, borderRadius:'50%', background:`radial-gradient(circle, ${scoreColor}20 0%, transparent 70%)`, pointerEvents:'none' }}/>
               {/* Score ring */}
               <div style={{ flexShrink:0, position:'relative', width:80, height:80 }}>
                 <svg width="80" height="80" viewBox="0 0 80 80" style={{ transform:'rotate(-90deg)', position:'absolute', top:0, left:0 }}>
-                  <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(0,0,0,0.04)" strokeWidth="6"/>
+                  <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6"/>
                   <circle cx="40" cy="40" r="33" fill="none" stroke={scoreColor} strokeWidth="6"
                     strokeDasharray={`${2*Math.PI*33}`}
                     strokeDashoffset={`${2*Math.PI*33*(1-postureScore/100)}`}
@@ -2757,22 +2757,22 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 </svg>
                 <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
                   <div style={{ fontSize:18, fontWeight:800, color:scoreColor, lineHeight:1, letterSpacing:'-1px' }}>{postureScore}</div>
-                  <div style={{ fontSize:7, color:'#999999', textTransform:'uppercase', letterSpacing:'0.08em', marginTop:1 }}>score</div>
+                  <div style={{ fontSize:7, color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:'0.08em', marginTop:1 }}>score</div>
                 </div>
               </div>
               {/* Score details + bars */}
               <div style={{ flex:1, minWidth:0 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-                  <span style={{ fontSize:15, fontWeight:700, color:'#1a1a1a', letterSpacing:'-0.2px' }}>{scoreLabel}</span>
-                  <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20, background:`${scoreColor}18`, color:scoreColor, border:`1px solid ${scoreColor}33` }}>{total} cert{total!==1?'s':''}</span>
-                  <span style={{ fontSize:10, color:'#6b6b6b' }}>·</span>
-                  <span style={{ fontSize:10, color:'#999999' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
+                  <span style={{ fontSize:15, fontWeight:700, color:'#ffffff', letterSpacing:'-0.2px' }}>{scoreLabel}</span>
+                  <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20, background:`${scoreColor}18`, color:scoreColor, border:`1px solid ${scoreColor}44` }}>{total} cert{total!==1?'s':''}</span>
+                  <span style={{ fontSize:10, color:'rgba(255,255,255,0.3)' }}>·</span>
+                  <span style={{ fontSize:10, color:'rgba(255,255,255,0.45)' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', rowGap:3, columnGap:20 }}>
                   {bars.map(b => (
                     <div key={b.label} style={{ display:'flex', alignItems:'center', gap:6 }}>
-                      <span style={{ fontSize:9, color:'rgba(240,237,232,0.28)', width:52, flexShrink:0, textTransform:'uppercase', letterSpacing:'0.04em' }}>{b.label}</span>
-                      <div style={{ flex:1, height:2, background:'rgba(0,0,0,0.05)', borderRadius:1, overflow:'hidden' }}>
+                      <span style={{ fontSize:9, color:'rgba(255,255,255,0.4)', width:52, flexShrink:0, textTransform:'uppercase', letterSpacing:'0.04em' }}>{b.label}</span>
+                      <div style={{ flex:1, height:2, background:'rgba(255,255,255,0.1)', borderRadius:1, overflow:'hidden' }}>
                         <div style={{ height:'100%', width:`${b.pct}%`, background:b.pct===100?b.color:'#1f5c4e', borderRadius:1, transition:'width 1s ease' }}/>
                       </div>
                       <span style={{ fontSize:9, color:b.pct===100?b.color:'#1f5c4e', width:22, textAlign:'right', flexShrink:0, fontWeight:600 }}>{b.pct}%</span>
@@ -2781,12 +2781,12 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 </div>
               </div>
               {/* Divider */}
-              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.05)', flexShrink:0 }}/>
+              <div style={{ width:1, height:52, background:'rgba(255,255,255,0.1)', flexShrink:0 }}/>
               {/* Stat pills */}
               <div style={{ display:'flex', gap:8, flexShrink:0 }}>
                 {[
-                  { val:healthy, label:'Healthy', color:'#16a068', bg:'rgba(74,222,128,0.07)', border:'rgba(74,222,128,0.18)', onClick:()=>setFilter('healthy') },
-                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#9a6400':pendingDcv>0?'#1f5c4e':'#999999', bg:'rgba(255,140,122,0.07)', border:'rgba(255,140,122,0.18)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
+                  { val:healthy, label:'Healthy', color:'#16a068', bg:'rgba(22,160,104,0.12)', border:'rgba(22,160,104,0.25)', onClick:()=>setFilter('healthy') },
+                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#fbbf24':pendingDcv>0?'#60a5fa':'rgba(255,255,255,0.3)', bg:'rgba(255,255,255,0.06)', border:'rgba(255,255,255,0.12)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
                 ].map(s => (
                   <div key={s.label} onClick={s.onClick} style={{
                     background:s.bg, border:`1px solid ${s.border}`,
@@ -2796,23 +2796,23 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                   onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.borderColor=s.color }}
                   onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.borderColor=s.border }}>
                     <div style={{ fontSize:24, fontWeight:800, color:s.val>0?s.color:'#bbbbbb', lineHeight:1, letterSpacing:'-1px' }}>{s.val}</div>
-                    <div style={{ fontSize:9, color:'#999999', marginTop:3, textTransform:'uppercase', letterSpacing:'0.05em' }}>{s.label}</div>
+                    <div style={{ fontSize:9, color:'rgba(255,255,255,0.4)', marginTop:3, textTransform:'uppercase', letterSpacing:'0.05em' }}>{s.label}</div>
                   </div>
                 ))}
               </div>
               {/* Divider */}
-              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.05)', flexShrink:0 }}/>
+              <div style={{ width:1, height:52, background:'rgba(255,255,255,0.1)', flexShrink:0 }}/>
               {/* AI button */}
               <div onClick={()=>onOpenAI?.()} title="Ask VaultBrain AI" style={{
                 flexShrink:0, cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:3,
                 padding:'8px 10px', borderRadius:10,
-                border:'1px solid rgba(0,0,0,0.08)', background:'rgba(192,57,43,0.05)',
+                border:'1px solid rgba(255,255,255,0.12)', background:'rgba(255,255,255,0.06)',
                 transition:'background .15s, border-color .15s, transform .15s',
               }}
-              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(31,92,78,0.09)'; e.currentTarget.style.borderColor='rgba(192,57,43,0.4)'; e.currentTarget.style.transform='scale(1.05)' }}
-              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(192,57,43,0.05)'; e.currentTarget.style.borderColor='rgba(0,0,0,0.08)'; e.currentTarget.style.transform='scale(1)' }}>
+              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; e.currentTarget.style.transform='scale(1.05)' }}
+              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'; e.currentTarget.style.transform='scale(1)' }}>
                 <span style={{ fontSize:18 }}>🧠</span>
-                <span style={{ fontSize:8, color:'rgba(192,57,43,0.6)', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:700 }}>AI</span>
+                <span style={{ fontSize:8, color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:700 }}>AI</span>
               </div>
             </div>
             </>
@@ -2871,7 +2871,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               orders.map(o => <DvPendingCard key={o.id} order={o} onRefresh={load}/>)
             ) : (
               // Compact list for 3+ orders -- one row per order, no clutter
-              <div style={{ background:'rgba(20,10,8,0.7)', border:'1px solid rgba(184,120,0,0.2)', borderRadius:10, overflow:'hidden' }}>
+              <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:10, overflow:'hidden', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
                 <div style={{ padding:'10px 14px', borderBottom:'1px solid rgba(0,0,0,0.05)',
                   display:'flex', alignItems:'center', gap:8 }}>
                   <div style={{ width:7, height:7, borderRadius:'50%', background:'#9a6400', animation:'v3pulse 1s ease infinite' }}/>
@@ -2940,7 +2940,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                   const isSel = cert.id === selected
                   return (
                     <div key={cert.id} onClick={() => setSelected(isSel ? null : cert.id)}
-                      style={{ background:'rgba(15,5,5,0.6)', border:`1px solid ${isSel?accentColor:'rgba(192,57,43,0.22)'}`, borderRadius:12, padding:'14px 16px', cursor:'pointer', position:'relative', overflow:'hidden', transition:'border-color .15s' }}
+                      style={{ background:'#ffffff', border:`1px solid ${isSel?accentColor:'rgba(0,0,0,0.08)'}`, borderRadius:12, padding:'14px 16px', cursor:'pointer', position:'relative', overflow:'hidden', transition:'all .15s', boxShadow:'0 1px 2px rgba(0,0,0,0.04)' }}
                       onMouseEnter={e=>e.currentTarget.style.borderColor=accentColor}
                       onMouseLeave={e=>e.currentTarget.style.borderColor=isSel?accentColor:'rgba(192,57,43,0.22)'}>
                       <div style={{ position:'absolute', top:0, left:0, width:3, height:'100%', background:accentColor, borderRadius:'3px 0 0 3px' }}/>
@@ -2961,7 +2961,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 })}
                 {/* Issue new slot */}
                 <div onClick={()=>nav&&nav('/issue-cert')}
-                  style={{ background:'rgba(15,5,5,0.4)', border:'1px dashed rgba(31,92,78,0.2)', borderRadius:12, padding:'14px 16px', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, minHeight:130, transition:'border-color .15s' }}
+                  style={{ background:'#f4f1ec', border:'1px dashed rgba(31,92,78,0.25)', borderRadius:12, padding:'14px 16px', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, minHeight:130, transition:'all .15s' }}
                   onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(255,140,122,0.5)'}
                   onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(31,92,78,0.2)'}>
                   <Plus size={22} color="rgba(255,140,122,0.4)"/>
@@ -3070,7 +3070,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                     const ago  = secs<60?`${secs}s`:secs<3600?`${Math.floor(secs/60)}m`:secs<86400?`${Math.floor(secs/3600)}h`:`${Math.floor(secs/86400)}d`
                     const col  = ev.event_type==='issued'?'#16a068':ev.event_type==='revoked'?'#1f5c4e':'#1f5c4e'
                     return (
-                      <div key={ev.id} style={{ background:'rgba(15,5,5,0.5)', border:'1px solid rgba(31,92,78,0.12)', borderRadius:10, padding:'10px 12px' }}>
+                      <div key={ev.id} style={{ background:'#f4f1ec', border:'1px solid rgba(0,0,0,0.06)', borderRadius:10, padding:'10px 12px' }}>
                         <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:4 }}>
                           <div style={{ width:5, height:5, borderRadius:'50%', background:col, flexShrink:0 }}/>
                           <span style={{ fontSize:11, fontWeight:600, color:'#1f5c4e', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{ev.event_type.replace(/_/g,' ')}</span>
