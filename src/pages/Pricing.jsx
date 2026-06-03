@@ -346,13 +346,13 @@ export default function Pricing({ nav }) {
 
         {/* ── COMPETITOR COMPARISON ── */}
         <div style={{border:`1px solid ${LINE}`,borderRadius:14,overflow:'hidden',marginBottom:72}}>
-          <div style={{textAlign:'center',padding:'32px 24px 24px',borderBottom:`1px solid ${LINE}`,background:CARD2}}>
+          <div style={{textAlign:'center',padding:'32px 24px 24px',borderBottom:`1px solid ${LINE}`,background:'#f4f1ec'}}>
             <div style={{fontSize:9,fontWeight:700,color:TEAL,letterSpacing:'2px',
               textTransform:'uppercase',marginBottom:10,fontFamily:MONO}}>CLM market comparison</div>
-            <h2 style={{fontSize:'clamp(18px,2.5vw,30px)',fontWeight:800,letterSpacing:'-0.5px'}}>
+            <h2 style={{fontSize:'clamp(18px,2.5vw,30px)',fontWeight:800,letterSpacing:'-0.5px',color:'#111111'}}>
 
           {/* ── SLA Premium callout ── */}
-          <div style={{maxWidth:860,margin:'0 auto 48px',background:'rgba(192,57,43,0.07)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:12,padding:'20px 24px'}}>
+          <div style={{maxWidth:860,margin:'0 auto 48px',background:'rgba(31,92,78,0.05)',border:'1px solid rgba(31,92,78,0.15)',borderRadius:12,padding:'20px 24px'}}>
             <div style={{display:'flex',alignItems:'flex-start',gap:16,flexWrap:'wrap'}}>
               <div style={{flex:1,minWidth:220}}>
                 <div style={{fontSize:10,fontWeight:700,color:TEAL,letterSpacing:'.12em',textTransform:'uppercase',marginBottom:6}}>Premium add-on · SLA Guarantee</div>
@@ -389,7 +389,7 @@ export default function Pricing({ nav }) {
             ].map((item, i) => (
               <div key={item.name} style={{padding:'28px 24px',
                 borderLeft:i>0?`1px solid ${LINE}`:'none',
-                background:item.hi?'rgba(192,57,43,0.04)':'transparent'}}>
+                background:item.hi?'rgba(31,92,78,0.04)':'transparent'}}>
                 <div style={{fontSize:10,fontWeight:700,color:item.color,letterSpacing:'0.5px',marginBottom:8,fontFamily:MONO}}>{item.name}</div>
                 <div style={{fontSize:30,fontWeight:900,color:item.color,letterSpacing:'-1px',marginBottom:3,lineHeight:1}}>{item.price}</div>
                 <div style={{fontSize:11,color:MUTED,marginBottom:18,fontFamily:MONO}}>{item.sub}</div>

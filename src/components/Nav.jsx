@@ -24,7 +24,15 @@ export default function Nav({ nav, page }) {
     {label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},
     {label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'},
   ]
-  const go=h=>h.startsWith('/')?nav(h):document.querySelector(h)?.scrollIntoView({behavior:'smooth'})
+  const go=h=>{
+    if(h.startsWith('/')) { nav(h); return }
+    if(window.location.pathname==='/') {
+      document.querySelector(h)?.scrollIntoView({behavior:'smooth'})
+    } else {
+      nav('/')
+      setTimeout(()=>document.querySelector(h)?.scrollIntoView({behavior:'smooth'}),300)
+    }
+  }
 
   return (
     <nav style={{
