@@ -64,6 +64,8 @@ export default function Nav({ nav, page }) {
 
         {/* Desktop CTA */}
         {!sm && <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
+          <button onClick={()=>nav('/vaultbrain')} style={{background:'rgba(192,57,43,0.12)',border:'1px solid rgba(192,57,43,0.3)',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#f87171',padding:'6px 13px',borderRadius:6,display:'flex',alignItems:'center',gap:5,transition:'background .12s'}}
+            onMouseEnter={e=>e.currentTarget.style.background='rgba(192,57,43,0.22)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(192,57,43,0.12)'}>🧠 Ask AI</button>
           <button onClick={()=>nav('/auth')} style={{background:'none',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,color:T2,padding:'5px 10px',borderRadius:3,transition:'color .12s'}}
             onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>Sign in</button>
           <button onClick={()=>nav('/auth')} style={{background:BK,border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:W,padding:'6px 14px',borderRadius:3,transition:'background .12s'}}

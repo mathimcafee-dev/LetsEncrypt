@@ -2728,6 +2728,38 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             { label:'DCV ready', pct: total>0?Math.round((issuedCerts.filter(c=>c.dns_provider_id).length/total)*100):0, color:'#4ade80' },
           ]
           return (
+            <>
+            {/* VaultBrain AI Advisor entry card */}
+            <div
+              onClick={() => nav('/vaultbrain')}
+              style={{
+                background: 'linear-gradient(135deg, rgba(192,57,43,0.18) 0%, rgba(167,139,250,0.1) 100%)',
+                border: '1px solid rgba(192,57,43,0.35)',
+                borderRadius: 12, padding: '14px 18px', marginBottom: 14,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14,
+                transition: 'border-color .15s, background .15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(192,57,43,0.6)'; e.currentTarget.style.background = 'linear-gradient(135deg, rgba(192,57,43,0.25) 0%, rgba(167,139,250,0.15) 100%)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(192,57,43,0.35)'; e.currentTarget.style.background = 'linear-gradient(135deg, rgba(192,57,43,0.18) 0%, rgba(167,139,250,0.1) 100%)' }}
+            >
+              <div style={{ fontSize: 32, flexShrink: 0 }}>🧠</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#f0ede8', marginBottom: 3 }}>
+                  Ask VaultBrain
+                </div>
+                <div style={{ fontSize: 12, color: '#b0a8a0', lineHeight: 1.5 }}>
+                  Your AI certificate advisor — knows your fleet, checks compliance, takes actions. Just type what you need.
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5, flexShrink: 0 }}>
+                {["'What needs attention?'", "'Check CA/B compliance'", "'Renew my cert'"].map(q => (
+                  <div key={q} style={{ fontSize: 10, color: '#a78bfa', background: 'rgba(167,139,250,0.08)', border: '0.5px solid rgba(167,139,250,0.2)', borderRadius: 4, padding: '2px 7px', whiteSpace: 'nowrap' }}>
+                    {q}
+                  </div>
+                ))}
+              </div>
+              <div style={{ color: '#b0a8a0', fontSize: 18, flexShrink: 0 }}>›</div>
+            </div>
             <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr', gap:10, marginBottom:20 }}>
               {/* Posture score */}
               <div style={{ background:'rgba(15,5,5,0.6)', border:'1px solid rgba(192,57,43,0.22)', borderRadius:12, padding:'16px 18px', display:'flex', flexDirection:'column', gap:12 }}>
@@ -2778,6 +2810,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                 </div>
               </div>
             </div>
+            </>
           )
         })()}
 
