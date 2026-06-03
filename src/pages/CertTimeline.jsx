@@ -28,7 +28,7 @@ function fmtDateShort(iso) {
 
 function expiryStyle(days) {
   if (days === null) return { color: '#6b6b6b', bg: 'transparent', border: 'transparent' }
-  if (days <= 7)  return { color: '#1f5c4e', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' }
+  if (days <= 7)  return { color: '#1f5c4e', bg: 'rgba(248,113,113,0.12)', border: 'rgba(192,57,43,0.2)' }
   if (days <= 30) return { color: '#9a6400', bg: 'rgba(251,191,36,0.10)',  border: 'rgba(251,191,36,0.3)' }
   return { color: '#16a068', bg: 'transparent', border: 'transparent' }
 }
@@ -61,7 +61,7 @@ function eventTypeLabel(type) {
 
 function StatusDot({ days }) {
   if (days === null) return <span style={{ color: '#6b6b6b', fontSize: 11 }}>—</span>
-  if (days <= 7)  return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1f5c4e', display: 'inline-block', boxShadow: '0 0 0 3px rgba(248,113,113,0.2)' }}/>
+  if (days <= 7)  return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1f5c4e', display: 'inline-block', boxShadow: '0 0 0 3px rgba(192,57,43,0.12)' }}/>
   if (days <= 30) return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#9a6400', display: 'inline-block' }}/>
   return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a068', display: 'inline-block' }}/>
 }
@@ -179,7 +179,7 @@ export default function CertTimeline({ user }) {
           marginBottom: 20, gap: 12, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(0,0,0,0.08)',
-              border: '1px solid rgba(192,57,43,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              border: '1px solid rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <CalendarDays size={18} color="#1f5c4e"/>
             </div>
             <div>
@@ -243,7 +243,7 @@ export default function CertTimeline({ user }) {
             <button key={f.id} onClick={() => setFilter(f.id)} style={{
               padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: F,
               background: filter === f.id ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.03)',
-              border: `1px solid ${filter === f.id ? 'rgba(192,57,43,0.4)' : 'rgba(0,0,0,0.06)'}`,
+              border: `1px solid ${filter === f.id ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.06)'}`,
               color: filter === f.id ? '#1f5c4e' : '#b0a8a0', cursor: 'pointer',
             }}>
               {f.label}
@@ -253,7 +253,7 @@ export default function CertTimeline({ user }) {
               )}
               {f.id === 'action' && actionReqd > 0 && (
                 <span style={{ marginLeft: 5, fontSize: 10, fontWeight: 700, padding: '1px 5px',
-                  borderRadius: 8, background: 'rgba(248,113,113,0.2)', color: '#1f5c4e' }}>{actionReqd}</span>
+                  borderRadius: 8, background: 'rgba(192,57,43,0.12)', color: '#1f5c4e' }}>{actionReqd}</span>
               )}
             </button>
           ))}
@@ -466,7 +466,7 @@ export default function CertTimeline({ user }) {
                                       <div style={{ position: 'absolute', top: RAIL_MID, left: 0, right: 0, height: 3, background: 'rgba(0,0,0,0.05)', borderRadius: 2 }} />
 
                                       {/* Progress fill */}
-                                      <div style={{ position: 'absolute', top: RAIL_MID, left: 0, width: todayPct + '%', height: 3, background: 'rgba(192,57,43,0.5)', borderRadius: 2 }} />
+                                      <div style={{ position: 'absolute', top: RAIL_MID, left: 0, width: todayPct + '%', height: 3, background: 'rgba(31,92,78,0.3)', borderRadius: 2 }} />
 
                                       {/* Today pin */}
                                       <div style={{ position: 'absolute', top: RAIL_MID - 8, left: todayPct + '%', transform: 'translateX(-50%)', width: 2, height: 19, background: '#fff', borderRadius: 1 }} />

@@ -6,7 +6,7 @@ const RAG_URL = 'https://ai.easysecurity.in/rag'
 const CHIPS_OUT = ['How does auto-renewal work?','Install agent on VPS','DNS challenge failing','What is TLS grade A+?','Connect Cloudflare DNS','What is KeyLocker?']
 const CHIPS_IN  = ['List my certificates','Show expiring soon','Are my agents online?','How to issue a certificate','My DNS providers','KeyLocker help']
 
-const G='#1f5c4e',BG='transparent',S1='transparent',S2='transparent',TX='rgba(240,237,232,0.06)',MU='#7a7a7a',BD='rgba(0,0,0,0.06)',GB='rgba(16,185,129,0.25)'
+const G='#1f5c4e',BG='transparent',S1='transparent',S2='transparent',TX='rgba(0,0,0,0.05)',MU='#7a7a7a',BD='rgba(0,0,0,0.06)',GB='rgba(16,185,129,0.25)'
 
 function Av({ai}){return <div style={{width:26,height:26,borderRadius:'50%',flexShrink:0,marginTop:2,fontSize:11,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',background:ai?'rgba(16,185,129,0.12)':'transparent',border:ai?'1px solid rgba(16,185,129,0.25)':'1px solid rgba(99,179,237,0.3)',color:ai?G:'#63b3ed'}}>{ai?'V':'U'}</div>}
 function Bub({ai,user,children}){return <div style={{padding:'10px 14px',borderRadius:14,maxWidth:'86%',background:user?'rgba(16,185,129,0.1)':S2,border:`0.5px solid ${user?'rgba(16,185,129,0.2)':BD}`,borderBottomLeftRadius:ai?3:14,borderBottomRightRadius:user?3:14}}>{children}</div>}
@@ -157,7 +157,7 @@ export default function SpartansBrain() {
   const isNew=msgs.length<=1&&!busy
 
   return(<>
-    <button onPointerDown={e=>{e.preventDefault();setOpen(o=>!o)}} aria-label="Spartan's Brain" style={{position:'fixed',bottom:24,right:24,zIndex:99999,width:52,height:52,borderRadius:'50%',background:open?S2:G,border:`2px solid ${open?'rgba(240,237,232,0.15)':G}`,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:`0 4px 24px ${open?'rgba(0,0,0,0.5)':'rgba(16,185,129,0.5)'}`,outline:'none',padding:0,WebkitTapHighlightColor:'transparent',touchAction:'manipulation'}}>
+    <button onPointerDown={e=>{e.preventDefault();setOpen(o=>!o)}} aria-label="Spartan's Brain" style={{position:'fixed',bottom:24,right:24,zIndex:99999,width:52,height:52,borderRadius:'50%',background:open?S2:G,border:`2px solid ${open?'#cccccc':G}`,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:`0 4px 24px ${open?'rgba(0,0,0,0.5)':'rgba(16,185,129,0.5)'}`,outline:'none',padding:0,WebkitTapHighlightColor:'transparent',touchAction:'manipulation'}}>
       {open?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>}
       <span style={{position:'absolute',top:2,right:2,width:10,height:10,borderRadius:'50%',background:G,border:'2px solid '+BG,animation:'vbpulse 2s infinite'}}/>
     </button>

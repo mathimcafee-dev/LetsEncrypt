@@ -103,11 +103,11 @@ function InventoryMockup() {
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>Inventory · 4 certificates</span>
       </div>
-      <div style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'6px 14px',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+      <div style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'6px 14px',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
         {['Domain','Days','Grade','CA','Auto','Status'].map(h=><div key={h} style={{fontSize:9.5,fontWeight:500,color:'rgba(255,255,255,0.4)',textTransform:'uppercase',letterSpacing:'0.05em',fontFamily:MONO}}>{h}</div>)}
       </div>
       {rows.map((r,i)=>(
-        <div key={r.d} style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'9px 14px',borderBottom:i<rows.length-1?'1px solid rgba(255,255,255,0.07)':'none',background:r.s==='critical'?'rgba(192,57,43,0.08)':r.s==='warning'?'rgba(154,100,0,0.08)':'transparent',alignItems:'center'}}>
+        <div key={r.d} style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'9px 14px',borderBottom:i<rows.length-1?'1px solid rgba(0,0,0,0.05)':'none',background:r.s==='critical'?'rgba(192,57,43,0.08)':r.s==='warning'?'rgba(154,100,0,0.08)':'transparent',alignItems:'center'}}>
           <span style={{fontSize:11.5,fontWeight:500,color:'rgba(255,255,255,0.85)',fontFamily:MONO}}>{r.d}</span>
           <span style={{fontSize:11,fontWeight:600,color:sc(r.s),fontFamily:MONO}}>{r.days}d</span>
           <span style={{fontSize:11,fontWeight:700,color:gc(r.grade)}}>{r.grade}</span>
@@ -132,7 +132,7 @@ function CertVaultMockup() {
           AES-256-GCM · Envelope encryption · Immutable audit
         </div>
         {[{d:'easysecurity.in',alg:'RSA-2048',last:'2h ago'},{d:'api.shop.com',alg:'EC-384',last:'Never'}].map((k,i)=>(
-          <div key={k.d} style={{border:'1px solid rgba(255,255,255,0.1)',borderTop:'2px solid #1f5c4e',borderRadius:4,padding:'11px',marginBottom:i===0?6:0,background:BG3}}>
+          <div key={k.d} style={{border:'1px solid rgba(0,0,0,0.07)',borderTop:'2px solid #1f5c4e',borderRadius:4,padding:'11px',marginBottom:i===0?6:0,background:BG3}}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
               <span style={{fontSize:12,fontWeight:500,color:T1,fontFamily:MONO}}>{k.d}</span>
               <span style={{fontSize:9,fontWeight:600,color:T3,background:'#f4f1ec',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>🔒 VAULT SECURED</span>
@@ -147,7 +147,7 @@ function CertVaultMockup() {
             </div>
             <div style={{display:'flex',gap:5}}>
               {['Reveal key','Rotate','Audit log'].map(t=>(
-                <button key={t} style={{fontSize:10,padding:'4px 9px',borderRadius:3,border:`1px solid ${t==='Reveal key'?'rgba(31,92,78,0.4)':'rgba(255,255,255,0.1)'}`,background:t==='Reveal key'?'rgba(31,92,78,0.3)':'rgba(255,255,255,0.08)',color:t==='Reveal key'?'#16a068':'rgba(255,255,255,0.55)',cursor:'pointer',fontFamily:F}}>{t}</button>
+                <button key={t} style={{fontSize:10,padding:'4px 9px',borderRadius:3,border:`1px solid ${t==='Reveal key'?'rgba(31,92,78,0.4)':'rgba(0,0,0,0.07)'}`,background:t==='Reveal key'?'rgba(31,92,78,0.3)':'rgba(0,0,0,0.06)',color:t==='Reveal key'?'#16a068':'rgba(255,255,255,0.55)',cursor:'pointer',fontFamily:F}}>{t}</button>
               ))}
             </div>
           </div>
@@ -272,7 +272,7 @@ function SSLVaultTrustBadge({ compact = false }) {
         <span style={{fontSize: compact ? 8 : 9, color:'#6a2a2a', letterSpacing:'.03em'}}>
           {compact ? '256-bit TLS encryption' : 'Certified PKI · GoGetSSL · RapidSSL DV'}
         </span>
-        <div style={{width:'100%',height:2,background:'#120505',borderRadius:1,marginTop:3,overflow:'hidden',position:'relative'}}>
+        <div style={{width:'100%',height:2,background:'rgba(0,0,0,0.07)',borderRadius:1,marginTop:3,overflow:'hidden',position:'relative'}}>
           <div style={{position:'absolute',left:'-60%',top:0,width:'40%',height:'100%',
             background:'linear-gradient(90deg,transparent,#1f5c4e,rgba(22,160,104,.4),transparent)',
             animation:'sv-scan-anim 2.4s linear infinite'}}/>
@@ -427,7 +427,7 @@ export default function Home({ nav }) {
       </div>
 
       {/* ── PLATFORM ── */}
-      <section id="platform" style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="platform" style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start',marginBottom:48}}>
@@ -474,7 +474,7 @@ export default function Home({ nav }) {
               {icon:'🏛',title:'Industry Intelligence',specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker'],badge:'PKI Hub'},
               {icon:'🔬',title:'CA Trust Store',specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm','CSV export · PEM download'],badge:'CCADB'},
             ].map(f=>(
-              <div key={f.title} style={{background:'#ffffff',padding:'20px',border:'1px solid rgba(0,0,0,0.07)',borderRadius:10}}>
+              <div key={f.title} style={{background:'#111111',padding:'20px',border:'1px solid rgba(0,0,0,0.07)',borderRadius:10}}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:12}}>
                     <span style={{fontSize:20}}>{f.icon}</span>
                     <Tag>{f.badge}</Tag>
@@ -491,7 +491,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── SECURITY CONTROLS ── */}
-      <section style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
@@ -561,7 +561,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── DNS ── */}
-      <section style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'center'}}>
             <FadeUp>
@@ -571,7 +571,7 @@ export default function Home({ nav }) {
                 <Body style={{marginBottom:20}}>When issuing or renewing, SSLVault calls your DNS provider API to add the ACME challenge record, polls for propagation, validates, then cleans up — fully automatic.</Body>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
                   {[['Cloudflare','API Token · Zone:DNS:Edit'],['Vercel','Access Token · Settings → Tokens'],['Route53','AWS IAM · Route53 write access'],['Namecheap','API Key · IP whitelist required'],['GoDaddy','API Key + Secret'],['DigitalOcean','Personal Access Token'],['Plesk','XML API'],['+ more','Contact us']].map(([name,note])=>(
-                    <div key={name} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#ffffff',border:`1px solid ${LN}`,borderRadius:4}}>
+                    <div key={name} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#111111',border:`1px solid ${LN}`,borderRadius:4}}>
                       <div style={{width:4,height:4,borderRadius:'50%',background:T3,flexShrink:0}}/>
                       <div><div style={{fontSize:12,fontWeight:500,color:T1}}>{name}</div><div style={{fontSize:10.5,color:T3,fontFamily:MONO}}>{note}</div></div>
                     </div>
@@ -581,7 +581,7 @@ export default function Home({ nav }) {
             </FadeUp>
             <FadeUp delay={80}>
               <Term title="dns-provider · Cloudflare API" lines={[
-                {prompt:'#',text:' DCV for renewal · api.myshop.com',c:'rgba(255,255,255,0.18)'},
+                {prompt:'#',text:' DCV for renewal · api.myshop.com',c:'rgba(0,0,0,0.1)'},
                 {prompt:'›',text:'Resolving zone: myshop.com',c:T2},
                 {prompt:'›',text:'PUT /zones/{id}/dns_records',c:'rgba(255,255,255,0.75)'},
                 {text:'↳ type:TXT  name:_acme-challenge',c:T3,indent:true},
@@ -616,7 +616,7 @@ export default function Home({ nav }) {
                 {n:'05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Runs forever, zero manual steps.',accent:'#1f5c4e'},
               ].map((s,i,arr)=>(
                 <div key={s.n} style={{flex:1,display:'flex',flexDirection:'row',alignItems:'stretch'}}>
-                  <div style={{flex:1,background:'#ffffff',border:'1px solid rgba(0,0,0,0.07)',borderRadius:12,padding:'20px 16px',position:'relative',display:'flex',flexDirection:'column',gap:10,boxShadow:'0 1px 2px rgba(0,0,0,0.04)'}}>
+                  <div style={{flex:1,background:'#111111',border:'1px solid rgba(0,0,0,0.07)',borderRadius:12,padding:'20px 16px',position:'relative',display:'flex',flexDirection:'column',gap:10,boxShadow:'0 1px 2px rgba(0,0,0,0.04)'}}>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                       <span style={{fontSize:11,fontWeight:800,color:s.accent,letterSpacing:'.06em',fontFamily:MONO}}>{s.n}</span>
                       <span style={{fontSize:22}}>{s.icon}</span>
@@ -640,7 +640,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── INDUSTRY INTELLIGENCE ── */}
-      <section style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
@@ -651,8 +651,8 @@ export default function Home({ nav }) {
           </FadeUp>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden',marginBottom:12}}>
             {[{icon:'🏛',title:'CA Trust Store',sub:'6,200+ root & intermediate CAs',desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert.',badge:'CCADB Live',path:'/ca-trust-explorer',stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']]},{icon:'⚖️',title:'CAB Forum Intelligence',sub:'Ballots, timelines & compliance',desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',badge:'Live sync',path:'/cab-forum',stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']]},{icon:'🌍',title:'Global PKI Hub',sub:'12 bodies · 22 standards · PQC tracker',desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',badge:'PQC Ready',path:'/pki-hub',stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']]}].map(item=>(
-              <div key={item.title} onClick={()=>nav(item.path)} style={{background:'#ffffff',padding:'22px',cursor:'pointer',transition:'background .12s',height:'100%',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(0,0,0,0.07)',borderRadius:10}}
-                  onMouseEnter={e=>e.currentTarget.style.background='#f4f1ec'} onMouseLeave={e=>e.currentTarget.style.background='#ffffff'}>
+              <div key={item.title} onClick={()=>nav(item.path)} style={{background:'#111111',padding:'22px',cursor:'pointer',transition:'background .12s',height:'100%',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(0,0,0,0.07)',borderRadius:10}}
+                  onMouseEnter={e=>e.currentTarget.style.background='#f4f1ec'} onMouseLeave={e=>e.currentTarget.style.background='#111111'}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
                     <span style={{fontSize:26}}>{item.icon}</span>
                     <Tag>{item.badge}</Tag>
@@ -700,7 +700,7 @@ export default function Home({ nav }) {
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:18}}>
-              <span style={{fontSize:10,fontWeight:600,color:RED,letterSpacing:'0.07em',textTransform:'uppercase',fontFamily:MONO,background:'rgba(192,57,43,0.07)',border:'1px solid rgba(248,113,113,0.2)',borderRadius:3,padding:'2px 9px'}}>Industry first</span>
+              <span style={{fontSize:10,fontWeight:600,color:RED,letterSpacing:'0.07em',textTransform:'uppercase',fontFamily:MONO,background:'rgba(192,57,43,0.07)',border:'1px solid rgba(192,57,43,0.12)',borderRadius:3,padding:'2px 9px'}}>Industry first</span>
               <span style={{fontSize:10,color:T3,letterSpacing:'0.05em',textTransform:'uppercase',fontFamily:MONO}}>No other CLM vendor has built this</span>
             </div>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:72,alignItems:'center',marginBottom:40}}>
@@ -765,7 +765,7 @@ export default function Home({ nav }) {
 
 
       {/* ── MISSION ── */}
-      <section style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start'}}>
             <FadeUp>
@@ -787,7 +787,7 @@ export default function Home({ nav }) {
                 ))}
                 <div style={{marginTop:5,display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
                   {[['DigiCert','Trust chain · 99.9% browser'],['RapidSSL','CA partner · wholesale pricing'],['RFC 8555','ACME v2 · no lock-in'],['AES-256','Military-grade key storage'],['GDPR','Netherlands-based PKI engineer 🇳🇱'],['No ads','No tracking · no reselling']].map(([val,sub])=>(
-                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'#ffffff',border:`1px solid ${LN}`,borderRadius:3,alignItems:'center'}}>
+                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'#111111',border:`1px solid ${LN}`,borderRadius:3,alignItems:'center'}}>
                       <div style={{fontSize:11,fontWeight:500,color:T1,fontFamily:MONO,minWidth:65}}>{val}</div>
                       <div style={{fontSize:10.5,color:T3,lineHeight:1.4}}>{sub}</div>
                     </div>
@@ -829,13 +829,13 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{background:'#111111',borderTop:`1px solid rgba(255,255,255,0.08)`,padding:`clamp(36px,5vw,52px) ${P} clamp(22px,3vw,32px)`}}>
+      <footer style={{background:'#111111',borderTop:`1px solid rgba(0,0,0,0.06)`,padding:`clamp(36px,5vw,52px) ${P} clamp(22px,3vw,32px)`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
-          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:32,paddingBottom:24,borderBottom:`1px solid rgba(255,255,255,0.08)`}}>
-            <div style={{width:20,height:20,background:'rgba(255,255,255,0.1)',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke='#ffffff' strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:32,paddingBottom:24,borderBottom:`1px solid rgba(0,0,0,0.06)`}}>
+            <div style={{width:20,height:20,background:'rgba(0,0,0,0.07)',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke='#111111' strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <span style={{fontSize:13,fontWeight:600,color:'#ffffff'}}>SSLVault</span>
+            <span style={{fontSize:13,fontWeight:600,color:'#111111'}}>SSLVault</span>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.35)',fontFamily:MONO,marginLeft:4}}>PKI-first CLM · Built by a real PKI engineer</span>
           </div>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr 1fr':'repeat(auto-fill,minmax(140px,1fr))',gap:24,marginBottom:32}}>
@@ -855,7 +855,7 @@ export default function Home({ nav }) {
           <div style={{marginBottom:20,display:'flex',justifyContent:'center'}}>
             <SSLVaultTrustBadge />
           </div>
-          <div style={{borderTop:`1px solid rgba(255,255,255,0.08)`,paddingTop:18,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
+          <div style={{borderTop:`1px solid rgba(0,0,0,0.06)`,paddingTop:18,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.35)',fontFamily:MONO}}>Made with ♥ towards PKI · Built by a real PKI engineer</span>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.35)'}}>© 2026 SSLVault. All rights reserved.</span>
           </div>

@@ -194,11 +194,11 @@ export default function AdminAnalytics({ user }) {
             {Object.entries(stats.grades).filter(([,v])=>v>0).map(([g,v])=>(
               <div key={g} style={{marginBottom:10}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
-                  <span style={{fontSize:12,fontWeight:500,color:gradeColor[g]||'rgba(240,237,232,0.7)',fontFamily:'monospace'}}>{g==='unknown'?'—':g}</span>
+                  <span style={{fontSize:12,fontWeight:500,color:gradeColor[g]||'#444444',fontFamily:'monospace'}}>{g==='unknown'?'—':g}</span>
                   <span style={{fontSize:12,color:'#333333'}}>{v} cert{v!==1?'s':''}</span>
                 </div>
                 <div style={{height:6,borderRadius:3,background:'var(--v2-surface-3)',overflow:'hidden'}}>
-                  <div style={{height:'100%',borderRadius:3,background:gradeColor[g]||'rgba(240,237,232,0.7)',width:`${Math.min(100,(v/Math.max(1,stats.active))*100)}%`,transition:'width .6s'}}/>
+                  <div style={{height:'100%',borderRadius:3,background:gradeColor[g]||'#444444',width:`${Math.min(100,(v/Math.max(1,stats.active))*100)}%`,transition:'width .6s'}}/>
                 </div>
               </div>
             ))}
@@ -210,7 +210,7 @@ export default function AdminAnalytics({ user }) {
             <div className="v2-section-label" style={{marginBottom:14}}>Certificates by CA</div>
             {Object.entries(stats.bySource).sort((a,b)=>b[1]-a[1]).map(([src,cnt])=>{
               const labels = {rapidssl:'RapidSSL',tss:'RapidSSL',letsencrypt:"Let's Encrypt",zerossl:'ZeroSSL',buypass:'Buypass',acme:'ACME',unknown:'Unknown'}
-              const colors = {rapidssl:'#16a068',tss:'#16a068',letsencrypt:'#111111',zerossl:'#111111',buypass:'#111111',acme:'rgba(240,237,232,0.7)',unknown:'rgba(240,237,232,0.38)'}
+              const colors = {rapidssl:'#16a068',tss:'#16a068',letsencrypt:'#111111',zerossl:'#111111',buypass:'#111111',acme:'#444444',unknown:'rgba(240,237,232,0.38)'}
               return (
                 <div key={src} style={{marginBottom:10}}>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
@@ -218,7 +218,7 @@ export default function AdminAnalytics({ user }) {
                     <span style={{fontSize:12,color:'#333333'}}>{cnt}</span>
                   </div>
                   <div style={{height:6,borderRadius:3,background:'var(--v2-surface-3)',overflow:'hidden'}}>
-                    <div style={{height:'100%',borderRadius:3,background:colors[src]||'rgba(240,237,232,0.7)',width:`${(cnt/Math.max(1,stats.active))*100}%`,transition:'width .6s'}}/>
+                    <div style={{height:'100%',borderRadius:3,background:colors[src]||'#444444',width:`${(cnt/Math.max(1,stats.active))*100}%`,transition:'width .6s'}}/>
                   </div>
                 </div>
               )

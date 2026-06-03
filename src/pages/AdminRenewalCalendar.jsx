@@ -86,7 +86,7 @@ function TabBar({ tab, setTab, counts }) {
               fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 10,
               background: t.warn && tab !== t.id ? 'rgba(192,57,43,0.2)' : 'rgba(0,0,0,0.08)',
               color: t.warn && tab !== t.id ? '#1f5c4e' : 'rgba(255,255,255,0.7)',
-              border: t.warn && tab !== t.id ? '0.5px solid rgba(248,113,113,0.3)' : 'none',
+              border: t.warn && tab !== t.id ? '0.5px solid rgba(192,57,43,0.2)' : 'none',
             }}>{t.count}</span>
           )}
         </button>
@@ -196,7 +196,7 @@ function AlertRow({ alert, onResolve, resolving }) {
     <div style={{
       display: 'flex', alignItems: 'flex-start', gap: 10,
       padding: '12px 16px',
-      borderBottom: '0.5px solid rgba(248,113,113,0.15)',
+      borderBottom: '0.5px solid rgba(192,57,43,0.1)',
       background: 'rgba(248,113,113,0.05)',
     }}>
       <AlertTriangle size={13} strokeWidth={2} color="#f87171" style={{ flexShrink: 0, marginTop: 2 }} />
@@ -290,7 +290,7 @@ export default function AdminRenewalCalendar({ user }) {
     return (
       <div className="v2-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <div style={{ textAlign: 'center' }}>
-          <Shield size={36} strokeWidth={1.2} color="rgba(255,255,255,0.2)" style={{ marginBottom: 12 }} />
+          <Shield size={36} strokeWidth={1.2} color="rgba(0,0,0,0.1)" style={{ marginBottom: 12 }} />
           <div style={{ fontSize: 15, fontWeight: 600, color: '#111111', marginBottom: 6 }}>Admin access required</div>
           <div style={{ fontSize: 12, color: '#888888' }}>Only master administrators can view this page.</div>
         </div>
@@ -329,7 +329,7 @@ export default function AdminRenewalCalendar({ user }) {
         <button onClick={load} disabled={loading} style={{
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-          border: '1px solid rgba(192,57,43,0.4)',
+          border: '1px solid rgba(0,0,0,0.1)',
           background: 'rgba(0,0,0,0.05)',
           color: '#333333', cursor: 'pointer', fontFamily: 'inherit',
         }}>
@@ -397,7 +397,7 @@ export default function AdminRenewalCalendar({ user }) {
             <>
               <div style={{ padding: '8px 16px', fontSize: 10, fontWeight: 700, color: '#1f5c4e',
                 textTransform: 'uppercase', letterSpacing: '0.5px',
-                borderBottom: '0.5px solid rgba(248,113,113,0.15)',
+                borderBottom: '0.5px solid rgba(192,57,43,0.1)',
                 background: 'rgba(248,113,113,0.06)' }}>
                 Open alerts — {alerts.length}
               </div>

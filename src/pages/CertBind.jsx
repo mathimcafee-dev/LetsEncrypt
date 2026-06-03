@@ -18,13 +18,13 @@ async function callCertBind(action, extra = {}) {
 
 const STATUS_MAP = {
   bound:          { label: 'Live',          color: '#16a068', bg: 'rgba(22,160,104,0.09)',   border: 'rgba(22,160,104,0.22)',  icon: CheckCircle2,  dot: '#16a068',  priority: 0 },
-  key_mismatch:   { label: 'Key mismatch',  color: '#1f5c4e', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,       dot: '#1f5c4e',  priority: 3 },
-  cert_mismatch:  { label: 'Wrong cert',    color: '#1f5c4e', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,       dot: '#1f5c4e',  priority: 3 },
+  key_mismatch:   { label: 'Key mismatch',  color: '#1f5c4e', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(192,57,43,0.2)', icon: XCircle,       dot: '#1f5c4e',  priority: 3 },
+  cert_mismatch:  { label: 'Wrong cert',    color: '#1f5c4e', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(192,57,43,0.2)', icon: XCircle,       dot: '#1f5c4e',  priority: 3 },
   chain_anomaly:  { label: 'Chain issue',   color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle, dot: '#9a6400',  priority: 2 },
   partial_deploy: { label: 'Partial',       color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle, dot: '#9a6400',  priority: 2 },
   unreachable:    { label: 'Unreachable',   color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle, dot: '#9a6400',  priority: 2 },
-  pending:        { label: 'Checking',      color: '#888888', bg: 'rgba(240,237,232,0.06)', border: '#cccccc', icon: Clock,        dot: '#b0a8a0',  priority: 1 },
-  null:           { label: 'Not checked',   color: '#888888', bg: 'rgba(240,237,232,0.04)', border: 'rgba(240,237,232,0.1)', icon: Clock,         dot: 'rgba(240,237,232,0.3)', priority: 1 },
+  pending:        { label: 'Checking',      color: '#888888', bg: 'rgba(0,0,0,0.05)', border: '#cccccc', icon: Clock,        dot: '#b0a8a0',  priority: 1 },
+  null:           { label: 'Not checked',   color: '#888888', bg: 'rgba(0,0,0,0.04)', border: 'rgba(0,0,0,0.07)', icon: Clock,         dot: '#999999', priority: 1 },
 }
 
 function getStatus(s) { return STATUS_MAP[s] || STATUS_MAP['null'] }
@@ -121,7 +121,7 @@ function CertRow({ cert, onCheck, checking }) {
             display:'flex', alignItems:'center', gap:5,
             padding:'5px 11px', borderRadius:6,
             background: isChecking ? 'rgba(0,0,0,0.03)' : 'rgba(0,0,0,0.07)',
-            color: isChecking ? 'rgba(240,237,232,0.3)' : '#111111',
+            color: isChecking ? '#999999' : '#111111',
             border: `1px solid ${isChecking ? 'rgba(0,0,0,0.05)' : 'rgba(31,92,78,0.2)'}`,
             fontSize:11, fontWeight:600, cursor: isChecking ? 'not-allowed' : 'pointer',
             fontFamily:'inherit', whiteSpace:'nowrap', transition:'all .12s',
@@ -248,8 +248,8 @@ export default function CertBind() {
           {[
             { num: certs.length, label: 'Total domains',  color: '#111111' },
             { num: live,         label: 'Verified live',  color: '#16a068' },
-            { num: alerts,       label: 'Need attention', color: alerts > 0 ? '#1f5c4e' : 'rgba(240,237,232,0.3)' },
-            { num: unchecked,    label: 'Not checked',    color: unchecked > 0 ? '#9a6400' : 'rgba(240,237,232,0.3)' },
+            { num: alerts,       label: 'Need attention', color: alerts > 0 ? '#1f5c4e' : '#999999' },
+            { num: unchecked,    label: 'Not checked',    color: unchecked > 0 ? '#9a6400' : '#999999' },
           ].map(({ num, label, color }, i) => (
             <div key={label} style={{ padding:'14px 18px', background:'rgba(0,0,0,0.02)', borderRight: i < 3 ? '1px solid rgba(0,0,0,0.07)' : 'none' }}>
               <div style={{ fontSize:24, fontWeight:700, color, letterSpacing:'-1px', lineHeight:1 }}>{num}</div>
@@ -260,7 +260,7 @@ export default function CertBind() {
 
         {/* ── Alert banner ── */}
         {alerts > 0 && (
-          <div style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 16px', borderRadius:8, background:'rgba(248,113,113,0.06)', border:'1px solid rgba(248,113,113,0.2)', marginBottom:16 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 16px', borderRadius:8, background:'rgba(248,113,113,0.06)', border:'1px solid rgba(192,57,43,0.12)', marginBottom:16 }}>
             <AlertTriangle size={13} color="#f87171" />
             <span style={{ fontSize:13, color:'#1f5c4e', fontWeight:600 }}>
               {alerts} certificate{alerts !== 1 ? 's' : ''} {alerts === 1 ? 'needs' : 'need'} attention — check the highlighted rows below
@@ -307,7 +307,7 @@ export default function CertBind() {
                 {lastRefresh ? `Last checked ${lastRefresh.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' })} UTC` : 'Not yet checked'}
                 {agents.length > 0 && (
                   <span style={{ marginLeft:12 }}>
-                    <PulseDot color={onlineAgents > 0 ? '#16a068' : 'rgba(240,237,232,0.2)'} animate={onlineAgents > 0} />
+                    <PulseDot color={onlineAgents > 0 ? '#16a068' : '#bbbbbb'} animate={onlineAgents > 0} />
                     <span style={{ marginLeft:5 }}>{onlineAgents}/{agents.length} agent{agents.length !== 1 ? 's' : ''} online</span>
                   </span>
                 )}

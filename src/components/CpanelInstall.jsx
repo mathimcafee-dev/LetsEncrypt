@@ -292,7 +292,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
     : 'N/A'
 
   // ── Shared styles ─────────────────────────────────────────────────────
-  const modalBg = { position:'fixed', inset:0, zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:20, background:'rgba(0,0,0,0.75)', backdropFilter:'blur(6px)' }
+  const modalBg = { position:'fixed', inset:0, zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:20, background:'rgba(0,0,0,0.45)', backdropFilter:'blur(6px)' }
   const card = { background:'#f4f1ec', border:'1px solid rgba(31,92,78,0.2)', borderRadius:14, width:'100%', maxWidth:520, maxHeight:'90vh', overflowY:'auto', boxShadow:'0 24px 64px rgba(0,0,0,0.6)' }
   const header = { padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, background:'#f4f1ec', zIndex:10, borderRadius:'14px 14px 0 0' }
   const body = { padding:'20px 22px 24px' }
@@ -399,7 +399,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                     <button onClick={() => { setUseNew(true); setSelectedServerId(null) }} style={{
                       textAlign:'left', padding:'10px 12px', borderRadius:7, cursor:'pointer',
                       fontFamily:'inherit', fontSize:12, fontWeight:500, color:'#888888',
-                      border: useNew ? '2px solid #2a6b5c' : '0.5px dashed rgba(255,255,255,0.2)',
+                      border: useNew ? '2px solid #2a6b5c' : '0.5px dashed rgba(0,0,0,0.1)',
                       background: useNew ? 'rgba(31,92,78,0.08)' : 'transparent',
                     }}>
                       + Add new server
@@ -463,7 +463,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                 {savedServers.length === 0 && (
                   <button onClick={()=>setPhase('select_type')} style={{padding:'10px 16px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.08)',background:'rgba(0,0,0,0.04)',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#333333'}}>Back</button>
                 )}
-                <button onClick={handleInstall} disabled={busy} style={{flex:1,padding:'11px',background:busy?'rgba(192,57,43,0.4)':'#1f5c4e',color:'white',border:'none',borderRadius:8,fontSize:13,fontWeight:700,cursor:busy?'wait':'pointer',fontFamily:'inherit'}}>
+                <button onClick={handleInstall} disabled={busy} style={{flex:1,padding:'11px',background:busy?'rgba(0,0,0,0.1)':'#1f5c4e',color:'white',border:'none',borderRadius:8,fontSize:13,fontWeight:700,cursor:busy?'wait':'pointer',fontFamily:'inherit'}}>
                   {busy ? 'Installing...' : 'Install Certificate'}
                 </button>
               </div>
@@ -520,9 +520,9 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                         </span>
                         {fingerprints.key_sha256 && (
                           <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:20,
-                            background: fingerprints.match ? 'rgba(22,160,104,0.12)' : 'rgba(248,113,113,0.15)',
+                            background: fingerprints.match ? 'rgba(22,160,104,0.12)' : 'rgba(192,57,43,0.1)',
                             color: fingerprints.match ? '#16a068' : '#1f5c4e',
-                            border: `1px solid ${fingerprints.match ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.3)'}` }}>
+                            border: `1px solid ${fingerprints.match ? 'rgba(74,222,128,0.3)' : 'rgba(192,57,43,0.2)'}` }}>
                             {fingerprints.match ? '✓ KEY MATCHES CERT' : '✗ MISMATCH'}
                           </span>
                         )}

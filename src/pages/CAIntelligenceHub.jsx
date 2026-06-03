@@ -591,7 +591,7 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
   const daysLeft = d ? Math.ceil((new Date(d).getTime() - Date.now()) / 86400000) : null
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.5)', zIndex: 9999,
+    <div style={{ position: 'fixed', inset: 0, background: '#666666', zIndex: 9999,
       display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div style={{ width: 480, height: '100vh', background:'rgba(0,0,0,0.02)', borderLeft: '0.5px solid var(--v2-border)',
@@ -1408,7 +1408,7 @@ style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 80px', minWi
 // ══════════════════════════════════════════════════════════════════════
 const CA_COLORS_HUB = {
   digicert: '#1f5c4e', sectigo: '#111111', sslcom: '#111111',
-  rapidssl: '#16a068', imported: 'rgba(240,237,232,0.7)', unknown: 'rgba(240,237,232,0.38)'
+  rapidssl: '#16a068', imported: '#444444', unknown: 'rgba(240,237,232,0.38)'
 }
 
 function ConsolidationTab({ tok, nav }) {
@@ -1563,9 +1563,9 @@ function ConsolidationTab({ tok, nav }) {
                     </div>
                     <div>
                       <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
-                        background: (CA_COLORS_HUB[opp.current_ca] || 'rgba(240,237,232,0.7)') + '18',
-                        color: CA_COLORS_HUB[opp.current_ca] || 'rgba(240,237,232,0.7)',
-                        border: `0.5px solid ${CA_COLORS_HUB[opp.current_ca] || 'rgba(240,237,232,0.7)'}44` }}>
+                        background: (CA_COLORS_HUB[opp.current_ca] || '#444444') + '18',
+                        color: CA_COLORS_HUB[opp.current_ca] || '#444444',
+                        border: `0.5px solid ${CA_COLORS_HUB[opp.current_ca] || '#444444'}44` }}>
                         {opp.current_ca}
                       </span>
                     </div>
@@ -1658,7 +1658,7 @@ export default function CAIntelligenceHub({ nav }) {
     { id:'rapidssl',      label:'RapidSSL',       icon: Shield,      color:'#16a068',  bg:'rgba(22,160,104,0.12)', count:live.rapidCount, dot:'#16a068' },
     { id:'digicert',      label:'DigiCert',       icon: Building,    color:'#1f5c4e',  bg:'rgba(0,0,0,0.07)',  count:null, dot:live.dcConn?'#16a068':'#555' },
     { id:'sectigo',       label:'Sectigo',        icon: Lock,        color:'#818cf8',  bg:'rgba(129,140,248,0.15)',count:null, dot:live.scConn?'#16a068':'#555' },
-    { id:'shadow',        label:'Exposure',       icon: Search,      color:'#1f5c4e',  bg:'rgba(248,113,113,0.15)',count:live.exposure>0?live.exposure:null },
+    { id:'shadow',        label:'Exposure',       icon: Search,      color:'#1f5c4e',  bg:'rgba(192,57,43,0.1)',count:live.exposure>0?live.exposure:null },
     { id:'consolidation', label:'Cost advisor',   icon: TrendingUp,  color:'#9a6400',  bg:'rgba(154,100,0,0.12)', count:null },
   ]
 

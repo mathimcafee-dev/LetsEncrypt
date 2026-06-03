@@ -58,8 +58,8 @@ export default function SLADashboard({ nav }) {
     card: { background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, padding: '14px 16px', marginBottom: 12 },
     lbl:  { fontSize: 10, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '.1em', display: 'block', marginBottom: 6 },
     ttl:  { fontSize: 13, fontWeight: 600, color: '#111111', marginBottom: 3 },
-    sub:  { fontSize: 12, color: 'rgba(240,237,232,0.6)', lineHeight: 1.6 },
-    btn:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: 'rgba(0,0,0,0.07)', border: '1px solid rgba(192,57,43,0.4)', borderRadius: 8, color: '#111111', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
+    sub:  { fontSize: 12, color: '#555555', lineHeight: 1.6 },
+    btn:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: 'rgba(0,0,0,0.07)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 8, color: '#111111', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
     btnP: { background: '#1f5c4e', border: '1px solid #2a6b5c', borderRadius: 8, padding: '10px 24px', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
   }
 
@@ -80,7 +80,7 @@ export default function SLADashboard({ nav }) {
     <div style={S.page}>
       <div style={{ maxWidth: 520, margin: '40px auto', textAlign: 'center' }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: '#111111', marginBottom: 12 }}>SLA Coverage not active</div>
-        <div style={{ fontSize: 13, color: 'rgba(240,237,232,0.6)', lineHeight: 1.75, marginBottom: 28 }}>Upgrade to SSLVault Premium to get the 47-Day compliance guarantee, monthly audit reports, and escalation alerts.</div>
+        <div style={{ fontSize: 13, color: '#555555', lineHeight: 1.75, marginBottom: 28 }}>Upgrade to SSLVault Premium to get the 47-Day compliance guarantee, monthly audit reports, and escalation alerts.</div>
         <button style={S.btnP} onClick={function() { if (nav) nav('/pricing') }}>View Premium plans</button>
         <div style={{ marginTop: 14, fontSize: 11, color: '#999999' }}>Plans from $999/year - Contact us to activate</div>
       </div>

@@ -176,7 +176,7 @@ function PageHeader({ counts, tab, onAdd, onAddBoth }) {
           </span>
           <span style={{ display:'flex', alignItems:'center', gap:5 }}>
             <span style={{ width:7, height:7, borderRadius:'50%',
-              background: counts.activeAgents > 0 ? '#16a068' : 'rgba(240,237,232,0.2)',
+              background: counts.activeAgents > 0 ? '#16a068' : '#bbbbbb',
               boxShadow: counts.activeAgents > 0 ? '0 0 0 3px rgba(22,163,74,0.2)' : 'none' }}/>
             {counts.activeAgents} agent{counts.activeAgents === 1 ? '' : 's'} active
           </span>
@@ -252,10 +252,10 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
   const t = server ? (SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel) : null
   const TIcon = t?.Icon
 
-  const tagBg = hasBoth ? 'rgba(240,237,232,0.7)' : dnsOnly ? '#16a068' : 'rgba(240,237,232,0.7)'
+  const tagBg = hasBoth ? '#444444' : dnsOnly ? '#16a068' : '#444444'
   const tagLabel = hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'
-  const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#2a6b5c)' : dnsOnly ? p?.color : t?.color || 'rgba(240,237,232,0.7)'
-  const dotColor = rowDot==='green'?'#16a068':rowDot==='amber'?'#111111':'rgba(240,237,232,0.2)'
+  const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#2a6b5c)' : dnsOnly ? p?.color : t?.color || '#444444'
+  const dotColor = rowDot==='green'?'#16a068':rowDot==='amber'?'#111111':'#bbbbbb'
   return (
     <div onClick={() => onSelect(domain)}
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
@@ -302,7 +302,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
               <TIcon size={11} style={{ color:t?.color }}/>
               {t?.short}
               {agent && <span style={{ width:6, height:6, borderRadius:'50%',
-                background:agentActive?'#16a068':'rgba(240,237,232,0.2)', marginLeft:2 }}/>}
+                background:agentActive?'#16a068':'#bbbbbb', marginLeft:2 }}/>}
             </span>
           )}
         </div>
@@ -316,7 +316,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
 function DnsRow({ cred, selected, onSelect, status }) {
   const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#333333' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
-  const dotColor = cls==='green'?'#16a068':cls==='amber'?'#111111':'rgba(240,237,232,0.2)'
+  const dotColor = cls==='green'?'#16a068':cls==='amber'?'#111111':'#bbbbbb'
   const statusLabel = status === 'healthy' ? 'Healthy' : status === 'expired' ? 'Auth expired' : 'Untested'
   return (
     <div onClick={() => onSelect(cred.id)}
@@ -441,7 +441,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
     : null
   const agentActive = lastSeenMin !== null && lastSeenMin < 15
   const cls = agent ? (agentActive ? 'green' : 'amber') : 'grey'
-  const dotColor = cls==='green'?'#16a068':cls==='amber'?'#111111':'rgba(240,237,232,0.2)'
+  const dotColor = cls==='green'?'#16a068':cls==='amber'?'#111111':'#bbbbbb'
   return (
     <div onClick={() => onSelect(server.id)}
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',

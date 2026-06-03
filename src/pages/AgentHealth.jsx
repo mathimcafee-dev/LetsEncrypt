@@ -277,8 +277,8 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 borderBottom: '0.5px solid var(--v2-border)', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
                   marginTop: 2, flexShrink: 0,
-                  background: (statusColor[job.status]||'rgba(240,237,232,0.7)')+'18',
-                  color: statusColor[job.status]||'rgba(240,237,232,0.7)' }}>
+                  background: (statusColor[job.status]||'#444444')+'18',
+                  color: statusColor[job.status]||'#444444' }}>
                   {job.status}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>

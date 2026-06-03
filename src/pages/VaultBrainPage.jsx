@@ -494,7 +494,7 @@ export default function VaultBrainPage({ nav }) {
       {/* ── Sticky input bar ────────────────────────────────────────────────── */}
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 20,
-        background: 'rgba(18,0,0,0.92)', backdropFilter: 'blur(12px)',
+        background: '#ffffff', backdropFilter: 'blur(12px)',
         borderTop: `1px solid ${C.border}`,
         padding: '12px 16px 20px',
       }}>

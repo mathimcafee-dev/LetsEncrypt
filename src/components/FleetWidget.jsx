@@ -53,8 +53,8 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:0 }}>
         {[
           { val: healthy.length,  label:'Healthy',       color:'#5edb8a', bg:'rgba(31,92,78,0.08)', icon: <Shield size={13} color="#16a34a"/> },
-          { val: expiring.length, label:'Expiring soon', color: expiring.length>0?'#1f5c4e':'rgba(240,237,232,0.5)', bg: expiring.length>0?'rgba(31,92,78,0.08)':'rgba(30,0,0,0.4)', icon: <AlertTriangle size={13} color={expiring.length>0?'#1f5c4e':'rgba(240,237,232,0.5)'}/> },
-          { val: expired.length,  label:'Expired',       color: expired.length>0?'#1f5c4e':'rgba(240,237,232,0.5)',  bg: expired.length>0?'rgba(31,92,78,0.09)':'rgba(30,0,0,0.4)',  icon: <XCircle size={13} color={expired.length>0?'#1f5c4e':'rgba(240,237,232,0.5)'}/> },
+          { val: expiring.length, label:'Expiring soon', color: expiring.length>0?'#1f5c4e':'#666666', bg: expiring.length>0?'rgba(31,92,78,0.08)':'rgba(30,0,0,0.4)', icon: <AlertTriangle size={13} color={expiring.length>0?'#1f5c4e':'#666666'}/> },
+          { val: expired.length,  label:'Expired',       color: expired.length>0?'#1f5c4e':'#666666',  bg: expired.length>0?'rgba(31,92,78,0.09)':'rgba(30,0,0,0.4)',  icon: <XCircle size={13} color={expired.length>0?'#1f5c4e':'#666666'}/> },
           { val: activeAgents,    label:'Agents active', color:'#1f5c4e', bg:'rgba(31,92,78,0.08)', icon: <Server size={13} color="#1f5c4e"/> },
         ].map((s, i) => (
           <div key={s.label} style={{ padding:'14px 16px', background:s.bg,

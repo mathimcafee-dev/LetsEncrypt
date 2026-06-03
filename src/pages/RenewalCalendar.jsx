@@ -532,7 +532,7 @@ export default function RenewalCalendar({ user }) {
                     background: view===v ? '#1f5c4e' : 'transparent',
                     border: 'none',
                     borderRadius:6, cursor:'pointer', fontFamily:'inherit',
-                    color: view===v ? '#ffffff' : 'rgba(240,237,232,0.4)',
+                    color: view===v ? '#ffffff' : '#888888',
                     transition:'all .15s',
                     boxShadow: view===v ? '0 1px 4px rgba(0,0,0,0.3)' : 'none',
                   }}>
@@ -563,9 +563,9 @@ export default function RenewalCalendar({ user }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, marginBottom:16, border:'1px solid rgba(0,0,0,0.08)', borderRadius:10, overflow:'hidden' }}>
           {[
             { label:'Total',         val:certs.length, color:'#111111' },
-            { label:'Expired',       val:allExpired,   color: allExpired > 0 ? RED : 'rgba(240,237,232,0.3)' },
-            { label:'Expiring ≤30d', val:allWarning,   color: allWarning > 0 ? AMBER : 'rgba(240,237,232,0.3)' },
-            { label:'Healthy',       val:allHealthy,   color: allHealthy > 0 ? GREEN : 'rgba(240,237,232,0.3)' },
+            { label:'Expired',       val:allExpired,   color: allExpired > 0 ? RED : '#999999' },
+            { label:'Expiring ≤30d', val:allWarning,   color: allWarning > 0 ? AMBER : '#999999' },
+            { label:'Healthy',       val:allHealthy,   color: allHealthy > 0 ? GREEN : '#999999' },
           ].map(({label,val,color},i)=>(
             <div key={label} style={{ padding:'14px 18px', background:'rgba(0,0,0,0.02)', borderRight: i<3 ? '1px solid rgba(0,0,0,0.07)' : 'none' }}>
               <div style={{ fontSize:24, fontWeight:700, color, letterSpacing:'-1px', lineHeight:1 }}>{val}</div>

@@ -4,7 +4,7 @@ import portrait from '../assets/mathi-portrait.jpg'
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
 const BG   = '#f7f5f0'
-const BG2  = '#1a0404'
+const BG2  = '#f4f1ec'
 const BG3  = '#ffffff'
 const BG4  = '#f0ede7'
 const T1   = '#111111'

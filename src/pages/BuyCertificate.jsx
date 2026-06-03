@@ -33,7 +33,7 @@ function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
   return (
     <button onClick={() => { navigator.clipboard.writeText(text); setOk(true); setTimeout(() => setOk(false), 1800) }}
-      style={{ background: 'rgba(0,0,0,0.05)', border: '0.5px solid rgba(240,237,232,0.1)',
+      style={{ background: 'rgba(0,0,0,0.05)', border: '0.5px solid rgba(0,0,0,0.07)',
         borderRadius: 4, cursor: 'pointer', color: ok ? '#1f5c4e' : '#888888',
         display: 'flex', alignItems: 'center', gap: 4, fontSize:10, padding: '3px 8px', fontFamily: 'inherit' }}>
       {ok ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
@@ -531,7 +531,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             <div style={{ padding: '12px 18px 16px' }}>
               <button onClick={place} disabled={busy}
                 style={{ width: '100%', background: busy ? '#1f2937' : 'linear-gradient(135deg,#2a6b5c,#1a56db)',
-                  color: busy ? 'rgba(240,237,232,0.5)' : '#000000', border: 'none', borderRadius: 8,
+                  color: busy ? '#666666' : '#000000', border: 'none', borderRadius: 8,
                   padding: '13px', fontSize:14, fontWeight: 700, cursor: busy ? 'not-allowed' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   fontFamily: 'inherit', transition: 'all 0.15s' }}>
@@ -988,7 +988,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
                     background: accent ? 'rgba(31,92,78,0.07)' : 'rgba(0,0,0,0.02)',
                     border: accent ? '1px solid rgba(31,92,78,0.25)' : '0.5px solid rgba(0,0,0,0.07)',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31,92,78,0.09)'; e.currentTarget.style.borderColor = 'rgba(192,57,43,0.4)' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31,92,78,0.09)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = accent ? 'rgba(31,92,78,0.07)' : 'rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = accent ? 'rgba(31,92,78,0.25)' : 'rgba(0,0,0,0.07)' }}>
                   <Icon size={20} color={accent ? '#1f5c4e' : '#b0a8a0'} strokeWidth={1.8}/>
                   <div>

@@ -134,7 +134,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
     <div style={{
       width:300, flexShrink:0,
       borderLeft:'1px solid rgba(0,0,0,0.08)',
-      background:'rgba(12,0,0,0.6)',
+      background:'rgba(0,0,0,0.45)',
       display:'flex', flexDirection:'column',
       height:'calc(100vh - 50px)',
       position:'sticky', top:50,
@@ -191,7 +191,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
               }}
               onMouseEnter={e=>{if(session){e.currentTarget.style.background='rgba(31,92,78,0.07)';e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'}}}
               onMouseLeave={e=>{e.currentTarget.style.background='rgba(0,0,0,0.02)';e.currentTarget.style.borderColor='rgba(0,0,0,0.05)'}}>
-                <span style={{color:'rgba(192,57,43,0.5)',marginRight:6}}>›</span>{c}
+                <span style={{color:'rgba(31,92,78,0.3)',marginRight:6}}>›</span>{c}
               </button>
             ))}
           </div>
@@ -229,7 +229,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
                 }}>🧠</div>
                 <div style={{
                   flex:1,background:'rgba(0,0,0,0.02)',
-                  border:`1px solid ${msg.err?'rgba(248,113,113,0.2)':'rgba(0,0,0,0.05)'}`,
+                  border:`1px solid ${msg.err?'rgba(192,57,43,0.12)':'rgba(0,0,0,0.05)'}`,
                   borderRadius:'2px 8px 8px 8px',padding:'8px 10px',
                 }}>
                   {msg.loading ? <Dots/> : (
@@ -299,7 +299,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
             rows={1} disabled={busy||!session}
             style={{
               flex:1,background:'rgba(0,0,0,0.03)',
-              border:`1px solid ${input?'rgba(192,57,43,0.4)':'rgba(0,0,0,0.06)'}`,
+              border:`1px solid ${input?'rgba(0,0,0,0.1)':'rgba(0,0,0,0.06)'}`,
               borderRadius:8,padding:'7px 10px',
               color:'#111111',fontSize:12.5,fontFamily:'inherit',
               resize:'none',outline:'none',lineHeight:1.5,

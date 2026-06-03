@@ -220,7 +220,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
               background: hostType===t.key ? 'rgba(31,92,78,0.08)' : 'white',
               cursor:'pointer', textAlign:'left', fontFamily:'inherit'
             }}>
-              <div style={{ color: hostType===t.key ? '#1f5c4e' : 'rgba(240,237,232,0.5)', marginBottom:6 }}>{t.icon}</div>
+              <div style={{ color: hostType===t.key ? '#1f5c4e' : '#666666', marginBottom:6 }}>{t.icon}</div>
               <div style={{ fontSize:13, fontWeight:600, color: hostType===t.key ? '#1f5c4e' : 'transparent' }}>{t.label}</div>
               <div style={{ fontSize:11, color:'#b5aea8', marginTop:2 }}>{t.sub}</div>
             </button>
@@ -285,7 +285,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                         </div>
                         <div>
                           <div style={{ fontSize:13, fontWeight: step.done || step.active ? 600 : 400,
-                            color: step.done ? 'transparent' : step.active ? '#2e7a68' : 'rgba(240,237,232,0.5)' }}>
+                            color: step.done ? 'transparent' : step.active ? '#2e7a68' : '#666666' }}>
                             {step.label}
                           </div>
                           <div style={{ fontSize:11, color:'#b5aea8', fontFamily:'monospace', marginTop:2 }}>
@@ -329,7 +329,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                     style={{ width:'100%', padding:'10px', fontSize:13, fontWeight:500, borderRadius:7,
                       border:'none', cursor:'pointer', fontFamily:'inherit',
                       background: jobStatus === 'success' ? '#1f5c4e' : 'rgba(31,92,78,0.08)',
-                      color: jobStatus === 'success' ? 'white' : 'rgba(240,237,232,0.6)' }}>
+                      color: jobStatus === 'success' ? 'white' : '#555555' }}>
                     {jobStatus === 'success' ? 'Done' : jobStatus === 'failed' ? 'Close' : 'Close (job continues in background)'}
                   </button>
                 </div>
@@ -366,7 +366,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                   {error && <div style={{ fontSize:12, color:'#1f5c4e', marginBottom:10 }}>{error}</div>}
                   <button onClick={dispatchToAgent} disabled={!selectedAgent || dispatching}
                     style={{ width:'100%', background: selectedAgent ? '#1f5c4e' : 'rgba(0,0,0,0.07)',
-                      color: selectedAgent ? 'white' : 'rgba(240,237,232,0.5)', border:'none', borderRadius:7,
+                      color: selectedAgent ? 'white' : '#666666', border:'none', borderRadius:7,
                       padding:'10px', fontSize:13, fontWeight:500, cursor: selectedAgent ? 'pointer' : 'default',
                       fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
                     {dispatching

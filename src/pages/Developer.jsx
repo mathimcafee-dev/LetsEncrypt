@@ -3,8 +3,8 @@ import portrait from '../assets/mathi-portrait.jpg'
 
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const BG   = '#120000'
-const BG2  = '#1a0404'
+const BG   = '#f4f1ec'
+const BG2  = '#f4f1ec'
 const BG3  = '#ffffff'
 const T1   = '#111111'
 const T2   = '#444444'

@@ -457,7 +457,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
             {/* Rotate */}
             <button className="v2-btn v2-btn-sm" onClick={() => onRotate(keyEntry)}
               disabled={rotating === keyEntry.id}
-              style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'rgba(240,237,232,0.85)', border:'1px solid rgba(240,237,232,0.2)' }}>
+              style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'rgba(240,237,232,0.85)', border:'1px solid #bbbbbb' }}>
               {rotating === keyEntry.id
                 ? <><RefreshCw size={10} style={{ animation:'spin .8s linear infinite' }}/> Rotating…</>
                 : <><RotateCcw size={10}/> Rotate key</>}
@@ -466,7 +466,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
             {/* View audit — now wired up */}
             <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
               style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
-                color:'#3d3d3d', border:'1px solid rgba(240,237,232,0.15)' }}>
+                color:'#3d3d3d', border:'1px solid #cccccc' }}>
               <Activity size={10}/> View audit
             </button>
           </div>
@@ -481,7 +481,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
             </div>
             <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
               style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
-                color:'#3d3d3d', border:'1px solid rgba(240,237,232,0.15)' }}>
+                color:'#3d3d3d', border:'1px solid #cccccc' }}>
               <Activity size={10}/> View audit
             </button>
           </div>

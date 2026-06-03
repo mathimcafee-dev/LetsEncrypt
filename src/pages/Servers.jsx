@@ -300,7 +300,7 @@ export default function ServersPage({ user }) {
         <div style={{ padding:'clamp(16px,20vw,60px) 20px', textAlign:'center', color:'#6b6b6b', fontSize:12 }}>Loading…</div>
       ) : agents.length === 0 ? (
         <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'clamp(16px,20vw,60px) 20px', textAlign:'center' }}>
-          <Server size={36} color="rgba(240,237,232,0.15)" strokeWidth={1.5} style={{ marginBottom:12 }}/>
+          <Server size={36} color="#cccccc" strokeWidth={1.5} style={{ marginBottom:12 }}/>
           <div style={{ fontSize:14, fontWeight:500, color:'#1a1a1a', marginBottom:6 }}>No servers connected</div>
           <div style={{ fontSize:12, color:'#6b6b6b', marginBottom:20, maxWidth:340, margin:'0 auto 20px' }}>
             Install the SSLVault agent on any Linux VPS or cPanel server. It will auto-renew your certificates and report status here.

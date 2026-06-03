@@ -158,14 +158,14 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
               <button className="v2-btn v2-btn-sm" onClick={() => onRotate(keyEntry)}
                 disabled={rotating === keyEntry.id}
                 style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
-                  color:'rgba(240,237,232,0.85)', border:'1px solid rgba(240,237,232,0.2)' }}>
+                  color:'rgba(240,237,232,0.85)', border:'1px solid #bbbbbb' }}>
                 {rotating === keyEntry.id
                   ? <><RefreshCw size={10} style={{ animation:'spin .8s linear infinite' }}/> Rotating…</>
                   : <><RotateCcw size={10}/> Rotate key</>}
               </button>
               <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
                 style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
-                  color:'#444444', border:'1px solid rgba(240,237,232,0.15)' }}>
+                  color:'#444444', border:'1px solid #cccccc' }}>
                 <Activity size={10}/> View audit
               </button>
             </div>
@@ -178,7 +178,7 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
               </div>
               <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
                 style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
-                  color:'#444444', border:'1px solid rgba(240,237,232,0.15)' }}>
+                  color:'#444444', border:'1px solid #cccccc' }}>
                 <Activity size={10}/> View audit
               </button>
             </div>
@@ -231,7 +231,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
   }
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:300,
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.45)', zIndex:300,
       display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%', maxWidth:420,
         boxShadow:'0 24px 60px rgba(0,0,0,0.5)', overflow:'hidden' }}>
@@ -626,7 +626,7 @@ export default function Vault({ nav }) {
 
         {/* Rotate confirm modal — exact same as KeyLocker */}
         {rotateConfirm && (
-          <div style={{ position:'fixed', inset:0, background:'rgba(240,237,232,0.5)', zIndex:200,
+          <div style={{ position:'fixed', inset:0, background:'#666666', zIndex:200,
             display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
             <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%',
               maxWidth:440, boxShadow:'0 20px 60px rgba(0,0,0,0.25)', overflow:'hidden' }}>

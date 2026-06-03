@@ -31,10 +31,10 @@ const EVENT_CONFIG = {
   renewed:         { icon: RotateCcw,   color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate renewed' },
   revoked:         { icon: ShieldOff,   color: '#1f5c4e', bg: 'rgba(248,113,113,0.12)', label: 'Certificate revoked' },
   agent_installed: { icon: Zap,         color: '#9a6400', bg: 'rgba(251,191,36,0.12)', label: 'Installed by agent' },
-  key_rotated:     { icon: RotateCcw,   color: '#1f5c4e', bg: 'rgba(255,107,91,0.12)', label: 'Key rotated' },
+  key_rotated:     { icon: RotateCcw,   color: '#1f5c4e', bg: 'rgba(0,0,0,0.08)', label: 'Key rotated' },
   downloaded:      { icon: Download,    color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate downloaded' },
-  private_key_copied: { icon: Shield,   color: '#1f5c4e', bg: 'rgba(255,107,91,0.12)', label: 'Private key copied' },
-  default:         { icon: Shield,      color: '#b5aea8', bg: 'rgba(232,245,244,0.06)', label: 'Event' },
+  private_key_copied: { icon: Shield,   color: '#1f5c4e', bg: 'rgba(0,0,0,0.08)', label: 'Private key copied' },
+  default:         { icon: Shield,      color: '#b5aea8', bg: 'rgba(0,0,0,0.04)', label: 'Event' },
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}

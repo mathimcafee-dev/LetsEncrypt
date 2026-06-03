@@ -225,7 +225,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
         {/* Empty state — chips */}
         {msgs.length === 0 && !busy && (
           <div style={{ padding: '14px 16px 18px' }}>
-            <div style={{ fontSize: 11, color: 'rgba(240,237,232,0.3)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ fontSize: 11, color: '#999999', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Suggested
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -241,12 +241,12 @@ export default function VaultBrainModal({ open, onClose, session }) {
                 }}
                 onMouseEnter={e => { if (session) { e.currentTarget.style.background = 'rgba(31,92,78,0.07)'; e.currentTarget.style.borderColor = 'rgba(31,92,78,0.2)' } }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)' }}>
-                  <span style={{ color: 'rgba(192,57,43,0.5)', fontSize: 11 }}>›</span>
+                  <span style={{ color: 'rgba(31,92,78,0.3)', fontSize: 11 }}>›</span>
                   {c}
                 </button>
               ))}
             </div>
-            <div style={{ marginTop: 14, fontSize: 11, color: 'rgba(240,237,232,0.2)', textAlign: 'center' }}>
+            <div style={{ marginTop: 14, fontSize: 11, color: '#bbbbbb', textAlign: 'center' }}>
               Press Esc to close
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                       borderRadius: '10px 10px 2px 10px', padding: '8px 13px',
                     }}>
                       <div style={{ fontSize: 13.5, color: '#111111' }}>{msg.text}</div>
-                      <div style={{ fontSize: 10, color: 'rgba(240,237,232,0.3)', marginTop: 3, textAlign: 'right' }}>{msg.ts}</div>
+                      <div style={{ fontSize: 10, color: '#999999', marginTop: 3, textAlign: 'right' }}>{msg.ts}</div>
                     </div>
                   </div>
                 )}
@@ -294,7 +294,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                           <div style={{ color: msg.err ? '#1f5c4e' : '#e4e0dc' }}>
                             <MsgText text={msg.text} />
                           </div>
-                          {msg.ts && <div style={{ fontSize: 10, color: 'rgba(240,237,232,0.25)', marginTop: 4 }}>{msg.ts}</div>}
+                          {msg.ts && <div style={{ fontSize: 10, color: '#aaaaaa', marginTop: 4 }}>{msg.ts}</div>}
                         </>
                       )}
                     </div>

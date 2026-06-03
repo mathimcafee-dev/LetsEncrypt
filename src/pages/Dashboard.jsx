@@ -316,7 +316,7 @@ function DvPendingCard({ order, onRefresh }) {
                 background: s.done ? 'rgba(22,160,104,0.11)' : s.active ? 'rgba(251,191,36,0.12)' : 'rgba(0,0,0,0.03)',
                 border: `1.5px solid ${s.done ? 'rgba(74,222,128,0.4)' : s.active ? 'rgba(251,191,36,0.4)' : 'rgba(0,0,0,0.07)'}`,
                 fontSize:11, fontWeight:700,
-                color: s.done ? '#16a068' : s.active ? '#9a6400' : 'rgba(240,237,232,0.2)' }}>
+                color: s.done ? '#16a068' : s.active ? '#9a6400' : '#bbbbbb' }}>
                 {s.done ? '✓' : s.active ? <span style={{ display:'inline-block', width:8, height:8, borderRadius:'50%', border:'2px solid #fbbf24', borderTopColor:'transparent', animation:'spin .8s linear infinite' }}/> : <span style={{ width:6, height:6, borderRadius:'50%', background:'rgba(0,0,0,0.09)' }}/>}
               </div>
               {i < steps.length-1 && (
@@ -329,7 +329,7 @@ function DvPendingCard({ order, onRefresh }) {
               <div style={{ fontSize:12, fontWeight:600, color: s.done ? '#16a068' : s.active ? '#9a6400' : '#888888', marginBottom:2 }}>
                 {s.label}
               </div>
-              <div style={{ fontSize:11, color: s.done ? 'rgba(240,237,232,0.5)' : s.active ? 'rgba(251,191,36,0.7)' : '#999999', wordBreak:'break-all' }}>
+              <div style={{ fontSize:11, color: s.done ? '#666666' : s.active ? 'rgba(251,191,36,0.7)' : '#999999', wordBreak:'break-all' }}>
                 {s.detail}
               </div>
             </div>
@@ -375,7 +375,7 @@ function DvPendingCard({ order, onRefresh }) {
         {!confirmDismiss ? (
           <button onClick={() => setConfirmDismiss(true)}
             style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:5, background:'transparent',
-              border:'1px solid rgba(248,113,113,0.2)', color:'rgba(248,113,113,0.6)', borderRadius:6,
+              border:'1px solid rgba(192,57,43,0.12)', color:'rgba(248,113,113,0.6)', borderRadius:6,
               padding:'6px 12px', fontSize:11, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <X size={10}/> Dismiss
           </button>
@@ -383,12 +383,12 @@ function DvPendingCard({ order, onRefresh }) {
           <div style={{ display:'flex', gap:6, alignItems:'center', marginLeft:'auto' }}>
             <span style={{ fontSize:11, color:'#1f5c4e' }}>Remove this card?</span>
             <button onClick={dismissOrder} disabled={dismissing}
-              style={{ background:'rgba(31,92,78,0.09)', color:'#1f5c4e', border:'1px solid rgba(248,113,113,0.3)', borderRadius:6,
+              style={{ background:'rgba(31,92,78,0.09)', color:'#1f5c4e', border:'1px solid rgba(192,57,43,0.2)', borderRadius:6,
                 padding:'5px 12px', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
               {dismissing ? 'Removing…' : 'Yes, remove'}
             </button>
             <button onClick={() => setConfirmDismiss(false)}
-              style={{ background:'transparent', color:'#6b6b6b', border:'1px solid rgba(240,237,232,0.1)', borderRadius:6,
+              style={{ background:'transparent', color:'#6b6b6b', border:'1px solid rgba(0,0,0,0.07)', borderRadius:6,
                 padding:'5px 12px', fontSize:11, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
               Cancel
             </button>
@@ -1155,7 +1155,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                 </div>
                 <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4,
                   background: r.status==='active' ? 'rgba(74,222,128,0.12)' : 'transparent',
-                  color: r.status==='active' ? '#16a068' : 'rgba(240,237,232,0.7)' }}>{r.status}</span>
+                  color: r.status==='active' ? '#16a068' : '#444444' }}>{r.status}</span>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:'4px 12px' }}>
                 {[
@@ -1386,7 +1386,7 @@ function TlsPostureRow({ cert, onRefresh }) {
   const gradeColor = { A:'#16a068', B:'#65a30d', C:'#111111', D:'#1f5c4e', F:'#1f5c4e' }
   const grade = cert.tls_grade
   const score = cert.tls_score || 0
-  const color = gradeColor[grade] || 'rgba(240,237,232,0.7)'
+  const color = gradeColor[grade] || '#444444'
 
   const runCheck = async (e) => {
     e.stopPropagation()
@@ -1590,12 +1590,12 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const ABtn = ({ icon: Icon, label, onClick, color='#1f5c4e', disabled }) => (
     <button onClick={disabled ? undefined : onClick} disabled={disabled}
       style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px',
-        background:'transparent', border:'1px solid rgba(240,237,232,0.15)',
+        background:'transparent', border:'1px solid #cccccc',
         borderRadius:7, cursor: disabled ? 'not-allowed' : 'pointer',
         color: disabled ? '#999999' : color,
         fontFamily:'inherit', fontSize:12, fontWeight:600, transition:'all .15s',
         opacity: disabled ? 0.5 : 1 }}
-      onMouseEnter={e => { if (!disabled) { e.currentTarget.style.background='rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor='rgba(240,237,232,0.3)' }}}
+      onMouseEnter={e => { if (!disabled) { e.currentTarget.style.background='rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor='#999999' }}}
       onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.borderColor='#cccccc' }}>
       {Icon && <Icon size={12}/>} {label}
     </button>
@@ -1716,7 +1716,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           <button key={k} onClick={() => setActiveSection(k)}
             style={{ fontSize:12, fontWeight:600, padding:'10px 14px', border:'none', background:'none',
               cursor:'pointer', fontFamily:'inherit', marginBottom:-1,
-              color: activeSection===k ? '#ffffff' : '#b0a8a0',
+              color: activeSection===k ? '#1f5c4e' : '#888888',
               borderBottom:'2px solid '+(activeSection===k ? '#1f5c4e' : 'transparent'),
               transition:'all .15s' }}>
             {l}
@@ -1747,7 +1747,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:'#1f5c4e', textTransform:'uppercase',
                 letterSpacing:'0.8px', marginBottom:12, paddingBottom:8,
-                borderBottom:'1px solid rgba(255,107,91,0.2)', display:'flex', alignItems:'center', gap:6 }}>
+                borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', gap:6 }}>
                 📋 Main Details
               </div>
 
@@ -1768,7 +1768,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                   padding:'9px 0', borderBottom:'1px solid rgba(0,0,0,0.04)', gap:16 }}>
                   <span style={{ fontSize:12, color:'#6b6b6b', flexShrink:0, minWidth:140 }}>{label}</span>
                   <div style={{ display:'flex', alignItems:'center', gap:6, textAlign:'right' }}>
-                    <span style={{ fontSize:12, color: label==='Order Status' ? '#16a068' : '#ffffff',
+                    <span style={{ fontSize:12, color: label==='Order Status' ? '#16a068' : '#111111',
                       fontFamily: mono ? 'monospace' : 'inherit' }}>
                       {value}
                     </span>
@@ -1798,7 +1798,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:'#1f5c4e', textTransform:'uppercase',
                 letterSpacing:'0.8px', marginBottom:12, paddingBottom:8,
-                borderBottom:'1px solid rgba(255,107,91,0.2)', display:'flex', alignItems:'center', gap:6 }}>
+                borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', gap:6 }}>
                 👤 Administrator Contact
               </div>
               {[
@@ -1820,7 +1820,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               {/* Technical Contact -- same data for DV certs */}
               <div style={{ fontSize:11, fontWeight:700, color:'#1f5c4e', textTransform:'uppercase',
                 letterSpacing:'0.8px', margin:'20px 0 12px', paddingBottom:8,
-                borderBottom:'1px solid rgba(255,107,91,0.2)', display:'flex', alignItems:'center', gap:6 }}>
+                borderBottom:'1px solid rgba(0,0,0,0.08)', display:'flex', alignItems:'center', gap:6 }}>
                 🔧 Technical Contact
               </div>
               {[
@@ -2125,7 +2125,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
       <div onClick={() => onSelect(primary.id)}
         style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 14px',
           cursor:'pointer', transition:'background 0.15s', background:'var(--v2-surface)' }}
-        onMouseEnter={e => e.currentTarget.style.background='rgba(255,107,91,0.07)'}
+        onMouseEnter={e => e.currentTarget.style.background='rgba(0,0,0,0.08)'}
         onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
 
         <span style={{ fontSize:11, color:'#6b6b6b', fontWeight:600, minWidth:16, textAlign:'right', flexShrink:0 }}>{index}</span>
@@ -2152,9 +2152,9 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
             </span>
             {primary.install_method && (
               <span style={{ fontSize:10, padding:'2px 8px', borderRadius:20,
-                background: primary.install_method==='cpanel'?'#000000':'rgba(240,237,232,0.7)',
+                background: primary.install_method==='cpanel'?'#000000':'#444444',
                 color: primary.install_method==='cpanel'?'#8B6914':'#111111',
-                border:`0.5px solid ${primary.install_method==='cpanel'?'rgba(30,0,0,0.5)':'rgba(240,237,232,0.7)'}`,
+                border:`0.5px solid ${primary.install_method==='cpanel'?'rgba(30,0,0,0.5)':'#444444'}`,
                 display:'flex', alignItems:'center', gap:3, flexShrink:0 }}>
                 {primary.install_method==='cpanel' ? '🌐 cPanel' : '🖥 VPS'}
               </span>
@@ -2276,7 +2276,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                         <span style={{ fontSize:9, color:'#6b6b6b', width:54, flexShrink:0 }}>
                           {subStart.toLocaleDateString('en-US',{month:'short',year:'numeric'})}
                         </span>
-                        <div style={{ flex:1, height:6, background:'rgba(240,237,232,0.6)', borderRadius:6,
+                        <div style={{ flex:1, height:6, background:'#555555', borderRadius:6,
                           position:'relative', overflow:'visible' }}>
                           {/* Filled progress */}
                           <div style={{ position:'absolute', left:0, top:0, bottom:0,
@@ -2501,7 +2501,7 @@ function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
             animation: isActive ? 'v3pulse 2s ease infinite' : 'none' }}/>
           {isExpired ? 'Expired' : isWarn ? 'Expiring' : isActive ? 'Active' : (cert.status || 'Pending')}
         </span>
-        <ChevronRight size={14} color={selected ? '#1f5c4e' : 'rgba(240,237,232,0.2)'}
+        <ChevronRight size={14} color={selected ? '#1f5c4e' : '#bbbbbb'}
           style={{ transform: selected ? 'rotate(90deg)' : 'none', transition:'transform .2s', flexShrink:0 }}/>
       </div>
     </div>
@@ -2707,8 +2707,8 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               borderRadius:8, padding:'7px 14px',
               fontSize:11, fontWeight:500, color:'#6b6b6b', cursor:'pointer', fontFamily:'inherit',
               transition:'border-color .15s, color .15s' }}
-            onMouseEnter={e=>{ e.currentTarget.style.borderColor='rgba(255,255,255,0.18)'; e.currentTarget.style.color='#ffffff' }}
-            onMouseLeave={e=>{ e.currentTarget.style.borderColor='rgba(0,0,0,0.06)'; e.currentTarget.style.color='rgba(240,237,232,0.5)' }}>
+            onMouseEnter={e=>{ e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'; e.currentTarget.style.color='#111111' }}
+            onMouseLeave={e=>{ e.currentTarget.style.borderColor='rgba(0,0,0,0.06)'; e.currentTarget.style.color='#666666' }}>
             <Share2 size={11} color="currentColor"/>
             {shareMsg || 'Share SSL status'}
           </button>
@@ -2748,7 +2748,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               {/* Score ring */}
               <div style={{ flexShrink:0, position:'relative', width:80, height:80 }}>
                 <svg width="80" height="80" viewBox="0 0 80 80" style={{ transform:'rotate(-90deg)', position:'absolute', top:0, left:0 }}>
-                  <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6"/>
+                  <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="6"/>
                   <circle cx="40" cy="40" r="33" fill="none" stroke={scoreColor} strokeWidth="6"
                     strokeDasharray={`${2*Math.PI*33}`}
                     strokeDashoffset={`${2*Math.PI*33*(1-postureScore/100)}`}
@@ -2763,7 +2763,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               {/* Score details + bars */}
               <div style={{ flex:1, minWidth:0 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-                  <span style={{ fontSize:15, fontWeight:700, color:'#ffffff', letterSpacing:'-0.2px' }}>{scoreLabel}</span>
+                  <span style={{ fontSize:15, fontWeight:700, color:'#111111', letterSpacing:'-0.2px' }}>{scoreLabel}</span>
                   <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20, background:`${scoreColor}18`, color:scoreColor, border:`1px solid ${scoreColor}44` }}>{total} cert{total!==1?'s':''}</span>
                   <span style={{ fontSize:10, color:'rgba(255,255,255,0.3)' }}>·</span>
                   <span style={{ fontSize:10, color:'rgba(255,255,255,0.45)' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
@@ -2772,7 +2772,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                   {bars.map(b => (
                     <div key={b.label} style={{ display:'flex', alignItems:'center', gap:6 }}>
                       <span style={{ fontSize:9, color:'rgba(255,255,255,0.4)', width:52, flexShrink:0, textTransform:'uppercase', letterSpacing:'0.04em' }}>{b.label}</span>
-                      <div style={{ flex:1, height:2, background:'rgba(255,255,255,0.1)', borderRadius:1, overflow:'hidden' }}>
+                      <div style={{ flex:1, height:2, background:'rgba(0,0,0,0.07)', borderRadius:1, overflow:'hidden' }}>
                         <div style={{ height:'100%', width:`${b.pct}%`, background:b.pct===100?b.color:'#1f5c4e', borderRadius:1, transition:'width 1s ease' }}/>
                       </div>
                       <span style={{ fontSize:9, color:b.pct===100?b.color:'#1f5c4e', width:22, textAlign:'right', flexShrink:0, fontWeight:600 }}>{b.pct}%</span>
@@ -2781,12 +2781,12 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 </div>
               </div>
               {/* Divider */}
-              <div style={{ width:1, height:52, background:'rgba(255,255,255,0.1)', flexShrink:0 }}/>
+              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.07)', flexShrink:0 }}/>
               {/* Stat pills */}
               <div style={{ display:'flex', gap:8, flexShrink:0 }}>
                 {[
                   { val:healthy, label:'Healthy', color:'#16a068', bg:'rgba(22,160,104,0.12)', border:'rgba(22,160,104,0.25)', onClick:()=>setFilter('healthy') },
-                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#fbbf24':pendingDcv>0?'#60a5fa':'rgba(255,255,255,0.3)', bg:'rgba(255,255,255,0.06)', border:'rgba(255,255,255,0.12)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
+                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#fbbf24':pendingDcv>0?'#60a5fa':'rgba(255,255,255,0.3)', bg:'rgba(0,0,0,0.05)', border:'rgba(0,0,0,0.08)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
                 ].map(s => (
                   <div key={s.label} onClick={s.onClick} style={{
                     background:s.bg, border:`1px solid ${s.border}`,
@@ -2801,16 +2801,16 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 ))}
               </div>
               {/* Divider */}
-              <div style={{ width:1, height:52, background:'rgba(255,255,255,0.1)', flexShrink:0 }}/>
+              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.07)', flexShrink:0 }}/>
               {/* AI button */}
               <div onClick={()=>onOpenAI?.()} title="Ask VaultBrain AI" style={{
                 flexShrink:0, cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:3,
                 padding:'8px 10px', borderRadius:10,
-                border:'1px solid rgba(255,255,255,0.12)', background:'rgba(255,255,255,0.06)',
+                border:'1px solid rgba(0,0,0,0.08)', background:'rgba(0,0,0,0.05)',
                 transition:'background .15s, border-color .15s, transform .15s',
               }}
-              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; e.currentTarget.style.transform='scale(1.05)' }}
-              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'; e.currentTarget.style.transform='scale(1)' }}>
+              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(0,0,0,0.07)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; e.currentTarget.style.transform='scale(1.05)' }}
+              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor='rgba(0,0,0,0.08)'; e.currentTarget.style.transform='scale(1)' }}>
                 <span style={{ fontSize:18 }}>🧠</span>
                 <span style={{ fontSize:8, color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:700 }}>AI</span>
               </div>
@@ -2824,9 +2824,9 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
           {[
             { label:'Total certificates', value:total,    color:'#1f5c4e', border:'rgba(0,0,0,0.1)',   sub:'managed by SSLVault',  filterKey:'all' },
             { label:'Healthy',            value:healthy,  color:'#16a068', border:'rgba(63,185,80,0.25)',    sub:healthy>0?'All valid':'No active certs', filterKey:'healthy' },
-            { label:'Expiring ≤30d',      value:expiring, color:expiring>0?'#9a6400':'rgba(240,237,232,0.4)', border:expiring>0?'rgba(210,153,34,0.25)':'rgba(0,0,0,0.07)', sub:expiring>0?'Needs attention':'None expiring', filterKey:'expiring' },
-            { label:'Pending DCV',        value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#1f5c4e':'rgba(240,237,232,0.4)', border:orders.filter(o=>o.status==='dv_pending').length>0?'rgba(248,81,73,0.25)':'rgba(0,0,0,0.07)', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None pending', filterKey:'all' },
-            { label:'Expired',            value:expired,  color:expired>0?'#1f5c4e':'rgba(240,237,232,0.4)', border:expired>0?'rgba(248,81,73,0.3)':'rgba(0,0,0,0.07)', sub:expired>0?'Renew immediately':'None expired', filterKey:'expired' },
+            { label:'Expiring ≤30d',      value:expiring, color:expiring>0?'#9a6400':'#888888', border:expiring>0?'rgba(210,153,34,0.25)':'rgba(0,0,0,0.07)', sub:expiring>0?'Needs attention':'None expiring', filterKey:'expiring' },
+            { label:'Pending DCV',        value:orders.filter(o=>o.status==='dv_pending').length, color:orders.filter(o=>o.status==='dv_pending').length>0?'#1f5c4e':'#888888', border:orders.filter(o=>o.status==='dv_pending').length>0?'rgba(248,81,73,0.25)':'rgba(0,0,0,0.07)', sub:orders.filter(o=>o.status==='dv_pending').length>0?'Awaiting DNS':'None pending', filterKey:'all' },
+            { label:'Expired',            value:expired,  color:expired>0?'#1f5c4e':'#888888', border:expired>0?'rgba(248,81,73,0.3)':'rgba(0,0,0,0.07)', sub:expired>0?'Renew immediately':'None expired', filterKey:'expired' },
           ].map((s,i) => (
             <div key={s.label} onClick={() => setFilter(s.filterKey)} style={{
               background:'transparent',
@@ -3042,7 +3042,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                           <div style={{ position:'absolute', left:0, top:0, bottom:0, width:`${issuedP*100}%`, background:'rgba(0,0,0,0.04)' }}/>
                           <div style={{ position:'absolute', left:`${issuedP*100}%`, top:0, bottom:0, width:`${activeW*100}%`, background:`${col}CC` }}/>
                           <div style={{ position:'absolute', left:`${Math.min(todayPct,expiryP)*100}%`, top:0, bottom:0, width:`${futureW*100}%`, background:`${col}33` }}/>
-                          <div style={{ position:'absolute', top:0, bottom:0, left:`${todayPct*100}%`, width:2, background:'rgba(192,57,43,0.6)' }}/>
+                          <div style={{ position:'absolute', top:0, bottom:0, left:`${todayPct*100}%`, width:2, background:'rgba(31,92,78,0.35)' }}/>
                         </div>
                         <div style={{ width:36, textAlign:'right', fontSize:11, fontWeight:700, fontFamily:'monospace', color:col, flexShrink:0 }}>{d==null?'--':d<=0?'EXP':`${d}d`}</div>
                         <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:99, width:50, textAlign:'center', flexShrink:0, background:notLive?'rgba(192,57,43,0.08)':'rgba(22,160,104,0.09)', color:notLive?'#c0392b':'#16a068', border:`1px solid ${notLive?'rgba(192,57,43,0.2)':'rgba(22,160,104,0.2)'}` }}>
@@ -3273,7 +3273,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                     onMouseEnter={e => e.currentTarget.style.opacity='0.65'}
                     onMouseLeave={e => e.currentTarget.style.opacity='0.35'}>
                     <div style={{ width:28, height:28, flexShrink:0,
-                      border:'1px dashed rgba(255,255,255,0.2)',
+                      border:'1px dashed rgba(0,0,0,0.1)',
                       borderRadius:'50%', display:'flex',
                       alignItems:'center', justifyContent:'center',
                       fontSize:16, color:'rgba(255,255,255,0.35)', fontWeight:300 }}>

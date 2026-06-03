@@ -63,7 +63,7 @@ function SSLVaultTrustBadge({ compact = false }) {
     <div style={{
       display:'inline-flex', alignItems:'center', gap: compact ? 8 : 11,
       padding: compact ? '6px 12px 6px 8px' : '9px 16px 9px 10px',
-      background:'#1a0808',
+      background:'#f4f1ec',
       border:'1px solid rgba(31,92,78,0.25)',
       borderRadius:10, position:'relative', overflow:'hidden',
       minWidth: compact ? 0 : 240,
@@ -80,7 +80,7 @@ function SSLVaultTrustBadge({ compact = false }) {
         <span style={{fontSize: compact ? 8 : 9, color:'#6a2a2a', letterSpacing:'.03em'}}>
           {compact ? '256-bit TLS encryption' : 'Certified PKI · GoGetSSL · RapidSSL DV'}
         </span>
-        <div style={{width:'100%',height:2,background:'#120505',borderRadius:1,marginTop:3,overflow:'hidden',position:'relative'}}>
+        <div style={{width:'100%',height:2,background:'rgba(0,0,0,0.07)',borderRadius:1,marginTop:3,overflow:'hidden',position:'relative'}}>
           <div style={{position:'absolute',left:'-60%',top:0,width:'40%',height:'100%',
             background:'linear-gradient(90deg,transparent,#2a6b5c,rgba(220,60,40,.5),transparent)',
             animation:'sv-scan-anim 2.4s linear infinite'}}/>

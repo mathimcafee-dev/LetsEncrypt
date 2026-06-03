@@ -452,7 +452,7 @@ function TLSGradesTab({ tok, user }) {
 // TAB 3 — CT WATCH
 // ══════════════════════════════════════════════════════════════════════
 const CT_STATUS = {
-  unknown:    { label:'Unknown',    color:'#1f5c4e', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.3)' },
+  unknown:    { label:'Unknown',    color:'#1f5c4e', bg:'rgba(248,113,113,0.12)', border:'rgba(192,57,43,0.2)' },
   phishing:   { label:'Phishing',   color:'#1f5c4e', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
   suspicious: { label:'Suspicious', color:'#1f5c4e', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
   known:      { label:'Known',      color:'#1a1a1a', bg:'transparent', border:'rgba(31,92,78,0.2)' },
@@ -566,7 +566,7 @@ function CTWatchTab({ tok, user }) {
                     <div style={{ display:'flex', gap:4 }}>
                       <button onClick={() => setExpanded(isExp?null:s.id)}
                         style={{ fontSize:10, padding:'3px 8px', borderRadius:5,
-                          border:'1px solid rgba(240,237,232,0.2)', background:'rgba(0,0,0,0.05)',
+                          border:'1px solid #bbbbbb', background:'rgba(0,0,0,0.05)',
                           cursor:'pointer', fontFamily:'inherit', color:'#1a1a1a', fontWeight:500 }}>
                         {isExp?'Hide':'Details'}
                       </button>

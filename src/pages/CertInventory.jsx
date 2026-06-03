@@ -182,7 +182,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 <InfoRow label="Validity"       value={order?.years ? `${order.years} Year${order.years>1?'s':''}` : '1 Year'}/>
                 <InfoRow label="Vendor Status"  value={(order?.minor_status||cert.status||'').toUpperCase()} color="#1f5c4e"/>
                 <InfoRow label="Install Method" value={cert.install_method ? cert.install_method.toUpperCase() : '—'}/>
-                <InfoRow label="Install Status" value={cert.install_status === 'success' ? (cert.install_verified ? '✓ Verified Live' : 'Installed') : (cert.install_status||'Not installed')} color={cert.install_status==='success'?'#111111':'rgba(240,237,232,0.4)'}/>
+                <InfoRow label="Install Status" value={cert.install_status === 'success' ? (cert.install_verified ? '✓ Verified Live' : 'Installed') : (cert.install_status||'Not installed')} color={cert.install_status==='success'?'#111111':'#888888'}/>
                 <InfoRow label="Environment"    value={cert.is_sandbox?'Sandbox':'Production'} color={cert.is_sandbox?'#1f5c4e':'#111111'}/>
               </tbody>
             </table>
@@ -202,7 +202,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 ].map(({ label, key, icon:Icon, filename, sensitive }) => (
                   <div key={key} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 14px', border:'1px solid rgba(0,0,0,0.08)', borderRadius:8, fontSize:12, background:'rgba(0,0,0,0.02)' }}>
                     <span style={{ display:'flex', alignItems:'center', gap:8, color:'#111111' }}>
-                      <Icon size={14} color="rgba(240,237,232,0.6)"/> {label}
+                      <Icon size={14} color="#555555"/> {label}
                       {sensitive && keyDeleted && <span style={{ fontSize:9, fontWeight:500, color:'#333333', background:'var(--v2-border)', padding:'1px 6px', borderRadius:3 }}>DELETED</span>}
                     </span>
                     {sensitive && keyDeleted ? (
@@ -555,7 +555,7 @@ export default function CertInventory({ user, nav, onIssue }) {
           <div style={{ padding:'clamp(16px,16vw,48px) 20px', textAlign:'center', color:'#888888', fontSize:12 }}>Loading…</div>
         ) : filtered.length === 0 ? (
           <div style={{ padding:'clamp(16px,18vw,56px) 20px', textAlign:'center' }}>
-            <Shield size={32} color="rgba(240,237,232,0.15)" strokeWidth={1.5} style={{ marginBottom:10 }}/>
+            <Shield size={32} color="#cccccc" strokeWidth={1.5} style={{ marginBottom:10 }}/>
             <div style={{ fontSize:13, fontWeight:500, color:'#111111', marginBottom:4 }}>{certs.length===0?'No certificates yet':'No matches'}</div>
             <div style={{ fontSize:11, color:'#888888', marginBottom:16 }}>{certs.length===0?'Issue your first SSL certificate to get started':'Try a different filter or search term'}</div>
             {certs.length===0 && <button onClick={() => onIssue?.()} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#111111', border:'none', borderRadius:6, padding:'8px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}><Plus size={12}/> Issue certificate</button>}

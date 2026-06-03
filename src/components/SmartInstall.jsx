@@ -12,7 +12,7 @@ function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
   return (
     <button onClick={() => { navigator.clipboard.writeText(text).catch(()=>{}); setOk(true); setTimeout(()=>setOk(false),2000) }}
-      style={{ background:'none', border:'0.5px solid rgba(240,237,232,0.15)', borderRadius:5, cursor:'pointer',
+      style={{ background:'none', border:'0.5px solid #cccccc', borderRadius:5, cursor:'pointer',
         color: ok ? '#16a068' : 'rgba(240,237,232,0.45)', display:'flex', alignItems:'center',
         gap:4, fontSize:11, padding:'3px 8px', fontFamily:'inherit', flexShrink:0 }}>
       {ok ? <><Check size={11}/> Copied</> : <><Copy size={11}/> Copy</>}
@@ -21,7 +21,7 @@ function CopyBtn({ text }) {
 }
 
 function StepRow({ icon, label, detail, state }) {
-  const colors = { done:'#16a068', running:'#9a6400', error:'#1f5c4e', pending:'rgba(240,237,232,0.25)' }
+  const colors = { done:'#16a068', running:'#9a6400', error:'#1f5c4e', pending:'#aaaaaa' }
   const c = colors[state] || colors.pending
   return (
     <div style={{ display:'flex', gap:12, alignItems:'flex-start', marginBottom:10 }}>
@@ -34,8 +34,8 @@ function StepRow({ icon, label, detail, state }) {
         {state==='pending' && <span style={{width:6,height:6,borderRadius:'50%',background:'rgba(0,0,0,0.09)'}}/>}
       </div>
       <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ fontSize:12, fontWeight:600, color: state==='pending' ? 'rgba(240,237,232,0.35)' : '#111111', marginBottom:1 }}>{label}</div>
-        {detail && <div style={{ fontSize:11, color: state==='error' ? '#1f5c4e' : 'rgba(240,237,232,0.5)', wordBreak:'break-all' }}>{detail}</div>}
+        <div style={{ fontSize:12, fontWeight:600, color: state==='pending' ? '#888888' : '#111111', marginBottom:1 }}>{label}</div>
+        {detail && <div style={{ fontSize:11, color: state==='error' ? '#1f5c4e' : '#666666', wordBreak:'break-all' }}>{detail}</div>}
       </div>
     </div>
   )
@@ -391,7 +391,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
   const btn = (primary) => ({ width:'100%', padding:'10px', fontSize:13, fontWeight:600,
     borderRadius:7, border: primary ? 'none' : '1px solid rgba(0,0,0,0.08)',
     background: primary ? '#1f5c4e' : 'transparent',
-    color: primary ? 'white' : 'rgba(240,237,232,0.7)',
+    color: primary ? 'white' : '#444444',
     cursor:'pointer', fontFamily:'inherit', marginTop:8 })
 
   return (
@@ -522,7 +522,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                       borderRadius:8, border:'1px solid rgba(0,0,0,0.07)', background:'rgba(0,0,0,0.02)',
                       cursor:'pointer', textAlign:'left', fontFamily:'inherit', width:'100%',
                       transition:'border-color .15s' }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor='rgba(192,57,43,0.5)'}
+                    onMouseEnter={e => e.currentTarget.style.borderColor='rgba(31,92,78,0.3)'}
                     onMouseLeave={e => e.currentTarget.style.borderColor='rgba(0,0,0,0.07)'}>
                     <span style={{ fontSize:20, lineHeight:1, flexShrink:0 }}>{opt.icon}</span>
                     <div>
@@ -658,7 +658,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
             <div>
               {steps.map((s, i) => <StepRow key={i} label={s.label} detail={s.detail} state={s.state}/>)}
               <div style={{ marginTop:16, padding:'12px 14px', borderRadius:8,
-                background:'rgba(192,57,43,0.07)', border:'1px solid rgba(248,113,113,0.2)' }}>
+                background:'rgba(192,57,43,0.07)', border:'1px solid rgba(192,57,43,0.12)' }}>
                 <div style={{ fontSize:12, fontWeight:600, color:'#1f5c4e', marginBottom:4 }}>Installation failed</div>
                 <div style={{ fontSize:11, color:'#777777', lineHeight:1.6 }}>
                   {errorMsg.replace(/Full:\s*\{.*$/s, '').trim() || errorMsg}

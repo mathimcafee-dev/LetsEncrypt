@@ -375,7 +375,7 @@ export default function MissionControlModal({
       }}>
         <div style={{
           width: '100%', maxWidth: 460,
-          background: '#0c0505',
+          background: '#f4f1ec',
           border: '1px solid rgba(0,0,0,0.06)',
           borderRadius: 18,
           boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,140,122,0.06)',
@@ -553,7 +553,7 @@ export default function MissionControlModal({
                   <div style={{
                     padding: '10px 14px', borderRadius: 10,
                     background: 'rgba(248,113,113,0.06)',
-                    border: '1px solid rgba(248,113,113,0.2)',
+                    border: '1px solid rgba(192,57,43,0.12)',
                     fontSize: 11, color: '#1f5c4e',
                   }}>
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>Something went wrong</div>

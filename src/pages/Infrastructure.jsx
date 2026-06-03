@@ -234,7 +234,7 @@ function InstallModal({ onClose }) {
     setTimeout(() => setCopied(null), 1500)
   }
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(240,237,232,0.5)', zIndex:200,
+    <div style={{ position:'fixed', inset:0, background:'#666666', zIndex:200,
       display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%', maxWidth:520,
         boxShadow:'0 20px 60px rgba(0,0,0,0.25)', overflow:'hidden' }}>

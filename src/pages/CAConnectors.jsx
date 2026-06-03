@@ -305,12 +305,12 @@ export default function CAConnectors({ nav }) {
             const res = syncResult[conn.id]
             return (
               <div key={conn.id} className="v2-card" style={{ overflow: 'hidden',
-                borderColor: conn.status === 'active' ? `${def.color || 'rgba(240,237,232,0.7)'}30` : 'rgba(0,0,0,0.1)' }}>
+                borderColor: conn.status === 'active' ? `${def.color || '#444444'}30` : 'rgba(0,0,0,0.1)' }}>
                 <div style={{ padding: '13px 14px', borderBottom: '0.5px solid var(--v2-border)',
                   display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 36, height: 36, borderRadius: 8, background: def.bg || '#000000',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 700, fontSize:12, color: def.color || 'rgba(240,237,232,0.7)', flexShrink: 0 }}>
+                    fontWeight: 700, fontSize:12, color: def.color || '#444444', flexShrink: 0 }}>
                     {def.logo || conn.ca_name?.slice(0,2).toUpperCase() || '?'}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -936,8 +936,8 @@ export default function CAConnectors({ nav }) {
                   {['digicert','sectigo','sslcom','imported'].map(src => {
                     const count = certs.filter(c => c.source===src||c.imported_from===src).length
                     if (!count) return null
-                    const colors = {digicert:['rgba(31,92,78,0.09)','#1f5c4e'],sectigo:['rgba(239,68,68,0.08)','#111111'],sslcom:['rgba(31,92,78,0.08)','#111111'],imported:['#000000','rgba(240,237,232,0.7)']}
-                    const [bg,color] = colors[src]||['#000000','rgba(240,237,232,0.7)']
+                    const colors = {digicert:['rgba(31,92,78,0.09)','#1f5c4e'],sectigo:['rgba(239,68,68,0.08)','#111111'],sslcom:['rgba(31,92,78,0.08)','#111111'],imported:['#000000','#444444']}
+                    const [bg,color] = colors[src]||['#000000','#444444']
                     const labels = {digicert:'DigiCert',sectigo:'Sectigo',sslcom:'SSL.com',imported:'Manual'}
                     return (
                       <div key={src} style={{ fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:20,

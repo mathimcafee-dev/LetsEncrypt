@@ -85,7 +85,7 @@ function StepBar({ step }) {
               <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: active ? '#1f5c4e' : '#b0a8a0' }}>{label}</span>
             </div>
             {i < steps.length - 1 && (
-              <div style={{ flex: 1, height: 1, background: done ? 'rgba(192,57,43,0.4)' : 'rgba(0,0,0,0.07)', margin: '0 8px', transition: 'background .3s' }} />
+              <div style={{ flex: 1, height: 1, background: done ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.07)', margin: '0 8px', transition: 'background .3s' }} />
             )}
           </div>
         )

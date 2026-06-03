@@ -692,7 +692,7 @@ export default function CATrustExplorer({ nav }) {
                       {c.ca_owner?.replace('Inc.','').replace('nv-sa','').trim() || c.common_name}
                     </span>
                     <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
-                      {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'rgba(240,237,232,0.7)',display:'inline-block',flexShrink:0}}/>}
+                      {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'#444444',display:'inline-block',flexShrink:0}}/>}
                       {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#1f5c4e',display:'inline-block',flexShrink:0}}/>}
                       {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#f4f1ec',display:'inline-block',flexShrink:0}}/>}
                       {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#f4f1ec',display:'inline-block',flexShrink:0}}/>}

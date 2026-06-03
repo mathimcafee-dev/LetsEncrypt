@@ -72,8 +72,8 @@ function useIsMobile(bp = 768) {
 // ── CertBind status map ───────────────────────────────────────────────
 const STATUS_MAP = {
   bound:          { label: 'Live',        color: '#16a068', bg: 'rgba(22,160,104,0.09)',   border: 'rgba(22,160,104,0.22)',  icon: CheckCircle2, dot: '#16a068',              priority: 0 },
-  key_mismatch:   { label: 'Key mismatch',color: '#1f5c4e', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,      dot: '#1f5c4e',              priority: 3 },
-  cert_mismatch:  { label: 'Wrong cert',  color: '#1f5c4e', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,      dot: '#1f5c4e',              priority: 3 },
+  key_mismatch:   { label: 'Key mismatch',color: '#1f5c4e', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(192,57,43,0.2)', icon: XCircle,      dot: '#1f5c4e',              priority: 3 },
+  cert_mismatch:  { label: 'Wrong cert',  color: '#1f5c4e', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(192,57,43,0.2)', icon: XCircle,      dot: '#1f5c4e',              priority: 3 },
   chain_anomaly:  { label: 'Chain issue', color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#9a6400',              priority: 2 },
   partial_deploy: { label: 'Partial',     color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#9a6400',              priority: 2 },
   unreachable:    { label: 'Unreachable', color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#9a6400',              priority: 2 },
@@ -287,7 +287,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
       {open && (
         <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.05)', padding: '16px 16px 16px 20px' }}>
           {isExpiringSoon && keyEntry.status === 'active' && (
-            <div style={{ background: 'rgba(192,57,43,0.07)', border: '0.5px solid rgba(248,113,113,0.3)', borderRadius: 8, padding: '9px 12px', marginBottom: 12, fontSize: 11, color: '#1f5c4e' }}>
+            <div style={{ background: 'rgba(192,57,43,0.07)', border: '0.5px solid rgba(192,57,43,0.2)', borderRadius: 8, padding: '9px 12px', marginBottom: 12, fontSize: 11, color: '#1f5c4e' }}>
               <AlertTriangle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }} /><strong>Expiring in {days} days</strong> — rotate now.
             </div>
           )}
@@ -561,7 +561,7 @@ export default function KeyIntelligence({ nav }) {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <h1 className="v2-h1">Key Intelligence</h1>
-                <span style={{ fontSize: 9, fontWeight: 800, color: '#fff', background: 'rgba(31,92,78,0.2)', border: '1px solid rgba(192,57,43,0.5)', borderRadius: 4, padding: '2px 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PRO</span>
+                <span style={{ fontSize: 9, fontWeight: 800, color: '#fff', background: 'rgba(31,92,78,0.2)', border: '1px solid rgba(31,92,78,0.3)', borderRadius: 4, padding: '2px 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PRO</span>
               </div>
               <p style={{ fontSize: 12, color: '#888888', marginTop: 2 }}>
                 {user.email} · {activeKeys.length} active key{activeKeys.length !== 1 ? 's' : ''} · {bindLive} verified live
@@ -660,7 +660,7 @@ export default function KeyIntelligence({ nav }) {
         {tab === 'bind' && (
           <div>
             {bindAlerts > 0 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.2)', marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(192,57,43,0.12)', marginBottom: 14 }}>
                 <AlertTriangle size={13} color="#f87171" />
                 <span style={{ fontSize: 12, color: '#1f5c4e', fontWeight: 600 }}>{bindAlerts} certificate{bindAlerts !== 1 ? 's' : ''} need attention</span>
               </div>
@@ -714,7 +714,7 @@ export default function KeyIntelligence({ nav }) {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ background: 'rgba(248,113,113,0.06)', border: '0.5px solid rgba(248,113,113,0.2)', borderRadius: 8, padding: '9px 14px', fontSize: 11, color: '#1f5c4e', marginBottom: 4 }}>
+              <div style={{ background: 'rgba(248,113,113,0.06)', border: '0.5px solid rgba(192,57,43,0.12)', borderRadius: 8, padding: '9px 14px', fontSize: 11, color: '#1f5c4e', marginBottom: 4 }}>
                 <AlertTriangle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }} />These keys are retained for 30 days as rollback, then permanently destroyed.
               </div>
               {archivedKeys.map(k => (

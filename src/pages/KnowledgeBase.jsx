@@ -5,7 +5,7 @@ const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
-  bg:'#f7f5f0', bg2:'#1a0404', bg3:'#220808',
+  bg:'#f7f5f0', bg2:'#f4f1ec', bg3:'#220808',
   border:'rgba(0,0,0,0.08)', border2:'rgba(31,92,78,0.25)',
   heading:'#111111', body:'#444444', muted:'#888888',
   teal:'#16a068', tealDk:'#16a068', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(22,160,104,0.22)',
@@ -31,14 +31,14 @@ function Code({ code, lang = 'bash' }) {
           {['#1f5c4e','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
           <span style={{ fontSize:10, color:'#6b6b6b', marginLeft:8 }}>{lang}</span>
         </div>
-        <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'rgba(240,237,232,0.4)', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>
+        <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'#888888', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>
           {copied
             ? <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg> Copied</>
             : <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</>
           }
         </button>
       </div>
-      <pre style={{ padding:'14px 16px', fontSize:12, lineHeight:1.9, color:'rgba(240,237,232,0.75)', overflowX:'auto', margin:0 }}>{code}</pre>
+      <pre style={{ padding:'14px 16px', fontSize:12, lineHeight:1.9, color:'#333333', overflowX:'auto', margin:0 }}>{code}</pre>
     </div>
   )
 }
@@ -179,7 +179,7 @@ export default function KnowledgeBase({ nav }) {
           <span style={{ fontSize:11, color:'#6b6b6b', fontFamily:MONO }}>/ Knowledge Base</span>
         </div>
         <div style={{ display:'flex', gap:8 }}>
-          <button onClick={() => nav('/install')} style={{ background:'none', border:`1px solid rgba(240,237,232,0.1)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'#b5aea8', padding:'6px 14px', borderRadius:100 }}>Install guide</button>
+          <button onClick={() => nav('/install')} style={{ background:'none', border:`1px solid rgba(0,0,0,0.07)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'#b5aea8', padding:'6px 14px', borderRadius:100 }}>Install guide</button>
           <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#1a1a1a', padding:'7px 18px', borderRadius:100 }}>Get started</button>
         </div>
       </header>

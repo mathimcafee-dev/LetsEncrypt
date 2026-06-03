@@ -68,7 +68,7 @@ const PLANS = [
   },
   {
     key:'premium', name:'Premium', price:'$10', per:'/month',
-    color:CORAL, glow:'rgba(255,107,91,0.2)', highlight:true,
+    color:CORAL, glow:'rgba(0,0,0,0.08)', highlight:true,
     cta:'Start Premium', badge:'Most Popular',
     sub:'For growing teams & agencies',
     certNote:'+ SSL certificates billed by usage',
@@ -204,9 +204,9 @@ export default function Pricing({ nav }) {
           '@media(max-width:700px)':{gridTemplateColumns:'1fr'}}}>
           {PLANS.map(plan => (
             <div key={plan.key} style={{
-              borderRadius:14, border:`1px solid ${plan.highlight ? 'rgba(255,107,91,0.4)' : LINE}`,
+              borderRadius:14, border:`1px solid ${plan.highlight ? 'rgba(0,0,0,0.08)' : LINE}`,
               background: plan.highlight
-                ? `linear-gradient(160deg,rgba(255,107,91,0.1),${CARD} 60%)`
+                ? `linear-gradient(160deg,rgba(0,0,0,0.08),${CARD} 60%)`
                 : CARD,
               padding:'28px 24px', position:'relative', display:'flex', flexDirection:'column',
               boxShadow: plan.highlight ? `0 0 50px ${plan.glow}` : 'none',
@@ -417,7 +417,7 @@ export default function Pricing({ nav }) {
         <div style={{border:`1px solid ${LINE2}`,borderRadius:14,
           padding:'clamp(40px,6vw,60px) clamp(24px,5vw,48px)',
           textAlign:'center',
-          background:`linear-gradient(135deg,rgba(192,57,43,0.07) 0%,rgba(255,107,91,0.05) 100%)`}}>
+          background:`linear-gradient(135deg,rgba(192,57,43,0.07) 0%,rgba(0,0,0,0.08) 100%)`}}>
           <h2 style={{fontSize:'clamp(24px,3.5vw,42px)',fontWeight:900,letterSpacing:'-1px',marginBottom:14}}>
             Start managing your certificates today.
           </h2>
@@ -432,10 +432,10 @@ export default function Pricing({ nav }) {
               Get started →
             </button>
             <button onClick={() => window.location.href='mailto:mathimcafee@gmail.com'}
-              style={{background:'transparent',border:`1px solid rgba(255,107,91,0.5)`,borderRadius:8,
+              style={{background:'transparent',border:`1px solid rgba(0,0,0,0.08)`,borderRadius:8,
                 color:CORAL,fontSize:15,fontWeight:600,padding:'14px 32px',cursor:'pointer',fontFamily:F,
                 transition:'all .15s'}}
-              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,107,91,0.08)'}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(0,0,0,0.08)'}
               onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
               Contact for Reseller →
             </button>
