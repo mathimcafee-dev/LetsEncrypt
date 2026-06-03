@@ -43,7 +43,7 @@ const PROVIDERS = {
     note: 'IAM user needs route53:ChangeResourceRecordSets permission.'
   },
   godaddy: {
-    name: 'GoDaddy', mono: 'GD', color: '#2a6b5c',
+    name: 'GoDaddy', mono: 'GD', color: '#1f5c4e',
     fields: [
       { key: 'apiKey',    label: 'API Key',    type: 'password', placeholder: 'your-godaddy-api-key',    help: 'developer.godaddy.com/keys', optional: false },
       { key: 'apiSecret', label: 'API Secret', type: 'password', placeholder: 'your-godaddy-api-secret', help: 'Created alongside the API key', optional: false },
@@ -52,7 +52,7 @@ const PROVIDERS = {
     note: 'Use Production keys, not OTE.'
   },
   digitalocean: {
-    name: 'DigitalOcean', mono: 'DO', color: '#2a6b5c',
+    name: 'DigitalOcean', mono: 'DO', color: '#1f5c4e',
     fields: [
       { key: 'apiToken', label: 'API Token', type: 'password', placeholder: 'your-digitalocean-api-token', help: 'Dashboard → API → Generate New Token', optional: false },
     ],
@@ -60,7 +60,7 @@ const PROVIDERS = {
     note: 'Token needs Read + Write scope.'
   },
   namecheap: {
-    name: 'Namecheap', mono: 'NC', color: '#2a6b5c',
+    name: 'Namecheap', mono: 'NC', color: '#1f5c4e',
     fields: [
       { key: 'apiUser', label: 'API Username', type: 'text',     placeholder: 'your-namecheap-username', help: 'Your Namecheap account username', optional: false },
       { key: 'apiKey',  label: 'API Key',      type: 'password', placeholder: 'your-namecheap-api-key',  help: 'Profile → Tools → Namecheap API Access', optional: false },
@@ -69,7 +69,7 @@ const PROVIDERS = {
     note: 'Enable API access and whitelist your IP in Namecheap settings.'
   },
   porkbun: {
-    name: 'Porkbun', mono: 'PB', color: '#ff8c7a',
+    name: 'Porkbun', mono: 'PB', color: '#1f5c4e',
     fields: [
       { key: 'apiKey',       label: 'API Key',       type: 'password', placeholder: 'pk1_xxxxxxxx', help: 'Account → API Access', optional: false },
       { key: 'secretApiKey', label: 'Secret API Key', type: 'password', placeholder: 'sk1_xxxxxxxx', help: 'Created alongside API key', optional: false },
@@ -78,7 +78,7 @@ const PROVIDERS = {
     note: 'Enable API access in your Porkbun account settings.'
   },
   gandi: {
-    name: 'Gandi', mono: 'GA', color: '#2a6b5c',
+    name: 'Gandi', mono: 'GA', color: '#1f5c4e',
     fields: [
       { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'your-gandi-api-key', help: 'Account → Security → API Key', optional: false },
     ],
@@ -116,7 +116,7 @@ const PROVIDERS = {
     note: 'Service account needs DNS Administrator role.'
   },
   hetzner: {
-    name: 'Hetzner DNS', mono: 'HZ', color: '#2a6b5c',
+    name: 'Hetzner DNS', mono: 'HZ', color: '#1f5c4e',
     fields: [
       { key: 'apiToken', label: 'API Token', type: 'password', placeholder: 'your-hetzner-dns-token', help: 'dns.hetzner.com → API tokens', optional: false },
     ],
@@ -132,7 +132,7 @@ const PROVIDERS = {
     note: 'Token needs Domain:Read/Write scope.'
   },
   vultr: {
-    name: 'Vultr', mono: 'VU', color: '#2a6b5c',
+    name: 'Vultr', mono: 'VU', color: '#1f5c4e',
     fields: [
       { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'your-vultr-api-key', help: 'Account → API → Enable API', optional: false },
     ],
@@ -140,7 +140,7 @@ const PROVIDERS = {
     note: 'Full API key from Vultr account settings.'
   },
   bunny: {
-    name: 'Bunny DNS', mono: 'BN', color: '#ff8c7a',
+    name: 'Bunny DNS', mono: 'BN', color: '#1f5c4e',
     fields: [
       { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'your-bunny-api-key', help: 'panel.bunny.net → Account → API', optional: false },
     ],
@@ -168,7 +168,7 @@ const SERVER_TYPES = {
       { key: 'api_token', label: 'cPanel API Token',     type: 'password', placeholder: 'Paste API token here', help: 'cPanel → Manage API Tokens → Create → SSL permission' },
     ]
   },
-  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#ffffff', bg: 'transparent', border: 'rgba(42,107,92,0.2)',
+  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#ffffff', bg: 'transparent', border: 'rgba(31,92,78,0.2)',
     desc: 'Ubuntu, Debian, CentOS, Amazon Linux',
     fields: [
       { key: 'host',     label: 'Server IP / Hostname', type: 'text',     placeholder: '134.209.x.x',                         help: 'Public IP or hostname' },
@@ -557,7 +557,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       {isVPS && !agent ? (
         <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
           style={{ fontSize:11, color:'#ffffff', background:'transparent',
-            border:'0.5px solid rgba(42,107,92,0.2)', borderRadius:6, cursor:'pointer',
+            border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:6, cursor:'pointer',
             padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
             fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>
           Install agent <ChevronRight size={11} strokeWidth={2}/>
@@ -874,9 +874,9 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
             border: '0.5px solid var(--v2-border)', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(42,107,92,0.09)',
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(31,92,78,0.09)',
                 border: '0.5px solid #fca5a5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <WifiOff size={18} strokeWidth={1.8} color="#2a6b5c" />
+                <WifiOff size={18} strokeWidth={1.8} color="#1f5c4e" />
               </div>
               <div>
                 <div style={{ fontSize:14, fontWeight: 600, color: '#ffffff' }}>Remove agent from server</div>
@@ -1326,7 +1326,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                   <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap: 8 }}>
                     {[
                       { id: 'agent',    title: 'Agent', desc: 'One-time setup on server. No SSH stored. Recommended.', color: 'var(--v2-accent)' },
-                      { id: 'ssh_push', title: 'SSH Push', desc: 'SSLVault SSHes in directly. Fully automatic.', color: '#1e8a5e' },
+                      { id: 'ssh_push', title: 'SSH Push', desc: 'SSLVault SSHes in directly. Fully automatic.', color: '#16a068' },
                     ].map(opt => (
                       <div key={opt.id} onClick={() => setInstallMode(opt.id)}
                         style={{ padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
@@ -1442,7 +1442,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 border: '0.5px solid var(--v2-green-border)', display: 'inline-flex',
                 alignItems: 'center', justifyContent: 'center', marginBottom: 12
               }}>
-                <Check size={22} strokeWidth={2.2} color="#2a6b5c" />
+                <Check size={22} strokeWidth={2.2} color="#1f5c4e" />
               </div>
               <div style={{ fontSize:14, fontWeight: 500, color: '#ffffff', marginBottom: 4 }}>Agent registered</div>
               <div style={{ fontSize:12, color: '#e8e0d8' }}>{server.nickname} is now fully automated</div>
@@ -1471,7 +1471,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 <label className="v2-label">SSH into your server and run</label>
                 <div style={{ background:'#0d0000', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                padding: '7px 12px', borderBottom: '0.5px solid rgba(42,107,92,0.07)' }}>
+                                padding: '7px 12px', borderBottom: '0.5px solid rgba(31,92,78,0.07)' }}>
                     <div style={{ display: 'flex', gap: 5 }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f87171' }} />
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#0d0000' }} />
@@ -1553,7 +1553,7 @@ function LoggedOutView({ nav }) {
 
         <div className="v2-card" style={{ padding: 32, textAlign: 'center' }}>
           <div style={{
-            width: 44, height: 44, borderRadius: 10, background:'#2a6b5c',
+            width: 44, height: 44, borderRadius: 10, background:'#1f5c4e',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14
           }}>
             <Lock size={20} strokeWidth={2} color="white" />
@@ -1786,7 +1786,7 @@ export default function DnsProviders({ nav }) {
                 {/* DNS + Server group */}
                 {domainGroups.filter(g => g.dns && g.server).length > 0 && (
                   <ListPanel>
-                    <SectionLabel label="DNS + Server · Full automation" icon={Zap} color="#3d8c78"
+                    <SectionLabel label="DNS + Server · Full automation" icon={Zap} color="#2e7a68"
                       count={domainGroups.filter(g=>g.dns&&g.server).length}/>
                     <div style={{ padding:'8px 10px 10px' }}>
                       {domainGroups.filter(g => g.dns && g.server).map(g => (
@@ -1816,7 +1816,7 @@ export default function DnsProviders({ nav }) {
                 {/* Server Only group */}
                 {domainGroups.filter(g => !g.dns && g.server).length > 0 && (
                   <ListPanel>
-                    <SectionLabel label="Server Only" icon={Server} color="#e07060"
+                    <SectionLabel label="Server Only" icon={Server} color="#1f5c4e"
                       count={domainGroups.filter(g=>!g.dns&&g.server).length}/>
                     <div style={{ padding:'8px 10px 10px' }}>
                       {domainGroups.filter(g => !g.dns && g.server).map(g => (

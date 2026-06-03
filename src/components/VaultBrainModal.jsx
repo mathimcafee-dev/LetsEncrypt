@@ -29,7 +29,7 @@ function MsgText({ text }) {
         const bullet = /^[-•]\s/.test(line.trimStart())
         return (
           <div key={i} style={{ display: 'flex', gap: 7, marginBottom: 1 }}>
-            {bullet && <span style={{ color: '#2a6b5c', flexShrink: 0, lineHeight: 1.7 }}>•</span>}
+            {bullet && <span style={{ color: '#1f5c4e', flexShrink: 0, lineHeight: 1.7 }}>•</span>}
             <span>{bullet ? line.trimStart().replace(/^[-•]\s/, '') : line}</span>
           </div>
         )
@@ -43,7 +43,7 @@ function Dots() {
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '2px 0' }}>
       {[0,1,2].map(i => (
         <span key={i} style={{
-          width: 6, height: 6, borderRadius: '50%', background: '#2a6b5c',
+          width: 6, height: 6, borderRadius: '50%', background: '#1f5c4e',
           display: 'inline-block',
           animation: `vbdot 1.1s ${i*0.17}s infinite ease-in-out`,
         }}/>
@@ -172,9 +172,9 @@ export default function VaultBrainModal({ open, onClose, session }) {
         width: 'min(640px, 96vw)', maxHeight: '80vh',
         zIndex: 2001,
         background: 'linear-gradient(160deg,#1c0404 0%,#120000 100%)',
-        border: '1px solid rgba(42,107,92,0.25)',
+        border: '1px solid rgba(31,92,78,0.25)',
         borderRadius: 16,
-        boxShadow: '0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(42,107,92,0.08)',
+        boxShadow: '0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(31,92,78,0.08)',
         display: 'flex', flexDirection: 'column',
         overflow: 'hidden',
         animation: 'vbmodalin .18s cubic-bezier(.16,1,.3,1)',
@@ -239,7 +239,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                   transition: 'background .1s, border-color .1s',
                   display: 'flex', alignItems: 'center', gap: 8,
                 }}
-                onMouseEnter={e => { if (session) { e.currentTarget.style.background = 'rgba(42,107,92,0.07)'; e.currentTarget.style.borderColor = 'rgba(42,107,92,0.2)' } }}
+                onMouseEnter={e => { if (session) { e.currentTarget.style.background = 'rgba(31,92,78,0.07)'; e.currentTarget.style.borderColor = 'rgba(31,92,78,0.2)' } }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)' }}>
                   <span style={{ color: 'rgba(192,57,43,0.5)', fontSize: 11 }}>›</span>
                   {c}
@@ -268,7 +268,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                 {msg.role === 'user' && (
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
                     <div style={{
-                      maxWidth: '78%', background: 'rgba(42,107,92,0.09)',
+                      maxWidth: '78%', background: 'rgba(31,92,78,0.09)',
                       border: '1px solid rgba(0,0,0,0.08)',
                       borderRadius: '10px 10px 2px 10px', padding: '8px 13px',
                     }}>
@@ -281,7 +281,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                   <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'flex-start' }}>
                     <div style={{
                       width: 24, height: 24, borderRadius: '50%', flexShrink: 0, marginTop: 1,
-                      background: 'rgba(42,107,92,0.08)', border: '1px solid rgba(0,0,0,0.1)',
+                      background: 'rgba(31,92,78,0.08)', border: '1px solid rgba(0,0,0,0.1)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
                     }}>🧠</div>
                     <div style={{
@@ -311,7 +311,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                     <div style={{ fontSize: 13, color: '#ddd9d4', marginBottom: 10, lineHeight: 1.6 }}>{pending.message}</div>
                     <div style={{ display: 'flex', gap: 7 }}>
                       <button onClick={confirm} disabled={busy} style={{
-                        background: '#2a6b5c', color: '#fff', border: 'none',
+                        background: '#1f5c4e', color: '#fff', border: 'none',
                         borderRadius: 7, padding: '7px 15px', cursor: busy ? 'wait' : 'pointer',
                         fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
                       }}>{busy ? '⏳ Working…' : '✅ Yes, go ahead'}</button>
@@ -339,7 +339,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                 fontFamily: 'inherit', fontSize: 11.5, color: '#b0a8a0',
                 transition: 'color .1s, border-color .1s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.color='#f0ede8'; e.currentTarget.style.borderColor='rgba(42,107,92,0.2)' }}
+              onMouseEnter={e => { e.currentTarget.style.color='#f0ede8'; e.currentTarget.style.borderColor='rgba(31,92,78,0.2)' }}
               onMouseLeave={e => { e.currentTarget.style.color='#b0a8a0'; e.currentTarget.style.borderColor='rgba(0,0,0,0.05)' }}>
                 {c}
               </button>

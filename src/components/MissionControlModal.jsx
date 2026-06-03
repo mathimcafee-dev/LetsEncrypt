@@ -18,7 +18,7 @@ const STEP_META = [
 ]
 
 // ── Spinner ───────────────────────────────────────────────────────────────────
-function Spinner({ size = 16, color = '#ff8c7a' }) {
+function Spinner({ size = 16, color = '#1f5c4e' }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
@@ -41,7 +41,7 @@ function StepRow({ step, index, isLast }) {
   const isSkipped = status === 'skipped'
   const isPending = status === 'pending'
 
-  const lineColor = isDone ? '#22c55e' : isActive ? '#ff8c7a' : 'rgba(0,0,0,0.06)'
+  const lineColor = isDone ? '#22c55e' : isActive ? '#1f5c4e' : 'rgba(0,0,0,0.06)'
 
   return (
     <div style={{ display: 'flex', gap: 0, position: 'relative' }}>
@@ -94,7 +94,7 @@ function StepRow({ step, index, isLast }) {
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
             color: isDone    ? '#22c55e'
-                 : isActive  ? '#ff8c7a'
+                 : isActive  ? '#1f5c4e'
                  : isError   ? '#f87171'
                  : isSkipped ? '#fbbf24'
                  : 'rgba(255,255,255,0.2)',
@@ -104,7 +104,7 @@ function StepRow({ step, index, isLast }) {
           {isActive && (
             <span style={{
               fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 10,
-              background: 'rgba(255,140,122,0.15)', color: '#ff8c7a',
+              background: 'rgba(255,140,122,0.15)', color: '#1f5c4e',
               letterSpacing: '0.08em', animation: 'mcv2-pulse 2s ease-in-out infinite',
             }}>RUNNING</span>
           )}
@@ -154,7 +154,7 @@ function FloatingPill({ action, domain, elapsedMs, currentStep, onExpand }) {
       cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
       backdropFilter: 'blur(12px)',
     }}>
-      <Spinner size={10} color="#ff8c7a"/>
+      <Spinner size={10} color="#1f5c4e"/>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>
           {action === 'reissue' ? 'Reissuing' : 'Renewing'} · {domain}
@@ -166,7 +166,7 @@ function FloatingPill({ action, domain, elapsedMs, currentStep, onExpand }) {
         )}
       </div>
       <span style={{
-        fontSize: 12, color: '#ff8c7a', fontFamily: 'monospace', fontWeight: 700,
+        fontSize: 12, color: '#1f5c4e', fontFamily: 'monospace', fontWeight: 700,
         marginLeft: 4,
       }}>
         {formatClock(elapsedMs)}
@@ -231,7 +231,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
               </div>
               {certIssued && (
                 <>
-                  <div style={{ fontSize: 10, fontFamily: 'monospace', color: '#ff8c7a', wordBreak: 'break-all' }}>
+                  <div style={{ fontSize: 10, fontFamily: 'monospace', color: '#1f5c4e', wordBreak: 'break-all' }}>
                     {p.cert.serial}
                   </div>
                   <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
@@ -391,7 +391,7 @@ export default function MissionControlModal({
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {busy && <Spinner size={14} color="#ff8c7a"/>}
+              {busy && <Spinner size={14} color="#1f5c4e"/>}
               {!busy && isDone && (
                 <div style={{
                   width: 14, height: 14, borderRadius: '50%',
@@ -421,7 +421,7 @@ export default function MissionControlModal({
               {busy && (
                 <div style={{
                   fontSize: 13, fontWeight: 700, fontFamily: 'monospace',
-                  color: '#ff8c7a', background: 'rgba(255,140,122,0.08)',
+                  color: '#1f5c4e', background: 'rgba(255,140,122,0.08)',
                   padding: '4px 10px', borderRadius: 6,
                   border: '1px solid rgba(255,140,122,0.2)',
                 }}>
@@ -457,7 +457,7 @@ export default function MissionControlModal({
                 ? 'linear-gradient(90deg, #f87171, #fca5a5)'
                 : isDone
                   ? 'linear-gradient(90deg, #22c55e, #86efac)'
-                  : 'linear-gradient(90deg, #2a6b5c, #ff8c7a)',
+                  : 'linear-gradient(90deg, #2a6b5c, #2a6b5c)',
               transition: 'width 0.8s cubic-bezier(.16,1,.3,1)',
             }}/>
           </div>
@@ -481,7 +481,7 @@ export default function MissionControlModal({
                   display: 'flex', alignItems: 'center', gap: 10,
                   animation: 'mcv2-slidein 0.25s ease',
                 }}>
-                  <Spinner size={12} color="#ff8c7a"/>
+                  <Spinner size={12} color="#1f5c4e"/>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>
                       {activeStep.label}
@@ -522,7 +522,7 @@ export default function MissionControlModal({
                     }}>
                       <div style={{
                         width: 5, height: 5, borderRadius: '50%',
-                        background: '#ff8c7a',
+                        background: '#1f5c4e',
                         animation: 'mcv2-pulse 1.6s ease-in-out infinite',
                         flexShrink: 0,
                       }}/>

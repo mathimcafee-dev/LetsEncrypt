@@ -14,10 +14,10 @@ const AMBER  = '#fbbf24'
 const GREEN  = '#4ade80'
 
 const STATUS = {
-  expired: { color: RED,   bg: 'rgba(42,107,92,0.09)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#f87171' },
+  expired: { color: RED,   bg: 'rgba(31,92,78,0.09)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#f87171' },
   warning: { color: AMBER, bg: 'rgba(239,68,68,0.08)', border: '#fcd34d', bar: AMBER, text: '#fbbf24' },
   healthy: { color: GREEN, bg: 'transparent', border: '#86efac', bar: GREEN, text: '#4ade80' },
-  today:   { color: ACCENT,bg: 'transparent', border: 'rgba(42,107,92,0.2)', bar: ACCENT,text: '#3d8c78' },
+  today:   { color: ACCENT,bg: 'transparent', border: 'rgba(31,92,78,0.2)', bar: ACCENT,text: '#2e7a68' },
 }
 
 function daysUntil(iso) {
@@ -79,7 +79,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
       <div style={{
         width: 24, height: 24, borderRadius: '50%', marginBottom: 6,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: isToday ? '#2a6b5c' : 'transparent',
+        background: isToday ? '#1f5c4e' : 'transparent',
         fontSize:12, fontWeight: hasCerts || isToday ? 700 : 400,
         color: isToday ? '#ffffff' : hasCerts ? (st ? st.text : '#ffffff') : '#6b5a5a',
       }}>
@@ -419,9 +419,9 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
                   {MONTHS_S[mi]}
                 </span>
                 <span style={{ fontSize:10, fontWeight:700, padding:'1px 7px', borderRadius:20,
-                  background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'rgba(42,107,92,0.09)':m.warning>0?'rgba(239,68,68,0.08)':'transparent',
+                  background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'rgba(31,92,78,0.09)':m.warning>0?'rgba(239,68,68,0.08)':'transparent',
                   color: m.certs.length===0 ? 'var(--v2-text-3)' : m.expired>0?RED:m.warning>0?AMBER:GREEN,
-                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'rgba(239,83,80,0.3)':m.warning>0?'rgba(0,0,0,0.1)':'rgba(42,107,92,0.2)'}` }}>
+                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'rgba(239,83,80,0.3)':m.warning>0?'rgba(0,0,0,0.1)':'rgba(31,92,78,0.2)'}` }}>
                   {m.certs.length}
                 </span>
               </div>
@@ -529,7 +529,7 @@ export default function RenewalCalendar({ user }) {
               {[['month','Month'],['week','Week'],['year','Year']].map(([v,l])=>(
                 <button key={v} onClick={()=>{setView(v);setAnimKey(k=>k+1)}}
                   style={{ padding:'6px 16px', fontSize:12, fontWeight: view===v ? 700 : 500,
-                    background: view===v ? '#2a6b5c' : 'transparent',
+                    background: view===v ? '#1f5c4e' : 'transparent',
                     border: 'none',
                     borderRadius:6, cursor:'pointer', fontFamily:'inherit',
                     color: view===v ? '#ffffff' : 'rgba(240,237,232,0.4)',
@@ -577,10 +577,10 @@ export default function RenewalCalendar({ user }) {
         {/* Legend */}
         <div style={{ display:'flex', gap:14, marginBottom:16, flexWrap:'wrap', alignItems:'center' }}>
           {[
-            { label:'Expired',        color:RED,   bg:'rgba(42,107,92,0.09)', border:'rgba(239,83,80,0.3)' },
+            { label:'Expired',        color:RED,   bg:'rgba(31,92,78,0.09)', border:'rgba(239,83,80,0.3)' },
             { label:'Expiring ≤30d',  color:AMBER, bg:'rgba(239,68,68,0.08)', border:'#fcd34d' },
             { label:'Healthy (>30d)', color:GREEN, bg:'transparent', border:'#86efac' },
-            { label:'Today',          color:ACCENT,bg:'transparent', border:'rgba(42,107,92,0.2)' },
+            { label:'Today',          color:ACCENT,bg:'transparent', border:'rgba(31,92,78,0.2)' },
           ].map(({label,color,bg,border})=>(
             <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
               <div style={{ width:10,height:10,borderRadius:2,background:bg,border:`0.5px solid ${border}` }}/>

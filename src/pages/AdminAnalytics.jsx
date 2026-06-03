@@ -80,7 +80,7 @@ export default function AdminAnalytics({ user }) {
 
   if (loading) return <div className="v2-page"><div className="v2-container" style={{paddingTop:40,textAlign:'center',color:'#b0a8a0'}}>Loading analytics…</div></div>
 
-  const gradeColor = {A:'#4ade80',B:'#65a30d',C:'#f0ede8',D:'#2a6b5c',F:'#f87171',unknown:'rgba(240,237,232,0.38)'}
+  const gradeColor = {A:'#4ade80',B:'#65a30d',C:'#f0ede8',D:'#1f5c4e',F:'#f87171',unknown:'rgba(240,237,232,0.38)'}
 
   return (
     <div className="v2-page">
@@ -105,8 +105,8 @@ export default function AdminAnalytics({ user }) {
             </button>
           </div>
           {actionMsg && (
-            <div style={{padding:'8px 12px',borderRadius:6,background:actionMsg.startsWith('Error')?'rgba(42,107,92,0.09)':'transparent',
-              border:`0.5px solid ${actionMsg.startsWith('Error')?'rgba(0,0,0,0.1)':'rgba(42,107,92,0.2)'}`,
+            <div style={{padding:'8px 12px',borderRadius:6,background:actionMsg.startsWith('Error')?'rgba(31,92,78,0.09)':'transparent',
+              border:`0.5px solid ${actionMsg.startsWith('Error')?'rgba(0,0,0,0.1)':'rgba(31,92,78,0.2)'}`,
               color:actionMsg.startsWith('Error')?'#f87171':'#4ade80',fontSize:12,marginBottom:10,
               display:'flex',alignItems:'center',justifyContent:'space-between'}}>
               {actionMsg}
@@ -135,9 +135,9 @@ export default function AdminAnalytics({ user }) {
                   <div style={{fontSize:12,fontWeight:500,color:'#ffffff'}}>{req.email}</div>
                   <div>
                     <span style={{fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:20,
-                      background:req.status==='pending'?'rgba(239,68,68,0.08)':req.status==='approved'?'transparent':'rgba(42,107,92,0.09)',
+                      background:req.status==='pending'?'rgba(239,68,68,0.08)':req.status==='approved'?'transparent':'rgba(31,92,78,0.09)',
                       color:req.status==='pending'?'#f0ede8':req.status==='approved'?'#4ade80':'#f87171',
-                      border:`0.5px solid ${req.status==='pending'?'rgba(0,0,0,0.1)':req.status==='approved'?'rgba(42,107,92,0.2)':'rgba(0,0,0,0.1)'}`}}>
+                      border:`0.5px solid ${req.status==='pending'?'rgba(0,0,0,0.1)':req.status==='approved'?'rgba(31,92,78,0.2)':'rgba(0,0,0,0.1)'}`}}>
                       {req.status}
                     </span>
                   </div>
@@ -147,13 +147,13 @@ export default function AdminAnalytics({ user }) {
                   <div style={{display:'flex',gap:6}}>
                     {req.status==='pending' && (<>
                       <button onClick={()=>handleApprove(req.user_id)}
-                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid rgba(42,107,92,0.2)',
-                          background:'transparent',color:'#1e8a5e',cursor:'pointer',fontWeight:600}}>
+                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid rgba(31,92,78,0.2)',
+                          background:'transparent',color:'#16a068',cursor:'pointer',fontWeight:600}}>
                         ✓ Approve
                       </button>
                       <button onClick={()=>handleReject(req.user_id,req.email)}
                         style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #fecaca',
-                          background:'rgba(42,107,92,0.09)',color:'#c0392b',cursor:'pointer',fontWeight:600}}>
+                          background:'rgba(31,92,78,0.09)',color:'#c0392b',cursor:'pointer',fontWeight:600}}>
                         ✗ Reject
                       </button>
                     </>)}
@@ -172,7 +172,7 @@ export default function AdminAnalytics({ user }) {
         {/* Primary metrics */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:10,marginBottom:20}}>
           {[
-            {icon:Shield,      val:stats.active,      label:'Active certs',     color:'#1e8a5e'},
+            {icon:Shield,      val:stats.active,      label:'Active certs',     color:'#16a068'},
             {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#ffffff'},
             {icon:AlertTriangle,val:stats.expiring30, label:'Expiring in 30d',  color:'#ffffff'},
             {icon:CheckCircle, val:stats.installed,   label:'Auto-installed',   color:'#ffffff'},
@@ -228,10 +228,10 @@ export default function AdminAnalytics({ user }) {
 
         {/* Expiry urgency */}
         {stats.expiring7 > 0 && (
-          <div style={{background:'rgba(42,107,92,0.09)',border:'0.5px solid #fecaca',borderRadius:10,padding:'14px 18px',marginBottom:20,display:'flex',gap:12,alignItems:'flex-start'}}>
+          <div style={{background:'rgba(31,92,78,0.09)',border:'0.5px solid #fecaca',borderRadius:10,padding:'14px 18px',marginBottom:20,display:'flex',gap:12,alignItems:'flex-start'}}>
             <AlertTriangle size={16} style={{color:'#c0392b',flexShrink:0,marginTop:2}}/>
             <div>
-              <div style={{fontSize:13,fontWeight:500,color:'#3d8c78',marginBottom:3}}>{stats.expiring7} certificate{stats.expiring7!==1?'s':''} expiring within 7 days</div>
+              <div style={{fontSize:13,fontWeight:500,color:'#2e7a68',marginBottom:3}}>{stats.expiring7} certificate{stats.expiring7!==1?'s':''} expiring within 7 days</div>
               <div style={{fontSize:12,color:'#c0392b'}}>Check the dashboard and renew immediately if auto-renew is not enabled.</div>
             </div>
           </div>

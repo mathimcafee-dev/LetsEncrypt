@@ -11,16 +11,16 @@ const FONT = "var(--v2-font, 'Segoe UI', system-ui, sans-serif)"
 
 // All configurable alert types
 const ALERT_TYPE_DEFS = [
-  { id: 'cert_expiry',       label: 'Certificate expiring',     desc: 'Email at 30/14/7 days before cert expires',             color: '#2a6b5c' },
-  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#ff8c7a' },
-  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#1e8a5e' },
-  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#1e8a5e' },
-  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#1e8a5e' },
-  { id: 'renewal_failed',    label: 'Auto-renewal failed',      desc: 'Alert when auto-renewal fails (with retry info)',       color: '#2a6b5c' },
-  { id: 'agent_offline',     label: 'Agent offline',            desc: 'When a VPS agent stops responding (1h cooldown)',       color: '#2a6b5c' },
-  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#b87800' },
-  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#b87800' },
-  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#b87800' },
+  { id: 'cert_expiry',       label: 'Certificate expiring',     desc: 'Email at 30/14/7 days before cert expires',             color: '#1f5c4e' },
+  { id: 'order_renewal',     label: 'Subscription renewal',     desc: 'Email before annual order subscription renews',         color: '#1f5c4e' },
+  { id: 'cert_issued',       label: 'Certificate issued',       desc: 'Confirmation when a new cert is successfully issued',   color: '#16a068' },
+  { id: 'cert_installed',    label: 'Certificate installed',    desc: 'When your agent installs a cert on a server',           color: '#16a068' },
+  { id: 'renewal_succeeded', label: 'Auto-renewal succeeded',   desc: 'Confirmation after zero-touch renewal completes',       color: '#16a068' },
+  { id: 'renewal_failed',    label: 'Auto-renewal failed',      desc: 'Alert when auto-renewal fails (with retry info)',       color: '#1f5c4e' },
+  { id: 'agent_offline',     label: 'Agent offline',            desc: 'When a VPS agent stops responding (1h cooldown)',       color: '#1f5c4e' },
+  { id: 'shadow_found',      label: 'Shadow IT detected',       desc: 'Unregistered certs found in connected CAs',            color: '#9a6400' },
+  { id: 'pqc_risk',          label: 'PQC risk detected',        desc: 'RSA-2048 certs flagged (once per cert)',                color: '#9a6400' },
+  { id: 'no_dns_warning',    label: 'DNS not connected',        desc: 'Cert cannot auto-renew — DNS provider missing',         color: '#9a6400' },
 ]
 
 const DEFAULT_TYPES = ['cert_expiry','order_renewal','cert_issued','cert_installed','renewal_succeeded','renewal_failed','agent_offline','shadow_found','pqc_risk']
@@ -39,7 +39,7 @@ function Toggle({ on, onClick, disabled }) {
   return (
     <button onClick={disabled ? undefined : onClick} style={{
       width: 36, height: 20, borderRadius: 10, border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-      background: on ? '#2a6b5c' : 'rgba(0,0,0,0.09)', position: 'relative',
+      background: on ? '#1f5c4e' : 'rgba(0,0,0,0.09)', position: 'relative',
       transition: 'background .18s', flexShrink: 0, opacity: disabled ? 0.5 : 1,
     }}>
       <span style={{
@@ -57,7 +57,7 @@ function Section({ title, icon: Icon, children, collapsible = false }) {
     <div style={{ background: 'transparent', border: '0.5px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
       <div onClick={collapsible ? () => setOpen(v => !v) : undefined}
         style={{ padding: '11px 18px', borderBottom: open ? '1px solid rgba(0,0,0,0.07)' : 'none',
-          fontSize:10, fontWeight: 700, color: '#ff8c7a', textTransform: 'uppercase',
+          fontSize:10, fontWeight: 700, color: '#1f5c4e', textTransform: 'uppercase',
           letterSpacing: '.6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           cursor: collapsible ? 'pointer' : 'default' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -87,19 +87,19 @@ function Row({ label, desc, children, last }) {
 // Alert log table row
 function LogRow({ log }) {
   const meta = {
-    cert_expiry: { icon: '⏰', color: '#2a6b5c' }, order_renewal: { icon: '🔄', color: '#1a1a1a' },
+    cert_expiry: { icon: '⏰', color: '#1f5c4e' }, order_renewal: { icon: '🔄', color: '#1a1a1a' },
     cert_issued: { icon: '✅', color: '#1a1a1a' }, cert_installed: { icon: '🚀', color: '#1a1a1a' },
-    renewal_succeeded: { icon: '✅', color: '#1a1a1a' }, renewal_failed: { icon: '⚠️', color: '#2a6b5c' },
-    agent_offline: { icon: '🔴', color: '#2a6b5c' }, shadow_found: { icon: '🔍', color: '#1a1a1a' },
+    renewal_succeeded: { icon: '✅', color: '#1a1a1a' }, renewal_failed: { icon: '⚠️', color: '#1f5c4e' },
+    agent_offline: { icon: '🔴', color: '#1f5c4e' }, shadow_found: { icon: '🔍', color: '#1a1a1a' },
     pqc_risk: { icon: '⚛️', color: '#1a1a1a' }, no_dns_warning: { icon: '⚠️', color: '#1a1a1a' },
     weekly_digest: { icon: '📊', color: '#0f2545' },
   }
-  const m = meta[log.alert_type] || { icon: '📧', color: '#ff8c7a' }
+  const m = meta[log.alert_type] || { icon: '📧', color: '#1f5c4e' }
   const ts = new Date(log.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
   const domain = log.metadata?.domain || '—'
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 80px 70px', gap: 12,
-      padding: '9px 0', borderBottom: '1px solid rgba(42,107,92,0.09)', alignItems: 'center', fontSize:12 }}>
+      padding: '9px 0', borderBottom: '1px solid rgba(31,92,78,0.09)', alignItems: 'center', fontSize:12 }}>
       <span style={{ fontSize:14 }}>{m.icon}</span>
       <div>
         <div style={{ fontWeight: 500, color: '#1a1a1a', fontSize:12 }}>
@@ -107,14 +107,14 @@ function LogRow({ log }) {
         </div>
         <div style={{ fontSize:10, color: '#6b6b6b', fontFamily: 'monospace' }}>{domain}</div>
       </div>
-      <div style={{ color: '#ff8c7a', fontSize:11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <div style={{ color: '#1f5c4e', fontSize:11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {log.recipient}
       </div>
       <div style={{ fontSize:10, color: '#6b6b6b' }}>{ts}</div>
       <div>
         <span style={{
           fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,
-          background: log.status === 'sent' ? 'transparent' : 'rgba(42,107,92,0.09)',
+          background: log.status === 'sent' ? 'transparent' : 'rgba(31,92,78,0.09)',
           color: log.status === 'sent' ? '#f0ede8' : '#f87171',
         }}>{log.status}</span>
       </div>
@@ -190,10 +190,10 @@ function ApiKeysPanel({ user }) {
       </div>
       <div style={{ textAlign:'center', padding:'40px 20px', background:'rgba(255,255,255,0.02)',
         border:'1px solid rgba(0,0,0,0.08)', borderRadius:12 }}>
-        <div style={{ width:48, height:48, borderRadius:12, background:'rgba(42,107,92,0.08)',
+        <div style={{ width:48, height:48, borderRadius:12, background:'rgba(31,92,78,0.08)',
           border:'1px solid rgba(0,0,0,0.1)', display:'flex', alignItems:'center',
           justifyContent:'center', margin:'0 auto 16px' }}>
-          <Key size={22} color="#2a6b5c" />
+          <Key size={22} color="#1f5c4e" />
         </div>
         <div style={{ fontSize:15, fontWeight:700, color:'#1a1a1a', marginBottom:8 }}>
           Coming Soon
@@ -204,7 +204,7 @@ function ApiKeysPanel({ user }) {
         </div>
         <div style={{ display:'flex', gap:8, justifyContent:'center', flexWrap:'wrap' }}>
           {['Issue certificates','Query cert status','Trigger renewals','Webhook events'].map(f => (
-            <span key={f} style={{ fontSize:10, fontWeight:600, color:'#9a9a9a',
+            <span key={f} style={{ fontSize:10, fontWeight:600, color:'#6b6b6b',
               background:'rgba(0,0,0,0.03)', border:'1px solid rgba(0,0,0,0.07)',
               borderRadius:20, padding:'4px 10px', fontFamily:'monospace' }}>
               {f}
@@ -248,13 +248,13 @@ function ApiKeysPanelFull_DISABLED({ user }) {
 
       {/* New key revealed */}
       {newKey && (
-        <div style={{ background: 'transparent', border: '0.5px solid rgba(42,107,92,0.2)', borderRadius: 8,
+        <div style={{ background: 'transparent', border: '0.5px solid rgba(31,92,78,0.2)', borderRadius: 8,
           padding: '12px 14px', marginBottom: 16 }}>
           <div style={{ fontSize:11, fontWeight: 600, color: '#1a1a1a', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
           </div>
           <div style={{ background:'#0d0000', borderRadius: 6, padding: '8px 10px',
-            fontFamily: 'monospace', fontSize:11, color: '#ff8c7a', wordBreak: 'break-all', marginBottom: 8 }}>
+            fontFamily: 'monospace', fontSize:11, color: '#1f5c4e', wordBreak: 'break-all', marginBottom: 8 }}>
             {newKey}
           </div>
           <button onClick={() => { navigator.clipboard?.writeText(newKey); setCopied(true); setTimeout(()=>setCopied(false),2000) }}
@@ -318,7 +318,7 @@ function ApiKeysPanelFull_DISABLED({ user }) {
               <button onClick={() => revoke(k.id)} disabled={revoking === k.id}
                 style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none',
                   border: '0.5px solid #fecaca', borderRadius: 6, padding: '5px 10px',
-                  fontSize:11, color: '#2a6b5c', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
+                  fontSize:11, color: '#1f5c4e', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
                 <Trash2 size={10} />
                 {revoking === k.id ? 'Revoking…' : 'Revoke'}
               </button>
@@ -329,7 +329,7 @@ function ApiKeysPanelFull_DISABLED({ user }) {
 
       <div style={{ marginTop: 14, padding: '10px 12px', background: 'var(--v2-surface-3)',
         borderRadius: 7, fontSize:11, color: '#6b6b6b', lineHeight: 1.6 }}>
-        Use your key in requests: <span style={{ fontFamily: 'monospace', color: '#ff8c7a' }}>
+        Use your key in requests: <span style={{ fontFamily: 'monospace', color: '#1f5c4e' }}>
           Authorization: Bearer sv_live_…
         </span>
       </div>
@@ -512,7 +512,7 @@ export default function SettingsPage({ user }) {
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
               borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize:12, fontWeight: 600,
               fontFamily: 'inherit', transition: 'all .15s',
-              background: activeTab === id ? 'rgba(42,107,92,0.09)' : 'transparent',
+              background: activeTab === id ? 'rgba(31,92,78,0.09)' : 'transparent',
               color: activeTab === id ? '#f0ede8' : 'rgba(240,237,232,0.38)',
               borderBottom: activeTab === id ? '2px solid #2a6b5c' : '2px solid transparent',
             }}>
@@ -528,14 +528,14 @@ export default function SettingsPage({ user }) {
           {/* Account */}
           <Section title="Account" icon={User}>
             <Row label="Email address" desc="Your sign-in email">
-              <span style={{ fontSize:12, color: '#ff8c7a', fontFamily: 'monospace' }}>{email}</span>
+              <span style={{ fontSize:12, color: '#1f5c4e', fontFamily: 'monospace' }}>{email}</span>
             </Row>
             <Row label="Member since">
-              <span style={{ fontSize:12, color: '#ff8c7a' }}>{createdAt}</span>
+              <span style={{ fontSize:12, color: '#1f5c4e' }}>{createdAt}</span>
             </Row>
             <Row label="Plan" desc="Free for personal and indie use" last>
               <span style={{ fontSize:11, fontWeight: 600, color: '#1a1a1a', background: 'transparent',
-                border: '0.5px solid rgba(42,107,92,0.2)', borderRadius: 4, padding: '3px 8px' }}>Free</span>
+                border: '0.5px solid rgba(31,92,78,0.2)', borderRadius: 4, padding: '3px 8px' }}>Free</span>
             </Row>
           </Section>
 
@@ -552,7 +552,7 @@ export default function SettingsPage({ user }) {
                 {ALERT_TYPE_DEFS.map(({ id, label, desc, color }) => (
                   <div key={id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     gap: 12, padding: '8px 12px', borderRadius: 8,
-                    background: alertTypes.includes(id) ? 'rgba(42,107,92,0.09)' : 'rgba(0,0,0,0.03)',
+                    background: alertTypes.includes(id) ? 'rgba(31,92,78,0.09)' : 'rgba(0,0,0,0.03)',
                     border: `1px solid ${alertTypes.includes(id) ? 'rgba(192,57,43,0.5)' : 'rgba(0,0,0,0.06)'}`,
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all .15s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
@@ -620,7 +620,7 @@ export default function SettingsPage({ user }) {
                 <Plus size={11}/> Add
               </button>
             </div>
-            {emailError && <div style={{ fontSize:11, color: '#2a6b5c', marginTop: 5 }}>{emailError}</div>}
+            {emailError && <div style={{ fontSize:11, color: '#1f5c4e', marginTop: 5 }}>{emailError}</div>}
           </Section>
 
           {/* Slack */}
@@ -657,7 +657,7 @@ export default function SettingsPage({ user }) {
               </select>
               <button onClick={sendTestEmail} disabled={testSending}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px',
-                  background: testSending ? 'rgba(42,107,92,0.2)' : 'rgba(0,0,0,0.07)', color: 'rgba(42,107,92,0.08)',
+                  background: testSending ? 'rgba(31,92,78,0.2)' : 'rgba(0,0,0,0.07)', color: 'rgba(31,92,78,0.08)',
                   border: 'none', borderRadius: 7, fontSize:12, fontWeight: 600,
                   cursor: testSending ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
                 {testSending ? <><RefreshCw size={11} className="spin"/> Sending…</> : <><Send size={11}/> Send test</>}
@@ -665,9 +665,9 @@ export default function SettingsPage({ user }) {
             </div>
             {testResult && (
               <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 7, fontSize:12,
-                background: testResult.ok ? 'transparent' : 'rgba(42,107,92,0.09)',
+                background: testResult.ok ? 'transparent' : 'rgba(31,92,78,0.09)',
                 color: testResult.ok ? '#f0ede8' : '#f87171',
-                border: `1px solid ${testResult.ok ? '#e07060' : 'rgba(0,0,0,0.1)'}` }}>
+                border: `1px solid ${testResult.ok ? '#1f5c4e' : 'rgba(0,0,0,0.1)'}` }}>
                 {testResult.ok ? '✓ ' : '✗ '}{testResult.msg}
               </div>
             )}
@@ -676,7 +676,7 @@ export default function SettingsPage({ user }) {
           {/* Security */}
           <Section title="Security" icon={Shield}>
             <Row label="Authentication" desc="Managed via Supabase Auth">
-              <span style={{ fontSize:11, color: '#ff8c7a' }}>Magic link</span>
+              <span style={{ fontSize:11, color: '#1f5c4e' }}>Magic link</span>
             </Row>
             <Row label="Private key storage" desc="AES-256-GCM encrypted at rest" last>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#1a1a1a' }}>
@@ -690,14 +690,14 @@ export default function SettingsPage({ user }) {
             <Row label="Sign out" desc="Sign out on this device">
               <button onClick={handleSignOut}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent',
-                  color: '#ff8c7a', border: '0.5px solid var(--v2-border)', borderRadius: 6,
+                  color: '#1f5c4e', border: '0.5px solid var(--v2-border)', borderRadius: 6,
                   padding: '6px 12px', fontSize:11, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <LogOut size={11}/> Sign out
               </button>
             </Row>
             <Row label="Delete account" desc="Permanently delete your account and all data" last>
               <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent',
-                color: '#2a6b5c', border: '0.5px solid #fecaca', borderRadius: 6,
+                color: '#1f5c4e', border: '0.5px solid #fecaca', borderRadius: 6,
                 padding: '6px 12px', fontSize:11, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Trash2 size={11}/> Delete account
               </button>
@@ -723,9 +723,9 @@ export default function SettingsPage({ user }) {
         {activeTab === 'log' && (
           <div style={{ background: 'transparent', border: '0.5px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden' }}>
             {/* Header */}
-            <div style={{ padding: '12px 18px', borderBottom: '1px solid rgba(42,107,92,0.09)',
+            <div style={{ padding: '12px 18px', borderBottom: '1px solid rgba(31,92,78,0.09)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-              <div style={{ fontSize:10, fontWeight: 700, color: '#ff8c7a', textTransform: 'uppercase', letterSpacing: '.6px' }}>
+              <div style={{ fontSize:10, fontWeight: 700, color: '#1f5c4e', textTransform: 'uppercase', letterSpacing: '.6px' }}>
                 Alert log {logsTotal > 0 && `(${logsTotal} total)`}
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -738,7 +738,7 @@ export default function SettingsPage({ user }) {
                 <button onClick={() => loadLogs(logsPage, logsTypeFilter)}
                   style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px',
                     background: 'var(--v2-surface-3)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 6,
-                    fontSize:11, cursor: 'pointer', fontFamily: 'inherit', color: '#ff8c7a' }}>
+                    fontSize:11, cursor: 'pointer', fontFamily: 'inherit', color: '#1f5c4e' }}>
                   <RefreshCw size={10}/> Refresh
                 </button>
               </div>
@@ -747,7 +747,7 @@ export default function SettingsPage({ user }) {
             {/* Column headers */}
             <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 80px 70px', gap: 12,
               padding: '8px 18px', fontSize:10, fontWeight: 700, color: '#6b6b6b',
-              textTransform: 'uppercase', letterSpacing: '.5px', borderBottom: '1px solid rgba(42,107,92,0.09)' }}>
+              textTransform: 'uppercase', letterSpacing: '.5px', borderBottom: '1px solid rgba(31,92,78,0.09)' }}>
               <div/>
               <div>Type / Domain</div>
               <div>Recipient</div>
@@ -777,7 +777,7 @@ export default function SettingsPage({ user }) {
 
             {/* Pagination */}
             {logsTotal > 20 && (
-              <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(42,107,92,0.07)',
+              <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(31,92,78,0.07)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontSize:11, color: '#6b6b6b' }}>
                   Showing {logsPage * 20 + 1}–{Math.min((logsPage + 1) * 20, logsTotal)} of {logsTotal}
@@ -786,7 +786,7 @@ export default function SettingsPage({ user }) {
                   <button onClick={() => setLogsPage(p => Math.max(0, p - 1))} disabled={logsPage === 0}
                     style={{ padding: '4px 10px', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 5,
                       fontSize:11, cursor: logsPage === 0 ? 'not-allowed' : 'pointer',
-                      background: 'rgba(42,107,92,0.07)',
+                      background: 'rgba(31,92,78,0.07)',
                       color: logsPage === 0 ? 'rgba(240,237,232,0.38)' : 'rgba(240,237,232,0.6)', fontFamily: 'inherit' }}>
                     ← Prev
                   </button>
@@ -794,7 +794,7 @@ export default function SettingsPage({ user }) {
                     disabled={(logsPage + 1) * 20 >= logsTotal}
                     style={{ padding: '4px 10px', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 5,
                       fontSize:11, cursor: (logsPage + 1) * 20 >= logsTotal ? 'not-allowed' : 'pointer',
-                      background: 'rgba(42,107,92,0.07)',
+                      background: 'rgba(31,92,78,0.07)',
                       color: (logsPage + 1) * 20 >= logsTotal ? 'rgba(240,237,232,0.38)' : 'rgba(240,237,232,0.6)', fontFamily: 'inherit' }}>
                     Next →
                   </button>

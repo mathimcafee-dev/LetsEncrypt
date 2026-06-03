@@ -37,7 +37,7 @@ import VaultBrainPanel from '../components/VaultBrainPanel'
 // ── Design tokens ──────────────────────────────────────────────────────
 const F = "'Inter',system-ui,sans-serif"
 const NAVY  = '#f7f5f0'        // page bg — warm parchment
-const CARD  = 'rgba(42,107,92,0.08)'  // hover bg — teal tint
+const CARD  = 'rgba(31,92,78,0.08)'  // hover bg — teal tint
 const CARD2 = '#ffffff'              // elevated card
 const CARD3 = '#f2efea'              // input bg
 const LINE  = 'rgba(0,0,0,0.07)'
@@ -45,11 +45,11 @@ const LINE2 = 'rgba(0,0,0,0.12)'
 const INK   = 'rgba(0,0,0,0.06)'
 const BODY  = '#6b6b6b'
 const MUTED = '#9a9a9a'
-const BLUE  = '#2a6b5c'
-const BLUEH = '#3d8c78'
-const GREEN = '#1e8a5e'
-const RED   = '#2a6b5c'
-const AMBER = '#b87800'
+const BLUE  = '#1f5c4e'
+const BLUEH = '#2e7a68'
+const GREEN = '#16a068'
+const RED   = '#1f5c4e'
+const AMBER = '#9a6400'
 
 function useIsMobile(bp=860) {
   const [m,setM] = useState(window.innerWidth<=bp)
@@ -174,14 +174,14 @@ export default function CLMHome({ user, nav, initialSection }) {
         padding:'8px 12px 8px 16px',
         width:'100%', textAlign:'left', fontFamily:F,
         fontSize:13, fontWeight:on?500:400,
-        color: on ? '#2a6b5c' : BODY,
-        background: on ? 'rgba(42,107,92,0.12)' : 'transparent',
+        color: on ? '#1f5c4e' : BODY,
+        background: on ? 'rgba(31,92,78,0.12)' : 'transparent',
         borderLeft: `2px solid ${on ? BLUE : 'transparent'}`,
         border:'none', cursor:'pointer',
         borderRadius:'0 6px 6px 0',
         marginBottom:1, transition:'all 0.1s',
       }}
-        onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(42,107,92,0.08)';e.currentTarget.style.color='#2a6b5c'}}}
+        onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(31,92,78,0.08)';e.currentTarget.style.color='#1f5c4e'}}}
         onMouseLeave={e=>{if(!on){e.currentTarget.style.background='transparent';e.currentTarget.style.color=BODY}}}>
         <Icon size={14} strokeWidth={on?2.2:1.8} color={on?BLUE:undefined} style={{flexShrink:0}}/>
         <span style={{flex:1}}>{label}</span>
@@ -197,7 +197,7 @@ export default function CLMHome({ user, nav, initialSection }) {
       <div style={{padding:'16px 16px 14px',borderBottom:`1px solid ${LINE}`,flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{width:30,height:30,borderRadius:8,background:BLUE,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f0ede8" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <div>
             <div style={{fontSize:13,fontWeight:700,color:'#1a1a1a',letterSpacing:'-0.2px',lineHeight:1.2}}>SSLVault</div>
@@ -226,9 +226,9 @@ export default function CLMHome({ user, nav, initialSection }) {
       {/* User */}
       <div style={{borderTop:`1px solid ${LINE}`,padding:'12px 14px',flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,${BLUE},${BLUEH})`,
+          <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,#1f5c4e,#2e7a68)`,
             display:'flex',alignItems:'center',justifyContent:'center',
-            fontSize:11,fontWeight:700,color:'#1a1a1a',flexShrink:0,letterSpacing:'-0.3px'}}>
+            fontSize:11,fontWeight:700,color:'#ffffff',flexShrink:0,letterSpacing:'-0.3px'}}>
             {initials}
           </div>
           <div style={{flex:1,minWidth:0}}>
@@ -283,7 +283,7 @@ export default function CLMHome({ user, nav, initialSection }) {
               style={{background:'none',border:'none',cursor:'pointer',color:'#6b6b6b',width:32,height:32,
                 display:'flex',alignItems:'center',justifyContent:'center',borderRadius:6,position:'relative',
                 transition:'all .12s'}}
-              onMouseEnter={e=>{e.currentTarget.style.background='rgba(42,107,92,0.08)';e.currentTarget.style.color='#2a6b5c'}}
+              onMouseEnter={e=>{e.currentTarget.style.background='rgba(31,92,78,0.08)';e.currentTarget.style.color='#1f5c4e'}}
               onMouseLeave={e=>{e.currentTarget.style.background='none';e.currentTarget.style.color=BODY}}>
               <Bell size={15}/>
               {unread>0&&<span style={{position:'absolute',top:5,right:5,width:6,height:6,
@@ -327,13 +327,13 @@ export default function CLMHome({ user, nav, initialSection }) {
             title="Ask VaultBrain AI"
             style={{
               display:'flex',alignItems:'center',gap:5,
-              background:aiOpen?'rgba(42,107,92,0.1)':'none',
-              border:`1px solid ${aiOpen?'rgba(42,107,92,0.35)':LINE}`,
+              background:aiOpen?'rgba(31,92,78,0.1)':'none',
+              border:`1px solid ${aiOpen?'rgba(31,92,78,0.35)':LINE}`,
               cursor:'pointer',color:aiOpen?'#f87171':'#c8c0b8',
               fontSize:12,fontFamily:F,padding:'5px 10px',borderRadius:6,
               transition:'all .12s',
             }}
-            onMouseEnter={e=>{if(!aiOpen){e.currentTarget.style.borderColor='rgba(42,107,92,0.3)';e.currentTarget.style.color='#f87171'}}}
+            onMouseEnter={e=>{if(!aiOpen){e.currentTarget.style.borderColor='rgba(31,92,78,0.3)';e.currentTarget.style.color='#f87171'}}}
             onMouseLeave={e=>{if(!aiOpen){e.currentTarget.style.borderColor=LINE;e.currentTarget.style.color='#c8c0b8'}}}>
             🧠{!isMobile&&<span style={{marginLeft:2}}>AI</span>}
           </button>
@@ -348,13 +348,13 @@ export default function CLMHome({ user, nav, initialSection }) {
 
         {/* Sidebar */}
         <nav ref={sideRef} style={{
-          width:240, background:CARD, borderRight:`1px solid ${LINE}`,
+          width:240, background:'#ffffff', borderRight:`1px solid rgba(0,0,0,0.09)`,
           flexShrink:0, overflowY:'auto',
           ...(isMobile
             ? {position:'fixed',left:0,top:50,bottom:0,zIndex:40,
                transform:sideOpen?'translateX(0)':'translateX(-100%)',
                transition:'transform 0.22s cubic-bezier(0.4,0,0.2,1)',
-               boxShadow:'4px 0 20px rgba(0,0,0,0.4)'}
+               boxShadow:'4px 0 20px rgba(0,0,0,0.12)'}
             : {position:'sticky',top:50,height:'calc(100vh - 50px)'}),
         }}>
           <Sidebar/>

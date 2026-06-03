@@ -7,13 +7,13 @@ const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
   bg:'#f7f5f0', bg2:'#1a0404', bg3:'#220808',
-  border:'rgba(0,0,0,0.08)', border2:'rgba(42,107,92,0.25)',
+  border:'rgba(0,0,0,0.08)', border2:'rgba(31,92,78,0.25)',
   heading:'#f0ede8', body:'rgba(240,237,232,0.65)', muted:'rgba(240,237,232,0.35)',
-  teal:'#4ade80', tealDk:'#4ade80', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(30,138,94,0.2)',
-  green:'#4ade80', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(30,138,94,0.2)',
+  teal:'#4ade80', tealDk:'#4ade80', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(22,160,104,0.22)',
+  green:'#4ade80', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(22,160,104,0.22)',
   purple:'#a78bfa', purpleBg:'rgba(167,139,250,0.06)',
   amber:'#fbbf24', amberBg:'rgba(251,191,36,0.06)',
-  red:'#f87171', redBg:'rgba(42,107,92,0.09)',
+  red:'#f87171', redBg:'rgba(31,92,78,0.09)',
   ink:'#f0ede8',
 }
 
@@ -27,7 +27,7 @@ function Code({ code, lang = 'bash' }) {
     <div style={{ background:'#0d0000', border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
       <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
         <div style={{ display:'flex', gap:5, alignItems:'center' }}>
-          {['#2a6b5c','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
+          {['#1f5c4e','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
           <span style={{ fontSize:10, color:'#6b6b6b', marginLeft:8 }}>{lang}</span>
         </div>
         <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'rgba(240,237,232,0.4)', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>

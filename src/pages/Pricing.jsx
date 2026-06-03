@@ -5,9 +5,9 @@ const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 const BG   = 'transparent'
 const CARD = '#220808'
 const CARD2= '#220808'
-const TEAL = '#2a6b5c'
-const TEALH= '#e07060'
-const CORAL= '#e07060'
+const TEAL = '#1f5c4e'
+const TEALH= '#1f5c4e'
+const CORAL= '#1f5c4e'
 const INK = '#f0ede8'
 const BODY = 'rgba(232,245,244,0.65)'
 const MUTED= 'rgba(232,245,244,0.35)'
@@ -267,7 +267,7 @@ export default function Pricing({ nav }) {
           <button onClick={() => setShowComp(v=>!v)}
             style={{background:'transparent',border:`1px solid ${LINE2}`,color:TEAL,
               borderRadius:8,padding:'10px 24px',fontSize:13,cursor:'pointer',fontFamily:F,transition:'all .15s'}}
-            onMouseEnter={e=>e.currentTarget.style.background='rgba(42,107,92,0.07)'}
+            onMouseEnter={e=>e.currentTarget.style.background='rgba(31,92,78,0.07)'}
             onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
             {showComp ? '▲ Hide full comparison' : '▼ Full feature comparison'}
           </button>

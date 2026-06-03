@@ -29,12 +29,12 @@ function timeAgo(iso) {
 
 // Grade colour map
 function gradeStyle(grade) {
-  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(42,107,92,0.09)', border: 'rgba(0,0,0,0.1)' }
+  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)' }
   if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)' }
   if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)', border: 'rgba(230,126,34,0.2)' }
-  if (grade === 'B') return { color: '#ffffff', bg: 'transparent', border: 'rgba(42,107,92,0.2)' }
-  if (grade === 'A') return { color: '#1e8a5e', bg: 'transparent', border: 'rgba(42,107,92,0.2)' }
-  if (grade === 'A+') return { color: '#ffffff', bg: 'transparent', border: '#e07060' }
+  if (grade === 'B') return { color: '#ffffff', bg: 'transparent', border: 'rgba(31,92,78,0.2)' }
+  if (grade === 'A') return { color: '#16a068', bg: 'transparent', border: 'rgba(31,92,78,0.2)' }
+  if (grade === 'A+') return { color: '#ffffff', bg: 'transparent', border: '#1f5c4e' }
   return { color: '#e8e0d8', bg: '#000000', border: '#f0ede8' }
 }
 
@@ -60,7 +60,7 @@ function Check({ ok, label }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
       {ok
         ? <CheckCircle size={11} color="#16a34a" />
-        : <XCircle size={11} color="#2a6b5c" />}
+        : <XCircle size={11} color="#1f5c4e" />}
       <span style={{ fontSize:11, color: ok ? '#4ade80' : '#f87171' }}>{label}</span>
     </div>
   )
@@ -94,7 +94,7 @@ function DomainRow({ score, onRescan, scanning }) {
             </span>
             {!score.cert_valid && (
               <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
-                background: 'rgba(42,107,92,0.09)', color: '#f87171' }}>UNREACHABLE</span>
+                background: 'rgba(31,92,78,0.09)', color: '#f87171' }}>UNREACHABLE</span>
             )}
           </div>
           <ScoreBar score={score.score} />
@@ -236,7 +236,7 @@ export default function SSLHealthScore({ user }) {
             {[
               { label: 'Domains', val: scores.length, color: '#ffffff' },
               { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#f0ede8' : '#f87171' },
-              { label: 'A / A+', val: (gradeCount['A'] || 0) + (gradeCount['A+'] || 0), color: '#1e8a5e' },
+              { label: 'A / A+', val: (gradeCount['A'] || 0) + (gradeCount['A+'] || 0), color: '#16a068' },
               { label: 'Need attention', val: issues.length, color: issues.length > 0 ? '#f87171' : '#4ade80' },
             ].map(({ label, val, color }) => (
               <div key={label} className="v2-card" style={{ padding: '12px 14px' }}>

@@ -44,7 +44,7 @@ export default function PKIConsortiumIntelligence({ nav }) {
         .pkic-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#ffffff}
         .pkic-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .pkic-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#ffffff;line-height:1.15;margin-bottom:10px}
-        .pkic-h1 em{color:#ff8c7a;font-style:normal}
+        .pkic-h1 em{color:#2a6b5c;font-style:normal}
         .pkic-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .pkic-stats{display:flex;gap:28px;flex-wrap:wrap}
         .pkic-sn{font-size:22px;font-weight:600;color:#ffffff;line-height:1}
@@ -62,7 +62,7 @@ export default function PKIConsortiumIntelligence({ nav }) {
         .init-card{background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px;margin-bottom:10px}
         .tl-row{display:flex;gap:12px;margin-bottom:14px}
         .tl-yr{font-family:${MONO};font-size:10px;font-weight:700;color:var(--v2-text-3);min-width:38px;text-align:right;padding-top:3px;flex-shrink:0}
-        .tl-dot{width:10px;height:10px;border-radius:50%;background:#e07060;flex-shrink:0;margin-top:3px}
+        .tl-dot{width:10px;height:10px;border-radius:50%;background:#2a6b5c;flex-shrink:0;margin-top:3px}
         .tl-spine{display:flex;flex-direction:column;align-items:center;width:16px;flex-shrink:0}
         .tl-line{width:1px;background:var(--v2-border);flex:1;min-height:14px;margin-top:3px}
         .link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--v2-border)}

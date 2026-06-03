@@ -49,7 +49,7 @@ export default function IETFIntelligence({ nav }) {
         .ii-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#ffffff}
         .ii-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .ii-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#ffffff;line-height:1.15;margin-bottom:10px}
-        .ii-h1 em{color:#ff8c7a;font-style:normal}
+        .ii-h1 em{color:#2a6b5c;font-style:normal}
         .ii-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .ii-stats{display:flex;gap:28px;flex-wrap:wrap}
         .ii-sn{font-size:22px;font-weight:600;color:#ffffff;line-height:1}

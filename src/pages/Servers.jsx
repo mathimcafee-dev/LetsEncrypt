@@ -8,8 +8,8 @@ import '../styles/design-v2.css'
 function agentStatus(last_seen_at, status) {
   if (!last_seen_at) return { label: 'Never seen', color: '#6b6b6b', dot: 'rgba(240,237,232,0.15)', bg: '#f0ede8' }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
-  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#2a6b5c', dot: '#f87171', bg: 'rgba(42,107,92,0.09)' }
-  if (mins > 6) return { label: 'Idle', color: '#ff8c7a', dot: '#f0ede8', bg: 'rgba(239,68,68,0.08)' }
+  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#1f5c4e', dot: '#f87171', bg: 'rgba(31,92,78,0.09)' }
+  if (mins > 6) return { label: 'Idle', color: '#1f5c4e', dot: '#f0ede8', bg: 'rgba(239,68,68,0.08)' }
   return { label: 'Online', color: '#1a1a1a', dot: '#f0ede8', bg: 'transparent' }
 }
 
@@ -22,10 +22,10 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 
 function JobRow({ job }) {
   const icon = job.status === 'completed'
-    ? <CheckCircle size={12} color="#2a6b5c"/>
+    ? <CheckCircle size={12} color="#1f5c4e"/>
     : job.status === 'failed'
-    ? <XCircle size={12} color="#2a6b5c"/>
-    : <Clock size={12} color="#e07060"/>
+    ? <XCircle size={12} color="#1f5c4e"/>
+    : <Clock size={12} color="#1f5c4e"/>
   return (
     <div style={{ display:'flex', alignItems:'center', gap:10, padding:'7px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:11 }}>
       {icon}
@@ -76,7 +76,7 @@ function AgentCard({ agent, onRefresh }) {
             <span style={{ fontSize:13, fontWeight:500, color:'#1a1a1a', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
               {agent.nickname || agent.hostname || 'Unnamed server'}
             </span>
-            {agent.is_sandbox && <span style={{ fontSize:9, color:'#ff8c7a', background:'rgba(239,68,68,0.08)', border:'0.5px solid #F2C4BC', borderRadius:3, padding:'1px 5px', fontWeight:500, flexShrink:0 }}>SANDBOX</span>}
+            {agent.is_sandbox && <span style={{ fontSize:9, color:'#1f5c4e', background:'rgba(239,68,68,0.08)', border:'0.5px solid #F2C4BC', borderRadius:3, padding:'1px 5px', fontWeight:500, flexShrink:0 }}>SANDBOX</span>}
           </div>
           <div style={{ fontSize:11, color:'#6b6b6b', fontFamily:'var(--font-mono, monospace)' }}>
             {agent.ip_address || agent.hostname || '—'}
@@ -177,7 +177,7 @@ function InstallModal({ onClose }) {
   }
 
   const CmdBlock = ({ cmd, id }) => (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#2a6b5c', borderRadius:6, padding:'10px 14px', marginBottom:8 }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#1f5c4e', borderRadius:6, padding:'10px 14px', marginBottom:8 }}>
       <code style={{ fontSize:12, color:'#1a1a1a', fontFamily:'var(--font-mono, monospace)', flex:1, overflow:'auto' }}>{cmd}</code>
       <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, marginLeft:12, fontSize:10, fontWeight:500, color:'#3d3d3d', padding:'4px 8px', border:'0.5px solid rgba(240,237,232,0.14)', borderRadius:4, background:'none', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
         {copied===id ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
@@ -200,7 +200,7 @@ function InstallModal({ onClose }) {
           <CmdBlock cmd={cmd1} id="install"/>
           <div style={{ fontSize:11, fontWeight:500, color:'#3d3d3d', margin:'14px 0 8px' }}>2. Verify it's running</div>
           <CmdBlock cmd={cmd2} id="verify"/>
-          <div style={{ background:'transparent', border:'0.5px solid rgba(42,107,92,0.2)', borderRadius:6, padding:'10px 12px', marginTop:14 }}>
+          <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:6, padding:'10px 12px', marginTop:14 }}>
             <div style={{ fontSize:11, color:'#1a1a1a', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and reports its status here. It will appear in this list within 1–2 minutes of installation.
             </div>
@@ -274,7 +274,7 @@ export default function ServersPage({ user }) {
           {[
             { label:'Total servers', val:agents.length, color:'#1a1a1a' },
             { label:'Online now', val:online, color: online > 0 ? '#f0ede8' : 'var(--v2-text)' },
-            { label:'Offline / idle', val:agents.length - online, color: agents.length - online > 0 ? '#e07060' : 'var(--v2-text)' },
+            { label:'Offline / idle', val:agents.length - online, color: agents.length - online > 0 ? '#1f5c4e' : 'var(--v2-text)' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'14px 18px' }}>
               <div style={{ fontSize:10, fontWeight:500, color:'#6b6b6b', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:6 }}>{label}</div>

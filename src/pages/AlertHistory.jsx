@@ -129,7 +129,7 @@ export default function AlertHistory({ nav }) {
               return (
                 <div key={a.id} onClick={() => setSelected(a)} style={{ padding:'10px 14px', cursor:'pointer',
                   borderBottom:'0.5px solid rgba(0,0,0,0.04)',
-                  background: isSelected ? 'rgba(42,107,92,0.07)' : 'transparent',
+                  background: isSelected ? 'rgba(31,92,78,0.07)' : 'transparent',
                   borderLeft: isSelected ? '2px solid #2a6b5c' : '2px solid transparent',
                   transition:'all 0.12s' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>

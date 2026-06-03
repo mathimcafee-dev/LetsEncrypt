@@ -19,7 +19,7 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 // ── Tab accent colours ────────────────────────────────────────────────
 const TAB_COLORS = {
   vault:   { color: '#818cf8', bg: 'rgba(129,140,248,0.15)', border: 'rgba(129,140,248,0.35)' },
-  bind:    { color: '#1e8a5e', bg: 'rgba(74,222,128,0.15)',  border: 'rgba(74,222,128,0.35)'  },
+  bind:    { color: '#16a068', bg: 'rgba(74,222,128,0.15)',  border: 'rgba(74,222,128,0.35)'  },
   archive: { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.35)'  },
   audit:   { color: '#38bdf8', bg: 'rgba(56,189,248,0.15)',  border: 'rgba(56,189,248,0.35)'  },
 }
@@ -71,7 +71,7 @@ function useIsMobile(bp = 768) {
 
 // ── CertBind status map ───────────────────────────────────────────────
 const STATUS_MAP = {
-  bound:          { label: 'Live',        color: '#1e8a5e', bg: 'rgba(30,138,94,0.08)',   border: 'rgba(30,138,94,0.2)',  icon: CheckCircle2, dot: '#4ade80',              priority: 0 },
+  bound:          { label: 'Live',        color: '#16a068', bg: 'rgba(22,160,104,0.09)',   border: 'rgba(22,160,104,0.22)',  icon: CheckCircle2, dot: '#4ade80',              priority: 0 },
   key_mismatch:   { label: 'Key mismatch',color: '#f87171', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,      dot: '#f87171',              priority: 3 },
   cert_mismatch:  { label: 'Wrong cert',  color: '#f87171', bg: 'rgba(192,57,43,0.07)',  border: 'rgba(248,113,113,0.3)', icon: XCircle,      dot: '#f87171',              priority: 3 },
   chain_anomaly:  { label: 'Chain issue', color: '#fbbf24', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#fbbf24',              priority: 2 },
@@ -92,7 +92,7 @@ function PulseDot({ color, animate }) {
 }
 
 // ── Entropy dot visualiser ────────────────────────────────────────────
-const ENTROPY_COLORS = ['#4ade80','#22c55e','#86efac','#fbbf24','#f97316','#fb923c','#f87171','#ef4444','#fca5a5','#818cf8','#a78bfa','#38bdf8','#67e8f9','#2a6b5c','#ff8c7a']
+const ENTROPY_COLORS = ['#4ade80','#22c55e','#86efac','#fbbf24','#f97316','#fb923c','#f87171','#ef4444','#fca5a5','#818cf8','#a78bfa','#38bdf8','#67e8f9','#1f5c4e','#1f5c4e']
 function EntropyDots() {
   const N = 36
   const [dots, setDots] = useState(() =>
@@ -196,7 +196,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
             <button type="button" onClick={onClose} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: 'rgba(0,0,0,0.06)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
-            <button type="submit" disabled={verifying || locked} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 700, borderRadius: 7, background: locked ? 'rgba(0,0,0,0.04)' : '#2a6b5c', color: '#fff', border: 'none', cursor: locked ? 'not-allowed' : 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button type="submit" disabled={verifying || locked} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 700, borderRadius: 7, background: locked ? 'rgba(0,0,0,0.04)' : '#1f5c4e', color: '#fff', border: 'none', cursor: locked ? 'not-allowed' : 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
               {verifying ? <><RefreshCw size={11} style={{ animation: 'spin .7s linear infinite' }} /> Verifying…</> : 'Confirm'}
             </button>
           </div>
@@ -220,10 +220,10 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
           {fetchErr && <div style={{ fontSize: 12, color: '#f87171', padding: '12px 0' }}>{fetchErr}</div>}
           {pem && (
             <>
-              <div style={{ position: 'relative', background: '#000', border: '0.5px solid rgba(0,0,0,0.07)', borderRadius: 8, padding: '12px 14px', fontFamily: '"JetBrains Mono",monospace', fontSize: 11, color: '#1e8a5e', maxHeight: 200, overflow: 'auto', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{pem}</div>
+              <div style={{ position: 'relative', background: '#000', border: '0.5px solid rgba(0,0,0,0.07)', borderRadius: 8, padding: '12px 14px', fontFamily: '"JetBrains Mono",monospace', fontSize: 11, color: '#16a068', maxHeight: 200, overflow: 'auto', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{pem}</div>
               <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                 <button onClick={() => { navigator.clipboard.writeText(pem); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: '#2a6b5c', color: '#fff', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: '#1f5c4e', color: '#fff', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
                   {copied ? <><Check size={12} /> Copied!</> : <><Copy size={12} /> Copy key</>}
                 </button>
               </div>
@@ -321,7 +321,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
           </div>
           {keyEntry.status === 'active' && (
             <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
-              <button onClick={() => onReveal(keyEntry)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 11, fontWeight: 700, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: '#2a6b5c', color: '#fff', border: 'none', transition: 'background .15s' }} onMouseEnter={e => e.currentTarget.style.background = '#3d8c78'} onMouseLeave={e => e.currentTarget.style.background = '#2a6b5c'}>
+              <button onClick={() => onReveal(keyEntry)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 11, fontWeight: 700, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: '#1f5c4e', color: '#fff', border: 'none', transition: 'background .15s' }} onMouseEnter={e => e.currentTarget.style.background = '#2e7a68'} onMouseLeave={e => e.currentTarget.style.background = '#1f5c4e'}>
                 <Eye size={11} /> Reveal key
               </button>
               <button onClick={() => onRotate(keyEntry)} disabled={rotating === keyEntry.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#e8e0d8', border: '0.5px solid rgba(255,255,255,0.18)', transition: 'all .15s', opacity: rotating === keyEntry.id ? 0.5 : 1 }}>
@@ -554,14 +554,14 @@ export default function KeyIntelligence({ nav }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 42, height: 42, borderRadius: 11, background: '#2a6b5c', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-              <div style={{ position: 'absolute', inset: -3, borderRadius: 14, border: '1px solid rgba(42,107,92,0.25)' }} />
+            <div style={{ width: 42, height: 42, borderRadius: 11, background: '#1f5c4e', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <div style={{ position: 'absolute', inset: -3, borderRadius: 14, border: '1px solid rgba(31,92,78,0.25)' }} />
               <Shield size={20} color="white" />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <h1 className="v2-h1">Key Intelligence</h1>
-                <span style={{ fontSize: 9, fontWeight: 800, color: '#fff', background: 'rgba(42,107,92,0.2)', border: '1px solid rgba(192,57,43,0.5)', borderRadius: 4, padding: '2px 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PRO</span>
+                <span style={{ fontSize: 9, fontWeight: 800, color: '#fff', background: 'rgba(31,92,78,0.2)', border: '1px solid rgba(192,57,43,0.5)', borderRadius: 4, padding: '2px 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PRO</span>
               </div>
               <p style={{ fontSize: 12, color: '#b0a8a0', marginTop: 2 }}>
                 {user.email} · {activeKeys.length} active key{activeKeys.length !== 1 ? 's' : ''} · {bindLive} verified live
@@ -588,7 +588,7 @@ export default function KeyIntelligence({ nav }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8, marginBottom: 20 }}>
           {[
             { label: 'Active keys',   val: activeKeys.length,   color: '#818cf8' },
-            { label: 'Verified live', val: bindLive,            color: '#1e8a5e' },
+            { label: 'Verified live', val: bindLive,            color: '#16a068' },
             { label: 'Archived keys', val: archivedKeys.length, color: '#fbbf24' },
             { label: 'Bind alerts',   val: bindAlerts,          color: bindAlerts > 0 ? '#f87171' : '#b0a8a0' },
             { label: 'Encryption',    val: 'AES-256',           color: '#38bdf8' },
@@ -602,15 +602,15 @@ export default function KeyIntelligence({ nav }) {
 
         {/* Banners */}
         {rotateError && (
-          <div style={{ background: 'rgba(42,107,92,0.09)', border: '0.5px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#f87171' }}>
+          <div style={{ background: 'rgba(31,92,78,0.09)', border: '0.5px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#f87171' }}>
             <AlertTriangle size={13} style={{ flexShrink: 0 }} /><span style={{ flex: 1 }}>{rotateError}</span>
             <button onClick={() => setRotateError('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f87171', fontSize: 16, lineHeight: 1 }}>×</button>
           </div>
         )}
         {rotateSuccess && (
-          <div style={{ background: 'transparent', border: '0.5px solid rgba(74,222,128,0.3)', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#1e8a5e' }}>
+          <div style={{ background: 'transparent', border: '0.5px solid rgba(74,222,128,0.3)', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#16a068' }}>
             <CheckCircle size={13} style={{ flexShrink: 0 }} /><span style={{ flex: 1 }}>{rotateSuccess}</span>
-            <button onClick={() => setRotateSuccess('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1e8a5e', fontSize: 16, lineHeight: 1 }}>×</button>
+            <button onClick={() => setRotateSuccess('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#16a068', fontSize: 16, lineHeight: 1 }}>×</button>
           </div>
         )}
 
@@ -691,7 +691,7 @@ export default function KeyIntelligence({ nav }) {
                     {agents.length > 0 && <span style={{ marginLeft: 12 }}><PulseDot color={onlineAgents > 0 ? '#4ade80' : '#b0a8a0'} animate={onlineAgents > 0} /><span style={{ marginLeft: 5 }}>{onlineAgents}/{agents.length} agent{agents.length !== 1 ? 's' : ''} online</span></span>}
                   </div>
                   <button onClick={runAllChecks} disabled={running || !!checking}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', borderRadius: 7, background: running ? 'rgba(30,138,94,0.06)' : '#4ade80', color: running ? '#4ade80' : '#0d2010', border: 'none', fontSize: 12, fontWeight: 700, cursor: running ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', borderRadius: 7, background: running ? 'rgba(22,160,104,0.07)' : '#4ade80', color: running ? '#4ade80' : '#0d2010', border: 'none', fontSize: 12, fontWeight: 700, cursor: running ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
                     {running ? <><RefreshCw size={11} style={{ animation: 'spin 1s linear infinite' }} /> Running…</> : <><Play size={11} /> Run all checks</>}
                   </button>
                 </div>
@@ -752,14 +752,14 @@ export default function KeyIntelligence({ nav }) {
                 <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 3 }}>A new certificate and key will be issued and deployed automatically</div>
               </div>
               <div style={{ padding: '16px 20px' }}>
-                <div style={{ background: 'rgba(74,222,128,0.06)', border: '0.5px solid rgba(74,222,128,0.2)', borderRadius: 8, padding: '10px 12px', marginBottom: 14, fontSize: 11, color: '#1e8a5e' }}>
+                <div style={{ background: 'rgba(74,222,128,0.06)', border: '0.5px solid rgba(74,222,128,0.2)', borderRadius: 8, padding: '10px 12px', marginBottom: 14, fontSize: 11, color: '#16a068' }}>
                   <CheckCircle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }} /><strong>Zero downtime</strong> — new cert installs before old key is archived. 30-day rollback window.
                 </div>
                 <div style={{ fontSize: 13, color: '#e8e0d8', lineHeight: 1.6 }}>This dispatches a renew job for <strong>{rotateConfirm.domain}</strong>. The old key is archived immediately after the new key is stored.</div>
               </div>
               <div style={{ padding: '12px 20px', borderTop: '0.5px solid rgba(0,0,0,0.06)', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                 <button className="v2-btn v2-btn-sm" onClick={() => setRotateConfirm(null)}>Cancel</button>
-                <button onClick={() => handleRotate(rotateConfirm)} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', background: '#2a6b5c', color: '#fff', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                <button onClick={() => handleRotate(rotateConfirm)} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', background: '#1f5c4e', color: '#fff', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                   <RotateCcw size={12} /> Rotate now
                 </button>
               </div>

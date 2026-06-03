@@ -37,11 +37,11 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
       <div style={{ padding:'12px 16px', borderBottom:'0.5px solid rgba(15,23,42,0.06)',
         display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-          <Shield size={14} color="#e07060"/>
+          <Shield size={14} color="#1f5c4e"/>
           <span style={{ fontSize:13, fontWeight:600, color:'transparent' }}>Fleet overview</span>
           {allClear && (
             <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20,
-              background:'rgba(42,107,92,0.08)', color:'#5edb8a', border:'0.5px solid rgba(42,107,92,0.2)' }}>
+              background:'rgba(31,92,78,0.08)', color:'#5edb8a', border:'0.5px solid rgba(31,92,78,0.2)' }}>
               All clear ✓
             </span>
           )}
@@ -52,10 +52,10 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
       {/* Stats row */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:0 }}>
         {[
-          { val: healthy.length,  label:'Healthy',       color:'#5edb8a', bg:'rgba(42,107,92,0.08)', icon: <Shield size={13} color="#16a34a"/> },
-          { val: expiring.length, label:'Expiring soon', color: expiring.length>0?'#e07060':'rgba(240,237,232,0.5)', bg: expiring.length>0?'rgba(42,107,92,0.08)':'rgba(30,0,0,0.4)', icon: <AlertTriangle size={13} color={expiring.length>0?'#e07060':'rgba(240,237,232,0.5)'}/> },
-          { val: expired.length,  label:'Expired',       color: expired.length>0?'#2a6b5c':'rgba(240,237,232,0.5)',  bg: expired.length>0?'rgba(42,107,92,0.09)':'rgba(30,0,0,0.4)',  icon: <XCircle size={13} color={expired.length>0?'#2a6b5c':'rgba(240,237,232,0.5)'}/> },
-          { val: activeAgents,    label:'Agents active', color:'#2a6b5c', bg:'rgba(42,107,92,0.08)', icon: <Server size={13} color="#2a6b5c"/> },
+          { val: healthy.length,  label:'Healthy',       color:'#5edb8a', bg:'rgba(31,92,78,0.08)', icon: <Shield size={13} color="#16a34a"/> },
+          { val: expiring.length, label:'Expiring soon', color: expiring.length>0?'#1f5c4e':'rgba(240,237,232,0.5)', bg: expiring.length>0?'rgba(31,92,78,0.08)':'rgba(30,0,0,0.4)', icon: <AlertTriangle size={13} color={expiring.length>0?'#1f5c4e':'rgba(240,237,232,0.5)'}/> },
+          { val: expired.length,  label:'Expired',       color: expired.length>0?'#1f5c4e':'rgba(240,237,232,0.5)',  bg: expired.length>0?'rgba(31,92,78,0.09)':'rgba(30,0,0,0.4)',  icon: <XCircle size={13} color={expired.length>0?'#1f5c4e':'rgba(240,237,232,0.5)'}/> },
+          { val: activeAgents,    label:'Agents active', color:'#1f5c4e', bg:'rgba(31,92,78,0.08)', icon: <Server size={13} color="#1f5c4e"/> },
         ].map((s, i) => (
           <div key={s.label} style={{ padding:'14px 16px', background:s.bg,
             borderRight: i < 3 ? '0.5px solid rgba(15,23,42,0.06)' : 'none' }}>
@@ -82,13 +82,13 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
               <div key={c.id} style={{ display:'flex', alignItems:'center', gap:10,
                 padding:'9px 16px', borderTop:'0.5px solid rgba(15,23,42,0.05)' }}>
                 {isExpired
-                  ? <XCircle      size={13} color="#2a6b5c" style={{ flexShrink:0 }}/>
-                  : <AlertTriangle size={13} color="#e07060" style={{ flexShrink:0 }}/>}
+                  ? <XCircle      size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
+                  : <AlertTriangle size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>}
                 <span style={{ fontSize:13, flex:1, color:'#e8e0d8',
                   overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{c.domain}</span>
                 <span style={{ fontSize:11, fontWeight:600, flexShrink:0,
-                  color: isExpired ? '#2a6b5c' : '#e07060',
-                  background: isExpired ? 'rgba(42,107,92,0.09)' : 'rgba(42,107,92,0.08)',
+                  color: isExpired ? '#1f5c4e' : '#1f5c4e',
+                  background: isExpired ? 'rgba(31,92,78,0.09)' : 'rgba(31,92,78,0.08)',
                   padding:'2px 8px', borderRadius:4 }}>
                   {isExpired ? `Expired ${Math.abs(d)}d ago` : `Expires in ${d}d`}
                 </span>

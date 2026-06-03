@@ -6,7 +6,7 @@ const RAG_URL = 'https://ai.easysecurity.in/rag'
 const CHIPS_OUT = ['How does auto-renewal work?','Install agent on VPS','DNS challenge failing','What is TLS grade A+?','Connect Cloudflare DNS','What is KeyLocker?']
 const CHIPS_IN  = ['List my certificates','Show expiring soon','Are my agents online?','How to issue a certificate','My DNS providers','KeyLocker help']
 
-const G='#2a6b5c',BG='transparent',S1='transparent',S2='transparent',TX='rgba(240,237,232,0.06)',MU='#7a7a7a',BD='rgba(0,0,0,0.06)',GB='rgba(16,185,129,0.25)'
+const G='#1f5c4e',BG='transparent',S1='transparent',S2='transparent',TX='rgba(240,237,232,0.06)',MU='#7a7a7a',BD='rgba(0,0,0,0.06)',GB='rgba(16,185,129,0.25)'
 
 function Av({ai}){return <div style={{width:26,height:26,borderRadius:'50%',flexShrink:0,marginTop:2,fontSize:11,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',background:ai?'rgba(16,185,129,0.12)':'transparent',border:ai?'1px solid rgba(16,185,129,0.25)':'1px solid rgba(99,179,237,0.3)',color:ai?G:'#63b3ed'}}>{ai?'V':'U'}</div>}
 function Bub({ai,user,children}){return <div style={{padding:'10px 14px',borderRadius:14,maxWidth:'86%',background:user?'rgba(16,185,129,0.1)':S2,border:`0.5px solid ${user?'rgba(16,185,129,0.2)':BD}`,borderBottomLeftRadius:ai?3:14,borderBottomRightRadius:user?3:14}}>{children}</div>}

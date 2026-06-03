@@ -12,8 +12,8 @@ const callInstall = async (body, tok) => {
 function Pill({ state }) {
   const map = {
     pending: { bg:'rgba(0,0,0,0.05)', color:'#b0a8a0', label:'Pending' },
-    running: { bg:'rgba(42,107,92,0.09)',   color:'#ff8c7a', label:'In progress...' },
-    done:    { bg:'rgba(30,138,94,0.08)',    color:'#1e8a5e', label:'Done ✓' },
+    running: { bg:'rgba(31,92,78,0.09)',   color:'#1f5c4e', label:'In progress...' },
+    done:    { bg:'rgba(22,160,104,0.09)',    color:'#16a068', label:'Done ✓' },
     error:   { bg:'rgba(248,113,113,0.12)', color:'#c0392b', label:'Failed' },
     skipped: { bg:'rgba(0,0,0,0.03)', color:'#b0a8a0', label:'Skipped' },
   }
@@ -34,7 +34,7 @@ async function pemSha256(pem) {
 function StepRow({ step, title, subtitle, state }) {
   const icons = {
     pending: <span style={{width:22,height:22,borderRadius:'50%',background:'rgba(0,0,0,0.06)',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#b0a8a0',fontWeight:700}}>{step}</span>,
-    running: <Loader size={18} color='#ff8c7a' style={{animation:'spin 1s linear infinite'}}/>,
+    running: <Loader size={18} color='#1f5c4e' style={{animation:'spin 1s linear infinite'}}/>,
     done:    <CheckCircle size={20} color='#4ade80'/>,
     error:   <XCircle size={20} color='#f87171'/>,
     skipped: <span style={{width:22,height:22,borderRadius:'50%',background:'rgba(0,0,0,0.05)',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#b0a8a0'}}>—</span>,
@@ -85,13 +85,13 @@ function SavedServerCard({ server, selected, onClick }) {
       transition:'all 0.15s',
     }}>
       <div style={{display:'flex',alignItems:'center',gap:8}}>
-        <Server size={13} color={selected ? '#ff8c7a' : '#b0a8a0'}/>
+        <Server size={13} color={selected ? '#1f5c4e' : '#b0a8a0'}/>
         <span style={{fontSize:13,fontWeight:600,color:'#ffffff',flex:1}}>{displayName}</span>
-        {selected && <Check size={14} color='#2a6b5c'/>}
+        {selected && <Check size={14} color='#1f5c4e'/>}
       </div>
       <div style={{fontSize:11,color:'#b0a8a0',marginTop:3,marginLeft:21}}>
         {host}:{port}
-        {server.auto_install_enabled && <span style={{marginLeft:8,color:'#1e8a5e',fontWeight:600}}>· Auto-install on</span>}
+        {server.auto_install_enabled && <span style={{marginLeft:8,color:'#16a068',fontWeight:600}}>· Auto-install on</span>}
       </div>
     </button>
   )
@@ -293,10 +293,10 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
 
   // ── Shared styles ─────────────────────────────────────────────────────
   const modalBg = { position:'fixed', inset:0, zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:20, background:'rgba(0,0,0,0.75)', backdropFilter:'blur(6px)' }
-  const card = { background:'#1a0000', border:'1px solid rgba(42,107,92,0.2)', borderRadius:14, width:'100%', maxWidth:520, maxHeight:'90vh', overflowY:'auto', boxShadow:'0 24px 64px rgba(0,0,0,0.6)' }
+  const card = { background:'#1a0000', border:'1px solid rgba(31,92,78,0.2)', borderRadius:14, width:'100%', maxWidth:520, maxHeight:'90vh', overflowY:'auto', boxShadow:'0 24px 64px rgba(0,0,0,0.6)' }
   const header = { padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, background:'#1a0000', zIndex:10, borderRadius:'14px 14px 0 0' }
   const body = { padding:'20px 22px 24px' }
-  const certBanner = { background:'rgba(30,138,94,0.06)', border:'0.5px solid rgba(74,222,128,0.2)', borderRadius:8, padding:'10px 14px', marginBottom:20, display:'flex', alignItems:'center', gap:10 }
+  const certBanner = { background:'rgba(22,160,104,0.07)', border:'0.5px solid rgba(74,222,128,0.2)', borderRadius:8, padding:'10px 14px', marginBottom:20, display:'flex', alignItems:'center', gap:10 }
 
   return (
     <div style={modalBg}>
@@ -307,7 +307,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
           <div>
             <div style={{display:'flex',alignItems:'center',gap:8}}>
               <div style={{width:28,height:28,borderRadius:7,background:'rgba(0,0,0,0.08)',border:'1px solid rgba(192,57,43,0.4)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                <Shield size={14} color='#ff8c7a'/>
+                <Shield size={14} color='#1f5c4e'/>
               </div>
               <span style={{fontSize:15,fontWeight:700,color:'#ffffff'}}>SSL Installation Wizard</span>
             </div>
@@ -323,7 +323,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
           {/* Loading */}
           {phase === 'loading' && (
             <div style={{textAlign:'center',padding:'32px',color:'#b0a8a0'}}>
-              <Loader size={20} style={{animation:'spin 1s linear infinite',marginBottom:10,display:'block',margin:'0 auto 12px'}} color='#ff8c7a'/>
+              <Loader size={20} style={{animation:'spin 1s linear infinite',marginBottom:10,display:'block',margin:'0 auto 12px'}} color='#1f5c4e'/>
               <div style={{fontSize:13}}>Loading saved servers...</div>
             </div>
           )}
@@ -357,7 +357,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                     <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
                       <span style={{fontSize:16}}>{t.icon}</span>
                       <span style={{fontSize:13,fontWeight:700,color:'#ffffff'}}>{t.title}</span>
-                      {serverType===t.key && <Check size={14} color='#2a6b5c' style={{marginLeft:'auto'}}/>}
+                      {serverType===t.key && <Check size={14} color='#1f5c4e' style={{marginLeft:'auto'}}/>}
                     </div>
                     <div style={{fontSize:11,color:'#b0a8a0',lineHeight:1.5}}>{t.desc}</div>
                   </button>
@@ -367,12 +367,12 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                 <div style={{background:'rgba(251,191,36,0.08)',border:'1px solid rgba(184,120,0,0.2)',borderRadius:8,padding:'12px 14px',marginBottom:16,display:'flex',gap:8}}>
                   <AlertTriangle size={13} color='#fbbf24' style={{marginTop:1,flexShrink:0}}/>
                   <div>
-                    <div style={{fontSize:12,fontWeight:600,color:'#b87800'}}>SSLVault Agent Required</div>
+                    <div style={{fontSize:12,fontWeight:600,color:'#9a6400'}}>SSLVault Agent Required</div>
                     <div style={{fontSize:11,color:'#b0a8a0',marginTop:2,lineHeight:1.5}}>Go to Servers tab → Install Agent. Once running it automatically polls and installs certificates.</div>
                   </div>
                 </div>
               )}
-              <button onClick={() => setPhase('configure')} style={{width:'100%',padding:'11px',background:'#2a6b5c',color:'white',border:'none',borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+              <button onClick={() => setPhase('configure')} style={{width:'100%',padding:'11px',background:'#1f5c4e',color:'white',border:'none',borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
                 Continue <ChevronRight size={14}/>
               </button>
             </>
@@ -400,7 +400,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                       textAlign:'left', padding:'10px 12px', borderRadius:7, cursor:'pointer',
                       fontFamily:'inherit', fontSize:12, fontWeight:500, color:'#b0a8a0',
                       border: useNew ? '2px solid #2a6b5c' : '0.5px dashed rgba(255,255,255,0.2)',
-                      background: useNew ? 'rgba(42,107,92,0.08)' : 'transparent',
+                      background: useNew ? 'rgba(31,92,78,0.08)' : 'transparent',
                     }}>
                       + Add new server
                     </button>
@@ -435,7 +435,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                       { val:autoInstall, set:setAutoInstall, label:'Auto-install when cert is reissued or renewed' },
                     ].map((item,i) => (
                       <label key={i} style={{display:'flex',alignItems:'flex-start',gap:8,cursor:'pointer'}}>
-                        <input type='checkbox' checked={item.val} onChange={e=>item.set(e.target.checked)} style={{marginTop:2,accentColor:'#2a6b5c'}}/>
+                        <input type='checkbox' checked={item.val} onChange={e=>item.set(e.target.checked)} style={{marginTop:2,accentColor:'#1f5c4e'}}/>
                         <span style={{fontSize:12,color:'#e8e0d8',lineHeight:1.5}}>{item.label}</span>
                       </label>
                     ))}
@@ -445,7 +445,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
 
               {/* What happens */}
               <div style={{marginBottom:20,background:'rgba(74,222,128,0.06)',border:'1px solid rgba(74,222,128,0.15)',borderRadius:8,padding:'12px 14px'}}>
-                <div style={{fontSize:11,fontWeight:700,color:'#1e8a5e',marginBottom:8}}>What happens during installation</div>
+                <div style={{fontSize:11,fontWeight:700,color:'#16a068',marginBottom:8}}>What happens during installation</div>
                 {[
                   'SSLVault connects to your cPanel server over HTTPS (no SSH needed)',
                   'Uploads the 3-block fullchain PEM — end-entity + intermediate + root CA',
@@ -454,7 +454,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                   'Verifies the live domain is serving your new certificate',
                 ].map((t,i) => (
                   <div key={i} style={{display:'flex',gap:6,marginBottom:4,fontSize:11,color:'#b0a8a0'}}>
-                    <span style={{color:'#1e8a5e',flexShrink:0}}>✓</span>{t}
+                    <span style={{color:'#16a068',flexShrink:0}}>✓</span>{t}
                   </div>
                 ))}
               </div>
@@ -463,7 +463,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                 {savedServers.length === 0 && (
                   <button onClick={()=>setPhase('select_type')} style={{padding:'10px 16px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.08)',background:'rgba(0,0,0,0.04)',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#e8e0d8'}}>Back</button>
                 )}
-                <button onClick={handleInstall} disabled={busy} style={{flex:1,padding:'11px',background:busy?'rgba(192,57,43,0.4)':'#2a6b5c',color:'white',border:'none',borderRadius:8,fontSize:13,fontWeight:700,cursor:busy?'wait':'pointer',fontFamily:'inherit'}}>
+                <button onClick={handleInstall} disabled={busy} style={{flex:1,padding:'11px',background:busy?'rgba(192,57,43,0.4)':'#1f5c4e',color:'white',border:'none',borderRadius:8,fontSize:13,fontWeight:700,cursor:busy?'wait':'pointer',fontFamily:'inherit'}}>
                   {busy ? 'Installing...' : 'Install Certificate'}
                 </button>
               </div>
@@ -493,10 +493,10 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
               {phase === 'done' && (
                 <div style={{marginTop:14}}>
                   {/* Main success card */}
-                  <div style={{background:'rgba(30,138,94,0.06)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:8,padding:'14px',marginBottom:12}}>
+                  <div style={{background:'rgba(22,160,104,0.07)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:8,padding:'14px',marginBottom:12}}>
                     <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:10}}>
                       <CheckCircle size={16} color='#4ade80'/>
-                      <span style={{fontSize:13,fontWeight:700,color:'#1e8a5e'}}>Certificate installed successfully</span>
+                      <span style={{fontSize:13,fontWeight:700,color:'#16a068'}}>Certificate installed successfully</span>
                     </div>
                     <div style={{display:'grid',gridTemplateColumns:'auto 1fr',gap:'4px 12px',fontSize:11,color:'#e8e0d8',lineHeight:1.8}}>
                       <span style={{color:'#b0a8a0',fontWeight:600}}>Domain</span>
@@ -506,7 +506,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                         <span>{new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
                       </>}
                       <span style={{color:'#b0a8a0',fontWeight:600}}>Status</span>
-                      <span style={{color:'#1e8a5e',fontWeight:700}}>✓ Active on cPanel</span>
+                      <span style={{color:'#16a068',fontWeight:700}}>✓ Active on cPanel</span>
                     </div>
                     {autoInstall && <div style={{fontSize:11,color:'#b0a8a0',marginTop:8}}>Future reissues and renewals will be installed automatically.</div>}
                   </div>
@@ -528,7 +528,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                         )}
                         {!fingerprints.key_sha256 && (
                           <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:20,
-                            background:'rgba(74,222,128,0.15)',color:'#1e8a5e',border:'1px solid rgba(74,222,128,0.3)'}}>
+                            background:'rgba(74,222,128,0.15)',color:'#16a068',border:'1px solid rgba(74,222,128,0.3)'}}>
                             ✓ CERT VERIFIED
                           </span>
                         )}
@@ -538,7 +538,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                           <div style={{fontSize:10,color:'#b0a8a0',fontWeight:600,marginBottom:3,textTransform:'uppercase',letterSpacing:'0.5px'}}>
                             Certificate SHA-256
                           </div>
-                          <div style={{fontFamily:'monospace',fontSize:10,color:'#1e8a5e',wordBreak:'break-all',lineHeight:1.6,
+                          <div style={{fontFamily:'monospace',fontSize:10,color:'#16a068',wordBreak:'break-all',lineHeight:1.6,
                             background:'rgba(74,222,128,0.06)',padding:'6px 8px',borderRadius:5}}>
                             {fingerprints.cert_sha256}
                           </div>
@@ -570,7 +570,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                 {phase === 'error' && (
                   <button onClick={()=>{setPhase('configure');setBusy(false)}} style={{flex:1,padding:'10px',border:'0.5px solid rgba(0,0,0,0.08)',borderRadius:8,background:'rgba(0,0,0,0.04)',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#e8e0d8'}}>Try again</button>
                 )}
-                <button onClick={()=>{if(phase==='done'&&onSuccess)onSuccess();onClose()}} style={{flex:1,padding:'10px',background:phase==='done'?'#2a6b5c':'rgba(0,0,0,0.06)',color:'#ffffff',border:'none',borderRadius:8,cursor:'pointer',fontFamily:'inherit',fontSize:13,fontWeight:700}}>
+                <button onClick={()=>{if(phase==='done'&&onSuccess)onSuccess();onClose()}} style={{flex:1,padding:'10px',background:phase==='done'?'#1f5c4e':'rgba(0,0,0,0.06)',color:'#ffffff',border:'none',borderRadius:8,cursor:'pointer',fontFamily:'inherit',fontSize:13,fontWeight:700}}>
                   {phase==='done'?'Done':'Close'}
                 </button>
               </div>

@@ -138,7 +138,7 @@ export default function AlertSettings({ nav }) {
             <button className="v2-btn v2-btn-sm" onClick={handleSave} disabled={saving}
               style={{ display:'flex', alignItems:'center', gap:5,
                 background: saved ? 'transparent' : undefined,
-                border: saved ? '0.5px solid rgba(42,107,92,0.2)' : undefined,
+                border: saved ? '0.5px solid rgba(31,92,78,0.2)' : undefined,
                 color: saved ? '#4ade80' : undefined }}>
               {saving  ? <><RefreshCw size={11} style={{ animation:'spin .7s linear infinite' }}/> Saving…</> :
                saved   ? <><CheckCircle size={11}/> Saved</>   : <><Save size={11}/> Save</>}
@@ -148,7 +148,7 @@ export default function AlertSettings({ nav }) {
 
         {/* Banners */}
         {error && (
-          <div style={{ background:'rgba(42,107,92,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
+          <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
             padding:'10px 14px', marginBottom:14, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#c0392b' }}>
             <AlertTriangle size={13} style={{ flexShrink:0 }}/> {error}
@@ -157,14 +157,14 @@ export default function AlertSettings({ nav }) {
           </div>
         )}
         {testResult === 'ok' && (
-          <div style={{ background:'transparent', border:'0.5px solid rgba(42,107,92,0.2)', borderRadius:8,
+          <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:8,
             padding:'10px 14px', marginBottom:14, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#ffffff' }}>
             <CheckCircle size={13} style={{ flexShrink:0 }}/> Test email sent to {user.email}
           </div>
         )}
         {testResult === 'fail' && (
-          <div style={{ background:'rgba(42,107,92,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
+          <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
             padding:'10px 14px', marginBottom:14, fontSize:12, color:'#c0392b' }}>
             Test failed — check RESEND_API_KEY in Supabase environment variables.
           </div>
@@ -184,7 +184,7 @@ export default function AlertSettings({ nav }) {
                 </div>
                 <button onClick={() => setEmailEnabled(v => !v)} style={{
                   width:36, height:20, borderRadius:100, border:'none', cursor:'pointer',
-                  background: emailEnabled ? '#2a6b5c' : 'var(--v2-surface-3)',
+                  background: emailEnabled ? '#1f5c4e' : 'var(--v2-surface-3)',
                   position:'relative', transition:'background 0.15s', flexShrink:0,
                 }}>
                   <div style={{
@@ -211,7 +211,7 @@ export default function AlertSettings({ nav }) {
                       padding:'4px 12px', borderRadius:6, fontSize:12, fontWeight: on ? 600 : 400,
                       cursor:'pointer', fontFamily:'inherit',
                       border: on ? '0.5px solid #2a6b5c' : '0.5px solid var(--v2-border)',
-                      background: on ? 'rgba(42,107,92,0.09)' : 'var(--v2-surface-3)',
+                      background: on ? 'rgba(31,92,78,0.09)' : 'var(--v2-surface-3)',
                       color: on ? '#f0ede8' : '#b0a8a0', transition:'all 0.1s',
                     }}>
                       {d}d
@@ -233,7 +233,7 @@ export default function AlertSettings({ nav }) {
                       <div onClick={() => toggleType(key)} style={{
                         width:15, height:15, borderRadius:3, flexShrink:0, marginTop:2,
                         border: on ? '1.5px solid #2a6b5c' : '1.5px solid var(--v2-border)',
-                        background: on ? '#2a6b5c' : 'transparent',
+                        background: on ? '#1f5c4e' : 'transparent',
                         display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer',
                       }}>
                         {on && <div style={{ width:7, height:7, background:'white', borderRadius:1 }}/>}

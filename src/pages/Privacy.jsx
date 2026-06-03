@@ -4,7 +4,7 @@ import {
 } from 'lucide-react'
 
 export default function Privacy({ nav }) {
-  const bg = 'linear-gradient(160deg,#eef2ff,rgba(42,107,92,0.09) 35%,#fefce8 65%,#fdf4ff)'
+  const bg = 'linear-gradient(160deg,#eef2ff,rgba(31,92,78,0.09) 35%,#fefce8 65%,#fdf4ff)'
   const updated = 'May 9, 2026'
 
   return (
@@ -32,7 +32,7 @@ export default function Privacy({ nav }) {
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14}}>
             {[
               {icon:Lock,title:'Private keys stay yours',desc:'When you use the persistent agent, private keys are generated and stored on your server. We never see them.',color:'#1a1a1a',bg:'transparent'},
-              {icon:Database,title:'Minimum metadata',desc:'We store only what\'s required to issue and renew certificates: domain, expiry, owner email.',color:'#1a1a1a',bg:'rgba(42,107,92,0.09)'},
+              {icon:Database,title:'Minimum metadata',desc:'We store only what\'s required to issue and renew certificates: domain, expiry, owner email.',color:'#1a1a1a',bg:'rgba(31,92,78,0.09)'},
               {icon:Eye,title:'No tracking',desc:'No third-party analytics, no advertising pixels, no behavioural profiling.',color:'#1a1a1a',bg:'#ede9fe'},
               {icon:Mail,title:'Email only for service',desc:'Renewal alerts, account notices. No marketing. No newsletters you didn\'t subscribe to.',color:'#1a1a1a',bg:'rgba(239,68,68,0.08)'},
             ].map(({icon:Icon,title,desc,color,bg})=>(

@@ -16,7 +16,7 @@ function agentStatus(last_seen_at, status) {
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
   if (status === 'offline' || mins > 15) return { label:'Offline', color:'#c0392b', dot:'#f87171', pulse:false }
   if (mins > 6) return { label:'Idle',    color:'#ffffff', dot:'#f0ede8', pulse:false }
-  return { label:'Online', color:'#1e8a5e', dot:'#4ade80', pulse:true }
+  return { label:'Online', color:'#16a068', dot:'#4ade80', pulse:true }
 }
 
 function fmtRel(iso) {
@@ -52,7 +52,7 @@ function CertPill({ cert }) {
   const isExpired = d !== null && d <= 0
   const isWarn    = d !== null && d > 0 && d <= 30
   const color = isExpired ? '#f87171' : isWarn ? '#f0ede8' : '#4ade80'
-  const bg    = isExpired ? 'rgba(42,107,92,0.09)' : isWarn ? 'rgba(239,68,68,0.08)' : 'transparent'
+  const bg    = isExpired ? 'rgba(31,92,78,0.09)' : isWarn ? 'rgba(239,68,68,0.08)' : 'transparent'
 
   return (
     <div style={{
@@ -271,7 +271,7 @@ function InstallModal({ onClose }) {
 
             </div>
           ))}
-          <div style={{ background:'transparent', border:'0.5px solid rgba(42,107,92,0.2)', borderRadius:7, padding:'10px 12px' }}>
+          <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:7, padding:'10px 12px' }}>
             <div style={{ fontSize:11, color:'#ffffff', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and appears in this list within 1–2 minutes.
             </div>
@@ -327,11 +327,11 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
     setTimeout(() => setCopied(false), 1500)
   }
 
-  const borderColor = st.label === 'Online' ? 'rgba(42,107,92,0.2)'
+  const borderColor = st.label === 'Online' ? 'rgba(31,92,78,0.2)'
     : st.label === 'Offline' ? 'rgba(0,0,0,0.1)'
     : 'var(--v2-border)'
   const headerBg = st.label === 'Online' ? 'transparent'
-    : st.label === 'Offline' ? 'rgba(42,107,92,0.09)'
+    : st.label === 'Offline' ? 'rgba(31,92,78,0.09)'
     : 'var(--v2-surface-3)'
 
   const cpu  = agent.cpu_pct  || 0
@@ -397,7 +397,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
 
         {/* Status pill */}
         <span style={{ fontSize:10, fontWeight:700, padding:'2px 9px', borderRadius:10, flexShrink:0,
-          background: st.label==='Online'?'transparent':st.label==='Offline'?'rgba(42,107,92,0.09)':'rgba(239,68,68,0.08)',
+          background: st.label==='Online'?'transparent':st.label==='Offline'?'rgba(31,92,78,0.09)':'rgba(239,68,68,0.08)',
           color: st.color }}>
           {st.label}
         </span>
@@ -468,8 +468,8 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                         <div key={j.id} style={{ display:'flex', alignItems:'center', gap:10,
                           padding:'7px 10px', borderRadius:7, background:'var(--v2-surface-3)' }}>
                           {ok   ? <CheckCircle size={12} color="#16a34a"/>
-                          :fail ? <XCircle size={12} color="#2a6b5c"/>
-                          :       <Clock size={12} color="#e07060"/>}
+                          :fail ? <XCircle size={12} color="#1f5c4e"/>
+                          :       <Clock size={12} color="#1f5c4e"/>}
                           <span style={{ fontSize:11, color:'#e8e0d8', fontFamily:'monospace', flex:1 }}>
                             {j.job_type}{j.domain ? ` · ${j.domain}` : ''}
                           </span>
@@ -668,7 +668,7 @@ export default function Infrastructure({ user }) {
         {!loading && agents.length > 0 && (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))', gap:8, marginBottom:20 }}>
             {[
-              { label:'Servers online',  val:online,       color:'#1e8a5e' },
+              { label:'Servers online',  val:online,       color:'#16a068' },
               { label:'Offline / idle',  val:offline,      color:offline>0?'#f87171':'var(--v2-text)' },
               { label:'Certs protected', val:certs.length, color:'#ffffff' },
               { label:'Renewals ≤30d',   val:renewalsDue,  color:renewalsDue>0?'#f0ede8':'#4ade80' },

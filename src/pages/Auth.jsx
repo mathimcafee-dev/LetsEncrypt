@@ -40,7 +40,7 @@ function SSLVaultTrustBadge({ compact = false }) {
         }
         ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke()
       }
-      drawStrand(pts1, '#2a6b5c'); drawStrand(pts2, '#e85555')
+      drawStrand(pts1, '#1f5c4e'); drawStrand(pts2, '#e85555')
       for (let i = 0; i <= STEPS; i++) {
         const depth = (Math.sin(pts1[i].phase) + 1) / 2
         const r = 1.4 + depth * 1.8
@@ -64,7 +64,7 @@ function SSLVaultTrustBadge({ compact = false }) {
       display:'inline-flex', alignItems:'center', gap: compact ? 8 : 11,
       padding: compact ? '6px 12px 6px 8px' : '9px 16px 9px 10px',
       background:'#1a0808',
-      border:'1px solid rgba(42,107,92,0.25)',
+      border:'1px solid rgba(31,92,78,0.25)',
       borderRadius:10, position:'relative', overflow:'hidden',
       minWidth: compact ? 0 : 240,
       animation:'sv-sweep-anim 3.5s ease-in-out infinite',
@@ -75,7 +75,7 @@ function SSLVaultTrustBadge({ compact = false }) {
           {compact ? 'Secured by' : 'Cryptographically Secured'}
         </span>
         <div style={{fontSize: compact ? 13 : 15, fontWeight:800, color:'#1a1a1a', lineHeight:1, letterSpacing:'.01em'}}>
-          SSLVault <span style={{color:'#2a6b5c', fontSize: compact ? 10 : 11, fontWeight:500}}>® {compact ? 'PKI' : 'easysecurity.in'}</span>
+          SSLVault <span style={{color:'#1f5c4e', fontSize: compact ? 10 : 11, fontWeight:500}}>® {compact ? 'PKI' : 'easysecurity.in'}</span>
         </div>
         <span style={{fontSize: compact ? 8 : 9, color:'#6a2a2a', letterSpacing:'.03em'}}>
           {compact ? '256-bit TLS encryption' : 'Certified PKI · GoGetSSL · RapidSSL DV'}
@@ -90,7 +90,7 @@ function SSLVaultTrustBadge({ compact = false }) {
         <span style={{fontSize: compact ? 14 : 18, fontWeight:900, color:'#e03030', lineHeight:1}}>256</span>
         <span style={{fontSize:8,color:'#6a2a2a',letterSpacing:'.06em',textTransform:'uppercase'}}>Bit SSL</span>
         {!compact && <div style={{display:'flex',alignItems:'center',gap:4,marginTop:4}}>
-          <div style={{width:5,height:5,borderRadius:'50%',background:'#ff6b6b',
+          <div style={{width:5,height:5,borderRadius:'50%',background:'#c0392b',
             animation:'sv-live-anim 1.2s ease-in-out infinite'}}/>
           <span style={{fontSize:8,color:'#cc4444',fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase'}}>Live</span>
         </div>}
@@ -160,13 +160,13 @@ export default function Auth({ nav }) {
   const perks = [
     { icon:<Zap size={15} />,    color:'var(--v2-amber)',       title:'Unlimited certificates',   desc:'No cap on domains or issuances — ever.' },
     { icon:<Shield size={15} />, color:'#1a1a1a',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
-    { icon:<Lock size={15} />,   color:'#2a6b5c',       title:'Private keys stay private', desc:'AES-256 at rest. Keys never leave your server.' },
+    { icon:<Lock size={15} />,   color:'#1f5c4e',       title:'Private keys stay private', desc:'AES-256 at rest. Keys never leave your server.' },
     { icon:<CheckCircle size={15} />, color:'#1a1a1a',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
   ]
 
   return (
     <div className="v2-page" style={{ minHeight:'calc(100vh - 60px)', display:'flex', alignItems:'center' }}>
-      <div style={{ position:'fixed', top:60, left:0, right:0, height:2, background:'#2a6b5c', zIndex:10 }} />
+      <div style={{ position:'fixed', top:60, left:0, right:0, height:2, background:'#1f5c4e', zIndex:10 }} />
 
       <div style={{ maxWidth:1060, margin:'0 auto', padding:'clamp(24px,6vw,60px) clamp(14px,3vw,24px)',
                     display:'grid', gridTemplateColumns:'minmax(0,1fr) clamp(320px,35vw,420px)', gap:60,
@@ -175,15 +175,15 @@ export default function Auth({ nav }) {
         {/* Left: value prop */}
         <div>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8,
-                        background:'rgba(42,107,92,0.09)', border:'0.5px solid rgba(42,107,92,0.2)',
+                        background:'rgba(31,92,78,0.09)', border:'0.5px solid rgba(31,92,78,0.2)',
                         borderRadius:100, padding:'4px 14px', marginBottom:24 }}>
             <span className="v2-pulse" />
-            <span style={{ fontSize:11, fontWeight:500, color:'#ff8c7a' }}>Free · Open · Trusted</span>
+            <span style={{ fontSize:11, fontWeight:500, color:'#1f5c4e' }}>Free · Open · Trusted</span>
           </div>
           <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, color:'#1a1a1a',
                         lineHeight:1.08, letterSpacing:'-1.4px', marginBottom:6 }}>One account.</h1>
           <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, lineHeight:1.08,
-                        letterSpacing:'-1.4px', marginBottom:20, color:'#ff8c7a' }}>Every certificate.</h1>
+                        letterSpacing:'-1.4px', marginBottom:20, color:'#1f5c4e' }}>Every certificate.</h1>
           <p style={{ fontSize:15, color:'#3d3d3d', lineHeight:1.75, marginBottom:36, maxWidth:420 }}>
             Sign in to manage your certificates, set expiry alerts, and deploy with one click.
           </p>
@@ -211,7 +211,7 @@ export default function Auth({ nav }) {
         <div>
           <div className="v2-card" style={{ padding:'min(32px,5vw) min(30px,4vw)', borderTop:'2px solid var(--v2-green)' }}>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
-              <div style={{ width:40, height:40, background:'#2a6b5c', borderRadius:'var(--v2-r-lg)',
+              <div style={{ width:40, height:40, background:'#1f5c4e', borderRadius:'var(--v2-r-lg)',
                              display:'flex', alignItems:'center', justifyContent:'center',
                              boxShadow:'0 0 0 4px rgba(0,0,0,0.07)' }}>
                 <Shield size={18} color='#fff' />

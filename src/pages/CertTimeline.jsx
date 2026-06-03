@@ -28,33 +28,33 @@ function fmtDateShort(iso) {
 
 function expiryStyle(days) {
   if (days === null) return { color: '#6b6b6b', bg: 'transparent', border: 'transparent' }
-  if (days <= 7)  return { color: '#2a6b5c', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' }
-  if (days <= 30) return { color: '#b87800', bg: 'rgba(251,191,36,0.10)',  border: 'rgba(251,191,36,0.3)' }
-  return { color: '#1e8a5e', bg: 'transparent', border: 'transparent' }
+  if (days <= 7)  return { color: '#1f5c4e', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' }
+  if (days <= 30) return { color: '#9a6400', bg: 'rgba(251,191,36,0.10)',  border: 'rgba(251,191,36,0.3)' }
+  return { color: '#16a068', bg: 'transparent', border: 'transparent' }
 }
 
 function eventTypeLabel(type) {
   const map = {
     // DB event_type values
-    'cert_warning_30d': { label: 'Cert warning 30d', color: '#b87800' },
+    'cert_warning_30d': { label: 'Cert warning 30d', color: '#9a6400' },
     'cert_warning_14d': { label: 'Cert warning 14d', color: '#f97316' },
-    'cert_warning_7d':  { label: 'Cert warning 7d',  color: '#2a6b5c' },
+    'cert_warning_7d':  { label: 'Cert warning 7d',  color: '#1f5c4e' },
     'cert_warning_1d':  { label: 'Cert warning 1d',  color: '#ef4444' },
     'cert_reissue':     { label: 'Auto-reissue',     color: '#818cf8' },
-    'sub_warning_30d':  { label: 'Sub warning 30d',  color: '#b87800' },
+    'sub_warning_30d':  { label: 'Sub warning 30d',  color: '#9a6400' },
     'sub_warning_14d':  { label: 'Sub warning 14d',  color: '#f97316' },
-    'sub_warning_7d':   { label: 'Sub warning 7d',   color: '#2a6b5c' },
+    'sub_warning_7d':   { label: 'Sub warning 7d',   color: '#1f5c4e' },
     'sub_warning_1d':   { label: 'Sub warning 1d',   color: '#ef4444' },
-    'sub_end':          { label: 'Subscription end', color: '#2a6b5c' },
+    'sub_end':          { label: 'Subscription end', color: '#1f5c4e' },
     // Legacy keys kept for backward compat
-    '30d_warning':    { label: 'Cert warning 30d', color: '#b87800' },
+    '30d_warning':    { label: 'Cert warning 30d', color: '#9a6400' },
     '14d_warning':    { label: 'Cert warning 14d', color: '#f97316' },
-    '7d_warning':     { label: 'Cert warning 7d',  color: '#2a6b5c' },
+    '7d_warning':     { label: 'Cert warning 7d',  color: '#1f5c4e' },
     'final_warning':  { label: 'Cert warning 1d',  color: '#ef4444' },
     'auto_reissue':   { label: 'Auto-reissue',     color: '#818cf8' },
-    'sub_30d':        { label: 'Sub warning 30d',  color: '#b87800' },
-    'sub_14d':        { label: 'Sub warning 14d',  color: '#2a6b5c' },
-    'renewal':        { label: 'Renewal',          color: '#1e8a5e' },
+    'sub_30d':        { label: 'Sub warning 30d',  color: '#9a6400' },
+    'sub_14d':        { label: 'Sub warning 14d',  color: '#1f5c4e' },
+    'renewal':        { label: 'Renewal',          color: '#16a068' },
   }
   return map[type] || { label: type ? type.replace(/_/g,' ') : '—', color: '#6b6b6b' }
 }
@@ -180,7 +180,7 @@ export default function CertTimeline({ user }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(0,0,0,0.08)',
               border: '1px solid rgba(192,57,43,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CalendarDays size={18} color="#ff8c7a"/>
+              <CalendarDays size={18} color="#1f5c4e"/>
             </div>
             <div>
               <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', margin: 0, letterSpacing: '-0.5px' }}>
@@ -208,7 +208,7 @@ export default function CertTimeline({ user }) {
             { label: 'Active certs',  value: certs.length,  color: '#3d3d3d', bg: 'rgba(0,0,0,0.03)', border: 'rgba(0,0,0,0.06)', icon: <Shield size={14}/> },
             { label: 'Expiring ≤30d', value: expiring30,    color: expiring30 > 0 ? '#fbbf24' : '#4ade80', bg: expiring30 > 0 ? 'rgba(184,120,0,0.06)' : 'rgba(74,222,128,0.06)', border: expiring30 > 0 ? 'rgba(184,120,0,0.2)' : 'rgba(74,222,128,0.2)', icon: <Clock size={14}/> },
             { label: 'Critical ≤7d',  value: expiring7,     color: expiring7  > 0 ? '#f87171' : '#4ade80', bg: expiring7  > 0 ? 'rgba(248,113,113,0.08)' : 'rgba(74,222,128,0.06)', border: expiring7  > 0 ? 'rgba(0,0,0,0.08)' : 'rgba(74,222,128,0.2)', icon: <AlertTriangle size={14}/> },
-            { label: 'Auto-renew on', value: autoRenew,     color: '#1e8a5e',  bg: 'rgba(74,222,128,0.06)', border: 'rgba(74,222,128,0.2)', icon: <RotateCcw size={14}/> },
+            { label: 'Auto-renew on', value: autoRenew,     color: '#16a068',  bg: 'rgba(74,222,128,0.06)', border: 'rgba(74,222,128,0.2)', icon: <RotateCcw size={14}/> },
           ].map(s => (
             <div key={s.label} style={{ padding: '14px 16px', borderRadius: 10,
               background: s.bg, border: `1px solid ${s.border}` }}>
@@ -244,16 +244,16 @@ export default function CertTimeline({ user }) {
               padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: F,
               background: filter === f.id ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.03)',
               border: `1px solid ${filter === f.id ? 'rgba(192,57,43,0.4)' : 'rgba(0,0,0,0.06)'}`,
-              color: filter === f.id ? '#ff8c7a' : '#b0a8a0', cursor: 'pointer',
+              color: filter === f.id ? '#1f5c4e' : '#b0a8a0', cursor: 'pointer',
             }}>
               {f.label}
               {f.id === 'expiring' && expiring30 > 0 && (
                 <span style={{ marginLeft: 5, fontSize: 10, fontWeight: 700, padding: '1px 5px',
-                  borderRadius: 8, background: 'rgba(251,191,36,0.2)', color: '#b87800' }}>{expiring30}</span>
+                  borderRadius: 8, background: 'rgba(251,191,36,0.2)', color: '#9a6400' }}>{expiring30}</span>
               )}
               {f.id === 'action' && actionReqd > 0 && (
                 <span style={{ marginLeft: 5, fontSize: 10, fontWeight: 700, padding: '1px 5px',
-                  borderRadius: 8, background: 'rgba(248,113,113,0.2)', color: '#2a6b5c' }}>{actionReqd}</span>
+                  borderRadius: 8, background: 'rgba(248,113,113,0.2)', color: '#1f5c4e' }}>{actionReqd}</span>
               )}
             </button>
           ))}
@@ -289,7 +289,7 @@ export default function CertTimeline({ user }) {
                       <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                         {col.label}
                         {col.sortable && sortKey === col.key && (
-                          sortAsc ? <ChevronUp size={10} color="#ff8c7a"/> : <ChevronDown size={10} color="#ff8c7a"/>
+                          sortAsc ? <ChevronUp size={10} color="#1f5c4e"/> : <ChevronDown size={10} color="#1f5c4e"/>
                         )}
                       </span>
                     </th>
@@ -312,7 +312,7 @@ export default function CertTimeline({ user }) {
                         onClick={() => setExpanded(isOpen ? null : row.id)}
                         style={{
                           cursor: 'pointer',
-                          background: isOpen ? 'rgba(42,107,92,0.07)' : 'transparent',
+                          background: isOpen ? 'rgba(31,92,78,0.07)' : 'transparent',
                           transition: 'background .1s',
                         }}
                         onMouseEnter={e => { if (!isOpen) e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
@@ -329,7 +329,7 @@ export default function CertTimeline({ user }) {
                                 {row.domain}
                               </div>
                               {row.action_required && (
-                                <div style={{ fontSize: 10, color: '#2a6b5c', marginTop: 2, display: 'flex', alignItems: 'center', gap: 3 }}>
+                                <div style={{ fontSize: 10, color: '#1f5c4e', marginTop: 2, display: 'flex', alignItems: 'center', gap: 3 }}>
                                   <AlertTriangle size={9}/> Action required
                                 </div>
                               )}
@@ -362,8 +362,8 @@ export default function CertTimeline({ user }) {
                           <td style={{ padding: '13px 14px', borderBottom: borderStyle }}>
                             {row.install_method ? (
                               <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 6,
-                                background: row.install_method === 'agent' ? 'rgba(99,102,241,0.15)' : 'rgba(42,107,92,0.09)',
-                                color: row.install_method === 'agent' ? '#818cf8' : '#ff8c7a',
+                                background: row.install_method === 'agent' ? 'rgba(99,102,241,0.15)' : 'rgba(31,92,78,0.09)',
+                                color: row.install_method === 'agent' ? '#818cf8' : '#1f5c4e',
                                 border: `1px solid ${row.install_method === 'agent' ? 'rgba(99,102,241,0.3)' : 'rgba(0,0,0,0.1)'}`,
                                 textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                                 {row.install_method}
@@ -401,7 +401,7 @@ export default function CertTimeline({ user }) {
                           <td style={{ padding: '13px 14px', borderBottom: borderStyle }}>
                             {pendingEvents.length > 0 ? (
                               <span style={{ fontSize: 12, fontWeight: 700, padding: '2px 9px', borderRadius: 8,
-                                background: 'rgba(42,107,92,0.08)', color: '#ff8c7a',
+                                background: 'rgba(31,92,78,0.08)', color: '#1f5c4e',
                                 border: '1px solid rgba(0,0,0,0.08)', fontFamily: MONO }}>
                                 {pendingEvents.length}
                               </span>
@@ -485,7 +485,7 @@ export default function CertTimeline({ user }) {
                                         const stemH    = above ? RAIL_MID - nodeTop - 16 : nodeTop - RAIL_MID - 3
                                         const dateLblT = above ? nodeTop - 15 : nodeTop + 19
                                         const nodeColor = isDone ? '#4ade80' : color
-                                        const nodeBg    = isDone ? 'rgba(30,138,94,0.1)' : color + '18'
+                                        const nodeBg    = isDone ? 'rgba(22,160,104,0.11)' : color + '18'
 
                                         return (
                                           <div key={ev.id}>
@@ -507,11 +507,11 @@ export default function CertTimeline({ user }) {
                                     {/* Legend */}
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 14, marginTop: 4 }}>
                                       {[
-                                        { label: 'Completed',      color: '#1e8a5e' },
-                                        { label: 'Warning',        color: '#b87800' },
-                                        { label: 'Critical',       color: '#2a6b5c' },
+                                        { label: 'Completed',      color: '#16a068' },
+                                        { label: 'Warning',        color: '#9a6400' },
+                                        { label: 'Critical',       color: '#1f5c4e' },
                                         { label: 'Auto-reissue',   color: '#818cf8' },
-                                        { label: 'Subscription',   color: '#2a6b5c' },
+                                        { label: 'Subscription',   color: '#1f5c4e' },
                                       ].map(l => (
                                         <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#6b6b6b' }}>
                                           <div style={{ width: 8, height: 8, borderRadius: '50%', border: `1.5px solid ${l.color}`, background: l.color + '20', flexShrink: 0 }} />

@@ -24,13 +24,13 @@ function fmtDateFull(iso) {
 }
 
 function statusInfo(days, status) {
-  if (status === 'revoked')         return { label:'Cancelled',  color:'#c0392b', bg:'rgba(42,107,92,0.09)', border:'rgba(0,0,0,0.1)' }
+  if (status === 'revoked')         return { label:'Cancelled',  color:'#c0392b', bg:'rgba(31,92,78,0.09)', border:'rgba(0,0,0,0.1)' }
   if (status === 'sandbox_revoked') return { label:'Revoked',    color:'#b0a8a0', bg:'var(--v2-border)', border:'var(--v2-border)' }
-  if (days != null && days < 0)     return { label:'Expired',    color:'#c0392b', bg:'rgba(42,107,92,0.09)', border:'rgba(0,0,0,0.1)' }
-  if (days != null && days <= 7)    return { label:'Exp. Soon',  color:'#ff8c7a', bg:'rgba(230,126,34,0.08)', border:'rgba(0,0,0,0.1)' }
+  if (days != null && days < 0)     return { label:'Expired',    color:'#c0392b', bg:'rgba(31,92,78,0.09)', border:'rgba(0,0,0,0.1)' }
+  if (days != null && days <= 7)    return { label:'Exp. Soon',  color:'#1f5c4e', bg:'rgba(230,126,34,0.08)', border:'rgba(0,0,0,0.1)' }
   if (days != null && days <= 30)   return { label:'Expiring',   color:'#ffffff', bg:'rgba(230,126,34,0.1)', border:'rgba(230,126,34,0.2)' }
-  if (status === 'active')          return { label:'Active',     color:'#ffffff', bg:'transparent', border:'rgba(42,107,92,0.2)' }
-  return                                   { label:'Pending',    color:'#ff8c7a', bg:'rgba(230,126,34,0.08)', border:'rgba(0,0,0,0.1)' }
+  if (status === 'active')          return { label:'Active',     color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)' }
+  return                                   { label:'Pending',    color:'#1f5c4e', bg:'rgba(230,126,34,0.08)', border:'rgba(0,0,0,0.1)' }
 }
 
 const PRODUCT_NAMES = {
@@ -44,7 +44,7 @@ function productName(code, certType) {
 
 const btnStyle = {
   fontSize:11, fontWeight:600, color:'#f0ede8', padding:'6px 12px',
-  border:'1px solid rgba(42,107,92,0.25)', borderRadius:6, background:'rgba(0,0,0,0.05)',
+  border:'1px solid rgba(31,92,78,0.25)', borderRadius:6, background:'rgba(0,0,0,0.05)',
   cursor:'pointer', display:'inline-flex', alignItems:'center', gap:5, fontFamily:'inherit',
   whiteSpace:'nowrap'
 }
@@ -126,7 +126,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
           <span style={{ fontSize:mono?11:12, color:color||'var(--v2-text)', fontFamily:mono?"'JetBrains Mono','Menlo',monospace":'inherit', wordBreak:'break-all' }}>{value || '—'}</span>
           {copiable && value && (
             <button onClick={() => copy(value, label)} style={{ flexShrink:0, background:'none', border:'none', cursor:'pointer', color:'#b0a8a0', padding:0 }}>
-              {copiedField===label ? <Check size={12} color="#2a6b5c"/> : <Copy size={12}/>}
+              {copiedField===label ? <Check size={12} color="#1f5c4e"/> : <Copy size={12}/>}
             </button>
           )}
         </div>
@@ -165,7 +165,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 <InfoRow label="Product Name"    value={productName(order?.product_code, cert.cert_type)}/>
                 <InfoRow label="Domain Name"     value={cert.domain} mono/>
                 <InfoRow label="Certificate Start"  value={fmtDate(cert.issued_at)}/>
-                <InfoRow label="Certificate Expiry" value={fmtDate(cert.expires_at)} color={days!=null&&days<30?'#e07060':undefined}/>
+                <InfoRow label="Certificate Expiry" value={fmtDate(cert.expires_at)} color={days!=null&&days<30?'#1f5c4e':undefined}/>
                 <InfoRow label="Certificate Validity" value={validityDays ? `${validityDays} Days` : '—'}/>
                 <InfoRow label="Order Status" value={
                   <span style={{ display:'flex', alignItems:'center', gap:6 }}>
@@ -180,17 +180,17 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 <InfoRow label="Order Date"     value={fmtDateFull(order?.created_at || cert.created_at)}/>
                 <InfoRow label="Order Expiration" value={order?.years ? fmtDate(new Date(new Date(order.created_at).getTime() + order.years*365*86400000).toISOString()) : '—'}/>
                 <InfoRow label="Validity"       value={order?.years ? `${order.years} Year${order.years>1?'s':''}` : '1 Year'}/>
-                <InfoRow label="Vendor Status"  value={(order?.minor_status||cert.status||'').toUpperCase()} color="#2a6b5c"/>
+                <InfoRow label="Vendor Status"  value={(order?.minor_status||cert.status||'').toUpperCase()} color="#1f5c4e"/>
                 <InfoRow label="Install Method" value={cert.install_method ? cert.install_method.toUpperCase() : '—'}/>
                 <InfoRow label="Install Status" value={cert.install_status === 'success' ? (cert.install_verified ? '✓ Verified Live' : 'Installed') : (cert.install_status||'Not installed')} color={cert.install_status==='success'?'#f0ede8':'rgba(240,237,232,0.4)'}/>
-                <InfoRow label="Environment"    value={cert.is_sandbox?'Sandbox':'Production'} color={cert.is_sandbox?'#e07060':'#f0ede8'}/>
+                <InfoRow label="Environment"    value={cert.is_sandbox?'Sandbox':'Production'} color={cert.is_sandbox?'#1f5c4e':'#f0ede8'}/>
               </tbody>
             </table>
           </div>
 
           {/* Certificate Details expandable */}
           <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden', marginBottom:16 }}>
-            <button onClick={() => setCertOpen(v=>!v)} style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', background:'#2a6b5c', border:'none', cursor:'pointer', fontFamily:'inherit' }}>
+            <button onClick={() => setCertOpen(v=>!v)} style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', background:'#1f5c4e', border:'none', cursor:'pointer', fontFamily:'inherit' }}>
               <span style={{ fontSize:12, fontWeight:600, color:'#ffffff' }}>Certificate Details</span>
               <span style={{ color:'#ffffff' }}>{certOpen ? <ChevronDown size={14}/> : <Plus size={14}/>}</span>
             </button>
@@ -224,7 +224,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                 )}
                 {keyDelOpen && (
                   <div style={{ background:'rgba(230,126,34,0.08)', border:'0.5px solid #F2C4BC', borderRadius:6, padding:12 }}>
-                    <div style={{ fontSize:11, fontWeight:500, color:'#2a6b5c', marginBottom:8 }}>Confirm key deletion — cannot be undone</div>
+                    <div style={{ fontSize:11, fontWeight:500, color:'#1f5c4e', marginBottom:8 }}>Confirm key deletion — cannot be undone</div>
                     {['I downloaded the private key','I installed it on my server','I understand this is irreversible'].map((lbl,i) => {
                       const k = ['downloaded','installed','understand'][i]
                       return (
@@ -245,8 +245,8 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
 
           {/* Revoke confirm */}
           {revokeOpen && (
-            <div style={{ background:'rgba(42,107,92,0.09)', border:'0.5px solid #fecaca', borderRadius:6, padding:12 }}>
-              <div style={{ fontSize:11, fontWeight:500, color:'#3d8c78', marginBottom:8 }}>Revoke this certificate? This is permanent and notifies the CA.</div>
+            <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:6, padding:12 }}>
+              <div style={{ fontSize:11, fontWeight:500, color:'#2e7a68', marginBottom:8 }}>Revoke this certificate? This is permanent and notifies the CA.</div>
               {revokeError && <div style={{ fontSize:11, color:'#c0392b', marginBottom:8 }}>{revokeError}</div>}
               <div style={{ display:'flex', gap:6 }}>
                 <button onClick={() => { setRevokeOpen(false); setRevokeErr('') }} style={btnStyle}>Cancel</button>
@@ -263,10 +263,10 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
             <ActionBtn icon={Download}  label="Download Certificate" onClick={downloadZip}/>
             <ActionBtn icon={RotateCcw} label="Renew Certificate"    onClick={() => { sessionStorage.setItem('prefill_domain',cert.domain); onIssue?.() }} disabled={isRevoked}/>
             <ActionBtn icon={Lock}      label="Install to Server"    onClick={() => onInstall?.(cert)} disabled={isRevoked||!cert.cert_pem}/>
-            <ActionBtn icon={Trash2}    label="Delete Certificate"   onClick={() => setDelConfirm(true)} color="#3d8c78"/>
+            <ActionBtn icon={Trash2}    label="Delete Certificate"   onClick={() => setDelConfirm(true)} color="#2e7a68"/>
             {delConfirm ? (
-              <div style={{ background:'rgba(42,107,92,0.09)', border:'0.5px solid #fecaca', borderRadius:6, padding:'10px 12px' }}>
-                <div style={{ fontSize:11, fontWeight:600, color:'#3d8c78', marginBottom:6 }}>
+              <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:6, padding:'10px 12px' }}>
+                <div style={{ fontSize:11, fontWeight:600, color:'#2e7a68', marginBottom:6 }}>
                   Permanently delete all records for <span style={{ fontFamily:'monospace' }}>{cert.domain}</span>?
                 </div>
                 <div style={{ fontSize:10, color:'#c0392b', marginBottom:10, lineHeight:1.5 }}>
@@ -284,7 +284,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
           </div>
 
           {cert.is_sandbox && (
-            <div style={{ marginTop:16, padding:10, background:'rgba(239,68,68,0.08)', border:'0.5px solid #F2C4BC', borderRadius:6, fontSize:10, color:'#ff8c7a', lineHeight:1.6 }}>
+            <div style={{ marginTop:16, padding:10, background:'rgba(239,68,68,0.08)', border:'0.5px solid #F2C4BC', borderRadius:6, fontSize:10, color:'#1f5c4e', lineHeight:1.6 }}>
               <strong>Sandbox certificate</strong><br/>Not trusted by browsers. Issue a production cert for live use.
             </div>
           )}

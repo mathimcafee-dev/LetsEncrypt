@@ -6,13 +6,13 @@ const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
   bg:'#f7f5f0', bg2:'#1a0404', bg3:'#220808',
-  border:'rgba(0,0,0,0.08)', border2:'rgba(42,107,92,0.25)',
+  border:'rgba(0,0,0,0.08)', border2:'rgba(31,92,78,0.25)',
   heading:'#f0ede8', body:'rgba(240,237,232,0.65)', muted:'rgba(240,237,232,0.35)',
-  teal:'#4ade80', tealDk:'#4ade80', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(30,138,94,0.2)',
-  green:'#4ade80', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(30,138,94,0.2)',
+  teal:'#4ade80', tealDk:'#4ade80', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(22,160,104,0.22)',
+  green:'#4ade80', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(22,160,104,0.22)',
   purple:'#a78bfa', purpleBg:'rgba(167,139,250,0.06)',
   amber:'#fbbf24', amberBg:'rgba(251,191,36,0.06)',
-  red:'#f87171', redBg:'rgba(42,107,92,0.09)',
+  red:'#f87171', redBg:'rgba(31,92,78,0.09)',
   ink:'#f0ede8',
 }
 
@@ -28,7 +28,7 @@ function Code({ code, lang = 'bash' }) {
     <div style={{ background:'#0d0000', border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden', margin:'14px 0', fontFamily:MONO }}>
       <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
         <div style={{ display:'flex', gap:5 }}>
-          {['#2a6b5c','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
+          {['#1f5c4e','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
           <span style={{ fontSize:10, color:'#6b6b6b', marginLeft:8 }}>{lang}</span>
         </div>
         <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'rgba(240,237,232,0.4)', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>
@@ -47,7 +47,7 @@ function Note({ type = 'tip', children }) {
   const styles = {
     tip:     { bg:C.tealBg,   bd:C.tealBd,                    color:C.tealDk,  label:'TIP',       icon:'💡' },
     warning: { bg:C.amberBg,  bd:'rgba(0,0,0,0.1)',       color:C.amber,   label:'WARNING',   icon:'⚠️' },
-    info:    { bg:C.greenBg,  bd:'rgba(42,107,92,0.2)',        color:C.green,   label:'INFO',      icon:'ℹ️' },
+    info:    { bg:C.greenBg,  bd:'rgba(31,92,78,0.2)',        color:C.green,   label:'INFO',      icon:'ℹ️' },
     danger:  { bg:C.redBg,    bd:'rgba(0,0,0,0.1)',       color:C.red,     label:'IMPORTANT', icon:'🔴' },
   }[type]
   return (
@@ -142,7 +142,7 @@ const SECTIONS = [
   { id:'getting-started', icon:'⚡', title:'Getting started',          subtitle:'Issue your first cert in minutes',               badge:'Start here', badgeColor:C.teal   },
   { id:'agent',           icon:'🤖', title:'Persistent agent',         subtitle:'Zero-touch VPS installs and renewals',            badge:'VPS',        badgeColor:C.green  },
   { id:'cpanel',          icon:'🏛', title:'cPanel / shared hosting',  subtitle:'No SSH needed — UAPI install',                   badge:'cPanel',     badgeColor:'#f0ede8'},
-  { id:'dns',             icon:'🌐', title:'DNS providers',            subtitle:'Auto DCV via Cloudflare, Vercel, Route53…',       badge:'DNS-01',     badgeColor:'#e07060'},
+  { id:'dns',             icon:'🌐', title:'DNS providers',            subtitle:'Auto DCV via Cloudflare, Vercel, Route53…',       badge:'DNS-01',     badgeColor:'#1f5c4e'},
   { id:'autorenew',       icon:'🔄', title:'Auto-renewal',             subtitle:'Set once, renew forever',                        badge:'Automation', badgeColor:C.amber  },
   { id:'certvault',       icon:'🔐', title:'CertVault',                subtitle:'AES-256-GCM private key vault',                  badge:'Security',   badgeColor:C.purple },
   { id:'readiness',       icon:'📋', title:'47-Day Readiness',         subtitle:'CA/B Forum 2026–2029 compliance',                badge:'CA/B Forum', badgeColor:C.red    },
@@ -755,7 +755,7 @@ export default function KnowledgeBase({ nav }) {
                   { arrow:true },
                   { icon:'🔌', label:'MCP Server', sub:'SSLVault connection point', color:C.teal },
                   { arrow:true },
-                  { icon:'🛡️', label:'SSLVault', sub:'acts on your certs', color:'#2a6b5c' },
+                  { icon:'🛡️', label:'SSLVault', sub:'acts on your certs', color:'#1f5c4e' },
                 ].map((item, i) => item.arrow ? (
                   <div key={i} style={{ fontSize:18, color:C.muted, padding:'0 8px' }}>→</div>
                 ) : (
@@ -930,7 +930,7 @@ export default function KnowledgeBase({ nav }) {
                 { problem:'I accidentally shared my token', fix:'Go to your SSLVault account → Settings → Security and invalidate your session immediately, then log out and log back in to get a fresh token. Update the config file.' },
               ].map((item, i) => (
                 <div key={i} style={{ background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, padding:'12px 16px' }}>
-                  <div style={{ fontSize:12.5, fontWeight:600, color:'#2a6b5c', marginBottom:5 }}>❌ {item.problem}</div>
+                  <div style={{ fontSize:12.5, fontWeight:600, color:'#1f5c4e', marginBottom:5 }}>❌ {item.problem}</div>
                   <div style={{ fontSize:12.5, color:C.body, lineHeight:1.7 }}>✅ {item.fix}</div>
                 </div>
               ))}

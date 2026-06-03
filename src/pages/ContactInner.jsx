@@ -27,7 +27,7 @@ export default function ContactInner({ nav }) {
       {/* Main contact card */}
       <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #2a6b5c' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
-          <Mail size={14} color="#2a6b5c"/>
+          <Mail size={14} color="#1f5c4e"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.5px' }}>Contact</span>
         </div>
         <div style={{ fontSize:20, fontWeight:500, color:'#ffffff', letterSpacing:'-.3px', marginBottom:8 }}>
@@ -58,7 +58,7 @@ export default function ContactInner({ nav }) {
         {TOPICS.map(({ icon:Icon, label, body }) => (
           <div key={label} style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'16px 18px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-              <Icon size={13} color="#2a6b5c"/>
+              <Icon size={13} color="#1f5c4e"/>
               <span style={{ fontSize:12, fontWeight:500, color:'#ffffff' }}>{label}</span>
             </div>
             <p style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.7, margin:0 }}>{body}</p>

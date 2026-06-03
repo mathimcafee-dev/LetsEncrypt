@@ -35,15 +35,15 @@ const S = {
   card:    { background: 'rgba(0,0,0,0.05)', border: '0.5px solid rgba(0,0,0,0.07)', borderRadius: 14, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' },
   input:   { width: '100%', padding: '10px 14px', fontSize: 13, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.09)', color: '#fff', outline: 'none', boxSizing: 'border-box', transition: 'border-color .15s' },
   label:   { display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#b0a8a0', marginBottom: 6 },
-  btnPri:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: '#2a6b5c', color: '#fff', border: 'none', cursor: 'pointer', transition: 'background .15s', whiteSpace: 'nowrap' },
+  btnPri:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: '#1f5c4e', color: '#fff', border: 'none', cursor: 'pointer', transition: 'background .15s', whiteSpace: 'nowrap' },
   btnSec:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: 'rgba(0,0,0,0.06)', color: '#e8e0d8', border: '1px solid rgba(0,0,0,0.09)', cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap' },
-  btnDis:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: 'rgba(42,107,92,0.2)', color: 'rgba(255,255,255,0.4)', border: 'none', cursor: 'not-allowed', whiteSpace: 'nowrap' },
+  btnDis:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: 'rgba(31,92,78,0.2)', color: 'rgba(255,255,255,0.4)', border: 'none', cursor: 'not-allowed', whiteSpace: 'nowrap' },
   title:   { fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4, letterSpacing: '-0.2px' },
   sub:     { fontSize: 12, color: '#b0a8a0', marginBottom: 20, lineHeight: 1.5 },
   err:     { fontSize: 11, color: '#f87171', marginTop: 5, fontWeight: 500 },
   mono:    { fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace' },
   sep:     { height: '0.5px', background: 'rgba(0,0,0,0.06)', margin: '16px 0' },
-  codeBox: { background: '#0d0000', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 7, padding: '11px 40px 11px 12px', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', fontSize: 11, color: '#1e8a5e', wordBreak: 'break-all', position: 'relative', lineHeight: 1.6, marginTop: 4 },
+  codeBox: { background: '#0d0000', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 7, padding: '11px 40px 11px 12px', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', fontSize: 11, color: '#16a068', wordBreak: 'break-all', position: 'relative', lineHeight: 1.6, marginTop: 4 },
   cmdBox:  { background: '#0d0000', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 7, padding: '10px 40px 10px 12px', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', fontSize: 11, color: '#e8e0d8', wordBreak: 'break-all', position: 'relative', lineHeight: 1.6, marginTop: 4 },
 }
 
@@ -75,14 +75,14 @@ function StepBar({ step }) {
                 width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 11, fontWeight: 700, transition: 'all .2s',
-                background: done || active ? '#2a6b5c' : 'rgba(0,0,0,0.06)',
+                background: done || active ? '#1f5c4e' : 'rgba(0,0,0,0.06)',
                 color: done || active ? '#fff' : '#b0a8a0',
                 border: done || active ? 'none' : '1px solid rgba(0,0,0,0.09)',
                 boxShadow: active ? '0 0 0 4px rgba(0,0,0,0.08)' : 'none',
               }}>
                 {done ? <Check size={11} /> : n}
               </div>
-              <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: active ? '#ff8c7a' : '#b0a8a0' }}>{label}</span>
+              <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: active ? '#1f5c4e' : '#b0a8a0' }}>{label}</span>
             </div>
             {i < steps.length - 1 && (
               <div style={{ flex: 1, height: 1, background: done ? 'rgba(192,57,43,0.4)' : 'rgba(0,0,0,0.07)', margin: '0 8px', transition: 'background .3s' }} />
@@ -111,13 +111,13 @@ function StepDomain({ data, onChange, onNext }) {
           placeholder="yourdomain.com" autoComplete="off"
           style={{ ...S.input, ...(err ? { borderColor: '#f87171' } : {}) }}
           onKeyDown={e => e.key === 'Enter' && submit()}
-          onFocus={e => e.target.style.borderColor = '#2a6b5c'}
+          onFocus={e => e.target.style.borderColor = '#1f5c4e'}
           onBlur={e => e.target.style.borderColor = err ? '#f87171' : 'rgba(0,0,0,0.09)'} />
         {err && <div style={S.err}>{err}</div>}
         <label style={{ ...S.label, marginTop: 16 }}>Certificate type</label>
         <select value={data.certType} onChange={e => onChange({ certType: e.target.value })}
           style={{ ...S.input, appearance: 'none' }}
-          onFocus={e => e.target.style.borderColor = '#2a6b5c'}
+          onFocus={e => e.target.style.borderColor = '#1f5c4e'}
           onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.09)'}>
           <option value="single">Single domain — domain.com</option>
           <option value="wildcard">Wildcard — *.domain.com (all subdomains)</option>
@@ -126,8 +126,8 @@ function StepDomain({ data, onChange, onNext }) {
       </div>
       <div style={{ padding: '12px 24px 16px', display: 'flex', justifyContent: 'flex-end' }}>
         <button style={S.btnPri} onClick={submit}
-          onMouseEnter={e => e.currentTarget.style.background = '#3d8c78'}
-          onMouseLeave={e => e.currentTarget.style.background = '#2a6b5c'}>
+          onMouseEnter={e => e.currentTarget.style.background = '#2e7a68'}
+          onMouseLeave={e => e.currentTarget.style.background = '#1f5c4e'}>
           Continue <ArrowRight size={13} />
         </button>
       </div>
@@ -156,9 +156,9 @@ function StepDNS({ data, onChange, onNext, onBack }) {
               style={{
                 padding: '10px 8px', borderRadius: 8, cursor: 'pointer', textAlign: 'center',
                 fontSize: 12, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', transition: 'all .15s',
-                background: data.dnsProvider === p.id ? 'rgba(42,107,92,0.12)' : 'rgba(0,0,0,0.04)',
+                background: data.dnsProvider === p.id ? 'rgba(31,92,78,0.12)' : 'rgba(0,0,0,0.04)',
                 border: data.dnsProvider === p.id ? '1px solid #2a6b5c' : '1px solid rgba(0,0,0,0.07)',
-                color: data.dnsProvider === p.id ? '#ff8c7a' : '#b0a8a0',
+                color: data.dnsProvider === p.id ? '#1f5c4e' : '#b0a8a0',
               }}>
               {p.label}
             </button>
@@ -172,21 +172,21 @@ function StepDNS({ data, onChange, onNext, onBack }) {
             <label style={S.label}>{selected.field1}</label>
             <input type="text" value={data.dnsKey1} onChange={e => onChange({ dnsKey1: e.target.value })}
               placeholder={selected.ph1} autoComplete="off" style={S.input}
-              onFocus={e => e.target.style.borderColor = '#2a6b5c'}
+              onFocus={e => e.target.style.borderColor = '#1f5c4e'}
               onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.09)'} />
             {selected.field2 && (
               <>
                 <label style={{ ...S.label, marginTop: 12 }}>{selected.field2}</label>
                 <input type="text" value={data.dnsKey2} onChange={e => onChange({ dnsKey2: e.target.value })}
                   placeholder={selected.ph2} autoComplete="off" style={S.input}
-                  onFocus={e => e.target.style.borderColor = '#2a6b5c'}
+                  onFocus={e => e.target.style.borderColor = '#1f5c4e'}
                   onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.09)'} />
               </>
             )}
           </div>
         )}
         {selected && !selected.field1 && (
-          <div style={{ marginTop: 14, background: 'rgba(42,107,92,0.07)', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 7, padding: '10px 12px', fontSize: 12, color: '#e8e0d8', lineHeight: 1.6 }}>
+          <div style={{ marginTop: 14, background: 'rgba(31,92,78,0.07)', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 7, padding: '10px 12px', fontSize: 12, color: '#e8e0d8', lineHeight: 1.6 }}>
             Manual DNS — SSLVault will show you a TXT record to add at your registrar after setup.
           </div>
         )}
@@ -198,8 +198,8 @@ function StepDNS({ data, onChange, onNext, onBack }) {
           <ArrowLeft size={13} /> Back
         </button>
         <button style={S.btnPri} onClick={submit}
-          onMouseEnter={e => e.currentTarget.style.background = '#3d8c78'}
-          onMouseLeave={e => e.currentTarget.style.background = '#2a6b5c'}>
+          onMouseEnter={e => e.currentTarget.style.background = '#2e7a68'}
+          onMouseLeave={e => e.currentTarget.style.background = '#1f5c4e'}>
           Continue <ArrowRight size={13} />
         </button>
       </div>
@@ -276,18 +276,18 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
       <div style={{ padding: 24 }}>
         <div style={S.title}>Server infrastructure</div>
         <div style={S.sub}>
-          Where is <strong style={{ color: '#ff8c7a', fontWeight: 600 }}>{data.domain}</strong> hosted?
+          Where is <strong style={{ color: '#1f5c4e', fontWeight: 600 }}>{data.domain}</strong> hosted?
         </div>
 
         {/* Infra selector */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div style={infraCard('hosting')} onClick={() => { onChange({ serverType: 'hosting' }); setErr('') }}>
-            <div style={{ fontSize: 22, color: '#ff8c7a', marginBottom: 8 }}><Server size={22} /></div>
+            <div style={{ fontSize: 22, color: '#1f5c4e', marginBottom: 8 }}><Server size={22} /></div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Shared hosting</div>
             <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 2 }}>cPanel · Plesk · DirectAdmin</div>
           </div>
           <div style={infraCard('vps')} onClick={() => { onChange({ serverType: 'vps' }); setErr('') }}>
-            <div style={{ fontSize: 22, color: '#ff8c7a', marginBottom: 8 }}><Terminal size={22} /></div>
+            <div style={{ fontSize: 22, color: '#1f5c4e', marginBottom: 8 }}><Terminal size={22} /></div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>VPS / Cloud server</div>
             <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 2 }}>Ubuntu · Debian · CentOS</div>
           </div>
@@ -304,26 +304,26 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
                 <label style={S.label}>cPanel URL</label>
                 <input type="text" value={data.cpUrl} onChange={e => onChange({ cpUrl: e.target.value })}
                   placeholder="https://cp.yourdomain.com:2083" style={S.input}
-                  onFocus={e => e.target.style.borderColor = '#2a6b5c'}
+                  onFocus={e => e.target.style.borderColor = '#1f5c4e'}
                   onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.09)'} />
               </div>
               <div>
                 <label style={S.label}>Port</label>
                 <input type="text" value={data.cpPort} onChange={e => onChange({ cpPort: e.target.value })}
                   placeholder="2083" style={S.input}
-                  onFocus={e => e.target.style.borderColor = '#2a6b5c'}
+                  onFocus={e => e.target.style.borderColor = '#1f5c4e'}
                   onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.09)'} />
               </div>
             </div>
             <label style={{ ...S.label, marginTop: 12 }}>cPanel username</label>
             <input type="text" value={data.cpUser} onChange={e => onChange({ cpUser: e.target.value })}
               placeholder="your cPanel username" autoComplete="off" style={S.input}
-              onFocus={e => e.target.style.borderColor = '#2a6b5c'}
+              onFocus={e => e.target.style.borderColor = '#1f5c4e'}
               onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.09)'} />
             <label style={{ ...S.label, marginTop: 12 }}>API token</label>
             <input type="text" value={data.cpToken} onChange={e => onChange({ cpToken: e.target.value })}
               placeholder="Generated from cPanel → Manage API Tokens" autoComplete="off" style={S.input}
-              onFocus={e => e.target.style.borderColor = '#2a6b5c'}
+              onFocus={e => e.target.style.borderColor = '#1f5c4e'}
               onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.09)'} />
           </div>
         )}
@@ -334,7 +334,7 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
             <div style={S.sep} />
             {installCmd.loading ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 0', color: '#b0a8a0', fontSize: 12 }}>
-                <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(42,107,92,0.2)', borderTopColor: '#2a6b5c', animation: 'spin .7s linear infinite', flexShrink: 0 }} />
+                <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(31,92,78,0.2)', borderTopColor: '#1f5c4e', animation: 'spin .7s linear infinite', flexShrink: 0 }} />
                 Generating your agent install token…
               </div>
             ) : installCmd.error ? (
@@ -373,8 +373,8 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
             style={saving ? S.btnDis : S.btnPri}
             disabled={saving}
             onClick={submit}
-            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#3d8c78' }}
-            onMouseLeave={e => { if (!saving) e.currentTarget.style.background = '#2a6b5c' }}>
+            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#2e7a68' }}
+            onMouseLeave={e => { if (!saving) e.currentTarget.style.background = '#1f5c4e' }}>
             {saving
               ? <><div style={{ width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', animation: 'spin .7s linear infinite' }} /> Saving…</>
               : <>Save &amp; continue <ArrowRight size={13} /></>}
@@ -387,8 +387,8 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
             style={(!tokenReady || saving) ? S.btnDis : S.btnPri}
             disabled={!tokenReady || saving}
             onClick={submit}
-            onMouseEnter={e => { if (tokenReady && !saving) e.currentTarget.style.background = '#3d8c78' }}
-            onMouseLeave={e => { if (tokenReady && !saving) e.currentTarget.style.background = '#2a6b5c' }}>
+            onMouseEnter={e => { if (tokenReady && !saving) e.currentTarget.style.background = '#2e7a68' }}
+            onMouseLeave={e => { if (tokenReady && !saving) e.currentTarget.style.background = '#1f5c4e' }}>
             {saving
               ? <><div style={{ width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', animation: 'spin .7s linear infinite' }} /> Saving…</>
               : <><Check size={13} /> Agent installed — done</>}
@@ -415,27 +415,27 @@ function StepDone({ data, onClose, nav }) {
     return (
       <div style={S.card}>
         <div style={{ padding: '32px 24px', textAlign: 'center' }}>
-          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(30,138,94,0.08)', border: '0.5px solid rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(22,160,104,0.09)', border: '0.5px solid rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
             <Check size={22} color="#4ade80" />
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Server connected!</div>
           <div style={{ fontSize: 12, color: '#b0a8a0', marginBottom: 20, lineHeight: 1.6 }}>
-            <strong style={{ color: '#ff8c7a' }}>{data.domain}</strong> is linked to your VPS.<br />
+            <strong style={{ color: '#1f5c4e' }}>{data.domain}</strong> is linked to your VPS.<br />
             SSL will be issued and installed automatically. Auto-renewal is active.
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(30,138,94,0.08)', color: '#1e8a5e', border: '1px solid rgba(30,138,94,0.2)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(22,160,104,0.09)', color: '#16a068', border: '1px solid rgba(22,160,104,0.22)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80' }} /> Agent registered
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(30,138,94,0.08)', color: '#1e8a5e', border: '1px solid rgba(30,138,94,0.2)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(22,160,104,0.09)', color: '#16a068', border: '1px solid rgba(22,160,104,0.22)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>
               <RefreshCw size={10} /> Auto-renew on
             </span>
           </div>
         </div>
         <div style={{ padding: '12px 24px 16px', display: 'flex', justifyContent: 'flex-end', borderTop: '0.5px solid rgba(0,0,0,0.05)' }}>
           <button style={S.btnPri} onClick={() => { onClose(); nav('/buy') }}
-            onMouseEnter={e => e.currentTarget.style.background = '#3d8c78'}
-            onMouseLeave={e => e.currentTarget.style.background = '#2a6b5c'}>
+            onMouseEnter={e => e.currentTarget.style.background = '#2e7a68'}
+            onMouseLeave={e => e.currentTarget.style.background = '#1f5c4e'}>
             Issue first certificate <ArrowRight size={13} />
           </button>
         </div>
@@ -448,7 +448,7 @@ function StepDone({ data, onClose, nav }) {
     <div style={S.card}>
       <div style={{ padding: 24 }}>
         <div style={{ textAlign: 'center', paddingBottom: 18 }}>
-          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(30,138,94,0.08)', border: '0.5px solid rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(22,160,104,0.09)', border: '0.5px solid rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
             <Check size={22} color="#4ade80" />
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Domain added successfully</div>
@@ -469,15 +469,15 @@ function StepDone({ data, onClose, nav }) {
         ))}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', fontSize: 12 }}>
           <span style={{ color: '#b0a8a0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', fontSize: 11 }}>Status</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(30,138,94,0.08)', color: '#1e8a5e', border: '1px solid rgba(30,138,94,0.2)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(22,160,104,0.09)', color: '#16a068', border: '1px solid rgba(22,160,104,0.22)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>
             <Check size={10} /> Ready
           </span>
         </div>
       </div>
       <div style={{ padding: '12px 24px 16px', display: 'flex', justifyContent: 'flex-end', borderTop: '0.5px solid rgba(0,0,0,0.05)' }}>
         <button style={S.btnPri} onClick={() => { onClose(); nav('/buy') }}
-          onMouseEnter={e => e.currentTarget.style.background = '#3d8c78'}
-          onMouseLeave={e => e.currentTarget.style.background = '#2a6b5c'}>
+          onMouseEnter={e => e.currentTarget.style.background = '#2e7a68'}
+          onMouseLeave={e => e.currentTarget.style.background = '#1f5c4e'}>
           Issue certificate <ArrowRight size={13} />
         </button>
       </div>
@@ -546,7 +546,7 @@ export default function AddDomainWizard({ user, onClose, nav }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: 7 }}>
-              <Globe size={14} color="#ff8c7a" />
+              <Globe size={14} color="#1f5c4e" />
               Domain Manager — Add domain
             </div>
             {data.domain && step > 1 && (

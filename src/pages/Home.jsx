@@ -12,7 +12,7 @@ const T1   = '#f0ede8'   // heading text
 const T2   = 'rgba(240,237,232,0.7)'   // body text
 const T3   = 'rgba(240,237,232,0.4)'  // muted text
 const LN   = 'rgba(0,0,0,0.08)'  // default border
-const LN2  = 'rgba(42,107,92,0.25)'  // strong border
+const LN2  = 'rgba(31,92,78,0.25)'  // strong border
 const LN3  = 'rgba(192,57,43,0.5)'  // hover border
 const GRN  = '#4ade80'   // success green
 const AMB  = '#fbbf24'   // warning amber
@@ -47,14 +47,14 @@ function Tag({children}) {
   return <span style={{display:'inline-flex',alignItems:'center',fontSize:10,fontWeight:500,color:T3,background:'rgba(0,0,0,0.05)',border:`1px solid ${LN2}`,borderRadius:3,padding:'2px 7px',fontFamily:MONO,letterSpacing:'0.04em'}}>{children}</span>
 }
 function Pill({status}) {
-  const m={active:[GRN,'rgba(30,138,94,0.08)'],warning:[AMB,'rgba(184,120,0,0.07)'],critical:[RED,'rgba(192,57,43,0.07)']}
+  const m={active:[GRN,'rgba(22,160,104,0.09)'],warning:[AMB,'rgba(184,120,0,0.07)'],critical:[RED,'rgba(192,57,43,0.07)']}
   const[c,bg]=m[status]||[T3,'rgba(0,0,0,0.05)']
   return <span style={{fontSize:10,fontWeight:500,color:c,background:bg,padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>{status}</span>
 }
 function BtnPrimary({label,onClick}) {
   const[h,setH]=useState(false)
   return <button onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-    style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:F,fontWeight:600,fontSize:13,padding:'9px 20px',borderRadius:6,border:'none',cursor:'pointer',background:h?'#3d8c78':'#2a6b5c',color:'#1a1a1a',transition:'background .14s'}}>
+    style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:F,fontWeight:600,fontSize:13,padding:'9px 20px',borderRadius:6,border:'none',cursor:'pointer',background:h?'#2e7a68':'#1f5c4e',color:'#1a1a1a',transition:'background .14s'}}>
     {label} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
   </button>
 }
@@ -232,7 +232,7 @@ function SSLVaultTrustBadge({ compact = false }) {
         }
         ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke()
       }
-      drawStrand(pts1, '#2a6b5c'); drawStrand(pts2, '#e85555')
+      drawStrand(pts1, '#1f5c4e'); drawStrand(pts2, '#e85555')
       for (let i = 0; i <= STEPS; i++) {
         const depth = (Math.sin(pts1[i].phase) + 1) / 2
         const r = 1.4 + depth * 1.8
@@ -256,7 +256,7 @@ function SSLVaultTrustBadge({ compact = false }) {
       display:'inline-flex', alignItems:'center', gap: compact ? 8 : 11,
       padding: compact ? '6px 12px 6px 8px' : '9px 16px 9px 10px',
       background:'#1a0808',
-      border:'1px solid rgba(42,107,92,0.25)',
+      border:'1px solid rgba(31,92,78,0.25)',
       borderRadius:10, position:'relative', overflow:'hidden',
       minWidth: compact ? 0 : 240,
       animation:'sv-sweep-anim 3.5s ease-in-out infinite',
@@ -267,7 +267,7 @@ function SSLVaultTrustBadge({ compact = false }) {
           {compact ? 'Secured by' : 'Cryptographically Secured'}
         </span>
         <div style={{fontSize: compact ? 13 : 15, fontWeight:800, color:'#1a1a1a', lineHeight:1, letterSpacing:'.01em'}}>
-          SSLVault <span style={{color:'#2a6b5c', fontSize: compact ? 10 : 11, fontWeight:500}}>® {compact ? 'PKI' : 'easysecurity.in'}</span>
+          SSLVault <span style={{color:'#1f5c4e', fontSize: compact ? 10 : 11, fontWeight:500}}>® {compact ? 'PKI' : 'easysecurity.in'}</span>
         </div>
         <span style={{fontSize: compact ? 8 : 9, color:'#6a2a2a', letterSpacing:'.03em'}}>
           {compact ? '256-bit TLS encryption' : 'Certified PKI · GoGetSSL · RapidSSL DV'}
@@ -282,7 +282,7 @@ function SSLVaultTrustBadge({ compact = false }) {
         <span style={{fontSize: compact ? 14 : 18, fontWeight:900, color:'#e03030', lineHeight:1}}>256</span>
         <span style={{fontSize:8,color:'#6a2a2a',letterSpacing:'.06em',textTransform:'uppercase'}}>Bit SSL</span>
         {!compact && <div style={{display:'flex',alignItems:'center',gap:4,marginTop:4}}>
-          <div style={{width:5,height:5,borderRadius:'50%',background:'#ff6b6b',
+          <div style={{width:5,height:5,borderRadius:'50%',background:'#c0392b',
             animation:'sv-live-anim 1.2s ease-in-out infinite'}}/>
           <span style={{fontSize:8,color:'#cc4444',fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase'}}>Live</span>
         </div>}
@@ -330,7 +330,7 @@ export default function Home({ nav }) {
       {/* ── NAV ── */}
       <header style={{position:'sticky',top:0,zIndex:200,background:'rgba(13,17,23,0.95)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderBottom:`1px solid ${LN}`,height:52,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',flexShrink:0}} onClick={()=>nav('/')}>
-          <div style={{width:22,height:22,background:'#2a6b5c',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <div style={{width:22,height:22,background:'#1f5c4e',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{fontSize:13,fontWeight:600,color:T1,letterSpacing:'-0.3px'}}>SSLVault</span>
@@ -351,7 +351,7 @@ export default function Home({ nav }) {
             <div className="id" style={{position:'absolute',top:'calc(100% + 6px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:'#1f1210',border:'1px solid rgba(0,0,0,0.1)',borderRadius:6,padding:'5px',minWidth:200,boxShadow:'0 8px 32px rgba(0,0,0,0.6)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
               {[{label:'CA Trust Store',path:'/ca-trust-explorer',desc:'6,200+ root & intermediate CAs'},{label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},{label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'}].map(it=>(
                 <button key={it.path} onClick={()=>nav(it.path)} style={{display:'block',width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',fontFamily:F,padding:'7px 10px',borderRadius:4,transition:'background .1s'}}
-                  onMouseEnter={e=>e.currentTarget.style.background='rgba(42,107,92,0.08)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
+                  onMouseEnter={e=>e.currentTarget.style.background='rgba(31,92,78,0.08)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
                   <div style={{fontSize:12,fontWeight:500,color:T1,marginBottom:1}}>{it.label}</div>
                   <div style={{fontSize:11,color:T3}}>{it.desc}</div>
                 </button>
@@ -361,7 +361,7 @@ export default function Home({ nav }) {
         </nav>}
         <div style={{display:'flex',gap:8,alignItems:'center',flexShrink:0}}>
           {!isMobile&&<button onClick={()=>nav('/auth')} style={{background:'none',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,color:T2,padding:'5px 10px',borderRadius:4,transition:'color .12s'}} onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>Sign in</button>}
-          <button onClick={()=>nav('/auth')} style={{background:'#2a6b5c',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#fff',padding:'7px 16px',borderRadius:5,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#3d8c78'} onMouseLeave={e=>e.currentTarget.style.background='#2a6b5c'}>Get started</button>
+          <button onClick={()=>nav('/auth')} style={{background:'#1f5c4e',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#fff',padding:'7px 16px',borderRadius:5,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#2e7a68'} onMouseLeave={e=>e.currentTarget.style.background='#1f5c4e'}>Get started</button>
         </div>
       </header>
 
@@ -682,7 +682,7 @@ export default function Home({ nav }) {
                     <div style={{fontSize:9.5,color:T3,marginTop:1}}>{fips}</div>
                   </div>
                 ))}
-                <button onClick={()=>nav('/pki-hub')} style={{background:'#2a6b5c',border:'none',borderRadius:4,padding:'7px 14px',fontSize:12,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#3d8c78'} onMouseLeave={e=>e.currentTarget.style.background='#2a6b5c'}>View PQC tracker →</button>
+                <button onClick={()=>nav('/pki-hub')} style={{background:'#1f5c4e',border:'none',borderRadius:4,padding:'7px 14px',fontSize:12,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#2e7a68'} onMouseLeave={e=>e.currentTarget.style.background='#1f5c4e'}>View PQC tracker →</button>
               </div>
             </Card>
           </FadeUp>
@@ -711,7 +711,7 @@ export default function Home({ nav }) {
                   <div style={{display:'flex',alignItems:'center',gap:9}}>
                     <span style={{fontSize:13}}>🔗</span>
                     <span style={{fontSize:12,fontWeight:500,color:T1,fontFamily:MONO}}>CertBind</span>
-                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(30,138,94,0.08)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
+                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(22,160,104,0.09)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
                   </div>
                   <span style={{fontSize:10.5,color:T3,fontFamily:MONO}}>4/4 domains bound</span>
                 </Card>

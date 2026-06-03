@@ -41,8 +41,8 @@ const TIMELINE = [
 
 const WORKING_GROUPS = [
   { id: 'server', name: 'Server Certificate WG', short: 'SCWG', color: '#ffffff', chair: 'Dimitris Zacharopoulos', chairOrg: 'HARICA', vchair: 'Wayne Thayer', vchairOrg: 'Fastly', latestBR: 'TLS BR v2.2.7', latestBallot: 'SC099', desc: 'Governs all publicly-trusted TLS/SSL certificates. Produces the Baseline Requirements — the primary rulebook for web PKI. Covers DCV methods, validity, key requirements, revocation, audit, and CT logging.', ballotPrefix: 'SC', members: 53, docs: 'https://cabforum.org/working-groups/server/' },
-  { id: 'smime', name: 'S/MIME Certificate WG', short: 'SMCWG', color: '#ff8c7a', chair: 'Stephen Davidson', chairOrg: 'DigiCert', vchair: 'Martijn Katerbarg', vchairOrg: 'Sectigo', latestBR: 'S/MIME BR v1.0.14', latestBallot: 'SMC016', desc: 'Produces the S/MIME Baseline Requirements governing email encryption and signing certificates. Chartered in 2020, first BRs published 2023. Covers mailbox-validated, org-validated, sponsor-validated and individual-validated S/MIME certs.', ballotPrefix: 'SMC', members: 38, docs: 'https://cabforum.org/working-groups/smime/' },
-  { id: 'codesign', name: 'Code Signing WG', short: 'CSCWG', color: '#ff8c7a', chair: 'Martijn Katerbarg', chairOrg: 'Sectigo', vchair: 'Thomas Zermeno', vchairOrg: 'SSL.com', latestBR: 'Code Signing BR v3.8', latestBallot: 'CSC-25', desc: 'Governs code signing certificates used to authenticate software publishers. Covers EV code signing, timestamping, private key protection requirements, and the transition to cloud-based signing services.', ballotPrefix: 'CSC', members: 31, docs: 'https://cabforum.org/working-groups/code-signing/' },
+  { id: 'smime', name: 'S/MIME Certificate WG', short: 'SMCWG', color: '#1f5c4e', chair: 'Stephen Davidson', chairOrg: 'DigiCert', vchair: 'Martijn Katerbarg', vchairOrg: 'Sectigo', latestBR: 'S/MIME BR v1.0.14', latestBallot: 'SMC016', desc: 'Produces the S/MIME Baseline Requirements governing email encryption and signing certificates. Chartered in 2020, first BRs published 2023. Covers mailbox-validated, org-validated, sponsor-validated and individual-validated S/MIME certs.', ballotPrefix: 'SMC', members: 38, docs: 'https://cabforum.org/working-groups/smime/' },
+  { id: 'codesign', name: 'Code Signing WG', short: 'CSCWG', color: '#1f5c4e', chair: 'Martijn Katerbarg', chairOrg: 'Sectigo', vchair: 'Thomas Zermeno', vchairOrg: 'SSL.com', latestBR: 'Code Signing BR v3.8', latestBallot: 'CSC-25', desc: 'Governs code signing certificates used to authenticate software publishers. Covers EV code signing, timestamping, private key protection requirements, and the transition to cloud-based signing services.', ballotPrefix: 'CSC', members: 31, docs: 'https://cabforum.org/working-groups/code-signing/' },
   { id: 'netsec', name: 'Network Security WG', short: 'NSWG', color: '#ffffff', chair: 'Clint Wilson', chairOrg: 'Apple', vchair: 'David Kluge', vchairOrg: 'Google Trust Services', latestBR: 'NetSec BR v2.0.5', latestBallot: 'NS-008', desc: 'Focuses on CA infrastructure security — network architecture, physical security, logical access controls, incident response, and system monitoring. Covers all systems involved in certificate issuance and management.', ballotPrefix: 'NS', members: 28, docs: 'https://cabforum.org/working-groups/netsec/' },
   { id: 'definitions', name: 'Definitions & Glossary WG', short: 'DWG', color: '#e8e0d8', chair: 'Tim Hollebeek', chairOrg: 'DigiCert', vchair: '—', vchairOrg: '', latestBR: 'Definitions v1.0', latestBallot: '—', desc: 'Maintains consistent terminology across all CAB Forum documents. Ensures that terms like "Applicant", "Subscriber", "Relying Party", and "Certificate Consumer" have unified definitions across all Working Group standards.', ballotPrefix: 'DEF', members: 22, docs: 'https://cabforum.org/working-groups/definitions/' },
 ]
@@ -113,22 +113,22 @@ function Pill({ color, bg, border, children }) {
 }
 
 const STATUS_STYLE = {
-  passed:   { color:'#ffffff', bg:'transparent', border:'rgba(42,107,92,0.2)' },
-  adopted:  { color:'#ffffff', bg:'transparent', border:'rgba(42,107,92,0.2)' },
-  withdrawn:{ color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
-  failed:   { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
-  draft:    { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  passed:   { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)' },
+  adopted:  { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)' },
+  withdrawn:{ color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  failed:   { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  draft:    { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
 }
 const WG_STYLE = {
-  'Server Cert WG': { color:'#ffffff', bg:'transparent', border:'rgba(42,107,92,0.2)' },
-  'S/MIME WG':      { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
-  'Code Signing WG':{ color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
-  'NetSec WG':      { color:'#ffffff', bg:'transparent', border:'rgba(42,107,92,0.2)' },
+  'Server Cert WG': { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)' },
+  'S/MIME WG':      { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  'Code Signing WG':{ color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  'NetSec WG':      { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)' },
   'Forum':          { color:'#b0a8a0', bg:'#000000', border:'rgba(30,0,0,0.5)' },
 }
 const IMPACT_STYLE = {
-  critical: { color:'#c0392b', bg:'rgba(42,107,92,0.09)', border:'rgba(0,0,0,0.1)' },
-  high:     { color:'#ff8c7a', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
+  critical: { color:'#c0392b', bg:'rgba(31,92,78,0.09)', border:'rgba(0,0,0,0.1)' },
+  high:     { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
 }
 
 function BallotRow({ b, onClick }) {
@@ -355,7 +355,7 @@ export default function CABForumNewsroom({ nav }) {
         .chip-green { background:var(--v2-green-bg);color:var(--v2-green-text);border:0.5px solid var(--v2-green-border) }
         .chip-amber { background:var(--v2-amber-bg);color:var(--v2-amber-text);border:0.5px solid var(--v2-amber-border) }
         .chip-red { background:var(--v2-red-bg);color:var(--v2-red-text);border:0.5px solid var(--v2-red-border) }
-        .chip-blue { background:rgba(42,107,92,0.09);color:#2a6b5c;border:0.5px solid rgba(42,107,92,0.2) }
+        .chip-blue { background:rgba(31,92,78,0.09);color:#2a6b5c;border:0.5px solid rgba(31,92,78,0.2) }
         .chip-grey { background:var(--v2-surface-3,var(--v2-hover));color:var(--v2-text-3);border:0.5px solid var(--v2-border) }
         /* ── Callouts ──────────────────────────────────────── */
         .v2-callout { padding:12px 14px;border-radius:var(--v2-r-lg);border:0.5px solid var(--v2-border);margin-bottom:10px }

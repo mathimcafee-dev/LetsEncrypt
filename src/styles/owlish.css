@@ -23,13 +23,13 @@
   --muted:     rgba(232,245,244,0.4);
 
   /* ── Brand teal ── */
-  --teal:      #e07060;
-  --teal-dim:  #e07060;
+  --teal:      #2a6b5c;
+  --teal-dim:  #2a6b5c;
   --teal-bg:   rgba(192,57,43,0.12);
   --teal-bd:   rgba(192,57,43,0.3);
 
   /* ── Coral accent ── */
-  --coral:     #e07060;
+  --coral:     #2a6b5c;
   --coral-dim: #e85544;
   --coral-bg:  rgba(255,107,91,0.12);
   --coral-bd:  rgba(255,107,91,0.3);
@@ -122,7 +122,7 @@ html, body {
 :root {
   --v2-bg: transparent; --v2-bg-alt: transparent; --v2-surface: transparent;
   --v2-surface-2: transparent; --v2-surface-3: transparent; --v2-hover: transparent;
-  --v2-border: rgba(192,57,43,0.15); --v2-border-strong: rgba(192,57,43,0.25); --v2-border-focus: #e07060;
+  --v2-border: rgba(192,57,43,0.15); --v2-border-strong: rgba(192,57,43,0.25); --v2-border-focus: #2a6b5c;
   --v2-text: rgba(192,57,43,0.1); --v2-text-2: rgba(232,245,244,0.7); --v2-text-3: rgba(232,245,244,0.4);
   --v2-green: #4ade80; --v2-green-text: #4ade80; --v2-green-text-2: #4ade80;
   --v2-green-bg: rgba(74,222,128,0.12); --v2-green-border: rgba(74,222,128,0.3);
@@ -131,7 +131,7 @@ html, body {
   --v2-shadow-sm: 0 1px 3px rgba(26,95,95,0.08);
   --v2-shadow-md: 0 4px 12px rgba(26,95,95,0.1);
   --v2-shadow-lg: 0 8px 24px rgba(26,95,95,0.12);
-  --v2-accent: #e07060; --v2-accent-bg: rgba(192,57,43,0.12); --v2-accent-border: rgba(192,57,43,0.3);
+  --v2-accent: #2a6b5c; --v2-accent-bg: rgba(192,57,43,0.12); --v2-accent-border: rgba(192,57,43,0.3);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -262,8 +262,8 @@ html, body {
 .v2-page button[style*="2px solid #388bfd"] { color: var(--teal) !important; border-bottom-color: var(--teal) !important; }
 
 /* Teal leftover */
-.v2-page [style*="color:'#ff8c7a'"],
-.v2-page [style*="color:'#ff8c7a'"] { color: var(--teal) !important; }
+.v2-page [style*="color:'#1f5c4e'"],
+.v2-page [style*="color:'#1f5c4e'"] { color: var(--teal) !important; }
 .v2-page [style*="background:'rgba(20,184,166"] { background: var(--teal-bg) !important; }
 .v2-page [style*="borderColor:'rgba(192,57,43,0.3)'"],
 .v2-page [style*="border:'0.5px solid rgba(192,57,43,0.3)'"] { border-color: var(--teal-bd) !important; }

@@ -75,7 +75,7 @@ function TabBar({ tab, setTab, counts }) {
           flex: 1, padding: '7px 12px', borderRadius: 6,
           border: 'none', cursor: 'pointer', fontFamily: 'inherit',
           fontSize: 12, fontWeight: tab === t.id ? 600 : 500,
-          background: tab === t.id ? 'rgba(42,107,92,0.2)' : 'transparent',
+          background: tab === t.id ? 'rgba(31,92,78,0.2)' : 'transparent',
           color: tab === t.id ? '#ffffff' : '#b0a8a0',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           transition: 'all 0.15s',
@@ -107,7 +107,7 @@ function EventRow({ ev, cert }) {
     : ev.status === 'executing' ? '#fbbf24'
     : '#60a5fa'
 
-  const statusBg = ev.status === 'sent' ? 'rgba(30,138,94,0.08)'
+  const statusBg = ev.status === 'sent' ? 'rgba(22,160,104,0.09)'
     : ev.status === 'failed' ? 'rgba(192,57,43,0.07)'
     : ev.status === 'executing' ? 'rgba(184,120,0,0.07)'
     : 'rgba(96,165,250,0.1)'
@@ -141,9 +141,9 @@ function EventRow({ ev, cert }) {
       <div style={{ width: 115, flexShrink: 0 }}>
         <span style={{
           fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
-          background: isReissue ? 'rgba(74,222,128,0.12)' : 'rgba(42,107,92,0.09)',
-          color: isReissue ? '#4ade80' : '#ff8c7a',
-          border: `0.5px solid ${isReissue ? 'rgba(30,138,94,0.2)' : 'rgba(255,140,122,0.25)'}`,
+          background: isReissue ? 'rgba(74,222,128,0.12)' : 'rgba(31,92,78,0.09)',
+          color: isReissue ? '#4ade80' : '#1f5c4e',
+          border: `0.5px solid ${isReissue ? 'rgba(22,160,104,0.22)' : 'rgba(255,140,122,0.25)'}`,
         }}>
           {EVENT_LABELS[ev.event_type] || ev.event_type}
         </span>
@@ -153,7 +153,7 @@ function EventRow({ ev, cert }) {
       <div style={{ width: 90, flexShrink: 0 }}>
         <span style={{
           fontSize: 11,
-          color: isToday ? '#ff8c7a' : isPast ? 'rgba(255,255,255,0.3)' : '#e8e0d8',
+          color: isToday ? '#1f5c4e' : isPast ? 'rgba(255,255,255,0.3)' : '#e8e0d8',
           fontWeight: isToday ? 700 : 400,
         }}>
           {fmtShort(ev.scheduled_date)}
@@ -161,7 +161,7 @@ function EventRow({ ev, cert }) {
         {isToday && (
           <span style={{
             marginLeft: 5, fontSize: 9, fontWeight: 700,
-            background: 'rgba(0,0,0,0.1)', color: '#ff8c7a',
+            background: 'rgba(0,0,0,0.1)', color: '#1f5c4e',
             padding: '1px 5px', borderRadius: 3,
           }}>today</span>
         )}
@@ -215,7 +215,7 @@ function AlertRow({ alert, onResolve, resolving }) {
         style={{
           padding: '5px 12px', borderRadius: 6, fontSize: 10, fontWeight: 600,
           border: '1px solid rgba(74,222,128,0.3)',
-          background: 'rgba(30,138,94,0.08)', color: '#1e8a5e',
+          background: 'rgba(22,160,104,0.09)', color: '#16a068',
           cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0,
           display: 'flex', alignItems: 'center', gap: 4,
         }}>
@@ -368,7 +368,7 @@ export default function AdminRenewalCalendar({ user }) {
           </span>
           <button onClick={() => setTab('alerts')} style={{
             marginLeft: 'auto', background: 'transparent', border: 'none',
-            color: '#ff8c7a', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+            color: '#1f5c4e', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
           }}>View →</button>
         </div>
       )}

@@ -4,7 +4,7 @@ import {
 } from 'lucide-react'
 
 export default function Terms({ nav }) {
-  const bg = 'linear-gradient(160deg,#eef2ff,rgba(42,107,92,0.09) 35%,#fefce8 65%,#fdf4ff)'
+  const bg = 'linear-gradient(160deg,#eef2ff,rgba(31,92,78,0.09) 35%,#fefce8 65%,#fdf4ff)'
   const updated = 'May 9, 2026'
 
   return (
@@ -34,7 +34,7 @@ export default function Terms({ nav }) {
               <AlertTriangle size={20} color='#000000'/>
             </div>
             <div>
-              <div style={{fontSize:11,fontWeight:800,color:'#ff8c7a',letterSpacing:'1.2px',textTransform:'uppercase',marginBottom:6}}>The TL;DR</div>
+              <div style={{fontSize:11,fontWeight:800,color:'#1f5c4e',letterSpacing:'1.2px',textTransform:'uppercase',marginBottom:6}}>The TL;DR</div>
               <div style={{fontSize:14,color:'#451a03',lineHeight:1.7,fontWeight:500}}>
                 SSLVault is a free service operated as-is. You're responsible for the domains you secure
                 and the servers you manage. We're not liable if Let's Encrypt is down or your DNS provider

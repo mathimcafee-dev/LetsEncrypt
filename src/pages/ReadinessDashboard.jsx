@@ -53,9 +53,9 @@ function Tick({ ok }) {
 
 function StatusPill({ status }) {
   const map = {
-    'Ready':      { bg:'rgba(74,222,128,0.12)',  color:'#1e8a5e', border:'rgba(74,222,128,0.3)' },
-    'At risk':    { bg:'rgba(251,191,36,0.12)',  color:'#b87800', border:'rgba(251,191,36,0.3)' },
-    'Will break': { bg:'rgba(248,113,113,0.12)', color:'#2a6b5c', border:'rgba(248,113,113,0.3)' },
+    'Ready':      { bg:'rgba(74,222,128,0.12)',  color:'#16a068', border:'rgba(74,222,128,0.3)' },
+    'At risk':    { bg:'rgba(251,191,36,0.12)',  color:'#9a6400', border:'rgba(251,191,36,0.3)' },
+    'Will break': { bg:'rgba(248,113,113,0.12)', color:'#1f5c4e', border:'rgba(248,113,113,0.3)' },
   }
   const s = map[status] || map['Will break']
   return (
@@ -69,7 +69,7 @@ function StatusPill({ status }) {
 
 function ScoreBadge({ score }) {
   const color = score >= 90 ? '#4ade80' : score >= 60 ? '#fbbf24' : '#f87171'
-  const bg    = score >= 90 ? 'rgba(30,138,94,0.08)' : score >= 60 ? 'rgba(184,120,0,0.07)' : 'rgba(192,57,43,0.07)'
+  const bg    = score >= 90 ? 'rgba(22,160,104,0.09)' : score >= 60 ? 'rgba(184,120,0,0.07)' : 'rgba(192,57,43,0.07)'
   return (
     <span style={{ fontSize:12, fontWeight:800, color, fontFamily:MONO,
       background:bg, padding:'2px 7px', borderRadius:6 }}>{score}</span>
@@ -182,7 +182,7 @@ export default function ReadinessDashboard({ user, onNav }) {
         width:col.width }}>
       <span style={{ display:'flex', alignItems:'center', gap:3 }}>
         {col.label}
-        {col.sortable && sortKey===col.key && (sortAsc ? <ChevronUp size={10} color="#ff8c7a"/> : <ChevronDown size={10} color="#ff8c7a"/>)}
+        {col.sortable && sortKey===col.key && (sortAsc ? <ChevronUp size={10} color="#1f5c4e"/> : <ChevronDown size={10} color="#1f5c4e"/>)}
       </span>
     </th>
   )
@@ -198,10 +198,10 @@ export default function ReadinessDashboard({ user, onNav }) {
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
               <div style={{ width:36, height:36, borderRadius:10, background:'rgba(0,0,0,0.08)',
                 border:'1px solid rgba(192,57,43,0.4)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <Shield size={18} color="#ff8c7a"/>
+                <Shield size={18} color="#1f5c4e"/>
               </div>
               <div>
-                <div style={{ fontSize:9, fontWeight:700, color:'#ff8c7a', letterSpacing:'1.5px',
+                <div style={{ fontSize:9, fontWeight:700, color:'#1f5c4e', letterSpacing:'1.5px',
                   textTransform:'uppercase', marginBottom:2 }}>CA/B Forum SC-081v3</div>
                 <h1 style={{ fontSize:22, fontWeight:800, color:'#1a1a1a', margin:0, letterSpacing:'-0.5px' }}>
                   47-Day Readiness
@@ -215,8 +215,8 @@ export default function ReadinessDashboard({ user, onNav }) {
           <a href="https://cabforum.org/working-groups/server/baseline-requirements/requirements/"
             target="_blank" rel="noreferrer"
             style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, fontWeight:600,
-              color:'#ff8c7a', textDecoration:'none', padding:'7px 12px', borderRadius:8,
-              background:'rgba(42,107,92,0.08)', border:'1px solid rgba(0,0,0,0.1)',
+              color:'#1f5c4e', textDecoration:'none', padding:'7px 12px', borderRadius:8,
+              background:'rgba(31,92,78,0.08)', border:'1px solid rgba(0,0,0,0.1)',
               transition:'all .15s', whiteSpace:'nowrap' }}>
             <ExternalLink size={12}/> View SC-081v3
           </a>
@@ -245,9 +245,9 @@ export default function ReadinessDashboard({ user, onNav }) {
           {/* Status breakdown */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
             {[
-              { label:'Will Break', value:willBreak, color:'#2a6b5c', bg:'rgba(248,113,113,0.08)', border:'rgba(248,113,113,0.2)', desc:'< 60 pts' },
-              { label:'At Risk',    value:atRisk,    color:'#b87800', bg:'rgba(184,120,0,0.06)',  border:'rgba(251,191,36,0.2)',  desc:'60–89 pts' },
-              { label:'Ready',      value:ready,     color:'#1e8a5e', bg:'rgba(30,138,94,0.06)',  border:'rgba(74,222,128,0.2)',  desc:'≥ 90 pts' },
+              { label:'Will Break', value:willBreak, color:'#1f5c4e', bg:'rgba(248,113,113,0.08)', border:'rgba(248,113,113,0.2)', desc:'< 60 pts' },
+              { label:'At Risk',    value:atRisk,    color:'#9a6400', bg:'rgba(184,120,0,0.06)',  border:'rgba(251,191,36,0.2)',  desc:'60–89 pts' },
+              { label:'Ready',      value:ready,     color:'#16a068', bg:'rgba(22,160,104,0.07)',  border:'rgba(74,222,128,0.2)',  desc:'≥ 90 pts' },
             ].map(s => (
               <div key={s.label} style={{ padding:'16px 18px', borderRadius:12,
                 background:s.bg, border:`1px solid ${s.border}` }}>
@@ -270,7 +270,7 @@ export default function ReadinessDashboard({ user, onNav }) {
             const d = daysUntilDate(m.date)
             const past = d <= 0
             const colors = ['#f87171','#fbbf24','#4ade80']
-            const bgs = ['rgba(248,113,113,0.08)','rgba(184,120,0,0.06)','rgba(30,138,94,0.06)']
+            const bgs = ['rgba(248,113,113,0.08)','rgba(184,120,0,0.06)','rgba(22,160,104,0.07)']
             const borders = ['rgba(248,113,113,0.2)','rgba(251,191,36,0.2)','rgba(74,222,128,0.2)']
             return (
               <div key={m.label} style={{ padding:'12px 16px', borderRadius:10,
@@ -310,7 +310,7 @@ export default function ReadinessDashboard({ user, onNav }) {
             <button key={f.key} onClick={() => setFilter(f.key)}
               style={{ padding:'6px 14px', borderRadius:7, fontSize:12, border:'none', fontFamily:F,
                 fontWeight: filter===f.key ? 700 : 500, cursor:'pointer',
-                background: filter===f.key ? '#2a6b5c' : 'transparent',
+                background: filter===f.key ? '#1f5c4e' : 'transparent',
                 color: filter===f.key ? '#ffffff' : '#b0a8a0',
                 transition:'all .15s' }}>
               {f.label}
@@ -321,7 +321,7 @@ export default function ReadinessDashboard({ user, onNav }) {
         {/* ── Table ── */}
         {loading ? (
           <div style={{ textAlign:'center', padding:'64px', color:'#6b6b6b' }}>
-            <RefreshCw size={20} style={{ animation:'spin .8s linear infinite', margin:'0 auto 12px', display:'block', color:'#ff8c7a' }}/>
+            <RefreshCw size={20} style={{ animation:'spin .8s linear infinite', margin:'0 auto 12px', display:'block', color:'#1f5c4e' }}/>
             <div style={{ fontSize:13, fontWeight:500 }}>Analysing fleet…</div>
           </div>
         ) : sorted.length === 0 ? (
@@ -360,8 +360,8 @@ export default function ReadinessDashboard({ user, onNav }) {
                             <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:4,
                               whiteSpace:'nowrap', flexShrink:0,
                               background: cert.source==='gogetssl' ? 'rgba(0,0,0,0.07)' : 'rgba(184,120,0,0.07)',
-                              color: cert.source==='gogetssl' ? '#ff8c7a' : '#fbbf24',
-                              border:`0.5px solid ${cert.source==='gogetssl'?'rgba(42,107,92,0.2)':'rgba(251,191,36,0.3)'}` }}>
+                              color: cert.source==='gogetssl' ? '#1f5c4e' : '#fbbf24',
+                              border:`0.5px solid ${cert.source==='gogetssl'?'rgba(31,92,78,0.2)':'rgba(251,191,36,0.3)'}` }}>
                               {cert.source==='gogetssl' ? 'SSLVault' : (cert.issuer || cert.source || 'CA')}
                             </span>
                           </div>
@@ -408,8 +408,8 @@ export default function ReadinessDashboard({ user, onNav }) {
                                 disabled={togglingId === cert.id}
                                 onClick={() => toggleAutoRenew(cert.id, cert.auto_renew_enabled)}
                                 style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
-                                  background:'rgba(30,138,94,0.08)', border:'0.5px solid rgba(74,222,128,0.3)',
-                                  color:'#1e8a5e', fontFamily:'inherit', whiteSpace:'nowrap',
+                                  background:'rgba(22,160,104,0.09)', border:'0.5px solid rgba(74,222,128,0.3)',
+                                  color:'#16a068', fontFamily:'inherit', whiteSpace:'nowrap',
                                   opacity: togglingId === cert.id ? 0.5 : 1 }}>
                                 {togglingId === cert.id ? '…' : '+ Auto-renew'}
                               </button>
@@ -418,8 +418,8 @@ export default function ReadinessDashboard({ user, onNav }) {
                               <button
                                 onClick={() => onNav('integrations')}
                                 style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
-                                  background:'rgba(42,107,92,0.08)', border:'0.5px solid rgba(42,107,92,0.2)',
-                                  color:'#ff8c7a', fontFamily:'inherit', whiteSpace:'nowrap' }}>
+                                  background:'rgba(31,92,78,0.08)', border:'0.5px solid rgba(31,92,78,0.2)',
+                                  color:'#1f5c4e', fontFamily:'inherit', whiteSpace:'nowrap' }}>
                                 + DNS provider
                               </button>
                             )}
@@ -427,13 +427,13 @@ export default function ReadinessDashboard({ user, onNav }) {
                               <button
                                 onClick={() => onNav('my-servers')}
                                 style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
-                                  background:'rgba(42,107,92,0.08)', border:'0.5px solid rgba(42,107,92,0.2)',
-                                  color:'#ff8c7a', fontFamily:'inherit', whiteSpace:'nowrap' }}>
+                                  background:'rgba(31,92,78,0.08)', border:'0.5px solid rgba(31,92,78,0.2)',
+                                  color:'#1f5c4e', fontFamily:'inherit', whiteSpace:'nowrap' }}>
                                 + Install agent
                               </button>
                             )}
                             {checks.auto_renew && checks.dns_provider && checks.install && (
-                              <span style={{ fontSize:10, color:'#1e8a5e', fontWeight:600 }}>✓ Ready</span>
+                              <span style={{ fontSize:10, color:'#16a068', fontWeight:600 }}>✓ Ready</span>
                             )}
                           </div>
                         </td>
@@ -460,7 +460,7 @@ export default function ReadinessDashboard({ user, onNav }) {
         <div style={{ marginTop:16, fontSize:11, color:'#6b6b6b', lineHeight:1.7,
           padding:'12px 16px', borderRadius:10,
           background:'rgba(255,255,255,0.03)', border:'1px solid rgba(0,0,0,0.05)' }}>
-          <strong style={{ color:'#ff8c7a' }}>CA/B Forum SC-081v3</strong> (passed Apr 2025) ·
+          <strong style={{ color:'#1f5c4e' }}>CA/B Forum SC-081v3</strong> (passed Apr 2025) ·
           200-day max from <strong style={{ color:'#3d3d3d' }}>Mar 15 2026</strong> ·
           100-day from <strong style={{ color:'#3d3d3d' }}>Mar 15 2027</strong> ·
           47-day from <strong style={{ color:'#3d3d3d' }}>Mar 15 2029</strong> ·

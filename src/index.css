@@ -56,7 +56,7 @@ input, textarea, select {
 }
 input:focus, textarea:focus, select:focus {
   border-color: var(--ws-teal) !important;
-  box-shadow: 0 0 0 3px rgba(42,107,92,0.12) !important;
+  box-shadow: 0 0 0 3px rgba(31,92,78,0.12) !important;
 }
 input::placeholder, textarea::placeholder { color: var(--ws-ink-4) !important; }
 select option { background: #fff; color: var(--ws-ink); }
@@ -111,8 +111,8 @@ label {
 @keyframes fadeUp  { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
 @keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:.5} }
 .fade-up  { animation: fadeUp .5s ease forwards; }
-.spinner  { width: 15px; height: 15px; border: 2px solid rgba(42,107,92,0.2); border-top-color: var(--ws-teal); border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; flex-shrink: 0; }
-.spinner-dark { border-color: rgba(42,107,92,0.15); border-top-color: var(--ws-teal); }
+.spinner  { width: 15px; height: 15px; border: 2px solid rgba(31,92,78,0.2); border-top-color: var(--ws-teal); border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; flex-shrink: 0; }
+.spinner-dark { border-color: rgba(31,92,78,0.15); border-top-color: var(--ws-teal); }
 
 nav {
   position: sticky; top: 0; z-index: 100;
@@ -130,4 +130,4 @@ nav {
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(42,107,92,0.25); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(31,92,78,0.25); border-radius: 3px; }

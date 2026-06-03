@@ -28,7 +28,7 @@ function StepRow({ icon, label, detail, state }) {
       <div style={{ width:22, height:22, borderRadius:'50%', flexShrink:0, marginTop:1,
         background: state==='done' ? 'rgba(74,222,128,0.12)' : state==='running' ? 'rgba(184,120,0,0.07)' : state==='error' ? 'rgba(248,113,113,0.12)' : 'rgba(0,0,0,0.03)',
         border:`1.5px solid ${c}40`, display:'flex', alignItems:'center', justifyContent:'center' }}>
-        {state==='done' && <span style={{color:'#1e8a5e',fontSize:12,fontWeight:700}}>✓</span>}
+        {state==='done' && <span style={{color:'#16a068',fontSize:12,fontWeight:700}}>✓</span>}
         {state==='running' && <span style={{display:'inline-block',width:8,height:8,borderRadius:'50%',border:'2px solid #fbbf24',borderTopColor:'transparent',animation:'spin .8s linear infinite'}}/>}
         {state==='error' && <span style={{color:'#c0392b',fontSize:12,fontWeight:700}}>✗</span>}
         {state==='pending' && <span style={{width:6,height:6,borderRadius:'50%',background:'rgba(0,0,0,0.09)'}}/>}
@@ -390,7 +390,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
     color:'#f0ede8', fontFamily:'inherit', outline:'none' }
   const btn = (primary) => ({ width:'100%', padding:'10px', fontSize:13, fontWeight:600,
     borderRadius:7, border: primary ? 'none' : '1px solid rgba(0,0,0,0.08)',
-    background: primary ? '#2a6b5c' : 'transparent',
+    background: primary ? '#1f5c4e' : 'transparent',
     color: primary ? 'white' : 'rgba(240,237,232,0.7)',
     cursor:'pointer', fontFamily:'inherit', marginTop:8 })
 
@@ -427,7 +427,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
             <div>
               <div style={{ background:'rgba(74,222,128,0.06)', border:'1px solid rgba(74,222,128,0.15)',
                 borderRadius:8, padding:'12px 14px', marginBottom:16 }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#1e8a5e', marginBottom:4 }}>
+                <div style={{ fontSize:12, fontWeight:600, color:'#16a068', marginBottom:4 }}>
                   {detectedMethod === 'cpanel' ? '🌐 cPanel server found' : '🖥 VPS agent found'}
                 </div>
                 <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)' }}>
@@ -454,7 +454,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
           {phase === 'ready' && needToken && (
             <div style={{ marginTop:12, padding:'12px 14px', borderRadius:8,
               background:'rgba(251,191,36,0.06)', border:'1px solid rgba(251,191,36,0.2)' }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#b87800', marginBottom:6 }}>
+              <div style={{ fontSize:12, fontWeight:600, color:'#9a6400', marginBottom:6 }}>
                 API token needed
               </div>
               <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', marginBottom:10, lineHeight:1.6 }}>
@@ -491,7 +491,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                   setSavingToken(false)
                 }}
                 style={{ width:'100%', padding:'8px', fontSize:12, fontWeight:600,
-                  borderRadius:6, border:'none', background: tokenInput ? '#2a6b5c' : 'rgba(42,107,92,0.2)',
+                  borderRadius:6, border:'none', background: tokenInput ? '#1f5c4e' : 'rgba(31,92,78,0.2)',
                   color:'white', cursor: tokenInput ? 'pointer' : 'default', fontFamily:'inherit' }}>
                 {savingToken ? 'Saving…' : 'Save token & install'}
               </button>
@@ -582,7 +582,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                   <span style={{ fontSize:10, color:'rgba(240,237,232,0.3)' }}>Paste on your server as root</span>
                   {pairingCmd && <CopyBtn text={pairingCmd}/>}
                 </div>
-                <pre style={{ margin:0, padding:'12px 14px', color:'#1e8a5e', fontSize:11,
+                <pre style={{ margin:0, padding:'12px 14px', color:'#16a068', fontSize:11,
                   fontFamily:'monospace', whiteSpace:'pre-wrap', wordBreak:'break-all', maxHeight:120, overflow:'auto' }}>
                   {pairingLoading ? 'Generating command…' : pairingCmd || '← Generate command below'}
                 </pre>
@@ -614,7 +614,7 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
                   marginBottom:8, background:'rgba(255,255,255,0.02)' }}>
                   <span style={{ fontSize:12, color:'#f0ede8' }}>{f.label}</span>
                   <button onClick={() => { const a = document.createElement('a'); a.href = 'data:text/plain;charset=utf-8,'+encodeURIComponent(f.val); a.download = f.filename; a.click() }}
-                    style={{ fontSize:11, fontWeight:600, color:'#1e8a5e', background:'none',
+                    style={{ fontSize:11, fontWeight:600, color:'#16a068', background:'none',
                       border:'1px solid rgba(74,222,128,0.2)', borderRadius:5, padding:'4px 10px',
                       cursor:'pointer', fontFamily:'inherit' }}>
                     Download
@@ -636,8 +636,8 @@ export default function SmartInstall({ cert, userId, session, onClose, onSuccess
               ))}
               {phase === 'done' && (
                 <div style={{ marginTop:16, padding:'12px 14px', borderRadius:8,
-                  background:'rgba(30,138,94,0.06)', border:'1px solid rgba(74,222,128,0.2)' }}>
-                  <div style={{ fontSize:13, fontWeight:700, color:'#1e8a5e', marginBottom:4 }}>
+                  background:'rgba(22,160,104,0.07)', border:'1px solid rgba(74,222,128,0.2)' }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:'#16a068', marginBottom:4 }}>
                     {detectedMethod === 'agent' ? '✓ Install job dispatched' : '✓ Certificate installed successfully'}
                   </div>
                   <div style={{ fontSize:11, color:'rgba(240,237,232,0.5)', lineHeight:1.6 }}>

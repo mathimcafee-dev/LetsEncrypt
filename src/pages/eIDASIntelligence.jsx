@@ -38,7 +38,7 @@ export default function eIDASIntelligence({ nav }) {
         .eid-hero{background:transparent;padding:clamp(16px,4vw,32px) clamp(12px,3vw,24px) 28px;color:#ffffff}
         .eid-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .eid-h1{font-size:26px;font-weight:600;letter-spacing:-.4px;color:#ffffff;line-height:1.15;margin-bottom:10px}
-        .eid-h1 em{color:#ff8c7a;font-style:normal}
+        .eid-h1 em{color:#2a6b5c;font-style:normal}
         .eid-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:100%;line-height:1.7;margin-bottom:20px}
         .eid-stats{display:flex;gap:28px;flex-wrap:wrap}
         .eid-sn{font-size:22px;font-weight:600;color:#ffffff;line-height:1}
@@ -147,7 +147,7 @@ export default function eIDASIntelligence({ nav }) {
               <div key={e.year+i} className="tl-row">
                 <div className="tl-yr">{e.year}</div>
                 <div className="tl-spine">
-                  <div className="tl-dot" style={{ background: e.type==='incident'?'var(--v2-red-text)':'#e07060' }}/>
+                  <div className="tl-dot" style={{ background: e.type==='incident'?'var(--v2-red-text)':'#1f5c4e' }}/>
                   {i < TIMELINE.length-1 && <div className="tl-line"/>}
                 </div>
                 <div style={{ flex:1, paddingBottom:8 }}>

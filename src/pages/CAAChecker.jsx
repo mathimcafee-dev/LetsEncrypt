@@ -9,15 +9,15 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 
 function StatusIcon({ status }) {
   if (status === 'pass')    return <CheckCircle  size={15} color="#16a34a" style={{ flexShrink:0 }} />
-  if (status === 'fail')    return <XCircle      size={15} color="#2a6b5c" style={{ flexShrink:0 }} />
-  if (status === 'warn')    return <AlertTriangle size={15} color="#e07060" style={{ flexShrink:0 }} />
-  return                           <Info         size={15} color="#2a6b5c" style={{ flexShrink:0 }} />
+  if (status === 'fail')    return <XCircle      size={15} color="#1f5c4e" style={{ flexShrink:0 }} />
+  if (status === 'warn')    return <AlertTriangle size={15} color="#1f5c4e" style={{ flexShrink:0 }} />
+  return                           <Info         size={15} color="#1f5c4e" style={{ flexShrink:0 }} />
 }
 
 function StatusBadge({ status }) {
   const map = {
-    pass: { bg:'transparent', color:'#1e8a5e', label:'Pass' },
-    fail: { bg:'rgba(42,107,92,0.09)', color:'#c0392b', label:'Fail' },
+    pass: { bg:'transparent', color:'#16a068', label:'Pass' },
+    fail: { bg:'rgba(31,92,78,0.09)', color:'#c0392b', label:'Fail' },
     warn: { bg:'rgba(239,68,68,0.08)', color:'#ffffff', label:'Warning' },
     info: { bg:'transparent', color:'#ffffff', label:'Info' },
   }
@@ -85,7 +85,7 @@ export default function CAAChecker({ nav }) {
           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
             <div style={{ width:36, height:36, borderRadius:8, background:'transparent',
               display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Shield size={18} color="#2a6b5c"/>
+              <Shield size={18} color="#1f5c4e"/>
             </div>
             <h1 className="v2-h1">CAA Record Checker</h1>
           </div>
@@ -126,14 +126,14 @@ export default function CAAChecker({ nav }) {
 
             {/* Summary banner */}
             <div style={{
-              background: result.safeToIssue ? 'transparent' : 'rgba(42,107,92,0.09)',
-              border: `0.5px solid ${result.safeToIssue ? 'rgba(42,107,92,0.2)' : 'rgba(0,0,0,0.1)'}`,
+              background: result.safeToIssue ? 'transparent' : 'rgba(31,92,78,0.09)',
+              border: `0.5px solid ${result.safeToIssue ? 'rgba(31,92,78,0.2)' : 'rgba(0,0,0,0.1)'}`,
               borderRadius:10, padding:'14px 16px', marginBottom:16,
               display:'flex', alignItems:'flex-start', gap:10,
             }}>
               {result.safeToIssue
                 ? <CheckCircle size={18} color="#16a34a" style={{ flexShrink:0, marginTop:1 }}/>
-                : <XCircle     size={18} color="#2a6b5c" style={{ flexShrink:0, marginTop:1 }}/>}
+                : <XCircle     size={18} color="#1f5c4e" style={{ flexShrink:0, marginTop:1 }}/>}
               <div>
                 <p style={{ margin:0, fontSize:13, fontWeight:600,
                   color: result.safeToIssue ? '#f0ede8' : '#f87171' }}>{result.summary}</p>

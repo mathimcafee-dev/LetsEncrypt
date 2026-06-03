@@ -60,7 +60,7 @@ export default function DeveloperInner({ nav }) {
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
             {CERTS.map(c => (
               <div key={c} style={{ display:'flex', alignItems:'flex-start', gap:10, fontSize:12, color:'#e8e0d8' }}>
-                <Award size={13} color="#2a6b5c" style={{ flexShrink:0, marginTop:1 }}/>
+                <Award size={13} color="#1f5c4e" style={{ flexShrink:0, marginTop:1 }}/>
                 {c}
               </div>
             ))}
@@ -80,7 +80,7 @@ export default function DeveloperInner({ nav }) {
         {/* SSLVault story */}
         <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px', gridColumn:'span 2' }}>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
-            <Shield size={13} color="#2a6b5c"/>
+            <Shield size={13} color="#1f5c4e"/>
             <span style={{ fontSize:10, fontWeight:500, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'.5px' }}>Why SSLVault</span>
           </div>
           <p style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.8, margin:'0 0 10px' }}>

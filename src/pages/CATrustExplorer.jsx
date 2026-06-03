@@ -9,7 +9,7 @@ const PAGE_SIZE = 10000
 
 const STORE_META = {
   Chrome:    { icon: '🌐', color: '#e8e0d8' },
-  Mozilla:   { icon: '🦊', color: '#2a6b5c' },
+  Mozilla:   { icon: '🦊', color: '#1f5c4e' },
   Apple:     { icon: '🍎', color: '#ffffff' },
   Microsoft: { icon: '🪟', color: '#ffffff' },
 }
@@ -36,7 +36,7 @@ const fmtDate = (iso) => {
 }
 
 const avatarColor = (name = '') => {
-  const colors = ['#f0ede8','#f0ede8','#f0ede8','#4ade80','#f87171','#f0ede8','#2a6b5c','#f0ede8','#e07060','#f0ede8']
+  const colors = ['#f0ede8','#f0ede8','#f0ede8','#4ade80','#f87171','#f0ede8','#1f5c4e','#f0ede8','#1f5c4e','#f0ede8']
   let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff
   return colors[Math.abs(h) % colors.length]
 }
@@ -485,7 +485,7 @@ export default function CATrustExplorer({ nav }) {
         .chip-amber { color:var(--v2-amber-text);background:var(--v2-amber-bg);border-color:var(--v2-amber-border) }
         .chip-red { color:var(--v2-red-text);background:var(--v2-red-bg);border-color:var(--v2-red-border) }
         .chip-grey { color:var(--v2-text-2);background:var(--v2-hover);border-color:var(--v2-border) }
-        .chip-amber { color:#ff8c7a;background:rgba(42,107,92,0.08);border-color:rgba(0,0,0,0.1) }
+        .chip-amber { color:#2a6b5c;background:rgba(31,92,78,0.08);border-color:rgba(0,0,0,0.1) }
         .detail-panel { background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);overflow:hidden }
         .dp-header { padding:14px 16px;border-bottom:0.5px solid var(--v2-border);display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--v2-surface-2);flex-wrap:wrap }
         .dp-title { font-size:14px;font-weight:600;color:var(--v2-text);letter-spacing:-0.2px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 }
@@ -630,7 +630,7 @@ export default function CATrustExplorer({ nav }) {
             { key: 'root',     val: counts.root,              label: 'Root CAs',          color: 'var(--v2-green)' },
             { key: 'inter',    val: counts.inter,             label: 'Intermediates',     color: 'var(--v2-grey-dot)' },
             { key: 'all4',     val: counts.all4,              label: 'All 4 stores',      color: 'var(--v2-green)' },
-            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#ffffff', valColor: '#e07060' },
+            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#ffffff', valColor: '#1f5c4e' },
             { key: 'distrust', val: counts.distrust,          label: 'Distrusted',        color: 'var(--v2-red)', valColor: 'var(--v2-red-text)' },
           ].map(({ key, val, label, color, valColor }) => (
             <div key={key} className={`stat-tile${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
@@ -693,11 +693,11 @@ export default function CATrustExplorer({ nav }) {
                     </span>
                     <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
                       {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'rgba(240,237,232,0.7)',display:'inline-block',flexShrink:0}}/>}
-                      {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#2a6b5c',display:'inline-block',flexShrink:0}}/>}
+                      {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#1f5c4e',display:'inline-block',flexShrink:0}}/>}
                       {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#0d0000',display:'inline-block',flexShrink:0}}/>}
                       {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0d0000',display:'inline-block',flexShrink:0}}/>}
                     </span>
-                    {c.ev_capable && <span style={{fontSize:9,color:'#ff8c7a',fontWeight:600}}>EV</span>}
+                    {c.ev_capable && <span style={{fontSize:9,color:'#1f5c4e',fontWeight:600}}>EV</span>}
                   </button>
                 )
               })}
@@ -862,7 +862,7 @@ export default function CATrustExplorer({ nav }) {
                       <div className="pem-block">
                         <div className="pem-head">
                           <div className="pem-dots">
-                            <span style={{ background: '#2a6b5c', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
+                            <span style={{ background: '#1f5c4e', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
                             <span style={{ background: '#ffbd2e', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
                             <span style={{ background: '#27c93f', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
                           </div>

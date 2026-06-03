@@ -25,8 +25,8 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 
 function ExpiryBadge({ iso }) {
   const d = dLeft(iso)
-  const color = d === null ? 'rgba(240,237,232,0.38)' : d <= 0 ? '#f87171' : d <= 7 ? '#2a6b5c' : d <= 30 ? '#f0ede8' : d <= 60 ? '#e67e22' : '#4ade80'
-  const bg    = d === null ? '#000000' : d <= 0 ? 'rgba(42,107,92,0.09)' : d <= 7 ? 'rgba(230,126,34,0.1)' : d <= 30 ? 'rgba(239,68,68,0.08)' : 'transparent'
+  const color = d === null ? 'rgba(240,237,232,0.38)' : d <= 0 ? '#f87171' : d <= 7 ? '#1f5c4e' : d <= 30 ? '#f0ede8' : d <= 60 ? '#e67e22' : '#4ade80'
+  const bg    = d === null ? '#000000' : d <= 0 ? 'rgba(31,92,78,0.09)' : d <= 7 ? 'rgba(230,126,34,0.1)' : d <= 30 ? 'rgba(239,68,68,0.08)' : 'transparent'
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
       background: bg, color, border: `0.5px solid ${color}44`, whiteSpace: 'nowrap' }}>
@@ -40,7 +40,7 @@ function StatusBadge({ status }) {
   const [color, bg, label] =
     n.includes('issued') || n === '2'  ? ['#4ade80', 'transparent', 'Issued']  :
     n.includes('revoked') || n === '3' ? ['rgba(240,237,232,0.7)', '#000000', 'Revoked'] :
-    n.includes('expired') || n === '4' ? ['#f87171', 'rgba(42,107,92,0.09)', 'Expired'] :
+    n.includes('expired') || n === '4' ? ['#f87171', 'rgba(31,92,78,0.09)', 'Expired'] :
     n.includes('pending') || n === '1' ? ['#f0ede8', 'rgba(239,68,68,0.08)', 'Pending'] :
     ['rgba(240,237,232,0.38)', '#000000', status || 'Unknown']
   return (
@@ -205,8 +205,8 @@ function InventoryLayer({ creds }) {
     { key: 'upcoming', label: '31–90 days',filter: c => { const d = dLeft(c.expires || c.notAfter); return d > 30 && d <= 90 } },
     { key: 'healthy',  label: '>90 days',  filter: c => dLeft(c.expires || c.notAfter) > 90 },
   ]
-  const COLORS = { expired: '#f87171', critical: '#2a6b5c', warning: '#f0ede8', upcoming: '#f0ede8', healthy: '#4ade80' }
-  const BANDS_BG = { expired: 'rgba(42,107,92,0.09)', critical: 'rgba(230,126,34,0.1)', warning: 'rgba(239,68,68,0.08)', upcoming: 'transparent', healthy: 'transparent' }
+  const COLORS = { expired: '#f87171', critical: '#1f5c4e', warning: '#f0ede8', upcoming: '#f0ede8', healthy: '#4ade80' }
+  const BANDS_BG = { expired: 'rgba(31,92,78,0.09)', critical: 'rgba(230,126,34,0.1)', warning: 'rgba(239,68,68,0.08)', upcoming: 'transparent', healthy: 'transparent' }
 
   const filtered = certs.filter(c => {
     const cn = c.commonName || c.cn || c.subject || ''
@@ -220,7 +220,7 @@ function InventoryLayer({ creds }) {
 
   return (
     <div>
-      <SectionHeader icon={Activity} color="#e07060" title="Certificate Inventory"
+      <SectionHeader icon={Activity} color="#1f5c4e" title="Certificate Inventory"
         sub="All SSL/TLS certificates from your Sectigo SCM account, bucketed by expiry urgency."
         badge="Live"/>
 
@@ -313,7 +313,7 @@ function OrgsLayer({ creds }) {
 
   return (
     <div>
-      <SectionHeader icon={Building} color="#e07060" title="Organisation Profiles"
+      <SectionHeader icon={Building} color="#1f5c4e" title="Organisation Profiles"
         sub="All organisations registered in Sectigo SCM. OV/EV validation status and certificate counts."
         badge="Reference"/>
 
@@ -383,7 +383,7 @@ function AnalyticsLayer({ creds }) {
 
   return (
     <div>
-      <SectionHeader icon={BarChart2} color="#e07060" title="Certificate Type Breakdown"
+      <SectionHeader icon={BarChart2} color="#1f5c4e" title="Certificate Type Breakdown"
         sub="Distribution of certificate types and statuses across your Sectigo portfolio."
         badge="Analytics"/>
 
@@ -472,7 +472,7 @@ export default function SectigoIntelligence({ nav }) {
           </div>
           {creds && (
             <span style={{ marginLeft: 'auto', fontSize:10, fontWeight: 700, padding: '2px 8px',
-              borderRadius: 20, background: 'transparent', color: '#1e8a5e', border: '0.5px solid rgba(42,107,92,0.2)',
+              borderRadius: 20, background: 'transparent', color: '#16a068', border: '0.5px solid rgba(31,92,78,0.2)',
               display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}/>
               Connected

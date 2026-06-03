@@ -36,7 +36,7 @@ html, body { font-family: var(--f); background: radial-gradient(ellipse at 65% 4
 
 .v2-page, [class*="v2-"] { font-family: var(--f) !important; }
 
-.v2-btn-primary, button[style*="#c0392b"], button[style*="#e07060"] {
+.v2-btn-primary, button[style*="#c0392b"], button[style*="#1f5c4e"] {
   background: #c0392b !important;
   border-color: #c0392b !important;
 }

@@ -6,12 +6,12 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 function GradeBadge({ grade }) {
   const map = {
-    'A+': { bg:'rgba(42,107,92,0.08)', color:'#2a6b5c' },
-    'A':  { bg:'rgba(42,107,92,0.08)', color:'#5edb8a' },
-    'B':  { bg:'rgba(42,107,92,0.08)', color:'#2a6b5c' },
+    'A+': { bg:'rgba(31,92,78,0.08)', color:'#1f5c4e' },
+    'A':  { bg:'rgba(31,92,78,0.08)', color:'#5edb8a' },
+    'B':  { bg:'rgba(31,92,78,0.08)', color:'#1f5c4e' },
     'C':  { bg:'rgba(230,126,34,0.08)', color:'#e67e22' },
-    'D':  { bg:'rgba(42,107,92,0.08)', color:'#ff8c7a' },
-    'F':  { bg:'rgba(42,107,92,0.09)', color:'#2a6b5c' },
+    'D':  { bg:'rgba(31,92,78,0.08)', color:'#1f5c4e' },
+    'F':  { bg:'rgba(31,92,78,0.09)', color:'#1f5c4e' },
   }
   const s = map[grade] || { bg:'rgba(26,0,0,0.5)', color:'#b0a8a0' }
   return (
@@ -27,14 +27,14 @@ function ProtoRow({ proto }) {
   const icon = proto.status === 'good'
     ? <CheckCircle  size={13} color="#16a34a" style={{ flexShrink:0 }}/>
     : proto.status === 'bad'
-    ? <XCircle      size={13} color="#2a6b5c" style={{ flexShrink:0 }}/>
-    : <AlertTriangle size={13} color="#e07060" style={{ flexShrink:0 }}/>
+    ? <XCircle      size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
+    : <AlertTriangle size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0',
       borderBottom:'0.5px solid rgba(15,23,42,0.06)' }}>
       {icon}
       <span style={{ fontSize:13, flex:1, color:'transparent' }}>{proto.name}</span>
-      <span style={{ fontSize:11, color: proto.status==='good'?'#16a34a':proto.status==='bad'?'#2a6b5c':'#e07060' }}>
+      <span style={{ fontSize:11, color: proto.status==='good'?'#16a34a':proto.status==='bad'?'#1f5c4e':'#1f5c4e' }}>
         {proto.note}
       </span>
     </div>
@@ -45,11 +45,11 @@ function VulnRow({ v }) {
   const icon = v.status === 'safe'
     ? <CheckCircle  size={13} color="#16a34a" style={{ flexShrink:0 }}/>
     : v.status === 'vulnerable'
-    ? <XCircle      size={13} color="#2a6b5c" style={{ flexShrink:0 }}/>
-    : <Info         size={13} color="#2a6b5c" style={{ flexShrink:0 }}/>
+    ? <XCircle      size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
+    : <Info         size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
   const label = v.status === 'safe' ? { text:'Not vulnerable', color:'#5edb8a' }
-    : v.status === 'vulnerable' ? { text:'Vulnerable', color:'#2a6b5c' }
-    : { text:'Manual check', color:'#2a6b5c' }
+    : v.status === 'vulnerable' ? { text:'Vulnerable', color:'#1f5c4e' }
+    : { text:'Manual check', color:'#1f5c4e' }
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0',
       borderBottom:'0.5px solid rgba(15,23,42,0.06)' }}>
@@ -133,8 +133,8 @@ export default function VulnScanner({ domain, session }) {
       </div>
 
       {error && (
-        <div style={{ padding:'8px 14px', background:'rgba(42,107,92,0.09)', border:'0.5px solid #fecaca',
-          borderTop:'none', borderRadius:'0 0 8px 8px', fontSize:12, color:'#2a6b5c' }}>
+        <div style={{ padding:'8px 14px', background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca',
+          borderTop:'none', borderRadius:'0 0 8px 8px', fontSize:12, color:'#1f5c4e' }}>
           {error}
         </div>
       )}
@@ -176,9 +176,9 @@ export default function VulnScanner({ domain, session }) {
           {/* Cipher strength */}
           <p style={{ margin:'0 0 8px', fontSize:11, fontWeight:700, color:'#b5aea8',
             textTransform:'uppercase', letterSpacing:'0.5px' }}>Cipher strength</p>
-          <CipherBar label="Strong" count={result.ciphers.strong} total={totalCiphers} color="#e07060"/>
-          <CipherBar label="Medium" count={result.ciphers.medium} total={totalCiphers} color="#e07060"/>
-          <CipherBar label="Weak"   count={result.ciphers.weak}   total={totalCiphers} color="#2a6b5c"/>
+          <CipherBar label="Strong" count={result.ciphers.strong} total={totalCiphers} color="#1f5c4e"/>
+          <CipherBar label="Medium" count={result.ciphers.medium} total={totalCiphers} color="#1f5c4e"/>
+          <CipherBar label="Weak"   count={result.ciphers.weak}   total={totalCiphers} color="#1f5c4e"/>
 
           {result.note && (
             <p style={{ margin:'10px 0 0', fontSize:11, color:'#b5aea8',

@@ -15,11 +15,11 @@ async function bulkScan(domains) {
 }
 
 function gradeStyle(grade) {
-  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(42,107,92,0.09)' }
+  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(31,92,78,0.09)' }
   if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)' }
   if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)' }
   if (grade === 'B') return { color: 'var(--v2-green-text)', bg: 'var(--v2-green-bg)' }
-  if (grade === 'A') return { color: '#1e8a5e', bg: 'transparent' }
+  if (grade === 'A') return { color: '#16a068', bg: 'transparent' }
   if (grade === 'A+') return { color: '#ffffff', bg: 'transparent' }
   return { color: '#b0a8a0', bg: 'var(--v2-bg)' }
 }
@@ -29,7 +29,7 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function Tick({ ok }) {
   return ok
     ? <CheckCircle size={12} color="#16a34a" style={{ flexShrink: 0 }} />
-    : <XCircle size={12} color="#2a6b5c" style={{ flexShrink: 0 }} />
+    : <XCircle size={12} color="#1f5c4e" style={{ flexShrink: 0 }} />
 }
 
 function exportCSV(results) {
@@ -86,7 +86,7 @@ export default function BulkScanner({ nav }) {
         justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
-          <Shield size={18} color="#2a6b5c" />
+          <Shield size={18} color="#1f5c4e" />
           <span style={{ fontSize:14, fontWeight: 600, color: '#ffffff' }}>SSLVault</span>
           <span style={{ fontSize:11, color: '#b0a8a0', fontWeight: 400 }}>· Bulk Scanner</span>
         </div>
@@ -170,7 +170,7 @@ export default function BulkScanner({ nav }) {
               {[
                 { label: 'Scanned', val: results.length, color: '#e8e0d8' },
                 { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#f0ede8' : '#f87171' },
-                { label: 'A / A+', val: (grades['A']||0)+(grades['A+']||0), color: '#1e8a5e' },
+                { label: 'A / A+', val: (grades['A']||0)+(grades['A+']||0), color: '#16a068' },
                 { label: 'F / issues', val: (grades['F']||0), color: '#f87171' },
               ].map(({ label, val, color }) => (
                 <div key={label} style={{ background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)',

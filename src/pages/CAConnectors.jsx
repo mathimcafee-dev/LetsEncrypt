@@ -36,7 +36,7 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function ExpiryBadge({ expiresAt }) {
   const d = daysLeft(expiresAt)
   if (d === null) return null
-  const [color, bg] = d > 30 ? ['#4ade80', 'transparent'] : d > 7 ? ['#f0ede8', 'rgba(239,68,68,0.08)'] : ['#f87171', 'rgba(42,107,92,0.09)']
+  const [color, bg] = d > 30 ? ['#4ade80', 'transparent'] : d > 7 ? ['#f0ede8', 'rgba(239,68,68,0.08)'] : ['#f87171', 'rgba(31,92,78,0.09)']
   return (
     <span style={{ fontSize:10, fontWeight: 500, padding: '2px 7px', borderRadius: 4,
       background: bg, color, border: `0.5px solid ${color}30` }}>
@@ -47,11 +47,11 @@ function ExpiryBadge({ expiresAt }) {
 
 function SourceBadge({ source }) {
   const map = {
-    digicert:   { label: 'DigiCert',       color: '#f87171', bg: 'rgba(42,107,92,0.09)' },
+    digicert:   { label: 'DigiCert',       color: '#f87171', bg: 'rgba(31,92,78,0.09)' },
     sectigo:    { label: 'Sectigo',        color: '#ffffff', bg: 'rgba(239,68,68,0.08)' },
-    sslcom:     { label: 'SSL.com',        color: '#ffffff', bg: 'rgba(42,107,92,0.08)' },
+    sslcom:     { label: 'SSL.com',        color: '#ffffff', bg: 'rgba(31,92,78,0.08)' },
     imported:   { label: 'Manual',         color: '#e8e0d8', bg: '#000000' },
-    rapidssl:   { label: 'RapidSSL',       color: '#1e8a5e', bg: 'transparent' },
+    rapidssl:   { label: 'RapidSSL',       color: '#16a068', bg: 'transparent' },
     letsencrypt:{ label: "Let's Encrypt",  color: '#ffffff', bg: 'transparent' },
   }
   const s = map[source] || { label: source || 'Unknown', color: '#e8e0d8', bg: '#000000' }
@@ -66,7 +66,7 @@ function SourceBadge({ source }) {
 const CA_DEFS = {
   digicert: {
     name: 'DigiCert CertCentral',
-    color: '#f87171', bg: 'rgba(42,107,92,0.09)', border: 'rgba(0,0,0,0.1)',
+    color: '#f87171', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)',
     logo: 'DC',
     desc: 'Pull all issued certificates from your CertCentral account. Monitoring only — no private keys needed.',
     fields: [
@@ -89,7 +89,7 @@ const CA_DEFS = {
   },
   sslcom: {
     name: 'SSL.com',
-    color: '#ffffff', bg: 'rgba(42,107,92,0.08)', border: 'rgba(42,107,92,0.2)',
+    color: '#ffffff', bg: 'rgba(31,92,78,0.08)', border: 'rgba(31,92,78,0.2)',
     logo: 'SL',
     desc: 'Pull all issued certificates from your SSL.com reseller account. Monitoring only — no private keys needed.',
     fields: [
@@ -272,7 +272,7 @@ export default function CAConnectors({ nav }) {
         {/* Stat strip */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 24 }}>
           {[
-            { val: connections.length, label: 'CAs connected',   color: '#1e8a5e' },
+            { val: connections.length, label: 'CAs connected',   color: '#16a068' },
             { val: certs.length,       label: 'Certs tracked',   color: '#ffffff' },
             { val: expiring30.length,  label: 'Expiring in 30d', color: '#ffffff' },
             { val: expired.length,     label: 'Expired',         color: '#f87171' },
@@ -289,7 +289,7 @@ export default function CAConnectors({ nav }) {
           <div style={{ background: 'rgba(239,68,68,0.08)', border: '0.5px solid #F2C4BC', borderRadius: 10,
             padding: '12px 16px', marginBottom: 20, display: 'flex', gap: 10, alignItems: 'center' }}>
             <AlertTriangle size={15} style={{ color: '#ffffff', flexShrink: 0 }}/>
-            <div style={{ fontSize:12, color: '#ff8c7a' }}>
+            <div style={{ fontSize:12, color: '#1f5c4e' }}>
               <strong>{expiring30.length} certificate{expiring30.length !== 1 ? 's' : ''}</strong> expiring
               within 30 days: {expiring30.map(c => c.domain).join(', ')}
             </div>
@@ -334,13 +334,13 @@ export default function CAConnectors({ nav }) {
                 <div style={{ padding: '10px 14px' }}>
                   {conn.error_message && (
                     <div style={{ fontSize:11, color: '#f87171', marginBottom: 8,
-                      background: 'rgba(42,107,92,0.09)', borderRadius: 5, padding: '5px 8px' }}>
+                      background: 'rgba(31,92,78,0.09)', borderRadius: 5, padding: '5px 8px' }}>
                       {conn.error_message}
                     </div>
                   )}
                   {res && (
                     <div style={{ fontSize:11, marginBottom: 8, padding: '5px 8px', borderRadius: 5,
-                      background: res.ok ? 'transparent' : 'rgba(42,107,92,0.09)',
+                      background: res.ok ? 'transparent' : 'rgba(31,92,78,0.09)',
                       color: res.ok ? '#166534' : '#f87171' }}>
                       {res.ok
                         ? `✓ Synced — ${res.imported} imported, ${res.skipped || 0} skipped`
@@ -370,7 +370,7 @@ export default function CAConnectors({ nav }) {
               alignItems: 'center', justifyContent: 'center', minHeight: 120, cursor: 'pointer' }}
               onClick={() => openAdd('digicert')}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(42,107,92,0.09)',
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(31,92,78,0.09)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontWeight: 700, fontSize:12, color: '#f87171', margin: '0 auto 8px' }}>DC</div>
                 <div style={{ fontSize:13, fontWeight: 500, color: '#e8e0d8' }}>Connect DigiCert</div>
@@ -429,10 +429,10 @@ export default function CAConnectors({ nav }) {
               onClick={() => setDelAllModal(true)}
               style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
                 fontWeight:600, padding:'5px 12px', borderRadius:7, cursor:'pointer',
-                background:'rgba(42,107,92,0.09)', color:'#c0392b', border:'0.5px solid #fecaca',
+                background:'rgba(31,92,78,0.09)', color:'#c0392b', border:'0.5px solid #fecaca',
                 fontFamily:'inherit', transition:'all .15s' }}
               onMouseEnter={e=>{e.currentTarget.style.background='#f87171';e.currentTarget.style.color='#000000'}}
-              onMouseLeave={e=>{e.currentTarget.style.background='rgba(42,107,92,0.09)';e.currentTarget.style.color='#f87171'}}>
+              onMouseLeave={e=>{e.currentTarget.style.background='rgba(31,92,78,0.09)';e.currentTarget.style.color='#f87171'}}>
               <Trash2 size={11}/> Delete all {certs.length} certs
             </button>
           )}
@@ -492,7 +492,7 @@ export default function CAConnectors({ nav }) {
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 4,
                     fontSize:10, fontWeight: 600, padding: '4px 9px', borderRadius: 6,
                     background: 'transparent', color: '#ffffff',
-                    border: '0.5px solid rgba(42,107,92,0.2)', cursor: 'pointer',
+                    border: '0.5px solid rgba(31,92,78,0.2)', cursor: 'pointer',
                     fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'all .15s' }}
                   onMouseEnter={e => { e.currentTarget.style.background='#f0ede8'; e.currentTarget.style.color='#000000' }}
                   onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#f0ede8' }}>
@@ -606,7 +606,7 @@ export default function CAConnectors({ nav }) {
                     ))}
 
                     {addError && (
-                      <div style={{ background: 'rgba(42,107,92,0.09)', border: '0.5px solid #fecaca', borderRadius: 7,
+                      <div style={{ background: 'rgba(31,92,78,0.09)', border: '0.5px solid #fecaca', borderRadius: 7,
                         padding: '9px 12px', marginBottom: 12, fontSize:12, color: '#f87171',
                         display: 'flex', gap: 7, alignItems: 'flex-start' }}>
                         <AlertTriangle size={13} style={{ flexShrink: 0, marginTop: 1 }}/>{addError}
@@ -683,9 +683,9 @@ export default function CAConnectors({ nav }) {
                 ) : importResult.ok ? (
                   <div style={{ textAlign: 'center', padding: '10px 0' }}>
                     <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'transparent',
-                      border: '1.5px solid rgba(42,107,92,0.2)', display: 'flex', alignItems: 'center',
+                      border: '1.5px solid rgba(31,92,78,0.2)', display: 'flex', alignItems: 'center',
                       justifyContent: 'center', margin: '0 auto 14px' }}>
-                      <Check size={20} style={{ color: '#1e8a5e' }}/>
+                      <Check size={20} style={{ color: '#16a068' }}/>
                     </div>
                     <div style={{ fontSize:15, fontWeight: 500, marginBottom: 12 }}>Certificate imported</div>
                     <div style={{ background: 'var(--v2-surface-3)', borderRadius: 8, padding: '12px 14px',
@@ -741,9 +741,9 @@ export default function CAConnectors({ nav }) {
               <div style={{ background:'rgba(255,255,255,0.03)', borderRadius: 14, width: '100%', maxWidth: 400,
                 padding: '24px', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '0.5px solid var(--v2-border)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(42,107,92,0.09)',
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(31,92,78,0.09)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Trash2 size={15} color="#2a6b5c"/>
+                    <Trash2 size={15} color="#1f5c4e"/>
                   </div>
                   <div style={{ fontSize:15, fontWeight: 600, color: '#ffffff' }}>
                     Remove {conn?.label || 'connection'}?
@@ -758,7 +758,7 @@ export default function CAConnectors({ nav }) {
                 {connCertCount > 0 && (
                   <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
                     padding: '10px 12px', borderRadius: 8, marginBottom: 16,
-                    background: delCerts ? 'rgba(42,107,92,0.09)' : 'var(--v2-surface-3)',
+                    background: delCerts ? 'rgba(31,92,78,0.09)' : 'var(--v2-surface-3)',
                     border: `0.5px solid ${delCerts ? 'rgba(0,0,0,0.1)' : 'var(--v2-border)'}`,
                     transition: 'all .15s' }}>
                     <input type="checkbox" checked={delCerts} onChange={e => setDelCerts(e.target.checked)}
@@ -807,13 +807,13 @@ export default function CAConnectors({ nav }) {
                 overflow:'hidden' }}>
 
                 {/* Header */}
-                <div style={{ padding:'18px 20px 14px', borderBottom:'0.5px solid rgba(42,107,92,0.07)',
+                <div style={{ padding:'18px 20px 14px', borderBottom:'0.5px solid rgba(31,92,78,0.07)',
                   display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <div>
                     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                       <div style={{ width:28, height:28, borderRadius:7, background:'transparent',
                         display:'flex', alignItems:'center', justifyContent:'center' }}>
-                        <RotateCcw size={13} color="#2a6b5c"/>
+                        <RotateCcw size={13} color="#1f5c4e"/>
                       </div>
                       <span style={{ fontSize:14, fontWeight:700, color:'#ffffff' }}>Renew certificate</span>
                     </div>
@@ -874,14 +874,14 @@ export default function CAConnectors({ nav }) {
                       <div style={{ fontSize:13, fontWeight:700, color:'#ffffff', marginBottom:3 }}>
                         Renew via SSLVault
                         <span style={{ marginLeft:7, fontSize:9, fontWeight:700, padding:'2px 7px',
-                          borderRadius:20, background:'transparent', color:'#1e8a5e',
-                          border:'0.5px solid rgba(42,107,92,0.2)' }}>Recommended</span>
+                          borderRadius:20, background:'transparent', color:'#16a068',
+                          border:'0.5px solid rgba(31,92,78,0.2)' }}>Recommended</span>
                       </div>
                       <div style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.5 }}>
                         Issue a fresh RapidSSL DV certificate through SSLVault — RapidSSL CA API,
                         auto-DNS validation, auto-install on your servers. Domain pre-filled.
                       </div>
-                      <div style={{ fontSize:10, color:'#1e8a5e', marginTop:5, fontWeight:600,
+                      <div style={{ fontSize:10, color:'#16a068', marginTop:5, fontWeight:600,
                         display:'flex', alignItems:'center', gap:4 }}>
                         <Check size={10}/> DigiCert trust chain · ~5 min · auto-installs
                       </div>
@@ -910,11 +910,11 @@ export default function CAConnectors({ nav }) {
               boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid rgba(0,0,0,0.08)', overflow:'hidden' }}>
 
               {/* Header */}
-              <div style={{ padding:'18px 20px 14px', borderBottom:'0.5px solid rgba(42,107,92,0.07)',
+              <div style={{ padding:'18px 20px 14px', borderBottom:'0.5px solid rgba(31,92,78,0.07)',
                 display:'flex', alignItems:'center', gap:12 }}>
-                <div style={{ width:36, height:36, borderRadius:9, background:'rgba(42,107,92,0.09)', flexShrink:0,
+                <div style={{ width:36, height:36, borderRadius:9, background:'rgba(31,92,78,0.09)', flexShrink:0,
                   display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <Trash2 size={16} color="#2a6b5c"/>
+                  <Trash2 size={16} color="#1f5c4e"/>
                 </div>
                 <div>
                   <div style={{ fontSize:14, fontWeight:700, color:'#ffffff' }}>Delete all tracked certificates?</div>
@@ -924,7 +924,7 @@ export default function CAConnectors({ nav }) {
 
               {/* Body */}
               <div style={{ padding:'16px 20px' }}>
-                <div style={{ background:'rgba(42,107,92,0.09)', border:'0.5px solid #fecaca', borderRadius:9,
+                <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:9,
                   padding:'12px 14px', marginBottom:16, fontSize:12, color:'#c0392b', lineHeight:1.6 }}>
                   This will <strong>permanently delete</strong> all {certs.length} tracked certificates
                   and remove every reference from the database. CA connections are kept — you can re-sync anytime.
@@ -936,7 +936,7 @@ export default function CAConnectors({ nav }) {
                   {['digicert','sectigo','sslcom','imported'].map(src => {
                     const count = certs.filter(c => c.source===src||c.imported_from===src).length
                     if (!count) return null
-                    const colors = {digicert:['rgba(42,107,92,0.09)','#f87171'],sectigo:['rgba(239,68,68,0.08)','#f0ede8'],sslcom:['rgba(42,107,92,0.08)','#f0ede8'],imported:['#000000','rgba(240,237,232,0.7)']}
+                    const colors = {digicert:['rgba(31,92,78,0.09)','#f87171'],sectigo:['rgba(239,68,68,0.08)','#f0ede8'],sslcom:['rgba(31,92,78,0.08)','#f0ede8'],imported:['#000000','rgba(240,237,232,0.7)']}
                     const [bg,color] = colors[src]||['#000000','rgba(240,237,232,0.7)']
                     const labels = {digicert:'DigiCert',sectigo:'Sectigo',sslcom:'SSL.com',imported:'Manual'}
                     return (
