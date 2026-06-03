@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHand
 import {
   Shield, Plus, RefreshCw, Download, X, Lock, AlertTriangle, CheckCircle,
   Globe, ChevronRight, Copy, Check, Activity, Zap, ArrowRight, Server,
-  FileText, Trash2, ShieldOff, ShieldCheck, Clock, RotateCcw, Share2
+  FileText, Trash2, ShieldOff, ShieldCheck, Clock, RotateCcw, Share2, Timer
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -2708,7 +2708,81 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           </button>
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:24 }}>
+        {/* ── FRESH STAT ROW ── */}
+        {(() => {
+          const pendingDcv = orders.filter(o=>o.status==='dv_pending').length
+          const postureScore = (() => {
+            if (!issuedCerts.length) return 0
+            const installPct  = issuedCerts.filter(c=>c.is_live_on_server).length / issuedCerts.length
+            const healthPct   = healthy / issuedCerts.length
+            const renewPct    = issuedCerts.filter(c=>c.auto_renew_enabled!==false).length / issuedCerts.length
+            return Math.round((installPct*30 + healthPct*40 + renewPct*30))
+          })()
+          const scoreColor = postureScore>=80?'#4ade80':postureScore>=50?'#fbbf24':'#f87171'
+          const scoreLabel = postureScore>=80?'Excellent':postureScore>=50?'At risk':'Critical'
+          const bars = [
+            { label:'Issuance', pct: total>0?100:0, color:'#4ade80' },
+            { label:'Install',  pct: total>0?Math.round((issuedCerts.filter(c=>c.is_live_on_server).length/total)*100):0, color: issuedCerts.filter(c=>c.is_live_on_server).length===total?'#4ade80':'#ff8c7a' },
+            { label:'Auto-renew', pct: total>0?Math.round((issuedCerts.filter(c=>c.auto_renew_enabled!==false).length/total)*100):0, color:'#4ade80' },
+            { label:'Key vault', pct: total>0?Math.round((issuedCerts.filter(c=>c.keylocker_key_id).length/total)*100):0, color:'#4ade80' },
+            { label:'DCV ready', pct: total>0?Math.round((issuedCerts.filter(c=>c.dns_provider_id).length/total)*100):0, color:'#4ade80' },
+          ]
+          return (
+            <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr', gap:10, marginBottom:20 }}>
+              {/* Posture score */}
+              <div style={{ background:'rgba(15,5,5,0.6)', border:'1px solid rgba(192,57,43,0.22)', borderRadius:12, padding:'16px 18px', display:'flex', flexDirection:'column', gap:12 }}>
+                <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
+                  <div>
+                    <div style={{ fontSize:10, fontWeight:600, color:'rgba(240,237,232,0.35)', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:4 }}>Posture score</div>
+                    <div style={{ fontSize:40, fontWeight:700, color:scoreColor, lineHeight:1, marginBottom:3 }}>{postureScore}</div>
+                    <div style={{ fontSize:11, color:scoreColor }}>{scoreLabel} · {total} cert{total!==1?'s':''} · {issuedCerts.filter(c=>c.is_live_on_server).length} live</div>
+                  </div>
+                  <div style={{ textAlign:'right' }}>
+                    <div style={{ fontSize:10, color:'rgba(192,57,43,0.5)', marginBottom:4 }}>CA/B mandate</div>
+                    <div style={{ fontSize:11, color:'#4ade80', fontWeight:500 }}>2026 ready</div>
+                    <div style={{ marginTop:4, fontSize:10, background:'rgba(232,137,122,0.14)', color:'#ff8c7a', padding:'2px 7px', borderRadius:4, display:'inline-block' }}>2027 gap</div>
+                  </div>
+                </div>
+                <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                  {bars.map(b => (
+                    <div key={b.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      <span style={{ fontSize:10, color:'rgba(240,237,232,0.35)', width:72, flexShrink:0 }}>{b.label}</span>
+                      <div style={{ flex:1, height:3, background:'rgba(192,57,43,0.12)', borderRadius:2, overflow:'hidden' }}>
+                        <div style={{ height:'100%', width:`${b.pct}%`, background:b.color, borderRadius:2, transition:'width 0.8s ease' }}/>
+                      </div>
+                      <span style={{ fontSize:10, color:b.pct===100?b.color:'#ff8c7a', width:28, textAlign:'right', flexShrink:0 }}>{b.pct}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Active certs pill */}
+              <div onClick={()=>setFilter('healthy')} style={{ background:'rgba(15,5,5,0.6)', border:`1px solid ${filter==='healthy'?'#4ade80':'rgba(192,57,43,0.22)'}`, borderRadius:12, padding:'16px 18px', cursor:'pointer', transition:'border-color .15s' }}
+                onMouseEnter={e=>e.currentTarget.style.borderColor='#4ade80'} onMouseLeave={e=>e.currentTarget.style.borderColor=filter==='healthy'?'#4ade80':'rgba(192,57,43,0.22)'}>
+                <div style={{ width:32, height:32, borderRadius:8, background:'rgba(74,222,128,0.1)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:10 }}>
+                  <CheckCircle size={16} color="#4ade80"/>
+                </div>
+                <div style={{ fontSize:32, fontWeight:700, color:'#4ade80', lineHeight:1, marginBottom:4 }}>{healthy}</div>
+                <div style={{ fontSize:11, color:'rgba(240,237,232,0.4)' }}>Healthy certs</div>
+                <div style={{ fontSize:10, color:'#4ade80', marginTop:6 }}>↑ All valid</div>
+              </div>
+              {/* Pending install / expiring pill */}
+              <div onClick={()=>setFilter(expiring>0?'expiring':'all')} style={{ background:'rgba(15,5,5,0.6)', border:`1px solid ${expiring>0||pendingDcv>0?'rgba(255,140,122,0.35)':'rgba(192,57,43,0.22)'}`, borderRadius:12, padding:'16px 18px', cursor:'pointer', transition:'border-color .15s' }}
+                onMouseEnter={e=>e.currentTarget.style.borderColor='#ff8c7a'} onMouseLeave={e=>e.currentTarget.style.borderColor=expiring>0||pendingDcv>0?'rgba(255,140,122,0.35)':'rgba(192,57,43,0.22)'}>
+                <div style={{ width:32, height:32, borderRadius:8, background:'rgba(255,140,122,0.1)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:10 }}>
+                  <Clock size={16} color="#ff8c7a"/>
+                </div>
+                <div style={{ fontSize:32, fontWeight:700, color: expiring>0||pendingDcv>0?'#ff8c7a':'rgba(240,237,232,0.4)', lineHeight:1, marginBottom:4 }}>{expiring+pendingDcv}</div>
+                <div style={{ fontSize:11, color:'rgba(240,237,232,0.4)' }}>Need attention</div>
+                <div style={{ fontSize:10, color: expiring>0?'#ff8c7a':pendingDcv>0?'#fbbf24':'rgba(240,237,232,0.3)', marginTop:6 }}>
+                  {expiring>0?`${expiring} expiring soon`:pendingDcv>0?`${pendingDcv} pending DCV`:'None pending'}
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* ── LEGACY STAT CARDS (hidden — data still drives filters) ── */}
+        <div style={{ display:'none', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:24 }}>
           {[
             { label:'Total certificates', value:total,    color:'#ff8c7a', border:'rgba(192,57,43,0.25)',   sub:'managed by SSLVault',  filterKey:'all' },
             { label:'Healthy',            value:healthy,  color:'#4ade80', border:'rgba(63,185,80,0.25)',    sub:healthy>0?'All valid':'No active certs', filterKey:'healthy' },
@@ -2801,8 +2875,182 @@ function LoggedInDashboard({ user, nav, onIssue }) {
 
 
 
-        {/* === WORLD CLASS DASHBOARD ========================================= */}
+        {/* === FRESH DASHBOARD ========================================= */}
         {!loading && certs.length > 0 && (() => {
+          const activeCerts = certs.filter(c => c.status === 'active')
+          const now = new Date()
+          const yearStart = new Date(now.getFullYear(), 0, 1)
+          const yearEnd   = new Date(now.getFullYear(), 11, 31)
+          const yearSpan  = yearEnd - yearStart
+          const todayPct  = (now - yearStart) / yearSpan
+          const tlPct     = iso => iso ? Math.min(Math.max((new Date(iso) - yearStart) / yearSpan, 0), 1) : 0
+          const months    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+          const selCert   = selected ? certs.find(c => c.id === selected) : null
+          const mandateReady = (maxDays) => activeCerts.filter(c => {
+            const d = daysLeft(c.expires_at); return d != null && d <= maxDays
+          }).length
+          return (
+            <>
+              {/* ── CERT CARDS ── */}
+              <div style={{ display:'grid', gridTemplateColumns:`repeat(${Math.min(activeCerts.length+1,4)},1fr)`, gap:10, marginBottom:14 }}>
+                {activeCerts.map(cert => {
+                  const d = daysLeft(cert.expires_at)
+                  const notLive = !cert.is_live_on_server
+                  const isWarn  = d !== null && d < 30 && d >= 0
+                  const isExp   = d !== null && d < 0
+                  const accentColor = notLive ? '#ff8c7a' : isExp ? '#f87171' : isWarn ? '#fbbf24' : '#4ade80'
+                  const isSel = cert.id === selected
+                  return (
+                    <div key={cert.id} onClick={() => setSelected(isSel ? null : cert.id)}
+                      style={{ background:'rgba(15,5,5,0.6)', border:`1px solid ${isSel?accentColor:'rgba(192,57,43,0.22)'}`, borderRadius:12, padding:'14px 16px', cursor:'pointer', position:'relative', overflow:'hidden', transition:'border-color .15s' }}
+                      onMouseEnter={e=>e.currentTarget.style.borderColor=accentColor}
+                      onMouseLeave={e=>e.currentTarget.style.borderColor=isSel?accentColor:'rgba(192,57,43,0.22)'}>
+                      <div style={{ position:'absolute', top:0, left:0, width:3, height:'100%', background:accentColor, borderRadius:'3px 0 0 3px' }}/>
+                      <div style={{ paddingLeft:8 }}>
+                        <div style={{ fontSize:13, fontWeight:600, color:'#ff8c7a', fontFamily:'monospace', marginBottom:2, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</div>
+                        <div style={{ fontSize:10, color:'rgba(240,237,232,0.35)', marginBottom:8 }}>{cert.cert_type||'RapidSSL Standard'} · {cert.install_method==='cpanel'?'cPanel':cert.install_method==='agent'?'Agent':'Direct'}</div>
+                        <div style={{ fontSize:28, fontWeight:700, color:accentColor, lineHeight:1, marginBottom:2 }}>{d==null?'--':Math.max(0,d)}</div>
+                        <div style={{ fontSize:10, color:'rgba(240,237,232,0.4)', marginBottom:8 }}>days · {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '--'}</div>
+                        <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
+                          {cert.auto_renew_enabled!==false && <span style={{ fontSize:9, padding:'2px 6px', borderRadius:4, background:'rgba(74,222,128,0.1)', color:'#4ade80' }}>Auto-renew</span>}
+                          <span style={{ fontSize:9, padding:'2px 6px', borderRadius:4, background: notLive?'rgba(255,140,122,0.12)':isExp?'rgba(248,113,113,0.12)':isWarn?'rgba(251,191,36,0.1)':'rgba(74,222,128,0.07)', color:accentColor }}>
+                            {notLive?'Install pending':isExp?'Expired':isWarn?'Expiring':'Live'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+                {/* Issue new slot */}
+                <div onClick={()=>nav&&nav('/issue-cert')}
+                  style={{ background:'rgba(15,5,5,0.4)', border:'1px dashed rgba(192,57,43,0.3)', borderRadius:12, padding:'14px 16px', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, minHeight:130, transition:'border-color .15s' }}
+                  onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(255,140,122,0.5)'}
+                  onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(192,57,43,0.3)'}>
+                  <Plus size={22} color="rgba(255,140,122,0.4)"/>
+                  <span style={{ fontSize:11, color:'rgba(240,237,232,0.3)' }}>Issue new certificate</span>
+                </div>
+              </div>
+
+              {/* ── SELECTED CERT QUICK STATS ── */}
+              {selCert && (() => {
+                const d = daysLeft(selCert.expires_at)
+                return (
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:1, marginBottom:14, borderRadius:10, overflow:'hidden', border:'1px solid rgba(192,57,43,0.2)', background:'rgba(15,5,5,0.5)' }}>
+                    {[
+                      { lbl:'Domain',     val:selCert.domain,                                                                          col:'#ff8c7a', mono:true },
+                      { lbl:'Expires',    val:selCert.expires_at?new Date(selCert.expires_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'N/A', col:d!=null&&d<=30?'#fbbf24':'#4ade80' },
+                      { lbl:'Server',     val:selCert.is_live_on_server?'Live on server':'Not installed',                              col:selCert.is_live_on_server?'#4ade80':'#f87171' },
+                      { lbl:'Auto-renew', val:selCert.auto_renew_enabled!==false?'Enabled':'Disabled',                                col:selCert.auto_renew_enabled!==false?'#4ade80':'#f87171' },
+                      { lbl:'Key vault',  val:selCert.keylocker_key_id?'Secured':'Not stored',                                        col:selCert.keylocker_key_id?'#4ade80':'#fbbf24' },
+                    ].map(({lbl,val,col,mono},i)=>(
+                      <div key={lbl} style={{ padding:'11px 14px', borderRight:i<4?'1px solid rgba(192,57,43,0.1)':'none' }}>
+                        <div style={{ fontSize:9, fontWeight:600, letterSpacing:'0.06em', textTransform:'uppercase', color:'rgba(240,237,232,0.28)', marginBottom:4 }}>{lbl}</div>
+                        <div style={{ fontSize:12, fontWeight:700, color:col, fontFamily:mono?'monospace':'inherit', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{val}</div>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
+
+              {/* ── MANDATE + TIMELINE ROW ── */}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
+                {/* CA/B Mandate readiness */}
+                <div style={{ background:'rgba(15,5,5,0.6)', border:'1px solid rgba(192,57,43,0.22)', borderRadius:12, padding:'14px 16px' }}>
+                  <div style={{ fontSize:10, fontWeight:600, color:'rgba(240,237,232,0.35)', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:10 }}>CA/B Forum mandate readiness</div>
+                  {[
+                    { year:'Mar 2026', max:200, label:'200d max', ready:activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=200}).length },
+                    { year:'Mar 2027', max:100, label:'100d max', ready:activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=100}).length },
+                    { year:'Mar 2029', max:47,  label:'47d max',  ready:activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=47}).length  },
+                  ].map(m=>{
+                    const pct = activeCerts.length>0?(m.ready/activeCerts.length)*100:0
+                    const col = m.ready===activeCerts.length?'#4ade80':'#ff8c7a'
+                    return (
+                      <div key={m.year} style={{ display:'flex', alignItems:'center', gap:10, padding:'7px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+                        <span style={{ fontSize:11, fontWeight:500, color:'rgba(240,237,232,0.6)', width:64, flexShrink:0 }}>{m.year}</span>
+                        <span style={{ fontSize:12, fontWeight:600, color:col, width:68, flexShrink:0 }}>{m.label}</span>
+                        <div style={{ flex:1, height:3, background:'rgba(192,57,43,0.12)', borderRadius:2, overflow:'hidden' }}>
+                          <div style={{ height:'100%', width:`${pct}%`, background:col, borderRadius:2, transition:'width 0.8s ease' }}/>
+                        </div>
+                        <span style={{ fontSize:10, color:col, width:36, textAlign:'right', flexShrink:0 }}>{m.ready}/{activeCerts.length}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Validity timeline */}
+                <div style={{ background:'rgba(15,5,5,0.6)', border:'1px solid rgba(192,57,43,0.22)', borderRadius:12, padding:'14px 16px' }}>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                    <div style={{ fontSize:10, fontWeight:600, color:'rgba(240,237,232,0.35)', letterSpacing:'0.06em', textTransform:'uppercase' }}>Validity timeline {now.getFullYear()}</div>
+                    <span style={{ fontSize:9, color:'rgba(240,237,232,0.25)' }}>Jun — Dec</span>
+                  </div>
+                  <div style={{ display:'flex', gap:0, marginBottom:8 }}>
+                    {months.map((m,i)=>(
+                      <div key={m} style={{ flex:1, fontSize:8, color:i===now.getMonth()?'#ff8c7a':'rgba(240,237,232,0.2)', textAlign:'center', fontWeight:i===now.getMonth()?600:400 }}>{m.slice(0,1)}</div>
+                    ))}
+                  </div>
+                  {activeCerts.map((cert,i)=>{
+                    const d = daysLeft(cert.expires_at)
+                    const notLive = !cert.is_live_on_server
+                    const col = notLive?'#ff8c7a':d!=null&&d<=0?'#f87171':d!=null&&d<=30?'#fbbf24':'#4ade80'
+                    const issuedP = tlPct(cert.issued_at)
+                    const expiryP = tlPct(cert.expires_at)
+                    const activeW = Math.max(Math.min(todayPct,expiryP)-issuedP,0)
+                    const futureW = Math.max(expiryP-todayPct,0)
+                    const shortName = cert.domain.replace(/^www\./,'').split('.')[0]
+                    return (
+                      <div key={cert.id} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:i<activeCerts.length-1?8:0 }}>
+                        <div style={{ width:70, flexShrink:0, fontSize:11, fontWeight:600, color:'rgba(240,237,232,0.7)', fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{shortName.length>8?shortName.slice(0,7)+'..':shortName}</div>
+                        <div style={{ flex:1, height:6, background:'rgba(192,57,43,0.1)', borderRadius:3, position:'relative', overflow:'hidden' }}>
+                          <div style={{ position:'absolute', left:0, top:0, bottom:0, width:`${issuedP*100}%`, background:'rgba(255,255,255,0.04)' }}/>
+                          <div style={{ position:'absolute', left:`${issuedP*100}%`, top:0, bottom:0, width:`${activeW*100}%`, background:`${col}CC` }}/>
+                          <div style={{ position:'absolute', left:`${Math.min(todayPct,expiryP)*100}%`, top:0, bottom:0, width:`${futureW*100}%`, background:`${col}33` }}/>
+                          <div style={{ position:'absolute', top:0, bottom:0, left:`${todayPct*100}%`, width:1.5, background:'rgba(255,140,122,0.7)' }}/>
+                        </div>
+                        <div style={{ width:36, textAlign:'right', fontSize:11, fontWeight:700, fontFamily:'monospace', color:col, flexShrink:0 }}>{d==null?'--':d<=0?'EXP':`${d}d`}</div>
+                        <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:99, width:50, textAlign:'center', flexShrink:0, background:notLive?'rgba(255,140,122,0.1)':'rgba(74,222,128,0.07)', color:notLive?'#ff8c7a':'#4ade80', border:`1px solid ${notLive?'rgba(255,140,122,0.2)':'rgba(74,222,128,0.18)'}` }}>
+                          {notLive?'INSTALL':'LIVE'}
+                        </span>
+                      </div>
+                    )
+                  })}
+                  <div style={{ marginTop:10, display:'flex', gap:12 }}>
+                    {[['rgba(74,222,128,0.75)','valid'],['rgba(255,140,122,0.6)','today']].map(([bg,lbl])=>(
+                      <span key={lbl} style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'rgba(240,237,232,0.25)' }}>
+                        <span style={{ width:lbl==='today'?1.5:14, height:lbl==='today'?10:4, background:bg, display:'inline-block', borderRadius:lbl==='today'?1:2 }}/>
+                        {lbl}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* ── ACTIVITY ROW ── */}
+              {recentEvents.length > 0 && (
+                <div style={{ display:'grid', gridTemplateColumns:`repeat(${Math.min(recentEvents.length,4)},1fr)`, gap:8, marginBottom:14 }}>
+                  {recentEvents.slice(0,4).map(ev=>{
+                    const secs = Math.floor((Date.now()-new Date(ev.created_at))/1000)
+                    const ago  = secs<60?`${secs}s`:secs<3600?`${Math.floor(secs/60)}m`:secs<86400?`${Math.floor(secs/3600)}h`:`${Math.floor(secs/86400)}d`
+                    const col  = ev.event_type==='issued'?'#4ade80':ev.event_type==='revoked'?'#f87171':'#ff8c7a'
+                    return (
+                      <div key={ev.id} style={{ background:'rgba(15,5,5,0.5)', border:'1px solid rgba(192,57,43,0.18)', borderRadius:10, padding:'10px 12px' }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:4 }}>
+                          <div style={{ width:5, height:5, borderRadius:'50%', background:col, flexShrink:0 }}/>
+                          <span style={{ fontSize:11, fontWeight:600, color:'#ff8c7a', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{ev.event_type.replace(/_/g,' ')}</span>
+                        </div>
+                        <div style={{ fontSize:10, color:'rgba(240,237,232,0.35)', fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{ev.domain}</div>
+                        <div style={{ fontSize:9, color:'rgba(240,237,232,0.2)', marginTop:4 }}>{ago} ago</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </>
+          )
+        })()}
+        {/* === END FRESH DASHBOARD ===================================== */}
+
+        {/* === OLD WORLD CLASS DASHBOARD (removed) ========================================= */}
+        {false && !loading && certs.length > 0 && (() => {
           const activeCerts = certs.filter(c => c.status === 'active')
           const allHealthy  = activeCerts.every(c => {
             const d = daysLeft(c.expires_at)
@@ -3204,7 +3452,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             </>
           )
         })()}
-        {/* === END WORLD CLASS DASHBOARD ===================================== */}
+        {/* === END OLD WORLD CLASS DASHBOARD ===================================== */}
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:16, alignItems:'start' }}>
           <div style={{ background:'transparent', border:'1px solid rgba(192,57,43,0.2)', borderRadius:8,
