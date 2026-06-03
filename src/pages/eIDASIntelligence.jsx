@@ -105,8 +105,8 @@ export default function eIDASIntelligence({ nav }) {
             <p className="eid-p">eIDAS defines six categories of qualified trust service — each with specific legal standing across the EU.</p>
             {TRUST_SERVICES.map(ts => (
               <div key={ts.name} className="ts-card">
-                <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginBottom:6 }}>{ts.name}</div>
-                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{ts.desc}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:6 }}>{ts.name}</div>
+                <div style={{ fontSize:12, color:'#333333', lineHeight:1.7 }}>{ts.desc}</div>
               </div>
             ))}
           </>
@@ -117,17 +117,17 @@ export default function eIDASIntelligence({ nav }) {
             <p className="eid-p">eIDAS 2.0 (Regulation 2024/1183) is not a minor update — it fundamentally expands the scope of EU digital trust law.</p>
             <div className="cmp-grid">
               <div className="cmp-card">
-                <div style={{ fontFamily:MONO, fontSize:10, fontWeight:700, color:'#b0a8a0', marginBottom:8 }}>eIDAS (910/2014)</div>
+                <div style={{ fontFamily:MONO, fontSize:10, fontWeight:700, color:'#888888', marginBottom:8 }}>eIDAS (910/2014)</div>
                 {['Qualified electronic signatures legally binding EU-wide','Qualified Trust Service Providers (QTSPs) regulated','EU Trusted Lists — machine-readable QTSP registries','QWAC certificates for website authentication (voluntary)','No digital identity wallet mandate','CAs could choose whether to pursue QTSP status'].map(p=>(
-                  <div key={p} style={{ display:'flex', gap:8, padding:'6px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:12, color:'#e8e0d8' }}>
-                    <span style={{ color:'#b0a8a0', flexShrink:0 }}>·</span>{p}
+                  <div key={p} style={{ display:'flex', gap:8, padding:'6px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:12, color:'#333333' }}>
+                    <span style={{ color:'#888888', flexShrink:0 }}>·</span>{p}
                   </div>
                 ))}
               </div>
               <div className="cmp-card" style={{ borderColor:'var(--v2-green-border)', background:'var(--v2-green-bg)' }}>
                 <div style={{ fontFamily:MONO, fontSize:10, fontWeight:700, color:'var(--v2-green-text)', marginBottom:8 }}>eIDAS 2.0 (2024/1183)</div>
                 {['All eIDAS 1.0 provisions retained and strengthened','EU Digital Identity Wallet — free, mandatory, every member state','Browsers legally required to trust QWAC certificates','Electronic attestation of attributes (verifiable credentials)','Remote qualified signing for mobile-first workflows','PQC migration planning provisions included'].map(p=>(
-                  <div key={p} style={{ display:'flex', gap:8, padding:'6px 0', borderBottom:'0.5px solid var(--v2-green-border)', fontSize:12, color:'#ffffff' }}>
+                  <div key={p} style={{ display:'flex', gap:8, padding:'6px 0', borderBottom:'0.5px solid var(--v2-green-border)', fontSize:12, color:'#111111' }}>
                     <span style={{ color:'var(--v2-green-text)', flexShrink:0 }}>+</span>{p}
                   </div>
                 ))}
@@ -151,8 +151,8 @@ export default function eIDASIntelligence({ nav }) {
                   {i < TIMELINE.length-1 && <div className="tl-line"/>}
                 </div>
                 <div style={{ flex:1, paddingBottom:8 }}>
-                  <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
-                  <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.65 }}>{e.desc}</div>
+                  <div style={{ fontSize:13, fontWeight:500, color:'#111111', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
+                  <div style={{ fontSize:12, color:'#333333', lineHeight:1.65 }}>{e.desc}</div>
                 </div>
               </div>
             ))}
@@ -170,8 +170,8 @@ export default function eIDASIntelligence({ nav }) {
             ].map(init => (
               <div key={init.title} className="ts-card">
                 <span className={`v2-chip ${init.status==='Active'?'chip-blue':'chip-amber'}`} style={{ fontSize:9 }}>{init.status}</span>
-                <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginTop:6, marginBottom:6 }}>{init.title}</div>
-                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{init.desc}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginTop:6, marginBottom:6 }}>{init.title}</div>
+                <div style={{ fontSize:12, color:'#333333', lineHeight:1.7 }}>{init.desc}</div>
               </div>
             ))}
           </>
@@ -188,8 +188,8 @@ export default function eIDASIntelligence({ nav }) {
             ].map(l => (
               <div key={l.label} className="link-row">
                 <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:500, color:'#ffffff', fontSize:13 }}>{l.label}</div>
-                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{l.desc}</div>
+                  <div style={{ fontWeight:500, color:'#111111', fontSize:13 }}>{l.label}</div>
+                  <div style={{ fontSize:11, color:'#888888', marginTop:2 }}>{l.desc}</div>
                 </div>
                 <a href={l.url} target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ gap:4, textDecoration:'none', flexShrink:0 }}>
                   <ExternalLink size={11}/> Visit ↗

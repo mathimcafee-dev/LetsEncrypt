@@ -132,8 +132,8 @@ export default function CSCIntelligence({ nav }) {
             <div className="v2-card v2-card-pad">
               {API_ENDPOINTS.map(ep => (
                 <div key={ep.endpoint} className="ep-row">
-                  <span style={{ fontFamily:MONO, fontSize:11, fontWeight:700, color:'#e8e0d8', minWidth:200, flexShrink:0 }}>{ep.endpoint}</span>
-                  <span style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.6 }}>{ep.desc}</span>
+                  <span style={{ fontFamily:MONO, fontSize:11, fontWeight:700, color:'#333333', minWidth:200, flexShrink:0 }}>{ep.endpoint}</span>
+                  <span style={{ fontSize:12, color:'#333333', lineHeight:1.6 }}>{ep.desc}</span>
                 </div>
               ))}
             </div>
@@ -145,8 +145,8 @@ export default function CSCIntelligence({ nav }) {
             <p className="csc-p">The CSC API is implemented by virtually every major cloud signing platform and European QTSP.</p>
             {ADOPTERS.map(a => (
               <div key={a.name} className="adopter-card">
-                <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginBottom:5 }}>{a.name}</div>
-                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{a.desc}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:5 }}>{a.name}</div>
+                <div style={{ fontSize:12, color:'#333333', lineHeight:1.7 }}>{a.desc}</div>
               </div>
             ))}
           </>
@@ -163,8 +163,8 @@ export default function CSCIntelligence({ nav }) {
                   {i < TIMELINE.length-1 && <div className="tl-line"/>}
                 </div>
                 <div style={{ flex:1, paddingBottom:8 }}>
-                  <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
-                  <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.65 }}>{e.desc}</div>
+                  <div style={{ fontSize:13, fontWeight:500, color:'#111111', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
+                  <div style={{ fontSize:12, color:'#333333', lineHeight:1.65 }}>{e.desc}</div>
                 </div>
               </div>
             ))}
@@ -182,8 +182,8 @@ export default function CSCIntelligence({ nav }) {
             ].map(init => (
               <div key={init.title} className="adopter-card">
                 <span className={`v2-chip ${init.status==='Active'?'chip-blue':'chip-amber'}`} style={{ fontSize:9 }}>{init.status}</span>
-                <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginTop:6, marginBottom:6 }}>{init.title}</div>
-                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{init.desc}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginTop:6, marginBottom:6 }}>{init.title}</div>
+                <div style={{ fontSize:12, color:'#333333', lineHeight:1.7 }}>{init.desc}</div>
               </div>
             ))}
           </>
@@ -199,8 +199,8 @@ export default function CSCIntelligence({ nav }) {
             ].map(l => (
               <div key={l.label} className="link-row">
                 <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:500, color:'#ffffff', fontSize:13 }}>{l.label}</div>
-                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{l.desc}</div>
+                  <div style={{ fontWeight:500, color:'#111111', fontSize:13 }}>{l.label}</div>
+                  <div style={{ fontSize:11, color:'#888888', marginTop:2 }}>{l.desc}</div>
                 </div>
                 <a href={l.url} target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ gap:4, textDecoration:'none', flexShrink:0 }}>
                   <ExternalLink size={11}/> Visit ↗

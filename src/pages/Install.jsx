@@ -8,13 +8,13 @@ const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 const C = {
   bg:'#f7f5f0', bg2:'#1a0404', bg3:'#220808',
   border:'rgba(0,0,0,0.08)', border2:'rgba(31,92,78,0.25)',
-  heading:'#f0ede8', body:'rgba(240,237,232,0.65)', muted:'rgba(240,237,232,0.35)',
-  teal:'#4ade80', tealDk:'#4ade80', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(22,160,104,0.22)',
-  green:'#4ade80', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(22,160,104,0.22)',
+  heading:'#111111', body:'rgba(240,237,232,0.65)', muted:'rgba(240,237,232,0.35)',
+  teal:'#16a068', tealDk:'#16a068', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(22,160,104,0.22)',
+  green:'#16a068', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(22,160,104,0.22)',
   purple:'#a78bfa', purpleBg:'rgba(167,139,250,0.06)',
-  amber:'#fbbf24', amberBg:'rgba(251,191,36,0.06)',
-  red:'#f87171', redBg:'rgba(31,92,78,0.09)',
-  ink:'#f0ede8',
+  amber:'#9a6400', amberBg:'rgba(251,191,36,0.06)',
+  red:'#1f5c4e', redBg:'rgba(31,92,78,0.09)',
+  ink:'#111111',
 }
 
 function Code({ code, lang = 'bash' }) {
@@ -24,8 +24,8 @@ function Code({ code, lang = 'bash' }) {
     setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   return (
-    <div style={{ background:'#0d0000', border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
-      <div style={{ background:'rgba(255,255,255,0.03)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
+    <div style={{ background:'#f4f1ec', border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
+      <div style={{ background:'rgba(0,0,0,0.02)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
         <div style={{ display:'flex', gap:5, alignItems:'center' }}>
           {['#1f5c4e','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
           <span style={{ fontSize:10, color:'#6b6b6b', marginLeft:8 }}>{lang}</span>
@@ -91,7 +91,7 @@ function GuideCard({ icon, title, badge, badgeColor, time, difficulty, children,
 
 const GUIDES = [
   { id:'vps',    icon:'🤖', title:'VPS / Linux server',    badge:'Agent',   badgeColor:C.green,   time:'5 min',   difficulty:'Easy'   },
-  { id:'cpanel', icon:'🏛', title:'cPanel shared hosting', badge:'cPanel',  badgeColor:'#f0ede8', time:'3 min',   difficulty:'Easy'   },
+  { id:'cpanel', icon:'🏛', title:'cPanel shared hosting', badge:'cPanel',  badgeColor:'#111111', time:'3 min',   difficulty:'Easy'   },
   { id:'nginx',  icon:'⚡', title:'Nginx manual install',  badge:'Manual',  badgeColor:C.amber,   time:'10 min',  difficulty:'Medium' },
   { id:'apache', icon:'🔥', title:'Apache manual install', badge:'Manual',  badgeColor:C.amber,   time:'10 min',  difficulty:'Medium' },
 ]

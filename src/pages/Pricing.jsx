@@ -8,13 +8,13 @@ const CARD2= '#220808'
 const TEAL = '#1f5c4e'
 const TEALH= '#1f5c4e'
 const CORAL= '#1f5c4e'
-const INK = '#f0ede8'
+const INK = '#111111'
 const BODY = 'rgba(232,245,244,0.65)'
 const MUTED= 'rgba(232,245,244,0.35)'
 const LINE = 'rgba(0,0,0,0.08)'
 const LINE2= 'rgba(0,0,0,0.08)'
-const GREEN= '#4ade80'
-const AMBER= '#fbbf24'
+const GREEN= '#16a068'
+const AMBER= '#9a6400'
 
 function Tick({ color=TEAL }) {
   return (
@@ -241,11 +241,11 @@ export default function Pricing({ nav }) {
                 style={{width:'100%',padding:'13px',borderRadius:8,
                   border:`1px solid ${plan.color}`,
                   background: plan.highlight ? plan.color : 'transparent',
-                  color: plan.highlight ? '#f0ede8' : plan.color,
+                  color: plan.highlight ? '#ffffff' : plan.color,
                   fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:F,
                   marginBottom:26,transition:'all .15s'}}
-                onMouseEnter={e=>{e.currentTarget.style.background=plan.color;e.currentTarget.style.color='#f0ede8'}}
-                onMouseLeave={e=>{e.currentTarget.style.background=plan.highlight?plan.color:'transparent';e.currentTarget.style.color=plan.highlight?'#f0ede8':plan.color}}>
+                onMouseEnter={e=>{e.currentTarget.style.background=plan.color;e.currentTarget.style.color='#ffffff'}}
+                onMouseLeave={e=>{e.currentTarget.style.background=plan.highlight?plan.color:'transparent';e.currentTarget.style.color=plan.highlight?'#ffffff':plan.color}}>
                 {plan.cta} →
               </button>
 

@@ -5,13 +5,13 @@ import { Shield, CheckCircle, XCircle, AlertTriangle, RefreshCw, ExternalLink } 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 function gradeStyle(grade) {
-  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)' }
-  if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)' }
+  if (!grade || grade === 'F') return { color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)' }
+  if (grade === 'D') return { color: '#111111', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)' }
   if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)', border: 'rgba(230,126,34,0.2)' }
-  if (grade === 'B') return { color: '#ffffff', bg: 'transparent', border: 'rgba(31,92,78,0.2)' }
+  if (grade === 'B') return { color: '#111111', bg: 'transparent', border: 'rgba(31,92,78,0.2)' }
   if (grade === 'A') return { color: '#16a068', bg: 'transparent', border: 'rgba(31,92,78,0.2)' }
-  if (grade === 'A+') return { color: '#ffffff', bg: 'transparent', border: '#1f5c4e' }
-  return { color: '#e8e0d8', bg: '#000000', border: '#f0ede8' }
+  if (grade === 'A+') return { color: '#111111', bg: 'transparent', border: '#1f5c4e' }
+  return { color: '#333333', bg: '#000000', border: '#111111' }
 }
 
 function timeAgo(iso) {
@@ -56,7 +56,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
   const allHealthy = scores.length > 0 && scores.every(s => s.cert_valid && (s.expiry_days == null || s.expiry_days > 30))
   const hasIssues  = scores.some(s => !s.cert_valid || (s.expiry_days != null && s.expiry_days <= 30))
 
-  const overallColor  = allHealthy ? '#4ade80' : hasIssues ? '#f87171' : '#f0ede8'
+  const overallColor  = allHealthy ? '#16a068' : hasIssues ? '#1f5c4e' : '#111111'
   const overallBg     = allHealthy ? 'transparent'  : hasIssues ? 'rgba(31,92,78,0.09)' : 'rgba(239,68,68,0.08)'
   const overallLabel  = allHealthy ? 'All systems operational' : hasIssues ? 'Issues detected' : 'Monitoring'
   const OverallIcon   = allHealthy ? CheckCircle : hasIssues ? XCircle : AlertTriangle
@@ -64,32 +64,32 @@ export default function PublicStatus({ username: propUsername, nav }) {
   return (
     <div style={{ minHeight: '100vh', background: 'transparent' }}>
       {/* Nav */}
-      <div style={{ background:'#0d0000', borderBottom: '0.5px solid rgba(0,0,0,0.08)',
+      <div style={{ background:'#f4f1ec', borderBottom: '0.5px solid rgba(0,0,0,0.08)',
         padding: '0 24px', height: 52, display: 'flex', alignItems: 'center',
         justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
           <Shield size={18} color="#1f5c4e" />
-          <span style={{ fontSize:14, fontWeight: 600, color: '#ffffff' }}>SSLVault</span>
+          <span style={{ fontSize:14, fontWeight: 600, color: '#111111' }}>SSLVault</span>
         </div>
-        <span style={{ fontSize:11, color: '#b0a8a0' }}>
+        <span style={{ fontSize:11, color: '#888888' }}>
           Powered by <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
-            style={{ color: '#ffffff', textDecoration: 'none' }}>easysecurity.in</a>
+            style={{ color: '#111111', textDecoration: 'none' }}>easysecurity.in</a>
         </span>
       </div>
 
       <div style={{ maxWidth: 680, margin: '0 auto', padding:'min(40px,5vw) min(24px,4vw)' }}>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: '#b0a8a0' }}>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: '#888888' }}>
             <RefreshCw size={24} style={{ animation: 'spin .8s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             Loading status…
           </div>
         ) : error ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <XCircle size={32} style={{ color: '#f87171', margin: '0 auto 12px', display: 'block' }} />
-            <div style={{ fontSize:15, fontWeight: 500, color: '#ffffff', marginBottom: 6 }}>{error}</div>
-            <div style={{ fontSize:13, color: '#b0a8a0' }}>This status page may not be public or doesn't exist.</div>
+            <XCircle size={32} style={{ color: '#1f5c4e', margin: '0 auto 12px', display: 'block' }} />
+            <div style={{ fontSize:15, fontWeight: 500, color: '#111111', marginBottom: 6 }}>{error}</div>
+            <div style={{ fontSize:13, color: '#888888' }}>This status page may not be public or doesn't exist.</div>
           </div>
         ) : (
           <>
@@ -101,10 +101,10 @@ export default function PublicStatus({ username: propUsername, nav }) {
                   <Shield size={20} color="#16a34a" />
                 </div>
                 <div>
-                  <div style={{ fontSize:18, fontWeight: 600, color: '#ffffff' }}>
+                  <div style={{ fontSize:18, fontWeight: 600, color: '#111111' }}>
                     {data?.display_name || username}
                   </div>
-                  <div style={{ fontSize:12, color: '#b0a8a0' }}>SSL status page</div>
+                  <div style={{ fontSize:12, color: '#888888' }}>SSL status page</div>
                 </div>
               </div>
 
@@ -118,7 +118,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
                     {scores.length} domain{scores.length !== 1 ? 's' : ''} monitored
                   </div>
                 </div>
-                <div style={{ marginLeft: 'auto', fontSize:11, color: '#b0a8a0' }}>
+                <div style={{ marginLeft: 'auto', fontSize:11, color: '#888888' }}>
                   Updated {scores.length > 0 ? timeAgo(scores[0].scanned_at) : '—'}
                 </div>
               </div>
@@ -126,7 +126,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
 
             {/* Domain list */}
             {scores.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '32px 0', fontSize:13, color: '#b0a8a0' }}>
+              <div style={{ textAlign: 'center', padding: '32px 0', fontSize:13, color: '#888888' }}>
                 No public domains to display.
               </div>
             ) : (
@@ -135,37 +135,37 @@ export default function PublicStatus({ username: propUsername, nav }) {
                   const gs = gradeStyle(s.grade)
                   const domainHealthy = s.cert_valid && (s.expiry_days == null || s.expiry_days > 30)
                   return (
-                    <div key={s.domain} style={{ background:'#0d0000', border: `0.5px solid ${gs.border}`,
+                    <div key={s.domain} style={{ background:'#f4f1ec', border: `0.5px solid ${gs.border}`,
                       borderRadius: 10, padding: '14px 16px',
                       display: 'flex', alignItems: 'center', gap: 14 }}>
 
                       {/* Status dot */}
                       <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
-                        background: domainHealthy ? '#4ade80' : s.expiry_days != null && s.expiry_days <= 7 ? '#f87171' : '#f0ede8',
+                        background: domainHealthy ? '#16a068' : s.expiry_days != null && s.expiry_days <= 7 ? '#1f5c4e' : '#111111',
                         boxShadow: domainHealthy ? '0 0 0 3px rgba(22,163,74,0.15)' : 'none' }} />
 
                       {/* Domain */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff',
+                        <div style={{ fontSize:13, fontWeight: 500, color: '#111111',
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           display: 'flex', alignItems: 'center', gap: 6 }}>
                           {s.domain}
                           <a href={`https://${s.domain}`} target="_blank" rel="noreferrer"
-                            style={{ color: '#b0a8a0', display: 'flex' }}
+                            style={{ color: '#888888', display: 'flex' }}
                             onClick={e => e.stopPropagation()}>
                             <ExternalLink size={11} />
                           </a>
                         </div>
                         <div style={{ display: 'flex', gap: 12, marginTop: 3 }}>
-                          <span style={{ fontSize:11, color: s.hsts ? '#4ade80' : '#f87171' }}>
+                          <span style={{ fontSize:11, color: s.hsts ? '#16a068' : '#1f5c4e' }}>
                             {s.hsts ? '✓' : '✗'} HSTS
                           </span>
-                          <span style={{ fontSize:11, color: s.caa ? '#4ade80' : '#f87171' }}>
+                          <span style={{ fontSize:11, color: s.caa ? '#16a068' : '#1f5c4e' }}>
                             {s.caa ? '✓' : '✗'} CAA
                           </span>
                           {s.expiry_days != null && (
                             <span style={{ fontSize:11, fontWeight: 500,
-                              color: s.expiry_days <= 7 ? '#f87171' : s.expiry_days <= 30 ? '#f0ede8' : '#4ade80' }}>
+                              color: s.expiry_days <= 7 ? '#1f5c4e' : s.expiry_days <= 30 ? '#111111' : '#16a068' }}>
                               {s.expiry_days <= 0 ? 'Expired' : `${s.expiry_days}d until expiry`}
                             </span>
                           )}
@@ -189,7 +189,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
             {/* Footer */}
             <div style={{ textAlign: 'center', marginTop: 32 }}>
               <a href="https://easysecurity.in" target="_blank" rel="noreferrer"
-                style={{ fontSize:12, color: '#b0a8a0', textDecoration: 'none',
+                style={{ fontSize:12, color: '#888888', textDecoration: 'none',
                   display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                 <Shield size={12} color="#1f5c4e" />
                 Secured & monitored by SSLVault · easysecurity.in

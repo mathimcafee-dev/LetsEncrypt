@@ -29,20 +29,20 @@ function timeAgo(iso) {
 
 // Grade colour map
 function gradeStyle(grade) {
-  if (!grade || grade === 'F') return { color: '#f87171', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)' }
-  if (grade === 'D') return { color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)' }
+  if (!grade || grade === 'F') return { color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)' }
+  if (grade === 'D') return { color: '#111111', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)' }
   if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)', border: 'rgba(230,126,34,0.2)' }
-  if (grade === 'B') return { color: '#ffffff', bg: 'transparent', border: 'rgba(31,92,78,0.2)' }
+  if (grade === 'B') return { color: '#111111', bg: 'transparent', border: 'rgba(31,92,78,0.2)' }
   if (grade === 'A') return { color: '#16a068', bg: 'transparent', border: 'rgba(31,92,78,0.2)' }
-  if (grade === 'A+') return { color: '#ffffff', bg: 'transparent', border: '#1f5c4e' }
-  return { color: '#e8e0d8', bg: '#000000', border: '#f0ede8' }
+  if (grade === 'A+') return { color: '#111111', bg: 'transparent', border: '#1f5c4e' }
+  return { color: '#333333', bg: '#000000', border: '#111111' }
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
-  const color = pct >= 80 ? '#4ade80' : pct >= 60 ? '#f0ede8' : pct >= 50 ? '#f0ede8' : '#f87171'
+  const color = pct >= 80 ? '#16a068' : pct >= 60 ? '#111111' : pct >= 50 ? '#111111' : '#1f5c4e'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{ flex: 1, height: 4, background: 'var(--v2-border)', borderRadius: 2, overflow: 'hidden' }}>
@@ -61,7 +61,7 @@ function Check({ ok, label }) {
       {ok
         ? <CheckCircle size={11} color="#16a34a" />
         : <XCircle size={11} color="#1f5c4e" />}
-      <span style={{ fontSize:11, color: ok ? '#4ade80' : '#f87171' }}>{label}</span>
+      <span style={{ fontSize:11, color: ok ? '#16a068' : '#1f5c4e' }}>{label}</span>
     </div>
   )
 }
@@ -74,7 +74,7 @@ function DomainRow({ score, onRescan, scanning }) {
     <div style={{ border: `0.5px solid ${gs.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 8 }}>
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
-        background:'rgba(255,255,255,0.03)', cursor: 'pointer' }}
+        background:'rgba(0,0,0,0.02)', cursor: 'pointer' }}
         onClick={() => setExpanded(v => !v)}>
 
         {/* Grade badge */}
@@ -88,13 +88,13 @@ function DomainRow({ score, onRescan, scanning }) {
         {/* Domain + score bar */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-            <span style={{ fontSize:13, fontWeight: 500, color: '#ffffff',
+            <span style={{ fontSize:13, fontWeight: 500, color: '#111111',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {score.domain}
             </span>
             {!score.cert_valid && (
               <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
-                background: 'rgba(31,92,78,0.09)', color: '#f87171' }}>UNREACHABLE</span>
+                background: 'rgba(31,92,78,0.09)', color: '#1f5c4e' }}>UNREACHABLE</span>
             )}
           </div>
           <ScoreBar score={score.score} />
@@ -107,7 +107,7 @@ function DomainRow({ score, onRescan, scanning }) {
           <Check ok={score.cert_valid} label="TLS" />
           {score.expiry_days != null && (
             <span style={{ fontSize:11, fontWeight: 500,
-              color: score.expiry_days <= 7 ? '#f87171' : score.expiry_days <= 30 ? '#f0ede8' : '#4ade80' }}>
+              color: score.expiry_days <= 7 ? '#1f5c4e' : score.expiry_days <= 30 ? '#111111' : '#16a068' }}>
               {score.expiry_days <= 0 ? 'Expired' : `${score.expiry_days}d`}
             </span>
           )}
@@ -122,7 +122,7 @@ function DomainRow({ score, onRescan, scanning }) {
             Rescan
           </button>
         </div>
-        <div style={{ color: '#b0a8a0' }}>
+        <div style={{ color: '#888888' }}>
           {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </div>
       </div>
@@ -142,14 +142,14 @@ function DomainRow({ score, onRescan, scanning }) {
             { label: 'Last scanned',  val: timeAgo(score.scanned_at) },
           ].map(({ label, val }) => (
             <div key={label}>
-              <div style={{ fontSize:10, color: '#b0a8a0', marginBottom: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{label}</div>
-              <div style={{ fontSize:12, color: '#ffffff', fontWeight: 500 }}>{val}</div>
+              <div style={{ fontSize:10, color: '#888888', marginBottom: 2, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{label}</div>
+              <div style={{ fontSize:12, color: '#111111', fontWeight: 500 }}>{val}</div>
             </div>
           ))}
           {score.error && (
             <div style={{ gridColumn: '1/-1' }}>
-              <div style={{ fontSize:10, color: '#f87171', fontWeight: 500, marginBottom: 2 }}>Error</div>
-              <div style={{ fontSize:11, color: '#f87171', fontFamily: 'monospace' }}>{score.error}</div>
+              <div style={{ fontSize:10, color: '#1f5c4e', fontWeight: 500, marginBottom: 2 }}>Error</div>
+              <div style={{ fontSize:11, color: '#1f5c4e', fontFamily: 'monospace' }}>{score.error}</div>
             </div>
           )}
         </div>
@@ -219,7 +219,7 @@ export default function SSLHealthScore({ user }) {
           marginBottom: 20, paddingTop: 8, gap: 12 }}>
           <div>
             <h1 className="v2-h1" style={{ fontSize:22 }}>SSL health score</h1>
-            <p style={{ fontSize:13, color: '#b0a8a0', marginTop: 4 }}>
+            <p style={{ fontSize:13, color: '#888888', marginTop: 4 }}>
               Grade A–F across TLS reachability, HSTS, CAA records and expiry
             </p>
           </div>
@@ -234,14 +234,14 @@ export default function SSLHealthScore({ user }) {
         {scores.length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
             {[
-              { label: 'Domains', val: scores.length, color: '#ffffff' },
-              { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#4ade80' : avgScore >= 60 ? '#f0ede8' : '#f87171' },
+              { label: 'Domains', val: scores.length, color: '#111111' },
+              { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#16a068' : avgScore >= 60 ? '#111111' : '#1f5c4e' },
               { label: 'A / A+', val: (gradeCount['A'] || 0) + (gradeCount['A+'] || 0), color: '#16a068' },
-              { label: 'Need attention', val: issues.length, color: issues.length > 0 ? '#f87171' : '#4ade80' },
+              { label: 'Need attention', val: issues.length, color: issues.length > 0 ? '#1f5c4e' : '#16a068' },
             ].map(({ label, val, color }) => (
               <div key={label} className="v2-card" style={{ padding: '12px 14px' }}>
                 <div style={{ fontSize:24, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
-                <div style={{ fontSize:11, color: '#b0a8a0', marginTop: 3 }}>{label}</div>
+                <div style={{ fontSize:11, color: '#888888', marginTop: 3 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -266,22 +266,22 @@ export default function SSLHealthScore({ user }) {
                 : <><Plus size={10} /> Scan domain</>}
             </button>
           </div>
-          {addError && <div style={{ fontSize:11, color: '#f87171', marginTop: 6 }}>{addError}</div>}
+          {addError && <div style={{ fontSize:11, color: '#1f5c4e', marginTop: 6 }}>{addError}</div>}
         </div>
 
         {/* Domain list */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: '#b0a8a0' }}>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: '#888888' }}>
             <RefreshCw size={24} style={{ animation: 'spin .8s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             Loading scores…
           </div>
         ) : scores.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 0' }}>
-            <Trophy size={32} style={{ color: '#b0a8a0', margin: '0 auto 12px', display: 'block' }} />
-            <div style={{ fontSize:14, fontWeight: 500, color: '#e8e0d8', marginBottom: 6 }}>
+            <Trophy size={32} style={{ color: '#888888', margin: '0 auto 12px', display: 'block' }} />
+            <div style={{ fontSize:14, fontWeight: 500, color: '#333333', marginBottom: 6 }}>
               No domains scanned yet
             </div>
-            <div style={{ fontSize:12, color: '#b0a8a0' }}>
+            <div style={{ fontSize:12, color: '#888888' }}>
               Enter a domain above to get your first SSL health grade.
             </div>
           </div>
@@ -290,7 +290,7 @@ export default function SSLHealthScore({ user }) {
             {scores.map(s => (
               <DomainRow key={s.id} score={s} onRescan={rescan} scanning={scanning} />
             ))}
-            <div style={{ fontSize:11, color: '#b0a8a0', textAlign: 'center', marginTop: 8 }}>
+            <div style={{ fontSize:11, color: '#888888', textAlign: 'center', marginTop: 8 }}>
               Grading: A+ (90–100) · A (80–89) · B (70–79) · C (60–69) · D (50–59) · F (&lt;50)
             </div>
           </div>

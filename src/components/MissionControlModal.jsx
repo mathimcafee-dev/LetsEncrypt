@@ -41,7 +41,7 @@ function StepRow({ step, index, isLast }) {
   const isSkipped = status === 'skipped'
   const isPending = status === 'pending'
 
-  const lineColor = isDone ? '#22c55e' : isActive ? '#1f5c4e' : 'rgba(0,0,0,0.06)'
+  const lineColor = isDone ? '#16a068' : isActive ? '#1f5c4e' : 'rgba(0,0,0,0.06)'
 
   return (
     <div style={{ display: 'flex', gap: 0, position: 'relative' }}>
@@ -69,7 +69,7 @@ function StepRow({ step, index, isLast }) {
         }}>
           {isActive  ? <Spinner size={14}/> :
            isDone    ? <span style={{ fontSize: 13 }}>✓</span> :
-           isError   ? <span style={{ fontSize: 13, color: '#f87171' }}>✗</span> :
+           isError   ? <span style={{ fontSize: 13, color: '#1f5c4e' }}>✗</span> :
            isSkipped ? <span style={{ fontSize: 12 }}>⏸</span> :
                        <span style={{ opacity: 0.35, fontSize: 13 }}>{meta.icon}</span>}
         </div>
@@ -93,11 +93,11 @@ function StepRow({ step, index, isLast }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
-            color: isDone    ? '#22c55e'
+            color: isDone    ? '#16a068'
                  : isActive  ? '#1f5c4e'
-                 : isError   ? '#f87171'
-                 : isSkipped ? '#fbbf24'
-                 : 'rgba(255,255,255,0.2)',
+                 : isError   ? '#1f5c4e'
+                 : isSkipped ? '#9a6400'
+                 : 'rgba(0,0,0,0.09)',
             fontFamily: 'monospace',
             transition: 'color 0.4s',
           }}>{meta.phase}</span>
@@ -114,8 +114,8 @@ function StepRow({ step, index, isLast }) {
           fontSize: 13, fontWeight: isActive || isDone ? 600 : 400,
           color: isDone    ? '#ffffff'
                : isActive  ? '#ffffff'
-               : isError   ? '#f87171'
-               : isSkipped ? '#fbbf24'
+               : isError   ? '#1f5c4e'
+               : isSkipped ? '#9a6400'
                : 'rgba(255,255,255,0.3)',
           lineHeight: 1.3,
           transition: 'color 0.4s',
@@ -127,7 +127,7 @@ function StepRow({ step, index, isLast }) {
           <div style={{
             fontSize: 11, marginTop: 4,
             fontFamily: isActive || isDone ? 'monospace' : 'inherit',
-            color: isError   ? '#f87171'
+            color: isError   ? '#1f5c4e'
                  : isActive  ? 'rgba(255,140,122,0.8)'
                  : isDone    ? 'rgba(255,255,255,0.4)'
                  : isSkipped ? 'rgba(251,191,36,0.6)'
@@ -215,7 +215,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
           <div style={{
             padding: '14px 16px',
             borderBottom: '1px solid rgba(0,0,0,0.05)',
-            background: certIssued ? 'rgba(34,197,94,0.06)' : 'rgba(255,255,255,0.02)',
+            background: certIssued ? 'rgba(34,197,94,0.06)' : 'rgba(0,0,0,0.02)',
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{
@@ -226,7 +226,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
               {isProbing ? '⏳' : certIssued ? '🔐' : '❓'}
             </div>
             <div style={{ flex: 1, textAlign: 'left' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: certIssued ? '#22c55e' : 'rgba(255,255,255,0.3)', marginBottom: 3 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: certIssued ? '#16a068' : 'rgba(255,255,255,0.3)', marginBottom: 3 }}>
                 Certificate Issued
               </div>
               {certIssued && (
@@ -244,7 +244,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
             {certIssued && (
               <span style={{
                 fontSize: 9, fontWeight: 800, padding: '2px 7px', borderRadius: 10,
-                background: 'rgba(34,197,94,0.15)', color: '#22c55e', letterSpacing: '0.06em',
+                background: 'rgba(34,197,94,0.15)', color: '#16a068', letterSpacing: '0.06em',
               }}>VALID</span>
             )}
           </div>
@@ -263,7 +263,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
               {isProbing ? '⏳' : reachable ? '🌐' : '⚠️'}
             </div>
             <div style={{ flex: 1, textAlign: 'left' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: reachable ? '#22c55e' : 'rgba(255,255,255,0.3)', marginBottom: 3 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: reachable ? '#16a068' : 'rgba(255,255,255,0.3)', marginBottom: 3 }}>
                 Live Server
               </div>
               {reachable && (
@@ -281,7 +281,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
             {reachable && (
               <span style={{
                 fontSize: 9, fontWeight: 800, padding: '2px 7px', borderRadius: 10,
-                background: 'rgba(34,197,94,0.15)', color: '#22c55e', letterSpacing: '0.06em',
+                background: 'rgba(34,197,94,0.15)', color: '#16a068', letterSpacing: '0.06em',
               }}>LIVE</span>
             )}
           </div>
@@ -293,7 +293,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
         <button onClick={onViewCert} style={{
           fontSize: 13, fontWeight: 600, padding: '10px 22px', borderRadius: 8,
           background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)',
-          color: '#22c55e', cursor: 'pointer', fontFamily: 'inherit',
+          color: '#16a068', cursor: 'pointer', fontFamily: 'inherit',
         }}>View Certificate</button>
         <button onClick={onDone} style={{
           fontSize: 13, fontWeight: 600, padding: '10px 22px', borderRadius: 8,
@@ -397,7 +397,7 @@ export default function MissionControlModal({
                   width: 14, height: 14, borderRadius: '50%',
                   background: 'rgba(34,197,94,0.2)', border: '1.5px solid #22c55e',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 8, color: '#22c55e',
+                  fontSize: 8, color: '#16a068',
                 }}>✓</div>
               )}
               {!busy && hasError && (
@@ -492,7 +492,7 @@ export default function MissionControlModal({
                       </div>
                     )}
                   </div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace', flexShrink: 0 }}>
+                  <div style={{ fontSize: 10, color: 'rgba(0,0,0,0.09)', fontFamily: 'monospace', flexShrink: 0 }}>
                     step {steps.findIndex(s => s.status === 'active') + 1}/{steps.length}
                   </div>
                 </div>
@@ -554,14 +554,14 @@ export default function MissionControlModal({
                     padding: '10px 14px', borderRadius: 10,
                     background: 'rgba(248,113,113,0.06)',
                     border: '1px solid rgba(248,113,113,0.2)',
-                    fontSize: 11, color: '#f87171',
+                    fontSize: 11, color: '#1f5c4e',
                   }}>
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>Something went wrong</div>
                     <div style={{ opacity: 0.75, marginBottom: 10 }}>Your existing certificate is still active.</div>
                     <button onClick={onDismiss} style={{
                       fontSize: 11, fontWeight: 600, padding: '6px 14px', borderRadius: 6,
                       background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(192,57,43,0.2)',
-                      color: '#f87171', cursor: 'pointer', fontFamily: 'inherit',
+                      color: '#1f5c4e', cursor: 'pointer', fontFamily: 'inherit',
                     }}>Dismiss</button>
                   </div>
                 )}

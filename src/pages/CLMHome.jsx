@@ -228,7 +228,7 @@ export default function CLMHome({ user, nav, initialSection }) {
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,#1f5c4e,#2e7a68)`,
             display:'flex',alignItems:'center',justifyContent:'center',
-            fontSize:11,fontWeight:700,color:'#ffffff',flexShrink:0,letterSpacing:'-0.3px'}}>
+            fontSize:11,fontWeight:700,color:'#111111',flexShrink:0,letterSpacing:'-0.3px'}}>
             {initials}
           </div>
           <div style={{flex:1,minWidth:0}}>
@@ -329,11 +329,11 @@ export default function CLMHome({ user, nav, initialSection }) {
               display:'flex',alignItems:'center',gap:5,
               background:aiOpen?'rgba(31,92,78,0.1)':'none',
               border:`1px solid ${aiOpen?'rgba(31,92,78,0.35)':LINE}`,
-              cursor:'pointer',color:aiOpen?'#f87171':'#c8c0b8',
+              cursor:'pointer',color:aiOpen?'#1f5c4e':'#c8c0b8',
               fontSize:12,fontFamily:F,padding:'5px 10px',borderRadius:6,
               transition:'all .12s',
             }}
-            onMouseEnter={e=>{if(!aiOpen){e.currentTarget.style.borderColor='rgba(31,92,78,0.3)';e.currentTarget.style.color='#f87171'}}}
+            onMouseEnter={e=>{if(!aiOpen){e.currentTarget.style.borderColor='rgba(31,92,78,0.3)';e.currentTarget.style.color='#1f5c4e'}}}
             onMouseLeave={e=>{if(!aiOpen){e.currentTarget.style.borderColor=LINE;e.currentTarget.style.color='#c8c0b8'}}}>
             🧠{!isMobile&&<span style={{marginLeft:2}}>AI</span>}
           </button>

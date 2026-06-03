@@ -37,9 +37,9 @@ function useIsMobile(bp = 768) {
 function agentStatus(last_seen_at, status) {
   if (!last_seen_at) return { label: 'Never seen', color: '#6b6b6b', dot: 'rgba(240,237,232,0.12)', pulse: false }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
-  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#1f5c4e', dot: '#f87171', pulse: false }
-  if (mins > 6) return { label: 'Idle', color: '#1a1a1a', dot: '#f0ede8', pulse: false }
-  return { label: 'Online', color: '#16a068', dot: '#4ade80', pulse: true }
+  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#1f5c4e', dot: '#1f5c4e', pulse: false }
+  if (mins > 6) return { label: 'Idle', color: '#1a1a1a', dot: '#111111', pulse: false }
+  return { label: 'Online', color: '#16a068', dot: '#16a068', pulse: true }
 }
 
 function certHealth(cert) {
@@ -116,8 +116,8 @@ function InstallModal({ onClose }) {
           ].map(({ id, label, cmd }) => (
             <div key={id} style={{ marginBottom: 14 }}>
               <div style={{ fontSize: 11, fontWeight: 500, color: '#3d3d3d', marginBottom: 6 }}>{label}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#0d0000', borderRadius: 7, padding: '10px 14px' }}>
-                <code style={{ fontSize: 12, color: id === 'install' && error ? '#f87171' : '#f0ede8', fontFamily: 'monospace', flex: 1, overflow: 'auto', whiteSpace: 'nowrap' }}>{cmd}</code>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f4f1ec', borderRadius: 7, padding: '10px 14px' }}>
+                <code style={{ fontSize: 12, color: id === 'install' && error ? '#1f5c4e' : '#111111', fontFamily: 'monospace', flex: 1, overflow: 'auto', whiteSpace: 'nowrap' }}>{cmd}</code>
                 {!loading && !error && <CopyBtn text={cmd} size={10} />}
               </div>
             </div>
@@ -228,7 +228,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
               { id: 'jobs',     label: 'Jobs',        icon: Activity },
             ].map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => setTab(id)}
-                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', fontSize: 11, fontWeight: tab === id ? 500 : 400, cursor: 'pointer', fontFamily: 'inherit', background: 'none', border: 'none', borderBottom: tab === id ? '2px solid #2a6b5c' : '2px solid transparent', color: tab === id ? '#f0ede8' : 'var(--v2-text-3)', transition: 'all .15s', marginBottom: '-0.5px' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', fontSize: 11, fontWeight: tab === id ? 500 : 400, cursor: 'pointer', fontFamily: 'inherit', background: 'none', border: 'none', borderBottom: tab === id ? '2px solid #2a6b5c' : '2px solid transparent', color: tab === id ? '#111111' : 'var(--v2-text-3)', transition: 'all .15s', marginBottom: '-0.5px' }}>
                 <Icon size={11} />{label}
               </button>
             ))}
@@ -348,7 +348,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                     {cert.fingerprint_sha1 && (
                       <div>
                         <div style={{ fontSize: 10, fontWeight: 600, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>SHA-1 fingerprint</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#0d0000', borderRadius: 7, padding: '8px 12px', marginBottom: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f4f1ec', borderRadius: 7, padding: '8px 12px', marginBottom: 12 }}>
                           <code style={{ fontSize: 10, color: '#1a1a1a', fontFamily: 'monospace', flex: 1, wordBreak: 'break-all' }}>{cert.fingerprint_sha1}</code>
                           <CopyBtn text={cert.fingerprint_sha1} />
                         </div>
@@ -395,7 +395,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                     {/* Agent token + actions */}
                     <div>
                       <div style={{ fontSize: 10, fontWeight: 600, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Agent token</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#0d0000', borderRadius: 7, padding: '8px 12px', marginBottom: 16 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f4f1ec', borderRadius: 7, padding: '8px 12px', marginBottom: 16 }}>
                         <code style={{ fontSize: 10, color: '#3d3d3d', fontFamily: 'monospace', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {agent.agent_token ? `${agent.agent_token.substring(0, 24)}…` : '—'}
                         </code>
@@ -403,7 +403,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                       </div>
 
                       <div style={{ fontSize: 10, fontWeight: 600, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Restart command</div>
-                      <div style={{ background: '#0d0000', borderRadius: 7, padding: '8px 12px', marginBottom: 16 }}>
+                      <div style={{ background: '#f4f1ec', borderRadius: 7, padding: '8px 12px', marginBottom: 16 }}>
                         <code style={{ fontSize: 10, color: '#1a1a1a', fontFamily: 'monospace' }}>
                           sudo systemctl restart sslvault-agent
                         </code>
@@ -460,7 +460,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                           <span style={{ fontSize: 11, color: '#3d3d3d', fontFamily: 'monospace', flex: 1 }}>
                             {j.job_type}
                           </span>
-                          <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: ok ? 'rgba(16,185,129,0.1)' : fail ? 'rgba(31,92,78,0.08)' : 'rgba(239,68,68,0.08)', color: ok ? '#4ade80' : fail ? '#f87171' : '#1f5c4e' }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: ok ? 'rgba(16,185,129,0.1)' : fail ? 'rgba(31,92,78,0.08)' : 'rgba(239,68,68,0.08)', color: ok ? '#16a068' : fail ? '#1f5c4e' : '#1f5c4e' }}>
                             {j.status}
                           </span>
                           {j.error_message && (
@@ -639,9 +639,9 @@ export default function DomainManager({ user, nav }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))', gap: 8, marginBottom: 20 }}>
             {[
               { label: 'Active domains',   val: domains.length,    color: '#1a1a1a' },
-              { label: 'Agents online',    val: online,            color: online > 0 ? '#4ade80' : '#b0a8a0' },
-              { label: 'Live on server',   val: liveOnServer,      color: liveOnServer > 0 ? '#4ade80' : '#b0a8a0' },
-              { label: 'Expiring ≤30d',    val: expiringSoon,      color: expiringSoon > 0 ? '#f0ede8' : '#4ade80' },
+              { label: 'Agents online',    val: online,            color: online > 0 ? '#16a068' : '#b0a8a0' },
+              { label: 'Live on server',   val: liveOnServer,      color: liveOnServer > 0 ? '#16a068' : '#b0a8a0' },
+              { label: 'Expiring ≤30d',    val: expiringSoon,      color: expiringSoon > 0 ? '#111111' : '#16a068' },
             ].map(({ label, val, color }) => (
               <div key={label} className="v2-card" style={{ padding: '11px 14px' }}>
                 <div style={{ fontSize: 22, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
@@ -705,7 +705,7 @@ export default function DomainManager({ user, nav }) {
             {/* Add another server nudge */}
             <div onClick={() => setShowInstall(true)}
               style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 16px', border: '0.5px dashed var(--v2-border)', borderRadius: 10, background: 'var(--v2-surface-3)', cursor: 'pointer', marginTop: 4, transition: 'border-color .15s' }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = '#f0ede8'}
+              onMouseEnter={e => e.currentTarget.style.borderColor = '#111111'}
               onMouseLeave={e => e.currentTarget.style.borderColor = ''}>
               <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Server size={16} color="var(--v2-text-3)" />

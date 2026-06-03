@@ -61,9 +61,9 @@ function eventTypeLabel(type) {
 
 function StatusDot({ days }) {
   if (days === null) return <span style={{ color: '#6b6b6b', fontSize: 11 }}>—</span>
-  if (days <= 7)  return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f87171', display: 'inline-block', boxShadow: '0 0 0 3px rgba(248,113,113,0.2)' }}/>
-  if (days <= 30) return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fbbf24', display: 'inline-block' }}/>
-  return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}/>
+  if (days <= 7)  return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1f5c4e', display: 'inline-block', boxShadow: '0 0 0 3px rgba(248,113,113,0.2)' }}/>
+  if (days <= 30) return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#9a6400', display: 'inline-block' }}/>
+  return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a068', display: 'inline-block' }}/>
 }
 
 function useIsMobile(bp = 768) {
@@ -206,8 +206,8 @@ export default function CertTimeline({ user }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
           {[
             { label: 'Active certs',  value: certs.length,  color: '#3d3d3d', bg: 'rgba(0,0,0,0.03)', border: 'rgba(0,0,0,0.06)', icon: <Shield size={14}/> },
-            { label: 'Expiring ≤30d', value: expiring30,    color: expiring30 > 0 ? '#fbbf24' : '#4ade80', bg: expiring30 > 0 ? 'rgba(184,120,0,0.06)' : 'rgba(74,222,128,0.06)', border: expiring30 > 0 ? 'rgba(184,120,0,0.2)' : 'rgba(74,222,128,0.2)', icon: <Clock size={14}/> },
-            { label: 'Critical ≤7d',  value: expiring7,     color: expiring7  > 0 ? '#f87171' : '#4ade80', bg: expiring7  > 0 ? 'rgba(248,113,113,0.08)' : 'rgba(74,222,128,0.06)', border: expiring7  > 0 ? 'rgba(0,0,0,0.08)' : 'rgba(74,222,128,0.2)', icon: <AlertTriangle size={14}/> },
+            { label: 'Expiring ≤30d', value: expiring30,    color: expiring30 > 0 ? '#9a6400' : '#16a068', bg: expiring30 > 0 ? 'rgba(184,120,0,0.06)' : 'rgba(74,222,128,0.06)', border: expiring30 > 0 ? 'rgba(184,120,0,0.2)' : 'rgba(74,222,128,0.2)', icon: <Clock size={14}/> },
+            { label: 'Critical ≤7d',  value: expiring7,     color: expiring7  > 0 ? '#1f5c4e' : '#16a068', bg: expiring7  > 0 ? 'rgba(192,57,43,0.07)' : 'rgba(74,222,128,0.06)', border: expiring7  > 0 ? 'rgba(0,0,0,0.08)' : 'rgba(74,222,128,0.2)', icon: <AlertTriangle size={14}/> },
             { label: 'Auto-renew on', value: autoRenew,     color: '#16a068',  bg: 'rgba(74,222,128,0.06)', border: 'rgba(74,222,128,0.2)', icon: <RotateCcw size={14}/> },
           ].map(s => (
             <div key={s.label} style={{ padding: '14px 16px', borderRadius: 10,
@@ -272,7 +272,7 @@ export default function CertTimeline({ user }) {
             <div style={{ fontSize: 12, color: '#6b6b6b' }}>Issue your first certificate to see the timeline here</div>
           </div>
         ) : (
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(0,0,0,0.06)',
+          <div style={{ background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.06)',
             borderRadius: 12, overflow: 'hidden' }}>
 
             {/* Table header */}
@@ -283,7 +283,7 @@ export default function CertTimeline({ user }) {
                     <th key={col.key} onClick={() => col.sortable && toggleSort(col.key)}
                       style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: '#6b6b6b',
                         textTransform: 'uppercase', letterSpacing: '0.8px', textAlign: 'left',
-                        background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(0,0,0,0.06)',
+                        background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.06)',
                         cursor: col.sortable ? 'pointer' : 'default', userSelect: 'none',
                         width: col.width, whiteSpace: 'nowrap', fontFamily: F }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -315,7 +315,7 @@ export default function CertTimeline({ user }) {
                           background: isOpen ? 'rgba(31,92,78,0.07)' : 'transparent',
                           transition: 'background .1s',
                         }}
-                        onMouseEnter={e => { if (!isOpen) e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                        onMouseEnter={e => { if (!isOpen) e.currentTarget.style.background = 'rgba(0,0,0,0.02)' }}
                         onMouseLeave={e => { if (!isOpen) e.currentTarget.style.background = 'transparent' }}>
 
                         {/* Domain */}
@@ -350,7 +350,7 @@ export default function CertTimeline({ user }) {
                         {!isMobile && (<>
                           {/* Sub ends */}
                           <td style={{ padding: '13px 14px', borderBottom: borderStyle }}>
-                            <div style={{ fontSize: 12, color: row.subDays !== null && row.subDays <= 30 ? '#fbbf24' : '#e8e0d8', fontFamily: MONO }}>
+                            <div style={{ fontSize: 12, color: row.subDays !== null && row.subDays <= 30 ? '#9a6400' : '#333333', fontFamily: MONO }}>
                               {row.subDays !== null ? `${row.subDays}d` : '—'}
                             </div>
                             <div style={{ fontSize: 10, color: '#6b6b6b', marginTop: 1 }}>
@@ -423,11 +423,11 @@ export default function CertTimeline({ user }) {
                                   { label: 'Reissued',       value: row.reissue_count ? `${row.reissue_count}×` : '0×' },
                                   { label: 'Last reissued',  value: fmtDate(row.last_reissued_at) },
                                   { label: 'Live on server', value: row.is_live_on_server ? '✓ Yes' : '✗ Not confirmed',
-                                    color: row.is_live_on_server ? '#4ade80' : '#fbbf24' },
+                                    color: row.is_live_on_server ? '#16a068' : '#9a6400' },
                                 ].map((m, mi) => (
                                   <div key={m.label} style={{ paddingRight: 20, marginRight: 20, borderRight: mi < 3 ? '0.5px solid rgba(0,0,0,0.06)' : 'none' }}>
                                     <div style={{ fontSize: 9, fontWeight: 700, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 3 }}>{m.label}</div>
-                                    <div style={{ fontSize: 12, color: m.color || '#e8e0d8', fontWeight: 600 }}>{m.value}</div>
+                                    <div style={{ fontSize: 12, color: m.color || '#333333', fontWeight: 600 }}>{m.value}</div>
                                   </div>
                                 ))}
                               </div>
@@ -457,7 +457,7 @@ export default function CertTimeline({ user }) {
                                         { label: 'Sub zone',  cx: Math.max(pct(row.expires_at) + 4, 60) },
                                         { label: 'Sub end',   cx: 95 },
                                       ].map(ph => (
-                                        <div key={ph.label} style={{ position: 'absolute', top: 30, left: ph.cx + '%', fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(255,255,255,0.2)', whiteSpace: 'nowrap', transform: 'translateX(-50%)' }}>
+                                        <div key={ph.label} style={{ position: 'absolute', top: 30, left: ph.cx + '%', fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(0,0,0,0.09)', whiteSpace: 'nowrap', transform: 'translateX(-50%)' }}>
                                           {ph.label}
                                         </div>
                                       ))}
@@ -484,7 +484,7 @@ export default function CertTimeline({ user }) {
                                         const stemTop  = above ? nodeTop + 16 : RAIL_MID + 3
                                         const stemH    = above ? RAIL_MID - nodeTop - 16 : nodeTop - RAIL_MID - 3
                                         const dateLblT = above ? nodeTop - 15 : nodeTop + 19
-                                        const nodeColor = isDone ? '#4ade80' : color
+                                        const nodeColor = isDone ? '#16a068' : color
                                         const nodeBg    = isDone ? 'rgba(22,160,104,0.11)' : color + '18'
 
                                         return (
@@ -497,7 +497,7 @@ export default function CertTimeline({ user }) {
                                             </div>
                                             {/* Node */}
                                             <div style={{ position: 'absolute', left: p + '%', top: nodeTop, width: 16, height: 16, borderRadius: '50%', border: `2px solid ${nodeColor}`, background: nodeBg, transform: 'translateX(-50%)', cursor: 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
-                                              {(isDone || isPast) && <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80' }} />}
+                                              {(isDone || isPast) && <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a068' }} />}
                                             </div>
                                           </div>
                                         )
@@ -528,7 +528,7 @@ export default function CertTimeline({ user }) {
                                           {upcoming.map(ev => {
                                             const { label, color } = eventTypeLabel(ev.event_type)
                                             const d = daysFromNow(ev.scheduled_date)
-                                            const urg = d !== null && d <= 7 ? '#f87171' : d !== null && d <= 30 ? '#fbbf24' : color
+                                            const urg = d !== null && d <= 7 ? '#1f5c4e' : d !== null && d <= 30 ? '#9a6400' : color
                                             return (
                                               <div key={ev.id} style={{ background: 'rgba(0,0,0,0.03)', border: `0.5px solid ${urg}40`, borderRadius: 8, padding: '9px 12px' }}>
                                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#3d3d3d', marginBottom: 2 }}>{label}</div>

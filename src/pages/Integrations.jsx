@@ -23,7 +23,7 @@ async function callCA(tok, body) {
 
 const CA_DEFS = {
   digicert: {
-    name: 'DigiCert CertCentral', color: '#f87171', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)', logo: 'DC',
+    name: 'DigiCert CertCentral', color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)', logo: 'DC',
     desc: 'Pull all issued certificates from your CertCentral account. Monitoring only — no private keys needed.',
     fields: [
       { key: 'api_key',    label: 'API Key',               type: 'password', placeholder: 'Your CertCentral API key',             required: true  },
@@ -32,7 +32,7 @@ const CA_DEFS = {
     docs: 'https://dev.digicert.com/en/certcentral-apis/creating-an-api-key.html',
   },
   sectigo: {
-    name: 'Sectigo SCM', color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)', logo: 'SC',
+    name: 'Sectigo SCM', color: '#111111', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)', logo: 'SC',
     desc: 'Pull all certificates from Sectigo Certificate Manager. Monitoring only — no private keys needed.',
     fields: [
       { key: 'customer_uri', label: 'Customer URI', type: 'text',     placeholder: 'your-company',          required: true },
@@ -42,7 +42,7 @@ const CA_DEFS = {
     docs: 'https://sectigo.com/knowledge-base/detail/Sectigo-Certificate-Manager-API/kA01N000000bvOx',
   },
   sslcom: {
-    name: 'SSL.com', color: '#ffffff', bg: 'rgba(31,92,78,0.08)', border: 'rgba(31,92,78,0.2)', logo: 'SL',
+    name: 'SSL.com', color: '#111111', bg: 'rgba(31,92,78,0.08)', border: 'rgba(31,92,78,0.2)', logo: 'SL',
     desc: 'Pull all issued certificates from your SSL.com reseller account. Monitoring only — no private keys needed.',
     fields: [
       { key: 'account_key', label: 'Account Key', type: 'password', placeholder: 'Your SSL.com account key', required: true },
@@ -68,7 +68,7 @@ const PROVIDERS = {
     note: 'Token needs Zone:DNS:Edit permission.'
   },
   vercel: {
-    name: 'Vercel', mono: '▲', color: '#ffffff',
+    name: 'Vercel', mono: '▲', color: '#111111',
     fields: [
       { key: 'apiToken', label: 'API Token', type: 'password', placeholder: 'your-vercel-api-token', help: 'Create at vercel.com/account/tokens', optional: false },
       { key: 'teamId',   label: 'Team ID',   type: 'text',     placeholder: 'team_xxxxxxxx',         help: 'Optional — leave blank for personal account', optional: true },
@@ -97,7 +97,7 @@ const PROVIDERS = {
 
 // ── Server types ──────────────────────────────────────────────────────
 const SERVER_TYPES = {
-  cpanel: { label: 'cPanel / Shared Hosting', short: 'cPanel', Icon: Cloud,    color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)',
+  cpanel: { label: 'cPanel / Shared Hosting', short: 'cPanel', Icon: Cloud,    color: '#111111', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)',
     desc: 'GoDaddy, Bluehost, Hostinger, SiteGround',
     fields: [
       { key: 'host',      label: 'Domain / cPanel Host', type: 'text',     placeholder: 'yourdomain.com',       help: 'Your website domain — cPanel runs at :2083' },
@@ -105,7 +105,7 @@ const SERVER_TYPES = {
       { key: 'api_token', label: 'cPanel API Token',     type: 'password', placeholder: 'Paste API token here', help: 'cPanel → Manage API Tokens → Create → SSL permission' },
     ]
   },
-  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#ffffff', bg: 'transparent', border: 'rgba(31,92,78,0.2)',
+  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#111111', bg: 'transparent', border: 'rgba(31,92,78,0.2)',
     desc: 'Ubuntu, Debian, CentOS, Amazon Linux',
     fields: [
       { key: 'host',     label: 'Server IP / Hostname', type: 'text',     placeholder: '134.209.x.x',                         help: 'Public IP or hostname' },
@@ -113,7 +113,7 @@ const SERVER_TYPES = {
       { key: 'ssh_key',  label: 'Private SSH Key',      type: 'password', placeholder: '-----BEGIN OPENSSH PRIVATE KEY-----', help: 'Paste your id_rsa private key' },
     ]
   },
-  plesk: { label: 'Plesk Panel', short: 'Plesk', Icon: Settings, color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)',
+  plesk: { label: 'Plesk Panel', short: 'Plesk', Icon: Settings, color: '#111111', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)',
     desc: 'Plesk Obsidian, Onyx',
     fields: [
       { key: 'host',      label: 'Plesk Host', type: 'text',     placeholder: 'server.example.com', help: 'Your Plesk panel hostname or IP' },
@@ -149,7 +149,7 @@ function Sparkline({ status = 'green' }) {
     status === 'green' ? '0,16 8,12 16,14 24,9 32,11 40,6 48,8 56,4 64,5'
   : status === 'amber' ? '0,8 8,9 16,7 24,10 32,12 40,16 48,18 56,18 64,18'
   : '0,12 8,12 16,12 24,12 32,12 40,12 48,12 56,12 64,12'
-  const stroke = status === 'green' ? '#f0ede8' : status === 'amber' ? '#f0ede8' : 'rgba(240,237,232,0.15)'
+  const stroke = status === 'green' ? '#111111' : status === 'amber' ? '#111111' : 'rgba(240,237,232,0.15)'
   return (
     <svg width="64" height="22" viewBox="0 0 64 22" style={{ flexShrink: 0 }}>
       <polyline points={points} fill="none" stroke={stroke} strokeWidth="1.4"
@@ -165,18 +165,18 @@ function PageHeader({ counts, tab, onAdd, onAddBoth }) {
       marginBottom:4, flexWrap:'wrap', gap:12 }}>
       <div>
         <h1 className="v2-h1" style={{ fontSize:22, letterSpacing:'-0.3px' }}>DNS &amp; Servers</h1>
-        <p style={{ fontSize:13, color:'#b0a8a0', marginTop:4, display:'flex', gap:12 }}>
+        <p style={{ fontSize:13, color:'#888888', marginTop:4, display:'flex', gap:12 }}>
           <span style={{ display:'flex', alignItems:'center', gap:5 }}>
-            <Globe size={12} style={{ color:'#b0a8a0' }}/>
+            <Globe size={12} style={{ color:'#888888' }}/>
             {counts.dns} provider{counts.dns === 1 ? '' : 's'}
           </span>
           <span style={{ display:'flex', alignItems:'center', gap:5 }}>
-            <Server size={12} style={{ color:'#b0a8a0' }}/>
+            <Server size={12} style={{ color:'#888888' }}/>
             {counts.servers} server{counts.servers === 1 ? '' : 's'}
           </span>
           <span style={{ display:'flex', alignItems:'center', gap:5 }}>
             <span style={{ width:7, height:7, borderRadius:'50%',
-              background: counts.activeAgents > 0 ? '#4ade80' : 'rgba(240,237,232,0.2)',
+              background: counts.activeAgents > 0 ? '#16a068' : 'rgba(240,237,232,0.2)',
               boxShadow: counts.activeAgents > 0 ? '0 0 0 3px rgba(22,163,74,0.2)' : 'none' }}/>
             {counts.activeAgents} agent{counts.activeAgents === 1 ? '' : 's'} active
           </span>
@@ -248,14 +248,14 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
     ? dnsCls
     : (agentActive ? 'green' : 'grey')
 
-  const p = dns ? (PROVIDERS[dns.provider] || { name: dns.provider, mono: '?', color: '#e8e0d8' }) : null
+  const p = dns ? (PROVIDERS[dns.provider] || { name: dns.provider, mono: '?', color: '#333333' }) : null
   const t = server ? (SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel) : null
   const TIcon = t?.Icon
 
-  const tagBg = hasBoth ? 'rgba(240,237,232,0.7)' : dnsOnly ? '#4ade80' : 'rgba(240,237,232,0.7)'
+  const tagBg = hasBoth ? 'rgba(240,237,232,0.7)' : dnsOnly ? '#16a068' : 'rgba(240,237,232,0.7)'
   const tagLabel = hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'
   const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#2a6b5c)' : dnsOnly ? p?.color : t?.color || 'rgba(240,237,232,0.7)'
-  const dotColor = rowDot==='green'?'#4ade80':rowDot==='amber'?'#f0ede8':'rgba(240,237,232,0.2)'
+  const dotColor = rowDot==='green'?'#16a068':rowDot==='amber'?'#111111':'rgba(240,237,232,0.2)'
   return (
     <div onClick={() => onSelect(domain)}
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
@@ -268,7 +268,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
       {/* Icon */}
       <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
         background:iconBg, display:'flex', alignItems:'center', justifyContent:'center',
-        fontSize:11, fontWeight:700, color:'#ffffff', position:'relative' }}>
+        fontSize:11, fontWeight:700, color:'#111111', position:'relative' }}>
         {hasBoth ? <Zap size={16} color="white"/> : dnsOnly ? p?.mono : (TIcon ? <TIcon size={16} color="white"/> : '?')}
         {/* Status dot */}
         <span style={{ position:'absolute', bottom:-2, right:-2, width:10, height:10,
@@ -279,44 +279,44 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:3 }}>
           <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace',
-            color:'#ffffff', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+            color:'#111111', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
             {domain}
           </span>
           <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
-            background:tagBg, color:'#ffffff', letterSpacing:'0.3px', flexShrink:0 }}>
+            background:tagBg, color:'#111111', letterSpacing:'0.3px', flexShrink:0 }}>
             {tagLabel}
           </span>
         </div>
         <div style={{ display:'flex', gap:8, alignItems:'center' }}>
           {dns && (
-            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'#b0a8a0' }}>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'#888888' }}>
               <span style={{ width:14, height:14, borderRadius:3, background:p?.color,
-                color:'#ffffff', display:'inline-flex', alignItems:'center', justifyContent:'center',
+                color:'#111111', display:'inline-flex', alignItems:'center', justifyContent:'center',
                 fontSize:7, fontWeight:700 }}>{p?.mono}</span>
               {p?.name}
             </span>
           )}
           {dns && server && <span style={{ color:'var(--v2-border-2)', fontSize:10 }}>·</span>}
           {server && TIcon && (
-            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'#b0a8a0' }}>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'#888888' }}>
               <TIcon size={11} style={{ color:t?.color }}/>
               {t?.short}
               {agent && <span style={{ width:6, height:6, borderRadius:'50%',
-                background:agentActive?'#4ade80':'rgba(240,237,232,0.2)', marginLeft:2 }}/>}
+                background:agentActive?'#16a068':'rgba(240,237,232,0.2)', marginLeft:2 }}/>}
             </span>
           )}
         </div>
       </div>
-      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#b0a8a0', flexShrink:0 }}/>
+      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#888888', flexShrink:0 }}/>
     </div>
   )
 }
 
 // ── DNS Provider row (kept for backward compat, not used in main list) ─
 function DnsRow({ cred, selected, onSelect, status }) {
-  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#e8e0d8' }
+  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#333333' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
-  const dotColor = cls==='green'?'#4ade80':cls==='amber'?'#f0ede8':'rgba(240,237,232,0.2)'
+  const dotColor = cls==='green'?'#16a068':cls==='amber'?'#111111':'rgba(240,237,232,0.2)'
   const statusLabel = status === 'healthy' ? 'Healthy' : status === 'expired' ? 'Auth expired' : 'Untested'
   return (
     <div onClick={() => onSelect(cred.id)}
@@ -328,26 +328,26 @@ function DnsRow({ cred, selected, onSelect, status }) {
       onMouseLeave={e=>{if(!selected)e.currentTarget.style.background='var(--v2-bg)'}}>
       <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
         background:p.color, display:'flex', alignItems:'center', justifyContent:'center',
-        fontSize:p.mono==='▲'?14:11, fontWeight:700, color:'#ffffff', position:'relative' }}>
+        fontSize:p.mono==='▲'?14:11, fontWeight:700, color:'#111111', position:'relative' }}>
         {p.mono}
         <span style={{ position:'absolute', bottom:-2, right:-2, width:10, height:10,
           borderRadius:'50%', background:dotColor, border:'2px solid var(--v2-bg)' }}/>
       </div>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:3 }}>
-          <span style={{ fontSize:13, fontWeight:600, color:'#ffffff' }}>{p.name}</span>
+          <span style={{ fontSize:13, fontWeight:600, color:'#111111' }}>{p.name}</span>
           <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20, letterSpacing:'0.3px',
-            background: cls==='green'?'#4ade80':cls==='amber'?'#f0ede8':'rgba(240,237,232,0.38)', color:'#ffffff', flexShrink:0 }}>
+            background: cls==='green'?'#16a068':cls==='amber'?'#111111':'rgba(240,237,232,0.38)', color:'#111111', flexShrink:0 }}>
             {statusLabel}
           </span>
-          {cred.tested_at && <span style={{ fontSize:10, color:'#b0a8a0' }}>{timeAgo(cred.tested_at)}</span>}
+          {cred.tested_at && <span style={{ fontSize:10, color:'#888888' }}>{timeAgo(cred.tested_at)}</span>}
         </div>
-        <div style={{ fontSize:11, color:'#b0a8a0', fontFamily:'monospace' }}>
+        <div style={{ fontSize:11, color:'#888888', fontFamily:'monospace' }}>
           {cred.domain_pattern}
         </div>
       </div>
       <Sparkline status={cls} />
-      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#b0a8a0', flexShrink:0 }}/>
+      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#888888', flexShrink:0 }}/>
     </div>
   )
 }
@@ -355,18 +355,18 @@ function DnsRow({ cred, selected, onSelect, status }) {
 // ── DNS Provider detail ───────────────────────────────────────────────
 function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
   if (!cred) return null
-  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#e8e0d8' }
+  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#333333' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
   return (
-    <div style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <div style={{ width:38, height:38, borderRadius:9, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, color:'#ffffff', flexShrink:0 }}>
+        <div style={{ width:38, height:38, borderRadius:9, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, color:'#111111', flexShrink:0 }}>
           {p.mono}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>{p.name}</div>
-          <div style={{ fontSize:11, color: '#e8e0d8' }}>
+          <div style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>{p.name}</div>
+          <div style={{ fontSize:11, color: '#333333' }}>
             DNS provider · added {fmtDate(cred.created_at)}
           </div>
         </div>
@@ -406,13 +406,13 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
           {status === 'healthy' && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-green" />
-              <span style={{ color: '#e8e0d8' }}>DNS challenge verified</span>
+              <span style={{ color: '#333333' }}>DNS challenge verified</span>
               <span className="v2-timeline-time">{timeAgo(cred.tested_at) || 'recently'}</span>
             </div>
           )}
           <div className="v2-timeline-item">
             <span className="v2-dot v2-dot-grey" />
-            <span style={{ color: '#e8e0d8' }}>Provider connected</span>
+            <span style={{ color: '#333333' }}>Provider connected</span>
             <span className="v2-timeline-time">{fmtDate(cred.created_at)}</span>
           </div>
         </div>
@@ -441,7 +441,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
     : null
   const agentActive = lastSeenMin !== null && lastSeenMin < 15
   const cls = agent ? (agentActive ? 'green' : 'amber') : 'grey'
-  const dotColor = cls==='green'?'#4ade80':cls==='amber'?'#f0ede8':'rgba(240,237,232,0.2)'
+  const dotColor = cls==='green'?'#16a068':cls==='amber'?'#111111':'rgba(240,237,232,0.2)'
   return (
     <div onClick={() => onSelect(server.id)}
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
@@ -459,28 +459,28 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       </div>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:3 }}>
-          <span style={{ fontSize:13, fontWeight:600, color:'#ffffff',
+          <span style={{ fontSize:13, fontWeight:600, color:'#111111',
             overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
             {server.nickname}
           </span>
           <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
-            background:t.color, color:'#ffffff', letterSpacing:'0.3px', flexShrink:0 }}>
+            background:t.color, color:'#111111', letterSpacing:'0.3px', flexShrink:0 }}>
             {t.short}
           </span>
           {agent ? (
-            <span style={{ fontSize:10, fontWeight:500, color:agentActive?'#4ade80':'#f0ede8',
+            <span style={{ fontSize:10, fontWeight:500, color:agentActive?'#16a068':'#111111',
               display:'flex', alignItems:'center', gap:4, flexShrink:0 }}>
               {agentActive
-                ? <span style={{ width:6,height:6,borderRadius:'50%',background:'#4ade80',
+                ? <span style={{ width:6,height:6,borderRadius:'50%',background:'#16a068',
                     boxShadow:'0 0 0 3px rgba(22,163,74,0.25)',animation:'v2-pulse 1.5s infinite' }}/>
-                : <span style={{ width:6,height:6,borderRadius:'50%',background:'#0d0000' }}/>}
+                : <span style={{ width:6,height:6,borderRadius:'50%',background:'#f4f1ec' }}/>}
               {agentActive ? 'Agent active' : `Offline · ${lastSeenMin}m`}
             </span>
           ) : (
-            <span style={{ fontSize:10, color:'#b0a8a0', flexShrink:0 }}>No agent</span>
+            <span style={{ fontSize:10, color:'#888888', flexShrink:0 }}>No agent</span>
           )}
         </div>
-        <div style={{ display:'flex', gap:8, alignItems:'center', fontSize:11, color:'#b0a8a0' }}>
+        <div style={{ display:'flex', gap:8, alignItems:'center', fontSize:11, color:'#888888' }}>
           <span style={{ fontFamily:'monospace' }}>{server.username}@{server.host}</span>
           {server.domains?.length > 0 && <>
             <span>·</span>
@@ -494,14 +494,14 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       </div>
       {isVPS && !agent ? (
         <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
-          style={{ fontSize:11, color:'#ffffff', background:'transparent',
+          style={{ fontSize:11, color:'#111111', background:'transparent',
             border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:6, cursor:'pointer',
             padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
             fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>
           Install agent <ChevronRight size={11} strokeWidth={2}/>
         </button>
       ) : (
-        <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#b0a8a0', flexShrink:0 }}/>
+        <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#888888', flexShrink:0 }}/>
       )}
     </div>
   )
@@ -593,9 +593,9 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
 
   const jobDot = (s) => {
     if (s === 'done')    return { color: 'var(--v2-green)',   label: 'Done' }
-    if (s === 'failed')  return { color: '#f87171',           label: 'Failed' }
-    if (s === 'claimed') return { color: '#ffffff',           label: 'Running' }
-    if (s === 'queued')  return { color: '#ffffff',           label: 'Queued' }
+    if (s === 'failed')  return { color: '#1f5c4e',           label: 'Failed' }
+    if (s === 'claimed') return { color: '#111111',           label: 'Running' }
+    if (s === 'queued')  return { color: '#111111',           label: 'Queued' }
     return { color: 'var(--v2-grey-dot)', label: s }
   }
 
@@ -607,7 +607,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
     return `${Math.floor(m/60)}h ago`
   }
   return (
-    <div style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div style={{
@@ -618,8 +618,8 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           <Icon size={18} strokeWidth={1.8} color={t.color} />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>{server.nickname}</div>
-          <div style={{ fontSize:11, color: '#e8e0d8', fontFamily: 'JetBrains Mono, monospace' }}>
+          <div style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>{server.nickname}</div>
+          <div style={{ fontSize:11, color: '#333333', fontFamily: 'JetBrains Mono, monospace' }}>
             {server.username}@{server.host}
           </div>
         </div>
@@ -650,7 +650,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           </span>
           {isVPS && (
             <button onClick={() => onInstallAgent(server)}
-                    style={{ background: 'transparent', border: 'none', color: '#ffffff',
+                    style={{ background: 'transparent', border: 'none', color: '#111111',
                              fontWeight: 500, fontSize:11, cursor: 'pointer', padding: 0 }}>
               Install →
             </button>
@@ -715,7 +715,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
               <button className="v2-btn v2-btn-sm" onClick={() => { setShowInstall(false); setDispatchResult(null) }}>Cancel</button>
             </div>
             {dispatchResult && (
-              <div style={{ marginTop: 8, fontSize:11, color: dispatchResult.ok ? 'var(--v2-green-text)' : '#f87171' }}>
+              <div style={{ marginTop: 8, fontSize:11, color: dispatchResult.ok ? 'var(--v2-green-text)' : '#1f5c4e' }}>
                 {dispatchResult.msg}
               </div>
             )}
@@ -727,14 +727,14 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           {agent?.last_seen_at && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-green" />
-              <span style={{ color: '#e8e0d8' }}>Agent heartbeat</span>
+              <span style={{ color: '#333333' }}>Agent heartbeat</span>
               <span className="v2-timeline-time">{timeAgo(agent.last_seen_at)}</span>
             </div>
           )}
           {loadingJobs && jobs.length === 0 && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-grey" />
-              <span style={{ color: '#b0a8a0', fontSize:11 }}>Loading job history…</span>
+              <span style={{ color: '#888888', fontSize:11 }}>Loading job history…</span>
             </div>
           )}
           {jobs.map(j => {
@@ -745,10 +745,10 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: d.color, flexShrink: 0,
                   boxShadow: isActive ? `0 0 0 3px ${d.color}33` : 'none',
                   animation: isActive ? 'v2-pulse 1.5s ease-in-out infinite' : 'none' }}/>
-                <span style={{ color: '#e8e0d8', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ color: '#333333', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   <strong style={{ color: d.color, fontWeight: 600 }}>{d.label}</strong>
                   {' · '}{j.job_type} · <span style={{ fontFamily: 'var(--v2-font-mono)', fontSize:10 }}>{j.domain}</span>
-                  {j.error_message && <span style={{ color: '#f87171', marginLeft: 4 }}>— {j.error_message.slice(0,60)}</span>}
+                  {j.error_message && <span style={{ color: '#1f5c4e', marginLeft: 4 }}>— {j.error_message.slice(0,60)}</span>}
                 </span>
                 <span className="v2-timeline-time">{fmtJobTime(j.completed_at || j.claimed_at || j.created_at)}</span>
               </div>
@@ -757,12 +757,12 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           {!loadingJobs && jobs.length === 0 && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-grey" />
-              <span style={{ color: '#b0a8a0', fontSize:11 }}>No jobs yet — cert installs and renewals will appear here</span>
+              <span style={{ color: '#888888', fontSize:11 }}>No jobs yet — cert installs and renewals will appear here</span>
             </div>
           )}
           <div className="v2-timeline-item">
             <span className="v2-dot v2-dot-grey" />
-            <span style={{ color: '#e8e0d8' }}>Server added</span>
+            <span style={{ color: '#333333' }}>Server added</span>
             <span className="v2-timeline-time">{fmtDate(server.created_at)}</span>
           </div>
         </div>
@@ -961,7 +961,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                     </div>
                     <div style={{ fontSize:11, fontWeight: 700, color: mode === m.key ? 'var(--v2-accent)' : 'var(--v2-text)',
                       marginBottom: 2 }}>{m.label}</div>
-                    <div style={{ fontSize:10, color: '#b0a8a0', lineHeight: 1.4 }}>{m.desc}</div>
+                    <div style={{ fontSize:10, color: '#888888', lineHeight: 1.4 }}>{m.desc}</div>
                   </button>
                 ))}
               </div>
@@ -970,7 +970,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
 
           {/* Shared domain field */}
           <div style={{ marginBottom: 16 }}>
-            <label className="v2-label">Domain <span style={{ color: '#f87171' }}>*</span></label>
+            <label className="v2-label">Domain <span style={{ color: '#1f5c4e' }}>*</span></label>
             <input className="v2-input mono" placeholder="yourdomain.com"
               value={domain} onChange={e => setDomain(e.target.value)} />
             <div className="v2-label-help">
@@ -984,7 +984,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
           {saveDns && (
             <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)',
               borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
-              <div style={{ fontSize:12, fontWeight: 700, color: '#ffffff', marginBottom: 12,
+              <div style={{ fontSize:12, fontWeight: 700, color: '#111111', marginBottom: 12,
                 display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Globe size={13} style={{ color: 'var(--v2-accent)' }}/> DNS Provider
               </div>
@@ -1005,7 +1005,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                         fontFamily: 'inherit',
                       }}>
                       <span style={{ width: 16, height: 16, borderRadius: 3, background: prov.color,
-                        color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: 8, fontWeight: 700 }}>{prov.mono}</span>
                       {prov.name}
                     </button>
@@ -1018,7 +1018,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                 <div key={f.key} style={{ marginBottom: 10 }}>
                   <label className="v2-label">
                     {f.label}
-                    {f.optional && <span style={{ color: '#b0a8a0', fontWeight: 400 }}> · optional</span>}
+                    {f.optional && <span style={{ color: '#888888', fontWeight: 400 }}> · optional</span>}
                   </label>
                   <div style={{ position: 'relative' }}>
                     <input className="v2-input mono"
@@ -1033,7 +1033,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                         onClick={() => setShowDnsField(s => ({ ...s, [f.key]: !s[f.key] }))}
                         style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
                           background: 'transparent', border: 'none', cursor: 'pointer',
-                          color: '#b0a8a0', display: 'flex' }}>
+                          color: '#888888', display: 'flex' }}>
                         {showDnsField[f.key] ? <EyeOff size={14}/> : <Eye size={14}/>}
                       </button>
                     )}
@@ -1042,7 +1042,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                 </div>
               ))}
 
-              <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 4 }}>
+              <div style={{ fontSize:10, color: '#888888', marginTop: 4 }}>
                 <a href={p.docs} target="_blank" rel="noopener noreferrer"
                   style={{ color: 'var(--v2-accent)', textDecoration: 'none' }}>
                   {p.name} docs
@@ -1055,7 +1055,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
           {saveServer && (
             <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)',
               borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
-              <div style={{ fontSize:12, fontWeight: 700, color: '#ffffff', marginBottom: 12,
+              <div style={{ fontSize:12, fontWeight: 700, color: '#111111', marginBottom: 12,
                 display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Server size={13} style={{ color: 'var(--v2-accent)' }}/> Server
               </div>
@@ -1131,7 +1131,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                           onClick={() => setShowServerField(s => ({ ...s, [f.key]: !s[f.key] }))}
                           style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
                             background: 'transparent', border: 'none', cursor: 'pointer',
-                            color: '#b0a8a0', display: 'flex' }}>
+                            color: '#888888', display: 'flex' }}>
                           {showServerField[f.key] ? <EyeOff size={14}/> : <Eye size={14}/>}
                         </button>
                       </>
@@ -1145,7 +1145,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
               {mode !== 'dns' && (
                 <div style={{ marginBottom: 10 }}>
                   <label className="v2-label">Additional domains
-                    <span style={{ color: '#b0a8a0', fontWeight: 400 }}> · optional</span>
+                    <span style={{ color: '#888888', fontWeight: 400 }}> · optional</span>
                   </label>
                   <input className="v2-input" placeholder="www.example.com, api.example.com"
                     value={extraDomains} onChange={e => setExtraDomains(e.target.value)}/>
@@ -1172,7 +1172,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                           color: installMode === opt.id ? opt.color : 'var(--v2-text)' }}>
                           {opt.title}
                         </div>
-                        <div style={{ fontSize:10, color: '#b0a8a0', lineHeight: 1.4 }}>{opt.desc}</div>
+                        <div style={{ fontSize:10, color: '#888888', lineHeight: 1.4 }}>{opt.desc}</div>
                       </div>
                     ))}
                   </div>
@@ -1281,22 +1281,22 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
               }}>
                 <Check size={22} strokeWidth={2.2} color="#1f5c4e" />
               </div>
-              <div style={{ fontSize:14, fontWeight: 500, color: '#ffffff', marginBottom: 4 }}>Agent registered</div>
-              <div style={{ fontSize:12, color: '#e8e0d8' }}>{server.nickname} is now fully automated</div>
+              <div style={{ fontSize:14, fontWeight: 500, color: '#111111', marginBottom: 4 }}>Agent registered</div>
+              <div style={{ fontSize:12, color: '#333333' }}>{server.nickname} is now fully automated</div>
             </div>
           ) : tokenError ? (
             <div className="v2-alert v2-alert-error">
               <AlertCircle size={13} /> <span>{tokenError} — please close and try again.</span>
             </div>
           ) : tokenLoading ? (
-            <div style={{ textAlign: 'center', padding: '32px 0', color: '#e8e0d8', fontSize:13 }}>
+            <div style={{ textAlign: 'center', padding: '32px 0', color: '#333333', fontSize:13 }}>
               Generating secure token…
             </div>
           ) : (
             <>
               <div style={{ marginBottom: 14 }}>
                 <div className="v2-section-label" style={{ marginBottom: 6 }}>What this does</div>
-                <ul style={{ paddingLeft: 18, margin: 0, fontSize:12, color: '#e8e0d8', lineHeight: 1.7 }}>
+                <ul style={{ paddingLeft: 18, margin: 0, fontSize:12, color: '#333333', lineHeight: 1.7 }}>
                   <li>Installs a lightweight background service (~2MB RAM)</li>
                   <li>Registers the server with SSLVault automatically</li>
                   <li>Handles future cert installs &amp; renewals — no SSH needed</li>
@@ -1306,24 +1306,24 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
 
               <div style={{ marginBottom: 14 }}>
                 <label className="v2-label">SSH into your server and run</label>
-                <div style={{ background:'#0d0000', borderRadius: 8, overflow: 'hidden' }}>
+                <div style={{ background:'#f4f1ec', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                                 padding: '7px 12px', borderBottom: '0.5px solid rgba(31,92,78,0.07)' }}>
                     <div style={{ display: 'flex', gap: 5 }}>
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f87171' }} />
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#0d0000' }} />
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#0d0000' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#1f5c4e' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#f4f1ec' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#f4f1ec' }} />
                     </div>
                     <button onClick={copy} style={{
                       background: 'transparent', border: 'none', cursor: 'pointer',
-                      color: copied ? '#f0ede8' : 'rgba(240,237,232,0.45)', fontSize:11, fontWeight: 500,
+                      color: copied ? '#111111' : 'rgba(240,237,232,0.45)', fontSize:11, fontWeight: 500,
                       display: 'inline-flex', alignItems: 'center', gap: 4
                     }}>
                       {copied ? <><Check size={11} /> Copied</> : 'Copy'}
                     </button>
                   </div>
                   <pre style={{
-                    margin: 0, padding: '12px 14px', color: '#b0a8a0', fontSize:11,
+                    margin: 0, padding: '12px 14px', color: '#888888', fontSize:11,
                     fontFamily: 'JetBrains Mono, monospace', whiteSpace: 'pre-wrap',
                     wordBreak: 'break-all', lineHeight: 1.6
                   }}>{installCmd}</pre>
@@ -1331,7 +1331,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
               </div>
 
               <div className="v2-alert v2-alert-info" style={{ marginBottom: 14, fontSize:11 }}>
-                <span><strong style={{ color: '#ffffff' }}>Requirements:</strong> Ubuntu 20/22/24, Debian 10/11/12, CentOS 7/8/9, Amazon Linux 2/2023 · Nginx or Apache · sudo</span>
+                <span><strong style={{ color: '#111111' }}>Requirements:</strong> Ubuntu 20/22/24, Debian 10/11/12, CentOS 7/8/9, Amazon Linux 2/2023 · Nginx or Apache · sudo</span>
               </div>
 
               <div className="v2-alert v2-alert-success">
@@ -1355,7 +1355,7 @@ function LoggedOutView({ nav }) {
           <h1 className="v2-h1" style={{ fontSize:Math.min(32,window.innerWidth>768?32:24), marginBottom: 10, letterSpacing: '-0.6px' }}>
             One vault for DNS &amp; servers
           </h1>
-          <p style={{ fontSize:14, color: '#e8e0d8', maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
+          <p style={{ fontSize:14, color: '#333333', maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
             Connect your DNS provider and servers once. Auto-DNS, auto-install, auto-renewal.
           </p>
         </div>
@@ -1363,10 +1363,10 @@ function LoggedOutView({ nav }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(190px,1fr))', gap: 10, marginBottom: 28 }}>
           {Object.entries(PROVIDERS).map(([key, p]) => (
             <div key={key} className="v2-card v2-card-pad" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width:32, height:32, borderRadius:7, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', color:'#ffffff', fontSize:10, fontWeight:700, flexShrink:0 }}>{p.mono}</div>
+              <div style={{ width:32, height:32, borderRadius:7, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', color:'#111111', fontSize:10, fontWeight:700, flexShrink:0 }}>{p.mono}</div>
               <div>
-                <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>{p.name}</div>
-                <div style={{ fontSize:11, color: '#e8e0d8' }}>DNS provider</div>
+                <div style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>{p.name}</div>
+                <div style={{ fontSize:11, color: '#333333' }}>DNS provider</div>
               </div>
             </div>
           ))}
@@ -1380,8 +1380,8 @@ function LoggedOutView({ nav }) {
                   <Icon size={16} strokeWidth={1.8} color={t.color} />
                 </div>
                 <div>
-                  <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>{t.short}</div>
-                  <div style={{ fontSize:11, color: '#e8e0d8' }}>Server type</div>
+                  <div style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>{t.short}</div>
+                  <div style={{ fontSize:11, color: '#333333' }}>Server type</div>
                 </div>
               </div>
             )
@@ -1395,10 +1395,10 @@ function LoggedOutView({ nav }) {
           }}>
             <Lock size={20} strokeWidth={2} color="white" />
           </div>
-          <div style={{ fontSize:18, fontWeight: 500, color: '#ffffff', marginBottom: 6, letterSpacing: '-0.3px' }}>
+          <div style={{ fontSize:18, fontWeight: 500, color: '#111111', marginBottom: 6, letterSpacing: '-0.3px' }}>
             Sign in to manage credentials
           </div>
-          <p style={{ color: '#e8e0d8', fontSize:13, maxWidth: 360, margin: '0 auto 18px', lineHeight: 1.6 }}>
+          <p style={{ color: '#333333', fontSize:13, maxWidth: 360, margin: '0 auto 18px', lineHeight: 1.6 }}>
             Credentials are encrypted at rest. Used only for automation — never displayed back to your browser.
           </p>
           <div style={{ display: 'inline-flex', gap: 8 }}>
@@ -1634,15 +1634,15 @@ export default function Integrations({ nav }) {
         display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
         <Icon size={11} color="white" strokeWidth={2.2}/>
       </div>
-      <span style={{ fontSize:10, fontWeight:700, color:'#e8e0d8',
+      <span style={{ fontSize:10, fontWeight:700, color:'#333333',
         textTransform:'uppercase', letterSpacing:'0.5px', flex:1 }}>{label}</span>
       <span style={{ fontSize:10, fontWeight:600, padding:'1px 7px', borderRadius:10,
-        background:'var(--v2-border)', color:'#b0a8a0' }}>{count}</span>
+        background:'var(--v2-border)', color:'#888888' }}>{count}</span>
     </div>
   )
 
   const ListPanel = ({ children }) => (
-    <div style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
       borderRadius:14, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       {children}
     </div>
@@ -1661,8 +1661,8 @@ export default function Integrations({ nav }) {
 
         {/* Page header */}
         <div style={{ marginBottom:28 }}>
-          <h1 style={{ fontSize:20, fontWeight:600, color:'#ffffff', margin:0, letterSpacing:'-0.2px' }}>Integrations</h1>
-          <p style={{ fontSize:13, color:'#b0a8a0', marginTop:4, marginBottom:0 }}>
+          <h1 style={{ fontSize:20, fontWeight:600, color:'#111111', margin:0, letterSpacing:'-0.2px' }}>Integrations</h1>
+          <p style={{ fontSize:13, color:'#888888', marginTop:4, marginBottom:0 }}>
             Manage DNS providers, servers, and external CA connections for automated certificate lifecycle management
           </p>
         </div>
@@ -1698,7 +1698,7 @@ export default function Integrations({ nav }) {
         {tab === 'dns' && (
           <div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-              <div style={{ fontSize:13, color:'#e8e0d8' }}>
+              <div style={{ fontSize:13, color:'#333333' }}>
                 {credentials.length} provider{credentials.length !== 1 ? 's' : ''} configured
               </div>
               <button className="v2-btn v2-btn-primary" onClick={() => setShowAddDns(true)}
@@ -1708,16 +1708,16 @@ export default function Integrations({ nav }) {
             </div>
 
             {loading ? (
-              <div style={{ textAlign:'center', padding:'60px 0', color:'#b0a8a0', fontSize:13 }}>
+              <div style={{ textAlign:'center', padding:'60px 0', color:'#888888', fontSize:13 }}>
                 <RefreshCw size={20} className="spin" style={{ display:'block', margin:'0 auto 10px' }}/>
                 Loading providers…
               </div>
             ) : credentials.length === 0 ? (
               <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
                 padding:'clamp(16px,20vw,60px) 32px', textAlign:'center' , overflowX:'auto'}}>
-                <Globe size={36} style={{ color:'#b0a8a0', marginBottom:14, display:'block', margin:'0 auto 14px' }}/>
-                <div style={{ fontSize:15, fontWeight:500, color:'#ffffff', marginBottom:6 }}>No DNS providers connected</div>
-                <div style={{ fontSize:13, color:'#b0a8a0', maxWidth:420, margin:'0 auto 20px' }}>
+                <Globe size={36} style={{ color:'#888888', marginBottom:14, display:'block', margin:'0 auto 14px' }}/>
+                <div style={{ fontSize:15, fontWeight:500, color:'#111111', marginBottom:6 }}>No DNS providers connected</div>
+                <div style={{ fontSize:13, color:'#888888', maxWidth:420, margin:'0 auto 20px' }}>
                   Connect Cloudflare, Vercel, GoDaddy, or DigitalOcean to automatically add DNS TXT records during certificate validation.
                 </div>
                 <button className="v2-btn v2-btn-primary" onClick={() => setShowAddDns(true)}
@@ -1732,17 +1732,17 @@ export default function Integrations({ nav }) {
                   padding:'10px 20px', background:'var(--v2-surface-2)',
                   borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
                   {['Provider', 'Domain', 'API credentials', 'Status', 'Actions'].map(h => (
-                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
+                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#888888',
                       textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
                   ))}
                 </div>
                 {credentials.map((cred, i) => {
-                  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono:'?', color:'#e8e0d8' }
+                  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono:'?', color:'#333333' }
                   const st = credStatus[cred.id] || 'untested'
                   const statusStyles = {
-                    healthy:  { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)', label:'Active' },
+                    healthy:  { color:'#111111', bg:'transparent', border:'rgba(31,92,78,0.2)', label:'Active' },
                     expired:  { color:'#2e7a68', bg:'rgba(31,92,78,0.09)', border:'rgba(0,0,0,0.1)', label:'Error' },
-                    untested: { color:'#e8e0d8', bg:'var(--v2-surface-2)', border:'var(--v2-border)', label:'Untested' }
+                    untested: { color:'#333333', bg:'var(--v2-surface-2)', border:'var(--v2-border)', label:'Untested' }
                   }
                   const ss = statusStyles[st] || statusStyles.untested
                   return (
@@ -1758,23 +1758,23 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                       <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                         <div style={{ width:34, height:34, borderRadius:7, background:p.color,
                           display:'flex', alignItems:'center', justifyContent:'center',
-                          fontSize:11, fontWeight:700, color:'#ffffff', flexShrink:0, letterSpacing:'0.3px' }}>
+                          fontSize:11, fontWeight:700, color:'#111111', flexShrink:0, letterSpacing:'0.3px' }}>
                           {p.mono}
                         </div>
                         <div>
-                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{p.name}</div>
-                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>DNS validation</div>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#111111' }}>{p.name}</div>
+                          <div style={{ fontSize:11, color:'#888888', marginTop:1 }}>DNS validation</div>
                         </div>
                       </div>
 
                       {/* Domain */}
-                      <div style={{ fontSize:13, fontFamily:'monospace', color:'#e8e0d8',
+                      <div style={{ fontSize:13, fontFamily:'monospace', color:'#333333',
                         overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                         {cred.domain_pattern || '*.all-domains'}
                       </div>
 
                       {/* Credentials */}
-                      <div style={{ fontSize:12, color:'#b0a8a0' }}>
+                      <div style={{ fontSize:12, color:'#888888' }}>
                         {cred.tested_at
                           ? `Tested ${new Date(cred.tested_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}`
                           : 'Not yet tested'}
@@ -1803,7 +1803,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                         <button onClick={() => deleteCred(cred.id)} title="Delete"
                           style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center',
                             background:'none', border:'0.5px solid #fecaca', borderRadius:5, cursor:'pointer',
-                            color:'#c0392b', transition:'all .12s', flexShrink:0 }}
+                            color:'#1f5c4e', transition:'all .12s', flexShrink:0 }}
                           onMouseEnter={e => { e.currentTarget.style.background='rgba(31,92,78,0.09)' }}
                           onMouseLeave={e => { e.currentTarget.style.background='none' }}>
                           <Trash2 size={12}/>
@@ -1817,9 +1817,9 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                   <div key={id} style={{ padding:'10px 20px', borderTop:'0.5px solid var(--v2-border)',
                     background: r.ok ? 'transparent' : 'rgba(31,92,78,0.09)', display:'flex', alignItems:'center', gap:8 }}>
                     {r.ok
-                      ? <Check size={13} style={{ color:'#ffffff', flexShrink:0 }}/>
-                      : <AlertCircle size={13} style={{ color:'#c0392b', flexShrink:0 }}/>}
-                    <span style={{ fontSize:12, color: r.ok ? '#f0ede8' : '#f87171' }}>
+                      ? <Check size={13} style={{ color:'#111111', flexShrink:0 }}/>
+                      : <AlertCircle size={13} style={{ color:'#1f5c4e', flexShrink:0 }}/>}
+                    <span style={{ fontSize:12, color: r.ok ? '#111111' : '#1f5c4e' }}>
                       {r.ok ? `Connection successful — API key valid` : r.message || 'Connection failed'}
                     </span>
                   </div>
@@ -1833,7 +1833,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
         {tab === 'servers' && (
           <div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-              <div style={{ fontSize:13, color:'#e8e0d8' }}>
+              <div style={{ fontSize:13, color:'#333333' }}>
                 {servers.length} server{servers.length !== 1 ? 's' : ''} configured
               </div>
               <button className="v2-btn v2-btn-primary" onClick={() => setShowAddSrv(true)}
@@ -1843,16 +1843,16 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
             </div>
 
             {loading ? (
-              <div style={{ textAlign:'center', padding:'60px 0', color:'#b0a8a0', fontSize:13 }}>
+              <div style={{ textAlign:'center', padding:'60px 0', color:'#888888', fontSize:13 }}>
                 <RefreshCw size={20} className="spin" style={{ display:'block', margin:'0 auto 10px' }}/>
                 Loading servers…
               </div>
             ) : servers.length === 0 ? (
               <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
                 padding:'clamp(16px,20vw,60px) 32px', textAlign:'center' , overflowX:'auto'}}>
-                <Server size={36} style={{ color:'#b0a8a0', display:'block', margin:'0 auto 14px' }}/>
-                <div style={{ fontSize:15, fontWeight:500, color:'#ffffff', marginBottom:6 }}>No servers connected</div>
-                <div style={{ fontSize:13, color:'#b0a8a0', maxWidth:420, margin:'0 auto 20px' }}>
+                <Server size={36} style={{ color:'#888888', display:'block', margin:'0 auto 14px' }}/>
+                <div style={{ fontSize:15, fontWeight:500, color:'#111111', marginBottom:6 }}>No servers connected</div>
+                <div style={{ fontSize:13, color:'#888888', maxWidth:420, margin:'0 auto 20px' }}>
                   Add a cPanel, SSH, or Plesk server for automatic certificate installation after issuance.
                 </div>
                 <button className="v2-btn v2-btn-primary" onClick={() => setShowAddSrv(true)}
@@ -1867,7 +1867,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                   padding:'10px 20px', background:'var(--v2-surface-2)',
                   borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
                   {['Server', 'Type', 'Domains', 'Agent', 'Actions'].map(h => (
-                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
+                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#888888',
                       textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
                   ))}
                 </div>
@@ -1880,9 +1880,9 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                   const agentOnline = minsAgo !== null && minsAgo < 15
                   const agentStatus = !agent ? 'none' : agentOnline ? 'online' : 'offline'
                   const agentUI = {
-                    online:  { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)', label:'Online' },
+                    online:  { color:'#111111', bg:'transparent', border:'rgba(31,92,78,0.2)', label:'Online' },
                     offline: { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)', label:'Offline' },
-                    none:    { color:'#e8e0d8', bg:'var(--v2-surface-2)', border:'var(--v2-border)', label:'No agent' },
+                    none:    { color:'#333333', bg:'var(--v2-surface-2)', border:'var(--v2-border)', label:'No agent' },
                   }
                   const ag = agentUI[agentStatus]
                   return (
@@ -1901,25 +1901,25 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidt
                           {TIcon && <TIcon size={16} color={t.color}/>}
                         </div>
                         <div>
-                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{srv.nickname || srv.host}</div>
-                          <div style={{ fontSize:11, fontFamily:'monospace', color:'#b0a8a0', marginTop:1 }}>{srv.host}</div>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#111111' }}>{srv.nickname || srv.host}</div>
+                          <div style={{ fontSize:11, fontFamily:'monospace', color:'#888888', marginTop:1 }}>{srv.host}</div>
                         </div>
                       </div>
 
                       {/* Type */}
-                      <div style={{ fontSize:12, color:'#e8e0d8' }}>{t.name}</div>
+                      <div style={{ fontSize:12, color:'#333333' }}>{t.name}</div>
 
                       {/* Domains */}
                       <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
                         {(srv.domains || []).slice(0,2).map(d => (
                           <span key={d} style={{ fontSize:11, fontFamily:'monospace', padding:'2px 7px',
-                            borderRadius:4, background:'var(--v2-surface-3)', color:'#e8e0d8',
+                            borderRadius:4, background:'var(--v2-surface-3)', color:'#333333',
                             border:'0.5px solid var(--v2-border)' }}>{d}</span>
                         ))}
                         {(srv.domains||[]).length > 2 && (
-                          <span style={{ fontSize:11, color:'#b0a8a0' }}>+{srv.domains.length-2}</span>
+                          <span style={{ fontSize:11, color:'#888888' }}>+{srv.domains.length-2}</span>
                         )}
-                        {!srv.domains?.length && <span style={{ fontSize:12, color:'#b0a8a0' }}>—</span>}
+                        {!srv.domains?.length && <span style={{ fontSize:12, color:'#888888' }}>—</span>}
                       </div>
 
                       {/* Agent status */}
@@ -1949,7 +1949,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidt
                         <button onClick={() => deleteServer(srv.id)} title="Delete"
                           style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center',
                             background:'none', border:'0.5px solid #fecaca', borderRadius:5, cursor:'pointer',
-                            color:'#c0392b', flexShrink:0 }}
+                            color:'#1f5c4e', flexShrink:0 }}
                           onMouseEnter={e => { e.currentTarget.style.background='rgba(31,92,78,0.09)' }}
                           onMouseLeave={e => { e.currentTarget.style.background='none' }}>
                           <Trash2 size={12}/>
@@ -1967,7 +1967,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidt
         {tab === 'ca' && (
           <div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-              <div style={{ fontSize:13, color:'#e8e0d8' }}>
+              <div style={{ fontSize:13, color:'#333333' }}>
                 {connections.length} connection{connections.length !== 1 ? 's' : ''} · {certCount} certificates tracked
               </div>
               <div style={{ display:'flex', gap:8 }}>
@@ -1985,9 +1985,9 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidt
             {connections.length === 0 ? (
               <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
                 padding:'clamp(16px,20vw,60px) 32px', textAlign:'center' , overflowX:'auto'}}>
-                <Shield size={36} style={{ color:'#b0a8a0', display:'block', margin:'0 auto 14px' }}/>
-                <div style={{ fontSize:15, fontWeight:500, color:'#ffffff', marginBottom:6 }}>No CA connections</div>
-                <div style={{ fontSize:13, color:'#b0a8a0', maxWidth:420, margin:'0 auto 20px' }}>
+                <Shield size={36} style={{ color:'#888888', display:'block', margin:'0 auto 14px' }}/>
+                <div style={{ fontSize:15, fontWeight:500, color:'#111111', marginBottom:6 }}>No CA connections</div>
+                <div style={{ fontSize:13, color:'#888888', maxWidth:420, margin:'0 auto 20px' }}>
                   Connect DigiCert CertCentral or Sectigo SCM to import your external certificate portfolio into SSLVault.
                 </div>
                 <button className="v2-btn v2-btn-primary" onClick={() => setShowAdd(true)}
@@ -2001,12 +2001,12 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidt
                   padding:'10px 20px', background:'var(--v2-surface-2)',
                   borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
                   {['Certificate authority', 'Label', 'Certs', 'Status', 'Actions'].map(h => (
-                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#b0a8a0',
+                    <div key={h} style={{ fontSize:11, fontWeight:600, color:'#888888',
                       textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
                   ))}
                 </div>
                 {connections.map((conn, i) => {
-                  const def = CA_DEFS[conn.ca_type] || { name:conn.ca_type, color:'#e8e0d8', bg:'var(--v2-surface-2)', logo:conn.ca_type?.slice(0,2).toUpperCase() }
+                  const def = CA_DEFS[conn.ca_type] || { name:conn.ca_type, color:'#333333', bg:'var(--v2-surface-2)', logo:conn.ca_type?.slice(0,2).toUpperCase() }
                   const res = syncResult[conn.id]
                   const isActive = conn.status === 'active'
                   return (
@@ -2022,18 +2022,18 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                       <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                         <div style={{ width:34, height:34, borderRadius:7, background:def.color,
                           display:'flex', alignItems:'center', justifyContent:'center',
-                          fontSize:11, fontWeight:700, color:'#ffffff', flexShrink:0 }}>{def.logo}</div>
+                          fontSize:11, fontWeight:700, color:'#111111', flexShrink:0 }}>{def.logo}</div>
                         <div>
-                          <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
-                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>Certificate authority</div>
+                          <div style={{ fontSize:13, fontWeight:500, color:'#111111' }}>{def.name}</div>
+                          <div style={{ fontSize:11, color:'#888888', marginTop:1 }}>Certificate authority</div>
                         </div>
                       </div>
 
                       {/* Label */}
-                      <div style={{ fontSize:13, color:'#e8e0d8' }}>{conn.label || '—'}</div>
+                      <div style={{ fontSize:13, color:'#333333' }}>{conn.label || '—'}</div>
 
                       {/* Cert count */}
-                      <div style={{ fontSize:13, color:'#e8e0d8' }}>
+                      <div style={{ fontSize:13, color:'#333333' }}>
                         {conn.cert_count !== undefined ? conn.cert_count : '—'}
                       </div>
 
@@ -2042,10 +2042,10 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                         <span style={{ display:'inline-flex', alignItems:'center', gap:5,
                           fontSize:12, fontWeight:500, padding:'4px 10px', borderRadius:4,
                           background: isActive ? 'transparent' : 'rgba(31,92,78,0.09)',
-                          color: isActive ? '#f0ede8' : '#2e7a68',
+                          color: isActive ? '#111111' : '#2e7a68',
                           border: `0.5px solid ${isActive ? 'rgba(31,92,78,0.2)' : 'rgba(0,0,0,0.1)'}` }}>
                           <span style={{ width:6, height:6, borderRadius:'50%',
-                            background: isActive ? '#f0ede8' : '#f87171' }}/>
+                            background: isActive ? '#111111' : '#1f5c4e' }}/>
                           {isActive ? 'Connected' : 'Error'}
                         </span>
                       </div>
@@ -2062,7 +2062,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                         <button onClick={() => setDelConn(conn.id)} title="Remove"
                           style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center',
                             background:'none', border:'0.5px solid #fecaca', borderRadius:5, cursor:'pointer',
-                            color:'#c0392b', flexShrink:0 }}
+                            color:'#1f5c4e', flexShrink:0 }}
                           onMouseEnter={e => { e.currentTarget.style.background='rgba(31,92,78,0.09)' }}
                           onMouseLeave={e => { e.currentTarget.style.background='none' }}>
                           <Trash2 size={12}/>
@@ -2075,9 +2075,9 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                   <div key={id} style={{ padding:'10px 20px', borderTop:'0.5px solid var(--v2-border)',
                     background: r.ok ? 'transparent' : 'rgba(31,92,78,0.09)', display:'flex', alignItems:'center', gap:8 }}>
                     {r.ok
-                      ? <Check size={13} style={{ color:'#ffffff' }}/>
-                      : <AlertCircle size={13} style={{ color:'#c0392b' }}/>}
-                    <span style={{ fontSize:12, color: r.ok ? '#f0ede8' : '#f87171' }}>
+                      ? <Check size={13} style={{ color:'#111111' }}/>
+                      : <AlertCircle size={13} style={{ color:'#1f5c4e' }}/>}
+                    <span style={{ fontSize:12, color: r.ok ? '#111111' : '#1f5c4e' }}>
                       {r.ok ? `Sync complete — ${r.imported || 0} certificates imported` : r.error}
                     </span>
                   </div>
@@ -2091,26 +2091,26 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
               <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
                 alignItems:'center', justifyContent:'center', padding:20,
                 background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
-                <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+                <div style={{ background:'rgba(0,0,0,0.02)', borderRadius:14, width:'100%', maxWidth:480,
                   boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
                   <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
                     display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                     <div style={{ fontSize:15, fontWeight:500 }}>Connect a CA</div>
                     <button onClick={() => { setShowAdd(false); setAddCa(null) }} style={{ background:'none',
                       border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
-                      color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+                      color:'#888888', padding:'4px 6px' }}><X size={14}/></button>
                   </div>
                   <div style={{ padding:'18px 22px 22px' }}>
                     {!addCa ? (
                       <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-                        <div style={{ fontSize:12, color:'#e8e0d8', marginBottom:4, lineHeight:1.6 }}>
+                        <div style={{ fontSize:12, color:'#333333', marginBottom:4, lineHeight:1.6 }}>
                           Choose a CA. SSLVault pulls your existing certificates for monitoring.
-                          <strong style={{ color:'#ffffff' }}> No private keys needed.</strong>
+                          <strong style={{ color:'#111111' }}> No private keys needed.</strong>
                         </div>
                         {Object.entries(CA_DEFS).map(([key, def]) => (
                           <div key={key} onClick={() => openAdd(key)}
                             style={{ padding:'14px 16px', borderRadius:10, border:'0.5px solid var(--v2-border)',
-                              background:'rgba(255,255,255,0.03)', cursor:'pointer', display:'flex',
+                              background:'rgba(0,0,0,0.02)', cursor:'pointer', display:'flex',
                               alignItems:'center', gap:12, transition:'all .15s' }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor=def.color; e.currentTarget.style.background=def.bg }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor='var(--v2-border)'; e.currentTarget.style.background='var(--v2-bg)' }}>
@@ -2118,10 +2118,10 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                               display:'flex', alignItems:'center', justifyContent:'center',
                               fontWeight:700, fontSize:12, color:def.color, flexShrink:0 }}>{def.logo}</div>
                             <div style={{ flex:1 }}>
-                              <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{def.name}</div>
-                              <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{def.desc}</div>
+                              <div style={{ fontSize:13, fontWeight:500, color:'#111111' }}>{def.name}</div>
+                              <div style={{ fontSize:11, color:'#888888', marginTop:2 }}>{def.desc}</div>
                             </div>
-                            <ChevronRight size={14} style={{ color:'#b0a8a0' }}/>
+                            <ChevronRight size={14} style={{ color:'#888888' }}/>
                           </div>
                         ))}
                       </div>
@@ -2136,19 +2136,19 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                             {CA_DEFS[addCa].logo}
                           </div>
                           <div style={{ flex:1 }}>
-                            <div style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{CA_DEFS[addCa].name}</div>
+                            <div style={{ fontSize:13, fontWeight:500, color:'#111111' }}>{CA_DEFS[addCa].name}</div>
                           </div>
                           {CA_DEFS[addCa].docs && (
                             <a href={CA_DEFS[addCa].docs} target="_blank" rel="noopener noreferrer"
-                              style={{ fontSize:11, color:'#b0a8a0', display:'flex', alignItems:'center', gap:3 }}>
+                              style={{ fontSize:11, color:'#888888', display:'flex', alignItems:'center', gap:3 }}>
                               Docs <ExternalLink size={11}/>
                             </a>
                           )}
                         </div>
                         <div style={{ background:'var(--v2-surface-3)', borderRadius:8, padding:'10px 12px',
                           marginBottom:16, display:'flex', gap:8, alignItems:'flex-start' }}>
-                          <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
-                          <div style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.6 }}>
+                          <Info size={13} style={{ color:'#888888', flexShrink:0, marginTop:1 }}/>
+                          <div style={{ fontSize:11, color:'#333333', lineHeight:1.6 }}>
                             SSLVault reads certificate details only — expiry, domain, issuer, SANs. Private keys stay on your servers.
                           </div>
                         </div>
@@ -2172,7 +2172,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                               {f.type==='password' && (
                                 <button type="button" onClick={() => setShowPwd(p => ({ ...p, [f.key]: !p[f.key] }))}
                                   style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)',
-                                    background:'none', border:'none', cursor:'pointer', color:'#b0a8a0' }}>
+                                    background:'none', border:'none', cursor:'pointer', color:'#888888' }}>
                                   {showPwd[f.key] ? <EyeOff size={13}/> : <Eye size={13}/>}
                                 </button>
                               )}
@@ -2181,7 +2181,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                         ))}
                         {addError && (
                           <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:7,
-                            padding:'9px 12px', marginBottom:12, fontSize:12, color:'#c0392b',
+                            padding:'9px 12px', marginBottom:12, fontSize:12, color:'#1f5c4e',
                             display:'flex', gap:7, alignItems:'flex-start' }}>
                             <AlertTriangle size={13} style={{ flexShrink:0, marginTop:1 }}/>{addError}
                           </div>
@@ -2207,19 +2207,19 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
               <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
                 alignItems:'center', justifyContent:'center', padding:20,
                 background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
-                <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:480,
+                <div style={{ background:'rgba(0,0,0,0.02)', borderRadius:14, width:'100%', maxWidth:480,
                   boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
                   <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
                     display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                     <div>
                       <div style={{ fontSize:15, fontWeight:500 }}>Import certificate</div>
-                      <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>
+                      <div style={{ fontSize:11, color:'#888888', marginTop:2 }}>
                         Paste cert PEM — domain, expiry &amp; issuer extracted automatically
                       </div>
                     </div>
                     <button onClick={() => setShowImport(false)} style={{ background:'none',
                       border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
-                      color:'#b0a8a0', padding:'4px 6px' }}><X size={14}/></button>
+                      color:'#888888', padding:'4px 6px' }}><X size={14}/></button>
                   </div>
                   <div style={{ padding:'18px 22px 22px' }}>
                     {!importResult ? (
@@ -2227,8 +2227,8 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                         <div style={{ background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
                           borderRadius:8, padding:'10px 12px', marginBottom:14,
                           display:'flex', gap:8, alignItems:'flex-start' }}>
-                          <Info size={13} style={{ color:'#b0a8a0', flexShrink:0, marginTop:1 }}/>
-                          <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.6 }}>
+                          <Info size={13} style={{ color:'#888888', flexShrink:0, marginTop:1 }}/>
+                          <div style={{ fontSize:12, color:'#333333', lineHeight:1.6 }}>
                             <strong>Only the certificate PEM is needed</strong> for tracking. Private key not required.
                           </div>
                         </div>
@@ -2263,8 +2263,8 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                       </div>
                     ) : (
                       <div style={{ textAlign:'center', padding:'10px 0' }}>
-                        <AlertTriangle size={32} style={{ color:'#c0392b', margin:'0 auto 12px', display:'block' }}/>
-                        <div style={{ fontSize:13, color:'#c0392b', marginBottom:16 }}>{importResult.error}</div>
+                        <AlertTriangle size={32} style={{ color:'#1f5c4e', margin:'0 auto 12px', display:'block' }}/>
+                        <div style={{ fontSize:13, color:'#1f5c4e', marginBottom:16 }}>{importResult.error}</div>
                         <button className="v2-btn" onClick={() => setImportResult(null)}>Try again</button>
                       </div>
                     )}
@@ -2281,7 +2281,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                 <div style={{ position:'fixed', inset:0, zIndex:1000, display:'flex',
                   alignItems:'center', justifyContent:'center', padding:20,
                   background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
-                  <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:14, width:'100%', maxWidth:400,
+                  <div style={{ background:'rgba(0,0,0,0.02)', borderRadius:14, width:'100%', maxWidth:400,
                     padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
                     <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
                       <div style={{ width:32, height:32, borderRadius:8, background:'rgba(31,92,78,0.09)',
@@ -2290,9 +2290,9 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                       </div>
                       <div style={{ fontSize:15, fontWeight:600 }}>Remove {conn?.label || 'connection'}?</div>
                     </div>
-                    <div style={{ fontSize:13, color:'#e8e0d8', marginBottom:16, lineHeight:1.6 }}>
+                    <div style={{ fontSize:13, color:'#333333', marginBottom:16, lineHeight:1.6 }}>
                       This CA connection will be disconnected and will no longer sync.
-                      {connCertCount > 0 && <span style={{ color:'#ffffff', fontWeight:500 }}> {connCertCount} certificate{connCertCount!==1?'s':''} are linked.</span>}
+                      {connCertCount > 0 && <span style={{ color:'#111111', fontWeight:500 }}> {connCertCount} certificate{connCertCount!==1?'s':''} are linked.</span>}
                     </div>
                     {connCertCount > 0 && (
                       <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer',
@@ -2301,12 +2301,12 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                         border: `0.5px solid ${delCerts ? 'rgba(0,0,0,0.1)' : 'var(--v2-border)'}`,
                         transition:'all .15s' }}>
                         <input type="checkbox" checked={delCerts} onChange={e => setDelCerts(e.target.checked)}
-                          style={{ width:14, height:14, accentColor:'#f87171', flexShrink:0 }}/>
+                          style={{ width:14, height:14, accentColor:'#1f5c4e', flexShrink:0 }}/>
                         <div>
-                          <div style={{ fontSize:12, fontWeight:600, color: delCerts ? '#f87171' : 'var(--v2-text)' }}>
+                          <div style={{ fontSize:12, fontWeight:600, color: delCerts ? '#1f5c4e' : 'var(--v2-text)' }}>
                             Also delete {connCertCount} imported certificate{connCertCount!==1?'s':''}
                           </div>
-                          <div style={{ fontSize:11, color:'#b0a8a0', marginTop:1 }}>
+                          <div style={{ fontSize:11, color:'#888888', marginTop:1 }}>
                             {delCerts ? 'Certificates will be removed from inventory' : 'Certificates remain but stop syncing'}
                           </div>
                         </div>
@@ -2316,7 +2316,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                       <button className="v2-btn" style={{ flex:1, justifyContent:'center' }}
                         onClick={() => { setDelConn(null); setDelCerts(true) }}>Cancel</button>
                       <button onClick={() => deleteConn(delConn)}
-                        style={{ flex:1, background:'#f87171', color:'#ffffff', border:'none',
+                        style={{ flex:1, background:'#1f5c4e', color:'#111111', border:'none',
                           borderRadius:8, padding:'9px', cursor:'pointer', fontFamily:'inherit',
                           fontWeight:600, fontSize:13, display:'flex', alignItems:'center',
                           justifyContent:'center', gap:6 }}>

@@ -148,8 +148,8 @@ export default function VaultBrainPanel({ open, onClose, session }) {
       }}>
         <span style={{fontSize:15}}>🧠</span>
         <div style={{flex:1}}>
-          <div style={{fontSize:13,fontWeight:600,color:'#f0ede8'}}>VaultBrain</div>
-          <div style={{fontSize:10,color:session?'#4ade80':'#b0a8a0'}}>
+          <div style={{fontSize:13,fontWeight:600,color:'#111111'}}>VaultBrain</div>
+          <div style={{fontSize:10,color:session?'#16a068':'#b0a8a0'}}>
             {session ? '● Gemini AI · Live' : '○ Not signed in'}
           </div>
         </div>
@@ -157,12 +157,12 @@ export default function VaultBrainPanel({ open, onClose, session }) {
           {msgs.length>0&&!busy&&(
             <button onClick={()=>{setMsgs([]);histRef.current=[];setStart(false);setPend(null)}} style={{
               background:'none',border:'1px solid rgba(0,0,0,0.05)',
-              borderRadius:5,cursor:'pointer',color:'#b0a8a0',fontSize:10,padding:'3px 7px',fontFamily:'inherit',
+              borderRadius:5,cursor:'pointer',color:'#888888',fontSize:10,padding:'3px 7px',fontFamily:'inherit',
             }}>Clear</button>
           )}
           <button onClick={onClose} style={{
             background:'none',border:'1px solid rgba(0,0,0,0.05)',
-            borderRadius:5,cursor:'pointer',color:'#b0a8a0',
+            borderRadius:5,cursor:'pointer',color:'#888888',
             width:24,height:24,display:'flex',alignItems:'center',justifyContent:'center',
           }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -178,19 +178,19 @@ export default function VaultBrainPanel({ open, onClose, session }) {
         {/* Empty — chips */}
         {msgs.length===0 && !busy && (
           <div>
-            <div style={{fontSize:10,color:'rgba(240,237,232,0.25)',marginBottom:8,textTransform:'uppercase',letterSpacing:'0.05em'}}>
+            <div style={{fontSize:10,color:'#bbbbbb',marginBottom:8,textTransform:'uppercase',letterSpacing:'0.05em'}}>
               Suggested
             </div>
             {CHIPS.map(c=>(
               <button key={c} onClick={()=>session&&send(c)} disabled={!session} style={{
                 display:'block',width:'100%',textAlign:'left',
-                background:'rgba(255,255,255,0.03)',border:'1px solid rgba(0,0,0,0.05)',
+                background:'rgba(0,0,0,0.02)',border:'1px solid rgba(0,0,0,0.05)',
                 borderRadius:8,padding:'8px 11px',cursor:session?'pointer':'not-allowed',
                 fontFamily:'inherit',fontSize:12.5,color:'#c8c4c0',marginBottom:5,
                 opacity:session?1:0.4,transition:'background .1s,border-color .1s',
               }}
               onMouseEnter={e=>{if(session){e.currentTarget.style.background='rgba(31,92,78,0.07)';e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'}}}
-              onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.03)';e.currentTarget.style.borderColor='rgba(0,0,0,0.05)'}}>
+              onMouseLeave={e=>{e.currentTarget.style.background='rgba(0,0,0,0.02)';e.currentTarget.style.borderColor='rgba(0,0,0,0.05)'}}>
                 <span style={{color:'rgba(192,57,43,0.5)',marginRight:6}}>›</span>{c}
               </button>
             ))}
@@ -199,7 +199,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
 
         {/* Loading initial */}
         {msgs.length===0 && busy && (
-          <div style={{textAlign:'center',paddingTop:20,color:'#b0a8a0'}}>
+          <div style={{textAlign:'center',paddingTop:20,color:'#888888'}}>
             <div style={{fontSize:11,marginBottom:8}}>Reading your fleet…</div>
             <div style={{display:'flex',justifyContent:'center'}}><Dots/></div>
           </div>
@@ -215,8 +215,8 @@ export default function VaultBrainPanel({ open, onClose, session }) {
                   border:'1px solid rgba(31,92,78,0.12)',
                   borderRadius:'8px 8px 2px 8px',padding:'7px 10px',
                 }}>
-                  <div style={{fontSize:12.5,color:'#f0ede8'}}>{msg.text}</div>
-                  <div style={{fontSize:9,color:'rgba(240,237,232,0.3)',marginTop:2,textAlign:'right'}}>{msg.ts}</div>
+                  <div style={{fontSize:12.5,color:'#111111'}}>{msg.text}</div>
+                  <div style={{fontSize:9,color:'#aaaaaa',marginTop:2,textAlign:'right'}}>{msg.ts}</div>
                 </div>
               </div>
             )}
@@ -224,18 +224,18 @@ export default function VaultBrainPanel({ open, onClose, session }) {
               <div style={{display:'flex',gap:6,marginBottom:8,alignItems:'flex-start'}}>
                 <div style={{
                   width:20,height:20,borderRadius:'50%',flexShrink:0,marginTop:1,
-                  background:'rgba(31,92,78,0.08)',border:'1px solid rgba(192,57,43,0.22)',
+                  background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.22)',
                   display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,
                 }}>🧠</div>
                 <div style={{
-                  flex:1,background:'rgba(255,255,255,0.03)',
+                  flex:1,background:'rgba(0,0,0,0.02)',
                   border:`1px solid ${msg.err?'rgba(248,113,113,0.2)':'rgba(0,0,0,0.05)'}`,
                   borderRadius:'2px 8px 8px 8px',padding:'8px 10px',
                 }}>
                   {msg.loading ? <Dots/> : (
                     <>
-                      <div style={{color:msg.err?'#f87171':'inherit'}}><MsgText text={msg.text}/></div>
-                      {msg.ts&&<div style={{fontSize:9,color:'rgba(240,237,232,0.25)',marginTop:3}}>{msg.ts}</div>}
+                      <div style={{color:msg.err?'#1f5c4e':'inherit'}}><MsgText text={msg.text}/></div>
+                      {msg.ts&&<div style={{fontSize:9,color:'#bbbbbb',marginTop:3}}>{msg.ts}</div>}
                     </>
                   )}
                 </div>
@@ -259,7 +259,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
                   <button onClick={()=>{setPend(null);setMsgs(m=>[...m,{role:'ai',text:'Cancelled.',ts:ts()}])}} disabled={busy} style={{
                     background:'none',border:'1px solid rgba(0,0,0,0.07)',
                     borderRadius:6,padding:'5px 10px',cursor:'pointer',
-                    fontSize:11,color:'#b0a8a0',fontFamily:'inherit',
+                    fontSize:11,color:'#888888',fontFamily:'inherit',
                   }}>Cancel</button>
                 </div>
               </div>
@@ -274,12 +274,12 @@ export default function VaultBrainPanel({ open, onClose, session }) {
         <div style={{padding:'4px 12px 6px',display:'flex',flexWrap:'wrap',gap:4,flexShrink:0,borderTop:'1px solid rgba(0,0,0,0.03)'}}>
           {CHIPS.slice(0,3).map(c=>(
             <button key={c} onClick={()=>send(c)} style={{
-              background:'rgba(255,255,255,0.03)',border:'1px solid rgba(0,0,0,0.05)',
+              background:'rgba(0,0,0,0.02)',border:'1px solid rgba(0,0,0,0.05)',
               borderRadius:20,padding:'3px 9px',cursor:'pointer',
-              fontFamily:'inherit',fontSize:10.5,color:'#b0a8a0',
+              fontFamily:'inherit',fontSize:10.5,color:'#888888',
               transition:'color .1s,border-color .1s',
             }}
-            onMouseEnter={e=>{e.currentTarget.style.color='#f0ede8';e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'}}
+            onMouseEnter={e=>{e.currentTarget.style.color='#111111';e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'}}
             onMouseLeave={e=>{e.currentTarget.style.color='#b0a8a0';e.currentTarget.style.borderColor='rgba(0,0,0,0.05)'}}>
               {c}
             </button>
@@ -301,7 +301,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
               flex:1,background:'rgba(0,0,0,0.03)',
               border:`1px solid ${input?'rgba(192,57,43,0.4)':'rgba(0,0,0,0.06)'}`,
               borderRadius:8,padding:'7px 10px',
-              color:'#f0ede8',fontSize:12.5,fontFamily:'inherit',
+              color:'#111111',fontSize:12.5,fontFamily:'inherit',
               resize:'none',outline:'none',lineHeight:1.5,
               minHeight:34,maxHeight:80,opacity:!session?0.5:1,
             }}

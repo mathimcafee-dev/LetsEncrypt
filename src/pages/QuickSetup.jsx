@@ -163,8 +163,8 @@ export default function QuickSetup({ nav }) {
         {/* STEP 1 */}
         {step === 1 && (
           <div className="v2-card v2-card-pad">
-            <h2 style={{ fontSize:17, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>Enter your domain</h2>
-            <p style={{ fontSize:13, color: '#e8e0d8', marginBottom: 20 }}>We'll issue your RapidSSL certificate and handle DNS validation.</p>
+            <h2 style={{ fontSize:17, fontWeight: 600, color: '#111111', marginBottom: 4 }}>Enter your domain</h2>
+            <p style={{ fontSize:13, color: '#333333', marginBottom: 20 }}>We'll issue your RapidSSL certificate and handle DNS validation.</p>
 
             <label className="v2-label">Domain Name</label>
             <input className="v2-input" value={domain} onChange={e => setDomain(e.target.value)}
@@ -212,16 +212,16 @@ export default function QuickSetup({ nav }) {
             {dcvInfo.autoAdded ? (
               <>
                 <Note type="success"><CheckCircle size={13}/> DNS validation record added automatically via {PROVIDERS[provider]?.name}.</Note>
-                <h2 style={{ fontSize:17, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>Issue your certificate</h2>
-                <p style={{ fontSize:13, color: '#e8e0d8', marginBottom: 20 }}>DNS is ready. Click below to complete issuance.</p>
+                <h2 style={{ fontSize:17, fontWeight: 600, color: '#111111', marginBottom: 4 }}>Issue your certificate</h2>
+                <p style={{ fontSize:13, color: '#333333', marginBottom: 20 }}>DNS is ready. Click below to complete issuance.</p>
               </>
             ) : (
               <>
-                <h2 style={{ fontSize:17, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>Add DNS validation record</h2>
-                <p style={{ fontSize:13, color: '#e8e0d8', marginBottom: 16 }}>Add this record to your DNS provider, then click Verify.</p>
+                <h2 style={{ fontSize:17, fontWeight: 600, color: '#111111', marginBottom: 4 }}>Add DNS validation record</h2>
+                <p style={{ fontSize:13, color: '#333333', marginBottom: 16 }}>Add this record to your DNS provider, then click Verify.</p>
                 <div className="v2-code" style={{ marginBottom: 12 }}>
                   <div className="v2-code-head">
-                    <div className="v2-code-dots"><span style={{ background: '#f87171' }}/><span style={{ background:'#0d0000' }}/><span style={{ background:'#0d0000' }}/></div>
+                    <div className="v2-code-dots"><span style={{ background: '#1f5c4e' }}/><span style={{ background:'#f4f1ec' }}/><span style={{ background:'#f4f1ec' }}/></div>
                   </div>
                   <pre>{`TYPE    ${dcvInfo.type || 'CNAME'}
 NAME    ${dcvInfo.host || '_acme-challenge'}
@@ -253,10 +253,10 @@ TTL     300`}</pre>
                 </div>
                 <div>
                   <h2 style={{ fontSize:18, fontWeight: 700, color: 'var(--v2-green)', marginBottom: 2 }}>Certificate Issued</h2>
-                  <p style={{ fontSize:12, color: '#b0a8a0', margin: 0 }}>{d}</p>
+                  <p style={{ fontSize:12, color: '#888888', margin: 0 }}>{d}</p>
                 </div>
               </div>
-              <p style={{ fontSize:12, color: '#e8e0d8', marginBottom: 14, lineHeight: 1.7 }}>
+              <p style={{ fontSize:12, color: '#333333', marginBottom: 14, lineHeight: 1.7 }}>
                 Your certificate is saved in <strong>Dashboard</strong>. Download the files below or install directly from the cert row.
               </p>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -274,18 +274,18 @@ TTL     300`}</pre>
             </div>
 
             <div className="v2-card v2-card-pad">
-              <h3 style={{ fontWeight: 600, fontSize:14, color: '#ffffff', marginBottom: 12 }}>Install on your server</h3>
+              <h3 style={{ fontWeight: 600, fontSize:14, color: '#111111', marginBottom: 12 }}>Install on your server</h3>
               <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap: 10, marginBottom: 12 }}>
                 <div className="v2-card v2-card-pad" style={{ cursor: 'pointer', background: 'var(--v2-surface-2)' }} onClick={() => nav('/dashboard')}>
-                  <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff', marginBottom: 3 }}>VPS / Cloud</div>
-                  <div style={{ fontSize:11, color: '#b0a8a0' }}>Persistent agent — one click deploy</div>
+                  <div style={{ fontSize:13, fontWeight: 600, color: '#111111', marginBottom: 3 }}>VPS / Cloud</div>
+                  <div style={{ fontSize:11, color: '#888888' }}>Persistent agent — one click deploy</div>
                 </div>
                 <div className="v2-card v2-card-pad" style={{ cursor: 'pointer', background: 'var(--v2-surface-2)' }} onClick={() => nav('/shared-hosting')}>
-                  <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff', marginBottom: 3 }}>cPanel / Shared</div>
-                  <div style={{ fontSize:11, color: '#b0a8a0' }}>PHP agent — no SSH needed</div>
+                  <div style={{ fontSize:13, fontWeight: 600, color: '#111111', marginBottom: 3 }}>cPanel / Shared</div>
+                  <div style={{ fontSize:11, color: '#888888' }}>PHP agent — no SSH needed</div>
                 </div>
               </div>
-              <p style={{ fontSize:11, color: '#b0a8a0', margin: 0 }}>Go to Dashboard → {d} → Install</p>
+              <p style={{ fontSize:11, color: '#888888', margin: 0 }}>Go to Dashboard → {d} → Install</p>
             </div>
 
             <div style={{ display: 'flex', gap: 10 }}>

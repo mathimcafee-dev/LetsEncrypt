@@ -51,9 +51,9 @@ function daysUntil(iso) {
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
 function MiniBar({ value, warn = 80, danger = 90 }) {
-  if (value == null) return <span style={{ color: '#b0a8a0', fontSize:11 }}>—</span>
+  if (value == null) return <span style={{ color: '#888888', fontSize:11 }}>—</span>
   const pct   = Math.min(100, Math.max(0, value))
-  const color = pct >= danger ? '#f87171' : pct >= warn ? '#f0ede8' : '#4ade80'
+  const color = pct >= danger ? '#1f5c4e' : pct >= warn ? '#111111' : '#16a068'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
       <div style={{ flex: 1, height: 4, borderRadius: 2, background: 'var(--v2-border)', overflow: 'hidden' }}>
@@ -70,10 +70,10 @@ function MiniBar({ value, warn = 80, danger = 90 }) {
 // ── Status pill ───────────────────────────────────────────────────────
 function StatusPill({ status }) {
   const map = {
-    online:  { bg: 'transparent', color: '#ffffff', label: 'Online',   dot: '#4ade80' },
-    offline: { bg: 'rgba(31,92,78,0.09)', color: '#f87171', label: 'Offline',  dot: '#f87171' },
-    never:   { bg: '#000000', color: '#e8e0d8', label: 'Never',    dot: 'rgba(240,237,232,0.38)' },
-    unknown: { bg: 'rgba(239,68,68,0.08)', color: '#1f5c4e', label: 'Unknown',  dot: '#f0ede8' },
+    online:  { bg: 'transparent', color: '#111111', label: 'Online',   dot: '#16a068' },
+    offline: { bg: 'rgba(31,92,78,0.09)', color: '#1f5c4e', label: 'Offline',  dot: '#1f5c4e' },
+    never:   { bg: '#000000', color: '#333333', label: 'Never',    dot: 'rgba(240,237,232,0.38)' },
+    unknown: { bg: 'rgba(239,68,68,0.08)', color: '#1f5c4e', label: 'Unknown',  dot: '#111111' },
   }
   const s = map[status] || map.unknown
   return (
@@ -89,14 +89,14 @@ function StatusPill({ status }) {
 
 // ── Job result badge ──────────────────────────────────────────────────
 function JobBadge({ status }) {
-  if (!status) return <span style={{ color: '#b0a8a0', fontSize:11 }}>—</span>
+  if (!status) return <span style={{ color: '#888888', fontSize:11 }}>—</span>
   const map = {
-    success: { bg: 'transparent', color: '#ffffff' },
-    failed:  { bg: 'rgba(31,92,78,0.09)', color: '#f87171' },
+    success: { bg: 'transparent', color: '#111111' },
+    failed:  { bg: 'rgba(31,92,78,0.09)', color: '#1f5c4e' },
     queued:  { bg: 'rgba(239,68,68,0.08)', color: '#1f5c4e' },
-    claimed: { bg: 'transparent', color: '#e8e0d8' },
+    claimed: { bg: 'transparent', color: '#333333' },
   }
-  const s = map[status] || { bg: '#000000', color: '#e8e0d8' }
+  const s = map[status] || { bg: '#000000', color: '#333333' }
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 4,
       background: s.bg, color: s.color }}>
@@ -107,8 +107,8 @@ function JobBadge({ status }) {
 
 // ── Renewal badge (days until soonest cert expiry on this agent) ──────
 function RenewalBadge({ days }) {
-  if (days == null) return <span style={{ color: '#b0a8a0', fontSize:11 }}>—</span>
-  const color = days <= 7 ? '#f87171' : days <= 30 ? '#f0ede8' : '#4ade80'
+  if (days == null) return <span style={{ color: '#888888', fontSize:11 }}>—</span>
+  const color = days <= 7 ? '#1f5c4e' : days <= 30 ? '#111111' : '#16a068'
   const bg    = days <= 7 ? 'rgba(31,92,78,0.09)' : days <= 30 ? 'rgba(239,68,68,0.08)' : 'transparent'
   return (
     <span style={{ fontSize:11, fontWeight: 500, color, background: bg,
@@ -140,7 +140,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
     load()
   }, [agent.id])
 
-  const statusColor = { success: '#4ade80', failed: '#f87171', queued: '#f0ede8', claimed: '#f0ede8' }
+  const statusColor = { success: '#16a068', failed: '#1f5c4e', queued: '#111111', claimed: '#111111' }
   const eventIcon   = { online: '🟢', offline: '🔴', recovered: '✅', degraded: '🟡' }
 
   const copyCmd = () => {
@@ -154,29 +154,29 @@ function Drawer({ agent, tok, onClose, onDelete }) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.28)', zIndex: 40 }}/>
       {/* Panel */}
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, zIndex: 50,
-        background:'rgba(255,255,255,0.03)', borderLeft: '0.5px solid var(--v2-border)',
+        background:'rgba(0,0,0,0.02)', borderLeft: '0.5px solid var(--v2-border)',
         display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
 
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)',
           display: 'flex', alignItems: 'center', gap: 12, position: 'sticky', top: 0,
-          background:'rgba(255,255,255,0.03)', zIndex: 1 }}>
+          background:'rgba(0,0,0,0.02)', zIndex: 1 }}>
           <div style={{ width: 36, height: 36, borderRadius: 9, background: 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Server size={16} color="#16a34a"/>
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize:14, fontWeight: 500, color: '#ffffff',
+            <div style={{ fontSize:14, fontWeight: 500, color: '#111111',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {agent.nickname}
             </div>
-            <div style={{ fontSize:11, color: '#b0a8a0' }}>
+            <div style={{ fontSize:11, color: '#888888' }}>
               {agent.hostname || agent.ip_address || '—'} · v{agent.agent_version || '?'}
             </div>
           </div>
           <StatusPill status={agent.computed_status || 'unknown'}/>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer',
-            color: '#b0a8a0', padding: 4, display: 'flex' }}>
+            color: '#888888', padding: 4, display: 'flex' }}>
             <X size={16}/>
           </button>
         </div>
@@ -190,8 +190,8 @@ function Drawer({ agent, tok, onClose, onDelete }) {
             { label: 'Last seen',     val: timeAgo(agent.last_seen_at) },
           ].map(({ label, val }) => (
             <div key={label} style={{ background: 'var(--v2-surface-3)', padding: '10px 14px' }}>
-              <div style={{ fontSize:10, color: '#b0a8a0', marginBottom: 3 }}>{label}</div>
-              <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>{val}</div>
+              <div style={{ fontSize:10, color: '#888888', marginBottom: 3 }}>{label}</div>
+              <div style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>{val}</div>
             </div>
           ))}
         </div>
@@ -207,15 +207,15 @@ function Drawer({ agent, tok, onClose, onDelete }) {
             ].map(({ label, value, warn = 80, danger = 90 }) => value != null && (
               <div key={label} style={{ marginBottom: 10 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize:12, color: '#b0a8a0' }}>{label}</span>
+                  <span style={{ fontSize:12, color: '#888888' }}>{label}</span>
                   <span style={{ fontSize:12, fontWeight: 500,
-                    color: value >= danger ? '#f87171' : value >= warn ? '#f0ede8' : '#4ade80',
+                    color: value >= danger ? '#1f5c4e' : value >= warn ? '#111111' : '#16a068',
                     fontFamily: 'monospace' }}>{Math.round(value)}%</span>
                 </div>
                 <div style={{ height: 5, borderRadius: 3, background: 'var(--v2-border)', overflow: 'hidden' }}>
                   <div style={{ height: '100%', borderRadius: 3, transition: 'width .6s',
                     width: `${Math.min(100, value)}%`,
-                    background: value >= danger ? '#f87171' : value >= warn ? '#f0ede8' : '#4ade80' }}/>
+                    background: value >= danger ? '#1f5c4e' : value >= warn ? '#111111' : '#16a068' }}/>
                 </div>
               </div>
             ))}
@@ -233,12 +233,12 @@ function Drawer({ agent, tok, onClose, onDelete }) {
             </button>
             <button className="v2-btn v2-btn-sm" onClick={() => onDelete(agent)}
               style={{ display: 'flex', alignItems: 'center', gap: 5,
-                borderColor: 'rgba(0,0,0,0.1)', color: '#f87171' }}>
+                borderColor: 'rgba(0,0,0,0.1)', color: '#1f5c4e' }}>
               <Trash2 size={11}/>
               Delete agent
             </button>
           </div>
-          <p style={{ fontSize:11, color: '#b0a8a0', marginTop: 8 }}>
+          <p style={{ fontSize:11, color: '#888888', marginTop: 8 }}>
             SSH into your server and run the copied command to restart the agent.
           </p>
         </div>
@@ -263,13 +263,13 @@ function Drawer({ agent, tok, onClose, onDelete }) {
         {/* Tab content */}
         <div style={{ flex: 1, padding: '14px 20px' }}>
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '24px 0', color: '#b0a8a0', fontSize:12 }}>
+            <div style={{ textAlign: 'center', padding: '24px 0', color: '#888888', fontSize:12 }}>
               <RefreshCw size={14} style={{ animation: 'spin .8s linear infinite', margin: '0 auto 8px', display: 'block' }}/>
               Loading…
             </div>
           ) : tab === 'jobs' ? (
             !jobs?.length ? (
-              <div style={{ fontSize:12, color: '#b0a8a0', textAlign: 'center', padding: '24px 0' }}>
+              <div style={{ fontSize:12, color: '#888888', textAlign: 'center', padding: '24px 0' }}>
                 No jobs yet for this agent.
               </div>
             ) : jobs.map(job => (
@@ -282,14 +282,14 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                   {job.status}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize:12, color: '#ffffff',
+                  <div style={{ fontSize:12, color: '#111111',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {job.job_type} {job.domain ? `— ${job.domain}` : ''}
                   </div>
-                  <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 2 }}>
+                  <div style={{ fontSize:10, color: '#888888', marginTop: 2 }}>
                     {timeAgo(job.created_at)}
                     {job.error_message && (
-                      <span style={{ color: '#f87171' }}> · {job.error_message.slice(0, 60)}</span>
+                      <span style={{ color: '#1f5c4e' }}> · {job.error_message.slice(0, 60)}</span>
                     )}
                   </div>
                 </div>
@@ -297,7 +297,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
             ))
           ) : tab === 'events' ? (
             !events?.length ? (
-              <div style={{ fontSize:12, color: '#b0a8a0', textAlign: 'center', padding: '24px 0' }}>
+              <div style={{ fontSize:12, color: '#888888', textAlign: 'center', padding: '24px 0' }}>
                 No health events recorded.
               </div>
             ) : events.map(ev => (
@@ -305,9 +305,9 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 borderBottom: '0.5px solid var(--v2-border)', alignItems: 'flex-start' }}>
                 <span style={{ fontSize:16, flexShrink: 0 }}>{eventIcon[ev.event_type] || '⚪'}</span>
                 <div>
-                  <div style={{ fontSize:12, fontWeight: 500, color: '#ffffff',
+                  <div style={{ fontSize:12, fontWeight: 500, color: '#111111',
                     textTransform: 'capitalize' }}>{ev.event_type}</div>
-                  <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 1 }}>
+                  <div style={{ fontSize:10, color: '#888888', marginTop: 1 }}>
                     {timeAgo(ev.created_at)}
                     {ev.meta?.reason && <span> · {ev.meta.reason}</span>}
                   </div>
@@ -329,8 +329,8 @@ function Drawer({ agent, tok, onClose, onDelete }) {
               ].map(({ label, val }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between',
                   padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)' }}>
-                  <span style={{ fontSize:12, color: '#b0a8a0' }}>{label}</span>
-                  <span style={{ fontSize:12, color: '#ffffff', fontWeight: 500,
+                  <span style={{ fontSize:12, color: '#888888' }}>{label}</span>
+                  <span style={{ fontSize:12, color: '#111111', fontWeight: 500,
                     fontFamily: label === 'Agent ID' ? 'monospace' : 'inherit' }}>{val}</span>
                 </div>
               ))}
@@ -363,24 +363,24 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.32)', zIndex: 60 }}/>
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-        zIndex: 70, background:'rgba(255,255,255,0.03)', border: '0.5px solid var(--v2-border)',
+        zIndex: 70, background:'rgba(0,0,0,0.02)', border: '0.5px solid var(--v2-border)',
         borderRadius: 12, padding: '24px', width: 360 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
           <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(31,92,78,0.09)',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Trash2 size={16} color="#1f5c4e"/>
           </div>
-          <div style={{ fontSize:15, fontWeight: 500, color: '#ffffff' }}>Delete agent</div>
+          <div style={{ fontSize:15, fontWeight: 500, color: '#111111' }}>Delete agent</div>
         </div>
-        <p style={{ fontSize:13, color: '#e8e0d8', marginBottom: 8 }}>
+        <p style={{ fontSize:13, color: '#333333', marginBottom: 8 }}>
           Remove <strong>{agent.nickname}</strong> from SSLVault? The server card will go offline.
           Run <code style={{ fontSize:11, background: 'var(--v2-surface-3)', padding: '1px 5px', borderRadius: 3 }}>sslvault-agent uninstall</code> on the server to remove the daemon.
         </p>
-        {err && <div style={{ fontSize:12, color: '#f87171', marginBottom: 8 }}>{err}</div>}
+        {err && <div style={{ fontSize:12, color: '#1f5c4e', marginBottom: 8 }}>{err}</div>}
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button className="v2-btn v2-btn-sm" onClick={onClose}>Cancel</button>
           <button className="v2-btn v2-btn-sm" onClick={confirm} disabled={busy}
-            style={{ background: '#f87171', borderColor: '#f87171', color: '#ffffff' }}>
+            style={{ background: '#1f5c4e', borderColor: '#1f5c4e', color: '#111111' }}>
             {busy ? 'Deleting…' : 'Delete'}
           </button>
         </div>
@@ -461,12 +461,12 @@ export default function AgentHealth({ user }) {
           marginBottom: 20, paddingTop: 8, gap: 12 }}>
           <div>
             <h1 className="v2-h1" style={{ fontSize:22 }}>Agent management</h1>
-            <p style={{ fontSize:13, color: '#b0a8a0', marginTop: 4 }}>
+            <p style={{ fontSize:13, color: '#888888', marginTop: 4 }}>
               Live ops view · all SSLVault agents across your servers
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize:11, color: '#b0a8a0' }}>
+            <span style={{ fontSize:11, color: '#888888' }}>
               {paused ? 'Paused' : `Refresh in ${countdown}s`}
               {lastRefresh && !paused && ` · Last: ${timeAgo(lastRefresh.toISOString())}`}
             </span>
@@ -486,17 +486,17 @@ export default function AgentHealth({ user }) {
         {/* ── Summary cards ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, marginBottom: 20 }}>
           {[
-            { val: agents.length, label: 'Total agents', color: '#ffffff', filter: 'all' },
+            { val: agents.length, label: 'Total agents', color: '#111111', filter: 'all' },
             { val: online.length,  label: 'Online',       color: '#16a068', filter: 'online' },
-            { val: offline.length, label: 'Offline',      color: '#f87171', filter: 'offline' },
-            { val: highLoad.length,label: 'High load',    color: '#ffffff', filter: 'all' },
+            { val: offline.length, label: 'Offline',      color: '#1f5c4e', filter: 'offline' },
+            { val: highLoad.length,label: 'High load',    color: '#111111', filter: 'all' },
           ].map(({ val, label, color, filter }) => (
             <div key={label} className="v2-card"
               onClick={() => setFilterStatus(filter)}
               style={{ padding: '12px 14px', cursor: 'pointer',
                 borderColor: filterStatus === filter && filter !== 'all' ? color + '66' : 'var(--v2-border)' }}>
               <div style={{ fontSize:24, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
-              <div style={{ fontSize:11, color: '#b0a8a0', marginTop: 3 }}>{label}</div>
+              <div style={{ fontSize:11, color: '#888888', marginTop: 3 }}>{label}</div>
             </div>
           ))}
         </div>
@@ -517,7 +517,7 @@ export default function AgentHealth({ user }) {
         <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
           <div style={{ flex: 1, position: 'relative' }}>
             <Search size={13} style={{ position: 'absolute', left: 10, top: '50%',
-              transform: 'translateY(-50%)', color: '#b0a8a0', pointerEvents: 'none' }}/>
+              transform: 'translateY(-50%)', color: '#888888', pointerEvents: 'none' }}/>
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, hostname, IP, OS…"
               style={{ width: '100%', paddingLeft: 32, fontSize:13, boxSizing: 'border-box' }}/>
@@ -543,23 +543,23 @@ export default function AgentHealth({ user }) {
 
         {/* ── Table ── */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '56px 0', color: '#b0a8a0' }}>
+          <div style={{ textAlign: 'center', padding: '56px 0', color: '#888888' }}>
             <RefreshCw size={24} style={{ animation: 'spin .8s linear infinite',
               margin: '0 auto 12px', display: 'block' }}/>
             Loading agents…
           </div>
         ) : agents.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '56px 0' }}>
-            <Server size={32} style={{ color: '#b0a8a0', margin: '0 auto 12px', display: 'block' }}/>
-            <div style={{ fontSize:14, fontWeight: 500, color: '#e8e0d8', marginBottom: 6 }}>
+            <Server size={32} style={{ color: '#888888', margin: '0 auto 12px', display: 'block' }}/>
+            <div style={{ fontSize:14, fontWeight: 500, color: '#333333', marginBottom: 6 }}>
               No agents installed
             </div>
-            <div style={{ fontSize:12, color: '#b0a8a0' }}>
+            <div style={{ fontSize:12, color: '#888888' }}>
               Install the SSLVault agent on your VPS from the Servers page.
             </div>
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#b0a8a0', fontSize:13 }}>
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#888888', fontSize:13 }}>
             No agents match your filter.
           </div>
         ) : (
@@ -571,7 +571,7 @@ export default function AgentHealth({ user }) {
               background: 'var(--v2-surface-3)',
               borderBottom: '0.5px solid var(--v2-border)' }}>
               {['Server', 'Status', 'CPU', 'RAM', 'Disk', 'Last job', 'Result', 'Certs', 'Next renew'].map(h => (
-                <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#b0a8a0',
+                <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
                   letterSpacing: '0.3px', textTransform: 'uppercase' }}>{h}</div>
               ))}
             </div>
@@ -598,15 +598,15 @@ export default function AgentHealth({ user }) {
                     <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0,
                       background: status === 'online' ? 'transparent' : status === 'offline' ? 'rgba(31,92,78,0.09)' : '#000000',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                      <Server size={14} color={status === 'online' ? '#4ade80' : status === 'offline' ? '#f87171' : 'rgba(240,237,232,0.38)'}/>
+                      <Server size={14} color={status === 'online' ? '#16a068' : status === 'offline' ? '#1f5c4e' : 'rgba(240,237,232,0.38)'}/>
                       {status === 'online' && (
                         <span style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8,
-                          borderRadius: '50%', background: '#4ade80', border: '1.5px solid var(--v2-bg)',
+                          borderRadius: '50%', background: '#16a068', border: '1.5px solid var(--v2-bg)',
                           animation: 'v3pulse 2s ease infinite' }}/>
                       )}
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff',
+                      <div style={{ fontSize:13, fontWeight: 500, color: '#111111',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         display: 'flex', alignItems: 'center', gap: 6 }}>
                         {agent.nickname}
@@ -614,7 +614,7 @@ export default function AgentHealth({ user }) {
                           <AlertTriangle size={11} color="#1f5c4e"/>
                         )}
                       </div>
-                      <div style={{ fontSize:11, color: '#b0a8a0',
+                      <div style={{ fontSize:11, color: '#888888',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {agent.hostname || agent.ip_address || '—'} · {agent.os || 'Linux'} · v{agent.agent_version || '?'}
                       </div>
@@ -634,7 +634,7 @@ export default function AgentHealth({ user }) {
                   <div><MiniBar value={agent.disk_pct} warn={85} danger={95}/></div>
 
                   {/* Last job */}
-                  <div style={{ fontSize:11, color: '#b0a8a0' }}>
+                  <div style={{ fontSize:11, color: '#888888' }}>
                     {agent.last_job_at ? timeAgo(agent.last_job_at) : '—'}
                   </div>
 
@@ -642,7 +642,7 @@ export default function AgentHealth({ user }) {
                   <div><JobBadge status={agent.last_job_status}/></div>
 
                   {/* Certs */}
-                  <div style={{ fontSize:12, color: '#e8e0d8', fontWeight: 500 }}>
+                  <div style={{ fontSize:12, color: '#333333', fontWeight: 500 }}>
                     {agent.certs_managed ?? '—'}
                   </div>
 
@@ -655,15 +655,15 @@ export default function AgentHealth({ user }) {
             {/* Footer summary */}
             <div style={{ padding: '8px 16px', borderTop: '0.5px solid var(--v2-border)',
               background: 'var(--v2-surface-3)', display: 'flex', gap: 20 }}>
-              <span style={{ fontSize:11, color: '#b0a8a0' }}>
+              <span style={{ fontSize:11, color: '#888888' }}>
                 {filtered.length} of {agents.length} agent{agents.length !== 1 ? 's' : ''} shown
               </span>
-              <span style={{ fontSize:11, color: '#b0a8a0' }}>
+              <span style={{ fontSize:11, color: '#888888' }}>
                 Uptime avg: {agents.filter(a => a.uptime_seconds).length
                   ? fmtUptime(Math.round(agents.reduce((s,a) => s + (a.uptime_seconds||0), 0) / agents.filter(a=>a.uptime_seconds).length))
                   : '—'}
               </span>
-              <span style={{ fontSize:11, color: '#b0a8a0' }}>
+              <span style={{ fontSize:11, color: '#888888' }}>
                 Click any row to open job history &amp; actions
               </span>
             </div>

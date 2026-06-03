@@ -15,7 +15,7 @@ export default function Privacy({ nav }) {
       <section style={{position:'relative',padding:'70px 0 30px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px',textAlign:'center'}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'transparent',border:'1px solid rgba(0,0,0,0.08)',padding:'6px 14px',borderRadius:999,marginBottom:24,boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-            <span style={{width:7,height:7,borderRadius:'50%',background:'#0d0000',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
+            <span style={{width:7,height:7,borderRadius:'50%',background:'#f4f1ec',boxShadow:'0 0 0 3px rgba(16,185,129,0.2)'}}/>
             <span style={{fontSize:11,fontWeight:700,color:'#3d3d3d',letterSpacing:'0.4px',textTransform:'uppercase'}}>Privacy Policy</span>
           </div>
           <h1 style={{fontFamily:'Georgia, serif',fontSize:'clamp(36px,5vw,56px)',fontWeight:800,letterSpacing:'-1.6px',lineHeight:1.05,marginBottom:16,color:'#1a1a1a'}}>
@@ -128,7 +128,7 @@ export default function Privacy({ nav }) {
           <button onClick={()=>nav('/terms')} style={{background:'transparent',color:'#1a1a1a',border:'1.5px solid rgba(0,0,0,0.08)',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <FileText size={14}/> Terms of Service
           </button>
-          <button onClick={()=>nav('/contact')} style={{background:'#0d0000',color:'#1a1a1a',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>nav('/contact')} style={{background:'#f4f1ec',color:'#1a1a1a',border:'none',padding:'12px 22px',borderRadius:10,fontSize:13,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8}}>
             <Mail size={14}/> Contact us <ArrowRight size={13}/>
           </button>
         </div>

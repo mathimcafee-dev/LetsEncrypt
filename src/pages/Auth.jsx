@@ -90,7 +90,7 @@ function SSLVaultTrustBadge({ compact = false }) {
         <span style={{fontSize: compact ? 14 : 18, fontWeight:900, color:'#e03030', lineHeight:1}}>256</span>
         <span style={{fontSize:8,color:'#6a2a2a',letterSpacing:'.06em',textTransform:'uppercase'}}>Bit SSL</span>
         {!compact && <div style={{display:'flex',alignItems:'center',gap:4,marginTop:4}}>
-          <div style={{width:5,height:5,borderRadius:'50%',background:'#c0392b',
+          <div style={{width:5,height:5,borderRadius:'50%',background:'#1f5c4e',
             animation:'sv-live-anim 1.2s ease-in-out infinite'}}/>
           <span style={{fontSize:8,color:'#cc4444',fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase'}}>Live</span>
         </div>}

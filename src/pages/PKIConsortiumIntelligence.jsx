@@ -123,12 +123,12 @@ export default function PKIConsortiumIntelligence({ nav }) {
               <div key={c.location} className="conf-card">
                 <div style={{ textAlign:'center', minWidth:60 }}>
                   <div className="conf-yr">{c.year}</div>
-                  <div style={{ fontSize:10, color:'#b0a8a0', marginTop:4 }}>{c.delegates}</div>
-                  <div style={{ fontSize:9, color:'#b0a8a0' }}>delegates</div>
+                  <div style={{ fontSize:10, color:'#888888', marginTop:4 }}>{c.delegates}</div>
+                  <div style={{ fontSize:9, color:'#888888' }}>delegates</div>
                 </div>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:14, fontWeight:600, color:'#ffffff', marginBottom:6 }}>{c.location}</div>
-                  <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{c.desc}</div>
+                  <div style={{ fontSize:14, fontWeight:600, color:'#111111', marginBottom:6 }}>{c.location}</div>
+                  <div style={{ fontSize:12, color:'#333333', lineHeight:1.7 }}>{c.desc}</div>
                 </div>
               </div>
             ))}
@@ -140,8 +140,8 @@ export default function PKIConsortiumIntelligence({ nav }) {
             <p className="pkic-p">PKI Consortium's major programmes and community contributions.</p>
             {KEY_INITIATIVES.map(init => (
               <div key={init.title} className="init-card">
-                <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginBottom:6 }}>{init.title}</div>
-                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.7 }}>{init.desc}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:6 }}>{init.title}</div>
+                <div style={{ fontSize:12, color:'#333333', lineHeight:1.7 }}>{init.desc}</div>
               </div>
             ))}
           </>
@@ -152,7 +152,7 @@ export default function PKIConsortiumIntelligence({ nav }) {
             <p className="pkic-p">PKI Consortium members span CAs, browser vendors, government agencies, and enterprise PKI teams — giving it a uniquely broad cross-sector perspective.</p>
             <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:20 }}>
               {MEMBERS.map(m => (
-                <div key={m} style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:'var(--v2-r-xl)', padding:'8px 14px', fontSize:12, fontWeight:500, color:'#ffffff' }}>{m}</div>
+                <div key={m} style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:'var(--v2-r-xl)', padding:'8px 14px', fontSize:12, fontWeight:500, color:'#111111' }}>{m}</div>
               ))}
             </div>
             <p className="pkic-p" style={{ fontSize:12 }}>Note: membership is broader than listed above — PKI Consortium is open to any organisation working in or with PKI.</p>
@@ -170,8 +170,8 @@ export default function PKIConsortiumIntelligence({ nav }) {
                   {i < TIMELINE.length-1 && <div className="tl-line"/>}
                 </div>
                 <div style={{ flex:1, paddingBottom:8 }}>
-                  <div style={{ fontSize:13, fontWeight:500, color:'#ffffff', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
-                  <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.65 }}>{e.desc}</div>
+                  <div style={{ fontSize:13, fontWeight:500, color:'#111111', marginBottom:4, lineHeight:1.4 }}>{e.event}</div>
+                  <div style={{ fontSize:12, color:'#333333', lineHeight:1.65 }}>{e.desc}</div>
                 </div>
               </div>
             ))}
@@ -188,8 +188,8 @@ export default function PKIConsortiumIntelligence({ nav }) {
             ].map(l => (
               <div key={l.label} className="link-row">
                 <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:500, color:'#ffffff', fontSize:13 }}>{l.label}</div>
-                  <div style={{ fontSize:11, color:'#b0a8a0', marginTop:2 }}>{l.desc}</div>
+                  <div style={{ fontWeight:500, color:'#111111', fontSize:13 }}>{l.label}</div>
+                  <div style={{ fontSize:11, color:'#888888', marginTop:2 }}>{l.desc}</div>
                 </div>
                 <a href={l.url} target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ gap:4, textDecoration:'none', flexShrink:0 }}>
                   <ExternalLink size={11}/> Visit ↗

@@ -78,9 +78,9 @@ export default function AdminAnalytics({ user }) {
 
   useEffect(()=>{if(user){ load(); loadRequests() }},[user])
 
-  if (loading) return <div className="v2-page"><div className="v2-container" style={{paddingTop:40,textAlign:'center',color:'#b0a8a0'}}>Loading analytics…</div></div>
+  if (loading) return <div className="v2-page"><div className="v2-container" style={{paddingTop:40,textAlign:'center',color:'#888888'}}>Loading analytics…</div></div>
 
-  const gradeColor = {A:'#4ade80',B:'#65a30d',C:'#f0ede8',D:'#1f5c4e',F:'#f87171',unknown:'rgba(240,237,232,0.38)'}
+  const gradeColor = {A:'#16a068',B:'#65a30d',C:'#111111',D:'#1f5c4e',F:'#1f5c4e',unknown:'rgba(240,237,232,0.38)'}
 
   return (
     <div className="v2-page">
@@ -97,8 +97,8 @@ export default function AdminAnalytics({ user }) {
         <div style={{marginBottom:24}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
             <div>
-              <div style={{fontSize:15,fontWeight:700,color:'#ffffff'}}>Signup requests</div>
-              <div style={{fontSize:12,color:'#b0a8a0',marginTop:2}}>New users waiting for your approval</div>
+              <div style={{fontSize:15,fontWeight:700,color:'#111111'}}>Signup requests</div>
+              <div style={{fontSize:12,color:'#888888',marginTop:2}}>New users waiting for your approval</div>
             </div>
             <button className="v2-btn v2-btn-sm" onClick={loadRequests} disabled={reqLoading}>
               <RefreshCw size={11}/> Refresh
@@ -107,17 +107,17 @@ export default function AdminAnalytics({ user }) {
           {actionMsg && (
             <div style={{padding:'8px 12px',borderRadius:6,background:actionMsg.startsWith('Error')?'rgba(31,92,78,0.09)':'transparent',
               border:`0.5px solid ${actionMsg.startsWith('Error')?'rgba(0,0,0,0.1)':'rgba(31,92,78,0.2)'}`,
-              color:actionMsg.startsWith('Error')?'#f87171':'#4ade80',fontSize:12,marginBottom:10,
+              color:actionMsg.startsWith('Error')?'#1f5c4e':'#16a068',fontSize:12,marginBottom:10,
               display:'flex',alignItems:'center',justifyContent:'space-between'}}>
               {actionMsg}
               <button onClick={()=>setActionMsg('')} style={{background:'none',border:'none',cursor:'pointer',fontSize:14,lineHeight:1}}>×</button>
             </div>
           )}
           {reqLoading ? (
-            <div style={{padding:'20px',textAlign:'center',color:'#b0a8a0',fontSize:13}}>Loading…</div>
+            <div style={{padding:'20px',textAlign:'center',color:'#888888',fontSize:13}}>Loading…</div>
           ) : requests.filter(r=>r.status==='pending').length === 0 ? (
             <div style={{padding:'16px',background:'var(--v2-surface-2)',borderRadius:8,border:'0.5px solid var(--v2-border)',
-              textAlign:'center',color:'#b0a8a0',fontSize:13}}>
+              textAlign:'center',color:'#888888',fontSize:13}}>
               No pending signup requests
             </div>
           ) : (
@@ -125,23 +125,23 @@ export default function AdminAnalytics({ user }) {
               <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:640,padding:'8px 16px',
                 background:'var(--v2-surface-2)',borderBottom:'0.5px solid rgba(0,0,0,0.06)'}}>
                 {['Email','Status','Requested','Actions'].map(h=>(
-                  <div key={h} style={{fontSize:10,fontWeight:700,color:'#b0a8a0',textTransform:'uppercase',letterSpacing:'0.4px'}}>{h}</div>
+                  <div key={h} style={{fontSize:10,fontWeight:700,color:'#888888',textTransform:'uppercase',letterSpacing:'0.4px'}}>{h}</div>
                 ))}
               </div>
               {requests.map((req,i)=>(
                 <div key={req.id} style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:640,
                   padding:'10px 16px',borderBottom:i<requests.length-1?'0.5px solid var(--v2-border)':'none',
                   background:i%2===0?'transparent':'var(--v2-surface-2)',alignItems:'center'}}>
-                  <div style={{fontSize:12,fontWeight:500,color:'#ffffff'}}>{req.email}</div>
+                  <div style={{fontSize:12,fontWeight:500,color:'#111111'}}>{req.email}</div>
                   <div>
                     <span style={{fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:20,
                       background:req.status==='pending'?'rgba(239,68,68,0.08)':req.status==='approved'?'transparent':'rgba(31,92,78,0.09)',
-                      color:req.status==='pending'?'#f0ede8':req.status==='approved'?'#4ade80':'#f87171',
+                      color:req.status==='pending'?'#111111':req.status==='approved'?'#16a068':'#1f5c4e',
                       border:`0.5px solid ${req.status==='pending'?'rgba(0,0,0,0.1)':req.status==='approved'?'rgba(31,92,78,0.2)':'rgba(0,0,0,0.1)'}`}}>
                       {req.status}
                     </span>
                   </div>
-                  <div style={{fontSize:11,color:'#b0a8a0'}}>
+                  <div style={{fontSize:11,color:'#888888'}}>
                     {new Date(req.requested_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
                   </div>
                   <div style={{display:'flex',gap:6}}>
@@ -153,12 +153,12 @@ export default function AdminAnalytics({ user }) {
                       </button>
                       <button onClick={()=>handleReject(req.user_id,req.email)}
                         style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #fecaca',
-                          background:'rgba(31,92,78,0.09)',color:'#c0392b',cursor:'pointer',fontWeight:600}}>
+                          background:'rgba(31,92,78,0.09)',color:'#1f5c4e',cursor:'pointer',fontWeight:600}}>
                         ✗ Reject
                       </button>
                     </>)}
                     {req.status!=='pending' && (
-                      <span style={{fontSize:11,color:'#b0a8a0'}}>
+                      <span style={{fontSize:11,color:'#888888'}}>
                         {req.reviewed_at ? new Date(req.reviewed_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '—'}
                       </span>
                     )}
@@ -173,16 +173,16 @@ export default function AdminAnalytics({ user }) {
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:10,marginBottom:20}}>
           {[
             {icon:Shield,      val:stats.active,      label:'Active certs',     color:'#16a068'},
-            {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#ffffff'},
-            {icon:AlertTriangle,val:stats.expiring30, label:'Expiring in 30d',  color:'#ffffff'},
-            {icon:CheckCircle, val:stats.installed,   label:'Auto-installed',   color:'#ffffff'},
+            {icon:TrendingUp,  val:stats.thisMonth,   label:'Issued this month',color:'#111111'},
+            {icon:AlertTriangle,val:stats.expiring30, label:'Expiring in 30d',  color:'#111111'},
+            {icon:CheckCircle, val:stats.installed,   label:'Auto-installed',   color:'#111111'},
           ].map(({icon:Icon,val,label,color})=>(
             <div key={label} className="v2-card" style={{padding:'14px 16px'}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
                 <div style={{width:30,height:30,borderRadius:7,background:color+'18',display:'flex',alignItems:'center',justifyContent:'center'}}><Icon size={15} color={color}/></div>
               </div>
               <div style={{fontSize:26,fontWeight:500,color,fontFamily:'monospace',lineHeight:1}}>{val}</div>
-              <div style={{fontSize:11,color:'#b0a8a0',marginTop:4}}>{label}</div>
+              <div style={{fontSize:11,color:'#888888',marginTop:4}}>{label}</div>
             </div>
           ))}
         </div>
@@ -195,14 +195,14 @@ export default function AdminAnalytics({ user }) {
               <div key={g} style={{marginBottom:10}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
                   <span style={{fontSize:12,fontWeight:500,color:gradeColor[g]||'rgba(240,237,232,0.7)',fontFamily:'monospace'}}>{g==='unknown'?'—':g}</span>
-                  <span style={{fontSize:12,color:'#e8e0d8'}}>{v} cert{v!==1?'s':''}</span>
+                  <span style={{fontSize:12,color:'#333333'}}>{v} cert{v!==1?'s':''}</span>
                 </div>
                 <div style={{height:6,borderRadius:3,background:'var(--v2-surface-3)',overflow:'hidden'}}>
                   <div style={{height:'100%',borderRadius:3,background:gradeColor[g]||'rgba(240,237,232,0.7)',width:`${Math.min(100,(v/Math.max(1,stats.active))*100)}%`,transition:'width .6s'}}/>
                 </div>
               </div>
             ))}
-            {stats.grades.unknown===stats.active&&<div style={{fontSize:12,color:'#b0a8a0'}}>No posture checks run yet — open a cert and click Sync Status.</div>}
+            {stats.grades.unknown===stats.active&&<div style={{fontSize:12,color:'#888888'}}>No posture checks run yet — open a cert and click Sync Status.</div>}
           </div>
 
           {/* CA source breakdown */}
@@ -210,12 +210,12 @@ export default function AdminAnalytics({ user }) {
             <div className="v2-section-label" style={{marginBottom:14}}>Certificates by CA</div>
             {Object.entries(stats.bySource).sort((a,b)=>b[1]-a[1]).map(([src,cnt])=>{
               const labels = {rapidssl:'RapidSSL',tss:'RapidSSL',letsencrypt:"Let's Encrypt",zerossl:'ZeroSSL',buypass:'Buypass',acme:'ACME',unknown:'Unknown'}
-              const colors = {rapidssl:'#4ade80',tss:'#4ade80',letsencrypt:'#f0ede8',zerossl:'#f0ede8',buypass:'#f0ede8',acme:'rgba(240,237,232,0.7)',unknown:'rgba(240,237,232,0.38)'}
+              const colors = {rapidssl:'#16a068',tss:'#16a068',letsencrypt:'#111111',zerossl:'#111111',buypass:'#111111',acme:'rgba(240,237,232,0.7)',unknown:'rgba(240,237,232,0.38)'}
               return (
                 <div key={src} style={{marginBottom:10}}>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
-                    <span style={{fontSize:12,fontWeight:500,color:'#ffffff'}}>{labels[src]||src}</span>
-                    <span style={{fontSize:12,color:'#e8e0d8'}}>{cnt}</span>
+                    <span style={{fontSize:12,fontWeight:500,color:'#111111'}}>{labels[src]||src}</span>
+                    <span style={{fontSize:12,color:'#333333'}}>{cnt}</span>
                   </div>
                   <div style={{height:6,borderRadius:3,background:'var(--v2-surface-3)',overflow:'hidden'}}>
                     <div style={{height:'100%',borderRadius:3,background:colors[src]||'rgba(240,237,232,0.7)',width:`${(cnt/Math.max(1,stats.active))*100}%`,transition:'width .6s'}}/>
@@ -229,10 +229,10 @@ export default function AdminAnalytics({ user }) {
         {/* Expiry urgency */}
         {stats.expiring7 > 0 && (
           <div style={{background:'rgba(31,92,78,0.09)',border:'0.5px solid #fecaca',borderRadius:10,padding:'14px 18px',marginBottom:20,display:'flex',gap:12,alignItems:'flex-start'}}>
-            <AlertTriangle size={16} style={{color:'#c0392b',flexShrink:0,marginTop:2}}/>
+            <AlertTriangle size={16} style={{color:'#1f5c4e',flexShrink:0,marginTop:2}}/>
             <div>
               <div style={{fontSize:13,fontWeight:500,color:'#2e7a68',marginBottom:3}}>{stats.expiring7} certificate{stats.expiring7!==1?'s':''} expiring within 7 days</div>
-              <div style={{fontSize:12,color:'#c0392b'}}>Check the dashboard and renew immediately if auto-renew is not enabled.</div>
+              <div style={{fontSize:12,color:'#1f5c4e'}}>Check the dashboard and renew immediately if auto-renew is not enabled.</div>
             </div>
           </div>
         )}

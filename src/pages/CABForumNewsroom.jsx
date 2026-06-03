@@ -17,8 +17,8 @@ const COMPLIANCE_DEADLINES = [
   { title: '100-day max validity', date: '2027-03-15', ballot: 'SC081v3', color: 'var(--v2-amber)', status: 'plan', action: 'Manual renewal every 100 days is operationally unsustainable. Start deploying ACME automation now.' },
   { title: '47-day max validity', date: '2029-03-15', ballot: 'SC081v3', color: 'var(--v2-green-text)', status: 'future', action: 'Full zero-touch automation required. Human-in-the-loop renewal processes will fail at this cadence.' },
   { title: 'DCV reuse max 10 days', date: '2027-03-15', ballot: 'SC081v3', color: 'var(--v2-amber)', status: 'plan', action: 'Domain control validation reuse drops to 10 days — requiring near-continuous automated re-validation.' },
-  { title: 'SHA-1 fully prohibited', date: '2026-01-01', ballot: 'SC097', color: '#b0a8a0', status: 'passed', action: 'Already in effect. Any cert or CRL with SHA-1 signatures must be revoked. Check your intermediates.' },
-  { title: 'Multi-perspective DCV', date: '2025-03-15', ballot: 'SC067v3', color: '#b0a8a0', status: 'passed', action: 'Already in effect. CAs must validate from multiple network perspectives. Affects all new issuances.' },
+  { title: 'SHA-1 fully prohibited', date: '2026-01-01', ballot: 'SC097', color: '#888888', status: 'passed', action: 'Already in effect. Any cert or CRL with SHA-1 signatures must be revoked. Check your intermediates.' },
+  { title: 'Multi-perspective DCV', date: '2025-03-15', ballot: 'SC067v3', color: '#888888', status: 'passed', action: 'Already in effect. CAs must validate from multiple network perspectives. Affects all new issuances.' },
 ]
 
 const TIMELINE = [
@@ -40,11 +40,11 @@ const TIMELINE = [
 ]
 
 const WORKING_GROUPS = [
-  { id: 'server', name: 'Server Certificate WG', short: 'SCWG', color: '#ffffff', chair: 'Dimitris Zacharopoulos', chairOrg: 'HARICA', vchair: 'Wayne Thayer', vchairOrg: 'Fastly', latestBR: 'TLS BR v2.2.7', latestBallot: 'SC099', desc: 'Governs all publicly-trusted TLS/SSL certificates. Produces the Baseline Requirements — the primary rulebook for web PKI. Covers DCV methods, validity, key requirements, revocation, audit, and CT logging.', ballotPrefix: 'SC', members: 53, docs: 'https://cabforum.org/working-groups/server/' },
+  { id: 'server', name: 'Server Certificate WG', short: 'SCWG', color: '#111111', chair: 'Dimitris Zacharopoulos', chairOrg: 'HARICA', vchair: 'Wayne Thayer', vchairOrg: 'Fastly', latestBR: 'TLS BR v2.2.7', latestBallot: 'SC099', desc: 'Governs all publicly-trusted TLS/SSL certificates. Produces the Baseline Requirements — the primary rulebook for web PKI. Covers DCV methods, validity, key requirements, revocation, audit, and CT logging.', ballotPrefix: 'SC', members: 53, docs: 'https://cabforum.org/working-groups/server/' },
   { id: 'smime', name: 'S/MIME Certificate WG', short: 'SMCWG', color: '#1f5c4e', chair: 'Stephen Davidson', chairOrg: 'DigiCert', vchair: 'Martijn Katerbarg', vchairOrg: 'Sectigo', latestBR: 'S/MIME BR v1.0.14', latestBallot: 'SMC016', desc: 'Produces the S/MIME Baseline Requirements governing email encryption and signing certificates. Chartered in 2020, first BRs published 2023. Covers mailbox-validated, org-validated, sponsor-validated and individual-validated S/MIME certs.', ballotPrefix: 'SMC', members: 38, docs: 'https://cabforum.org/working-groups/smime/' },
   { id: 'codesign', name: 'Code Signing WG', short: 'CSCWG', color: '#1f5c4e', chair: 'Martijn Katerbarg', chairOrg: 'Sectigo', vchair: 'Thomas Zermeno', vchairOrg: 'SSL.com', latestBR: 'Code Signing BR v3.8', latestBallot: 'CSC-25', desc: 'Governs code signing certificates used to authenticate software publishers. Covers EV code signing, timestamping, private key protection requirements, and the transition to cloud-based signing services.', ballotPrefix: 'CSC', members: 31, docs: 'https://cabforum.org/working-groups/code-signing/' },
-  { id: 'netsec', name: 'Network Security WG', short: 'NSWG', color: '#ffffff', chair: 'Clint Wilson', chairOrg: 'Apple', vchair: 'David Kluge', vchairOrg: 'Google Trust Services', latestBR: 'NetSec BR v2.0.5', latestBallot: 'NS-008', desc: 'Focuses on CA infrastructure security — network architecture, physical security, logical access controls, incident response, and system monitoring. Covers all systems involved in certificate issuance and management.', ballotPrefix: 'NS', members: 28, docs: 'https://cabforum.org/working-groups/netsec/' },
-  { id: 'definitions', name: 'Definitions & Glossary WG', short: 'DWG', color: '#e8e0d8', chair: 'Tim Hollebeek', chairOrg: 'DigiCert', vchair: '—', vchairOrg: '', latestBR: 'Definitions v1.0', latestBallot: '—', desc: 'Maintains consistent terminology across all CAB Forum documents. Ensures that terms like "Applicant", "Subscriber", "Relying Party", and "Certificate Consumer" have unified definitions across all Working Group standards.', ballotPrefix: 'DEF', members: 22, docs: 'https://cabforum.org/working-groups/definitions/' },
+  { id: 'netsec', name: 'Network Security WG', short: 'NSWG', color: '#111111', chair: 'Clint Wilson', chairOrg: 'Apple', vchair: 'David Kluge', vchairOrg: 'Google Trust Services', latestBR: 'NetSec BR v2.0.5', latestBallot: 'NS-008', desc: 'Focuses on CA infrastructure security — network architecture, physical security, logical access controls, incident response, and system monitoring. Covers all systems involved in certificate issuance and management.', ballotPrefix: 'NS', members: 28, docs: 'https://cabforum.org/working-groups/netsec/' },
+  { id: 'definitions', name: 'Definitions & Glossary WG', short: 'DWG', color: '#333333', chair: 'Tim Hollebeek', chairOrg: 'DigiCert', vchair: '—', vchairOrg: '', latestBR: 'Definitions v1.0', latestBallot: '—', desc: 'Maintains consistent terminology across all CAB Forum documents. Ensures that terms like "Applicant", "Subscriber", "Relying Party", and "Certificate Consumer" have unified definitions across all Working Group standards.', ballotPrefix: 'DEF', members: 22, docs: 'https://cabforum.org/working-groups/definitions/' },
 ]
 
 const CA_MEMBERS = ['AC Camerfirma','Actalis','Amazon Trust Services','Asseco/Certum','Beijing CA','Buypass','Certigna','certSIGN','CFCA','Chunghwa Telecom','Cybertrust Japan','DigiCert','Digidentity','Disig','DocuSign','D-TRUST','eMudhra','Entrust','E-tugra','Fastly','GDCA','GlobalSign','GoDaddy','HARICA','IdenTrust','iTrusChina','Izenpe','Japan Registry Services','Kamu SM','KPN',"Let's Encrypt",'MOIS Korea','MSC Trustgate','NAVER Cloud','Network Solutions','OISTE','SDAIA','SECOM Trust','Sectigo','SHECA','SK ID Solutions','SSL.com','SwissSign','Telia','TrustAsia','TWCA','Visa']
@@ -113,29 +113,29 @@ function Pill({ color, bg, border, children }) {
 }
 
 const STATUS_STYLE = {
-  passed:   { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)' },
-  adopted:  { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)' },
+  passed:   { color:'#111111', bg:'transparent', border:'rgba(31,92,78,0.2)' },
+  adopted:  { color:'#111111', bg:'transparent', border:'rgba(31,92,78,0.2)' },
   withdrawn:{ color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
   failed:   { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
   draft:    { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
 }
 const WG_STYLE = {
-  'Server Cert WG': { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)' },
+  'Server Cert WG': { color:'#111111', bg:'transparent', border:'rgba(31,92,78,0.2)' },
   'S/MIME WG':      { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
   'Code Signing WG':{ color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
-  'NetSec WG':      { color:'#ffffff', bg:'transparent', border:'rgba(31,92,78,0.2)' },
-  'Forum':          { color:'#b0a8a0', bg:'#000000', border:'rgba(30,0,0,0.5)' },
+  'NetSec WG':      { color:'#111111', bg:'transparent', border:'rgba(31,92,78,0.2)' },
+  'Forum':          { color:'#888888', bg:'#000000', border:'rgba(30,0,0,0.5)' },
 }
 const IMPACT_STYLE = {
-  critical: { color:'#c0392b', bg:'rgba(31,92,78,0.09)', border:'rgba(0,0,0,0.1)' },
+  critical: { color:'#1f5c4e', bg:'rgba(31,92,78,0.09)', border:'rgba(0,0,0,0.1)' },
   high:     { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
 }
 
 function BallotRow({ b, onClick }) {
   const imp = b.impact_level ? IMPACT_STYLE[b.impact_level.toLowerCase()] : null
   const impLabel = b.impact_level === 'critical' ? 'Critical' : b.impact_level === 'high' ? 'High impact' : null
-  const st = STATUS_STYLE[(b.status||'').toLowerCase()] || { color:'#b0a8a0', bg:'#000000', border:'rgba(30,0,0,0.5)' }
-  const wg = WG_STYLE[b.working_group] || { color:'#b0a8a0', bg:'#000000', border:'rgba(30,0,0,0.5)' }
+  const st = STATUS_STYLE[(b.status||'').toLowerCase()] || { color:'#888888', bg:'#000000', border:'rgba(30,0,0,0.5)' }
+  const wg = WG_STYLE[b.working_group] || { color:'#888888', bg:'#000000', border:'rgba(30,0,0,0.5)' }
 
   return (
     <div onClick={() => onClick(b)} style={{
@@ -149,8 +149,8 @@ function BallotRow({ b, onClick }) {
       {/* ID + Title + Impact chip */}
       <div style={{ display:'flex', alignItems:'flex-start', gap:8, flexWrap:'wrap', marginBottom:5 }}>
         <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, fontWeight:700,
-          color:'#b0a8a0', flexShrink:0, paddingTop:2 }}>{b.ballot_id}</span>
-        <span style={{ fontSize:14, fontWeight:600, color:'#ffffff', lineHeight:1.3, flex:1, minWidth:0 }}>
+          color:'#888888', flexShrink:0, paddingTop:2 }}>{b.ballot_id}</span>
+        <span style={{ fontSize:14, fontWeight:600, color:'#111111', lineHeight:1.3, flex:1, minWidth:0 }}>
           {b.title}
         </span>
         {imp && impLabel && <Pill {...imp}>{impLabel}</Pill>}
@@ -158,7 +158,7 @@ function BallotRow({ b, onClick }) {
 
       {/* Description */}
       {b.plain_english && (
-        <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.6, marginBottom:8, paddingLeft:0 }}>
+        <div style={{ fontSize:12, color:'#333333', lineHeight:1.6, marginBottom:8, paddingLeft:0 }}>
           {b.plain_english}
         </div>
       )}
@@ -167,12 +167,12 @@ function BallotRow({ b, onClick }) {
       <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
         <Pill {...wg}>{b.working_group}</Pill>
         {b.proposed_by && (
-          <span style={{ fontSize:11, color:'#b0a8a0' }}>
+          <span style={{ fontSize:11, color:'#888888' }}>
             {b.proposed_by}{b.proposed_org ? ` · ${b.proposed_org}` : ''}
           </span>
         )}
         {b.voting_closed && (
-          <span style={{ fontSize:11, color:'#b0a8a0' }}>{fmtDate(b.voting_closed)}</span>
+          <span style={{ fontSize:11, color:'#888888' }}>{fmtDate(b.voting_closed)}</span>
         )}
         {b.br_version && (
           <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10,
@@ -446,18 +446,18 @@ export default function CABForumNewsroom({ nav }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border-strong)', borderRadius: 'var(--v2-r-md)', padding: '5px 10px', flex: 1 }}>
                   <Search size={13} color="var(--v2-text-3)" />
                   <input type="text" placeholder="Search ballots…" value={query} onChange={e => setQuery(e.target.value)}
-                    style={{ border: 'none', outline: 'none', background: 'transparent', fontSize:12, color: '#ffffff', fontFamily: S.font, width: 160 }} />
+                    style={{ border: 'none', outline: 'none', background: 'transparent', fontSize:12, color: '#111111', fontFamily: S.font, width: 160 }} />
                 </div>
               </div>
             </div>
             <div className="filter-bar">
-              <span style={{ fontSize:11, color: '#b0a8a0', marginRight: 4 }}>WG:</span>
+              <span style={{ fontSize:11, color: '#888888', marginRight: 4 }}>WG:</span>
               {['all','Server Cert WG','S/MIME WG','Code Signing WG','NetSec WG','Forum'].map(f => (
                 <button key={f} className={`fchip${wgFilter === f ? ' on' : ''}`} onClick={() => setWgFilter(f)}>
                   {f === 'all' ? 'All' : f}
                 </button>
               ))}
-              <span style={{ fontSize:11, color: '#b0a8a0', marginLeft: 8, marginRight: 4 }}>Status:</span>
+              <span style={{ fontSize:11, color: '#888888', marginLeft: 8, marginRight: 4 }}>Status:</span>
               {[['all','All'],['passed','Passed'],['active','Active'],['failed','Failed/Withdrawn']].map(([k,l]) => (
                 <button key={k} className={`fchip${statusFilter === k ? ' on' : ''}`} onClick={() => setStatusFilter(k)}>{l}</button>
               ))}
@@ -532,10 +532,10 @@ export default function CABForumNewsroom({ nav }) {
                 {criticalBallots.slice(0, 5).map(b => (
                   <div key={b.ballot_id} onClick={() => setSelectedBallot(b)} style={{ padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                      <span style={{ fontFamily: S.mono, fontSize:10, fontWeight: 600, color: '#e8e0d8' }}>{b.ballot_id}</span>
+                      <span style={{ fontFamily: S.mono, fontSize:10, fontWeight: 600, color: '#333333' }}>{b.ballot_id}</span>
                       <Chip cls="chip-red">Critical</Chip>
                     </div>
-                    <div style={{ fontSize:11, fontWeight: 500, color: '#ffffff', lineHeight: 1.4 }}>{b.title}</div>
+                    <div style={{ fontSize:11, fontWeight: 500, color: '#111111', lineHeight: 1.4 }}>{b.title}</div>
                   </div>
                 ))}
               </div>
@@ -553,8 +553,8 @@ export default function CABForumNewsroom({ nav }) {
                 ].map(({ name, version, date, ballot }) => (
                   <div key={name} style={{ padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontSize:11, fontWeight: 500, color: '#ffffff' }}>{name}</div>
-                      <div style={{ fontSize:10, color: '#b0a8a0' }}>{date} · {ballot}</div>
+                      <div style={{ fontSize:11, fontWeight: 500, color: '#111111' }}>{name}</div>
+                      <div style={{ fontSize:10, color: '#888888' }}>{date} · {ballot}</div>
                     </div>
                     <Chip cls="chip-green">{version}</Chip>
                   </div>
@@ -575,8 +575,8 @@ export default function CABForumNewsroom({ nav }) {
                   { role: 'Code Signing WG Chair', name: 'Martijn Katerbarg', org: 'Sectigo' },
                 ].map(({ role, name, org }) => (
                   <div key={role} style={{ padding: '7px 0', borderBottom: '0.5px solid var(--v2-border)' }}>
-                    <div style={{ fontSize:10, color: '#b0a8a0', marginBottom: 2 }}>{role}</div>
-                    <div style={{ fontSize:12, fontWeight: 500, color: '#ffffff' }}>{name} <span style={{ fontWeight: 400, color: '#e8e0d8' }}>· {org}</span></div>
+                    <div style={{ fontSize:10, color: '#888888', marginBottom: 2 }}>{role}</div>
+                    <div style={{ fontSize:12, fontWeight: 500, color: '#111111' }}>{name} <span style={{ fontWeight: 400, color: '#333333' }}>· {org}</span></div>
                   </div>
                 ))}
               </div>
@@ -600,19 +600,19 @@ export default function CABForumNewsroom({ nav }) {
                 <div key={d.title} className="v2-card v2-card-pad" style={{ borderLeft: `3px solid ${d.color}`, borderRadius: '0 var(--v2-r-xl) var(--v2-r-xl) 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize:14, fontWeight: 600, color: '#ffffff', marginBottom: 3 }}>{d.title}</div>
+                      <div style={{ fontSize:14, fontWeight: 600, color: '#111111', marginBottom: 3 }}>{d.title}</div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        <span style={{ fontFamily: S.mono, fontSize:11, color: '#b0a8a0' }}>{d.date}</span>
+                        <span style={{ fontFamily: S.mono, fontSize:11, color: '#888888' }}>{d.date}</span>
                         <Chip cls="chip-grey">{d.ballot}</Chip>
                       </div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 12 }}>
                       {isPast ? (
-                        <div style={{ fontSize:13, fontWeight: 600, color: '#b0a8a0' }}>In effect</div>
+                        <div style={{ fontSize:13, fontWeight: 600, color: '#888888' }}>In effect</div>
                       ) : (
                         <>
                           <div style={{ fontSize:24, fontWeight: 700, color: d.color, fontFamily: S.mono, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{days}</div>
-                          <div style={{ fontSize:10, color: '#b0a8a0', textTransform: 'uppercase', letterSpacing: '.04em' }}>days left</div>
+                          <div style={{ fontSize:10, color: '#888888', textTransform: 'uppercase', letterSpacing: '.04em' }}>days left</div>
                         </>
                       )}
                     </div>
@@ -694,13 +694,13 @@ export default function CABForumNewsroom({ nav }) {
                 <div className="wg-top">
                   <div className="wg-badge" style={{ background: wg.color }}>{wg.short}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize:14, fontWeight: 600, color: '#ffffff', marginBottom: 3 }}>{wg.name}</div>
-                    <div style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.5 }}>{wg.desc}</div>
+                    <div style={{ fontSize:14, fontWeight: 600, color: '#111111', marginBottom: 3 }}>{wg.name}</div>
+                    <div style={{ fontSize:12, color: '#333333', lineHeight: 1.5 }}>{wg.desc}</div>
                   </div>
                 </div>
                 <div className="wg-meta">
-                  <div><div className="wm-k">Chair</div><div className="wm-v">{wg.chair} <span style={{ fontWeight: 400, color: '#e8e0d8' }}>· {wg.chairOrg}</span></div></div>
-                  <div><div className="wm-k">Vice Chair</div><div className="wm-v">{wg.vchair} <span style={{ fontWeight: 400, color: '#e8e0d8' }}>{wg.vchairOrg ? '· ' + wg.vchairOrg : ''}</span></div></div>
+                  <div><div className="wm-k">Chair</div><div className="wm-v">{wg.chair} <span style={{ fontWeight: 400, color: '#333333' }}>· {wg.chairOrg}</span></div></div>
+                  <div><div className="wm-k">Vice Chair</div><div className="wm-v">{wg.vchair} <span style={{ fontWeight: 400, color: '#333333' }}>{wg.vchairOrg ? '· ' + wg.vchairOrg : ''}</span></div></div>
                   <div><div className="wm-k">Latest standard</div><div className="wm-v" style={{ fontFamily: S.mono, fontSize:11, color: 'var(--v2-green-text)' }}>{wg.latestBR}</div></div>
                   <div><div className="wm-k">Latest ballot</div><div className="wm-v" style={{ fontFamily: S.mono, fontSize:11 }}>{wg.latestBallot}</div></div>
                   <div><div className="wm-k">Members</div><div className="wm-v">{wg.members}+</div></div>
@@ -729,7 +729,7 @@ export default function CABForumNewsroom({ nav }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 14 }}>
             <div className="v2-card">
               <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>Certification Authorities</div>
+                <div style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>Certification Authorities</div>
                 <Chip cls="chip-blue">{CA_MEMBERS.length} CAs</Chip>
               </div>
               <div style={{ padding: 14 }}>
@@ -740,7 +740,7 @@ export default function CABForumNewsroom({ nav }) {
             </div>
             <div className="v2-card">
               <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>Certificate Consumers (Browsers & OS)</div>
+                <div style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>Certificate Consumers (Browsers & OS)</div>
                 <Chip cls="chip-green">{BROWSER_MEMBERS.length} consumers</Chip>
               </div>
               <div style={{ padding: 14 }}>
@@ -754,7 +754,7 @@ export default function CABForumNewsroom({ nav }) {
             </div>
             <div className="v2-card">
               <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)' }}>
-                <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>Associates & Interested Parties</div>
+                <div style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>Associates & Interested Parties</div>
               </div>
               <div style={{ padding: 14 }}>
                 <div className="member-grid">
@@ -769,7 +769,7 @@ export default function CABForumNewsroom({ nav }) {
             </div>
             <div className="v2-card">
               <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)' }}>
-                <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>How membership works</div>
+                <div style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>How membership works</div>
               </div>
               <div style={{ padding: 14 }}>
                 {[
@@ -779,8 +779,8 @@ export default function CABForumNewsroom({ nav }) {
                   { title: 'Interested Parties', desc: 'Individual experts and organisations who contribute to discussions without voting rights. EFF, Cloudflare, ICANN, Netflix are examples.' },
                 ].map(({ title, desc }) => (
                   <div key={title} style={{ padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)' }}>
-                    <div style={{ fontSize:12, fontWeight: 500, color: '#ffffff', marginBottom: 3 }}>{title}</div>
-                    <div style={{ fontSize:11, color: '#e8e0d8', lineHeight: 1.5 }}>{desc}</div>
+                    <div style={{ fontSize:12, fontWeight: 500, color: '#111111', marginBottom: 3 }}>{title}</div>
+                    <div style={{ fontSize:11, color: '#333333', lineHeight: 1.5 }}>{desc}</div>
                   </div>
                 ))}
               </div>

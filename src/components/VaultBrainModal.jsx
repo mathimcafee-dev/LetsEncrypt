@@ -197,7 +197,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
             disabled={busy || !session}
             style={{
               flex: 1, background: 'none', border: 'none', outline: 'none',
-              color: '#f0ede8', fontSize: 15, fontFamily: 'inherit',
+              color: '#111111', fontSize: 15, fontFamily: 'inherit',
               opacity: !session ? 0.5 : 1,
             }}
           />
@@ -206,13 +206,13 @@ export default function VaultBrainModal({ open, onClose, session }) {
             {msgs.length > 0 && !busy && (
               <button onClick={() => { setMsgs([]); histRef.current = []; setStart(false); setPend(null) }} style={{
                 background: 'none', border: '1px solid rgba(0,0,0,0.06)',
-                borderRadius: 5, cursor: 'pointer', color: '#b0a8a0',
+                borderRadius: 5, cursor: 'pointer', color: '#888888',
                 fontSize: 11, padding: '3px 8px', fontFamily: 'inherit',
               }}>Clear</button>
             )}
             <button onClick={onClose} style={{
               background: 'none', border: '1px solid rgba(0,0,0,0.06)',
-              borderRadius: 6, cursor: 'pointer', color: '#b0a8a0',
+              borderRadius: 6, cursor: 'pointer', color: '#888888',
               width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -231,7 +231,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {CHIPS.map(c => (
                 <button key={c} onClick={() => session && send(c)} disabled={!session} style={{
-                  background: 'rgba(255,255,255,0.03)',
+                  background: 'rgba(0,0,0,0.02)',
                   border: '1px solid rgba(0,0,0,0.05)',
                   borderRadius: 9, padding: '9px 13px', cursor: session ? 'pointer' : 'not-allowed',
                   fontFamily: 'inherit', fontSize: 13.5, color: '#d8d4d0', textAlign: 'left',
@@ -240,7 +240,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                   display: 'flex', alignItems: 'center', gap: 8,
                 }}
                 onMouseEnter={e => { if (session) { e.currentTarget.style.background = 'rgba(31,92,78,0.07)'; e.currentTarget.style.borderColor = 'rgba(31,92,78,0.2)' } }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)' }}>
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)' }}>
                   <span style={{ color: 'rgba(192,57,43,0.5)', fontSize: 11 }}>›</span>
                   {c}
                 </button>
@@ -254,7 +254,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
 
         {/* Loading first response */}
         {msgs.length === 0 && busy && (
-          <div style={{ padding: '24px 16px', textAlign: 'center', color: '#b0a8a0' }}>
+          <div style={{ padding: '24px 16px', textAlign: 'center', color: '#888888' }}>
             <div style={{ fontSize: 11, marginBottom: 8 }}>Reading your certificate fleet…</div>
             <div style={{ display: 'flex', justifyContent: 'center' }}><Dots /></div>
           </div>
@@ -272,7 +272,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                       border: '1px solid rgba(0,0,0,0.08)',
                       borderRadius: '10px 10px 2px 10px', padding: '8px 13px',
                     }}>
-                      <div style={{ fontSize: 13.5, color: '#f0ede8' }}>{msg.text}</div>
+                      <div style={{ fontSize: 13.5, color: '#111111' }}>{msg.text}</div>
                       <div style={{ fontSize: 10, color: 'rgba(240,237,232,0.3)', marginTop: 3, textAlign: 'right' }}>{msg.ts}</div>
                     </div>
                   </div>
@@ -285,13 +285,13 @@ export default function VaultBrainModal({ open, onClose, session }) {
                       display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
                     }}>🧠</div>
                     <div style={{
-                      flex: 1, background: 'rgba(255,255,255,0.03)',
+                      flex: 1, background: 'rgba(0,0,0,0.02)',
                       border: `1px solid ${msg.err ? 'rgba(192,57,43,0.2)' : 'rgba(0,0,0,0.05)'}`,
                       borderRadius: '2px 10px 10px 10px', padding: '9px 13px',
                     }}>
                       {msg.loading ? <Dots /> : (
                         <>
-                          <div style={{ color: msg.err ? '#f87171' : '#e4e0dc' }}>
+                          <div style={{ color: msg.err ? '#1f5c4e' : '#e4e0dc' }}>
                             <MsgText text={msg.text} />
                           </div>
                           {msg.ts && <div style={{ fontSize: 10, color: 'rgba(240,237,232,0.25)', marginTop: 4 }}>{msg.ts}</div>}
@@ -307,7 +307,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                     background: 'rgba(251,191,36,0.05)', border: '1px solid rgba(251,191,36,0.2)',
                     borderRadius: 10, padding: '11px 14px',
                   }}>
-                    <div style={{ fontSize: 12, color: '#fbbf24', fontWeight: 600, marginBottom: 8 }}>⚡ Confirm action</div>
+                    <div style={{ fontSize: 12, color: '#9a6400', fontWeight: 600, marginBottom: 8 }}>⚡ Confirm action</div>
                     <div style={{ fontSize: 13, color: '#ddd9d4', marginBottom: 10, lineHeight: 1.6 }}>{pending.message}</div>
                     <div style={{ display: 'flex', gap: 7 }}>
                       <button onClick={confirm} disabled={busy} style={{
@@ -318,7 +318,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                       <button onClick={() => { setPend(null); setMsgs(m => [...m, { role:'ai', text:'Cancelled.', ts: ts() }]) }} disabled={busy} style={{
                         background: 'none', border: '1px solid rgba(0,0,0,0.07)',
                         borderRadius: 7, padding: '7px 12px', cursor: 'pointer',
-                        fontSize: 12, color: '#b0a8a0', fontFamily: 'inherit',
+                        fontSize: 12, color: '#888888', fontFamily: 'inherit',
                       }}>Cancel</button>
                     </div>
                   </div>
@@ -334,12 +334,12 @@ export default function VaultBrainModal({ open, onClose, session }) {
           <div style={{ padding: '6px 16px 10px', display: 'flex', flexWrap: 'wrap', gap: 5, flexShrink: 0, borderTop: '1px solid rgba(0,0,0,0.03)' }}>
             {CHIPS.slice(0,3).map(c => (
               <button key={c} onClick={() => send(c)} style={{
-                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(0,0,0,0.05)',
+                background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.05)',
                 borderRadius: 20, padding: '4px 11px', cursor: 'pointer',
-                fontFamily: 'inherit', fontSize: 11.5, color: '#b0a8a0',
+                fontFamily: 'inherit', fontSize: 11.5, color: '#888888',
                 transition: 'color .1s, border-color .1s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.color='#f0ede8'; e.currentTarget.style.borderColor='rgba(31,92,78,0.2)' }}
+              onMouseEnter={e => { e.currentTarget.style.color='#111111'; e.currentTarget.style.borderColor='rgba(31,92,78,0.2)' }}
               onMouseLeave={e => { e.currentTarget.style.color='#b0a8a0'; e.currentTarget.style.borderColor='rgba(0,0,0,0.05)' }}>
                 {c}
               </button>

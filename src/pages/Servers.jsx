@@ -6,11 +6,11 @@ import { formatDistanceToNow, differenceInMinutes } from 'date-fns'
 import '../styles/design-v2.css'
 
 function agentStatus(last_seen_at, status) {
-  if (!last_seen_at) return { label: 'Never seen', color: '#6b6b6b', dot: 'rgba(240,237,232,0.15)', bg: '#f0ede8' }
+  if (!last_seen_at) return { label: 'Never seen', color: '#6b6b6b', dot: 'rgba(240,237,232,0.15)', bg: '#111111' }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
-  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#1f5c4e', dot: '#f87171', bg: 'rgba(31,92,78,0.09)' }
-  if (mins > 6) return { label: 'Idle', color: '#1f5c4e', dot: '#f0ede8', bg: 'rgba(239,68,68,0.08)' }
-  return { label: 'Online', color: '#1a1a1a', dot: '#f0ede8', bg: 'transparent' }
+  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#1f5c4e', dot: '#1f5c4e', bg: 'rgba(31,92,78,0.09)' }
+  if (mins > 6) return { label: 'Idle', color: '#1f5c4e', dot: '#111111', bg: 'rgba(239,68,68,0.08)' }
+  return { label: 'Online', color: '#1a1a1a', dot: '#111111', bg: 'transparent' }
 }
 
 function fmtRelative(iso) {
@@ -80,9 +80,9 @@ function AgentCard({ agent, onRefresh }) {
           </div>
           <div style={{ fontSize:11, color:'#6b6b6b', fontFamily:'var(--font-mono, monospace)' }}>
             {agent.ip_address || agent.hostname || '—'}
-            {agent.os && <span style={{ marginLeft:8, color:'rgba(240,237,232,0.15)' }}>·</span>}
+            {agent.os && <span style={{ marginLeft:8, color:'#dddddd' }}>·</span>}
             {agent.os && <span style={{ marginLeft:8 }}>{agent.os}</span>}
-            {agent.web_server && <span style={{ marginLeft:8, color:'rgba(240,237,232,0.15)' }}>·</span>}
+            {agent.web_server && <span style={{ marginLeft:8, color:'#dddddd' }}>·</span>}
             {agent.web_server && <span style={{ marginLeft:8 }}>{agent.web_server}</span>}
           </div>
         </div>
@@ -112,7 +112,7 @@ function AgentCard({ agent, onRefresh }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'rgba(255,255,255,0.03)', padding:'16px 18px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:24 }}>
+        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'rgba(0,0,0,0.02)', padding:'16px 18px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:24 }}>
           {/* Server info */}
           <div>
             <div style={{ fontSize:10, fontWeight:500, color:'#6b6b6b', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:10 }}>Server Info</div>
@@ -262,7 +262,7 @@ export default function ServersPage({ user }) {
           <button onClick={refresh} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'var(--v2-surface)', color:'#3d3d3d', border:'0.5px solid var(--v2-border)', padding:'7px 12px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <RefreshCw size={12} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }}/> Refresh
           </button>
-          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d0000', color:'#1a1a1a', border:'none', padding:'7px 14px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#1a1a1a', border:'none', padding:'7px 14px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Plus size={12}/> Add server
           </button>
         </div>
@@ -273,7 +273,7 @@ export default function ServersPage({ user }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:12, marginBottom:24 }}>
           {[
             { label:'Total servers', val:agents.length, color:'#1a1a1a' },
-            { label:'Online now', val:online, color: online > 0 ? '#f0ede8' : 'var(--v2-text)' },
+            { label:'Online now', val:online, color: online > 0 ? '#111111' : 'var(--v2-text)' },
             { label:'Offline / idle', val:agents.length - online, color: agents.length - online > 0 ? '#1f5c4e' : 'var(--v2-text)' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'14px 18px' }}>
@@ -305,7 +305,7 @@ export default function ServersPage({ user }) {
           <div style={{ fontSize:12, color:'#6b6b6b', marginBottom:20, maxWidth:340, margin:'0 auto 20px' }}>
             Install the SSLVault agent on any Linux VPS or cPanel server. It will auto-renew your certificates and report status here.
           </div>
-          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#0d0000', color:'#1a1a1a', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#1a1a1a', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Terminal size={13}/> Install agent
           </button>
         </div>

@@ -13,7 +13,7 @@ function GradeBadge({ grade }) {
     'D':  { bg:'rgba(31,92,78,0.08)', color:'#1f5c4e' },
     'F':  { bg:'rgba(31,92,78,0.09)', color:'#1f5c4e' },
   }
-  const s = map[grade] || { bg:'rgba(26,0,0,0.5)', color:'#b0a8a0' }
+  const s = map[grade] || { bg:'rgba(26,0,0,0.5)', color:'#888888' }
   return (
     <div style={{ width:48, height:48, borderRadius:10, background:s.bg,
       display:'flex', alignItems:'center', justifyContent:'center',
@@ -64,7 +64,7 @@ function CipherBar({ label, count, total, color }) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0
   return (
     <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-      <span style={{ fontSize:12, color:'#b0a8a0', width:60 }}>{label}</span>
+      <span style={{ fontSize:12, color:'#888888', width:60 }}>{label}</span>
       <div style={{ flex:1, height:5, borderRadius:3, background:'transparent', overflow:'hidden' }}>
         <div style={{ width:`${pct}%`, height:'100%', background:color, borderRadius:3,
           transition:'width 0.6s cubic-bezier(0.16,1,0.3,1)' }}/>
@@ -109,7 +109,7 @@ export default function VulnScanner({ domain, session }) {
         borderRadius: result ? '8px 8px 0 0' : 8 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <Bug size={14} color="rgba(240,237,232,0.45)"/>
-          <span style={{ fontSize:13, fontWeight:500, color:'#e8e0d8' }}>SSL Vulnerability Scan</span>
+          <span style={{ fontSize:13, fontWeight:500, color:'#333333' }}>SSL Vulnerability Scan</span>
           {result && <GradeBadge grade={result.grade}/>}
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>

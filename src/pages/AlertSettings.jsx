@@ -90,7 +90,7 @@ export default function AlertSettings({ nav }) {
   const inputStyle = {
     width:'100%', padding:'9px 12px', fontSize:12, borderRadius:8,
     border:'0.5px solid var(--v2-border)', background:'var(--v2-surface)',
-    color:'#ffffff', fontFamily:'inherit', outline:'none', boxSizing:'border-box',
+    color:'#111111', fontFamily:'inherit', outline:'none', boxSizing:'border-box',
   }
 
   if (authLoading || loading) return (
@@ -102,7 +102,7 @@ export default function AlertSettings({ nav }) {
   if (!user) return (
     <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>
       <div style={{ textAlign:'center' }}>
-        <div style={{ fontSize:15, fontWeight:700, color:'#ffffff', marginBottom:12 }}>Sign in to manage alerts</div>
+        <div style={{ fontSize:15, fontWeight:700, color:'#111111', marginBottom:12 }}>Sign in to manage alerts</div>
         <button className="v2-btn v2-btn-primary" onClick={() => nav('/auth')}>Sign in</button>
       </div>
     </div>
@@ -123,7 +123,7 @@ export default function AlertSettings({ nav }) {
             </div>
             <div>
               <h1 className="v2-h1">Alert settings</h1>
-              <p style={{ fontSize:12, color:'#b0a8a0', marginTop:2 }}>
+              <p style={{ fontSize:12, color:'#888888', marginTop:2 }}>
                 Configure when SSLVault notifies you about certificate events
               </p>
             </div>
@@ -139,7 +139,7 @@ export default function AlertSettings({ nav }) {
               style={{ display:'flex', alignItems:'center', gap:5,
                 background: saved ? 'transparent' : undefined,
                 border: saved ? '0.5px solid rgba(31,92,78,0.2)' : undefined,
-                color: saved ? '#4ade80' : undefined }}>
+                color: saved ? '#16a068' : undefined }}>
               {saving  ? <><RefreshCw size={11} style={{ animation:'spin .7s linear infinite' }}/> Saving…</> :
                saved   ? <><CheckCircle size={11}/> Saved</>   : <><Save size={11}/> Save</>}
             </button>
@@ -150,22 +150,22 @@ export default function AlertSettings({ nav }) {
         {error && (
           <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
             padding:'10px 14px', marginBottom:14, display:'flex', alignItems:'center',
-            gap:8, fontSize:12, color:'#c0392b' }}>
+            gap:8, fontSize:12, color:'#1f5c4e' }}>
             <AlertTriangle size={13} style={{ flexShrink:0 }}/> {error}
             <button onClick={() => setError('')} style={{ marginLeft:'auto', background:'none',
-              border:'none', cursor:'pointer', color:'#c0392b', fontSize:16 }}>×</button>
+              border:'none', cursor:'pointer', color:'#1f5c4e', fontSize:16 }}>×</button>
           </div>
         )}
         {testResult === 'ok' && (
           <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:8,
             padding:'10px 14px', marginBottom:14, display:'flex', alignItems:'center',
-            gap:8, fontSize:12, color:'#ffffff' }}>
+            gap:8, fontSize:12, color:'#111111' }}>
             <CheckCircle size={13} style={{ flexShrink:0 }}/> Test email sent to {user.email}
           </div>
         )}
         {testResult === 'fail' && (
           <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
-            padding:'10px 14px', marginBottom:14, fontSize:12, color:'#c0392b' }}>
+            padding:'10px 14px', marginBottom:14, fontSize:12, color:'#1f5c4e' }}>
             Test failed — check RESEND_API_KEY in Supabase environment variables.
           </div>
         )}
@@ -180,7 +180,7 @@ export default function AlertSettings({ nav }) {
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                   <Mail size={13} color="#b0a8a0"/>
-                  <span style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>Email notifications</span>
+                  <span style={{ fontSize:13, fontWeight:500, color:'#111111' }}>Email notifications</span>
                 </div>
                 <button onClick={() => setEmailEnabled(v => !v)} style={{
                   width:36, height:20, borderRadius:100, border:'none', cursor:'pointer',
@@ -194,14 +194,14 @@ export default function AlertSettings({ nav }) {
                   }}/>
                 </button>
               </div>
-              <div style={{ fontSize:11, color:'#b0a8a0' }}>
+              <div style={{ fontSize:11, color:'#888888' }}>
                 {emailEnabled ? `Alerts sent to ${user.email}` : 'All email alerts disabled'}
               </div>
             </div>
 
             {/* Thresholds */}
             <div className="v2-card" style={{ padding:'14px 16px' }}>
-              <div style={{ fontSize:9, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+              <div style={{ fontSize:9, fontWeight:600, color:'#888888', textTransform:'uppercase',
                 letterSpacing:'0.5px', marginBottom:10 }}>Alert thresholds (days before expiry)</div>
               <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
                 {ALL_THRESHOLDS.map(d => {
@@ -212,7 +212,7 @@ export default function AlertSettings({ nav }) {
                       cursor:'pointer', fontFamily:'inherit',
                       border: on ? '0.5px solid #2a6b5c' : '0.5px solid var(--v2-border)',
                       background: on ? 'rgba(31,92,78,0.09)' : 'var(--v2-surface-3)',
-                      color: on ? '#f0ede8' : '#b0a8a0', transition:'all 0.1s',
+                      color: on ? '#111111' : '#b0a8a0', transition:'all 0.1s',
                     }}>
                       {d}d
                     </button>
@@ -223,7 +223,7 @@ export default function AlertSettings({ nav }) {
 
             {/* Alert types */}
             <div className="v2-card" style={{ padding:'14px 16px' }}>
-              <div style={{ fontSize:9, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+              <div style={{ fontSize:9, fontWeight:600, color:'#888888', textTransform:'uppercase',
                 letterSpacing:'0.5px', marginBottom:12 }}>Alert types</div>
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {ALERT_TYPES.map(({ key, label, desc }) => {
@@ -239,8 +239,8 @@ export default function AlertSettings({ nav }) {
                         {on && <div style={{ width:7, height:7, background:'white', borderRadius:1 }}/>}
                       </div>
                       <div>
-                        <div style={{ fontSize:12, fontWeight:500, color:'#e8e0d8' }}>{label}</div>
-                        <div style={{ fontSize:11, color:'#b0a8a0' }}>{desc}</div>
+                        <div style={{ fontSize:12, fontWeight:500, color:'#333333' }}>{label}</div>
+                        <div style={{ fontSize:11, color:'#888888' }}>{desc}</div>
                       </div>
                     </label>
                   )
@@ -254,7 +254,7 @@ export default function AlertSettings({ nav }) {
 
             {/* Extra recipients */}
             <div className="v2-card" style={{ padding:'14px 16px' }}>
-              <div style={{ fontSize:9, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+              <div style={{ fontSize:9, fontWeight:600, color:'#888888', textTransform:'uppercase',
                 letterSpacing:'0.5px', marginBottom:10 }}>Additional recipients</div>
               <div style={{ display:'flex', gap:6, marginBottom:10 }}>
                 <input type="email" placeholder="colleague@company.com" value={newEmail}
@@ -267,16 +267,16 @@ export default function AlertSettings({ nav }) {
                 </button>
               </div>
               {extraEmails.length === 0
-                ? <div style={{ fontSize:11, color:'#b0a8a0', fontStyle:'italic' }}>No additional recipients</div>
+                ? <div style={{ fontSize:11, color:'#888888', fontStyle:'italic' }}>No additional recipients</div>
                 : extraEmails.map(e => (
                   <div key={e} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
                     padding:'6px 10px', borderRadius:6, marginBottom:5,
                     background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
-                    fontSize:11, color:'#e8e0d8', fontFamily:'monospace' }}>
+                    fontSize:11, color:'#333333', fontFamily:'monospace' }}>
                     {e}
                     <button onClick={() => setExtraEmails(p => p.filter(x => x !== e))}
                       style={{ background:'none', border:'none', cursor:'pointer',
-                        color:'#b0a8a0', padding:'0 2px', lineHeight:1 }}>
+                        color:'#888888', padding:'0 2px', lineHeight:1 }}>
                       <X size={10}/>
                     </button>
                   </div>
@@ -286,12 +286,12 @@ export default function AlertSettings({ nav }) {
 
             {/* Slack webhook */}
             <div className="v2-card" style={{ padding:'14px 16px' }}>
-              <div style={{ fontSize:9, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+              <div style={{ fontSize:9, fontWeight:600, color:'#888888', textTransform:'uppercase',
                 letterSpacing:'0.5px', marginBottom:4 }}>Slack webhook
-                <span style={{ marginLeft:6, fontSize:9, color:'#b0a8a0', fontWeight:400,
+                <span style={{ marginLeft:6, fontSize:9, color:'#888888', fontWeight:400,
                   textTransform:'none', letterSpacing:0 }}>(optional)</span>
               </div>
-              <div style={{ fontSize:11, color:'#b0a8a0', marginBottom:8 }}>Post alerts to a Slack channel</div>
+              <div style={{ fontSize:11, color:'#888888', marginBottom:8 }}>Post alerts to a Slack channel</div>
               <input type="url" placeholder="https://hooks.slack.com/services/…"
                 value={slackWebhook} onChange={e => setSlackWebhook(e.target.value)}
                 style={inputStyle}/>
@@ -299,7 +299,7 @@ export default function AlertSettings({ nav }) {
 
             {/* Summary */}
             <div className="v2-card" style={{ padding:'14px 16px' }}>
-              <div style={{ fontSize:9, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase',
+              <div style={{ fontSize:9, fontWeight:600, color:'#888888', textTransform:'uppercase',
                 letterSpacing:'0.5px', marginBottom:10 }}>Current configuration</div>
               {[
                 { label:'Email',      value: emailEnabled ? 'Enabled' : 'Disabled', warn: !emailEnabled },
@@ -310,8 +310,8 @@ export default function AlertSettings({ nav }) {
               ].map(({ label, value, warn }) => (
                 <div key={label} style={{ display:'flex', justifyContent:'space-between',
                   fontSize:11, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.04)' }}>
-                  <span style={{ color:'#b0a8a0' }}>{label}</span>
-                  <span style={{ fontWeight:500, color: warn ? '#f87171' : '#e8e0d8' }}>{value}</span>
+                  <span style={{ color:'#888888' }}>{label}</span>
+                  <span style={{ fontWeight:500, color: warn ? '#1f5c4e' : '#333333' }}>{value}</span>
                 </div>
               ))}
             </div>

@@ -29,8 +29,8 @@ const EVENT_CONFIG = {
   issued:          { icon: ShieldCheck, color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate issued' },
   reissued:        { icon: RefreshCw,   color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate reissued' },
   renewed:         { icon: RotateCcw,   color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate renewed' },
-  revoked:         { icon: ShieldOff,   color: '#f87171', bg: 'rgba(248,113,113,0.12)', label: 'Certificate revoked' },
-  agent_installed: { icon: Zap,         color: '#fbbf24', bg: 'rgba(251,191,36,0.12)', label: 'Installed by agent' },
+  revoked:         { icon: ShieldOff,   color: '#1f5c4e', bg: 'rgba(248,113,113,0.12)', label: 'Certificate revoked' },
+  agent_installed: { icon: Zap,         color: '#9a6400', bg: 'rgba(251,191,36,0.12)', label: 'Installed by agent' },
   key_rotated:     { icon: RotateCcw,   color: '#1f5c4e', bg: 'rgba(255,107,91,0.12)', label: 'Key rotated' },
   downloaded:      { icon: Download,    color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate downloaded' },
   private_key_copied: { icon: Shield,   color: '#1f5c4e', bg: 'rgba(255,107,91,0.12)', label: 'Private key copied' },
@@ -115,11 +115,11 @@ export default function CertChangelog({ user }) {
           marginBottom: 20, paddingTop: 8 }}>
           <div>
             <h1 className="v2-h1" style={{ fontSize:22 }}>Certificate changelog</h1>
-            <p style={{ fontSize:13, color: '#b0a8a0', marginTop: 4 }}>
+            <p style={{ fontSize:13, color: '#888888', marginTop: 4 }}>
               Complete history — every issue, renewal, revocation and install across all your certificates
             </p>
           </div>
-          <div style={{ fontSize:12, color: '#b0a8a0', marginTop: 8 }}>
+          <div style={{ fontSize:12, color: '#888888', marginTop: 8 }}>
             {filtered.length} event{filtered.length !== 1 ? 's' : ''}
           </div>
         </div>
@@ -144,7 +144,7 @@ export default function CertChangelog({ user }) {
                       </div>
                       <span style={{ fontSize:18, fontWeight: 500, color: cfg.color, fontFamily: 'monospace' }}>{count}</span>
                     </div>
-                    <div style={{ fontSize:10, color: '#b0a8a0', textTransform: 'capitalize' }}>
+                    <div style={{ fontSize:10, color: '#888888', textTransform: 'capitalize' }}>
                       {type.replace(/_/g, ' ')}
                     </div>
                   </div>
@@ -158,14 +158,14 @@ export default function CertChangelog({ user }) {
         <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
           <div style={{ flex: 1, position: 'relative' }}>
             <Search size={13} style={{ position: 'absolute', left: 10, top: '50%',
-              transform: 'translateY(-50%)', color: '#b0a8a0', pointerEvents: 'none' }} />
+              transform: 'translateY(-50%)', color: '#888888', pointerEvents: 'none' }} />
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by domain or event type…"
               style={{ width: '100%', paddingLeft: 32, fontSize:13, boxSizing: 'border-box' }} />
           </div>
           <select value={filter} onChange={e => setFilter(e.target.value)}
             style={{ fontSize:12, padding: '0 10px', borderRadius: 8,
-              border: '0.5px solid var(--v2-border)', background:'rgba(255,255,255,0.03)', color: '#ffffff' }}>
+              border: '0.5px solid var(--v2-border)', background:'rgba(0,0,0,0.02)', color: '#111111' }}>
             {eventTypes.map(t => (
               <option key={t} value={t}>{t === 'all' ? 'All events' : t.replace(/_/g, ' ')}</option>
             ))}
@@ -174,29 +174,29 @@ export default function CertChangelog({ user }) {
 
         {/* Timeline */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: '#b0a8a0' }}>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: '#888888' }}>
             <RefreshCw size={24} style={{ animation: 'spin .8s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             Loading changelog…
           </div>
         ) : events.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 0' }}>
-            <History size={32} style={{ color: '#b0a8a0', margin: '0 auto 12px', display: 'block' }} />
-            <div style={{ fontSize:14, fontWeight: 500, color: '#e8e0d8', marginBottom: 6 }}>
+            <History size={32} style={{ color: '#888888', margin: '0 auto 12px', display: 'block' }} />
+            <div style={{ fontSize:14, fontWeight: 500, color: '#333333', marginBottom: 6 }}>
               No events yet
             </div>
-            <div style={{ fontSize:12, color: '#b0a8a0' }}>
+            <div style={{ fontSize:12, color: '#888888' }}>
               Events are recorded when you issue, renew, revoke or install certificates.
             </div>
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '32px 0', fontSize:13, color: '#b0a8a0' }}>
+          <div style={{ textAlign: 'center', padding: '32px 0', fontSize:13, color: '#888888' }}>
             No events match your filter.
           </div>
         ) : (
           Object.entries(grouped).map(([day, dayEvents]) => (
             <div key={day} style={{ marginBottom: 24 }}>
               {/* Day label */}
-              <div style={{ fontSize:11, fontWeight: 600, color: '#b0a8a0',
+              <div style={{ fontSize:11, fontWeight: 600, color: '#888888',
                 letterSpacing: '0.3px', textTransform: 'uppercase', marginBottom: 10,
                 display: 'flex', alignItems: 'center', gap: 10 }}>
                 {day}
@@ -226,7 +226,7 @@ export default function CertChangelog({ user }) {
                     {/* Content */}
                     <div style={{ flex: 1, minWidth: 0, paddingBottom: 8 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                        <span style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>
+                        <span style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>
                           {cfg.label}
                         </span>
                         <span style={{ fontSize:10, fontWeight: 500, padding: '1px 6px', borderRadius: 3,
@@ -234,17 +234,17 @@ export default function CertChangelog({ user }) {
                           {ev.event_type.replace(/_/g, ' ')}
                         </span>
                       </div>
-                      <div style={{ fontSize:12, color: '#e8e0d8', marginBottom: 3 }}>
+                      <div style={{ fontSize:12, color: '#333333', marginBottom: 3 }}>
                         {ev.domain}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize:11, color: '#b0a8a0' }}>
+                        <span style={{ fontSize:11, color: '#888888' }}>
                           {fmtDate(ev.created_at)}
                         </span>
                         {hasMeta && (
                           <button onClick={() => setExpanded(p => ({ ...p, [ev.id]: !p[ev.id] }))}
                             style={{ background: 'none', border: 'none', cursor: 'pointer',
-                              color: '#b0a8a0', display: 'flex', alignItems: 'center', gap: 3,
+                              color: '#888888', display: 'flex', alignItems: 'center', gap: 3,
                               fontSize:11, padding: 0 }}>
                             {isExp ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
                             {isExp ? 'Hide details' : 'Show details'}
@@ -257,10 +257,10 @@ export default function CertChangelog({ user }) {
                         <div style={{ marginTop: 6, background: 'var(--v2-surface-3)',
                           border: '0.5px solid var(--v2-border)', borderRadius: 6,
                           padding: '8px 10px', fontSize:11, fontFamily: 'monospace',
-                          color: '#e8e0d8' }}>
+                          color: '#333333' }}>
                           {Object.entries(ev.meta).map(([k, v]) => (
                             <div key={k} style={{ marginBottom: 2 }}>
-                              <span style={{ color: '#b0a8a0' }}>{k}: </span>
+                              <span style={{ color: '#888888' }}>{k}: </span>
                               <span>{String(v)}</span>
                             </div>
                           ))}

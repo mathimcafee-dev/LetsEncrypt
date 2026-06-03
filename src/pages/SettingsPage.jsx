@@ -115,7 +115,7 @@ function LogRow({ log }) {
         <span style={{
           fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,
           background: log.status === 'sent' ? 'transparent' : 'rgba(31,92,78,0.09)',
-          color: log.status === 'sent' ? '#f0ede8' : '#f87171',
+          color: log.status === 'sent' ? '#111111' : '#1f5c4e',
         }}>{log.status}</span>
       </div>
     </div>
@@ -188,7 +188,7 @@ function ApiKeysPanel({ user }) {
       <div style={{ fontSize:12, color: '#6b6b6b', marginBottom: 24, lineHeight: 1.6 }}>
         Integrate SSLVault into your own tools, pipelines, and CI/CD workflows using API keys.
       </div>
-      <div style={{ textAlign:'center', padding:'40px 20px', background:'rgba(255,255,255,0.02)',
+      <div style={{ textAlign:'center', padding:'40px 20px', background:'rgba(0,0,0,0.02)',
         border:'1px solid rgba(0,0,0,0.08)', borderRadius:12 }}>
         <div style={{ width:48, height:48, borderRadius:12, background:'rgba(31,92,78,0.08)',
           border:'1px solid rgba(0,0,0,0.1)', display:'flex', alignItems:'center',
@@ -253,12 +253,12 @@ function ApiKeysPanelFull_DISABLED({ user }) {
           <div style={{ fontSize:11, fontWeight: 600, color: '#1a1a1a', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
           </div>
-          <div style={{ background:'#0d0000', borderRadius: 6, padding: '8px 10px',
+          <div style={{ background:'#f4f1ec', borderRadius: 6, padding: '8px 10px',
             fontFamily: 'monospace', fontSize:11, color: '#1f5c4e', wordBreak: 'break-all', marginBottom: 8 }}>
             {newKey}
           </div>
           <button onClick={() => { navigator.clipboard?.writeText(newKey); setCopied(true); setTimeout(()=>setCopied(false),2000) }}
-            style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#4ade80',
+            style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#16a068',
               border: 'none', borderRadius: 6, padding: '6px 12px', fontSize:11,
               color: '#1a1a1a', cursor: 'pointer', fontFamily: 'inherit' }}>
             {copied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy key</>}
@@ -513,7 +513,7 @@ export default function SettingsPage({ user }) {
               borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize:12, fontWeight: 600,
               fontFamily: 'inherit', transition: 'all .15s',
               background: activeTab === id ? 'rgba(31,92,78,0.09)' : 'transparent',
-              color: activeTab === id ? '#f0ede8' : 'rgba(240,237,232,0.38)',
+              color: activeTab === id ? '#111111' : 'rgba(240,237,232,0.38)',
               borderBottom: activeTab === id ? '2px solid #2a6b5c' : '2px solid transparent',
             }}>
             <Icon size={12}/>{label}
@@ -610,12 +610,12 @@ export default function SettingsPage({ user }) {
               <input value={newEmail} onChange={e => { setNewEmail(e.target.value); setEmailError('') }}
                 onKeyDown={e => e.key === 'Enter' && addExtraEmail()}
                 placeholder="name@example.com"
-                style={{ flex: 1, padding: '7px 10px', border: `1px solid ${emailError ? 'rgba(0,0,0,0.1)' : '#f0ede8'}`,
+                style={{ flex: 1, padding: '7px 10px', border: `1px solid ${emailError ? 'rgba(0,0,0,0.1)' : '#111111'}`,
                   borderRadius: 7, fontSize:12, fontFamily: 'monospace', outline: 'none',
                   background: emailError ? 'rgba(192,57,43,0.07)' : 'transparent' }}/>
               <button onClick={addExtraEmail}
                 style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
-                  background:'#0d0000', color: '#1a1a1a', border: 'none', borderRadius: 7,
+                  background:'#f4f1ec', color: '#1a1a1a', border: 'none', borderRadius: 7,
                   fontSize:12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Plus size={11}/> Add
               </button>
@@ -666,7 +666,7 @@ export default function SettingsPage({ user }) {
             {testResult && (
               <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 7, fontSize:12,
                 background: testResult.ok ? 'transparent' : 'rgba(31,92,78,0.09)',
-                color: testResult.ok ? '#f0ede8' : '#f87171',
+                color: testResult.ok ? '#111111' : '#1f5c4e',
                 border: `1px solid ${testResult.ok ? '#1f5c4e' : 'rgba(0,0,0,0.1)'}` }}>
                 {testResult.ok ? '✓ ' : '✗ '}{testResult.msg}
               </div>
@@ -708,7 +708,7 @@ export default function SettingsPage({ user }) {
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
             <button onClick={handleSave} disabled={saving}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6,
-                background: saving ? '#f0ede8' : saved ? '#4ade80' : '#f0ede8',
+                background: saving ? '#111111' : saved ? '#16a068' : '#111111',
                 color: saving ? 'rgba(240,237,232,0.38)' : '#000000', border: 'none', borderRadius: 7,
                 padding: '10px 22px', fontSize:12, fontWeight: 700,
                 cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'background .2s' }}>

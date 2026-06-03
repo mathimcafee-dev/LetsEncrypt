@@ -64,14 +64,14 @@ function Tick({ ok, label }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:4 }}>
       {ok ? <CheckCircle size={11} color="#1f5c4e"/> : <XCircle size={11} color="#2e7a68"/>}
-      <span style={{ fontSize:11, color:ok?'#f0ede8':'#2e7a68' }}>{label}</span>
+      <span style={{ fontSize:11, color:ok?'#111111':'#2e7a68' }}>{label}</span>
     </div>
   )
 }
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
-  const color = pct>=80?'#f0ede8':pct>=60?'#2e7a68':pct>=50?'#1f5c4e':'#2e7a68'
+  const color = pct>=80?'#111111':pct>=60?'#2e7a68':pct>=50?'#1f5c4e':'#2e7a68'
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
       <div style={{ flex:1, height:4, background:'var(--v2-border)', borderRadius:2, overflow:'hidden' }}>
@@ -152,7 +152,7 @@ function OverviewTab({ user }) {
   const { total=0, active=0, expiring30=0, expiring7=0, thisMonth=0,
           grades={}, bySource={}, deployed=0, keyVault=0 } = stats || {}
 
-  const gradeEntries = [['A+','#f0ede8'],['A','#2e7a68'],['B','#2e7a68'],
+  const gradeEntries = [['A+','#111111'],['A','#2e7a68'],['B','#2e7a68'],
     ['C','#1f5c4e'],['D','#1f5c4e'],['F','#2e7a68'],['—','rgba(240,237,232,0.45)']]
   const maxGrade = Math.max(...gradeEntries.map(([g]) => grades[g]||0), 1)
 
@@ -161,11 +161,11 @@ function OverviewTab({ user }) {
       {/* KPI strip */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Active certs" val={active} sub={`of ${total} total`}
-          color={active>0?'#f0ede8':'var(--v2-text-1)'}/>
+          color={active>0?'#111111':'var(--v2-text-1)'}/>
         <StatCard label="Expiring ≤ 30d" val={expiring30} sub={expiring7>0?`${expiring7} within 7 days`:'none critical'}
           color={expiring30>0?'#1f5c4e':'var(--v2-text-1)'} bg={expiring30>0?'rgba(230,126,34,0.12)':undefined}/>
         <StatCard label="Deployed to servers" val={deployed} sub="agent or cPanel"
-          color={deployed>0?'#f0ede8':'var(--v2-text-1)'}/>
+          color={deployed>0?'#111111':'var(--v2-text-1)'}/>
         <StatCard label="Keys in vault" val={keyVault} sub="AES-256 encrypted"
           color="#1f5c4e"/>
       </div>
@@ -180,7 +180,7 @@ function OverviewTab({ user }) {
           {gradeEntries.map(([g, color]) => (
             <div key={g} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:9 }}>
               <span style={{ width:24, fontSize:11, fontWeight:700, color, fontFamily:'monospace', textAlign:'center' }}>{g}</span>
-              <div style={{ flex:1, height:22, background:'rgba(255,255,255,0.03)', borderRadius:6, overflow:'hidden', position:'relative' }}>
+              <div style={{ flex:1, height:22, background:'rgba(0,0,0,0.02)', borderRadius:6, overflow:'hidden', position:'relative' }}>
                 {(grades[g]||0) > 0 && (
                   <div style={{ position:'absolute', left:0, top:0, bottom:0,
                     width:`${Math.max(8, Math.round(((grades[g]||0)/maxGrade)*100))}%`,
@@ -210,7 +210,7 @@ function OverviewTab({ user }) {
               <div style={{ fontSize:12, color:'#6b6b6b' }}>No certificates yet</div>
             ) : Object.entries(bySource).map(([src, count]) => (
               <div key={src} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                marginBottom:8, padding:'7px 10px', borderRadius:8, background:'rgba(255,255,255,0.03)',
+                marginBottom:8, padding:'7px 10px', borderRadius:8, background:'rgba(0,0,0,0.02)',
                 border:'0.5px solid var(--v2-border)' }}>
                 <span style={{ fontSize:12, color:'#1a1a1a', fontWeight:500, textTransform:'capitalize' }}>
                   {src === 'gogetssl' ? 'RapidSSL (SSLVault)' : src}
@@ -301,7 +301,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
           <Tick ok={s.cert_valid} label="TLS"/>
           {s.expiry_days != null && (
             <span style={{ fontSize:11, fontWeight:600,
-              color:s.expiry_days<=0?'#2e7a68':s.expiry_days<=30?'#1f5c4e':'#f0ede8' }}>
+              color:s.expiry_days<=0?'#2e7a68':s.expiry_days<=30?'#1f5c4e':'#111111' }}>
               {s.expiry_days<=0?'Expired':`${s.expiry_days}d`}
             </span>
           )}
@@ -319,7 +319,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
       </div>
       {expanded && (
         <div style={{ padding:'12px 14px', borderTop:`0.5px solid ${style.border}`,
-          background:'rgba(255,255,255,0.03)',
+          background:'rgba(0,0,0,0.02)',
           display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px,1fr))', gap:10 }}>
           {[
             ['Score',       `${Math.round(s.score||0)} / 100`],
@@ -392,12 +392,12 @@ function TLSGradesTab({ tok, user }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
           <StatCard label="Domains tracked" val={scores.length}/>
           <StatCard label="Average score" val={avgScore}
-            color={avgScore>=80?'#f0ede8':avgScore>=60?'#2e7a68':'#2e7a68'}/>
+            color={avgScore>=80?'#111111':avgScore>=60?'#2e7a68':'#2e7a68'}/>
           <StatCard label="Grade A / A+"
             val={(scores.filter(s=>s.grade==='A'||s.grade==='A+').length)}
             color="#1f5c4e"/>
           <StatCard label="Need attention" val={issues.length}
-            color={issues.length>0?'#2e7a68':'#f0ede8'}
+            color={issues.length>0?'#2e7a68':'#111111'}
             bg={issues.length>0?'rgba(31,92,78,0.08)':undefined}/>
         </div>
       )}
@@ -497,7 +497,7 @@ function CTWatchTab({ tok, user }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Total findings" val={shadows.length}/>
         <StatCard label="Needs review" val={unknowns.length}
-          color={unknowns.length>0?'#2e7a68':'#f0ede8'}
+          color={unknowns.length>0?'#2e7a68':'#111111'}
           bg={unknowns.length>0?'rgba(31,92,78,0.08)':undefined}/>
         <StatCard label="Confirmed safe" val={known.length} color="#1f5c4e"/>
       </div>
@@ -693,7 +693,7 @@ function MassScanTab() {
           rows={6} placeholder={'example.com\ngoogle.com\ngithub.com'}
           style={{ width:'100%', resize:'vertical', fontSize:13, fontFamily:'monospace',
             borderRadius:8, border:'0.5px solid var(--v2-border)', padding:'10px 12px',
-            background:'rgba(255,255,255,0.03)', color:'#1a1a1a', outline:'none', boxSizing:'border-box' }}/>
+            background:'rgba(0,0,0,0.02)', color:'#1a1a1a', outline:'none', boxSizing:'border-box' }}/>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:10 }}>
           <span style={{ fontSize:11, color:'#6b6b6b' }}>
             {input.split('\n').filter(l=>l.trim()).length} domains · one per line
@@ -759,7 +759,7 @@ function MassScanTab() {
           {/* Table */}
           <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'visible' }}>
             <div style={{ display:'grid', gridTemplateColumns:'2fr 60px 60px 60px 60px 80px 1fr',
-              padding:'8px 14px', background:'rgba(255,255,255,0.03)', borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+              padding:'8px 14px', background:'rgba(0,0,0,0.02)', borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
               {['Domain','Grade','Score','TLS','HSTS','CAA','Expiry / Issue'].map(h => (
                 <div key={h} style={{ fontSize:10, fontWeight:600, color:'#6b6b6b',
                   textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>

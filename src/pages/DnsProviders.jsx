@@ -23,7 +23,7 @@ const PROVIDERS = {
     note: 'Token needs Zone:DNS:Edit permission.'
   },
   vercel: {
-    name: 'Vercel', mono: '▲', color: '#ffffff',
+    name: 'Vercel', mono: '▲', color: '#111111',
     fields: [
       { key: 'apiToken', label: 'API Token', type: 'password', placeholder: 'your-vercel-api-token', help: 'Create at vercel.com/account/tokens', optional: false },
       { key: 'teamId',   label: 'Team ID',   type: 'text',     placeholder: 'team_xxxxxxxx',         help: 'Optional — leave blank for personal account', optional: true },
@@ -160,7 +160,7 @@ const PROVIDERS = {
 
 // ── Server types ──────────────────────────────────────────────────────
 const SERVER_TYPES = {
-  cpanel: { label: 'cPanel / Shared Hosting', short: 'cPanel', Icon: Cloud,    color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)',
+  cpanel: { label: 'cPanel / Shared Hosting', short: 'cPanel', Icon: Cloud,    color: '#111111', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)',
     desc: 'GoDaddy, Bluehost, Hostinger, SiteGround',
     fields: [
       { key: 'host',      label: 'Domain / cPanel Host', type: 'text',     placeholder: 'yourdomain.com',       help: 'Your website domain — cPanel runs at :2083' },
@@ -168,7 +168,7 @@ const SERVER_TYPES = {
       { key: 'api_token', label: 'cPanel API Token',     type: 'password', placeholder: 'Paste API token here', help: 'cPanel → Manage API Tokens → Create → SSL permission' },
     ]
   },
-  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#ffffff', bg: 'transparent', border: 'rgba(31,92,78,0.2)',
+  ssh: { label: 'VPS / Cloud Server', short: 'VPS', Icon: Server, color: '#111111', bg: 'transparent', border: 'rgba(31,92,78,0.2)',
     desc: 'Ubuntu, Debian, CentOS, Amazon Linux',
     fields: [
       { key: 'host',     label: 'Server IP / Hostname', type: 'text',     placeholder: '134.209.x.x',                         help: 'Public IP or hostname' },
@@ -176,7 +176,7 @@ const SERVER_TYPES = {
       { key: 'ssh_key',  label: 'Private SSH Key',      type: 'password', placeholder: '-----BEGIN OPENSSH PRIVATE KEY-----', help: 'Paste your id_rsa private key' },
     ]
   },
-  plesk: { label: 'Plesk Panel', short: 'Plesk', Icon: Settings, color: '#ffffff', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)',
+  plesk: { label: 'Plesk Panel', short: 'Plesk', Icon: Settings, color: '#111111', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)',
     desc: 'Plesk Obsidian, Onyx',
     fields: [
       { key: 'host',      label: 'Plesk Host', type: 'text',     placeholder: 'server.example.com', help: 'Your Plesk panel hostname or IP' },
@@ -212,7 +212,7 @@ function Sparkline({ status = 'green' }) {
     status === 'green' ? '0,16 8,12 16,14 24,9 32,11 40,6 48,8 56,4 64,5'
   : status === 'amber' ? '0,8 8,9 16,7 24,10 32,12 40,16 48,18 56,18 64,18'
   : '0,12 8,12 16,12 24,12 32,12 40,12 48,12 56,12 64,12'
-  const stroke = status === 'green' ? '#f0ede8' : status === 'amber' ? '#f0ede8' : 'rgba(240,237,232,0.15)'
+  const stroke = status === 'green' ? '#111111' : status === 'amber' ? '#111111' : 'rgba(240,237,232,0.15)'
   return (
     <svg width="64" height="22" viewBox="0 0 64 22" style={{ flexShrink: 0 }}>
       <polyline points={points} fill="none" stroke={stroke} strokeWidth="1.4"
@@ -228,18 +228,18 @@ function PageHeader({ counts, tab, onAdd, onAddBoth }) {
       marginBottom:4, flexWrap:'wrap', gap:12 }}>
       <div>
         <h1 className="v2-h1" style={{ fontSize:22, letterSpacing:'-0.3px' }}>DNS &amp; Servers</h1>
-        <p style={{ fontSize:13, color:'#b0a8a0', marginTop:4, display:'flex', gap:12 }}>
+        <p style={{ fontSize:13, color:'#888888', marginTop:4, display:'flex', gap:12 }}>
           <span style={{ display:'flex', alignItems:'center', gap:5 }}>
-            <Globe size={12} style={{ color:'#b0a8a0' }}/>
+            <Globe size={12} style={{ color:'#888888' }}/>
             {counts.dns} provider{counts.dns === 1 ? '' : 's'}
           </span>
           <span style={{ display:'flex', alignItems:'center', gap:5 }}>
-            <Server size={12} style={{ color:'#b0a8a0' }}/>
+            <Server size={12} style={{ color:'#888888' }}/>
             {counts.servers} server{counts.servers === 1 ? '' : 's'}
           </span>
           <span style={{ display:'flex', alignItems:'center', gap:5 }}>
             <span style={{ width:7, height:7, borderRadius:'50%',
-              background: counts.activeAgents > 0 ? '#4ade80' : 'rgba(240,237,232,0.2)',
+              background: counts.activeAgents > 0 ? '#16a068' : 'rgba(240,237,232,0.2)',
               boxShadow: counts.activeAgents > 0 ? '0 0 0 3px rgba(22,163,74,0.2)' : 'none' }}/>
             {counts.activeAgents} agent{counts.activeAgents === 1 ? '' : 's'} active
           </span>
@@ -310,14 +310,14 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
     ? dnsCls
     : (agentActive ? 'green' : 'grey')
 
-  const p = dns ? (PROVIDERS[dns.provider] || { name: dns.provider, mono: '?', color: '#e8e0d8' }) : null
+  const p = dns ? (PROVIDERS[dns.provider] || { name: dns.provider, mono: '?', color: '#333333' }) : null
   const t = server ? (SERVER_TYPES[server.server_type] || SERVER_TYPES.cpanel) : null
   const TIcon = t?.Icon
 
-  const tagBg = hasBoth ? 'rgba(240,237,232,0.7)' : dnsOnly ? '#4ade80' : 'rgba(240,237,232,0.7)'
+  const tagBg = hasBoth ? 'rgba(240,237,232,0.7)' : dnsOnly ? '#16a068' : 'rgba(240,237,232,0.7)'
   const tagLabel = hasBoth ? 'DNS + Server' : dnsOnly ? 'DNS only' : 'Server only'
   const iconBg = hasBoth ? 'linear-gradient(135deg,#1e40af,#2a6b5c)' : dnsOnly ? p?.color : t?.color || 'rgba(240,237,232,0.7)'
-  const dotColor = rowDot==='green'?'#4ade80':rowDot==='amber'?'#f0ede8':'rgba(240,237,232,0.2)'
+  const dotColor = rowDot==='green'?'#16a068':rowDot==='amber'?'#111111':'rgba(240,237,232,0.2)'
   return (
     <div onClick={() => onSelect(domain)}
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
@@ -330,7 +330,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
       {/* Icon */}
       <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
         background:iconBg, display:'flex', alignItems:'center', justifyContent:'center',
-        fontSize:11, fontWeight:700, color:'#ffffff', position:'relative' }}>
+        fontSize:11, fontWeight:700, color:'#111111', position:'relative' }}>
         {hasBoth ? <Zap size={16} color="white"/> : dnsOnly ? p?.mono : (TIcon ? <TIcon size={16} color="white"/> : '?')}
         {/* Status dot */}
         <span style={{ position:'absolute', bottom:-2, right:-2, width:10, height:10,
@@ -341,44 +341,44 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:3 }}>
           <span style={{ fontSize:13, fontWeight:600, fontFamily:'monospace',
-            color:'#ffffff', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+            color:'#111111', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
             {domain}
           </span>
           <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
-            background:tagBg, color:'#ffffff', letterSpacing:'0.3px', flexShrink:0 }}>
+            background:tagBg, color:'#111111', letterSpacing:'0.3px', flexShrink:0 }}>
             {tagLabel}
           </span>
         </div>
         <div style={{ display:'flex', gap:8, alignItems:'center' }}>
           {dns && (
-            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'#b0a8a0' }}>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'#888888' }}>
               <span style={{ width:14, height:14, borderRadius:3, background:p?.color,
-                color:'#ffffff', display:'inline-flex', alignItems:'center', justifyContent:'center',
+                color:'#111111', display:'inline-flex', alignItems:'center', justifyContent:'center',
                 fontSize:7, fontWeight:700 }}>{p?.mono}</span>
               {p?.name}
             </span>
           )}
           {dns && server && <span style={{ color:'var(--v2-border-2)', fontSize:10 }}>·</span>}
           {server && TIcon && (
-            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'#b0a8a0' }}>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:11, color:'#888888' }}>
               <TIcon size={11} style={{ color:t?.color }}/>
               {t?.short}
               {agent && <span style={{ width:6, height:6, borderRadius:'50%',
-                background:agentActive?'#4ade80':'rgba(240,237,232,0.2)', marginLeft:2 }}/>}
+                background:agentActive?'#16a068':'rgba(240,237,232,0.2)', marginLeft:2 }}/>}
             </span>
           )}
         </div>
       </div>
-      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#b0a8a0', flexShrink:0 }}/>
+      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#888888', flexShrink:0 }}/>
     </div>
   )
 }
 
 // ── DNS Provider row (kept for backward compat, not used in main list) ─
 function DnsRow({ cred, selected, onSelect, status }) {
-  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#e8e0d8' }
+  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#333333' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
-  const dotColor = cls==='green'?'#4ade80':cls==='amber'?'#f0ede8':'rgba(240,237,232,0.2)'
+  const dotColor = cls==='green'?'#16a068':cls==='amber'?'#111111':'rgba(240,237,232,0.2)'
   const statusLabel = status === 'healthy' ? 'Healthy' : status === 'expired' ? 'Auth expired' : 'Untested'
   return (
     <div onClick={() => onSelect(cred.id)}
@@ -390,26 +390,26 @@ function DnsRow({ cred, selected, onSelect, status }) {
       onMouseLeave={e=>{if(!selected)e.currentTarget.style.background='var(--v2-bg)'}}>
       <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
         background:p.color, display:'flex', alignItems:'center', justifyContent:'center',
-        fontSize:p.mono==='▲'?14:11, fontWeight:700, color:'#ffffff', position:'relative' }}>
+        fontSize:p.mono==='▲'?14:11, fontWeight:700, color:'#111111', position:'relative' }}>
         {p.mono}
         <span style={{ position:'absolute', bottom:-2, right:-2, width:10, height:10,
           borderRadius:'50%', background:dotColor, border:'2px solid var(--v2-bg)' }}/>
       </div>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:3 }}>
-          <span style={{ fontSize:13, fontWeight:600, color:'#ffffff' }}>{p.name}</span>
+          <span style={{ fontSize:13, fontWeight:600, color:'#111111' }}>{p.name}</span>
           <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20, letterSpacing:'0.3px',
-            background: cls==='green'?'#4ade80':cls==='amber'?'#f0ede8':'rgba(240,237,232,0.38)', color:'#ffffff', flexShrink:0 }}>
+            background: cls==='green'?'#16a068':cls==='amber'?'#111111':'rgba(240,237,232,0.38)', color:'#111111', flexShrink:0 }}>
             {statusLabel}
           </span>
-          {cred.tested_at && <span style={{ fontSize:10, color:'#b0a8a0' }}>{timeAgo(cred.tested_at)}</span>}
+          {cred.tested_at && <span style={{ fontSize:10, color:'#888888' }}>{timeAgo(cred.tested_at)}</span>}
         </div>
-        <div style={{ fontSize:11, color:'#b0a8a0', fontFamily:'monospace' }}>
+        <div style={{ fontSize:11, color:'#888888', fontFamily:'monospace' }}>
           {cred.domain_pattern}
         </div>
       </div>
       <Sparkline status={cls} />
-      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#b0a8a0', flexShrink:0 }}/>
+      <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#888888', flexShrink:0 }}/>
     </div>
   )
 }
@@ -417,18 +417,18 @@ function DnsRow({ cred, selected, onSelect, status }) {
 // ── DNS Provider detail ───────────────────────────────────────────────
 function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
   if (!cred) return null
-  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#e8e0d8' }
+  const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#333333' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
   return (
-    <div style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <div style={{ width:38, height:38, borderRadius:9, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, color:'#ffffff', flexShrink:0 }}>
+        <div style={{ width:38, height:38, borderRadius:9, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, color:'#111111', flexShrink:0 }}>
           {p.mono}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>{p.name}</div>
-          <div style={{ fontSize:11, color: '#e8e0d8' }}>
+          <div style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>{p.name}</div>
+          <div style={{ fontSize:11, color: '#333333' }}>
             DNS provider · added {fmtDate(cred.created_at)}
           </div>
         </div>
@@ -468,13 +468,13 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
           {status === 'healthy' && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-green" />
-              <span style={{ color: '#e8e0d8' }}>DNS challenge verified</span>
+              <span style={{ color: '#333333' }}>DNS challenge verified</span>
               <span className="v2-timeline-time">{timeAgo(cred.tested_at) || 'recently'}</span>
             </div>
           )}
           <div className="v2-timeline-item">
             <span className="v2-dot v2-dot-grey" />
-            <span style={{ color: '#e8e0d8' }}>Provider connected</span>
+            <span style={{ color: '#333333' }}>Provider connected</span>
             <span className="v2-timeline-time">{fmtDate(cred.created_at)}</span>
           </div>
         </div>
@@ -503,7 +503,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
     : null
   const agentActive = lastSeenMin !== null && lastSeenMin < 15
   const cls = agent ? (agentActive ? 'green' : 'amber') : 'grey'
-  const dotColor = cls==='green'?'#4ade80':cls==='amber'?'#f0ede8':'rgba(240,237,232,0.2)'
+  const dotColor = cls==='green'?'#16a068':cls==='amber'?'#111111':'rgba(240,237,232,0.2)'
   return (
     <div onClick={() => onSelect(server.id)}
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
@@ -521,28 +521,28 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       </div>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:3 }}>
-          <span style={{ fontSize:13, fontWeight:600, color:'#ffffff',
+          <span style={{ fontSize:13, fontWeight:600, color:'#111111',
             overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
             {server.nickname}
           </span>
           <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:20,
-            background:t.color, color:'#ffffff', letterSpacing:'0.3px', flexShrink:0 }}>
+            background:t.color, color:'#111111', letterSpacing:'0.3px', flexShrink:0 }}>
             {t.short}
           </span>
           {agent ? (
-            <span style={{ fontSize:10, fontWeight:500, color:agentActive?'#4ade80':'#f0ede8',
+            <span style={{ fontSize:10, fontWeight:500, color:agentActive?'#16a068':'#111111',
               display:'flex', alignItems:'center', gap:4, flexShrink:0 }}>
               {agentActive
-                ? <span style={{ width:6,height:6,borderRadius:'50%',background:'#4ade80',
+                ? <span style={{ width:6,height:6,borderRadius:'50%',background:'#16a068',
                     boxShadow:'0 0 0 3px rgba(22,163,74,0.25)',animation:'v2-pulse 1.5s infinite' }}/>
-                : <span style={{ width:6,height:6,borderRadius:'50%',background:'#0d0000' }}/>}
+                : <span style={{ width:6,height:6,borderRadius:'50%',background:'#f4f1ec' }}/>}
               {agentActive ? 'Agent active' : `Offline · ${lastSeenMin}m`}
             </span>
           ) : (
-            <span style={{ fontSize:10, color:'#b0a8a0', flexShrink:0 }}>No agent</span>
+            <span style={{ fontSize:10, color:'#888888', flexShrink:0 }}>No agent</span>
           )}
         </div>
-        <div style={{ display:'flex', gap:8, alignItems:'center', fontSize:11, color:'#b0a8a0' }}>
+        <div style={{ display:'flex', gap:8, alignItems:'center', fontSize:11, color:'#888888' }}>
           <span style={{ fontFamily:'monospace' }}>{server.username}@{server.host}</span>
           {server.domains?.length > 0 && <>
             <span>·</span>
@@ -556,14 +556,14 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       </div>
       {isVPS && !agent ? (
         <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
-          style={{ fontSize:11, color:'#ffffff', background:'transparent',
+          style={{ fontSize:11, color:'#111111', background:'transparent',
             border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:6, cursor:'pointer',
             padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
             fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>
           Install agent <ChevronRight size={11} strokeWidth={2}/>
         </button>
       ) : (
-        <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#b0a8a0', flexShrink:0 }}/>
+        <ChevronRight size={14} strokeWidth={1.6} style={{ color:'#888888', flexShrink:0 }}/>
       )}
     </div>
   )
@@ -673,9 +673,9 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
 
   const jobDot = (s) => {
     if (s === 'done')    return { color: 'var(--v2-green)',   label: 'Done' }
-    if (s === 'failed')  return { color: '#f87171',           label: 'Failed' }
-    if (s === 'claimed') return { color: '#ffffff',           label: 'Running' }
-    if (s === 'queued')  return { color: '#ffffff',           label: 'Queued' }
+    if (s === 'failed')  return { color: '#1f5c4e',           label: 'Failed' }
+    if (s === 'claimed') return { color: '#111111',           label: 'Running' }
+    if (s === 'queued')  return { color: '#111111',           label: 'Queued' }
     return { color: 'var(--v2-grey-dot)', label: s }
   }
 
@@ -687,7 +687,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
     return `${Math.floor(m/60)}h ago`
   }
   return (
-    <div style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div style={{
@@ -698,8 +698,8 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           <Icon size={18} strokeWidth={1.8} color={t.color} />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>{server.nickname}</div>
-          <div style={{ fontSize:11, color: '#e8e0d8', fontFamily: 'JetBrains Mono, monospace' }}>
+          <div style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>{server.nickname}</div>
+          <div style={{ fontSize:11, color: '#333333', fontFamily: 'JetBrains Mono, monospace' }}>
             {server.username}@{server.host}
           </div>
         </div>
@@ -730,7 +730,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           </span>
           {isVPS && (
             <button onClick={() => onInstallAgent(server)}
-                    style={{ background: 'transparent', border: 'none', color: '#ffffff',
+                    style={{ background: 'transparent', border: 'none', color: '#111111',
                              fontWeight: 500, fontSize:11, cursor: 'pointer', padding: 0 }}>
               Install →
             </button>
@@ -795,7 +795,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
               <button className="v2-btn v2-btn-sm" onClick={() => { setShowInstall(false); setDispatchResult(null) }}>Cancel</button>
             </div>
             {dispatchResult && (
-              <div style={{ marginTop: 8, fontSize:11, color: dispatchResult.ok ? 'var(--v2-green-text)' : '#f87171' }}>
+              <div style={{ marginTop: 8, fontSize:11, color: dispatchResult.ok ? 'var(--v2-green-text)' : '#1f5c4e' }}>
                 {dispatchResult.msg}
               </div>
             )}
@@ -807,14 +807,14 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           {agent?.last_seen_at && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-green" />
-              <span style={{ color: '#e8e0d8' }}>Agent heartbeat</span>
+              <span style={{ color: '#333333' }}>Agent heartbeat</span>
               <span className="v2-timeline-time">{timeAgo(agent.last_seen_at)}</span>
             </div>
           )}
           {loadingJobs && jobs.length === 0 && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-grey" />
-              <span style={{ color: '#b0a8a0', fontSize:11 }}>Loading job history…</span>
+              <span style={{ color: '#888888', fontSize:11 }}>Loading job history…</span>
             </div>
           )}
           {jobs.map(j => {
@@ -825,10 +825,10 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: d.color, flexShrink: 0,
                   boxShadow: isActive ? `0 0 0 3px ${d.color}33` : 'none',
                   animation: isActive ? 'v2-pulse 1.5s ease-in-out infinite' : 'none' }}/>
-                <span style={{ color: '#e8e0d8', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ color: '#333333', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   <strong style={{ color: d.color, fontWeight: 600 }}>{d.label}</strong>
                   {' · '}{j.job_type} · <span style={{ fontFamily: 'var(--v2-font-mono)', fontSize:10 }}>{j.domain}</span>
-                  {j.error_message && <span style={{ color: '#f87171', marginLeft: 4 }}>— {j.error_message.slice(0,60)}</span>}
+                  {j.error_message && <span style={{ color: '#1f5c4e', marginLeft: 4 }}>— {j.error_message.slice(0,60)}</span>}
                 </span>
                 <span className="v2-timeline-time">{fmtJobTime(j.completed_at || j.claimed_at || j.created_at)}</span>
               </div>
@@ -837,12 +837,12 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           {!loadingJobs && jobs.length === 0 && (
             <div className="v2-timeline-item">
               <span className="v2-dot v2-dot-grey" />
-              <span style={{ color: '#b0a8a0', fontSize:11 }}>No jobs yet — cert installs and renewals will appear here</span>
+              <span style={{ color: '#888888', fontSize:11 }}>No jobs yet — cert installs and renewals will appear here</span>
             </div>
           )}
           <div className="v2-timeline-item">
             <span className="v2-dot v2-dot-grey" />
-            <span style={{ color: '#e8e0d8' }}>Server added</span>
+            <span style={{ color: '#333333' }}>Server added</span>
             <span className="v2-timeline-time">{fmtDate(server.created_at)}</span>
           </div>
         </div>
@@ -853,7 +853,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           <Edit3 size={11} strokeWidth={2} /> Edit
         </button>
         {agent && (
-          <button className="v2-btn" style={{ color: '#f87171', borderColor: 'rgba(239,83,80,0.3)' }}
+          <button className="v2-btn" style={{ color: '#1f5c4e', borderColor: 'rgba(239,83,80,0.3)' }}
             onClick={() => setShowRemoveAgent(true)} title="Remove agent from this server">
             <WifiOff size={11} strokeWidth={2} /> Remove agent
           </button>
@@ -870,7 +870,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16
         }}>
           <div style={{
-            background:'rgba(255,255,255,0.03)', borderRadius: 14, padding: 24, maxWidth: 480, width: '100%',
+            background:'rgba(0,0,0,0.02)', borderRadius: 14, padding: 24, maxWidth: 480, width: '100%',
             border: '0.5px solid var(--v2-border)', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
@@ -879,17 +879,17 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
                 <WifiOff size={18} strokeWidth={1.8} color="#1f5c4e" />
               </div>
               <div>
-                <div style={{ fontSize:14, fontWeight: 600, color: '#ffffff' }}>Remove agent from server</div>
-                <div style={{ fontSize:11, color: '#b0a8a0' }}>{server.nickname} · {server.host}</div>
+                <div style={{ fontSize:14, fontWeight: 600, color: '#111111' }}>Remove agent from server</div>
+                <div style={{ fontSize:11, color: '#888888' }}>{server.nickname} · {server.host}</div>
               </div>
             </div>
 
             {/* Step 1 — server command */}
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize:11, fontWeight: 600, color: '#e8e0d8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ fontSize:11, fontWeight: 600, color: '#333333', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Step 1 — Run on your server
               </div>
-              <div style={{ background:'#0d0000', borderRadius: 8, padding: '10px 14px', position: 'relative' }}>
+              <div style={{ background:'#f4f1ec', borderRadius: 8, padding: '10px 14px', position: 'relative' }}>
                 <code style={{ fontSize:12, color: '#86efac', fontFamily: 'JetBrains Mono, monospace', userSelect: 'all', display: 'block', lineHeight: 1.6 }}>
                   sudo bash /usr/local/bin/sslvault-agent uninstall
                 </code>
@@ -897,21 +897,21 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
                   onClick={() => navigator.clipboard?.writeText('sudo bash /usr/local/bin/sslvault-agent uninstall')}
                   style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.06)',
                     border: '0.5px solid rgba(240,237,232,0.14)', borderRadius: 5, padding: '2px 8px',
-                    color: '#b0a8a0', fontSize:10, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    color: '#888888', fontSize:10, cursor: 'pointer', fontFamily: 'inherit' }}>
                   Copy
                 </button>
               </div>
-              <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 5 }}>
+              <div style={{ fontSize:10, color: '#888888', marginTop: 5 }}>
                 This stops the agent service, removes the binary, and cleans up <code style={{ fontFamily: 'JetBrains Mono, monospace' }}>/etc/sslvault/</code>. Cert files in <code style={{ fontFamily: 'JetBrains Mono, monospace' }}>/etc/ssl/sslvault/</code> are preserved.
               </div>
             </div>
 
             {/* Step 2 — deregister from DB */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize:11, fontWeight: 600, color: '#e8e0d8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ fontSize:11, fontWeight: 600, color: '#333333', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Step 2 — Remove from SSLVault
               </div>
-              <div style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.5 }}>
+              <div style={{ fontSize:12, color: '#333333', lineHeight: 1.5 }}>
                 Click below to deregister this agent from the platform. All job history will be removed and cert auto-install will stop.
               </div>
             </div>
@@ -930,7 +930,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
                   onClick={handleRemoveAgent}
                   disabled={removingAgent}
                   style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                    background: '#f87171', color: '#ffffff', border: 'none', borderRadius: 8,
+                    background: '#1f5c4e', color: '#111111', border: 'none', borderRadius: 8,
                     padding: '8px 16px', fontSize:12, fontWeight: 500, cursor: removingAgent ? 'not-allowed' : 'pointer',
                     opacity: removingAgent ? 0.7 : 1 }}>
                   {removingAgent ? <><RefreshCw size={11} className="spin"/> Removing…</> : <><Trash2 size={11}/> Deregister agent</>}
@@ -1125,7 +1125,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                     </div>
                     <div style={{ fontSize:11, fontWeight: 700, color: mode === m.key ? 'var(--v2-accent)' : 'var(--v2-text)',
                       marginBottom: 2 }}>{m.label}</div>
-                    <div style={{ fontSize:10, color: '#b0a8a0', lineHeight: 1.4 }}>{m.desc}</div>
+                    <div style={{ fontSize:10, color: '#888888', lineHeight: 1.4 }}>{m.desc}</div>
                   </button>
                 ))}
               </div>
@@ -1134,7 +1134,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
 
           {/* Shared domain field */}
           <div style={{ marginBottom: 16 }}>
-            <label className="v2-label">Domain <span style={{ color: '#f87171' }}>*</span></label>
+            <label className="v2-label">Domain <span style={{ color: '#1f5c4e' }}>*</span></label>
             <input className="v2-input mono" placeholder="yourdomain.com"
               value={domain} onChange={e => setDomain(e.target.value)} />
             <div className="v2-label-help">
@@ -1148,7 +1148,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
           {saveDns && (
             <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)',
               borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
-              <div style={{ fontSize:12, fontWeight: 700, color: '#ffffff', marginBottom: 12,
+              <div style={{ fontSize:12, fontWeight: 700, color: '#111111', marginBottom: 12,
                 display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Globe size={13} style={{ color: 'var(--v2-accent)' }}/> DNS Provider
               </div>
@@ -1169,7 +1169,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                         fontFamily: 'inherit',
                       }}>
                       <span style={{ width: 16, height: 16, borderRadius: 3, background: prov.color,
-                        color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: 8, fontWeight: 700 }}>{prov.mono}</span>
                       {prov.name}
                     </button>
@@ -1182,7 +1182,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                 <div key={f.key} style={{ marginBottom: 10 }}>
                   <label className="v2-label">
                     {f.label}
-                    {f.optional && <span style={{ color: '#b0a8a0', fontWeight: 400 }}> · optional</span>}
+                    {f.optional && <span style={{ color: '#888888', fontWeight: 400 }}> · optional</span>}
                   </label>
                   <div style={{ position: 'relative' }}>
                     <input className="v2-input mono"
@@ -1197,7 +1197,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                         onClick={() => setShowDnsField(s => ({ ...s, [f.key]: !s[f.key] }))}
                         style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
                           background: 'transparent', border: 'none', cursor: 'pointer',
-                          color: '#b0a8a0', display: 'flex' }}>
+                          color: '#888888', display: 'flex' }}>
                         {showDnsField[f.key] ? <EyeOff size={14}/> : <Eye size={14}/>}
                       </button>
                     )}
@@ -1206,7 +1206,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                 </div>
               ))}
 
-              <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 4 }}>
+              <div style={{ fontSize:10, color: '#888888', marginTop: 4 }}>
                 <a href={p.docs} target="_blank" rel="noopener noreferrer"
                   style={{ color: 'var(--v2-accent)', textDecoration: 'none' }}>
                   {p.name} docs
@@ -1219,7 +1219,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
           {saveServer && (
             <div style={{ background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)',
               borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
-              <div style={{ fontSize:12, fontWeight: 700, color: '#ffffff', marginBottom: 12,
+              <div style={{ fontSize:12, fontWeight: 700, color: '#111111', marginBottom: 12,
                 display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Server size={13} style={{ color: 'var(--v2-accent)' }}/> Server
               </div>
@@ -1295,7 +1295,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                           onClick={() => setShowServerField(s => ({ ...s, [f.key]: !s[f.key] }))}
                           style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
                             background: 'transparent', border: 'none', cursor: 'pointer',
-                            color: '#b0a8a0', display: 'flex' }}>
+                            color: '#888888', display: 'flex' }}>
                           {showServerField[f.key] ? <EyeOff size={14}/> : <Eye size={14}/>}
                         </button>
                       </>
@@ -1309,7 +1309,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
               {mode !== 'dns' && (
                 <div style={{ marginBottom: 10 }}>
                   <label className="v2-label">Additional domains
-                    <span style={{ color: '#b0a8a0', fontWeight: 400 }}> · optional</span>
+                    <span style={{ color: '#888888', fontWeight: 400 }}> · optional</span>
                   </label>
                   <input className="v2-input" placeholder="www.example.com, api.example.com"
                     value={extraDomains} onChange={e => setExtraDomains(e.target.value)}/>
@@ -1336,7 +1336,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                           color: installMode === opt.id ? opt.color : 'var(--v2-text)' }}>
                           {opt.title}
                         </div>
-                        <div style={{ fontSize:10, color: '#b0a8a0', lineHeight: 1.4 }}>{opt.desc}</div>
+                        <div style={{ fontSize:10, color: '#888888', lineHeight: 1.4 }}>{opt.desc}</div>
                       </div>
                     ))}
                   </div>
@@ -1444,22 +1444,22 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
               }}>
                 <Check size={22} strokeWidth={2.2} color="#1f5c4e" />
               </div>
-              <div style={{ fontSize:14, fontWeight: 500, color: '#ffffff', marginBottom: 4 }}>Agent registered</div>
-              <div style={{ fontSize:12, color: '#e8e0d8' }}>{server.nickname} is now fully automated</div>
+              <div style={{ fontSize:14, fontWeight: 500, color: '#111111', marginBottom: 4 }}>Agent registered</div>
+              <div style={{ fontSize:12, color: '#333333' }}>{server.nickname} is now fully automated</div>
             </div>
           ) : tokenError ? (
             <div className="v2-alert v2-alert-error">
               <AlertCircle size={13} /> <span>{tokenError} — please close and try again.</span>
             </div>
           ) : tokenLoading ? (
-            <div style={{ textAlign: 'center', padding: '32px 0', color: '#e8e0d8', fontSize:13 }}>
+            <div style={{ textAlign: 'center', padding: '32px 0', color: '#333333', fontSize:13 }}>
               Generating secure token…
             </div>
           ) : (
             <>
               <div style={{ marginBottom: 14 }}>
                 <div className="v2-section-label" style={{ marginBottom: 6 }}>What this does</div>
-                <ul style={{ paddingLeft: 18, margin: 0, fontSize:12, color: '#e8e0d8', lineHeight: 1.7 }}>
+                <ul style={{ paddingLeft: 18, margin: 0, fontSize:12, color: '#333333', lineHeight: 1.7 }}>
                   <li>Installs a lightweight background service (~2MB RAM)</li>
                   <li>Registers the server with SSLVault automatically</li>
                   <li>Handles future cert installs &amp; renewals — no SSH needed</li>
@@ -1469,24 +1469,24 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
 
               <div style={{ marginBottom: 14 }}>
                 <label className="v2-label">SSH into your server and run</label>
-                <div style={{ background:'#0d0000', borderRadius: 8, overflow: 'hidden' }}>
+                <div style={{ background:'#f4f1ec', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                                 padding: '7px 12px', borderBottom: '0.5px solid rgba(31,92,78,0.07)' }}>
                     <div style={{ display: 'flex', gap: 5 }}>
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f87171' }} />
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#0d0000' }} />
-                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#0d0000' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#1f5c4e' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#f4f1ec' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#f4f1ec' }} />
                     </div>
                     <button onClick={copy} style={{
                       background: 'transparent', border: 'none', cursor: 'pointer',
-                      color: copied ? '#f0ede8' : 'rgba(240,237,232,0.45)', fontSize:11, fontWeight: 500,
+                      color: copied ? '#111111' : 'rgba(240,237,232,0.45)', fontSize:11, fontWeight: 500,
                       display: 'inline-flex', alignItems: 'center', gap: 4
                     }}>
                       {copied ? <><Check size={11} /> Copied</> : 'Copy'}
                     </button>
                   </div>
                   <pre style={{
-                    margin: 0, padding: '12px 14px', color: '#b0a8a0', fontSize:11,
+                    margin: 0, padding: '12px 14px', color: '#888888', fontSize:11,
                     fontFamily: 'JetBrains Mono, monospace', whiteSpace: 'pre-wrap',
                     wordBreak: 'break-all', lineHeight: 1.6
                   }}>{installCmd}</pre>
@@ -1494,7 +1494,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
               </div>
 
               <div className="v2-alert v2-alert-info" style={{ marginBottom: 14, fontSize:11 }}>
-                <span><strong style={{ color: '#ffffff' }}>Requirements:</strong> Ubuntu 20/22/24, Debian 10/11/12, CentOS 7/8/9, Amazon Linux 2/2023 · Nginx or Apache · sudo</span>
+                <span><strong style={{ color: '#111111' }}>Requirements:</strong> Ubuntu 20/22/24, Debian 10/11/12, CentOS 7/8/9, Amazon Linux 2/2023 · Nginx or Apache · sudo</span>
               </div>
 
               <div className="v2-alert v2-alert-success">
@@ -1518,7 +1518,7 @@ function LoggedOutView({ nav }) {
           <h1 className="v2-h1" style={{ fontSize:Math.min(32,window.innerWidth>768?32:24), marginBottom: 10, letterSpacing: '-0.6px' }}>
             One vault for DNS &amp; servers
           </h1>
-          <p style={{ fontSize:14, color: '#e8e0d8', maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
+          <p style={{ fontSize:14, color: '#333333', maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
             Connect your DNS provider and servers once. Auto-DNS, auto-install, auto-renewal.
           </p>
         </div>
@@ -1526,10 +1526,10 @@ function LoggedOutView({ nav }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(190px,1fr))', gap: 10, marginBottom: 28 }}>
           {Object.entries(PROVIDERS).map(([key, p]) => (
             <div key={key} className="v2-card v2-card-pad" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width:32, height:32, borderRadius:7, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', color:'#ffffff', fontSize:10, fontWeight:700, flexShrink:0 }}>{p.mono}</div>
+              <div style={{ width:32, height:32, borderRadius:7, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', color:'#111111', fontSize:10, fontWeight:700, flexShrink:0 }}>{p.mono}</div>
               <div>
-                <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>{p.name}</div>
-                <div style={{ fontSize:11, color: '#e8e0d8' }}>DNS provider</div>
+                <div style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>{p.name}</div>
+                <div style={{ fontSize:11, color: '#333333' }}>DNS provider</div>
               </div>
             </div>
           ))}
@@ -1543,8 +1543,8 @@ function LoggedOutView({ nav }) {
                   <Icon size={16} strokeWidth={1.8} color={t.color} />
                 </div>
                 <div>
-                  <div style={{ fontSize:13, fontWeight: 500, color: '#ffffff' }}>{t.short}</div>
-                  <div style={{ fontSize:11, color: '#e8e0d8' }}>Server type</div>
+                  <div style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>{t.short}</div>
+                  <div style={{ fontSize:11, color: '#333333' }}>Server type</div>
                 </div>
               </div>
             )
@@ -1558,10 +1558,10 @@ function LoggedOutView({ nav }) {
           }}>
             <Lock size={20} strokeWidth={2} color="white" />
           </div>
-          <div style={{ fontSize:18, fontWeight: 500, color: '#ffffff', marginBottom: 6, letterSpacing: '-0.3px' }}>
+          <div style={{ fontSize:18, fontWeight: 500, color: '#111111', marginBottom: 6, letterSpacing: '-0.3px' }}>
             Sign in to manage credentials
           </div>
-          <p style={{ color: '#e8e0d8', fontSize:13, maxWidth: 360, margin: '0 auto 18px', lineHeight: 1.6 }}>
+          <p style={{ color: '#333333', fontSize:13, maxWidth: 360, margin: '0 auto 18px', lineHeight: 1.6 }}>
             Credentials are encrypted at rest. Used only for automation — never displayed back to your browser.
           </p>
           <div style={{ display: 'inline-flex', gap: 8 }}>
@@ -1734,15 +1734,15 @@ export default function DnsProviders({ nav }) {
         display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
         <Icon size={11} color="white" strokeWidth={2.2}/>
       </div>
-      <span style={{ fontSize:10, fontWeight:700, color:'#e8e0d8',
+      <span style={{ fontSize:10, fontWeight:700, color:'#333333',
         textTransform:'uppercase', letterSpacing:'0.5px', flex:1 }}>{label}</span>
       <span style={{ fontSize:10, fontWeight:600, padding:'1px 7px', borderRadius:10,
-        background:'var(--v2-border)', color:'#b0a8a0' }}>{count}</span>
+        background:'var(--v2-border)', color:'#888888' }}>{count}</span>
     </div>
   )
 
   const ListPanel = ({ children }) => (
-    <div style={{ background:'rgba(255,255,255,0.03)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
       borderRadius:14, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       {children}
     </div>
@@ -1766,8 +1766,8 @@ export default function DnsProviders({ nav }) {
           <div>
             {loading ? (
               <ListPanel>
-                <div style={{ padding:'clamp(16px,16vw,48px) 16px', textAlign:'center', fontSize:12, color:'#b0a8a0' }}>
-                  <RefreshCw size={18} style={{ color:'#b0a8a0', animation:'spin 1s linear infinite', marginBottom:10, display:'block', margin:'0 auto 10px' }}/>
+                <div style={{ padding:'clamp(16px,16vw,48px) 16px', textAlign:'center', fontSize:12, color:'#888888' }}>
+                  <RefreshCw size={18} style={{ color:'#888888', animation:'spin 1s linear infinite', marginBottom:10, display:'block', margin:'0 auto 10px' }}/>
                   Loading domains…
                 </div>
               </ListPanel>
@@ -1862,7 +1862,7 @@ export default function DnsProviders({ nav }) {
                 {selDnsCred && !selSrv && (
                   <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--v2-surface-2)',
                     border: '1px dashed var(--v2-border)', borderRadius: 8, textAlign: 'center' }}>
-                    <div style={{ fontSize:11, color: '#b0a8a0', marginBottom: 6 }}>
+                    <div style={{ fontSize:11, color: '#888888', marginBottom: 6 }}>
                       No server saved for this domain
                     </div>
                     <button className="v2-btn v2-btn-sm v2-btn-primary"
@@ -1875,7 +1875,7 @@ export default function DnsProviders({ nav }) {
                   <div style={{ padding: '10px 14px', background: 'var(--v2-surface-2)',
                     border: '1px dashed var(--v2-border)', borderRadius: 8, textAlign: 'center',
                     marginBottom: 12 }}>
-                    <div style={{ fontSize:11, color: '#b0a8a0', marginBottom: 6 }}>
+                    <div style={{ fontSize:11, color: '#888888', marginBottom: 6 }}>
                       No DNS provider for this domain
                     </div>
                     <button className="v2-btn v2-btn-sm v2-btn-primary"
@@ -1887,7 +1887,7 @@ export default function DnsProviders({ nav }) {
               </div>
             ) : domainGroups.length > 0 ? (
               <div className="v2-detail" style={{ textAlign: 'center', padding:'min(40px,5vw) min(16px,4vw)' }}>
-                <div style={{ fontSize:12, color: '#e8e0d8' }}>Select a domain to see details</div>
+                <div style={{ fontSize:12, color: '#333333' }}>Select a domain to see details</div>
               </div>
             ) : null}
           </div>

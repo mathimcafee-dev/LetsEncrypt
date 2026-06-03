@@ -17,7 +17,7 @@ const fmtDate = (iso) => iso ? format(new Date(iso), 'MMM d, yyyy') : '—'
 const fmtAgo  = (iso) => iso ? formatDistanceToNow(new Date(iso), { addSuffix: true }) : '—'
 
 function statusColor(s) {
-  return { active:'#f0ede8', archived:'#f0ede8', revoked:'#f87171' }[s] || 'rgba(240,237,232,0.38)'
+  return { active:'#111111', archived:'#111111', revoked:'#1f5c4e' }[s] || 'rgba(240,237,232,0.38)'
 }
 
 // ── callCertVault helper ──────────────────────────────────────────────
@@ -166,9 +166,9 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
         {/* Progress indicator */}
         <div style={{ height:2, background:'var(--v2-surface-3)', display:'flex' }}>
           {step === 'auth' ? (
-            <div style={{ width:'50%', background:'#0d0000', transition:'width .3s' }}/>
+            <div style={{ width:'50%', background:'#f4f1ec', transition:'width .3s' }}/>
           ) : (
-            <div style={{ width:`${pct}%`, background:'#0d0000', transition:'width 1s linear' }}/>
+            <div style={{ width:`${pct}%`, background:'#f4f1ec', transition:'width 1s linear' }}/>
           )}
         </div>
 
@@ -184,7 +184,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                 <div style={{ width:20, height:20, borderRadius:'50%', flexShrink:0,
                   display:'flex', alignItems:'center', justifyContent:'center',
                   fontSize:10, fontWeight:700,
-                  background: done ? '#f0ede8' : (step==='auth'&&n===1)||(step==='key'&&n===2) ? '#f0ede8' : 'var(--v2-surface-3)',
+                  background: done ? '#111111' : (step==='auth'&&n===1)||(step==='key'&&n===2) ? '#111111' : 'var(--v2-surface-3)',
                   color: done||(step==='auth'&&n===1)||(step==='key'&&n===2) ? '#000000' : 'var(--v2-text-3)',
                 }}>
                   {done ? <Check size={10}/> : n}
@@ -251,7 +251,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
               ) : (
                 <button type="submit" disabled={verifying || !password.trim()}
                   style={{ width:'100%', padding:'11px', borderRadius:8, cursor:'pointer',
-                    background: verifying||!password.trim() ? 'var(--v2-surface-3)' : '#f0ede8',
+                    background: verifying||!password.trim() ? 'var(--v2-surface-3)' : '#111111',
                     color: verifying||!password.trim() ? 'var(--v2-text-3)' : '#000000',
                     border:'none', fontSize:13, fontWeight:600, fontFamily:'inherit',
                     display:'flex', alignItems:'center', justifyContent:'center', gap:8,
@@ -288,7 +288,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                     Never share this key. Do not save unencrypted. This access is logged.
                   </div>
 
-                  <div style={{ background:'#0d0000', borderRadius:9, padding:'14px 16px',
+                  <div style={{ background:'#f4f1ec', borderRadius:9, padding:'14px 16px',
                     marginBottom:12, fontFamily:'monospace', fontSize:11, color:'#6b6b6b',
                     lineHeight:1.8, whiteSpace:'pre', userSelect:'none' }}>
                     {masked}
@@ -296,8 +296,8 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
 
                   <button onClick={copy} style={{
                     width:'100%', padding:'11px', borderRadius:8, cursor:'pointer',
-                    background: copied ? 'transparent' : '#f0ede8', fontFamily:'inherit',
-                    color: copied ? '#4ade80' : '#000000',
+                    background: copied ? 'transparent' : '#111111', fontFamily:'inherit',
+                    color: copied ? '#16a068' : '#000000',
                     border: copied ? '1px solid rgba(31,92,78,0.2)' : 'none',
                     fontSize:13, fontWeight:600,
                     display:'flex', alignItems:'center', justifyContent:'center', gap:8,
@@ -338,8 +338,8 @@ function AuditRow({ entry }) {
     viewed:   <Eye size={12} color="rgba(0,0,0,0.36)"/>,
   }
   const actionColors = {
-    created:'#f0ede8', fetched:'#f0ede8', rotated:'#f0ede8',
-    archived:'rgba(240,237,232,0.38)', deleted:'#f87171', viewed:'rgba(240,237,232,0.38)',
+    created:'#111111', fetched:'#111111', rotated:'#111111',
+    archived:'rgba(240,237,232,0.38)', deleted:'#1f5c4e', viewed:'rgba(240,237,232,0.38)',
   }
   return (
     <div style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px',
@@ -623,7 +623,7 @@ export default function CertVault({ nav }) {
     <div className="v2-page" style={{ display:'flex', alignItems:'center',
       justifyContent:'center', minHeight:'60vh' }}>
       <div style={{ textAlign:'center', maxWidth:380 }}>
-        <div style={{ width:48, height:48, background:'#0d0000', borderRadius:12,
+        <div style={{ width:48, height:48, background:'#f4f1ec', borderRadius:12,
           display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
           <Lock size={22} color="white"/>
         </div>
@@ -757,12 +757,12 @@ export default function CertVault({ nav }) {
               style={{ padding:'8px 14px', fontSize:12, fontWeight:tab===t.key?500:400,
                 cursor:'pointer', fontFamily:'inherit', background:'none', border:'none',
                 borderBottom:tab===t.key?'2px solid #2a6b5c':'2px solid transparent',
-                color:tab===t.key?'#f0ede8':'var(--v2-text-3)', marginBottom:'-0.5px',
+                color:tab===t.key?'#111111':'var(--v2-text-3)', marginBottom:'-0.5px',
                 display:'flex', alignItems:'center', gap:6 }}>
               {t.label}
               <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:8,
                 background:tab===t.key?'transparent':'var(--v2-surface-3)',
-                color:tab===t.key?'#f0ede8':'var(--v2-text-3)' }}>
+                color:tab===t.key?'#111111':'var(--v2-text-3)' }}>
                 {t.count}
               </span>
             </button>

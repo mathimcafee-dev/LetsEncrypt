@@ -7,8 +7,8 @@ function daysLeft(iso) {
   if (!iso) return 999
   return Math.floor((new Date(iso).getTime() - Date.now()) / 86400000)
 }
-function scoreCol(s) { return s >= 80 ? '#4ade80' : s >= 50 ? '#f59e0b' : '#1f5c4e' }
-function certCol(d)  { return d < 10 ? '#1f5c4e' : d < 30 ? '#f59e0b' : '#4ade80' }
+function scoreCol(s) { return s >= 80 ? '#16a068' : s >= 50 ? '#f59e0b' : '#1f5c4e' }
+function certCol(d)  { return d < 10 ? '#1f5c4e' : d < 30 ? '#f59e0b' : '#16a068' }
 function certLbl(d)  { return d < 0 ? 'EXPIRED' : d < 10 ? 'CRITICAL' : d < 30 ? 'WARNING' : 'HEALTHY' }
 function fmtDate(iso) {
   try { return iso ? new Date(iso).toLocaleDateString('en-GB') : 'N/A' } catch(e) { return 'N/A' }
@@ -54,12 +54,12 @@ export default function SLADashboard({ nav }) {
   }
 
   var S = {
-    page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: '#120000', overflowY: 'auto', padding: '28px 24px', fontFamily: "'Segoe UI',system-ui,sans-serif" },
+    page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: '#f4f1ec', overflowY: 'auto', padding: '28px 24px', fontFamily: "'Segoe UI',system-ui,sans-serif" },
     card: { background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, padding: '14px 16px', marginBottom: 12 },
     lbl:  { fontSize: 10, fontWeight: 700, color: 'rgba(240,237,232,0.4)', textTransform: 'uppercase', letterSpacing: '.1em', display: 'block', marginBottom: 6 },
-    ttl:  { fontSize: 13, fontWeight: 600, color: '#f0ede8', marginBottom: 3 },
+    ttl:  { fontSize: 13, fontWeight: 600, color: '#111111', marginBottom: 3 },
     sub:  { fontSize: 12, color: 'rgba(240,237,232,0.6)', lineHeight: 1.6 },
-    btn:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: 'rgba(0,0,0,0.07)', border: '1px solid rgba(192,57,43,0.4)', borderRadius: 8, color: '#f0ede8', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
+    btn:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: 'rgba(0,0,0,0.07)', border: '1px solid rgba(192,57,43,0.4)', borderRadius: 8, color: '#111111', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
     btnP: { background: '#1f5c4e', border: '1px solid #2a6b5c', borderRadius: 8, padding: '10px 24px', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
   }
 
@@ -71,7 +71,7 @@ export default function SLADashboard({ nav }) {
 
   if (err) return (
     <div style={S.page}>
-      <div style={{ background: 'rgba(31,92,78,0.08)', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 8, padding: '12px 16px', color: '#f87171', fontSize: 13, marginBottom: 12 }}>Error: {err}</div>
+      <div style={{ background: 'rgba(31,92,78,0.08)', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 8, padding: '12px 16px', color: '#1f5c4e', fontSize: 13, marginBottom: 12 }}>Error: {err}</div>
       <button style={S.btn} onClick={load}>Retry</button>
     </div>
   )
@@ -79,7 +79,7 @@ export default function SLADashboard({ nav }) {
   if (!status || !status.has_sla) return (
     <div style={S.page}>
       <div style={{ maxWidth: 520, margin: '40px auto', textAlign: 'center' }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#f0ede8', marginBottom: 12 }}>SLA Coverage not active</div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#111111', marginBottom: 12 }}>SLA Coverage not active</div>
         <div style={{ fontSize: 13, color: 'rgba(240,237,232,0.6)', lineHeight: 1.75, marginBottom: 28 }}>Upgrade to SSLVault Premium to get the 47-Day compliance guarantee, monthly audit reports, and escalation alerts.</div>
         <button style={S.btnP} onClick={function() { if (nav) nav('/pricing') }}>View Premium plans</button>
         <div style={{ marginTop: 14, fontSize: 11, color: 'rgba(240,237,232,0.3)' }}>Plans from $999/year - Contact us to activate</div>
@@ -98,7 +98,7 @@ export default function SLADashboard({ nav }) {
 
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#f0ede8', marginBottom: 4 }}>SLA Coverage</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#111111', marginBottom: 4 }}>SLA Coverage</div>
             <div style={{ fontSize: 12, color: 'rgba(240,237,232,0.4)' }}>
               Plan: <span style={{ color: '#1f5c4e', fontWeight: 600 }}>{(sub.plan || 'active').toUpperCase()}</span>
               {' - '}{sub.domain_limit || 0} domains covered
@@ -123,15 +123,15 @@ export default function SLADashboard({ nav }) {
           </div>
           <div style={S.card}>
             <span style={S.lbl}>Total certs</span>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#f0ede8' }}>{status.total_certs || 0}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#111111' }}>{status.total_certs || 0}</div>
           </div>
           <div style={S.card}>
             <span style={S.lbl}>Expiring 30d</span>
-            <div style={{ fontSize: 28, fontWeight: 800, color: (status.expiring_30d || 0) > 0 ? '#f59e0b' : '#4ade80' }}>{status.expiring_30d || 0}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: (status.expiring_30d || 0) > 0 ? '#f59e0b' : '#16a068' }}>{status.expiring_30d || 0}</div>
           </div>
           <div style={S.card}>
             <span style={S.lbl}>Critical 10d</span>
-            <div style={{ fontSize: 28, fontWeight: 800, color: (status.expiring_10d || 0) > 0 ? '#1f5c4e' : '#4ade80' }}>{status.expiring_10d || 0}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: (status.expiring_10d || 0) > 0 ? '#1f5c4e' : '#16a068' }}>{status.expiring_10d || 0}</div>
           </div>
         </div>
 
@@ -153,7 +153,7 @@ export default function SLADashboard({ nav }) {
                   var cc = certCol(dl)
                   return (
                     <tr key={c.id || c.domain} style={{ borderTop: '1px solid rgba(31,92,78,0.08)' }}>
-                      <td style={{ padding: '10px 14px', fontSize: 13, color: '#f0ede8', fontFamily: 'monospace' }}>{c.domain}</td>
+                      <td style={{ padding: '10px 14px', fontSize: 13, color: '#111111', fontFamily: 'monospace' }}>{c.domain}</td>
                       <td style={{ padding: '10px 14px', fontSize: 12, color: 'rgba(240,237,232,0.5)' }}>{fmtDate(c.expires_at)}</td>
                       <td style={{ padding: '10px 14px', fontSize: 13, fontWeight: 600, color: cc }}>{Math.max(0, dl)}</td>
                       <td style={{ padding: '10px 14px' }}>

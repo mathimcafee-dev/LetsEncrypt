@@ -38,11 +38,11 @@ export default function ProGate({ isPro, nav, feature = 'This feature', compact 
                       boxShadow:'0 0 0 6px rgba(124,58,237,0.1)' }}>
           <Lock size={22} color='white' />
         </div>
-        <div style={{ fontSize:15, fontWeight:700, color:'#ffffff',
+        <div style={{ fontSize:15, fontWeight:700, color:'#111111',
                       marginBottom:6, letterSpacing:'-0.2px' }}>
           {feature} is a Pro feature
         </div>
-        <p style={{ fontSize:13, color:'#e8e0d8', lineHeight:1.65,
+        <p style={{ fontSize:13, color:'#333333', lineHeight:1.65,
                     maxWidth:340, margin:'0 auto 20px' }}>
           Upgrade to CertVault Pro to access encrypted key storage, automatic rotation,
           and full audit logging — from €9.99/month.

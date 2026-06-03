@@ -12,7 +12,7 @@ const MONO = "'JetBrains Mono',monospace"
 // Mandate thresholds
 const MANDATES = [
   { year: '2026', label: 'Mar 2026', days: 200, col: '#f59e0b' },
-  { year: '2027', label: 'Mar 2027', days: 100, col: '#f87171' },
+  { year: '2027', label: 'Mar 2027', days: 100, col: '#1f5c4e' },
   { year: '2029', label: 'Mar 2029', days: 47,  col: '#1f5c4e' },
 ]
 
@@ -39,9 +39,9 @@ function readinessScore(cert, hasDns) {
   var score = (checks.auto_renew?30:0)+(checks.dns_provider?25:0)+(checks.install?20:0)+(checks.validity_200?15:0)+(checks.key_secured?10:0)
   return { checks, score, status: score >= 90 ? 'Ready' : score >= 60 ? 'At risk' : 'Will break', validity: v }
 }
-function slaCol(s) { return s >= 80 ? '#4ade80' : s >= 50 ? '#f59e0b' : '#1f5c4e' }
+function slaCol(s) { return s >= 80 ? '#16a068' : s >= 50 ? '#f59e0b' : '#1f5c4e' }
 function slaLbl(s) { return s >= 80 ? 'COMPLIANT' : s >= 50 ? 'AT RISK' : 'BREACH' }
-function rdCol(s)  { return s >= 90 ? '#4ade80' : s >= 60 ? '#fbbf24' : '#f87171' }
+function rdCol(s)  { return s >= 90 ? '#16a068' : s >= 60 ? '#9a6400' : '#1f5c4e' }
 
 function Tick({ ok }) {
   return ok
@@ -171,7 +171,7 @@ export default function ComplianceCentre({ nav, user }) {
               <span style={{ fontSize:20, fontWeight:700, color:'#1a1a1a' }}>Compliance Centre</span>
               {hasSla && <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:99, background:'rgba(0,0,0,0.07)', color:'#1f5c4e', letterSpacing:'.06em' }}>{(sub.plan||'PREMIUM').toUpperCase()}</span>}
             </div>
-            <div style={{ fontSize:12, color:'rgba(240,237,232,0.35)' }}>47-Day mandate readiness + SLA compliance + certificate health</div>
+            <div style={{ fontSize:12, color:'#999999' }}>47-Day mandate readiness + SLA compliance + certificate health</div>
           </div>
           <div style={{ display:'flex', gap:8 }}>
             {hasSla && (
@@ -225,9 +225,9 @@ export default function ComplianceCentre({ nav, user }) {
                 var count = rows.filter(function(r){ return r.rs.validity !== null && r.rs.validity <= m.days }).length
                 return (
                   <div key={m.year} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <div style={{ width:6, height:6, borderRadius:'50%', background: compliant ? '#4ade80' : m.col, flexShrink:0 }}/>
+                    <div style={{ width:6, height:6, borderRadius:'50%', background: compliant ? '#16a068' : m.col, flexShrink:0 }}/>
                     <span style={{ fontSize:11, color:'rgba(240,237,232,0.45)', minWidth:60 }}>{m.label}</span>
-                    <span style={{ fontSize:11, fontWeight:600, color: compliant ? '#4ade80' : m.col }}>{m.days}d max</span>
+                    <span style={{ fontSize:11, fontWeight:600, color: compliant ? '#16a068' : m.col }}>{m.days}d max</span>
                     <span style={{ fontSize:10, color:'#6b6b6b', marginLeft:'auto' }}>{count}/{rows.length} ready</span>
                   </div>
                 )
@@ -251,7 +251,7 @@ export default function ComplianceCentre({ nav, user }) {
           {/* Table header */}
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
             <span style={{ fontSize:12, fontWeight:600, color:'#1a1a1a' }}>Certificate Coverage</span>
-            <span style={{ fontSize:11, color:'rgba(240,237,232,0.35)' }}>{rows.length} domain{rows.length !== 1 ? 's' : ''}</span>
+            <span style={{ fontSize:11, color:'#999999' }}>{rows.length} domain{rows.length !== 1 ? 's' : ''}</span>
           </div>
 
           <table style={{ width:'100%', minWidth:900, borderCollapse:'collapse' }}>
@@ -282,7 +282,7 @@ export default function ComplianceCentre({ nav, user }) {
                 <tr><td colSpan={12} style={{ padding:28, textAlign:'center', color:'#6b6b6b', fontSize:13 }}>No active certificates</td></tr>
               ) : sorted.map(function(row) {
                 var c = row.cert, rs = row.rs, dl = row.dl
-                var dlCol = dl < 10 ? '#1f5c4e' : dl < 30 ? '#f59e0b' : '#4ade80'
+                var dlCol = dl < 10 ? '#1f5c4e' : dl < 30 ? '#f59e0b' : '#16a068'
                 var rdColor = rdCol(rs.score)
                 var v = rs.validity
                 var isExpanded = expanded === c.id
@@ -290,7 +290,7 @@ export default function ComplianceCentre({ nav, user }) {
                   <tr key={c.id} onClick={function(){ setExpanded(isExpanded ? null : c.id) }}
                     style={{ borderTop:'1px solid rgba(31,92,78,0.07)', cursor:'pointer', transition:'background .1s',
                       background: isExpanded ? 'rgba(192,57,43,0.06)' : 'transparent' }}
-                    onMouseEnter={function(e){ if(!isExpanded) e.currentTarget.style.background='rgba(255,255,255,0.02)' }}
+                    onMouseEnter={function(e){ if(!isExpanded) e.currentTarget.style.background='rgba(0,0,0,0.02)' }}
                     onMouseLeave={function(e){ if(!isExpanded) e.currentTarget.style.background='transparent' }}>
                     <td style={{ padding:'10px 12px', fontSize:13, color:'#1a1a1a', fontFamily:MONO }}>{c.domain}</td>
                     <td style={{ padding:'10px 12px', fontSize:11, color:'#6b6b6b' }}>{fmtDate(c.expires_at)}</td>
@@ -319,13 +319,13 @@ export default function ComplianceCentre({ nav, user }) {
                             { ok:rs.checks.key_secured,  label:'Key in KeyLocker', fix:'Save key to KeyLocker', pts:10 },
                           ].map(function(ch) {
                             return (
-                              <div key={ch.label} style={{ background:'rgba(255,255,255,0.03)', borderRadius:8, padding:'10px 12px', border:'1px solid ' + (ch.ok ? 'rgba(22,160,104,0.11)' : 'rgba(31,92,78,0.09)') }}>
+                              <div key={ch.label} style={{ background:'rgba(0,0,0,0.02)', borderRadius:8, padding:'10px 12px', border:'1px solid ' + (ch.ok ? 'rgba(22,160,104,0.11)' : 'rgba(31,92,78,0.09)') }}>
                                 <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
                                   <Tick ok={ch.ok}/>
-                                  <span style={{ fontSize:11, fontWeight:600, color: ch.ok ? '#4ade80' : '#f87171' }}>+{ch.pts} pts</span>
+                                  <span style={{ fontSize:11, fontWeight:600, color: ch.ok ? '#16a068' : '#1f5c4e' }}>+{ch.pts} pts</span>
                                 </div>
                                 <div style={{ fontSize:11, color:'#3d3d3d', lineHeight:1.4 }}>{ch.label}</div>
-                                {!ch.ok && <div style={{ fontSize:10, color:'rgba(240,237,232,0.35)', marginTop:4 }}>{ch.fix}</div>}
+                                {!ch.ok && <div style={{ fontSize:10, color:'#999999', marginTop:4 }}>{ch.fix}</div>}
                               </div>
                             )
                           })}
@@ -344,7 +344,7 @@ export default function ComplianceCentre({ nav, user }) {
           <div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
               <span style={{ fontSize:12, fontWeight:600, color:'#1a1a1a' }}>Compliance Reports</span>
-              <span style={{ fontSize:11, color:'rgba(240,237,232,0.35)' }}>SOC2 / ISO 27001 audit evidence</span>
+              <span style={{ fontSize:11, color:'#999999' }}>SOC2 / ISO 27001 audit evidence</span>
             </div>
             {reports.length === 0 ? (
               <div style={{ ...card, textAlign:'center', padding:'20px', color:'#6b6b6b', fontSize:13 }}>

@@ -201,11 +201,11 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
             </div>
             <div>
               <div style={{ fontSize:14, fontWeight:600, color:'transparent' }}>Install Certificate</div>
-              <div style={{ fontSize:11, color:'#b0a8a0', fontFamily:'monospace' }}>{cert.domain}</div>
+              <div style={{ fontSize:11, color:'#888888', fontFamily:'monospace' }}>{cert.domain}</div>
             </div>
           </div>
           <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer',
-            color:'#b0a8a0', fontSize:20, lineHeight:1, padding:'2px 6px' }}>×</button>
+            color:'#888888', fontSize:20, lineHeight:1, padding:'2px 6px' }}>×</button>
         </div>
 
         {/* Host type tabs */}

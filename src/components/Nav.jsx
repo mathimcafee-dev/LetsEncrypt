@@ -88,7 +88,7 @@ export default function Nav({ nav, page }) {
             ))}
             <div style={{height:1,background:LN,margin:'7px 0 9px'}}/>
             <button onClick={()=>{nav('/auth');setMob(false)}} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,0.04)',color:T1,border:`1px solid ${LN}`,padding:'10px 12px',borderRadius:3,fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:F,marginBottom:6}}>Sign in</button>
-            <button onClick={()=>{nav('/auth');setMob(false)}} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'#1f5c4e',color:'#ffffff',border:'none',padding:'10px 12px',borderRadius:3,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:F}}>Get started</button>
+            <button onClick={()=>{nav('/auth');setMob(false)}} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'#1f5c4e',color:'#111111',border:'none',padding:'10px 12px',borderRadius:3,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:F}}>Get started</button>
           </div>
         </div>
       )}

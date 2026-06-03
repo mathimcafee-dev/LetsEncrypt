@@ -47,8 +47,8 @@ function StatCard({ label, value, subtext, accentColor, icon: Icon }) {
         <Icon size={18} strokeWidth={1.8} color={accentColor} />
       </div>
       <div>
-        <div style={{ fontSize: 22, fontWeight: 700, color: '#ffffff', lineHeight: 1.1 }}>{value}</div>
-        <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 3, fontWeight: 500 }}>{label}</div>
+        <div style={{ fontSize: 22, fontWeight: 700, color: '#111111', lineHeight: 1.1 }}>{value}</div>
+        <div style={{ fontSize: 11, color: '#888888', marginTop: 3, fontWeight: 500 }}>{label}</div>
         {subtext && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{subtext}</div>}
       </div>
     </div>
@@ -85,7 +85,7 @@ function TabBar({ tab, setTab, counts }) {
             <span style={{
               fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 10,
               background: t.warn && tab !== t.id ? 'rgba(192,57,43,0.2)' : 'rgba(0,0,0,0.08)',
-              color: t.warn && tab !== t.id ? '#f87171' : 'rgba(255,255,255,0.7)',
+              color: t.warn && tab !== t.id ? '#1f5c4e' : 'rgba(255,255,255,0.7)',
               border: t.warn && tab !== t.id ? '0.5px solid rgba(248,113,113,0.3)' : 'none',
             }}>{t.count}</span>
           )}
@@ -102,9 +102,9 @@ function EventRow({ ev, cert }) {
   const isToday = days === 0
   const isPast = days !== null && days < 0
 
-  const statusColor = ev.status === 'sent' ? '#4ade80'
-    : ev.status === 'failed' ? '#f87171'
-    : ev.status === 'executing' ? '#fbbf24'
+  const statusColor = ev.status === 'sent' ? '#16a068'
+    : ev.status === 'failed' ? '#1f5c4e'
+    : ev.status === 'executing' ? '#9a6400'
     : '#60a5fa'
 
   const statusBg = ev.status === 'sent' ? 'rgba(22,160,104,0.09)'
@@ -129,7 +129,7 @@ function EventRow({ ev, cert }) {
       {/* Domain */}
       <div style={{ width: 155, flexShrink: 0 }}>
         <div style={{
-          fontSize: 12, fontWeight: 600, color: '#ffffff',
+          fontSize: 12, fontWeight: 600, color: '#111111',
           fontFamily: 'JetBrains Mono, monospace',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
@@ -142,7 +142,7 @@ function EventRow({ ev, cert }) {
         <span style={{
           fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
           background: isReissue ? 'rgba(74,222,128,0.12)' : 'rgba(31,92,78,0.09)',
-          color: isReissue ? '#4ade80' : '#1f5c4e',
+          color: isReissue ? '#16a068' : '#1f5c4e',
           border: `0.5px solid ${isReissue ? 'rgba(22,160,104,0.22)' : 'rgba(255,140,122,0.25)'}`,
         }}>
           {EVENT_LABELS[ev.event_type] || ev.event_type}
@@ -153,7 +153,7 @@ function EventRow({ ev, cert }) {
       <div style={{ width: 90, flexShrink: 0 }}>
         <span style={{
           fontSize: 11,
-          color: isToday ? '#1f5c4e' : isPast ? 'rgba(255,255,255,0.3)' : '#e8e0d8',
+          color: isToday ? '#1f5c4e' : isPast ? 'rgba(255,255,255,0.3)' : '#333333',
           fontWeight: isToday ? 700 : 400,
         }}>
           {fmtShort(ev.scheduled_date)}
@@ -179,7 +179,7 @@ function EventRow({ ev, cert }) {
         </span>
         {ev.error_message && (
           <span style={{
-            fontSize: 10, color: '#f87171',
+            fontSize: 10, color: '#1f5c4e',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180,
           }}>
             {ev.error_message.slice(0, 70)}
@@ -201,10 +201,10 @@ function AlertRow({ alert, onResolve, resolving }) {
     }}>
       <AlertTriangle size={13} strokeWidth={2} color="#f87171" style={{ flexShrink: 0, marginTop: 2 }} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: '#ffffff', marginBottom: 3 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#111111', marginBottom: 3 }}>
           {alert.domain || 'Unknown domain'}
         </div>
-        <div style={{ fontSize: 11, color: '#f87171', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 11, color: '#1f5c4e', lineHeight: 1.5 }}>
           {(alert.message || '').slice(0, 120)}
         </div>
         <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>
@@ -291,8 +291,8 @@ export default function AdminRenewalCalendar({ user }) {
       <div className="v2-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <div style={{ textAlign: 'center' }}>
           <Shield size={36} strokeWidth={1.2} color="rgba(255,255,255,0.2)" style={{ marginBottom: 12 }} />
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff', marginBottom: 6 }}>Admin access required</div>
-          <div style={{ fontSize: 12, color: '#b0a8a0' }}>Only master administrators can view this page.</div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#111111', marginBottom: 6 }}>Admin access required</div>
+          <div style={{ fontSize: 12, color: '#888888' }}>Only master administrators can view this page.</div>
         </div>
       </div>
     )
@@ -322,7 +322,7 @@ export default function AdminRenewalCalendar({ user }) {
         marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 className="v2-h1" style={{ marginBottom: 4 }}>Admin Renewal Calendar</h1>
-          <p style={{ margin: 0, fontSize: 12, color: '#b0a8a0' }}>
+          <p style={{ margin: 0, fontSize: 12, color: '#888888' }}>
             Platform-wide monitoring · All customers
           </p>
         </div>
@@ -331,7 +331,7 @@ export default function AdminRenewalCalendar({ user }) {
           padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
           border: '1px solid rgba(192,57,43,0.4)',
           background: 'rgba(0,0,0,0.05)',
-          color: '#e8e0d8', cursor: 'pointer', fontFamily: 'inherit',
+          color: '#333333', cursor: 'pointer', fontFamily: 'inherit',
         }}>
           <RefreshCw size={12} strokeWidth={2} style={{ animation: loading ? 'spin 0.8s linear infinite' : 'none' }} />
           Refresh
@@ -347,10 +347,10 @@ export default function AdminRenewalCalendar({ user }) {
           accentColor="#60a5fa" icon={Calendar} />
         <StatCard label="Failed events"    value={loading ? '…' : failed.length}
           subtext="need retry or manual fix"
-          accentColor={failed.length > 0 ? '#f87171' : 'rgba(255,255,255,0.2)'} icon={AlertTriangle} />
+          accentColor={failed.length > 0 ? '#1f5c4e' : 'rgba(0,0,0,0.09)'} icon={AlertTriangle} />
         <StatCard label="Open alerts"      value={loading ? '…' : alerts.length}
           subtext="admin action needed"
-          accentColor={alerts.length > 0 ? '#f87171' : 'rgba(255,255,255,0.2)'} icon={Bell} />
+          accentColor={alerts.length > 0 ? '#1f5c4e' : 'rgba(0,0,0,0.09)'} icon={Bell} />
       </div>
 
       {/* Open alert banner */}
@@ -359,7 +359,7 @@ export default function AdminRenewalCalendar({ user }) {
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 14px', borderRadius: 8, marginBottom: 16,
           background: 'rgba(192,57,43,0.07)', border: '1px solid rgba(192,57,43,0.2)',
-          fontSize: 12, color: '#f87171',
+          fontSize: 12, color: '#1f5c4e',
         }}>
           <AlertTriangle size={14} strokeWidth={2} />
           <span>
@@ -383,19 +383,19 @@ export default function AdminRenewalCalendar({ user }) {
         borderRadius: 12, overflow: 'hidden',
       }}>
         {loading ? (
-          <div style={{ padding: '48px 16px', textAlign: 'center', color: '#b0a8a0', fontSize: 12 }}>
+          <div style={{ padding: '48px 16px', textAlign: 'center', color: '#888888', fontSize: 12 }}>
             Loading…
           </div>
         ) : tab === 'alerts' ? (
           alerts.length === 0 ? (
             <div style={{ padding: '48px 16px', textAlign: 'center' }}>
               <CheckCircle size={28} strokeWidth={1.4} color="rgba(74,222,128,0.4)" style={{ marginBottom: 10 }} />
-              <div style={{ fontSize: 13, color: '#ffffff', fontWeight: 600, marginBottom: 4 }}>No open alerts</div>
-              <div style={{ fontSize: 11, color: '#b0a8a0' }}>All certificates are healthy.</div>
+              <div style={{ fontSize: 13, color: '#111111', fontWeight: 600, marginBottom: 4 }}>No open alerts</div>
+              <div style={{ fontSize: 11, color: '#888888' }}>All certificates are healthy.</div>
             </div>
           ) : (
             <>
-              <div style={{ padding: '8px 16px', fontSize: 10, fontWeight: 700, color: '#f87171',
+              <div style={{ padding: '8px 16px', fontSize: 10, fontWeight: 700, color: '#1f5c4e',
                 textTransform: 'uppercase', letterSpacing: '0.5px',
                 borderBottom: '0.5px solid rgba(248,113,113,0.15)',
                 background: 'rgba(248,113,113,0.06)' }}>
@@ -409,12 +409,12 @@ export default function AdminRenewalCalendar({ user }) {
         ) : tabEvents.length === 0 ? (
           <div style={{ padding: '48px 16px', textAlign: 'center' }}>
             <Calendar size={28} strokeWidth={1.4} color="rgba(0,0,0,0.09)" style={{ marginBottom: 10 }} />
-            <div style={{ fontSize: 13, color: '#ffffff', fontWeight: 600, marginBottom: 4 }}>
+            <div style={{ fontSize: 13, color: '#111111', fontWeight: 600, marginBottom: 4 }}>
               {tab === 'today' ? 'No events today'
                 : tab === 'failed' ? 'No failed events'
                 : 'No upcoming events in the next 7 days'}
             </div>
-            <div style={{ fontSize: 11, color: '#b0a8a0' }}>
+            <div style={{ fontSize: 11, color: '#888888' }}>
               {tab === 'failed' ? 'All automations running cleanly.' : 'Events appear as certificates approach expiry.'}
             </div>
           </div>
@@ -426,7 +426,7 @@ export default function AdminRenewalCalendar({ user }) {
               fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)',
               textTransform: 'uppercase', letterSpacing: '0.5px',
               borderBottom: '0.5px solid rgba(0,0,0,0.06)',
-              background: 'rgba(255,255,255,0.02)',
+              background: 'rgba(0,0,0,0.02)',
             }}>
               <div style={{ width: 8, flexShrink: 0 }} />
               <div style={{ width: 155, flexShrink: 0 }}>Domain</div>

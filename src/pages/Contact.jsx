@@ -50,7 +50,7 @@ export default function Contact({ nav }) {
           <div>
             <a href={`mailto:${email}`}
               style={{ display:'inline-flex', alignItems:'center', gap:8,
-                        background:'#0d0000', color:'#1a1a1a', padding:'11px 22px',
+                        background:'#f4f1ec', color:'#1a1a1a', padding:'11px 22px',
                         borderRadius:'var(--v2-r-md)', fontSize:14, fontWeight:500,
                         textDecoration:'none' }}>
               Compose email <ArrowRight size={13} />

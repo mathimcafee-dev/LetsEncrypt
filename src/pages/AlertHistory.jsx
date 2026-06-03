@@ -11,10 +11,10 @@ const fmtDate = (iso) => iso ? format(new Date(iso), 'MMM d, yyyy HH:mm') : '—
 const fmtAgo  = (iso) => iso ? formatDistanceToNow(new Date(iso), { addSuffix: true }) : '—'
 
 const TYPE_META = {
-  cert_expiry:   { label:'Cert expiry',    color:'#c0392b' },
+  cert_expiry:   { label:'Cert expiry',    color:'#1f5c4e' },
   order_renewal: { label:'Sub renewal',    color:'#fb923c' },
   pqc_risk:      { label:'PQC risk',       color:'#a78bfa' },
-  test:          { label:'Test',           color:'#b0a8a0' },
+  test:          { label:'Test',           color:'#888888' },
 }
 
 export default function AlertHistory({ nav }) {
@@ -50,7 +50,7 @@ export default function AlertHistory({ nav }) {
   if (!user) return (
     <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>
       <div style={{ textAlign:'center' }}>
-        <div style={{ fontSize:15, fontWeight:700, color:'#ffffff', marginBottom:12 }}>Sign in to view alerts</div>
+        <div style={{ fontSize:15, fontWeight:700, color:'#111111', marginBottom:12 }}>Sign in to view alerts</div>
         <button className="v2-btn v2-btn-primary" onClick={() => nav('/auth')}>Sign in</button>
       </div>
     </div>
@@ -80,7 +80,7 @@ export default function AlertHistory({ nav }) {
             </div>
             <div>
               <h1 className="v2-h1">Alert history</h1>
-              <p style={{ fontSize:12, color:'#b0a8a0', marginTop:2 }}>
+              <p style={{ fontSize:12, color:'#888888', marginTop:2 }}>
                 {alerts.length} alert{alerts.length !== 1 ? 's' : ''} · last 100
               </p>
             </div>
@@ -98,12 +98,12 @@ export default function AlertHistory({ nav }) {
               style={{ padding:'8px 14px', fontSize:12, fontWeight:filter===t.key?500:400,
                 cursor:'pointer', fontFamily:'inherit', background:'none', border:'none',
                 borderBottom:filter===t.key?'2px solid #2a6b5c':'2px solid transparent',
-                color:filter===t.key?'#f0ede8':'var(--v2-text-3)', marginBottom:'-0.5px',
+                color:filter===t.key?'#111111':'var(--v2-text-3)', marginBottom:'-0.5px',
                 display:'flex', alignItems:'center', gap:6 }}>
               {t.label}
               <span style={{ fontSize:10, fontWeight:600, padding:'1px 6px', borderRadius:8,
                 background:filter===t.key?'transparent':'var(--v2-surface-3)',
-                color:filter===t.key?'#f0ede8':'var(--v2-text-3)' }}>
+                color:filter===t.key?'#111111':'var(--v2-text-3)' }}>
                 {t.count}
               </span>
             </button>
@@ -118,8 +118,8 @@ export default function AlertHistory({ nav }) {
             {filtered.length === 0 ? (
               <div style={{ textAlign:'center', padding:'48px 24px' }}>
                 <Bell size={32} color="var(--v2-text-3)" style={{ margin:'0 auto 12px', display:'block' }}/>
-                <div style={{ fontSize:14, fontWeight:500, color:'#e8e0d8', marginBottom:6 }}>No alerts yet</div>
-                <div style={{ fontSize:12, color:'#b0a8a0', maxWidth:300, margin:'0 auto', lineHeight:1.6 }}>
+                <div style={{ fontSize:14, fontWeight:500, color:'#333333', marginBottom:6 }}>No alerts yet</div>
+                <div style={{ fontSize:12, color:'#888888', maxWidth:300, margin:'0 auto', lineHeight:1.6 }}>
                   Alerts appear here once the daily cron finds certs approaching their thresholds.
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function AlertHistory({ nav }) {
                   transition:'all 0.12s' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
                     <span style={{ width:6, height:6, borderRadius:'50%', background:m.color, flexShrink:0 }}/>
-                    <span style={{ fontFamily:'monospace', fontSize:12, fontWeight:600, color:'#ffffff',
+                    <span style={{ fontFamily:'monospace', fontSize:12, fontWeight:600, color:'#111111',
                       flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                       {a.domain || '—'}
                     </span>
@@ -146,9 +146,9 @@ export default function AlertHistory({ nav }) {
                   </div>
                   <div style={{ display:'flex', alignItems:'center', gap:8, paddingLeft:14 }}>
                     {a.alert_days && (
-                      <span style={{ fontSize:10, color:'#b0a8a0' }}>{a.alert_days}d threshold</span>
+                      <span style={{ fontSize:10, color:'#888888' }}>{a.alert_days}d threshold</span>
                     )}
-                    <span style={{ fontSize:10, color:'#b0a8a0' }}>· {fmtAgo(a.sent_at)}</span>
+                    <span style={{ fontSize:10, color:'#888888' }}>· {fmtAgo(a.sent_at)}</span>
                   </div>
                 </div>
               )
@@ -160,8 +160,8 @@ export default function AlertHistory({ nav }) {
             {!selected ? (
               <div style={{ textAlign:'center', padding:'48px 20px' }}>
                 <Bell size={28} color="var(--v2-text-3)" style={{ margin:'0 auto 12px', display:'block' }}/>
-                <div style={{ fontSize:13, fontWeight:500, color:'#e8e0d8', marginBottom:6 }}>Select an alert</div>
-                <div style={{ fontSize:11, color:'#b0a8a0', lineHeight:1.6 }}>
+                <div style={{ fontSize:13, fontWeight:500, color:'#333333', marginBottom:6 }}>Select an alert</div>
+                <div style={{ fontSize:11, color:'#888888', lineHeight:1.6 }}>
                   Click any alert to see details
                 </div>
               </div>
@@ -183,8 +183,8 @@ export default function AlertHistory({ nav }) {
                 ].map(({ label, value, mono }) => (
                   <div key={label} style={{ display:'flex', padding:'8px 0',
                     borderBottom:'0.5px solid rgba(0,0,0,0.04)' }}>
-                    <span style={{ width:80, flexShrink:0, fontSize:11, color:'#b0a8a0' }}>{label}</span>
-                    <span style={{ fontSize:12, color:'#e8e0d8', fontWeight:500,
+                    <span style={{ width:80, flexShrink:0, fontSize:11, color:'#888888' }}>{label}</span>
+                    <span style={{ fontSize:12, color:'#333333', fontWeight:500,
                       fontFamily: mono ? 'monospace' : 'inherit' }}>{value}</span>
                   </div>
                 ))}

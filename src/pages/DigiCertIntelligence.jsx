@@ -31,11 +31,11 @@ function fmtDays(d) {
 // Colour coding for expiry
 function expiryColor(d) {
   if (d === null) return 'rgba(240,237,232,0.38)'
-  if (d <= 0)  return '#f87171'
+  if (d <= 0)  return '#1f5c4e'
   if (d <= 7)  return '#1f5c4e'
-  if (d <= 30) return '#f0ede8'
+  if (d <= 30) return '#111111'
   if (d <= 60) return '#e67e22'
-  return '#4ade80'
+  return '#16a068'
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
@@ -54,11 +54,11 @@ function ExpiryBadge({ iso }) {
 
 function StatusBadge({ status }) {
   const map = {
-    issued:   ['#4ade80', 'transparent'],
-    expired:  ['#f87171', 'rgba(31,92,78,0.09)'],
+    issued:   ['#16a068', 'transparent'],
+    expired:  ['#1f5c4e', 'rgba(31,92,78,0.09)'],
     revoked:  ['rgba(240,237,232,0.7)', '#000000'],
-    pending:  ['#f0ede8', 'rgba(239,68,68,0.08)'],
-    approved: ['#f0ede8', 'transparent'],
+    pending:  ['#111111', 'rgba(239,68,68,0.08)'],
+    approved: ['#111111', 'transparent'],
   }
   const [color, bg] = map[status?.toLowerCase()] || ['rgba(240,237,232,0.38)', '#000000']
   return (
@@ -71,10 +71,10 @@ function StatusBadge({ status }) {
 
 function OrgBadge({ status }) {
   const map = {
-    active:   ['#4ade80', 'transparent', 'Active'],
-    pending:  ['#f0ede8', 'rgba(239,68,68,0.08)', 'Pending'],
-    expired:  ['#f87171', 'rgba(31,92,78,0.09)', 'Expired'],
-    rejected: ['#f87171', 'rgba(31,92,78,0.09)', 'Rejected'],
+    active:   ['#16a068', 'transparent', 'Active'],
+    pending:  ['#111111', 'rgba(239,68,68,0.08)', 'Pending'],
+    expired:  ['#1f5c4e', 'rgba(31,92,78,0.09)', 'Expired'],
+    rejected: ['#1f5c4e', 'rgba(31,92,78,0.09)', 'Rejected'],
   }
   const [color, bg, label] = map[status?.toLowerCase()] || ['rgba(240,237,232,0.38)', '#000000', status || 'Unknown']
   return (
@@ -98,13 +98,13 @@ function SectionHeader({ icon: Icon, color, title, sub, badge }) {
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <h2 style={{ fontSize:16, fontWeight: 700, color: '#ffffff',
+          <h2 style={{ fontSize:16, fontWeight: 700, color: '#111111',
             letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
           {badge && <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 20,
             background: color + '18', color, border: `0.5px solid ${color}44`,
             textTransform: 'uppercase', letterSpacing: '0.5px' }}>{badge}</span>}
         </div>
-        {sub && <p style={{ fontSize:12, color: '#b0a8a0', margin: '3px 0 0', lineHeight: 1.5 }}>{sub}</p>}
+        {sub && <p style={{ fontSize:12, color: '#888888', margin: '3px 0 0', lineHeight: 1.5 }}>{sub}</p>}
       </div>
     </div>
   )
@@ -161,10 +161,10 @@ function ApiKeyPanel({ onConnect }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(31,92,78,0.09)',
           border: '1px solid #fecaca', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', fontWeight: 800, fontSize:14, color: '#f87171' }}>DC</div>
+          justifyContent: 'center', fontWeight: 800, fontSize:14, color: '#1f5c4e' }}>DC</div>
         <div>
-          <div style={{ fontWeight: 600, fontSize:15, color: '#ffffff' }}>Connect DigiCert CertCentral</div>
-          <div style={{ fontSize:11, color: '#b0a8a0', marginTop: 1 }}>Read-only API key — no write access required</div>
+          <div style={{ fontWeight: 600, fontSize:15, color: '#111111' }}>Connect DigiCert CertCentral</div>
+          <div style={{ fontSize:11, color: '#888888', marginTop: 1 }}>Read-only API key — no write access required</div>
         </div>
       </div>
       <div className="v2-callout info" style={{ marginBottom: 16 }}>
@@ -181,7 +181,7 @@ function ApiKeyPanel({ onConnect }) {
           style={{ paddingRight: 38 }} onKeyDown={e => e.key === 'Enter' && connect()}/>
         <button onClick={() => setShow(s => !s)} style={{ position: 'absolute', right: 10, top: '50%',
           transform: 'translateY(-50%)', background: 'none', border: 'none',
-          cursor: 'pointer', color: '#b0a8a0', padding: 0 }}>
+          cursor: 'pointer', color: '#888888', padding: 0 }}>
           {show ? <EyeOff size={13}/> : <Eye size={13}/>}
         </button>
       </div>
@@ -193,7 +193,7 @@ function ApiKeyPanel({ onConnect }) {
       <a href="https://dev.digicert.com/en/certcentral-apis/authentication.html"
         target="_blank" rel="noopener noreferrer"
         style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12, fontSize:11,
-          color: '#b0a8a0', textDecoration: 'none', justifyContent: 'center' }}>
+          color: '#888888', textDecoration: 'none', justifyContent: 'center' }}>
         API key guide <ExternalLink size={10}/>
       </a>
     </div>
@@ -221,7 +221,7 @@ function PortfolioLayer({ apiKey }) {
 
   useEffect(() => { load() }, [load])
 
-  if (loading) return <div style={{ padding: 32, textAlign: 'center', color: '#b0a8a0' }}><Spinner/><span style={{ marginLeft: 8 }}>Loading portfolio…</span></div>
+  if (loading) return <div style={{ padding: 32, textAlign: 'center', color: '#888888' }}><Spinner/><span style={{ marginLeft: 8 }}>Loading portfolio…</span></div>
   if (error)   return <div className="v2-callout error" style={{ margin: 16 }}><AlertCircle size={13}/>{error}</div>
   if (!orders) return null
 
@@ -247,10 +247,10 @@ function PortfolioLayer({ apiKey }) {
   })
 
   const BANDS = [
-    { key: 'expired',  label: 'Expired',      color: '#f87171', bg: 'rgba(31,92,78,0.09)' },
+    { key: 'expired',  label: 'Expired',      color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)' },
     { key: 'critical', label: '≤7 days',       color: '#1f5c4e', bg: 'rgba(230,126,34,0.1)' },
-    { key: 'warning',  label: '8–30 days',     color: '#ffffff', bg: 'rgba(239,68,68,0.08)' },
-    { key: 'upcoming', label: '31–90 days',    color: '#ffffff', bg: 'transparent' },
+    { key: 'warning',  label: '8–30 days',     color: '#111111', bg: 'rgba(239,68,68,0.08)' },
+    { key: 'upcoming', label: '31–90 days',    color: '#111111', bg: 'transparent' },
     { key: 'healthy',  label: '>90 days',      color: '#16a068', bg: 'transparent' },
   ]
 
@@ -272,7 +272,7 @@ function PortfolioLayer({ apiKey }) {
               letterSpacing: '-0.5px', lineHeight: 1, marginBottom: 4, fontFamily: 'var(--v2-mono)' }}>
               {buckets[b.key].length}
             </div>
-            <div style={{ fontSize:10, color: '#b0a8a0', textTransform: 'uppercase',
+            <div style={{ fontSize:10, color: '#888888', textTransform: 'uppercase',
               letterSpacing: '0.4px' }}>{b.label}</div>
           </div>
         ))}
@@ -281,7 +281,7 @@ function PortfolioLayer({ apiKey }) {
       {/* Search */}
       <div style={{ position: 'relative', marginBottom: 14 }}>
         <Search size={13} style={{ position: 'absolute', left: 10, top: '50%',
-          transform: 'translateY(-50%)', color: '#b0a8a0' }}/>
+          transform: 'translateY(-50%)', color: '#888888' }}/>
         <input className="v2-input" placeholder="Search domain…" value={search}
           onChange={e => setSearch(e.target.value)}
           style={{ paddingLeft: 32, fontSize:12 }}/>
@@ -293,12 +293,12 @@ function PortfolioLayer({ apiKey }) {
           padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Domain', 'Type', 'Status', 'Expires', 'Days left'].map(h => (
-            <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#b0a8a0',
+            <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
               textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</div>
           ))}
         </div>
         {filtered.length === 0 ? (
-          <div style={{ padding: 24, textAlign: 'center', color: '#b0a8a0', fontSize:13 }}>
+          <div style={{ padding: 24, textAlign: 'center', color: '#888888', fontSize:13 }}>
             No orders match this filter
           </div>
         ) : filtered.slice(0, 200).map((o, i) => {
@@ -312,18 +312,18 @@ function PortfolioLayer({ apiKey }) {
               onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-surface-3)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
               <div>
-                <div className="v2-mono" style={{ fontSize:12, fontWeight: 500, color: '#ffffff' }}>{cn}</div>
-                <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 1 }}>Order #{o.id}</div>
+                <div className="v2-mono" style={{ fontSize:12, fontWeight: 500, color: '#111111' }}>{cn}</div>
+                <div style={{ fontSize:10, color: '#888888', marginTop: 1 }}>Order #{o.id}</div>
               </div>
-              <div style={{ fontSize:11, color: '#e8e0d8' }}>{o.product?.name_id || o.product?.type || '—'}</div>
+              <div style={{ fontSize:11, color: '#333333' }}>{o.product?.name_id || o.product?.type || '—'}</div>
               <div><StatusBadge status={o.status}/></div>
-              <div style={{ fontSize:11, color: '#e8e0d8' }}>{fmt(exp)}</div>
+              <div style={{ fontSize:11, color: '#333333' }}>{fmt(exp)}</div>
               <div><ExpiryBadge iso={exp}/></div>
             </div>
           )
         })}
         {filtered.length > 200 && (
-          <div style={{ padding: '10px 14px', fontSize:11, color: '#b0a8a0',
+          <div style={{ padding: '10px 14px', fontSize:11, color: '#888888',
             borderTop: '0.5px solid var(--v2-border)', textAlign: 'center' }}>
             Showing first 200 of {filtered.length} results — use search to narrow down
           </div>
@@ -357,7 +357,7 @@ function ValidationLayer({ apiKey }) {
 
   useEffect(() => { load() }, [load])
 
-  if (loading) return <div style={{ padding: 32, textAlign: 'center', color: '#b0a8a0' }}><Spinner/><span style={{ marginLeft: 8 }}>Loading validation data…</span></div>
+  if (loading) return <div style={{ padding: 32, textAlign: 'center', color: '#888888' }}><Spinner/><span style={{ marginLeft: 8 }}>Loading validation data…</span></div>
   if (error)   return <div className="v2-callout error" style={{ margin: 16 }}><AlertCircle size={13}/>{error}</div>
   if (!orgs)   return null
 
@@ -396,12 +396,12 @@ function ValidationLayer({ apiKey }) {
           padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Organisation', 'ID', 'OV status', 'EV status'].map(h => (
-            <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#b0a8a0',
+            <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
               textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</div>
           ))}
         </div>
         {orgs.length === 0 ? (
-          <div style={{ padding: 20, textAlign: 'center', color: '#b0a8a0', fontSize:12 }}>No organisations found</div>
+          <div style={{ padding: 20, textAlign: 'center', color: '#888888', fontSize:12 }}>No organisations found</div>
         ) : orgs.map((org, i) => {
           const ov = org.validations?.find(v => v.type === 'ov')
           const ev = org.validations?.find(v => v.type === 'ev')
@@ -410,12 +410,12 @@ function ValidationLayer({ apiKey }) {
               padding: '9px 14px', borderBottom: i < orgs.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
               alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize:12, fontWeight: 500, color: '#ffffff' }}>{org.name}</div>
-                <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 1 }}>{org.country} · {org.city}</div>
+                <div style={{ fontSize:12, fontWeight: 500, color: '#111111' }}>{org.name}</div>
+                <div style={{ fontSize:10, color: '#888888', marginTop: 1 }}>{org.country} · {org.city}</div>
               </div>
-              <div className="v2-mono" style={{ fontSize:11, color: '#b0a8a0' }}>#{org.id}</div>
-              <div>{ov ? <OrgBadge status={ov.status}/> : <span style={{ fontSize:10, color: '#b0a8a0' }}>—</span>}</div>
-              <div>{ev ? <OrgBadge status={ev.status}/> : <span style={{ fontSize:10, color: '#b0a8a0' }}>—</span>}</div>
+              <div className="v2-mono" style={{ fontSize:11, color: '#888888' }}>#{org.id}</div>
+              <div>{ov ? <OrgBadge status={ov.status}/> : <span style={{ fontSize:10, color: '#888888' }}>—</span>}</div>
+              <div>{ev ? <OrgBadge status={ev.status}/> : <span style={{ fontSize:10, color: '#888888' }}>—</span>}</div>
             </div>
           )
         })}
@@ -430,12 +430,12 @@ function ValidationLayer({ apiKey }) {
           padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Domain', 'DCV method', 'Validation expires', 'Days left'].map(h => (
-            <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#b0a8a0',
+            <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
               textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</div>
           ))}
         </div>
         {domains.length === 0 ? (
-          <div style={{ padding: 20, textAlign: 'center', color: '#b0a8a0', fontSize:12 }}>No pre-validated domains found</div>
+          <div style={{ padding: 20, textAlign: 'center', color: '#888888', fontSize:12 }}>No pre-validated domains found</div>
         ) : domains.map((dom, i) => {
           const dcvExp = dom.dcv_expiration?.dcv
           const d = dLeft(dcvExp)
@@ -443,11 +443,11 @@ function ValidationLayer({ apiKey }) {
             <div key={dom.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
               padding: '9px 14px', borderBottom: i < domains.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
               alignItems: 'center' }}>
-              <div className="v2-mono" style={{ fontSize:12, fontWeight: 500, color: '#ffffff' }}>{dom.name}</div>
-              <div style={{ fontSize:11, color: '#e8e0d8', textTransform: 'uppercase', fontSize:10 }}>
+              <div className="v2-mono" style={{ fontSize:12, fontWeight: 500, color: '#111111' }}>{dom.name}</div>
+              <div style={{ fontSize:11, color: '#333333', textTransform: 'uppercase', fontSize:10 }}>
                 {dom.dcv_method || '—'}
               </div>
-              <div style={{ fontSize:11, color: '#e8e0d8' }}>{fmt(dcvExp)}</div>
+              <div style={{ fontSize:11, color: '#333333' }}>{fmt(dcvExp)}</div>
               <div><ExpiryBadge iso={dcvExp}/></div>
             </div>
           )
@@ -516,7 +516,7 @@ function PQCLayer({ apiKey }) {
 
   useEffect(() => { scan() }, [scan])
 
-  if (loading) return <div style={{ padding: 32, textAlign: 'center', color: '#b0a8a0' }}><Spinner/><span style={{ marginLeft: 8 }}>Scanning portfolio…</span></div>
+  if (loading) return <div style={{ padding: 32, textAlign: 'center', color: '#888888' }}><Spinner/><span style={{ marginLeft: 8 }}>Scanning portfolio…</span></div>
   if (error)   return <div className="v2-callout error" style={{ margin: 16 }}><AlertCircle size={13}/>{error}</div>
   if (!results) return null
 
@@ -531,7 +531,7 @@ function PQCLayer({ apiKey }) {
   }
 
   const score = riskScore()
-  const scoreColor = score >= 80 ? '#4ade80' : score >= 60 ? '#f0ede8' : '#f87171'
+  const scoreColor = score >= 80 ? '#16a068' : score >= 60 ? '#111111' : '#1f5c4e'
 
   return (
     <div>
@@ -542,14 +542,14 @@ function PQCLayer({ apiKey }) {
       {/* Score card */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 14, marginBottom: 24 }}>
         <div className="v2-card v2-card-pad" style={{ textAlign: 'center' }}>
-          <div style={{ fontSize:11, color: '#b0a8a0', textTransform: 'uppercase',
+          <div style={{ fontSize:11, color: '#888888', textTransform: 'uppercase',
             letterSpacing: '0.5px', marginBottom: 10 }}>Crypto Agility Score</div>
           <div style={{ fontSize:Math.min(52,window.innerWidth>768?52:44), fontWeight: 900, color: scoreColor,
             letterSpacing: '-2px', lineHeight: 1, fontFamily: 'var(--v2-mono)' }}>{score}</div>
           <div style={{ fontSize:11, color: scoreColor, marginTop: 4, fontWeight: 600 }}>
             {score >= 80 ? 'Good posture' : score >= 60 ? 'Needs improvement' : 'High risk'}
           </div>
-          <div style={{ fontSize:10, color: '#b0a8a0', marginTop: 8, lineHeight: 1.5 }}>
+          <div style={{ fontSize:10, color: '#888888', marginTop: 8, lineHeight: 1.5 }}>
             Based on key algorithm, hash strength, and 47-day readiness
           </div>
         </div>
@@ -563,13 +563,13 @@ function PQCLayer({ apiKey }) {
             { label: 'ECDSA P-256 certs (good)', count: summary.ecdsaP256.length, risk: 'good' },
             { label: 'ECDSA P-384 certs (best)', count: summary.ecdsaP384.length, risk: 'good' },
           ].map(({ label, count, risk }) => {
-            const color = risk === 'critical' ? '#f87171' : risk === 'high' ? '#1f5c4e'
-                        : risk === 'medium' ? '#f0ede8' : risk === 'low' ? '#f0ede8' : '#4ade80'
+            const color = risk === 'critical' ? '#1f5c4e' : risk === 'high' ? '#1f5c4e'
+                        : risk === 'medium' ? '#111111' : risk === 'low' ? '#111111' : '#16a068'
             return (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10,
                 marginBottom: 8, opacity: count === 0 ? 0.4 : 1 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }}/>
-                <span style={{ flex: 1, fontSize:12, color: '#e8e0d8' }}>{label}</span>
+                <span style={{ flex: 1, fontSize:12, color: '#333333' }}>{label}</span>
                 <span className="v2-mono" style={{ fontSize:12, fontWeight: 700, color }}>{count}</span>
               </div>
             )
@@ -581,17 +581,17 @@ function PQCLayer({ apiKey }) {
       <div className="v2-card v2-card-pad" style={{ background: noAutoRenew.length > 0 ? 'rgba(239,68,68,0.08)' : 'transparent',
         border: `0.5px solid ${noAutoRenew.length > 0 ? 'rgba(0,0,0,0.1)' : 'rgba(31,92,78,0.2)'}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-          <Clock size={14} strokeWidth={2} style={{ color: noAutoRenew.length > 0 ? '#f0ede8' : '#4ade80' }}/>
-          <span style={{ fontWeight: 600, fontSize:13, color: '#ffffff' }}>
+          <Clock size={14} strokeWidth={2} style={{ color: noAutoRenew.length > 0 ? '#111111' : '#16a068' }}/>
+          <span style={{ fontWeight: 600, fontSize:13, color: '#111111' }}>
             47-Day Certificate Readiness
           </span>
         </div>
-        <p style={{ fontSize:12, color: '#e8e0d8', margin: '0 0 6px', lineHeight: 1.65 }}>
+        <p style={{ fontSize:12, color: '#333333', margin: '0 0 6px', lineHeight: 1.65 }}>
           CA/Browser Forum mandates certificates drop to 200-day validity from March 2026, and 47-day validity by 2029.
           Certificates expiring within 200 days with no automatic renewal in SSLVault will require manual action
           on an increasingly frequent cycle.
         </p>
-        <div style={{ fontWeight: 600, fontSize:13, color: noAutoRenew.length > 0 ? '#f0ede8' : '#4ade80' }}>
+        <div style={{ fontWeight: 600, fontSize:13, color: noAutoRenew.length > 0 ? '#111111' : '#16a068' }}>
           {noAutoRenew.length === 0
             ? '✓ All active certs are covered — 47-day ready'
             : `${noAutoRenew.length} certs within 200-day window without confirmed auto-renewal`}
@@ -643,7 +643,7 @@ function ReissueLayer({ apiKey }) {
               padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
               background: 'var(--v2-surface-3)' }}>
               {['Certificate ID', 'Common name', 'Reissued', 'Expires'].map(h => (
-                <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#b0a8a0',
+                <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
                   textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</div>
               ))}
             </div>
@@ -651,9 +651,9 @@ function ReissueLayer({ apiKey }) {
               <div key={r.id} style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(180px,100%),1fr))',
                 padding: '9px 14px', borderBottom: i < history.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
                 alignItems: 'center' }}>
-                <div className="v2-mono" style={{ fontSize:11, color: '#e8e0d8' }}>#{r.id}</div>
-                <div className="v2-mono" style={{ fontSize:12, color: '#ffffff' }}>{r.common_name || '—'}</div>
-                <div style={{ fontSize:11, color: '#e8e0d8' }}>{fmt(r.date_created)}</div>
+                <div className="v2-mono" style={{ fontSize:11, color: '#333333' }}>#{r.id}</div>
+                <div className="v2-mono" style={{ fontSize:12, color: '#111111' }}>{r.common_name || '—'}</div>
+                <div style={{ fontSize:11, color: '#333333' }}>{fmt(r.date_created)}</div>
                 <div><ExpiryBadge iso={r.valid_till}/></div>
               </div>
             ))}
@@ -741,7 +741,7 @@ function RevokeLayer({ apiKey }) {
               <div className="v2-code" style={{ margin: 0 }}>
                 <div className="v2-code-head">
                   <div className="v2-code-dots">
-                    <span style={{ background: '#f87171' }}/><span style={{ background:'#0d0000' }}/><span style={{ background:'#0d0000' }}/>
+                    <span style={{ background: '#1f5c4e' }}/><span style={{ background:'#f4f1ec' }}/><span style={{ background:'#f4f1ec' }}/>
                   </div>
                 </div>
                 <pre>{`PUT https://www.digicert.com/services/v2/certificate/${certId || '{cert_id}'}/revoke
@@ -764,7 +764,7 @@ X-DC-DEVKEY: ••••••••••••••••
             </button>
             <button className="v2-btn" onClick={() => { setCertId(''); setPreview(false); setError('') }}
               style={{ fontSize:12 }}>Clear</button>
-            <button className="v2-btn" style={{ background: 'rgba(31,92,78,0.09)', color: '#f87171',
+            <button className="v2-btn" style={{ background: 'rgba(31,92,78,0.09)', color: '#1f5c4e',
               border: '0.5px solid #fecaca', fontSize:12 }}
               onClick={execute} disabled={busy || !certId.trim()}>
               {busy ? <Spinner/> : <Shield size={12}/>} Submit revocation request
@@ -811,14 +811,14 @@ function CTLogLayer({ apiKey }) {
       {ctStatus && (
         <div className="v2-card v2-card-pad" style={{ marginBottom: 20, display: 'flex', gap: 12, alignItems: 'center' }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-            background: ctStatus.ct_log_monitoring ? '#4ade80' : 'rgba(240,237,232,0.38)' }}/>
+            background: ctStatus.ct_log_monitoring ? '#16a068' : 'rgba(240,237,232,0.38)' }}/>
           <div>
-            <div style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>
-              Account CT log monitoring: <span style={{ color: ctStatus.ct_log_monitoring ? '#4ade80' : 'rgba(240,237,232,0.38)' }}>
+            <div style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>
+              Account CT log monitoring: <span style={{ color: ctStatus.ct_log_monitoring ? '#16a068' : 'rgba(240,237,232,0.38)' }}>
                 {ctStatus.ct_log_monitoring ? 'Enabled' : 'Disabled'}
               </span>
             </div>
-            <div style={{ fontSize:11, color: '#b0a8a0', marginTop: 2 }}>
+            <div style={{ fontSize:11, color: '#888888', marginTop: 2 }}>
               When enabled, DigiCert alerts you when unexpected certificates are logged for your domains
             </div>
           </div>
@@ -837,7 +837,7 @@ function CTLogLayer({ apiKey }) {
       {error && <div className="v2-callout error" style={{ marginBottom: 12, fontSize:12 }}>{error}</div>}
       {ctLogs && (
         <div className="v2-card v2-card-pad">
-          <pre className="v2-mono" style={{ fontSize:11, color: '#e8e0d8',
+          <pre className="v2-mono" style={{ fontSize:11, color: '#333333',
             whiteSpace: 'pre-wrap', wordBreak: 'break-all', margin: 0 }}>
             {JSON.stringify(ctLogs, null, 2)}
           </pre>
@@ -887,7 +887,7 @@ export default function DigiCertIntelligence({ nav }) {
         {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, paddingTop: 8 }}>
           <button onClick={() => nav('/ca-intelligence')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#b0a8a0',
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888888',
               padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontSize:12, fontFamily: 'inherit' }}>
             <ChevronLeft size={13}/> CA Intelligence
           </button>
@@ -895,14 +895,14 @@ export default function DigiCertIntelligence({ nav }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
             <div style={{ width: 22, height: 22, borderRadius: 6, background: 'rgba(31,92,78,0.09)',
               border: '1px solid #fecaca', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#f87171' }}>DC</div>
-            <span style={{ fontSize:13, fontWeight: 600, color: '#ffffff' }}>DigiCert Intelligence</span>
+              justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#1f5c4e' }}>DC</div>
+            <span style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>DigiCert Intelligence</span>
           </div>
           {apiKey && (
             <span style={{ marginLeft: 'auto', fontSize:10, fontWeight: 700, padding: '2px 8px',
               borderRadius: 20, background: 'transparent', color: '#16a068', border: '0.5px solid rgba(31,92,78,0.2)',
               display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}/>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a068', display: 'inline-block' }}/>
               Connected
             </span>
           )}
@@ -929,7 +929,7 @@ export default function DigiCertIntelligence({ nav }) {
               ))}
               <button onClick={() => { setApiKey(''); setLoaded(false) }}
                 style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize:11, color: '#b0a8a0', padding: '9px 8px', fontFamily: 'inherit',
+                  fontSize:11, color: '#888888', padding: '9px 8px', fontFamily: 'inherit',
                   display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Lock size={11}/> Disconnect
               </button>

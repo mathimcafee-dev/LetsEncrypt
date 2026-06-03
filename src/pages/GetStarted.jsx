@@ -58,7 +58,7 @@ function FAQ({ q, a }) {
         <span className="v2-accordion-title" style={{ flex: 1 }}>{q}</span>
         {open ? <ChevronUp size={14} strokeWidth={1.8}/> : <ChevronDown size={14} strokeWidth={1.8}/>}
       </button>
-      {open && <div className="v2-accordion-body" style={{ paddingTop: 10 }}><p style={{ margin: 0, fontSize:13, lineHeight: 1.7, color: '#e8e0d8' }}>{a}</p></div>}
+      {open && <div className="v2-accordion-body" style={{ paddingTop: 10 }}><p style={{ margin: 0, fontSize:13, lineHeight: 1.7, color: '#333333' }}>{a}</p></div>}
     </div>
   )
 }
@@ -70,7 +70,7 @@ function Divider({ label, title }) {
         <span className="v2-section-label">{label}</span>
         <div style={{ flex: 1, height: 1, background: 'var(--v2-border)' }} />
       </div>
-      <h2 style={{ fontSize:16, fontWeight: 600, color: '#ffffff', letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
+      <h2 style={{ fontSize:16, fontWeight: 600, color: '#111111', letterSpacing: '-0.2px', margin: 0 }}>{title}</h2>
     </div>
   )
 }
@@ -102,20 +102,20 @@ export default function GetStarted({ nav }) {
         {/* WHAT IS SSL */}
         <Divider label="BASICS" title="What is SSL?" />
         <div className="v2-card v2-card-pad" style={{ marginBottom: 8 }}>
-          <p style={{ fontSize:14, color: '#e8e0d8', lineHeight: 1.8, marginBottom: 16 }}>
+          <p style={{ fontSize:14, color: '#333333', lineHeight: 1.8, marginBottom: 16 }}>
             SSL (Secure Sockets Layer) encrypts the connection between your website and your visitors.
             When it's active, your browser shows <strong>https://</strong> and a padlock. Without it — a red "Not Secure" warning.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 16 }}>
             <div style={{ background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
-              <div style={{ fontSize:12, fontWeight: 600, color: '#f87171', marginBottom: 6 }}>Without SSL (HTTP)</div>
-              <p style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.65, margin: 0 }}>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#1f5c4e', marginBottom: 6 }}>Without SSL (HTTP)</div>
+              <p style={{ fontSize:12, color: '#333333', lineHeight: 1.65, margin: 0 }}>
                 Red "Not Secure" warning. Visitor data exposed. Lower Google ranking. Payments blocked.
               </p>
             </div>
             <div style={{ background: 'transparent', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
               <div style={{ fontSize:12, fontWeight: 600, color: '#16a068', marginBottom: 6 }}>With SSL (HTTPS)</div>
-              <p style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.65, margin: 0 }}>
+              <p style={{ fontSize:12, color: '#333333', lineHeight: 1.65, margin: 0 }}>
                 Green padlock. All traffic encrypted. Trust signals for visitors and Google. Required for payments.
               </p>
             </div>
@@ -138,8 +138,8 @@ export default function GetStarted({ nav }) {
             <div key={title} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
               <span className={`v2-badge ${badge === 'Yes' ? 'v2-badge-green' : 'v2-badge-amber'}`} style={{ flexShrink: 0, marginTop: 2 }}>{badge}</span>
               <div>
-                <div style={{ fontWeight: 600, fontSize:13, color: '#ffffff', marginBottom: 2 }}>{title}</div>
-                <div style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.6 }}>{desc}</div>
+                <div style={{ fontWeight: 600, fontSize:13, color: '#111111', marginBottom: 2 }}>{title}</div>
+                <div style={{ fontSize:12, color: '#333333', lineHeight: 1.6 }}>{desc}</div>
               </div>
             </div>
           ))}
@@ -150,14 +150,14 @@ export default function GetStarted({ nav }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 8, marginBottom: 8 }}>
           {[
             { type: 'DV (Domain Validated)', time: '~5 minutes', use: 'Blogs, APIs, personal sites, SaaS', color: 'var(--v2-green)' },
-            { type: 'OV (Org Validated)', time: '1–3 business days', use: 'Business websites, portals', color: '#e8e0d8' },
-            { type: 'EV (Extended Validation)', time: '2–7 business days', use: 'E-commerce, banks, high trust', color: '#e8e0d8' },
+            { type: 'OV (Org Validated)', time: '1–3 business days', use: 'Business websites, portals', color: '#333333' },
+            { type: 'EV (Extended Validation)', time: '2–7 business days', use: 'E-commerce, banks, high trust', color: '#333333' },
             { type: 'Wildcard DV', time: '~5 minutes', use: '*.yourdomain.com — all subdomains', color: 'var(--v2-green)' },
           ].map(({ type, time, use, color }) => (
             <div key={type} className="v2-card v2-card-pad">
-              <div style={{ fontSize:12, fontWeight: 600, color: '#ffffff', marginBottom: 4 }}>{type}</div>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#111111', marginBottom: 4 }}>{type}</div>
               <div style={{ fontSize:11, color, marginBottom: 3, fontWeight: 500 }}>{time}</div>
-              <div style={{ fontSize:11, color: '#b0a8a0', lineHeight: 1.55 }}>{use}</div>
+              <div style={{ fontSize:11, color: '#888888', lineHeight: 1.55 }}>{use}</div>
             </div>
           ))}
         </div>
@@ -167,7 +167,7 @@ export default function GetStarted({ nav }) {
 
         {/* CHOOSE YOUR PATH */}
         <Divider label="YOUR SITUATION" title="Choose your setup path" />
-        <p style={{ fontSize:13, color: '#e8e0d8', marginBottom: 14, lineHeight: 1.7 }}>Pick the one that matches your hosting setup:</p>
+        <p style={{ fontSize:13, color: '#333333', marginBottom: 14, lineHeight: 1.7 }}>Pick the one that matches your hosting setup:</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 }}>
           {[
             { id: 'vps', icon: Server, title: 'VPS or cloud server (DigitalOcean, AWS, Hetzner, Linode)', desc: 'SSH access available. Install the persistent agent once — all future installs and renewals are fully automatic.', badge: 'Recommended' },
@@ -179,13 +179,13 @@ export default function GetStarted({ nav }) {
               <div className="v2-card v2-card-pad" style={{ cursor: 'pointer', border: path === p.id ? '1.5px solid var(--v2-border-strong)' : undefined }}
                    onClick={() => setPath(path === p.id ? null : p.id)}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <p.icon size={15} strokeWidth={1.8} style={{ color: '#e8e0d8', flexShrink: 0 }}/>
+                  <p.icon size={15} strokeWidth={1.8} style={{ color: '#333333', flexShrink: 0 }}/>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 2 }}>
-                      <span style={{ fontWeight: 600, fontSize:13, color: '#ffffff' }}>{p.title}</span>
+                      <span style={{ fontWeight: 600, fontSize:13, color: '#111111' }}>{p.title}</span>
                       <span className="v2-badge v2-badge-green">{p.badge}</span>
                     </div>
-                    <p style={{ fontSize:12, color: '#e8e0d8', margin: 0, lineHeight: 1.6 }}>{p.desc}</p>
+                    <p style={{ fontSize:12, color: '#333333', margin: 0, lineHeight: 1.6 }}>{p.desc}</p>
                   </div>
                   {path === p.id ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
                 </div>
@@ -203,7 +203,7 @@ export default function GetStarted({ nav }) {
                       <Step n={2} title="Go to Dashboard → expand cert → Install"><p>Click the <strong>Install</strong> button on your certificate row. If no agent is connected, the modal shows a one-line install command.</p></Step>
                       <Step n={3} title="Run the agent install on your server (one time only)">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#f87171' }}/><span style={{ background:'#0d0000' }}/><span style={{ background:'#0d0000' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#1f5c4e' }}/><span style={{ background:'#f4f1ec' }}/><span style={{ background:'#f4f1ec' }}/></div></div>
                           <pre>curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash</pre>
                         </div>
                         <p>The agent registers with SSLVault. Your server appears as Online in <strong>Dashboard → Servers</strong>.</p>
@@ -221,7 +221,7 @@ export default function GetStarted({ nav }) {
                       <Step n={3} title="Download and upload the PHP agent"><p>Click <strong>Download PHP Agent</strong>. Upload the file to your <code className="v2-kbd">public_html</code> directory via cPanel File Manager.</p></Step>
                       <Step n={4} title="Visit the agent URL to activate">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#f87171' }}/><span style={{ background:'#0d0000' }}/><span style={{ background:'#0d0000' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#1f5c4e' }}/><span style={{ background:'#f4f1ec' }}/><span style={{ background:'#f4f1ec' }}/></div></div>
                           <pre>https://yourdomain.com/sslvault-agent.php</pre>
                         </div>
                         <p>The script installs your certificate via cPanel's UAPI. <strong>Delete the file immediately after.</strong></p>
@@ -237,7 +237,7 @@ export default function GetStarted({ nav }) {
                         <span className="v2-callout-title">Good news — Vercel and Netlify handle SSL automatically</span><br/>
                         <span style={{ fontSize:12 }}>Just add your custom domain in their project settings and SSL is provisioned automatically.</span>
                       </div>
-                      <p style={{ fontSize:13, color: '#e8e0d8', lineHeight: 1.7 }}>
+                      <p style={{ fontSize:13, color: '#333333', lineHeight: 1.7 }}>
                         If you have a <strong>backend server, API, or external domain</strong> that these platforms don't manage, issue a certificate via SSLVault and install it on that server using the persistent agent or manual steps.
                       </p>
                       <button className="v2-btn" onClick={() => nav('/buy')} style={{ marginTop: 4, fontSize:12 }}>
@@ -286,11 +286,11 @@ export default function GetStarted({ nav }) {
               <tr><td style={{ fontWeight: 600 }}>Email</td><td>Click a link sent to admin@, webmaster@, or hostmaster@ for your domain.</td></tr>
             </tbody>
           </table></div>
-          <div style={{ background:'#0d0000', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
+          <div style={{ background:'#f4f1ec', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '6px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize:12 }}>
-              <span style={{ color: '#e8e0d8', fontWeight: 600 }}>TYPE</span><span style={{ color: '#ffffff' }}>CNAME</span>
-              <span style={{ color: '#e8e0d8', fontWeight: 600 }}>NAME</span><span style={{ color: '#1f5c4e' }}>_acme-challenge</span>
-              <span style={{ color: '#e8e0d8', fontWeight: 600 }}>VALUE</span><span style={{ color: '#fbbf24', wordBreak: 'break-all' }}>abc123def456.comodoca.com</span>
+              <span style={{ color: '#333333', fontWeight: 600 }}>TYPE</span><span style={{ color: '#111111' }}>CNAME</span>
+              <span style={{ color: '#333333', fontWeight: 600 }}>NAME</span><span style={{ color: '#1f5c4e' }}>_acme-challenge</span>
+              <span style={{ color: '#333333', fontWeight: 600 }}>VALUE</span><span style={{ color: '#9a6400', wordBreak: 'break-all' }}>abc123def456.comodoca.com</span>
             </div>
           </div>
           <Note type="warn">In the Name field, enter <strong>only</strong> <code className="v2-kbd">_acme-challenge</code> — your DNS provider appends the domain automatically. Entering the full hostname will fail.</Note>
@@ -305,14 +305,14 @@ export default function GetStarted({ nav }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginTop: 8 }}>
             {[
               { icon: Bot, label: 'Persistent Agent', desc: 'VPS — dispatches to your connected server automatically', color: 'var(--v2-green)' },
-              { icon: Cloud, label: 'cPanel / Shared', desc: 'PHP agent install via cPanel UAPI — no SSH', color: '#e8e0d8' },
-              { icon: Server, label: 'Manual', desc: 'Download PEM files and follow the server install guide', color: '#e8e0d8' },
+              { icon: Cloud, label: 'cPanel / Shared', desc: 'PHP agent install via cPanel UAPI — no SSH', color: '#333333' },
+              { icon: Server, label: 'Manual', desc: 'Download PEM files and follow the server install guide', color: '#333333' },
             ].map(({ icon: Icon, label, desc, color }) => (
               <div key={label} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 10 }}>
                 <Icon size={14} strokeWidth={1.8} style={{ color, flexShrink: 0, marginTop: 2 }}/>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize:12, color: '#ffffff', marginBottom: 2 }}>{label}</div>
-                  <div style={{ fontSize:11, color: '#e8e0d8', lineHeight: 1.55 }}>{desc}</div>
+                  <div style={{ fontWeight: 600, fontSize:12, color: '#111111', marginBottom: 2 }}>{label}</div>
+                  <div style={{ fontSize:11, color: '#333333', lineHeight: 1.55 }}>{desc}</div>
                 </div>
               </div>
             ))}
@@ -342,7 +342,7 @@ export default function GetStarted({ nav }) {
           ].map(([term, def]) => (
             <div key={term} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 16 }}>
               <span className="v2-mono" style={{ fontSize:12, fontWeight: 600, color: 'var(--v2-green)', minWidth: 160, flexShrink: 0 }}>{term}</span>
-              <span style={{ fontSize:12, color: '#e8e0d8', lineHeight: 1.6 }}>{def}</span>
+              <span style={{ fontSize:12, color: '#333333', lineHeight: 1.6 }}>{def}</span>
             </div>
           ))}
         </div>
@@ -370,10 +370,10 @@ export default function GetStarted({ nav }) {
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>
-          <h3 style={{ fontSize:18, fontWeight: 600, color: '#ffffff', marginBottom: 6, letterSpacing: '-0.3px' }}>
+          <h3 style={{ fontSize:18, fontWeight: 600, color: '#111111', marginBottom: 6, letterSpacing: '-0.3px' }}>
             Ready to secure your domains?
           </h3>
-          <p style={{ color: '#e8e0d8', fontSize:13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
+          <p style={{ color: '#333333', fontSize:13, maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.6 }}>
             Issue DV, OV, EV or Wildcard certificates via RapidSSL. Auto-renew. Deploy with one command.
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>

@@ -10,8 +10,8 @@ const PQC_ALGORITHMS = [
   { id:'ML-KEM', name:'ML-KEM (Kyber)', fips:'FIPS 203', type:'Key Encapsulation', status:'Final', date:'Aug 2024', desc:'Post-quantum replacement for RSA/ECDH key exchange. Protects the TLS handshake. Fast, efficient, small keys.', replaces:'RSA/ECDH', adopters:['NIST','IETF','CAB Forum (planning)','Apple (iMessage)','Cloudflare','Google Chrome'], color:'#16a068', risk:'low' },
   { id:'ML-DSA', name:'ML-DSA (Dilithium)', fips:'FIPS 204', type:'Digital Signature', status:'Final', date:'Aug 2024', desc:'Post-quantum replacement for RSA/ECDSA signatures. Will replace signature algorithms in all X.509 certificates.', replaces:'RSA/ECDSA', adopters:['NIST','IETF (LAMPS drafting)','CAB Forum (planning)','IBM Research'], color:'#16a068', risk:'low' },
   { id:'SLH-DSA', name:'SLH-DSA (SPHINCS+)', fips:'FIPS 205', type:'Digital Signature Backup', status:'Final', date:'Aug 2024', desc:'Hash-based backup signature algorithm. Different mathematical basis to ML-DSA — fallback if lattice cryptography is broken.', replaces:'RSA/ECDSA (backup)', adopters:['NIST','IETF (LAMPS drafting)'], color:'#16a068', risk:'low' },
-  { id:'FN-DSA', name:'FN-DSA (FALCON)', fips:'FIPS 206', type:'Digital Signature', status:'Draft', date:'2025 expected', desc:'Fourth NIST PQC algorithm. NTRU-lattice based. Smaller signatures than ML-DSA. Being standardised as FIPS 206.', replaces:'RSA/ECDSA', adopters:['NIST (in progress)'], color:'#ffffff', risk:'medium' },
-  { id:'HQC', name:'HQC', fips:'In process', type:'Key Encapsulation Backup', status:'Selected 2025', date:'Selected 2025', desc:'Backup KEM selected by NIST in 2025 as an alternative to ML-KEM. Code-based cryptography — different mathematical approach.', replaces:'RSA/ECDH (backup)', adopters:['NIST (selected)'], color:'#ffffff', risk:'medium' },
+  { id:'FN-DSA', name:'FN-DSA (FALCON)', fips:'FIPS 206', type:'Digital Signature', status:'Draft', date:'2025 expected', desc:'Fourth NIST PQC algorithm. NTRU-lattice based. Smaller signatures than ML-DSA. Being standardised as FIPS 206.', replaces:'RSA/ECDSA', adopters:['NIST (in progress)'], color:'#111111', risk:'medium' },
+  { id:'HQC', name:'HQC', fips:'In process', type:'Key Encapsulation Backup', status:'Selected 2025', date:'Selected 2025', desc:'Backup KEM selected by NIST in 2025 as an alternative to ML-KEM. Code-based cryptography — different mathematical approach.', replaces:'RSA/ECDH (backup)', adopters:['NIST (selected)'], color:'#111111', risk:'medium' },
 ]
 
 const PQC_READINESS = [
@@ -26,32 +26,32 @@ const PQC_READINESS = [
 
 // ── Global PKI history (Phase 2 timeline) ────────────────────────────
 const GLOBAL_TIMELINE = [
-  { year:1865, org:'ITU', event:'International Telecommunication Union founded', desc:'Founded in Paris as the International Telegraph Union — the oldest UN agency. Today maintains X.509, the certificate standard all PKI is built on.', type:'milestone', color:'#ffffff' },
+  { year:1865, org:'ITU', event:'International Telecommunication Union founded', desc:'Founded in Paris as the International Telegraph Union — the oldest UN agency. Today maintains X.509, the certificate standard all PKI is built on.', type:'milestone', color:'#111111' },
   { year:1978, org:'NIST', event:'RSA algorithm published — public key cryptography begins', desc:'Rivest, Shamir, Adleman publish the RSA algorithm. For the first time, two parties can exchange encrypted messages without a prior shared secret. The foundation of modern PKI.', type:'milestone', color:'#1f5c4e' },
-  { year:1988, org:'ITU', event:'X.509 v1 published — the certificate format is born', desc:'ITU-T publishes X.509 as part of the X.500 directory standards. Defines the certificate structure every TLS, S/MIME, and code signing certificate still uses today.', type:'milestone', color:'#ffffff' },
-  { year:1993, org:'IETF', event:'SSL invented by Netscape — HTTPS begins', desc:'Netscape creates SSL 2.0 to secure web commerce. The beginning of HTTPS and mass PKI deployment. SSL eventually standardised by IETF as TLS 1.0 in 1999.', type:'milestone', color:'#ffffff' },
-  { year:1999, org:'webtrust', event:'WebTrust for CAs launched by AICPA/CPA Canada', desc:'First formal CA audit programme launched. Gives browser vendors an independent assurance mechanism to evaluate CA trustworthiness before root store inclusion.', type:'milestone', color:'#e8e0d8' },
-  { year:2001, org:'apkic', event:'Asia PKI Consortium founded in Hong Kong', desc:'APKIC established to promote PKI adoption and interoperability across Asia/Oceania. Initial members from Hong Kong, Japan, Taiwan, South Korea. Now 11+ economies.', type:'milestone', color:'#ffffff' },
-  { year:2005, org:'cabf', event:'CA/Browser Forum founded — web PKI governance begins', desc:'Voluntary consortium formed between major CAs and browsers to establish industry standards. First meeting in San Francisco. Initial focus on EV guidelines.', type:'milestone', color:'#ffffff' },
-  { year:2007, org:'cabf', event:'EV Guidelines v1.0 — first CAB Forum standard', desc:'Extended Validation certificate guidelines published. The green address bar era begins. High-assurance identity validation codified for the first time globally.', type:'milestone', color:'#ffffff' },
-  { year:2011, org:'cabf', event:'DigiNotar breach — CA trust crisis', desc:'Dutch CA DigiNotar compromised. 500+ fraudulent certificates for Google, Mozilla, and governments. DigiNotar bankrupt. Accelerated Baseline Requirements development.', type:'incident', color:'#c0392b' },
-  { year:2012, org:'cabf', event:'Baseline Requirements v1.0 — the constitution of web PKI', desc:'All publicly-trusted TLS certificates must now comply with the BRs. Governs key size, validity, revocation, DCV, and audit. The most important PKI document ever published.', type:'milestone', color:'#ffffff' },
-  { year:2012, org:'fido', event:'FIDO Alliance founded — passwordless authentication begins', desc:'Google, Lenovo, NXP, PayPal, and others found FIDO Alliance. Mission: reduce world\'s reliance on passwords. Leads to FIDO2/WebAuthn and passkeys.', type:'milestone', color:'#c0392b' },
-  { year:2014, org:'eidas', event:'eIDAS Regulation — EU digital identity framework created', desc:'EU Regulation 910/2014 creates pan-European framework for electronic signatures, seals, and timestamps. Makes qualified electronic signatures legally binding across all EU member states.', type:'milestone', color:'#e8e0d8' },
+  { year:1988, org:'ITU', event:'X.509 v1 published — the certificate format is born', desc:'ITU-T publishes X.509 as part of the X.500 directory standards. Defines the certificate structure every TLS, S/MIME, and code signing certificate still uses today.', type:'milestone', color:'#111111' },
+  { year:1993, org:'IETF', event:'SSL invented by Netscape — HTTPS begins', desc:'Netscape creates SSL 2.0 to secure web commerce. The beginning of HTTPS and mass PKI deployment. SSL eventually standardised by IETF as TLS 1.0 in 1999.', type:'milestone', color:'#111111' },
+  { year:1999, org:'webtrust', event:'WebTrust for CAs launched by AICPA/CPA Canada', desc:'First formal CA audit programme launched. Gives browser vendors an independent assurance mechanism to evaluate CA trustworthiness before root store inclusion.', type:'milestone', color:'#333333' },
+  { year:2001, org:'apkic', event:'Asia PKI Consortium founded in Hong Kong', desc:'APKIC established to promote PKI adoption and interoperability across Asia/Oceania. Initial members from Hong Kong, Japan, Taiwan, South Korea. Now 11+ economies.', type:'milestone', color:'#111111' },
+  { year:2005, org:'cabf', event:'CA/Browser Forum founded — web PKI governance begins', desc:'Voluntary consortium formed between major CAs and browsers to establish industry standards. First meeting in San Francisco. Initial focus on EV guidelines.', type:'milestone', color:'#111111' },
+  { year:2007, org:'cabf', event:'EV Guidelines v1.0 — first CAB Forum standard', desc:'Extended Validation certificate guidelines published. The green address bar era begins. High-assurance identity validation codified for the first time globally.', type:'milestone', color:'#111111' },
+  { year:2011, org:'cabf', event:'DigiNotar breach — CA trust crisis', desc:'Dutch CA DigiNotar compromised. 500+ fraudulent certificates for Google, Mozilla, and governments. DigiNotar bankrupt. Accelerated Baseline Requirements development.', type:'incident', color:'#1f5c4e' },
+  { year:2012, org:'cabf', event:'Baseline Requirements v1.0 — the constitution of web PKI', desc:'All publicly-trusted TLS certificates must now comply with the BRs. Governs key size, validity, revocation, DCV, and audit. The most important PKI document ever published.', type:'milestone', color:'#111111' },
+  { year:2012, org:'fido', event:'FIDO Alliance founded — passwordless authentication begins', desc:'Google, Lenovo, NXP, PayPal, and others found FIDO Alliance. Mission: reduce world\'s reliance on passwords. Leads to FIDO2/WebAuthn and passkeys.', type:'milestone', color:'#1f5c4e' },
+  { year:2014, org:'eidas', event:'eIDAS Regulation — EU digital identity framework created', desc:'EU Regulation 910/2014 creates pan-European framework for electronic signatures, seals, and timestamps. Makes qualified electronic signatures legally binding across all EU member states.', type:'milestone', color:'#333333' },
   { year:2016, org:'nist', event:'NIST begins 8-year PQC standardisation project', desc:'NIST releases call for post-quantum cryptographic algorithms. 69 candidates submitted globally. 8-year evaluation process begins. The biggest cryptographic transition since RSA.', type:'milestone', color:'#1f5c4e' },
-  { year:2018, org:'cabf', event:'Symantec distrusted by Chrome and Mozilla', desc:'After years of compliance failures and hundreds of misissued certificates, Google and Mozilla removed Symantec roots. DigiCert acquired Symantec PKI business.', type:'incident', color:'#c0392b' },
-  { year:2019, org:'ietf', event:'RFC 8555 ACME published — certificate automation standardised', desc:'ACME protocol standardised by IETF. Let\'s Encrypt had pioneered it — now it is an official internet standard. Enables zero-touch certificate management.', type:'milestone', color:'#ffffff' },
-  { year:2019, org:'cabf', event:'Working Group structure — CAB Forum restructured', desc:'Forum restructures into specialised Working Groups: Server Cert, Code Signing, NetSec — each with own charter and ballots. Improves governance quality.', type:'milestone', color:'#ffffff' },
-  { year:2020, org:'cabf', event:'Apple enforces 1-year validity unilaterally — industry shock', desc:'A CAB Forum ballot to reduce validity failed. Apple bypassed the Forum and enforced 398-day certs in Safari. All browsers followed. S/MIME WG chartered.', type:'enforcement', color:'#ffffff' },
-  { year:2020, org:'fido', event:'FIDO2 and WebAuthn become W3C standards', desc:'WebAuthn published as W3C Recommendation. FIDO2 enables passwordless login using hardware keys, biometrics, and platform authenticators across all major browsers.', type:'milestone', color:'#c0392b' },
-  { year:2023, org:'cabf', event:'SC063 — OCSP optional, CRLs required. Privacy improvement.', desc:'Major privacy improvement: OCSP becomes optional while CRL availability is mandated. Reduces OCSP responders tracking which websites users visit.', type:'ballot', color:'#ffffff' },
-  { year:2024, org:'cabf', event:'Entrust distrusted — largest CA distrust event in history', desc:'Chrome and Mozilla remove Entrust from root stores after sustained compliance failures. 26M+ active certificates affected. Largest CA distrust event ever.', type:'incident', color:'#c0392b' },
-  { year:2024, org:'cabf', event:'SC067v3 — Multi-perspective DCV mandatory', desc:'CAs must validate domain control from multiple geographically-distributed network perspectives simultaneously. Prevents BGP hijacking attacks against certificate issuance.', type:'ballot', color:'#ffffff' },
+  { year:2018, org:'cabf', event:'Symantec distrusted by Chrome and Mozilla', desc:'After years of compliance failures and hundreds of misissued certificates, Google and Mozilla removed Symantec roots. DigiCert acquired Symantec PKI business.', type:'incident', color:'#1f5c4e' },
+  { year:2019, org:'ietf', event:'RFC 8555 ACME published — certificate automation standardised', desc:'ACME protocol standardised by IETF. Let\'s Encrypt had pioneered it — now it is an official internet standard. Enables zero-touch certificate management.', type:'milestone', color:'#111111' },
+  { year:2019, org:'cabf', event:'Working Group structure — CAB Forum restructured', desc:'Forum restructures into specialised Working Groups: Server Cert, Code Signing, NetSec — each with own charter and ballots. Improves governance quality.', type:'milestone', color:'#111111' },
+  { year:2020, org:'cabf', event:'Apple enforces 1-year validity unilaterally — industry shock', desc:'A CAB Forum ballot to reduce validity failed. Apple bypassed the Forum and enforced 398-day certs in Safari. All browsers followed. S/MIME WG chartered.', type:'enforcement', color:'#111111' },
+  { year:2020, org:'fido', event:'FIDO2 and WebAuthn become W3C standards', desc:'WebAuthn published as W3C Recommendation. FIDO2 enables passwordless login using hardware keys, biometrics, and platform authenticators across all major browsers.', type:'milestone', color:'#1f5c4e' },
+  { year:2023, org:'cabf', event:'SC063 — OCSP optional, CRLs required. Privacy improvement.', desc:'Major privacy improvement: OCSP becomes optional while CRL availability is mandated. Reduces OCSP responders tracking which websites users visit.', type:'ballot', color:'#111111' },
+  { year:2024, org:'cabf', event:'Entrust distrusted — largest CA distrust event in history', desc:'Chrome and Mozilla remove Entrust from root stores after sustained compliance failures. 26M+ active certificates affected. Largest CA distrust event ever.', type:'incident', color:'#1f5c4e' },
+  { year:2024, org:'cabf', event:'SC067v3 — Multi-perspective DCV mandatory', desc:'CAs must validate domain control from multiple geographically-distributed network perspectives simultaneously. Prevents BGP hijacking attacks against certificate issuance.', type:'ballot', color:'#111111' },
   { year:2024, org:'nist', event:'FIPS 203, 204, 205 finalised — PQC era begins', desc:'NIST finalises ML-KEM, ML-DSA, and SLH-DSA — the three post-quantum standards that will replace RSA and ECC globally. The most significant crypto event since RSA publication.', type:'milestone', color:'#1f5c4e' },
-  { year:2024, org:'eidas', event:'eIDAS 2.0 Regulation 2024/1183 — EU Digital Identity Wallet', desc:'eIDAS 2.0 published. Introduces EU Digital Identity Wallet (EUDIW) and mandates browsers trust government-issued QWAC certificates. Browser governance battle begins.', type:'milestone', color:'#e8e0d8' },
-  { year:2025, org:'cabf', event:'SC081v3 — The 47-day mandate. Most impactful ballot since BRs.', desc:'200-day validity by March 2026, 100-day by March 2027, 47-day by March 2029. Zero-touch automation becomes a legal requirement for all certificate issuance.', type:'ballot', color:'#c0392b' },
-  { year:2025, org:'pkic', event:'PQC Conference KL — 2500+ delegates. World\'s largest.', desc:'PKI Consortium hosts record-breaking PQC conference in Kuala Lumpur. 2500+ delegates from governments, CAs, and tech companies. PQC migration moves from planning to execution.', type:'milestone', color:'#ffffff' },
-  { year:2026, org:'cabf', event:'SHA-1 fully prohibited in all certificates and CRLs', desc:'SC097 fully enforced. Every remaining SHA-1 use in certificate chains prohibited. Any Intermediate CA still signing with SHA-1 must be revoked immediately.', type:'enforcement', color:'#ffffff' },
+  { year:2024, org:'eidas', event:'eIDAS 2.0 Regulation 2024/1183 — EU Digital Identity Wallet', desc:'eIDAS 2.0 published. Introduces EU Digital Identity Wallet (EUDIW) and mandates browsers trust government-issued QWAC certificates. Browser governance battle begins.', type:'milestone', color:'#333333' },
+  { year:2025, org:'cabf', event:'SC081v3 — The 47-day mandate. Most impactful ballot since BRs.', desc:'200-day validity by March 2026, 100-day by March 2027, 47-day by March 2029. Zero-touch automation becomes a legal requirement for all certificate issuance.', type:'ballot', color:'#1f5c4e' },
+  { year:2025, org:'pkic', event:'PQC Conference KL — 2500+ delegates. World\'s largest.', desc:'PKI Consortium hosts record-breaking PQC conference in Kuala Lumpur. 2500+ delegates from governments, CAs, and tech companies. PQC migration moves from planning to execution.', type:'milestone', color:'#111111' },
+  { year:2026, org:'cabf', event:'SHA-1 fully prohibited in all certificates and CRLs', desc:'SC097 fully enforced. Every remaining SHA-1 use in certificate chains prohibited. Any Intermediate CA still signing with SHA-1 must be revoked immediately.', type:'enforcement', color:'#111111' },
 ]
 
 // ── Deep dive routes for org cards ──────────────────────────────────
@@ -79,8 +79,8 @@ const rFlag = r => REGION_FLAGS[r] || '🌐'
 const statusDot = s => {
   if (!s) return 'rgba(240,237,232,0.45)'
   const l = s.toLowerCase()
-  if (['final','current','in force','active','complete'].some(x=>l.includes(x))) return '#4ade80'
-  if (['draft','selected','planning'].some(x=>l.includes(x))) return '#f0ede8'
+  if (['final','current','in force','active','complete'].some(x=>l.includes(x))) return '#16a068'
+  if (['draft','selected','planning'].some(x=>l.includes(x))) return '#111111'
   return 'rgba(240,237,232,0.45)'
 }
 
@@ -237,7 +237,7 @@ export default function GlobalPKIHub({ nav }) {
       {/* Sync bar */}
       <div className="hub-sync">
         <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
-          <span style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#4ade80', marginRight:2 }} />
+          <span style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#16a068', marginRight:2 }} />
           <span>Global PKI Intelligence Hub · {orgs.length || 12} organisations · {standards.length || 22} standards · {events.length || 6} events indexed</span>
         </div>
         <div style={{ display:'flex', gap:8, alignItems:'center' }}>
@@ -304,8 +304,8 @@ export default function GlobalPKIHub({ nav }) {
           <div style={{ display:'flex', alignItems:'center', gap:7, background:'var(--v2-surface)', border:'0.5px solid var(--v2-border-strong)', borderRadius:'var(--v2-r-md)', padding:'5px 10px', marginLeft:8 }}>
             <Search size={13} color="var(--v2-text-3)" />
             <input type="text" placeholder="Search…" value={query} onChange={e=>setQuery(e.target.value)}
-              style={{ border:'none', outline:'none', background:'transparent', fontSize:12, color:'#ffffff', fontFamily:FONT, width:160 }} />
-            {query && <button onClick={()=>setQuery('')} style={{ background:'none', border:'none', cursor:'pointer', color:'#b0a8a0', padding:0 }}><X size={12}/></button>}
+              style={{ border:'none', outline:'none', background:'transparent', fontSize:12, color:'#111111', fontFamily:FONT, width:160 }} />
+            {query && <button onClick={()=>setQuery('')} style={{ background:'none', border:'none', cursor:'pointer', color:'#888888', padding:0 }}><X size={12}/></button>}
           </div>
         </div>
       )}
@@ -317,9 +317,9 @@ export default function GlobalPKIHub({ nav }) {
             <div className="detail-panel">
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:12 }}>
                 <div style={{ display:'flex', gap:12, alignItems:'flex-start' }}>
-                  <div className="org-badge" style={{ background: selectedOrg.logo_color||'#f0ede8', width:44, height:44, fontSize:11 }}>{selectedOrg.acronym||selectedOrg.short_name?.slice(0,4)}</div>
+                  <div className="org-badge" style={{ background: selectedOrg.logo_color||'#111111', width:44, height:44, fontSize:11 }}>{selectedOrg.acronym||selectedOrg.short_name?.slice(0,4)}</div>
                   <div>
-                    <div style={{ fontSize:16, fontWeight:600, color:'#ffffff', marginBottom:3 }}>{selectedOrg.full_name}</div>
+                    <div style={{ fontSize:16, fontWeight:600, color:'#111111', marginBottom:3 }}>{selectedOrg.full_name}</div>
                     <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
                       {selectedOrg.tags?.slice(0,5).map(t => <span key={t} className="v2-chip chip-blue" style={{ fontSize:9 }}>{t}</span>)}
                     </div>
@@ -330,7 +330,7 @@ export default function GlobalPKIHub({ nav }) {
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:14 }}>
                 <div>
                   <div className="v2-callout tip" style={{ fontSize:12, marginBottom:12 }}>{selectedOrg.plain_english}</div>
-                  <div style={{ fontSize:11, color:'#e8e0d8', lineHeight:1.7 }}><strong style={{ color:'#ffffff' }}>Mission:</strong> {selectedOrg.mission}</div>
+                  <div style={{ fontSize:11, color:'#333333', lineHeight:1.7 }}><strong style={{ color:'#111111' }}>Mission:</strong> {selectedOrg.mission}</div>
                 </div>
                 <div>
                   {[
@@ -343,15 +343,15 @@ export default function GlobalPKIHub({ nav }) {
                     { k:'Membership', v:selectedOrg.membership_type },
                   ].map(({ k, v }) => v && (
                     <div key={k} style={{ display:'flex', gap:10, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:11 }}>
-                      <span style={{ color:'#b0a8a0', minWidth:80, flexShrink:0 }}>{k}</span>
-                      <span style={{ color:'#ffffff', fontWeight:500, fontSize:11 }}>{v}</span>
+                      <span style={{ color:'#888888', minWidth:80, flexShrink:0 }}>{k}</span>
+                      <span style={{ color:'#111111', fontWeight:500, fontSize:11 }}>{v}</span>
                     </div>
                   ))}
                 </div>
               </div>
               {selectedOrg.key_outputs?.length > 0 && (
                 <div style={{ marginTop:12 }}>
-                  <div style={{ fontSize:11, color:'#b0a8a0', letterSpacing:'.04em', textTransform:'uppercase', fontWeight:500, marginBottom:7 }}>Key outputs</div>
+                  <div style={{ fontSize:11, color:'#888888', letterSpacing:'.04em', textTransform:'uppercase', fontWeight:500, marginBottom:7 }}>Key outputs</div>
                   <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
                     {selectedOrg.key_outputs.map(o => <span key={o} className="v2-chip chip-grey" style={{ fontSize:10 }}>{o}</span>)}
                   </div>
@@ -373,17 +373,17 @@ export default function GlobalPKIHub({ nav }) {
               {filteredOrgs.map(org => (
                 <div key={org.id} className={`org-card${selectedOrg?.id===org.id?' active':''}`} onClick={() => setSelectedOrg(selectedOrg?.id===org.id ? null : org)}>
                   <div className="org-header">
-                    <div className="org-badge" style={{ background: org.logo_color||'#f0ede8' }}>{org.acronym||org.short_name?.slice(0,4)}</div>
+                    <div className="org-badge" style={{ background: org.logo_color||'#111111' }}>{org.acronym||org.short_name?.slice(0,4)}</div>
                     <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginBottom:2 }}>{org.short_name}</div>
-                      <div style={{ fontSize:10, color:'#b0a8a0', lineHeight:1.4 }}>{org.full_name?.slice(0,60)}{org.full_name?.length>60?'…':''}</div>
+                      <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:2 }}>{org.short_name}</div>
+                      <div style={{ fontSize:10, color:'#888888', lineHeight:1.4 }}>{org.full_name?.slice(0,60)}{org.full_name?.length>60?'…':''}</div>
                       <div style={{ marginTop:4, display:'flex', gap:3 }}>
                         <span className="v2-chip chip-grey" style={{ fontSize:9 }}>{org.category}</span>
                         <span className="v2-chip chip-grey" style={{ fontSize:9 }}>{rFlag(org.region)} {org.region}</span>
                       </div>
                     </div>
                   </div>
-                  <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.5, flex:1 }}>{org.plain_english}</div>
+                  <div style={{ fontSize:12, color:'#333333', lineHeight:1.5, flex:1 }}>{org.plain_english}</div>
                   <div className="org-meta">
                     {org.founded && <><div className="om-k">Founded</div><div className="om-v">{org.founded}</div></>}
                     {org.chair && <><div className="om-k">Chair</div><div className="om-v">{org.chair}</div></>}
@@ -391,7 +391,7 @@ export default function GlobalPKIHub({ nav }) {
                     {org.category && <><div className="om-k">Type</div><div className="om-v">{org.category}</div></>}
                   </div>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                    <span style={{ fontSize:11, color:'#b0a8a0', display:'flex', alignItems:'center', gap:3 }}>
+                    <span style={{ fontSize:11, color:'#888888', display:'flex', alignItems:'center', gap:3 }}>
                       {selectedOrg?.id===org.id ? 'Close' : 'Details'} <ChevronRight size={12}/>
                     </span>
                     {ORG_DEEP_DIVE[org.id] && (
@@ -424,24 +424,24 @@ export default function GlobalPKIHub({ nav }) {
                     <div className="std-id-col">
                       <div className="std-id">{s.identifier}</div>
                       <div className="std-ver">{s.version}</div>
-                      {org && <div style={{ marginTop:4 }}><div className="org-badge" style={{ background:org.logo_color||'#f0ede8', width:20, height:20, fontSize:7, borderRadius:4, display:'inline-flex' }}>{org.acronym?.slice(0,4)||org.short_name?.slice(0,4)}</div></div>}
+                      {org && <div style={{ marginTop:4 }}><div className="org-badge" style={{ background:org.logo_color||'#111111', width:20, height:20, fontSize:7, borderRadius:4, display:'inline-flex' }}>{org.acronym?.slice(0,4)||org.short_name?.slice(0,4)}</div></div>}
                     </div>
                     <div style={{ flex:1, minWidth:0 }}>
                       <div style={{ display:'flex', alignItems:'flex-start', gap:8, marginBottom:4, flexWrap:'wrap' }}>
-                        <span style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{s.title}</span>
+                        <span style={{ fontSize:13, fontWeight:500, color:'#111111' }}>{s.title}</span>
                         <div style={{ display:'flex', alignItems:'center', gap:5 }}>
                           <span style={{ width:7, height:7, borderRadius:'50%', background:statusDot(s.status), display:'inline-block', flexShrink:0 }}/>
                           <span className={`v2-chip ${s.status==='Final'||s.status==='Current'||s.status==='In Force'||s.status==='Active' ? 'chip-green' : s.status==='Draft'?'chip-amber':'chip-grey'}`} style={{ fontSize:9 }}>{s.status}</span>
                           {s.category && <span className="v2-chip chip-grey" style={{ fontSize:9 }}>{s.category}</span>}
                         </div>
                       </div>
-                      <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.5 }}>{s.plain_english}</div>
+                      <div style={{ fontSize:12, color:'#333333', lineHeight:1.5 }}>{s.plain_english}</div>
                       <div style={{ display:'flex', gap:4, flexWrap:'wrap', marginTop:5 }}>
                         {s.tags?.slice(0,5).map(t => <span key={t} className="v2-chip chip-grey" style={{ fontSize:9 }}>{t}</span>)}
                       </div>
                     </div>
                     <div style={{ minWidth:80, textAlign:'right', flexShrink:0 }}>
-                      <div style={{ fontSize:10, color:'#b0a8a0' }}>{s.published_date ? new Date(s.published_date).getFullYear() : '—'}</div>
+                      <div style={{ fontSize:10, color:'#888888' }}>{s.published_date ? new Date(s.published_date).getFullYear() : '—'}</div>
                       {s.url && (
                         <a href={s.url} target="_blank" rel="noreferrer" onClick={e=>e.stopPropagation()} className="v2-btn v2-btn-sm" style={{ gap:4, textDecoration:'none', marginTop:4, display:'inline-flex' }}>
                           <ExternalLink size={10}/> Read
@@ -457,9 +457,9 @@ export default function GlobalPKIHub({ nav }) {
             <div className="side-info">
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
                 <div className="si-head">Standard detail</div>
-                <button onClick={()=>setSelectedStd(null)} style={{ background:'none', border:'none', cursor:'pointer', color:'#b0a8a0' }}><X size={14}/></button>
+                <button onClick={()=>setSelectedStd(null)} style={{ background:'none', border:'none', cursor:'pointer', color:'#888888' }}><X size={14}/></button>
               </div>
-              <div style={{ fontSize:14, fontWeight:600, color:'#ffffff', marginBottom:8, lineHeight:1.4 }}>{selectedStd.title}</div>
+              <div style={{ fontSize:14, fontWeight:600, color:'#111111', marginBottom:8, lineHeight:1.4 }}>{selectedStd.title}</div>
               <div className="v2-callout tip" style={{ fontSize:11, marginBottom:12 }}>{selectedStd.plain_english}</div>
               {[
                 { k:'Identifier', v:selectedStd.identifier },
@@ -469,8 +469,8 @@ export default function GlobalPKIHub({ nav }) {
                 { k:'Published', v:fmtDate(selectedStd.published_date) },
               ].filter(x=>x.v).map(({ k, v }) => (
                 <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:11 }}>
-                  <span style={{ color:'#b0a8a0', minWidth:70, flexShrink:0 }}>{k}</span>
-                  <span style={{ color:'#ffffff', fontWeight:500 }}>{v}</span>
+                  <span style={{ color:'#888888', minWidth:70, flexShrink:0 }}>{k}</span>
+                  <span style={{ color:'#111111', fontWeight:500 }}>{v}</span>
                 </div>
               ))}
               {selectedStd.tags?.length > 0 && (
@@ -534,7 +534,7 @@ export default function GlobalPKIHub({ nav }) {
             Today's RSA and ECDSA certificates will be breakable by a sufficiently powerful quantum computer. While no such computer exists yet, "harvest now, decrypt later" attacks mean adversaries are collecting encrypted data today to decrypt in the future. PKI must migrate to post-quantum algorithms before the quantum threat materialises — and that migration takes years. The clock is already running.
           </div>
 
-          <div style={{ fontSize:12, fontWeight:600, color:'#ffffff', marginBottom:10, marginTop:4 }}>Finalised NIST standards — the new building blocks of PKI</div>
+          <div style={{ fontSize:12, fontWeight:600, color:'#111111', marginBottom:10, marginTop:4 }}>Finalised NIST standards — the new building blocks of PKI</div>
           <div className="pqc-grid" style={{ padding:0, marginBottom:20 }}>
             {PQC_ALGORITHMS.map(alg => (
               <div key={alg.id} className="pqc-card">
@@ -542,14 +542,14 @@ export default function GlobalPKIHub({ nav }) {
                   <span style={{ width:6, height:6, borderRadius:'50%', background:'currentColor', display:'inline-block' }}/>
                   {alg.status} · {alg.date}
                 </div>
-                <div style={{ fontSize:13, fontWeight:600, color:'#ffffff', marginBottom:3 }}>{alg.name}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:3 }}>{alg.name}</div>
                 <div style={{ display:'flex', gap:5, marginBottom:8, flexWrap:'wrap' }}>
                   <span className="v2-chip chip-blue" style={{ fontSize:9 }}>{alg.fips}</span>
                   <span className="v2-chip chip-grey" style={{ fontSize:9 }}>{alg.type}</span>
                 </div>
-                <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.5, marginBottom:8 }}>{alg.desc}</div>
-                <div style={{ fontSize:10, color:'#b0a8a0', marginBottom:4 }}>Replaces: <span style={{ color:'#ffffff', fontWeight:500 }}>{alg.replaces}</span></div>
-                <div style={{ fontSize:10, color:'#b0a8a0', marginBottom:4 }}>Adopters:</div>
+                <div style={{ fontSize:12, color:'#333333', lineHeight:1.5, marginBottom:8 }}>{alg.desc}</div>
+                <div style={{ fontSize:10, color:'#888888', marginBottom:4 }}>Replaces: <span style={{ color:'#111111', fontWeight:500 }}>{alg.replaces}</span></div>
+                <div style={{ fontSize:10, color:'#888888', marginBottom:4 }}>Adopters:</div>
                 <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
                   {alg.adopters.map(a => <span key={a} className="v2-chip chip-grey" style={{ fontSize:9 }}>{a}</span>)}
                 </div>
@@ -557,7 +557,7 @@ export default function GlobalPKIHub({ nav }) {
             ))}
           </div>
 
-          <div style={{ fontSize:12, fontWeight:600, color:'#ffffff', marginBottom:12 }}>PKI body readiness status</div>
+          <div style={{ fontSize:12, fontWeight:600, color:'#111111', marginBottom:12 }}>PKI body readiness status</div>
           <div className="v2-card v2-card-pad" style={{ marginBottom:16 }}>
             {PQC_READINESS.map(r => {
               const s = pqcStatusColor(r.status)
@@ -569,7 +569,7 @@ export default function GlobalPKIHub({ nav }) {
                     <div className="readiness-fill" style={{ width:`${pct}%`, background: r.status==='complete'?'var(--v2-green-text)':r.status==='active'?'var(--v2-amber-text)':'var(--v2-text-3)' }}/>
                   </div>
                   <span style={{ padding:'2px 8px', borderRadius:20, fontSize:10, fontWeight:600, background:s.bg, color:s.text, border:`0.5px solid ${s.border}`, minWidth:70, textAlign:'center', flexShrink:0 }}>{s.label}</span>
-                  <div style={{ fontSize:11, color:'#e8e0d8', flex:1, paddingLeft:10 }}>{r.detail}</div>
+                  <div style={{ fontSize:11, color:'#333333', flex:1, paddingLeft:10 }}>{r.detail}</div>
                 </div>
               )
             })}
@@ -611,17 +611,17 @@ export default function GlobalPKIHub({ nav }) {
                     )}
                     <div style={{ flex:1, minWidth:0 }}>
                       <div style={{ display:'flex', alignItems:'flex-start', gap:8, marginBottom:5, flexWrap:'wrap' }}>
-                        <div style={{ fontSize:14, fontWeight:600, color:'#ffffff' }}>{e.title}</div>
+                        <div style={{ fontSize:14, fontWeight:600, color:'#111111' }}>{e.title}</div>
                         {isPast ? <span className="v2-chip chip-grey" style={{ fontSize:9 }}>Past</span>
                           : days !== null && days < 90 ? <span className="v2-chip chip-amber" style={{ fontSize:9 }}>{days}d away</span>
                           : days !== null ? <span className="v2-chip chip-blue" style={{ fontSize:9 }}>{days}d away</span> : null}
                       </div>
                       <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:6 }}>
-                        {org && <span className="org-badge" style={{ background:org.logo_color||'#f0ede8', width:20, height:20, fontSize:7, borderRadius:4, display:'inline-flex', alignItems:'center', justifyContent:'center', flexShrink:0, color:'#ffffff', fontWeight:800 }}>{org.acronym?.slice(0,4)}</span>}
+                        {org && <span className="org-badge" style={{ background:org.logo_color||'#111111', width:20, height:20, fontSize:7, borderRadius:4, display:'inline-flex', alignItems:'center', justifyContent:'center', flexShrink:0, color:'#111111', fontWeight:800 }}>{org.acronym?.slice(0,4)}</span>}
                         {e.event_type && <span className="v2-chip chip-blue" style={{ fontSize:9 }}>{e.event_type}</span>}
-                        {e.location && <span style={{ fontSize:11, color:'#e8e0d8' }}>📍 {e.location}{e.country ? `, ${e.country}` : ''}</span>}
+                        {e.location && <span style={{ fontSize:11, color:'#333333' }}>📍 {e.location}{e.country ? `, ${e.country}` : ''}</span>}
                       </div>
-                      {e.description && <div style={{ fontSize:12, color:'#e8e0d8', lineHeight:1.5 }}>{e.description}</div>}
+                      {e.description && <div style={{ fontSize:12, color:'#333333', lineHeight:1.5 }}>{e.description}</div>}
                       {e.url && (
                         <a href={e.url} target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ marginTop:8, gap:4, textDecoration:'none', display:'inline-flex' }}>
                           <ExternalLink size={11}/> More info ↗

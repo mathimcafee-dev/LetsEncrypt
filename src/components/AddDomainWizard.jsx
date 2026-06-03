@@ -34,17 +34,17 @@ const DNS_PROVIDERS = [
 const S = {
   card:    { background: 'rgba(0,0,0,0.05)', border: '0.5px solid rgba(0,0,0,0.07)', borderRadius: 14, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' },
   input:   { width: '100%', padding: '10px 14px', fontSize: 13, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.09)', color: '#fff', outline: 'none', boxSizing: 'border-box', transition: 'border-color .15s' },
-  label:   { display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#b0a8a0', marginBottom: 6 },
+  label:   { display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#888888', marginBottom: 6 },
   btnPri:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: '#1f5c4e', color: '#fff', border: 'none', cursor: 'pointer', transition: 'background .15s', whiteSpace: 'nowrap' },
-  btnSec:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: 'rgba(0,0,0,0.06)', color: '#e8e0d8', border: '1px solid rgba(0,0,0,0.09)', cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap' },
+  btnSec:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: 'rgba(0,0,0,0.06)', color: '#333333', border: '1px solid rgba(0,0,0,0.09)', cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap' },
   btnDis:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: 'rgba(31,92,78,0.2)', color: 'rgba(255,255,255,0.4)', border: 'none', cursor: 'not-allowed', whiteSpace: 'nowrap' },
   title:   { fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4, letterSpacing: '-0.2px' },
-  sub:     { fontSize: 12, color: '#b0a8a0', marginBottom: 20, lineHeight: 1.5 },
-  err:     { fontSize: 11, color: '#f87171', marginTop: 5, fontWeight: 500 },
+  sub:     { fontSize: 12, color: '#888888', marginBottom: 20, lineHeight: 1.5 },
+  err:     { fontSize: 11, color: '#1f5c4e', marginTop: 5, fontWeight: 500 },
   mono:    { fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace' },
   sep:     { height: '0.5px', background: 'rgba(0,0,0,0.06)', margin: '16px 0' },
-  codeBox: { background: '#0d0000', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 7, padding: '11px 40px 11px 12px', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', fontSize: 11, color: '#16a068', wordBreak: 'break-all', position: 'relative', lineHeight: 1.6, marginTop: 4 },
-  cmdBox:  { background: '#0d0000', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 7, padding: '10px 40px 10px 12px', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', fontSize: 11, color: '#e8e0d8', wordBreak: 'break-all', position: 'relative', lineHeight: 1.6, marginTop: 4 },
+  codeBox: { background: '#f4f1ec', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 7, padding: '11px 40px 11px 12px', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', fontSize: 11, color: '#16a068', wordBreak: 'break-all', position: 'relative', lineHeight: 1.6, marginTop: 4 },
+  cmdBox:  { background: '#f4f1ec', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 7, padding: '10px 40px 10px 12px', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', fontSize: 11, color: '#333333', wordBreak: 'break-all', position: 'relative', lineHeight: 1.6, marginTop: 4 },
 }
 
 // ── Copy button ───────────────────────────────────────────────────────────────
@@ -53,7 +53,7 @@ function CopyButton({ text }) {
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text).catch(() => {}); setDone(true); setTimeout(() => setDone(false), 1600) }}
-      style={{ position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', cursor: 'pointer', color: done ? '#4ade80' : '#b0a8a0', padding: 2, display: 'flex', alignItems: 'center', transition: 'color .15s' }}>
+      style={{ position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', cursor: 'pointer', color: done ? '#16a068' : '#b0a8a0', padding: 2, display: 'flex', alignItems: 'center', transition: 'color .15s' }}>
       {done ? <Check size={13} /> : <Copy size={13} />}
     </button>
   )
@@ -109,10 +109,10 @@ function StepDomain({ data, onChange, onNext }) {
         <label style={S.label}>Domain name</label>
         <input type="text" value={data.domain} onChange={e => { onChange({ domain: e.target.value }); setErr('') }}
           placeholder="yourdomain.com" autoComplete="off"
-          style={{ ...S.input, ...(err ? { borderColor: '#f87171' } : {}) }}
+          style={{ ...S.input, ...(err ? { borderColor: '#1f5c4e' } : {}) }}
           onKeyDown={e => e.key === 'Enter' && submit()}
           onFocus={e => e.target.style.borderColor = '#1f5c4e'}
-          onBlur={e => e.target.style.borderColor = err ? '#f87171' : 'rgba(0,0,0,0.09)'} />
+          onBlur={e => e.target.style.borderColor = err ? '#1f5c4e' : 'rgba(0,0,0,0.09)'} />
         {err && <div style={S.err}>{err}</div>}
         <label style={{ ...S.label, marginTop: 16 }}>Certificate type</label>
         <select value={data.certType} onChange={e => onChange({ certType: e.target.value })}
@@ -186,7 +186,7 @@ function StepDNS({ data, onChange, onNext, onBack }) {
           </div>
         )}
         {selected && !selected.field1 && (
-          <div style={{ marginTop: 14, background: 'rgba(31,92,78,0.07)', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 7, padding: '10px 12px', fontSize: 12, color: '#e8e0d8', lineHeight: 1.6 }}>
+          <div style={{ marginTop: 14, background: 'rgba(31,92,78,0.07)', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 7, padding: '10px 12px', fontSize: 12, color: '#333333', lineHeight: 1.6 }}>
             Manual DNS — SSLVault will show you a TXT record to add at your registrar after setup.
           </div>
         )}
@@ -284,12 +284,12 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
           <div style={infraCard('hosting')} onClick={() => { onChange({ serverType: 'hosting' }); setErr('') }}>
             <div style={{ fontSize: 22, color: '#1f5c4e', marginBottom: 8 }}><Server size={22} /></div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Shared hosting</div>
-            <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 2 }}>cPanel · Plesk · DirectAdmin</div>
+            <div style={{ fontSize: 11, color: '#888888', marginTop: 2 }}>cPanel · Plesk · DirectAdmin</div>
           </div>
           <div style={infraCard('vps')} onClick={() => { onChange({ serverType: 'vps' }); setErr('') }}>
             <div style={{ fontSize: 22, color: '#1f5c4e', marginBottom: 8 }}><Terminal size={22} /></div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>VPS / Cloud server</div>
-            <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 2 }}>Ubuntu · Debian · CentOS</div>
+            <div style={{ fontSize: 11, color: '#888888', marginTop: 2 }}>Ubuntu · Debian · CentOS</div>
           </div>
         </div>
         {err && <div style={S.err}>{err}</div>}
@@ -333,7 +333,7 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
           <div>
             <div style={S.sep} />
             {installCmd.loading ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 0', color: '#b0a8a0', fontSize: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 0', color: '#888888', fontSize: 12 }}>
                 <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(31,92,78,0.2)', borderTopColor: '#1f5c4e', animation: 'spin .7s linear infinite', flexShrink: 0 }} />
                 Generating your agent install token…
               </div>
@@ -351,7 +351,7 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
                   {installCmd.cmd}
                   <CopyButton text={installCmd.cmd} />
                 </div>
-                <div style={{ marginTop: 12, background: 'rgba(74,222,128,0.06)', border: '0.5px solid rgba(74,222,128,0.2)', borderRadius: 7, padding: '9px 12px', fontSize: 11, color: '#b0a8a0', lineHeight: 1.6 }}>
+                <div style={{ marginTop: 12, background: 'rgba(74,222,128,0.06)', border: '0.5px solid rgba(74,222,128,0.2)', borderRadius: 7, padding: '9px 12px', fontSize: 11, color: '#888888', lineHeight: 1.6 }}>
                   The agent connects back automatically. No server credentials needed — it registers itself once installed.
                 </div>
               </>
@@ -419,13 +419,13 @@ function StepDone({ data, onClose, nav }) {
             <Check size={22} color="#4ade80" />
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Server connected!</div>
-          <div style={{ fontSize: 12, color: '#b0a8a0', marginBottom: 20, lineHeight: 1.6 }}>
+          <div style={{ fontSize: 12, color: '#888888', marginBottom: 20, lineHeight: 1.6 }}>
             <strong style={{ color: '#1f5c4e' }}>{data.domain}</strong> is linked to your VPS.<br />
             SSL will be issued and installed automatically. Auto-renewal is active.
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(22,160,104,0.09)', color: '#16a068', border: '1px solid rgba(22,160,104,0.22)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80' }} /> Agent registered
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a068' }} /> Agent registered
             </span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(22,160,104,0.09)', color: '#16a068', border: '1px solid rgba(22,160,104,0.22)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>
               <RefreshCw size={10} /> Auto-renew on
@@ -452,7 +452,7 @@ function StepDone({ data, onClose, nav }) {
             <Check size={22} color="#4ade80" />
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Domain added successfully</div>
-          <div style={{ fontSize: 12, color: '#b0a8a0' }}>{data.domain} is connected via cPanel auto-install</div>
+          <div style={{ fontSize: 12, color: '#888888' }}>{data.domain} is connected via cPanel auto-install</div>
         </div>
         <div style={S.sep} />
         {[
@@ -463,12 +463,12 @@ function StepDone({ data, onClose, nav }) {
           ['cPanel host',  data.cpUrl || '—'],
         ].map(([k, v]) => (
           <div key={k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '0.5px solid rgba(0,0,0,0.05)', fontSize: 12 }}>
-            <span style={{ color: '#b0a8a0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', fontSize: 11 }}>{k}</span>
-            <span style={{ color: '#e8e0d8', fontWeight: 600, ...S.mono, fontSize: 11 }}>{v}</span>
+            <span style={{ color: '#888888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', fontSize: 11 }}>{k}</span>
+            <span style={{ color: '#333333', fontWeight: 600, ...S.mono, fontSize: 11 }}>{v}</span>
           </div>
         ))}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', fontSize: 12 }}>
-          <span style={{ color: '#b0a8a0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', fontSize: 11 }}>Status</span>
+          <span style={{ color: '#888888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', fontSize: 11 }}>Status</span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(22,160,104,0.09)', color: '#16a068', border: '1px solid rgba(22,160,104,0.22)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>
             <Check size={10} /> Ready
           </span>
@@ -550,11 +550,11 @@ export default function AddDomainWizard({ user, onClose, nav }) {
               Domain Manager — Add domain
             </div>
             {data.domain && step > 1 && (
-              <div style={{ fontSize: 11, color: '#b0a8a0', marginTop: 2, fontFamily: '"JetBrains Mono",monospace' }}>{data.domain}</div>
+              <div style={{ fontSize: 11, color: '#888888', marginTop: 2, fontFamily: '"JetBrains Mono",monospace' }}>{data.domain}</div>
             )}
           </div>
           <button onClick={onClose}
-            style={{ width: 28, height: 28, borderRadius: 6, border: '0.5px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.05)', cursor: 'pointer', color: '#e8e0d8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            style={{ width: 28, height: 28, borderRadius: 6, border: '0.5px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.05)', cursor: 'pointer', color: '#333333', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <X size={13} />
           </button>
         </div>

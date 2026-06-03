@@ -68,7 +68,7 @@ function StatusPill({ status }) {
 }
 
 function ScoreBadge({ score }) {
-  const color = score >= 90 ? '#4ade80' : score >= 60 ? '#fbbf24' : '#f87171'
+  const color = score >= 90 ? '#16a068' : score >= 60 ? '#9a6400' : '#1f5c4e'
   const bg    = score >= 90 ? 'rgba(22,160,104,0.09)' : score >= 60 ? 'rgba(184,120,0,0.07)' : 'rgba(192,57,43,0.07)'
   return (
     <span style={{ fontSize:12, fontWeight:800, color, fontFamily:MONO,
@@ -78,7 +78,7 @@ function ScoreBadge({ score }) {
 
 function FleetScoreRing({ score }) {
   const r = 28, circ = 2*Math.PI*r
-  const color = score >= 90 ? '#4ade80' : score >= 60 ? '#fbbf24' : '#f87171'
+  const color = score >= 90 ? '#16a068' : score >= 60 ? '#9a6400' : '#1f5c4e'
   const pct = score / 100
   return (
     <svg width={72} height={72} style={{ flexShrink:0 }}>
@@ -177,7 +177,7 @@ export default function ReadinessDashboard({ user, onNav }) {
     <th onClick={() => col.sortable && toggleSort(col.key)}
       style={{ padding:'10px 12px', fontSize:10, fontWeight:700, color:'#6b6b6b', fontFamily:F,
         textTransform:'uppercase', letterSpacing:'0.8px', textAlign:'left',
-        background:'rgba(255,255,255,0.03)', borderBottom:'1px solid rgba(0,0,0,0.07)',
+        background:'rgba(0,0,0,0.02)', borderBottom:'1px solid rgba(0,0,0,0.07)',
         cursor:col.sortable?'pointer':'default', userSelect:'none', whiteSpace:'nowrap',
         width:col.width }}>
       <span style={{ display:'flex', alignItems:'center', gap:3 }}>
@@ -197,7 +197,7 @@ export default function ReadinessDashboard({ user, onNav }) {
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
               <div style={{ width:36, height:36, borderRadius:10, background:'rgba(0,0,0,0.08)',
-                border:'1px solid rgba(192,57,43,0.4)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                border:'1px solid rgba(31,92,78,0.4)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <Shield size={18} color="#1f5c4e"/>
               </div>
               <div>
@@ -245,7 +245,7 @@ export default function ReadinessDashboard({ user, onNav }) {
           {/* Status breakdown */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
             {[
-              { label:'Will Break', value:willBreak, color:'#1f5c4e', bg:'rgba(248,113,113,0.08)', border:'rgba(248,113,113,0.2)', desc:'< 60 pts' },
+              { label:'Will Break', value:willBreak, color:'#1f5c4e', bg:'rgba(192,57,43,0.07)', border:'rgba(248,113,113,0.2)', desc:'< 60 pts' },
               { label:'At Risk',    value:atRisk,    color:'#9a6400', bg:'rgba(184,120,0,0.06)',  border:'rgba(251,191,36,0.2)',  desc:'60–89 pts' },
               { label:'Ready',      value:ready,     color:'#16a068', bg:'rgba(22,160,104,0.07)',  border:'rgba(74,222,128,0.2)',  desc:'≥ 90 pts' },
             ].map(s => (
@@ -269,8 +269,8 @@ export default function ReadinessDashboard({ user, onNav }) {
           {MILESTONES.map((m,i) => {
             const d = daysUntilDate(m.date)
             const past = d <= 0
-            const colors = ['#f87171','#fbbf24','#4ade80']
-            const bgs = ['rgba(248,113,113,0.08)','rgba(184,120,0,0.06)','rgba(22,160,104,0.07)']
+            const colors = ['#1f5c4e','#9a6400','#16a068']
+            const bgs = ['rgba(192,57,43,0.07)','rgba(184,120,0,0.06)','rgba(22,160,104,0.07)']
             const borders = ['rgba(248,113,113,0.2)','rgba(251,191,36,0.2)','rgba(74,222,128,0.2)']
             return (
               <div key={m.label} style={{ padding:'12px 16px', borderRadius:10,
@@ -287,7 +287,7 @@ export default function ReadinessDashboard({ user, onNav }) {
                 </div>
                 <span style={{ fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20,
                   background: past ? bgs[0] : 'rgba(0,0,0,0.05)',
-                  color: past ? '#f87171' : colors[i],
+                  color: past ? '#1f5c4e' : colors[i],
                   border:`1px solid ${past ? borders[0] : borders[i]}`,
                   whiteSpace:'nowrap', flexShrink:0 }}>
                   {past ? 'In effect' : `${d}d`}
@@ -341,13 +341,13 @@ export default function ReadinessDashboard({ user, onNav }) {
                   {sorted.map((row, idx) => {
                     const { cert, checks, milestones, score, status, validity } = row
                     const expiry = fmtExpiry(cert.expires_at)
-                    const expiryColor = expiry.days !== null && expiry.days < 30 ? '#f87171' : expiry.days !== null && expiry.days < 90 ? '#fbbf24' : '#e8e0d8'
+                    const expiryColor = expiry.days !== null && expiry.days < 30 ? '#1f5c4e' : expiry.days !== null && expiry.days < 90 ? '#9a6400' : '#333333'
                     return (
                       <tr key={cert.id}
                         style={{ borderTop:'1px solid rgba(0,0,0,0.05)', transition:'background .1s',
-                          background: idx%2===0 ? 'transparent' : 'rgba(255,255,255,0.02)' }}
+                          background: idx%2===0 ? 'transparent' : 'rgba(0,0,0,0.02)' }}
                         onMouseEnter={e => e.currentTarget.style.background='rgba(192,57,43,0.07)'}
-                        onMouseLeave={e => e.currentTarget.style.background=idx%2===0?'transparent':'rgba(255,255,255,0.02)'}>
+                        onMouseLeave={e => e.currentTarget.style.background=idx%2===0?'transparent':'rgba(0,0,0,0.02)'}>
 
                         {/* Domain */}
                         <td style={{ padding:'11px 12px', maxWidth:180 }}>
@@ -360,7 +360,7 @@ export default function ReadinessDashboard({ user, onNav }) {
                             <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:4,
                               whiteSpace:'nowrap', flexShrink:0,
                               background: cert.source==='gogetssl' ? 'rgba(0,0,0,0.07)' : 'rgba(184,120,0,0.07)',
-                              color: cert.source==='gogetssl' ? '#1f5c4e' : '#fbbf24',
+                              color: cert.source==='gogetssl' ? '#1f5c4e' : '#9a6400',
                               border:`0.5px solid ${cert.source==='gogetssl'?'rgba(31,92,78,0.2)':'rgba(251,191,36,0.3)'}` }}>
                               {cert.source==='gogetssl' ? 'SSLVault' : (cert.issuer || cert.source || 'CA')}
                             </span>
@@ -445,7 +445,7 @@ export default function ReadinessDashboard({ user, onNav }) {
             </div>
             <div style={{ padding:'10px 16px', borderTop:'1px solid rgba(0,0,0,0.06)',
               display:'flex', alignItems:'center', justifyContent:'space-between',
-              background:'rgba(255,255,255,0.02)' }}>
+              background:'rgba(0,0,0,0.02)' }}>
               <span style={{ fontSize:11, color:'#6b6b6b', fontWeight:500 }}>
                 {sorted.length} domain{sorted.length!==1?'s':''} · Click headers to sort
               </span>
@@ -459,7 +459,7 @@ export default function ReadinessDashboard({ user, onNav }) {
         {/* ── Footer Note ── */}
         <div style={{ marginTop:16, fontSize:11, color:'#6b6b6b', lineHeight:1.7,
           padding:'12px 16px', borderRadius:10,
-          background:'rgba(255,255,255,0.03)', border:'1px solid rgba(0,0,0,0.05)' }}>
+          background:'rgba(0,0,0,0.02)', border:'1px solid rgba(0,0,0,0.05)' }}>
           <strong style={{ color:'#1f5c4e' }}>CA/B Forum SC-081v3</strong> (passed Apr 2025) ·
           200-day max from <strong style={{ color:'#3d3d3d' }}>Mar 15 2026</strong> ·
           100-day from <strong style={{ color:'#3d3d3d' }}>Mar 15 2027</strong> ·

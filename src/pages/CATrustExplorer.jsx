@@ -8,10 +8,10 @@ const SYNC_FN = `${SUPABASE_URL}/functions/v1/ccadb-sync`
 const PAGE_SIZE = 10000
 
 const STORE_META = {
-  Chrome:    { icon: '🌐', color: '#e8e0d8' },
+  Chrome:    { icon: '🌐', color: '#333333' },
   Mozilla:   { icon: '🦊', color: '#1f5c4e' },
-  Apple:     { icon: '🍎', color: '#ffffff' },
-  Microsoft: { icon: '🪟', color: '#ffffff' },
+  Apple:     { icon: '🍎', color: '#111111' },
+  Microsoft: { icon: '🪟', color: '#111111' },
 }
 
 const ALL_STORES = ['Chrome', 'Mozilla', 'Apple', 'Microsoft']
@@ -36,7 +36,7 @@ const fmtDate = (iso) => {
 }
 
 const avatarColor = (name = '') => {
-  const colors = ['#f0ede8','#f0ede8','#f0ede8','#4ade80','#f87171','#f0ede8','#1f5c4e','#f0ede8','#1f5c4e','#f0ede8']
+  const colors = ['#111111','#111111','#111111','#16a068','#1f5c4e','#111111','#1f5c4e','#111111','#1f5c4e','#111111']
   let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff
   return colors[Math.abs(h) % colors.length]
 }
@@ -81,7 +81,7 @@ function CertAvatar({ name, size = 30 }) {
     <div style={{
       width: size, height: size, borderRadius: 6, flexShrink: 0,
       background: avatarColor(name), display: 'flex', alignItems: 'center',
-      justifyContent: 'center', fontSize:11, fontWeight: 700, color: '#ffffff', letterSpacing: '0.2px'
+      justifyContent: 'center', fontSize:11, fontWeight: 700, color: '#111111', letterSpacing: '0.2px'
     }}>
       {initials(name)}
     </div>
@@ -211,7 +211,7 @@ function ChainView({ cert }) {
           <div className="chain-card">
             <div className="cc-top">
               <span className="v2-chip chip-blue">Root CA</span>
-              <span className="cc-name" style={{ fontSize:11, color: '#e8e0d8' }}>
+              <span className="cc-name" style={{ fontSize:11, color: '#333333' }}>
                 Issuing root — {cert?.ca_owner}
               </span>
             </div>
@@ -231,9 +231,9 @@ function ChainView({ cert }) {
           </div>
           <div className="cc-meta">
             <span>{cert?.ca_owner}</span>
-            <span style={{ color: '#b0a8a0' }}>·</span>
+            <span style={{ color: '#888888' }}>·</span>
             <span>{cert?.key_algorithm}</span>
-            <span style={{ color: '#b0a8a0' }}>·</span>
+            <span style={{ color: '#888888' }}>·</span>
             <span>{fmtDate(cert?.valid_from)} → {fmtDate(cert?.valid_to)}</span>
           </div>
         </div>
@@ -583,9 +583,9 @@ export default function CATrustExplorer({ nav }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span className="live-dot" />
           <span>CCADB data · synced {syncAge}</span>
-          <span style={{ color: '#b0a8a0' }}>·</span>
+          <span style={{ color: '#888888' }}>·</span>
           <span>{totalCount ? totalCount.toLocaleString() : '—'} certificates indexed</span>
-          <span style={{ color: '#b0a8a0' }}>·</span>
+          <span style={{ color: '#888888' }}>·</span>
           <span>Sources: Mozilla · Apple · Chrome · Microsoft root stores</span>
           {syncMsg && <span style={{ color: 'var(--v2-amber-text)', fontWeight: 500 }}>{syncMsg}</span>}
         </div>
@@ -630,7 +630,7 @@ export default function CATrustExplorer({ nav }) {
             { key: 'root',     val: counts.root,              label: 'Root CAs',          color: 'var(--v2-green)' },
             { key: 'inter',    val: counts.inter,             label: 'Intermediates',     color: 'var(--v2-grey-dot)' },
             { key: 'all4',     val: counts.all4,              label: 'All 4 stores',      color: 'var(--v2-green)' },
-            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#ffffff', valColor: '#1f5c4e' },
+            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#111111', valColor: '#1f5c4e' },
             { key: 'distrust', val: counts.distrust,          label: 'Distrusted',        color: 'var(--v2-red)', valColor: 'var(--v2-red-text)' },
           ].map(({ key, val, label, color, valColor }) => (
             <div key={key} className={`stat-tile${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
@@ -664,7 +664,7 @@ export default function CATrustExplorer({ nav }) {
         {/* Popular CAs strip */}
         {popularCAs.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize:11, letterSpacing: '0.4px', color: '#b0a8a0', textTransform: 'uppercase', fontWeight: 500, marginBottom: 10 }}>
+            <div style={{ fontSize:11, letterSpacing: '0.4px', color: '#888888', textTransform: 'uppercase', fontWeight: 500, marginBottom: 10 }}>
               Popular CAs
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -684,7 +684,7 @@ export default function CATrustExplorer({ nav }) {
                       width: 22, height: 22, borderRadius: 5, flexShrink: 0,
                       background: avatarColor(c.ca_owner || ''),
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 9, fontWeight: 700, color: '#ffffff'
+                      fontSize: 9, fontWeight: 700, color: '#111111'
                     }}>
                       {initials(c.ca_owner || c.common_name || '?')}
                     </div>
@@ -694,8 +694,8 @@ export default function CATrustExplorer({ nav }) {
                     <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
                       {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'rgba(240,237,232,0.7)',display:'inline-block',flexShrink:0}}/>}
                       {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#1f5c4e',display:'inline-block',flexShrink:0}}/>}
-                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#0d0000',display:'inline-block',flexShrink:0}}/>}
-                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#0d0000',display:'inline-block',flexShrink:0}}/>}
+                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#f4f1ec',display:'inline-block',flexShrink:0}}/>}
+                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#f4f1ec',display:'inline-block',flexShrink:0}}/>}
                     </span>
                     {c.ev_capable && <span style={{fontSize:9,color:'#1f5c4e',fontWeight:600}}>EV</span>}
                   </button>
@@ -754,7 +754,7 @@ export default function CATrustExplorer({ nav }) {
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>
                             {c.ca_owner}
                           </span>
-                          <span style={{ color: '#b0a8a0' }}>·</span>
+                          <span style={{ color: '#888888' }}>·</span>
                           <span className={`v2-chip ${c.cert_type === 'Root CA' ? 'chip-blue' : 'chip-grey'}`} style={{ fontSize: 9 }}>
                             {c.cert_type === 'Root CA' ? 'Root' : 'Int.'}
                           </span>
@@ -797,7 +797,7 @@ export default function CATrustExplorer({ nav }) {
                       }}>
                       <FileDown size={12} /> {pemDownloading ? 'Fetching…' : 'Download PEM'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" style={{ background:'#0d0000', color: '#ffffff', borderColor: '#f0ede8', gap: 5 }}
+                    <button className="v2-btn v2-btn-sm" style={{ background:'#f4f1ec', color: '#111111', borderColor: '#111111', gap: 5 }}
                       onClick={() => {
                         const fp = selected?.sha256_fingerprint || selected?.fingerprint
                         if (fp) window.open(`https://crt.sh/?q=${encodeURIComponent(fp)}`, '_blank')
@@ -867,7 +867,7 @@ export default function CATrustExplorer({ nav }) {
                             <span style={{ background: '#27c93f', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
                           </div>
                           <button
-                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#b0a8a0', fontSize:11, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}
+                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#888888', fontSize:11, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}
                             onClick={() => copyText(selected.pem_info)}
                           >
                             <Copy size={11} /> Copy PEM
@@ -886,9 +886,9 @@ export default function CATrustExplorer({ nav }) {
               </>
             ) : (
               <div className="empty-state">
-                <ShieldCheck size={32} style={{ marginBottom: 12, color: '#b0a8a0' }} />
-                <div style={{ fontSize:13, fontWeight: 500, color: '#e8e0d8' }}>Select a certificate</div>
-                <div style={{ fontSize:12, color: '#b0a8a0', marginTop: 4 }}>Click any row in the list to inspect it</div>
+                <ShieldCheck size={32} style={{ marginBottom: 12, color: '#888888' }} />
+                <div style={{ fontSize:13, fontWeight: 500, color: '#333333' }}>Select a certificate</div>
+                <div style={{ fontSize:12, color: '#888888', marginTop: 4 }}>Click any row in the list to inspect it</div>
               </div>
             )}
           </div>

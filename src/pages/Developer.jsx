@@ -5,15 +5,15 @@ const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
 const BG   = '#120000'
 const BG2  = '#1a0404'
-const BG3  = '#220808'
-const T1   = '#f0ede8'
+const BG3  = '#ffffff'
+const T1   = '#111111'
 const T2   = 'rgba(240,237,232,0.65)'
 const T3   = 'rgba(240,237,232,0.35)'
 const LN   = 'rgba(0,0,0,0.08)'
 const LN2  = 'rgba(31,92,78,0.25)'
 const RED  = '#1f5c4e'
-const GRN  = '#4ade80'
-const AMB  = '#fbbf24'
+const GRN  = '#16a068'
+const AMB  = '#9a6400'
 const PRP  = '#a78bfa'
 
 export default function Developer({ nav }) {
@@ -100,7 +100,7 @@ export default function Developer({ nav }) {
               { n:'03', title:'Monitor', desc:'TLS health score A+ to F. Expiry tracking, CT log monitoring, HSTS and CAA checks, CA/B Forum 47-day compliance scoring.' },
               { n:'04', title:'Renew',   desc:'Auto-renews 30 days before expiry. DCV re-validated, cert re-issued, deployed to server — zero manual steps, forever.' },
             ].map((s, i, arr) => (
-              <div key={s.n} style={{ display:'flex', gap:16, padding:'16px 20px', background:BG2, borderBottom:i < arr.length - 1 ? `1px solid ${LN}` : 'none' }}>
+              <div key={s.n} style={{ display:'flex', gap:16, padding:'16px 20px', background:'#f4f1ec', borderBottom:i < arr.length - 1 ? `1px solid ${LN}` : 'none' }}>
                 <span style={{ fontSize:10, color:T3, fontFamily:MONO, width:24, flexShrink:0, marginTop:2 }}>/ {s.n}</span>
                 <div>
                   <div style={{ fontSize:13, fontWeight:600, color:T1, marginBottom:4 }}>{s.title}</div>

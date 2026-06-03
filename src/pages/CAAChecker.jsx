@@ -17,9 +17,9 @@ function StatusIcon({ status }) {
 function StatusBadge({ status }) {
   const map = {
     pass: { bg:'transparent', color:'#16a068', label:'Pass' },
-    fail: { bg:'rgba(31,92,78,0.09)', color:'#c0392b', label:'Fail' },
-    warn: { bg:'rgba(239,68,68,0.08)', color:'#ffffff', label:'Warning' },
-    info: { bg:'transparent', color:'#ffffff', label:'Info' },
+    fail: { bg:'rgba(31,92,78,0.09)', color:'#1f5c4e', label:'Fail' },
+    warn: { bg:'rgba(239,68,68,0.08)', color:'#111111', label:'Warning' },
+    info: { bg:'transparent', color:'#111111', label:'Info' },
   }
   const s = map[status] || map.info
   return (
@@ -37,7 +37,7 @@ function CopySnippet({ text }) {
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(()=>setCopied(false),1800) }}
       style={{ display:'flex', alignItems:'center', gap:5, background:'transparent',
         border:'0.5px solid rgba(0,0,0,0.08)', borderRadius:4, padding:'4px 9px',
-        fontSize:12, color:'#e8e0d8', cursor:'pointer', fontFamily:'monospace' }}>
+        fontSize:12, color:'#333333', cursor:'pointer', fontFamily:'monospace' }}>
       {copied ? <Check size={11} color="#16a34a"/> : <Copy size={11}/>}
       {text}
     </button>
@@ -76,7 +76,7 @@ export default function CAAChecker({ nav }) {
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:28 }}>
           <button onClick={() => nav('/dashboard')}
             style={{ display:'flex', alignItems:'center', gap:4, background:'none',
-              border:'none', color:'#b0a8a0', fontSize:13, cursor:'pointer', padding:0 }}>
+              border:'none', color:'#888888', fontSize:13, cursor:'pointer', padding:0 }}>
             <ArrowLeft size={14}/> Back
           </button>
         </div>
@@ -89,7 +89,7 @@ export default function CAAChecker({ nav }) {
             </div>
             <h1 className="v2-h1">CAA Record Checker</h1>
           </div>
-          <p style={{ fontSize:13, color:'#b0a8a0', margin:0 }}>
+          <p style={{ fontSize:13, color:'#888888', margin:0 }}>
             Verify that your domain's DNS allows GoGetSSL to issue certificates — before you attempt issuance.
           </p>
         </div>
@@ -103,14 +103,14 @@ export default function CAAChecker({ nav }) {
               onKeyDown={e => e.key === 'Enter' && check()}
               placeholder="easysecurity.in"
               style={{ flex:1, padding:'9px 12px', border:'0.5px solid var(--v2-border-strong)',
-                borderRadius:6, fontSize:14, fontFamily:'inherit', color:'#ffffff',
-                background:'rgba(255,255,255,0.03)', outline:'none' }}
+                borderRadius:6, fontSize:14, fontFamily:'inherit', color:'#111111',
+                background:'rgba(0,0,0,0.02)', outline:'none' }}
             />
             <button
               onClick={check}
               disabled={loading}
-              style={{ display:'flex', alignItems:'center', gap:6, background:'#0d0000',
-                color:'#ffffff', border:'none', borderRadius:6, padding:'9px 18px',
+              style={{ display:'flex', alignItems:'center', gap:6, background:'#f4f1ec',
+                color:'#111111', border:'none', borderRadius:6, padding:'9px 18px',
                 fontSize:13, fontWeight:600, cursor:loading?'not-allowed':'pointer',
                 opacity:loading?0.6:1, fontFamily:'inherit', whiteSpace:'nowrap' }}>
               {loading ? <RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }}/> : <Search size={14}/>}
@@ -136,9 +136,9 @@ export default function CAAChecker({ nav }) {
                 : <XCircle     size={18} color="#1f5c4e" style={{ flexShrink:0, marginTop:1 }}/>}
               <div>
                 <p style={{ margin:0, fontSize:13, fontWeight:600,
-                  color: result.safeToIssue ? '#f0ede8' : '#f87171' }}>{result.summary}</p>
+                  color: result.safeToIssue ? '#111111' : '#1f5c4e' }}>{result.summary}</p>
                 {result.checkedDomain !== result.domain && (
-                  <p style={{ margin:'3px 0 0', fontSize:12, color:'#e8e0d8' }}>
+                  <p style={{ margin:'3px 0 0', fontSize:12, color:'#333333' }}>
                     CAA inherited from parent: <code style={{ fontSize:11 }}>{result.checkedDomain}</code>
                   </p>
                 )}
@@ -148,9 +148,9 @@ export default function CAAChecker({ nav }) {
             {/* Checks list */}
             <div style={{ background:'transparent', border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:16 }}>
               <div style={{ padding:'10px 16px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
-                background:'rgba(255,255,255,0.03)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                <span style={{ fontSize:12, fontWeight:600, color:'#e8e0d8', textTransform:'uppercase', letterSpacing:'0.4px' }}>Check results</span>
-                <span style={{ fontSize:11, color:'#b0a8a0' }}>{result.domain}</span>
+                background:'rgba(0,0,0,0.02)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                <span style={{ fontSize:12, fontWeight:600, color:'#333333', textTransform:'uppercase', letterSpacing:'0.4px' }}>Check results</span>
+                <span style={{ fontSize:11, color:'#888888' }}>{result.domain}</span>
               </div>
               {result.checks.map((c, i) => (
                 <div key={c.key} style={{ padding:'13px 16px',
@@ -159,13 +159,13 @@ export default function CAAChecker({ nav }) {
                   <StatusIcon status={c.status}/>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:c.detail?3:0 }}>
-                      <span style={{ fontSize:13, fontWeight:500, color:'#ffffff' }}>{c.label}</span>
+                      <span style={{ fontSize:13, fontWeight:500, color:'#111111' }}>{c.label}</span>
                       <StatusBadge status={c.status}/>
                     </div>
-                    {c.detail && <p style={{ margin:0, fontSize:12, color:'#b0a8a0' }}>{c.detail}</p>}
+                    {c.detail && <p style={{ margin:0, fontSize:12, color:'#888888' }}>{c.detail}</p>}
                     {c.raw && (
                       <div style={{ marginTop:6 }}>
-                        <p style={{ margin:'0 0 4px', fontSize:11, color:'#b0a8a0' }}>Suggested DNS record:</p>
+                        <p style={{ margin:'0 0 4px', fontSize:11, color:'#888888' }}>Suggested DNS record:</p>
                         <CopySnippet text={c.raw}/>
                       </div>
                     )}
@@ -177,9 +177,9 @@ export default function CAAChecker({ nav }) {
             {/* Raw records */}
             {result.rawRecords?.length > 0 && (
               <div style={{ background:'transparent', border:'0.5px solid var(--v2-border)', borderRadius:8, padding:'12px 14px' }}>
-                <p style={{ margin:'0 0 6px', fontSize:11, fontWeight:600, color:'#b0a8a0', textTransform:'uppercase', letterSpacing:'0.4px' }}>Raw CAA records</p>
+                <p style={{ margin:'0 0 6px', fontSize:11, fontWeight:600, color:'#888888', textTransform:'uppercase', letterSpacing:'0.4px' }}>Raw CAA records</p>
                 {result.rawRecords.map((r, i) => (
-                  <code key={i} style={{ display:'block', fontSize:12, color:'#e8e0d8', padding:'2px 0' }}>{r}</code>
+                  <code key={i} style={{ display:'block', fontSize:12, color:'#333333', padding:'2px 0' }}>{r}</code>
                 ))}
               </div>
             )}
@@ -188,7 +188,7 @@ export default function CAAChecker({ nav }) {
 
         {/* Empty state hint */}
         {!result && !loading && (
-          <div style={{ textAlign:'center', padding:'40px 0', color:'#b0a8a0' }}>
+          <div style={{ textAlign:'center', padding:'40px 0', color:'#888888' }}>
             <Shield size={32} style={{ marginBottom:10, opacity:0.3 }}/>
             <p style={{ fontSize:13, margin:0 }}>Enter a domain above to check its CAA DNS records</p>
           </div>
