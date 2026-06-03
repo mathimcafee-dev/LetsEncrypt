@@ -134,7 +134,7 @@ const _build = 1779297041 // cache bust
         ? 'opacity 0.14s ease-in, transform 0.14s ease-in'
         : 'opacity 0.22s cubic-bezier(.16,1,.3,1), transform 0.22s cubic-bezier(.16,1,.3,1)',
       minHeight: '100vh',
-      background: '#f7f5f0',
+      background: '#f4f1ec',
       color: '#1a1a1a',
       fontFamily: "'Inter', system-ui, sans-serif",
       position: 'relative',

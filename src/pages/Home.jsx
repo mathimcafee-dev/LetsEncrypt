@@ -325,10 +325,10 @@ export default function Home({ nav }) {
         <div style={{position:'absolute',top:'30%',right:'20%',width:'300px',height:'300px',borderRadius:'50%',background:'radial-gradient(circle, rgba(31,92,78,0.08) 0%, transparent 70%)'}}/>
         <div style={{position:'absolute',top:'55%',right:'5%',width:'200px',height:'200px',borderRadius:'50%',background:'radial-gradient(circle, rgba(31,92,78,0.06) 0%, transparent 70%)'}}/>
       </div>
-      <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(0,0,0,0.09);color:#fff}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
+      <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(31,92,78,0.15);color:#111}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       {/* ── NAV ── */}
-      <header style={{position:'sticky',top:0,zIndex:200,background:'rgba(13,17,23,0.95)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderBottom:`1px solid ${LN}`,height:52,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
+      <header style={{position:'sticky',top:0,zIndex:200,background:'#ffffff',borderBottom:'1px solid rgba(0,0,0,0.08)',boxShadow:'0 1px 0 rgba(0,0,0,0.04)',height:54,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',flexShrink:0}} onClick={()=>nav('/')}>
           <div style={{width:22,height:22,background:'#1f5c4e',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
