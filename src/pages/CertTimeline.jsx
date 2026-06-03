@@ -27,7 +27,7 @@ function fmtDateShort(iso) {
 }
 
 function expiryStyle(days) {
-  if (days === null) return { color: '#6b6b6b', bg: 'transparent', border: 'transparent' }
+  if (days === null) return { color: '#555555', bg: 'transparent', border: 'transparent' }
   if (days <= 7)  return { color: '#1f5c4e', bg: 'rgba(248,113,113,0.12)', border: 'rgba(192,57,43,0.2)' }
   if (days <= 30) return { color: '#9a6400', bg: 'rgba(251,191,36,0.10)',  border: 'rgba(251,191,36,0.3)' }
   return { color: '#16a068', bg: 'transparent', border: 'transparent' }
@@ -56,11 +56,11 @@ function eventTypeLabel(type) {
     'sub_14d':        { label: 'Sub warning 14d',  color: '#1f5c4e' },
     'renewal':        { label: 'Renewal',          color: '#16a068' },
   }
-  return map[type] || { label: type ? type.replace(/_/g,' ') : '—', color: '#6b6b6b' }
+  return map[type] || { label: type ? type.replace(/_/g,' ') : '—', color: '#555555' }
 }
 
 function StatusDot({ days }) {
-  if (days === null) return <span style={{ color: '#6b6b6b', fontSize: 11 }}>—</span>
+  if (days === null) return <span style={{ color: '#555555', fontSize: 11 }}>—</span>
   if (days <= 7)  return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1f5c4e', display: 'inline-block', boxShadow: '0 0 0 3px rgba(192,57,43,0.12)' }}/>
   if (days <= 30) return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#9a6400', display: 'inline-block' }}/>
   return <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a068', display: 'inline-block' }}/>
@@ -183,10 +183,10 @@ export default function CertTimeline({ user }) {
               <CalendarDays size={18} color="#1f5c4e"/>
             </div>
             <div>
-              <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', margin: 0, letterSpacing: '-0.5px' }}>
+              <h1 style={{ fontSize: 22, fontWeight: 800, color: '#111111', margin: 0, letterSpacing: '-0.5px' }}>
                 Certificate Timeline
               </h1>
-              <p style={{ fontSize: 13, color: '#6b6b6b', margin: '2px 0 0' }}>
+              <p style={{ fontSize: 13, color: '#555555', margin: '2px 0 0' }}>
                 Expiry schedule · Renewal events · Install status
               </p>
             </div>
@@ -195,7 +195,7 @@ export default function CertTimeline({ user }) {
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
             background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.07)',
-            color: '#3d3d3d', cursor: 'pointer', fontFamily: F,
+            color: '#333333', cursor: 'pointer', fontFamily: F,
           }}>
             <RefreshCw size={12} style={{ animation: loading ? 'spin .8s linear infinite' : 'none' }}/>
             Refresh
@@ -205,7 +205,7 @@ export default function CertTimeline({ user }) {
         {/* ── Summary cards ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
           {[
-            { label: 'Active certs',  value: certs.length,  color: '#3d3d3d', bg: 'rgba(0,0,0,0.03)', border: 'rgba(0,0,0,0.06)', icon: <Shield size={14}/> },
+            { label: 'Active certs',  value: certs.length,  color: '#333333', bg: 'rgba(0,0,0,0.03)', border: 'rgba(0,0,0,0.06)', icon: <Shield size={14}/> },
             { label: 'Expiring ≤30d', value: expiring30,    color: expiring30 > 0 ? '#9a6400' : '#16a068', bg: expiring30 > 0 ? 'rgba(184,120,0,0.06)' : 'rgba(74,222,128,0.06)', border: expiring30 > 0 ? 'rgba(184,120,0,0.2)' : 'rgba(74,222,128,0.2)', icon: <Clock size={14}/> },
             { label: 'Critical ≤7d',  value: expiring7,     color: expiring7  > 0 ? '#1f5c4e' : '#16a068', bg: expiring7  > 0 ? 'rgba(192,57,43,0.07)' : 'rgba(74,222,128,0.06)', border: expiring7  > 0 ? 'rgba(0,0,0,0.08)' : 'rgba(74,222,128,0.2)', icon: <AlertTriangle size={14}/> },
             { label: 'Auto-renew on', value: autoRenew,     color: '#16a068',  bg: 'rgba(74,222,128,0.06)', border: 'rgba(74,222,128,0.2)', icon: <RotateCcw size={14}/> },
@@ -226,13 +226,13 @@ export default function CertTimeline({ user }) {
         {/* ── Search + filter bar ── */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: 180 }}>
-            <Search size={13} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#6b6b6b' }}/>
+            <Search size={13} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#555555' }}/>
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search domain…"
               style={{ width: '100%', padding: '8px 10px 8px 30px', borderRadius: 8, fontSize: 13,
                 background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.07)',
-                color: '#3d3d3d', fontFamily: F, boxSizing: 'border-box' }}
+                color: '#333333', fontFamily: F, boxSizing: 'border-box' }}
             />
           </div>
           {[
@@ -261,15 +261,15 @@ export default function CertTimeline({ user }) {
 
         {/* ── Table ── */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: '#6b6b6b', fontSize: 13 }}>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: '#555555', fontSize: 13 }}>
             <RefreshCw size={16} style={{ animation: 'spin .8s linear infinite', marginRight: 8 }}/>
             Loading…
           </div>
         ) : rows.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
             <CalendarDays size={32} color="rgba(0,0,0,0.08)" style={{ marginBottom: 12 }}/>
-            <div style={{ fontSize: 14, color: '#3d3d3d', marginBottom: 6 }}>No certificates found</div>
-            <div style={{ fontSize: 12, color: '#6b6b6b' }}>Issue your first certificate to see the timeline here</div>
+            <div style={{ fontSize: 14, color: '#333333', marginBottom: 6 }}>No certificates found</div>
+            <div style={{ fontSize: 12, color: '#555555' }}>Issue your first certificate to see the timeline here</div>
           </div>
         ) : (
           <div style={{ background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.06)',
@@ -281,7 +281,7 @@ export default function CertTimeline({ user }) {
                 <tr>
                   {COLS.map(col => (
                     <th key={col.key} onClick={() => col.sortable && toggleSort(col.key)}
-                      style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: '#6b6b6b',
+                      style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: '#555555',
                         textTransform: 'uppercase', letterSpacing: '0.8px', textAlign: 'left',
                         background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.06)',
                         cursor: col.sortable ? 'pointer' : 'default', userSelect: 'none',
@@ -323,7 +323,7 @@ export default function CertTimeline({ user }) {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <StatusDot days={row.days}/>
                             <div>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a',
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111111',
                                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                 maxWidth: isMobile ? 140 : 200 }}>
                                 {row.domain}
@@ -342,7 +342,7 @@ export default function CertTimeline({ user }) {
                           <div style={{ fontSize: 12, fontWeight: 700, color: es.color, fontFamily: MONO }}>
                             {row.days !== null ? `${row.days}d` : '—'}
                           </div>
-                          <div style={{ fontSize: 10, color: '#6b6b6b', marginTop: 1 }}>
+                          <div style={{ fontSize: 10, color: '#555555', marginTop: 1 }}>
                             {fmtDateShort(row.expires_at)}
                           </div>
                         </td>
@@ -353,7 +353,7 @@ export default function CertTimeline({ user }) {
                             <div style={{ fontSize: 12, color: row.subDays !== null && row.subDays <= 30 ? '#9a6400' : '#333333', fontFamily: MONO }}>
                               {row.subDays !== null ? `${row.subDays}d` : '—'}
                             </div>
-                            <div style={{ fontSize: 10, color: '#6b6b6b', marginTop: 1 }}>
+                            <div style={{ fontSize: 10, color: '#555555', marginTop: 1 }}>
                               {fmtDateShort(row.subscription_end_date)}
                             </div>
                           </td>
@@ -368,7 +368,7 @@ export default function CertTimeline({ user }) {
                                 textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                                 {row.install_method}
                               </span>
-                            ) : <span style={{ fontSize: 11, color: '#6b6b6b' }}>—</span>}
+                            ) : <span style={{ fontSize: 11, color: '#555555' }}>—</span>}
                           </td>
 
                           {/* Auto-renew */}
@@ -389,12 +389,12 @@ export default function CertTimeline({ user }) {
                                   <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 6,
                                     background: 'rgba(0,0,0,0.05)', color, border: '1px solid rgba(0,0,0,0.06)',
                                     whiteSpace: 'nowrap' }}>{label}</span>
-                                  <div style={{ fontSize: 10, color: '#6b6b6b', marginTop: 3 }}>
+                                  <div style={{ fontSize: 10, color: '#555555', marginTop: 3 }}>
                                     {fmtDateShort(nextEvent.scheduled_date)}{d !== null ? ` · in ${d}d` : ''}
                                   </div>
                                 </div>
                               )
-                            })() : <span style={{ fontSize: 11, color: '#6b6b6b' }}>—</span>}
+                            })() : <span style={{ fontSize: 11, color: '#555555' }}>—</span>}
                           </td>
 
                           {/* Pending events count */}
@@ -405,7 +405,7 @@ export default function CertTimeline({ user }) {
                                 border: '1px solid rgba(0,0,0,0.08)', fontFamily: MONO }}>
                                 {pendingEvents.length}
                               </span>
-                            ) : <span style={{ fontSize: 11, color: '#6b6b6b' }}>0</span>}
+                            ) : <span style={{ fontSize: 11, color: '#555555' }}>0</span>}
                           </td>
                         </>)}
                       </tr>
@@ -426,7 +426,7 @@ export default function CertTimeline({ user }) {
                                     color: row.is_live_on_server ? '#16a068' : '#9a6400' },
                                 ].map((m, mi) => (
                                   <div key={m.label} style={{ paddingRight: 20, marginRight: 20, borderRight: mi < 3 ? '0.5px solid rgba(0,0,0,0.06)' : 'none' }}>
-                                    <div style={{ fontSize: 9, fontWeight: 700, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 3 }}>{m.label}</div>
+                                    <div style={{ fontSize: 9, fontWeight: 700, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 3 }}>{m.label}</div>
                                     <div style={{ fontSize: 12, color: m.color || '#333333', fontWeight: 600 }}>{m.value}</div>
                                   </div>
                                 ))}
@@ -434,7 +434,7 @@ export default function CertTimeline({ user }) {
 
                               {/* Lifecycle rail */}
                               {row.events.length === 0 ? (
-                                <div style={{ fontSize: 12, color: '#6b6b6b' }}>No scheduled events.</div>
+                                <div style={{ fontSize: 12, color: '#555555' }}>No scheduled events.</div>
                               ) : (() => {
                                 const issued   = row.issued_at   ? new Date(row.issued_at)             : new Date(Date.now() - 30*86400000)
                                 const subEnd   = row.subscription_end_date ? new Date(row.subscription_end_date) : new Date(row.expires_at)
@@ -492,7 +492,7 @@ export default function CertTimeline({ user }) {
                                             {/* Stem */}
                                             <div style={{ position: 'absolute', left: p + '%', top: stemTop, width: 1.5, height: Math.abs(stemH), background: 'rgba(0,0,0,0.07)', transform: 'translateX(-50%)' }} />
                                             {/* Date label */}
-                                            <div style={{ position: 'absolute', left: p + '%', top: dateLblT, fontSize: 8, color: '#6b6b6b', whiteSpace: 'nowrap', transform: 'translateX(-50%)', fontWeight: 600 }}>
+                                            <div style={{ position: 'absolute', left: p + '%', top: dateLblT, fontSize: 8, color: '#555555', whiteSpace: 'nowrap', transform: 'translateX(-50%)', fontWeight: 600 }}>
                                               {fmtDateShort(ev.scheduled_date)}
                                             </div>
                                             {/* Node */}
@@ -513,7 +513,7 @@ export default function CertTimeline({ user }) {
                                         { label: 'Auto-reissue',   color: '#818cf8' },
                                         { label: 'Subscription',   color: '#1f5c4e' },
                                       ].map(l => (
-                                        <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#6b6b6b' }}>
+                                        <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#555555' }}>
                                           <div style={{ width: 8, height: 8, borderRadius: '50%', border: `1.5px solid ${l.color}`, background: l.color + '20', flexShrink: 0 }} />
                                           {l.label}
                                         </div>
@@ -531,8 +531,8 @@ export default function CertTimeline({ user }) {
                                             const urg = d !== null && d <= 7 ? '#1f5c4e' : d !== null && d <= 30 ? '#9a6400' : color
                                             return (
                                               <div key={ev.id} style={{ background: 'rgba(0,0,0,0.03)', border: `0.5px solid ${urg}40`, borderRadius: 8, padding: '9px 12px' }}>
-                                                <div style={{ fontSize: 10, fontWeight: 700, color: '#3d3d3d', marginBottom: 2 }}>{label}</div>
-                                                <div style={{ fontSize: 10, color: '#6b6b6b' }}>{fmtDate(ev.scheduled_date)}</div>
+                                                <div style={{ fontSize: 10, fontWeight: 700, color: '#333333', marginBottom: 2 }}>{label}</div>
+                                                <div style={{ fontSize: 10, color: '#555555' }}>{fmtDate(ev.scheduled_date)}</div>
                                                 <div style={{ fontSize: 14, fontWeight: 700, color: urg, marginTop: 4 }}>in {d}d</div>
                                               </div>
                                             )

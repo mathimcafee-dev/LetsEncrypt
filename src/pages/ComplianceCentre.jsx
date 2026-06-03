@@ -148,12 +148,12 @@ export default function ComplianceCentre({ nav, user }) {
   // Styles
   var card = { background:'rgba(0,0,0,0.03)', border:'1px solid rgba(31,92,78,0.12)', borderRadius:10, padding:'16px 18px' }
   var lbl  = { fontSize:10, fontWeight:700, color:'#aaaaaa', textTransform:'uppercase', letterSpacing:'.1em', display:'block', marginBottom:8 }
-  var th   = { padding:'10px 12px', fontSize:10, fontWeight:700, color:'#6b6b6b', letterSpacing:'.08em', textTransform:'uppercase', cursor:'pointer', userSelect:'none', whiteSpace:'nowrap' }
+  var th   = { padding:'10px 12px', fontSize:10, fontWeight:700, color:'#555555', letterSpacing:'.08em', textTransform:'uppercase', cursor:'pointer', userSelect:'none', whiteSpace:'nowrap' }
 
   if (loading) return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10, fontFamily:F, padding:60 }}>
       <RefreshCw size={15} color="#1f5c4e" style={{ animation:'spin 1s linear infinite' }}/>
-      <span style={{ color:'#6b6b6b', fontSize:13 }}>Loading...</span>
+      <span style={{ color:'#555555', fontSize:13 }}>Loading...</span>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
@@ -168,18 +168,18 @@ export default function ComplianceCentre({ nav, user }) {
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:5 }}>
               <Shield size={20} color="#1f5c4e"/>
-              <span style={{ fontSize:20, fontWeight:700, color:'#1a1a1a' }}>Compliance Centre</span>
+              <span style={{ fontSize:20, fontWeight:700, color:'#111111' }}>Compliance Centre</span>
               {hasSla && <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:99, background:'rgba(0,0,0,0.07)', color:'#1f5c4e', letterSpacing:'.06em' }}>{(sub.plan||'PREMIUM').toUpperCase()}</span>}
             </div>
             <div style={{ fontSize:12, color:'#999999' }}>47-Day mandate readiness + SLA compliance + certificate health</div>
           </div>
           <div style={{ display:'flex', gap:8 }}>
             {hasSla && (
-              <button onClick={generateReport} disabled={genLoad} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', background:'rgba(31,92,78,0.09)', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8, color:'#1a1a1a', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:F }}>
+              <button onClick={generateReport} disabled={genLoad} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', background:'rgba(31,92,78,0.09)', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8, color:'#111111', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:F }}>
                 <FileText size={13}/>{genLoad ? 'Generating...' : 'Generate report'}
               </button>
             )}
-            <button onClick={load} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', background:'transparent', border:'1px solid rgba(240,237,232,0.12)', borderRadius:8, color:'#6b6b6b', fontSize:12, cursor:'pointer', fontFamily:F }}>
+            <button onClick={load} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', background:'transparent', border:'1px solid rgba(240,237,232,0.12)', borderRadius:8, color:'#555555', fontSize:12, cursor:'pointer', fontFamily:F }}>
               <RefreshCw size={12}/>Refresh
             </button>
           </div>
@@ -196,7 +196,7 @@ export default function ComplianceCentre({ nav, user }) {
             <div>
               <span style={lbl}>Fleet Readiness</span>
               <div style={{ fontSize:14, fontWeight:700, color:rdCol(fleetScore) }}>{fleetScore >= 90 ? 'Ready' : fleetScore >= 60 ? 'At risk' : 'Will break'}</div>
-              <div style={{ fontSize:12, color:'#6b6b6b', marginTop:4 }}>
+              <div style={{ fontSize:12, color:'#555555', marginTop:4 }}>
                 {rows.filter(function(r){ return r.rs.score>=90 }).length} ready &middot; {rows.filter(function(r){ return r.rs.score>=60&&r.rs.score<90 }).length} at risk &middot; {rows.filter(function(r){ return r.rs.score<60 }).length} critical
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function ComplianceCentre({ nav, user }) {
               <div>
                 <span style={lbl}>SLA Compliance</span>
                 <div style={{ fontSize:14, fontWeight:700, color:slaCol(slaScore) }}>{slaLbl(slaScore)}</div>
-                <div style={{ fontSize:12, color:'#6b6b6b', marginTop:4 }}>
+                <div style={{ fontSize:12, color:'#555555', marginTop:4 }}>
                   {sub.domain_limit} domains covered &middot; {(sub.plan||'').toUpperCase()}
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function ComplianceCentre({ nav, user }) {
                     <div style={{ width:6, height:6, borderRadius:'50%', background: compliant ? '#16a068' : m.col, flexShrink:0 }}/>
                     <span style={{ fontSize:11, color:'#666666', minWidth:60 }}>{m.label}</span>
                     <span style={{ fontSize:11, fontWeight:600, color: compliant ? '#16a068' : m.col }}>{m.days}d max</span>
-                    <span style={{ fontSize:10, color:'#6b6b6b', marginLeft:'auto' }}>{count}/{rows.length} ready</span>
+                    <span style={{ fontSize:10, color:'#555555', marginLeft:'auto' }}>{count}/{rows.length} ready</span>
                   </div>
                 )
               })}
@@ -250,7 +250,7 @@ export default function ComplianceCentre({ nav, user }) {
 
           {/* Table header */}
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
-            <span style={{ fontSize:12, fontWeight:600, color:'#1a1a1a' }}>Certificate Coverage</span>
+            <span style={{ fontSize:12, fontWeight:600, color:'#111111' }}>Certificate Coverage</span>
             <span style={{ fontSize:11, color:'#999999' }}>{rows.length} domain{rows.length !== 1 ? 's' : ''}</span>
           </div>
 
@@ -279,7 +279,7 @@ export default function ComplianceCentre({ nav, user }) {
             </thead>
             <tbody>
               {sorted.length === 0 ? (
-                <tr><td colSpan={12} style={{ padding:28, textAlign:'center', color:'#6b6b6b', fontSize:13 }}>No active certificates</td></tr>
+                <tr><td colSpan={12} style={{ padding:28, textAlign:'center', color:'#555555', fontSize:13 }}>No active certificates</td></tr>
               ) : sorted.map(function(row) {
                 var c = row.cert, rs = row.rs, dl = row.dl
                 var dlCol = dl < 10 ? '#1f5c4e' : dl < 30 ? '#f59e0b' : '#16a068'
@@ -292,10 +292,10 @@ export default function ComplianceCentre({ nav, user }) {
                       background: isExpanded ? 'rgba(192,57,43,0.06)' : 'transparent' }}
                     onMouseEnter={function(e){ if(!isExpanded) e.currentTarget.style.background='rgba(0,0,0,0.02)' }}
                     onMouseLeave={function(e){ if(!isExpanded) e.currentTarget.style.background='transparent' }}>
-                    <td style={{ padding:'10px 12px', fontSize:13, color:'#1a1a1a', fontFamily:MONO }}>{c.domain}</td>
-                    <td style={{ padding:'10px 12px', fontSize:11, color:'#6b6b6b' }}>{fmtDate(c.expires_at)}</td>
+                    <td style={{ padding:'10px 12px', fontSize:13, color:'#111111', fontFamily:MONO }}>{c.domain}</td>
+                    <td style={{ padding:'10px 12px', fontSize:11, color:'#555555' }}>{fmtDate(c.expires_at)}</td>
                     <td style={{ padding:'10px 12px', fontSize:13, fontWeight:600, color:dlCol }}>{Math.max(0,dl)}</td>
-                    <td style={{ padding:'10px 12px', fontSize:11, color:'#6b6b6b' }}>{v !== null ? v+'d' : 'N/A'}</td>
+                    <td style={{ padding:'10px 12px', fontSize:11, color:'#555555' }}>{v !== null ? v+'d' : 'N/A'}</td>
                     <td style={{ padding:'10px 12px' }}>
                       <span style={{ fontSize:10, fontWeight:700, padding:'3px 9px', borderRadius:99, background:rdColor+'18', color:rdColor, letterSpacing:'.04em' }}>{rs.status}</span>
                     </td>
@@ -324,7 +324,7 @@ export default function ComplianceCentre({ nav, user }) {
                                   <Tick ok={ch.ok}/>
                                   <span style={{ fontSize:11, fontWeight:600, color: ch.ok ? '#16a068' : '#1f5c4e' }}>+{ch.pts} pts</span>
                                 </div>
-                                <div style={{ fontSize:11, color:'#3d3d3d', lineHeight:1.4 }}>{ch.label}</div>
+                                <div style={{ fontSize:11, color:'#333333', lineHeight:1.4 }}>{ch.label}</div>
                                 {!ch.ok && <div style={{ fontSize:10, color:'#999999', marginTop:4 }}>{ch.fix}</div>}
                               </div>
                             )
@@ -343,11 +343,11 @@ export default function ComplianceCentre({ nav, user }) {
         {hasSla && (
           <div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-              <span style={{ fontSize:12, fontWeight:600, color:'#1a1a1a' }}>Compliance Reports</span>
+              <span style={{ fontSize:12, fontWeight:600, color:'#111111' }}>Compliance Reports</span>
               <span style={{ fontSize:11, color:'#999999' }}>SOC2 / ISO 27001 audit evidence</span>
             </div>
             {reports.length === 0 ? (
-              <div style={{ ...card, textAlign:'center', padding:'20px', color:'#6b6b6b', fontSize:13 }}>
+              <div style={{ ...card, textAlign:'center', padding:'20px', color:'#555555', fontSize:13 }}>
                 No reports yet. Click Generate report above.
               </div>
             ) : (
@@ -360,8 +360,8 @@ export default function ComplianceCentre({ nav, user }) {
                         <FileText size={16} color="#1f5c4e"/>
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ fontSize:12, fontWeight:600, color:'#1a1a1a' }}>{r.report_month}</div>
-                        <div style={{ fontSize:11, color:'#6b6b6b', marginTop:2 }}>
+                        <div style={{ fontSize:12, fontWeight:600, color:'#111111' }}>{r.report_month}</div>
+                        <div style={{ fontSize:11, color:'#555555', marginTop:2 }}>
                           Score: <span style={{ color:slaCol(sc), fontWeight:700 }}>{sc}/100</span> &middot; {r.certs_covered} certs
                         </div>
                       </div>

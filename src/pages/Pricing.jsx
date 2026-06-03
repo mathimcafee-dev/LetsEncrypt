@@ -214,7 +214,7 @@ export default function Pricing({ nav }) {
               {plan.badge && (
                 <div style={{position:'absolute',top:-13,left:'50%',transform:'translateX(-50%)',
                   background:`linear-gradient(135deg,${CORAL},#ff9e8c)`,borderRadius:20,padding:'4px 16px',
-                  fontSize:10,fontWeight:800,color:'#1a1a1a',whiteSpace:'nowrap',letterSpacing:'0.5px',fontFamily:MONO}}>
+                  fontSize:10,fontWeight:800,color:'#111111',whiteSpace:'nowrap',letterSpacing:'0.5px',fontFamily:MONO}}>
                   ★ {plan.badge}
                 </div>
               )}
@@ -427,7 +427,7 @@ export default function Pricing({ nav }) {
           <div style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap'}}>
             <button onClick={() => nav('/auth')}
               style={{background:`linear-gradient(135deg,${TEAL},${TEALH})`,border:'none',borderRadius:8,
-                color:'#1a1a1a',fontSize:15,fontWeight:700,padding:'14px 32px',cursor:'pointer',fontFamily:F,
+                color:'#111111',fontSize:15,fontWeight:700,padding:'14px 32px',cursor:'pointer',fontFamily:F,
                 boxShadow:`0 4px 24px rgba(0,0,0,0.1)`}}>
               Get started →
             </button>

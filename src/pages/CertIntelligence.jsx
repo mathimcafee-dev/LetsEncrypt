@@ -259,12 +259,12 @@ function ExpiryTimeline({ tok }) {
         <div style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', marginBottom:8,
           background:'rgba(230,126,34,0.1)', border:'0.5px solid #fed7aa', borderRadius:10 }}>
           <CheckSquare size={14} style={{ color:'#1f5c4e', flexShrink:0 }}/>
-          <span style={{ fontSize:12, fontWeight:600, color:'#2e7a68', flex:1 }}>
+          <span style={{ fontSize:12, fontWeight:600, color:'#1f5c4e', flex:1 }}>
             {selected.size} certificate{selected.size !== 1 ? 's' : ''} selected
           </span>
           <button onClick={() => setSelected(new Set())}
             style={{ fontSize:11, fontWeight:600, padding:'5px 10px', borderRadius:7,
-              border:'0.5px solid #fdba74', background:'var(--v2-surface)', color:'#2e7a68',
+              border:'0.5px solid #fdba74', background:'var(--v2-surface)', color:'#1f5c4e',
               cursor:'pointer', fontFamily:'inherit' }}>
             Clear
           </button>

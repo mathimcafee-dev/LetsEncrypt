@@ -144,7 +144,7 @@ export default function About({ nav }) {
             ].map(m => (
               <div key={m.date} style={{ background:BG4, border:`1px solid ${LN}`, borderTop:`3px solid ${m.color}`, borderRadius:6, padding:'14px' }}>
                 <div style={{ fontSize:9, fontWeight:700, color:m.color, fontFamily:MONO, letterSpacing:'1px', marginBottom:6 }}>{m.status}</div>
-                <div style={{ fontSize:10, color:T3, fontFamily:MONO, marginBottom:4 }}>{m.date}</div>
+                <div style={{ fontSize:10, color:'#888888', fontFamily:MONO, marginBottom:4 }}>{m.date}</div>
                 <div style={{ fontSize:22, fontWeight:700, color:m.color, fontFamily:MONO, letterSpacing:'-1px', marginBottom:8 }}>{m.days}</div>
                 <div style={{ fontSize:12, color:T2, lineHeight:1.6 }}>{m.desc}</div>
               </div>

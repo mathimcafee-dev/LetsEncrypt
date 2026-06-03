@@ -507,7 +507,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                     <div key={k} style={{ display:'flex', justifyContent:'space-between',
                       padding:'5px 0', fontSize:12, borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
                       <span style={{ color:'#888888' }}>{k}</span>
-                      <span style={{ color:'#111111', fontFamily:'monospace', fontSize:11 }}>{v}</span>
+                      <span style={{ color:'#111111', fontFamily:'"JetBrains Mono",monospace', fontSize:11 }}>{v}</span>
                     </div>
                   ))}
                 </div>
@@ -537,7 +537,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                     Restart command
                   </div>
                   <div style={{ background:'#f4f1ec', borderRadius:7, padding:'8px 12px' }}>
-                    <code style={{ fontSize:10, color:'#111111', fontFamily:'monospace' }}>
+                    <code style={{ fontSize:10, color:'#111111', fontFamily:'"JetBrains Mono",monospace' }}>
                       sudo systemctl restart sslvault-agent
                     </code>
                   </div>

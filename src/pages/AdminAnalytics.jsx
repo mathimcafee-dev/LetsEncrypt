@@ -231,7 +231,7 @@ export default function AdminAnalytics({ user }) {
           <div style={{background:'rgba(31,92,78,0.09)',border:'0.5px solid #fecaca',borderRadius:10,padding:'14px 18px',marginBottom:20,display:'flex',gap:12,alignItems:'flex-start'}}>
             <AlertTriangle size={16} style={{color:'#1f5c4e',flexShrink:0,marginTop:2}}/>
             <div>
-              <div style={{fontSize:13,fontWeight:500,color:'#2e7a68',marginBottom:3}}>{stats.expiring7} certificate{stats.expiring7!==1?'s':''} expiring within 7 days</div>
+              <div style={{fontSize:13,fontWeight:500,color:'#1f5c4e',marginBottom:3}}>{stats.expiring7} certificate{stats.expiring7!==1?'s':''} expiring within 7 days</div>
               <div style={{fontSize:12,color:'#1f5c4e'}}>Check the dashboard and renew immediately if auto-renew is not enabled.</div>
             </div>
           </div>

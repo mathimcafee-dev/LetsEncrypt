@@ -74,7 +74,7 @@ function SSLVaultTrustBadge({ compact = false }) {
         <span style={{fontSize:7,fontWeight:700,color:'#e85555',letterSpacing:'.14em',textTransform:'uppercase'}}>
           {compact ? 'Secured by' : 'Cryptographically Secured'}
         </span>
-        <div style={{fontSize: compact ? 13 : 15, fontWeight:800, color:'#1a1a1a', lineHeight:1, letterSpacing:'.01em'}}>
+        <div style={{fontSize: compact ? 13 : 15, fontWeight:800, color:'#111111', lineHeight:1, letterSpacing:'.01em'}}>
           SSLVault <span style={{color:'#1f5c4e', fontSize: compact ? 10 : 11, fontWeight:500}}>® {compact ? 'PKI' : 'easysecurity.in'}</span>
         </div>
         <span style={{fontSize: compact ? 8 : 9, color:'#6a2a2a', letterSpacing:'.03em'}}>
@@ -159,9 +159,9 @@ export default function Auth({ nav }) {
 
   const perks = [
     { icon:<Zap size={15} />,    color:'var(--v2-amber)',       title:'Unlimited certificates',   desc:'No cap on domains or issuances — ever.' },
-    { icon:<Shield size={15} />, color:'#1a1a1a',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
+    { icon:<Shield size={15} />, color:'#111111',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
     { icon:<Lock size={15} />,   color:'#1f5c4e',       title:'Private keys stay private', desc:'AES-256 at rest. Keys never leave your server.' },
-    { icon:<CheckCircle size={15} />, color:'#1a1a1a',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
+    { icon:<CheckCircle size={15} />, color:'#111111',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
   ]
 
   return (
@@ -180,11 +180,11 @@ export default function Auth({ nav }) {
             <span className="v2-pulse" />
             <span style={{ fontSize:11, fontWeight:500, color:'#1f5c4e' }}>Free · Open · Trusted</span>
           </div>
-          <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, color:'#1a1a1a',
+          <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, color:'#111111',
                         lineHeight:1.08, letterSpacing:'-1.4px', marginBottom:6 }}>One account.</h1>
           <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, lineHeight:1.08,
                         letterSpacing:'-1.4px', marginBottom:20, color:'#1f5c4e' }}>Every certificate.</h1>
-          <p style={{ fontSize:15, color:'#3d3d3d', lineHeight:1.75, marginBottom:36, maxWidth:420 }}>
+          <p style={{ fontSize:15, color:'#333333', lineHeight:1.75, marginBottom:36, maxWidth:420 }}>
             Sign in to manage your certificates, set expiry alerts, and deploy with one click.
           </p>
           <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
@@ -195,14 +195,14 @@ export default function Auth({ nav }) {
                                display:'flex', alignItems:'center', justifyContent:'center',
                                flexShrink:0, color }}>{icon}</div>
                 <div>
-                  <div style={{ fontSize:13, fontWeight:600, color:'#1a1a1a', marginBottom:2 }}>{title}</div>
-                  <div style={{ fontSize:12, color:'#6b6b6b', lineHeight:1.55 }}>{desc}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:2 }}>{title}</div>
+                  <div style={{ fontSize:12, color:'#555555', lineHeight:1.55 }}>{desc}</div>
                 </div>
               </div>
             ))}
           </div>
           <div style={{ marginTop:36, paddingTop:24, borderTop:'0.5px solid var(--v2-border)',
-                        fontSize:11, color:'#6b6b6b', lineHeight:1.6 }}>
+                        fontSize:11, color:'#555555', lineHeight:1.6 }}>
             Powered by RapidSSL · DigiCert trust chain · RFC 8555 ACME
           </div>
         </div>
@@ -217,10 +217,10 @@ export default function Auth({ nav }) {
                 <Shield size={18} color='#fff' />
               </div>
               <div>
-                <div style={{ fontSize:16, fontWeight:700, color:'#1a1a1a', letterSpacing:'-0.3px' }}>
+                <div style={{ fontSize:16, fontWeight:700, color:'#111111', letterSpacing:'-0.3px' }}>
                   {mode === 'set_password' ? 'Set your password' : 'Sign in to SSLVault'}
                 </div>
-                <div style={{ fontSize:12, color:'#6b6b6b' }}>
+                <div style={{ fontSize:12, color:'#555555' }}>
                   {mode === 'set_password' ? 'Choose a password to activate your account' : 'Welcome back'}
                 </div>
               </div>
@@ -242,7 +242,7 @@ export default function Auth({ nav }) {
                 <button onClick={() => setShowPw(v => !v)}
                   style={{ position:'absolute', right:11, top:'50%', transform:'translateY(-50%)',
                             background:'none', border:'none', cursor:'pointer',
-                            color:'#6b6b6b', padding:2, display:'flex' }}>
+                            color:'#555555', padding:2, display:'flex' }}>
                   {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
@@ -272,11 +272,11 @@ export default function Auth({ nav }) {
               <SSLVaultTrustBadge compact={true} />
             </div>
 
-            <div style={{ textAlign:'center', fontSize:13, color:'#6b6b6b' }}>
+            <div style={{ textAlign:'center', fontSize:13, color:'#555555' }}>
               New to SSLVault?{' '}
               <button onClick={() => nav('/auth')}
                 style={{ background:'none', border:'none', cursor:'pointer',
-                          color:'#1a1a1a', fontWeight:600, fontSize:13,
+                          color:'#111111', fontWeight:600, fontSize:13,
                           padding:0, textDecoration:'underline', textUnderlineOffset:2 }}>
                 Contact us to get access
               </button>
@@ -284,7 +284,7 @@ export default function Auth({ nav }) {
           </div>
 
           <div style={{ marginTop:14, display:'flex', alignItems:'center', gap:7,
-                        justifyContent:'center', fontSize:11, color:'#6b6b6b' }}>
+                        justifyContent:'center', fontSize:11, color:'#555555' }}>
             <Lock size={10} />
             Encrypted at rest · Private keys never uploaded · Row-level security
           </div>

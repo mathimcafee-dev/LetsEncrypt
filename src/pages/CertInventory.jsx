@@ -246,7 +246,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
           {/* Revoke confirm */}
           {revokeOpen && (
             <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:6, padding:12 }}>
-              <div style={{ fontSize:11, fontWeight:500, color:'#2e7a68', marginBottom:8 }}>Revoke this certificate? This is permanent and notifies the CA.</div>
+              <div style={{ fontSize:11, fontWeight:500, color:'#1f5c4e', marginBottom:8 }}>Revoke this certificate? This is permanent and notifies the CA.</div>
               {revokeError && <div style={{ fontSize:11, color:'#1f5c4e', marginBottom:8 }}>{revokeError}</div>}
               <div style={{ display:'flex', gap:6 }}>
                 <button onClick={() => { setRevokeOpen(false); setRevokeErr('') }} style={btnStyle}>Cancel</button>
@@ -266,7 +266,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
             <ActionBtn icon={Trash2}    label="Delete Certificate"   onClick={() => setDelConfirm(true)} color="#2e7a68"/>
             {delConfirm ? (
               <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:6, padding:'10px 12px' }}>
-                <div style={{ fontSize:11, fontWeight:600, color:'#2e7a68', marginBottom:6 }}>
+                <div style={{ fontSize:11, fontWeight:600, color:'#1f5c4e', marginBottom:6 }}>
                   Permanently delete all records for <span style={{ fontFamily:'monospace' }}>{cert.domain}</span>?
                 </div>
                 <div style={{ fontSize:10, color:'#1f5c4e', marginBottom:10, lineHeight:1.5 }}>

@@ -20,11 +20,11 @@ export default function Contact({ nav }) {
             </span>
           </div>
           <h1 style={{ fontSize:'clamp(32px,5vw,52px)', fontWeight:700, letterSpacing:'-1.2px',
-                        lineHeight:1.1, margin:'0 0 14px', color:'#1a1a1a' }}>
+                        lineHeight:1.1, margin:'0 0 14px', color:'#111111' }}>
             Have a question?<br />
             <span style={{ color:'var(--v2-green)' }}>Drop us a line.</span>
           </h1>
-          <p style={{ fontSize:16, color:'#3d3d3d', maxWidth:500, margin:'0 auto', lineHeight:1.7 }}>
+          <p style={{ fontSize:16, color:'#333333', maxWidth:500, margin:'0 auto', lineHeight:1.7 }}>
             Bug reports, feature requests, partnership ideas, or just saying hi —
             we typically reply within 1–2 days.
           </p>
@@ -41,7 +41,7 @@ export default function Contact({ nav }) {
           <div className="v2-section-label" style={{ marginBottom:8 }}>Email</div>
           <a href={`mailto:${email}`}
             style={{ display:'inline-block', fontSize:'clamp(18px,3vw,26px)', fontWeight:600,
-                      color:'#1a1a1a', textDecoration:'none', letterSpacing:'-0.4px',
+                      color:'#111111', textDecoration:'none', letterSpacing:'-0.4px',
                       marginBottom:24, fontFamily:'var(--mono, monospace)' }}
             onMouseEnter={e => e.currentTarget.style.color = 'var(--v2-green)'}
             onMouseLeave={e => e.currentTarget.style.color = 'var(--v2-text)'}>
@@ -50,7 +50,7 @@ export default function Contact({ nav }) {
           <div>
             <a href={`mailto:${email}`}
               style={{ display:'inline-flex', alignItems:'center', gap:8,
-                        background:'#f4f1ec', color:'#1a1a1a', padding:'11px 22px',
+                        background:'#f4f1ec', color:'#111111', padding:'11px 22px',
                         borderRadius:'var(--v2-r-md)', fontSize:14, fontWeight:500,
                         textDecoration:'none' }}>
               Compose email <ArrowRight size={13} />
@@ -64,7 +64,7 @@ export default function Contact({ nav }) {
               { icon:<Shield size={12} />, label:'No tracking, no ads' },
             ].map(({ icon, label }) => (
               <div key={label} style={{ display:'flex', alignItems:'center', gap:6,
-                                        fontSize:12, color:'#6b6b6b', fontWeight:500 }}>
+                                        fontSize:12, color:'#555555', fontWeight:500 }}>
                 {icon} {label}
               </div>
             ))}
@@ -81,11 +81,11 @@ export default function Contact({ nav }) {
             {[
               { icon:Wrench,       label:'Bug reports',       color:'var(--v2-red)',
                 body:'Domain affected, browser and OS, the exact error message, and steps to reproduce. A screenshot helps a lot.' },
-              { icon:Zap,          label:'Feature requests',  color:'#1a1a1a',
+              { icon:Zap,          label:'Feature requests',  color:'#111111',
                 body:"What you're trying to accomplish, how SSLVault falls short today, and what the ideal outcome looks like for you." },
               { icon:Shield,       label:'Account help',      color:'var(--v2-green)',
                 body:"The email address tied to your account and a description of what you're stuck on. Never share passwords or API tokens." },
-              { icon:Users,        label:'Partnerships',      color:'#1a1a1a',
+              { icon:Users,        label:'Partnerships',      color:'#111111',
                 body:"Who you are, what you're building, and how SSLVault might fit into the picture. Always happy to talk." },
             ].map(({ icon:Icon, label, body, color }) => (
               <div key={label} className="v2-card" style={{ padding:'20px 22px', display:'flex', gap:14, alignItems:'flex-start' }}>
@@ -96,8 +96,8 @@ export default function Contact({ nav }) {
                   <Icon size={14} />
                 </div>
                 <div>
-                  <div style={{ fontSize:13, fontWeight:600, color:'#1a1a1a', marginBottom:4 }}>{label}</div>
-                  <div style={{ fontSize:12, color:'#3d3d3d', lineHeight:1.65 }}>{body}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:4 }}>{label}</div>
+                  <div style={{ fontSize:12, color:'#333333', lineHeight:1.65 }}>{body}</div>
                 </div>
               </div>
             ))}
@@ -120,7 +120,7 @@ export default function Contact({ nav }) {
         {/* ── OTHER CHANNELS ────────────────────────────────────────── */}
         <div className="v2-card" style={{ overflow:'hidden' }}>
           <div style={{ padding:'16px 20px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
-                        fontSize:12, fontWeight:600, color:'#1a1a1a' }}>
+                        fontSize:12, fontWeight:600, color:'#111111' }}>
             Other ways to reach us
           </div>
           {[
@@ -137,13 +137,13 @@ export default function Contact({ nav }) {
                                        padding:'14px 20px', borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
               <div className="v2-icontile">{icon}</div>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:13, fontWeight:500, color:'#1a1a1a' }}>{label}</div>
-                <div style={{ fontSize:11, color:'#6b6b6b' }}>{sub}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#111111' }}>{label}</div>
+                <div style={{ fontSize:11, color:'#555555' }}>{sub}</div>
               </div>
               {href
                 ? <a href={href} target='_blank' rel='noreferrer'
                     style={{ display:'inline-flex', alignItems:'center', gap:5,
-                              fontSize:12, color:'#3d3d3d', textDecoration:'none',
+                              fontSize:12, color:'#333333', textDecoration:'none',
                               whiteSpace:'nowrap' }}
                     className="v2-btn v2-btn-sm">
                     {cta} <ArrowRight size={10} />

@@ -101,7 +101,7 @@ export default function Developer({ nav }) {
               { n:'04', title:'Renew',   desc:'Auto-renews 30 days before expiry. DCV re-validated, cert re-issued, deployed to server — zero manual steps, forever.' },
             ].map((s, i, arr) => (
               <div key={s.n} style={{ display:'flex', gap:16, padding:'16px 20px', background:'#f4f1ec', borderBottom:i < arr.length - 1 ? `1px solid ${LN}` : 'none' }}>
-                <span style={{ fontSize:10, color:T3, fontFamily:MONO, width:24, flexShrink:0, marginTop:2 }}>/ {s.n}</span>
+                <span style={{ fontSize:10, color:'#888888', fontFamily:MONO, width:24, flexShrink:0, marginTop:2 }}>/ {s.n}</span>
                 <div>
                   <div style={{ fontSize:13, fontWeight:600, color:T1, marginBottom:4 }}>{s.title}</div>
                   <div style={{ fontSize:12.5, color:T2, lineHeight:1.65 }}>{s.desc}</div>

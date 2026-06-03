@@ -266,7 +266,7 @@ function SSLVaultTrustBadge({ compact = false }) {
         <span style={{fontSize:7,fontWeight:700,color:'#e85555',letterSpacing:'.14em',textTransform:'uppercase'}}>
           {compact ? 'Secured by' : 'Cryptographically Secured'}
         </span>
-        <div style={{fontSize: compact ? 13 : 15, fontWeight:800, color:'#1a1a1a', lineHeight:1, letterSpacing:'.01em'}}>
+        <div style={{fontSize: compact ? 13 : 15, fontWeight:800, color:'#111111', lineHeight:1, letterSpacing:'.01em'}}>
           SSLVault <span style={{color:'#1f5c4e', fontSize: compact ? 10 : 11, fontWeight:500}}>® {compact ? 'PKI' : 'easysecurity.in'}</span>
         </div>
         <span style={{fontSize: compact ? 8 : 9, color:'#6a2a2a', letterSpacing:'.03em'}}>
@@ -421,7 +421,7 @@ export default function Home({ nav }) {
       <div style={{background:'#ffffff',borderBottom:`1px solid ${LN}`,overflow:'hidden',padding:'8px 0'}}>
         <div style={{display:'flex',overflow:'hidden',maskImage:'linear-gradient(to right,transparent,black 8%,black 92%,transparent)'}}>
           <div style={{display:'flex',gap:48,flexShrink:0,animation:'ticker 36s linear infinite',whiteSpace:'nowrap'}}>
-            {[...TICKER,...TICKER].map((p,i)=><span key={i} style={{fontSize:10.5,fontWeight:400,color:T3,letterSpacing:'0.05em',fontFamily:MONO}}><span style={{color:'rgba(31,92,78,0.3)',marginRight:8}}>◆</span>{p}</span>)}
+            {[...TICKER,...TICKER].map((p,i)=><span key={i} style={{fontSize:10.5,fontWeight:400,color:T3,letterSpacing:'0.05em',fontFamily:MONO}}><span style={{color:'#1f5c4e',marginRight:8}}>◆</span>{p}</span>)}
           </div>
         </div>
       </div>

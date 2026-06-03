@@ -76,8 +76,8 @@ function Row({ label, desc, children, last }) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
       padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid rgba(0,0,0,0.05)' }}>
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize:12, fontWeight: 500, color: '#1a1a1a', marginBottom: 1 }}>{label}</div>
-        {desc && <div style={{ fontSize:11, color: '#6b6b6b' }}>{desc}</div>}
+        <div style={{ fontSize:12, fontWeight: 500, color: '#111111', marginBottom: 1 }}>{label}</div>
+        {desc && <div style={{ fontSize:11, color: '#555555' }}>{desc}</div>}
       </div>
       {children}
     </div>
@@ -87,11 +87,11 @@ function Row({ label, desc, children, last }) {
 // Alert log table row
 function LogRow({ log }) {
   const meta = {
-    cert_expiry: { icon: '⏰', color: '#1f5c4e' }, order_renewal: { icon: '🔄', color: '#1a1a1a' },
-    cert_issued: { icon: '✅', color: '#1a1a1a' }, cert_installed: { icon: '🚀', color: '#1a1a1a' },
-    renewal_succeeded: { icon: '✅', color: '#1a1a1a' }, renewal_failed: { icon: '⚠️', color: '#1f5c4e' },
-    agent_offline: { icon: '🔴', color: '#1f5c4e' }, shadow_found: { icon: '🔍', color: '#1a1a1a' },
-    pqc_risk: { icon: '⚛️', color: '#1a1a1a' }, no_dns_warning: { icon: '⚠️', color: '#1a1a1a' },
+    cert_expiry: { icon: '⏰', color: '#1f5c4e' }, order_renewal: { icon: '🔄', color: '#111111' },
+    cert_issued: { icon: '✅', color: '#111111' }, cert_installed: { icon: '🚀', color: '#111111' },
+    renewal_succeeded: { icon: '✅', color: '#111111' }, renewal_failed: { icon: '⚠️', color: '#1f5c4e' },
+    agent_offline: { icon: '🔴', color: '#1f5c4e' }, shadow_found: { icon: '🔍', color: '#111111' },
+    pqc_risk: { icon: '⚛️', color: '#111111' }, no_dns_warning: { icon: '⚠️', color: '#111111' },
     weekly_digest: { icon: '📊', color: '#0f2545' },
   }
   const m = meta[log.alert_type] || { icon: '📧', color: '#1f5c4e' }
@@ -102,15 +102,15 @@ function LogRow({ log }) {
       padding: '9px 0', borderBottom: '1px solid rgba(31,92,78,0.09)', alignItems: 'center', fontSize:12 }}>
       <span style={{ fontSize:14 }}>{m.icon}</span>
       <div>
-        <div style={{ fontWeight: 500, color: '#1a1a1a', fontSize:12 }}>
+        <div style={{ fontWeight: 500, color: '#111111', fontSize:12 }}>
           {log.alert_type.replace(/_/g, ' ')}
         </div>
-        <div style={{ fontSize:10, color: '#6b6b6b', fontFamily: 'monospace' }}>{domain}</div>
+        <div style={{ fontSize:10, color: '#555555', fontFamily: 'monospace' }}>{domain}</div>
       </div>
       <div style={{ color: '#1f5c4e', fontSize:11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {log.recipient}
       </div>
-      <div style={{ fontSize:10, color: '#6b6b6b' }}>{ts}</div>
+      <div style={{ fontSize:10, color: '#555555' }}>{ts}</div>
       <div>
         <span style={{
           fontSize:10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,
@@ -184,8 +184,8 @@ function ApiKeysPanel({ user }) {
   // Coming soon — API endpoints not yet live
   return (
     <div style={{ padding: '16px 18px' }}>
-      <div style={{ fontSize:13, fontWeight: 600, color: '#1a1a1a', marginBottom: 4 }}>API Keys</div>
-      <div style={{ fontSize:12, color: '#6b6b6b', marginBottom: 24, lineHeight: 1.6 }}>
+      <div style={{ fontSize:13, fontWeight: 600, color: '#111111', marginBottom: 4 }}>API Keys</div>
+      <div style={{ fontSize:12, color: '#555555', marginBottom: 24, lineHeight: 1.6 }}>
         Integrate SSLVault into your own tools, pipelines, and CI/CD workflows using API keys.
       </div>
       <div style={{ textAlign:'center', padding:'40px 20px', background:'rgba(0,0,0,0.02)',
@@ -195,7 +195,7 @@ function ApiKeysPanel({ user }) {
           justifyContent:'center', margin:'0 auto 16px' }}>
           <Key size={22} color="#1f5c4e" />
         </div>
-        <div style={{ fontSize:15, fontWeight:700, color:'#1a1a1a', marginBottom:8 }}>
+        <div style={{ fontSize:15, fontWeight:700, color:'#111111', marginBottom:8 }}>
           Coming Soon
         </div>
         <div style={{ fontSize:12, color:'#666666', lineHeight:1.7, maxWidth:320, margin:'0 auto 20px' }}>
@@ -204,7 +204,7 @@ function ApiKeysPanel({ user }) {
         </div>
         <div style={{ display:'flex', gap:8, justifyContent:'center', flexWrap:'wrap' }}>
           {['Issue certificates','Query cert status','Trigger renewals','Webhook events'].map(f => (
-            <span key={f} style={{ fontSize:10, fontWeight:600, color:'#6b6b6b',
+            <span key={f} style={{ fontSize:10, fontWeight:600, color:'#555555',
               background:'rgba(0,0,0,0.03)', border:'1px solid rgba(0,0,0,0.07)',
               borderRadius:20, padding:'4px 10px', fontFamily:'monospace' }}>
               {f}
@@ -241,8 +241,8 @@ function ApiKeysPanelFull_DISABLED({ user }) {
 
   const DISABLED_RETURN = (
     <div style={{ padding: '16px 18px' }}>
-      <div style={{ fontSize:13, fontWeight: 600, color: '#1a1a1a', marginBottom: 4 }}>API Keys</div>
-      <div style={{ fontSize:12, color: '#6b6b6b', marginBottom: 16, lineHeight: 1.6 }}>
+      <div style={{ fontSize:13, fontWeight: 600, color: '#111111', marginBottom: 4 }}>API Keys</div>
+      <div style={{ fontSize:12, color: '#555555', marginBottom: 16, lineHeight: 1.6 }}>
         Use API keys to integrate SSLVault into your own tools and pipelines. Each key is shown once — store it securely.
       </div>
 
@@ -250,7 +250,7 @@ function ApiKeysPanelFull_DISABLED({ user }) {
       {newKey && (
         <div style={{ background: 'transparent', border: '0.5px solid rgba(31,92,78,0.2)', borderRadius: 8,
           padding: '12px 14px', marginBottom: 16 }}>
-          <div style={{ fontSize:11, fontWeight: 600, color: '#1a1a1a', marginBottom: 6 }}>
+          <div style={{ fontSize:11, fontWeight: 600, color: '#111111', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
           </div>
           <div style={{ background:'#f4f1ec', borderRadius: 6, padding: '8px 10px',
@@ -260,7 +260,7 @@ function ApiKeysPanelFull_DISABLED({ user }) {
           <button onClick={() => { navigator.clipboard?.writeText(newKey); setCopied(true); setTimeout(()=>setCopied(false),2000) }}
             style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#16a068',
               border: 'none', borderRadius: 6, padding: '6px 12px', fontSize:11,
-              color: '#1a1a1a', cursor: 'pointer', fontFamily: 'inherit' }}>
+              color: '#111111', cursor: 'pointer', fontFamily: 'inherit' }}>
             {copied ? <><Check size={10}/> Copied!</> : <><Copy size={10}/> Copy key</>}
           </button>
         </div>
@@ -269,7 +269,7 @@ function ApiKeysPanelFull_DISABLED({ user }) {
       {/* Create new key */}
       <div style={{ background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)',
         borderRadius: 8, padding: '12px 14px', marginBottom: 16 }}>
-        <div style={{ fontSize:11, fontWeight: 600, color: '#1a1a1a', marginBottom: 8 }}>Create new key</div>
+        <div style={{ fontSize:11, fontWeight: 600, color: '#111111', marginBottom: 8 }}>Create new key</div>
         <div style={{ display: 'flex', gap: 8 }}>
           <input value={label} onChange={e => setLabel(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && createKey()}
@@ -289,13 +289,13 @@ function ApiKeysPanelFull_DISABLED({ user }) {
 
       {/* Keys list */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '24px 0', color: '#6b6b6b', fontSize:12 }}>
+        <div style={{ textAlign: 'center', padding: '24px 0', color: '#555555', fontSize:12 }}>
           Loading…
         </div>
       ) : keys.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '24px 0' }}>
-          <Key size={24} style={{ color: '#6b6b6b', margin: '0 auto 8px', display: 'block' }} />
-          <div style={{ fontSize:12, color: '#6b6b6b' }}>No API keys yet.</div>
+          <Key size={24} style={{ color: '#555555', margin: '0 auto 8px', display: 'block' }} />
+          <div style={{ fontSize:12, color: '#555555' }}>No API keys yet.</div>
         </div>
       ) : (
         <div style={{ border: '0.5px solid var(--v2-border)', borderRadius: 8, overflow: 'hidden' }}>
@@ -307,8 +307,8 @@ function ApiKeysPanelFull_DISABLED({ user }) {
                 <Key size={13} color="var(--v2-text-3)" />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize:12, fontWeight: 600, color: '#1a1a1a', marginBottom: 2 }}>{k.label}</div>
-                <div style={{ display: 'flex', gap: 10, fontSize:10, color: '#6b6b6b' }}>
+                <div style={{ fontSize:12, fontWeight: 600, color: '#111111', marginBottom: 2 }}>{k.label}</div>
+                <div style={{ display: 'flex', gap: 10, fontSize:10, color: '#555555' }}>
                   <span style={{ fontFamily: 'monospace' }}>{k.key_prefix}…</span>
                   <span>Created {fmtDate(k.created_at)}</span>
                   {k.last_used_at && <span>Last used {fmtDate(k.last_used_at)}</span>}
@@ -328,7 +328,7 @@ function ApiKeysPanelFull_DISABLED({ user }) {
       )}
 
       <div style={{ marginTop: 14, padding: '10px 12px', background: 'var(--v2-surface-3)',
-        borderRadius: 7, fontSize:11, color: '#6b6b6b', lineHeight: 1.6 }}>
+        borderRadius: 7, fontSize:11, color: '#555555', lineHeight: 1.6 }}>
         Use your key in requests: <span style={{ fontFamily: 'monospace', color: '#1f5c4e' }}>
           Authorization: Bearer sv_live_…
         </span>
@@ -495,7 +495,7 @@ export default function SettingsPage({ user }) {
   const handleSignOut = async () => { await supabase.auth.signOut() }
 
   if (loading) return (
-    <div style={{ padding: 'clamp(16px,16vw,48px) 28px', display: 'flex', alignItems: 'center', gap: 8, color: '#6b6b6b', fontSize:13, fontFamily: 'inherit' }}>
+    <div style={{ padding: 'clamp(16px,16vw,48px) 28px', display: 'flex', alignItems: 'center', gap: 8, color: '#555555', fontSize:13, fontFamily: 'inherit' }}>
       <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }}/> Loading…
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
@@ -534,7 +534,7 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize:12, color: '#1f5c4e' }}>{createdAt}</span>
             </Row>
             <Row label="Plan" desc="Free for personal and indie use" last>
-              <span style={{ fontSize:11, fontWeight: 600, color: '#1a1a1a', background: 'transparent',
+              <span style={{ fontSize:11, fontWeight: 600, color: '#111111', background: 'transparent',
                 border: '0.5px solid rgba(31,92,78,0.2)', borderRadius: 4, padding: '3px 8px' }}>Free</span>
             </Row>
           </Section>
@@ -545,7 +545,7 @@ export default function SettingsPage({ user }) {
               <Toggle on={emailAlerts} onClick={() => setEmailAlerts(v => !v)}/>
             </Row>
             <div style={{ paddingTop: 12 }}>
-              <div style={{ fontSize:11, color: '#6b6b6b', marginBottom: 10 }}>
+              <div style={{ fontSize:11, color: '#555555', marginBottom: 10 }}>
                 Choose which events trigger an email:
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -558,8 +558,8 @@ export default function SettingsPage({ user }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }}/>
                       <div>
-                        <div style={{ fontSize:12, fontWeight: 500, color: '#1a1a1a' }}>{label}</div>
-                        <div style={{ fontSize:10, color: '#6b6b6b' }}>{desc}</div>
+                        <div style={{ fontSize:12, fontWeight: 500, color: '#111111' }}>{label}</div>
+                        <div style={{ fontSize:10, color: '#555555' }}>{desc}</div>
                       </div>
                     </div>
                     <Toggle on={alertTypes.includes(id)} onClick={() => toggleType(id)} disabled={!emailAlerts}/>
@@ -571,7 +571,7 @@ export default function SettingsPage({ user }) {
 
           {/* Expiry thresholds */}
           <Section title="Expiry alert thresholds" icon={Clock}>
-            <div style={{ fontSize:11, color: '#6b6b6b', marginBottom: 10 }}>
+            <div style={{ fontSize:11, color: '#555555', marginBottom: 10 }}>
               Alert when a certificate is within this many days of expiry:
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -592,16 +592,16 @@ export default function SettingsPage({ user }) {
 
           {/* Additional recipients */}
           <Section title="Additional recipients" icon={Mail}>
-            <div style={{ fontSize:11, color: '#6b6b6b', marginBottom: 12 }}>
+            <div style={{ fontSize:11, color: '#555555', marginBottom: 12 }}>
               Send all alerts to these email addresses in addition to your account email.
             </div>
             {extraEmails.map(e => (
               <div key={e} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '7px 10px', background: 'var(--v2-surface-3)', border: '1px solid rgba(0,0,0,0.08)',
                 borderRadius: 7, marginBottom: 6 }}>
-                <span style={{ fontSize:12, color: '#3d3d3d', fontFamily: 'monospace' }}>{e}</span>
+                <span style={{ fontSize:12, color: '#333333', fontFamily: 'monospace' }}>{e}</span>
                 <button onClick={() => removeExtraEmail(e)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b6b6b', padding: 2 }}>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555555', padding: 2 }}>
                   <X size={12}/>
                 </button>
               </div>
@@ -615,7 +615,7 @@ export default function SettingsPage({ user }) {
                   background: emailError ? 'rgba(192,57,43,0.07)' : 'transparent' }}/>
               <button onClick={addExtraEmail}
                 style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
-                  background:'#f4f1ec', color: '#1a1a1a', border: 'none', borderRadius: 7,
+                  background:'#f4f1ec', color: '#111111', border: 'none', borderRadius: 7,
                   fontSize:12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Plus size={11}/> Add
               </button>
@@ -625,7 +625,7 @@ export default function SettingsPage({ user }) {
 
           {/* Slack */}
           <Section title="Slack webhook" collapsible>
-            <div style={{ fontSize:11, color: '#6b6b6b', marginBottom: 10 }}>
+            <div style={{ fontSize:11, color: '#555555', marginBottom: 10 }}>
               Get all alerts in Slack. Paste an Incoming Webhook URL from your Slack workspace.
             </div>
             <input value={slackWebhook} onChange={e => setSlackWebhook(e.target.value)}
@@ -644,7 +644,7 @@ export default function SettingsPage({ user }) {
 
           {/* Test send */}
           <Section title="Test alert" icon={Send}>
-            <div style={{ fontSize:11, color: '#6b6b6b', marginBottom: 12 }}>
+            <div style={{ fontSize:11, color: '#555555', marginBottom: 12 }}>
               Send a test email to verify your alert settings are working.
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -679,7 +679,7 @@ export default function SettingsPage({ user }) {
               <span style={{ fontSize:11, color: '#1f5c4e' }}>Magic link</span>
             </Row>
             <Row label="Private key storage" desc="AES-256-GCM encrypted at rest" last>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#1a1a1a' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize:11, fontWeight: 500, color: '#111111' }}>
                 <Shield size={11}/> Encrypted
               </span>
             </Row>
@@ -746,7 +746,7 @@ export default function SettingsPage({ user }) {
 
             {/* Column headers */}
             <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 80px 70px', gap: 12,
-              padding: '8px 18px', fontSize:10, fontWeight: 700, color: '#6b6b6b',
+              padding: '8px 18px', fontSize:10, fontWeight: 700, color: '#555555',
               textTransform: 'uppercase', letterSpacing: '.5px', borderBottom: '1px solid rgba(31,92,78,0.09)' }}>
               <div/>
               <div>Type / Domain</div>
@@ -757,15 +757,15 @@ export default function SettingsPage({ user }) {
 
             <div style={{ padding: '0 18px' }}>
               {logsLoading ? (
-                <div style={{ padding: '24px 0', textAlign: 'center', color: '#6b6b6b', fontSize:12 }}>
+                <div style={{ padding: '24px 0', textAlign: 'center', color: '#555555', fontSize:12 }}>
                   <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite', marginRight: 6 }}/>
                   Loading alert log…
                 </div>
               ) : logs.length === 0 ? (
-                <div style={{ padding: '32px 0', textAlign: 'center', color: '#6b6b6b', fontSize:12 }}>
+                <div style={{ padding: '32px 0', textAlign: 'center', color: '#555555', fontSize:12 }}>
                   No alerts sent yet.{' '}
                   <button onClick={() => setActiveTab('preferences')}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1a1a1a',
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#111111',
                       fontSize:12, fontFamily: 'inherit', textDecoration: 'underline' }}>
                     Configure alerts →
                   </button>
@@ -779,7 +779,7 @@ export default function SettingsPage({ user }) {
             {logsTotal > 20 && (
               <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(31,92,78,0.07)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize:11, color: '#6b6b6b' }}>
+                <span style={{ fontSize:11, color: '#555555' }}>
                   Showing {logsPage * 20 + 1}–{Math.min((logsPage + 1) * 20, logsTotal)} of {logsTotal}
                 </span>
                 <div style={{ display: 'flex', gap: 6 }}>

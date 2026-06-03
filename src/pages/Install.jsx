@@ -28,7 +28,7 @@ function Code({ code, lang = 'bash' }) {
       <div style={{ background:'rgba(0,0,0,0.02)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
         <div style={{ display:'flex', gap:5, alignItems:'center' }}>
           {['#1f5c4e','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
-          <span style={{ fontSize:10, color:'#6b6b6b', marginLeft:8 }}>{lang}</span>
+          <span style={{ fontSize:10, color:'#555555', marginLeft:8 }}>{lang}</span>
         </div>
         <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'#888888', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>
           {copied
@@ -59,7 +59,7 @@ function Note({ type = 'tip', children }) {
 function Step({ n, title, children }) {
   return (
     <div style={{ display:'flex', gap:16, marginBottom:24 }}>
-      <div style={{ width:30, height:30, borderRadius:8, background:C.teal, color:'#1a1a1a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, flexShrink:0, marginTop:1 }}>{n}</div>
+      <div style={{ width:30, height:30, borderRadius:8, background:C.teal, color:'#111111', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, flexShrink:0, marginTop:1 }}>{n}</div>
       <div style={{ flex:1 }}>
         <div style={{ fontSize:14, fontWeight:600, color:C.heading, marginBottom:8 }}>{title}</div>
         <div style={{ fontSize:13.5, color:C.body, lineHeight:1.8 }}>{children}</div>
@@ -110,12 +110,12 @@ export default function Install({ nav }) {
           <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{ fontSize:15, fontWeight:600, color:'#1a1a1a' }}>SSLVault</span>
-          <span style={{ fontSize:11, color:'#6b6b6b', fontFamily:MONO }}>/ Install Guide</span>
+          <span style={{ fontSize:15, fontWeight:600, color:'#111111' }}>SSLVault</span>
+          <span style={{ fontSize:11, color:'#555555', fontFamily:MONO }}>/ Install Guide</span>
         </div>
         <div style={{ display:'flex', gap:8 }}>
           <button onClick={() => nav('/knowledge-base')} style={{ background:'none', border:`1px solid rgba(0,0,0,0.07)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'#b5aea8', padding:'6px 14px', borderRadius:100 }}>Knowledge base</button>
-          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:500, color:'#1a1a1a', padding:'7px 18px', borderRadius:100 }}>Get started</button>
+          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:600, color:'#111111', padding:'7px 18px', borderRadius:100 }}>Get started</button>
         </div>
       </header>
 

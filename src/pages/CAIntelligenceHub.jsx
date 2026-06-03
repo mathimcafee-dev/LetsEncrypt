@@ -232,11 +232,11 @@ function OverviewTab({ tok, onSwitchCA }) {
           <div style={{ fontSize:11, fontWeight:600, color:'#888888', textTransform:'uppercase',
             letterSpacing:'0.4px', marginBottom:14 }}>Expiry risk — all CAs</div>
           {[
-            { label:'Expired',    n:expired, color:'#2e7a68', bg:'rgba(31,92,78,0.08)' },
+            { label:'Expired',    n:expired, color:'#1f5c4e', bg:'rgba(31,92,78,0.08)' },
             { label:'≤ 7 days',   n:exp7,    color:'#1f5c4e', bg:'#FBEAEA' },
             { label:'≤ 30 days',  n:exp30,   color:'#1f5c4e', bg:'rgba(230,126,34,0.12)' },
-            { label:'≤ 90 days',  n:exp90,   color:'#2e7a68', bg:'transparent' },
-            { label:'Healthy',    n:healthy, color:'#2e7a68', bg:'transparent' },
+            { label:'≤ 90 days',  n:exp90,   color:'#1f5c4e', bg:'transparent' },
+            { label:'Healthy',    n:healthy, color:'#1f5c4e', bg:'transparent' },
           ].map(({ label, n, color, bg }) => (
             <div key={label} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
               <span style={{ fontSize:11, color:'#888888', width:72, flexShrink:0 }}>{label}</span>
@@ -442,7 +442,7 @@ function RapidSSLTab({ tok, nav }) {
       <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:10,
         padding:'12px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
         <div>
-          <div style={{ fontSize:13, fontWeight:600, color:'#2e7a68' }}>RapidSSL — SSLVault native CA</div>
+          <div style={{ fontSize:13, fontWeight:600, color:'#1f5c4e' }}>RapidSSL — SSLVault native CA</div>
           <div style={{ fontSize:11, color:'#111111', marginTop:2 }}>Live API · {orders.length} domains managed</div>
         </div>
         <div style={{ display:'flex', gap:8 }}>

@@ -1741,7 +1741,7 @@ export default function Integrations({ nav }) {
                   const st = credStatus[cred.id] || 'untested'
                   const statusStyles = {
                     healthy:  { color:'#111111', bg:'transparent', border:'rgba(31,92,78,0.2)', label:'Active' },
-                    expired:  { color:'#2e7a68', bg:'rgba(31,92,78,0.09)', border:'rgba(0,0,0,0.1)', label:'Error' },
+                    expired:  { color:'#1f5c4e', bg:'rgba(31,92,78,0.09)', border:'rgba(0,0,0,0.1)', label:'Error' },
                     untested: { color:'#333333', bg:'var(--v2-surface-2)', border:'var(--v2-border)', label:'Untested' }
                   }
                   const ss = statusStyles[st] || statusStyles.untested

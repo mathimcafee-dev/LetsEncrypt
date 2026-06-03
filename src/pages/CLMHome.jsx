@@ -200,7 +200,7 @@ export default function CLMHome({ user, nav, initialSection }) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <div>
-            <div style={{fontSize:13,fontWeight:700,color:'#1a1a1a',letterSpacing:'-0.2px',lineHeight:1.2}}>SSLVault</div>
+            <div style={{fontSize:13,fontWeight:700,color:'#111111',letterSpacing:'-0.2px',lineHeight:1.2}}>SSLVault</div>
             <div style={{fontSize:10,color:MUTED,marginTop:1}}>Certificate Manager</div>
           </div>
         </div>
@@ -232,7 +232,7 @@ export default function CLMHome({ user, nav, initialSection }) {
             {initials}
           </div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:12,fontWeight:500,color:'#1a1a1a',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+            <div style={{fontSize:12,fontWeight:500,color:'#111111',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
               {email.split('@')[0]}
             </div>
             <div style={{fontSize:10,color:MUTED,marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
@@ -252,7 +252,7 @@ export default function CLMHome({ user, nav, initialSection }) {
   )
 
   return (
-    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:NAVY,color:'#1a1a1a'}}>
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:NAVY,color:'#111111'}}>
 
       {/* ── Topbar ── */}
       <div style={{
@@ -265,12 +265,12 @@ export default function CLMHome({ user, nav, initialSection }) {
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           {isMobile&&(
             <button onClick={()=>setSideOpen(o=>!o)}
-              style={{background:'none',border:'none',cursor:'pointer',color:'#6b6b6b',padding:4,display:'flex',borderRadius:4}}>
+              style={{background:'none',border:'none',cursor:'pointer',color:'#555555',padding:4,display:'flex',borderRadius:4}}>
               {sideOpen?<X size={16}/>:<Menu size={16}/>}
             </button>
           )}
           <div>
-            <span style={{fontSize:13,fontWeight:600,color:'#1a1a1a'}}>{TITLES[sec]||'SSLVault'}</span>
+            <span style={{fontSize:13,fontWeight:600,color:'#111111'}}>{TITLES[sec]||'SSLVault'}</span>
             {sec==='dashboard'&&<span style={{fontSize:12,color:MUTED,marginLeft:8}}>
               {email}
             </span>}
@@ -280,7 +280,7 @@ export default function CLMHome({ user, nav, initialSection }) {
           {/* Bell */}
           <div ref={bellRef} style={{position:'relative'}}>
             <button onClick={()=>{setBellOpen(o=>!o);if(!bellOpen)loadNotifs()}}
-              style={{background:'none',border:'none',cursor:'pointer',color:'#6b6b6b',width:32,height:32,
+              style={{background:'none',border:'none',cursor:'pointer',color:'#555555',width:32,height:32,
                 display:'flex',alignItems:'center',justifyContent:'center',borderRadius:6,position:'relative',
                 transition:'all .12s'}}
               onMouseEnter={e=>{e.currentTarget.style.background='rgba(31,92,78,0.08)';e.currentTarget.style.color='#1f5c4e'}}
@@ -294,7 +294,7 @@ export default function CLMHome({ user, nav, initialSection }) {
                 border:`1px solid ${LINE2}`,borderRadius:8,width:300,
                 boxShadow:'0 8px 24px rgba(0,0,0,0.4)',zIndex:100,overflow:'hidden'}}>
                 <div style={{padding:'12px 16px',borderBottom:`1px solid ${LINE}`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                  <span style={{fontSize:13,fontWeight:600,color:'#1a1a1a'}}>Notifications</span>
+                  <span style={{fontSize:13,fontWeight:600,color:'#111111'}}>Notifications</span>
                   <button onClick={()=>setBellOpen(false)} style={{background:'none',border:'none',cursor:'pointer',color:MUTED,fontSize:11,fontFamily:F}}>Close</button>
                 </div>
                 {notifs.length===0
@@ -304,7 +304,7 @@ export default function CLMHome({ user, nav, initialSection }) {
                       background:n.read?'transparent':'rgba(56,139,253,0.04)',display:'flex',gap:10,alignItems:'flex-start'}}>
                       <span style={{width:6,height:6,borderRadius:'50%',background:n.read?MUTED:BLUE,marginTop:4,flexShrink:0}}/>
                       <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:12,fontWeight:n.read?400:500,color:'#1a1a1a',marginBottom:1,lineHeight:1.3}}>{n.title}</div>
+                        <div style={{fontSize:12,fontWeight:n.read?400:500,color:'#111111',marginBottom:1,lineHeight:1.3}}>{n.title}</div>
                         <div style={{fontSize:11,color:MUTED,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{n.body}</div>
                       </div>
                     </div>
@@ -315,7 +315,7 @@ export default function CLMHome({ user, nav, initialSection }) {
           {/* Sign out */}
           <button onClick={()=>supabase.auth.signOut()}
             style={{display:'flex',alignItems:'center',gap:6,background:'none',border:`1px solid ${LINE}`,
-              cursor:'pointer',color:'#6b6b6b',fontSize:12,fontFamily:F,padding:'5px 10px',borderRadius:6,
+              cursor:'pointer',color:'#555555',fontSize:12,fontFamily:F,padding:'5px 10px',borderRadius:6,
               transition:'all .12s'}}
             onMouseEnter={e=>{e.currentTarget.style.borderColor=LINE2;e.currentTarget.style.color=INK}}
             onMouseLeave={e=>{e.currentTarget.style.borderColor=LINE;e.currentTarget.style.color=BODY}}>

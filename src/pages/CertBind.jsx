@@ -83,7 +83,7 @@ function CertRow({ cert, onCheck, checking }) {
 
       {/* Domain */}
       <div style={{ paddingRight:16, minWidth:0 }}>
-        <div style={{ fontSize:13, fontWeight:600, color:'#111111', fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+        <div style={{ fontSize:13, fontWeight:600, color:'#111111', fontFamily:'"JetBrains Mono",monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
           {cert.domain}
         </div>
         <div style={{ fontSize:11, color:'#888888', marginTop:2, fontFamily:'inherit' }}>

@@ -241,7 +241,7 @@ export default function VaultBrainModal({ open, onClose, session }) {
                 }}
                 onMouseEnter={e => { if (session) { e.currentTarget.style.background = 'rgba(31,92,78,0.07)'; e.currentTarget.style.borderColor = 'rgba(31,92,78,0.2)' } }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)' }}>
-                  <span style={{ color: 'rgba(31,92,78,0.3)', fontSize: 11 }}>›</span>
+                  <span style={{ color: '#1f5c4e', fontSize: 11 }}>›</span>
                   {c}
                 </button>
               ))}

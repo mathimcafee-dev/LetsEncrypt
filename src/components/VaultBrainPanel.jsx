@@ -191,7 +191,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
               }}
               onMouseEnter={e=>{if(session){e.currentTarget.style.background='rgba(31,92,78,0.07)';e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'}}}
               onMouseLeave={e=>{e.currentTarget.style.background='rgba(0,0,0,0.02)';e.currentTarget.style.borderColor='rgba(0,0,0,0.05)'}}>
-                <span style={{color:'rgba(31,92,78,0.3)',marginRight:6}}>›</span>{c}
+                <span style={{color:'#1f5c4e',marginRight:6}}>›</span>{c}
               </button>
             ))}
           </div>

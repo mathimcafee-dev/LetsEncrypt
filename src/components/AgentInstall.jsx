@@ -377,7 +377,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
               ) : (
                 <div>
                   <div style={{ background:'rgba(31,92,78,0.08)', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:8,
-                    padding:'12px 14px', marginBottom:14, fontSize:12, color:'#2e7a68', lineHeight:1.7 }}>
+                    padding:'12px 14px', marginBottom:14, fontSize:12, color:'#1f5c4e', lineHeight:1.7 }}>
                     No agent connected yet. Run this on your server to install the SSLVault agent.
                     Once connected, cert installs and renewals are fully automatic.
                   </div>
@@ -435,7 +435,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
           {hostType === 'shared' && (
             <div>
               <div style={{ background:'rgba(31,92,78,0.08)', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:8,
-                padding:'12px 14px', marginBottom:16, fontSize:12, color:'#2e7a68', lineHeight:1.7 }}>
+                padding:'12px 14px', marginBottom:16, fontSize:12, color:'#1f5c4e', lineHeight:1.7 }}>
                 SSLVault installs directly via cPanel's API — no PHP file, no upload, nothing in public_html.
                 Your credentials are encrypted in Supabase Vault and never exposed.
               </div>
