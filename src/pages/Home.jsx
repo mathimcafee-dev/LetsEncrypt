@@ -600,34 +600,40 @@ export default function Home({ nav }) {
       <section style={{background:'#f4f1ec',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
-            <div style={{textAlign:'center',marginBottom:44}}>
+            <div style={{textAlign:'center',marginBottom:52}}>
               <Eyebrow>How it works</Eyebrow>
-              <H2 style={{maxWidth:480,margin:'8px auto 12px'}}>From CSR to live HTTPS in one automated pipeline.</H2>
-              <Body style={{maxWidth:420,margin:'0 auto'}}>SSLVault orchestrates every step across ACME, your DNS provider, and your web server.</Body>
+              <H2 style={{maxWidth:480,margin:'8px auto 12px'}}>From domain to live HTTPS in minutes.</H2>
+              <Body style={{maxWidth:420,margin:'0 auto'}}>Five automated steps. Zero manual work. SSLVault handles DNS, CA, install, and renewal.</Body>
             </div>
           </FadeUp>
           <FadeUp>
-            <div style={{display:'grid',gridTemplateColumns:`repeat(${isMobile?1:5},1fr)`,gap:isMobile?8:0,marginBottom:40,alignItems:'center'}}>
-              {[{n:'/ 01',icon:'🖥',title:'Issue request',desc:'Select domain + cert type. SSLVault generates CSR.'},null,{n:'/ 02',icon:'🌐',title:'Auto DCV',desc:'DNS provider API adds ACME challenge. Auto-validated.'},null,{n:'/ 03',icon:'🏛',title:'CA issues cert',desc:'RapidSSL signs cert. Stored encrypted in CertVault.'}].map((s,i)=>{
-                if(!s)return <div key={i} style={{display:'flex',justifyContent:'center',alignItems:'center'}}><svg width="24" height="8" viewBox="0 0 24 8" fill="none"><line x1="0" y1="4" x2="19" y2="4" stroke={LN2} strokeWidth="1" strokeDasharray="2 2"/><path d="M17 1l4 3-4 3" stroke={LN2} strokeWidth="1" strokeLinecap="round"/></svg></div>
-                return <Card key={s.n} style={{textAlign:'center',padding:'18px'}}>
-                  <div style={{fontSize:22,marginBottom:8}}>{s.icon}</div>
-                  <div style={{fontSize:10,color:T3,fontFamily:MONO,marginBottom:5}}>{s.n}</div>
-                  <div style={{fontSize:12,fontWeight:600,color:T1,marginBottom:5}}>{s.title}</div>
-                  <div style={{fontSize:11,color:T2,lineHeight:1.6}}>{s.desc}</div>
-                </Card>
-              })}
-            </div>
-            <div style={{display:'grid',gridTemplateColumns:`repeat(${isMobile?1:5},1fr)`,gap:isMobile?8:0,alignItems:'center'}}>
-              {[null,{n:'/ 05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Zero manual steps.'},null,{n:'/ 04',icon:'⚡',title:'Auto-install',desc:'VPS agent deploys to Nginx/Apache, or cPanel UAPI — both fully automatic within 2 minutes.'},null].map((s,i)=>{
-                if(!s)return <div key={i}/>
-                return <Card key={s.n} style={{textAlign:'center',padding:'18px'}}>
-                  <div style={{fontSize:22,marginBottom:8}}>{s.icon}</div>
-                  <div style={{fontSize:10,color:T3,fontFamily:MONO,marginBottom:5}}>{s.n}</div>
-                  <div style={{fontSize:12,fontWeight:600,color:T1,marginBottom:5}}>{s.title}</div>
-                  <div style={{fontSize:11,color:T2,lineHeight:1.6}}>{s.desc}</div>
-                </Card>
-              })}
+            <div style={{display:'flex',flexDirection:isMobile?'column':'row',gap:isMobile?10:0,alignItems:'stretch'}}>
+              {[
+                {n:'01',icon:'🖥',title:'Issue request',desc:'Select domain and cert type. SSLVault generates the CSR automatically.',accent:'#1f5c4e'},
+                {n:'02',icon:'🌐',title:'DNS validation',desc:'DNS provider API adds the ACME TXT challenge. Auto-validated in seconds.',accent:'#16a068'},
+                {n:'03',icon:'🏛',title:'CA issues cert',desc:'RapidSSL signs the cert. Stored AES-256 encrypted in CertVault.',accent:'#1f5c4e'},
+                {n:'04',icon:'⚡',title:'Auto-install',desc:'VPS agent or cPanel UAPI deploys to Nginx / Apache within 2 minutes.',accent:'#16a068'},
+                {n:'05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Runs forever, zero manual steps.',accent:'#1f5c4e'},
+              ].map((s,i,arr)=>(
+                <div key={s.n} style={{flex:1,display:'flex',flexDirection:'row',alignItems:'stretch'}}>
+                  <div style={{flex:1,background:'#ffffff',border:'1px solid rgba(0,0,0,0.07)',borderRadius:12,padding:'20px 16px',position:'relative',display:'flex',flexDirection:'column',gap:10,boxShadow:'0 1px 2px rgba(0,0,0,0.04)'}}>
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                      <span style={{fontSize:11,fontWeight:800,color:s.accent,letterSpacing:'.06em',fontFamily:MONO}}>{s.n}</span>
+                      <span style={{fontSize:22}}>{s.icon}</span>
+                    </div>
+                    <div style={{height:2,width:28,background:s.accent,borderRadius:99,opacity:.7}}/>
+                    <div style={{fontSize:13,fontWeight:700,color:T1,letterSpacing:'-.01em',lineHeight:1.3}}>{s.title}</div>
+                    <div style={{fontSize:11.5,color:T2,lineHeight:1.65,flex:1}}>{s.desc}</div>
+                  </div>
+                  {i<arr.length-1&&!isMobile&&(
+                    <div style={{width:28,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,paddingBottom:20}}>
+                      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+                        <path d="M0 6h13M9 1l5 5-5 5" stroke="rgba(31,92,78,0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </FadeUp>
         </div>
