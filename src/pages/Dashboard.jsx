@@ -2883,7 +2883,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                   const hasDcv = !!(o.dcv_txt_value || o.dcv_cname_value)
                   return (
                     <div key={o.id} style={{ display:'flex', alignItems:'center', gap:12, padding:'9px 14px',
-                      borderBottom:'1px solid rgba(0,0,0,0.03)' }}>
+                      borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
                       <div style={{ width:6, height:6, borderRadius:'50%', flexShrink:0,
                         background: hasDcv ? '#16a068' : '#9a6400',
                         animation: !hasDcv ? 'v3pulse 1.2s ease infinite' : 'none' }}/>
@@ -2993,8 +2993,8 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               {/* ── MANDATE + TIMELINE ROW ── */}
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
                 {/* CA/B Mandate readiness */}
-                <div style={{ background:'rgba(15,5,5,0.6)', border:'1px solid rgba(31,92,78,0.22)', borderRadius:12, padding:'14px 16px' }}>
-                  <div style={{ fontSize:10, fontWeight:600, color:'#999999', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:10 }}>CA/B Forum mandate readiness</div>
+                <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:'14px 16px', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize:10, fontWeight:600, color:'#888888', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:10 }}>CA/B Forum mandate readiness</div>
                   {[
                     { year:'Mar 2026', max:200, label:'200d max', ready:activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=200}).length },
                     { year:'Mar 2027', max:100, label:'100d max', ready:activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=100}).length },
@@ -3003,10 +3003,10 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                     const pct = activeCerts.length>0?(m.ready/activeCerts.length)*100:0
                     const col = m.ready===activeCerts.length?'#16a068':'#1f5c4e'
                     return (
-                      <div key={m.year} style={{ display:'flex', alignItems:'center', gap:10, padding:'7px 0', borderBottom:'1px solid rgba(0,0,0,0.03)' }}>
+                      <div key={m.year} style={{ display:'flex', alignItems:'center', gap:10, padding:'7px 0', borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
                         <span style={{ fontSize:11, fontWeight:500, color:'#555555', width:64, flexShrink:0 }}>{m.year}</span>
                         <span style={{ fontSize:12, fontWeight:600, color:col, width:68, flexShrink:0 }}>{m.label}</span>
-                        <div style={{ flex:1, height:3, background:'rgba(31,92,78,0.09)', borderRadius:2, overflow:'hidden' }}>
+                        <div style={{ flex:1, height:3, background:'rgba(0,0,0,0.08)', borderRadius:2, overflow:'hidden' }}>
                           <div style={{ height:'100%', width:`${pct}%`, background:col, borderRadius:2, transition:'width 0.8s ease' }}/>
                         </div>
                         <span style={{ fontSize:10, color:col, width:36, textAlign:'right', flexShrink:0 }}>{m.ready}/{activeCerts.length}</span>
@@ -3016,14 +3016,14 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 </div>
 
                 {/* Validity timeline */}
-                <div style={{ background:'rgba(15,5,5,0.6)', border:'1px solid rgba(31,92,78,0.22)', borderRadius:12, padding:'14px 16px' }}>
+                <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:'14px 16px', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
                     <div style={{ fontSize:10, fontWeight:600, color:'#999999', letterSpacing:'0.06em', textTransform:'uppercase' }}>Validity timeline {now.getFullYear()}</div>
-                    <span style={{ fontSize:9, color:'#bbbbbb' }}>Jun — Dec</span>
+                    <span style={{ fontSize:9, color:'#888888' }}>Jun — Dec</span>
                   </div>
                   <div style={{ display:'flex', gap:0, marginBottom:8 }}>
                     {months.map((m,i)=>(
-                      <div key={m} style={{ flex:1, fontSize:8, color:i===now.getMonth()?'#1f5c4e':'rgba(240,237,232,0.2)', textAlign:'center', fontWeight:i===now.getMonth()?600:400 }}>{m.slice(0,1)}</div>
+                      <div key={m} style={{ flex:1, fontSize:8, color:i===now.getMonth()?'#1f5c4e':'rgba(0,0,0,0.25)', textAlign:'center', fontWeight:i===now.getMonth()?600:400 }}>{m.slice(0,1)}</div>
                     ))}
                   </div>
                   {activeCerts.map((cert,i)=>{
@@ -3038,22 +3038,22 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                     return (
                       <div key={cert.id} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:i<activeCerts.length-1?8:0 }}>
                         <div style={{ width:70, flexShrink:0, fontSize:11, fontWeight:600, color:'#3d3d3d', fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{shortName.length>8?shortName.slice(0,7)+'..':shortName}</div>
-                        <div style={{ flex:1, height:6, background:'rgba(31,92,78,0.08)', borderRadius:3, position:'relative', overflow:'hidden' }}>
-                          <div style={{ position:'absolute', left:0, top:0, bottom:0, width:`${issuedP*100}%`, background:'rgba(0,0,0,0.03)' }}/>
+                        <div style={{ flex:1, height:6, background:'rgba(0,0,0,0.07)', borderRadius:3, position:'relative', overflow:'hidden' }}>
+                          <div style={{ position:'absolute', left:0, top:0, bottom:0, width:`${issuedP*100}%`, background:'rgba(0,0,0,0.04)' }}/>
                           <div style={{ position:'absolute', left:`${issuedP*100}%`, top:0, bottom:0, width:`${activeW*100}%`, background:`${col}CC` }}/>
                           <div style={{ position:'absolute', left:`${Math.min(todayPct,expiryP)*100}%`, top:0, bottom:0, width:`${futureW*100}%`, background:`${col}33` }}/>
-                          <div style={{ position:'absolute', top:0, bottom:0, left:`${todayPct*100}%`, width:1.5, background:'rgba(255,140,122,0.7)' }}/>
+                          <div style={{ position:'absolute', top:0, bottom:0, left:`${todayPct*100}%`, width:2, background:'rgba(192,57,43,0.6)' }}/>
                         </div>
                         <div style={{ width:36, textAlign:'right', fontSize:11, fontWeight:700, fontFamily:'monospace', color:col, flexShrink:0 }}>{d==null?'--':d<=0?'EXP':`${d}d`}</div>
-                        <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:99, width:50, textAlign:'center', flexShrink:0, background:notLive?'rgba(255,140,122,0.1)':'rgba(74,222,128,0.07)', color:notLive?'#1f5c4e':'#16a068', border:`1px solid ${notLive?'rgba(255,140,122,0.2)':'rgba(74,222,128,0.18)'}` }}>
+                        <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:99, width:50, textAlign:'center', flexShrink:0, background:notLive?'rgba(192,57,43,0.08)':'rgba(22,160,104,0.09)', color:notLive?'#c0392b':'#16a068', border:`1px solid ${notLive?'rgba(192,57,43,0.2)':'rgba(22,160,104,0.2)'}` }}>
                           {notLive?'INSTALL':'LIVE'}
                         </span>
                       </div>
                     )
                   })}
                   <div style={{ marginTop:10, display:'flex', gap:12 }}>
-                    {[['rgba(74,222,128,0.75)','valid'],['rgba(255,140,122,0.6)','today']].map(([bg,lbl])=>(
-                      <span key={lbl} style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'#bbbbbb' }}>
+                    {[['rgba(22,160,104,0.7)','valid'],['rgba(192,57,43,0.55)','today']].map(([bg,lbl])=>(
+                      <span key={lbl} style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'#888888' }}>
                         <span style={{ width:lbl==='today'?1.5:14, height:lbl==='today'?10:4, background:bg, display:'inline-block', borderRadius:lbl==='today'?1:2 }}/>
                         {lbl}
                       </span>

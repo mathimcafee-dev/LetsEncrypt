@@ -420,9 +420,9 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
     : isExpiringSoon ? '#1f5c4e' : '#16a068'
 
   return (
-    <div style={{ border:'0.5px solid rgba(255,255,255,0.09)', borderRadius:10,
-      overflow:'hidden', position:'relative', transition:'border-color .15s',
-      ...(open ? { borderColor:'rgba(255,255,255,0.16)' } : {}) }}>
+    <div style={{ border:'1px solid rgba(0,0,0,0.08)', borderRadius:10,
+      overflow:'hidden', position:'relative', transition:'border-color .15s', background:'#ffffff',
+      ...(open ? { borderColor:'rgba(31,92,78,0.25)', boxShadow:'0 2px 8px rgba(0,0,0,0.08)' } : {}) }}>
 
       {/* Left accent bar */}
       <div style={{ position:'absolute', left:0, top:0, bottom:0, width:3,
@@ -448,8 +448,8 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
           </span>
           {keyEntry.status === 'active' && (
             <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:9,
-              color:'#111111', background:'rgba(31,92,78,0.09)',
-              border:'0.5px solid rgba(192,57,43,0.4)', borderRadius:4,
+              color:'#1f5c4e', background:'rgba(31,92,78,0.08)',
+              border:'1px solid rgba(31,92,78,0.2)', borderRadius:4,
               padding:'2px 7px', fontWeight:700 }}>
               <Lock size={8}/> VAULT SECURED
             </span>
@@ -547,7 +547,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
                 style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
                   fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
                   background:'rgba(0,0,0,0.06)', color:'#333333',
-                  border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s',
+                  border:'1px solid rgba(0,0,0,0.1)', transition:'all .15s',
                   opacity: rotating === keyEntry.id ? 0.5 : 1 }}>
                 {rotating === keyEntry.id
                   ? <><RefreshCw size={10} style={{ animation:'spin .8s linear infinite' }}/> Rotating…</>
@@ -574,7 +574,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
                 style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
                   fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
                   background:'rgba(0,0,0,0.06)', color:'#333333',
-                  border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s', flexShrink:0 }}>
+                  border:'1px solid rgba(0,0,0,0.1)', transition:'all .15s', flexShrink:0 }}>
                 <Activity size={10}/> View audit
               </button>
             </div>
@@ -779,7 +779,7 @@ export default function CertVault({ nav }) {
         </div>
 
         {/* Security strip */}
-        <div style={{ background:'rgba(192,57,43,0.06)', border:'0.5px solid rgba(192,57,43,0.22)',
+        <div style={{ background:'rgba(31,92,78,0.06)', border:'1px solid rgba(31,92,78,0.15)',
           borderRadius:9, padding:'10px 16px', marginBottom:20,
           display:'flex', alignItems:'center', gap:10 }}>
           <div style={{ position:'relative', flexShrink:0, width:8, height:8 }}>
@@ -787,7 +787,7 @@ export default function CertVault({ nav }) {
               background:'rgba(22,160,104,0.12)', animation:'dotpulse 2s ease infinite' }}/>
             <div style={{ width:8, height:8, borderRadius:'50%', background:'#16a068', position:'relative' }}/>
           </div>
-          <div style={{ fontSize:11, color:'rgba(255,255,255,0.75)', fontWeight:500 }}>
+          <div style={{ fontSize:11, color:'#1f5c4e', fontWeight:500 }}>
             AES-256-GCM encrypted · Envelope key hierarchy · Immutable audit log · Keys never stored in plaintext
           </div>
         </div>

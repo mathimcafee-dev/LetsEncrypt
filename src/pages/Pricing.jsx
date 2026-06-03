@@ -3,14 +3,14 @@ import { useState } from 'react'
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 const BG   = 'transparent'
-const CARD = '#220808'
-const CARD2= '#220808'
+const CARD = '#ffffff'
+const CARD2= '#111111'
 const TEAL = '#1f5c4e'
 const TEALH= '#1f5c4e'
 const CORAL= '#1f5c4e'
 const INK = '#111111'
-const BODY = 'rgba(232,245,244,0.65)'
-const MUTED= 'rgba(232,245,244,0.35)'
+const BODY = '#444444'
+const MUTED= '#888888'
 const LINE = 'rgba(0,0,0,0.08)'
 const LINE2= 'rgba(0,0,0,0.08)'
 const GREEN= '#16a068'
@@ -279,16 +279,16 @@ export default function Pricing({ nav }) {
             {/* Header */}
             <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr',
               background:CARD2,padding:'16px 24px',borderBottom:`1px solid ${LINE}`}}>
-              <div style={{fontSize:11,color:MUTED,fontFamily:MONO}}>Feature</div>
-              {[['Starter',TEAL],['Premium',CORAL],['Pro',AMBER]].map(([n,c]) => (
+              <div style={{fontSize:11,color:'rgba(255,255,255,0.5)',fontFamily:MONO}}>Feature</div>
+              {[['Starter','#5bbfa8'],['Premium','#e8897a'],['Pro','#f0c060']].map(([n,c]) => (
                 <div key={n} style={{fontSize:11,fontWeight:700,color:c,textTransform:'uppercase',
                   letterSpacing:'0.8px',textAlign:'center',fontFamily:MONO}}>{n}</div>
               ))}
             </div>
             {FEATURES.map(sec => (
               <div key={sec.section}>
-                <div style={{padding:'9px 24px',background:'rgba(192,57,43,0.04)',borderTop:`1px solid ${LINE}`}}>
-                  <span style={{fontSize:10,fontWeight:700,color:TEAL,textTransform:'uppercase',
+                <div style={{padding:'9px 24px',background:'rgba(31,92,78,0.05)',borderTop:`1px solid ${LINE}`}}>
+                  <span style={{fontSize:10,fontWeight:700,color:'#1f5c4e',textTransform:'uppercase',
                     letterSpacing:'1px',fontFamily:MONO}}>{sec.section}</span>
                 </div>
                 {sec.rows.map((row, i) => (
