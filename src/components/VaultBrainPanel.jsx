@@ -73,13 +73,14 @@ export default function VaultBrainPanel({ open, onClose, session }) {
     if (open) setTimeout(() => inputRef.current?.focus(), 300)
   }, [open])
 
-  // Kick off proactive briefing when panel first opens with a session
+  // Brief only when user first opens panel — reset on close so next open briefs again
   useEffect(() => {
     if (open && session && !started && msgs.length === 0) {
       setStarted(true)
       sendToAI('Give me a quick briefing on my certificate fleet.', true)
     }
-  }, [open, session])
+    if (!open) { setStarted(false) }
+  }, [open])
 
   function ts() {
     return new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })

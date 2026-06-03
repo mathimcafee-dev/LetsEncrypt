@@ -91,6 +91,11 @@ const _build = 1779297041 // cache bust
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      // After login, redirect to dashboard
+      if (session?.user && (window.location.pathname === '/' || window.location.pathname === '/auth')) {
+        window.history.pushState({}, '', '/dashboard')
+        setPage('/dashboard')
+      }
     })
     return () => subscription.unsubscribe()
   }, [])
