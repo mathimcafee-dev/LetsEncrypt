@@ -152,6 +152,7 @@ const SECTIONS = [
   { id:'calendar',        icon:'📅', title:'Renewal Calendar',         subtitle:'Heatmap of upcoming renewals',                   badge:'Planning',   badgeColor:C.teal   },
   { id:'troubleshoot',    icon:'🔧', title:'Troubleshooting',          subtitle:'Common errors and fixes',                        badge:'Help',       badgeColor:C.muted  },
   { id:'certbind',        icon:'🔗', title:'CertBind',                 subtitle:'Active certificate binding verification',         badge:'Unique',     badgeColor:C.teal   },
+  { id:'mcp',             icon:'🤖', title:'AI Agent (MCP)',           subtitle:'Control SSLVault with Claude, Copilot & more',   badge:'New',        badgeColor:C.purple },
 ]
 
 export default function KnowledgeBase({ nav }) {
@@ -722,6 +723,225 @@ export default function KnowledgeBase({ nav }) {
               { q:'How often do checks run automatically?', a:'When a Persistent Agent is connected, CertBind checks run on every agent poll cycle — every 5 minutes. For certs without an agent, Layer 2 TLS probe checks are scheduled every 15 minutes.' },
               { q:'Can I disable CertBind for a specific certificate?', a:'Yes. In Security → CertBind, toggle monitoring off for any individual cert. This is occasionally useful during planned maintenance windows. SSLVault will resume checks automatically when you re-enable it.' },
               { q:'What is a chain anomaly and should I be worried?', a:'A chain anomaly means the TLS certificate chain on your server contains an intermediate CA that was not in the original issued chain. The most common cause is a corporate SSL inspection proxy (e.g. Zscaler, Palo Alto) that re-signs traffic with its own intermediate. If you recognise the intermediate as your corporate proxy, mark it Known. If you do not recognise it, investigate immediately.' },
+            ]}/>
+          </Section>
+        )}
+
+        {filtered.some(s=>s.id==='mcp') && (
+          <Section {...SECTIONS[13]}>
+            <div style={{ fontSize:13.5, color:C.body, lineHeight:1.8, marginBottom:20 }}>
+              SSLVault has an <strong style={{color:C.heading}}>MCP server</strong> — a connection that lets AI assistants like Claude Desktop, Cursor, and Microsoft Copilot manage your certificates using plain English. No dashboards, no forms. You just type what you want and the AI does it.
+            </div>
+
+            <Note type="info">
+              <strong>No technical knowledge required.</strong> If you can install an app and paste a line of text, you can use this. The AI handles everything — it knows your certificates, your servers, and what actions to take.
+            </Note>
+
+            {/* ── WHAT IS MCP ── */}
+            <div style={{ fontSize:15, fontWeight:600, color:C.heading, margin:'24px 0 10px', paddingBottom:8, borderBottom:`1px solid ${C.border}` }}>
+              What is MCP and why does it matter?
+            </div>
+            <div style={{ fontSize:13.5, color:C.body, lineHeight:1.8, marginBottom:16 }}>
+              MCP (Model Context Protocol) is an open standard — think of it like a universal plug that lets any AI assistant connect to any tool. When you connect SSLVault to Claude Desktop via MCP, the AI can see your certificates and take real actions on your behalf.
+            </div>
+
+            {/* Visual explainer */}
+            <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, padding:'20px 24px', margin:'16px 0 24px', fontFamily:MONO }}>
+              <div style={{ display:'flex', alignItems:'center', gap:0, flexWrap:'wrap' }}>
+                {[
+                  { icon:'🧑', label:'You', sub:'type in plain English' },
+                  { arrow:true },
+                  { icon:'🤖', label:'Claude Desktop', sub:'AI understands intent', color:C.purple },
+                  { arrow:true },
+                  { icon:'🔌', label:'MCP Server', sub:'SSLVault connection point', color:C.teal },
+                  { arrow:true },
+                  { icon:'🛡️', label:'SSLVault', sub:'acts on your certs', color:'#f87171' },
+                ].map((item, i) => item.arrow ? (
+                  <div key={i} style={{ fontSize:18, color:C.muted, padding:'0 8px' }}>→</div>
+                ) : (
+                  <div key={i} style={{ textAlign:'center', minWidth:110 }}>
+                    <div style={{ fontSize:28, marginBottom:4 }}>{item.icon}</div>
+                    <div style={{ fontSize:12, fontWeight:600, color:item.color||C.heading }}>{item.label}</div>
+                    <div style={{ fontSize:10, color:C.muted, marginTop:2 }}>{item.sub}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ fontSize:13.5, color:C.body, lineHeight:1.8, marginBottom:8 }}>
+              <strong style={{color:C.heading}}>Example conversations you can have:</strong>
+            </div>
+            {[
+              { you: '"Show me all my certificates"', ai: 'Lists every cert — domain, days left, install status, auto-renew' },
+              { you: '"Which certs expire in the next 30 days?"', ai: 'Filters and shows only expiring certs with exact dates' },
+              { you: '"What is my fleet posture score?"', ai: 'Returns your 0–100 security score with breakdown + CA/B mandate readiness' },
+              { you: '"Check CA/B Forum compliance for my fleet"', ai: 'Full report: which certs meet 2026/2027/2029 mandates, which need action' },
+              { you: '"Issue a new cert for api.mycompany.com"', ai: 'Places the order, validates DNS, and tells you when it\'s issued' },
+              { you: '"Install the cert on my cPanel server"', ai: 'Triggers installation and confirms it\'s live' },
+              { you: '"Show my VPS agents"', ai: 'Lists all connected servers with their last-seen time' },
+            ].map((ex, i) => (
+              <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:8, background:C.bg3, borderRadius:8, padding:'10px 14px', border:`1px solid ${C.border}` }}>
+                <div>
+                  <div style={{ fontSize:10, color:C.muted, marginBottom:3 }}>YOU SAY</div>
+                  <div style={{ fontSize:12, color:C.purple, fontStyle:'italic' }}>{ex.you}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize:10, color:C.muted, marginBottom:3 }}>AI DOES</div>
+                  <div style={{ fontSize:12, color:C.body }}>{ex.ai}</div>
+                </div>
+              </div>
+            ))}
+
+            {/* ── WHAT YOU NEED ── */}
+            <div style={{ fontSize:15, fontWeight:600, color:C.heading, margin:'28px 0 10px', paddingBottom:8, borderBottom:`1px solid ${C.border}` }}>
+              What you need before starting
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))', gap:10, marginBottom:20 }}>
+              {[
+                { icon:'💻', label:'Claude Desktop app', desc:'Free download. Works on Mac and Windows.', link:'https://claude.ai/download', linkLabel:'Download Claude Desktop' },
+                { icon:'🔑', label:'Your SSLVault JWT token', desc:'A secret key that proves you are logged in to SSLVault.', link:null, linkLabel:null },
+                { icon:'📝', label:'A text editor', desc:'Notepad on Windows, TextEdit on Mac — to paste one config snippet.', link:null, linkLabel:null },
+              ].map((item, i) => (
+                <div key={i} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:10, padding:'14px 16px' }}>
+                  <div style={{ fontSize:24, marginBottom:8 }}>{item.icon}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:C.heading, marginBottom:4 }}>{item.label}</div>
+                  <div style={{ fontSize:12, color:C.body, lineHeight:1.6 }}>{item.desc}</div>
+                  {item.link && <a href={item.link} target="_blank" rel="noopener noreferrer" style={{ display:'inline-block', marginTop:8, fontSize:11, color:C.teal }}>{item.linkLabel} →</a>}
+                </div>
+              ))}
+            </div>
+
+            {/* ── STEP BY STEP ── */}
+            <div style={{ fontSize:15, fontWeight:600, color:C.heading, margin:'28px 0 16px', paddingBottom:8, borderBottom:`1px solid ${C.border}` }}>
+              Step-by-step setup (takes about 5 minutes)
+            </div>
+
+            <Step n={1} title="Install Claude Desktop on your computer">
+              <div>Go to <a href="https://claude.ai/download" target="_blank" rel="noopener noreferrer" style={{color:C.teal}}>claude.ai/download</a> and download the app for your operating system (Mac or Windows). Install it like any other app. Sign in with a free Anthropic account.</div>
+              <Note type="tip">Claude Desktop is different from the Claude website. You need the <strong>app</strong> (downloaded and installed), not the browser version, for MCP to work.</Note>
+            </Step>
+
+            <Step n={2} title="Get your SSLVault login token">
+              <div style={{marginBottom:10}}>Your token proves to the MCP server that it is really you. Here is how to find it:</div>
+              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                {[
+                  { n:'A', text:'Open easysecurity.in in your browser and log in to SSLVault.' },
+                  { n:'B', text:'Press F12 on your keyboard (or right-click → Inspect). This opens DevTools.' },
+                  { n:'C', text:'Click the Network tab at the top of DevTools.' },
+                  { n:'D', text:'Click anywhere on the SSLVault page (for example, click Dashboard).' },
+                  { n:'E', text:'A list of requests appears. Click on any one that says "functions" in its name.' },
+                  { n:'F', text:'In the panel that opens, click the Headers tab.' },
+                  { n:'G', text:'Scroll down to find a line that starts with Authorization: Bearer. The long string after "Bearer " is your token. Copy everything after "Bearer " (not including the word Bearer itself).' },
+                ].map(item => (
+                  <div key={item.n} style={{ display:'flex', gap:10, background:C.bg3, borderRadius:8, padding:'8px 12px', border:`1px solid ${C.border}` }}>
+                    <div style={{ width:20, height:20, borderRadius:4, background:C.teal, color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, flexShrink:0 }}>{item.n}</div>
+                    <div style={{ fontSize:12.5, color:C.body }}>{item.text}</div>
+                  </div>
+                ))}
+              </div>
+              <Note type="warning">Your token is like a password. Do not share it with anyone. It gives full access to your SSLVault account.</Note>
+            </Step>
+
+            <Step n={3} title="Find the Claude Desktop config file">
+              <div style={{marginBottom:10}}>Claude Desktop reads a config file to know which tools to connect. You need to open this file and add SSLVault to it.</div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:10 }}>
+                <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:8, padding:'12px 14px' }}>
+                  <div style={{ fontSize:12, fontWeight:600, color:C.heading, marginBottom:6 }}>🍎 On Mac</div>
+                  <div style={{ fontSize:11.5, color:C.body, lineHeight:1.7 }}>Open Finder → press <strong>⌘ Shift G</strong> → paste this path and press Enter:</div>
+                  <Code code="~/Library/Application Support/Claude/" lang="path" />
+                  <div style={{ fontSize:11.5, color:C.body }}>Open the file named <strong>claude_desktop_config.json</strong></div>
+                </div>
+                <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:8, padding:'12px 14px' }}>
+                  <div style={{ fontSize:12, fontWeight:600, color:C.heading, marginBottom:6 }}>🪟 On Windows</div>
+                  <div style={{ fontSize:11.5, color:C.body, lineHeight:1.7 }}>Press <strong>Win + R</strong> → paste this and press Enter:</div>
+                  <Code code="%APPDATA%\Claude\" lang="path" />
+                  <div style={{ fontSize:11.5, color:C.body }}>Open the file named <strong>claude_desktop_config.json</strong></div>
+                </div>
+              </div>
+              <Note type="tip">If the file does not exist yet, create a new file called <strong>claude_desktop_config.json</strong> in that folder.</Note>
+            </Step>
+
+            <Step n={4} title="Paste the SSLVault MCP config">
+              <div style={{marginBottom:10}}>Open the config file in any text editor. Replace its entire contents with the text below. Then replace <strong style={{color:C.amber}}>PASTE_YOUR_TOKEN_HERE</strong> with the token you copied in Step 2.</div>
+              <Code lang="json" code={`{
+  "mcpServers": {
+    "sslvault": {
+      "url": "https://frthcwkntciaakqsppss.supabase.co/functions/v1/sslvault-mcp",
+      "headers": {
+        "Authorization": "Bearer PASTE_YOUR_TOKEN_HERE"
+      }
+    }
+  }
+}`} />
+              <Note type="danger">Make sure your token has no extra spaces at the start or end. The file must be valid JSON — every bracket and comma must be in place exactly as shown above.</Note>
+            </Step>
+
+            <Step n={5} title="Restart Claude Desktop and verify the connection">
+              <div style={{marginBottom:12}}>Save the config file, then fully quit Claude Desktop and re-open it. Here is how to confirm SSLVault is connected:</div>
+              {[
+                { step:'A', text:'Open Claude Desktop.' },
+                { step:'B', text:'Start a new conversation.' },
+                { step:'C', text:'Look for a small plug or tools icon near the bottom of the chat box. Click it.' },
+                { step:'D', text:'You should see "sslvault" listed with 10 tools. If you see it — you are connected!' },
+                { step:'E', text:'Type: "list my certificates" and press Enter. SSLVault should respond with your certs.' },
+              ].map(item => (
+                <div key={item.step} style={{ display:'flex', gap:10, background:C.bg3, borderRadius:8, padding:'8px 12px', border:`1px solid ${C.border}`, marginBottom:6 }}>
+                  <div style={{ width:20, height:20, borderRadius:4, background:C.teal, color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, flexShrink:0 }}>{item.step}</div>
+                  <div style={{ fontSize:12.5, color:C.body }}>{item.text}</div>
+                </div>
+              ))}
+            </Step>
+
+            {/* ── COMPLETE TOOL LIST ── */}
+            <div style={{ fontSize:15, fontWeight:600, color:C.heading, margin:'28px 0 12px', paddingBottom:8, borderBottom:`1px solid ${C.border}` }}>
+              What you can ask the AI to do — all 10 tools
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+              {[
+                { tool:'list_certs',              ask:'"Show me all my certificates"',                   what:'Lists every cert with domain, expiry, status, install state' },
+                { tool:'get_cert',                ask:'"Give me details for easysecurity.in"',            what:'Full detail for one cert — dates, DCV, vault, install info' },
+                { tool:'get_posture',             ask:'"What is my fleet posture score?"',               what:'0–100 security score with breakdown across 5 dimensions' },
+                { tool:'check_mandate_readiness', ask:'"Am I CA/B Forum compliant?"',                   what:'Full SC-081v3 compliance report for 2026 / 2027 / 2029' },
+                { tool:'issue_cert',              ask:'"Issue a cert for shop.example.com"',             what:'Places GoGetSSL order, DCV, polls until issued' },
+                { tool:'renew_cert',              ask:'"Renew my easysecurity.in cert"',                 what:'New 12-month GoGetSSL order (new billing)' },
+                { tool:'reissue_cert',            ask:'"Reissue freecerts.site with a new key"',         what:'Fresh RSA-2048 key on same order — no new billing' },
+                { tool:'check_cert_status',       ask:'"Has my cert been issued yet?"',                  what:'Force-syncs from GoGetSSL and returns current status' },
+                { tool:'install_cert',            ask:'"Install the cert on my cPanel server"',          what:'Triggers cPanel auto-install via stored credential' },
+                { tool:'list_agents',             ask:'"What servers are connected?"',                   what:'All VPS agents — hostname, IP, status, last seen' },
+              ].map((item, i) => (
+                <div key={i} style={{ display:'grid', gridTemplateColumns:'140px 1fr 1fr', gap:10, background:C.bg2, borderRadius:8, padding:'10px 14px', border:`1px solid ${C.border}`, alignItems:'start' }}>
+                  <div style={{ fontFamily:MONO, fontSize:10.5, color:C.teal, paddingTop:2 }}>{item.tool}</div>
+                  <div style={{ fontSize:12, color:C.purple, fontStyle:'italic' }}>{item.ask}</div>
+                  <div style={{ fontSize:12, color:C.body }}>{item.what}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── TROUBLESHOOTING ── */}
+            <div style={{ fontSize:15, fontWeight:600, color:C.heading, margin:'28px 0 12px', paddingBottom:8, borderBottom:`1px solid ${C.border}` }}>
+              If something is not working
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+              {[
+                { problem:'Claude says "I don\'t have access to SSLVault tools"', fix:'The config file was not saved correctly, or Claude Desktop was not fully restarted. Quit Claude completely (not just close the window — use File → Quit), then re-open it.' },
+                { problem:'"Not authenticated" message when asking about certs', fix:'Your JWT token has expired. Tokens expire after a few hours. Go back to Step 2, copy a fresh token from DevTools, and update the config file. Restart Claude.' },
+                { problem:'"sslvault" not showing in the tools list', fix:'Open the config file and check for typos. Every bracket, quote, and comma must be exactly right. The most common mistake is a missing comma between sections or extra text around the JSON.' },
+                { problem:'Claude connects but returns empty results', fix:'Make sure you are logged in to SSLVault and have at least one certificate in your account. The MCP server reads live data — if your account is new and empty, the AI will say so.' },
+                { problem:'I accidentally shared my token', fix:'Go to your SSLVault account → Settings → Security and invalidate your session immediately, then log out and log back in to get a fresh token. Update the config file.' },
+              ].map((item, i) => (
+                <div key={i} style={{ background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, padding:'12px 16px' }}>
+                  <div style={{ fontSize:12.5, fontWeight:600, color:'#f87171', marginBottom:5 }}>❌ {item.problem}</div>
+                  <div style={{ fontSize:12.5, color:C.body, lineHeight:1.7 }}>✅ {item.fix}</div>
+                </div>
+              ))}
+            </div>
+
+            <FAQ items={[
+              { q:'Is my data safe? Can the AI access anything it should not?', a:'Yes, it is safe. The MCP server only exposes 10 specific actions — it cannot access your private keys, payment information, or account password. Every action is scoped to your own account only. The AI cannot act on certs that do not belong to you.' },
+              { q:'Does this work with AI tools other than Claude Desktop?', a:'Yes. The SSLVault MCP server is compatible with any MCP-enabled AI: Cursor (a code editor with AI), Microsoft Copilot Studio, and other MCP clients. The connection URL and config format are the same — only the location of the config file differs per tool.' },
+              { q:'Can the AI actually issue a certificate without me confirming?', a:'Yes — if you ask it to. This is by design. The power of MCP is that the AI can take actions, not just give advice. If you want a confirmation step, phrase your request as a question first: "What would happen if I issue a cert for example.com?" — the AI will explain before doing anything.' },
+              { q:'My token keeps expiring — is there a permanent way to connect?', a:'Supabase JWTs expire after a short period by default. A permanent API token feature for SSLVault MCP is on the roadmap. For now, refreshing the token every time you log in is the standard flow.' },
+              { q:'What happens if I revoke my session while Claude Desktop is running?', a:'Any in-progress tool calls will fail with "Not authenticated". Just update the config file with a fresh token and restart Claude Desktop.' },
             ]}/>
           </Section>
         )}
