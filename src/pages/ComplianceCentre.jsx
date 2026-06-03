@@ -147,7 +147,7 @@ export default function ComplianceCentre({ nav, user }) {
 
   // Styles
   var card = { background:'rgba(0,0,0,0.03)', border:'1px solid rgba(31,92,78,0.12)', borderRadius:10, padding:'16px 18px' }
-  var lbl  = { fontSize:10, fontWeight:700, color:'rgba(240,237,232,0.38)', textTransform:'uppercase', letterSpacing:'.1em', display:'block', marginBottom:8 }
+  var lbl  = { fontSize:10, fontWeight:700, color:'#aaaaaa', textTransform:'uppercase', letterSpacing:'.1em', display:'block', marginBottom:8 }
   var th   = { padding:'10px 12px', fontSize:10, fontWeight:700, color:'#6b6b6b', letterSpacing:'.08em', textTransform:'uppercase', cursor:'pointer', userSelect:'none', whiteSpace:'nowrap' }
 
   if (loading) return (

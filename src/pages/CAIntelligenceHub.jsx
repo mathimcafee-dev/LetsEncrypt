@@ -1073,10 +1073,10 @@ function SectigoTab({ tok }) {
 
   if (!creds) return (
     <div>
-      <div style={{ background: 'rgba(30,0,0,0.4)', border: '0.5px solid #e9d5ff', borderRadius: 8,
+      <div style={{ background: 'rgba(31,92,78,0.05)', border: '1px solid rgba(31,92,78,0.15)', borderRadius: 8,
         padding: '12px 16px', marginBottom: 16 }}>
         <div style={{ fontSize:13, fontWeight: 600, color: '#2e7a68', marginBottom: 2 }}>Sectigo SCM — not connected</div>
-        <div style={{ fontSize:11, color: '#111111' }}>Connect your SCM credentials to access inventory, org status, and portfolio analytics.</div>
+        <div style={{ fontSize:11, color: '#555555' }}>Connect your SCM credentials to access inventory, org status, and portfolio analytics.</div>
       </div>
       <SectionCard>
         {[
@@ -1109,7 +1109,7 @@ function SectigoTab({ tok }) {
 
   return (
     <div>
-      <div style={{ background: 'rgba(30,0,0,0.4)', border: '0.5px solid #e9d5ff', borderRadius: 8,
+      <div style={{ background: 'rgba(31,92,78,0.05)', border: '1px solid rgba(31,92,78,0.15)', borderRadius: 8,
         padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div>
           <div style={{ fontSize:13, fontWeight: 600, color: '#2e7a68' }}>Sectigo SCM connected</div>

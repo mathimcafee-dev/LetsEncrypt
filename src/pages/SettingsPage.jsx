@@ -513,7 +513,7 @@ export default function SettingsPage({ user }) {
               borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize:12, fontWeight: 600,
               fontFamily: 'inherit', transition: 'all .15s',
               background: activeTab === id ? 'rgba(31,92,78,0.09)' : 'transparent',
-              color: activeTab === id ? '#111111' : 'rgba(240,237,232,0.38)',
+              color: activeTab === id ? '#111111' : '#aaaaaa',
               borderBottom: activeTab === id ? '2px solid #2a6b5c' : '2px solid transparent',
             }}>
             <Icon size={12}/>{label}
@@ -553,7 +553,7 @@ export default function SettingsPage({ user }) {
                   <div key={id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     gap: 12, padding: '8px 12px', borderRadius: 8,
                     background: alertTypes.includes(id) ? 'rgba(31,92,78,0.09)' : 'rgba(0,0,0,0.03)',
-                    border: `1px solid ${alertTypes.includes(id) ? 'rgba(192,57,43,0.5)' : 'rgba(0,0,0,0.06)'}`,
+                    border: `1px solid ${alertTypes.includes(id) ? 'rgba(31,92,78,0.35)' : 'rgba(0,0,0,0.08)'}`,
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all .15s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }}/>
@@ -581,8 +581,8 @@ export default function SettingsPage({ user }) {
                   style={{ padding: '6px 14px', borderRadius: 6, fontSize:12, fontWeight: 500,
                     cursor: emailAlerts ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
                     opacity: emailAlerts ? 1 : 0.45, transition: 'all 0.15s',
-                    background: alertDays.includes(d) ? 'rgba(0,0,0,0.08)' : 'rgba(232,245,244,0.06)',
-                    color: alertDays.includes(d) ? '#0e7490' : 'rgba(240,237,232,0.38)',
+                    background: alertDays.includes(d) ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.04)',
+                    color: alertDays.includes(d) ? '#0e7490' : '#aaaaaa',
                     border: alertDays.includes(d) ? '1px solid #a5f3fc' : '1px solid rgba(0,0,0,0.08)' }}>
                   {d} {d === 1 ? 'day' : 'days'}
                 </button>
@@ -708,8 +708,8 @@ export default function SettingsPage({ user }) {
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
             <button onClick={handleSave} disabled={saving}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6,
-                background: saving ? '#111111' : saved ? '#16a068' : '#111111',
-                color: saving ? 'rgba(240,237,232,0.38)' : '#000000', border: 'none', borderRadius: 7,
+                background: saving ? '#888888' : saved ? '#16a068' : '#111111',
+                color: saving ? 'rgba(255,255,255,0.6)' : '#ffffff', border: 'none', borderRadius: 7,
                 padding: '10px 22px', fontSize:12, fontWeight: 700,
                 cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'background .2s' }}>
               {saving ? <><RefreshCw size={12} className="spin"/> Saving…</>
@@ -787,7 +787,7 @@ export default function SettingsPage({ user }) {
                     style={{ padding: '4px 10px', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 5,
                       fontSize:11, cursor: logsPage === 0 ? 'not-allowed' : 'pointer',
                       background: 'rgba(31,92,78,0.07)',
-                      color: logsPage === 0 ? 'rgba(240,237,232,0.38)' : 'rgba(240,237,232,0.6)', fontFamily: 'inherit' }}>
+                      color: logsPage === 0 ? '#aaaaaa' : '#666666', fontFamily: 'inherit' }}>
                     ← Prev
                   </button>
                   <button onClick={() => setLogsPage(p => p + 1)}
@@ -795,7 +795,7 @@ export default function SettingsPage({ user }) {
                     style={{ padding: '4px 10px', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 5,
                       fontSize:11, cursor: (logsPage + 1) * 20 >= logsTotal ? 'not-allowed' : 'pointer',
                       background: 'rgba(31,92,78,0.07)',
-                      color: (logsPage + 1) * 20 >= logsTotal ? 'rgba(240,237,232,0.38)' : 'rgba(240,237,232,0.6)', fontFamily: 'inherit' }}>
+                      color: (logsPage + 1) * 20 >= logsTotal ? '#aaaaaa' : '#666666', fontFamily: 'inherit' }}>
                     Next →
                   </button>
                 </div>

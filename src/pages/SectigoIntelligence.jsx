@@ -25,7 +25,7 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 
 function ExpiryBadge({ iso }) {
   const d = dLeft(iso)
-  const color = d === null ? 'rgba(240,237,232,0.38)' : d <= 0 ? '#1f5c4e' : d <= 7 ? '#1f5c4e' : d <= 30 ? '#111111' : d <= 60 ? '#e67e22' : '#16a068'
+  const color = d === null ? '#aaaaaa' : d <= 0 ? '#1f5c4e' : d <= 7 ? '#1f5c4e' : d <= 30 ? '#111111' : d <= 60 ? '#e67e22' : '#16a068'
   const bg    = d === null ? '#000000' : d <= 0 ? 'rgba(31,92,78,0.09)' : d <= 7 ? 'rgba(230,126,34,0.1)' : d <= 30 ? 'rgba(239,68,68,0.08)' : 'transparent'
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
@@ -39,10 +39,10 @@ function StatusBadge({ status }) {
   const n = String(status || '').toLowerCase()
   const [color, bg, label] =
     n.includes('issued') || n === '2'  ? ['#16a068', 'transparent', 'Issued']  :
-    n.includes('revoked') || n === '3' ? ['rgba(240,237,232,0.7)', '#000000', 'Revoked'] :
+    n.includes('revoked') || n === '3' ? ['#444444', '#000000', 'Revoked'] :
     n.includes('expired') || n === '4' ? ['#1f5c4e', 'rgba(31,92,78,0.09)', 'Expired'] :
     n.includes('pending') || n === '1' ? ['#111111', 'rgba(239,68,68,0.08)', 'Pending'] :
-    ['rgba(240,237,232,0.38)', '#000000', status || 'Unknown']
+    ['#aaaaaa', '#000000', status || 'Unknown']
   return (
     <span style={{ fontSize:10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
       background: bg, color, border: `0.5px solid ${color}44` }}>{label}</span>

@@ -54,3 +54,6 @@
 .v2-btn:hover { background: var(--ws-surface-2); color: var(--ws-ink); }
 .v2-btn-primary { background: var(--ws-teal); color: #fff; border-color: transparent; }
 .v2-btn-primary:hover { background: var(--ws-teal-mid); }
+.v2-btn-sm { padding: 5px 11px; font-size: 11px; border-radius: var(--ws-r-sm); }
+.v2-btn-danger { background: var(--ws-red-bg); color: var(--ws-red); border-color: var(--ws-red-border); }
+.v2-btn-danger:hover { background: var(--ws-red); color: #fff; }

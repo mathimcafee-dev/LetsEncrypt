@@ -17,7 +17,7 @@ const fmtDate = (iso) => iso ? format(new Date(iso), 'MMM d, yyyy') : '—'
 const fmtAgo  = (iso) => iso ? formatDistanceToNow(new Date(iso), { addSuffix: true }) : '—'
 
 function statusColor(s) {
-  return { active:'#111111', archived:'#111111', revoked:'#1f5c4e' }[s] || 'rgba(240,237,232,0.38)'
+  return { active:'#111111', archived:'#111111', revoked:'#1f5c4e' }[s] || '#aaaaaa'
 }
 
 // ── callCertVault helper ──────────────────────────────────────────────
@@ -235,7 +235,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
               </div>
 
               {authError && (
-                <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid rgba(248,113,113,0.3)', borderRadius:7,
+                <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid rgba(192,57,43,0.2)', borderRadius:7,
                   padding:'9px 12px', marginBottom:12, fontSize:11, color:'#1f5c4e',
                   display:'flex', alignItems:'center', gap:7 }}>
                   <AlertTriangle size={12} style={{ flexShrink:0 }}/>
@@ -244,7 +244,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
               )}
 
               {locked ? (
-                <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid rgba(248,113,113,0.3)', borderRadius:7,
+                <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid rgba(192,57,43,0.2)', borderRadius:7,
                   padding:'10px 12px', fontSize:12, color:'#1f5c4e', textAlign:'center' }}>
                   Access locked after 3 failed attempts. Close and try again later.
                 </div>
@@ -339,13 +339,13 @@ function AuditRow({ entry }) {
   }
   const actionColors = {
     created:'#1f5c4e', fetched:'#1f5c4e', rotated:'#9a6400',
-    archived:'rgba(240,237,232,0.38)', deleted:'#1f5c4e', viewed:'rgba(240,237,232,0.38)',
+    archived:'#aaaaaa', deleted:'#1f5c4e', viewed:'#aaaaaa',
   }
   return (
     <div style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px',
       borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:12 }}>
       <div style={{ width:28, height:28, borderRadius:6, flexShrink:0,
-        background:`${actionColors[entry.action] || 'rgba(240,237,232,0.38)'}12`,
+        background:`${actionColors[entry.action] || '#aaaaaa'}12`,
         display:'flex', alignItems:'center', justifyContent:'center' }}>
         {icons[entry.action] || <Activity size={12}/>}
       </div>
@@ -476,7 +476,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
 
           {/* Expiry warning */}
           {isExpiringSoon && keyEntry.status === 'active' && (
-            <div style={{ background:'rgba(192,57,43,0.07)', border:'0.5px solid rgba(248,113,113,0.3)',
+            <div style={{ background:'rgba(192,57,43,0.07)', border:'1px solid rgba(192,57,43,0.2)',
               borderRadius:8, padding:'9px 12px', marginBottom:12, fontSize:11, color:'#1f5c4e' }}>
               <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
               <strong>Expiring in {days} days</strong> — rotate now to avoid disruption.
@@ -557,7 +557,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
                 style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'6px 12px',
                   fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
                   background:'rgba(0,0,0,0.06)', color:'#333333',
-                  border:'0.5px solid rgba(255,255,255,0.18)', transition:'all .15s' }}>
+                  border:'1px solid rgba(0,0,0,0.1)', transition:'all .15s' }}>
                 <Activity size={10}/> View audit
               </button>
             </div>
@@ -962,7 +962,7 @@ export default function CertVault({ nav }) {
 
         {/* Rotate confirm modal */}
         {rotateConfirm && (
-          <div style={{ position:'fixed', inset:0, background:'rgba(240,237,232,0.5)', zIndex:200,
+          <div style={{ position:'fixed', inset:0, background:'#777777', zIndex:200,
             display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
             <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%',
               maxWidth:440, boxShadow:'0 20px 60px rgba(0,0,0,0.25)', overflow:'hidden' }}>

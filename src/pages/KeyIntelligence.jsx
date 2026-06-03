@@ -61,7 +61,7 @@ function fmtExpiry(iso) {
   return { date, days, urgent: days < 30 }
 }
 function statusColor(s) {
-  return { active: '#111111', archived: '#111111', revoked: '#1f5c4e' }[s] || 'rgba(240,237,232,0.38)'
+  return { active: '#111111', archived: '#111111', revoked: '#1f5c4e' }[s] || '#aaaaaa'
 }
 function useIsMobile(bp = 768) {
   const [m, setM] = useState(typeof window !== 'undefined' ? window.innerWidth <= bp : false)
@@ -77,8 +77,8 @@ const STATUS_MAP = {
   chain_anomaly:  { label: 'Chain issue', color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#9a6400',              priority: 2 },
   partial_deploy: { label: 'Partial',     color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#9a6400',              priority: 2 },
   unreachable:    { label: 'Unreachable', color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#9a6400',              priority: 2 },
-  pending:        { label: 'Checking',    color: '#888888', bg: 'rgba(240,237,232,0.06)', border: '#cccccc',icon: Clock,        dot: '#b0a8a0',              priority: 1 },
-  null:           { label: 'Not checked', color: '#888888', bg: 'rgba(240,237,232,0.04)', border: 'rgba(240,237,232,0.1)', icon: Clock,        dot: 'rgba(240,237,232,0.3)',priority: 1 },
+  pending:        { label: 'Checking',    color: '#888888', bg: 'rgba(0,0,0,0.04)', border: '#cccccc',icon: Clock,        dot: '#b0a8a0',              priority: 1 },
+  null:           { label: 'Not checked', color: '#888888', bg: 'rgba(0,0,0,0.03)', border: 'rgba(0,0,0,0.07)', icon: Clock,        dot: '#aaaaaa',priority: 1 },
 }
 function getStatus(s) { return STATUS_MAP[s] || STATUS_MAP['null'] }
 
@@ -195,7 +195,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
             {authError && <div style={{ fontSize: 11, color: '#1f5c4e', marginTop: 5 }}>{authError}</div>}
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button type="button" onClick={onClose} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: 'rgba(0,0,0,0.06)', color: '#333333', border: '0.5px solid rgba(255,255,255,0.18)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+            <button type="button" onClick={onClose} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: 'rgba(0,0,0,0.06)', color: '#333333', border: '1px solid rgba(0,0,0,0.1)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
             <button type="submit" disabled={verifying || locked} style={{ padding: '8px 16px', fontSize: 12, fontWeight: 700, borderRadius: 7, background: locked ? 'rgba(0,0,0,0.04)' : '#1f5c4e', color: '#fff', border: 'none', cursor: locked ? 'not-allowed' : 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
               {verifying ? <><RefreshCw size={11} style={{ animation: 'spin .7s linear infinite' }} /> Verifying…</> : 'Confirm'}
             </button>
@@ -264,7 +264,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
   const accentColor = keyEntry.status === 'archived' ? '#b0a8a0' : isExpiringSoon ? '#1f5c4e' : '#16a068'
 
   return (
-    <div style={{ border: '0.5px solid rgba(255,255,255,0.09)', borderRadius: 10, overflow: 'hidden', position: 'relative', transition: 'border-color .15s', ...(open ? { borderColor: 'rgba(255,255,255,0.18)' } : {}) }}>
+    <div style={{ border: '1px solid rgba(0,0,0,0.08)', borderRadius: 10, overflow: 'hidden', position: 'relative', transition: 'border-color .15s', ...(open ? { borderColor: 'rgba(31,92,78,0.25)' } : {}) }}>
       <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: accentColor, borderRadius: '3px 0 0 3px' }} />
       <div onClick={() => setOpen(v => !v)}
         style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px 12px 20px', cursor: 'pointer', userSelect: 'none', background: open ? 'rgba(0,0,0,0.02)' : 'transparent', transition: 'background .15s' }}>
@@ -324,10 +324,10 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
               <button onClick={() => onReveal(keyEntry)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 11, fontWeight: 700, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: '#1f5c4e', color: '#fff', border: 'none', transition: 'background .15s' }} onMouseEnter={e => e.currentTarget.style.background = '#2e7a68'} onMouseLeave={e => e.currentTarget.style.background = '#1f5c4e'}>
                 <Eye size={11} /> Reveal key
               </button>
-              <button onClick={() => onRotate(keyEntry)} disabled={rotating === keyEntry.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#333333', border: '0.5px solid rgba(255,255,255,0.18)', transition: 'all .15s', opacity: rotating === keyEntry.id ? 0.5 : 1 }}>
+              <button onClick={() => onRotate(keyEntry)} disabled={rotating === keyEntry.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#333333', border: '1px solid rgba(0,0,0,0.1)', transition: 'all .15s', opacity: rotating === keyEntry.id ? 0.5 : 1 }}>
                 {rotating === keyEntry.id ? <><RefreshCw size={10} style={{ animation: 'spin .8s linear infinite' }} /> Rotating…</> : <><RotateCcw size={10} /> Rotate key</>}
               </button>
-              <button onClick={() => onViewAudit(keyEntry.domain)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#333333', border: '0.5px solid rgba(255,255,255,0.18)', transition: 'all .15s' }}>
+              <button onClick={() => onViewAudit(keyEntry.domain)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#333333', border: '1px solid rgba(0,0,0,0.1)', transition: 'all .15s' }}>
                 <Activity size={10} /> View audit
               </button>
             </div>
@@ -335,7 +335,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
           {keyEntry.status === 'archived' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ fontSize: 11, color: '#888888', flex: 1 }}><Clock size={11} style={{ verticalAlign: '-1px', marginRight: 4 }} />Archived {fmtAgo(keyEntry.archived_at)} · Auto-deleted 30 days after archiving</div>
-              <button onClick={() => onViewAudit(keyEntry.domain)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#333333', border: '0.5px solid rgba(255,255,255,0.18)', flexShrink: 0 }}>
+              <button onClick={() => onViewAudit(keyEntry.domain)} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 7, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(0,0,0,0.06)', color: '#333333', border: '1px solid rgba(0,0,0,0.1)', flexShrink: 0 }}>
                 <Activity size={10} /> View audit
               </button>
             </div>
@@ -665,7 +665,7 @@ export default function KeyIntelligence({ nav }) {
                 <span style={{ fontSize: 12, color: '#1f5c4e', fontWeight: 600 }}>{bindAlerts} certificate{bindAlerts !== 1 ? 's' : ''} need attention</span>
               </div>
             )}
-            <div style={{ border: '0.5px solid rgba(255,255,255,0.09)', borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ border: '1px solid rgba(0,0,0,0.08)', borderRadius: 10, overflow: 'hidden' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 120px 100px 110px 90px', padding: '0 18px', height: 36, alignItems: 'center', background: 'rgba(0,0,0,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
                 {['', 'Domain', 'Install path', 'Checked', 'Status', ''].map((h, i) => (
                   <div key={i} style={{ fontSize: 9, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{h}</div>

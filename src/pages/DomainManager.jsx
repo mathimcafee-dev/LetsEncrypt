@@ -35,7 +35,7 @@ function useIsMobile(bp = 768) {
 }
 
 function agentStatus(last_seen_at, status) {
-  if (!last_seen_at) return { label: 'Never seen', color: '#6b6b6b', dot: 'rgba(240,237,232,0.12)', pulse: false }
+  if (!last_seen_at) return { label: 'Never seen', color: '#6b6b6b', dot: 'rgba(0,0,0,0.15)', pulse: false }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
   if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#1f5c4e', dot: '#1f5c4e', pulse: false }
   if (mins > 6) return { label: 'Idle', color: '#1a1a1a', dot: '#111111', pulse: false }
@@ -170,7 +170,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
   const isExpired  = daysLeft_ !== null && daysLeft_ < 0
 
   // Border color based on worst condition
-  const borderColor = isExpired ? 'rgba(192,57,43,0.4)'
+  const borderColor = isExpired ? 'rgba(192,57,43,0.35)'
     : isExpiring ? 'rgba(0,0,0,0.08)'
     : (st?.label === 'Online') ? 'rgba(0,0,0,0.08)'
     : 'var(--v2-border)'

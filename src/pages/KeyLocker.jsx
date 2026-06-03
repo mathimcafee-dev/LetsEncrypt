@@ -17,7 +17,7 @@ const fmtDate = (iso) => iso ? format(new Date(iso), 'MMM d, yyyy') : '—'
 const fmtAgo  = (iso) => iso ? formatDistanceToNow(new Date(iso), { addSuffix: true }) : '—'
 
 function statusColor(s) {
-  return { active:'#111111', archived:'#111111', revoked:'#1f5c4e' }[s] || 'rgba(240,237,232,0.38)'
+  return { active:'#111111', archived:'#111111', revoked:'#1f5c4e' }[s] || '#aaaaaa'
 }
 
 // ── callCertVault helper ──────────────────────────────────────────────
@@ -339,13 +339,13 @@ function AuditRow({ entry }) {
   }
   const actionColors = {
     created:'#111111', fetched:'#111111', rotated:'#111111',
-    archived:'rgba(240,237,232,0.38)', deleted:'#1f5c4e', viewed:'rgba(240,237,232,0.38)',
+    archived:'#aaaaaa', deleted:'#1f5c4e', viewed:'#aaaaaa',
   }
   return (
     <div style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px',
       borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:12 }}>
       <div style={{ width:28, height:28, borderRadius:6, flexShrink:0,
-        background:`${actionColors[entry.action] || 'rgba(240,237,232,0.38)'}12`,
+        background:`${actionColors[entry.action] || '#aaaaaa'}12`,
         display:'flex', alignItems:'center', justifyContent:'center' }}>
         {icons[entry.action] || <Activity size={12}/>}
       </div>
@@ -873,7 +873,7 @@ export default function CertVault({ nav }) {
 
         {/* Rotate confirm modal */}
         {rotateConfirm && (
-          <div style={{ position:'fixed', inset:0, background:'rgba(240,237,232,0.5)', zIndex:200,
+          <div style={{ position:'fixed', inset:0, background:'#777777', zIndex:200,
             display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
             <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%',
               maxWidth:440, boxShadow:'0 20px 60px rgba(0,0,0,0.25)', overflow:'hidden' }}>

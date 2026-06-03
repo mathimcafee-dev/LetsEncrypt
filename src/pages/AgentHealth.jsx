@@ -72,7 +72,7 @@ function StatusPill({ status }) {
   const map = {
     online:  { bg: 'transparent', color: '#111111', label: 'Online',   dot: '#16a068' },
     offline: { bg: 'rgba(31,92,78,0.09)', color: '#1f5c4e', label: 'Offline',  dot: '#1f5c4e' },
-    never:   { bg: '#000000', color: '#333333', label: 'Never',    dot: 'rgba(240,237,232,0.38)' },
+    never:   { bg: '#000000', color: '#333333', label: 'Never',    dot: '#aaaaaa' },
     unknown: { bg: 'rgba(239,68,68,0.08)', color: '#1f5c4e', label: 'Unknown',  dot: '#111111' },
   }
   const s = map[status] || map.unknown
@@ -598,7 +598,7 @@ export default function AgentHealth({ user }) {
                     <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0,
                       background: status === 'online' ? 'transparent' : status === 'offline' ? 'rgba(31,92,78,0.09)' : '#000000',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                      <Server size={14} color={status === 'online' ? '#16a068' : status === 'offline' ? '#1f5c4e' : 'rgba(240,237,232,0.38)'}/>
+                      <Server size={14} color={status === 'online' ? '#16a068' : status === 'offline' ? '#1f5c4e' : '#aaaaaa'}/>
                       {status === 'online' && (
                         <span style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8,
                           borderRadius: '50%', background: '#16a068', border: '1.5px solid var(--v2-bg)',
