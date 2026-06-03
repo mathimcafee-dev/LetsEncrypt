@@ -56,7 +56,7 @@ export default function SLADashboard({ nav }) {
   var S = {
     page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: '#f4f1ec', overflowY: 'auto', padding: '28px 24px', fontFamily: "'Segoe UI',system-ui,sans-serif" },
     card: { background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, padding: '14px 16px', marginBottom: 12 },
-    lbl:  { fontSize: 10, fontWeight: 700, color: 'rgba(240,237,232,0.4)', textTransform: 'uppercase', letterSpacing: '.1em', display: 'block', marginBottom: 6 },
+    lbl:  { fontSize: 10, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '.1em', display: 'block', marginBottom: 6 },
     ttl:  { fontSize: 13, fontWeight: 600, color: '#111111', marginBottom: 3 },
     sub:  { fontSize: 12, color: 'rgba(240,237,232,0.6)', lineHeight: 1.6 },
     btn:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: 'rgba(0,0,0,0.07)', border: '1px solid rgba(192,57,43,0.4)', borderRadius: 8, color: '#111111', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
@@ -65,7 +65,7 @@ export default function SLADashboard({ nav }) {
 
   if (loading) return (
     <div style={S.page}>
-      <div style={{ color: 'rgba(240,237,232,0.5)', fontSize: 14 }}>Loading SLA status...</div>
+      <div style={{ color: '#666666', fontSize: 14 }}>Loading SLA status...</div>
     </div>
   )
 
@@ -82,7 +82,7 @@ export default function SLADashboard({ nav }) {
         <div style={{ fontSize: 20, fontWeight: 700, color: '#111111', marginBottom: 12 }}>SLA Coverage not active</div>
         <div style={{ fontSize: 13, color: 'rgba(240,237,232,0.6)', lineHeight: 1.75, marginBottom: 28 }}>Upgrade to SSLVault Premium to get the 47-Day compliance guarantee, monthly audit reports, and escalation alerts.</div>
         <button style={S.btnP} onClick={function() { if (nav) nav('/pricing') }}>View Premium plans</button>
-        <div style={{ marginTop: 14, fontSize: 11, color: 'rgba(240,237,232,0.3)' }}>Plans from $999/year - Contact us to activate</div>
+        <div style={{ marginTop: 14, fontSize: 11, color: '#999999' }}>Plans from $999/year - Contact us to activate</div>
       </div>
     </div>
   )
@@ -99,7 +99,7 @@ export default function SLADashboard({ nav }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ fontSize: 20, fontWeight: 700, color: '#111111', marginBottom: 4 }}>SLA Coverage</div>
-            <div style={{ fontSize: 12, color: 'rgba(240,237,232,0.4)' }}>
+            <div style={{ fontSize: 12, color: '#888888' }}>
               Plan: <span style={{ color: '#1f5c4e', fontWeight: 600 }}>{(sub.plan || 'active').toUpperCase()}</span>
               {' - '}{sub.domain_limit || 0} domains covered
             </div>
@@ -119,7 +119,7 @@ export default function SLADashboard({ nav }) {
             <div style={{ fontSize: 10, fontWeight: 700, color: col, letterSpacing: '.08em', marginTop: 4 }}>
               {score >= 80 ? 'COMPLIANT' : score >= 50 ? 'AT RISK' : 'BREACH'}
             </div>
-            <div style={{ fontSize: 10, color: 'rgba(240,237,232,0.3)', marginTop: 3 }}>compliance score</div>
+            <div style={{ fontSize: 10, color: '#999999', marginTop: 3 }}>compliance score</div>
           </div>
           <div style={S.card}>
             <span style={S.lbl}>Total certs</span>
@@ -141,20 +141,20 @@ export default function SLADashboard({ nav }) {
             <thead>
               <tr style={{ background: 'rgba(31,92,78,0.07)' }}>
                 {['Domain', 'Expires', 'Days left', 'Status'].map(function(h) {
-                  return <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: 'rgba(240,237,232,0.4)', letterSpacing: '.08em', textTransform: 'uppercase' }}>{h}</th>
+                  return <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#888888', letterSpacing: '.08em', textTransform: 'uppercase' }}>{h}</th>
                 })}
               </tr>
             </thead>
             <tbody>
               {certs.length === 0
-                ? <tr><td colSpan={4} style={{ padding: 24, textAlign: 'center', fontSize: 13, color: 'rgba(240,237,232,0.3)' }}>No active certificates</td></tr>
+                ? <tr><td colSpan={4} style={{ padding: 24, textAlign: 'center', fontSize: 13, color: '#999999' }}>No active certificates</td></tr>
                 : certs.map(function(c) {
                   var dl = daysLeft(c.expires_at)
                   var cc = certCol(dl)
                   return (
                     <tr key={c.id || c.domain} style={{ borderTop: '1px solid rgba(31,92,78,0.08)' }}>
                       <td style={{ padding: '10px 14px', fontSize: 13, color: '#111111', fontFamily: 'monospace' }}>{c.domain}</td>
-                      <td style={{ padding: '10px 14px', fontSize: 12, color: 'rgba(240,237,232,0.5)' }}>{fmtDate(c.expires_at)}</td>
+                      <td style={{ padding: '10px 14px', fontSize: 12, color: '#666666' }}>{fmtDate(c.expires_at)}</td>
                       <td style={{ padding: '10px 14px', fontSize: 13, fontWeight: 600, color: cc }}>{Math.max(0, dl)}</td>
                       <td style={{ padding: '10px 14px' }}>
                         <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: cc + '22', color: cc, letterSpacing: '.06em' }}>{certLbl(dl)}</span>
@@ -169,7 +169,7 @@ export default function SLADashboard({ nav }) {
 
         <span style={Object.assign({}, S.lbl, { marginTop: 20, display: 'block' })}>Compliance Reports</span>
         {reports.length === 0
-          ? <div style={S.card}><div style={{ fontSize: 13, color: 'rgba(240,237,232,0.3)', textAlign: 'center', padding: '8px 0' }}>No reports yet. Click Generate report above.</div></div>
+          ? <div style={S.card}><div style={{ fontSize: 13, color: '#999999', textAlign: 'center', padding: '8px 0' }}>No reports yet. Click Generate report above.</div></div>
           : reports.map(function(r) {
             return (
               <div key={r.id} style={Object.assign({}, S.card, { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 })}>

@@ -8,8 +8,8 @@ const BG2  = '#1a0404'
 const BG3  = '#ffffff'
 const BG4  = '#f0ede7'
 const T1   = '#111111'
-const T2   = 'rgba(240,237,232,0.65)'
-const T3   = 'rgba(240,237,232,0.35)'
+const T2   = '#444444'
+const T3   = '#888888'
 const LN   = 'rgba(0,0,0,0.08)'
 const LN2  = 'rgba(31,92,78,0.25)'
 const RED  = '#1f5c4e'
@@ -34,13 +34,13 @@ export default function About({ nav }) {
       <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}`}</style>
 
       {/* Nav */}
-      <header style={{ background:'rgba(13,0,0,0.92)', backdropFilter:'blur(12px)', borderBottom:`1px solid ${LN}`, height:52, display:'flex', alignItems:'center', justifyContent:'space-between', padding:`0 ${P}`, position:'sticky', top:0, zIndex:100 }}>
+      <header style={{ background:'#ffffff', borderBottom:`1px solid ${LN}`, height:52, display:'flex', alignItems:'center', justifyContent:'space-between', padding:`0 ${P}`, position:'sticky', top:0, zIndex:100 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer' }} onClick={() => nav('/')}>
           <div style={{ width:22, height:22, background:RED, borderRadius:4, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{ fontSize:13, fontWeight:600, color:T1 }}>SSLVault</span>
-          <span style={{ fontSize:11, color:T3, fontFamily:MONO }}> / About</span>
+          <span style={{ fontSize:13, fontWeight:600, color:'#111111' }}>SSLVault</span>
+          <span style={{ fontSize:11, color:'#888888', fontFamily:MONO }}> / About</span>
         </div>
         <div style={{ display:'flex', gap:8 }}>
           <button onClick={() => nav('/pricing')} style={{ background:'none', border:`1px solid ${LN2}`, cursor:'pointer', fontFamily:F, fontSize:12, color:T2, padding:'6px 14px', borderRadius:5 }}>Pricing</button>

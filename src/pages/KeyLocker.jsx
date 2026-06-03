@@ -133,7 +133,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
   const locked = attempts >= 3
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(240,237,232,0.65)', zIndex:300,
+    <div style={{ position:'fixed', inset:0, background:'#444444', zIndex:300,
       display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'var(--v2-surface)', borderRadius:14, width:'100%', maxWidth:480,
         boxShadow:'0 28px 72px rgba(0,0,0,0.35)', overflow:'hidden',

@@ -153,7 +153,7 @@ function OverviewTab({ user }) {
           grades={}, bySource={}, deployed=0, keyVault=0 } = stats || {}
 
   const gradeEntries = [['A+','#111111'],['A','#2e7a68'],['B','#2e7a68'],
-    ['C','#1f5c4e'],['D','#1f5c4e'],['F','#2e7a68'],['—','rgba(240,237,232,0.45)']]
+    ['C','#1f5c4e'],['D','#1f5c4e'],['F','#2e7a68'],['—','#666666']]
   const maxGrade = Math.max(...gradeEntries.map(([g]) => grades[g]||0), 1)
 
   return (

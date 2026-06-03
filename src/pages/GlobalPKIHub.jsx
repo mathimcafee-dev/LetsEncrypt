@@ -77,11 +77,11 @@ const REGION_FLAGS = { 'Global':'🌍', 'Europe':'🇪🇺', 'Americas':'🇺�
 const rFlag = r => REGION_FLAGS[r] || '🌐'
 
 const statusDot = s => {
-  if (!s) return 'rgba(240,237,232,0.45)'
+  if (!s) return '#666666'
   const l = s.toLowerCase()
   if (['final','current','in force','active','complete'].some(x=>l.includes(x))) return '#16a068'
   if (['draft','selected','planning'].some(x=>l.includes(x))) return '#111111'
-  return 'rgba(240,237,232,0.45)'
+  return '#666666'
 }
 
 const pqcStatusColor = s => {

@@ -165,11 +165,11 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: isDone ? '#111111' : '#000000',
                   fontSize:11, fontWeight: 700,
-                  color: isDone ? '#111111' : 'rgba(240,237,232,0.35)',
+                  color: isDone ? '#111111' : '#888888',
                 }}>
                   {isDone ? '✓' : step.num}
                 </div>
-                <span style={{ fontSize:11, fontWeight: 600, color: isDone ? '#111111' : 'rgba(240,237,232,0.35)' }}>
+                <span style={{ fontSize:11, fontWeight: 600, color: isDone ? '#111111' : '#888888' }}>
                   {isDone ? step.doneLabel : step.pendingLabel}
                 </span>
               </div>
@@ -261,7 +261,7 @@ function InstallModal({ onClose }) {
                   overflow:'auto', whiteSpace:'nowrap' }}>{cmd}</code>
                 {!loading && !error && (
                   <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, fontSize:10, fontWeight:500,
-                    color:'rgba(240,237,232,0.55)', padding:'4px 8px', border:'0.5px solid rgba(240,237,232,0.14)',
+                    color:'#555555', padding:'4px 8px', border:'0.5px solid rgba(240,237,232,0.14)',
                     borderRadius:4, background:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:4,
                     fontFamily:'inherit' }}>
                     {copied===id ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}

@@ -291,7 +291,7 @@ function OverviewTab({ tok, onSwitchCA }) {
                     animation:'pulse-ca 2s ease-in-out infinite' }}/>
                 )}
                 <span style={{ position:'absolute', inset:0, borderRadius:'50%',
-                  background:conn?CA_META[ca].accent:'rgba(240,237,232,0.15)' }}/>
+                  background:conn?CA_META[ca].accent:'#cccccc' }}/>
               </div>
             </div>
             <div style={{ fontSize:13, fontWeight:600, color:'var(--v2-text-1)', marginBottom:3 }}>{label}</div>

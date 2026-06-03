@@ -326,10 +326,10 @@ function DvPendingCard({ order, onRefresh }) {
             </div>
             {/* Step text */}
             <div style={{ paddingBottom: i < steps.length-1 ? 0 : 0, flex:1, minWidth:0 }}>
-              <div style={{ fontSize:12, fontWeight:600, color: s.done ? '#16a068' : s.active ? '#9a6400' : 'rgba(240,237,232,0.35)', marginBottom:2 }}>
+              <div style={{ fontSize:12, fontWeight:600, color: s.done ? '#16a068' : s.active ? '#9a6400' : '#888888', marginBottom:2 }}>
                 {s.label}
               </div>
-              <div style={{ fontSize:11, color: s.done ? 'rgba(240,237,232,0.5)' : s.active ? 'rgba(251,191,36,0.7)' : 'rgba(240,237,232,0.25)', wordBreak:'break-all' }}>
+              <div style={{ fontSize:11, color: s.done ? 'rgba(240,237,232,0.5)' : s.active ? 'rgba(251,191,36,0.7)' : '#999999', wordBreak:'break-all' }}>
                 {s.detail}
               </div>
             </div>
@@ -1592,11 +1592,11 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px',
         background:'transparent', border:'1px solid rgba(240,237,232,0.15)',
         borderRadius:7, cursor: disabled ? 'not-allowed' : 'pointer',
-        color: disabled ? 'rgba(240,237,232,0.25)' : color,
+        color: disabled ? '#999999' : color,
         fontFamily:'inherit', fontSize:12, fontWeight:600, transition:'all .15s',
         opacity: disabled ? 0.5 : 1 }}
       onMouseEnter={e => { if (!disabled) { e.currentTarget.style.background='rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor='rgba(240,237,232,0.3)' }}}
-      onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.borderColor='rgba(240,237,232,0.15)' }}>
+      onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.borderColor='#cccccc' }}>
       {Icon && <Icon size={12}/>} {label}
     </button>
   )
@@ -2075,7 +2075,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
   const days  = daysLeft(primary.expires_at)
   const s     = statusOf(days, primary.status)
   const initials = primary.domain.replace(/^www\./, '').slice(0,2).toUpperCase()
-  const dotColor = s.dot==='green'?'#111111':s.dot==='amber'?'#111111':s.dot==='red'?'#1f5c4e':'rgba(240,237,232,0.15)'
+  const dotColor = s.dot==='green'?'#111111':s.dot==='amber'?'#111111':s.dot==='red'?'#1f5c4e':'#cccccc'
 
   // Group versions by ggs_order_id -- each unique order = one subscription
   const subscriptionMap = {}
@@ -2215,7 +2215,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
             // Older           → muted cream
             const borderColor = isActiveSub && !isRenewal ? '#111111'
               : isRenewal ? '#111111'
-              : 'rgba(240,237,232,0.15)'
+              : '#cccccc'
 
             const headerBg    = isActiveSub && !isRenewal ? 'transparent'
               : isRenewal ? 'transparent'
@@ -2281,7 +2281,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                           {/* Filled progress */}
                           <div style={{ position:'absolute', left:0, top:0, bottom:0,
                             width:`${isActiveSub ? subPct : 100}%`,
-                            background:isActiveSub ? borderColor : 'rgba(240,237,232,0.15)',
+                            background:isActiveSub ? borderColor : '#cccccc',
                             borderRadius:6, transition:'width .6s' }}/>
                           {/* Today marker for active sub */}
                           {isActiveSub && subPct > 0 && subPct < 100 && (
@@ -2365,7 +2365,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                         {wasInstalled && (
                           <>
                             <Server size={12} color="rgba(240,237,232,0.45)"/>
-                            <div style={{ position:'absolute', top:'50%', left:3, right:3, height:1.5, background:'rgba(240,237,232,0.45)', transform:'rotate(-25deg)', transformOrigin:'center' }}/>
+                            <div style={{ position:'absolute', top:'50%', left:3, right:3, height:1.5, background:'#666666', transform:'rotate(-25deg)', transformOrigin:'center' }}/>
                           </>
                         )}
                         {!isLive && !wasInstalled && vi===0 && <Clock size={11} color="#1f5c4e"/>}
@@ -2377,7 +2377,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                         <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2 }}>
                           <span style={{ fontSize:10, fontWeight:600, padding:'1px 7px', borderRadius:20,
                             background: isLive ? '#111111' : wasInstalled ? '#111111' : vi===0 ? 'transparent' : '#111111',
-                            color: isLive ? '#000000' : wasInstalled ? 'rgba(240,237,232,0.45)' : vi===0 ? '#111111' : 'rgba(240,237,232,0.45)',
+                            color: isLive ? '#000000' : wasInstalled ? '#666666' : vi===0 ? '#111111' : '#666666',
                             border: isLive ? 'none' : `0.5px solid ${wasInstalled?'rgba(0,0,0,0.07)':vi===0?'rgba(31,92,78,0.2)':'rgba(0,0,0,0.07)'}`,
                             fontWeight: isLive ? 600 : 500,
                             flexShrink:0 }}>
@@ -2786,7 +2786,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               <div style={{ display:'flex', gap:8, flexShrink:0 }}>
                 {[
                   { val:healthy, label:'Healthy', color:'#16a068', bg:'rgba(74,222,128,0.07)', border:'rgba(74,222,128,0.18)', onClick:()=>setFilter('healthy') },
-                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#9a6400':pendingDcv>0?'#1f5c4e':'rgba(240,237,232,0.25)', bg:'rgba(255,140,122,0.07)', border:'rgba(255,140,122,0.18)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
+                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#9a6400':pendingDcv>0?'#1f5c4e':'#999999', bg:'rgba(255,140,122,0.07)', border:'rgba(255,140,122,0.18)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
                 ].map(s => (
                   <div key={s.label} onClick={s.onClick} style={{
                     background:s.bg, border:`1px solid ${s.border}`,
@@ -3512,7 +3512,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                       background: 'transparent',
                       borderBottom: filter===f.key ? '2px solid #388bfd' : '2px solid transparent',
                       borderRadius: 0,
-                      color: filter===f.key ? 'rgba(31,92,78,0.09)' : 'rgba(240,237,232,0.45)',
+                      color: filter===f.key ? 'rgba(31,92,78,0.09)' : '#666666',
                       paddingBottom: '10px', marginBottom: '-1px',
                       boxShadow: filter===f.key ? '0 1px 3px rgba(0,0,0,0.07)' : 'none' }}>
                     {f.label}

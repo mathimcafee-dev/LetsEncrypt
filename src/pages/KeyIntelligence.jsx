@@ -77,7 +77,7 @@ const STATUS_MAP = {
   chain_anomaly:  { label: 'Chain issue', color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#9a6400',              priority: 2 },
   partial_deploy: { label: 'Partial',     color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#9a6400',              priority: 2 },
   unreachable:    { label: 'Unreachable', color: '#9a6400', bg: 'rgba(184,120,0,0.07)',   border: 'rgba(184,120,0,0.2)', icon: AlertTriangle,dot: '#9a6400',              priority: 2 },
-  pending:        { label: 'Checking',    color: '#888888', bg: 'rgba(240,237,232,0.06)', border: 'rgba(240,237,232,0.15)',icon: Clock,        dot: '#b0a8a0',              priority: 1 },
+  pending:        { label: 'Checking',    color: '#888888', bg: 'rgba(240,237,232,0.06)', border: '#cccccc',icon: Clock,        dot: '#b0a8a0',              priority: 1 },
   null:           { label: 'Not checked', color: '#888888', bg: 'rgba(240,237,232,0.04)', border: 'rgba(240,237,232,0.1)', icon: Clock,        dot: 'rgba(240,237,232,0.3)',priority: 1 },
 }
 function getStatus(s) { return STATUS_MAP[s] || STATUS_MAP['null'] }

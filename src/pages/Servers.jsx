@@ -6,7 +6,7 @@ import { formatDistanceToNow, differenceInMinutes } from 'date-fns'
 import '../styles/design-v2.css'
 
 function agentStatus(last_seen_at, status) {
-  if (!last_seen_at) return { label: 'Never seen', color: '#6b6b6b', dot: 'rgba(240,237,232,0.15)', bg: '#111111' }
+  if (!last_seen_at) return { label: 'Never seen', color: '#6b6b6b', dot: '#cccccc', bg: '#111111' }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
   if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#1f5c4e', dot: '#1f5c4e', bg: 'rgba(31,92,78,0.09)' }
   if (mins > 6) return { label: 'Idle', color: '#1f5c4e', dot: '#111111', bg: 'rgba(239,68,68,0.08)' }
@@ -186,7 +186,7 @@ function InstallModal({ onClose }) {
   )
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(240,237,232,0.45)', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+    <div style={{ position:'fixed', inset:0, background:'#666666', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'var(--v2-surface)', borderRadius:10, width:'100%', maxWidth:540, boxShadow:'0 20px 60px rgba(0,0,0,0.2)', overflow:'hidden' }}>
         <div style={{ padding:'18px 22px', borderBottom:'0.5px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div>

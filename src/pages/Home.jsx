@@ -333,7 +333,7 @@ export default function Home({ nav }) {
           <div style={{width:22,height:22,background:'#1f5c4e',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <span style={{fontSize:13,fontWeight:600,color:T1,letterSpacing:'-0.3px'}}>SSLVault</span>
+          <span style={{fontSize:13,fontWeight:600,color:'#111111',letterSpacing:'-0.3px'}}>SSLVault</span>
         </div>
         {!isMobile&&<nav style={{display:'flex',alignItems:'center',gap:1,background:'transparent'}}>
           {[['Platform','#platform'],['Features','#features'],['Security','#security'],['Pricing','/pricing']].map(([l,h])=>(

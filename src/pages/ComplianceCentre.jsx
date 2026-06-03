@@ -226,7 +226,7 @@ export default function ComplianceCentre({ nav, user }) {
                 return (
                   <div key={m.year} style={{ display:'flex', alignItems:'center', gap:8 }}>
                     <div style={{ width:6, height:6, borderRadius:'50%', background: compliant ? '#16a068' : m.col, flexShrink:0 }}/>
-                    <span style={{ fontSize:11, color:'rgba(240,237,232,0.45)', minWidth:60 }}>{m.label}</span>
+                    <span style={{ fontSize:11, color:'#666666', minWidth:60 }}>{m.label}</span>
                     <span style={{ fontSize:11, fontWeight:600, color: compliant ? '#16a068' : m.col }}>{m.days}d max</span>
                     <span style={{ fontSize:10, color:'#6b6b6b', marginLeft:'auto' }}>{count}/{rows.length} ready</span>
                   </div>
@@ -239,7 +239,7 @@ export default function ComplianceCentre({ nav, user }) {
           {!hasSla && (
             <div style={{ ...card, border:'1px solid rgba(0,0,0,0.1)', display:'flex', flexDirection:'column', justifyContent:'center' }}>
               <span style={lbl}>SLA Guarantee</span>
-              <div style={{ fontSize:13, color:'rgba(240,237,232,0.55)', lineHeight:1.6, marginBottom:12 }}>Get a written compliance guarantee + monthly audit reports for SOC2 / ISO 27001.</div>
+              <div style={{ fontSize:13, color:'#555555', lineHeight:1.6, marginBottom:12 }}>Get a written compliance guarantee + monthly audit reports for SOC2 / ISO 27001.</div>
               <button onClick={function(){ if(nav) nav('/pricing') }} style={{ alignSelf:'flex-start', padding:'7px 16px', background:'#1f5c4e', border:'none', borderRadius:7, color:'#fff', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:F }}>Upgrade to Premium</button>
             </div>
           )}

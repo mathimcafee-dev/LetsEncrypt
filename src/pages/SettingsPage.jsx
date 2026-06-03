@@ -198,7 +198,7 @@ function ApiKeysPanel({ user }) {
         <div style={{ fontSize:15, fontWeight:700, color:'#1a1a1a', marginBottom:8 }}>
           Coming Soon
         </div>
-        <div style={{ fontSize:12, color:'rgba(240,237,232,0.45)', lineHeight:1.7, maxWidth:320, margin:'0 auto 20px' }}>
+        <div style={{ fontSize:12, color:'#666666', lineHeight:1.7, maxWidth:320, margin:'0 auto 20px' }}>
           The SSLVault REST API is under development. You'll be able to issue certificates,
           query cert status, and trigger renewals programmatically.
         </div>

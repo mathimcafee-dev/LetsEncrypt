@@ -149,7 +149,7 @@ function Sparkline({ status = 'green' }) {
     status === 'green' ? '0,16 8,12 16,14 24,9 32,11 40,6 48,8 56,4 64,5'
   : status === 'amber' ? '0,8 8,9 16,7 24,10 32,12 40,16 48,18 56,18 64,18'
   : '0,12 8,12 16,12 24,12 32,12 40,12 48,12 56,12 64,12'
-  const stroke = status === 'green' ? '#111111' : status === 'amber' ? '#111111' : 'rgba(240,237,232,0.15)'
+  const stroke = status === 'green' ? '#111111' : status === 'amber' ? '#111111' : '#cccccc'
   return (
     <svg width="64" height="22" viewBox="0 0 64 22" style={{ flexShrink: 0 }}>
       <polyline points={points} fill="none" stroke={stroke} strokeWidth="1.4"
@@ -1316,7 +1316,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                     </div>
                     <button onClick={copy} style={{
                       background: 'transparent', border: 'none', cursor: 'pointer',
-                      color: copied ? '#111111' : 'rgba(240,237,232,0.45)', fontSize:11, fontWeight: 500,
+                      color: copied ? '#111111' : '#666666', fontSize:11, fontWeight: 500,
                       display: 'inline-flex', alignItems: 'center', gap: 4
                     }}>
                       {copied ? <><Check size={11} /> Copied</> : 'Copy'}

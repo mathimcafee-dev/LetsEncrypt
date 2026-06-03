@@ -34,7 +34,7 @@ function CopyBtn({ text }) {
   return (
     <button onClick={() => { navigator.clipboard.writeText(text); setOk(true); setTimeout(() => setOk(false), 1800) }}
       style={{ background: 'rgba(0,0,0,0.05)', border: '0.5px solid rgba(240,237,232,0.1)',
-        borderRadius: 4, cursor: 'pointer', color: ok ? '#1f5c4e' : 'rgba(240,237,232,0.35)',
+        borderRadius: 4, cursor: 'pointer', color: ok ? '#1f5c4e' : '#888888',
         display: 'flex', alignItems: 'center', gap: 4, fontSize:10, padding: '3px 8px', fontFamily: 'inherit' }}>
       {ok ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
     </button>
@@ -60,7 +60,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
           </div>
           <div style={{ fontSize:10, color: '#3d3d3d' }}>DigiCert / RapidSSL trust chain</div>
         </div>
-        <div style={{ marginLeft: 'auto', background: 'rgba(240,237,232,0.15)', borderRadius: 3,
+        <div style={{ marginLeft: 'auto', background: '#cccccc', borderRadius: 3,
           padding: '2px 7px', fontSize: 9, fontWeight: 700, color: '#1a1a1a', letterSpacing: '0.5px' }}>
           LIVE
         </div>
@@ -79,7 +79,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
           <div key={label} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 8 }}>
             <span style={{ fontSize: 9, fontWeight: 600, color: '#b5aea8',
               textTransform: 'uppercase', letterSpacing: '0.4px', paddingTop: 1 }}>{label}</span>
-            <span style={{ fontSize:11, color: highlight ? '#1f5c4e' : 'rgba(240,237,232,0.35)',
+            <span style={{ fontSize:11, color: highlight ? '#1f5c4e' : '#888888',
               wordBreak: 'break-all', fontWeight: highlight ? 600 : 400 }}>{value}</span>
           </div>
         ))}
@@ -524,7 +524,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               ].map(({ k, v, blue }) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize:12, marginBottom: 7 }}>
                   <span style={{ color: '#b5aea8' }}>{k}</span>
-                  <span style={{ color: blue ? '#111111' : 'rgba(240,237,232,0.35)', fontWeight: blue ? 500 : 400 }}>{v}</span>
+                  <span style={{ color: blue ? '#111111' : '#888888', fontWeight: blue ? 500 : 400 }}>{v}</span>
                 </div>
               ))}
             </div>
@@ -622,7 +622,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 <span style={{ fontSize:10, fontWeight: 700, color: '#1a1a1a',
                   textTransform: 'uppercase', letterSpacing: '0.4px' }}>{k}</span>
                 <span style={{ fontSize:12, fontFamily: 'monospace',
-                  color: loading ? '#111111' : accent ? '#1f5c4e' : 'rgba(240,237,232,0.35)',
+                  color: loading ? '#111111' : accent ? '#1f5c4e' : '#888888',
                   wordBreak: 'break-all', lineHeight: 1.5 }}>
                   {loading
                     ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>

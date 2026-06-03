@@ -7,7 +7,7 @@ const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 const C = {
   bg:'#f7f5f0', bg2:'#1a0404', bg3:'#220808',
   border:'rgba(0,0,0,0.08)', border2:'rgba(31,92,78,0.25)',
-  heading:'#111111', body:'rgba(240,237,232,0.65)', muted:'rgba(240,237,232,0.35)',
+  heading:'#111111', body:'#444444', muted:'#888888',
   teal:'#16a068', tealDk:'#16a068', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(22,160,104,0.22)',
   green:'#16a068', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(22,160,104,0.22)',
   purple:'#a78bfa', purpleBg:'rgba(167,139,250,0.06)',

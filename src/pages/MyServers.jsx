@@ -111,7 +111,7 @@ function ServerCard({ agent, certs }) {
             border: `1px solid ${online ? 'rgba(31,92,78,0.2)' : 'rgba(240,237,232,0.12)'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Server size={18} color={online ? '#16a068' : 'rgba(240,237,232,0.35)'} />
+            <Server size={18} color={online ? '#16a068' : '#888888'} />
           </div>
           <div style={{
             position: 'absolute', bottom: -2, right: -2,
@@ -132,7 +132,7 @@ function ServerCard({ agent, certs }) {
             <span>·</span>
             <span>{agent.os?.replace(/\(.*?\)/g, '').trim() || 'Linux'}</span>
             <span>·</span>
-            <span style={{ color: online ? '#16a068' : 'rgba(240,237,232,0.35)', fontWeight: 500 }}>
+            <span style={{ color: online ? '#16a068' : '#888888', fontWeight: 500 }}>
               {online ? `Online · ${fmtAgo(agent.last_seen_at)}` : `Offline · ${fmtAgo(agent.last_seen_at)}`}
             </span>
           </div>
@@ -496,7 +496,7 @@ function AddDnsModal({ onClose, onSaved, userId }) {
                   transition:'all .15s',
                   boxShadow: provider === id ? `0 0 0 3px ${info.color}20` : 'none',
                 }}>
-                  <div style={{ fontSize:11, fontWeight:700, color:provider===id?info.color:'rgba(240,237,232,0.45)', fontFamily:'monospace', marginBottom:4 }}>{info.initials}</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:provider===id?info.color:'#666666', fontFamily:'monospace', marginBottom:4 }}>{info.initials}</div>
                   <div style={{ fontSize:11, fontWeight:600, color:provider===id?info.color:'#333333', lineHeight:1.2 }}>{info.name}</div>
                 </button>
               )
@@ -621,7 +621,7 @@ function EmptyState({ hasDns, onAddServer, onAddDns }) {
               background: step.done ? '#111111' : '#000000',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize:11, fontWeight: 700,
-              color: step.done ? 'var(--v2-surface)' : 'rgba(240,237,232,0.35)',
+              color: step.done ? 'var(--v2-surface)' : '#888888',
               marginBottom: 10,
             }}>
               {step.done ? '✓' : step.num}
@@ -750,7 +750,7 @@ function AddHostingModal({ onClose, onSaved, userId }) {
           display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div>
             <div style={{ fontSize:15, fontWeight:700, color:'#111111' }}>Connect cPanel hosting</div>
-            <div style={{ fontSize:12, color:'rgba(240,237,232,0.45)', marginTop:2 }}>
+            <div style={{ fontSize:12, color:'#666666', marginTop:2 }}>
               Certificates install and renew automatically
             </div>
           </div>
@@ -1050,7 +1050,7 @@ export default function MyServers({ user }) {
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '10px 16px', fontSize:13, fontWeight: 500,
                   background: 'none', border: 'none', cursor: 'pointer',
-                  color: activeTab === id ? '#ffffff' : 'rgba(240,237,232,0.55)',
+                  color: activeTab === id ? '#ffffff' : '#555555',
                   borderBottom: `2px solid ${activeTab === id ? '#1f5c4e' : 'transparent'}`,
                   marginBottom: -1, fontFamily: 'inherit', transition: 'all .15s',
                 }}>
