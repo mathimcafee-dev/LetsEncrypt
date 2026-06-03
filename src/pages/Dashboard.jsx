@@ -1621,8 +1621,8 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   }
 
   return (
-    <div style={{ background:'rgba(10,0,0,0.95)', border:'1px solid rgba(31,92,78,0.2)',
-      borderRadius:12, overflow:'hidden', marginTop:4, animation:'fadeSlideUp 0.2s ease both' }}>
+    <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)',
+      borderRadius:12, overflow:'hidden', marginTop:4, boxShadow:'0 2px 8px rgba(0,0,0,0.07)', animation:'fadeSlideUp 0.2s ease both' }}>
 
       {/* -- Status banner -- */}
       <div style={{ padding:'10px 18px', display:'flex', alignItems:'center', gap:10,
@@ -1644,7 +1644,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
 
       {/* -- Action buttons row -- matches GoGetSSL toolbar -- */}
       <div style={{ padding:'10px 18px', display:'flex', gap:8, flexWrap:'wrap',
-        borderBottom:'1px solid rgba(0,0,0,0.06)', background:'rgba(0,0,0,0.02)' }}>
+        borderBottom:'1px solid rgba(0,0,0,0.07)', background:'#f4f1ec' }}>
         <ABtn icon={RotateCcw} label="Reissue SSL"
           onClick={() => certHistoryRef.current?.doAction('reissue')} disabled={!session}/>
         {cert._daysToRenewal != null && cert._daysToRenewal <= 30 && (
@@ -1693,7 +1693,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             {subEnd && <span>{fmtD(subEnd)} · Subscription ends</span>}
           </div>
           <div style={{ position:'relative', height:14, borderRadius:6, overflow:'hidden',
-            background:'rgba(0,0,0,0.04)', border:'1px solid rgba(0,0,0,0.06)' }}>
+            background:'rgba(0,0,0,0.07)', border:'1px solid rgba(0,0,0,0.06)' }}>
             <div style={{ position:'absolute', left:0, top:0, bottom:0,
               width: certPct+'%', borderRadius:'6px 0 0 6px',
               background: isExpired ? '#1f5c4e' : isWarn ? '#111111' : '#16a068' }}/>
@@ -1711,7 +1711,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
       )}
 
       {/* -- Section tabs -- */}
-      <div style={{ display:'flex', borderBottom:'1px solid rgba(0,0,0,0.06)', padding:'0 18px' }}>
+      <div style={{ display:'flex', borderBottom:'1px solid rgba(0,0,0,0.07)', padding:'0 18px', background:'#fff' }}>
         {[['details','Details'], ['files','Files'], ['history','History'], ['security','Security'], ['posture','Posture']].map(([k,l]) => (
           <button key={k} onClick={() => setActiveSection(k)}
             style={{ fontSize:12, fontWeight:600, padding:'10px 14px', border:'none', background:'none',
@@ -2152,7 +2152,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
             </span>
             {primary.install_method && (
               <span style={{ fontSize:10, padding:'2px 8px', borderRadius:20,
-                background: primary.install_method==='cpanel'?'#000000':'#444444',
+                background: primary.install_method==='cpanel'?'#1f5c4e':'#555555',
                 color: primary.install_method==='cpanel'?'#8B6914':'#111111',
                 border:`0.5px solid ${primary.install_method==='cpanel'?'rgba(30,0,0,0.5)':'#444444'}`,
                 display:'flex', alignItems:'center', gap:3, flexShrink:0 }}>
