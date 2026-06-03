@@ -88,13 +88,18 @@ const _build = 1779297041 // cache bust
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setAuthLoading(false)
+      // If logged in and on /dashboard standalone, redirect to CLM shell
+      if (session?.user && window.location.pathname === '/dashboard') {
+        window.history.replaceState({}, '', '/')
+        setPage('/')
+      }
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
-      // After login, redirect to dashboard
-      if (session?.user && (window.location.pathname === '/' || window.location.pathname === '/auth')) {
-        window.history.pushState({}, '', '/dashboard')
-        setPage('/dashboard')
+      // After login from /auth, go to CLM home
+      if (session?.user && window.location.pathname === '/auth') {
+        window.history.pushState({}, '', '/')
+        setPage('/')
       }
     })
     return () => subscription.unsubscribe()
