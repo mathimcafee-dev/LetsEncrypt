@@ -15,6 +15,7 @@ import FleetWidget from '../components/FleetWidget'
 import VulnScanner from '../components/VulnScanner'
 import MissionControlModal from '../components/MissionControlModal'
 import SmartInstall from '../components/SmartInstall'
+import VaultBrainPanel from '../components/VaultBrainPanel'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -2523,6 +2524,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
   const [healthScores, setHealthScores] = useState({})  // domain → {grade, score}
   const [recentEvents, setRecentEvents] = useState([])   // activity feed
   const [shareMsg,   setShareMsg]   = useState('')        // share button feedback
+  const [aiPanelOpen, setAiPanelOpen] = useState(false)  // VaultBrain panel
 
   const load = useCallback(async () => {
     if (!user) return
@@ -2731,7 +2733,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
             <>
             {/* VaultBrain AI Advisor entry card */}
             <div
-              onClick={() => nav('/vaultbrain')}
+              onClick={() => setAiPanelOpen(true)}
               style={{
                 background: 'linear-gradient(135deg, rgba(192,57,43,0.18) 0%, rgba(167,139,250,0.1) 100%)',
                 border: '1px solid rgba(192,57,43,0.35)',
@@ -3710,11 +3712,50 @@ function LoggedInDashboard({ user, nav, onIssue }) {
         />
       )}
 
+      {/* VaultBrain slide-in panel */}
+      <VaultBrainPanel
+        open={aiPanelOpen}
+        onClose={() => setAiPanelOpen(false)}
+        session={session}
+      />
+
+      {/* Floating AI button */}
+      <button
+        onClick={() => setAiPanelOpen(o => !o)}
+        title="Ask VaultBrain AI"
+        style={{
+          position: 'fixed', bottom: 24, right: 24, zIndex: 999,
+          width: 52, height: 52, borderRadius: '50%', border: 'none',
+          background: aiPanelOpen ? 'rgba(192,57,43,0.3)' : 'linear-gradient(135deg,#c0392b,#922b21)',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 22, boxShadow: '0 4px 20px rgba(192,57,43,0.5)',
+          transition: 'transform .15s, background .15s',
+          transform: aiPanelOpen ? 'scale(0.9)' : 'scale(1)',
+        }}
+        onMouseEnter={e => { if (!aiPanelOpen) e.currentTarget.style.transform = 'scale(1.08)' }}
+        onMouseLeave={e => e.currentTarget.style.transform = aiPanelOpen ? 'scale(0.9)' : 'scale(1)'}
+      >
+        {aiPanelOpen ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        ) : '🧠'}
+        {/* Pulse ring */}
+        {!aiPanelOpen && (
+          <span style={{
+            position: 'absolute', inset: -3, borderRadius: '50%',
+            border: '2px solid rgba(192,57,43,0.4)',
+            animation: 'vbring 2s infinite',
+          }} />
+        )}
+      </button>
+
       <style>{`
   @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
   @keyframes fadeSlideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+  @keyframes vbring{0%{transform:scale(1);opacity:.7}70%{transform:scale(1.5);opacity:0}100%{transform:scale(1.5);opacity:0}}
 `}</style>
     </div>
   )

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import Nav from './components/Nav'
-import VaultBrain from './components/VaultBrain'
 import Home from './pages/Home'
 import CLMHome from './pages/CLMHome'
 import Dashboard from './pages/Dashboard'
@@ -57,7 +56,6 @@ import DomainManager from './pages/DomainManager'
 import Vault from './pages/Vault'
 import AlertSettings from './pages/AlertSettings'
 import AlertHistory from './pages/AlertHistory'
-import VaultBrainPage from './pages/VaultBrainPage'
 
 
 export default function App() {
@@ -205,8 +203,6 @@ const _build = 1779297041 // cache bust
       {page === '/vault' && <Vault nav={nav} />}
       {page === '/alert-settings' && <AlertSettings nav={nav} />}
       {page === '/alerts' && <AlertHistory nav={nav} />}
-      {page === '/vaultbrain' && <VaultBrainPage nav={nav} />}
-      <VaultBrain />
     </div>
   )
 }
