@@ -210,18 +210,32 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   try {
-    // Authenticate caller
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
-    )
-    const { data: { user }, error: authErr } = await supabase.auth.getUser()
-    if (authErr || !user) return json({ error: 'Unauthorized' }, 401)
+    // Two auth modes:
+    // 1. Normal: user JWT -> auth.getUser()
+    // 2. Bulk: service role key + _bulk_user_id in body -> trust user_id directly
+    //    Called from gogetssl-issue when bulk-process-cron places orders
+    const authHeader = req.headers.get('Authorization') || ''
+    const bearer     = authHeader.replace(/^Bearer\s+/i, '').trim()
+    const SVC_KEY    = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+    const isSvcRole  = SVC_KEY && bearer === SVC_KEY
 
     const ip   = req.headers.get('x-forwarded-for') || null
     const body = await req.json()
     const { action } = body
+
+    let user: { id: string }
+    if (isSvcRole && body._bulk_user_id) {
+      user = { id: body._bulk_user_id as string }
+    } else {
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_ANON_KEY')!,
+        { global: { headers: { Authorization: authHeader } } }
+      )
+      const { data: { user: u }, error: authErr } = await supabase.auth.getUser()
+      if (authErr || !u) return json({ error: 'Unauthorized' }, 401)
+      user = u
+    }
 
     // ── store ─────────────────────────────────────────────────────────
     // Called by gogetssl-issue after order placement.

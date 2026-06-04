@@ -511,20 +511,31 @@ serve(async (req) => {
 
     // poll_pending is called by cron with service role key — allow without user JWT
     const SVC_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+    const bearerToken = authHeader.replace(/^Bearer\s+/i, '').trim()
+    const isSvcRole = SVC_KEY && bearerToken === SVC_KEY
+
     if (action === 'poll_pending') {
-      const bearerToken = authHeader.replace(/^Bearer\s+/i, '').trim()
-      if (bearerToken !== SVC_KEY) return json({ error: 'Unauthorized' }, 401)
+      if (!isSvcRole) return json({ error: 'Unauthorized' }, 401)
       const res = await runPollPending()
       return json(res)
     }
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } }
-    )
-    const { data: { user }, error: authErr } = await supabase.auth.getUser()
-    if (authErr || !user) return json({ error: 'Unauthorized' }, 401)
+    // bulk-process-cron calls place_order with service role key + _bulk_user_id.
+    // Same pattern as cpanel-install _service_user_id.
+    // The cron has already authenticated the user when the job was created.
+    let user: { id: string }
+    if (isSvcRole && body._bulk_user_id) {
+      user = { id: body._bulk_user_id }
+    } else {
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_ANON_KEY')!,
+        { global: { headers: { Authorization: authHeader } } }
+      )
+      const { data: { user: u }, error: authErr } = await supabase.auth.getUser()
+      if (authErr || !u) return json({ error: 'Unauthorized' }, 401)
+      user = u
+    }
 
     // ── PLACE ORDER ───────────────────────────────────────────────────
     if (action === 'place_order') {
@@ -627,11 +638,15 @@ serve(async (req) => {
       }, { onConflict: 'user_id,domain' })
 
       // Store private key in KeyLocker
-      const klRes = await callKeyLocker(authHeader, {
+      // In bulk mode (service role + _bulk_user_id), pass the user_id explicitly
+      // so KeyLocker can authenticate without a user JWT
+      const klBody: Record<string, unknown> = {
         action: 'store', private_key_pem: privateKeyPem, domain: cleanDomain,
         order_id: saved.id, ggs_order_id: orderRes.order_id,
         csr_pem: csrPem, product_name: product.name, algorithm: 'RSA', key_size: 2048,
-      })
+      }
+      if (isSvcRole && body._bulk_user_id) klBody._bulk_user_id = user.id
+      const klRes = await callKeyLocker(authHeader, klBody)
       if (klRes.ok && klRes.key_id) {
         await adminDb().from('ssl_orders').update({ keylocker_key_id: klRes.key_id }).eq('id', saved.id)
       } else {
