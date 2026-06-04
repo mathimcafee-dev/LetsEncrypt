@@ -213,12 +213,12 @@ function SSLVaultTrustBadge({ compact = false }) {
       </div>
       <div style={{flex:1}}>
         <div style={{fontSize:compact?7:8,fontWeight:700,color:'#0077b6',letterSpacing:'.12em',textTransform:'uppercase',marginBottom:2}}>{compact?'Secured':'Cryptographically Secured'}</div>
-        <div style={{fontSize:compact?12:14,fontWeight:800,color:'#ffffff',lineHeight:1,letterSpacing:'-.3px'}}>SSLVault <span style={{fontWeight:400,color:'rgba(255,255,255,0.45)',fontSize:compact?9:10}}>easysecurity.in</span></div>
-        {!compact&&<div style={{fontSize:9,color:'rgba(255,255,255,0.45)',marginTop:3,letterSpacing:'.02em'}}>Certified PKI · RapidSSL · AES-256-GCM</div>}
+        <div style={{fontSize:compact?12:14,fontWeight:800,color:'#0a1628',lineHeight:1,letterSpacing:'-.3px'}}>SSLVault <span style={{fontWeight:400,color:'rgba(0,0,0,0.4)',fontSize:compact?9:10}}>easysecurity.in</span></div>
+        {!compact&&<div style={{fontSize:9,color:'rgba(0,0,0,0.4)',marginTop:3,letterSpacing:'.02em'}}>Certified PKI · RapidSSL · AES-256-GCM</div>}
       </div>
       <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:2,flexShrink:0}}>
         <div style={{fontSize:compact?13:16,fontWeight:900,color:'#0077b6',lineHeight:1,fontFamily:MONO}}>256</div>
-        <div style={{fontSize:7,color:'rgba(255,255,255,0.45)',letterSpacing:'.08em',textTransform:'uppercase'}}>bit TLS</div>
+        <div style={{fontSize:7,color:'rgba(0,0,0,0.4)',letterSpacing:'.08em',textTransform:'uppercase'}}>bit TLS</div>
         <div style={{display:'flex',alignItems:'center',gap:3,marginTop:2}}>
           <div style={{width:5,height:5,borderRadius:'50%',background:'#00a550'}}/>
           <span style={{fontSize:7,color:'#00a550',fontWeight:700,letterSpacing:'.06em'}}>LIVE</span>
@@ -480,7 +480,7 @@ export default function Home({ nav }) {
               <Body>CertVault and 47-Day Readiness are built into every account — not a paid add-on.</Body>
             </div>
           </FadeUp>
-          <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:16}}>
+          <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:16,alignItems:'start'}}>
             <FadeUp>
               <div>
                 <div style={{fontSize:10,color:'rgba(255,255,255,0.48)',fontFamily:MONO,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:10,fontWeight:500}}>🔐 AES-256-GCM private key vault</div>
@@ -605,8 +605,8 @@ export default function Home({ nav }) {
                       <span style={{fontSize:22}}>{s.icon}</span>
                     </div>
                     <div style={{height:2,width:28,background:s.accent,borderRadius:99,opacity:.7}}/>
-                    <div style={{fontSize:13,fontWeight:700,color:'#ffffff',letterSpacing:'-.01em',lineHeight:1.3}}>{s.title}</div>
-                    <div style={{fontSize:11.5,color:'rgba(255,255,255,0.7)',lineHeight:1.65,flex:1}}>{s.desc}</div>
+                    <div style={{fontSize:13,fontWeight:700,color:s.bg?'#ffffff':'#0a1628',letterSpacing:'-.01em',lineHeight:1.3}}>{s.title}</div>
+                    <div style={{fontSize:11.5,color:s.bg?'rgba(255,255,255,0.7)':'rgba(0,0,0,0.6)',lineHeight:1.65,flex:1}}>{s.desc}</div>
                   </div>
                   {i<arr.length-1&&!isMobile&&(
                     <div style={{width:28,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,paddingBottom:20}}>
