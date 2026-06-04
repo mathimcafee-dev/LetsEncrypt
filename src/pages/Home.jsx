@@ -73,7 +73,7 @@ function Term({title,lines}) {
     <div style={{background:'#111111',border:`1px solid rgba(0,0,0,0.1)`,borderRadius:8,overflow:'hidden',fontFamily:MONO}}>
       <div style={{background:'#f4f1ec',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:9,height:9,borderRadius:'50%',background:c,opacity:.85}}/>)}</div>
-        <span style={{fontSize:10,color:'rgba(255,255,255,0.4)',flex:1,textAlign:'center'}}>{title}</span>
+        <span style={{fontSize:10,color:'#888888',flex:1,textAlign:'center'}}>{title}</span>
       </div>
       <div style={{padding:'16px 18px',fontSize:11.5,lineHeight:2}}>
         {lines.map((l,i)=><div key={i} style={{color:l.c||T2,paddingLeft:l.indent?18:0}}>
@@ -412,7 +412,7 @@ export default function Home({ nav }) {
       </div>
 
       {/* ── PLATFORM ── */}
-      <section id="platform" style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="platform" style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start',marginBottom:48}}>
@@ -546,7 +546,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── DNS ── */}
-      <section style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'center'}}>
             <FadeUp>
@@ -556,7 +556,7 @@ export default function Home({ nav }) {
                 <Body style={{marginBottom:20}}>When issuing or renewing, SSLVault calls your DNS provider API to add the ACME challenge record, polls for propagation, validates, then cleans up — fully automatic.</Body>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
                   {[['Cloudflare','API Token · Zone:DNS:Edit'],['Vercel','Access Token · Settings → Tokens'],['Route53','AWS IAM · Route53 write access'],['Namecheap','API Key · IP whitelist required'],['GoDaddy','API Key + Secret'],['DigitalOcean','Personal Access Token'],['Plesk','XML API'],['+ more','Contact us']].map(([name,note])=>(
-                    <div key={name} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#111111',border:`1px solid ${LN}`,borderRadius:4}}>
+                    <div key={name} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#f4f1ec',border:`1px solid ${LN}`,borderRadius:6}}>
                       <div style={{width:4,height:4,borderRadius:'50%',background:T3,flexShrink:0}}/>
                       <div><div style={{fontSize:12,fontWeight:500,color:T1}}>{name}</div><div style={{fontSize:10.5,color:T3,fontFamily:MONO}}>{note}</div></div>
                     </div>
@@ -601,7 +601,7 @@ export default function Home({ nav }) {
                 {n:'05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Runs forever, zero manual steps.',accent:'#1f5c4e'},
               ].map((s,i,arr)=>(
                 <div key={s.n} style={{flex:1,display:'flex',flexDirection:'row',alignItems:'stretch'}}>
-                  <div style={{flex:1,background:'#111111',border:'1px solid rgba(0,0,0,0.07)',borderRadius:12,padding:'20px 16px',position:'relative',display:'flex',flexDirection:'column',gap:10,boxShadow:'0 1px 2px rgba(0,0,0,0.04)'}}>
+                  <div style={{flex:1,background:'#ffffff',border:'1px solid rgba(0,0,0,0.08)',borderRadius:12,padding:'20px 16px',position:'relative',display:'flex',flexDirection:'column',gap:10,boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                       <span style={{fontSize:11,fontWeight:800,color:s.accent,letterSpacing:'.06em',fontFamily:MONO}}>{s.n}</span>
                       <span style={{fontSize:22}}>{s.icon}</span>
@@ -625,7 +625,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── INDUSTRY INTELLIGENCE ── */}
-      <section style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#f4f1ec',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
@@ -636,7 +636,7 @@ export default function Home({ nav }) {
           </FadeUp>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden',marginBottom:12}}>
             {[{icon:'🏛',title:'CA Trust Store',sub:'6,200+ root & intermediate CAs',desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert.',badge:'CCADB Live',path:'/ca-trust-explorer',stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']]},{icon:'⚖️',title:'CAB Forum Intelligence',sub:'Ballots, timelines & compliance',desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',badge:'Live sync',path:'/cab-forum',stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']]},{icon:'🌍',title:'Global PKI Hub',sub:'12 bodies · 22 standards · PQC tracker',desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',badge:'PQC Ready',path:'/pki-hub',stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']]}].map(item=>(
-              <div key={item.title} onClick={()=>nav(item.path)} style={{background:'#111111',padding:'22px',cursor:'pointer',transition:'background .12s',height:'100%',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(0,0,0,0.07)',borderRadius:10}}
+              <div key={item.title} onClick={()=>nav(item.path)} style={{background:'#ffffff',padding:'22px',cursor:'pointer',transition:'all .12s',height:'100%',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(0,0,0,0.08)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}
                   onMouseEnter={e=>e.currentTarget.style.background='#f4f1ec'} onMouseLeave={e=>e.currentTarget.style.background='#111111'}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
                     <span style={{fontSize:26}}>{item.icon}</span>
@@ -750,7 +750,7 @@ export default function Home({ nav }) {
 
 
       {/* ── MISSION ── */}
-      <section style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start'}}>
             <FadeUp>
@@ -772,7 +772,7 @@ export default function Home({ nav }) {
                 ))}
                 <div style={{marginTop:5,display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
                   {[['DigiCert','Trust chain · 99.9% browser'],['RapidSSL','CA partner · wholesale pricing'],['RFC 8555','ACME v2 · no lock-in'],['AES-256','Military-grade key storage'],['GDPR','Netherlands-based PKI engineer 🇳🇱'],['No ads','No tracking · no reselling']].map(([val,sub])=>(
-                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'#111111',border:`1px solid ${LN}`,borderRadius:3,alignItems:'center'}}>
+                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'#f4f1ec',border:`1px solid ${LN}`,borderRadius:6,alignItems:'center'}}>
                       <div style={{fontSize:11,fontWeight:500,color:T1,fontFamily:MONO,minWidth:65}}>{val}</div>
                       <div style={{fontSize:10.5,color:T3,lineHeight:1.4}}>{sub}</div>
                     </div>
