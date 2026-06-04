@@ -9,15 +9,15 @@ const MONTHS_S = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','N
 const DAYS_S   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
 const ACCENT = '#111111'
-const RED    = '#1f5c4e'
+const RED    = '#0077b6'
 const AMBER  = '#9a6400'
-const GREEN  = '#16a068'
+const GREEN  = '#00a550'
 
 const STATUS = {
-  expired: { color: RED,   bg: 'rgba(31,92,78,0.09)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#1f5c4e' },
+  expired: { color: RED,   bg: 'rgba(0,119,182,0.09)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#0077b6' },
   warning: { color: AMBER, bg: 'rgba(239,68,68,0.08)', border: '#fcd34d', bar: AMBER, text: '#9a6400' },
-  healthy: { color: GREEN, bg: 'transparent', border: '#86efac', bar: GREEN, text: '#16a068' },
-  today:   { color: ACCENT,bg: 'transparent', border: 'rgba(31,92,78,0.2)', bar: ACCENT,text: '#2e7a68' },
+  healthy: { color: GREEN, bg: 'transparent', border: '#86efac', bar: GREEN, text: '#00a550' },
+  today:   { color: ACCENT,bg: 'transparent', border: 'rgba(0,119,182,0.2)', bar: ACCENT,text: '#0091d6' },
 }
 
 function daysUntil(iso) {
@@ -79,7 +79,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
       <div style={{
         width: 24, height: 24, borderRadius: '50%', marginBottom: 6,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: isToday ? '#1f5c4e' : 'transparent',
+        background: isToday ? '#0077b6' : 'transparent',
         fontSize:12, fontWeight: hasCerts || isToday ? 700 : 400,
         color: isToday ? '#ffffff' : hasCerts ? (st ? st.text : '#ffffff') : '#6b5a5a',
       }}>
@@ -419,9 +419,9 @@ function YearView({ certs, viewYear, today, onDrillDown }) {
                   {MONTHS_S[mi]}
                 </span>
                 <span style={{ fontSize:10, fontWeight:700, padding:'1px 7px', borderRadius:20,
-                  background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'rgba(31,92,78,0.09)':m.warning>0?'rgba(239,68,68,0.08)':'transparent',
+                  background: m.certs.length===0 ? 'var(--v2-bg)' : m.expired>0?'rgba(0,119,182,0.09)':m.warning>0?'rgba(239,68,68,0.08)':'transparent',
                   color: m.certs.length===0 ? 'var(--v2-text-3)' : m.expired>0?RED:m.warning>0?AMBER:GREEN,
-                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'rgba(239,83,80,0.3)':m.warning>0?'rgba(0,0,0,0.1)':'rgba(31,92,78,0.2)'}` }}>
+                  border: `0.5px solid ${m.certs.length===0?'var(--v2-border)':m.expired>0?'rgba(239,83,80,0.3)':m.warning>0?'rgba(0,0,0,0.1)':'rgba(0,119,182,0.2)'}` }}>
                   {m.certs.length}
                 </span>
               </div>
@@ -529,7 +529,7 @@ export default function RenewalCalendar({ user }) {
               {[['month','Month'],['week','Week'],['year','Year']].map(([v,l])=>(
                 <button key={v} onClick={()=>{setView(v);setAnimKey(k=>k+1)}}
                   style={{ padding:'6px 16px', fontSize:12, fontWeight: view===v ? 700 : 500,
-                    background: view===v ? '#1f5c4e' : 'transparent',
+                    background: view===v ? '#0077b6' : 'transparent',
                     border: 'none',
                     borderRadius:6, cursor:'pointer', fontFamily:'inherit',
                     color: view===v ? '#ffffff' : '#888888',
@@ -577,10 +577,10 @@ export default function RenewalCalendar({ user }) {
         {/* Legend */}
         <div style={{ display:'flex', gap:14, marginBottom:16, flexWrap:'wrap', alignItems:'center' }}>
           {[
-            { label:'Expired',        color:RED,   bg:'rgba(31,92,78,0.09)', border:'rgba(239,83,80,0.3)' },
+            { label:'Expired',        color:RED,   bg:'rgba(0,119,182,0.09)', border:'rgba(239,83,80,0.3)' },
             { label:'Expiring ≤30d',  color:AMBER, bg:'rgba(239,68,68,0.08)', border:'#fcd34d' },
             { label:'Healthy (>30d)', color:GREEN, bg:'transparent', border:'#86efac' },
-            { label:'Today',          color:ACCENT,bg:'transparent', border:'rgba(31,92,78,0.2)' },
+            { label:'Today',          color:ACCENT,bg:'transparent', border:'rgba(0,119,182,0.2)' },
           ].map(({label,color,bg,border})=>(
             <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
               <div style={{ width:10,height:10,borderRadius:2,background:bg,border:`0.5px solid ${border}` }}/>

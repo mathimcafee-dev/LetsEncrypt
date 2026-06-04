@@ -40,8 +40,8 @@ async function callCertVault(action, extra = {}) {
 // ── Audit row — exact same as KeyLocker ──────────────────────────────
 function AuditRow({ entry }) {
   const actionColor = {
-    key_created:'#16a068', key_rotated:'#fb923c',
-    key_revealed:'#1f5c4e', key_archived:'#94a3b8',
+    key_created:'#00a550', key_rotated:'#fb923c',
+    key_revealed:'#0077b6', key_archived:'#94a3b8',
   }[entry.action] || '#b0a8a0'
   return (
     <div style={{ padding:'9px 16px', borderBottom:'1px solid rgba(0,0,0,0.04)',
@@ -67,8 +67,8 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
   const warn = days !== null && days < 30 && keyEntry.status === 'active'
   const linkedCert = certs?.find(c => c.keylocker_key_id === keyEntry.id)
 
-  const statusColor = { active:'#16a068', archived:'#fb923c', revoked:'#1f5c4e' }[keyEntry.status] || '#b0a8a0'
-  const statusBg    = { active:'rgba(22,160,104,0.07)', archived:'rgba(251,146,60,0.08)', revoked:'rgba(192,57,43,0.07)' }[keyEntry.status] || 'transparent'
+  const statusColor = { active:'#00a550', archived:'#fb923c', revoked:'#0077b6' }[keyEntry.status] || '#b0a8a0'
+  const statusBg    = { active:'rgba(0,165,80,0.07)', archived:'rgba(251,146,60,0.08)', revoked:'rgba(192,57,43,0.07)' }[keyEntry.status] || 'transparent'
 
   return (
     <div className="v2-card" style={{ overflow:'hidden' }}>
@@ -84,7 +84,7 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
           </div>
           <div style={{ fontSize:10, color:'#888888', marginTop:2 }}>
             {keyEntry.algorithm || 'RSA 2048'} · created {fmtAgo(keyEntry.created_at)}
-            {linkedCert && <span style={{ color:'#16a068', marginLeft:6 }}>· cert linked</span>}
+            {linkedCert && <span style={{ color:'#00a550', marginLeft:6 }}>· cert linked</span>}
           </div>
         </div>
         <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:4,
@@ -93,12 +93,12 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
           {keyEntry.status}
         </span>
         {warn && (
-          <span style={{ fontSize:10, color:'#1f5c4e', fontWeight:600, flexShrink:0 }}>
+          <span style={{ fontSize:10, color:'#0077b6', fontWeight:600, flexShrink:0 }}>
             ⚠ {days}d
           </span>
         )}
         {days !== null && keyEntry.status === 'active' && !warn && (
-          <span style={{ fontSize:10, color:'#16a068', flexShrink:0 }}>{days}d left</span>
+          <span style={{ fontSize:10, color:'#00a550', flexShrink:0 }}>{days}d left</span>
         )}
         {open ? <ChevronUp size={13} color="#b0a8a0" style={{ flexShrink:0 }}/> : <ChevronDown size={13} color="#b0a8a0" style={{ flexShrink:0 }}/>}
       </div>
@@ -108,7 +108,7 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
         <div style={{ padding:'14px 16px' }}>
           {warn && (
             <div style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(154,100,0,0.2)',
-              borderRadius:8, padding:'10px 12px', marginBottom:12, fontSize:11, color:'#1f5c4e' }}>
+              borderRadius:8, padding:'10px 12px', marginBottom:12, fontSize:11, color:'#0077b6' }}>
               <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
               <strong>Expiring in {days} days</strong> — rotate now to avoid disruption.
             </div>
@@ -134,10 +134,10 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
 
           {/* Linked cert */}
           {linkedCert && (
-            <div style={{ background:'rgba(74,222,128,0.06)', border:'1px solid rgba(22,160,104,0.14)',
+            <div style={{ background:'rgba(74,222,128,0.06)', border:'1px solid rgba(0,165,80,0.14)',
               borderRadius:8, padding:'10px 12px', marginBottom:12, fontSize:11 }}>
               <Shield size={11} color="#4ade80" style={{ verticalAlign:'-1px', marginRight:5 }}/>
-              <strong style={{ color:'#16a068' }}>Linked certificate:</strong>
+              <strong style={{ color:'#00a550' }}>Linked certificate:</strong>
               <span style={{ color:'#333333', marginLeft:6, fontFamily:'monospace' }}>{linkedCert.domain}</span>
               {linkedCert.expires_at && (
                 <span style={{ color:'#888888', marginLeft:8 }}>· expires {fmtDate(linkedCert.expires_at)}</span>
@@ -269,8 +269,8 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                     color:'#111111', fontFamily:'inherit', outline:'none', boxSizing:'border-box' }} autoFocus/>
               </div>
               {authError && (
-                <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:7,
-                  padding:'9px 12px', marginBottom:12, fontSize:11, color:'#1f5c4e',
+                <div style={{ background:'rgba(0,119,182,0.09)', border:'1px solid #fecaca', borderRadius:7,
+                  padding:'9px 12px', marginBottom:12, fontSize:11, color:'#0077b6',
                   display:'flex', alignItems:'center', gap:7 }}>
                   <AlertTriangle size={12} style={{ flexShrink:0 }}/> {authError}
                 </div>
@@ -294,27 +294,27 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                 <div style={{ fontSize:12 }}>Decrypting from vault…</div>
               </div>
             ) : fetchErr ? (
-              <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
-                padding:'12px 14px', fontSize:12, color:'#1f5c4e' }}>
+              <div style={{ background:'rgba(0,119,182,0.09)', border:'1px solid #fecaca', borderRadius:8,
+                padding:'12px 14px', fontSize:12, color:'#0077b6' }}>
                 <AlertTriangle size={12} style={{ verticalAlign:'-1px', marginRight:6 }}/>{fetchErr}
               </div>
             ) : (
               <>
                 <div style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(154,100,0,0.2)', borderRadius:8,
-                  padding:'9px 12px', marginBottom:12, fontSize:11, color:'#1f5c4e',
+                  padding:'9px 12px', marginBottom:12, fontSize:11, color:'#0077b6',
                   display:'flex', alignItems:'center', gap:7 }}>
                   <AlertTriangle size={11} style={{ flexShrink:0 }}/>
                   Never share this key. Do not save unencrypted. This access is logged.
                 </div>
-                <div style={{ background:'#f4f1ec', borderRadius:9, padding:'14px 16px',
+                <div style={{ background:'#f0f4fa', borderRadius:9, padding:'14px 16px',
                   marginBottom:12, fontFamily:'monospace', fontSize:11, color:'#888888',
                   lineHeight:1.8, whiteSpace:'pre', userSelect:'none' }}>
                   {masked}
                 </div>
                 <button onClick={copy} style={{ width:'100%', padding:'11px', borderRadius:8, cursor:'pointer',
                   background: copied ? 'transparent' : '#111111', fontFamily:'inherit',
-                  color: copied ? '#16a068' : '#000000',
-                  border: copied ? '1px solid rgba(31,92,78,0.2)' : 'none',
+                  color: copied ? '#00a550' : '#000000',
+                  border: copied ? '1px solid rgba(0,119,182,0.2)' : 'none',
                   fontSize:13, fontWeight:600, display:'flex', alignItems:'center',
                   justifyContent:'center', gap:8, transition:'all .2s' }}>
                   {copied ? <><Check size={14}/> Copied to clipboard!</> : <><Copy size={14}/> Copy private key to clipboard</>}
@@ -402,7 +402,7 @@ export default function Vault({ nav }) {
   if (!user) return (
     <div className="v2-page" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>
       <div style={{ textAlign:'center', maxWidth:380 }}>
-        <div style={{ width:48, height:48, background:'#f4f1ec', borderRadius:12,
+        <div style={{ width:48, height:48, background:'#f0f4fa', borderRadius:12,
           display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
           <Lock size={22} color="white"/>
         </div>
@@ -474,8 +474,8 @@ export default function Vault({ nav }) {
         <div style={{ background:'rgba(124,58,237,0.05)', border:'1px solid rgba(124,58,237,0.18)',
           borderRadius:9, padding:'12px 16px', marginBottom:20,
           display:'flex', alignItems:'center', gap:10 }}>
-          <Lock size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
-          <div style={{ fontSize:11, color:'#1f5c4e', fontWeight:500 }}>
+          <Lock size={13} color="#0077b6" style={{ flexShrink:0 }}/>
+          <div style={{ fontSize:11, color:'#0077b6', fontWeight:500 }}>
             AES-256-GCM encrypted · Envelope key hierarchy · Immutable audit log · Keys never stored in plaintext
           </div>
         </div>
@@ -485,8 +485,8 @@ export default function Vault({ nav }) {
           {[
             { label:'Active keys',   val: activeKeys.length,   color:'#111111' },
             { label:'Archived',      val: archivedKeys.length, color:'#111111' },
-            { label:'Certs linked',  val: certs.length,        color:'#16a068' },
-            { label:'Encryption',    val: 'AES-256',           color:'#16a068' },
+            { label:'Certs linked',  val: certs.length,        color:'#00a550' },
+            { label:'Encryption',    val: 'AES-256',           color:'#00a550' },
           ].map(({ label, val, color }) => (
             <div key={label} className="v2-card" style={{ padding:'12px 14px' }}>
               <div style={{ fontSize:22, fontWeight:500, color, fontFamily:'monospace' }}>{val}</div>
@@ -497,17 +497,17 @@ export default function Vault({ nav }) {
 
         {/* Banners */}
         {rotateError && (
-          <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
+          <div style={{ background:'rgba(0,119,182,0.09)', border:'1px solid #fecaca', borderRadius:8,
             padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center',
-            gap:8, fontSize:12, color:'#1f5c4e' }}>
+            gap:8, fontSize:12, color:'#0077b6' }}>
             <AlertTriangle size={13} style={{ flexShrink:0 }}/>
             <span style={{ flex:1 }}>{rotateError}</span>
             <button onClick={() => setRotateError('')} style={{ background:'none', border:'none',
-              cursor:'pointer', color:'#1f5c4e', fontSize:16, lineHeight:1 }}>×</button>
+              cursor:'pointer', color:'#0077b6', fontSize:16, lineHeight:1 }}>×</button>
           </div>
         )}
         {rotateSuccess && (
-          <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8,
+          <div style={{ background:'transparent', border:'1px solid rgba(0,119,182,0.2)', borderRadius:8,
             padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#111111' }}>
             <CheckCircle size={13} style={{ flexShrink:0 }}/>
@@ -583,7 +583,7 @@ export default function Vault({ nav }) {
               ) : (
                 <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                   <div style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(154,100,0,0.2)', borderRadius:8,
-                    padding:'10px 14px', fontSize:11, color:'#1f5c4e', marginBottom:4 }}>
+                    padding:'10px 14px', fontSize:11, color:'#0077b6', marginBottom:4 }}>
                     <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
                     These keys are retained for 30 days as rollback, then permanently destroyed.
                   </div>
@@ -639,7 +639,7 @@ export default function Vault({ nav }) {
                 </div>
               </div>
               <div style={{ padding:'16px 20px' }}>
-                <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8,
+                <div style={{ background:'transparent', border:'1px solid rgba(0,119,182,0.2)', borderRadius:8,
                   padding:'10px 12px', marginBottom:14, fontSize:11, color:'#333333' }}>
                   <CheckCircle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
                   <strong>Zero downtime</strong> — new cert installs before old key is archived. 30-day rollback window.

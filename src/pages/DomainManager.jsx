@@ -37,20 +37,20 @@ function useIsMobile(bp = 768) {
 function agentStatus(last_seen_at, status) {
   if (!last_seen_at) return { label: 'Never seen', color: '#555555', dot: 'rgba(0,0,0,0.15)', pulse: false }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
-  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#1f5c4e', dot: '#1f5c4e', pulse: false }
+  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#0077b6', dot: '#0077b6', pulse: false }
   if (mins > 6) return { label: 'Idle', color: '#111111', dot: '#111111', pulse: false }
-  return { label: 'Online', color: '#16a068', dot: '#16a068', pulse: true }
+  return { label: 'Online', color: '#00a550', dot: '#00a550', pulse: true }
 }
 
 function certHealth(cert) {
   if (!cert) return { label: 'No cert', color: '#555555', bg: 'transparent', border: 'var(--v2-border)' }
-  if (cert.status === 'revoked') return { label: 'Revoked', color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)' }
+  if (cert.status === 'revoked') return { label: 'Revoked', color: '#0077b6', bg: 'rgba(0,119,182,0.09)', border: 'rgba(0,0,0,0.1)' }
   const d = daysLeft(cert.expires_at)
-  if (d === null) return { label: 'Active', color: '#16a068', bg: 'transparent', border: 'var(--v2-border)' }
-  if (d < 0)  return { label: 'Expired', color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)' }
-  if (d <= 7) return { label: `${d}d`, color: '#1f5c4e', bg: 'rgba(31,92,78,0.07)', border: 'rgba(0,0,0,0.08)' }
+  if (d === null) return { label: 'Active', color: '#00a550', bg: 'transparent', border: 'var(--v2-border)' }
+  if (d < 0)  return { label: 'Expired', color: '#0077b6', bg: 'rgba(0,119,182,0.09)', border: 'rgba(0,0,0,0.1)' }
+  if (d <= 7) return { label: `${d}d`, color: '#0077b6', bg: 'rgba(0,119,182,0.07)', border: 'rgba(0,0,0,0.08)' }
   if (d <= 30) return { label: `${d}d`, color: '#111111', bg: 'rgba(239,68,68,0.06)', border: 'rgba(0,0,0,0.07)' }
-  return { label: `${d}d`, color: '#16a068', bg: 'transparent', border: 'var(--v2-border)' }
+  return { label: `${d}d`, color: '#00a550', bg: 'transparent', border: 'var(--v2-border)' }
 }
 
 // ── Status dot ─────────────────────────────────────────────────────────
@@ -116,13 +116,13 @@ function InstallModal({ onClose }) {
           ].map(({ id, label, cmd }) => (
             <div key={id} style={{ marginBottom: 14 }}>
               <div style={{ fontSize: 11, fontWeight: 500, color: '#333333', marginBottom: 6 }}>{label}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f4f1ec', borderRadius: 8, padding: '11px 14px', border: '1px solid rgba(0,0,0,0.07)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f0f4fa', borderRadius: 8, padding: '11px 14px', border: '1px solid rgba(0,0,0,0.07)' }}>
                 <code style={{ fontSize: 12.5, color: id === 'install' && error ? '#c0392b' : '#111111', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', flex: 1, overflow: 'auto', whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}>{cmd}</code>
                 {!loading && !error && <CopyBtn text={cmd} size={10} />}
               </div>
             </div>
           ))}
-          <div style={{ background: 'transparent', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 7, padding: '10px 12px' }}>
+          <div style={{ background: 'transparent', border: '1px solid rgba(0,119,182,0.2)', borderRadius: 7, padding: '10px 12px' }}>
             <div style={{ fontSize: 11, color: '#111111', lineHeight: 1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-installs and auto-renews certificates, and appears in Domain Manager within 1–2 minutes.
             </div>
@@ -195,7 +195,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
           <div style={{ fontSize: 11, color: '#555555', marginTop: 2, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             {cert && <span>{cert.issuer || 'RapidSSL'} · {cert.cert_type || 'DV'}</span>}
             {cert?.install_method && <span style={{ color: '#111111', fontFamily: 'monospace' }}>{cert.install_method}</span>}
-            {cert?.auto_renew_enabled && <span style={{ color: '#16a068' }}>auto-renew</span>}
+            {cert?.auto_renew_enabled && <span style={{ color: '#00a550' }}>auto-renew</span>}
           </div>
         </div>
 
@@ -251,7 +251,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                         {isExpired ? 'Expired' : daysLeft_ !== null ? `Expires in ${daysLeft_} days` : 'Active'}
                       </div>
                       {cert.auto_renew_enabled && (
-                        <div style={{ fontSize: 10, color: '#16a068', marginTop: 3 }}>Auto-renew enabled</div>
+                        <div style={{ fontSize: 10, color: '#00a550', marginTop: 3 }}>Auto-renew enabled</div>
                       )}
                     </>
                   ) : (
@@ -275,7 +275,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                   ) : cert?.install_method === 'cpanel' ? (
                     <>
                       <div style={{ fontSize: 12, fontWeight: 500, color: '#111111', marginBottom: 4 }}>cPanel</div>
-                      <div style={{ fontSize: 11, color: '#16a068' }}>Auto-installed via cPanel API</div>
+                      <div style={{ fontSize: 11, color: '#00a550' }}>Auto-installed via cPanel API</div>
                     </>
                   ) : (
                     <div style={{ fontSize: 11, color: '#555555' }}>No server linked yet</div>
@@ -306,7 +306,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                       Issued {fmtRel(cert.issued_at || cert.created_at)}
                     </div>
                     {cert.is_live_on_server && (
-                      <div style={{ fontSize: 10, color: '#16a068', marginTop: 3 }}>Live on server ✓</div>
+                      <div style={{ fontSize: 10, color: '#00a550', marginTop: 3 }}>Live on server ✓</div>
                     )}
                   </div>
                 )}
@@ -348,7 +348,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                     {cert.fingerprint_sha1 && (
                       <div>
                         <div style={{ fontSize: 10, fontWeight: 600, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>SHA-1 fingerprint</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f4f1ec', borderRadius: 7, padding: '8px 12px', marginBottom: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f0f4fa', borderRadius: 7, padding: '8px 12px', marginBottom: 12 }}>
                           <code style={{ fontSize: 10, color: '#111111', fontFamily: 'monospace', flex: 1, wordBreak: 'break-all' }}>{cert.fingerprint_sha1}</code>
                           <CopyBtn text={cert.fingerprint_sha1} />
                         </div>
@@ -395,7 +395,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                     {/* Agent token + actions */}
                     <div>
                       <div style={{ fontSize: 10, fontWeight: 600, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Agent token</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f4f1ec', borderRadius: 7, padding: '8px 12px', marginBottom: 16 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f0f4fa', borderRadius: 7, padding: '8px 12px', marginBottom: 16 }}>
                         <code style={{ fontSize: 10, color: '#333333', fontFamily: 'monospace', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {agent.agent_token ? `${agent.agent_token.substring(0, 24)}…` : '—'}
                         </code>
@@ -403,7 +403,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                       </div>
 
                       <div style={{ fontSize: 10, fontWeight: 600, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Restart command</div>
-                      <div style={{ background: '#f4f1ec', borderRadius: 7, padding: '8px 12px', marginBottom: 16 }}>
+                      <div style={{ background: '#f0f4fa', borderRadius: 7, padding: '8px 12px', marginBottom: 16 }}>
                         <code style={{ fontSize: 10, color: '#111111', fontFamily: 'monospace' }}>
                           sudo systemctl restart sslvault-agent
                         </code>
@@ -419,7 +419,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                           await supabase.from('persistent_agents').delete().eq('id', agent.id)
                           onRemoveAgent?.(agent.id)
                         }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 500, color: '#1f5c4e', background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', fontFamily: 'inherit' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 500, color: '#0077b6', background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', fontFamily: 'inherit' }}>
                         <Trash2 size={11} />{removing ? 'Removing…' : 'Remove agent'}
                       </button>
                     </div>
@@ -454,17 +454,17 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                       return (
                         <div key={j.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px', borderRadius: 7, background: 'var(--v2-surface-3)' }}>
                           {ok   ? <CheckCircle size={12} color="#16a34a" />
-                          : fail ? <XCircle size={12} color="#1f5c4e" />
-                          : pend ? <Clock size={12} color="#1f5c4e" style={{ animation: 'spin 2s linear infinite' }} />
+                          : fail ? <XCircle size={12} color="#0077b6" />
+                          : pend ? <Clock size={12} color="#0077b6" style={{ animation: 'spin 2s linear infinite' }} />
                           :        <Clock size={12} color="#b0a8a0" />}
                           <span style={{ fontSize: 11, color: '#333333', fontFamily: 'monospace', flex: 1 }}>
                             {j.job_type}
                           </span>
-                          <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: ok ? 'rgba(16,185,129,0.1)' : fail ? 'rgba(31,92,78,0.08)' : 'rgba(239,68,68,0.08)', color: ok ? '#16a068' : fail ? '#1f5c4e' : '#1f5c4e' }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 8, background: ok ? 'rgba(16,185,129,0.1)' : fail ? 'rgba(0,119,182,0.08)' : 'rgba(239,68,68,0.08)', color: ok ? '#00a550' : fail ? '#0077b6' : '#0077b6' }}>
                             {j.status}
                           </span>
                           {j.error_message && (
-                            <span style={{ fontSize: 10, color: '#1f5c4e', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={j.error_message}>
+                            <span style={{ fontSize: 10, color: '#0077b6', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={j.error_message}>
                               {j.error_message}
                             </span>
                           )}
@@ -512,7 +512,7 @@ function UnlinkedAgents({ agents, onRefresh, onRemove }) {
               await supabase.from('agent_jobs').delete().eq('agent_id', agent.id)
               await supabase.from('persistent_agents').delete().eq('id', agent.id)
               onRemove?.(agent.id)
-            }} style={{ fontSize: 10, color: '#1f5c4e', background: 'none', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 5, padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
+            }} style={{ fontSize: 10, color: '#0077b6', background: 'none', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 5, padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
               <Trash2 size={10} />
             </button>
           </div>
@@ -626,9 +626,9 @@ export default function DomainManager({ user, nav }) {
               Refresh
             </button>
             <button onClick={() => setShowWizard(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1f5c4e', color: '#111111', border: 'none', padding: '7px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'background .15s' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#2e7a68'}
-              onMouseLeave={e => e.currentTarget.style.background = '#1f5c4e'}>
+              style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#0077b6', color: '#111111', border: 'none', padding: '7px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'background .15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#0091d6'}
+              onMouseLeave={e => e.currentTarget.style.background = '#0077b6'}>
               <Plus size={12} /> Add domain
             </button>
           </div>
@@ -639,9 +639,9 @@ export default function DomainManager({ user, nav }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))', gap: 8, marginBottom: 20 }}>
             {[
               { label: 'Active domains',   val: domains.length,    color: '#111111' },
-              { label: 'Agents online',    val: online,            color: online > 0 ? '#16a068' : '#b0a8a0' },
-              { label: 'Live on server',   val: liveOnServer,      color: liveOnServer > 0 ? '#16a068' : '#b0a8a0' },
-              { label: 'Expiring ≤30d',    val: expiringSoon,      color: expiringSoon > 0 ? '#111111' : '#16a068' },
+              { label: 'Agents online',    val: online,            color: online > 0 ? '#00a550' : '#b0a8a0' },
+              { label: 'Live on server',   val: liveOnServer,      color: liveOnServer > 0 ? '#00a550' : '#b0a8a0' },
+              { label: 'Expiring ≤30d',    val: expiringSoon,      color: expiringSoon > 0 ? '#111111' : '#00a550' },
             ].map(({ label, val, color }) => (
               <div key={label} className="v2-card" style={{ padding: '11px 14px' }}>
                 <div style={{ fontSize: 22, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>

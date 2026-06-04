@@ -147,7 +147,7 @@ export default function eIDASIntelligence({ nav }) {
               <div key={e.year+i} className="tl-row">
                 <div className="tl-yr">{e.year}</div>
                 <div className="tl-spine">
-                  <div className="tl-dot" style={{ background: e.type==='incident'?'var(--v2-red-text)':'#1f5c4e' }}/>
+                  <div className="tl-dot" style={{ background: e.type==='incident'?'var(--v2-red-text)':'#0077b6' }}/>
                   {i < TIMELINE.length-1 && <div className="tl-line"/>}
                 </div>
                 <div style={{ flex:1, paddingBottom:8 }}>

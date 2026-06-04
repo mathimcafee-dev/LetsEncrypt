@@ -46,7 +46,7 @@ export default function Nav({ nav, page }) {
 
         {/* Logo */}
         <div onClick={()=>nav('/')} style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',userSelect:'none',flexShrink:0}}>
-          <div style={{width:26,height:26,background:'#1f5c4e',borderRadius:6,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+          <div style={{width:26,height:26,background:'#0077b6',borderRadius:6,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{fontSize:14,fontWeight:700,color:'#111111',letterSpacing:'-0.3px'}}>SSLVault</span>
@@ -92,9 +92,9 @@ export default function Nav({ nav, page }) {
         {!sm && (
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
             <button onClick={()=>nav('/dashboard')}
-              style={{background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.18)',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#1f5c4e',padding:'6px 13px',borderRadius:7,display:'flex',alignItems:'center',gap:5,transition:'all .12s'}}
-              onMouseEnter={e=>{e.currentTarget.style.background='rgba(31,92,78,0.14)'}}
-              onMouseLeave={e=>{e.currentTarget.style.background='rgba(31,92,78,0.08)'}}>
+              style={{background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#0077b6',padding:'6px 13px',borderRadius:7,display:'flex',alignItems:'center',gap:5,transition:'all .12s'}}
+              onMouseEnter={e=>{e.currentTarget.style.background='rgba(0,119,182,0.14)'}}
+              onMouseLeave={e=>{e.currentTarget.style.background='rgba(0,119,182,0.08)'}}>
               Ask AI
             </button>
             <button onClick={()=>nav('/auth')}
@@ -104,9 +104,9 @@ export default function Nav({ nav, page }) {
               Sign in
             </button>
             <button onClick={()=>nav('/auth')}
-              style={{background:'#1f5c4e',border:'none',cursor:'pointer',fontFamily:F,fontSize:13,fontWeight:600,color:'#ffffff',padding:'7px 16px',borderRadius:7,transition:'background .12s',letterSpacing:'-0.1px'}}
-              onMouseEnter={e=>e.currentTarget.style.background='#2e7a68'}
-              onMouseLeave={e=>e.currentTarget.style.background='#1f5c4e'}>
+              style={{background:'#0077b6',border:'none',cursor:'pointer',fontFamily:F,fontSize:13,fontWeight:600,color:'#ffffff',padding:'7px 16px',borderRadius:7,transition:'background .12s',letterSpacing:'-0.1px'}}
+              onMouseEnter={e=>e.currentTarget.style.background='#0091d6'}
+              onMouseLeave={e=>e.currentTarget.style.background='#0077b6'}>
               Get started
             </button>
           </div>
@@ -147,9 +147,9 @@ export default function Nav({ nav, page }) {
               Sign in
             </button>
             <button onClick={()=>{nav('/auth');setMob(false)}}
-              style={{display:'flex',alignItems:'center',justifyContent:'center',background:'#1f5c4e',color:'#ffffff',border:'none',padding:'11px',borderRadius:7,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:F,transition:'background .12s'}}
-              onMouseEnter={e=>e.currentTarget.style.background='#2e7a68'}
-              onMouseLeave={e=>e.currentTarget.style.background='#1f5c4e'}>
+              style={{display:'flex',alignItems:'center',justifyContent:'center',background:'#0077b6',color:'#ffffff',border:'none',padding:'11px',borderRadius:7,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:F,transition:'background .12s'}}
+              onMouseEnter={e=>e.currentTarget.style.background='#0091d6'}
+              onMouseLeave={e=>e.currentTarget.style.background='#0077b6'}>
               Get started
             </button>
           </div>

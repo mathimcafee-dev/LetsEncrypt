@@ -27,7 +27,7 @@ export default function ContactInner({ nav }) {
       {/* Main contact card */}
       <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #2a6b5c' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
-          <Mail size={14} color="#1f5c4e"/>
+          <Mail size={14} color="#0077b6"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.5px' }}>Contact</span>
         </div>
         <div style={{ fontSize:20, fontWeight:500, color:'#111111', letterSpacing:'-.3px', marginBottom:8 }}>
@@ -37,7 +37,7 @@ export default function ContactInner({ nav }) {
           SSLVault is built and maintained by a single developer. Bug reports, feature requests, and partnership ideas all land directly in one inbox — with a typical reply time of 1–2 days.
         </p>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <a href={`mailto:${email}`} style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#f4f1ec', color:'#111111', textDecoration:'none', borderRadius:6, padding:'9px 16px', fontSize:13, fontWeight:500 }}>
+          <a href={`mailto:${email}`} style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#f0f4fa', color:'#111111', textDecoration:'none', borderRadius:6, padding:'9px 16px', fontSize:13, fontWeight:500 }}>
             <Mail size={13}/> {email}
           </a>
           <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#333333', border:'1px solid #e8edf2', borderRadius:6, padding:'9px 12px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
@@ -58,7 +58,7 @@ export default function ContactInner({ nav }) {
         {TOPICS.map(({ icon:Icon, label, body }) => (
           <div key={label} style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'16px 18px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-              <Icon size={13} color="#1f5c4e"/>
+              <Icon size={13} color="#0077b6"/>
               <span style={{ fontSize:12, fontWeight:500, color:'#111111' }}>{label}</span>
             </div>
             <p style={{ fontSize:11, color:'#333333', lineHeight:1.7, margin:0 }}>{body}</p>

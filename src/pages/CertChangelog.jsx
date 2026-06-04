@@ -26,14 +26,14 @@ function fmtDate(iso) {
 }
 
 const EVENT_CONFIG = {
-  issued:          { icon: ShieldCheck, color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate issued' },
-  reissued:        { icon: RefreshCw,   color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate reissued' },
-  renewed:         { icon: RotateCcw,   color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate renewed' },
-  revoked:         { icon: ShieldOff,   color: '#1f5c4e', bg: 'rgba(248,113,113,0.12)', label: 'Certificate revoked' },
+  issued:          { icon: ShieldCheck, color: '#0077b6', bg: 'rgba(0,119,182,0.09)', label: 'Certificate issued' },
+  reissued:        { icon: RefreshCw,   color: '#0077b6', bg: 'rgba(0,119,182,0.09)', label: 'Certificate reissued' },
+  renewed:         { icon: RotateCcw,   color: '#0077b6', bg: 'rgba(0,119,182,0.09)', label: 'Certificate renewed' },
+  revoked:         { icon: ShieldOff,   color: '#0077b6', bg: 'rgba(248,113,113,0.12)', label: 'Certificate revoked' },
   agent_installed: { icon: Zap,         color: '#9a6400', bg: 'rgba(251,191,36,0.12)', label: 'Installed by agent' },
-  key_rotated:     { icon: RotateCcw,   color: '#1f5c4e', bg: 'rgba(0,0,0,0.08)', label: 'Key rotated' },
-  downloaded:      { icon: Download,    color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', label: 'Certificate downloaded' },
-  private_key_copied: { icon: Shield,   color: '#1f5c4e', bg: 'rgba(0,0,0,0.08)', label: 'Private key copied' },
+  key_rotated:     { icon: RotateCcw,   color: '#0077b6', bg: 'rgba(0,0,0,0.08)', label: 'Key rotated' },
+  downloaded:      { icon: Download,    color: '#0077b6', bg: 'rgba(0,119,182,0.09)', label: 'Certificate downloaded' },
+  private_key_copied: { icon: Shield,   color: '#0077b6', bg: 'rgba(0,0,0,0.08)', label: 'Private key copied' },
   default:         { icon: Shield,      color: '#b5aea8', bg: 'rgba(0,0,0,0.04)', label: 'Event' },
 }
 

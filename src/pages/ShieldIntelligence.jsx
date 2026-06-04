@@ -36,12 +36,12 @@ function fmtDate(iso) {
 }
 
 function gradeStyle(g) {
-  if (!g || g==='F') return { color:'#1f5c4e', bg:'rgba(31,92,78,0.08)', border:'rgba(0,0,0,0.08)' }
-  if (g==='D')       return { color:'#1f5c4e', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
-  if (g==='C')       return { color:'#1f5c4e', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
-  if (g==='B')       return { color:'#1f5c4e', bg:'transparent', border:'rgba(31,92,78,0.2)' }
-  if (g==='A')       return { color:'#1f5c4e', bg:'transparent', border:'rgba(31,92,78,0.2)' }
-  if (g==='A+')      return { color:'#111111', bg:'transparent', border:'#1f5c4e' }
+  if (!g || g==='F') return { color:'#0077b6', bg:'rgba(0,119,182,0.08)', border:'rgba(0,0,0,0.08)' }
+  if (g==='D')       return { color:'#0077b6', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
+  if (g==='C')       return { color:'#0077b6', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' }
+  if (g==='B')       return { color:'#0077b6', bg:'transparent', border:'rgba(0,119,182,0.2)' }
+  if (g==='A')       return { color:'#0077b6', bg:'transparent', border:'rgba(0,119,182,0.2)' }
+  if (g==='A+')      return { color:'#111111', bg:'transparent', border:'#0077b6' }
   return { color:'#555555', bg:'var(--v2-bg)', border:'var(--v2-border)' }
 }
 
@@ -63,15 +63,15 @@ function GradeBadge({ grade, size = 44 }) {
 function Tick({ ok, label }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-      {ok ? <CheckCircle size={11} color="#1f5c4e"/> : <XCircle size={11} color="#2e7a68"/>}
-      <span style={{ fontSize:11, color:ok?'#111111':'#2e7a68' }}>{label}</span>
+      {ok ? <CheckCircle size={11} color="#0077b6"/> : <XCircle size={11} color="#0091d6"/>}
+      <span style={{ fontSize:11, color:ok?'#111111':'#0091d6' }}>{label}</span>
     </div>
   )
 }
 
 function ScoreBar({ score }) {
   const pct = Math.min(100, Math.max(0, score || 0))
-  const color = pct>=80?'#111111':pct>=60?'#2e7a68':pct>=50?'#1f5c4e':'#2e7a68'
+  const color = pct>=80?'#111111':pct>=60?'#0091d6':pct>=50?'#0077b6':'#0091d6'
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
       <div style={{ flex:1, height:4, background:'var(--v2-border)', borderRadius:2, overflow:'hidden' }}>
@@ -152,8 +152,8 @@ function OverviewTab({ user }) {
   const { total=0, active=0, expiring30=0, expiring7=0, thisMonth=0,
           grades={}, bySource={}, deployed=0, keyVault=0 } = stats || {}
 
-  const gradeEntries = [['A+','#111111'],['A','#2e7a68'],['B','#2e7a68'],
-    ['C','#1f5c4e'],['D','#1f5c4e'],['F','#2e7a68'],['—','#666666']]
+  const gradeEntries = [['A+','#111111'],['A','#0091d6'],['B','#0091d6'],
+    ['C','#0077b6'],['D','#0077b6'],['F','#0091d6'],['—','#666666']]
   const maxGrade = Math.max(...gradeEntries.map(([g]) => grades[g]||0), 1)
 
   return (
@@ -163,11 +163,11 @@ function OverviewTab({ user }) {
         <StatCard label="Active certs" val={active} sub={`of ${total} total`}
           color={active>0?'#111111':'var(--v2-text-1)'}/>
         <StatCard label="Expiring ≤ 30d" val={expiring30} sub={expiring7>0?`${expiring7} within 7 days`:'none critical'}
-          color={expiring30>0?'#1f5c4e':'var(--v2-text-1)'} bg={expiring30>0?'rgba(230,126,34,0.12)':undefined}/>
+          color={expiring30>0?'#0077b6':'var(--v2-text-1)'} bg={expiring30>0?'rgba(230,126,34,0.12)':undefined}/>
         <StatCard label="Deployed to servers" val={deployed} sub="agent or cPanel"
           color={deployed>0?'#111111':'var(--v2-text-1)'}/>
         <StatCard label="Keys in vault" val={keyVault} sub="AES-256 encrypted"
-          color="#1f5c4e"/>
+          color="#0077b6"/>
       </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:12 }}>
@@ -245,8 +245,8 @@ function OverviewTab({ user }) {
             letterSpacing:'0.4px', marginBottom:12 }}>Fleet health</div>
           <div style={{ display:'flex', height:12, borderRadius:8, overflow:'hidden', gap:1 }}>
             {[
-              { n:expiring7,             color:'#1f5c4e', label:'Critical' },
-              { n:expiring30-expiring7,  color:'#1f5c4e', label:'Expiring' },
+              { n:expiring7,             color:'#0077b6', label:'Critical' },
+              { n:expiring30-expiring7,  color:'#0077b6', label:'Expiring' },
               { n:active-expiring30,     color:'#111111', label:'Healthy' },
             ].map(({ n, color, label }) => n > 0 && (
               <div key={label} title={`${label}: ${n}`}
@@ -255,8 +255,8 @@ function OverviewTab({ user }) {
           </div>
           <div style={{ display:'flex', gap:16, marginTop:8 }}>
             {[
-              { label:'Critical (≤7d)', n:expiring7,  color:'#1f5c4e' },
-              { label:'Expiring (≤30d)', n:expiring30, color:'#1f5c4e' },
+              { label:'Critical (≤7d)', n:expiring7,  color:'#0077b6' },
+              { label:'Expiring (≤30d)', n:expiring30, color:'#0077b6' },
               { label:'Healthy',        n:active-expiring30, color:'#111111' },
             ].map(({ label, n, color }) => (
               <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
@@ -290,7 +290,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
             </span>
             {!s.cert_valid && (
               <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:4,
-                background:'rgba(31,92,78,0.08)', color:'#1f5c4e' }}>UNREACHABLE</span>
+                background:'rgba(0,119,182,0.08)', color:'#0077b6' }}>UNREACHABLE</span>
             )}
           </div>
           <ScoreBar score={s.score}/>
@@ -301,7 +301,7 @@ function DomainScoreRow({ s, scanning, onRescan }) {
           <Tick ok={s.cert_valid} label="TLS"/>
           {s.expiry_days != null && (
             <span style={{ fontSize:11, fontWeight:600,
-              color:s.expiry_days<=0?'#2e7a68':s.expiry_days<=30?'#1f5c4e':'#111111' }}>
+              color:s.expiry_days<=0?'#0091d6':s.expiry_days<=30?'#0077b6':'#111111' }}>
               {s.expiry_days<=0?'Expired':`${s.expiry_days}d`}
             </span>
           )}
@@ -392,13 +392,13 @@ function TLSGradesTab({ tok, user }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
           <StatCard label="Domains tracked" val={scores.length}/>
           <StatCard label="Average score" val={avgScore}
-            color={avgScore>=80?'#111111':avgScore>=60?'#2e7a68':'#2e7a68'}/>
+            color={avgScore>=80?'#111111':avgScore>=60?'#0091d6':'#0091d6'}/>
           <StatCard label="Grade A / A+"
             val={(scores.filter(s=>s.grade==='A'||s.grade==='A+').length)}
-            color="#1f5c4e"/>
+            color="#0077b6"/>
           <StatCard label="Need attention" val={issues.length}
-            color={issues.length>0?'#2e7a68':'#111111'}
-            bg={issues.length>0?'rgba(31,92,78,0.08)':undefined}/>
+            color={issues.length>0?'#0091d6':'#111111'}
+            bg={issues.length>0?'rgba(0,119,182,0.08)':undefined}/>
         </div>
       )}
 
@@ -421,7 +421,7 @@ function TLSGradesTab({ tok, user }) {
             {adding ? <><Spinner/> Scanning…</> : <><Plus size={11}/> Scan</>}
           </button>
         </div>
-        {addErr && <div style={{ fontSize:11, color:'#1f5c4e', marginTop:6 }}>{addErr}</div>}
+        {addErr && <div style={{ fontSize:11, color:'#0077b6', marginTop:6 }}>{addErr}</div>}
       </div>
 
       {/* List */}
@@ -452,10 +452,10 @@ function TLSGradesTab({ tok, user }) {
 // TAB 3 — CT WATCH
 // ══════════════════════════════════════════════════════════════════════
 const CT_STATUS = {
-  unknown:    { label:'Unknown',    color:'#1f5c4e', bg:'rgba(248,113,113,0.12)', border:'rgba(192,57,43,0.2)' },
-  phishing:   { label:'Phishing',   color:'#1f5c4e', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
-  suspicious: { label:'Suspicious', color:'#1f5c4e', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
-  known:      { label:'Known',      color:'#111111', bg:'transparent', border:'rgba(31,92,78,0.2)' },
+  unknown:    { label:'Unknown',    color:'#0077b6', bg:'rgba(248,113,113,0.12)', border:'rgba(192,57,43,0.2)' },
+  phishing:   { label:'Phishing',   color:'#0077b6', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
+  suspicious: { label:'Suspicious', color:'#0077b6', bg:'rgba(230,126,34,0.12)', border:'rgba(230,126,34,0.4)' },
+  known:      { label:'Known',      color:'#111111', bg:'transparent', border:'rgba(0,119,182,0.2)' },
 }
 
 function CTWatchTab({ tok, user }) {
@@ -497,16 +497,16 @@ function CTWatchTab({ tok, user }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:16 }}>
         <StatCard label="Total findings" val={shadows.length}/>
         <StatCard label="Needs review" val={unknowns.length}
-          color={unknowns.length>0?'#2e7a68':'#111111'}
-          bg={unknowns.length>0?'rgba(31,92,78,0.08)':undefined}/>
-        <StatCard label="Confirmed safe" val={known.length} color="#1f5c4e"/>
+          color={unknowns.length>0?'#0091d6':'#111111'}
+          bg={unknowns.length>0?'rgba(0,119,182,0.08)':undefined}/>
+        <StatCard label="Confirmed safe" val={known.length} color="#0077b6"/>
       </div>
 
       {/* Explanation */}
-      <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:10,
+      <div style={{ background:'transparent', border:'1px solid rgba(0,119,182,0.2)', borderRadius:10,
         padding:'12px 16px', marginBottom:16, display:'flex', gap:10 }}>
-        <ShieldAlert size={16} color="#1f5c4e" style={{ flexShrink:0, marginTop:1 }}/>
-        <div style={{ fontSize:12, color:'#1f5c4e', lineHeight:1.6 }}>
+        <ShieldAlert size={16} color="#0077b6" style={{ flexShrink:0, marginTop:1 }}/>
+        <div style={{ fontSize:12, color:'#0077b6', lineHeight:1.6 }}>
           CT Watch monitors Certificate Transparency logs for any certificate issued for your domains
           outside of SSLVault. Unauthorised certs may indicate phishing or shadow IT.
         </div>
@@ -527,7 +527,7 @@ function CTWatchTab({ tok, user }) {
         <div>
           {/* Table header */}
           <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 90px 110px',minWidth:640,
-            padding:'10px 14px', background:'rgba(31,92,78,0.09)', border:'1px solid rgba(0,0,0,0.1)',
+            padding:'10px 14px', background:'rgba(0,119,182,0.09)', border:'1px solid rgba(0,0,0,0.1)',
             borderRadius:'10px 10px 0 0', marginBottom:0 }}>
             {['Domain','Product','Expires','Status',''].map(h => (
               <div key={h} style={{ fontSize:10, fontWeight:700, color:'#111111',
@@ -572,8 +572,8 @@ function CTWatchTab({ tok, user }) {
                       </button>
                       <button onClick={() => dismiss(s.id)} disabled={dismissing===s.id}
                         style={{ fontSize:10, padding:'3px 8px', borderRadius:5,
-                          border:'1px solid #F7C1C1', background:'rgba(31,92,78,0.08)',
-                          cursor:'pointer', fontFamily:'inherit', color:'#1f5c4e' }}>
+                          border:'1px solid #F7C1C1', background:'rgba(0,119,182,0.08)',
+                          cursor:'pointer', fontFamily:'inherit', color:'#0077b6' }}>
                         {dismissing===s.id?<Spinner/>:'Dismiss'}
                       </button>
                     </div>
@@ -598,14 +598,14 @@ function CTWatchTab({ tok, user }) {
                       <div style={{ display:'flex', gap:6 }}>
                         <button onClick={() => mark(s.id,'known')} disabled={marking===s.id}
                           style={{ fontSize:11, padding:'5px 12px', borderRadius:6,
-                            border:'1px solid rgba(31,92,78,0.2)', background:'transparent',
-                            cursor:'pointer', fontFamily:'inherit', color:'#1f5c4e', fontWeight:500 }}>
+                            border:'1px solid rgba(0,119,182,0.2)', background:'transparent',
+                            cursor:'pointer', fontFamily:'inherit', color:'#0077b6', fontWeight:500 }}>
                           Mark as safe
                         </button>
                         <button onClick={() => mark(s.id,'phishing')} disabled={marking===s.id}
                           style={{ fontSize:11, padding:'5px 12px', borderRadius:6,
-                            border:'1px solid #F7C1C1', background:'rgba(31,92,78,0.08)',
-                            cursor:'pointer', fontFamily:'inherit', color:'#1f5c4e', fontWeight:500 }}>
+                            border:'1px solid #F7C1C1', background:'rgba(0,119,182,0.08)',
+                            cursor:'pointer', fontFamily:'inherit', color:'#0077b6', fontWeight:500 }}>
                           Flag as phishing
                         </button>
                       </div>
@@ -716,7 +716,7 @@ function MassScanTab() {
             </button>
           </div>
         </div>
-        {error && <div style={{ fontSize:11, color:'#1f5c4e', marginTop:8 }}>{error}</div>}
+        {error && <div style={{ fontSize:11, color:'#0077b6', marginTop:8 }}>{error}</div>}
 
         {/* Progress bar */}
         {scanning && (
@@ -733,10 +733,10 @@ function MassScanTab() {
           {/* Summary */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:12 }}>
             <StatCard label="Scanned" val={results.length} sub="domains"/>
-            <StatCard label="Passed" val={passCount} color="#1f5c4e" bg="rgba(39,174,96,0.1)"/>
+            <StatCard label="Passed" val={passCount} color="#0077b6" bg="rgba(39,174,96,0.1)"/>
             <StatCard label="Failed" val={failCount}
-              color={failCount>0?'#2e7a68':'var(--v2-text-1)'}
-              bg={failCount>0?'rgba(31,92,78,0.08)':undefined}/>
+              color={failCount>0?'#0091d6':'var(--v2-text-1)'}
+              bg={failCount>0?'rgba(0,119,182,0.08)':undefined}/>
           </div>
 
           {/* Filter */}
@@ -787,17 +787,17 @@ function MassScanTab() {
                     {r.score!=null?Math.round(r.score):'—'}
                   </div>
                   <div>{r.cert_valid
-                    ? <CheckCircle size={13} color="#1f5c4e"/>
-                    : <XCircle size={13} color="#2e7a68"/>}</div>
+                    ? <CheckCircle size={13} color="#0077b6"/>
+                    : <XCircle size={13} color="#0091d6"/>}</div>
                   <div>{r.hsts
-                    ? <CheckCircle size={13} color="#1f5c4e"/>
-                    : <XCircle size={13} color="#2e7a68"/>}</div>
+                    ? <CheckCircle size={13} color="#0077b6"/>
+                    : <XCircle size={13} color="#0091d6"/>}</div>
                   <div>{r.caa
-                    ? <CheckCircle size={13} color="#1f5c4e"/>
-                    : <XCircle size={13} color="#2e7a68"/>}</div>
+                    ? <CheckCircle size={13} color="#0077b6"/>
+                    : <XCircle size={13} color="#0091d6"/>}</div>
                   <div style={{ fontSize:11,
-                    color: r.error?'#2e7a68':r.expiry_days!=null&&r.expiry_days<=0?'#2e7a68':
-                      r.expiry_days!=null&&r.expiry_days<=30?'#1f5c4e':'var(--v2-text-2)' }}>
+                    color: r.error?'#0091d6':r.expiry_days!=null&&r.expiry_days<=0?'#0091d6':
+                      r.expiry_days!=null&&r.expiry_days<=30?'#0077b6':'var(--v2-text-2)' }}>
                     {r.error ? r.error.slice(0,40)
                       : r.expiry_days!=null ? (r.expiry_days<=0?'Expired':`${r.expiry_days}d left`)
                       : r.issuer||'—'}

@@ -6,12 +6,12 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 function GradeBadge({ grade }) {
   const map = {
-    'A+': { bg:'rgba(31,92,78,0.08)', color:'#1f5c4e' },
-    'A':  { bg:'rgba(31,92,78,0.08)', color:'#5edb8a' },
-    'B':  { bg:'rgba(31,92,78,0.08)', color:'#1f5c4e' },
+    'A+': { bg:'rgba(0,119,182,0.08)', color:'#0077b6' },
+    'A':  { bg:'rgba(0,119,182,0.08)', color:'#5edb8a' },
+    'B':  { bg:'rgba(0,119,182,0.08)', color:'#0077b6' },
     'C':  { bg:'rgba(230,126,34,0.08)', color:'#e67e22' },
-    'D':  { bg:'rgba(31,92,78,0.08)', color:'#1f5c4e' },
-    'F':  { bg:'rgba(31,92,78,0.09)', color:'#1f5c4e' },
+    'D':  { bg:'rgba(0,119,182,0.08)', color:'#0077b6' },
+    'F':  { bg:'rgba(0,119,182,0.09)', color:'#0077b6' },
   }
   const s = map[grade] || { bg:'rgba(26,0,0,0.5)', color:'#888888' }
   return (
@@ -27,14 +27,14 @@ function ProtoRow({ proto }) {
   const icon = proto.status === 'good'
     ? <CheckCircle  size={13} color="#16a34a" style={{ flexShrink:0 }}/>
     : proto.status === 'bad'
-    ? <XCircle      size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
-    : <AlertTriangle size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
+    ? <XCircle      size={13} color="#0077b6" style={{ flexShrink:0 }}/>
+    : <AlertTriangle size={13} color="#0077b6" style={{ flexShrink:0 }}/>
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0',
       borderBottom:'1px solid rgba(15,23,42,0.06)' }}>
       {icon}
       <span style={{ fontSize:13, flex:1, color:'transparent' }}>{proto.name}</span>
-      <span style={{ fontSize:11, color: proto.status==='good'?'#16a34a':proto.status==='bad'?'#1f5c4e':'#1f5c4e' }}>
+      <span style={{ fontSize:11, color: proto.status==='good'?'#16a34a':proto.status==='bad'?'#0077b6':'#0077b6' }}>
         {proto.note}
       </span>
     </div>
@@ -45,11 +45,11 @@ function VulnRow({ v }) {
   const icon = v.status === 'safe'
     ? <CheckCircle  size={13} color="#16a34a" style={{ flexShrink:0 }}/>
     : v.status === 'vulnerable'
-    ? <XCircle      size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
-    : <Info         size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
+    ? <XCircle      size={13} color="#0077b6" style={{ flexShrink:0 }}/>
+    : <Info         size={13} color="#0077b6" style={{ flexShrink:0 }}/>
   const label = v.status === 'safe' ? { text:'Not vulnerable', color:'#5edb8a' }
-    : v.status === 'vulnerable' ? { text:'Vulnerable', color:'#1f5c4e' }
-    : { text:'Manual check', color:'#1f5c4e' }
+    : v.status === 'vulnerable' ? { text:'Vulnerable', color:'#0077b6' }
+    : { text:'Manual check', color:'#0077b6' }
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0',
       borderBottom:'1px solid rgba(15,23,42,0.06)' }}>
@@ -105,7 +105,7 @@ export default function VulnScanner({ domain, session }) {
     <div style={{ marginTop:12 }}>
       {/* Trigger row */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-        padding:'10px 14px', background:'rgba(31,92,78,0.05)', border:'1px solid rgba(15,23,42,0.08)',
+        padding:'10px 14px', background:'rgba(0,119,182,0.05)', border:'1px solid rgba(15,23,42,0.08)',
         borderRadius: result ? '8px 8px 0 0' : 8 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <Bug size={14} color="#777777"/>
@@ -133,8 +133,8 @@ export default function VulnScanner({ domain, session }) {
       </div>
 
       {error && (
-        <div style={{ padding:'8px 14px', background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca',
-          borderTop:'none', borderRadius:'0 0 8px 8px', fontSize:12, color:'#1f5c4e' }}>
+        <div style={{ padding:'8px 14px', background:'rgba(0,119,182,0.09)', border:'1px solid #fecaca',
+          borderTop:'none', borderRadius:'0 0 8px 8px', fontSize:12, color:'#0077b6' }}>
           {error}
         </div>
       )}
@@ -176,9 +176,9 @@ export default function VulnScanner({ domain, session }) {
           {/* Cipher strength */}
           <p style={{ margin:'0 0 8px', fontSize:11, fontWeight:700, color:'#b5aea8',
             textTransform:'uppercase', letterSpacing:'0.5px' }}>Cipher strength</p>
-          <CipherBar label="Strong" count={result.ciphers.strong} total={totalCiphers} color="#1f5c4e"/>
-          <CipherBar label="Medium" count={result.ciphers.medium} total={totalCiphers} color="#1f5c4e"/>
-          <CipherBar label="Weak"   count={result.ciphers.weak}   total={totalCiphers} color="#1f5c4e"/>
+          <CipherBar label="Strong" count={result.ciphers.strong} total={totalCiphers} color="#0077b6"/>
+          <CipherBar label="Medium" count={result.ciphers.medium} total={totalCiphers} color="#0077b6"/>
+          <CipherBar label="Weak"   count={result.ciphers.weak}   total={totalCiphers} color="#0077b6"/>
 
           {result.note && (
             <p style={{ margin:'10px 0 0', fontSize:11, color:'#b5aea8',

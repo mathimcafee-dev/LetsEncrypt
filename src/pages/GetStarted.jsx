@@ -107,14 +107,14 @@ export default function GetStarted({ nav }) {
             When it's active, your browser shows <strong>https://</strong> and a padlock. Without it — a red "Not Secure" warning.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 16 }}>
-            <div style={{ background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
-              <div style={{ fontSize:12, fontWeight: 600, color: '#1f5c4e', marginBottom: 6 }}>Without SSL (HTTP)</div>
+            <div style={{ background: 'rgba(0,119,182,0.09)', border: '1px solid #fecaca', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#0077b6', marginBottom: 6 }}>Without SSL (HTTP)</div>
               <p style={{ fontSize:12, color: '#333333', lineHeight: 1.65, margin: 0 }}>
                 Red "Not Secure" warning. Visitor data exposed. Lower Google ranking. Payments blocked.
               </p>
             </div>
-            <div style={{ background: 'transparent', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
-              <div style={{ fontSize:12, fontWeight: 600, color: '#16a068', marginBottom: 6 }}>With SSL (HTTPS)</div>
+            <div style={{ background: 'transparent', border: '1px solid rgba(0,119,182,0.2)', borderRadius: 'var(--v2-r-md)', padding: '14px 16px' }}>
+              <div style={{ fontSize:12, fontWeight: 600, color: '#00a550', marginBottom: 6 }}>With SSL (HTTPS)</div>
               <p style={{ fontSize:12, color: '#333333', lineHeight: 1.65, margin: 0 }}>
                 Green padlock. All traffic encrypted. Trust signals for visitors and Google. Required for payments.
               </p>
@@ -203,7 +203,7 @@ export default function GetStarted({ nav }) {
                       <Step n={2} title="Go to Dashboard → expand cert → Install"><p>Click the <strong>Install</strong> button on your certificate row. If no agent is connected, the modal shows a one-line install command.</p></Step>
                       <Step n={3} title="Run the agent install on your server (one time only)">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#1f5c4e' }}/><span style={{ background:'#f4f1ec' }}/><span style={{ background:'#f4f1ec' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#0077b6' }}/><span style={{ background:'#f0f4fa' }}/><span style={{ background:'#f0f4fa' }}/></div></div>
                           <pre>curl -fsSL https://easysecurity.in/agent-install.sh | sudo bash</pre>
                         </div>
                         <p>The agent registers with SSLVault. Your server appears as Online in <strong>Dashboard → Servers</strong>.</p>
@@ -221,7 +221,7 @@ export default function GetStarted({ nav }) {
                       <Step n={3} title="Download and upload the PHP agent"><p>Click <strong>Download PHP Agent</strong>. Upload the file to your <code className="v2-kbd">public_html</code> directory via cPanel File Manager.</p></Step>
                       <Step n={4} title="Visit the agent URL to activate">
                         <div className="v2-code" style={{ marginBottom: 8 }}>
-                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#1f5c4e' }}/><span style={{ background:'#f4f1ec' }}/><span style={{ background:'#f4f1ec' }}/></div></div>
+                          <div className="v2-code-head"><div className="v2-code-dots"><span style={{ background: '#0077b6' }}/><span style={{ background:'#f0f4fa' }}/><span style={{ background:'#f0f4fa' }}/></div></div>
                           <pre>https://yourdomain.com/sslvault-agent.php</pre>
                         </div>
                         <p>The script installs your certificate via cPanel's UAPI. <strong>Delete the file immediately after.</strong></p>
@@ -286,10 +286,10 @@ export default function GetStarted({ nav }) {
               <tr><td style={{ fontWeight: 600 }}>Email</td><td>Click a link sent to admin@, webmaster@, or hostmaster@ for your domain.</td></tr>
             </tbody>
           </table></div>
-          <div style={{ background:'#f4f1ec', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
+          <div style={{ background:'#f0f4fa', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '6px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize:12 }}>
               <span style={{ color: '#333333', fontWeight: 600 }}>TYPE</span><span style={{ color: '#111111' }}>CNAME</span>
-              <span style={{ color: '#333333', fontWeight: 600 }}>NAME</span><span style={{ color: '#1f5c4e' }}>_acme-challenge</span>
+              <span style={{ color: '#333333', fontWeight: 600 }}>NAME</span><span style={{ color: '#0077b6' }}>_acme-challenge</span>
               <span style={{ color: '#333333', fontWeight: 600 }}>VALUE</span><span style={{ color: '#9a6400', wordBreak: 'break-all' }}>abc123def456.comodoca.com</span>
             </div>
           </div>
@@ -366,7 +366,7 @@ export default function GetStarted({ nav }) {
 
         {/* CTA */}
         <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#1f5c4e',
+          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#0077b6',
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>

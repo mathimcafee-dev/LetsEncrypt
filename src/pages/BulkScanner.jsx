@@ -15,11 +15,11 @@ async function bulkScan(domains) {
 }
 
 function gradeStyle(grade) {
-  if (!grade || grade === 'F') return { color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)' }
+  if (!grade || grade === 'F') return { color: '#0077b6', bg: 'rgba(0,119,182,0.09)' }
   if (grade === 'D') return { color: '#111111', bg: 'rgba(239,68,68,0.08)' }
   if (grade === 'C') return { color: '#e67e22', bg: 'rgba(230,126,34,0.08)' }
   if (grade === 'B') return { color: 'var(--v2-green-text)', bg: 'var(--v2-green-bg)' }
-  if (grade === 'A') return { color: '#16a068', bg: 'transparent' }
+  if (grade === 'A') return { color: '#00a550', bg: 'transparent' }
   if (grade === 'A+') return { color: '#111111', bg: 'transparent' }
   return { color: '#888888', bg: 'var(--v2-bg)' }
 }
@@ -29,7 +29,7 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 function Tick({ ok }) {
   return ok
     ? <CheckCircle size={12} color="#16a34a" style={{ flexShrink: 0 }} />
-    : <XCircle size={12} color="#1f5c4e" style={{ flexShrink: 0 }} />
+    : <XCircle size={12} color="#0077b6" style={{ flexShrink: 0 }} />
 }
 
 function exportCSV(results) {
@@ -86,7 +86,7 @@ export default function BulkScanner({ nav }) {
         justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           onClick={() => nav && nav('/')}>
-          <Shield size={18} color="#1f5c4e" />
+          <Shield size={18} color="#0077b6" />
           <span style={{ fontSize:14, fontWeight: 600, color: '#111111' }}>SSLVault</span>
           <span style={{ fontSize:11, color: '#888888', fontWeight: 400 }}>· Bulk Scanner</span>
         </div>
@@ -155,11 +155,11 @@ export default function BulkScanner({ nav }) {
           {/* Progress bar */}
           {scanning && (
             <div style={{ marginTop: 12, height: 3, background: 'var(--v2-border)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background:'#f4f1ec', borderRadius: 2,
+              <div style={{ height: '100%', background:'#f0f4fa', borderRadius: 2,
                 width: `${progress}%`, transition: 'width .4s ease' }} />
             </div>
           )}
-          {error && <div style={{ fontSize:12, color: '#1f5c4e', marginTop: 8 }}>{error}</div>}
+          {error && <div style={{ fontSize:12, color: '#0077b6', marginTop: 8 }}>{error}</div>}
         </div>
 
         {/* Results */}
@@ -169,9 +169,9 @@ export default function BulkScanner({ nav }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px,1fr))', gap: 8, marginBottom: 16 }}>
               {[
                 { label: 'Scanned', val: results.length, color: '#333333' },
-                { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#16a068' : avgScore >= 60 ? '#111111' : '#1f5c4e' },
-                { label: 'A / A+', val: (grades['A']||0)+(grades['A+']||0), color: '#16a068' },
-                { label: 'F / issues', val: (grades['F']||0), color: '#1f5c4e' },
+                { label: 'Avg score', val: avgScore, color: avgScore >= 80 ? '#00a550' : avgScore >= 60 ? '#111111' : '#0077b6' },
+                { label: 'A / A+', val: (grades['A']||0)+(grades['A+']||0), color: '#00a550' },
+                { label: 'F / issues', val: (grades['F']||0), color: '#0077b6' },
               ].map(({ label, val, color }) => (
                 <div key={label} style={{ background: 'var(--v2-surface)', border: '1px solid var(--v2-border)',
                   borderRadius: 10, padding: '10px 12px' }}>
@@ -213,7 +213,7 @@ export default function BulkScanner({ nav }) {
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {r.domain}
                       {r.error && (
-                        <div style={{ fontSize:10, color: '#1f5c4e', fontWeight: 400, marginTop: 1 }}>
+                        <div style={{ fontSize:10, color: '#0077b6', fontWeight: 400, marginTop: 1 }}>
                           {r.error.slice(0, 50)}
                         </div>
                       )}
@@ -232,8 +232,8 @@ export default function BulkScanner({ nav }) {
                     <Tick ok={r.caa} />
                     <div style={{ fontSize:11, fontWeight: 500,
                       color: r.expiry_days == null ? 'var(--v2-text-3)'
-                           : r.expiry_days <= 7 ? '#1f5c4e'
-                           : r.expiry_days <= 30 ? '#111111' : '#16a068' }}>
+                           : r.expiry_days <= 7 ? '#0077b6'
+                           : r.expiry_days <= 30 ? '#111111' : '#00a550' }}>
                       {r.expiry_days != null ? (r.expiry_days <= 0 ? 'Expired' : `${r.expiry_days}d`) : '—'}
                     </div>
                   </div>

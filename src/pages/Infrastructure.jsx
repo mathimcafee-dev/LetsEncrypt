@@ -14,9 +14,9 @@ import '../styles/design-v2.css'
 function agentStatus(last_seen_at, status) {
   if (!last_seen_at) return { label:'Never seen', color:'#888888', dot:'rgba(240,237,232,0.12)', pulse:false }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
-  if (status === 'offline' || mins > 15) return { label:'Offline', color:'#1f5c4e', dot:'#1f5c4e', pulse:false }
+  if (status === 'offline' || mins > 15) return { label:'Offline', color:'#0077b6', dot:'#0077b6', pulse:false }
   if (mins > 6) return { label:'Idle',    color:'#111111', dot:'#111111', pulse:false }
-  return { label:'Online', color:'#16a068', dot:'#16a068', pulse:true }
+  return { label:'Online', color:'#00a550', dot:'#00a550', pulse:true }
 }
 
 function fmtRel(iso) {
@@ -51,8 +51,8 @@ function CertPill({ cert }) {
   const d = daysLeft(cert.expires_at)
   const isExpired = d !== null && d <= 0
   const isWarn    = d !== null && d > 0 && d <= 30
-  const color = isExpired ? '#1f5c4e' : isWarn ? '#111111' : '#16a068'
-  const bg    = isExpired ? 'rgba(31,92,78,0.09)' : isWarn ? 'rgba(239,68,68,0.08)' : 'transparent'
+  const color = isExpired ? '#0077b6' : isWarn ? '#111111' : '#00a550'
+  const bg    = isExpired ? 'rgba(0,119,182,0.09)' : isWarn ? 'rgba(239,68,68,0.08)' : 'transparent'
 
   return (
     <div style={{
@@ -130,7 +130,7 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
 
   return (
     <div style={{
-      background:'#f4f1ec', border: '1px solid #e8edf2', borderRadius: 12,
+      background:'#f0f4fa', border: '1px solid #e8edf2', borderRadius: 12,
       marginBottom: 24, overflow: 'hidden',
     }}>
       {/* Banner */}
@@ -139,7 +139,7 @@ function SetupChecklist({ hasDns, hasAgent, hasAgentOnline, onAddDns, onAddAgent
         borderBottom: '1px solid #e8edf2',
         display: 'flex', alignItems: 'center', gap: 8,
       }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background:'#f4f1ec', flexShrink: 0 }} />
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background:'#f0f4fa', flexShrink: 0 }} />
         <span style={{ fontSize:12, fontWeight: 600, color: '#111111' }}>
           Complete VPS setup — {[hasDns, hasAgent].filter(Boolean).length} of 2 prerequisites done
         </span>
@@ -255,9 +255,9 @@ function InstallModal({ onClose }) {
           ].map(({ id, label, cmd }) => (
             <div key={id} style={{ marginBottom:14 }}>
               <div style={{ fontSize:11, fontWeight:500, color:'#333333', marginBottom:6 }}>{label}</div>
-              <div style={{ display:'flex', alignItems:'center', gap:8, background:'#f4f1ec',
+              <div style={{ display:'flex', alignItems:'center', gap:8, background:'#f0f4fa',
                 borderRadius:7, padding:'10px 14px' }}>
-                <code style={{ fontSize:12, color: id==='install' && error ? '#1f5c4e' : '#111111', fontFamily:'monospace', flex:1,
+                <code style={{ fontSize:12, color: id==='install' && error ? '#0077b6' : '#111111', fontFamily:'monospace', flex:1,
                   overflow:'auto', whiteSpace:'nowrap' }}>{cmd}</code>
                 {!loading && !error && (
                   <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, fontSize:10, fontWeight:500,
@@ -271,7 +271,7 @@ function InstallModal({ onClose }) {
 
             </div>
           ))}
-          <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:7, padding:'10px 12px' }}>
+          <div style={{ background:'transparent', border:'1px solid rgba(0,119,182,0.2)', borderRadius:7, padding:'10px 12px' }}>
             <div style={{ fontSize:11, color:'#111111', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and appears in this list within 1–2 minutes.
             </div>
@@ -327,18 +327,18 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
     setTimeout(() => setCopied(false), 1500)
   }
 
-  const borderColor = st.label === 'Online' ? 'rgba(31,92,78,0.2)'
+  const borderColor = st.label === 'Online' ? 'rgba(0,119,182,0.2)'
     : st.label === 'Offline' ? 'rgba(0,0,0,0.1)'
     : 'var(--v2-border)'
   const headerBg = st.label === 'Online' ? 'transparent'
-    : st.label === 'Offline' ? 'rgba(31,92,78,0.09)'
+    : st.label === 'Offline' ? 'rgba(0,119,182,0.09)'
     : 'var(--v2-surface-3)'
 
   const cpu  = agent.cpu_pct  || 0
   const ram  = agent.mem_pct  || 0
   const disk = agent.disk_pct || 0
 
-  const barColor = (v) => v >= 90 ? '#1f5c4e' : v >= 75 ? '#111111' : '#16a068'
+  const barColor = (v) => v >= 90 ? '#0077b6' : v >= 75 ? '#111111' : '#00a550'
 
   return (
     <div style={{ border:`0.5px solid ${borderColor}`, borderRadius:10, overflow:'hidden',
@@ -385,7 +385,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
         {/* Cert count badge */}
         <div style={{ textAlign:'right', flexShrink:0 }}>
           {st.label === 'Offline' ? (
-            <span style={{ fontSize:11, color:'#1f5c4e', fontWeight:500 }}>
+            <span style={{ fontSize:11, color:'#0077b6', fontWeight:500 }}>
               {myCerts.length > 0 ? `${myCerts.length} cert${myCerts.length>1?'s':''} at risk` : 'Offline'}
             </span>
           ) : (
@@ -397,7 +397,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
 
         {/* Status pill */}
         <span style={{ fontSize:10, fontWeight:700, padding:'2px 9px', borderRadius:10, flexShrink:0,
-          background: st.label==='Online'?'transparent':st.label==='Offline'?'rgba(31,92,78,0.09)':'rgba(239,68,68,0.08)',
+          background: st.label==='Online'?'transparent':st.label==='Offline'?'rgba(0,119,182,0.09)':'rgba(239,68,68,0.08)',
           color: st.color }}>
           {st.label}
         </span>
@@ -468,13 +468,13 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                         <div key={j.id} style={{ display:'flex', alignItems:'center', gap:10,
                           padding:'7px 10px', borderRadius:7, background:'var(--v2-surface-3)' }}>
                           {ok   ? <CheckCircle size={12} color="#16a34a"/>
-                          :fail ? <XCircle size={12} color="#1f5c4e"/>
-                          :       <Clock size={12} color="#1f5c4e"/>}
+                          :fail ? <XCircle size={12} color="#0077b6"/>
+                          :       <Clock size={12} color="#0077b6"/>}
                           <span style={{ fontSize:11, color:'#333333', fontFamily:'monospace', flex:1 }}>
                             {j.job_type}{j.domain ? ` · ${j.domain}` : ''}
                           </span>
                           {j.error_message && (
-                            <span style={{ fontSize:10, color:'#1f5c4e', maxWidth:200,
+                            <span style={{ fontSize:10, color:'#0077b6', maxWidth:200,
                               overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                               {j.error_message}
                             </span>
@@ -536,7 +536,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                     textTransform:'uppercase', letterSpacing:'0.4px', marginBottom:8 }}>
                     Restart command
                   </div>
-                  <div style={{ background:'#f4f1ec', borderRadius:7, padding:'8px 12px' }}>
+                  <div style={{ background:'#f0f4fa', borderRadius:7, padding:'8px 12px' }}>
                     <code style={{ fontSize:10, color:'#111111', fontFamily:'"JetBrains Mono",monospace' }}>
                       sudo systemctl restart sslvault-agent
                     </code>
@@ -559,7 +559,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
             </button>
             <div style={{ flex:1 }}/>
             <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', display:'flex', alignItems:'center', gap:5,
-                borderColor:'rgba(0,0,0,0.1)', color:'#1f5c4e' }}
+                borderColor:'rgba(0,0,0,0.1)', color:'#0077b6' }}
               disabled={removing}
               onClick={async () => {
                 if (!window.confirm(`Remove "${agent.nickname || agent.hostname}" from SSLVault? This stops auto-renewal for this server.`)) return
@@ -651,7 +651,7 @@ export default function Infrastructure({ user }) {
               Refresh
             </button>
             <button onClick={() => setShowInstall(true)}
-              style={{ display:'flex', alignItems:'center', gap:6, background:'#f4f1ec',
+              style={{ display:'flex', alignItems:'center', gap:6, background:'#f0f4fa',
                 color:'#111111', border:'none', padding:'7px 14px', borderRadius:7,
                 fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit',
                 transition:'opacity .15s' }}
@@ -666,10 +666,10 @@ export default function Infrastructure({ user }) {
         {!loading && agents.length > 0 && (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))', gap:8, marginBottom:20 }}>
             {[
-              { label:'Servers online',  val:online,       color:'#16a068' },
-              { label:'Offline / idle',  val:offline,      color:offline>0?'#1f5c4e':'var(--v2-text)' },
+              { label:'Servers online',  val:online,       color:'#00a550' },
+              { label:'Offline / idle',  val:offline,      color:offline>0?'#0077b6':'var(--v2-text)' },
               { label:'Certs protected', val:certs.length, color:'#111111' },
-              { label:'Renewals ≤30d',   val:renewalsDue,  color:renewalsDue>0?'#111111':'#16a068' },
+              { label:'Renewals ≤30d',   val:renewalsDue,  color:renewalsDue>0?'#111111':'#00a550' },
             ].map(({ label, val, color }) => (
               <div key={label} className="v2-card" style={{ padding:'11px 14px' }}>
                 <div style={{ fontSize:22, fontWeight:500, color, fontFamily:'monospace' }}>{val}</div>
@@ -698,7 +698,7 @@ export default function Infrastructure({ user }) {
               It will auto-renew your certificates and report status here.
             </div>
             <button onClick={() => setShowInstall(true)}
-              style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec',
+              style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0f4fa',
                 color:'#111111', border:'none', borderRadius:7, padding:'9px 20px',
                 fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
               <Terminal size={13}/> Install agent

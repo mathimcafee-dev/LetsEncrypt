@@ -42,7 +42,7 @@ export default function DeveloperInner({ nav }) {
               PKI specialist with a deep interest in digital trust and certificate lifecycle management. SSLVault is a personal project — a way to give back to the indie and non-profit community who need enterprise-grade CLM without the enterprise price tag.
             </p>
             <div style={{ display:'flex', gap:8 }}>
-              <a href="mailto:mathimcafee@gmail.com" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#111111', textDecoration:'none', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
+              <a href="mailto:mathimcafee@gmail.com" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0f4fa', color:'#111111', textDecoration:'none', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
                 <Mail size={12}/> Contact
               </a>
               <a href="https://github.com/mathimcafee-dev" target="_blank" rel="noopener noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#111111', textDecoration:'none', border:'1px solid #e8edf2', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
@@ -60,7 +60,7 @@ export default function DeveloperInner({ nav }) {
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
             {CERTS.map(c => (
               <div key={c} style={{ display:'flex', alignItems:'flex-start', gap:10, fontSize:12, color:'#333333' }}>
-                <Award size={13} color="#1f5c4e" style={{ flexShrink:0, marginTop:1 }}/>
+                <Award size={13} color="#0077b6" style={{ flexShrink:0, marginTop:1 }}/>
                 {c}
               </div>
             ))}
@@ -80,7 +80,7 @@ export default function DeveloperInner({ nav }) {
         {/* SSLVault story */}
         <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'20px 22px', gridColumn:'span 2' }}>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
-            <Shield size={13} color="#1f5c4e"/>
+            <Shield size={13} color="#0077b6"/>
             <span style={{ fontSize:10, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.5px' }}>Why SSLVault</span>
           </div>
           <p style={{ fontSize:12, color:'#333333', lineHeight:1.8, margin:'0 0 10px' }}>

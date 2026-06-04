@@ -18,7 +18,7 @@ const STEP_META = [
 ]
 
 // ── Spinner ───────────────────────────────────────────────────────────────────
-function Spinner({ size = 16, color = '#1f5c4e' }) {
+function Spinner({ size = 16, color = '#0077b6' }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
@@ -41,7 +41,7 @@ function StepRow({ step, index, isLast }) {
   const isSkipped = status === 'skipped'
   const isPending = status === 'pending'
 
-  const lineColor = isDone ? '#16a068' : isActive ? '#1f5c4e' : 'rgba(0,0,0,0.06)'
+  const lineColor = isDone ? '#00a550' : isActive ? '#0077b6' : 'rgba(0,0,0,0.06)'
 
   return (
     <div style={{ display: 'flex', gap: 0, position: 'relative' }}>
@@ -69,7 +69,7 @@ function StepRow({ step, index, isLast }) {
         }}>
           {isActive  ? <Spinner size={14}/> :
            isDone    ? <span style={{ fontSize: 13 }}>✓</span> :
-           isError   ? <span style={{ fontSize: 13, color: '#1f5c4e' }}>✗</span> :
+           isError   ? <span style={{ fontSize: 13, color: '#0077b6' }}>✗</span> :
            isSkipped ? <span style={{ fontSize: 12 }}>⏸</span> :
                        <span style={{ opacity: 0.35, fontSize: 13 }}>{meta.icon}</span>}
         </div>
@@ -93,9 +93,9 @@ function StepRow({ step, index, isLast }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
-            color: isDone    ? '#16a068'
-                 : isActive  ? '#1f5c4e'
-                 : isError   ? '#1f5c4e'
+            color: isDone    ? '#00a550'
+                 : isActive  ? '#0077b6'
+                 : isError   ? '#0077b6'
                  : isSkipped ? '#9a6400'
                  : 'rgba(0,0,0,0.09)',
             fontFamily: 'monospace',
@@ -104,7 +104,7 @@ function StepRow({ step, index, isLast }) {
           {isActive && (
             <span style={{
               fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 10,
-              background: 'rgba(255,140,122,0.15)', color: '#1f5c4e',
+              background: 'rgba(255,140,122,0.15)', color: '#0077b6',
               letterSpacing: '0.08em', animation: 'mcv2-pulse 2s ease-in-out infinite',
             }}>RUNNING</span>
           )}
@@ -114,7 +114,7 @@ function StepRow({ step, index, isLast }) {
           fontSize: 13, fontWeight: isActive || isDone ? 600 : 400,
           color: isDone    ? '#ffffff'
                : isActive  ? '#ffffff'
-               : isError   ? '#1f5c4e'
+               : isError   ? '#0077b6'
                : isSkipped ? '#9a6400'
                : 'rgba(255,255,255,0.3)',
           lineHeight: 1.3,
@@ -127,7 +127,7 @@ function StepRow({ step, index, isLast }) {
           <div style={{
             fontSize: 11, marginTop: 4,
             fontFamily: isActive || isDone ? 'monospace' : 'inherit',
-            color: isError   ? '#1f5c4e'
+            color: isError   ? '#0077b6'
                  : isActive  ? 'rgba(255,140,122,0.8)'
                  : isDone    ? 'rgba(255,255,255,0.4)'
                  : isSkipped ? 'rgba(251,191,36,0.6)'
@@ -154,7 +154,7 @@ function FloatingPill({ action, domain, elapsedMs, currentStep, onExpand }) {
       cursor: 'pointer', boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
       backdropFilter: 'blur(12px)',
     }}>
-      <Spinner size={10} color="#1f5c4e"/>
+      <Spinner size={10} color="#0077b6"/>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>
           {action === 'reissue' ? 'Reissuing' : 'Renewing'} · {domain}
@@ -166,7 +166,7 @@ function FloatingPill({ action, domain, elapsedMs, currentStep, onExpand }) {
         )}
       </div>
       <span style={{
-        fontSize: 12, color: '#1f5c4e', fontFamily: 'monospace', fontWeight: 700,
+        fontSize: 12, color: '#0077b6', fontFamily: 'monospace', fontWeight: 700,
         marginLeft: 4,
       }}>
         {formatClock(elapsedMs)}
@@ -226,12 +226,12 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
               {isProbing ? '⏳' : certIssued ? '🔐' : '❓'}
             </div>
             <div style={{ flex: 1, textAlign: 'left' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: certIssued ? '#16a068' : 'rgba(255,255,255,0.3)', marginBottom: 3 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: certIssued ? '#00a550' : 'rgba(255,255,255,0.3)', marginBottom: 3 }}>
                 Certificate Issued
               </div>
               {certIssued && (
                 <>
-                  <div style={{ fontSize: 10, fontFamily: 'monospace', color: '#1f5c4e', wordBreak: 'break-all' }}>
+                  <div style={{ fontSize: 10, fontFamily: 'monospace', color: '#0077b6', wordBreak: 'break-all' }}>
                     {p.cert.serial}
                   </div>
                   <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
@@ -244,7 +244,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
             {certIssued && (
               <span style={{
                 fontSize: 9, fontWeight: 800, padding: '2px 7px', borderRadius: 10,
-                background: 'rgba(34,197,94,0.15)', color: '#16a068', letterSpacing: '0.06em',
+                background: 'rgba(34,197,94,0.15)', color: '#00a550', letterSpacing: '0.06em',
               }}>VALID</span>
             )}
           </div>
@@ -263,7 +263,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
               {isProbing ? '⏳' : reachable ? '🌐' : '⚠️'}
             </div>
             <div style={{ flex: 1, textAlign: 'left' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: reachable ? '#16a068' : 'rgba(255,255,255,0.3)', marginBottom: 3 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: reachable ? '#00a550' : 'rgba(255,255,255,0.3)', marginBottom: 3 }}>
                 Live Server
               </div>
               {reachable && (
@@ -281,7 +281,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
             {reachable && (
               <span style={{
                 fontSize: 9, fontWeight: 800, padding: '2px 7px', borderRadius: 10,
-                background: 'rgba(34,197,94,0.15)', color: '#16a068', letterSpacing: '0.06em',
+                background: 'rgba(34,197,94,0.15)', color: '#00a550', letterSpacing: '0.06em',
               }}>LIVE</span>
             )}
           </div>
@@ -293,7 +293,7 @@ function SuccessScreen({ action, domain, probeStatus, onDone, onViewCert }) {
         <button onClick={onViewCert} style={{
           fontSize: 13, fontWeight: 600, padding: '10px 22px', borderRadius: 8,
           background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)',
-          color: '#16a068', cursor: 'pointer', fontFamily: 'inherit',
+          color: '#00a550', cursor: 'pointer', fontFamily: 'inherit',
         }}>View Certificate</button>
         <button onClick={onDone} style={{
           fontSize: 13, fontWeight: 600, padding: '10px 22px', borderRadius: 8,
@@ -375,7 +375,7 @@ export default function MissionControlModal({
       }}>
         <div style={{
           width: '100%', maxWidth: 460,
-          background: '#f4f1ec',
+          background: '#f0f4fa',
           border: '1px solid rgba(0,0,0,0.06)',
           borderRadius: 18,
           boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,140,122,0.06)',
@@ -391,13 +391,13 @@ export default function MissionControlModal({
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {busy && <Spinner size={14} color="#1f5c4e"/>}
+              {busy && <Spinner size={14} color="#0077b6"/>}
               {!busy && isDone && (
                 <div style={{
                   width: 14, height: 14, borderRadius: '50%',
                   background: 'rgba(34,197,94,0.2)', border: '1.5px solid #22c55e',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 8, color: '#16a068',
+                  fontSize: 8, color: '#00a550',
                 }}>✓</div>
               )}
               {!busy && hasError && (
@@ -421,7 +421,7 @@ export default function MissionControlModal({
               {busy && (
                 <div style={{
                   fontSize: 13, fontWeight: 700, fontFamily: 'monospace',
-                  color: '#1f5c4e', background: 'rgba(255,140,122,0.08)',
+                  color: '#0077b6', background: 'rgba(255,140,122,0.08)',
                   padding: '4px 10px', borderRadius: 6,
                   border: '1px solid rgba(192,57,43,0.2)',
                 }}>
@@ -481,7 +481,7 @@ export default function MissionControlModal({
                   display: 'flex', alignItems: 'center', gap: 10,
                   animation: 'mcv2-slidein 0.25s ease',
                 }}>
-                  <Spinner size={12} color="#1f5c4e"/>
+                  <Spinner size={12} color="#0077b6"/>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>
                       {activeStep.label}
@@ -522,7 +522,7 @@ export default function MissionControlModal({
                     }}>
                       <div style={{
                         width: 5, height: 5, borderRadius: '50%',
-                        background: '#1f5c4e',
+                        background: '#0077b6',
                         animation: 'mcv2-pulse 1.6s ease-in-out infinite',
                         flexShrink: 0,
                       }}/>
@@ -554,14 +554,14 @@ export default function MissionControlModal({
                     padding: '10px 14px', borderRadius: 10,
                     background: 'rgba(248,113,113,0.06)',
                     border: '1px solid rgba(192,57,43,0.12)',
-                    fontSize: 11, color: '#1f5c4e',
+                    fontSize: 11, color: '#0077b6',
                   }}>
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>Something went wrong</div>
                     <div style={{ opacity: 0.75, marginBottom: 10 }}>Your existing certificate is still active.</div>
                     <button onClick={onDismiss} style={{
                       fontSize: 11, fontWeight: 600, padding: '6px 14px', borderRadius: 6,
                       background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(192,57,43,0.2)',
-                      color: '#1f5c4e', cursor: 'pointer', fontFamily: 'inherit',
+                      color: '#0077b6', cursor: 'pointer', fontFamily: 'inherit',
                     }}>Dismiss</button>
                   </div>
                 )}

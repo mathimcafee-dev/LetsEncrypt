@@ -64,7 +64,7 @@ function TerminalMock({ lines }) {
     <div className="v2-code" style={{ marginBottom: 12 }}>
       <div className="v2-code-head">
         <div className="v2-code-dots">
-          <span style={{ background: '#1f5c4e' }}/><span style={{ background:'#f4f1ec' }}/><span style={{ background:'#f4f1ec' }}/>
+          <span style={{ background: '#0077b6' }}/><span style={{ background:'#f0f4fa' }}/><span style={{ background:'#f0f4fa' }}/>
           <span style={{ marginLeft: 8, fontSize:10, color: '#888888', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>browser output</span>
         </div>
       </div>
@@ -168,7 +168,7 @@ export default function SharedHostingGuide({ nav }) {
           <div className="v2-code" style={{ marginBottom: 10 }}>
             <div className="v2-code-head">
               <div className="v2-code-dots">
-                <span style={{ background: '#1f5c4e' }}/><span style={{ background:'#f4f1ec' }}/><span style={{ background:'#f4f1ec' }}/>
+                <span style={{ background: '#0077b6' }}/><span style={{ background:'#f0f4fa' }}/><span style={{ background:'#f0f4fa' }}/>
                 <span style={{ marginLeft: 8, fontSize:10, color: '#888888', fontFamily: 'JetBrains Mono, monospace', background: 'transparent', borderRadius: 0, width: 'auto', height: 'auto', display: 'inline' }}>File Manager — public_html</span>
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function SharedHostingGuide({ nav }) {
               'Wait for the upload to complete',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#1f5c4e', color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#0077b6', color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
                 <span style={{ fontSize:12, color: '#333333' }}>{t}</span>
               </div>
             ))}
@@ -230,7 +230,7 @@ export default function SharedHostingGuide({ nav }) {
               'Click Install Certificate',
             ].map((t, i) => (
               <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '9px 14px' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#1f5c4e', color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background:'#0077b6', color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize:11, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
                 <span style={{ fontSize:12, color: '#333333', lineHeight: 1.6 }}>{t}</span>
               </div>
             ))}
@@ -244,8 +244,8 @@ export default function SharedHostingGuide({ nav }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {['Go to cPanel File Manager', 'Navigate to public_html', 'Find sslvault-agent.php', 'Right-click → Delete → Confirm'].map((t, i) => (
-              <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '8px 14px', background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca' }}>
-                <Trash2 size={12} style={{ color: '#1f5c4e', flexShrink: 0 }}/>
+              <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '8px 14px', background: 'rgba(0,119,182,0.09)', border: '1px solid #fecaca' }}>
+                <Trash2 size={12} style={{ color: '#0077b6', flexShrink: 0 }}/>
                 <span style={{ fontSize:12, color: '#333333' }}>{t}</span>
               </div>
             ))}
@@ -312,7 +312,7 @@ export default function SharedHostingGuide({ nav }) {
 
         {/* CTA */}
         <div className="v2-card" style={{ marginTop: 32, padding: 28, textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#1f5c4e',
+          <div style={{ width: 40, height: 40, borderRadius: 10, background:'#0077b6',
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Shield size={18} color="white" strokeWidth={2}/>
           </div>

@@ -22,7 +22,7 @@ export default function AboutInner({ nav }) {
       {/* Mission block */}
       <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #2a6b5c' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
-          <Heart size={14} color="#1f5c4e"/>
+          <Heart size={14} color="#0077b6"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.5px' }}>Mission</span>
         </div>
         <p style={{ fontSize:20, fontWeight:500, color:'#111111', lineHeight:1.5, letterSpacing:'-.3px', margin:'0 0 14px', maxWidth:680 }}>
@@ -40,8 +40,8 @@ export default function AboutInner({ nav }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:16 }}>
         {PILLARS.map(({ icon:Icon, title, body }) => (
           <div key={title} style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
-            <div style={{ width:32, height:32, background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
-              <Icon size={15} color="#1f5c4e"/>
+            <div style={{ width:32, height:32, background:'transparent', border:'1px solid rgba(0,119,182,0.2)', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
+              <Icon size={15} color="#0077b6"/>
             </div>
             <div style={{ fontSize:13, fontWeight:500, color:'#111111', marginBottom:6 }}>{title}</div>
             <div style={{ fontSize:12, color:'#333333', lineHeight:1.7 }}>{body}</div>
@@ -61,7 +61,7 @@ export default function AboutInner({ nav }) {
             ['Agent', 'Bash daemon, systemd'],
             ['DNS', 'Cloudflare · Vercel · cPanel'],
           ].map(([k, v]) => (
-            <div key={k} style={{ padding:'10px 12px', background:'transparent', borderRadius:6, border:'1px solid rgba(31,92,78,0.07)' }}>
+            <div key={k} style={{ padding:'10px 12px', background:'transparent', borderRadius:6, border:'1px solid rgba(0,119,182,0.07)' }}>
               <div style={{ fontSize:9, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.4px', marginBottom:4 }}>{k}</div>
               <div style={{ fontSize:12, color:'#111111', fontFamily:"'JetBrains Mono',monospace" }}>{v}</div>
             </div>
@@ -71,7 +71,7 @@ export default function AboutInner({ nav }) {
 
       {/* CTA */}
       <div style={{ display:'flex', gap:10 }}>
-        <button onClick={() => nav('/developer')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#111111', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+        <button onClick={() => nav('/developer')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0f4fa', color:'#111111', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
           <Code2 size={13}/> Meet the developer
         </button>
         <button onClick={() => nav('/contact')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#111111', border:'1px solid #e8edf2', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>

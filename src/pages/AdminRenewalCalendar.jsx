@@ -75,7 +75,7 @@ function TabBar({ tab, setTab, counts }) {
           flex: 1, padding: '7px 12px', borderRadius: 6,
           border: 'none', cursor: 'pointer', fontFamily: 'inherit',
           fontSize: 12, fontWeight: tab === t.id ? 600 : 500,
-          background: tab === t.id ? 'rgba(31,92,78,0.2)' : 'transparent',
+          background: tab === t.id ? 'rgba(0,119,182,0.2)' : 'transparent',
           color: tab === t.id ? '#ffffff' : '#b0a8a0',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           transition: 'all 0.15s',
@@ -85,7 +85,7 @@ function TabBar({ tab, setTab, counts }) {
             <span style={{
               fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 10,
               background: t.warn && tab !== t.id ? 'rgba(192,57,43,0.2)' : 'rgba(0,0,0,0.08)',
-              color: t.warn && tab !== t.id ? '#1f5c4e' : 'rgba(255,255,255,0.7)',
+              color: t.warn && tab !== t.id ? '#0077b6' : 'rgba(255,255,255,0.7)',
               border: t.warn && tab !== t.id ? '1px solid rgba(192,57,43,0.2)' : 'none',
             }}>{t.count}</span>
           )}
@@ -102,12 +102,12 @@ function EventRow({ ev, cert }) {
   const isToday = days === 0
   const isPast = days !== null && days < 0
 
-  const statusColor = ev.status === 'sent' ? '#16a068'
-    : ev.status === 'failed' ? '#1f5c4e'
+  const statusColor = ev.status === 'sent' ? '#00a550'
+    : ev.status === 'failed' ? '#0077b6'
     : ev.status === 'executing' ? '#9a6400'
     : '#60a5fa'
 
-  const statusBg = ev.status === 'sent' ? 'rgba(22,160,104,0.09)'
+  const statusBg = ev.status === 'sent' ? 'rgba(0,165,80,0.09)'
     : ev.status === 'failed' ? 'rgba(192,57,43,0.07)'
     : ev.status === 'executing' ? 'rgba(184,120,0,0.07)'
     : 'rgba(96,165,250,0.1)'
@@ -141,9 +141,9 @@ function EventRow({ ev, cert }) {
       <div style={{ width: 115, flexShrink: 0 }}>
         <span style={{
           fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
-          background: isReissue ? 'rgba(22,160,104,0.09)' : 'rgba(31,92,78,0.09)',
-          color: isReissue ? '#16a068' : '#1f5c4e',
-          border: `0.5px solid ${isReissue ? 'rgba(22,160,104,0.22)' : 'rgba(255,140,122,0.25)'}`,
+          background: isReissue ? 'rgba(0,165,80,0.09)' : 'rgba(0,119,182,0.09)',
+          color: isReissue ? '#00a550' : '#0077b6',
+          border: `0.5px solid ${isReissue ? 'rgba(0,165,80,0.22)' : 'rgba(255,140,122,0.25)'}`,
         }}>
           {EVENT_LABELS[ev.event_type] || ev.event_type}
         </span>
@@ -153,7 +153,7 @@ function EventRow({ ev, cert }) {
       <div style={{ width: 90, flexShrink: 0 }}>
         <span style={{
           fontSize: 11,
-          color: isToday ? '#1f5c4e' : isPast ? 'rgba(255,255,255,0.3)' : '#333333',
+          color: isToday ? '#0077b6' : isPast ? 'rgba(255,255,255,0.3)' : '#333333',
           fontWeight: isToday ? 700 : 400,
         }}>
           {fmtShort(ev.scheduled_date)}
@@ -161,7 +161,7 @@ function EventRow({ ev, cert }) {
         {isToday && (
           <span style={{
             marginLeft: 5, fontSize: 9, fontWeight: 700,
-            background: 'rgba(0,0,0,0.1)', color: '#1f5c4e',
+            background: 'rgba(0,0,0,0.1)', color: '#0077b6',
             padding: '1px 5px', borderRadius: 3,
           }}>today</span>
         )}
@@ -179,7 +179,7 @@ function EventRow({ ev, cert }) {
         </span>
         {ev.error_message && (
           <span style={{
-            fontSize: 10, color: '#1f5c4e',
+            fontSize: 10, color: '#0077b6',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180,
           }}>
             {ev.error_message.slice(0, 70)}
@@ -204,7 +204,7 @@ function AlertRow({ alert, onResolve, resolving }) {
         <div style={{ fontSize: 12, fontWeight: 600, color: '#111111', marginBottom: 3 }}>
           {alert.domain || 'Unknown domain'}
         </div>
-        <div style={{ fontSize: 11, color: '#1f5c4e', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 11, color: '#0077b6', lineHeight: 1.5 }}>
           {(alert.message || '').slice(0, 120)}
         </div>
         <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>
@@ -214,8 +214,8 @@ function AlertRow({ alert, onResolve, resolving }) {
       <button onClick={() => onResolve(alert.id)} disabled={resolving === alert.id}
         style={{
           padding: '5px 12px', borderRadius: 6, fontSize: 10, fontWeight: 600,
-          border: '1px solid rgba(22,160,104,0.22)',
-          background: 'rgba(22,160,104,0.09)', color: '#16a068',
+          border: '1px solid rgba(0,165,80,0.22)',
+          background: 'rgba(0,165,80,0.09)', color: '#00a550',
           cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0,
           display: 'flex', alignItems: 'center', gap: 4,
         }}>
@@ -347,10 +347,10 @@ export default function AdminRenewalCalendar({ user }) {
           accentColor="#60a5fa" icon={Calendar} />
         <StatCard label="Failed events"    value={loading ? '…' : failed.length}
           subtext="need retry or manual fix"
-          accentColor={failed.length > 0 ? '#1f5c4e' : 'rgba(0,0,0,0.09)'} icon={AlertTriangle} />
+          accentColor={failed.length > 0 ? '#0077b6' : 'rgba(0,0,0,0.09)'} icon={AlertTriangle} />
         <StatCard label="Open alerts"      value={loading ? '…' : alerts.length}
           subtext="admin action needed"
-          accentColor={alerts.length > 0 ? '#1f5c4e' : 'rgba(0,0,0,0.09)'} icon={Bell} />
+          accentColor={alerts.length > 0 ? '#0077b6' : 'rgba(0,0,0,0.09)'} icon={Bell} />
       </div>
 
       {/* Open alert banner */}
@@ -358,8 +358,8 @@ export default function AdminRenewalCalendar({ user }) {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 14px', borderRadius: 8, marginBottom: 16,
-          background: 'rgba(31,92,78,0.06)', border: '1px solid rgba(31,92,78,0.15)',
-          fontSize: 12, color: '#1f5c4e',
+          background: 'rgba(0,119,182,0.06)', border: '1px solid rgba(0,119,182,0.15)',
+          fontSize: 12, color: '#0077b6',
         }}>
           <AlertTriangle size={14} strokeWidth={2} />
           <span>
@@ -368,7 +368,7 @@ export default function AdminRenewalCalendar({ user }) {
           </span>
           <button onClick={() => setTab('alerts')} style={{
             marginLeft: 'auto', background: 'transparent', border: 'none',
-            color: '#1f5c4e', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+            color: '#0077b6', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
           }}>View →</button>
         </div>
       )}
@@ -395,7 +395,7 @@ export default function AdminRenewalCalendar({ user }) {
             </div>
           ) : (
             <>
-              <div style={{ padding: '8px 16px', fontSize: 10, fontWeight: 700, color: '#1f5c4e',
+              <div style={{ padding: '8px 16px', fontSize: 10, fontWeight: 700, color: '#0077b6',
                 textTransform: 'uppercase', letterSpacing: '0.5px',
                 borderBottom: '1px solid rgba(192,57,43,0.1)',
                 background: 'rgba(248,113,113,0.06)' }}>

@@ -9,15 +9,15 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 
 function StatusIcon({ status }) {
   if (status === 'pass')    return <CheckCircle  size={15} color="#16a34a" style={{ flexShrink:0 }} />
-  if (status === 'fail')    return <XCircle      size={15} color="#1f5c4e" style={{ flexShrink:0 }} />
-  if (status === 'warn')    return <AlertTriangle size={15} color="#1f5c4e" style={{ flexShrink:0 }} />
-  return                           <Info         size={15} color="#1f5c4e" style={{ flexShrink:0 }} />
+  if (status === 'fail')    return <XCircle      size={15} color="#0077b6" style={{ flexShrink:0 }} />
+  if (status === 'warn')    return <AlertTriangle size={15} color="#0077b6" style={{ flexShrink:0 }} />
+  return                           <Info         size={15} color="#0077b6" style={{ flexShrink:0 }} />
 }
 
 function StatusBadge({ status }) {
   const map = {
-    pass: { bg:'transparent', color:'#16a068', label:'Pass' },
-    fail: { bg:'rgba(31,92,78,0.09)', color:'#1f5c4e', label:'Fail' },
+    pass: { bg:'transparent', color:'#00a550', label:'Pass' },
+    fail: { bg:'rgba(0,119,182,0.09)', color:'#0077b6', label:'Fail' },
     warn: { bg:'rgba(239,68,68,0.08)', color:'#111111', label:'Warning' },
     info: { bg:'transparent', color:'#111111', label:'Info' },
   }
@@ -85,7 +85,7 @@ export default function CAAChecker({ nav }) {
           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
             <div style={{ width:36, height:36, borderRadius:8, background:'transparent',
               display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Shield size={18} color="#1f5c4e"/>
+              <Shield size={18} color="#0077b6"/>
             </div>
             <h1 className="v2-h1">CAA Record Checker</h1>
           </div>
@@ -109,7 +109,7 @@ export default function CAAChecker({ nav }) {
             <button
               onClick={check}
               disabled={loading}
-              style={{ display:'flex', alignItems:'center', gap:6, background:'#f4f1ec',
+              style={{ display:'flex', alignItems:'center', gap:6, background:'#f0f4fa',
                 color:'#111111', border:'none', borderRadius:6, padding:'9px 18px',
                 fontSize:13, fontWeight:600, cursor:loading?'not-allowed':'pointer',
                 opacity:loading?0.6:1, fontFamily:'inherit', whiteSpace:'nowrap' }}>
@@ -126,17 +126,17 @@ export default function CAAChecker({ nav }) {
 
             {/* Summary banner */}
             <div style={{
-              background: result.safeToIssue ? 'transparent' : 'rgba(31,92,78,0.09)',
-              border: `0.5px solid ${result.safeToIssue ? 'rgba(31,92,78,0.2)' : 'rgba(0,0,0,0.1)'}`,
+              background: result.safeToIssue ? 'transparent' : 'rgba(0,119,182,0.09)',
+              border: `0.5px solid ${result.safeToIssue ? 'rgba(0,119,182,0.2)' : 'rgba(0,0,0,0.1)'}`,
               borderRadius:10, padding:'14px 16px', marginBottom:16,
               display:'flex', alignItems:'flex-start', gap:10,
             }}>
               {result.safeToIssue
                 ? <CheckCircle size={18} color="#16a34a" style={{ flexShrink:0, marginTop:1 }}/>
-                : <XCircle     size={18} color="#1f5c4e" style={{ flexShrink:0, marginTop:1 }}/>}
+                : <XCircle     size={18} color="#0077b6" style={{ flexShrink:0, marginTop:1 }}/>}
               <div>
                 <p style={{ margin:0, fontSize:13, fontWeight:600,
-                  color: result.safeToIssue ? '#111111' : '#1f5c4e' }}>{result.summary}</p>
+                  color: result.safeToIssue ? '#111111' : '#0077b6' }}>{result.summary}</p>
                 {result.checkedDomain !== result.domain && (
                   <p style={{ margin:'3px 0 0', fontSize:12, color:'#333333' }}>
                     CAA inherited from parent: <code style={{ fontSize:11 }}>{result.checkedDomain}</code>

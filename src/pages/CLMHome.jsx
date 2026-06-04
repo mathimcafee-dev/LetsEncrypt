@@ -36,8 +36,8 @@ import VaultBrainPanel from '../components/VaultBrainPanel'
 
 // ── Design tokens ──────────────────────────────────────────────────────
 const F = "'Inter',system-ui,sans-serif"
-const NAVY  = '#f7f5f0'        // page bg — warm parchment
-const CARD  = 'rgba(31,92,78,0.08)'  // hover bg — teal tint
+const NAVY  = '#f0f4fa'        // page bg — warm parchment
+const CARD  = 'rgba(0,119,182,0.08)'  // hover bg — teal tint
 const CARD2 = '#ffffff'              // elevated card
 const CARD3 = '#f2efea'              // input bg
 const LINE  = 'rgba(0,0,0,0.07)'
@@ -45,10 +45,10 @@ const LINE2 = 'rgba(0,0,0,0.12)'
 const INK   = 'rgba(0,0,0,0.06)'
 const BODY  = '#6b6b6b'
 const MUTED = '#9a9a9a'
-const BLUE  = '#1f5c4e'
-const BLUEH = '#2e7a68'
-const GREEN = '#16a068'
-const RED   = '#1f5c4e'
+const BLUE  = '#0077b6'
+const BLUEH = '#0091d6'
+const GREEN = '#00a550'
+const RED   = '#0077b6'
 const AMBER = '#9a6400'
 
 function useIsMobile(bp=860) {
@@ -174,14 +174,14 @@ export default function CLMHome({ user, nav, initialSection }) {
         padding:'8px 12px 8px 16px',
         width:'100%', textAlign:'left', fontFamily:F,
         fontSize:13, fontWeight:on?500:400,
-        color: on ? '#1f5c4e' : BODY,
-        background: on ? 'rgba(31,92,78,0.12)' : 'transparent',
+        color: on ? '#0077b6' : BODY,
+        background: on ? 'rgba(0,119,182,0.12)' : 'transparent',
         borderLeft: `2px solid ${on ? BLUE : 'transparent'}`,
         border:'none', cursor:'pointer',
         borderRadius:'0 6px 6px 0',
         marginBottom:1, transition:'all 0.1s',
       }}
-        onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(31,92,78,0.08)';e.currentTarget.style.color='#1f5c4e'}}}
+        onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(0,119,182,0.08)';e.currentTarget.style.color='#0077b6'}}}
         onMouseLeave={e=>{if(!on){e.currentTarget.style.background='transparent';e.currentTarget.style.color=BODY}}}>
         <Icon size={14} strokeWidth={on?2.2:1.8} color={on?BLUE:undefined} style={{flexShrink:0}}/>
         <span style={{flex:1}}>{label}</span>
@@ -226,7 +226,7 @@ export default function CLMHome({ user, nav, initialSection }) {
       {/* User */}
       <div style={{borderTop:`1px solid ${LINE}`,padding:'12px 14px',flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,#1f5c4e,#2e7a68)`,
+          <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,#0077b6,#0091d6)`,
             display:'flex',alignItems:'center',justifyContent:'center',
             fontSize:11,fontWeight:700,color:'#111111',flexShrink:0,letterSpacing:'-0.3px'}}>
             {initials}
@@ -283,7 +283,7 @@ export default function CLMHome({ user, nav, initialSection }) {
               style={{background:'none',border:'none',cursor:'pointer',color:'#555555',width:32,height:32,
                 display:'flex',alignItems:'center',justifyContent:'center',borderRadius:6,position:'relative',
                 transition:'all .12s'}}
-              onMouseEnter={e=>{e.currentTarget.style.background='rgba(31,92,78,0.08)';e.currentTarget.style.color='#1f5c4e'}}
+              onMouseEnter={e=>{e.currentTarget.style.background='rgba(0,119,182,0.08)';e.currentTarget.style.color='#0077b6'}}
               onMouseLeave={e=>{e.currentTarget.style.background='none';e.currentTarget.style.color=BODY}}>
               <Bell size={15}/>
               {unread>0&&<span style={{position:'absolute',top:5,right:5,width:6,height:6,
@@ -327,13 +327,13 @@ export default function CLMHome({ user, nav, initialSection }) {
             title="Ask VaultBrain AI"
             style={{
               display:'flex',alignItems:'center',gap:5,
-              background:aiOpen?'rgba(31,92,78,0.1)':'none',
-              border:`1px solid ${aiOpen?'rgba(31,92,78,0.35)':LINE}`,
-              cursor:'pointer',color:aiOpen?'#1f5c4e':'#c8c0b8',
+              background:aiOpen?'rgba(0,119,182,0.1)':'none',
+              border:`1px solid ${aiOpen?'rgba(0,119,182,0.35)':LINE}`,
+              cursor:'pointer',color:aiOpen?'#0077b6':'#c8c0b8',
               fontSize:12,fontFamily:F,padding:'5px 10px',borderRadius:6,
               transition:'all .12s',
             }}
-            onMouseEnter={e=>{if(!aiOpen){e.currentTarget.style.borderColor='rgba(31,92,78,0.3)';e.currentTarget.style.color='#1f5c4e'}}}
+            onMouseEnter={e=>{if(!aiOpen){e.currentTarget.style.borderColor='rgba(0,119,182,0.3)';e.currentTarget.style.color='#0077b6'}}}
             onMouseLeave={e=>{if(!aiOpen){e.currentTarget.style.borderColor=LINE;e.currentTarget.style.color='#c8c0b8'}}}>
             🧠{!isMobile&&<span style={{marginLeft:2}}>AI</span>}
           </button>
@@ -377,9 +377,9 @@ export default function CLMHome({ user, nav, initialSection }) {
 
       <style>{`
         @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-        body{font-family:'Inter',system-ui,sans-serif;background:'#f7f5f0'}
+        body{font-family:'Inter',system-ui,sans-serif;background:'#f0f4fa'}
         ::-webkit-scrollbar{width:5px;height:5px}
-        ::-webkit-scrollbar-track{background:'#f7f5f0'}
+        ::-webkit-scrollbar-track{background:'#f0f4fa'}
         ::-webkit-scrollbar-thumb{background:rgba(240,237,232,0.12);border-radius:99px}
         ::-webkit-scrollbar-thumb:hover{background:rgba(240,237,232,0.22)}
       `}</style>

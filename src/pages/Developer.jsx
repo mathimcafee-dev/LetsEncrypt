@@ -3,16 +3,16 @@ import portrait from '../assets/mathi-portrait.jpg'
 
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const BG   = '#f4f1ec'
-const BG2  = '#f4f1ec'
+const BG   = '#f0f4fa'
+const BG2  = '#f0f4fa'
 const BG3  = '#ffffff'
 const T1   = '#111111'
 const T2   = '#444444'
 const T3   = '#888888'
 const LN   = 'rgba(0,0,0,0.08)'
-const LN2  = 'rgba(31,92,78,0.25)'
-const RED  = '#1f5c4e'
-const GRN  = '#16a068'
+const LN2  = 'rgba(0,119,182,0.25)'
+const RED  = '#0077b6'
+const GRN  = '#00a550'
 const AMB  = '#9a6400'
 const PRP  = '#a78bfa'
 
@@ -100,7 +100,7 @@ export default function Developer({ nav }) {
               { n:'03', title:'Monitor', desc:'TLS health score A+ to F. Expiry tracking, CT log monitoring, HSTS and CAA checks, CA/B Forum 47-day compliance scoring.' },
               { n:'04', title:'Renew',   desc:'Auto-renews 30 days before expiry. DCV re-validated, cert re-issued, deployed to server — zero manual steps, forever.' },
             ].map((s, i, arr) => (
-              <div key={s.n} style={{ display:'flex', gap:16, padding:'16px 20px', background:'#f4f1ec', borderBottom:i < arr.length - 1 ? `1px solid ${LN}` : 'none' }}>
+              <div key={s.n} style={{ display:'flex', gap:16, padding:'16px 20px', background:'#f0f4fa', borderBottom:i < arr.length - 1 ? `1px solid ${LN}` : 'none' }}>
                 <span style={{ fontSize:10, color:'#888888', fontFamily:MONO, width:24, flexShrink:0, marginTop:2 }}>/ {s.n}</span>
                 <div>
                   <div style={{ fontSize:13, fontWeight:600, color:T1, marginBottom:4 }}>{s.title}</div>

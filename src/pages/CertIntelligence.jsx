@@ -31,17 +31,17 @@ async function getToken() {
 }
 
 const URGENCY = {
-  expired:  { label: 'Expired',    color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)', dot: '#1f5c4e' },
-  critical: { label: 'Critical',   color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)', border: 'rgba(0,0,0,0.1)', dot: '#e67e22' },
+  expired:  { label: 'Expired',    color: '#0077b6', bg: 'rgba(0,119,182,0.09)', border: 'rgba(0,0,0,0.1)', dot: '#0077b6' },
+  critical: { label: 'Critical',   color: '#0077b6', bg: 'rgba(0,119,182,0.09)', border: 'rgba(0,0,0,0.1)', dot: '#e67e22' },
   warning:  { label: 'Warning',    color: '#111111', bg: 'rgba(239,68,68,0.08)', border: 'rgba(0,0,0,0.1)', dot: '#111111' },
-  upcoming: { label: 'Upcoming',   color: '#111111', bg: 'transparent', border: 'rgba(31,92,78,0.2)', dot: '#111111' },
-  healthy:  { label: 'Healthy',    color: '#16a068', bg: 'transparent', border: 'rgba(31,92,78,0.2)', dot: '#16a068' },
+  upcoming: { label: 'Upcoming',   color: '#111111', bg: 'transparent', border: 'rgba(0,119,182,0.2)', dot: '#111111' },
+  healthy:  { label: 'Healthy',    color: '#00a550', bg: 'transparent', border: 'rgba(0,119,182,0.2)', dot: '#00a550' },
   unknown:  { label: 'Unknown',    color: '#888888', bg: 'var(--v2-bg)', border: 'var(--v2-border)', dot: 'var(--v2-text-3)' },
 }
 
 const CA_COLORS = {
-  digicert: '#1f5c4e', sectigo: '#111111', sslcom: '#111111',
-  rapidssl: '#16a068', imported: 'var(--v2-text-3)', unknown: 'var(--v2-text-3)'
+  digicert: '#0077b6', sectigo: '#111111', sslcom: '#111111',
+  rapidssl: '#00a550', imported: 'var(--v2-text-3)', unknown: 'var(--v2-text-3)'
 }
 
 function fmt(iso) {
@@ -165,7 +165,7 @@ function ExpiryTimeline({ tok }) {
 
   return (
     <div>
-      <SectionBanner icon={Activity} color="#1f5c4e"
+      <SectionBanner icon={Activity} color="#0077b6"
         title="Cross-CA Expiry Timeline"
         sub="Every certificate across all connected CAs, unified by urgency. Certs with no renewal path are flagged for manual action."/>
 
@@ -186,10 +186,10 @@ function ExpiryTimeline({ tok }) {
 
       {/* Alert banners */}
       {(counts.expired > 0 || counts.critical > 0) && (
-        <div style={{ background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca', borderRadius: 10,
+        <div style={{ background: 'rgba(0,119,182,0.09)', border: '1px solid #fecaca', borderRadius: 10,
           padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
-          <AlertCircle size={15} color="#1f5c4e" style={{ flexShrink: 0 }}/>
-          <span style={{ fontSize:13, color: '#1f5c4e', fontWeight: 600 }}>
+          <AlertCircle size={15} color="#0077b6" style={{ flexShrink: 0 }}/>
+          <span style={{ fontSize:13, color: '#0077b6', fontWeight: 600 }}>
             {counts.expired > 0 && `${counts.expired} expired`}
             {counts.expired > 0 && counts.critical > 0 && ' · '}
             {counts.critical > 0 && `${counts.critical} expiring within 7 days`}
@@ -201,8 +201,8 @@ function ExpiryTimeline({ tok }) {
       {no_renewal_path_count > 0 && (
         <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(154,100,0,0.2)', borderRadius: 10,
           padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
-          <AlertTriangle size={14} color="#1f5c4e" style={{ flexShrink: 0 }}/>
-          <span style={{ fontSize:12, color: '#1f5c4e' }}>
+          <AlertTriangle size={14} color="#0077b6" style={{ flexShrink: 0 }}/>
+          <span style={{ fontSize:12, color: '#0077b6' }}>
             <strong>{no_renewal_path_count} certificate{no_renewal_path_count !== 1 ? 's' : ''}</strong> have no renewal path —
             no agent, no DNS connector, and not a RapidSSL cert. These require manual renewal.
           </span>
@@ -258,20 +258,20 @@ function ExpiryTimeline({ tok }) {
       {selected.size > 0 && (
         <div style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', marginBottom:8,
           background:'rgba(230,126,34,0.1)', border:'1px solid #fed7aa', borderRadius:10 }}>
-          <CheckSquare size={14} style={{ color:'#1f5c4e', flexShrink:0 }}/>
-          <span style={{ fontSize:12, fontWeight:600, color:'#1f5c4e', flex:1 }}>
+          <CheckSquare size={14} style={{ color:'#0077b6', flexShrink:0 }}/>
+          <span style={{ fontSize:12, fontWeight:600, color:'#0077b6', flex:1 }}>
             {selected.size} certificate{selected.size !== 1 ? 's' : ''} selected
           </span>
           <button onClick={() => setSelected(new Set())}
             style={{ fontSize:11, fontWeight:600, padding:'5px 10px', borderRadius:7,
-              border:'1px solid #fdba74', background:'var(--v2-surface)', color:'#1f5c4e',
+              border:'1px solid #fdba74', background:'var(--v2-surface)', color:'#0077b6',
               cursor:'pointer', fontFamily:'inherit' }}>
             Clear
           </button>
           <button onClick={() => setDelConfirm(true)}
             style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, fontWeight:700,
               padding:'5px 12px', borderRadius:7, border:'none',
-              background:'#1f5c4e', color:'#111111', cursor:'pointer', fontFamily:'inherit' }}>
+              background:'#0077b6', color:'#111111', cursor:'pointer', fontFamily:'inherit' }}>
             <Trash2 size={11}/> Delete {selected.size}
           </button>
         </div>
@@ -303,7 +303,7 @@ function ExpiryTimeline({ tok }) {
           return (
             <div key={cert.id} style={{ display: 'grid', gridTemplateColumns: '28px 2fr 1fr 1fr 1fr 1fr 80px',
               padding: '10px 16px', alignItems: 'center',
-              borderBottom: i < certs.length - 1 ? '1px solid rgba(31,92,78,0.07)' : 'none',
+              borderBottom: i < certs.length - 1 ? '1px solid rgba(0,119,182,0.07)' : 'none',
               background: isSelected ? 'transparent' : cert.no_renewal_path ? 'rgba(154,100,0,0.07)44' : 'transparent',
               transition: 'background .12s', cursor: 'pointer' }}
               onClick={() => toggleSelect(cert.id)}
@@ -321,7 +321,7 @@ function ExpiryTimeline({ tok }) {
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cert.domain}</span>
                 </div>
                 {cert.no_renewal_path && (
-                  <Tag text="⚠ No renewal path" color="#1f5c4e" bg="rgba(31,92,78,0.08)"/>
+                  <Tag text="⚠ No renewal path" color="#0077b6" bg="rgba(0,119,182,0.08)"/>
                 )}
               </div>
               <div>
@@ -338,7 +338,7 @@ function ExpiryTimeline({ tok }) {
                   style={{ display:'inline-flex', alignItems:'center', gap:4,
                     fontSize:10, fontWeight:600, padding:'4px 9px', borderRadius:6,
                     background:'transparent', color:'#111111',
-                    border:'1px solid rgba(31,92,78,0.2)', cursor:'pointer',
+                    border:'1px solid rgba(0,119,182,0.2)', cursor:'pointer',
                     fontFamily:'inherit', whiteSpace:'nowrap', transition:'all .15s' }}
                   onMouseEnter={e => { e.currentTarget.style.background='#111111'; e.currentTarget.style.color='var(--v2-surface)' }}
                   onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#111111' }}>
@@ -386,7 +386,7 @@ function ExpiryTimeline({ tok }) {
                   <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                     <div style={{ width:28, height:28, borderRadius:7, background:'transparent',
                       display:'flex', alignItems:'center', justifyContent:'center' }}>
-                      <RotateCcw size={13} color="#1f5c4e"/>
+                      <RotateCcw size={13} color="#0077b6"/>
                     </div>
                     <span style={{ fontSize:14, fontWeight:700, color:'#111111' }}>Renew certificate</span>
                   </div>
@@ -431,7 +431,7 @@ function ExpiryTimeline({ tok }) {
                   style={{ display:'flex', alignItems:'flex-start', gap:14, padding:'14px 16px',
                     borderRadius:10, border:'1.5px solid rgba(0,0,0,0.08)', background:'var(--v2-surface)',
                     cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor='#16a068'; e.currentTarget.style.background='transparent' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor='#00a550'; e.currentTarget.style.background='transparent' }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor='var(--v2-border)'; e.currentTarget.style.background='var(--v2-surface)' }}>
                   <div style={{ width:34, height:34, borderRadius:8, background:'transparent',
                     display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -441,13 +441,13 @@ function ExpiryTimeline({ tok }) {
                     <div style={{ fontSize:13, fontWeight:700, color:'#111111', marginBottom:3 }}>
                       Renew via SSLVault
                       <span style={{ marginLeft:7, fontSize:9, fontWeight:700, padding:'2px 7px',
-                        borderRadius:20, background:'transparent', color:'#16a068',
-                        border:'1px solid rgba(31,92,78,0.2)' }}>Recommended</span>
+                        borderRadius:20, background:'transparent', color:'#00a550',
+                        border:'1px solid rgba(0,119,182,0.2)' }}>Recommended</span>
                     </div>
                     <div style={{ fontSize:11, color:'#888888', lineHeight:1.5 }}>
                       Issue a fresh certificate via RapidSSL with auto-DNS validation and auto-install. Domain pre-filled.
                     </div>
-                    <div style={{ fontSize:10, color:'#16a068', marginTop:5, fontWeight:600,
+                    <div style={{ fontSize:10, color:'#00a550', marginTop:5, fontWeight:600,
                       display:'flex', alignItems:'center', gap:4 }}>
                       <Check size={10}/> DigiCert trust chain · ~5 min · auto-installs
                     </div>
@@ -473,9 +473,9 @@ function ExpiryTimeline({ tok }) {
           <div style={{ background:'var(--v2-surface)', borderRadius:14, width:'100%', maxWidth:400,
             padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'1px solid var(--v2-border)' }}>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-              <div style={{ width:36, height:36, borderRadius:9, background:'rgba(31,92,78,0.09)',
+              <div style={{ width:36, height:36, borderRadius:9, background:'rgba(0,119,182,0.09)',
                 display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                <Trash2 size={16} color="#1f5c4e"/>
+                <Trash2 size={16} color="#0077b6"/>
               </div>
               <div>
                 <div style={{ fontSize:15, fontWeight:700, color:'#111111' }}>
@@ -486,8 +486,8 @@ function ExpiryTimeline({ tok }) {
                 </div>
               </div>
             </div>
-            <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
-              padding:'10px 12px', marginBottom:16, fontSize:12, color:'#1f5c4e', lineHeight:1.6 }}>
+            <div style={{ background:'rgba(0,119,182,0.09)', border:'1px solid #fecaca', borderRadius:8,
+              padding:'10px 12px', marginBottom:16, fontSize:12, color:'#0077b6', lineHeight:1.6 }}>
               These certificates will be <strong>permanently removed</strong> from SSLVault.
               The actual certificates on your servers and at your CA are not affected.
               You can re-sync from your CA connection to restore them.
@@ -499,7 +499,7 @@ function ExpiryTimeline({ tok }) {
                 Cancel
               </button>
               <button onClick={doDelete} disabled={deleting}
-                style={{ flex:2, padding:'9px', background: deleting ? 'var(--v2-text-3)' : '#1f5c4e',
+                style={{ flex:2, padding:'9px', background: deleting ? 'var(--v2-text-3)' : '#0077b6',
                   color:'#111111', border:'none', borderRadius:8, fontSize:12, fontWeight:700,
                   cursor: deleting ? 'wait' : 'pointer', fontFamily:'inherit',
                   display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
@@ -563,7 +563,7 @@ function ShadowScanner({ tok, nav }) {
 
   return (
     <div>
-      <SectionBanner icon={Search} color="#1f5c4e"
+      <SectionBanner icon={Search} color="#0077b6"
         title="Shadow IT Scanner"
         sub="Compares your DigiCert portfolio against SSLVault inventory. Finds certs issued outside your CLM — compliance risk, expiry blindspot."/>
 
@@ -592,7 +592,7 @@ function ShadowScanner({ tok, nav }) {
             )}
             {conns.length === 1 && (
               <div style={{ fontSize:12, color: '#333333', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a068' }}/>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00a550' }}/>
                 {conns[0].label || conns[0].ca_name}
               </div>
             )}
@@ -611,18 +611,18 @@ function ShadowScanner({ tok, nav }) {
 
         {result && (
           <div style={{ marginTop: 14, padding: '12px 14px', borderRadius: 8,
-            background: result.ok ? 'transparent' : 'rgba(31,92,78,0.09)',
-            border: `0.5px solid ${result.ok ? 'rgba(31,92,78,0.2)' : 'rgba(0,0,0,0.1)'}` }}>
+            background: result.ok ? 'transparent' : 'rgba(0,119,182,0.09)',
+            border: `0.5px solid ${result.ok ? 'rgba(0,119,182,0.2)' : 'rgba(0,0,0,0.1)'}` }}>
             {result.ok ? (
               <div style={{ display: 'flex', gap: 20, fontSize:12, color: '#5edb8a' }}>
                 <span><strong>{result.total_in_ca}</strong> total in DigiCert</span>
                 <span><strong>{result.total_in_sslvault}</strong> in SSLVault</span>
-                <span style={{ fontWeight: 700, color: result.shadow_count > 0 ? '#1f5c4e' : '#16a068' }}>
+                <span style={{ fontWeight: 700, color: result.shadow_count > 0 ? '#0077b6' : '#00a550' }}>
                   <strong>{result.shadow_count}</strong> shadow certs found
                 </span>
               </div>
             ) : (
-              <span style={{ fontSize:12, color: '#1f5c4e' }}>{result.error}</span>
+              <span style={{ fontSize:12, color: '#0077b6' }}>{result.error}</span>
             )}
           </div>
         )}
@@ -656,7 +656,7 @@ function ShadowScanner({ tok, nav }) {
               {result?.ok ? 'No shadow certs found — portfolio is fully accounted for.' : 'Run a scan to find shadow certificates.'}
             </div>
             {result?.ok && (
-              <Tag text="✓ Portfolio complete" color="#16a34a" bg="rgba(31,92,78,0.09)"/>
+              <Tag text="✓ Portfolio complete" color="#16a34a" bg="rgba(0,119,182,0.09)"/>
             )}
           </div>
         ) : shadows.map((s, i) => {
@@ -664,7 +664,7 @@ function ShadowScanner({ tok, nav }) {
           return (
             <div key={s.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto',
               padding: '10px 16px', alignItems: 'center',
-              borderBottom: i < shadows.length - 1 ? '1px solid rgba(31,92,78,0.07)' : 'none',
+              borderBottom: i < shadows.length - 1 ? '1px solid rgba(0,119,182,0.07)' : 'none',
               transition: 'background .12s' }}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-bg)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
@@ -684,7 +684,7 @@ function ShadowScanner({ tok, nav }) {
                 <button onClick={() => { sessionStorage.setItem('prefill_domain', s.domain); nav('/buy') }}
                   title="Import via SSLVault"
                   style={{ fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 5,
-                    background: 'transparent', color: '#16a068', border: '1px solid rgba(31,92,78,0.2)',
+                    background: 'transparent', color: '#00a550', border: '1px solid rgba(0,119,182,0.2)',
                     cursor: 'pointer', fontFamily: 'inherit' }}>Import</button>
                 <button onClick={() => dismiss(s.id)} disabled={dismissing === s.id}
                   title="Dismiss this finding"
@@ -759,13 +759,13 @@ function ConsolidationAdvisor({ tok, nav }) {
           <button onClick={runAnalysis} disabled={running}
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, fontWeight: 700,
               padding: '9px 18px', borderRadius: 8, border: 'none',
-              background: running ? 'var(--v2-text-3)' : '#16a068', color:'#111111',
+              background: running ? 'var(--v2-text-3)' : '#00a550', color:'#111111',
               cursor: running ? 'wait' : 'pointer', fontFamily: 'inherit' }}>
             {running ? <><Spinner/> Analysing…</> : <><TrendingDown size={13}/> Run Analysis</>}
           </button>
         </div>
         {result && !result.ok && (
-          <div style={{ marginTop: 12, fontSize:12, color: '#1f5c4e', background: 'rgba(31,92,78,0.09)',
+          <div style={{ marginTop: 12, fontSize:12, color: '#0077b6', background: 'rgba(0,119,182,0.09)',
             border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px' }}>{result.error}</div>
         )}
       </Card>
@@ -774,7 +774,7 @@ function ConsolidationAdvisor({ tok, nav }) {
       {opps.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10, marginBottom: 20 }}>
           <Card style={{ padding: '14px 16px', borderLeft: '3px solid #16a34a' }}>
-            <div style={{ fontSize:26, fontWeight: 800, color: '#16a068', letterSpacing: '-0.5px', marginBottom: 4 }}>
+            <div style={{ fontSize:26, fontWeight: 800, color: '#00a550', letterSpacing: '-0.5px', marginBottom: 4 }}>
               ${totalSaving.toFixed(0)}<span style={{ fontSize:13, fontWeight: 500 }}>/yr</span>
             </div>
             <div style={{ fontSize:11, color: '#888888', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Estimated savings</div>
@@ -807,7 +807,7 @@ function ConsolidationAdvisor({ tok, nav }) {
             {consolidation.map((opp, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto',
                 padding: '11px 16px', alignItems: 'center',
-                borderBottom: i < consolidation.length - 1 ? '1px solid rgba(31,92,78,0.07)' : 'none',
+                borderBottom: i < consolidation.length - 1 ? '1px solid rgba(0,119,182,0.07)' : 'none',
                 transition: 'background .12s' }}
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-bg)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
@@ -821,13 +821,13 @@ function ConsolidationAdvisor({ tok, nav }) {
                 <Tag text={opp.current_ca} color={CA_COLORS[opp.current_ca]||'var(--v2-text-3)'} bg={(CA_COLORS[opp.current_ca]||'var(--v2-text-3)')+'14'}/>
                 <div style={{ fontSize:11, color: '#888888' }}>{opp.current_product || '—'}</div>
                 <div style={{ fontSize:11, color: '#888888' }}>{fmt(opp.expires_at)}</div>
-                <div style={{ fontSize:13, fontWeight: 800, color: '#16a068' }}>
+                <div style={{ fontSize:13, fontWeight: 800, color: '#00a550' }}>
                   ${(opp.estimated_saving_usd || 0).toFixed(0)}
                 </div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   <button onClick={() => migrate(opp)}
                     style={{ fontSize: 9, fontWeight: 700, padding: '4px 8px', borderRadius: 5,
-                      background: 'transparent', color: '#16a068', border: '1px solid rgba(31,92,78,0.2)',
+                      background: 'transparent', color: '#00a550', border: '1px solid rgba(0,119,182,0.2)',
                       cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 3 }}>
                     <Zap size={8}/> Migrate
                   </button>
@@ -851,8 +851,8 @@ function ConsolidationAdvisor({ tok, nav }) {
           <Card>
             {duplicates.map((opp, i) => (
               <div key={i} style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12,
-                borderBottom: i < duplicates.length - 1 ? '1px solid rgba(31,92,78,0.07)' : 'none' }}>
-                <AlertTriangle size={14} color="#1f5c4e" style={{ flexShrink: 0 }}/>
+                borderBottom: i < duplicates.length - 1 ? '1px solid rgba(0,119,182,0.07)' : 'none' }}>
+                <AlertTriangle size={14} color="#0077b6" style={{ flexShrink: 0 }}/>
                 <div style={{ flex: 1 }}>
                   <span style={{ fontSize:12, fontWeight: 600, fontFamily: 'monospace', color: '#111111' }}>{opp.domain}</span>
                   <span style={{ fontSize:11, color: '#888888', marginLeft: 8 }}>{opp.reason}</span>
@@ -900,18 +900,18 @@ export default function CertIntelligence({ nav }) {
   const TABS = [
     { id: 'timeline',      label: 'Expiry Timeline',        icon: Activity,    color: '#111111' },
     { id: 'shadow',        label: 'Shadow IT Scanner',      icon: Search,      color: '#111111' },
-    { id: 'consolidation', label: 'Consolidation Advisor',  icon: DollarSign,  color: '#16a068' },
+    { id: 'consolidation', label: 'Consolidation Advisor',  icon: DollarSign,  color: '#00a550' },
   ]
 
   return (
-    <div style={{ background: 'linear-gradient(160deg,#f0f4f8,rgba(31,92,78,0.07))', minHeight: '100vh',
+    <div style={{ background: 'linear-gradient(160deg,#f0f4f8,rgba(0,119,182,0.07))', minHeight: '100vh',
       fontFamily: "'Segoe UI',-apple-system,system-ui,sans-serif" }}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 24px' }}>
 
         {/* Page header */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 9, background:'#f4f1ec',
+            <div style={{ width: 36, height: 36, borderRadius: 9, background:'#f0f4fa',
               display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Activity size={18} color="var(--v2-surface)" strokeWidth={2}/>
             </div>
@@ -919,7 +919,7 @@ export default function CertIntelligence({ nav }) {
               CA Intelligence Suite
             </h1>
             <span style={{ fontSize:10, fontWeight: 700, padding: '3px 9px', borderRadius: 20,
-              background: 'transparent', color: '#16a068', border: '1px solid rgba(31,92,78,0.2)' }}>
+              background: 'transparent', color: '#00a550', border: '1px solid rgba(0,119,182,0.2)' }}>
               Live
             </span>
           </div>

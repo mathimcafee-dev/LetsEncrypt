@@ -24,7 +24,7 @@ function MsgText({ text }) {
         const b = /^[-•]\s/.test(line.trimStart())
         return (
           <div key={i} style={{display:'flex',gap:6,marginBottom:1}}>
-            {b && <span style={{color:'#1f5c4e',flexShrink:0}}>•</span>}
+            {b && <span style={{color:'#0077b6',flexShrink:0}}>•</span>}
             <span>{b ? line.trimStart().replace(/^[-•]\s/,'') : line}</span>
           </div>
         )
@@ -38,7 +38,7 @@ function Dots() {
     <div style={{display:'flex',gap:4,alignItems:'center',padding:'3px 0'}}>
       {[0,1,2].map(i=>(
         <span key={i} style={{
-          width:5,height:5,borderRadius:'50%',background:'#1f5c4e',display:'inline-block',
+          width:5,height:5,borderRadius:'50%',background:'#0077b6',display:'inline-block',
           animation:`vbdot 1.1s ${i*0.17}s infinite ease-in-out`
         }}/>
       ))}
@@ -149,7 +149,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
         <span style={{fontSize:15}}>🧠</span>
         <div style={{flex:1}}>
           <div style={{fontSize:13,fontWeight:600,color:'#111111'}}>VaultBrain</div>
-          <div style={{fontSize:10,color:session?'#16a068':'#b0a8a0'}}>
+          <div style={{fontSize:10,color:session?'#00a550':'#b0a8a0'}}>
             {session ? '● Gemini AI · Live' : '○ Not signed in'}
           </div>
         </div>
@@ -189,9 +189,9 @@ export default function VaultBrainPanel({ open, onClose, session }) {
                 fontFamily:'inherit',fontSize:12.5,color:'#c8c4c0',marginBottom:5,
                 opacity:session?1:0.4,transition:'background .1s,border-color .1s',
               }}
-              onMouseEnter={e=>{if(session){e.currentTarget.style.background='rgba(31,92,78,0.07)';e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'}}}
+              onMouseEnter={e=>{if(session){e.currentTarget.style.background='rgba(0,119,182,0.07)';e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'}}}
               onMouseLeave={e=>{e.currentTarget.style.background='rgba(0,0,0,0.02)';e.currentTarget.style.borderColor='rgba(0,0,0,0.05)'}}>
-                <span style={{color:'#1f5c4e',marginRight:6}}>›</span>{c}
+                <span style={{color:'#0077b6',marginRight:6}}>›</span>{c}
               </button>
             ))}
           </div>
@@ -211,8 +211,8 @@ export default function VaultBrainPanel({ open, onClose, session }) {
             {msg.role==='user'&&(
               <div style={{display:'flex',justifyContent:'flex-end',marginBottom:8}}>
                 <div style={{
-                  maxWidth:'85%',background:'rgba(31,92,78,0.08)',
-                  border:'1px solid rgba(31,92,78,0.12)',
+                  maxWidth:'85%',background:'rgba(0,119,182,0.08)',
+                  border:'1px solid rgba(0,119,182,0.12)',
                   borderRadius:'8px 8px 2px 8px',padding:'7px 10px',
                 }}>
                   <div style={{fontSize:12.5,color:'#111111'}}>{msg.text}</div>
@@ -224,7 +224,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
               <div style={{display:'flex',gap:6,marginBottom:8,alignItems:'flex-start'}}>
                 <div style={{
                   width:20,height:20,borderRadius:'50%',flexShrink:0,marginTop:1,
-                  background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.22)',
+                  background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.22)',
                   display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,
                 }}>🧠</div>
                 <div style={{
@@ -234,7 +234,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
                 }}>
                   {msg.loading ? <Dots/> : (
                     <>
-                      <div style={{color:msg.err?'#1f5c4e':'inherit'}}><MsgText text={msg.text}/></div>
+                      <div style={{color:msg.err?'#0077b6':'inherit'}}><MsgText text={msg.text}/></div>
                       {msg.ts&&<div style={{fontSize:9,color:'#bbbbbb',marginTop:3}}>{msg.ts}</div>}
                     </>
                   )}
@@ -252,7 +252,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
                 <div style={{fontSize:12,color:'#ddd9d4',marginBottom:8,lineHeight:1.5}}>{pend.message}</div>
                 <div style={{display:'flex',gap:6}}>
                   <button onClick={confirm} disabled={busy} style={{
-                    background:'#1f5c4e',color:'#fff',border:'none',
+                    background:'#0077b6',color:'#fff',border:'none',
                     borderRadius:6,padding:'5px 12px',cursor:busy?'wait':'pointer',
                     fontSize:11,fontWeight:600,fontFamily:'inherit',
                   }}>{busy?'⏳ Working…':'✅ Go ahead'}</button>
@@ -308,7 +308,7 @@ export default function VaultBrainPanel({ open, onClose, session }) {
           />
           <button onClick={submit} disabled={busy||!input.trim()||!session} style={{
             width:32,height:32,borderRadius:8,border:'none',flexShrink:0,
-            background:busy||!input.trim()||!session?'rgba(0,0,0,0.04)':'#1f5c4e',
+            background:busy||!input.trim()||!session?'rgba(0,0,0,0.04)':'#0077b6',
             cursor:busy||!input.trim()||!session?'not-allowed':'pointer',
             display:'flex',alignItems:'center',justifyContent:'center',
             opacity:busy||!input.trim()||!session?0.4:1,

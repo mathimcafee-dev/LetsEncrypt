@@ -7,8 +7,8 @@ function daysLeft(iso) {
   if (!iso) return 999
   return Math.floor((new Date(iso).getTime() - Date.now()) / 86400000)
 }
-function scoreCol(s) { return s >= 80 ? '#16a068' : s >= 50 ? '#f59e0b' : '#1f5c4e' }
-function certCol(d)  { return d < 10 ? '#1f5c4e' : d < 30 ? '#f59e0b' : '#16a068' }
+function scoreCol(s) { return s >= 80 ? '#00a550' : s >= 50 ? '#f59e0b' : '#0077b6' }
+function certCol(d)  { return d < 10 ? '#0077b6' : d < 30 ? '#f59e0b' : '#00a550' }
 function certLbl(d)  { return d < 0 ? 'EXPIRED' : d < 10 ? 'CRITICAL' : d < 30 ? 'WARNING' : 'HEALTHY' }
 function fmtDate(iso) {
   try { return iso ? new Date(iso).toLocaleDateString('en-GB') : 'N/A' } catch(e) { return 'N/A' }
@@ -54,13 +54,13 @@ export default function SLADashboard({ nav }) {
   }
 
   var S = {
-    page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: '#f4f1ec', overflowY: 'auto', padding: '28px 24px', fontFamily: "'Segoe UI',system-ui,sans-serif" },
+    page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: '#f0f4fa', overflowY: 'auto', padding: '28px 24px', fontFamily: "'Segoe UI',system-ui,sans-serif" },
     card: { background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, padding: '14px 16px', marginBottom: 12 },
     lbl:  { fontSize: 10, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '.1em', display: 'block', marginBottom: 6 },
     ttl:  { fontSize: 13, fontWeight: 600, color: '#111111', marginBottom: 3 },
     sub:  { fontSize: 12, color: '#555555', lineHeight: 1.6 },
     btn:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: 'rgba(0,0,0,0.07)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 8, color: '#111111', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
-    btnP: { background: '#1f5c4e', border: '1px solid #2a6b5c', borderRadius: 8, padding: '10px 24px', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
+    btnP: { background: '#0077b6', border: '1px solid #2a6b5c', borderRadius: 8, padding: '10px 24px', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
   }
 
   if (loading) return (
@@ -71,7 +71,7 @@ export default function SLADashboard({ nav }) {
 
   if (err) return (
     <div style={S.page}>
-      <div style={{ background: 'rgba(31,92,78,0.08)', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 8, padding: '12px 16px', color: '#1f5c4e', fontSize: 13, marginBottom: 12 }}>Error: {err}</div>
+      <div style={{ background: 'rgba(0,119,182,0.08)', border: '1px solid rgba(0,119,182,0.2)', borderRadius: 8, padding: '12px 16px', color: '#0077b6', fontSize: 13, marginBottom: 12 }}>Error: {err}</div>
       <button style={S.btn} onClick={load}>Retry</button>
     </div>
   )
@@ -100,7 +100,7 @@ export default function SLADashboard({ nav }) {
           <div>
             <div style={{ fontSize: 20, fontWeight: 700, color: '#111111', marginBottom: 4 }}>SLA Coverage</div>
             <div style={{ fontSize: 12, color: '#888888' }}>
-              Plan: <span style={{ color: '#1f5c4e', fontWeight: 600 }}>{(sub.plan || 'active').toUpperCase()}</span>
+              Plan: <span style={{ color: '#0077b6', fontWeight: 600 }}>{(sub.plan || 'active').toUpperCase()}</span>
               {' - '}{sub.domain_limit || 0} domains covered
             </div>
           </div>
@@ -110,7 +110,7 @@ export default function SLADashboard({ nav }) {
         </div>
 
         {msg && (
-          <div style={{ background: 'rgba(22,160,104,0.07)', border: '1px solid rgba(22,160,104,0.22)', borderRadius: 8, padding: '10px 14px', color: '#16a068', fontSize: 12, marginBottom: 16 }}>{msg}</div>
+          <div style={{ background: 'rgba(0,165,80,0.07)', border: '1px solid rgba(0,165,80,0.22)', borderRadius: 8, padding: '10px 14px', color: '#00a550', fontSize: 12, marginBottom: 16 }}>{msg}</div>
         )}
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
@@ -127,11 +127,11 @@ export default function SLADashboard({ nav }) {
           </div>
           <div style={S.card}>
             <span style={S.lbl}>Expiring 30d</span>
-            <div style={{ fontSize: 28, fontWeight: 800, color: (status.expiring_30d || 0) > 0 ? '#f59e0b' : '#16a068' }}>{status.expiring_30d || 0}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: (status.expiring_30d || 0) > 0 ? '#f59e0b' : '#00a550' }}>{status.expiring_30d || 0}</div>
           </div>
           <div style={S.card}>
             <span style={S.lbl}>Critical 10d</span>
-            <div style={{ fontSize: 28, fontWeight: 800, color: (status.expiring_10d || 0) > 0 ? '#1f5c4e' : '#16a068' }}>{status.expiring_10d || 0}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: (status.expiring_10d || 0) > 0 ? '#0077b6' : '#00a550' }}>{status.expiring_10d || 0}</div>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ export default function SLADashboard({ nav }) {
         <div style={Object.assign({}, S.card, { padding: 0, overflow: 'hidden' })}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: 'rgba(31,92,78,0.07)' }}>
+              <tr style={{ background: 'rgba(0,119,182,0.07)' }}>
                 {['Domain', 'Expires', 'Days left', 'Status'].map(function(h) {
                   return <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#888888', letterSpacing: '.08em', textTransform: 'uppercase' }}>{h}</th>
                 })}
@@ -152,7 +152,7 @@ export default function SLADashboard({ nav }) {
                   var dl = daysLeft(c.expires_at)
                   var cc = certCol(dl)
                   return (
-                    <tr key={c.id || c.domain} style={{ borderTop: '1px solid rgba(31,92,78,0.08)' }}>
+                    <tr key={c.id || c.domain} style={{ borderTop: '1px solid rgba(0,119,182,0.08)' }}>
                       <td style={{ padding: '10px 14px', fontSize: 13, color: '#111111', fontFamily: 'monospace' }}>{c.domain}</td>
                       <td style={{ padding: '10px 14px', fontSize: 12, color: '#666666' }}>{fmtDate(c.expires_at)}</td>
                       <td style={{ padding: '10px 14px', fontSize: 13, fontWeight: 600, color: cc }}>{Math.max(0, dl)}</td>
@@ -189,7 +189,7 @@ export default function SLADashboard({ nav }) {
                     } catch {
                       window.open(r.report_url, '_blank')
                     }
-                  }} style={{ fontSize: 12, color: '#1f5c4e', background: 'rgba(31,92,78,0.08)', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontWeight: 600, flexShrink: 0, fontFamily: 'inherit' }}>
+                  }} style={{ fontSize: 12, color: '#0077b6', background: 'rgba(0,119,182,0.08)', border: '1px solid rgba(0,119,182,0.2)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontWeight: 600, flexShrink: 0, fontFamily: 'inherit' }}>
                     View Report
                   </button>
                 )}

@@ -6,14 +6,14 @@ const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 
 const C = {
-  bg:'#f7f5f0', bg2:'#f4f1ec', bg3:'#220808',
-  border:'rgba(0,0,0,0.08)', border2:'rgba(31,92,78,0.25)',
+  bg:'#f0f4fa', bg2:'#f0f4fa', bg3:'#220808',
+  border:'rgba(0,0,0,0.08)', border2:'rgba(0,119,182,0.25)',
   heading:'#111111', body:'#444444', muted:'#888888',
-  teal:'#16a068', tealDk:'#16a068', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(22,160,104,0.22)',
-  green:'#16a068', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(22,160,104,0.22)',
+  teal:'#00a550', tealDk:'#00a550', tealBg:'rgba(74,222,128,0.06)', tealBd:'rgba(0,165,80,0.22)',
+  green:'#00a550', greenBg:'rgba(74,222,128,0.06)', greenBd:'rgba(0,165,80,0.22)',
   purple:'#a78bfa', purpleBg:'rgba(167,139,250,0.06)',
   amber:'#9a6400', amberBg:'rgba(251,191,36,0.06)',
-  red:'#1f5c4e', redBg:'rgba(31,92,78,0.09)',
+  red:'#0077b6', redBg:'rgba(0,119,182,0.09)',
   ink:'#111111',
 }
 
@@ -24,10 +24,10 @@ function Code({ code, lang = 'bash' }) {
     setCopied(true); setTimeout(() => setCopied(false), 1800)
   }
   return (
-    <div style={{ background:'#f4f1ec', border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
+    <div style={{ background:'#f0f4fa', border:`1px solid ${C.border}`, borderRadius:10, overflow:'hidden', margin:'12px 0', fontFamily:MONO }}>
       <div style={{ background:'rgba(0,0,0,0.02)', padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
         <div style={{ display:'flex', gap:5, alignItems:'center' }}>
-          {['#1f5c4e','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
+          {['#0077b6','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c, opacity:.7 }}/>)}
           <span style={{ fontSize:10, color:'#555555', marginLeft:8 }}>{lang}</span>
         </div>
         <button onClick={copy} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:5, fontSize:11, color:copied?C.green:'#888888', fontFamily:MONO, padding:'2px 6px', borderRadius:4, transition:'color .15s' }}>

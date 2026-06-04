@@ -4,19 +4,19 @@ import { supabase } from '../lib/supabase'
 // ── Resend.com design tokens — pure black/white ────────────────────────
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const BG   = '#f7f5f0'   // page background
-const BG2  = '#f4f1ec'   // alt section background
+const BG   = '#f0f4fa'   // page background
+const BG2  = '#f0f4fa'   // alt section background
 const BG3  = '#ffffff'   // card surface
-const BG4  = '#f0ede7'   // deep card / input
+const BG4  = '#e8f0f8'   // deep card / input
 const T1   = '#111111'   // heading text
 const T2   = '#444444'   // body text
 const T3   = '#888888'  // muted text
 const LN   = 'rgba(0,0,0,0.08)'  // default border
-const LN2  = 'rgba(31,92,78,0.25)'  // strong border
-const LN3  = 'rgba(31,92,78,0.3)'  // hover border
-const GRN  = '#16a068'   // success green
+const LN2  = 'rgba(0,119,182,0.25)'  // strong border
+const LN3  = 'rgba(0,119,182,0.3)'  // hover border
+const GRN  = '#00a550'   // success green
 const AMB  = '#9a6400'   // warning amber
-const RED  = '#1f5c4e'   // error red
+const RED  = '#0077b6'   // error red
 
 function useIsMobile() {
   const [w,setW] = useState(window.innerWidth)
@@ -47,14 +47,14 @@ function Tag({children}) {
   return <span style={{display:'inline-flex',alignItems:'center',fontSize:10,fontWeight:500,color:T3,background:'rgba(0,0,0,0.05)',border:`1px solid ${LN2}`,borderRadius:3,padding:'2px 7px',fontFamily:MONO,letterSpacing:'0.04em'}}>{children}</span>
 }
 function Pill({status}) {
-  const m={active:[GRN,'rgba(22,160,104,0.09)'],warning:[AMB,'rgba(184,120,0,0.07)'],critical:[RED,'rgba(192,57,43,0.07)']}
+  const m={active:[GRN,'rgba(0,165,80,0.09)'],warning:[AMB,'rgba(184,120,0,0.07)'],critical:[RED,'rgba(192,57,43,0.07)']}
   const[c,bg]=m[status]||[T3,'rgba(0,0,0,0.05)']
   return <span style={{fontSize:10,fontWeight:500,color:c,background:bg,padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>{status}</span>
 }
 function BtnPrimary({label,onClick}) {
   const[h,setH]=useState(false)
   return <button onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-    style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:F,fontWeight:600,fontSize:13,padding:'9px 20px',borderRadius:6,border:'none',cursor:'pointer',background:h?'#2e7a68':'#1f5c4e',color:'#ffffff',transition:'background .14s'}}>
+    style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:F,fontWeight:600,fontSize:13,padding:'9px 20px',borderRadius:6,border:'none',cursor:'pointer',background:h?'#0091d6':'#0077b6',color:'#ffffff',transition:'background .14s'}}>
     {label} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
   </button>
 }
@@ -71,7 +71,7 @@ function Card({children,style={}}) {
 function Term({title,lines}) {
   return (
     <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',fontFamily:MONO,boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
-      <div style={{background:'#f4f1ec',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
+      <div style={{background:'#f0f4fa',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:9,height:9,borderRadius:'50%',background:c,opacity:.85}}/>)}</div>
         <span style={{fontSize:10,color:'#888888',flex:1,textAlign:'center'}}>{title}</span>
       </div>
@@ -81,7 +81,7 @@ function Term({title,lines}) {
         </div>)}
         <div style={{marginTop:8,display:'flex',alignItems:'center',gap:5}}>
           <span style={{color:T3}}>›</span>
-          <span style={{display:'inline-block',width:6,height:13,background:'#16a068',animation:'blink 1.2s step-end infinite',borderRadius:1}}/>
+          <span style={{display:'inline-block',width:6,height:13,background:'#00a550',animation:'blink 1.2s step-end infinite',borderRadius:1}}/>
         </div>
       </div>
     </div>
@@ -99,7 +99,7 @@ function InventoryMockup() {
   const gc=g=>g.startsWith('A')?GRN:g==='B'?AMB:RED
   return (
     <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
-      <div style={{background:'#f4f1ec',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
+      <div style={{background:'#f0f4fa',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>Inventory · 4 certificates</span>
       </div>
@@ -123,23 +123,23 @@ function InventoryMockup() {
 function CertVaultMockup() {
   return (
     <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
-      <div style={{background:'#f4f1ec',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
+      <div style={{background:'#f0f4fa',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>CertVault · Private key vault</span>
       </div>
       <div style={{padding:'14px'}}>
-        <div style={{padding:'8px 10px',background:'#f4f1ec',border:`1px solid ${LN}`,borderRadius:4,marginBottom:10,fontSize:11,color:T2,fontFamily:MONO}}>
+        <div style={{padding:'8px 10px',background:'#f0f4fa',border:`1px solid ${LN}`,borderRadius:4,marginBottom:10,fontSize:11,color:T2,fontFamily:MONO}}>
           AES-256-GCM · Envelope encryption · Immutable audit
         </div>
         {[{d:'easysecurity.in',alg:'RSA-2048',last:'2h ago'},{d:'api.shop.com',alg:'EC-384',last:'Never'}].map((k,i)=>(
-          <div key={k.d} style={{border:'1px solid rgba(0,0,0,0.07)',borderTop:'2px solid #1f5c4e',borderRadius:4,padding:'11px',marginBottom:i===0?6:0,background:BG3}}>
+          <div key={k.d} style={{border:'1px solid rgba(0,0,0,0.07)',borderTop:'2px solid #0077b6',borderRadius:4,padding:'11px',marginBottom:i===0?6:0,background:BG3}}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
               <span style={{fontSize:12,fontWeight:500,color:T1,fontFamily:MONO}}>{k.d}</span>
-              <span style={{fontSize:9,fontWeight:600,color:T3,background:'#f4f1ec',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>🔒 VAULT SECURED</span>
+              <span style={{fontSize:9,fontWeight:600,color:T3,background:'#f0f4fa',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>🔒 VAULT SECURED</span>
             </div>
             <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:5,marginBottom:9}}>
               {[['Algorithm',k.alg],['Rotations','2'],['Last access',k.last]].map(([l,v])=>(
-                <div key={l} style={{background:'#f4f1ec',borderRadius:3,padding:'5px 7px'}}>
+                <div key={l} style={{background:'#f0f4fa',borderRadius:3,padding:'5px 7px'}}>
                   <div style={{fontSize:9,color:T3,textTransform:'uppercase',letterSpacing:'0.3px',marginBottom:2}}>{l}</div>
                   <div style={{fontSize:11,fontWeight:500,color:T1,fontFamily:MONO}}>{v}</div>
                 </div>
@@ -147,7 +147,7 @@ function CertVaultMockup() {
             </div>
             <div style={{display:'flex',gap:5}}>
               {['Reveal key','Rotate','Audit log'].map(t=>(
-                <button key={t} style={{fontSize:10,padding:'4px 9px',borderRadius:3,border:`1px solid ${t==='Reveal key'?'rgba(31,92,78,0.3)':'rgba(0,0,0,0.1)'}`,background:t==='Reveal key'?'rgba(31,92,78,0.15)':'rgba(0,0,0,0.05)',color:t==='Reveal key'?'#16a068':'#666666',cursor:'pointer',fontFamily:F}}>{t}</button>
+                <button key={t} style={{fontSize:10,padding:'4px 9px',borderRadius:3,border:`1px solid ${t==='Reveal key'?'rgba(0,119,182,0.3)':'rgba(0,0,0,0.1)'}`,background:t==='Reveal key'?'rgba(0,119,182,0.15)':'rgba(0,0,0,0.05)',color:t==='Reveal key'?'#00a550':'#666666',cursor:'pointer',fontFamily:F}}>{t}</button>
               ))}
             </div>
           </div>
@@ -161,14 +161,14 @@ function ReadinessMockup() {
   const certs=[{d:'easysecurity.in',s:92,label:'Ready',c:GRN},{d:'api.shop.com',s:58,label:'At Risk',c:AMB},{d:'staging.portal.io',s:24,label:'Will Break',c:RED}]
   return (
     <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
-      <div style={{background:'#f4f1ec',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
+      <div style={{background:'#f0f4fa',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>47-Day Readiness · CA/B Forum</span>
       </div>
       <div style={{padding:'12px'}}>
         <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:5,marginBottom:10}}>
           {[{d:'Mar 2026',v:'200d',c:RED},{d:'Mar 2027',v:'100d',c:AMB},{d:'Mar 2029',v:'47d',c:GRN}].map(m=>(
-            <div key={m.d} style={{padding:'8px',borderRadius:4,background:'#f4f1ec',border:`1px solid ${LN}`}}>
+            <div key={m.d} style={{padding:'8px',borderRadius:4,background:'#f0f4fa',border:`1px solid ${LN}`}}>
               <div style={{fontSize:9.5,fontWeight:600,color:m.c,marginBottom:2,fontFamily:MONO}}>{m.d}</div>
               <div style={{fontSize:18,fontWeight:700,color:m.c,fontFamily:MONO}}>{m.v}</div>
               <div style={{fontSize:9,color:T3}}>max validity</div>
@@ -204,24 +204,24 @@ function SSLVaultTrustBadge({ compact = false }) {
     <div style={{
       display:'inline-flex', alignItems:'center', gap:12,
       padding: compact ? '7px 14px' : '12px 18px',
-      background:'#ffffff', border:'1px solid rgba(31,92,78,0.2)',
+      background:'#ffffff', border:'1px solid rgba(0,119,182,0.2)',
       borderRadius:10, boxShadow:'0 1px 4px rgba(0,0,0,0.08)',
       minWidth: compact ? 0 : 260,
     }}>
-      <div style={{width:compact?28:36,height:compact?28:36,background:'#1f5c4e',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+      <div style={{width:compact?28:36,height:compact?28:36,background:'#0077b6',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
         <svg width={compact?12:16} height={compact?12:16} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
       <div style={{flex:1}}>
-        <div style={{fontSize:compact?7:8,fontWeight:700,color:'#1f5c4e',letterSpacing:'.12em',textTransform:'uppercase',marginBottom:2}}>{compact?'Secured':'Cryptographically Secured'}</div>
+        <div style={{fontSize:compact?7:8,fontWeight:700,color:'#0077b6',letterSpacing:'.12em',textTransform:'uppercase',marginBottom:2}}>{compact?'Secured':'Cryptographically Secured'}</div>
         <div style={{fontSize:compact?12:14,fontWeight:800,color:'#111111',lineHeight:1,letterSpacing:'-.3px'}}>SSLVault <span style={{fontWeight:400,color:'#888',fontSize:compact?9:10}}>easysecurity.in</span></div>
         {!compact&&<div style={{fontSize:9,color:'#888',marginTop:3,letterSpacing:'.02em'}}>Certified PKI · RapidSSL · AES-256-GCM</div>}
       </div>
       <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:2,flexShrink:0}}>
-        <div style={{fontSize:compact?13:16,fontWeight:900,color:'#1f5c4e',lineHeight:1,fontFamily:MONO}}>256</div>
+        <div style={{fontSize:compact?13:16,fontWeight:900,color:'#0077b6',lineHeight:1,fontFamily:MONO}}>256</div>
         <div style={{fontSize:7,color:'#888',letterSpacing:'.08em',textTransform:'uppercase'}}>bit TLS</div>
         <div style={{display:'flex',alignItems:'center',gap:3,marginTop:2}}>
-          <div style={{width:5,height:5,borderRadius:'50%',background:'#16a068'}}/>
-          <span style={{fontSize:7,color:'#16a068',fontWeight:700,letterSpacing:'.06em'}}>LIVE</span>
+          <div style={{width:5,height:5,borderRadius:'50%',background:'#00a550'}}/>
+          <span style={{fontSize:7,color:'#00a550',fontWeight:700,letterSpacing:'.06em'}}>LIVE</span>
         </div>
       </div>
     </div>
@@ -240,14 +240,14 @@ export default function Home({ nav }) {
   const P = 'clamp(20px,5vw,48px)'
 
   return (
-    <div style={{fontFamily:F,position:'relative',background:'#f4f1ec',color:T1,overflowX:'hidden'}}>
+    <div style={{fontFamily:F,position:'relative',background:'#f0f4fa',color:T1,overflowX:'hidden'}}>
 
-      <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(31,92,78,0.15);color:#111}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
+      <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(0,119,182,0.15);color:#111}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       {/* ── NAV ── */}
       <header style={{position:'sticky',top:0,zIndex:200,background:'#ffffff',borderBottom:'1px solid rgba(0,0,0,0.08)',boxShadow:'0 1px 0 rgba(0,0,0,0.04)',height:54,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',flexShrink:0}} onClick={()=>nav('/')}>
-          <div style={{width:22,height:22,background:'#1f5c4e',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <div style={{width:22,height:22,background:'#0077b6',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <span style={{fontSize:13,fontWeight:600,color:'#111111',letterSpacing:'-0.3px'}}>SSLVault</span>
@@ -268,7 +268,7 @@ export default function Home({ nav }) {
             <div className="id" style={{position:'absolute',top:'calc(100% + 6px)',left:'50%',transform:'translateX(-50%) translateY(-4px)',background:'#ffffff',border:'1px solid rgba(0,0,0,0.1)',borderRadius:6,padding:'5px',minWidth:200,boxShadow:'0 8px 32px rgba(0,0,0,0.12)',zIndex:300,opacity:0,pointerEvents:'none',transition:'opacity .16s,transform .16s'}}>
               {[{label:'CA Trust Store',path:'/ca-trust-explorer',desc:'6,200+ root & intermediate CAs'},{label:'CAB Forum',path:'/cab-forum',desc:'Ballots, timelines & compliance'},{label:'PKI Hub',path:'/pki-hub',desc:'Standards bodies & PQC tracker'}].map(it=>(
                 <button key={it.path} onClick={()=>nav(it.path)} style={{display:'block',width:'100%',textAlign:'left',background:'none',border:'none',cursor:'pointer',fontFamily:F,padding:'7px 10px',borderRadius:4,transition:'background .1s'}}
-                  onMouseEnter={e=>e.currentTarget.style.background='rgba(31,92,78,0.08)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
+                  onMouseEnter={e=>e.currentTarget.style.background='rgba(0,119,182,0.08)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
                   <div style={{fontSize:12,fontWeight:500,color:T1,marginBottom:1}}>{it.label}</div>
                   <div style={{fontSize:11,color:T3}}>{it.desc}</div>
                 </button>
@@ -278,19 +278,19 @@ export default function Home({ nav }) {
         </nav>}
         <div style={{display:'flex',gap:8,alignItems:'center',flexShrink:0}}>
           {!isMobile&&<button onClick={()=>nav('/auth')} style={{background:'none',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,color:T2,padding:'5px 10px',borderRadius:4,transition:'color .12s'}} onMouseEnter={e=>e.currentTarget.style.color=T1} onMouseLeave={e=>e.currentTarget.style.color=T2}>Sign in</button>}
-          <button onClick={()=>nav('/auth')} style={{background:'#1f5c4e',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#fff',padding:'7px 16px',borderRadius:5,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#2e7a68'} onMouseLeave={e=>e.currentTarget.style.background='#1f5c4e'}>Get started</button>
+          <button onClick={()=>nav('/auth')} style={{background:'#0077b6',border:'none',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#fff',padding:'7px 16px',borderRadius:5,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#0091d6'} onMouseLeave={e=>e.currentTarget.style.background='#0077b6'}>Get started</button>
         </div>
       </header>
 
       {/* ── HERO ── */}
-      <section style={{background:'#f4f1ec',borderBottom:`1px solid ${LN}`,overflow:'hidden'}}>
+      <section style={{background:'#f0f4fa',borderBottom:`1px solid ${LN}`,overflow:'hidden'}}>
         <div style={{display:'flex',flexDirection:isMobile?'column':'row',minHeight:isMobile?'auto':500}}>
 
           {/* Left: teal dark panel */}
-          <div style={{flex:1,background:'#1f5c4e',padding:isMobile?'44px 24px 36px':'clamp(56px,8vw,88px) clamp(32px,5vw,64px)',display:'flex',flexDirection:'column',justifyContent:'space-between',gap:32}}>
+          <div style={{flex:1,background:'#0077b6',padding:isMobile?'44px 24px 36px':'clamp(56px,8vw,88px) clamp(32px,5vw,64px)',display:'flex',flexDirection:'column',justifyContent:'space-between',gap:32}}>
             <div>
               <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:99,padding:'5px 13px',marginBottom:24}}>
-                <span style={{width:6,height:6,borderRadius:'50%',background:'#16a068',animation:'blink 2.4s ease infinite'}}/>
+                <span style={{width:6,height:6,borderRadius:'50%',background:'#00a550',animation:'blink 2.4s ease infinite'}}/>
                 <span style={{fontSize:10,fontWeight:600,color:'rgba(255,255,255,0.75)',letterSpacing:'.08em',fontFamily:MONO}}>CERTIFIED PKI SPECIALIST · NETHERLANDS</span>
               </div>
               <h1 style={{fontSize:`clamp(34px,5vw,64px)`,fontWeight:900,letterSpacing:'-2px',lineHeight:1.05,color:'#ffffff',marginBottom:16}}>
@@ -302,7 +302,7 @@ export default function Home({ nav }) {
             </div>
             <div>
               <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:28}}>
-                <button onClick={()=>nav('/auth')} style={{background:'#16a068',border:'none',borderRadius:8,padding:'11px 22px',fontSize:13,fontWeight:700,color:'#ffffff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#1ab37a'} onMouseLeave={e=>e.currentTarget.style.background='#16a068'}>Get started free →</button>
+                <button onClick={()=>nav('/auth')} style={{background:'#00a550',border:'none',borderRadius:8,padding:'11px 22px',fontSize:13,fontWeight:700,color:'#ffffff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#00bf5e'} onMouseLeave={e=>e.currentTarget.style.background='#00a550'}>Get started free →</button>
                 <button onClick={()=>nav('/pricing')} style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.18)',borderRadius:8,padding:'11px 18px',fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.75)',cursor:'pointer',fontFamily:F,transition:'all .12s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.14)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.08)'}>View pricing</button>
               </div>
               <div style={{display:'flex',gap:20,borderTop:'1px solid rgba(255,255,255,0.1)',paddingTop:20}}>
@@ -327,23 +327,23 @@ export default function Home({ nav }) {
               <div key={c.domain} style={{background:'#ffffff',border:'1px solid rgba(0,0,0,0.08)',borderRadius:12,padding:'14px 16px',boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
                   <div style={{display:'flex',alignItems:'center',gap:8}}>
-                    <div style={{width:8,height:8,borderRadius:'50%',background:'#16a068'}}/>
+                    <div style={{width:8,height:8,borderRadius:'50%',background:'#00a550'}}/>
                     <span style={{fontSize:13,fontWeight:700,color:'#111111',fontFamily:MONO}}>{c.domain}</span>
                   </div>
-                  <span style={{fontSize:9,fontWeight:800,color:'#16a068',background:'rgba(22,160,104,0.09)',border:'1px solid rgba(22,160,104,0.2)',borderRadius:4,padding:'2px 8px',letterSpacing:'.05em'}}>{c.status}</span>
+                  <span style={{fontSize:9,fontWeight:800,color:'#00a550',background:'rgba(0,165,80,0.09)',border:'1px solid rgba(0,165,80,0.2)',borderRadius:4,padding:'2px 8px',letterSpacing:'.05em'}}>{c.status}</span>
                 </div>
                 <div style={{display:'flex',gap:20}}>
-                  <div><div style={{fontSize:20,fontWeight:800,color:'#1f5c4e',fontFamily:MONO}}>{c.days}d</div><div style={{fontSize:10,color:'#888'}}>remaining</div></div>
-                  <div><div style={{fontSize:15,fontWeight:700,color:'#16a068'}}>{c.grade}</div><div style={{fontSize:10,color:'#888'}}>grade</div></div>
+                  <div><div style={{fontSize:20,fontWeight:800,color:'#0077b6',fontFamily:MONO}}>{c.days}d</div><div style={{fontSize:10,color:'#888'}}>remaining</div></div>
+                  <div><div style={{fontSize:15,fontWeight:700,color:'#00a550'}}>{c.grade}</div><div style={{fontSize:10,color:'#888'}}>grade</div></div>
                   <div><div style={{fontSize:12,fontWeight:600,color:'#444'}}>{c.ca}</div><div style={{fontSize:10,color:'#888'}}>{c.method}</div></div>
-                  <div><div style={{fontSize:12,fontWeight:600,color:'#16a068'}}>✓ auto</div><div style={{fontSize:10,color:'#888'}}>renew</div></div>
+                  <div><div style={{fontSize:12,fontWeight:600,color:'#00a550'}}>✓ auto</div><div style={{fontSize:10,color:'#888'}}>renew</div></div>
                 </div>
               </div>
             ))}
             {/* stat strip */}
             <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginTop:4}}>
-              {[{val:'100',label:'SLA score',color:'#1f5c4e'},{val:'2/2',label:'Live certs',color:'#16a068'},{val:'0',label:'Expiring',color:'#888'}].map(s=>(
-                <div key={s.label} style={{background:'#f4f1ec',border:'1px solid rgba(0,0,0,0.06)',borderRadius:8,padding:'12px',textAlign:'center'}}>
+              {[{val:'100',label:'SLA score',color:'#0077b6'},{val:'2/2',label:'Live certs',color:'#00a550'},{val:'0',label:'Expiring',color:'#888'}].map(s=>(
+                <div key={s.label} style={{background:'#f0f4fa',border:'1px solid rgba(0,0,0,0.06)',borderRadius:8,padding:'12px',textAlign:'center'}}>
                   <div style={{fontSize:18,fontWeight:800,color:s.color,fontFamily:MONO}}>{s.val}</div>
                   <div style={{fontSize:10,color:'#888',marginTop:2}}>{s.label}</div>
                 </div>
@@ -352,7 +352,7 @@ export default function Home({ nav }) {
             {/* trust tags */}
             <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:4}}>
               {['RFC 8555','AES-256-GCM','RapidSSL CA','CA/B 2026','DNS-01'].map(t=>(
-                <span key={t} style={{fontSize:10,fontWeight:600,color:'#1f5c4e',background:'rgba(31,92,78,0.07)',border:'1px solid rgba(31,92,78,0.15)',borderRadius:5,padding:'3px 9px',fontFamily:MONO}}>{t}</span>
+                <span key={t} style={{fontSize:10,fontWeight:600,color:'#0077b6',background:'rgba(0,119,182,0.07)',border:'1px solid rgba(0,119,182,0.15)',borderRadius:5,padding:'3px 9px',fontFamily:MONO}}>{t}</span>
               ))}
             </div>
           </div>
@@ -363,7 +363,7 @@ export default function Home({ nav }) {
       <div style={{background:'#ffffff',borderBottom:`1px solid ${LN}`,overflow:'hidden',padding:'8px 0'}}>
         <div style={{display:'flex',overflow:'hidden',maskImage:'linear-gradient(to right,transparent,black 8%,black 92%,transparent)'}}>
           <div style={{display:'flex',gap:48,flexShrink:0,animation:'ticker 36s linear infinite',whiteSpace:'nowrap'}}>
-            {[...TICKER,...TICKER].map((p,i)=><span key={i} style={{fontSize:10.5,fontWeight:400,color:T3,letterSpacing:'0.05em',fontFamily:MONO}}><span style={{color:'#1f5c4e',marginRight:8}}>◆</span>{p}</span>)}
+            {[...TICKER,...TICKER].map((p,i)=><span key={i} style={{fontSize:10.5,fontWeight:400,color:T3,letterSpacing:'0.05em',fontFamily:MONO}}><span style={{color:'#0077b6',marginRight:8}}>◆</span>{p}</span>)}
           </div>
         </div>
       </div>
@@ -396,7 +396,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" style={{background:'#f4f1ec',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="features" style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp><div style={{marginBottom:44,maxWidth:480}}>
               <Eyebrow>All capabilities</Eyebrow>
@@ -419,11 +419,11 @@ export default function Home({ nav }) {
               <div key={f.title} style={{background:'#ffffff',padding:'20px',border:'1px solid rgba(0,0,0,0.08)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.05)',display:'flex',flexDirection:'column',gap:0}}>
                 <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:10}}>
                   <span style={{fontSize:22}}>{f.icon}</span>
-                  <span style={{fontSize:9,fontWeight:800,color:'#1f5c4e',background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.18)',borderRadius:4,padding:'2px 7px',letterSpacing:'.06em',fontFamily:MONO}}>{f.badge}</span>
+                  <span style={{fontSize:9,fontWeight:800,color:'#0077b6',background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',borderRadius:4,padding:'2px 7px',letterSpacing:'.06em',fontFamily:MONO}}>{f.badge}</span>
                 </div>
                 <div style={{fontSize:13,fontWeight:700,color:'#111111',marginBottom:10,letterSpacing:'-.01em'}}>{f.title}</div>
                 {f.specs.map(s=><div key={s} style={{display:'flex',alignItems:'flex-start',gap:7,marginBottom:5}}>
-                  <span style={{color:'rgba(31,92,78,0.5)',fontSize:11,marginTop:2,flexShrink:0,fontWeight:600}}>—</span>
+                  <span style={{color:'rgba(0,119,182,0.5)',fontSize:11,marginTop:2,flexShrink:0,fontWeight:600}}>—</span>
                   <span style={{fontSize:12,color:'#555555',lineHeight:1.55}}>{s}</span>
                 </div>)}
               </div>
@@ -433,12 +433,12 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── SECURITY CONTROLS ── */}
-      <section style={{background:'#f4f1ec',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
               <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
-                <span style={{fontSize:10,fontWeight:700,color:'#1f5c4e',background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.18)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>SECURITY CONTROLS</span>
+                <span style={{fontSize:10,fontWeight:700,color:'#0077b6',background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>SECURITY CONTROLS</span>
               </div>
               <H2 style={{marginBottom:12,color:'#111111'}}>Enterprise PKI controls. Not an afterthought.</H2>
               <Body>CertVault and 47-Day Readiness are built into every account — not a paid add-on.</Body>
@@ -462,7 +462,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── SECURITY SPECS ── */}
-      <section id="security" style={{background:'#f4f1ec',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="security" style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start',marginBottom:44}}>
@@ -474,7 +474,7 @@ export default function Home({ nav }) {
               </div>
               <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
                 {[{spec:'AES-256-GCM',title:'Key encryption',desc:'DEK wrapped with KEK. Keys never in plaintext.'},{spec:'RFC 8555',title:'ACME v2',desc:'DNS-01 challenge. Auto-validated via provider API.'},{spec:'CT monitoring',title:'Cert transparency',desc:'crt.sh queries for every cert ever issued.'},{spec:'CAA + HSTS',title:'DNS security',desc:'CAA prevents unauthorised CA issuance.'},{spec:'TLS 1.2 / 1.3',title:'TLS posture',desc:'ECDHE + PFS. HSTS max-age verified.'},{spec:'Append-only',title:'Audit trail',desc:'Every access logged. CSV export for SOC 2.'}].map(s=>(
-                  <div key={s.spec} style={{background:'#f4f1ec',padding:'14px',borderRadius:8}}>
+                  <div key={s.spec} style={{background:'#f0f4fa',padding:'14px',borderRadius:8}}>
                     <div style={{fontSize:9.5,fontWeight:600,color:T3,fontFamily:MONO,letterSpacing:'0.05em',marginBottom:5}}>{s.spec}</div>
                     <div style={{fontSize:12,fontWeight:600,color:T1,marginBottom:4}}>{s.title}</div>
                     <div style={{fontSize:11.5,color:T2,lineHeight:1.6}}>{s.desc}</div>
@@ -486,7 +486,7 @@ export default function Home({ nav }) {
           <FadeUp>
             <Card>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:24}}>
-                <div style={{width:6,height:6,borderRadius:'50%',background:'#16a068',animation:'blink 2s ease infinite'}}/>
+                <div style={{width:6,height:6,borderRadius:'50%',background:'#00a550',animation:'blink 2s ease infinite'}}/>
                 <span style={{fontSize:12,fontWeight:600,color:T1}}>CA/B Forum maximum validity mandate — action required now</span>
               </div>
               <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:isMobile?20:0}}>
@@ -515,7 +515,7 @@ export default function Home({ nav }) {
                 <Body style={{marginBottom:20}}>When issuing or renewing, SSLVault calls your DNS provider API to add the ACME challenge record, polls for propagation, validates, then cleans up — fully automatic.</Body>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
                   {[['Cloudflare','API Token · Zone:DNS:Edit'],['Vercel','Access Token · Settings → Tokens'],['Route53','AWS IAM · Route53 write access'],['Namecheap','API Key · IP whitelist required'],['GoDaddy','API Key + Secret'],['DigitalOcean','Personal Access Token'],['Plesk','XML API'],['+ more','Contact us']].map(([name,note])=>(
-                    <div key={name} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#f4f1ec',border:`1px solid ${LN}`,borderRadius:6}}>
+                    <div key={name} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#f0f4fa',border:`1px solid ${LN}`,borderRadius:6}}>
                       <div style={{width:4,height:4,borderRadius:'50%',background:T3,flexShrink:0}}/>
                       <div><div style={{fontSize:12,fontWeight:500,color:T1}}>{name}</div><div style={{fontSize:10.5,color:T3,fontFamily:MONO}}>{note}</div></div>
                     </div>
@@ -541,7 +541,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── ARCHITECTURE ── */}
-      <section style={{background:'#f4f1ec',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:40,flexWrap:'wrap',gap:16}}>
@@ -550,20 +550,20 @@ export default function Home({ nav }) {
                 <H2 style={{marginBottom:8,maxWidth:360}}>CSR to live HTTPS in one pipeline.</H2>
                 <Body style={{maxWidth:380}}>Five automated steps. Zero manual work. Runs forever.</Body>
               </div>
-              <button onClick={()=>nav('/auth')} style={{background:'#1f5c4e',border:'none',borderRadius:8,padding:'10px 22px',fontSize:12,fontWeight:700,color:'#ffffff',cursor:'pointer',fontFamily:F,alignSelf:'flex-start',transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#2e7a68'} onMouseLeave={e=>e.currentTarget.style.background='#1f5c4e'}>Get started →</button>
+              <button onClick={()=>nav('/auth')} style={{background:'#0077b6',border:'none',borderRadius:8,padding:'10px 22px',fontSize:12,fontWeight:700,color:'#ffffff',cursor:'pointer',fontFamily:F,alignSelf:'flex-start',transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#0091d6'} onMouseLeave={e=>e.currentTarget.style.background='#0077b6'}>Get started →</button>
             </div>
           </FadeUp>
           <FadeUp>
             <div style={{display:'flex',flexDirection:isMobile?'column':'row',gap:isMobile?10:0,alignItems:'stretch'}}>
               {[
-                {n:'01',icon:'🖥',title:'Issue request',desc:'Select domain and cert type. SSLVault generates the CSR automatically.',accent:'#1f5c4e'},
-                {n:'02',icon:'🌐',title:'DNS validation',desc:'DNS provider API adds the ACME TXT challenge. Auto-validated in seconds.',accent:'#16a068'},
-                {n:'03',icon:'🏛',title:'CA issues cert',desc:'RapidSSL signs the cert. Stored AES-256 encrypted in CertVault.',accent:'#1f5c4e'},
-                {n:'04',icon:'⚡',title:'Auto-install',desc:'VPS agent or cPanel UAPI deploys to Nginx / Apache within 2 minutes.',accent:'#16a068'},
-                {n:'05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Runs forever, zero manual steps.',accent:'#ffffff',bg:'#1f5c4e'},
+                {n:'01',icon:'🖥',title:'Issue request',desc:'Select domain and cert type. SSLVault generates the CSR automatically.',accent:'#0077b6'},
+                {n:'02',icon:'🌐',title:'DNS validation',desc:'DNS provider API adds the ACME TXT challenge. Auto-validated in seconds.',accent:'#00a550'},
+                {n:'03',icon:'🏛',title:'CA issues cert',desc:'RapidSSL signs the cert. Stored AES-256 encrypted in CertVault.',accent:'#0077b6'},
+                {n:'04',icon:'⚡',title:'Auto-install',desc:'VPS agent or cPanel UAPI deploys to Nginx / Apache within 2 minutes.',accent:'#00a550'},
+                {n:'05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Runs forever, zero manual steps.',accent:'#ffffff',bg:'#0077b6'},
               ].map((s,i,arr)=>(
                 <div key={s.n} style={{flex:1,display:'flex',flexDirection:'row',alignItems:'stretch'}}>
-                  <div style={{flex:1,background:s.bg||'#ffffff',border:`1px solid ${s.bg?'rgba(31,92,78,0.4)':'rgba(0,0,0,0.08)'}`,borderRadius:12,padding:'20px 16px',position:'relative',display:'flex',flexDirection:'column',gap:10,boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}>
+                  <div style={{flex:1,background:s.bg||'#ffffff',border:`1px solid ${s.bg?'rgba(0,119,182,0.4)':'rgba(0,0,0,0.08)'}`,borderRadius:12,padding:'20px 16px',position:'relative',display:'flex',flexDirection:'column',gap:10,boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                       <span style={{fontSize:11,fontWeight:800,color:s.accent,letterSpacing:'.06em',fontFamily:MONO}}>{s.n}</span>
                       <span style={{fontSize:22}}>{s.icon}</span>
@@ -575,7 +575,7 @@ export default function Home({ nav }) {
                   {i<arr.length-1&&!isMobile&&(
                     <div style={{width:28,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,paddingBottom:20}}>
                       <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
-                        <path d="M0 6h13M9 1l5 5-5 5" stroke="rgba(31,92,78,0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M0 6h13M9 1l5 5-5 5" stroke="rgba(0,119,182,0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
                   )}
@@ -587,12 +587,12 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── INDUSTRY INTELLIGENCE ── */}
-      <section style={{background:'#f4f1ec',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
               <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
-                <span style={{fontSize:10,fontWeight:700,color:'#1f5c4e',background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.18)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>INDUSTRY INTELLIGENCE</span>
+                <span style={{fontSize:10,fontWeight:700,color:'#0077b6',background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>INDUSTRY INTELLIGENCE</span>
               </div>
               <H2 style={{marginBottom:12,maxWidth:520}}>The deepest PKI intelligence platform on the web.</H2>
               <Body style={{maxWidth:500}}>Not just a certificate manager — a living knowledge base covering every CA, standard, governance body, and cryptographic transition shaping the industry.</Body>
@@ -601,7 +601,7 @@ export default function Home({ nav }) {
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:16,marginBottom:16}}>
             {[{icon:'🏛',title:'CA Trust Store',sub:'6,200+ root & intermediate CAs',desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert.',badge:'CCADB Live',path:'/ca-trust-explorer',stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']]},{icon:'⚖️',title:'CAB Forum Intelligence',sub:'Ballots, timelines & compliance',desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',badge:'Live sync',path:'/cab-forum',stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']]},{icon:'🌍',title:'Global PKI Hub',sub:'12 bodies · 22 standards · PQC tracker',desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',badge:'PQC Ready',path:'/pki-hub',stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']]}].map(item=>(
               <div key={item.title} onClick={()=>nav(item.path)} style={{background:'#ffffff',padding:'22px',cursor:'pointer',transition:'all .12s',height:'100%',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(0,0,0,0.08)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}
-                  onMouseEnter={e=>{e.currentTarget.style.background='#f4f1ec';e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'}} onMouseLeave={e=>{e.currentTarget.style.background='#ffffff';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'}}>
+                  onMouseEnter={e=>{e.currentTarget.style.background='#f0f4fa';e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'}} onMouseLeave={e=>{e.currentTarget.style.background='#ffffff';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'}}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
                     <span style={{fontSize:26}}>{item.icon}</span>
                     <Tag>{item.badge}</Tag>
@@ -632,12 +632,12 @@ export default function Home({ nav }) {
               </div>
               <div style={{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center',flexShrink:0}}>
                 {[['ML-KEM','FIPS 203'],['ML-DSA','FIPS 204'],['SLH-DSA','FIPS 205']].map(([alg,fips])=>(
-                  <div key={alg} style={{background:'#f4f1ec',border:`1px solid ${LN}`,borderRadius:4,padding:'6px 10px',textAlign:'center'}}>
+                  <div key={alg} style={{background:'#f0f4fa',border:`1px solid ${LN}`,borderRadius:4,padding:'6px 10px',textAlign:'center'}}>
                     <div style={{fontSize:11,fontWeight:600,color:T1,fontFamily:MONO}}>{alg}</div>
                     <div style={{fontSize:9.5,color:T3,marginTop:1}}>{fips}</div>
                   </div>
                 ))}
-                <button onClick={()=>nav('/pki-hub')} style={{background:'#1f5c4e',border:'none',borderRadius:4,padding:'7px 14px',fontSize:12,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#2e7a68'} onMouseLeave={e=>e.currentTarget.style.background='#1f5c4e'}>View PQC tracker →</button>
+                <button onClick={()=>nav('/pki-hub')} style={{background:'#0077b6',border:'none',borderRadius:4,padding:'7px 14px',fontSize:12,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#0091d6'} onMouseLeave={e=>e.currentTarget.style.background='#0077b6'}>View PQC tracker →</button>
               </div>
             </Card>
           </FadeUp>
@@ -645,11 +645,11 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CERTBIND ── */}
-      <section style={{background:'#f4f1ec',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:18}}>
-              <span style={{fontSize:10,fontWeight:600,color:'#1f5c4e',letterSpacing:'0.07em',textTransform:'uppercase',fontFamily:MONO,background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.18)',borderRadius:5,padding:'3px 10px'}}>Industry first</span>
+              <span style={{fontSize:10,fontWeight:600,color:'#0077b6',letterSpacing:'0.07em',textTransform:'uppercase',fontFamily:MONO,background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',borderRadius:5,padding:'3px 10px'}}>Industry first</span>
               <span style={{fontSize:10,color:T3,letterSpacing:'0.05em',textTransform:'uppercase',fontFamily:MONO}}>No other CLM vendor has built this</span>
             </div>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:72,alignItems:'center',marginBottom:40}}>
@@ -666,13 +666,13 @@ export default function Home({ nav }) {
                   <div style={{display:'flex',alignItems:'center',gap:9}}>
                     <span style={{fontSize:13}}>🔗</span>
                     <span style={{fontSize:12,fontWeight:500,color:T1,fontFamily:MONO}}>CertBind</span>
-                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(22,160,104,0.09)',border:'1px solid rgba(22,160,104,0.14)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
+                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(0,165,80,0.09)',border:'1px solid rgba(0,165,80,0.14)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
                   </div>
                   <span style={{fontSize:10.5,color:T3,fontFamily:MONO}}>4/4 domains bound</span>
                 </Card>
                 {[{n:'01',label:'Key-Cert Binding Proof',status:'VERIFIED',desc:'Agent signs nonce · key ↔ cert proven cryptographically'},{n:'02',label:'Live TLS Fingerprint',status:'MATCH',desc:'SHA-256 of served cert matches issued cert on every poll'},{n:'03',label:'Chain Integrity',status:'CLEAN',desc:'No unexpected intermediates · no SSL inspection proxy'},{n:'04',label:'Multi-Node Consistency',status:'7/7 NODES',desc:'All load balancer nodes serving correct certificate'}].map(l=>(
                   <Card key={l.n} style={{display:'flex',gap:10,alignItems:'flex-start',padding:'10px 12px'}}>
-                    <div style={{width:20,height:20,borderRadius:3,background:'#f4f1ec',display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:700,color:T3,fontFamily:MONO,flexShrink:0}}>{l.n}</div>
+                    <div style={{width:20,height:20,borderRadius:3,background:'#f0f4fa',display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:700,color:T3,fontFamily:MONO,flexShrink:0}}>{l.n}</div>
                     <div style={{flex:1}}>
                       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:2}}>
                         <span style={{fontSize:12,fontWeight:500,color:T1}}>{l.label}</span>
@@ -719,8 +719,8 @@ export default function Home({ nav }) {
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start'}}>
             <FadeUp>
               <div>
-                <div style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid rgba(31,92,78,0.2)',borderRadius:99,padding:'5px 14px',marginBottom:20,background:'rgba(31,92,78,0.04)'}}>
-                  <span style={{fontSize:11,fontWeight:600,color:'#1f5c4e',letterSpacing:'.06em'}}>Why we built this</span>
+                <div style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid rgba(0,119,182,0.2)',borderRadius:99,padding:'5px 14px',marginBottom:20,background:'rgba(0,119,182,0.04)'}}>
+                  <span style={{fontSize:11,fontWeight:600,color:'#0077b6',letterSpacing:'.06em'}}>Why we built this</span>
                 </div>
                 <H2 style={{marginBottom:14}}>PKI expertise shouldn't require a $250k contract.</H2>
                 <Body style={{marginBottom:16}}>SSLVault is built by a Certified PKI Specialist with deep CA industry experience. The same automation enterprise teams pay hundreds of thousands for — available without the procurement cycle.</Body>
@@ -734,14 +734,14 @@ export default function Home({ nav }) {
             <FadeUp delay={80}>
               <div style={{display:'flex',flexDirection:'column',gap:5}}>
                 {[{name:'Venafi TLS Protect',price:'$250k+/yr',notes:'Enterprise only · No cert issuance · No cPanel',hi:false},{name:'Keyfactor Command',price:'$75–200k/yr',notes:'Mid-market · Complex setup · No free tier',hi:false},{name:'SSLVault CLM',price:'Partner rates',notes:'Full CLM · Agent + cPanel + DNS · All cert types',hi:true}].map(c=>(
-                  <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(31,92,78,0.06)':'#ffffff',border:`1px solid ${c.hi?'rgba(31,92,78,0.25)':LN}`,borderRadius:8,boxShadow:c.hi?'0 1px 4px rgba(31,92,78,0.1)':'none'}}>
-                    <div style={{flex:1}}><div style={{fontSize:12,fontWeight:c.hi?700:500,color:c.hi?'#1f5c4e':T1}}>{c.name}</div><div style={{fontSize:11,color:T3,marginTop:2}}>{c.notes}</div></div>
-                    <div style={{fontSize:13,fontWeight:c.hi?700:400,color:c.hi?'#1f5c4e':T3,fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
+                  <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(0,119,182,0.06)':'#ffffff',border:`1px solid ${c.hi?'rgba(0,119,182,0.25)':LN}`,borderRadius:8,boxShadow:c.hi?'0 1px 4px rgba(0,119,182,0.1)':'none'}}>
+                    <div style={{flex:1}}><div style={{fontSize:12,fontWeight:c.hi?700:500,color:c.hi?'#0077b6':T1}}>{c.name}</div><div style={{fontSize:11,color:T3,marginTop:2}}>{c.notes}</div></div>
+                    <div style={{fontSize:13,fontWeight:c.hi?700:400,color:c.hi?'#0077b6':T3,fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
                   </div>
                 ))}
                 <div style={{marginTop:5,display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
                   {[['DigiCert','Trust chain · 99.9% browser'],['RapidSSL','CA partner · wholesale pricing'],['RFC 8555','ACME v2 · no lock-in'],['AES-256','Military-grade key storage'],['GDPR','Netherlands-based PKI engineer 🇳🇱'],['No ads','No tracking · no reselling']].map(([val,sub])=>(
-                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'#f4f1ec',border:`1px solid ${LN}`,borderRadius:6,alignItems:'center'}}>
+                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'#f0f4fa',border:`1px solid ${LN}`,borderRadius:6,alignItems:'center'}}>
                       <div style={{fontSize:11,fontWeight:500,color:T1,fontFamily:MONO,minWidth:65}}>{val}</div>
                       <div style={{fontSize:10.5,color:T3,lineHeight:1.4}}>{sub}</div>
                     </div>
@@ -754,11 +754,11 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CTA ── */}
-      <section style={{background:'#1f5c4e',padding:`clamp(64px,8vw,80px) ${P}`,borderTop:'none'}}>
+      <section style={{background:'#0077b6',padding:`clamp(64px,8vw,80px) ${P}`,borderTop:'none'}}>
         <div style={{maxWidth:560,margin:'0 auto',textAlign:'center'}}>
           <FadeUp>
             <div style={{display:'inline-flex',alignItems:'center',gap:6,border:'1px solid rgba(255,255,255,0.2)',borderRadius:100,padding:'5px 14px',marginBottom:24,background:'rgba(255,255,255,0.08)'}}>
-              <span style={{width:5,height:5,borderRadius:'50%',background:'#16a068',animation:'blink 2.4s ease infinite'}}/>
+              <span style={{width:5,height:5,borderRadius:'50%',background:'#00a550',animation:'blink 2.4s ease infinite'}}/>
               <span style={{fontSize:11,color:'rgba(255,255,255,0.7)',fontFamily:MONO,letterSpacing:'.05em'}}>Production-ready · RFC 8555 · CA/B Forum 2026</span>
             </div>
             <h2 style={{fontSize:'clamp(22px,4vw,38px)',fontWeight:700,letterSpacing:'-0.8px',lineHeight:1.14,color:'#ffffff',marginBottom:14}}>
@@ -768,7 +768,7 @@ export default function Home({ nav }) {
               Issue, monitor, and auto-renew SSL certificates with enterprise-grade PKI controls — CertVault, 47-day readiness, and CA intelligence included.
             </p>
             <div style={{display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap',marginBottom:28}}>
-              <button onClick={()=>nav('/auth')} style={{background:'#ffffff',border:'none',borderRadius:8,padding:'12px 26px',fontSize:13,fontWeight:700,color:'#1f5c4e',cursor:'pointer',fontFamily:F,transition:'all .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#f0ede7'} onMouseLeave={e=>e.currentTarget.style.background='#ffffff'}>Start managing certs →</button>
+              <button onClick={()=>nav('/auth')} style={{background:'#ffffff',border:'none',borderRadius:8,padding:'12px 26px',fontSize:13,fontWeight:700,color:'#0077b6',cursor:'pointer',fontFamily:F,transition:'all .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#e8f0f8'} onMouseLeave={e=>e.currentTarget.style.background='#ffffff'}>Start managing certs →</button>
               <button onClick={()=>nav('/pricing')} style={{background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.25)',borderRadius:8,padding:'12px 20px',fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.85)',cursor:'pointer',fontFamily:F,transition:'all .12s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.18)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}>View pricing</button>
             </div>
             <div style={{display:'flex',gap:18,justifyContent:'center',flexWrap:'wrap'}}>

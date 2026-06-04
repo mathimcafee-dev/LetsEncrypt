@@ -221,7 +221,7 @@ export default function QuickSetup({ nav }) {
                 <p style={{ fontSize:13, color: '#333333', marginBottom: 16 }}>Add this record to your DNS provider, then click Verify.</p>
                 <div className="v2-code" style={{ marginBottom: 12 }}>
                   <div className="v2-code-head">
-                    <div className="v2-code-dots"><span style={{ background: '#1f5c4e' }}/><span style={{ background:'#f4f1ec' }}/><span style={{ background:'#f4f1ec' }}/></div>
+                    <div className="v2-code-dots"><span style={{ background: '#0077b6' }}/><span style={{ background:'#f0f4fa' }}/><span style={{ background:'#f0f4fa' }}/></div>
                   </div>
                   <pre>{`TYPE    ${dcvInfo.type || 'CNAME'}
 NAME    ${dcvInfo.host || '_acme-challenge'}

@@ -12,8 +12,8 @@ const MONO = "'JetBrains Mono',monospace"
 // Mandate thresholds
 const MANDATES = [
   { year: '2026', label: 'Mar 2026', days: 200, col: '#f59e0b' },
-  { year: '2027', label: 'Mar 2027', days: 100, col: '#1f5c4e' },
-  { year: '2029', label: 'Mar 2029', days: 47,  col: '#1f5c4e' },
+  { year: '2027', label: 'Mar 2027', days: 100, col: '#0077b6' },
+  { year: '2029', label: 'Mar 2029', days: 47,  col: '#0077b6' },
 ]
 
 function daysLeft(iso) {
@@ -39,9 +39,9 @@ function readinessScore(cert, hasDns) {
   var score = (checks.auto_renew?30:0)+(checks.dns_provider?25:0)+(checks.install?20:0)+(checks.validity_200?15:0)+(checks.key_secured?10:0)
   return { checks, score, status: score >= 90 ? 'Ready' : score >= 60 ? 'At risk' : 'Will break', validity: v }
 }
-function slaCol(s) { return s >= 80 ? '#16a068' : s >= 50 ? '#f59e0b' : '#1f5c4e' }
+function slaCol(s) { return s >= 80 ? '#00a550' : s >= 50 ? '#f59e0b' : '#0077b6' }
 function slaLbl(s) { return s >= 80 ? 'COMPLIANT' : s >= 50 ? 'AT RISK' : 'BREACH' }
-function rdCol(s)  { return s >= 90 ? '#16a068' : s >= 60 ? '#9a6400' : '#1f5c4e' }
+function rdCol(s)  { return s >= 90 ? '#00a550' : s >= 60 ? '#9a6400' : '#0077b6' }
 
 function Tick({ ok }) {
   return ok
@@ -146,13 +146,13 @@ export default function ComplianceCentre({ nav, user }) {
   }, [rows, sortKey, sortAsc])
 
   // Styles
-  var card = { background:'rgba(0,0,0,0.03)', border:'1px solid rgba(31,92,78,0.12)', borderRadius:10, padding:'16px 18px' }
+  var card = { background:'rgba(0,0,0,0.03)', border:'1px solid rgba(0,119,182,0.12)', borderRadius:10, padding:'16px 18px' }
   var lbl  = { fontSize:10, fontWeight:700, color:'#aaaaaa', textTransform:'uppercase', letterSpacing:'.1em', display:'block', marginBottom:8 }
   var th   = { padding:'10px 12px', fontSize:10, fontWeight:700, color:'#555555', letterSpacing:'.08em', textTransform:'uppercase', cursor:'pointer', userSelect:'none', whiteSpace:'nowrap' }
 
   if (loading) return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10, fontFamily:F, padding:60 }}>
-      <RefreshCw size={15} color="#1f5c4e" style={{ animation:'spin 1s linear infinite' }}/>
+      <RefreshCw size={15} color="#0077b6" style={{ animation:'spin 1s linear infinite' }}/>
       <span style={{ color:'#555555', fontSize:13 }}>Loading...</span>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
@@ -167,15 +167,15 @@ export default function ComplianceCentre({ nav, user }) {
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:28, flexWrap:'wrap', gap:12 }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:5 }}>
-              <Shield size={20} color="#1f5c4e"/>
+              <Shield size={20} color="#0077b6"/>
               <span style={{ fontSize:20, fontWeight:700, color:'#111111' }}>Compliance Centre</span>
-              {hasSla && <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:99, background:'rgba(0,0,0,0.07)', color:'#1f5c4e', letterSpacing:'.06em' }}>{(sub.plan||'PREMIUM').toUpperCase()}</span>}
+              {hasSla && <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:99, background:'rgba(0,0,0,0.07)', color:'#0077b6', letterSpacing:'.06em' }}>{(sub.plan||'PREMIUM').toUpperCase()}</span>}
             </div>
             <div style={{ fontSize:12, color:'#999999' }}>47-Day mandate readiness + SLA compliance + certificate health</div>
           </div>
           <div style={{ display:'flex', gap:8 }}>
             {hasSla && (
-              <button onClick={generateReport} disabled={genLoad} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', background:'rgba(31,92,78,0.09)', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8, color:'#111111', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:F }}>
+              <button onClick={generateReport} disabled={genLoad} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', background:'rgba(0,119,182,0.09)', border:'1px solid rgba(0,119,182,0.2)', borderRadius:8, color:'#111111', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:F }}>
                 <FileText size={13}/>{genLoad ? 'Generating...' : 'Generate report'}
               </button>
             )}
@@ -185,7 +185,7 @@ export default function ComplianceCentre({ nav, user }) {
           </div>
         </div>
 
-        {msg && <div style={{ background:'rgba(22,160,104,0.07)', border:'1px solid rgba(22,160,104,0.22)', borderRadius:8, padding:'10px 14px', color:'#16a068', fontSize:12, marginBottom:20 }}>{msg}</div>}
+        {msg && <div style={{ background:'rgba(0,165,80,0.07)', border:'1px solid rgba(0,165,80,0.22)', borderRadius:8, padding:'10px 14px', color:'#00a550', fontSize:12, marginBottom:20 }}>{msg}</div>}
 
         {/* -- SECTION 1: SCORES -- */}
         <div style={{ display:'grid', gridTemplateColumns: hasSla ? '1fr 1fr 1fr' : '1fr 1fr', gap:12, marginBottom:20 }}>
@@ -225,9 +225,9 @@ export default function ComplianceCentre({ nav, user }) {
                 var count = rows.filter(function(r){ return r.rs.validity !== null && r.rs.validity <= m.days }).length
                 return (
                   <div key={m.year} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <div style={{ width:6, height:6, borderRadius:'50%', background: compliant ? '#16a068' : m.col, flexShrink:0 }}/>
+                    <div style={{ width:6, height:6, borderRadius:'50%', background: compliant ? '#00a550' : m.col, flexShrink:0 }}/>
                     <span style={{ fontSize:11, color:'#666666', minWidth:60 }}>{m.label}</span>
-                    <span style={{ fontSize:11, fontWeight:600, color: compliant ? '#16a068' : m.col }}>{m.days}d max</span>
+                    <span style={{ fontSize:11, fontWeight:600, color: compliant ? '#00a550' : m.col }}>{m.days}d max</span>
                     <span style={{ fontSize:10, color:'#555555', marginLeft:'auto' }}>{count}/{rows.length} ready</span>
                   </div>
                 )
@@ -240,7 +240,7 @@ export default function ComplianceCentre({ nav, user }) {
             <div style={{ ...card, border:'1px solid rgba(0,0,0,0.1)', display:'flex', flexDirection:'column', justifyContent:'center' }}>
               <span style={lbl}>SLA Guarantee</span>
               <div style={{ fontSize:13, color:'#555555', lineHeight:1.6, marginBottom:12 }}>Get a written compliance guarantee + monthly audit reports for SOC2 / ISO 27001.</div>
-              <button onClick={function(){ if(nav) nav('/pricing') }} style={{ alignSelf:'flex-start', padding:'7px 16px', background:'#1f5c4e', border:'none', borderRadius:7, color:'#fff', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:F }}>Upgrade to Premium</button>
+              <button onClick={function(){ if(nav) nav('/pricing') }} style={{ alignSelf:'flex-start', padding:'7px 16px', background:'#0077b6', border:'none', borderRadius:7, color:'#fff', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:F }}>Upgrade to Premium</button>
             </div>
           )}
         </div>
@@ -258,15 +258,15 @@ export default function ComplianceCentre({ nav, user }) {
             <thead>
               <tr style={{ background:'rgba(192,57,43,0.06)' }}>
                 <th style={{ ...th, width:'22%' }} onClick={function(){ toggleSort('domain') }}>
-                  <span style={{ display:'flex', alignItems:'center', gap:3 }}>Domain{sortKey==='domain'&&(sortAsc?<ChevronUp size={9} color="#1f5c4e"/>:<ChevronDown size={9} color="#1f5c4e"/>)}</span>
+                  <span style={{ display:'flex', alignItems:'center', gap:3 }}>Domain{sortKey==='domain'&&(sortAsc?<ChevronUp size={9} color="#0077b6"/>:<ChevronDown size={9} color="#0077b6"/>)}</span>
                 </th>
                 <th style={{ ...th, width:'11%' }} onClick={function(){ toggleSort('expiry') }}>
-                  <span style={{ display:'flex', alignItems:'center', gap:3 }}>Expires{sortKey==='expiry'&&(sortAsc?<ChevronUp size={9} color="#1f5c4e"/>:<ChevronDown size={9} color="#1f5c4e"/>)}</span>
+                  <span style={{ display:'flex', alignItems:'center', gap:3 }}>Expires{sortKey==='expiry'&&(sortAsc?<ChevronUp size={9} color="#0077b6"/>:<ChevronDown size={9} color="#0077b6"/>)}</span>
                 </th>
                 <th style={{ ...th, width:'7%' }}>Days</th>
                 <th style={{ ...th, width:'7%' }}>Validity</th>
                 <th style={{ ...th, width:'9%' }} onClick={function(){ toggleSort('score') }}>
-                  <span style={{ display:'flex', alignItems:'center', gap:3 }}>Readiness{sortKey==='score'&&(sortAsc?<ChevronUp size={9} color="#1f5c4e"/>:<ChevronDown size={9} color="#1f5c4e"/>)}</span>
+                  <span style={{ display:'flex', alignItems:'center', gap:3 }}>Readiness{sortKey==='score'&&(sortAsc?<ChevronUp size={9} color="#0077b6"/>:<ChevronDown size={9} color="#0077b6"/>)}</span>
                 </th>
                 <th style={{ ...th, width:'6%', textAlign:'center' }}>2026</th>
                 <th style={{ ...th, width:'6%', textAlign:'center' }}>2027</th>
@@ -282,13 +282,13 @@ export default function ComplianceCentre({ nav, user }) {
                 <tr><td colSpan={12} style={{ padding:28, textAlign:'center', color:'#555555', fontSize:13 }}>No active certificates</td></tr>
               ) : sorted.map(function(row) {
                 var c = row.cert, rs = row.rs, dl = row.dl
-                var dlCol = dl < 10 ? '#1f5c4e' : dl < 30 ? '#f59e0b' : '#16a068'
+                var dlCol = dl < 10 ? '#0077b6' : dl < 30 ? '#f59e0b' : '#00a550'
                 var rdColor = rdCol(rs.score)
                 var v = rs.validity
                 var isExpanded = expanded === c.id
                 return [
                   <tr key={c.id} onClick={function(){ setExpanded(isExpanded ? null : c.id) }}
-                    style={{ borderTop:'1px solid rgba(31,92,78,0.07)', cursor:'pointer', transition:'background .1s',
+                    style={{ borderTop:'1px solid rgba(0,119,182,0.07)', cursor:'pointer', transition:'background .1s',
                       background: isExpanded ? 'rgba(192,57,43,0.06)' : 'transparent' }}
                     onMouseEnter={function(e){ if(!isExpanded) e.currentTarget.style.background='rgba(0,0,0,0.02)' }}
                     onMouseLeave={function(e){ if(!isExpanded) e.currentTarget.style.background='transparent' }}>
@@ -309,7 +309,7 @@ export default function ComplianceCentre({ nav, user }) {
                   </tr>,
                   isExpanded && (
                     <tr key={c.id + '-expanded'} style={{ background:'rgba(192,57,43,0.04)' }}>
-                      <td colSpan={12} style={{ padding:'12px 16px', borderTop:'1px solid rgba(31,92,78,0.08)' }}>
+                      <td colSpan={12} style={{ padding:'12px 16px', borderTop:'1px solid rgba(0,119,182,0.08)' }}>
                         <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:8 }}>
                           {[
                             { ok:rs.checks.auto_renew,   label:'Auto-renew enabled', fix:'Enable in cert settings', pts:30 },
@@ -319,10 +319,10 @@ export default function ComplianceCentre({ nav, user }) {
                             { ok:rs.checks.key_secured,  label:'Key in KeyLocker', fix:'Save key to KeyLocker', pts:10 },
                           ].map(function(ch) {
                             return (
-                              <div key={ch.label} style={{ background:'rgba(0,0,0,0.02)', borderRadius:8, padding:'10px 12px', border:'1px solid ' + (ch.ok ? 'rgba(22,160,104,0.11)' : 'rgba(31,92,78,0.09)') }}>
+                              <div key={ch.label} style={{ background:'rgba(0,0,0,0.02)', borderRadius:8, padding:'10px 12px', border:'1px solid ' + (ch.ok ? 'rgba(0,165,80,0.11)' : 'rgba(0,119,182,0.09)') }}>
                                 <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
                                   <Tick ok={ch.ok}/>
-                                  <span style={{ fontSize:11, fontWeight:600, color: ch.ok ? '#16a068' : '#1f5c4e' }}>+{ch.pts} pts</span>
+                                  <span style={{ fontSize:11, fontWeight:600, color: ch.ok ? '#00a550' : '#0077b6' }}>+{ch.pts} pts</span>
                                 </div>
                                 <div style={{ fontSize:11, color:'#333333', lineHeight:1.4 }}>{ch.label}</div>
                                 {!ch.ok && <div style={{ fontSize:10, color:'#999999', marginTop:4 }}>{ch.fix}</div>}
@@ -356,8 +356,8 @@ export default function ComplianceCentre({ nav, user }) {
                   var sc = r.compliance_score
                   return (
                     <div key={r.id} style={{ ...card, display:'flex', alignItems:'center', gap:12 }}>
-                      <div style={{ width:40, height:40, borderRadius:8, background:'rgba(31,92,78,0.09)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                        <FileText size={16} color="#1f5c4e"/>
+                      <div style={{ width:40, height:40, borderRadius:8, background:'rgba(0,119,182,0.09)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <FileText size={16} color="#0077b6"/>
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
                         <div style={{ fontSize:12, fontWeight:600, color:'#111111' }}>{r.report_month}</div>
@@ -367,7 +367,7 @@ export default function ComplianceCentre({ nav, user }) {
                       </div>
                       {r.report_url && (
                         <a href={r.report_url} target="_blank" rel="noreferrer"
-                          style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'#1f5c4e', textDecoration:'none', fontWeight:600, flexShrink:0 }}>
+                          style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'#0077b6', textDecoration:'none', fontWeight:600, flexShrink:0 }}>
                           <Download size={12}/>View
                         </a>
                       )}

@@ -5,15 +5,15 @@ const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
 const BG   = 'transparent'
 const CARD = '#ffffff'
 const CARD2= '#111111'
-const TEAL = '#1f5c4e'
-const TEALH= '#1f5c4e'
-const CORAL= '#1f5c4e'
+const TEAL = '#0077b6'
+const TEALH= '#0077b6'
+const CORAL= '#0077b6'
 const INK = '#111111'
 const BODY = '#444444'
 const MUTED= '#888888'
 const LINE = 'rgba(0,0,0,0.08)'
 const LINE2= 'rgba(0,0,0,0.08)'
-const GREEN= '#16a068'
+const GREEN= '#00a550'
 const AMBER= '#9a6400'
 
 function Tick({ color=TEAL }) {
@@ -267,7 +267,7 @@ export default function Pricing({ nav }) {
           <button onClick={() => setShowComp(v=>!v)}
             style={{background:'transparent',border:`1px solid ${LINE2}`,color:TEAL,
               borderRadius:8,padding:'10px 24px',fontSize:13,cursor:'pointer',fontFamily:F,transition:'all .15s'}}
-            onMouseEnter={e=>e.currentTarget.style.background='rgba(31,92,78,0.07)'}
+            onMouseEnter={e=>e.currentTarget.style.background='rgba(0,119,182,0.07)'}
             onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
             {showComp ? '▲ Hide full comparison' : '▼ Full feature comparison'}
           </button>
@@ -287,8 +287,8 @@ export default function Pricing({ nav }) {
             </div>
             {FEATURES.map(sec => (
               <div key={sec.section}>
-                <div style={{padding:'9px 24px',background:'rgba(31,92,78,0.05)',borderTop:`1px solid ${LINE}`}}>
-                  <span style={{fontSize:10,fontWeight:700,color:'#1f5c4e',textTransform:'uppercase',
+                <div style={{padding:'9px 24px',background:'rgba(0,119,182,0.05)',borderTop:`1px solid ${LINE}`}}>
+                  <span style={{fontSize:10,fontWeight:700,color:'#0077b6',textTransform:'uppercase',
                     letterSpacing:'1px',fontFamily:MONO}}>{sec.section}</span>
                 </div>
                 {sec.rows.map((row, i) => (
@@ -346,13 +346,13 @@ export default function Pricing({ nav }) {
 
         {/* ── COMPETITOR COMPARISON ── */}
         <div style={{border:`1px solid ${LINE}`,borderRadius:14,overflow:'hidden',marginBottom:72}}>
-          <div style={{textAlign:'center',padding:'32px 24px 24px',borderBottom:`1px solid ${LINE}`,background:'#f4f1ec'}}>
+          <div style={{textAlign:'center',padding:'32px 24px 24px',borderBottom:`1px solid ${LINE}`,background:'#f0f4fa'}}>
             <div style={{fontSize:9,fontWeight:700,color:TEAL,letterSpacing:'2px',
               textTransform:'uppercase',marginBottom:10,fontFamily:MONO}}>CLM market comparison</div>
             <h2 style={{fontSize:'clamp(18px,2.5vw,30px)',fontWeight:800,letterSpacing:'-0.5px',color:'#111111'}}>
 
           {/* ── SLA Premium callout ── */}
-          <div style={{maxWidth:860,margin:'0 auto 48px',background:'rgba(31,92,78,0.05)',border:'1px solid rgba(31,92,78,0.15)',borderRadius:12,padding:'20px 24px'}}>
+          <div style={{maxWidth:860,margin:'0 auto 48px',background:'rgba(0,119,182,0.05)',border:'1px solid rgba(0,119,182,0.15)',borderRadius:12,padding:'20px 24px'}}>
             <div style={{display:'flex',alignItems:'flex-start',gap:16,flexWrap:'wrap'}}>
               <div style={{flex:1,minWidth:220}}>
                 <div style={{fontSize:10,fontWeight:700,color:TEAL,letterSpacing:'.12em',textTransform:'uppercase',marginBottom:6}}>Premium add-on · SLA Guarantee</div>
@@ -389,7 +389,7 @@ export default function Pricing({ nav }) {
             ].map((item, i) => (
               <div key={item.name} style={{padding:'28px 24px',
                 borderLeft:i>0?`1px solid ${LINE}`:'none',
-                background:item.hi?'rgba(31,92,78,0.04)':'transparent'}}>
+                background:item.hi?'rgba(0,119,182,0.04)':'transparent'}}>
                 <div style={{fontSize:10,fontWeight:700,color:item.color,letterSpacing:'0.5px',marginBottom:8,fontFamily:MONO}}>{item.name}</div>
                 <div style={{fontSize:30,fontWeight:900,color:item.color,letterSpacing:'-1px',marginBottom:3,lineHeight:1}}>{item.price}</div>
                 <div style={{fontSize:11,color:MUTED,marginBottom:18,fontFamily:MONO}}>{item.sub}</div>

@@ -11,7 +11,7 @@ const fmtDate = (iso) => iso ? format(new Date(iso), 'MMM d, yyyy HH:mm') : '—
 const fmtAgo  = (iso) => iso ? formatDistanceToNow(new Date(iso), { addSuffix: true }) : '—'
 
 const TYPE_META = {
-  cert_expiry:   { label:'Cert expiry',    color:'#1f5c4e' },
+  cert_expiry:   { label:'Cert expiry',    color:'#0077b6' },
   order_renewal: { label:'Sub renewal',    color:'#fb923c' },
   pqc_risk:      { label:'PQC risk',       color:'#a78bfa' },
   test:          { label:'Test',           color:'#888888' },
@@ -129,7 +129,7 @@ export default function AlertHistory({ nav }) {
               return (
                 <div key={a.id} onClick={() => setSelected(a)} style={{ padding:'10px 14px', cursor:'pointer',
                   borderBottom:'1px solid rgba(0,0,0,0.04)',
-                  background: isSelected ? 'rgba(31,92,78,0.07)' : 'transparent',
+                  background: isSelected ? 'rgba(0,119,182,0.07)' : 'transparent',
                   borderLeft: isSelected ? '2px solid #2a6b5c' : '2px solid transparent',
                   transition:'all 0.12s' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>

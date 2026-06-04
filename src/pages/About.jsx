@@ -3,17 +3,17 @@ import portrait from '../assets/mathi-portrait.jpg'
 
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
-const BG   = '#f7f5f0'
-const BG2  = '#f4f1ec'
+const BG   = '#f0f4fa'
+const BG2  = '#f0f4fa'
 const BG3  = '#ffffff'
-const BG4  = '#f0ede7'
+const BG4  = '#e8f0f8'
 const T1   = '#111111'
 const T2   = '#444444'
 const T3   = '#888888'
 const LN   = 'rgba(0,0,0,0.08)'
-const LN2  = 'rgba(31,92,78,0.25)'
-const RED  = '#1f5c4e'
-const GRN  = '#16a068'
+const LN2  = 'rgba(0,119,182,0.25)'
+const RED  = '#0077b6'
+const GRN  = '#00a550'
 const AMB  = '#9a6400'
 const PRP  = '#a78bfa'
 const P    = 'clamp(20px,5vw,48px)'
@@ -67,7 +67,7 @@ export default function About({ nav }) {
       </section>
 
       {/* Stats */}
-      <section style={{ background:'#f4f1ec', borderBottom:`1px solid ${LN}`, padding:`32px ${P}` }}>
+      <section style={{ background:'#f0f4fa', borderBottom:`1px solid ${LN}`, padding:`32px ${P}` }}>
         <div style={{ maxWidth:860, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:10 }}>
           <Stat val="8+"    label="DNS providers"          sub="Cloudflare, Vercel, Route53…"    color={GRN} />
           <Stat val="A+"    label="Max TLS health grade"   sub="HSTS · CAA · TLS 1.3 verified"   color={AMB} />
@@ -192,7 +192,7 @@ export default function About({ nav }) {
               { n:'04', color:RED,  title:'Forward-compatible by design',
                 body:"The CA/B Forum 2026–2029 mandate timeline is the biggest change to PKI operations in a decade. SSLVault's agent polls every 60s, DNS providers are API-connected, and renewal is fully automated. When 47-day certs become mandatory, nothing changes for SSLVault users." },
             ].map((p, i, arr) => (
-              <div key={p.n} style={{ display:'flex', gap:16, padding:'18px 20px', background:'#f4f1ec', borderBottom:i < arr.length - 1 ? `1px solid ${LN}` : 'none', borderLeft:`3px solid ${p.color}` }}>
+              <div key={p.n} style={{ display:'flex', gap:16, padding:'18px 20px', background:'#f0f4fa', borderBottom:i < arr.length - 1 ? `1px solid ${LN}` : 'none', borderLeft:`3px solid ${p.color}` }}>
                 <div style={{ fontSize:10, fontWeight:700, color:p.color, fontFamily:MONO, width:24, flexShrink:0, marginTop:1 }}>{p.n}</div>
                 <div>
                   <div style={{ fontSize:13, fontWeight:600, color:T1, marginBottom:5 }}>{p.title}</div>

@@ -134,7 +134,7 @@ const _build = 1779297041 // cache bust
         ? 'opacity 0.12s ease-in, transform 0.12s ease-in'
         : 'opacity 0.18s ease-out, transform 0.18s ease-out',
       minHeight: '100vh',
-      background: '#f4f1ec',
+      background: '#f0f4fa',
       color: '#111111',
       fontFamily: "'Inter', system-ui, sans-serif",
       position: 'relative',

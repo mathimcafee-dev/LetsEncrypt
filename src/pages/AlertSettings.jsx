@@ -138,8 +138,8 @@ export default function AlertSettings({ nav }) {
             <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={handleSave} disabled={saving}
               style={{ display:'flex', alignItems:'center', gap:5,
                 background: saved ? 'transparent' : undefined,
-                border: saved ? '1px solid rgba(31,92,78,0.2)' : undefined,
-                color: saved ? '#16a068' : undefined }}>
+                border: saved ? '1px solid rgba(0,119,182,0.2)' : undefined,
+                color: saved ? '#00a550' : undefined }}>
               {saving  ? <><RefreshCw size={11} style={{ animation:'spin .7s linear infinite' }}/> Saving…</> :
                saved   ? <><CheckCircle size={11}/> Saved</>   : <><Save size={11}/> Save</>}
             </button>
@@ -148,24 +148,24 @@ export default function AlertSettings({ nav }) {
 
         {/* Banners */}
         {error && (
-          <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
+          <div style={{ background:'rgba(0,119,182,0.09)', border:'1px solid #fecaca', borderRadius:8,
             padding:'10px 14px', marginBottom:14, display:'flex', alignItems:'center',
-            gap:8, fontSize:12, color:'#1f5c4e' }}>
+            gap:8, fontSize:12, color:'#0077b6' }}>
             <AlertTriangle size={13} style={{ flexShrink:0 }}/> {error}
             <button onClick={() => setError('')} style={{ marginLeft:'auto', background:'none',
-              border:'none', cursor:'pointer', color:'#1f5c4e', fontSize:16 }}>×</button>
+              border:'none', cursor:'pointer', color:'#0077b6', fontSize:16 }}>×</button>
           </div>
         )}
         {testResult === 'ok' && (
-          <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8,
+          <div style={{ background:'transparent', border:'1px solid rgba(0,119,182,0.2)', borderRadius:8,
             padding:'10px 14px', marginBottom:14, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#111111' }}>
             <CheckCircle size={13} style={{ flexShrink:0 }}/> Test email sent to {user.email}
           </div>
         )}
         {testResult === 'fail' && (
-          <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
-            padding:'10px 14px', marginBottom:14, fontSize:12, color:'#1f5c4e' }}>
+          <div style={{ background:'rgba(0,119,182,0.09)', border:'1px solid #fecaca', borderRadius:8,
+            padding:'10px 14px', marginBottom:14, fontSize:12, color:'#0077b6' }}>
             Test failed — check RESEND_API_KEY in Supabase environment variables.
           </div>
         )}
@@ -184,7 +184,7 @@ export default function AlertSettings({ nav }) {
                 </div>
                 <button onClick={() => setEmailEnabled(v => !v)} style={{
                   width:36, height:20, borderRadius:100, border:'none', cursor:'pointer',
-                  background: emailEnabled ? '#1f5c4e' : 'var(--v2-surface-3)',
+                  background: emailEnabled ? '#0077b6' : 'var(--v2-surface-3)',
                   position:'relative', transition:'background 0.15s', flexShrink:0,
                 }}>
                   <div style={{
@@ -211,7 +211,7 @@ export default function AlertSettings({ nav }) {
                       padding:'4px 12px', borderRadius:6, fontSize:12, fontWeight: on ? 600 : 400,
                       cursor:'pointer', fontFamily:'inherit',
                       border: on ? '0.5px solid #2a6b5c' : '1px solid var(--v2-border)',
-                      background: on ? 'rgba(31,92,78,0.09)' : 'var(--v2-surface-3)',
+                      background: on ? 'rgba(0,119,182,0.09)' : 'var(--v2-surface-3)',
                       color: on ? '#111111' : '#b0a8a0', transition:'all 0.1s',
                     }}>
                       {d}d
@@ -233,7 +233,7 @@ export default function AlertSettings({ nav }) {
                       <div onClick={() => toggleType(key)} style={{
                         width:15, height:15, borderRadius:3, flexShrink:0, marginTop:2,
                         border: on ? '1.5px solid #2a6b5c' : '1.5px solid var(--v2-border)',
-                        background: on ? '#1f5c4e' : 'transparent',
+                        background: on ? '#0077b6' : 'transparent',
                         display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer',
                       }}>
                         {on && <div style={{ width:7, height:7, background:'white', borderRadius:1 }}/>}
@@ -311,7 +311,7 @@ export default function AlertSettings({ nav }) {
                 <div key={label} style={{ display:'flex', justifyContent:'space-between',
                   fontSize:11, padding:'5px 0', borderBottom:'1px solid rgba(0,0,0,0.04)' }}>
                   <span style={{ color:'#888888' }}>{label}</span>
-                  <span style={{ fontWeight:500, color: warn ? '#1f5c4e' : '#333333' }}>{value}</span>
+                  <span style={{ fontWeight:500, color: warn ? '#0077b6' : '#333333' }}>{value}</span>
                 </div>
               ))}
             </div>

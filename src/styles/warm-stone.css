@@ -1,201 +1,95 @@
 /* ═══════════════════════════════════════════════════════════════════
-   SSLVault — Warm Stone Design System v1.0 — LOCKED PRODUCTION
-   Approved: 2026-06-03
-   Do NOT modify without explicit approval from Spartan.
+   SSLVault — Blue Design System v2.0 — LOCKED PRODUCTION
+   Approved: 2026-06-04  (replaces Warm Stone v1.0)
+   Palette: White + DigiCert Blue #0077b6
    ═══════════════════════════════════════════════════════════════════
 
    PALETTE
    ─────────────────────────────────────────────────────────────────
-   Page background    #f4f1ec   warm parchment
+   Page background    #f0f4fa   light blue-white
    Surface / card     #ffffff   pure white
-   Surface alt        #f0ede7   warm off-white
-   Surface deep       #e8e4dd   pressed surface
+   Surface alt        #e8f0f8   blue-tinted surface
+   Surface deep       #dde8f4   deeper blue surface
 
    Ink primary        #111111   near-black
    Ink secondary      #444444   body text
-   Ink tertiary       #888888   muted / labels
-   Ink faint          #aaaaaa   placeholders
-   Ink disabled       #cccccc   disabled states
+   Ink tertiary       #666666   muted
+   Ink faint          #999999   placeholders
 
-   Teal (brand)       #1f5c4e   primary accent
-   Teal mid           #2e7a68   hover
-   Teal light         #e8f2ef   teal surface
-   Teal border        rgba(31,92,78,0.2)
+   Blue (brand)       #0077b6   primary accent
+   Blue mid           #0091d6   hover
+   Blue light         #e6f2fa   blue surface
+   Blue border        rgba(0,119,182,0.2)
 
-   Green (success)    #16a068   live / healthy
+   Green (success)    #00a550   live / healthy
    Amber (warning)    #9a6400   expiring / at risk
    Red (danger)       #c0392b   expired / error
 
-   Border default     rgba(0,0,0,0.08)
-   Border strong      rgba(0,0,0,0.13)
-   Border light       rgba(0,0,0,0.05)
+   Border default     rgba(0,119,182,0.12)
+   Border strong      rgba(0,119,182,0.22)
 
    INTENTIONAL DARK SURFACES (do not convert)
    ─────────────────────────────────────────────────────────────────
-   Hero score banner  #111111   Dashboard posture card
-   Code / terminal    #111111   command blocks, inline terminal mocks
-   Footer             #111111   landing page footer
-
-   TYPOGRAPHY
-   ─────────────────────────────────────────────────────────────────
-   UI font            Inter (system-ui fallback)
-   Mono font          JetBrains Mono (Menlo / Consolas fallback)
-   Base size          14px
-   Line height        1.65
-
-   SPACING / RADIUS
-   ─────────────────────────────────────────────────────────────────
-   Radius sm          5px     tags, chips
-   Radius md          8px     buttons, inputs
-   Radius lg          12px    cards
-   Radius xl          16px    panels, modals
+   Score banner       #0077b6   Dashboard posture card
+   Code / terminal    #111111   command blocks
+   Footer             #0077b6   landing page footer
    ═══════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* ── Page ── */
-  --ws-page:         #f4f1ec;
+  --ws-page:         #f0f4fa;
   --ws-surface:      #ffffff;
-  --ws-surface-2:    #f0ede7;
-  --ws-surface-3:    #e8e4dd;
-
-  /* ── Ink ── */
+  --ws-surface-2:    #e8f0f8;
+  --ws-surface-3:    #dde8f4;
+  --ws-line:         rgba(0,119,182,0.12);
+  --ws-line-2:       rgba(0,119,182,0.22);
+  --ws-line-3:       rgba(0,119,182,0.07);
   --ws-ink:          #111111;
   --ws-ink-2:        #444444;
-  --ws-ink-3:        #888888;
-  --ws-ink-4:        #aaaaaa;
+  --ws-ink-3:        #666666;
+  --ws-ink-4:        #999999;
   --ws-ink-5:        #cccccc;
-
-  /* ── Brand teal ── */
-  --ws-teal:         #1f5c4e;
-  --ws-teal-mid:     #2e7a68;
-  --ws-teal-light:   #e8f2ef;
-  --ws-teal-border:  rgba(31,92,78,0.2);
-  --ws-teal-dim:     rgba(31,92,78,0.08);
-
-  /* ── Semantic ── */
-  --ws-green:        #16a068;
-  --ws-green-bg:     rgba(22,160,104,0.09);
-  --ws-green-border: rgba(22,160,104,0.2);
+  --ws-teal:         #0077b6;
+  --ws-teal-mid:     #0091d6;
+  --ws-teal-light:   #e6f2fa;
+  --ws-teal-border:  rgba(0,119,182,0.2);
+  --ws-teal-dim:     rgba(0,119,182,0.08);
+  --ws-green:        #00a550;
+  --ws-green-bg:     rgba(0,165,80,0.09);
+  --ws-green-border: rgba(0,165,80,0.2);
   --ws-amber:        #9a6400;
   --ws-amber-bg:     rgba(154,100,0,0.08);
   --ws-amber-border: rgba(154,100,0,0.2);
   --ws-red:          #c0392b;
   --ws-red-bg:       rgba(192,57,43,0.08);
   --ws-red-border:   rgba(192,57,43,0.2);
-
-  /* ── Borders ── */
-  --ws-line:         rgba(0,0,0,0.08);
-  --ws-line-2:       rgba(0,0,0,0.13);
-  --ws-line-3:       rgba(0,0,0,0.05);
-
-  /* ── Shadows ── */
-  --ws-shadow-sm:    0 1px 2px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
-  --ws-shadow-md:    0 2px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
-  --ws-shadow-lg:    0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
-
-  /* ── Radius ── */
-  --ws-r-sm:  5px;
-  --ws-r-md:  8px;
-  --ws-r-lg:  12px;
-  --ws-r-xl:  16px;
-
-  /* ── Typography ── */
-  --ws-font:  'Inter', system-ui, -apple-system, sans-serif;
-  --ws-mono:  'JetBrains Mono', 'Menlo', 'Consolas', monospace;
+  --ws-r-sm:5px; --ws-r-md:8px; --ws-r-lg:12px; --ws-r-xl:16px;
+  --ws-shadow-sm: 0 1px 3px rgba(0,119,182,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --ws-shadow-md: 0 2px 8px rgba(0,119,182,0.1),0 1px 3px rgba(0,0,0,0.05);
+  --ws-shadow-lg: 0 8px 24px rgba(0,119,182,0.12),0 2px 6px rgba(0,0,0,0.06);
+  --ws-font: 'Inter',system-ui,-apple-system,sans-serif;
+  --ws-mono: 'JetBrains Mono','Menlo','Consolas',monospace;
 }
 
-/* ── Reset ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--ws-page) !important;
-  color: var(--ws-ink);
-  font-family: var(--ws-font);
-  font-size: 14px;
-  line-height: 1.65;
-  min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(31,92,78,0.2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(31,92,78,0.35); }
-
-/* ── Nav (public) ── */
-nav {
-  position: sticky; top: 0; z-index: 100;
-  background: #ffffff;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
-}
-
-/* ── Inputs ── */
-input, textarea, select {
-  background: var(--ws-surface) !important;
-  border: 1px solid var(--ws-line-2) !important;
-  color: var(--ws-ink) !important;
-  font-family: var(--ws-font) !important;
-  font-size: 14px !important;
-  border-radius: var(--ws-r-md) !important;
-  padding: 9px 13px !important;
-  outline: none !important;
-  transition: all .15s !important;
-}
-input:focus, textarea:focus, select:focus {
-  border-color: var(--ws-teal) !important;
-  box-shadow: 0 0 0 3px rgba(31,92,78,0.1) !important;
-}
-input::placeholder, textarea::placeholder { color: var(--ws-ink-4) !important; }
-
-/* ── Utility classes ── */
-.ws-card {
-  background: var(--ws-surface);
-  border: 1px solid var(--ws-line);
-  border-radius: var(--ws-r-lg);
-  padding: 20px;
-  box-shadow: var(--ws-shadow-sm);
-}
-.ws-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 18px; border-radius: var(--ws-r-md);
-  font-family: var(--ws-font); font-size: 13px; font-weight: 700;
-  cursor: pointer; border: none; transition: all .15s;
-  text-decoration: none; white-space: nowrap;
-}
-.ws-btn-primary { background: var(--ws-teal); color: #ffffff; }
-.ws-btn-primary:hover { background: var(--ws-teal-mid); }
-.ws-btn-secondary { background: var(--ws-surface); color: var(--ws-ink-2); border: 1px solid var(--ws-line-2); }
-.ws-btn-secondary:hover { background: var(--ws-surface-2); color: var(--ws-ink); }
-
-.ws-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 9px; border-radius: 99px;
-  font-size: 10px; font-weight: 700; letter-spacing: .05em;
-}
-.ws-badge-green  { background: var(--ws-green-bg);  color: var(--ws-green);  border: 1px solid var(--ws-green-border); }
-.ws-badge-amber  { background: var(--ws-amber-bg);  color: var(--ws-amber);  border: 1px solid var(--ws-amber-border); }
-.ws-badge-red    { background: var(--ws-red-bg);    color: var(--ws-red);    border: 1px solid var(--ws-red-border); }
-.ws-badge-teal   { background: var(--ws-teal-dim);  color: var(--ws-teal);   border: 1px solid var(--ws-teal-border); }
-
-/* ── Animations ── */
-@keyframes ws-spin    { to { transform: rotate(360deg); } }
-@keyframes ws-fadeUp  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@keyframes ws-pulse   { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
-@keyframes ws-blink   { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
-
-.ws-spinner {
-  width: 14px; height: 14px;
-  border: 2px solid rgba(31,92,78,0.18);
-  border-top-color: var(--ws-teal);
-  border-radius: 50%;
-  animation: ws-spin .6s linear infinite;
-  display: inline-block; flex-shrink: 0;
-}
-.ws-fade-up { animation: ws-fadeUp .35s ease forwards; }
-.ws-pulse   { animation: ws-pulse 2.2s ease-in-out infinite; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ws-page)!important;color:var(--ws-ink);font-family:var(--ws-font);font-size:14px;line-height:1.65;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(0,119,182,0.2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,119,182,0.35)}
+nav{position:sticky;top:0;z-index:100;background:#ffffff;border-bottom:1px solid rgba(0,119,182,0.12);box-shadow:0 1px 0 rgba(0,119,182,0.06)}
+input,textarea,select{background:var(--ws-surface)!important;border:1px solid var(--ws-line-2)!important;color:var(--ws-ink)!important;font-family:var(--ws-font)!important;font-size:14px!important;border-radius:var(--ws-r-md)!important;padding:9px 13px!important;outline:none!important;transition:all .15s!important}
+input:focus,textarea:focus,select:focus{border-color:var(--ws-teal)!important;box-shadow:0 0 0 3px rgba(0,119,182,0.1)!important}
+input::placeholder,textarea::placeholder{color:var(--ws-ink-4)!important}
+.ws-card{background:var(--ws-surface);border:1px solid var(--ws-line);border-radius:var(--ws-r-lg);padding:20px;box-shadow:var(--ws-shadow-sm)}
+.ws-btn-primary{background:var(--ws-teal);color:#fff;border:none;border-radius:var(--ws-r-md);padding:9px 18px;font-family:var(--ws-font);font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
+.ws-btn-primary:hover{background:var(--ws-teal-mid)}
+.ws-badge-green{background:var(--ws-green-bg);color:var(--ws-green);border:1px solid var(--ws-green-border);border-radius:99px;padding:3px 9px;font-size:10px;font-weight:700}
+.ws-badge-teal{background:var(--ws-teal-dim);color:var(--ws-teal);border:1px solid var(--ws-teal-border);border-radius:99px;padding:3px 9px;font-size:10px;font-weight:700}
+.ws-spinner{width:14px;height:14px;border:2px solid rgba(0,119,182,0.18);border-top-color:var(--ws-teal);border-radius:50%;animation:ws-spin .6s linear infinite;display:inline-block;flex-shrink:0}
+@keyframes ws-spin{to{transform:rotate(360deg)}}
+@keyframes ws-fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes ws-pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes ws-blink{0%,100%{opacity:1}50%{opacity:0}}

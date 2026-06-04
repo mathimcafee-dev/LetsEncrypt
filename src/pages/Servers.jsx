@@ -8,8 +8,8 @@ import '../styles/design-v2.css'
 function agentStatus(last_seen_at, status) {
   if (!last_seen_at) return { label: 'Never seen', color: '#555555', dot: '#cccccc', bg: '#111111' }
   const mins = differenceInMinutes(new Date(), new Date(last_seen_at))
-  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#1f5c4e', dot: '#1f5c4e', bg: 'rgba(31,92,78,0.09)' }
-  if (mins > 6) return { label: 'Idle', color: '#1f5c4e', dot: '#111111', bg: 'rgba(239,68,68,0.08)' }
+  if (status === 'offline' || mins > 15) return { label: 'Offline', color: '#0077b6', dot: '#0077b6', bg: 'rgba(0,119,182,0.09)' }
+  if (mins > 6) return { label: 'Idle', color: '#0077b6', dot: '#111111', bg: 'rgba(239,68,68,0.08)' }
   return { label: 'Online', color: '#111111', dot: '#111111', bg: 'transparent' }
 }
 
@@ -22,10 +22,10 @@ function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?
 
 function JobRow({ job }) {
   const icon = job.status === 'completed'
-    ? <CheckCircle size={12} color="#1f5c4e"/>
+    ? <CheckCircle size={12} color="#0077b6"/>
     : job.status === 'failed'
-    ? <XCircle size={12} color="#1f5c4e"/>
-    : <Clock size={12} color="#1f5c4e"/>
+    ? <XCircle size={12} color="#0077b6"/>
+    : <Clock size={12} color="#0077b6"/>
   return (
     <div style={{ display:'flex', alignItems:'center', gap:10, padding:'7px 0', borderBottom:'1px solid rgba(0,0,0,0.06)', fontSize:11 }}>
       {icon}
@@ -76,7 +76,7 @@ function AgentCard({ agent, onRefresh }) {
             <span style={{ fontSize:13, fontWeight:600, color:'#111111', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
               {agent.nickname || agent.hostname || 'Unnamed server'}
             </span>
-            {agent.is_sandbox && <span style={{ fontSize:9, color:'#1f5c4e', background:'rgba(239,68,68,0.08)', border:'1px solid rgba(154,100,0,0.2)', borderRadius:3, padding:'1px 5px', fontWeight:500, flexShrink:0 }}>SANDBOX</span>}
+            {agent.is_sandbox && <span style={{ fontSize:9, color:'#0077b6', background:'rgba(239,68,68,0.08)', border:'1px solid rgba(154,100,0,0.2)', borderRadius:3, padding:'1px 5px', fontWeight:500, flexShrink:0 }}>SANDBOX</span>}
           </div>
           <div style={{ fontSize:11, color:'#555555', fontFamily:'var(--font-mono, monospace)' }}>
             {agent.ip_address || agent.hostname || '—'}
@@ -177,7 +177,7 @@ function InstallModal({ onClose }) {
   }
 
   const CmdBlock = ({ cmd, id }) => (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#f4f1ec', borderRadius:8, padding:'11px 14px', marginBottom:8, border:'1px solid rgba(0,0,0,0.07)' }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#f0f4fa', borderRadius:8, padding:'11px 14px', marginBottom:8, border:'1px solid rgba(0,0,0,0.07)' }}>
       <code style={{ fontSize:12.5, color:'#111111', fontFamily:'"JetBrains Mono","Menlo",monospace', flex:1, overflow:'auto' }}>{cmd}</code>
       <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, marginLeft:12, fontSize:10, fontWeight:500, color:'#555555', padding:'4px 8px', border:'1px solid rgba(0,0,0,0.1)', borderRadius:4, background:'#ffffff', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
         {copied===id ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
@@ -200,7 +200,7 @@ function InstallModal({ onClose }) {
           <CmdBlock cmd={cmd1} id="install"/>
           <div style={{ fontSize:11, fontWeight:500, color:'#333333', margin:'14px 0 8px' }}>2. Verify it's running</div>
           <CmdBlock cmd={cmd2} id="verify"/>
-          <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:6, padding:'10px 12px', marginTop:14 }}>
+          <div style={{ background:'transparent', border:'1px solid rgba(0,119,182,0.2)', borderRadius:6, padding:'10px 12px', marginTop:14 }}>
             <div style={{ fontSize:11, color:'#111111', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and reports its status here. It will appear in this list within 1–2 minutes of installation.
             </div>
@@ -262,7 +262,7 @@ export default function ServersPage({ user }) {
           <button onClick={refresh} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'var(--v2-surface)', color:'#333333', border:'1px solid var(--v2-border)', padding:'7px 12px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <RefreshCw size={12} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }}/> Refresh
           </button>
-          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#111111', border:'none', padding:'7px 14px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0f4fa', color:'#111111', border:'none', padding:'7px 14px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Plus size={12}/> Add server
           </button>
         </div>
@@ -274,7 +274,7 @@ export default function ServersPage({ user }) {
           {[
             { label:'Total servers', val:agents.length, color:'#111111' },
             { label:'Online now', val:online, color: online > 0 ? '#111111' : 'var(--v2-text)' },
-            { label:'Offline / idle', val:agents.length - online, color: agents.length - online > 0 ? '#1f5c4e' : 'var(--v2-text)' },
+            { label:'Offline / idle', val:agents.length - online, color: agents.length - online > 0 ? '#0077b6' : 'var(--v2-text)' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', padding:'14px 18px' }}>
               <div style={{ fontSize:10, fontWeight:500, color:'#555555', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:6 }}>{label}</div>
@@ -305,7 +305,7 @@ export default function ServersPage({ user }) {
           <div style={{ fontSize:12, color:'#555555', marginBottom:20, maxWidth:340, margin:'0 auto 20px' }}>
             Install the SSLVault agent on any Linux VPS or cPanel server. It will auto-renew your certificates and report status here.
           </div>
-          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#111111', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f0f4fa', color:'#111111', border:'none', borderRadius:6, padding:'9px 18px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <Terminal size={13}/> Install agent
           </button>
         </div>
