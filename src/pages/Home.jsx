@@ -308,7 +308,7 @@ export default function Home({ nav }) {
   const P = 'clamp(20px,5vw,48px)'
 
   return (
-    <div style={{fontFamily:F,position:'relative',background:`#f7f5f0`,color:T1,overflowX:'hidden'}}>
+    <div style={{fontFamily:F,position:'relative',background:'#f4f1ec',color:T1,overflowX:'hidden'}}>
 
       <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(31,92,78,0.15);color:#111}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
@@ -634,10 +634,10 @@ export default function Home({ nav }) {
               <Body style={{maxWidth:500}}>Not just a certificate manager — a living knowledge base covering every CA, standard, governance body, and cryptographic transition shaping the industry.</Body>
             </div>
           </FadeUp>
-          <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden',marginBottom:12}}>
+          <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:16,marginBottom:16}}>
             {[{icon:'🏛',title:'CA Trust Store',sub:'6,200+ root & intermediate CAs',desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert.',badge:'CCADB Live',path:'/ca-trust-explorer',stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']]},{icon:'⚖️',title:'CAB Forum Intelligence',sub:'Ballots, timelines & compliance',desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',badge:'Live sync',path:'/cab-forum',stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']]},{icon:'🌍',title:'Global PKI Hub',sub:'12 bodies · 22 standards · PQC tracker',desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',badge:'PQC Ready',path:'/pki-hub',stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']]}].map(item=>(
               <div key={item.title} onClick={()=>nav(item.path)} style={{background:'#ffffff',padding:'22px',cursor:'pointer',transition:'all .12s',height:'100%',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(0,0,0,0.08)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}
-                  onMouseEnter={e=>e.currentTarget.style.background='#f4f1ec'} onMouseLeave={e=>e.currentTarget.style.background='#111111'}>
+                  onMouseEnter={e=>{e.currentTarget.style.background='#f4f1ec';e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'}} onMouseLeave={e=>{e.currentTarget.style.background='#ffffff';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'}}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
                     <span style={{fontSize:26}}>{item.icon}</span>
                     <Tag>{item.badge}</Tag>
@@ -814,7 +814,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{background:'#111111',borderTop:`1px solid rgba(0,0,0,0.06)`,padding:`clamp(36px,5vw,52px) ${P} clamp(22px,3vw,32px)`}}>
+      <footer style={{background:'#111111',borderTop:`1px solid rgba(255,255,255,0.08)`,padding:`clamp(36px,5vw,52px) ${P} clamp(22px,3vw,32px)`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:32,paddingBottom:24,borderBottom:`1px solid rgba(0,0,0,0.06)`}}>
             <div style={{width:20,height:20,background:'rgba(0,0,0,0.07)',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -826,11 +826,11 @@ export default function Home({ nav }) {
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr 1fr':'repeat(auto-fill,minmax(140px,1fr))',gap:24,marginBottom:32}}>
             {[{title:'Product',links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]]},{title:'Support',links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CAA Checker',()=>nav('/caa-check')]]},{title:'Intelligence',links:[['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum',()=>nav('/cab-forum')],['PKI Hub',()=>nav('/pki-hub')],['Trust Passport',()=>nav('/trust-passport')]]},{title:'Security',links:[['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']]},{title:'Protocol',links:[['RFC 8555','#security'],['DNS-01','#security'],['AES-256-GCM','#security']]},{title:'Company',links:[['About',()=>nav('/about')],['Contact',()=>nav('/contact')]]}].map(col=>(
               <div key={col.title}>
-                <div style={{fontSize:10,fontWeight:600,color:'rgba(255,255,255,0.35)',textTransform:'uppercase',letterSpacing:'0.07em',fontFamily:MONO,marginBottom:12}}>{col.title}</div>
+                <div style={{fontSize:10,fontWeight:600,color:'rgba(255,255,255,0.45)',textTransform:'uppercase',letterSpacing:'0.07em',fontFamily:MONO,marginBottom:12}}>{col.title}</div>
                 {col.links.map(([l,h])=>(
                   <div key={l} style={{marginBottom:8}}>
                     <button onClick={()=>typeof h==='function'?h():document.querySelector(h)?.scrollIntoView({behavior:'smooth'})}
-                      style={{background:'none',border:'none',cursor:'pointer',fontSize:12,color:'rgba(255,255,255,0.4)',fontFamily:F,padding:0,transition:'color .12s',textAlign:'left'}}
+                      style={{background:'none',border:'none',cursor:'pointer',fontSize:12,color:'rgba(255,255,255,0.55)',fontFamily:F,padding:0,transition:'color .12s',textAlign:'left'}}
                       onMouseEnter={e=>e.currentTarget.style.color='#ffffff'} onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.4)'}>{l}</button>
                   </div>
                 ))}

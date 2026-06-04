@@ -124,7 +124,7 @@ const WG_STYLE = {
   'S/MIME WG':      { color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
   'Code Signing WG':{ color:'#1f5c4e', bg:'rgba(239,68,68,0.08)', border:'rgba(0,0,0,0.1)' },
   'NetSec WG':      { color:'#111111', bg:'transparent', border:'rgba(31,92,78,0.2)' },
-  'Forum':          { color:'#888888', bg:'#000000', border:'rgba(30,0,0,0.5)' },
+  'Forum':          { color:'#888888', bg:'rgba(0,0,0,0.06)', border:'rgba(0,0,0,0.15)' },
 }
 const IMPACT_STYLE = {
   critical: { color:'#1f5c4e', bg:'rgba(31,92,78,0.09)', border:'rgba(0,0,0,0.1)' },
@@ -134,8 +134,8 @@ const IMPACT_STYLE = {
 function BallotRow({ b, onClick }) {
   const imp = b.impact_level ? IMPACT_STYLE[b.impact_level.toLowerCase()] : null
   const impLabel = b.impact_level === 'critical' ? 'Critical' : b.impact_level === 'high' ? 'High impact' : null
-  const st = STATUS_STYLE[(b.status||'').toLowerCase()] || { color:'#888888', bg:'#000000', border:'rgba(30,0,0,0.5)' }
-  const wg = WG_STYLE[b.working_group] || { color:'#888888', bg:'#000000', border:'rgba(30,0,0,0.5)' }
+  const st = STATUS_STYLE[(b.status||'').toLowerCase()] || { color:'#888888', bg:'rgba(0,0,0,0.06)', border:'rgba(0,0,0,0.15)' }
+  const wg = WG_STYLE[b.working_group] || { color:'#888888', bg:'rgba(0,0,0,0.06)', border:'rgba(0,0,0,0.15)' }
 
   return (
     <div onClick={() => onClick(b)} style={{
@@ -260,7 +260,7 @@ export default function CABForumNewsroom({ nav }) {
         .sync-bar { background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:7px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--v2-text-2);gap:12px;flex-wrap:wrap }
         .live-dot { display:inline-block;width:6px;height:6px;border-radius:50%;background:#22c55e;margin-right:5px;vertical-align:middle;animation:blink 2.4s infinite }
         @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-        .hero-band { background:var(--v2-border-focus,#0a0a0a);padding:32px 24px 28px;color:#ffffff }
+        .hero-band { background:#1f5c4e;padding:32px 24px 28px;color:#ffffff }
         .hero-eyebrow { font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase;font-weight:500;margin-bottom:8px }
         .hero-h1 { font-size:26px;font-weight:600;letter-spacing:-.4px;color:#ffffff;line-height:1.2;margin-bottom:10px }
         .hero-h1 em { color:#2a6b5c;font-style:normal }

@@ -129,13 +129,13 @@ const _build = 1779297041 // cache bust
   return (
     <div style={{
       opacity: transitioning ? 0 : 1,
-      transform: transitioning ? 'translateY(6px)' : 'translateY(0)',
+      transform: transitioning ? 'translateY(4px)' : 'translateY(0)',
       transition: transitioning
-        ? 'opacity 0.14s ease-in, transform 0.14s ease-in'
-        : 'opacity 0.22s cubic-bezier(.16,1,.3,1), transform 0.22s cubic-bezier(.16,1,.3,1)',
+        ? 'opacity 0.12s ease-in, transform 0.12s ease-in'
+        : 'opacity 0.18s ease-out, transform 0.18s ease-out',
       minHeight: '100vh',
       background: '#f4f1ec',
-      color: '#1a1a1a',
+      color: '#111111',
       fontFamily: "'Inter', system-ui, sans-serif",
       position: 'relative',
     }}>

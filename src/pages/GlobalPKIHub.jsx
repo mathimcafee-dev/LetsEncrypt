@@ -172,7 +172,7 @@ export default function GlobalPKIHub({ nav }) {
       <style>{`
         .hub-sync{background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:7px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--v2-text-2);gap:12px;flex-wrap:wrap}
         .hub-alert{background:var(--v2-amber-bg,#fde8e4);border-bottom:0.5px solid var(--v2-amber-border,#F2C4BC);padding:9px 24px;display:flex;align-items:center;gap:12px;font-size:12px;flex-wrap:wrap}
-        .hub-hero{background:transparent;padding:36px 24px 30px;color:#ffffff}
+        .hub-hero{background:#1f5c4e;padding:36px 24px 30px;color:#ffffff}
         .hub-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .hub-h1{font-size:28px;font-weight:600;letter-spacing:-.5px;color:#ffffff;line-height:1.15;margin-bottom:10px}
         .hub-h1 em{color:#2a6b5c;font-style:normal}

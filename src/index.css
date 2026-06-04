@@ -45,3 +45,6 @@
 .spinner-dark{border-color:rgba(31,92,78,0.15);border-top-color:var(--ws-teal)}
 nav{position:sticky;top:0;z-index:100;background:#ffffff;border-bottom:1px solid rgba(0,0,0,0.08)}
 .output-box{background:var(--ws-surface-2);border:1px solid var(--ws-line);border-radius:var(--ws-r-md);padding:12px;font-family:var(--ws-mono);font-size:11px;color:var(--ws-ink-2);word-break:break-all;white-space:pre-wrap;line-height:1.6}
+
+/* Smooth section transitions */
+section { transition: background .2s ease; }
