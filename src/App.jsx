@@ -54,6 +54,7 @@ import Infrastructure from './pages/Infrastructure'
 import CertChangelog from './pages/CertChangelog'
 import DomainManager from './pages/DomainManager'
 import Vault from './pages/Vault'
+import VaultBrainPage from './pages/VaultBrainPage'
 import AlertSettings from './pages/AlertSettings'
 import AlertHistory from './pages/AlertHistory'
 
@@ -203,6 +204,7 @@ const _build = 1779297041 // cache bust
       {page === '/cert-changelog' && <CertChangelog user={user} />}
       {page === '/domain-manager' && <DomainManager user={user} nav={nav} />}
       {page === '/vault' && <Vault nav={nav} />}
+      {page === '/vaultbrain' && <VaultBrainPage nav={nav} />}
       {page === '/alert-settings' && <AlertSettings nav={nav} />}
       {page === '/alerts' && <AlertHistory nav={nav} />}
     </div>

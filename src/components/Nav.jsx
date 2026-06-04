@@ -91,7 +91,7 @@ export default function Nav({ nav, page }) {
         {/* Desktop CTA */}
         {!sm && (
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
-            <button onClick={()=>nav('/dashboard')}
+            <button onClick={()=>nav('/vaultbrain')}
               style={{background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#0077b6',padding:'6px 13px',borderRadius:7,display:'flex',alignItems:'center',gap:5,transition:'all .12s'}}
               onMouseEnter={e=>{e.currentTarget.style.background='rgba(0,119,182,0.14)'}}
               onMouseLeave={e=>{e.currentTarget.style.background='rgba(0,119,182,0.08)'}}>
