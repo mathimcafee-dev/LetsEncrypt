@@ -70,7 +70,7 @@ function Card({children,style={}}) {
 }
 function Term({title,lines}) {
   return (
-    <div style={{background:'#111111',border:`1px solid rgba(0,0,0,0.1)`,borderRadius:8,overflow:'hidden',fontFamily:MONO}}>
+    <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',fontFamily:MONO,boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
       <div style={{background:'#f4f1ec',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:9,height:9,borderRadius:'50%',background:c,opacity:.85}}/>)}</div>
         <span style={{fontSize:10,color:'#888888',flex:1,textAlign:'center'}}>{title}</span>
@@ -122,7 +122,7 @@ function InventoryMockup() {
 
 function CertVaultMockup() {
   return (
-    <div style={{background:'#111111',border:`1px solid rgba(0,0,0,0.1)`,borderRadius:6,overflow:'hidden'}}>
+    <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
       <div style={{background:'#f4f1ec',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>CertVault · Private key vault</span>
@@ -147,7 +147,7 @@ function CertVaultMockup() {
             </div>
             <div style={{display:'flex',gap:5}}>
               {['Reveal key','Rotate','Audit log'].map(t=>(
-                <button key={t} style={{fontSize:10,padding:'4px 9px',borderRadius:3,border:`1px solid ${t==='Reveal key'?'rgba(31,92,78,0.4)':'rgba(0,0,0,0.07)'}`,background:t==='Reveal key'?'rgba(31,92,78,0.3)':'rgba(0,0,0,0.06)',color:t==='Reveal key'?'#16a068':'rgba(255,255,255,0.55)',cursor:'pointer',fontFamily:F}}>{t}</button>
+                <button key={t} style={{fontSize:10,padding:'4px 9px',borderRadius:3,border:`1px solid ${t==='Reveal key'?'rgba(31,92,78,0.3)':'rgba(0,0,0,0.1)'}`,background:t==='Reveal key'?'rgba(31,92,78,0.15)':'rgba(0,0,0,0.05)',color:t==='Reveal key'?'#16a068':'#666666',cursor:'pointer',fontFamily:F}}>{t}</button>
               ))}
             </div>
           </div>
@@ -160,7 +160,7 @@ function CertVaultMockup() {
 function ReadinessMockup() {
   const certs=[{d:'easysecurity.in',s:92,label:'Ready',c:GRN},{d:'api.shop.com',s:58,label:'At Risk',c:AMB},{d:'staging.portal.io',s:24,label:'Will Break',c:RED}]
   return (
-    <div style={{background:'#111111',border:`1px solid rgba(0,0,0,0.1)`,borderRadius:6,overflow:'hidden'}}>
+    <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
       <div style={{background:'#f4f1ec',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>47-Day Readiness · CA/B Forum</span>
@@ -505,7 +505,9 @@ export default function Home({ nav }) {
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
-              <Eyebrow>Security controls</Eyebrow>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+                <span style={{fontSize:10,fontWeight:700,color:'#1f5c4e',background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.18)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>SECURITY CONTROLS</span>
+              </div>
               <H2 style={{marginBottom:12,color:'#111111'}}>Enterprise PKI controls. Not an afterthought.</H2>
               <Body>CertVault and 47-Day Readiness are built into every account — not a paid add-on.</Body>
             </div>
@@ -657,7 +659,9 @@ export default function Home({ nav }) {
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
-              <Eyebrow>Industry Intelligence</Eyebrow>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+                <span style={{fontSize:10,fontWeight:700,color:'#1f5c4e',background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.18)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>INDUSTRY INTELLIGENCE</span>
+              </div>
               <H2 style={{marginBottom:12,maxWidth:520}}>The deepest PKI intelligence platform on the web.</H2>
               <Body style={{maxWidth:500}}>Not just a certificate manager — a living knowledge base covering every CA, standard, governance body, and cryptographic transition shaping the industry.</Body>
             </div>
@@ -713,7 +717,7 @@ export default function Home({ nav }) {
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:18}}>
-              <span style={{fontSize:10,fontWeight:600,color:RED,letterSpacing:'0.07em',textTransform:'uppercase',fontFamily:MONO,background:'rgba(192,57,43,0.07)',border:'1px solid rgba(192,57,43,0.12)',borderRadius:3,padding:'2px 9px'}}>Industry first</span>
+              <span style={{fontSize:10,fontWeight:600,color:'#1f5c4e',letterSpacing:'0.07em',textTransform:'uppercase',fontFamily:MONO,background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.18)',borderRadius:5,padding:'3px 10px'}}>Industry first</span>
               <span style={{fontSize:10,color:T3,letterSpacing:'0.05em',textTransform:'uppercase',fontFamily:MONO}}>No other CLM vendor has built this</span>
             </div>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:72,alignItems:'center',marginBottom:40}}>
@@ -821,24 +825,24 @@ export default function Home({ nav }) {
       <section style={{background:'#1f5c4e',padding:`clamp(64px,8vw,80px) ${P}`,borderTop:'none'}}>
         <div style={{maxWidth:560,margin:'0 auto',textAlign:'center'}}>
           <FadeUp>
-            <div style={{display:'inline-flex',alignItems:'center',gap:6,border:`1px solid ${LN}`,borderRadius:100,padding:'4px 12px',marginBottom:22,background:'rgba(0,0,0,0.02)'}}>
-              <span style={{width:5,height:5,borderRadius:'50%',background:'rgba(255,255,255,0.35)',animation:'blink 2.4s ease infinite'}}/>
-              <span style={{fontSize:11,color:T3,fontFamily:MONO}}>Production-ready · RFC 8555 · CA/B Forum 2026 compliant</span>
+            <div style={{display:'inline-flex',alignItems:'center',gap:6,border:'1px solid rgba(255,255,255,0.2)',borderRadius:100,padding:'5px 14px',marginBottom:24,background:'rgba(255,255,255,0.08)'}}>
+              <span style={{width:5,height:5,borderRadius:'50%',background:'#16a068',animation:'blink 2.4s ease infinite'}}/>
+              <span style={{fontSize:11,color:'rgba(255,255,255,0.7)',fontFamily:MONO,letterSpacing:'.05em'}}>Production-ready · RFC 8555 · CA/B Forum 2026</span>
             </div>
-            <h2 style={{fontSize:'clamp(22px,4vw,38px)',fontWeight:700,letterSpacing:'-0.8px',lineHeight:1.14,color:T1,marginBottom:14}}>
-              Ready to automate your<br/><span style={{color:T3}}>certificate lifecycle?</span>
+            <h2 style={{fontSize:'clamp(22px,4vw,38px)',fontWeight:700,letterSpacing:'-0.8px',lineHeight:1.14,color:'#ffffff',marginBottom:14}}>
+              Ready to automate your<br/><span style={{color:'rgba(255,255,255,0.45)'}}>certificate lifecycle?</span>
             </h2>
-            <p style={{fontSize:14,color:T2,lineHeight:1.75,maxWidth:420,margin:'0 auto 28px'}}>
+            <p style={{fontSize:14,color:'rgba(255,255,255,0.6)',lineHeight:1.75,maxWidth:420,margin:'0 auto 28px'}}>
               Issue, monitor, and auto-renew SSL certificates with enterprise-grade PKI controls — CertVault, 47-day readiness, and CA intelligence included.
             </p>
-            <div style={{display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap',marginBottom:22}}>
-              <BtnPrimary label="Start managing certs" onClick={()=>nav('/auth')}/>
-              <BtnGhost label="View pricing" onClick={()=>nav('/pricing')}/>
+            <div style={{display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap',marginBottom:28}}>
+              <button onClick={()=>nav('/auth')} style={{background:'#ffffff',border:'none',borderRadius:8,padding:'12px 26px',fontSize:13,fontWeight:700,color:'#1f5c4e',cursor:'pointer',fontFamily:F,transition:'all .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#f0ede7'} onMouseLeave={e=>e.currentTarget.style.background='#ffffff'}>Start managing certs →</button>
+              <button onClick={()=>nav('/pricing')} style={{background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.25)',borderRadius:8,padding:'12px 20px',fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.85)',cursor:'pointer',fontFamily:F,transition:'all .12s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.18)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}>View pricing</button>
             </div>
             <div style={{display:'flex',gap:18,justifyContent:'center',flexWrap:'wrap'}}>
               {['RapidSSL · DigiCert trust chain','RFC 8555 · AES-256-GCM','CA/B Forum 2026 ready'].map(t=>(
-                <span key={t} style={{fontSize:11,color:T3,display:'flex',alignItems:'center',gap:5}}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>{t}
+                <span key={t} style={{fontSize:11,color:'rgba(255,255,255,0.5)',display:'flex',alignItems:'center',gap:5}}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke='rgba(255,255,255,0.5)' strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>{t}
                 </span>
               ))}
             </div>
@@ -849,11 +853,11 @@ export default function Home({ nav }) {
       {/* ── FOOTER ── */}
       <footer style={{background:'#111111',borderTop:`1px solid rgba(255,255,255,0.08)`,padding:`clamp(36px,5vw,52px) ${P} clamp(22px,3vw,32px)`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
-          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:32,paddingBottom:24,borderBottom:`1px solid rgba(0,0,0,0.06)`}}>
-            <div style={{width:20,height:20,background:'rgba(0,0,0,0.07)',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke='#111111' strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:32,paddingBottom:24,borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+            <div style={{width:20,height:20,background:'rgba(255,255,255,0.12)',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke='#ffffff' strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <span style={{fontSize:13,fontWeight:600,color:'#111111'}}>SSLVault</span>
+            <span style={{fontSize:13,fontWeight:600,color:'#ffffff'}}>SSLVault</span>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.35)',fontFamily:MONO,marginLeft:4}}>PKI-first CLM · Built by a real PKI engineer</span>
           </div>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr 1fr':'repeat(auto-fill,minmax(140px,1fr))',gap:24,marginBottom:32}}>
