@@ -2737,27 +2737,27 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
             <>
             {/* ── MODERN HERO BANNER ── */}
             <div style={{
-              background: '#111111',
+              background: '#ffffff',
               border: '1px solid rgba(0,0,0,0.08)',
               borderRadius: 14, padding: '20px 24px', marginBottom: 14,
               display: 'flex', alignItems: 'center', gap: 20,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
               position: 'relative', overflow: 'hidden',
             }}>
               <div style={{ position:'absolute', top:-60, left:-60, width:200, height:200, borderRadius:'50%', background:`radial-gradient(circle, ${scoreColor}20 0%, transparent 70%)`, pointerEvents:'none' }}/>
               {/* Score ring */}
               <div style={{ flexShrink:0, position:'relative', width:80, height:80 }}>
                 <svg width="80" height="80" viewBox="0 0 80 80" style={{ transform:'rotate(-90deg)', position:'absolute', top:0, left:0 }}>
-                  <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="6"/>
+                  <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(31,92,78,0.1)" strokeWidth="6"/>
                   <circle cx="40" cy="40" r="33" fill="none" stroke={scoreColor} strokeWidth="6"
                     strokeDasharray={`${2*Math.PI*33}`}
                     strokeDashoffset={`${2*Math.PI*33*(1-postureScore/100)}`}
                     strokeLinecap="round"
-                    style={{ filter:`drop-shadow(0 0 5px ${scoreColor}66)`, transition:'stroke-dashoffset 1.2s ease' }}/>
+                    style={{ transition:'stroke-dashoffset 1.2s ease' }}/>
                 </svg>
                 <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
                   <div style={{ fontSize:18, fontWeight:800, color:scoreColor, lineHeight:1, letterSpacing:'-1px' }}>{postureScore}</div>
-                  <div style={{ fontSize:7, color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:'0.08em', marginTop:1 }}>score</div>
+                  <div style={{ fontSize:7, color:'#aaaaaa', textTransform:'uppercase', letterSpacing:'0.08em', marginTop:1 }}>score</div>
                 </div>
               </div>
               {/* Score details + bars */}
@@ -2765,14 +2765,14 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
                   <span style={{ fontSize:15, fontWeight:700, color:'#111111', letterSpacing:'-0.2px' }}>{scoreLabel}</span>
                   <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20, background:`${scoreColor}18`, color:scoreColor, border:`1px solid ${scoreColor}44` }}>{total} cert{total!==1?'s':''}</span>
-                  <span style={{ fontSize:10, color:'rgba(255,255,255,0.3)' }}>·</span>
-                  <span style={{ fontSize:10, color:'rgba(255,255,255,0.45)' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
+                  <span style={{ fontSize:10, color:'rgba(0,0,0,0.25)' }}>·</span>
+                  <span style={{ fontSize:10, color:'#888888' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', rowGap:3, columnGap:20 }}>
                   {bars.map(b => (
                     <div key={b.label} style={{ display:'flex', alignItems:'center', gap:6 }}>
-                      <span style={{ fontSize:9, color:'rgba(255,255,255,0.4)', width:52, flexShrink:0, textTransform:'uppercase', letterSpacing:'0.04em' }}>{b.label}</span>
-                      <div style={{ flex:1, height:2, background:'rgba(0,0,0,0.07)', borderRadius:1, overflow:'hidden' }}>
+                      <span style={{ fontSize:9, color:'#888888', width:52, flexShrink:0, textTransform:'uppercase', letterSpacing:'0.04em' }}>{b.label}</span>
+                      <div style={{ flex:1, height:2, background:'rgba(0,0,0,0.09)', borderRadius:1, overflow:'hidden' }}>
                         <div style={{ height:'100%', width:`${b.pct}%`, background:b.pct===100?b.color:'#1f5c4e', borderRadius:1, transition:'width 1s ease' }}/>
                       </div>
                       <span style={{ fontSize:9, color:b.pct===100?b.color:'#1f5c4e', width:22, textAlign:'right', flexShrink:0, fontWeight:600 }}>{b.pct}%</span>
@@ -2781,12 +2781,12 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 </div>
               </div>
               {/* Divider */}
-              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.07)', flexShrink:0 }}/>
+              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.09)', flexShrink:0 }}/>
               {/* Stat pills */}
               <div style={{ display:'flex', gap:8, flexShrink:0 }}>
                 {[
-                  { val:healthy, label:'Healthy', color:'#16a068', bg:'rgba(22,160,104,0.12)', border:'rgba(22,160,104,0.25)', onClick:()=>setFilter('healthy') },
-                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#fbbf24':pendingDcv>0?'#60a5fa':'rgba(255,255,255,0.3)', bg:'rgba(0,0,0,0.05)', border:'rgba(0,0,0,0.08)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
+                  { val:healthy, label:'Healthy', color:'#16a068', bg:'rgba(22,160,104,0.07)', border:'rgba(22,160,104,0.2)', onClick:()=>setFilter('healthy') },
+                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#9a6400':pendingDcv>0?'#1f5c4e':'#bbbbbb', bg:'rgba(0,0,0,0.03)', border:'rgba(0,0,0,0.08)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
                 ].map(s => (
                   <div key={s.label} onClick={s.onClick} style={{
                     background:s.bg, border:`1px solid ${s.border}`,
@@ -2795,24 +2795,24 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                   }}
                   onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.borderColor=s.color }}
                   onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.borderColor=s.border }}>
-                    <div style={{ fontSize:24, fontWeight:800, color:s.val>0?s.color:'#bbbbbb', lineHeight:1, letterSpacing:'-1px' }}>{s.val}</div>
-                    <div style={{ fontSize:9, color:'rgba(255,255,255,0.4)', marginTop:3, textTransform:'uppercase', letterSpacing:'0.05em' }}>{s.label}</div>
+                    <div style={{ fontSize:24, fontWeight:800, color:s.val>0?s.color:'#cccccc', lineHeight:1, letterSpacing:'-1px' }}>{s.val}</div>
+                    <div style={{ fontSize:9, color:'#888888', marginTop:3, textTransform:'uppercase', letterSpacing:'0.05em' }}>{s.label}</div>
                   </div>
                 ))}
               </div>
               {/* Divider */}
-              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.07)', flexShrink:0 }}/>
+              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.09)', flexShrink:0 }}/>
               {/* AI button */}
               <div onClick={()=>onOpenAI?.()} title="Ask VaultBrain AI" style={{
                 flexShrink:0, cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:3,
                 padding:'8px 10px', borderRadius:10,
-                border:'1px solid rgba(0,0,0,0.08)', background:'rgba(0,0,0,0.05)',
+                border:'1px solid rgba(0,0,0,0.09)', background:'rgba(31,92,78,0.05)',
                 transition:'background .15s, border-color .15s, transform .15s',
               }}
-              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(0,0,0,0.07)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; e.currentTarget.style.transform='scale(1.05)' }}
-              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor='rgba(0,0,0,0.08)'; e.currentTarget.style.transform='scale(1)' }}>
+              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(31,92,78,0.1)'; e.currentTarget.style.borderColor='rgba(31,92,78,0.3)'; e.currentTarget.style.transform='scale(1.05)' }}
+              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(31,92,78,0.05)'; e.currentTarget.style.borderColor='rgba(0,0,0,0.09)'; e.currentTarget.style.transform='scale(1)' }}>
                 <span style={{ fontSize:18 }}>🧠</span>
-                <span style={{ fontSize:8, color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:700 }}>AI</span>
+                <span style={{ fontSize:8, color:'#888888', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:700 }}>AI</span>
               </div>
             </div>
             </>
