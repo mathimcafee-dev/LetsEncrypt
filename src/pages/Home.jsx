@@ -125,23 +125,23 @@ function CertVaultMockup() {
     <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
       <div style={{background:'#f0f4fa',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:'1px solid rgba(255,255,255,0.12)'}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
-        <span style={{fontSize:10,color:'rgba(255,255,255,0.48)',fontFamily:MONO,flex:1,textAlign:'center'}}>CertVault · Private key vault</span>
+        <span style={{fontSize:10,color:'rgba(0,0,0,0.45)',fontFamily:MONO,flex:1,textAlign:'center'}}>CertVault · Private key vault</span>
       </div>
       <div style={{padding:'14px'}}>
-        <div style={{padding:'8px 10px',background:'#f0f4fa',border:'1px solid rgba(255,255,255,0.14)',borderRadius:4,marginBottom:10,fontSize:11,color:'rgba(255,255,255,0.72)',fontFamily:MONO}}>
+        <div style={{padding:'8px 10px',background:'#f0f4fa',border:'1px solid rgba(0,0,0,0.08)',borderRadius:4,marginBottom:10,fontSize:11,color:'rgba(0,0,0,0.55)',fontFamily:MONO}}>
           AES-256-GCM · Envelope encryption · Immutable audit
         </div>
         {[{d:'easysecurity.in',alg:'RSA-2048',last:'2h ago'},{d:'api.shop.com',alg:'EC-384',last:'Never'}].map((k,i)=>(
           <div key={k.d} style={{border:'1px solid rgba(0,0,0,0.07)',borderTop:'2px solid #0077b6',borderRadius:4,padding:'11px',marginBottom:i===0?6:0,background:'rgba(255,255,255,0.06)'}}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
               <span style={{fontSize:12,fontWeight:500,color:'#111111',fontFamily:MONO}}>{k.d}</span>
-              <span style={{fontSize:9,fontWeight:600,color:'rgba(255,255,255,0.48)',background:'#f0f4fa',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>🔒 VAULT SECURED</span>
+              <span style={{fontSize:9,fontWeight:600,color:'rgba(0,0,0,0.45)',background:'#f0f4fa',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>🔒 VAULT SECURED</span>
             </div>
             <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:5,marginBottom:9}}>
               {[['Algorithm',k.alg],['Rotations','2'],['Last access',k.last]].map(([l,v])=>(
                 <div key={l} style={{background:'#f0f4fa',borderRadius:3,padding:'5px 7px'}}>
-                  <div style={{fontSize:9,color:'rgba(255,255,255,0.48)',textTransform:'uppercase',letterSpacing:'0.3px',marginBottom:2}}>{l}</div>
-                  <div style={{fontSize:11,fontWeight:500,color:'#ffffff',fontFamily:MONO}}>{v}</div>
+                  <div style={{fontSize:9,color:'rgba(0,0,0,0.45)',textTransform:'uppercase',letterSpacing:'0.3px',marginBottom:2}}>{l}</div>
+                  <div style={{fontSize:11,fontWeight:500,color:'#111111',fontFamily:MONO}}>{v}</div>
                 </div>
               ))}
             </div>
@@ -163,20 +163,20 @@ function ReadinessMockup() {
     <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
       <div style={{background:'#f0f4fa',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:'1px solid rgba(255,255,255,0.12)'}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
-        <span style={{fontSize:10,color:'rgba(255,255,255,0.48)',fontFamily:MONO,flex:1,textAlign:'center'}}>47-Day Readiness · CA/B Forum</span>
+        <span style={{fontSize:10,color:'rgba(0,0,0,0.45)',fontFamily:MONO,flex:1,textAlign:'center'}}>47-Day Readiness · CA/B Forum</span>
       </div>
       <div style={{padding:'12px'}}>
         <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:5,marginBottom:10}}>
           {[{d:'Mar 2026',v:'200d',c:RED},{d:'Mar 2027',v:'100d',c:AMB},{d:'Mar 2029',v:'47d',c:GRN}].map(m=>(
-            <div key={m.d} style={{padding:'8px',borderRadius:4,background:'#f0f4fa',border:'1px solid rgba(255,255,255,0.14)'}}>
+            <div key={m.d} style={{padding:'8px',borderRadius:4,background:'#f0f4fa',border:'1px solid rgba(0,0,0,0.08)'}}>
               <div style={{fontSize:9.5,fontWeight:600,color:m.c,marginBottom:2,fontFamily:MONO}}>{m.d}</div>
               <div style={{fontSize:18,fontWeight:700,color:m.c,fontFamily:MONO}}>{m.v}</div>
-              <div style={{fontSize:9,color:'rgba(255,255,255,0.48)'}}>max validity</div>
+              <div style={{fontSize:9,color:'rgba(0,0,0,0.45)'}}>max validity</div>
             </div>
           ))}
         </div>
         {certs.map(c=>(
-          <div key={c.d} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',borderRadius:4,background:'#ffffff',marginBottom:5,border:'1px solid rgba(255,255,255,0.14)'}}>
+          <div key={c.d} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',borderRadius:4,background:'#ffffff',marginBottom:5,border:'1px solid rgba(0,0,0,0.08)'}}>
             <div style={{position:'relative',width:32,height:32,flexShrink:0}}>
               <svg width="32" height="32" viewBox="0 0 36 36">
                 <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="3"/>
@@ -185,8 +185,8 @@ function ReadinessMockup() {
               <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:700,color:c.c}}>{c.s}</div>
             </div>
             <div style={{flex:1}}>
-              <div style={{fontSize:11,fontWeight:500,color:'#ffffff',fontFamily:MONO}}>{c.d}</div>
-              <div style={{fontSize:10,color:'rgba(255,255,255,0.45)'}}>Automation checklist</div>
+              <div style={{fontSize:11,fontWeight:500,color:'#111111',fontFamily:MONO}}>{c.d}</div>
+              <div style={{fontSize:10,color:'rgba(0,0,0,0.45)'}}>Automation checklist</div>
             </div>
             <span style={{fontSize:10,fontWeight:500,color:c.c,background:c.c+'18',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>{c.label}</span>
           </div>
@@ -551,9 +551,9 @@ export default function Home({ nav }) {
                 <Body style={{marginBottom:20}}>When issuing or renewing, SSLVault calls your DNS provider API to add the ACME challenge record, polls for propagation, validates, then cleans up — fully automatic.</Body>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
                   {[['Cloudflare','API Token · Zone:DNS:Edit'],['Vercel','Access Token · Settings → Tokens'],['Route53','AWS IAM · Route53 write access'],['Namecheap','API Key · IP whitelist required'],['GoDaddy','API Key + Secret'],['DigitalOcean','Personal Access Token'],['Plesk','XML API'],['+ more','Contact us']].map(([name,note])=>(
-                    <div key={name} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#f0f4fa',border:'1px solid rgba(255,255,255,0.14)',borderRadius:6}}>
+                    <div key={name} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#f0f4fa',border:'1px solid rgba(0,0,0,0.08)',borderRadius:6}}>
                       <div style={{width:4,height:4,borderRadius:'50%',background:T3,flexShrink:0}}/>
-                      <div><div style={{fontSize:12,fontWeight:500,color:'#111111'}}>{name}</div><div style={{fontSize:10.5,color:'rgba(255,255,255,0.48)',fontFamily:MONO}}>{note}</div></div>
+                      <div><div style={{fontSize:12,fontWeight:500,color:'#111111'}}>{name}</div><div style={{fontSize:10.5,color:'rgba(0,0,0,0.45)',fontFamily:MONO}}>{note}</div></div>
                     </div>
                   ))}
                 </div>
