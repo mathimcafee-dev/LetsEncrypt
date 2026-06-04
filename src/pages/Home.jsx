@@ -645,27 +645,31 @@ export default function Home({ nav }) {
               <Body>Eight core capability areas — built, not bolted on.</Body>
             </div>
           </FadeUp>
-          <div style={{display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:12}}>
-            {[{icon:'⚡',title:'Certificate issuance',specs:['DV, OV, EV, Wildcard, SAN','RapidSSL · DigiCert trust chain','ACME v2 · RFC 8555','Issued in < 5 minutes'],badge:'ACME v2'},
-              {icon:'🤖',title:'VPS persistent agent',specs:['systemd daemon · polls every 60s','Nginx + Apache auto-detect','Config test before reload','Cron dispatches jobs every 2 min'],badge:'systemd'},
-              {icon:'🌐',title:'DNS automation',specs:['Cloudflare · Vercel · Route53','Namecheap · GoDaddy · DigitalOcean','Auto TXT/CNAME challenge','Cleanup after DCV completes'],badge:'DNS-01'},
-              {icon:'🏛',title:'cPanel auto-install',specs:['UAPI-based installation','No SSH or agent required','API token auth','Cron auto-installs within 2 min'],badge:'UAPI'},
-              {icon:'🔐',title:'CertVault',specs:['AES-256-GCM · envelope encryption','Password re-auth before reveal','30-day rotation archive','Immutable audit log → CSV'],badge:'AES-256'},
-              {icon:'📋',title:'47-day readiness',specs:['Scores every cert 0–100','200d → 100d → 47d timeline','Per-cert automation checklist','Fleet-wide compliance report'],badge:'CA/B 2026'},
-              {icon:'🔍',title:'Discovery & monitoring',specs:['CT log scan via crt.sh','CT abuse monitor — unknown CAs','SSL health score A+ to F','HSTS · CAA · TLS 1.3 checks'],badge:'CT Logs'},
-              {icon:'📈',title:'CA intelligence',specs:['GoGetSSL · RapidSSL · DigiCert chain','cPanel + VPS agent auto-install','Zero-touch renewal pipeline','Fleet expiry & compliance view'],badge:'Multi-CA'},
-              {icon:'🏛',title:'Industry Intelligence',specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker'],badge:'PKI Hub'},
-              {icon:'🔬',title:'CA Trust Store',specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm','CSV export · PEM download'],badge:'CCADB'},
+          <div style={{display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:10}}>
+            {[{icon:'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',title:'Certificate issuance',specs:['DV, OV, EV, Wildcard, SAN','RapidSSL · DigiCert trust chain','ACME v2 · RFC 8555','Issued in < 5 minutes'],badge:'ACME v2'},
+              {icon:'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v10m0 0H5a2 2 0 00-2 2v4a2 2 0 002 2h4m0-8h10a2 2 0 012 2v4a2 2 0 01-2 2H9m0-8v6',title:'VPS persistent agent',specs:['systemd daemon · polls every 60s','Nginx + Apache auto-detect','Config test before reload','Cron dispatches jobs every 2 min'],badge:'systemd'},
+              {icon:'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9',title:'DNS automation',specs:['Cloudflare · Vercel · Route53','Namecheap · GoDaddy · DigitalOcean','Auto TXT/CNAME challenge','Cleanup after DCV completes'],badge:'DNS-01'},
+              {icon:'M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2',title:'cPanel auto-install',specs:['UAPI-based installation','No SSH or agent required','API token auth','Cron auto-installs within 2 min'],badge:'UAPI'},
+              {icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',title:'CertVault',specs:['AES-256-GCM · envelope encryption','Password re-auth before reveal','30-day rotation archive','Immutable audit log → CSV'],badge:'AES-256'},
+              {icon:'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z',title:'47-day readiness',specs:['Scores every cert 0–100','200d → 100d → 47d timeline','Per-cert automation checklist','Fleet-wide compliance report'],badge:'CA/B 2026'},
+              {icon:'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',title:'Discovery & monitoring',specs:['CT log scan via crt.sh','CT abuse monitor — unknown CAs','SSL health score A+ to F','HSTS · CAA · TLS 1.3 checks'],badge:'CT Logs'},
+              {icon:'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',title:'CA intelligence',specs:['GoGetSSL · RapidSSL · DigiCert chain','cPanel + VPS agent auto-install','Zero-touch renewal pipeline','Fleet expiry & compliance view'],badge:'Multi-CA'},
+              {icon:'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064',title:'Industry Intelligence',specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker'],badge:'PKI Hub'},
+              {icon:'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',title:'CA Trust Store',specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm','CSV export · PEM download'],badge:'CCADB'},
             ].map(f=>(
-              <div key={f.title} style={{background:'rgba(255,255,255,0.1)',padding:'20px',border:'1px solid rgba(255,255,255,0.2)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.1)',display:'flex',flexDirection:'column',gap:0}}>
-                <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:10}}>
-                  <span style={{fontSize:22}}>{f.icon}</span>
-                  <span style={{fontSize:9,fontWeight:800,color:'#0077b6',background:'#ffffff',border:'none',borderRadius:4,padding:'2px 7px',letterSpacing:'.06em',fontFamily:MONO}}>{f.badge}</span>
+              <div key={f.title} style={{background:'#0f1923',padding:'16px',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,display:'flex',flexDirection:'column',gap:0,transition:'border-color .15s'}}
+                onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(61,191,176,0.3)'}
+                onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.07)'}>
+                <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:12}}>
+                  <div style={{width:30,height:30,borderRadius:7,background:'rgba(61,191,176,0.1)',border:'1px solid rgba(61,191,176,0.2)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3dbfb0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={f.icon}/></svg>
+                  </div>
+                  <span style={{fontSize:9,fontWeight:700,color:'#3dbfb0',background:'rgba(61,191,176,0.1)',border:'1px solid rgba(61,191,176,0.2)',borderRadius:20,padding:'2px 8px',letterSpacing:'.06em',fontFamily:MONO}}>{f.badge}</span>
                 </div>
-                <div style={{fontSize:13,fontWeight:700,color:'#ffffff',marginBottom:10,letterSpacing:'-.01em'}}>{f.title}</div>
-                {f.specs.map(s=><div key={s} style={{display:'flex',alignItems:'flex-start',gap:7,marginBottom:5}}>
-                  <span style={{color:'rgba(255,255,255,0.3)',fontSize:11,marginTop:2,flexShrink:0,fontWeight:600}}>—</span>
-                  <span style={{fontSize:12,color:'rgba(255,255,255,0.65)',lineHeight:1.55}}>{s}</span>
+                <div style={{fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.9)',marginBottom:10}}>{f.title}</div>
+                {f.specs.map(s=><div key={s} style={{display:'flex',alignItems:'flex-start',gap:7,marginBottom:4}}>
+                  <span style={{color:'rgba(61,191,176,0.5)',fontSize:10,marginTop:3,flexShrink:0}}>›</span>
+                  <span style={{fontSize:11,color:'rgba(255,255,255,0.5)',lineHeight:1.55}}>{s}</span>
                 </div>)}
               </div>
             ))}
@@ -833,48 +837,69 @@ export default function Home({ nav }) {
               <Body style={{maxWidth:500}}>Not just a certificate manager — a living knowledge base covering every CA, standard, governance body, and cryptographic transition shaping the industry.</Body>
             </div>
           </FadeUp>
-          <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:16,marginBottom:16}}>
-            {[{icon:'🏛',title:'CA Trust Store',sub:'6,200+ root & intermediate CAs',desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert.',badge:'CCADB Live',path:'/ca-trust-explorer',stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']]},{icon:'⚖️',title:'CAB Forum Intelligence',sub:'Ballots, timelines & compliance',desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',badge:'Live sync',path:'/cab-forum',stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']]},{icon:'🌍',title:'Global PKI Hub',sub:'12 bodies · 22 standards · PQC tracker',desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',badge:'PQC Ready',path:'/pki-hub',stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']]}].map(item=>(
-              <div key={item.title} onClick={()=>nav(item.path)} style={{background:'rgba(255,255,255,0.1)',padding:'22px',cursor:'pointer',transition:'all .12s',height:'100%',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(255,255,255,0.2)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.1)'}}
-                  onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.18)';e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'}} onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.1)';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'}}>
-                  <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
-                    <span style={{fontSize:26}}>{item.icon}</span>
-                    <Tag>{item.badge}</Tag>
+          <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:12,marginBottom:12}}>
+            {[{icon:'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',title:'CA Trust Store',sub:'6,200+ root & intermediate CAs',desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert.',badge:'CCADB Live',path:'/ca-trust-explorer',stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']]},
+              {icon:'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3',title:'CAB Forum Intelligence',sub:'Ballots, timelines & compliance',desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',badge:'Live sync',path:'/cab-forum',stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']]},
+              {icon:'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064',title:'Global PKI Hub',sub:'12 bodies · 22 standards · PQC tracker',desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',badge:'PQC Ready',path:'/pki-hub',stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']]}
+            ].map(item=>(
+              <div key={item.title} onClick={()=>nav(item.path)} style={{background:'#0f1923',cursor:'pointer',transition:'all .15s',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,overflow:'hidden'}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(61,191,176,0.35)';e.currentTarget.style.transform='translateY(-2px)'}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.07)';e.currentTarget.style.transform='none'}}>
+                {/* Card header */}
+                <div style={{background:'#1a2533',padding:'10px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                  <div style={{width:28,height:28,borderRadius:7,background:'rgba(61,191,176,0.1)',border:'1px solid rgba(61,191,176,0.2)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3dbfb0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={item.icon}/></svg>
                   </div>
-                  <div>
-                    <div style={{fontSize:13,fontWeight:600,color:'#ffffff',marginBottom:3}}>{item.title}</div>
-                    <div style={{fontSize:10.5,color:'rgba(255,255,255,0.5)',fontFamily:MONO,marginBottom:9}}>{item.sub}</div>
-                    <div style={{fontSize:12,color:'rgba(255,255,255,0.65)',lineHeight:1.7}}>{item.desc}</div>
-                  </div>
-                  <div style={{display:'flex',borderTop:'1px solid rgba(255,255,255,0.15)',paddingTop:12,marginTop:'auto'}}>
+                  <span style={{fontSize:9,fontWeight:700,color:'#3dbfb0',background:'rgba(61,191,176,0.1)',border:'1px solid rgba(61,191,176,0.2)',borderRadius:20,padding:'2px 8px',letterSpacing:'.06em',fontFamily:MONO}}>{item.badge}</span>
+                </div>
+                {/* Content */}
+                <div style={{padding:'0 14px',flex:1}}>
+                  <div style={{fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.9)',marginBottom:3}}>{item.title}</div>
+                  <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,marginBottom:9}}>{item.sub}</div>
+                  <div style={{fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.7}}>{item.desc}</div>
+                </div>
+                {/* Stats + explore */}
+                <div style={{padding:'10px 14px',borderTop:'1px solid rgba(255,255,255,0.05)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <div style={{display:'flex',gap:16}}>
                     {item.stats.map(([val,label],i)=>(
-                      <div key={label} style={{flex:1,paddingLeft:i>0?12:0,borderLeft:i>0?'1px solid rgba(255,255,255,0.15)':'none',marginLeft:i>0?12:0}}>
-                        <div style={{fontSize:12,fontWeight:600,color:'#ffffff',fontFamily:MONO,marginBottom:1}}>{val}</div>
-                        <div style={{fontSize:10,color:'rgba(255,255,255,0.48)'}}>{label}</div>
+                      <div key={label}>
+                        <div style={{fontSize:12,fontWeight:600,color:'rgba(255,255,255,0.85)',fontFamily:MONO}}>{val}</div>
+                        <div style={{fontSize:9,color:'rgba(255,255,255,0.3)'}}>{label}</div>
                       </div>
                     ))}
                   </div>
-                  <div style={{fontSize:11,color:'rgba(255,255,255,0.48)'}}>Explore →</div>
+                  <span style={{fontSize:11,color:'rgba(61,191,176,0.7)',fontFamily:MONO}}>Explore →</span>
+                </div>
               </div>
             ))}
           </div>
           <FadeUp>
-            <Card style={{display:'flex',gap:16,alignItems:'flex-start',flexWrap:'wrap'}}>
-              <span style={{fontSize:22,flexShrink:0}}>⚛️</span>
-              <div style={{flex:1,minWidth:240}}>
-                <div style={{fontSize:13,fontWeight:700,color:'#ffffff',marginBottom:4}}>Post-Quantum Cryptography migration tracker — live</div>
-                <div style={{fontSize:12,color:'rgba(255,255,255,0.65)',lineHeight:1.7}}>NIST finalised ML-KEM (FIPS 203), ML-DSA (FIPS 204), and SLH-DSA (FIPS 205) in August 2024. The PKI Hub tracks every body's PQC readiness — from IETF LAMPS WG certificate profiles to ETSI EN 319 updates.</div>
+            <div style={{background:'#0f1923',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,overflow:'hidden'}}>
+              <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:7,height:7,borderRadius:'50%',background:c}}/>)}</div>
+                <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1,textAlign:'center'}}>Post-Quantum Cryptography · migration tracker</span>
+                <span style={{fontSize:9,color:'#3dbfb0',fontFamily:MONO,display:'flex',alignItems:'center',gap:4}}><div style={{width:5,height:5,borderRadius:'50%',background:'#3dbfb0'}}/>Live</span>
               </div>
-              <div style={{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center',flexShrink:0}}>
-                {[['ML-KEM','FIPS 203'],['ML-DSA','FIPS 204'],['SLH-DSA','FIPS 205']].map(([alg,fips])=>(
-                  <div key={alg} style={{background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.2)',borderRadius:4,padding:'6px 10px',textAlign:'center'}}>
-                    <div style={{fontSize:11,fontWeight:600,color:'#ffffff',fontFamily:MONO}}>{alg}</div>
-                    <div style={{fontSize:9.5,color:'rgba(255,255,255,0.48)',marginTop:1}}>{fips}</div>
-                  </div>
-                ))}
-                <button onClick={()=>nav('/pki-hub')} style={{background:'#0077b6',border:'none',borderRadius:4,padding:'7px 14px',fontSize:12,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:F,transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#0091d6'} onMouseLeave={e=>e.currentTarget.style.background='#0077b6'}>View PQC tracker →</button>
+              <div style={{padding:'16px 18px',display:'flex',gap:20,alignItems:'flex-start',flexWrap:'wrap'}}>
+                <div style={{flex:1,minWidth:240}}>
+                  <div style={{fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.9)',marginBottom:6}}>Post-Quantum Cryptography migration tracker — live</div>
+                  <div style={{fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.7}}>NIST finalised ML-KEM (FIPS 203), ML-DSA (FIPS 204), and SLH-DSA (FIPS 205) in August 2024. The PKI Hub tracks every body's PQC readiness — from IETF LAMPS WG certificate profiles to ETSI EN 319 updates.</div>
+                </div>
+                <div style={{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center',flexShrink:0}}>
+                  {[['ML-KEM','FIPS 203'],['ML-DSA','FIPS 204'],['SLH-DSA','FIPS 205']].map(([alg,fips])=>(
+                    <div key={alg} style={{background:'rgba(61,191,176,0.08)',border:'1px solid rgba(61,191,176,0.2)',borderRadius:7,padding:'7px 10px',textAlign:'center'}}>
+                      <div style={{fontSize:11,fontWeight:600,color:'#3dbfb0',fontFamily:MONO}}>{alg}</div>
+                      <div style={{fontSize:9,color:'rgba(255,255,255,0.35)',marginTop:2}}>{fips}</div>
+                    </div>
+                  ))}
+                  <button onClick={()=>nav('/pki-hub')} style={{background:'#0077b6',border:'none',borderRadius:8,padding:'8px 14px',fontSize:12,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:F,transition:'background .12s'}}
+                    onMouseEnter={e=>e.currentTarget.style.background='#0091d6'}
+                    onMouseLeave={e=>e.currentTarget.style.background='#0077b6'}>
+                    View PQC tracker →
+                  </button>
+                </div>
               </div>
-            </Card>
+            </div>
           </FadeUp>
         </div>
       </section>
@@ -944,11 +969,11 @@ export default function Home({ nav }) {
             <div style={{borderTop:'1px solid rgba(255,255,255,0.12)',paddingTop:32}}>
               <div style={{fontSize:10,color:'rgba(255,255,255,0.48)',fontFamily:MONO,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:16,textAlign:'center',fontWeight:500}}>Real-world failures CertBind prevents</div>
               <div style={{display:'grid',gridTemplateColumns:`repeat(${isMobile?1:3},1fr)`,gap:8}}>
-                {[{status:'key_mismatch',color:RED,bg:'rgba(248,113,113,0.05)',bd:'rgba(248,113,113,0.12)',title:'The Zombie Certificate',scenario:'Nginx renewed cert automatically. But a config change six months ago redirected nginx to a backup key from a previous issuance. CLM shows green. Browser shows valid. The cert and key are from different issuances.',impact:'$11M average PKI outage cost · undetected for months in typical orgs'},{status:'partial_deploy',color:AMB,bg:'rgba(251,191,36,0.05)',bd:'rgba(251,191,36,0.12)',title:'The Phantom Install',scenario:'New cert deployed to 4 of 7 load balancer nodes. The other 3 are still running the cert that expires in 4 days. CLM shows the cert was issued and installed. It has no idea about the other 3 nodes.',impact:'#1 cause of PKI-related outages in enterprises · usually found by customers first'},{status:'chain_anomaly',color:'#a78bfa',bg:'rgba(167,139,250,0.05)',bd:'rgba(167,139,250,0.12)',title:'The Silent Swap',scenario:"Enterprise Palo Alto proxy is SSL-inspecting traffic to your API server. Every TLS connection is being decrypted, inspected, and re-encrypted with the proxy's internal CA. Your CLM doesn't know.",impact:'Affects every enterprise with SSL inspection · invisible to all other CLM tools'}].map(s=>(
-                  <div key={s.title} style={{background:s.bg,border:`1px solid ${s.bd}`,borderRadius:6,padding:'16px'}}>
-                    <div style={{fontSize:9.5,fontWeight:700,color:s.color,fontFamily:MONO,letterSpacing:'0.05em',marginBottom:8}}>{s.status.toUpperCase()}</div>
-                    <div style={{fontSize:13,fontWeight:600,color:'#ffffff',marginBottom:8}}>{s.title}</div>
-                    <div style={{fontSize:12,color:'rgba(255,255,255,0.65)',lineHeight:1.75,marginBottom:9}}>{s.scenario}</div>
+                {[{status:'key_mismatch',color:'#e74c3c',title:'The Zombie Certificate',scenario:'Nginx renewed cert automatically. But a config change six months ago redirected nginx to a backup key from a previous issuance. CLM shows green. Browser shows valid. The cert and key are from different issuances.',impact:'$11M average PKI outage cost · undetected for months in typical orgs'},{status:'partial_deploy',color:'#f39c12',title:'The Phantom Install',scenario:'New cert deployed to 4 of 7 load balancer nodes. The other 3 are still running the cert that expires in 4 days. CLM shows the cert was issued and installed. It has no idea about the other 3 nodes.',impact:'#1 cause of PKI-related outages in enterprises · usually found by customers first'},{status:'chain_anomaly',color:'#a78bfa',title:'The Silent Swap',scenario:"Enterprise Palo Alto proxy is SSL-inspecting traffic to your API server. Every TLS connection is being decrypted, inspected, and re-encrypted with the proxy's internal CA. Your CLM doesn't know.",impact:'Affects every enterprise with SSL inspection · invisible to all other CLM tools'}].map(s=>(
+                  <div key={s.title} style={{background:'#0f1923',border:`1px solid ${s.color}22`,borderRadius:10,padding:'16px',borderTop:`2px solid ${s.color}`}}>
+                    <div style={{fontSize:9,fontWeight:700,color:s.color,fontFamily:MONO,letterSpacing:'.07em',marginBottom:10,textTransform:'uppercase'}}>{s.status}</div>
+                    <div style={{fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.9)',marginBottom:8}}>{s.title}</div>
+                    <div style={{fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.75,marginBottom:10}}>{s.scenario}</div>
                     <div style={{fontSize:11,fontWeight:500,color:s.color,lineHeight:1.5}}>{s.impact}</div>
                   </div>
                 ))}
@@ -980,18 +1005,21 @@ export default function Home({ nav }) {
               </div>
             </FadeUp>
             <FadeUp delay={80}>
-              <div style={{display:'flex',flexDirection:'column',gap:5}}>
+              <div style={{display:'flex',flexDirection:'column',gap:6}}>
                 {[{name:'Venafi TLS Protect',price:'$250k+/yr',notes:'Enterprise only · No cert issuance · No cPanel',hi:false},{name:'Keyfactor Command',price:'$75–200k/yr',notes:'Mid-market · Complex setup · No free tier',hi:false},{name:'SSLVault CLM',price:'Partner rates',notes:'Full CLM · Agent + cPanel + DNS · All cert types',hi:true}].map(c=>(
-                  <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(255,255,255,0.2)':'rgba(255,255,255,0.08)',border:`1px solid ${c.hi?'rgba(255,255,255,0.45)':'rgba(255,255,255,0.15)'}`,borderRadius:8}}>
-                    <div style={{flex:1}}><div style={{fontSize:12,fontWeight:c.hi?700:500,color:'#ffffff'}}>{c.name}</div><div style={{fontSize:11,color:'rgba(255,255,255,0.48)',marginTop:2}}>{c.notes}</div></div>
-                    <div style={{fontSize:13,fontWeight:c.hi?700:400,color:c.hi?'#ffffff':'rgba(255,255,255,0.5)',fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
+                  <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(61,191,176,0.08)':'rgba(255,255,255,0.03)',border:`1px solid ${c.hi?'rgba(61,191,176,0.3)':'rgba(255,255,255,0.07)'}`,borderRadius:9,borderLeft:c.hi?`3px solid #3dbfb0`:'3px solid transparent'}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:12,fontWeight:c.hi?600:400,color:c.hi?'rgba(255,255,255,0.95)':'rgba(255,255,255,0.6)'}}>{c.name}</div>
+                      <div style={{fontSize:10,color:'rgba(255,255,255,0.3)',marginTop:2,fontFamily:MONO}}>{c.notes}</div>
+                    </div>
+                    <div style={{fontSize:13,fontWeight:c.hi?700:400,color:c.hi?'#3dbfb0':'rgba(255,255,255,0.35)',fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
                   </div>
                 ))}
-                <div style={{marginTop:5,display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
-                  {[['DigiCert','Trust chain · 99.9% browser'],['RapidSSL','CA partner · wholesale pricing'],['RFC 8555','ACME v2 · no lock-in'],['AES-256','Military-grade key storage'],['GDPR','Netherlands-based PKI engineer 🇳🇱'],['No ads','No tracking · no reselling']].map(([val,sub])=>(
-                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.18)',borderRadius:6,alignItems:'center'}}>
-                      <div style={{fontSize:11,fontWeight:500,color:'#ffffff',fontFamily:MONO,minWidth:65}}>{val}</div>
-                      <div style={{fontSize:10.5,color:'rgba(255,255,255,0.48)',lineHeight:1.4}}>{sub}</div>
+                <div style={{marginTop:6,display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(260px,100%),1fr))',gap:4}}>
+                  {[['DigiCert','Trust chain · 99.9% browser'],['RapidSSL','CA partner · wholesale pricing'],['RFC 8555','ACME v2 · no lock-in'],['AES-256','Military-grade key storage'],['GDPR','Netherlands-based PKI engineer'],['No ads','No tracking · no reselling']].map(([val,sub])=>(
+                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'#0f1923',border:'1px solid rgba(255,255,255,0.06)',borderRadius:7,alignItems:'center'}}>
+                      <div style={{fontSize:10,fontWeight:600,color:'#3dbfb0',fontFamily:MONO,minWidth:58}}>{val}</div>
+                      <div style={{fontSize:10,color:'rgba(255,255,255,0.4)',lineHeight:1.4}}>{sub}</div>
                     </div>
                   ))}
                 </div>
