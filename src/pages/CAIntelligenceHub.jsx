@@ -10,6 +10,7 @@ import {
   Clock, Globe, Eye, EyeOff, Lock, AlertTriangle, DollarSign, Check, X, AlertCircle
 } from 'lucide-react'
 import '../styles/design-v2.css'
+import PageHero from '../components/PageHero'
 
 const FN_CA     = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/ca-intelligence'
 const FN_IMPORT = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/ca-import'
@@ -1665,71 +1666,52 @@ export default function CAIntelligenceHub({ nav }) {
   const active = TABS.find(t=>t.id===tab)
 
   return (
-    <div className="v2-page">
+    <div className="v2-page" style={{fontFamily:'inherit'}}>
       <style>{`
         @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
         @keyframes capulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(2.8);opacity:0}}
-        .pki-tab{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;background:none;border:none;border-radius:8px 8px 0 0;transition:all .18s;color:#b0a8a0;border-bottom:2.5px solid transparent;white-space:nowrap}
-        .pki-tab:hover{color:#fff;background:rgba(0,0,0,0.04)}
-        .pki-tab.on{font-weight:700;border-bottom-color:var(--tc);color:var(--tc);background:var(--tb)}
-        .pki-count{font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;background:rgba(0,0,0,0.06);transition:all .18s}
-        .pki-tab.on .pki-count{background:var(--tb);color:var(--tc)}
+        .pki-tab{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;background:none;border:none;border-bottom:2px solid transparent;transition:all .15s;color:#666;white-space:nowrap}
+        .pki-tab:hover{color:#111}
+        .pki-tab.on{font-weight:600;border-bottom-color:#0077b6;color:#0077b6}
+        .pki-count{font-size:10px;font-weight:500;padding:1px 7px;border-radius:20px;background:#f0f4fa;color:#666;transition:all .15s}
+        .pki-tab.on .pki-count{background:#0077b6;color:#fff}
       `}</style>
 
-      <div className="v2-container" style={{ maxWidth:1100, paddingTop:8, paddingBottom:60 }}>
-
-        {/* ── Page header ── */}
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, flexWrap:'wrap', gap:12 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <div style={{ width:40, height:40, borderRadius:10, background:'#0077b6', display:'flex', alignItems:'center', justifyContent:'center', position:'relative' }}>
-              <div style={{ position:'absolute', inset:-3, borderRadius:13, border:'1px solid rgba(0,119,182,0.25)' }}/>
-              <Activity size={19} color="white"/>
-            </div>
-            <div>
-              <h1 className="v2-h1" style={{ fontSize:20, marginBottom:2 }}>PKI Intelligence</h1>
-              <p style={{ fontSize:11, color:'#888888', margin:0 }}>Unified visibility across {live.caCount} of 3 CAs · {live.total} certificates tracked</p>
-            </div>
+      <PageHero
+        eyebrow="SSLVault · CA Intelligence"
+        title="PKI Intelligence"
+        subtitle={`Unified visibility across ${live.caCount} of 3 CAs · ${live.total} certificates tracked`}
+        stats={[{n:live.total||0,l:'Total certs'},{n:live.healthy||0,l:'Healthy'},{n:live.exp30||0,l:'Expiring soon'},{n:'3',l:'CA integrations'}]}
+        tags={['GoGetSSL · RapidSSL · DigiCert','CCADB indexed','47-day ready','Auto-renew','CA/B Forum 2026']}
+        syncBar={null}
+        alertBar={live.exp30>0?(
+          <div style={{background:'rgba(243,156,18,0.1)',borderBottom:'1px solid rgba(243,156,18,0.25)',padding:'9px 24px',display:'flex',alignItems:'center',gap:10,fontSize:12,color:'#e67e22',fontWeight:500}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            {live.exp30} certificate{live.exp30>1?'s':''} expiring within 30 days — action required
           </div>
+        ):null}
+      />
 
-          {/* Live health pill */}
-          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-            {live.exp30 > 0 ? (
-              <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, color:'#9a6400', background:'rgba(184,120,0,0.07)', border:'1px solid rgba(251,191,36,0.35)', borderRadius:20, padding:'5px 12px' }}>
-                <span style={{ width:6, height:6, borderRadius:'50%', background:'#9a6400' }}/>
-                {live.exp30} expiring soon
-              </span>
-            ) : (
-              <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, color:'#00a550', background:'rgba(0,165,80,0.07)', border:'1px solid rgba(0,165,80,0.22)', borderRadius:20, padding:'5px 12px' }}>
-                <span style={{ width:6, height:6, borderRadius:'50%', background:'#00a550' }}/>
-                All certs healthy
-              </span>
-            )}
-          </div>
-        </div>
+      <div style={{background:'#fff',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 24px',display:'flex',gap:0,overflowX:'auto',scrollbarWidth:'none',position:'sticky',top:0,zIndex:100,boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+        {TABS.map(t=>{
+          const on=tab===t.id
+          return(
+            <button key={t.id} className={'pki-tab'+(on?' on':'')} onClick={()=>setTab(t.id)}>
+              <t.icon size={12}/>
+              {t.label}
+              {t.dot&&(
+                <span style={{position:'relative',width:7,height:7}}>
+                  {t.dot==='#00a550'&&<span style={{position:'absolute',inset:-2,borderRadius:'50%',background:'rgba(0,165,80,0.25)',animation:'capulse 2.5s ease infinite'}}/>}
+                  <span style={{position:'absolute',inset:0,borderRadius:'50%',background:t.dot}}/>
+                </span>
+              )}
+              {t.count!=null&&<span className="pki-count">{t.count}</span>}
+            </button>
+          )
+        })}
+      </div>
 
-        {/* ── Coloured pill tab bar ── */}
-        <div style={{ display:'flex', gap:2, borderBottom:'1px solid rgba(0,0,0,0.06)', marginBottom:24, overflowX:'auto' }}>
-          {TABS.map(t => {
-            const on = tab === t.id
-            return (
-              <button key={t.id} className={'pki-tab'+(on?' on':'')}
-                style={{ '--tc':t.color, '--tb':t.bg }}
-                onClick={() => setTab(t.id)}>
-                <t.icon size={12}/>
-                {t.label}
-                {t.dot && (
-                  <span style={{ position:'relative', width:7, height:7 }}>
-                    {t.dot==='#00a550' && <span style={{ position:'absolute', inset:-2, borderRadius:'50%', background:'rgba(0,165,80,0.25)', animation:'capulse 2.5s ease infinite'}}/>}
-                    <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:t.dot }}/>
-                  </span>
-                )}
-                {t.count != null && <span className="pki-count">{t.count}</span>}
-              </button>
-            )
-          })}
-        </div>
-
-        {/* ── Content ── */}
+      <div style={{maxWidth:1100,margin:'0 auto',padding:'24px 24px 60px'}}>
         {!tok ? (
           <div style={{ textAlign:'center', padding:60, color:'#888888', fontSize:13 }}>
             <Spinner/><span style={{ marginLeft:8 }}>Loading session…</span>

@@ -799,28 +799,36 @@ export default function Home({ nav }) {
             </div>
           </FadeUp>
           <FadeUp>
-            <div style={{display:'flex',flexDirection:isMobile?'column':'row',gap:isMobile?10:0,alignItems:'stretch'}}>
+            <div style={{display:'flex',flexDirection:isMobile?'column':'row',gap:isMobile?8:0,alignItems:'stretch'}}>
               {[
-                {n:'01',icon:'🖥',title:'Issue request',desc:'Select domain and cert type. SSLVault generates the CSR automatically.',accent:'#0077b6'},
-                {n:'02',icon:'🌐',title:'DNS validation',desc:'DNS provider API adds the ACME TXT challenge. Auto-validated in seconds.',accent:'#00a550'},
-                {n:'03',icon:'🏛',title:'CA issues cert',desc:'RapidSSL signs the cert. Stored AES-256 encrypted in CertVault.',accent:'#0077b6'},
-                {n:'04',icon:'⚡',title:'Auto-install',desc:'VPS agent or cPanel UAPI deploys to Nginx / Apache within 2 minutes.',accent:'#00a550'},
-                {n:'05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Runs forever, zero manual steps.',accent:'#ffffff',bg:'#0077b6'},
+                {n:'01',path:'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',title:'Issue request',desc:'Select domain and cert type. SSLVault generates the CSR automatically.',c:'#0077b6'},
+                {n:'02',path:'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9',title:'DNS validation',desc:'DNS provider API adds the ACME TXT challenge. Auto-validated in seconds.',c:'#3dbfb0'},
+                {n:'03',path:'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',title:'CA issues cert',desc:'RapidSSL signs the cert. Stored AES-256 encrypted in CertVault.',c:'#0077b6'},
+                {n:'04',path:'M13 10V3L4 14h7v7l9-11h-7z',title:'Auto-install',desc:'VPS agent or cPanel UAPI deploys to Nginx / Apache within 2 minutes.',c:'#3dbfb0'},
+                {n:'05',path:'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Runs forever, zero manual steps.',c:'#3dbfb0',highlight:true},
               ].map((s,i,arr)=>(
                 <div key={s.n} style={{flex:1,display:'flex',flexDirection:'row',alignItems:'stretch'}}>
-                  <div style={{flex:1,background:s.bg||'#ffffff',border:`1px solid ${s.bg?'rgba(0,119,182,0.4)':'rgba(0,0,0,0.08)'}`,borderRadius:12,padding:'20px 16px',position:'relative',display:'flex',flexDirection:'column',gap:10,boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}>
+                  <div style={{
+                    flex:1,background:s.highlight?'rgba(61,191,176,0.08)':'#0f1923',
+                    border:`1px solid ${s.highlight?'rgba(61,191,176,0.3)':'rgba(255,255,255,0.07)'}`,
+                    borderRadius:12,padding:'18px 16px',display:'flex',flexDirection:'column',gap:10,
+                    boxShadow:'0 2px 12px rgba(0,0,0,0.2)',
+                    borderTop:s.highlight?`2px solid #3dbfb0`:`2px solid ${s.c}`,
+                  }}>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                      <span style={{fontSize:11,fontWeight:800,color:s.accent,letterSpacing:'.06em',fontFamily:MONO}}>{s.n}</span>
-                      <span style={{fontSize:22}}>{s.icon}</span>
+                      <span style={{fontSize:10,fontWeight:700,color:s.c,letterSpacing:'.08em',fontFamily:MONO}}>{s.n}</span>
+                      <div style={{width:26,height:26,borderRadius:7,background:`${s.c}18`,border:`1px solid ${s.c}30`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={s.c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={s.path}/></svg>
+                      </div>
                     </div>
-                    <div style={{height:2,width:28,background:s.accent,borderRadius:99,opacity:.7}}/>
-                    <div style={{fontSize:13,fontWeight:700,color:s.bg?'#ffffff':'#0a1628',letterSpacing:'-.01em',lineHeight:1.3}}>{s.title}</div>
-                    <div style={{fontSize:11.5,color:s.bg?'rgba(255,255,255,0.7)':'rgba(0,0,0,0.6)',lineHeight:1.65,flex:1}}>{s.desc}</div>
+                    <div style={{height:2,width:24,background:s.c,borderRadius:99,opacity:.6}}/>
+                    <div style={{fontSize:13,fontWeight:600,color:'rgba(255,255,255,0.9)',lineHeight:1.3}}>{s.title}</div>
+                    <div style={{fontSize:11,color:'rgba(255,255,255,0.45)',lineHeight:1.65,flex:1}}>{s.desc}</div>
                   </div>
                   {i<arr.length-1&&!isMobile&&(
-                    <div style={{width:28,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,paddingBottom:20}}>
-                      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
-                        <path d="M0 6h13M9 1l5 5-5 5" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <div style={{width:24,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                      <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
+                        <path d="M0 5h11M7 1l4 4-4 4" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
                   )}
