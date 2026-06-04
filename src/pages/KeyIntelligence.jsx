@@ -18,10 +18,10 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 // ── Tab accent colours ────────────────────────────────────────────────
 const TAB_COLORS = {
-  vault:   { color: '#818cf8', bg: 'rgba(129,140,248,0.15)', border: 'rgba(129,140,248,0.35)' },
+  vault:   { color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)',    border: 'rgba(31,92,78,0.25)'   },
   bind:    { color: '#16a068', bg: 'rgba(22,160,104,0.12)',  border: 'rgba(74,222,128,0.35)'  },
   archive: { color: '#9a6400', bg: 'rgba(154,100,0,0.12)',  border: 'rgba(251,191,36,0.35)'  },
-  audit:   { color: '#38bdf8', bg: 'rgba(56,189,248,0.15)',  border: 'rgba(56,189,248,0.35)'  },
+  audit:   { color: '#1f5c4e', bg: 'rgba(31,92,78,0.07)',    border: 'rgba(31,92,78,0.2)'    },
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────
@@ -191,7 +191,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
             <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>Password</label>
             <input ref={inputRef} type="password" value={password} onChange={e => setPassword(e.target.value)} disabled={locked}
               placeholder="Your SSLVault password"
-              style={{ width: '100%', padding: '10px 14px', fontSize: 13, borderRadius: 7, background: 'rgba(0,0,0,0.06)', border: `1px solid ${authError ? '#1f5c4e' : 'rgba(0,0,0,0.09)'}`, color: '#fff', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+              style={{ width: '100%', padding: '10px 14px', fontSize: 13, borderRadius: 7, background: '#f4f1ec', border: `1px solid ${authError ? '#c0392b' : 'rgba(0,0,0,0.12)'}`, color: '#111111', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
             {authError && <div style={{ fontSize: 11, color: '#1f5c4e', marginTop: 5 }}>{authError}</div>}
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
@@ -272,7 +272,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
           <span style={{ fontSize: 13, fontWeight: 700, color: '#111111', fontFamily: '"JetBrains Mono","Menlo",monospace' }}>{keyEntry.domain}</span>
           <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px', color: accentColor, background: `${accentColor}15`, border: `0.5px solid ${accentColor}40`, borderRadius: 4, padding: '2px 7px' }}>{keyEntry.status}</span>
           {keyEntry.status === 'active' && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 9, color: '#fff', background: 'rgba(129,140,248,0.12)', border: '0.5px solid rgba(129,140,248,0.4)', borderRadius: 4, padding: '2px 7px', fontWeight: 700 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 9, color: '#1f5c4e', background: 'rgba(31,92,78,0.08)', border: '1px solid rgba(31,92,78,0.25)', borderRadius: 4, padding: '2px 7px', fontWeight: 700 }}>
               <Lock size={8} /> VAULT SECURED
             </span>
           )}
@@ -287,7 +287,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
       {open && (
         <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', padding: '16px 16px 16px 20px' }}>
           {isExpiringSoon && keyEntry.status === 'active' && (
-            <div style={{ background: 'rgba(192,57,43,0.07)', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 8, padding: '9px 12px', marginBottom: 12, fontSize: 11, color: '#1f5c4e' }}>
+            <div style={{ background: 'rgba(31,92,78,0.06)', border: '1px solid rgba(31,92,78,0.15)', borderRadius: 8, padding: '9px 12px', marginBottom: 12, fontSize: 11, color: '#1f5c4e' }}>
               <AlertTriangle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }} /><strong>Expiring in {days} days</strong> — rotate now.
             </div>
           )}
@@ -378,7 +378,7 @@ function BindRow({ cert, onCheck, checking }) {
       </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <button onClick={() => !isChecking && onCheck(cert)} disabled={isChecking}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, background: isChecking ? 'rgba(0,0,0,0.03)' : 'rgba(74,222,128,0.12)', color: isChecking ? '#b0a8a0' : '#16a068', border: `1px solid ${isChecking ? 'rgba(0,0,0,0.05)' : 'rgba(74,222,128,0.3)'}`, fontSize: 10, fontWeight: 600, cursor: isChecking ? 'not-allowed' : 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, background: isChecking ? 'rgba(0,0,0,0.03)' : 'rgba(22,160,104,0.09)', color: isChecking ? '#aaaaaa' : '#16a068', border: `1px solid ${isChecking ? 'rgba(0,0,0,0.05)' : 'rgba(22,160,104,0.25)'}`, fontSize: 10, fontWeight: 600, cursor: isChecking ? 'not-allowed' : 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
           <RefreshCw size={9} /> Run check
         </button>
       </div>
@@ -568,7 +568,7 @@ export default function KeyIntelligence({ nav }) {
               </p>
             </div>
           </div>
-          <button className="v2-btn v2-btn-sm" onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <button onClick={handleRefresh} style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 12px', fontSize:11, fontWeight:600, borderRadius:7, border:'1px solid rgba(0,0,0,0.15)', background:'#ffffff', color:'#444444', cursor:'pointer', fontFamily:'inherit', transition:'all .15s' }}>
             <RefreshCw size={11} /> Refresh
           </button>
         </div>
@@ -591,7 +591,7 @@ export default function KeyIntelligence({ nav }) {
             { label: 'Verified live', val: bindLive,            color: '#16a068' },
             { label: 'Archived keys', val: archivedKeys.length, color: '#9a6400' },
             { label: 'Bind alerts',   val: bindAlerts,          color: bindAlerts > 0 ? '#1f5c4e' : '#b0a8a0' },
-            { label: 'Encryption',    val: 'AES-256',           color: '#38bdf8' },
+            { label: 'Encryption',    val: 'AES-256',           color: '#1f5c4e' },
           ].map(({ label, val, color }) => (
             <div key={label} className="v2-card" style={{ padding: '11px 13px' }}>
               <div style={{ fontSize: 20, fontWeight: 700, color, fontFamily: 'monospace', letterSpacing: '-0.5px' }}>{val}</div>
