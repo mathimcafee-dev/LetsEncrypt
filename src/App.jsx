@@ -33,6 +33,7 @@ import eIDASIntelligence from './pages/eIDASIntelligence'
 import PKIConsortiumIntelligence from './pages/PKIConsortiumIntelligence'
 import CSCIntelligence from './pages/CSCIntelligence'
 import BulkScanner from './pages/BulkScanner'
+import BulkIssuePage from './pages/BulkIssuePage'
 import PublicStatus from './pages/PublicStatus'
 import CAAChecker from './pages/CAAChecker'
 import KeyLocker from './pages/KeyLocker'
@@ -173,6 +174,7 @@ const _build = 1779297041 // cache bust
       {page === '/ca-intelligence' && <CAIntelligenceHub nav={nav} />}
       {page === '/ca-connectors' && <CAConnectors nav={nav} />}
       {page === '/scan' && <BulkScanner nav={nav} />}
+      {page === '/bulk-issue' && <BulkIssuePage nav={nav} />}
       {(page === '/status' || page.startsWith('/status/')) && <PublicStatus nav={nav} />}
       {page === '/caa-check' && <CAAChecker nav={nav} />}
       {page === '/ca-trust-explorer' && <CATrustExplorer nav={nav} />}
