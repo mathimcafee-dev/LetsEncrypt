@@ -2681,27 +2681,48 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
   return (
-    <div style={{ background:'transparent', minHeight:'100vh', fontFamily:"'Inter',system-ui,sans-serif" }}>
-      <div style={{ maxWidth:1280, margin:'0 auto', padding:'28px 24px 80px' }}>
+    <div style={{ background:'#f0f4f9', minHeight:'100vh', fontFamily:"'Inter',system-ui,sans-serif" }}>
+      <style>{`
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        @keyframes fadeSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes v3pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+        .dc-card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #dde4ef;box-shadow:0 1px 4px rgba(0,55,104,0.06)}
+        .dc-head{background:#003768;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:none}
+        .dc-head-title{font-size:10px;color:rgba(255,255,255,0.4);flex:1;text-align:center;font-family:'JetBrains Mono','Fira Mono',monospace;letter-spacing:.03em}
+        .dc-head-live{display:flex;align-items:center;gap:4px;font-size:9px;color:#4fc37a;font-family:'JetBrains Mono',monospace}
+        .dc-panel{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #dde4ef;box-shadow:0 1px 4px rgba(0,55,104,0.06)}
+        .dc-ph{background:#003768;padding:9px 16px;display:flex;align-items:center;justify-content:space-between}
+        .dc-ph-title{font-size:9px;font-weight:600;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:.08em;font-family:'JetBrains Mono',monospace}
+        .dc-ph-right{font-size:9px;color:#4fc37a;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:4px}
+        .dc-tab-row{display:flex;align-items:center;background:#f5f8fc;border-bottom:1px solid #dde4ef;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+        .dc-tab{padding:9px 14px;font-size:11px;color:#8a9ab5;border-bottom:2px solid transparent;cursor:pointer;font-family:'JetBrains Mono',monospace;white-space:nowrap;transition:color .15s}
+        .dc-tab:hover{color:#003768}
+        .dc-tab.on{color:#003768;border-bottom-color:#003768;font-weight:600}
+        .dc-tc{font-size:9px;padding:1px 5px;border-radius:20px;background:#e8f1fb;color:#0061a7;margin-left:4px;font-family:'JetBrains Mono',monospace}
+        .dc-btn{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;border:1px solid #dde4ef;background:#fff;font-size:11px;color:#5a7090;cursor:pointer;font-family:inherit;transition:all .15s}
+        .dc-btn:hover{border-color:#003768;color:#003768}
+        .dc-btn.pri{background:#003768;border-color:#003768;color:#fff}
+        .dc-btn.pri:hover{background:#004d96}
+      `}</style>
+      <div style={{ maxWidth:1280, margin:'0 auto', padding:'20px 24px 80px' }}>
 
-        <div style={{ marginBottom:18, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
-          <div>
-            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:3 }}>
-              <h1 style={{ fontSize:18, fontWeight:700, color:'#111111', letterSpacing:'-0.3px', margin:0 }}>
-                Certificate Dashboard
-              </h1>
-              {healthy === total && total > 0 && (
-                <span style={{ fontSize:10, fontWeight:600, padding:'2px 9px', borderRadius:20,
-                  background:'rgba(0,165,80,0.09)', color:'#00a550', border:'1px solid rgba(0,165,80,0.22)',
-                  animation:'fadeIn 0.5s ease' }}>
-                  All healthy ✓
-                </span>
-              )}
+        {/* ── TOP NAV BAR ── */}
+        <div style={{ background:'#003768', borderRadius:12, padding:'12px 18px', marginBottom:14, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ width:32, height:32, borderRadius:8, background:'#0061a7', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#fff', flexShrink:0, fontFamily:"'JetBrains Mono',monospace", letterSpacing:'.04em' }}>SV</div>
+            <div>
+              <div style={{ fontSize:13, fontWeight:600, color:'#fff', letterSpacing:'-0.2px' }}>Certificate Dashboard</div>
+              <div style={{ fontSize:10, color:'rgba(255,255,255,0.4)', fontFamily:"'JetBrains Mono',monospace" }}>{user.email} · {domainGroups.length} certificate{domainGroups.length!==1?'s':''}</div>
             </div>
-            <p style={{ fontSize:11, color:'#555555', margin:0, letterSpacing:'0.01em' }}>{user.email} · {domainGroups.length} certificate{domainGroups.length!==1?'s':''}</p>
           </div>
-          <button
-            onClick={async () => {
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            {healthy === total && total > 0 && (
+              <div style={{ display:'flex', alignItems:'center', gap:5, fontSize:10, fontWeight:600, color:'#4fc37a', background:'rgba(79,195,122,0.12)', border:'1px solid rgba(79,195,122,0.3)', borderRadius:20, padding:'4px 11px' }}>
+                <div style={{ width:5, height:5, borderRadius:'50%', background:'#4fc37a' }}/>
+                All healthy
+              </div>
+            )}
+            <button onClick={async () => {
               const { data: { session: s } } = await supabase.auth.getSession()
               if (!s) return
               const username = s.user.email.split('@')[0].replace(/[^a-z0-9]/gi, '')
@@ -2709,17 +2730,12 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               try { await navigator.clipboard.writeText(url) } catch(_) {}
               setShareMsg('Link copied!')
               setTimeout(() => setShareMsg(''), 2500)
-            }}
-            style={{ display:'flex', alignItems:'center', gap:6,
-              background:'rgba(0,0,0,0.02)', border:'1px solid rgba(0,0,0,0.06)',
-              borderRadius:8, padding:'7px 14px',
-              fontSize:11, fontWeight:500, color:'#555555', cursor:'pointer', fontFamily:'inherit',
-              transition:'border-color .15s, color .15s' }}
-            onMouseEnter={e=>{ e.currentTarget.style.borderColor='rgba(0,0,0,0.1)'; e.currentTarget.style.color='#111111' }}
-            onMouseLeave={e=>{ e.currentTarget.style.borderColor='rgba(0,0,0,0.06)'; e.currentTarget.style.color='#666666' }}>
-            <Share2 size={11} color="currentColor"/>
-            {shareMsg || 'Share SSL status'}
-          </button>
+            }} style={{ display:'flex', alignItems:'center', gap:6, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:8, padding:'7px 13px', fontSize:11, fontWeight:500, color:'rgba(255,255,255,0.8)', cursor:'pointer', fontFamily:'inherit', transition:'background .15s' }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.18)'}
+              onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}>
+              <Share2 size={11}/> {shareMsg || 'Share SSL status'}
+            </button>
+          </div>
         </div>
 
         {/* ── FRESH STAT ROW ── */}
@@ -2743,84 +2759,70 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
           ]
           return (
             <>
-            {/* ── MODERN HERO BANNER ── */}
-            <div style={{
-              background: '#ffffff',
-              border: '1px solid rgba(0,0,0,0.08)',
-              borderRadius: 14, padding: '20px 24px', marginBottom: 14,
-              display: 'flex', alignItems: 'center', gap: 20,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-              position: 'relative', overflow: 'hidden',
-            }}>
-              <div style={{ position:'absolute', top:-60, left:-60, width:200, height:200, borderRadius:'50%', background:`radial-gradient(circle, ${scoreColor}20 0%, transparent 70%)`, pointerEvents:'none' }}/>
-              {/* Score ring */}
-              <div style={{ flexShrink:0, position:'relative', width:80, height:80 }}>
-                <svg width="80" height="80" viewBox="0 0 80 80" style={{ transform:'rotate(-90deg)', position:'absolute', top:0, left:0 }}>
-                  <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(0,119,182,0.1)" strokeWidth="6"/>
-                  <circle cx="40" cy="40" r="33" fill="none" stroke={scoreColor} strokeWidth="6"
-                    strokeDasharray={`${2*Math.PI*33}`}
-                    strokeDashoffset={`${2*Math.PI*33*(1-postureScore/100)}`}
-                    strokeLinecap="round"
-                    style={{ transition:'stroke-dashoffset 1.2s ease' }}/>
-                </svg>
-                <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
-                  <div style={{ fontSize:18, fontWeight:800, color:scoreColor, lineHeight:1, letterSpacing:'-1px' }}>{postureScore}</div>
-                  <div style={{ fontSize:7, color:'#aaaaaa', textTransform:'uppercase', letterSpacing:'0.08em', marginTop:1 }}>score</div>
+            {/* ── HERO POSTURE BANNER ── */}
+            <div className="dc-card" style={{ marginBottom:14 }}>
+              <div className="dc-head">
+                <div style={{ display:'flex', gap:4 }}>
+                  {['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c }}/>)}
                 </div>
+                <div className="dc-head-title">Certificate posture · SSLVault</div>
+                <div className="dc-head-live"><div style={{ width:5, height:5, borderRadius:'50%', background:'#4fc37a' }}/>Live</div>
               </div>
-              {/* Score details + bars */}
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-                  <span style={{ fontSize:15, fontWeight:700, color:'#111111', letterSpacing:'-0.2px' }}>{scoreLabel}</span>
-                  <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20, background:`${scoreColor}18`, color:scoreColor, border:`1px solid ${scoreColor}44` }}>{total} cert{total!==1?'s':''}</span>
-                  <span style={{ fontSize:10, color:'rgba(0,0,0,0.25)' }}>·</span>
-                  <span style={{ fontSize:10, color:'#888888' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
+              <div style={{ display:'grid', gridTemplateColumns:'100px 1fr 160px', alignItems:'stretch' }}>
+                {/* Score ring */}
+                <div style={{ padding:'20px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, borderRight:'1px solid #e8edf5' }}>
+                  <div style={{ flexShrink:0, position:'relative', width:72, height:72 }}>
+                    <svg width="72" height="72" viewBox="0 0 72 72" style={{ transform:'rotate(-90deg)', position:'absolute', top:0, left:0 }}>
+                      <circle cx="36" cy="36" r="28" fill="none" stroke="#e8edf5" strokeWidth="5"/>
+                      <circle cx="36" cy="36" r="28" fill="none" stroke={postureScore>=80?'#1a7e3b':postureScore>=50?'#b87d00':'#c0392b'} strokeWidth="5"
+                        strokeDasharray={`${2*Math.PI*28}`}
+                        strokeDashoffset={`${2*Math.PI*28*(1-postureScore/100)}`}
+                        strokeLinecap="round" style={{ transition:'stroke-dashoffset 1.2s ease' }}/>
+                    </svg>
+                    <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
+                      <div style={{ fontSize:18, fontWeight:700, color:postureScore>=80?'#1a7e3b':postureScore>=50?'#b87d00':'#c0392b', lineHeight:1, fontFamily:"'JetBrains Mono',monospace" }}>{postureScore}</div>
+                      <div style={{ fontSize:7, color:'#9aabc0', textTransform:'uppercase', letterSpacing:'0.1em', marginTop:1, fontFamily:"'JetBrains Mono',monospace" }}>score</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize:9, fontWeight:600, color:postureScore>=80?'#1a7e3b':postureScore>=50?'#b87d00':'#c0392b', background:postureScore>=80?'#e8f7ee':postureScore>=50?'#fef3d0':'#fde8e8', border:`1px solid ${postureScore>=80?'#b8e2c8':postureScore>=50?'#f5d78e':'#f5b8b8'}`, borderRadius:20, padding:'2px 10px', fontFamily:"'JetBrains Mono',monospace" }}>{scoreLabel}</div>
                 </div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', rowGap:3, columnGap:20 }}>
+                {/* Bars */}
+                <div style={{ padding:'16px 20px', display:'flex', flexDirection:'column', justifyContent:'center', gap:5 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
+                    <span style={{ fontSize:14, fontWeight:600, color:'#003768' }}>Fleet posture</span>
+                    <span style={{ fontSize:9, padding:'2px 8px', borderRadius:20, background:'#e8f7ee', border:'1px solid #b8e2c8', color:'#1a7e3b', fontFamily:"'JetBrains Mono',monospace" }}>{total} cert{total!==1?'s':''}</span>
+                    <span style={{ fontSize:10, color:'#8a9ab5' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
+                  </div>
                   {bars.map(b => (
-                    <div key={b.label} style={{ display:'flex', alignItems:'center', gap:6 }}>
-                      <span style={{ fontSize:9, color:'#888888', width:52, flexShrink:0, textTransform:'uppercase', letterSpacing:'0.04em' }}>{b.label}</span>
-                      <div style={{ flex:1, height:2, background:'rgba(0,0,0,0.09)', borderRadius:1, overflow:'hidden' }}>
-                        <div style={{ height:'100%', width:`${b.pct}%`, background:b.pct===100?b.color:'#0077b6', borderRadius:1, transition:'width 1s ease' }}/>
+                    <div key={b.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      <span style={{ fontSize:9, color:'#8a9ab5', width:64, flexShrink:0, textTransform:'uppercase', letterSpacing:'.05em', fontFamily:"'JetBrains Mono',monospace" }}>{b.label}</span>
+                      <div style={{ flex:1, height:3, background:'#e8edf5', borderRadius:2, overflow:'hidden' }}>
+                        <div style={{ height:'100%', width:`${b.pct}%`, background:b.pct===100?'#1a7e3b':'#0061a7', borderRadius:2, transition:'width 1s ease' }}/>
                       </div>
-                      <span style={{ fontSize:9, color:b.pct===100?b.color:'#0077b6', width:22, textAlign:'right', flexShrink:0, fontWeight:600 }}>{b.pct}%</span>
+                      <span style={{ fontSize:9, color:b.pct===100?'#1a7e3b':'#0061a7', width:28, textAlign:'right', flexShrink:0, fontWeight:600, fontFamily:"'JetBrains Mono',monospace" }}>{b.pct}%</span>
                     </div>
                   ))}
                 </div>
-              </div>
-              {/* Divider */}
-              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.09)', flexShrink:0 }}/>
-              {/* Stat pills */}
-              <div style={{ display:'flex', gap:8, flexShrink:0 }}>
-                {[
-                  { val:healthy, label:'Healthy', color:'#00a550', bg:'rgba(0,165,80,0.07)', border:'rgba(0,165,80,0.2)', onClick:()=>setFilter('healthy') },
-                  { val:expiring+pendingDcv, label:'Attention', color:expiring>0?'#9a6400':pendingDcv>0?'#0077b6':'#bbbbbb', bg:'rgba(0,0,0,0.03)', border:'rgba(0,0,0,0.08)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
-                ].map(s => (
-                  <div key={s.label} onClick={s.onClick} style={{
-                    background:s.bg, border:`1px solid ${s.border}`,
-                    borderRadius:12, padding:'10px 14px', cursor:'pointer', textAlign:'center', minWidth:60,
-                    transition:'transform .15s, border-color .15s',
-                  }}
-                  onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.borderColor=s.color }}
-                  onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.borderColor=s.border }}>
-                    <div style={{ fontSize:24, fontWeight:800, color:s.val>0?s.color:'#cccccc', lineHeight:1, letterSpacing:'-1px' }}>{s.val}</div>
-                    <div style={{ fontSize:9, color:'#888888', marginTop:3, textTransform:'uppercase', letterSpacing:'0.05em' }}>{s.label}</div>
+                {/* Stat tiles + AI */}
+                <div style={{ borderLeft:'1px solid #e8edf5', padding:'16px', display:'flex', flexDirection:'column', gap:7, justifyContent:'center' }}>
+                  {[
+                    { val:healthy, label:'Healthy', color:'#1a7e3b', bg:'#e8f7ee', border:'#b8e2c8', onClick:()=>setFilter('healthy') },
+                    { val:expiring+pendingDcv, label:'Attention', color:expiring+pendingDcv>0?'#b87d00':'#c0c8d8', bg:expiring+pendingDcv>0?'#fef9ec':'#f5f8fc', border:expiring+pendingDcv>0?'#f5d78e':'#dde4ef', onClick:()=>setFilter(expiring>0?'expiring':'all') },
+                  ].map(s=>(
+                    <div key={s.label} onClick={s.onClick} style={{ padding:'10px 14px', borderRadius:9, background:s.bg, border:`1px solid ${s.border}`, textAlign:'center', cursor:'pointer', transition:'transform .15s' }}
+                      onMouseEnter={e=>e.currentTarget.style.transform='translateY(-2px)'}
+                      onMouseLeave={e=>e.currentTarget.style.transform='translateY(0)'}>
+                      <div style={{ fontSize:22, fontWeight:700, color:s.color, lineHeight:1, fontFamily:"'JetBrains Mono',monospace" }}>{s.val}</div>
+                      <div style={{ fontSize:8, color:'#8a9ab5', marginTop:3, textTransform:'uppercase', letterSpacing:'.06em', fontFamily:"'JetBrains Mono',monospace" }}>{s.label}</div>
+                    </div>
+                  ))}
+                  <div onClick={()=>onOpenAI?.()} style={{ padding:'9px', borderRadius:9, background:'#e8f1fb', border:'1px solid #b8d0f0', textAlign:'center', cursor:'pointer', transition:'background .15s' }}
+                    onMouseEnter={e=>e.currentTarget.style.background='#d0e5f7'}
+                    onMouseLeave={e=>e.currentTarget.style.background='#e8f1fb'}>
+                    <Activity size={16} color="#0061a7"/>
+                    <div style={{ fontSize:8, color:'#0061a7', marginTop:2, fontFamily:"'JetBrains Mono',monospace" }}>AI</div>
                   </div>
-                ))}
-              </div>
-              {/* Divider */}
-              <div style={{ width:1, height:52, background:'rgba(0,0,0,0.09)', flexShrink:0 }}/>
-              {/* AI button */}
-              <div onClick={()=>onOpenAI?.()} title="Ask VaultBrain AI" style={{
-                flexShrink:0, cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:3,
-                padding:'8px 10px', borderRadius:10,
-                border:'1px solid rgba(0,0,0,0.09)', background:'rgba(0,119,182,0.05)',
-                transition:'background .15s, border-color .15s, transform .15s',
-              }}
-              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(0,119,182,0.1)'; e.currentTarget.style.borderColor='rgba(0,119,182,0.3)'; e.currentTarget.style.transform='scale(1.05)' }}
-              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(0,119,182,0.05)'; e.currentTarget.style.borderColor='rgba(0,0,0,0.09)'; e.currentTarget.style.transform='scale(1)' }}>
-                <span style={{ fontSize:18 }}>🧠</span>
-                <span style={{ fontSize:8, color:'#888888', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:700 }}>AI</span>
+                </div>
               </div>
             </div>
             </>
@@ -2948,18 +2950,22 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                   const isSel = cert.id === selected
                   return (
                     <div key={cert.id} onClick={() => setSelected(isSel ? null : cert.id)}
-                      style={{ background:'#ffffff', border:`1px solid ${isSel?accentColor:'rgba(0,0,0,0.08)'}`, borderRadius:12, padding:'14px 16px', cursor:'pointer', position:'relative', overflow:'hidden', transition:'all .15s', boxShadow:'0 1px 2px rgba(0,0,0,0.04)' }}
-                      onMouseEnter={e=>e.currentTarget.style.borderColor=accentColor}
-                      onMouseLeave={e=>e.currentTarget.style.borderColor=isSel?accentColor:'rgba(192,57,43,0.22)'}>
-                      <div style={{ position:'absolute', top:0, left:0, width:3, height:'100%', background:accentColor, borderRadius:'3px 0 0 3px' }}/>
-                      <div style={{ paddingLeft:8 }}>
-                        <div style={{ fontSize:13, fontWeight:600, color:'#111111', fontFamily:'"JetBrains Mono",monospace', marginBottom:2, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</div>
-                        <div style={{ fontSize:10, color:'#999999', marginBottom:8 }}>{cert.cert_type||'RapidSSL Standard'} · {cert.install_method==='cpanel'?'cPanel':cert.install_method==='agent'?'Agent':'Direct'}</div>
-                        <div style={{ fontSize:28, fontWeight:700, color:accentColor, lineHeight:1, marginBottom:2 }}>{d==null?'--':Math.max(0,d)}</div>
-                        <div style={{ fontSize:10, color:'#555555', marginBottom:8 }}>days · {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '--'}</div>
+                      style={{ background:'#fff', border:`1px solid ${isSel?'#003768':'#dde4ef'}`, borderRadius:12, overflow:'hidden', cursor:'pointer', transition:'all .15s', boxShadow:'0 1px 4px rgba(0,55,104,0.06)' }}
+                      onMouseEnter={e=>{ e.currentTarget.style.borderColor='#003768'; e.currentTarget.style.boxShadow='0 3px 10px rgba(0,55,104,0.1)' }}
+                      onMouseLeave={e=>{ e.currentTarget.style.borderColor=isSel?'#003768':'#dde4ef'; e.currentTarget.style.boxShadow='0 1px 4px rgba(0,55,104,0.06)' }}>
+                      <div style={{ background:'#003768', padding:'9px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                        <span style={{ fontSize:12, fontWeight:600, color:'#fff', fontFamily:"'JetBrains Mono',monospace", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</span>
+                        <span style={{ fontSize:8, fontWeight:600, color:notLive?'#f5a623':isExp?'#ff6b6b':isWarn?'#fbbf24':'#4fc37a', background:notLive?'rgba(245,166,35,0.15)':isExp?'rgba(255,107,107,0.15)':isWarn?'rgba(251,191,36,0.15)':'rgba(79,195,122,0.15)', border:`1px solid ${notLive?'rgba(245,166,35,0.35)':isExp?'rgba(255,107,107,0.35)':isWarn?'rgba(251,191,36,0.35)':'rgba(79,195,122,0.35)'}`, borderRadius:20, padding:'2px 7px', fontFamily:"'JetBrains Mono',monospace", flexShrink:0 }}>
+                          {notLive?'INSTALL':isExp?'EXPIRED':isWarn?'EXPIRING':'LIVE'}
+                        </span>
+                      </div>
+                      <div style={{ padding:'12px 14px' }}>
+                        <div style={{ fontSize:10, color:'#8a9ab5', marginBottom:8, fontFamily:"'JetBrains Mono',monospace" }}>{cert.cert_type||'RapidSSL Standard'} · {cert.install_method==='cpanel'?'cPanel':cert.install_method==='agent'?'Agent':'Direct'}</div>
+                        <div style={{ fontSize:26, fontWeight:700, color:'#003768', lineHeight:1, marginBottom:3, fontFamily:"'JetBrains Mono',monospace" }}>{d==null?'--':Math.max(0,d)}</div>
+                        <div style={{ fontSize:10, color:'#8a9ab5', marginBottom:9, fontFamily:"'JetBrains Mono',monospace" }}>days · {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '--'}</div>
                         <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
-                          {cert.auto_renew_enabled!==false && <span style={{ fontSize:9, padding:'2px 6px', borderRadius:4, background:'rgba(0,165,80,0.09)', color:'#00a550' }}>Auto-renew</span>}
-                          <span style={{ fontSize:9, padding:'2px 6px', borderRadius:4, background: notLive?'rgba(255,140,122,0.12)':isExp?'rgba(248,113,113,0.12)':isWarn?'rgba(184,120,0,0.07)':'rgba(0,165,80,0.07)', color:accentColor }}>
+                          {cert.auto_renew_enabled!==false && <span style={{ fontSize:8, padding:'2px 7px', borderRadius:20, background:'#e8f7ee', border:'1px solid #b8e2c8', color:'#1a7e3b', fontFamily:"'JetBrains Mono',monospace", fontWeight:600 }}>Auto-renew</span>}
+                          <span style={{ fontSize:8, padding:'2px 7px', borderRadius:20, background:notLive?'#fde8e8':isExp?'#fde8e8':isWarn?'#fef9ec':'#e8f7ee', border:`1px solid ${notLive?'#f5b8b8':isExp?'#f5b8b8':isWarn?'#f5d78e':'#b8e2c8'}`, color:notLive?'#c0392b':isExp?'#c0392b':isWarn?'#b87d00':'#1a7e3b', fontFamily:"'JetBrains Mono',monospace", fontWeight:600 }}>
                             {notLive?'Install pending':isExp?'Expired':isWarn?'Expiring':'Live'}
                           </span>
                         </div>
@@ -2969,11 +2975,13 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 })}
                 {/* Issue new slot */}
                 <div onClick={()=>nav&&nav('/issue-cert')}
-                  style={{ background:'#f0f4fa', border:'1px dashed rgba(0,119,182,0.25)', borderRadius:12, padding:'14px 16px', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, minHeight:130, transition:'all .15s' }}
-                  onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(255,140,122,0.5)'}
-                  onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(0,119,182,0.2)'}>
-                  <Plus size={22} color="rgba(255,140,122,0.4)"/>
-                  <span style={{ fontSize:11, color:'#555555' }}>Issue new certificate</span>
+                  style={{ background:'#fff', border:'2px dashed #c8d5e8', borderRadius:12, cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, minHeight:130, transition:'all .15s' }}
+                  onMouseEnter={e=>{ e.currentTarget.style.borderColor='#003768'; e.currentTarget.style.background='#f5f8fc' }}
+                  onMouseLeave={e=>{ e.currentTarget.style.borderColor='#c8d5e8'; e.currentTarget.style.background='#fff' }}>
+                  <div style={{ width:32, height:32, borderRadius:8, background:'#e8f1fb', border:'1px solid #b8d0f0', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <Plus size={16} color="#0061a7"/>
+                  </div>
+                  <span style={{ fontSize:11, color:'#8a9ab5' }}>Issue new certificate</span>
                 </div>
               </div>
 
@@ -3001,43 +3009,49 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               {/* ── MANDATE + TIMELINE ROW ── */}
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
                 {/* CA/B Mandate readiness */}
-                <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:'14px 16px', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
-                  <div style={{ fontSize:10, fontWeight:600, color:'#888888', letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:10 }}>CA/B Forum mandate readiness</div>
+                <div className="dc-panel">
+                  <div className="dc-ph">
+                    <span className="dc-ph-title">CA/B Forum mandate readiness</span>
+                    <div className="dc-ph-right"><div style={{ width:5, height:5, borderRadius:'50%', background:'#4fc37a' }}/>{activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=200}).length}/{activeCerts.length} compliant</div>
+                  </div>
+                  <div style={{ padding:'14px 16px' }}>
                   {[
                     { year:'Mar 2026', max:200, label:'200d max', ready:activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=200}).length },
                     { year:'Mar 2027', max:100, label:'100d max', ready:activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=100}).length },
                     { year:'Mar 2029', max:47,  label:'47d max',  ready:activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=47}).length  },
-                  ].map(m=>{
+                  ].map((m,i,arr)=>{
                     const pct = activeCerts.length>0?(m.ready/activeCerts.length)*100:0
-                    const col = m.ready===activeCerts.length?'#00a550':'#0077b6'
+                    const col = m.max===200?'#c0392b':m.max===100?'#b87d00':'#0061a7'
                     return (
-                      <div key={m.year} style={{ display:'flex', alignItems:'center', gap:10, padding:'7px 0', borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
-                        <span style={{ fontSize:11, fontWeight:500, color:'#555555', width:64, flexShrink:0 }}>{m.year}</span>
-                        <span style={{ fontSize:12, fontWeight:600, color:col, width:68, flexShrink:0 }}>{m.label}</span>
-                        <div style={{ flex:1, height:3, background:'rgba(0,0,0,0.08)', borderRadius:2, overflow:'hidden' }}>
+                      <div key={m.year} style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0', borderBottom:i<arr.length-1?'1px solid #f0f4f9':'none' }}>
+                        <span style={{ fontSize:10, color:'#8a9ab5', width:54, flexShrink:0, fontFamily:"'JetBrains Mono',monospace" }}>{m.year}</span>
+                        <span style={{ fontSize:11, fontWeight:600, color:col, width:60, flexShrink:0, fontFamily:"'JetBrains Mono',monospace" }}>{m.label}</span>
+                        <div style={{ flex:1, height:4, background:'#e8edf5', borderRadius:2, overflow:'hidden' }}>
                           <div style={{ height:'100%', width:`${pct}%`, background:col, borderRadius:2, transition:'width 0.8s ease' }}/>
                         </div>
-                        <span style={{ fontSize:10, color:col, width:36, textAlign:'right', flexShrink:0 }}>{m.ready}/{activeCerts.length}</span>
+                        <span style={{ fontSize:10, color:col, width:28, textAlign:'right', flexShrink:0, fontFamily:"'JetBrains Mono',monospace" }}>{m.ready}/{activeCerts.length}</span>
                       </div>
                     )
                   })}
+                  </div>
                 </div>
 
                 {/* Validity timeline */}
-                <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)', borderRadius:12, padding:'14px 16px', boxShadow:'0 1px 3px rgba(0,0,0,0.05)' }}>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
-                    <div style={{ fontSize:10, fontWeight:600, color:'#999999', letterSpacing:'0.06em', textTransform:'uppercase' }}>Validity timeline {now.getFullYear()}</div>
-                    <span style={{ fontSize:9, color:'#888888' }}>Jun — Dec</span>
+                <div className="dc-panel">
+                  <div className="dc-ph">
+                    <span className="dc-ph-title">Validity timeline {now.getFullYear()}</span>
+                    <span style={{ fontSize:9, color:'rgba(255,255,255,0.3)', fontFamily:"'JetBrains Mono',monospace" }}>Jan — Dec</span>
                   </div>
+                  <div style={{ padding:'14px 16px' }}>
                   <div style={{ display:'flex', gap:0, marginBottom:8 }}>
                     {months.map((m,i)=>(
-                      <div key={m} style={{ flex:1, fontSize:8, color:i===now.getMonth()?'#0077b6':'rgba(0,0,0,0.25)', textAlign:'center', fontWeight:i===now.getMonth()?600:400 }}>{m.slice(0,1)}</div>
+                      <div key={m} style={{ flex:1, fontSize:8, color:i===now.getMonth()?'#003768':'#c0c8d8', textAlign:'center', fontWeight:i===now.getMonth()?700:400, fontFamily:"'JetBrains Mono',monospace" }}>{m.slice(0,1)}</div>
                     ))}
                   </div>
                   {activeCerts.map((cert,i)=>{
                     const d = daysLeft(cert.expires_at)
                     const notLive = !cert.is_live_on_server
-                    const col = notLive?'#0077b6':d!=null&&d<=0?'#0077b6':d!=null&&d<=30?'#9a6400':'#00a550'
+                    const col = notLive?'#0061a7':d!=null&&d<=0?'#c0392b':d!=null&&d<=30?'#b87d00':'#1a7e3b'
                     const issuedP = tlPct(cert.issued_at)
                     const expiryP = tlPct(cert.expires_at)
                     const activeW = Math.max(Math.min(todayPct,expiryP)-issuedP,0)
@@ -3045,27 +3059,27 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                     const shortName = cert.domain.replace(/^www\./,'').split('.')[0]
                     return (
                       <div key={cert.id} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:i<activeCerts.length-1?8:0 }}>
-                        <div style={{ width:70, flexShrink:0, fontSize:11, fontWeight:600, color:'#333333', fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{shortName.length>8?shortName.slice(0,7)+'..':shortName}</div>
-                        <div style={{ flex:1, height:6, background:'rgba(0,0,0,0.07)', borderRadius:3, position:'relative', overflow:'hidden' }}>
-                          <div style={{ position:'absolute', left:0, top:0, bottom:0, width:`${issuedP*100}%`, background:'rgba(0,0,0,0.04)' }}/>
-                          <div style={{ position:'absolute', left:`${issuedP*100}%`, top:0, bottom:0, width:`${activeW*100}%`, background:`${col}CC` }}/>
-                          <div style={{ position:'absolute', left:`${Math.min(todayPct,expiryP)*100}%`, top:0, bottom:0, width:`${futureW*100}%`, background:`${col}33` }}/>
-                          <div style={{ position:'absolute', top:0, bottom:0, left:`${todayPct*100}%`, width:2, background:'rgba(0,119,182,0.35)' }}/>
+                        <div style={{ width:64, flexShrink:0, fontSize:11, fontWeight:600, color:'#003768', fontFamily:"'JetBrains Mono',monospace", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{shortName.length>7?shortName.slice(0,6)+'..':shortName}</div>
+                        <div style={{ flex:1, height:8, background:'#e8edf5', borderRadius:3, position:'relative', overflow:'hidden' }}>
+                          <div style={{ position:'absolute', left:`${issuedP*100}%`, top:0, bottom:0, width:`${activeW*100}%`, background:`${col}50`, borderRight:`2px solid ${col}` }}/>
+                          <div style={{ position:'absolute', left:`${Math.min(todayPct,expiryP)*100}%`, top:0, bottom:0, width:`${futureW*100}%`, background:`${col}20` }}/>
+                          <div style={{ position:'absolute', top:0, bottom:0, left:`${todayPct*100}%`, width:1.5, background:'#f5a623' }}/>
                         </div>
-                        <div style={{ width:36, textAlign:'right', fontSize:11, fontWeight:700, fontFamily:'monospace', color:col, flexShrink:0 }}>{d==null?'--':d<=0?'EXP':`${d}d`}</div>
-                        <span style={{ fontSize:9, fontWeight:600, padding:'2px 6px', borderRadius:99, width:50, textAlign:'center', flexShrink:0, background:notLive?'rgba(192,57,43,0.08)':'rgba(0,165,80,0.09)', color:notLive?'#c0392b':'#00a550', border:`1px solid ${notLive?'rgba(192,57,43,0.2)':'rgba(0,165,80,0.2)'}` }}>
-                          {notLive?'INSTALL':'LIVE'}
+                        <div style={{ width:36, textAlign:'right', fontSize:11, fontWeight:700, fontFamily:"'JetBrains Mono',monospace", color:col, flexShrink:0 }}>{d==null?'--':d<=0?'EXP':`${d}d`}</div>
+                        <span style={{ fontSize:8, fontWeight:600, padding:'2px 6px', borderRadius:20, width:46, textAlign:'center', flexShrink:0, background:notLive?'#fde8e8':'#e8f7ee', color:notLive?'#c0392b':'#1a7e3b', border:`1px solid ${notLive?'#f5b8b8':'#b8e2c8'}`, fontFamily:"'JetBrains Mono',monospace" }}>
+                          {notLive?'PENDING':'LIVE'}
                         </span>
                       </div>
                     )
                   })}
                   <div style={{ marginTop:10, display:'flex', gap:12 }}>
-                    {[['rgba(0,165,80,0.7)','valid'],['rgba(192,57,43,0.55)','today']].map(([bg,lbl])=>(
-                      <span key={lbl} style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'#888888' }}>
-                        <span style={{ width:lbl==='today'?1.5:14, height:lbl==='today'?10:4, background:bg, display:'inline-block', borderRadius:lbl==='today'?1:2 }}/>
-                        {lbl}
-                      </span>
-                    ))}
+                    <span style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'#8a9ab5', fontFamily:"'JetBrains Mono',monospace" }}>
+                      <span style={{ width:14, height:3, background:'rgba(0,97,167,0.45)', display:'inline-block', borderRadius:2 }}/>Valid
+                    </span>
+                    <span style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'#b87d00', fontFamily:"'JetBrains Mono',monospace" }}>
+                      <span style={{ width:1.5, height:10, background:'#f5a623', display:'inline-block', borderRadius:1 }}/>Today
+                    </span>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -3501,76 +3515,51 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
         {/* === END OLD WORLD CLASS DASHBOARD ===================================== */}
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:16, alignItems:'start' }}>
-          <div style={{ background:'transparent', border:'1px solid rgba(0,0,0,0.08)', borderRadius:8,
-            overflow:'hidden' }}>
-            <div style={{ padding:'14px 16px', borderBottom:'1px solid rgba(0,0,0,0.07)',
-              display:'flex', alignItems:'center', gap:8, flexWrap:'wrap',
-              background:'transparent' }}>
-              {/* Filter tabs */}
-              <div style={{ display:'flex', gap:2, background:'transparent', borderRadius:0, padding:0, borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
-                {[
-                  { key:'all',      label:'All',      count:total },
-                  { key:'healthy',  label:'Healthy',  count:healthy },
-                  { key:'expiring', label:'Expiring', count:expiring },
-                  { key:'expired',  label:'Expired',  count:expired },
-                ].map(f => (
-                  <button key={f.key} onClick={() => setFilter(f.key)}
-                    style={{ padding:'5px 12px', borderRadius:6, fontSize:11, fontWeight:600,
-                      cursor:'pointer', fontFamily:'inherit', border:'none', transition:'all .15s',
-                      background: 'transparent',
-                      borderBottom: filter===f.key ? '2px solid #388bfd' : '2px solid transparent',
-                      borderRadius: 0,
-                      color: filter===f.key ? 'rgba(0,119,182,0.09)' : '#666666',
-                      paddingBottom: '10px', marginBottom: '-1px',
-                      boxShadow: filter===f.key ? '0 1px 3px rgba(0,0,0,0.07)' : 'none' }}>
-                    {f.label}
-                    <span style={{ marginLeft:5, fontSize:10, fontWeight:700, padding:'1px 5px', borderRadius:10,
-                      background: 'rgba(0,0,0,0.05)',
-                      color: '#555555',
-                      borderRadius: 10,
-                      marginLeft: 4, transition:'all .15s' }}>
-                      {f.count}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
+          <div className="dc-panel">
+            {/* Filter tabs row */}
+            <div className="dc-tab-row">
+              {[
+                { key:'all',      label:'All',      count:total },
+                { key:'healthy',  label:'Healthy',  count:healthy },
+                { key:'expiring', label:'Expiring', count:expiring },
+                { key:'expired',  label:'Expired',  count:expired },
+              ].map(f => (
+                <button key={f.key} onClick={() => setFilter(f.key)} className={`dc-tab${filter===f.key?' on':''}`}>
+                  {f.label}
+                  <span className="dc-tc">{f.count}</span>
+                </button>
+              ))}
+              <div style={{ marginLeft:'auto', display:'flex', gap:6, alignItems:'center', padding:'6px 0' }}>
                 <div style={{ position:'relative' }}>
-                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search domains..."
-                    style={{ background:'transparent', border:'1px solid rgba(63,185,80,0.2)', borderRadius:8, color:'#0077b6',
-                      fontSize:12, padding:'6px 10px 6px 30px', width:190, outline:'none', fontFamily:'inherit',
+                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search domains…"
+                    style={{ background:'#f5f8fc', border:'1px solid #dde4ef', borderRadius:7, color:'#003768',
+                      fontSize:11, padding:'6px 10px 6px 28px', width:180, outline:'none', fontFamily:"'JetBrains Mono',monospace",
                       transition:'border-color .15s' }}
-                    onFocus={e=>e.target.style.borderColor='#0077b6'}
-                    onBlur={e=>e.target.style.borderColor='rgba(0,0,0,0.07)'}/>
-                  <Globe size={12} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'#555555', pointerEvents:'none' }}/>
+                    onFocus={e=>e.target.style.borderColor='#003768'}
+                    onBlur={e=>e.target.style.borderColor='#dde4ef'}/>
+                  <Globe size={11} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:'#8a9ab5', pointerEvents:'none' }}/>
                 </div>
                 <ScanPqcButton onDone={load}/>
-                <button onClick={() => onIssue ? onIssue() : nav('/buy')}
-                  style={{ display:'flex', alignItems:'center', gap:5, background:'transparent', color:'#0077b6',
-                    border:'none', borderRadius:8, padding:'7px 14px', fontSize:11, fontWeight:700,
-                    cursor:'pointer', fontFamily:'inherit', boxShadow:'0 2px 6px rgba(14,127,192,0.3)',
-                    transition:'all .15s' }}
-                  onMouseEnter={e=>{e.currentTarget.style.background='#111111';e.currentTarget.style.boxShadow='0 4px 12px rgba(14,127,192,0.4)'}}
-                  onMouseLeave={e=>{e.currentTarget.style.background='#111111';e.currentTarget.style.boxShadow='0 2px 6px rgba(14,127,192,0.3)'}}>
+                <button onClick={() => onIssue ? onIssue() : nav('/buy')} className="dc-btn pri" style={{ display:'flex', alignItems:'center', gap:5 }}>
                   <Plus size={11}/> New SSL
                 </button>
               </div>
             </div>
 
             {loading ? (
-              <div style={{ padding:'clamp(16px,16vw,48px) 16px', textAlign:'center' }}>
-                <RefreshCw size={20} style={{ color:'#555555', animation:'spin 1s linear infinite' }}/>
-                <div style={{ fontSize:12, color:'#555555', marginTop:10 }}>Loading...</div>
+              <div style={{ padding:'48px 16px', textAlign:'center' }}>
+                <RefreshCw size={20} style={{ color:'#8a9ab5', animation:'v3pulse 1s linear infinite' }}/>
+                <div style={{ fontSize:12, color:'#8a9ab5', marginTop:10 }}>Loading…</div>
               </div>
             ) : visible.length === 0 ? (
-              <div style={{ padding:'clamp(16px,16vw,48px) 16px', textAlign:'center' }}>
-                <Shield size={24} style={{ color:'#0077b6', marginBottom:12 }}/>
-                <div style={{ fontSize:13, fontWeight:600, color:'#555555', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
-                <div style={{ fontSize:12, color:'#555555', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
+              <div style={{ padding:'48px 16px', textAlign:'center' }}>
+                <div style={{ width:44, height:44, borderRadius:10, background:'#e8f1fb', border:'1px solid #b8d0f0', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 12px' }}>
+                  <Shield size={20} color="#0061a7"/>
+                </div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#003768', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
+                <div style={{ fontSize:12, color:'#8a9ab5', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
                 {total===0 && (
-                  <button onClick={() => onIssue ? onIssue() : nav('/buy')}
-                    style={{ background:'transparent', color:'#0077b6', border:'none', borderRadius:7,
-                      padding:'9px 18px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+                  <button onClick={() => onIssue ? onIssue() : nav('/buy')} className="dc-btn pri" style={{ margin:'0 auto', display:'flex', alignItems:'center', gap:5 }}>
                     Issue your first certificate
                   </button>
                 )}
@@ -3579,12 +3568,11 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               <>
                 {/* Table header */}
                 <div style={{ display:'grid', gridTemplateColumns:'40px 1fr 180px 140px',
-                  gap:'0 0', padding:'8px 20px',
-                  background:'rgba(0,0,0,0.02)', borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
+                  padding:'8px 20px', background:'#fafbfc', borderBottom:'1px solid #e8edf5' }}>
                   <span/>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#555555', textTransform:'uppercase', letterSpacing:'0.6px' }}>Description</span>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#555555', textTransform:'uppercase', letterSpacing:'0.6px', textAlign:'right', paddingRight:24 }}>Expires</span>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#555555', textTransform:'uppercase', letterSpacing:'0.6px', textAlign:'right', paddingRight:10 }}>Status</span>
+                  <span style={{ fontSize:9, fontWeight:600, color:'#8a9ab5', textTransform:'uppercase', letterSpacing:'.07em', fontFamily:"'JetBrains Mono',monospace" }}>Description</span>
+                  <span style={{ fontSize:9, fontWeight:600, color:'#8a9ab5', textTransform:'uppercase', letterSpacing:'.07em', textAlign:'right', paddingRight:24, fontFamily:"'JetBrains Mono',monospace" }}>Expires</span>
+                  <span style={{ fontSize:9, fontWeight:600, color:'#8a9ab5', textTransform:'uppercase', letterSpacing:'.07em', textAlign:'right', paddingRight:10, fontFamily:"'JetBrains Mono',monospace" }}>Status</span>
                 </div>
                 {domainGroups.map((cert, idx) => {
                   // Check if this cert has an active pending/issued reissue order
