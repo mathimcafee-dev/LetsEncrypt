@@ -786,16 +786,13 @@ export default function Home({ nav }) {
       </DNSContext.Provider>
 
       {/* ── ARCHITECTURE ── */}
-      <section style={{background:'#1A2E2C',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'3px solid #3DBFB0'}}>
+      <section style={{background:'#005a8a',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:40,flexWrap:'wrap',gap:16}}>
               <div>
-                <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
-                  <span style={{width:6,height:6,borderRadius:'50%',background:'#E8897A',display:'inline-block'}}/>
-                  <span style={{fontSize:11,fontWeight:600,color:'#3DBFB0',letterSpacing:'0.1em',textTransform:'uppercase',fontFamily:MONO}}>How it works</span>
-                </div>
-                <H2 style={{marginBottom:8,maxWidth:400}}>CSR to live HTTPS in <span style={{color:'#E8897A'}}>one pipeline.</span></H2>
+                <Eyebrow>How it works</Eyebrow>
+                <H2 style={{marginBottom:8,maxWidth:360}}>CSR to live HTTPS in one pipeline.</H2>
                 <Body style={{maxWidth:380}}>Five automated steps. Zero manual work. Runs forever.</Body>
               </div>
               <button onClick={()=>nav('/auth')} style={{background:'#E8897A',border:'none',borderRadius:8,padding:'10px 22px',fontSize:12,fontWeight:700,color:'#ffffff',cursor:'pointer',fontFamily:F,alignSelf:'flex-start',transition:'background .12s'}} onMouseEnter={e=>e.currentTarget.style.background='#d97060'} onMouseLeave={e=>e.currentTarget.style.background='#E8897A'}>Get started →</button>
@@ -804,37 +801,26 @@ export default function Home({ nav }) {
           <FadeUp>
             <div style={{display:'flex',flexDirection:isMobile?'column':'row',gap:isMobile?10:0,alignItems:'stretch'}}>
               {[
-                {n:'01',title:'Issue request',desc:'Select domain and cert type. SSLVault generates the CSR automatically.',accent:'#3DBFB0',badge:'CSR auto-gen',
-                  icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3DBFB0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M8 14h4M8 17h6"/></svg>},
-                {n:'02',title:'DNS validation',desc:'DNS provider API adds the TXT challenge. Auto-validated in seconds.',accent:'#3DBFB0',badge:'Auto DNS',
-                  icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3DBFB0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a13 13 0 0 1 0 18M3 12h18"/></svg>},
-                {n:'03',title:'CA issues cert',desc:'GoGetSSL signs the cert. Stored AES-256 encrypted in CertVault.',accent:'#3DBFB0',badge:'AES-256',
-                  icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3DBFB0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>},
-                {n:'04',title:'Auto-install',desc:'VPS agent or cPanel UAPI deploys to Nginx / Apache within 2 minutes.',accent:'#3DBFB0',badge:'2-min deploy',
-                  icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3DBFB0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>},
-                {n:'05',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Runs forever, zero manual steps.',accent:'#E8897A',badge:'Always-on',coral:true,
-                  icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8897A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><path d="M21 3v9h-9"/></svg>},
+                {n:'01',icon:'🖥',title:'Issue request',desc:'Select domain and cert type. SSLVault generates the CSR automatically.',accent:'#3DBFB0'},
+                {n:'02',icon:'🌐',title:'DNS validation',desc:'DNS provider API adds the TXT challenge. Auto-validated in seconds.',accent:'#3DBFB0'},
+                {n:'03',icon:'🏛',title:'CA issues cert',desc:'GoGetSSL signs the cert. Stored AES-256 encrypted in CertVault.',accent:'#3DBFB0'},
+                {n:'04',icon:'⚡',title:'Auto-install',desc:'VPS agent or cPanel UAPI deploys to Nginx / Apache within 2 minutes.',accent:'#3DBFB0'},
+                {n:'05',icon:'🔄',title:'Lifecycle loop',desc:'Monitors expiry. Auto-renews 30 days before. Runs forever, zero manual steps.',accent:'#E8897A',bg:'rgba(232,137,122,0.15)',coral:true},
               ].map((s,i,arr)=>(
                 <div key={s.n} style={{flex:1,display:'flex',flexDirection:'row',alignItems:'stretch'}}>
-                  <div style={{flex:1,background:s.coral?'rgba(232,137,122,0.08)':'rgba(15,87,80,0.25)',border:`1px solid ${s.coral?'rgba(232,137,122,0.3)':'rgba(61,191,176,0.15)'}`,borderRadius:12,padding:'20px 16px',display:'flex',flexDirection:'column',gap:10,transition:'border-color .15s,transform .15s'}}
-                    onMouseEnter={e=>{e.currentTarget.style.borderColor=s.coral?'rgba(232,137,122,0.6)':'rgba(61,191,176,0.45)';e.currentTarget.style.transform='translateY(-2px)'}}
-                    onMouseLeave={e=>{e.currentTarget.style.borderColor=s.coral?'rgba(232,137,122,0.3)':'rgba(61,191,176,0.15)';e.currentTarget.style.transform='none'}}>
+                  <div style={{flex:1,background:s.bg||'rgba(255,255,255,0.07)',border:`1px solid ${s.coral?'rgba(232,137,122,0.35)':'rgba(255,255,255,0.12)'}`,borderRadius:12,padding:'20px 16px',position:'relative',display:'flex',flexDirection:'column',gap:10,boxShadow:'0 1px 3px rgba(0,0,0,0.15)'}}>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                       <span style={{fontSize:11,fontWeight:800,color:s.accent,letterSpacing:'.06em',fontFamily:MONO}}>{s.n}</span>
-                      <div style={{width:32,height:32,borderRadius:8,background:s.coral?'rgba(232,137,122,0.12)':'rgba(61,191,176,0.1)',display:'flex',alignItems:'center',justifyContent:'center'}}>{s.icon}</div>
+                      <span style={{fontSize:20}}>{s.icon}</span>
                     </div>
-                    <div style={{height:2,width:28,background:s.accent,borderRadius:99,opacity:.7}}/>
+                    <div style={{height:2,width:28,background:s.accent,borderRadius:99,opacity:.8}}/>
                     <div style={{fontSize:13,fontWeight:700,color:'rgba(255,255,255,0.92)',letterSpacing:'-.01em',lineHeight:1.3}}>{s.title}</div>
-                    <div style={{fontSize:11.5,color:'rgba(255,255,255,0.5)',lineHeight:1.65,flex:1}}>{s.desc}</div>
-                    <div style={{display:'inline-flex',alignItems:'center',gap:5,width:'fit-content',fontSize:10,fontWeight:600,letterSpacing:'.05em',background:s.coral?'rgba(232,137,122,0.12)':'rgba(61,191,176,0.1)',color:s.accent,padding:'3px 10px',borderRadius:20}}>
-                      <span style={{width:5,height:5,borderRadius:'50%',background:s.accent,display:'inline-block'}}/>
-                      {s.badge}
-                    </div>
+                    <div style={{fontSize:11.5,color:'rgba(255,255,255,0.55)',lineHeight:1.65,flex:1}}>{s.desc}</div>
                   </div>
                   {i<arr.length-1&&!isMobile&&(
-                    <div style={{width:24,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,paddingBottom:20}}>
-                      <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
-                        <path d="M0 5h11M7 1l5 4-5 4" stroke="rgba(61,191,176,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <div style={{width:28,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,paddingBottom:20}}>
+                      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+                        <path d="M0 6h13M9 1l5 5-5 5" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
                   )}
