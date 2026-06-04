@@ -315,30 +315,31 @@ function OverviewTab({ tok, onSwitchCA }) {
 function StatCard({ label, val, sub, color, bg, onClick }) {
   return (
     <div onClick={onClick} style={{ padding:'12px 14px', borderRadius:10,
-      background:bg||'var(--v2-surface)', border:'1px solid var(--v2-border)',
+      background:bg||'#0f1923', border:'1px solid rgba(255,255,255,0.07)',
       cursor:onClick?'pointer':'default' }}>
-      <div style={{ fontSize:11, color:'#888888', marginBottom:4 }}>{label}</div>
-      <div style={{ fontSize:22, fontWeight:700, color:color||'var(--v2-text-1)', fontFamily:'monospace', lineHeight:1 }}>{val}</div>
-      <div style={{ fontSize:10, color:'#888888', marginTop:4 }}>{sub}</div>
+      <div style={{ fontSize:10, color:'rgba(255,255,255,0.35)', marginBottom:4, textTransform:'uppercase', letterSpacing:'.05em', fontFamily:'monospace' }}>{label}</div>
+      <div style={{ fontSize:22, fontWeight:700, color:color||'rgba(255,255,255,0.9)', fontFamily:'monospace', lineHeight:1 }}>{val}</div>
+      <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', marginTop:4 }}>{sub}</div>
     </div>
   )
 }
 
 function FilterBar({ filters, active, onSelect, count }) {
   return (
-    <div style={{ display:'flex', alignItems:'center', gap:4, padding:'10px 14px',
-      borderBottom:'1px solid rgba(0,0,0,0.06)', flexWrap:'wrap' }}>
+    <div style={{ display:'flex', alignItems:'center', gap:4, padding:'8px 12px',
+      borderBottom:'1px solid rgba(255,255,255,0.06)', flexWrap:'wrap',
+      background:'#1a2533' }}>
       {filters.map(([id, lbl]) => (
         <button key={id} onClick={() => onSelect(id)}
-          style={{ padding:'4px 11px', borderRadius:6, fontSize:11, border:'none', fontFamily:'inherit',
+          style={{ padding:'4px 12px', borderRadius:20, fontSize:11, border:'none', fontFamily:'inherit',
             fontWeight:active===id?600:400, cursor:'pointer', transition:'all .15s',
-            background:active===id?'var(--v2-green)':'none',
-            color:active===id?'#000000':'var(--v2-text-3)' }}>
+            background:active===id?'#0077b6':'rgba(255,255,255,0.05)',
+            color:active===id?'#ffffff':'rgba(255,255,255,0.45)' }}>
           {lbl}
         </button>
       ))}
       {count !== undefined && (
-        <span style={{ marginLeft:'auto', fontSize:11, color:'#888888' }}>{count} certs</span>
+        <span style={{ marginLeft:'auto', fontSize:11, color:'rgba(255,255,255,0.3)', fontFamily:'monospace' }}>{count} certs</span>
       )}
     </div>
   )
@@ -354,23 +355,22 @@ function TableHead({ cols }) {
 }
 
 function CertTable({ cols, headers, children, loading, empty }) {
-  // children is an array from .map() — check its actual length
   const isEmpty = !children || (Array.isArray(children) && children.length === 0)
   return (
-    <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:10, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
+    <div style={{ background:'#0f1923', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
       <div style={{ display:'grid', gridTemplateColumns:cols, padding:'8px 14px',
-        background:'rgba(0,0,0,0.02)', borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
+        background:'#1a2533', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
         {headers.map(h => (
-          <div key={h} style={{ fontSize:10, fontWeight:600, color:'#888888',
-            textTransform:'uppercase', letterSpacing:'0.4px' }}>{h}</div>
+          <div key={h} style={{ fontSize:9, fontWeight:600, color:'rgba(255,255,255,0.3)',
+            textTransform:'uppercase', letterSpacing:'0.07em', fontFamily:'monospace' }}>{h}</div>
         ))}
       </div>
       {loading ? (
-        <div style={{ padding:40, textAlign:'center', color:'#888888', fontSize:13 }}>
+        <div style={{ padding:40, textAlign:'center', color:'rgba(255,255,255,0.35)', fontSize:13 }}>
           <Spinner/><span style={{ marginLeft:8 }}>Loading…</span>
         </div>
       ) : isEmpty ? (
-        <div style={{ padding:'min(36px,5vw) min(24px,4vw)', textAlign:'center', fontSize:12, color:'#888888' }}>{empty}</div>
+        <div style={{ padding:'min(36px,5vw) min(24px,4vw)', textAlign:'center', fontSize:12, color:'rgba(255,255,255,0.35)' }}>{empty}</div>
       ) : children}
     </div>
   )
@@ -485,22 +485,22 @@ function RapidSSLTab({ tok, nav }) {
           const color = expiryColor(d)
           return (
             <div key={i} style={{ display:'grid', gridTemplateColumns:COLS, padding:'10px 14px',
-              borderBottom:'1px solid rgba(0,0,0,0.06)', alignItems:'center',
-              background: i%2===0?'var(--v2-surface)':'var(--v2-bg)',
+              borderBottom:'1px solid rgba(255,255,255,0.04)', alignItems:'center',
+              background: i%2===0?'rgba(255,255,255,0.02)':'transparent',
               transition:'background .1s' }}
-              onMouseEnter={e=>e.currentTarget.style.background='var(--v2-surface-3)'}
-              onMouseLeave={e=>e.currentTarget.style.background=i%2===0?'var(--v2-surface)':'var(--v2-bg)'}>
-              <div style={{ fontFamily:'monospace', fontSize:12, fontWeight:600, color:'var(--v2-text-1)',
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.05)'}
+              onMouseLeave={e=>e.currentTarget.style.background=i%2===0?'rgba(255,255,255,0.02)':'transparent'}>
+              <div style={{ fontFamily:'monospace', fontSize:12, fontWeight:500, color:'rgba(255,255,255,0.85)',
                 overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                 {c.common_name || c.domain || '—'}
               </div>
-              <div style={{ fontSize:11, color:'#333333' }}>{c.product_name||'RapidSSL'}</div>
-              <div style={{ fontSize:11, color:'#333333' }}>{fmt(c.expiry_date)}</div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.45)' }}>{c.product_name||'RapidSSL'}</div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.45)' }}>{fmt(c.expiry_date)}</div>
               <div>
                 <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
-                  background: d===null?'var(--v2-bg)':d<=0?'rgba(0,119,182,0.08)':d<=30?'rgba(230,126,34,0.12)':'transparent',
-                  color: d===null?'var(--v2-text-3)':d<=0?'#0091d6':d<=30?'#0077b6':'#0091d6',
-                  border:`0.5px solid ${d===null?'var(--v2-border)':d<=0?'rgba(0,0,0,0.08)':d<=30?'rgba(230,126,34,0.4)':'rgba(0,119,182,0.2)'}` }}>
+                  background: d===null?'rgba(255,255,255,0.04)':d<=0?'rgba(231,76,60,0.15)':d<=30?'rgba(243,156,18,0.15)':'rgba(0,165,80,0.12)',
+                  color: d===null?'rgba(255,255,255,0.3)':d<=0?'#e74c3c':d<=30?'#f39c12':'#00a550',
+                  border:`1px solid ${d===null?'rgba(255,255,255,0.08)':d<=0?'rgba(231,76,60,0.3)':d<=30?'rgba(243,156,18,0.3)':'rgba(0,165,80,0.25)'}` }}>
                   {d===null?'—':d<=0?'Expired':`${d}d`}
                 </span>
               </div>
@@ -810,32 +810,28 @@ function DigiCertTab({ tok, nav }) {
 
   if (!apiKey) return (
     <div>
-      <div style={{ background: 'rgba(0,119,182,0.09)', border: '1px solid #fecaca', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
-        <div style={{ fontSize:13, fontWeight: 600, color: '#0091d6', marginBottom: 2 }}>DigiCert CertCentral — not connected</div>
-        <div style={{ fontSize:11, color: '#0077b6' }}>Connect your API key to access portfolio, PQC scoring, reissue, and CT log monitoring.</div>
+      <div style={{ background:'rgba(0,119,182,0.08)', border:'1px solid rgba(0,119,182,0.2)', borderRadius:10, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ fontSize:13, fontWeight:600, color:'#3dbfb0', marginBottom:3 }}>DigiCert CertCentral — not connected</div>
+        <div style={{ fontSize:12, color:'rgba(255,255,255,0.5)' }}>Connect your API key to access portfolio, PQC scoring, reissue, and CT log monitoring.</div>
       </div>
-      <SectionCard>
-        <label className="v2-label">CertCentral API key</label>
-        <div style={{ position: 'relative', marginBottom: 8 }}>
-          <input className="v2-input mono" type={showKey ? 'text' : 'password'}
-            value={draftKey} onChange={e => setDraftKey(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && connect()}
-            placeholder="Paste your DigiCert API key…"/>
-          <button onClick={() => setShowKey(v => !v)}
-            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#888888' }}>
+      <div style={{ background:'#0f1923', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:'20px' }}>
+        <label style={{ display:'block', fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:'.06em', marginBottom:8, fontFamily:'monospace' }}>CertCentral API key</label>
+        <div style={{ position:'relative', marginBottom:8 }}>
+          <input type={showKey ? 'text' : 'password'} value={draftKey} onChange={e=>setDraftKey(e.target.value)}
+            onKeyDown={e=>e.key==='Enter'&&connect()} placeholder="Paste your DigiCert API key…"
+            style={{ width:'100%', boxSizing:'border-box', padding:'10px 36px 10px 12px', borderRadius:8, border:'1px solid rgba(255,255,255,0.1)', background:'rgba(255,255,255,0.05)', color:'rgba(255,255,255,0.85)', fontSize:13, fontFamily:'monospace', outline:'none' }}/>
+          <button onClick={()=>setShowKey(v=>!v)} style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'rgba(255,255,255,0.4)' }}>
             {showKey ? <EyeOff size={13}/> : <Eye size={13}/>}
           </button>
         </div>
-        <div className="v2-label-help" style={{ marginBottom: 12 }}>
-          Get your key at <a href="https://dev.digicert.com/en/certcentral-apis/creating-an-api-key.html"
-            target="_blank" rel="noreferrer" style={{ color: '#111111', textDecoration: 'underline' }}>
-            dev.digicert.com</a>. Read-only scope is sufficient.
+        <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', marginBottom:14 }}>
+          Get your key at <a href="https://dev.digicert.com/en/certcentral-apis/creating-an-api-key.html" target="_blank" rel="noreferrer" style={{ color:'#3dbfb0' }}>dev.digicert.com</a>. Read-only scope is sufficient.
         </div>
-        {error && <div className="v2-alert v2-alert-error" style={{ marginBottom: 10 }}>{error}</div>}
-        <button className="v2-btn v2-btn-primary" onClick={connect} disabled={saving}>
+        {error && <div style={{ background:'rgba(231,76,60,0.1)', border:'1px solid rgba(231,76,60,0.2)', borderRadius:7, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#e74c3c' }}>{error}</div>}
+        <button onClick={connect} disabled={saving} style={{ padding:'9px 20px', borderRadius:8, background:'#0077b6', border:'none', color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit', display:'flex', alignItems:'center', gap:7 }}>
           {saving ? <><Spinner/> Connecting…</> : 'Connect DigiCert'}
         </button>
-      </SectionCard>
+      </div>
     </div>
   )
 
@@ -1074,37 +1070,34 @@ function SectigoTab({ tok }) {
 
   if (!creds) return (
     <div>
-      <div style={{ background: 'rgba(0,119,182,0.05)', border: '1px solid rgba(0,119,182,0.15)', borderRadius: 8,
-        padding: '12px 16px', marginBottom: 16 }}>
-        <div style={{ fontSize:13, fontWeight: 600, color: '#0091d6', marginBottom: 2 }}>Sectigo SCM — not connected</div>
-        <div style={{ fontSize:11, color: '#555555' }}>Connect your SCM credentials to access inventory, org status, and portfolio analytics.</div>
+      <div style={{ background:'rgba(0,119,182,0.08)', border:'1px solid rgba(0,119,182,0.2)', borderRadius:10, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ fontSize:13, fontWeight:600, color:'#3dbfb0', marginBottom:3 }}>Sectigo SCM — not connected</div>
+        <div style={{ fontSize:12, color:'rgba(255,255,255,0.5)' }}>Connect your SCM credentials to access inventory, org status, and portfolio analytics.</div>
       </div>
-      <SectionCard>
+      <div style={{ background:'#0f1923', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:'20px' }}>
         {[
-          { label: 'Customer URI', key: 'uri',   placeholder: 'https://cert-manager.com', type: 'text' },
-          { label: 'Login',        key: 'login', placeholder: 'your@email.com',           type: 'text' },
-          { label: 'Password',     key: 'pass',  placeholder: '••••••••',                 type: showPass ? 'text' : 'password' },
+          { label:'Customer URI', key:'uri',   placeholder:'https://cert-manager.com', type:'text' },
+          { label:'Login',        key:'login', placeholder:'your@email.com',           type:'text' },
+          { label:'Password',     key:'pass',  placeholder:'••••••••',                 type:showPass?'text':'password' },
         ].map(({ label, key, placeholder, type }) => (
-          <div key={key} style={{ marginBottom: 12 }}>
-            <label className="v2-label">{label}</label>
-            <div style={{ position: 'relative' }}>
-              <input className="v2-input" type={type} placeholder={placeholder}
-                value={draft[key]} onChange={e => setDraft(d => ({ ...d, [key]: e.target.value }))}/>
-              {key === 'pass' && (
-                <button onClick={() => setShowPass(v => !v)}
-                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                    background: 'none', border: 'none', cursor: 'pointer', color: '#888888' }}>
-                  {showPass ? <EyeOff size={13}/> : <Eye size={13}/>}
+          <div key={key} style={{ marginBottom:12 }}>
+            <label style={{ display:'block', fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:'.06em', marginBottom:6, fontFamily:'monospace' }}>{label}</label>
+            <div style={{ position:'relative' }}>
+              <input type={type} placeholder={placeholder} value={draft[key]} onChange={e=>setDraft(d=>({...d,[key]:e.target.value}))}
+                style={{ width:'100%', boxSizing:'border-box', padding:'10px 12px', borderRadius:8, border:'1px solid rgba(255,255,255,0.1)', background:'rgba(255,255,255,0.05)', color:'rgba(255,255,255,0.85)', fontSize:13, fontFamily:'inherit', outline:'none' }}/>
+              {key==='pass'&&(
+                <button onClick={()=>setShowPass(v=>!v)} style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'rgba(255,255,255,0.4)' }}>
+                  {showPass?<EyeOff size={13}/>:<Eye size={13}/>}
                 </button>
               )}
             </div>
           </div>
         ))}
-        {error && <div className="v2-alert v2-alert-error" style={{ marginBottom: 10 }}>{error}</div>}
-        <button className="v2-btn v2-btn-primary" onClick={connect} disabled={saving}>
-          {saving ? <><Spinner/> Connecting…</> : 'Connect Sectigo'}
+        {error && <div style={{ background:'rgba(231,76,60,0.1)', border:'1px solid rgba(231,76,60,0.2)', borderRadius:7, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#e74c3c' }}>{error}</div>}
+        <button onClick={connect} disabled={saving} style={{ padding:'9px 20px', borderRadius:8, background:'#0077b6', border:'none', color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit', display:'flex', alignItems:'center', gap:7 }}>
+          {saving?<><Spinner/> Connecting…</>:'Connect Sectigo'}
         </button>
-      </SectionCard>
+      </div>
     </div>
   )
 
