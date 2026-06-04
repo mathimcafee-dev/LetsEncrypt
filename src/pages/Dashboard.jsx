@@ -45,8 +45,16 @@ function dl(text, filename) {
 function CopyBtn({ text, label = 'Copy' }) {
   const [copied, setCopied] = useState(false)
   return (
-    <button className="v2-btn v2-btn-sm" onClick={() => {
+    <button onClick={() => {
       navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1800)
+    }} style={{
+      display:'inline-flex', alignItems:'center', gap:5,
+      padding:'5px 11px', borderRadius:6,
+      border: copied ? '1px solid rgba(22,160,104,0.4)' : '1px solid rgba(0,0,0,0.15)',
+      background: copied ? 'rgba(22,160,104,0.08)' : '#ffffff',
+      color: copied ? '#16a068' : '#444444',
+      fontSize:11, fontWeight:600, cursor:'pointer',
+      fontFamily:'inherit', transition:'all .15s',
     }}>
       {copied ? <Check size={10}/> : <Copy size={10}/>}
       {copied ? 'Copied' : label}
@@ -1846,8 +1854,8 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           {cert.cert_pem ? (
             <>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                padding:'12px 14px', borderRadius:8, border:'1px solid rgba(0,0,0,0.07)',
-                background:'rgba(0,0,0,0.02)' }}>
+                padding:'12px 14px', borderRadius:8, border:'1px solid rgba(0,0,0,0.09)',
+                background:'#fafaf9' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                   <FileText size={16} color="#1f5c4e"/>
                   <div>
@@ -1857,7 +1865,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                 </div>
                 <div style={{ display:'flex', gap:6 }}>
                   <CopyBtn text={cert.cert_pem} label="Copy"/>
-                  <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.cert_pem, cert.domain+'-cert.pem')}>
+                  <button onClick={() => dl(cert.cert_pem, cert.domain+'-cert.pem')} style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}}>
                     <Download size={10}/> Download
                   </button>
                 </div>
@@ -1875,7 +1883,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                   </div>
                   <div style={{ display:'flex', gap:6 }}>
                     <CopyBtn text={cert.ca_pem} label="Copy"/>
-                    <button className="v2-btn v2-btn-sm" onClick={() => dl(cert.ca_pem, cert.domain+'-ca.pem')}>
+                    <button onClick={() => dl(cert.ca_pem, cert.domain+'-ca.pem')} style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}}>
                       <Download size={10}/> Download
                     </button>
                   </div>
