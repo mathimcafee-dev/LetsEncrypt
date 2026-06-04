@@ -447,7 +447,7 @@ export default function Home({ nav }) {
               <Body>Eight core capability areas — built, not bolted on.</Body>
             </div>
           </FadeUp>
-          <div style={{display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
+          <div style={{display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:12}}>
             {[{icon:'⚡',title:'Certificate issuance',specs:['DV, OV, EV, Wildcard, SAN','RapidSSL · DigiCert trust chain','ACME v2 · RFC 8555','Issued in < 5 minutes'],badge:'ACME v2'},
               {icon:'🤖',title:'VPS persistent agent',specs:['systemd daemon · polls every 60s','Nginx + Apache auto-detect','Config test before reload','Cron dispatches jobs every 2 min'],badge:'systemd'},
               {icon:'🌐',title:'DNS automation',specs:['Cloudflare · Vercel · Route53','Namecheap · GoDaddy · DigitalOcean','Auto TXT/CNAME challenge','Cleanup after DCV completes'],badge:'DNS-01'},
@@ -459,29 +459,29 @@ export default function Home({ nav }) {
               {icon:'🏛',title:'Industry Intelligence',specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker'],badge:'PKI Hub'},
               {icon:'🔬',title:'CA Trust Store',specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm','CSV export · PEM download'],badge:'CCADB'},
             ].map(f=>(
-              <div key={f.title} style={{background:'#111111',padding:'20px',border:'1px solid rgba(0,0,0,0.07)',borderRadius:10}}>
-                  <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:12}}>
-                    <span style={{fontSize:20}}>{f.icon}</span>
-                    <Tag>{f.badge}</Tag>
-                  </div>
-                  <div style={{fontSize:13,fontWeight:600,color:T1,marginBottom:10}}>{f.title}</div>
-                  {f.specs.map(s=><div key={s} style={{display:'flex',alignItems:'flex-start',gap:8,marginBottom:5}}>
-                    <span style={{color:T3,fontSize:11,marginTop:1,flexShrink:0}}>—</span>
-                    <span style={{fontSize:12,color:T2,lineHeight:1.5}}>{s}</span>
-                  </div>)}
+              <div key={f.title} style={{background:'#ffffff',padding:'20px',border:'1px solid rgba(0,0,0,0.08)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.05)',display:'flex',flexDirection:'column',gap:0}}>
+                <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:10}}>
+                  <span style={{fontSize:22}}>{f.icon}</span>
+                  <span style={{fontSize:9,fontWeight:800,color:'#1f5c4e',background:'rgba(31,92,78,0.08)',border:'1px solid rgba(31,92,78,0.18)',borderRadius:4,padding:'2px 7px',letterSpacing:'.06em',fontFamily:MONO}}>{f.badge}</span>
                 </div>
+                <div style={{fontSize:13,fontWeight:700,color:'#111111',marginBottom:10,letterSpacing:'-.01em'}}>{f.title}</div>
+                {f.specs.map(s=><div key={s} style={{display:'flex',alignItems:'flex-start',gap:7,marginBottom:5}}>
+                  <span style={{color:'rgba(31,92,78,0.5)',fontSize:11,marginTop:2,flexShrink:0,fontWeight:600}}>—</span>
+                  <span style={{fontSize:12,color:'#555555',lineHeight:1.55}}>{s}</span>
+                </div>)}
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* ── SECURITY CONTROLS ── */}
-      <section style={{background:'#111111',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#f4f1ec',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
               <Eyebrow>Security controls</Eyebrow>
-              <H2 style={{marginBottom:12}}>Enterprise PKI controls. Not an afterthought.</H2>
+              <H2 style={{marginBottom:12,color:'#111111'}}>Enterprise PKI controls. Not an afterthought.</H2>
               <Body>CertVault and 47-Day Readiness are built into every account — not a paid add-on.</Body>
             </div>
           </FadeUp>
