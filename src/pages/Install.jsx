@@ -1,6 +1,7 @@
 // Install.jsx — SSLVault install guide
 // Owlish white · Inter · no CSS class dependencies
 import { useState } from 'react'
+import PageHero from '../components/PageHero'
 
 const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
@@ -101,34 +102,18 @@ export default function Install({ nav }) {
   const guide = GUIDES.find(g => g.id === active)
 
   return (
-    <div style={{ minHeight:'100vh', background:`#f7f5f0`, fontFamily:F, color:C.heading }}>
+    <div style={{ minHeight:'100vh', background:`#f8f9fa`, fontFamily:F, color:C.heading }}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0}`}</style>
 
-      {/* Nav */}
-      <header style={{ background:'rgba(8,12,20,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(0,0,0,0.05)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(16px,4vw,40px)', position:'sticky', top:0, zIndex:100 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }} onClick={() => nav('/')}>
-          <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <span style={{ fontSize:15, fontWeight:600, color:'#111111' }}>SSLVault</span>
-          <span style={{ fontSize:11, color:'#555555', fontFamily:MONO }}>/ Install Guide</span>
-        </div>
-        <div style={{ display:'flex', gap:8 }}>
-          <button onClick={() => nav('/knowledge-base')} style={{ background:'none', border:`1px solid rgba(0,0,0,0.07)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'#b5aea8', padding:'6px 14px', borderRadius:100 }}>Knowledge base</button>
-          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:600, color:'#111111', padding:'7px 18px', borderRadius:100 }}>Get started</button>
-        </div>
-      </header>
+      <PageHero
+        eyebrow="SSLVault · Setup"
+        title="Install Guide"
+        subtitle="Step-by-step instructions for every hosting environment. The persistent agent is recommended — SSH once, then everything is automated."
+        stats={[{n:'VPS',l:'Agent install'},{n:'cPanel',l:'UAPI auto-install'},{n:'2 min',l:'Cron interval'},{n:'Zero',l:'Manual steps'}]}
+        tags={['VPS agent','cPanel UAPI','Nginx · Apache','DNS-01 automation','Auto-renew','60s poll interval','Zero-touch']}
+      />
 
-      <div style={{ maxWidth:900, margin:'0 auto', padding:'clamp(40px,6vw,72px) clamp(20px,4vw,40px) 100px' }}>
-
-        {/* Header */}
-        <div style={{ marginBottom:48 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:14 }}>Installation</div>
-          <h1 style={{ fontSize:'clamp(28px,4vw,44px)', fontWeight:700, color:C.heading, letterSpacing:'-1px', lineHeight:1.1, marginBottom:16 }}>Install Guide</h1>
-          <p style={{ fontSize:15, color:C.body, maxWidth:540, lineHeight:1.8 }}>
-            Step-by-step instructions for every hosting environment. The persistent agent is recommended — SSH once, then everything is automated.
-          </p>
-        </div>
+      <div style={{ maxWidth:900, margin:'0 auto', padding:'clamp(32px,5vw,56px) clamp(20px,4vw,40px) 100px' }}>
 
         {/* Guide selector */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:10, marginBottom:40 }}>

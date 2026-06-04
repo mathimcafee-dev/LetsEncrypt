@@ -1,7 +1,8 @@
 // CAAChecker.jsx — Standalone CAA Record Checker page
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Shield, Search, CheckCircle, XCircle, AlertTriangle, Info, RefreshCw, ArrowLeft, Copy, Check } from 'lucide-react'
 import '../styles/design-v2.css'
+import PageHero from '../components/PageHero'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -70,29 +71,14 @@ export default function CAAChecker({ nav }) {
 
   return (
     <div className="v2-page">
-      <div className="v2-container" style={{ maxWidth:760 }}>
-
-        {/* Header */}
-        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:28 }}>
-          <button onClick={() => nav('/dashboard')}
-            style={{ display:'flex', alignItems:'center', gap:4, background:'none',
-              border:'none', color:'#888888', fontSize:13, cursor:'pointer', padding:0 }}>
-            <ArrowLeft size={14}/> Back
-          </button>
-        </div>
-
-        <div style={{ marginBottom:28 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-            <div style={{ width:36, height:36, borderRadius:8, background:'transparent',
-              display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Shield size={18} color="#0077b6"/>
-            </div>
-            <h1 className="v2-h1">CAA Record Checker</h1>
-          </div>
-          <p style={{ fontSize:13, color:'#888888', margin:0 }}>
-            Verify that your domain's DNS allows GoGetSSL to issue certificates — before you attempt issuance.
-          </p>
-        </div>
+      <PageHero
+        eyebrow="SSLVault · DNS Security"
+        title="CAA Record Checker"
+        subtitle="Verify that your domain's DNS allows GoGetSSL to issue certificates — before you attempt issuance. Catch misconfigurations instantly."
+        stats={[{n:'DNS',l:'Live lookup'},{n:'CAA',l:'RFC 8659'},{n:'GoGetSSL',l:'CA validated'},{n:'Free',l:'No login'}]}
+        tags={['RFC 8659','CAA DNS records','GoGetSSL CA','Issuance pre-check','Live DNS lookup','Parent inheritance']}
+      />
+      <div className="v2-container" style={{ maxWidth:760, paddingTop:24 }}>
 
         {/* Input */}
         <div style={{ background:'transparent', border:'1px solid var(--v2-border)', borderRadius:10, padding:'16px 18px', marginBottom:16 }}>
