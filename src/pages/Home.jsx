@@ -309,22 +309,7 @@ export default function Home({ nav }) {
 
   return (
     <div style={{fontFamily:F,position:'relative',background:`#f7f5f0`,color:T1,overflowX:'hidden'}}>
-      {/* Comodo-style concentric ring overlay */}
-      <div style={{position:'fixed',top:0,right:'-10%',width:'80vw',height:'100vh',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
-        {[600,500,400,320,240,160,90].map((s,i)=>(
-          <div key={i} style={{
-            position:'absolute',top:'50%',right:'5%',
-            width:s+'px',height:s+'px',
-            borderRadius:'50%',
-            transform:'translateY(-50%)',
-            border:`1.5px solid rgba(180,20,20,${0.12+i*0.04})`,
-            background:'transparent'
-          }}/>
-        ))}
-        {/* Radial glow spots */}
-        <div style={{position:'absolute',top:'30%',right:'20%',width:'300px',height:'300px',borderRadius:'50%',background:'radial-gradient(circle, rgba(31,92,78,0.08) 0%, transparent 70%)'}}/>
-        <div style={{position:'absolute',top:'55%',right:'5%',width:'200px',height:'200px',borderRadius:'50%',background:'radial-gradient(circle, rgba(31,92,78,0.06) 0%, transparent 70%)'}}/>
-      </div>
+
       <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(31,92,78,0.15);color:#111}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       {/* ── NAV ── */}

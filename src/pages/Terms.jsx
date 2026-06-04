@@ -9,7 +9,7 @@ export default function Terms({ nav }) {
 
   return (
     <div style={{minHeight:'100vh',background:bg,position:'relative'}}>
-      <div style={{position:'absolute',inset:0,backgroundImage:'radial-gradient(circle, rgba(15,23,42,0.04) 1px, transparent 1px)',backgroundSize:'24px 24px',pointerEvents:'none'}}/>
+      
 
       {/* HERO */}
       <section style={{position:'relative',padding:'70px 0 30px'}}>
