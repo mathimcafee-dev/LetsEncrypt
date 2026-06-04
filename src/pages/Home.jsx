@@ -360,10 +360,15 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── TICKER ── */}
-      <div style={{background:'#ffffff',borderBottom:`1px solid ${LN}`,overflow:'hidden',padding:'8px 0'}}>
-        <div style={{display:'flex',overflow:'hidden',maskImage:'linear-gradient(to right,transparent,black 8%,black 92%,transparent)'}}>
-          <div style={{display:'flex',gap:48,flexShrink:0,animation:'ticker 36s linear infinite',whiteSpace:'nowrap'}}>
-            {[...TICKER,...TICKER].map((p,i)=><span key={i} style={{fontSize:10.5,fontWeight:400,color:T3,letterSpacing:'0.05em',fontFamily:MONO}}><span style={{color:'#0077b6',marginRight:8}}>◆</span>{p}</span>)}
+      <div style={{background:'#0077b6',overflow:'hidden',padding:'0'}}>
+        <div style={{display:'flex',overflow:'hidden',WebkitMaskImage:'linear-gradient(to right,transparent,black 5%,black 95%,transparent)',maskImage:'linear-gradient(to right,transparent,black 5%,black 95%,transparent)'}}>
+          <div style={{display:'flex',gap:0,flexShrink:0,animation:'ticker 28s linear infinite',whiteSpace:'nowrap'}}>
+            {[...TICKER,...TICKER].map((p,i)=>(
+              <span key={i} style={{display:'inline-flex',alignItems:'center',gap:0,padding:'8px 0',fontFamily:MONO}}>
+                <span style={{fontSize:10,fontWeight:600,color:'rgba(255,255,255,0.9)',letterSpacing:'0.04em',padding:'0 20px'}}>{p}</span>
+                <span style={{width:1,height:10,background:'rgba(255,255,255,0.25)',flexShrink:0}}/>
+              </span>
+            ))}
           </div>
         </div>
       </div>
