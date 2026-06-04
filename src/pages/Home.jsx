@@ -121,37 +121,95 @@ function InventoryMockup() {
 }
 
 function CertVaultMockup() {
+  const [shown, setShown] = React.useState({})
+  const [animating, setAnimating] = React.useState({})
+  const [litBlocks, setLitBlocks] = React.useState({})
+  const [pulse, setPulse] = React.useState(true)
+
+  useEffect(()=>{
+    const iv = setInterval(()=>setPulse(p=>!p), 1200)
+    return ()=>clearInterval(iv)
+  },[])
+
+  const toggleKey = (id) => {
+    if(shown[id]){ setShown(s=>({...s,[id]:false})); setLitBlocks(l=>({...l,[id]:0})); return }
+    setAnimating(a=>({...a,[id]:true}))
+    let i=0
+    const iv = setInterval(()=>{
+      i++; setLitBlocks(l=>({...l,[id]:i}))
+      if(i>=12){ clearInterval(iv); setShown(s=>({...s,[id]:true})); setAnimating(a=>({...a,[id]:false})) }
+    }, 45)
+  }
+
+  const keys=[{d:'easysecurity.in',alg:'RSA-2048',rot:'2',last:'2h ago',id:'k1'},{d:'api.shop.com',alg:'EC-384',rot:'2',last:'Never',id:'k2'}]
+
   return (
-    <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
-      <div style={{background:'#f0f4fa',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:'1px solid rgba(255,255,255,0.12)'}}>
+    <div style={{background:'#0f1923',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.25)'}}>
+      {/* titlebar */}
+      <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
-        <span style={{fontSize:10,color:'rgba(0,0,0,0.45)',fontFamily:MONO,flex:1,textAlign:'center'}}>CertVault · Private key vault</span>
+        <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1,textAlign:'center'}}>CertVault · Private key vault</span>
+        <span style={{fontSize:9,color:'rgba(255,255,255,0.2)',fontFamily:MONO}}>v2.1</span>
       </div>
-      <div style={{padding:'14px'}}>
-        <div style={{padding:'8px 10px',background:'#f0f4fa',border:'1px solid rgba(0,0,0,0.08)',borderRadius:4,marginBottom:10,fontSize:11,color:'rgba(0,0,0,0.55)',fontFamily:MONO}}>
+      {/* enc header */}
+      <div style={{padding:'9px 14px',borderBottom:'1px solid rgba(255,255,255,0.06)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',gap:7,fontSize:10,color:'#3dbfb0',fontFamily:MONO}}>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#3dbfb0',opacity:pulse?1:0.3,transition:'opacity 0.4s'}}/>
           AES-256-GCM · Envelope encryption · Immutable audit
         </div>
-        {[{d:'easysecurity.in',alg:'RSA-2048',last:'2h ago'},{d:'api.shop.com',alg:'EC-384',last:'Never'}].map((k,i)=>(
-          <div key={k.d} style={{border:'1px solid rgba(0,0,0,0.07)',borderTop:'2px solid #0077b6',borderRadius:4,padding:'11px',marginBottom:i===0?6:0,background:'rgba(255,255,255,0.06)'}}>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-              <span style={{fontSize:12,fontWeight:500,color:'#111111',fontFamily:MONO}}>{k.d}</span>
-              <span style={{fontSize:9,fontWeight:600,color:'rgba(0,0,0,0.45)',background:'#f0f4fa',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>🔒 VAULT SECURED</span>
+        <span style={{fontSize:9,color:'rgba(255,255,255,0.3)',fontFamily:MONO}}>2 keys protected</span>
+      </div>
+      {/* key rows */}
+      <div style={{padding:'12px',display:'flex',flexDirection:'column',gap:8}}>
+        {keys.map(k=>{
+          const isShown = shown[k.id]
+          const isAnim = animating[k.id]
+          const lit = litBlocks[k.id]||0
+          return (
+            <div key={k.id} style={{background:isShown?'rgba(61,191,176,0.06)':'rgba(255,255,255,0.04)',border:`1px solid ${isShown?'rgba(61,191,176,0.3)':'rgba(255,255,255,0.07)'}`,borderRadius:8,padding:'12px',transition:'all 0.2s'}}>
+              {/* domain + badge */}
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
+                <span style={{fontSize:12,fontWeight:500,color:'#ffffff',fontFamily:MONO}}>{k.d}</span>
+                <span style={{fontSize:9,color:'#3dbfb0',background:'rgba(61,191,176,0.15)',border:'1px solid rgba(61,191,176,0.25)',padding:'2px 8px',borderRadius:20,fontFamily:MONO,display:'flex',alignItems:'center',gap:4}}>
+                  <div style={{width:5,height:5,borderRadius:'50%',background:'#3dbfb0'}}/> VAULT SECURED
+                </span>
+              </div>
+              {/* stats */}
+              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:6,marginBottom:10}}>
+                {[['Algorithm',k.alg],['Rotations',k.rot],['Last access',k.last]].map(([l,v])=>(
+                  <div key={l} style={{background:'rgba(255,255,255,0.04)',borderRadius:5,padding:'6px 8px'}}>
+                    <div style={{fontSize:9,color:'rgba(255,255,255,0.35)',textTransform:'uppercase',letterSpacing:'0.3px',marginBottom:3}}>{l}</div>
+                    <div style={{fontSize:11,fontWeight:500,color:'#ffffff',fontFamily:MONO}}>{v}</div>
+                  </div>
+                ))}
+              </div>
+              {/* key preview */}
+              <div style={{background:'rgba(255,255,255,0.03)',border:`1px solid ${isShown?'rgba(61,191,176,0.2)':'rgba(255,255,255,0.06)'}`,borderRadius:5,padding:'7px 10px',marginBottom:8,fontFamily:MONO,fontSize:10,color:isShown?'#3dbfb0':'rgba(255,255,255,0.2)',letterSpacing:isShown?0:'0.12em',lineHeight:1.5,display:'flex',alignItems:'center',justifyContent:'space-between',transition:'all 0.3s'}}>
+                <span style={{flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                  {isShown?'-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQ...+xK3mP9aQ2rZ':'•••••••••••••••••••••••••••••••••••••••••••••••••••••'}
+                </span>
+                <span style={{fontSize:9,marginLeft:8,flexShrink:0}}>{isShown?'REVEALED':'MASKED'}</span>
+              </div>
+              {/* encryption blocks animation */}
+              <div style={{display:'flex',alignItems:'center',gap:3,marginBottom:8}}>
+                {Array(12).fill(0).map((_,i)=>(
+                  <div key={i} style={{width:8,height:8,borderRadius:2,background:i<lit?'#3dbfb0':'rgba(255,255,255,0.12)',transition:'background 0.1s'}}/>
+                ))}
+                <span style={{marginLeft:6,fontSize:9,color:'rgba(255,255,255,0.3)',fontFamily:MONO}}>
+                  {isAnim?'decrypting…':isShown?'decrypted · in memory only':'encrypted at rest'}
+                </span>
+              </div>
+              {/* action buttons */}
+              <div style={{display:'flex',gap:6}}>
+                <button onClick={()=>toggleKey(k.id)} style={{fontSize:10,padding:'5px 10px',borderRadius:5,border:'1px solid rgba(61,191,176,0.4)',background:'rgba(61,191,176,0.15)',color:'#3dbfb0',cursor:'pointer',fontFamily:F,fontWeight:600}}>
+                  {isShown?'Hide key':'Reveal key'}
+                </button>
+                <button style={{fontSize:10,padding:'5px 10px',borderRadius:5,border:'1px solid rgba(255,255,255,0.2)',background:'rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.75)',cursor:'pointer',fontFamily:F}}>Rotate</button>
+                <button style={{fontSize:10,padding:'5px 10px',borderRadius:5,border:'1px solid rgba(255,255,255,0.2)',background:'rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.75)',cursor:'pointer',fontFamily:F}}>Audit log</button>
+              </div>
             </div>
-            <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:5,marginBottom:9}}>
-              {[['Algorithm',k.alg],['Rotations','2'],['Last access',k.last]].map(([l,v])=>(
-                <div key={l} style={{background:'#f0f4fa',borderRadius:3,padding:'5px 7px'}}>
-                  <div style={{fontSize:9,color:'rgba(0,0,0,0.45)',textTransform:'uppercase',letterSpacing:'0.3px',marginBottom:2}}>{l}</div>
-                  <div style={{fontSize:11,fontWeight:500,color:'#111111',fontFamily:MONO}}>{v}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{display:'flex',gap:5}}>
-              {['Reveal key','Rotate','Audit log'].map(t=>(
-                <button key={t} style={{fontSize:10,padding:'4px 9px',borderRadius:3,border:`1px solid ${t==='Reveal key'?'rgba(0,119,182,0.3)':'rgba(0,0,0,0.1)'}`,background:t==='Reveal key'?'rgba(0,119,182,0.15)':'rgba(0,0,0,0.05)',color:t==='Reveal key'?'#00a550':'#666666',cursor:'pointer',fontFamily:F}}>{t}</button>
-              ))}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
@@ -228,10 +286,111 @@ function SSLVaultTrustBadge({ compact = false }) {
   )
 }
 
+const DNS_PROVIDERS = [
+  {name:'Cloudflare',sub:'API Token · Zone:DNS:Edit',api:'PUT /zones/{id}/dns_records',zone:'myshop.com',ttl:'60s',time:'4.2s'},
+  {name:'Vercel',sub:'Access Token · Settings → Tokens',api:'POST /v2/domains/{domain}/records',zone:'vercel-dns',ttl:'60s',time:'3.8s'},
+  {name:'Route53',sub:'AWS IAM · Route53 write access',api:'ChangeResourceRecordSets',zone:'Z2FDTNDATAQYW2',ttl:'60s',time:'6.1s'},
+  {name:'Namecheap',sub:'API Key · IP whitelist required',api:'namecheap.domains.dns.setHosts',zone:'namecheap-api',ttl:'60s',time:'5.4s'},
+  {name:'GoDaddy',sub:'API Key + Secret',api:'PATCH /v1/domains/{domain}/records',zone:'godaddy-api',ttl:'600s',time:'7.2s'},
+  {name:'DigitalOcean',sub:'Personal Access Token',api:'POST /v2/domains/{domain}/records',zone:'do-api',ttl:'60s',time:'3.1s'},
+  {name:'Plesk',sub:'XML API',api:'POST /api/v2/cli/dns/call',zone:'plesk-api',ttl:'60s',time:'5.8s'},
+]
+
+const DNSContext = React.createContext({selected:null,setSelected:()=>{}})
+
+function DNSProviderSelector() {
+  const {selected,setSelected} = React.useContext(DNSContext)
+  return (
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(220px,100%),1fr))',gap:6}}>
+      {DNS_PROVIDERS.map(p=>{
+        const isSel = selected?.name===p.name
+        return (
+          <div key={p.name} onClick={()=>setSelected(p)} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 12px',background:isSel?'rgba(255,255,255,0.18)':'rgba(255,255,255,0.08)',border:`1px solid ${isSel?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.12)'}`,borderRadius:8,cursor:'pointer',transition:'all 0.15s'}}>
+            <div style={{width:6,height:6,borderRadius:'50%',background:isSel?'#3dbfb0':'rgba(255,255,255,0.3)',flexShrink:0,transition:'background 0.15s'}}/>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:12,fontWeight:600,color:'#ffffff'}}>{p.name}</div>
+              <div style={{fontSize:10,color:'rgba(255,255,255,0.5)',fontFamily:MONO,marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p.sub}</div>
+            </div>
+            {isSel&&<div style={{width:6,height:6,borderRadius:'50%',background:'#3dbfb0',flexShrink:0}}/>}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function DNSTerminal() {
+  const {selected} = React.useContext(DNSContext)
+  const [lines, setLines] = React.useState([])
+  const [progress, setProgress] = React.useState(0)
+  const [statusLabel, setStatusLabel] = React.useState('idle')
+  const [done, setDone] = React.useState(false)
+  const timerRef = React.useRef([])
+
+  useEffect(()=>{
+    timerRef.current.forEach(clearTimeout)
+    timerRef.current = []
+    if(!selected){ setLines([]); setProgress(0); setStatusLabel('idle'); setDone(false); return }
+    setLines([]); setProgress(0); setDone(false); setStatusLabel('running…')
+    const p = selected
+    const LOG = [
+      {prompt:'#', text:` DCV for renewal · ${p.zone}`, c:'rgba(255,255,255,0.25)', delay:0},
+      {prompt:'›', text:`Resolving zone: ${p.zone}`, c:'rgba(255,255,255,0.6)', delay:320},
+      {prompt:'›', text:p.api, c:'rgba(255,255,255,0.8)', delay:720},
+      {prompt:'', text:`↳ type:TXT  name:_acme-challenge`, c:'#3dbfb0', indent:true, delay:1020},
+      {prompt:'', text:`↳ content:xK3-mP9_aQ2rZ...  ttl:${p.ttl}`, c:'#3dbfb0', indent:true, delay:1220},
+      {prompt:'›', text:`Record created · TTL ${p.ttl}`, c:GRN, delay:1700},
+      {prompt:'›', text:`Propagated in ${p.time} ✓`, c:GRN, delay:2300},
+      {prompt:'›', text:`ACME challenge: verified ✓`, c:GRN, delay:2900},
+      {prompt:'›', text:`Challenge record removed ✓`, c:'rgba(255,255,255,0.5)', delay:3500},
+    ]
+    const steps = ['authenticating…','resolving zone…','calling API…','creating record…','polling…','validating…','cleaning up…','verified ✓']
+    LOG.forEach((l,i)=>{
+      const t = setTimeout(()=>{
+        setLines(prev=>[...prev,l])
+        setProgress(Math.round((i+1)/LOG.length*100))
+        setStatusLabel(steps[Math.min(i,steps.length-1)])
+        if(i===LOG.length-1) setDone(true)
+      }, l.delay)
+      timerRef.current.push(t)
+    })
+    return ()=>timerRef.current.forEach(clearTimeout)
+  },[selected])
+
+  return (
+    <div style={{background:'#0f1923',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.25)'}}>
+      <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
+        <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1}}>{selected?`dns-provider · ${selected.name.toLowerCase()} API`:'dns-provider · select a provider'}</span>
+        <span style={{fontSize:9,fontFamily:MONO,padding:'2px 8px',borderRadius:20,background:done?'rgba(0,165,80,0.2)':selected?'rgba(61,191,176,0.12)':'rgba(255,255,255,0.06)',color:done?GRN:selected?'#3dbfb0':'rgba(255,255,255,0.3)',transition:'all 0.3s'}}>{done?'done ✓':statusLabel}</span>
+      </div>
+      <div style={{padding:'14px',minHeight:200,display:'flex',flexDirection:'column',justifyContent:lines.length?'flex-start':'center',alignItems:lines.length?'stretch':'center'}}>
+        {lines.length===0?(
+          <div style={{textAlign:'center',opacity:0.4}}>
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.3)',fontFamily:MONO}}>← select a DNS provider</div>
+          </div>
+        ):lines.map((l,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'flex-start',gap:8,padding:'2px 0',fontSize:11,fontFamily:MONO,lineHeight:1.6}}>
+            <span style={{color:'rgba(255,255,255,0.25)',flexShrink:0,width:10}}>{l.prompt}</span>
+            <span style={{color:l.c,paddingLeft:l.indent?16:0}}>{l.text}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{background:'#1a2533',padding:'8px 14px',display:'flex',alignItems:'center',gap:10,borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+        <div style={{flex:1,height:3,background:'rgba(255,255,255,0.08)',borderRadius:2,overflow:'hidden'}}>
+          <div style={{height:'100%',background:done?GRN:'#3dbfb0',borderRadius:2,width:progress+'%',transition:'width 0.4s'}}/>
+        </div>
+        <span style={{fontSize:9,color:done?GRN:'#3dbfb0',fontFamily:MONO,minWidth:90,textAlign:'right',transition:'color 0.3s'}}>{statusLabel}</span>
+      </div>
+    </div>
+  )
+}
+
 export default function Home({ nav }) {
   const {isMobile,isTablet}=useIsMobile()
   const [certCount,setCertCount]=useState(null)
   const [count,setCount]=useState(0)
+  const [dnsProvider,setDnsProvider]=useState(null)
 
   useEffect(()=>{supabase.from('certificates').select('id',{count:'exact',head:true}).then(({count})=>count&&setCertCount(count))},[])
   useEffect(()=>{if(!certCount)return;let i=0;const iv=setInterval(()=>{i+=Math.ceil(certCount/60);if(i>=certCount){setCount(certCount);clearInterval(iv)}else setCount(i)},16);return()=>clearInterval(iv)},[certCount])
@@ -541,6 +700,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── DNS ── */}
+      <DNSContext.Provider value={{selected:dnsProvider,setSelected:setDnsProvider}}>
       <section style={{background:'#0077b6',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'center'}}>
@@ -549,32 +709,16 @@ export default function Home({ nav }) {
                 <Eyebrow>DNS automation</Eyebrow>
                 <H2 style={{marginBottom:14}}>Automated DNS-01 challenge across every major provider.</H2>
                 <Body style={{marginBottom:20}}>When issuing or renewing, SSLVault calls your DNS provider API to add the ACME challenge record, polls for propagation, validates, then cleans up — fully automatic.</Body>
-                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
-                  {[['Cloudflare','API Token · Zone:DNS:Edit'],['Vercel','Access Token · Settings → Tokens'],['Route53','AWS IAM · Route53 write access'],['Namecheap','API Key · IP whitelist required'],['GoDaddy','API Key + Secret'],['DigitalOcean','Personal Access Token'],['Plesk','XML API'],['+ more','Contact us']].map(([name,note])=>(
-                    <div key={name} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',background:'#f0f4fa',border:'1px solid rgba(0,0,0,0.08)',borderRadius:6}}>
-                      <div style={{width:4,height:4,borderRadius:'50%',background:T3,flexShrink:0}}/>
-                      <div><div style={{fontSize:12,fontWeight:500,color:'#111111'}}>{name}</div><div style={{fontSize:10.5,color:'rgba(0,0,0,0.45)',fontFamily:MONO}}>{note}</div></div>
-                    </div>
-                  ))}
-                </div>
+                <DNSProviderSelector/>
               </div>
             </FadeUp>
             <FadeUp delay={80}>
-              <Term title="dns-provider · Cloudflare API" lines={[
-                {prompt:'#',text:' DCV for renewal · api.myshop.com',c:'rgba(0,0,0,0.1)'},
-                {prompt:'›',text:'Resolving zone: myshop.com',c:T2},
-                {prompt:'›',text:'PUT /zones/{id}/dns_records',c:'rgba(255,255,255,0.75)'},
-                {text:'↳ type:TXT  name:_acme-challenge',c:T3,indent:true},
-                {text:'↳ content:xK3-mP9_aQ2rZ...  ttl:60',c:T3,indent:true},
-                {prompt:'›',text:'Record created · TTL 60s',c:GRN},
-                {prompt:'›',text:'Propagated in 4.2s ✓',c:GRN},
-                {prompt:'›',text:'ACME challenge: verified ✓',c:GRN},
-                {prompt:'›',text:'Challenge record removed ✓',c:T2},
-              ]}/>
+              <DNSTerminal/>
             </FadeUp>
           </div>
         </div>
       </section>
+      </DNSContext.Provider>
 
       {/* ── ARCHITECTURE ── */}
       <section style={{background:'#005a8a',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
