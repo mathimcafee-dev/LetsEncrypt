@@ -590,7 +590,7 @@ export default function CATrustExplorer({ nav }) {
           {syncMsg && <span style={{ color: 'var(--v2-amber-text)', fontWeight: 500 }}>{syncMsg}</span>}
         </div>
         <div style={{ display: 'flex', gap: 7 }}>
-          <button className="v2-btn v2-btn-sm" style={{ gap: 5 }}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', gap: 5 }}
             onClick={() => {
               if (!filtered.length) return
               const headers = ['Common Name','Owner','Country','Status','Algorithm','Key Size','Valid From','Valid To','Trust Store']
@@ -608,7 +608,7 @@ export default function CATrustExplorer({ nav }) {
             }}>
             <Download size={13} /> Export CSV
           </button>
-          <button className="v2-btn v2-btn-sm" onClick={triggerSync} disabled={syncing} style={{ gap: 5 }}>
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={triggerSync} disabled={syncing} style={{ gap: 5 }}>
             <RefreshCw size={13} className={syncing ? 'spin' : ''} />
             {syncing ? 'Syncing…' : 'Sync now'}
           </button>
@@ -775,10 +775,10 @@ export default function CATrustExplorer({ nav }) {
                 <div className="dp-header">
                   <div className="dp-title">{selected.common_name || selected.ca_owner}</div>
                   <div className="dp-actions">
-                    <button className="v2-btn v2-btn-sm" onClick={() => copyText(selected.sha256_fingerprint || '')} style={{ gap: 5 }}>
+                    <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => copyText(selected.sha256_fingerprint || '')} style={{ gap: 5 }}>
                       <Copy size={12} /> {copied ? 'Copied!' : 'SHA-256'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" style={{ gap: 5 }} disabled={pemDownloading} onClick={async () => {
+                    <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', gap: 5 }} disabled={pemDownloading} onClick={async () => {
                         if (!selected?.sha256_fingerprint) return
                         setPemDownloading(true)
                         try {
@@ -797,7 +797,7 @@ export default function CATrustExplorer({ nav }) {
                       }}>
                       <FileDown size={12} /> {pemDownloading ? 'Fetching…' : 'Download PEM'}
                     </button>
-                    <button className="v2-btn v2-btn-sm" style={{ background:'#f4f1ec', color: '#111111', borderColor: '#111111', gap: 5 }}
+                    <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', background:'#f4f1ec', color: '#111111', borderColor: '#111111', gap: 5 }}
                       onClick={() => {
                         const fp = selected?.sha256_fingerprint || selected?.fingerprint
                         if (fp) window.open(`https://crt.sh/?q=${encodeURIComponent(fp)}`, '_blank')

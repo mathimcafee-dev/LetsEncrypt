@@ -759,13 +759,13 @@ X-DC-DEVKEY: ••••••••••••••••
           {error && <div className="v2-callout error" style={{ marginBottom: 12, fontSize:12 }}>{error}</div>}
 
           <div style={{ display: 'flex', gap: 10 }}>
-            <button className="v2-btn" onClick={() => setPreview(p => !p)} style={{ fontSize:12 }}>
+            <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => setPreview(p => !p)} style={{ fontSize:12 }}>
               {preview ? 'Hide' : 'Show'} API preview
             </button>
-            <button className="v2-btn" onClick={() => { setCertId(''); setPreview(false); setError('') }}
+            <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => { setCertId(''); setPreview(false); setError('') }}
               style={{ fontSize:12 }}>Clear</button>
             <button className="v2-btn" style={{ background: 'rgba(31,92,78,0.09)', color: '#1f5c4e',
-              border: '0.5px solid #fecaca', fontSize:12 }}
+              border: '1px solid #fecaca', fontSize:12 }}
               onClick={execute} disabled={busy || !certId.trim()}>
               {busy ? <Spinner/> : <Shield size={12}/>} Submit revocation request
             </button>

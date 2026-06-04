@@ -19,7 +19,7 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 // ── Tab accent colours ────────────────────────────────────────────────
 const TAB_COLORS = {
   vault:   { color: '#1f5c4e', bg: 'rgba(31,92,78,0.09)',    border: 'rgba(31,92,78,0.25)'   },
-  bind:    { color: '#16a068', bg: 'rgba(22,160,104,0.12)',  border: 'rgba(74,222,128,0.35)'  },
+  bind:    { color: '#16a068', bg: 'rgba(22,160,104,0.12)',  border: 'rgba(22,160,104,0.25)'  },
   archive: { color: '#9a6400', bg: 'rgba(154,100,0,0.12)',  border: 'rgba(251,191,36,0.35)'  },
   audit:   { color: '#1f5c4e', bg: 'rgba(31,92,78,0.07)',    border: 'rgba(31,92,78,0.2)'    },
 }
@@ -574,7 +574,7 @@ export default function KeyIntelligence({ nav }) {
         </div>
 
         {/* Security strip */}
-        <div style={{ background: 'rgba(192,57,43,0.06)', border: '1px solid rgba(192,57,43,0.22)', borderRadius: 9, padding: '10px 16px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ background: 'rgba(31,92,78,0.06)', border: '1px solid rgba(31,92,78,0.15)', borderRadius: 9, padding: '10px 16px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ position: 'relative', flexShrink: 0, width: 8, height: 8 }}>
             <div style={{ position: 'absolute', inset: '-3px', borderRadius: '50%', background: 'rgba(22,160,104,0.12)', animation: 'dotpulse 2s ease infinite' }} />
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a068', position: 'relative' }} />
@@ -587,7 +587,7 @@ export default function KeyIntelligence({ nav }) {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8, marginBottom: 20 }}>
           {[
-            { label: 'Active keys',   val: activeKeys.length,   color: '#818cf8' },
+            { label: 'Active keys',   val: activeKeys.length,   color: '#1f5c4e' },
             { label: 'Verified live', val: bindLive,            color: '#16a068' },
             { label: 'Archived keys', val: archivedKeys.length, color: '#9a6400' },
             { label: 'Bind alerts',   val: bindAlerts,          color: bindAlerts > 0 ? '#1f5c4e' : '#b0a8a0' },
@@ -602,13 +602,13 @@ export default function KeyIntelligence({ nav }) {
 
         {/* Banners */}
         {rotateError && (
-          <div style={{ background: 'rgba(31,92,78,0.09)', border: '0.5px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#1f5c4e' }}>
+          <div style={{ background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#1f5c4e' }}>
             <AlertTriangle size={13} style={{ flexShrink: 0 }} /><span style={{ flex: 1 }}>{rotateError}</span>
             <button onClick={() => setRotateError('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1f5c4e', fontSize: 16, lineHeight: 1 }}>×</button>
           </div>
         )}
         {rotateSuccess && (
-          <div style={{ background: 'transparent', border: '0.5px solid rgba(74,222,128,0.3)', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#16a068' }}>
+          <div style={{ background: 'transparent', border: '1px solid rgba(22,160,104,0.22)', borderRadius: 8, padding: '10px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#16a068' }}>
             <CheckCircle size={13} style={{ flexShrink: 0 }} /><span style={{ flex: 1 }}>{rotateSuccess}</span>
             <button onClick={() => setRotateSuccess('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#16a068', fontSize: 16, lineHeight: 1 }}>×</button>
           </div>
@@ -731,7 +731,7 @@ export default function KeyIntelligence({ nav }) {
               <div style={{ flex: 1, fontSize: 12, color: '#333333', fontWeight: 500 }}>
                 {auditFilter ? <>Audit log for <strong>{auditFilter}</strong><button onClick={() => setAuditFilter(null)} style={{ marginLeft: 8, fontSize: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#888888' }}>(clear)</button></> : `All events · ${audit.length} total`}
               </div>
-              <button className="v2-btn v2-btn-sm" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11 }}>
+              <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11 }}>
                 <Download size={10} /> Export CSV
               </button>
             </div>
@@ -752,13 +752,13 @@ export default function KeyIntelligence({ nav }) {
                 <div style={{ fontSize: 11, color: '#888888', marginTop: 3 }}>A new certificate and key will be issued and deployed automatically</div>
               </div>
               <div style={{ padding: '16px 20px' }}>
-                <div style={{ background: 'rgba(74,222,128,0.06)', border: '0.5px solid rgba(74,222,128,0.2)', borderRadius: 8, padding: '10px 12px', marginBottom: 14, fontSize: 11, color: '#16a068' }}>
+                <div style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(22,160,104,0.14)', borderRadius: 8, padding: '10px 12px', marginBottom: 14, fontSize: 11, color: '#16a068' }}>
                   <CheckCircle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }} /><strong>Zero downtime</strong> — new cert installs before old key is archived. 30-day rollback window.
                 </div>
                 <div style={{ fontSize: 13, color: '#333333', lineHeight: 1.6 }}>This dispatches a renew job for <strong>{rotateConfirm.domain}</strong>. The old key is archived immediately after the new key is stored.</div>
               </div>
               <div style={{ padding: '12px 20px', borderTop: '1px solid rgba(0,0,0,0.06)', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                <button className="v2-btn v2-btn-sm" onClick={() => setRotateConfirm(null)}>Cancel</button>
+                <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => setRotateConfirm(null)}>Cancel</button>
                 <button onClick={() => handleRotate(rotateConfirm)} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', background: '#1f5c4e', color: '#fff', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                   <RotateCcw size={12} /> Rotate now
                 </button>

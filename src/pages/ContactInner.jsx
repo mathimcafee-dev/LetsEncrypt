@@ -25,7 +25,7 @@ export default function ContactInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Main contact card */}
-      <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #2a6b5c' }}>
+      <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #2a6b5c' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
           <Mail size={14} color="#1f5c4e"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.5px' }}>Contact</span>
@@ -40,14 +40,14 @@ export default function ContactInner({ nav }) {
           <a href={`mailto:${email}`} style={{ display:'inline-flex', alignItems:'center', gap:7, background:'#f4f1ec', color:'#111111', textDecoration:'none', borderRadius:6, padding:'9px 16px', fontSize:13, fontWeight:500 }}>
             <Mail size={13}/> {email}
           </a>
-          <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#333333', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 12px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={copy} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#333333', border:'1px solid #e8edf2', borderRadius:6, padding:'9px 12px', fontSize:12, cursor:'pointer', fontFamily:'inherit' }}>
             {copied ? <><Check size={12}/> Copied</> : <><Copy size={12}/> Copy</>}
           </button>
         </div>
       </div>
 
       {/* Response time note */}
-      <div style={{ display:'flex', alignItems:'center', gap:8, background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'14px 18px', marginBottom:16 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:8, background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'14px 18px', marginBottom:16 }}>
         <Clock size={13} color="#777777"/>
         <span style={{ fontSize:12, color:'#333333' }}>Typical response time: <strong style={{ color:'#111111' }}>1–2 business days</strong></span>
         <span style={{ marginLeft:'auto', fontSize:11, color:'#888888' }}>Based in Netherlands (CET)</span>
@@ -56,7 +56,7 @@ export default function ContactInner({ nav }) {
       {/* Topics grid */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:10 }}>
         {TOPICS.map(({ icon:Icon, label, body }) => (
-          <div key={label} style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'16px 18px' }}>
+          <div key={label} style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'16px 18px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
               <Icon size={13} color="#1f5c4e"/>
               <span style={{ fontSize:12, fontWeight:500, color:'#111111' }}>{label}</span>

@@ -666,7 +666,7 @@ export default function Home({ nav }) {
                   <div style={{display:'flex',alignItems:'center',gap:9}}>
                     <span style={{fontSize:13}}>🔗</span>
                     <span style={{fontSize:12,fontWeight:500,color:T1,fontFamily:MONO}}>CertBind</span>
-                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(22,160,104,0.09)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
+                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(22,160,104,0.09)',border:'1px solid rgba(22,160,104,0.14)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
                   </div>
                   <span style={{fontSize:10.5,color:T3,fontFamily:MONO}}>4/4 domains bound</span>
                 </Card>

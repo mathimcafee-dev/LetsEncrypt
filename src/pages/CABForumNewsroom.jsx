@@ -177,7 +177,7 @@ function BallotRow({ b, onClick }) {
         {b.br_version && (
           <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10,
             color:'var(--v2-green-text)', background:'var(--v2-green-bg)',
-            padding:'1px 6px', borderRadius:4, border:'0.5px solid var(--v2-green-border)' }}>
+            padding:'1px 6px', borderRadius:4, border:'1px solid var(--v2-green-border)' }}>
             {b.br_version}
           </span>
         )}
@@ -386,10 +386,10 @@ export default function CABForumNewsroom({ nav }) {
           {syncMsg && <span style={{ color: 'var(--v2-amber-text)', fontWeight: 500 }}>{syncMsg}</span>}
         </div>
         <div style={{ display: 'flex', gap: 7 }}>
-          <button className="v2-btn v2-btn-sm" onClick={triggerSync} disabled={syncing} style={{ gap: 5 }}>
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={triggerSync} disabled={syncing} style={{ gap: 5 }}>
             <RefreshCw size={13} /> {syncing ? 'Syncing…' : 'Sync now'}
           </button>
-          <a href="https://cabforum.org" target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ gap: 5, textDecoration: 'none' }}>
+          <a href="https://cabforum.org" target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', gap: 5, textDecoration: 'none' }}>
             <ExternalLink size={12} /> CAB Forum ↗
           </a>
         </div>
@@ -402,7 +402,7 @@ export default function CABForumNewsroom({ nav }) {
           <span className="ca-text">200-day certificate validity limit — enforcement date approaching</span>
           <span className="ca-days">{urgentDays} days left</span>
           <span style={{ fontFamily: S.mono, fontSize:11, color: 'var(--v2-amber-text)' }}>March 15, 2026 · SC081v3</span>
-          <button className="v2-btn v2-btn-sm" onClick={() => setTab('deadlines')} style={{ fontSize:10, padding: '3px 9px' }}>See all deadlines →</button>
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => setTab('deadlines')} style={{ fontSize:10, padding: '3px 9px' }}>See all deadlines →</button>
         </div>
       )}
 
@@ -468,7 +468,7 @@ export default function CABForumNewsroom({ nav }) {
               <div className="ballot-detail-panel">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                   <div className="bdp-title">{selectedBallot.ballot_id} — {selectedBallot.title}</div>
-                  <button className="v2-btn v2-btn-sm" onClick={() => setSelectedBallot(null)} style={{ fontSize:11, flexShrink: 0 }}>✕ Close</button>
+                  <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => setSelectedBallot(null)} style={{ fontSize:11, flexShrink: 0 }}>✕ Close</button>
                 </div>
                 {selectedBallot.plain_english && (
                   <div className="v2-callout tip" style={{ marginBottom: 12 }}>

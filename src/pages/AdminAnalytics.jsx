@@ -90,7 +90,7 @@ export default function AdminAnalytics({ user }) {
             <h1 className="v2-h1" style={{fontSize:24}}>Admin analytics</h1>
             <p className="v2-subtitle" style={{fontSize:13,marginTop:4}}>Live platform metrics — certificate portfolio health and operational status</p>
           </div>
-          <button className="v2-btn" onClick={load}><RefreshCw size={13}/> Refresh</button>
+          <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={load}><RefreshCw size={13}/> Refresh</button>
         </div>
 
         {/* Signup requests */}
@@ -100,7 +100,7 @@ export default function AdminAnalytics({ user }) {
               <div style={{fontSize:15,fontWeight:700,color:'#111111'}}>Signup requests</div>
               <div style={{fontSize:12,color:'#888888',marginTop:2}}>New users waiting for your approval</div>
             </div>
-            <button className="v2-btn v2-btn-sm" onClick={loadRequests} disabled={reqLoading}>
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={loadRequests} disabled={reqLoading}>
               <RefreshCw size={11}/> Refresh
             </button>
           </div>
@@ -152,7 +152,7 @@ export default function AdminAnalytics({ user }) {
                         ✓ Approve
                       </button>
                       <button onClick={()=>handleReject(req.user_id,req.email)}
-                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid #fecaca',
+                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'1px solid #fecaca',
                           background:'rgba(31,92,78,0.09)',color:'#1f5c4e',cursor:'pointer',fontWeight:600}}>
                         ✗ Reject
                       </button>
@@ -228,7 +228,7 @@ export default function AdminAnalytics({ user }) {
 
         {/* Expiry urgency */}
         {stats.expiring7 > 0 && (
-          <div style={{background:'rgba(31,92,78,0.09)',border:'0.5px solid #fecaca',borderRadius:10,padding:'14px 18px',marginBottom:20,display:'flex',gap:12,alignItems:'flex-start'}}>
+          <div style={{background:'rgba(31,92,78,0.09)',border:'1px solid #fecaca',borderRadius:10,padding:'14px 18px',marginBottom:20,display:'flex',gap:12,alignItems:'flex-start'}}>
             <AlertTriangle size={16} style={{color:'#1f5c4e',flexShrink:0,marginTop:2}}/>
             <div>
               <div style={{fontSize:13,fontWeight:500,color:'#1f5c4e',marginBottom:3}}>{stats.expiring7} certificate{stats.expiring7!==1?'s':''} expiring within 7 days</div>

@@ -296,7 +296,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
   const card = { background:'#f4f1ec', border:'1px solid rgba(31,92,78,0.2)', borderRadius:14, width:'100%', maxWidth:520, maxHeight:'90vh', overflowY:'auto', boxShadow:'0 24px 64px rgba(0,0,0,0.6)' }
   const header = { padding:'18px 22px 14px', borderBottom:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, background:'#f4f1ec', zIndex:10, borderRadius:'14px 14px 0 0' }
   const body = { padding:'20px 22px 24px' }
-  const certBanner = { background:'rgba(22,160,104,0.07)', border:'0.5px solid rgba(74,222,128,0.2)', borderRadius:8, padding:'10px 14px', marginBottom:20, display:'flex', alignItems:'center', gap:10 }
+  const certBanner = { background:'rgba(22,160,104,0.07)', border:'1px solid rgba(22,160,104,0.14)', borderRadius:8, padding:'10px 14px', marginBottom:20, display:'flex', alignItems:'center', gap:10 }
 
   return (
     <div style={modalBg}>
@@ -444,7 +444,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
               )}
 
               {/* What happens */}
-              <div style={{marginBottom:20,background:'rgba(74,222,128,0.06)',border:'1px solid rgba(74,222,128,0.15)',borderRadius:8,padding:'12px 14px'}}>
+              <div style={{marginBottom:20,background:'rgba(74,222,128,0.06)',border:'1px solid rgba(22,160,104,0.1)',borderRadius:8,padding:'12px 14px'}}>
                 <div style={{fontSize:11,fontWeight:700,color:'#16a068',marginBottom:8}}>What happens during installation</div>
                 {[
                   'SSLVault connects to your cPanel server over HTTPS (no SSH needed)',
@@ -493,7 +493,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
               {phase === 'done' && (
                 <div style={{marginTop:14}}>
                   {/* Main success card */}
-                  <div style={{background:'rgba(22,160,104,0.07)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:8,padding:'14px',marginBottom:12}}>
+                  <div style={{background:'rgba(22,160,104,0.07)',border:'1px solid rgba(22,160,104,0.14)',borderRadius:8,padding:'14px',marginBottom:12}}>
                     <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:10}}>
                       <CheckCircle size={16} color='#16a068'/>
                       <span style={{fontSize:13,fontWeight:700,color:'#16a068'}}>Certificate installed successfully</span>
@@ -522,13 +522,13 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                           <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:20,
                             background: fingerprints.match ? 'rgba(22,160,104,0.12)' : 'rgba(192,57,43,0.1)',
                             color: fingerprints.match ? '#16a068' : '#1f5c4e',
-                            border: `1px solid ${fingerprints.match ? 'rgba(74,222,128,0.3)' : 'rgba(192,57,43,0.2)'}` }}>
+                            border: `1px solid ${fingerprints.match ? 'rgba(22,160,104,0.22)' : 'rgba(192,57,43,0.2)'}` }}>
                             {fingerprints.match ? '✓ KEY MATCHES CERT' : '✗ MISMATCH'}
                           </span>
                         )}
                         {!fingerprints.key_sha256 && (
                           <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:20,
-                            background:'rgba(22,160,104,0.12)',color:'#16a068',border:'1px solid rgba(74,222,128,0.3)'}}>
+                            background:'rgba(22,160,104,0.12)',color:'#16a068',border:'1px solid rgba(22,160,104,0.22)'}}>
                             ✓ CERT VERIFIED
                           </span>
                         )}

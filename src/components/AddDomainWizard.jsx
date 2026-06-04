@@ -351,7 +351,7 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
                   {installCmd.cmd}
                   <CopyButton text={installCmd.cmd} />
                 </div>
-                <div style={{ marginTop: 12, background: 'rgba(74,222,128,0.06)', border: '0.5px solid rgba(74,222,128,0.2)', borderRadius: 7, padding: '9px 12px', fontSize: 11, color: '#888888', lineHeight: 1.6 }}>
+                <div style={{ marginTop: 12, background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(22,160,104,0.14)', borderRadius: 7, padding: '9px 12px', fontSize: 11, color: '#888888', lineHeight: 1.6 }}>
                   The agent connects back automatically. No server credentials needed — it registers itself once installed.
                 </div>
               </>
@@ -415,7 +415,7 @@ function StepDone({ data, onClose, nav }) {
     return (
       <div style={S.card}>
         <div style={{ padding: '32px 24px', textAlign: 'center' }}>
-          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(22,160,104,0.09)', border: '0.5px solid rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(22,160,104,0.09)', border: '1px solid rgba(22,160,104,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
             <Check size={22} color="#4ade80" />
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Server connected!</div>
@@ -448,7 +448,7 @@ function StepDone({ data, onClose, nav }) {
     <div style={S.card}>
       <div style={{ padding: 24 }}>
         <div style={{ textAlign: 'center', paddingBottom: 18 }}>
-          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(22,160,104,0.09)', border: '0.5px solid rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(22,160,104,0.09)', border: '1px solid rgba(22,160,104,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
             <Check size={22} color="#4ade80" />
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Domain added successfully</div>

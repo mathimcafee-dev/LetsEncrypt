@@ -27,10 +27,10 @@ export default function DeveloperInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Profile card */}
-      <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:14, borderLeft:'3px solid #2a6b5c' }}>
+      <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:14, borderLeft:'3px solid #2a6b5c' }}>
         <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:24, alignItems:'start' }}>
           <img src={portrait} alt="Mathivanan Kathirvel"
-            style={{ width:80, height:80, borderRadius:8, objectFit:'cover', border:'0.5px solid #e8edf2', flexShrink:0 }}/>
+            style={{ width:80, height:80, borderRadius:8, objectFit:'cover', border:'1px solid #e8edf2', flexShrink:0 }}/>
           <div>
             <div style={{ fontSize:18, fontWeight:500, color:'#111111', letterSpacing:'-.3px', marginBottom:4 }}>Mathivanan Kathirvel</div>
             <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:10 }}>
@@ -45,7 +45,7 @@ export default function DeveloperInner({ nav }) {
               <a href="mailto:mathimcafee@gmail.com" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#111111', textDecoration:'none', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
                 <Mail size={12}/> Contact
               </a>
-              <a href="https://github.com/mathimcafee-dev" target="_blank" rel="noopener noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#111111', textDecoration:'none', border:'0.5px solid #e8edf2', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
+              <a href="https://github.com/mathimcafee-dev" target="_blank" rel="noopener noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#111111', textDecoration:'none', border:'1px solid #e8edf2', borderRadius:6, padding:'7px 13px', fontSize:12, fontWeight:500 }}>
                 <Github size={12}/> GitHub
               </a>
             </div>
@@ -55,7 +55,7 @@ export default function DeveloperInner({ nav }) {
 
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:14 }}>
         {/* Credentials */}
-        <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
+        <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
           <div style={{ fontSize:10, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Credentials</div>
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
             {CERTS.map(c => (
@@ -68,17 +68,17 @@ export default function DeveloperInner({ nav }) {
         </div>
 
         {/* Skills */}
-        <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
+        <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
           <div style={{ fontSize:10, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Skills</div>
           <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
             {SKILLS.map(s => (
-              <span key={s} style={{ fontSize:11, fontWeight:500, color:'#333333', background:'transparent', border:'0.5px solid #e8edf2', borderRadius:4, padding:'4px 9px' }}>{s}</span>
+              <span key={s} style={{ fontSize:11, fontWeight:500, color:'#333333', background:'transparent', border:'1px solid #e8edf2', borderRadius:4, padding:'4px 9px' }}>{s}</span>
             ))}
           </div>
         </div>
 
         {/* SSLVault story */}
-        <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px', gridColumn:'span 2' }}>
+        <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'20px 22px', gridColumn:'span 2' }}>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
             <Shield size={13} color="#1f5c4e"/>
             <span style={{ fontSize:10, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.5px' }}>Why SSLVault</span>

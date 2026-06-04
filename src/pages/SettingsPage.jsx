@@ -317,7 +317,7 @@ function ApiKeysPanelFull_DISABLED({ user }) {
               </div>
               <button onClick={() => revoke(k.id)} disabled={revoking === k.id}
                 style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none',
-                  border: '0.5px solid #fecaca', borderRadius: 6, padding: '5px 10px',
+                  border: '1px solid #fecaca', borderRadius: 6, padding: '5px 10px',
                   fontSize:11, color: '#1f5c4e', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
                 <Trash2 size={10} />
                 {revoking === k.id ? 'Revoking…' : 'Revoke'}
@@ -697,7 +697,7 @@ export default function SettingsPage({ user }) {
             </Row>
             <Row label="Delete account" desc="Permanently delete your account and all data" last>
               <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent',
-                color: '#1f5c4e', border: '0.5px solid #fecaca', borderRadius: 6,
+                color: '#1f5c4e', border: '1px solid #fecaca', borderRadius: 6,
                 padding: '6px 12px', fontSize:11, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <Trash2 size={11}/> Delete account
               </button>

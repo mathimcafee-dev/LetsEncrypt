@@ -53,7 +53,7 @@ function Tick({ ok }) {
 
 function StatusPill({ status }) {
   const map = {
-    'Ready':      { bg:'rgba(74,222,128,0.12)',  color:'#16a068', border:'rgba(74,222,128,0.3)' },
+    'Ready':      { bg:'rgba(22,160,104,0.09)',  color:'#16a068', border:'rgba(22,160,104,0.22)' },
     'At risk':    { bg:'rgba(251,191,36,0.12)',  color:'#9a6400', border:'rgba(251,191,36,0.3)' },
     'Will break': { bg:'rgba(248,113,113,0.12)', color:'#1f5c4e', border:'rgba(192,57,43,0.2)' },
   }
@@ -247,7 +247,7 @@ export default function ReadinessDashboard({ user, onNav }) {
             {[
               { label:'Will Break', value:willBreak, color:'#1f5c4e', bg:'rgba(192,57,43,0.07)', border:'rgba(192,57,43,0.12)', desc:'< 60 pts' },
               { label:'At Risk',    value:atRisk,    color:'#9a6400', bg:'rgba(184,120,0,0.06)',  border:'rgba(251,191,36,0.2)',  desc:'60–89 pts' },
-              { label:'Ready',      value:ready,     color:'#16a068', bg:'rgba(22,160,104,0.07)',  border:'rgba(74,222,128,0.2)',  desc:'≥ 90 pts' },
+              { label:'Ready',      value:ready,     color:'#16a068', bg:'rgba(22,160,104,0.07)',  border:'rgba(22,160,104,0.14)',  desc:'≥ 90 pts' },
             ].map(s => (
               <div key={s.label} style={{ padding:'16px 18px', borderRadius:12,
                 background:s.bg, border:`1px solid ${s.border}` }}>
@@ -271,7 +271,7 @@ export default function ReadinessDashboard({ user, onNav }) {
             const past = d <= 0
             const colors = ['#1f5c4e','#9a6400','#16a068']
             const bgs = ['rgba(192,57,43,0.07)','rgba(184,120,0,0.06)','rgba(22,160,104,0.07)']
-            const borders = ['rgba(192,57,43,0.12)','rgba(251,191,36,0.2)','rgba(74,222,128,0.2)']
+            const borders = ['rgba(192,57,43,0.12)','rgba(251,191,36,0.2)','rgba(22,160,104,0.14)']
             return (
               <div key={m.label} style={{ padding:'12px 16px', borderRadius:10,
                 background: past ? bgs[0] : 'rgba(0,0,0,0.03)',
@@ -408,7 +408,7 @@ export default function ReadinessDashboard({ user, onNav }) {
                                 disabled={togglingId === cert.id}
                                 onClick={() => toggleAutoRenew(cert.id, cert.auto_renew_enabled)}
                                 style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
-                                  background:'rgba(22,160,104,0.09)', border:'0.5px solid rgba(74,222,128,0.3)',
+                                  background:'rgba(22,160,104,0.09)', border:'1px solid rgba(22,160,104,0.22)',
                                   color:'#16a068', fontFamily:'inherit', whiteSpace:'nowrap',
                                   opacity: togglingId === cert.id ? 0.5 : 1 }}>
                                 {togglingId === cert.id ? '…' : '+ Auto-renew'}

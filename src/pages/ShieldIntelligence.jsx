@@ -572,7 +572,7 @@ function CTWatchTab({ tok, user }) {
                       </button>
                       <button onClick={() => dismiss(s.id)} disabled={dismissing===s.id}
                         style={{ fontSize:10, padding:'3px 8px', borderRadius:5,
-                          border:'0.5px solid #F7C1C1', background:'rgba(31,92,78,0.08)',
+                          border:'1px solid #F7C1C1', background:'rgba(31,92,78,0.08)',
                           cursor:'pointer', fontFamily:'inherit', color:'#1f5c4e' }}>
                         {dismissing===s.id?<Spinner/>:'Dismiss'}
                       </button>
@@ -604,7 +604,7 @@ function CTWatchTab({ tok, user }) {
                         </button>
                         <button onClick={() => mark(s.id,'phishing')} disabled={marking===s.id}
                           style={{ fontSize:11, padding:'5px 12px', borderRadius:6,
-                            border:'0.5px solid #F7C1C1', background:'rgba(31,92,78,0.08)',
+                            border:'1px solid #F7C1C1', background:'rgba(31,92,78,0.08)',
                             cursor:'pointer', fontFamily:'inherit', color:'#1f5c4e', fontWeight:500 }}>
                           Flag as phishing
                         </button>

@@ -173,7 +173,7 @@ export default function SpartansBrain() {
           <div style={{fontSize:13,fontWeight:600,color:TX}}>Spartan's Brain</div>
           <div style={{fontSize:10,color:G}}>{session?'🔐 Connected to your account · AI Support':'PKI expert · AI-powered support'}</div>
         </div>
-        <span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'rgba(16,185,129,0.1)',border:'0.5px solid rgba(16,185,129,0.2)',color:G}}>SSLVAULT</span>
+        <span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'rgba(16,185,129,0.1)',border:'1px solid rgba(16,185,129,0.2)',color:G}}>SSLVAULT</span>
       </div>
 
       <div style={{flex:1,overflowY:'auto',padding:'14px 12px',display:'flex',flexDirection:'column',gap:12,touchAction:'pan-y'}}>

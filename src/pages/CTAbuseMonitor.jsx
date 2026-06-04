@@ -101,7 +101,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
 
       <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
         {status !== 'known' && (
-          <button className="v2-btn v2-btn-sm" onClick={() => onDismiss(shadow.id)}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => onDismiss(shadow.id)}
             disabled={dismissing === shadow.id}
             style={{ display: 'flex', alignItems: 'center', gap: 5,
               borderColor: 'rgba(31,92,78,0.2)', color: '#16a068' }}>
@@ -109,13 +109,13 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
             {dismissing === shadow.id ? 'Marking…' : 'Mark as known'}
           </button>
         )}
-        <button className="v2-btn v2-btn-sm"
+        <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}}
           onClick={() => window.open(`https://crt.sh/?q=${encodeURIComponent(shadow.domain)}`, '_blank')}
           style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <ExternalLink size={11}/> View on crt.sh
         </button>
         {status !== 'known' && (
-          <button className="v2-btn v2-btn-sm" onClick={() => onMark(shadow.id, 'phishing')}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => onMark(shadow.id, 'phishing')}
             style={{ display: 'flex', alignItems: 'center', gap: 5, borderColor: 'rgba(0,0,0,0.1)', color: '#1f5c4e' }}>
             <AlertTriangle size={11}/> Report mis-issuance
           </button>
@@ -243,7 +243,7 @@ export default function CTAbuseMonitor({ user }) {
               Certificates issued for your domains by any CA — detected via CT logs. Spot phishing and mis-issuance instantly.
             </p>
           </div>
-          <button className="v2-btn v2-btn-sm" onClick={load}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={load}
             style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
             <RefreshCw size={11} style={loading ? { animation: 'spin .8s linear infinite' } : {}}/>
             Refresh
@@ -252,7 +252,7 @@ export default function CTAbuseMonitor({ user }) {
 
         {/* Alert banner */}
         {flagged > 0 && (
-          <div style={{ background: 'rgba(31,92,78,0.09)', border: '0.5px solid #fecaca', borderRadius: 10,
+          <div style={{ background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
             <ShieldAlert size={16} color="#1f5c4e" style={{ flexShrink: 0, marginTop: 1 }}/>
             <div>
@@ -443,7 +443,7 @@ export default function CTAbuseMonitor({ user }) {
                   onKeyDown={e => e.key === 'Enter' && addWatchDomain()}
                   placeholder="Add domain to watch (e.g. yourdomain.com)"
                   style={{ flex: 1, fontSize:12 }}/>
-                <button className="v2-btn v2-btn-sm" onClick={addWatchDomain}
+                <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={addWatchDomain}
                   disabled={addingDomain || !newDomain.trim()}
                   style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   {addingDomain

@@ -241,7 +241,7 @@ export default function GlobalPKIHub({ nav }) {
           <span>Global PKI Intelligence Hub · {orgs.length || 12} organisations · {standards.length || 22} standards · {events.length || 6} events indexed</span>
         </div>
         <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-          <a href="https://cabforum.org" target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ gap:5, textDecoration:'none' }}>
+          <a href="https://cabforum.org" target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', gap:5, textDecoration:'none' }}>
             <ExternalLink size={12} /> CAB Forum ↗
           </a>
         </div>
@@ -325,7 +325,7 @@ export default function GlobalPKIHub({ nav }) {
                     </div>
                   </div>
                 </div>
-                <button className="v2-btn v2-btn-sm" onClick={()=>setSelectedOrg(null)}>✕</button>
+                <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={()=>setSelectedOrg(null)}>✕</button>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:14 }}>
                 <div>
@@ -396,7 +396,7 @@ export default function GlobalPKIHub({ nav }) {
                     </span>
                     {ORG_DEEP_DIVE[org.id] && (
                       <button onClick={(e)=>{ e.stopPropagation(); nav(ORG_DEEP_DIVE[org.id]) }}
-                        className="v2-btn v2-btn-sm" style={{ gap:4, fontSize:10 }}>
+                        style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', gap:4, fontSize:10 }}>
                         Deep Dive <ChevronRight size={11}/>
                       </button>
                     )}
@@ -443,7 +443,7 @@ export default function GlobalPKIHub({ nav }) {
                     <div style={{ minWidth:80, textAlign:'right', flexShrink:0 }}>
                       <div style={{ fontSize:10, color:'#888888' }}>{s.published_date ? new Date(s.published_date).getFullYear() : '—'}</div>
                       {s.url && (
-                        <a href={s.url} target="_blank" rel="noreferrer" onClick={e=>e.stopPropagation()} className="v2-btn v2-btn-sm" style={{ gap:4, textDecoration:'none', marginTop:4, display:'inline-flex' }}>
+                        <a href={s.url} target="_blank" rel="noreferrer" onClick={e=>e.stopPropagation()} style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', gap:4, textDecoration:'none', marginTop:4, display:'inline-flex' }}>
                           <ExternalLink size={10}/> Read
                         </a>
                       )}
@@ -623,7 +623,7 @@ export default function GlobalPKIHub({ nav }) {
                       </div>
                       {e.description && <div style={{ fontSize:12, color:'#333333', lineHeight:1.5 }}>{e.description}</div>}
                       {e.url && (
-                        <a href={e.url} target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ marginTop:8, gap:4, textDecoration:'none', display:'inline-flex' }}>
+                        <a href={e.url} target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', marginTop:8, gap:4, textDecoration:'none', display:'inline-flex' }}>
                           <ExternalLink size={11}/> More info ↗
                         </a>
                       )}

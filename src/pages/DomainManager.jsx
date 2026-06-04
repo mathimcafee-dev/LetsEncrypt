@@ -129,7 +129,7 @@ function InstallModal({ onClose }) {
           </div>
         </div>
         <div style={{ padding: '12px 20px', borderTop: '1px solid var(--v2-border)', display: 'flex', justifyContent: 'flex-end' }}>
-          <button onClick={onClose} className="v2-btn v2-btn-sm">Close</button>
+          <button onClick={onClose} style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}}>Close</button>
         </div>
       </div>
     </div>
@@ -433,7 +433,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                   <span style={{ fontSize: 11, color: '#555555' }}>Recent agent jobs for {domain}</span>
-                  <button className="v2-btn v2-btn-sm" onClick={loadJobs} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={loadJobs} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <RefreshCw size={10} />Refresh
                   </button>
                 </div>
@@ -621,7 +621,7 @@ export default function DomainManager({ user, nav }) {
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
-            <button className="v2-btn v2-btn-sm" onClick={refresh} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={refresh} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <RefreshCw size={11} style={refreshing ? { animation: 'spin .8s linear infinite' } : {}} />
               Refresh
             </button>

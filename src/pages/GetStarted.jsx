@@ -93,7 +93,7 @@ export default function GetStarted({ nav }) {
             <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
               <Shield size={13} strokeWidth={2.2}/> Issue Certificate <ArrowRight size={13}/>
             </button>
-            <button className="v2-btn" onClick={() => nav('/dashboard')}>
+            <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => nav('/dashboard')}>
               My Dashboard
             </button>
           </div>
@@ -240,7 +240,7 @@ export default function GetStarted({ nav }) {
                       <p style={{ fontSize:13, color: '#333333', lineHeight: 1.7 }}>
                         If you have a <strong>backend server, API, or external domain</strong> that these platforms don't manage, issue a certificate via SSLVault and install it on that server using the persistent agent or manual steps.
                       </p>
-                      <button className="v2-btn" onClick={() => nav('/buy')} style={{ marginTop: 4, fontSize:12 }}>
+                      <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => nav('/buy')} style={{ marginTop: 4, fontSize:12 }}>
                         Issue Certificate Anyway <ArrowRight size={13}/>
                       </button>
                     </>
@@ -380,7 +380,7 @@ export default function GetStarted({ nav }) {
             <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
               <Shield size={13} strokeWidth={2.2}/> Issue Certificate <ArrowRight size={13}/>
             </button>
-            <button className="v2-btn" onClick={() => nav('/knowledge-base')}>
+            <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => nav('/knowledge-base')}>
               Knowledge Base
             </button>
           </div>

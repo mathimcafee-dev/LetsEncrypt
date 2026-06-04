@@ -261,7 +261,7 @@ function InstallModal({ onClose }) {
                   overflow:'auto', whiteSpace:'nowrap' }}>{cmd}</code>
                 {!loading && !error && (
                   <button onClick={() => copy(cmd, id)} style={{ flexShrink:0, fontSize:10, fontWeight:500,
-                    color:'#555555', padding:'4px 8px', border:'0.5px solid rgba(240,237,232,0.14)',
+                    color:'#555555', padding:'4px 8px', border:'1px solid rgba(240,237,232,0.14)',
                     borderRadius:4, background:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:4,
                     fontFamily:'inherit' }}>
                     {copied===id ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
@@ -278,7 +278,7 @@ function InstallModal({ onClose }) {
           </div>
         </div>
         <div style={{ padding:'12px 20px', borderTop:'1px solid var(--v2-border)', display:'flex', justifyContent:'flex-end' }}>
-          <button onClick={onClose} className="v2-btn v2-btn-sm">Close</button>
+          <button onClick={onClose} style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}}>Close</button>
         </div>
       </div>
     </div>
@@ -549,18 +549,16 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
           {/* Footer actions */}
           <div style={{ padding:'10px 16px', borderTop:'1px solid var(--v2-border)',
             display:'flex', gap:8, background:'var(--v2-surface-3)' }}>
-            <button className="v2-btn v2-btn-sm"
-              style={{ display:'flex', alignItems:'center', gap:5 }}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', display:'flex', alignItems:'center', gap:5 }}
               onClick={() => { setTab('jobs'); loadJobs() }}>
               <RotateCcw size={11}/> Refresh jobs
             </button>
-            <button className="v2-btn v2-btn-sm" onClick={onRefresh}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={onRefresh}
               style={{ display:'flex', alignItems:'center', gap:5 }}>
               <RefreshCw size={11}/> Refresh agent
             </button>
             <div style={{ flex:1 }}/>
-            <button className="v2-btn v2-btn-sm"
-              style={{ display:'flex', alignItems:'center', gap:5,
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', display:'flex', alignItems:'center', gap:5,
                 borderColor:'rgba(0,0,0,0.1)', color:'#1f5c4e' }}
               disabled={removing}
               onClick={async () => {
@@ -647,7 +645,7 @@ export default function Infrastructure({ user }) {
             </p>
           </div>
           <div style={{ display:'flex', gap:8, flexShrink:0 }}>
-            <button className="v2-btn v2-btn-sm" onClick={refresh}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={refresh}
               style={{ display:'flex', alignItems:'center', gap:5 }}>
               <RefreshCw size={11} style={refreshing?{animation:'spin .8s linear infinite'}:{}}/>
               Refresh

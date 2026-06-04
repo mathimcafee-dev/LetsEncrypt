@@ -52,7 +52,7 @@ const DNS_PROVIDERS = {
   vercel:       { name: 'Vercel',        color: '#333333', initials: '▲'  },
   route53:      { name: 'Route 53',      color: '#ff9900', initials: 'R53' },
   godaddy:      { name: 'GoDaddy',       color: '#16a068', initials: 'GD' },
-  digitalocean: { name: 'DigitalOcean',  color: '#38bdf8', initials: 'DO' },
+  digitalocean: { name: 'DigitalOcean',  color: '#1f5c4e', initials: 'DO' },
   namecheap:    { name: 'Namecheap',     color: '#fb923c', initials: 'NC' },
   porkbun:      { name: 'Porkbun',       color: '#a78bfa', initials: 'PB' },
   gandi:        { name: 'Gandi',         color: '#9a6400', initials: 'GA' },
@@ -60,7 +60,7 @@ const DNS_PROVIDERS = {
   linode:       { name: 'Linode',        color: '#16a068', initials: 'LN' },
   vultr:        { name: 'Vultr',         color: '#a78bfa', initials: 'VU' },
   bunny:        { name: 'Bunny DNS',     color: '#fb923c', initials: 'BN' },
-  dnsimple:     { name: 'DNSimple',      color: '#38bdf8', initials: 'DS' },
+  dnsimple:     { name: 'DNSimple',      color: '#1f5c4e', initials: 'DS' },
 }
 
 // ── Copy button ──────────────────────────────────────────────────────
@@ -1226,7 +1226,7 @@ export default function MyServers({ user }) {
                             </div>
                             <div style={{fontSize:13,color:'#333333'}}>{conn.label||'—'}</div>
                             <div style={{fontSize:13,color:'#333333'}}>{conn.cert_count??'—'}</div>
-                            <div><span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:11,fontWeight:600,padding:'3px 8px',borderRadius:4,background:isActive?'transparent':'rgba(31,92,78,0.09)',color:isActive?'#16a068':'#1f5c4e',border:`1px solid ${isActive?'rgba(74,222,128,0.3)':'rgba(192,57,43,0.2)'}`}}><span style={{width:5,height:5,borderRadius:'50%',background:isActive?'#16a068':'#1f5c4e'}}/>{isActive?'Connected':'Error'}</span></div>
+                            <div><span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:11,fontWeight:600,padding:'3px 8px',borderRadius:4,background:isActive?'transparent':'rgba(31,92,78,0.09)',color:isActive?'#16a068':'#1f5c4e',border:`1px solid ${isActive?'rgba(22,160,104,0.22)':'rgba(192,57,43,0.2)'}`}}><span style={{width:5,height:5,borderRadius:'50%',background:isActive?'#16a068':'#1f5c4e'}}/>{isActive?'Connected':'Error'}</span></div>
                             <div style={{display:'flex',gap:5}}>
                               <button onClick={()=>caSync(conn.id)} disabled={caSyncing===conn.id}
                                 style={{padding:'5px 10px',fontSize:11,background:'rgba(31,92,78,0.07)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:6,cursor:'pointer',fontFamily:'inherit',color:'#333333',display:'flex',alignItems:'center',gap:4}}>

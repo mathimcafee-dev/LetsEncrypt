@@ -226,12 +226,12 @@ function Drawer({ agent, tok, onClose, onDelete }) {
         <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--v2-border)' }}>
           <div className="v2-section-label" style={{ marginBottom: 10 }}>Actions</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button className="v2-btn v2-btn-sm" onClick={copyCmd}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={copyCmd}
               style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               {copied ? <Check size={11}/> : <Copy size={11}/>}
               {copied ? 'Copied!' : 'Copy restart cmd'}
             </button>
-            <button className="v2-btn v2-btn-sm" onClick={() => onDelete(agent)}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => onDelete(agent)}
               style={{ display: 'flex', alignItems: 'center', gap: 5,
                 borderColor: 'rgba(0,0,0,0.1)', color: '#1f5c4e' }}>
               <Trash2 size={11}/>
@@ -378,8 +378,8 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
         </p>
         {err && <div style={{ fontSize:12, color: '#1f5c4e', marginBottom: 8 }}>{err}</div>}
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button className="v2-btn v2-btn-sm" onClick={onClose}>Cancel</button>
-          <button className="v2-btn v2-btn-sm" onClick={confirm} disabled={busy}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={onClose}>Cancel</button>
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={confirm} disabled={busy}
             style={{ background: '#1f5c4e', borderColor: '#1f5c4e', color: '#111111' }}>
             {busy ? 'Deleting…' : 'Delete'}
           </button>
@@ -470,12 +470,12 @@ export default function AgentHealth({ user }) {
               {paused ? 'Paused' : `Refresh in ${countdown}s`}
               {lastRefresh && !paused && ` · Last: ${timeAgo(lastRefresh.toISOString())}`}
             </span>
-            <button className="v2-btn v2-btn-sm" onClick={() => setPaused(p => !p)}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => setPaused(p => !p)}
               style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               {paused ? <Play size={11}/> : <Pause size={11}/>}
               {paused ? 'Resume' : 'Pause'}
             </button>
-            <button className="v2-btn v2-btn-sm" onClick={() => load()} disabled={loading}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => load()} disabled={loading}
               style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <RefreshCw size={11} style={loading ? { animation: 'spin .8s linear infinite' } : {}}/>
               Refresh
@@ -503,7 +503,7 @@ export default function AgentHealth({ user }) {
 
         {/* ── Offline alert banner ── */}
         {offline.length > 0 && (
-          <div style={{ background: 'rgba(31,92,78,0.09)', border: '0.5px solid #fecaca', borderRadius: 10,
+          <div style={{ background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca', borderRadius: 10,
             padding: '10px 14px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
             <WifiOff size={14} color="#1f5c4e" style={{ flexShrink: 0 }}/>
             <div style={{ fontSize:12, color: '#2e7a68', flex: 1 }}>
@@ -534,7 +534,7 @@ export default function AgentHealth({ user }) {
             ))}
           </div>
           {(search || filterStatus !== 'all') && (
-            <button className="v2-btn v2-btn-sm" onClick={() => { setSearch(''); setFilterStatus('all') }}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => { setSearch(''); setFilterStatus('all') }}
               style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <X size={11}/> Clear
             </button>

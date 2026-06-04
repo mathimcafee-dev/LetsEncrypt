@@ -266,7 +266,7 @@ TTL     300`}</pre>
                   </button>
                 )}
                 {certData?.privateKey && (
-                  <button className="v2-btn" onClick={() => dl(certData.privateKey, d + '-key.pem')} style={{ fontSize:12 }}>
+                  <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => dl(certData.privateKey, d + '-key.pem')} style={{ fontSize:12 }}>
                     <Download size={12}/> key.pem
                   </button>
                 )}
@@ -292,7 +292,7 @@ TTL     300`}</pre>
               <button className="v2-btn v2-btn-primary" onClick={() => nav('/dashboard')} style={{ flex: 1, justifyContent: 'center', fontSize:13 }}>
                 <Shield size={13}/> My Dashboard
               </button>
-              <button className="v2-btn" onClick={() => { setStep(1); setDomain(''); setCertData(null); setError(''); setCreds({}); setDcvInfo(null) }} style={{ fontSize:13 }}>
+              <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => { setStep(1); setDomain(''); setCertData(null); setError(''); setCreds({}); setDcvInfo(null) }} style={{ fontSize:13 }}>
                 <RotateCcw size={13}/> New Certificate
               </button>
             </div>

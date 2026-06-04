@@ -244,7 +244,7 @@ export default function SharedHostingGuide({ nav }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {['Go to cPanel File Manager', 'Navigate to public_html', 'Find sslvault-agent.php', 'Right-click → Delete → Confirm'].map((t, i) => (
-              <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '8px 14px', background: 'rgba(31,92,78,0.09)', border: '0.5px solid #fecaca' }}>
+              <div key={i} className="v2-card v2-card-pad" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '8px 14px', background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca' }}>
                 <Trash2 size={12} style={{ color: '#1f5c4e', flexShrink: 0 }}/>
                 <span style={{ fontSize:12, color: '#333333' }}>{t}</span>
               </div>
@@ -326,7 +326,7 @@ export default function SharedHostingGuide({ nav }) {
             <button className="v2-btn v2-btn-primary" onClick={() => nav('/buy')}>
               <Shield size={13}/> Issue Certificate <ArrowRight size={13}/>
             </button>
-            <button className="v2-btn" onClick={() => nav('/dashboard')}>
+            <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => nav('/dashboard')}>
               My Dashboard
             </button>
           </div>

@@ -9,7 +9,7 @@ function daysLeft(iso) {
 
 export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
   if (loading) return (
-    <div style={{ background:'white', border:'0.5px solid rgba(15,23,42,0.08)',
+    <div style={{ background:'white', border:'1px solid rgba(15,23,42,0.08)',
       borderRadius:10, padding:'20px', marginBottom:20, display:'flex',
       alignItems:'center', gap:8, color:'#b5aea8', fontSize:13 }}>
       <RefreshCw size={14} style={{ animation:'spin 1s linear infinite' }}/>
@@ -29,12 +29,12 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
   const allClear  = expired.length === 0 && expiring.length === 0
 
   return (
-    <div style={{ background:'white', border:'0.5px solid rgba(15,23,42,0.08)',
+    <div style={{ background:'white', border:'1px solid rgba(15,23,42,0.08)',
       borderRadius:10, marginBottom:20, overflow:'hidden',
       animation:'fadeSlideUp 0.3s ease both', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
 
       {/* Header */}
-      <div style={{ padding:'12px 16px', borderBottom:'0.5px solid rgba(15,23,42,0.06)',
+      <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(15,23,42,0.06)',
         display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:7 }}>
           <Shield size={14} color="#1f5c4e"/>
@@ -71,7 +71,7 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
 
       {/* Attention list */}
       {attention.length > 0 && (
-        <div style={{ borderTop:'0.5px solid rgba(15,23,42,0.06)' }}>
+        <div style={{ borderTop:'1px solid rgba(15,23,42,0.06)' }}>
           <div style={{ padding:'8px 16px', background:'rgba(31,92,78,0.05)' }}>
             <span style={{ fontSize:11, fontWeight:600, color:'#b5aea8', textTransform:'uppercase', letterSpacing:'0.4px' }}>Needs attention</span>
           </div>
@@ -80,7 +80,7 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
             const isExpired = d != null && d < 0
             return (
               <div key={c.id} style={{ display:'flex', alignItems:'center', gap:10,
-                padding:'9px 16px', borderTop:'0.5px solid rgba(15,23,42,0.05)' }}>
+                padding:'9px 16px', borderTop:'1px solid rgba(15,23,42,0.05)' }}>
                 {isExpired
                   ? <XCircle      size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
                   : <AlertTriangle size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>}
@@ -100,7 +100,7 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
 
       {/* Actions */}
       {(expired.length > 0 || expiring.length > 0) && (
-        <div style={{ borderTop:'0.5px solid rgba(15,23,42,0.06)',
+        <div style={{ borderTop:'1px solid rgba(15,23,42,0.06)',
           padding:'10px 16px', display:'flex', gap:8 }}>
           {expiring.length > 0 && (
             <button onClick={() => onRenew && onRenew(expiring)}
@@ -113,7 +113,7 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
           )}
           <button onClick={() => nav && nav('/dashboard')}
             style={{ display:'flex', alignItems:'center', gap:5,
-              background:'white', color:'#333333', border:'0.5px solid rgba(15,23,42,0.12)',
+              background:'white', color:'#333333', border:'1px solid rgba(15,23,42,0.12)',
               borderRadius:6, padding:'8px 14px', fontSize:12, fontWeight:600,
               cursor:'pointer', fontFamily:'inherit', justifyContent:'center',
               ...(expiring.length > 0 ? {} : { flex:1 }) }}>

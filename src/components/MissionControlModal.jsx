@@ -423,7 +423,7 @@ export default function MissionControlModal({
                   fontSize: 13, fontWeight: 700, fontFamily: 'monospace',
                   color: '#1f5c4e', background: 'rgba(255,140,122,0.08)',
                   padding: '4px 10px', borderRadius: 6,
-                  border: '1px solid rgba(255,140,122,0.2)',
+                  border: '1px solid rgba(192,57,43,0.2)',
                 }}>
                   {formatClock(elapsedMs)}
                 </div>
@@ -477,7 +477,7 @@ export default function MissionControlModal({
                 <div style={{
                   padding: '10px 14px', borderRadius: 10, marginBottom: 20,
                   background: 'rgba(255,140,122,0.07)',
-                  border: '1px solid rgba(255,140,122,0.2)',
+                  border: '1px solid rgba(192,57,43,0.2)',
                   display: 'flex', alignItems: 'center', gap: 10,
                   animation: 'mcv2-slidein 0.25s ease',
                 }}>

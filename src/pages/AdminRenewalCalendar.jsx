@@ -141,7 +141,7 @@ function EventRow({ ev, cert }) {
       <div style={{ width: 115, flexShrink: 0 }}>
         <span style={{
           fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
-          background: isReissue ? 'rgba(74,222,128,0.12)' : 'rgba(31,92,78,0.09)',
+          background: isReissue ? 'rgba(22,160,104,0.09)' : 'rgba(31,92,78,0.09)',
           color: isReissue ? '#16a068' : '#1f5c4e',
           border: `0.5px solid ${isReissue ? 'rgba(22,160,104,0.22)' : 'rgba(255,140,122,0.25)'}`,
         }}>
@@ -214,7 +214,7 @@ function AlertRow({ alert, onResolve, resolving }) {
       <button onClick={() => onResolve(alert.id)} disabled={resolving === alert.id}
         style={{
           padding: '5px 12px', borderRadius: 6, fontSize: 10, fontWeight: 600,
-          border: '1px solid rgba(74,222,128,0.3)',
+          border: '1px solid rgba(22,160,104,0.22)',
           background: 'rgba(22,160,104,0.09)', color: '#16a068',
           cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0,
           display: 'flex', alignItems: 'center', gap: 4,
@@ -358,7 +358,7 @@ export default function AdminRenewalCalendar({ user }) {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 14px', borderRadius: 8, marginBottom: 16,
-          background: 'rgba(192,57,43,0.07)', border: '1px solid rgba(192,57,43,0.2)',
+          background: 'rgba(31,92,78,0.06)', border: '1px solid rgba(31,92,78,0.15)',
           fontSize: 12, color: '#1f5c4e',
         }}>
           <AlertTriangle size={14} strokeWidth={2} />

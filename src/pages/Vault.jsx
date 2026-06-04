@@ -107,7 +107,7 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
       {open && (
         <div style={{ padding:'14px 16px' }}>
           {warn && (
-            <div style={{ background:'rgba(239,68,68,0.08)', border:'0.5px solid rgba(154,100,0,0.2)',
+            <div style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(154,100,0,0.2)',
               borderRadius:8, padding:'10px 12px', marginBottom:12, fontSize:11, color:'#1f5c4e' }}>
               <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
               <strong>Expiring in {days} days</strong> — rotate now to avoid disruption.
@@ -134,7 +134,7 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
 
           {/* Linked cert */}
           {linkedCert && (
-            <div style={{ background:'rgba(74,222,128,0.06)', border:'0.5px solid rgba(74,222,128,0.2)',
+            <div style={{ background:'rgba(74,222,128,0.06)', border:'1px solid rgba(22,160,104,0.14)',
               borderRadius:8, padding:'10px 12px', marginBottom:12, fontSize:11 }}>
               <Shield size={11} color="#4ade80" style={{ verticalAlign:'-1px', marginRight:5 }}/>
               <strong style={{ color:'#16a068' }}>Linked certificate:</strong>
@@ -152,10 +152,10 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
                 style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 12px',
                   fontSize:11, fontWeight:600, borderRadius:7, cursor:'pointer', fontFamily:'inherit',
                   background:'rgba(124,58,237,0.08)', color:'#111111',
-                  border:'0.5px solid rgba(124,58,237,0.25)', transition:'all .15s' }}>
+                  border:'1px solid rgba(124,58,237,0.25)', transition:'all .15s' }}>
                 <Eye size={11}/> Reveal key
               </button>
-              <button className="v2-btn v2-btn-sm" onClick={() => onRotate(keyEntry)}
+              <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => onRotate(keyEntry)}
                 disabled={rotating === keyEntry.id}
                 style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
                   color:'rgba(240,237,232,0.85)', border:'1px solid #bbbbbb' }}>
@@ -163,7 +163,7 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
                   ? <><RefreshCw size={10} style={{ animation:'spin .8s linear infinite' }}/> Rotating…</>
                   : <><RotateCcw size={10}/> Rotate key</>}
               </button>
-              <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
+              <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => onViewAudit(keyEntry.domain)}
                 style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
                   color:'#444444', border:'1px solid #cccccc' }}>
                 <Activity size={10}/> View audit
@@ -176,7 +176,7 @@ function KeyCard({ keyEntry, certs, onRotate, onReveal, onViewAudit, rotating })
                 <Clock size={11} style={{ verticalAlign:'-1px', marginRight:4 }}/>
                 Archived {fmtAgo(keyEntry.archived_at)} · Auto-deleted 30 days after archiving
               </div>
-              <button className="v2-btn v2-btn-sm" onClick={() => onViewAudit(keyEntry.domain)}
+              <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => onViewAudit(keyEntry.domain)}
                 style={{ display:'flex', alignItems:'center', gap:5, fontSize:11,
                   color:'#444444', border:'1px solid #cccccc' }}>
                 <Activity size={10}/> View audit
@@ -269,7 +269,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                     color:'#111111', fontFamily:'inherit', outline:'none', boxSizing:'border-box' }} autoFocus/>
               </div>
               {authError && (
-                <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:7,
+                <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:7,
                   padding:'9px 12px', marginBottom:12, fontSize:11, color:'#1f5c4e',
                   display:'flex', alignItems:'center', gap:7 }}>
                   <AlertTriangle size={12} style={{ flexShrink:0 }}/> {authError}
@@ -294,13 +294,13 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                 <div style={{ fontSize:12 }}>Decrypting from vault…</div>
               </div>
             ) : fetchErr ? (
-              <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
+              <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
                 padding:'12px 14px', fontSize:12, color:'#1f5c4e' }}>
                 <AlertTriangle size={12} style={{ verticalAlign:'-1px', marginRight:6 }}/>{fetchErr}
               </div>
             ) : (
               <>
-                <div style={{ background:'rgba(239,68,68,0.08)', border:'0.5px solid rgba(154,100,0,0.2)', borderRadius:8,
+                <div style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(154,100,0,0.2)', borderRadius:8,
                   padding:'9px 12px', marginBottom:12, fontSize:11, color:'#1f5c4e',
                   display:'flex', alignItems:'center', gap:7 }}>
                   <AlertTriangle size={11} style={{ flexShrink:0 }}/>
@@ -455,7 +455,7 @@ export default function Vault({ nav }) {
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <h1 className="v2-h1">Vault</h1>
                 <span style={{ fontSize:9, fontWeight:700, color:'#111111',
-                  background:'rgba(124,58,237,0.08)', border:'0.5px solid rgba(124,58,237,0.2)',
+                  background:'rgba(124,58,237,0.08)', border:'1px solid rgba(124,58,237,0.2)',
                   borderRadius:4, padding:'2px 7px', textTransform:'uppercase', letterSpacing:'0.4px' }}>PRO</span>
               </div>
               <p style={{ fontSize:12, color:'#888888', marginTop:2 }}>
@@ -464,14 +464,14 @@ export default function Vault({ nav }) {
               </p>
             </div>
           </div>
-          <button className="v2-btn v2-btn-sm" onClick={loadData}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={loadData}
             style={{ display:'flex', alignItems:'center', gap:5 }}>
             <RefreshCw size={11}/> Refresh
           </button>
         </div>
 
         {/* Security strip */}
-        <div style={{ background:'rgba(124,58,237,0.05)', border:'0.5px solid rgba(124,58,237,0.18)',
+        <div style={{ background:'rgba(124,58,237,0.05)', border:'1px solid rgba(124,58,237,0.18)',
           borderRadius:9, padding:'12px 16px', marginBottom:20,
           display:'flex', alignItems:'center', gap:10 }}>
           <Lock size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
@@ -497,7 +497,7 @@ export default function Vault({ nav }) {
 
         {/* Banners */}
         {rotateError && (
-          <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
+          <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
             padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#1f5c4e' }}>
             <AlertTriangle size={13} style={{ flexShrink:0 }}/>
@@ -582,7 +582,7 @@ export default function Vault({ nav }) {
                 </div>
               ) : (
                 <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                  <div style={{ background:'rgba(239,68,68,0.08)', border:'0.5px solid rgba(154,100,0,0.2)', borderRadius:8,
+                  <div style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(154,100,0,0.2)', borderRadius:8,
                     padding:'10px 14px', fontSize:11, color:'#1f5c4e', marginBottom:4 }}>
                     <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
                     These keys are retained for 30 days as rollback, then permanently destroyed.
@@ -610,7 +610,7 @@ export default function Vault({ nav }) {
                         </>
                       : `All events · Last ${audit.length}`}
                   </div>
-                  <button className="v2-btn v2-btn-sm" onClick={exportCSV}
+                  <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={exportCSV}
                     style={{ display:'flex', alignItems:'center', gap:5, fontSize:11 }}>
                     <Download size={10}/> Export CSV
                   </button>
@@ -647,7 +647,7 @@ export default function Vault({ nav }) {
               </div>
               <div style={{ padding:'12px 20px', borderTop:'1px solid var(--v2-border)',
                 display:'flex', gap:8, justifyContent:'flex-end' }}>
-                <button className="v2-btn v2-btn-sm" onClick={() => setRotateConfirm(null)}>Cancel</button>
+                <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => setRotateConfirm(null)}>Cancel</button>
                 <button onClick={() => handleRotate(rotateConfirm)}
                   style={{ display:'flex', alignItems:'center', gap:7, padding:'7px 16px',
                     background:'linear-gradient(135deg,#f07059,#C45A4A)',

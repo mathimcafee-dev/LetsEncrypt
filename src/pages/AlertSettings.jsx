@@ -129,13 +129,13 @@ export default function AlertSettings({ nav }) {
             </div>
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            <button className="v2-btn v2-btn-sm" onClick={handleTest} disabled={testing}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={handleTest} disabled={testing}
               style={{ display:'flex', alignItems:'center', gap:5 }}>
               {testing
                 ? <><RefreshCw size={11} style={{ animation:'spin .7s linear infinite' }}/> Sending…</>
                 : <><Send size={11}/> Test email</>}
             </button>
-            <button className="v2-btn v2-btn-sm" onClick={handleSave} disabled={saving}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={handleSave} disabled={saving}
               style={{ display:'flex', alignItems:'center', gap:5,
                 background: saved ? 'transparent' : undefined,
                 border: saved ? '1px solid rgba(31,92,78,0.2)' : undefined,
@@ -148,7 +148,7 @@ export default function AlertSettings({ nav }) {
 
         {/* Banners */}
         {error && (
-          <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
+          <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
             padding:'10px 14px', marginBottom:14, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#1f5c4e' }}>
             <AlertTriangle size={13} style={{ flexShrink:0 }}/> {error}
@@ -164,7 +164,7 @@ export default function AlertSettings({ nav }) {
           </div>
         )}
         {testResult === 'fail' && (
-          <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
+          <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
             padding:'10px 14px', marginBottom:14, fontSize:12, color:'#1f5c4e' }}>
             Test failed — check RESEND_API_KEY in Supabase environment variables.
           </div>
@@ -261,7 +261,7 @@ export default function AlertSettings({ nav }) {
                   onChange={e => setNewEmail(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && addEmail()}
                   style={{ ...inputStyle, flex:1 }}/>
-                <button className="v2-btn v2-btn-sm" onClick={addEmail}
+                <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={addEmail}
                   style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
                   <Plus size={11}/> Add
                 </button>

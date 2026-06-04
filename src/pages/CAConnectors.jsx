@@ -260,7 +260,7 @@ export default function CAConnectors({ nav }) {
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button className="v2-btn" onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}>
+            <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => { setShowImport(true); setPemText(''); setImportResult(null) }}>
               <Upload size={13}/> Paste PEM
             </button>
             <button className="v2-btn v2-btn-primary" onClick={() => setShowAdd(true)}>
@@ -286,7 +286,7 @@ export default function CAConnectors({ nav }) {
 
         {/* Expiry alert */}
         {expiring30.length > 0 && (
-          <div style={{ background: 'rgba(239,68,68,0.08)', border: '0.5px solid rgba(154,100,0,0.2)', borderRadius: 10,
+          <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(154,100,0,0.2)', borderRadius: 10,
             padding: '12px 16px', marginBottom: 20, display: 'flex', gap: 10, alignItems: 'center' }}>
             <AlertTriangle size={15} style={{ color: '#111111', flexShrink: 0 }}/>
             <div style={{ fontSize:12, color: '#1f5c4e' }}>
@@ -351,7 +351,7 @@ export default function CAConnectors({ nav }) {
                     <div style={{ fontSize:11, color: '#888888', flex: 1, alignSelf: 'center' }}>
                       {conn.last_sync_at ? `Last sync ${fmtDate(conn.last_sync_at)}` : 'Never synced'}
                     </div>
-                    <button className="v2-btn v2-btn-sm" onClick={() => doSync(conn.id)}
+                    <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => doSync(conn.id)}
                       disabled={syncing === conn.id}>
                       {syncing === conn.id
                         ? <RefreshCw size={11} style={{ animation: 'spin .8s linear infinite' }}/>
@@ -429,7 +429,7 @@ export default function CAConnectors({ nav }) {
               onClick={() => setDelAllModal(true)}
               style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11,
                 fontWeight:600, padding:'5px 12px', borderRadius:7, cursor:'pointer',
-                background:'rgba(31,92,78,0.09)', color:'#1f5c4e', border:'0.5px solid #fecaca',
+                background:'rgba(31,92,78,0.09)', color:'#1f5c4e', border:'1px solid #fecaca',
                 fontFamily:'inherit', transition:'all .15s' }}
               onMouseEnter={e=>{e.currentTarget.style.background='#1f5c4e';e.currentTarget.style.color='#000000'}}
               onMouseLeave={e=>{e.currentTarget.style.background='rgba(31,92,78,0.09)';e.currentTarget.style.color='#1f5c4e'}}>
@@ -606,7 +606,7 @@ export default function CAConnectors({ nav }) {
                     ))}
 
                     {addError && (
-                      <div style={{ background: 'rgba(31,92,78,0.09)', border: '0.5px solid #fecaca', borderRadius: 7,
+                      <div style={{ background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca', borderRadius: 7,
                         padding: '9px 12px', marginBottom: 12, fontSize:12, color: '#1f5c4e',
                         display: 'flex', gap: 7, alignItems: 'flex-start' }}>
                         <AlertTriangle size={13} style={{ flexShrink: 0, marginTop: 1 }}/>{addError}
@@ -614,7 +614,7 @@ export default function CAConnectors({ nav }) {
                     )}
 
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button className="v2-btn" onClick={() => setAddCa(null)}>Back</button>
+                      <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => setAddCa(null)}>Back</button>
                       <button className="v2-btn v2-btn-primary" style={{ flex: 1, justifyContent: 'center' }}
                         onClick={saveConnection} disabled={addSaving}>
                         {addSaving
@@ -722,7 +722,7 @@ export default function CAConnectors({ nav }) {
                   <div style={{ textAlign: 'center', padding: '10px 0' }}>
                     <AlertTriangle size={32} style={{ color: '#1f5c4e', margin: '0 auto 12px', display: 'block' }}/>
                     <div style={{ fontSize:13, color: '#1f5c4e', marginBottom: 16 }}>{importResult.error}</div>
-                    <button className="v2-btn" onClick={() => setImportResult(null)}>Try again</button>
+                    <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => setImportResult(null)}>Try again</button>
                   </div>
                 )}
               </div>
@@ -924,7 +924,7 @@ export default function CAConnectors({ nav }) {
 
               {/* Body */}
               <div style={{ padding:'16px 20px' }}>
-                <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:9,
+                <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:9,
                   padding:'12px 14px', marginBottom:16, fontSize:12, color:'#1f5c4e', lineHeight:1.6 }}>
                   This will <strong>permanently delete</strong> all {certs.length} tracked certificates
                   and remove every reference from the database. CA connections are kept — you can re-sync anytime.

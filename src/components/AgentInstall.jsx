@@ -11,7 +11,7 @@ function CopyBtn({ text }) {
     setOk(true); setTimeout(() => setOk(false), 2000)
   }
   return (
-    <button onClick={copy} style={{ background:'none', border:'0.5px solid #e8edf2', borderRadius:5,
+    <button onClick={copy} style={{ background:'none', border:'1px solid #e8edf2', borderRadius:5,
       cursor:'pointer', color: ok ? '#1f5c4e' : '#777777', display:'flex', alignItems:'center',
       gap:4, fontSize:11, padding:'3px 8px', fontFamily:'inherit' }}>
       {ok ? <><Check size={11}/> Copied</> : <><Copy size={11}/> Copy</>}
@@ -193,7 +193,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
 
         {/* Header */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-          padding:'18px 22px', borderBottom:'0.5px solid #e8edf2' }}>
+          padding:'18px 22px', borderBottom:'1px solid #e8edf2' }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ width:34, height:34, background:'#0d3c6e', borderRadius:8,
               display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -394,7 +394,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                       onBlur={() => { if (serverNickname) fetchPairingCmd() }}
                       placeholder="My Production Server"
                       style={{ width:'100%', padding:'8px 10px', fontSize:13, borderRadius:6,
-                        border:'0.5px solid #e2e8f0', fontFamily:'inherit', boxSizing:'border-box' }}
+                        border:'1px solid #e2e8f0', fontFamily:'inherit', boxSizing:'border-box' }}
                     />
                   </div>
 

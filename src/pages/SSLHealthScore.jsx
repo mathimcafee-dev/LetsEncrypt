@@ -115,7 +115,7 @@ function DomainRow({ score, onRescan, scanning }) {
 
         {/* Actions */}
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-          <button className="v2-btn v2-btn-sm" onClick={() => onRescan(score.domain)}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => onRescan(score.domain)}
             disabled={scanning === score.domain}
             style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <RefreshCw size={10} style={scanning === score.domain ? { animation: 'spin .8s linear infinite' } : {}} />
@@ -223,7 +223,7 @@ export default function SSLHealthScore({ user }) {
               Grade A–F across TLS reachability, HSTS, CAA records and expiry
             </p>
           </div>
-          <button className="v2-btn v2-btn-sm" onClick={() => load()}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => load()}
             style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <RefreshCw size={11} style={loading ? { animation: 'spin .8s linear infinite' } : {}} />
             Refresh all
@@ -259,7 +259,7 @@ export default function SSLHealthScore({ user }) {
               placeholder="yourdomain.com — press Enter to scan"
               style={{ flex: 1, fontSize:13 }}
             />
-            <button className="v2-btn v2-btn-sm" onClick={addDomain} disabled={adding || !newDomain.trim()}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={addDomain} disabled={adding || !newDomain.trim()}
               style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
               {adding
                 ? <><RefreshCw size={10} style={{ animation: 'spin .8s linear infinite' }} /> Scanning…</>

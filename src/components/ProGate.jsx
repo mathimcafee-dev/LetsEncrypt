@@ -47,7 +47,7 @@ export default function ProGate({ isPro, nav, feature = 'This feature', compact 
           Upgrade to CertVault Pro to access encrypted key storage, automatic rotation,
           and full audit logging — from €9.99/month.
         </p>
-        <button className="v2-btn" onClick={() => nav('/pricing')}
+        <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => nav('/pricing')}
           style={{ background:'linear-gradient(135deg,#E8897A,#C45A4A)',
                    color:'white', border:'none', padding:'10px 22px', fontSize:13,
                    fontWeight:600, display:'inline-flex', alignItems:'center', gap:7 }}>

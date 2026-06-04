@@ -223,7 +223,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
                   <button onClick={() => setKeyDelOpen(true)} style={{ alignSelf:'flex-start', fontSize:10, color:'#888888', background:'none', border:'none', cursor:'pointer', padding:0, fontFamily:'inherit', textDecoration:'underline' }}>Delete private key after install</button>
                 )}
                 {keyDelOpen && (
-                  <div style={{ background:'rgba(230,126,34,0.08)', border:'0.5px solid rgba(154,100,0,0.2)', borderRadius:6, padding:12 }}>
+                  <div style={{ background:'rgba(230,126,34,0.08)', border:'1px solid rgba(154,100,0,0.2)', borderRadius:6, padding:12 }}>
                     <div style={{ fontSize:11, fontWeight:500, color:'#1f5c4e', marginBottom:8 }}>Confirm key deletion — cannot be undone</div>
                     {['I downloaded the private key','I installed it on my server','I understand this is irreversible'].map((lbl,i) => {
                       const k = ['downloaded','installed','understand'][i]
@@ -245,7 +245,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
 
           {/* Revoke confirm */}
           {revokeOpen && (
-            <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:6, padding:12 }}>
+            <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:6, padding:12 }}>
               <div style={{ fontSize:11, fontWeight:500, color:'#1f5c4e', marginBottom:8 }}>Revoke this certificate? This is permanent and notifies the CA.</div>
               {revokeError && <div style={{ fontSize:11, color:'#1f5c4e', marginBottom:8 }}>{revokeError}</div>}
               <div style={{ display:'flex', gap:6 }}>
@@ -265,7 +265,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
             <ActionBtn icon={Lock}      label="Install to Server"    onClick={() => onInstall?.(cert)} disabled={isRevoked||!cert.cert_pem}/>
             <ActionBtn icon={Trash2}    label="Delete Certificate"   onClick={() => setDelConfirm(true)} color="#2e7a68"/>
             {delConfirm ? (
-              <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:6, padding:'10px 12px' }}>
+              <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:6, padding:'10px 12px' }}>
                 <div style={{ fontSize:11, fontWeight:600, color:'#1f5c4e', marginBottom:6 }}>
                   Permanently delete all records for <span style={{ fontFamily:'monospace' }}>{cert.domain}</span>?
                 </div>
@@ -284,7 +284,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
           </div>
 
           {cert.is_sandbox && (
-            <div style={{ marginTop:16, padding:10, background:'rgba(239,68,68,0.08)', border:'0.5px solid rgba(154,100,0,0.2)', borderRadius:6, fontSize:10, color:'#1f5c4e', lineHeight:1.6 }}>
+            <div style={{ marginTop:16, padding:10, background:'rgba(239,68,68,0.08)', border:'1px solid rgba(154,100,0,0.2)', borderRadius:6, fontSize:10, color:'#1f5c4e', lineHeight:1.6 }}>
               <strong>Sandbox certificate</strong><br/>Not trusted by browsers. Issue a production cert for live use.
             </div>
           )}

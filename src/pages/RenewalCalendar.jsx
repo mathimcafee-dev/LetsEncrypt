@@ -542,7 +542,7 @@ export default function RenewalCalendar({ user }) {
             </div>
             {/* Nav */}
             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              <button className="v2-btn v2-btn-sm" onClick={()=>navigate(-1)}
+              <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={()=>navigate(-1)}
                 style={{ display:'flex', alignItems:'center', padding:'6px 8px' }}>
                 <ChevronLeft size={14}/>
               </button>
@@ -550,11 +550,11 @@ export default function RenewalCalendar({ user }) {
                 minWidth:view==='year'?50:150, textAlign:'center' }}>
                 {navLabel}
               </div>
-              <button className="v2-btn v2-btn-sm" onClick={()=>navigate(1)}
+              <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={()=>navigate(1)}
                 style={{ display:'flex', alignItems:'center', padding:'6px 8px' }}>
                 <ChevronRight size={14}/>
               </button>
-              <button className="v2-btn v2-btn-sm" onClick={goToday}>Today</button>
+              <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={goToday}>Today</button>
             </div>
           </div>
         </div>

@@ -246,7 +246,7 @@ function PageHeader({ counts, tab, onAdd, onAddBoth }) {
         </p>
       </div>
       <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-        <button className="v2-btn" onClick={onAdd}
+        <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={onAdd}
           style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', fontSize:12, fontWeight:500 }}>
           <Plus size={13} strokeWidth={2}/>
           {tab === 'dns' ? 'DNS only' : 'Server only'}
@@ -432,7 +432,7 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
             DNS provider · added {fmtDate(cred.created_at)}
           </div>
         </div>
-        <button className="v2-btn v2-btn-sm" onClick={() => onTest(cred)} disabled={testing}>
+        <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => onTest(cred)} disabled={testing}>
           <RefreshCw size={11} strokeWidth={2} className={testing ? 'spin' : ''} />
           {testing ? 'Testing…' : 'Test'}
         </button>
@@ -792,7 +792,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
               <button className="v2-btn v2-btn-primary v2-btn-sm" onClick={dispatchInstall} disabled={dispatching || !installCertId || !installDomain}>
                 {dispatching ? <><RefreshCw size={11} className="spin"/> Dispatching…</> : 'Dispatch install'}
               </button>
-              <button className="v2-btn v2-btn-sm" onClick={() => { setShowInstall(false); setDispatchResult(null) }}>Cancel</button>
+              <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => { setShowInstall(false); setDispatchResult(null) }}>Cancel</button>
             </div>
             {dispatchResult && (
               <div style={{ marginTop: 8, fontSize:11, color: dispatchResult.ok ? 'var(--v2-green-text)' : '#1f5c4e' }}>
@@ -875,7 +875,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
               <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(31,92,78,0.09)',
-                border: '0.5px solid #fca5a5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                border: '1px solid #fca5a5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <WifiOff size={18} strokeWidth={1.8} color="#1f5c4e" />
               </div>
               <div>
@@ -896,7 +896,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
                 <button
                   onClick={() => navigator.clipboard?.writeText('sudo bash /usr/local/bin/sslvault-agent uninstall')}
                   style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.06)',
-                    border: '0.5px solid rgba(240,237,232,0.14)', borderRadius: 5, padding: '2px 8px',
+                    border: '1px solid rgba(240,237,232,0.14)', borderRadius: 5, padding: '2px 8px',
                     color: '#888888', fontSize:10, cursor: 'pointer', fontFamily: 'inherit' }}>
                   Copy
                 </button>
@@ -1350,7 +1350,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
         </div>
 
         <div className="v2-modal-foot">
-          <button className="v2-btn" onClick={onClose}>Cancel</button>
+          <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={onClose}>Cancel</button>
           <button className="v2-btn v2-btn-primary" onClick={submit} disabled={loading || !!success}>
             {loading ? 'Saving…' : isEdit ? 'Save changes' : `Save ${mode === 'both' ? 'DNS & server' : mode === 'dns' ? 'DNS provider' : 'server'}`}
           </button>
@@ -1439,7 +1439,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
             <div style={{ textAlign: 'center', padding: '24px 0' }}>
               <div style={{
                 width: 48, height: 48, borderRadius: 12, background: 'var(--v2-green-bg)',
-                border: '0.5px solid var(--v2-green-border)', display: 'inline-flex',
+                border: '1px solid var(--v2-green-border)', display: 'inline-flex',
                 alignItems: 'center', justifyContent: 'center', marginBottom: 12
               }}>
                 <Check size={22} strokeWidth={2.2} color="#1f5c4e" />
@@ -1566,7 +1566,7 @@ function LoggedOutView({ nav }) {
           </p>
           <div style={{ display: 'inline-flex', gap: 8 }}>
             <button className="v2-btn v2-btn-primary" onClick={() => nav('/auth')}>Sign in</button>
-            <button className="v2-btn" onClick={() => nav('/install')}>See install guide</button>
+            <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => nav('/install')}>See install guide</button>
           </div>
         </div>
       </div>

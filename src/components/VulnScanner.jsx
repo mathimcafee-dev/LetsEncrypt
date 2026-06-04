@@ -31,7 +31,7 @@ function ProtoRow({ proto }) {
     : <AlertTriangle size={13} color="#1f5c4e" style={{ flexShrink:0 }}/>
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0',
-      borderBottom:'0.5px solid rgba(15,23,42,0.06)' }}>
+      borderBottom:'1px solid rgba(15,23,42,0.06)' }}>
       {icon}
       <span style={{ fontSize:13, flex:1, color:'transparent' }}>{proto.name}</span>
       <span style={{ fontSize:11, color: proto.status==='good'?'#16a34a':proto.status==='bad'?'#1f5c4e':'#1f5c4e' }}>
@@ -52,7 +52,7 @@ function VulnRow({ v }) {
     : { text:'Manual check', color:'#1f5c4e' }
   return (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0',
-      borderBottom:'0.5px solid rgba(15,23,42,0.06)' }}>
+      borderBottom:'1px solid rgba(15,23,42,0.06)' }}>
       {icon}
       <span style={{ fontSize:13, flex:1, color:'transparent' }}>{v.name}</span>
       <span style={{ fontSize:11, fontWeight:600, color:label.color }}>{label.text}</span>
@@ -105,7 +105,7 @@ export default function VulnScanner({ domain, session }) {
     <div style={{ marginTop:12 }}>
       {/* Trigger row */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-        padding:'10px 14px', background:'rgba(31,92,78,0.05)', border:'0.5px solid rgba(15,23,42,0.08)',
+        padding:'10px 14px', background:'rgba(31,92,78,0.05)', border:'1px solid rgba(15,23,42,0.08)',
         borderRadius: result ? '8px 8px 0 0' : 8 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <Bug size={14} color="#777777"/>
@@ -133,7 +133,7 @@ export default function VulnScanner({ domain, session }) {
       </div>
 
       {error && (
-        <div style={{ padding:'8px 14px', background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca',
+        <div style={{ padding:'8px 14px', background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca',
           borderTop:'none', borderRadius:'0 0 8px 8px', fontSize:12, color:'#1f5c4e' }}>
           {error}
         </div>
@@ -141,13 +141,13 @@ export default function VulnScanner({ domain, session }) {
 
       {/* Results panel */}
       {result && expanded && (
-        <div style={{ border:'0.5px solid rgba(15,23,42,0.08)', borderTop:'none',
+        <div style={{ border:'1px solid rgba(15,23,42,0.08)', borderTop:'none',
           borderRadius:'0 0 8px 8px', background:'white', padding:'14px 16px',
           animation:'fadeSlideUp 0.25s ease both' }}>
 
           {/* Grade + score */}
           <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16,
-            paddingBottom:12, borderBottom:'0.5px solid rgba(15,23,42,0.06)' }}>
+            paddingBottom:12, borderBottom:'1px solid rgba(15,23,42,0.06)' }}>
             <GradeBadge grade={result.grade}/>
             <div>
               <p style={{ margin:0, fontSize:13, fontWeight:600, color:'transparent' }}>
@@ -182,7 +182,7 @@ export default function VulnScanner({ domain, session }) {
 
           {result.note && (
             <p style={{ margin:'10px 0 0', fontSize:11, color:'#b5aea8',
-              paddingTop:10, borderTop:'0.5px solid rgba(15,23,42,0.06)' }}>
+              paddingTop:10, borderTop:'1px solid rgba(15,23,42,0.06)' }}>
               ℹ {result.note}
             </p>
           )}

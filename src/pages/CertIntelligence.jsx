@@ -186,7 +186,7 @@ function ExpiryTimeline({ tok }) {
 
       {/* Alert banners */}
       {(counts.expired > 0 || counts.critical > 0) && (
-        <div style={{ background: 'rgba(31,92,78,0.09)', border: '0.5px solid #fecaca', borderRadius: 10,
+        <div style={{ background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca', borderRadius: 10,
           padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
           <AlertCircle size={15} color="#1f5c4e" style={{ flexShrink: 0 }}/>
           <span style={{ fontSize:13, color: '#1f5c4e', fontWeight: 600 }}>
@@ -199,7 +199,7 @@ function ExpiryTimeline({ tok }) {
       )}
 
       {no_renewal_path_count > 0 && (
-        <div style={{ background: 'rgba(239,68,68,0.08)', border: '0.5px solid rgba(154,100,0,0.2)', borderRadius: 10,
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(154,100,0,0.2)', borderRadius: 10,
           padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
           <AlertTriangle size={14} color="#1f5c4e" style={{ flexShrink: 0 }}/>
           <span style={{ fontSize:12, color: '#1f5c4e' }}>
@@ -257,14 +257,14 @@ function ExpiryTimeline({ tok }) {
       {/* Batch delete toolbar — appears when items selected */}
       {selected.size > 0 && (
         <div style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', marginBottom:8,
-          background:'rgba(230,126,34,0.1)', border:'0.5px solid #fed7aa', borderRadius:10 }}>
+          background:'rgba(230,126,34,0.1)', border:'1px solid #fed7aa', borderRadius:10 }}>
           <CheckSquare size={14} style={{ color:'#1f5c4e', flexShrink:0 }}/>
           <span style={{ fontSize:12, fontWeight:600, color:'#1f5c4e', flex:1 }}>
             {selected.size} certificate{selected.size !== 1 ? 's' : ''} selected
           </span>
           <button onClick={() => setSelected(new Set())}
             style={{ fontSize:11, fontWeight:600, padding:'5px 10px', borderRadius:7,
-              border:'0.5px solid #fdba74', background:'var(--v2-surface)', color:'#1f5c4e',
+              border:'1px solid #fdba74', background:'var(--v2-surface)', color:'#1f5c4e',
               cursor:'pointer', fontFamily:'inherit' }}>
             Clear
           </button>
@@ -486,7 +486,7 @@ function ExpiryTimeline({ tok }) {
                 </div>
               </div>
             </div>
-            <div style={{ background:'rgba(31,92,78,0.09)', border:'0.5px solid #fecaca', borderRadius:8,
+            <div style={{ background:'rgba(31,92,78,0.09)', border:'1px solid #fecaca', borderRadius:8,
               padding:'10px 12px', marginBottom:16, fontSize:12, color:'#1f5c4e', lineHeight:1.6 }}>
               These certificates will be <strong>permanently removed</strong> from SSLVault.
               The actual certificates on your servers and at your CA are not affected.
@@ -766,7 +766,7 @@ function ConsolidationAdvisor({ tok, nav }) {
         </div>
         {result && !result.ok && (
           <div style={{ marginTop: 12, fontSize:12, color: '#1f5c4e', background: 'rgba(31,92,78,0.09)',
-            border: '0.5px solid #fecaca', borderRadius: 8, padding: '10px 14px' }}>{result.error}</div>
+            border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px' }}>{result.error}</div>
         )}
       </Card>
 

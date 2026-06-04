@@ -20,7 +20,7 @@ export default function AboutInner({ nav }) {
     <div style={{ padding:'28px 28px 60px', fontFamily:"system-ui,-apple-system,'Segoe UI',sans-serif" }}>
 
       {/* Mission block */}
-      <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #2a6b5c' }}>
+      <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'min(28px,5vw) min(32px,4vw)', marginBottom:16, borderLeft:'3px solid #2a6b5c' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
           <Heart size={14} color="#1f5c4e"/>
           <span style={{ fontSize:10, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.5px' }}>Mission</span>
@@ -39,7 +39,7 @@ export default function AboutInner({ nav }) {
       {/* Pillars grid */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:16 }}>
         {PILLARS.map(({ icon:Icon, title, body }) => (
-          <div key={title} style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
+          <div key={title} style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
             <div style={{ width:32, height:32, background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
               <Icon size={15} color="#1f5c4e"/>
             </div>
@@ -50,7 +50,7 @@ export default function AboutInner({ nav }) {
       </div>
 
       {/* Stack */}
-      <div style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 24px', marginBottom:16 }}>
+      <div style={{ background:'transparent', border:'1px solid #e8edf2', borderRadius:8, padding:'20px 24px', marginBottom:16 }}>
         <div style={{ fontSize:10, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:14 }}>Stack & infrastructure</div>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8 }}>
           {[
@@ -74,7 +74,7 @@ export default function AboutInner({ nav }) {
         <button onClick={() => nav('/developer')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#111111', border:'none', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
           <Code2 size={13}/> Meet the developer
         </button>
-        <button onClick={() => nav('/contact')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#111111', border:'0.5px solid #e8edf2', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+        <button onClick={() => nav('/contact')} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'#111111', border:'1px solid #e8edf2', borderRadius:6, padding:'9px 16px', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
           Contact us <ArrowRight size={12}/>
         </button>
       </div>

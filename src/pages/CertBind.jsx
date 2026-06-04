@@ -231,7 +231,7 @@ export default function CertBind() {
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
             {allClear && (
-              <span style={{ fontSize:12, fontWeight:600, color:'#16a068', background:'rgba(22,160,104,0.07)', border:'1px solid rgba(74,222,128,0.2)', borderRadius:20, padding:'4px 12px', display:'flex', alignItems:'center', gap:5 }}>
+              <span style={{ fontSize:12, fontWeight:600, color:'#16a068', background:'rgba(22,160,104,0.07)', border:'1px solid rgba(22,160,104,0.14)', borderRadius:20, padding:'4px 12px', display:'flex', alignItems:'center', gap:5 }}>
                 <CheckCircle2 size={11} /> All clear
               </span>
             )}

@@ -329,7 +329,7 @@ function DvPendingCard({ order, onRefresh }) {
               </div>
               {i < steps.length-1 && (
                 <div style={{ width:1.5, flex:1, minHeight:12, marginTop:3,
-                  background: s.done ? 'rgba(74,222,128,0.3)' : 'rgba(0,0,0,0.06)' }}/>
+                  background: s.done ? 'rgba(22,160,104,0.22)' : 'rgba(0,0,0,0.06)' }}/>
               )}
             </div>
             {/* Step text */}
@@ -1162,7 +1162,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
                   Renewal · GGS #{r.ggs_order_id||'--'}
                 </div>
                 <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4,
-                  background: r.status==='active' ? 'rgba(74,222,128,0.12)' : 'transparent',
+                  background: r.status==='active' ? 'rgba(22,160,104,0.09)' : 'transparent',
                   color: r.status==='active' ? '#16a068' : '#444444' }}>{r.status}</span>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:'4px 12px' }}>
@@ -1307,7 +1307,7 @@ function PqcRow({ cert, onRefresh }) {
           {!noPem && (
             <button onClick={runCheck} disabled={checking}
               style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
-                color:'#1f5c4e', background:'rgba(248,113,113,0.12)', border:'0.5px solid rgba(154,100,0,0.2)',
+                color:'#1f5c4e', background:'rgba(248,113,113,0.12)', border:'1px solid rgba(154,100,0,0.2)',
                 borderRadius:6, padding:'4px 10px', cursor:checking?'wait':'pointer',
                 fontFamily:'inherit', fontWeight:500, flexShrink:0 }}>
               {checking
@@ -2692,7 +2692,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               </h1>
               {healthy === total && total > 0 && (
                 <span style={{ fontSize:10, fontWeight:600, padding:'2px 9px', borderRadius:20,
-                  background:'rgba(22,160,104,0.09)', color:'#16a068', border:'0.5px solid rgba(74,222,128,0.3)',
+                  background:'rgba(22,160,104,0.09)', color:'#16a068', border:'1px solid rgba(22,160,104,0.22)',
                   animation:'fadeIn 0.5s ease' }}>
                   All healthy ✓
                 </span>
@@ -2857,13 +2857,13 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
         </div>
 
         {expired > 0 && (
-          <div style={{ background:'rgba(248,113,113,0.12)', border:'0.5px solid rgba(220,38,38,0.3)', borderRadius:8, padding:'12px 16px', marginBottom:14, display:'flex', alignItems:'center', gap:12 }}>
+          <div style={{ background:'rgba(248,113,113,0.12)', border:'1px solid rgba(220,38,38,0.3)', borderRadius:8, padding:'12px 16px', marginBottom:14, display:'flex', alignItems:'center', gap:12 }}>
             <AlertTriangle size={14} color="#f87171" style={{ flexShrink:0 }}/>
             <span style={{ fontSize:12, color:'#1f5c4e' }}><strong>{expired} expired certificate{expired!==1?'s':''}</strong> -- renew immediately.</span>
           </div>
         )}
         {expiring > 0 && expired === 0 && (
-          <div style={{ background:'rgba(251,191,36,0.12)', border:'0.5px solid rgba(245,158,11,0.25)', borderRadius:8, padding:'12px 16px', marginBottom:14, display:'flex', alignItems:'center', gap:12 }}>
+          <div style={{ background:'rgba(251,191,36,0.12)', border:'1px solid rgba(245,158,11,0.25)', borderRadius:8, padding:'12px 16px', marginBottom:14, display:'flex', alignItems:'center', gap:12 }}>
             <AlertTriangle size={14} color="#fbbf24" style={{ flexShrink:0 }}/>
             <span style={{ fontSize:12, color:'#9a6400' }}><strong>{expiring} expiring within 30 days</strong></span>
           </div>
@@ -2959,7 +2959,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                         <div style={{ fontSize:10, color:'#555555', marginBottom:8 }}>days · {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '--'}</div>
                         <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
                           {cert.auto_renew_enabled!==false && <span style={{ fontSize:9, padding:'2px 6px', borderRadius:4, background:'rgba(22,160,104,0.09)', color:'#16a068' }}>Auto-renew</span>}
-                          <span style={{ fontSize:9, padding:'2px 6px', borderRadius:4, background: notLive?'rgba(255,140,122,0.12)':isExp?'rgba(248,113,113,0.12)':isWarn?'rgba(184,120,0,0.07)':'rgba(74,222,128,0.07)', color:accentColor }}>
+                          <span style={{ fontSize:9, padding:'2px 6px', borderRadius:4, background: notLive?'rgba(255,140,122,0.12)':isExp?'rgba(248,113,113,0.12)':isWarn?'rgba(184,120,0,0.07)':'rgba(22,160,104,0.07)', color:accentColor }}>
                             {notLive?'Install pending':isExp?'Expired':isWarn?'Expiring':'Live'}
                           </span>
                         </div>
@@ -3196,7 +3196,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                     </span>
                     {allHealthy && (
                       <div style={{ display:'flex', alignItems:'center', gap:5,
-                        background:'rgba(74,222,128,0.07)',
+                        background:'rgba(22,160,104,0.07)',
                         border:'1px solid rgba(74,222,128,0.18)',
                         borderRadius:99, padding:'2px 9px' }}>
                         <div style={{ width:5, height:5, borderRadius:'50%',
@@ -3264,9 +3264,9 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                         {/* Badge */}
                         <span style={{ fontSize:9, fontWeight:700, padding:'2px 8px',
                           borderRadius:99, flexShrink:0,
-                          background: notLive ? 'rgba(129,140,248,0.1)' : d !== null && d <= 30 ? 'rgba(184,120,0,0.07)' : 'rgba(74,222,128,0.07)',
+                          background: notLive ? 'rgba(129,140,248,0.1)' : d !== null && d <= 30 ? 'rgba(184,120,0,0.07)' : 'rgba(22,160,104,0.07)',
                           color: notLive ? '#818cf8' : d !== null && d <= 30 ? '#9a6400' : '#16a068',
-                          border: `1px solid ${notLive ? 'rgba(129,140,248,0.25)' : d !== null && d <= 30 ? 'rgba(251,191,36,0.2)' : 'rgba(74,222,128,0.18)'}` }}>
+                          border: `1px solid ${notLive ? 'rgba(31,92,78,0.2)' : d !== null && d <= 30 ? 'rgba(251,191,36,0.2)' : 'rgba(74,222,128,0.18)'}` }}>
                           {notLive ? 'INSTALL' : d !== null && d <= 0 ? 'EXPIRED' : d !== null && d <= 30 ? 'EXPIRING' : 'LIVE'}
                         </span>
                       </div>
@@ -3351,7 +3351,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                     Lifecycle {now.getFullYear()}
                   </span>
                   <div style={{ display:'flex', gap:12 }}>
-                    {[['rgba(74,222,128,0.75)','Valid'],['rgba(74,222,128,0.2)','Remaining'],['rgba(0,0,0,0.05)','Past']].map(([bg,lbl]) => (
+                    {[['rgba(74,222,128,0.75)','Valid'],['rgba(22,160,104,0.14)','Remaining'],['rgba(0,0,0,0.05)','Past']].map(([bg,lbl]) => (
                       <span key={lbl} style={{ display:'flex', alignItems:'center', gap:4,
                         fontSize:9, color:'rgba(255,255,255,0.25)' }}>
                         <span style={{ width:14, height:4, borderRadius:2,
@@ -3434,7 +3434,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                         <div style={{ width:52, flexShrink:0, textAlign:'right' }}>
                           <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px',
                             borderRadius:99,
-                            background: notLive ? 'rgba(129,140,248,0.1)' : 'rgba(74,222,128,0.07)',
+                            background: notLive ? 'rgba(129,140,248,0.1)' : 'rgba(22,160,104,0.07)',
                             color: notLive ? '#818cf8' : '#16a068',
                             border: `1px solid ${notLive ? 'rgba(129,140,248,0.2)' : 'rgba(74,222,128,0.18)'}` }}>
                             {notLive ? 'INSTALL' : 'LIVE'}
@@ -3739,7 +3739,7 @@ function MarketingDashboard({ nav }) {
       <div className="v2-container">
         <div style={{ textAlign:'center', padding:'56px 0 48px' }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'var(--v2-green-bg)',
-            border:'0.5px solid var(--v2-green-border)', borderRadius:100, padding:'4px 14px', marginBottom:20 }}>
+            border:'1px solid var(--v2-green-border)', borderRadius:100, padding:'4px 14px', marginBottom:20 }}>
             <span className="v2-pulse"/>
             <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-green-text)' }}>Free · Open · Trusted</span>
           </div>

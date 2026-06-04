@@ -12,7 +12,7 @@ export default function Contact({ nav }) {
         {/* ── HERO ─────────────────────────────────────────────────── */}
         <div style={{ textAlign:'center', padding:'48px 0 48px' }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8,
-                        background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
+                        background:'var(--v2-green-bg)', border:'1px solid var(--v2-green-border)',
                         borderRadius:100, padding:'4px 14px', marginBottom:20 }}>
             <span className="v2-pulse" />
             <span style={{ fontSize:12, fontWeight:500, color:'var(--v2-green-text)' }}>
@@ -34,7 +34,7 @@ export default function Contact({ nav }) {
         <div className="v2-card" style={{ padding:'40px', marginBottom:16, textAlign:'center',
                                           borderTop:'2px solid var(--v2-green)' }}>
           <div style={{ width:56, height:56, borderRadius:'var(--v2-r-xl)', margin:'0 auto 20px',
-                        background:'var(--v2-green-bg)', border:'0.5px solid var(--v2-green-border)',
+                        background:'var(--v2-green-bg)', border:'1px solid var(--v2-green-border)',
                         display:'flex', alignItems:'center', justifyContent:'center' }}>
             <Mail size={24} color='var(--v2-green)' />
           </div>
@@ -110,7 +110,7 @@ export default function Contact({ nav }) {
           Most common questions — setup, DNS validation, troubleshooting, FAQs — are already
           answered there. Faster than waiting for a reply.
           <div style={{ marginTop:10 }}>
-            <button className="v2-btn v2-btn-sm" onClick={() => nav('/knowledge-base')}
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => nav('/knowledge-base')}
               style={{ fontSize:12 }}>
               <BookOpen size={11} /> Browse Knowledge Base <ArrowRight size={10} />
             </button>
@@ -145,10 +145,10 @@ export default function Contact({ nav }) {
                     style={{ display:'inline-flex', alignItems:'center', gap:5,
                               fontSize:12, color:'#333333', textDecoration:'none',
                               whiteSpace:'nowrap' }}
-                    className="v2-btn v2-btn-sm">
+                    style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}}>
                     {cta} <ArrowRight size={10} />
                   </a>
-                : <button className="v2-btn v2-btn-sm" onClick={action}
+                : <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={action}
                     style={{ fontSize:12, whiteSpace:'nowrap' }}>
                     {cta} <ArrowRight size={10} />
                   </button>

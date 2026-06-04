@@ -191,7 +191,7 @@ export default function PKIConsortiumIntelligence({ nav }) {
                   <div style={{ fontWeight:500, color:'#111111', fontSize:13 }}>{l.label}</div>
                   <div style={{ fontSize:11, color:'#888888', marginTop:2 }}>{l.desc}</div>
                 </div>
-                <a href={l.url} target="_blank" rel="noreferrer" className="v2-btn v2-btn-sm" style={{ gap:4, textDecoration:'none', flexShrink:0 }}>
+                <a href={l.url} target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', gap:4, textDecoration:'none', flexShrink:0 }}>
                   <ExternalLink size={11}/> Visit ↗
                 </a>
               </div>

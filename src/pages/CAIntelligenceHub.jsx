@@ -95,7 +95,7 @@ function WorkspaceRow({ icon: Icon, iconBg, iconColor, label, badge, badgeColor,
             border: `0.5px solid ${badgeColor || '#111111'}44` }}>{badge}</span>
         )}
       </div>
-      <button className="v2-btn v2-btn-sm" onClick={onOpen}>{openLabel}</button>
+      <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={onOpen}>{openLabel}</button>
     </div>
   )
 }
@@ -693,12 +693,12 @@ function CertDetailPanel({ cert, tok, connId, onClose }) {
             )}
             <button
               onClick={() => window.open(`https://accounts.digicert.com/`, '_blank')}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, padding: '8px 14px', borderRadius: 7, border: '0.5px solid var(--v2-green)', background: 'var(--v2-green-bg)', cursor: 'pointer', color: 'var(--v2-green-text)', fontWeight: 500 }}>
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, padding: '8px 14px', borderRadius: 7, border: '1px solid var(--v2-green)', background: 'var(--v2-green-bg)', cursor: 'pointer', color: 'var(--v2-green-text)', fontWeight: 500 }}>
               <RotateCcw size={12}/> Reissue at DigiCert CertCentral ↗
             </button>
             <button
               onClick={handleRevoke} disabled={revoking}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, padding: '8px 14px', borderRadius: 7, border: '0.5px solid #fecaca', background: 'rgba(31,92,78,0.09)', cursor: revoking ? 'not-allowed' : 'pointer', color: '#1f5c4e', fontWeight: 500 }}>
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize:12, padding: '8px 14px', borderRadius: 7, border: '1px solid #fecaca', background: 'rgba(31,92,78,0.09)', cursor: revoking ? 'not-allowed' : 'pointer', color: '#1f5c4e', fontWeight: 500 }}>
               {revoking ? <><RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }}/> Revoking…</> : <><Ban size={12}/> Revoke certificate</>}
             </button>
             {revokeMsg && <div style={{ fontSize:11, color: revokeMsg.includes('Error') || revokeMsg.includes('failed') ? '#1f5c4e' : '#16a068', padding: '6px 10px', borderRadius: 6, background: 'var(--v2-surface-2)', border: '1px solid var(--v2-border)' }}>{revokeMsg}</div>}
@@ -809,7 +809,7 @@ function DigiCertTab({ tok, nav }) {
 
   if (!apiKey) return (
     <div>
-      <div style={{ background: 'rgba(31,92,78,0.09)', border: '0.5px solid #fecaca', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
+      <div style={{ background: 'rgba(31,92,78,0.09)', border: '1px solid #fecaca', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
         <div style={{ fontSize:13, fontWeight: 600, color: '#2e7a68', marginBottom: 2 }}>DigiCert CertCentral — not connected</div>
         <div style={{ fontSize:11, color: '#1f5c4e' }}>Connect your API key to access portfolio, PQC scoring, reissue, and CT log monitoring.</div>
       </div>
@@ -851,7 +851,7 @@ function DigiCertTab({ tok, nav }) {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button className="v2-btn v2-btn-sm" onClick={doSync} disabled={loadingPf}>
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={doSync} disabled={loadingPf}>
             {loadingPf ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync from DigiCert</>}
           </button>
           <button onClick={() => window.open('https://accounts.digicert.com/', '_blank')}
@@ -990,7 +990,7 @@ function DigiCertTab({ tok, nav }) {
                 </div>
                 <div style={{ display: 'flex', gap: 4, alignSelf: 'center' }} onClick={e => e.stopPropagation()}>
                   <button onClick={() => { sessionStorage.setItem('prefill_domain', c.domain || ''); nav && nav('/buy') }}
-                    style={{ fontSize:10, padding: '3px 8px', borderRadius: 5, border: '0.5px solid var(--v2-green)', background: 'var(--v2-green-bg)', color: 'var(--v2-green-text)', cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                    style={{ fontSize:10, padding: '3px 8px', borderRadius: 5, border: '1px solid var(--v2-green)', background: 'var(--v2-green-bg)', color: 'var(--v2-green-text)', cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     ↻ SSLVault
                   </button>
                   <button onClick={() => window.open('https://accounts.digicert.com/', '_blank')}
@@ -1139,7 +1139,7 @@ function SectigoTab({ tok }) {
           <span style={{ fontSize:11, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
             Certificate inventory
           </span>
-          <button className="v2-btn v2-btn-sm" onClick={syncInventory} disabled={syncing}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={syncInventory} disabled={syncing}
             style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             {syncing ? <><Spinner/> Syncing…</> : <><RefreshCw size={11}/> Sync from Sectigo</>}
           </button>
@@ -1285,7 +1285,7 @@ function ShadowITTab({ tok, nav }) {
                 {conns[0].label || conns[0].ca_name}
               </div>
             )}
-            <button className="v2-btn" onClick={doScan} disabled={scanning || !selectedConn}
+            <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={doScan} disabled={scanning || !selectedConn}
               style={{ background: scanning || !selectedConn ? undefined : '#111111',
                 color: scanning || !selectedConn ? undefined : '#000000',
                 borderColor: scanning || !selectedConn ? undefined : '#111111',
@@ -1328,7 +1328,7 @@ function ShadowITTab({ tok, nav }) {
             {shadows.length}
           </span>}
         </div>
-        <button className="v2-btn v2-btn-sm" onClick={loadShadows} disabled={loading}
+        <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={loadShadows} disabled={loading}
           style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <RefreshCw size={11} style={{ animation: loading ? 'spin .8s linear infinite' : 'none' }}/> Refresh
         </button>
@@ -1384,7 +1384,7 @@ style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 80px', minWi
                   background: u.bg, color: u.color, border: `0.5px solid ${u.color}44` }}>{u.label}</span>
               </div>
               <div style={{ display: 'flex', gap: 4, alignSelf: 'center' }}>
-                <button className="v2-btn v2-btn-sm"
+                <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}}
                   onClick={() => { sessionStorage.setItem('prefill_domain', s.domain); nav('/buy') }}
                   style={{ fontSize:10, padding: '3px 8px' }}>
                   Import
@@ -1466,7 +1466,7 @@ function ConsolidationTab({ tok, nav }) {
               Analyses your cross-CA portfolio for consolidation opportunities and duplicate certs.
             </div>
           </div>
-          <button className="v2-btn" onClick={runAnalysis} disabled={running}
+          <button style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:7,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={runAnalysis} disabled={running}
             style={{ display: 'flex', alignItems: 'center', gap: 6,
               background: running ? undefined : '#16a068', color: running ? undefined : '#000000',
               borderColor: running ? undefined : '#16a068' }}>
@@ -1575,14 +1575,14 @@ function ConsolidationTab({ tok, nav }) {
                       ${(opp.estimated_saving_usd || 0).toFixed(0)}
                     </div>
                     <div style={{ display: 'flex', gap: 4 }}>
-                      <button className="v2-btn v2-btn-sm"
+                      <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}}
                         onClick={() => { sessionStorage.setItem('prefill_domain', opp.domain); nav('/buy') }}
                         style={{ fontSize:10, padding: '3px 8px', background: 'transparent',
                           color: '#16a068', borderColor: 'rgba(31,92,78,0.2)',
                           display: 'flex', alignItems: 'center', gap: 3 }}>
                         <Zap size={9}/> Migrate
                       </button>
-                      <button className="v2-btn v2-btn-sm" onClick={() => dismiss(opps.indexOf(opp))}
+                      <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => dismiss(opps.indexOf(opp))}
                         style={{ fontSize:10, padding: '3px 7px' }}>✕</button>
                     </div>
                   </div>
@@ -1607,7 +1607,7 @@ function ConsolidationTab({ tok, nav }) {
                         color: '#111111' }}>{opp.domain}</span>
                       <span style={{ fontSize:11, color: '#888888', marginLeft: 8 }}>{opp.reason}</span>
                     </div>
-                    <button className="v2-btn v2-btn-sm" onClick={() => dismiss(opps.indexOf(opp))}>Dismiss</button>
+                    <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => dismiss(opps.indexOf(opp))}>Dismiss</button>
                   </div>
                 ))}
               </div>
@@ -1657,7 +1657,7 @@ export default function CAIntelligenceHub({ nav }) {
     { id:'overview',      label:'Overview',       icon: BarChart2,   color:'#1f5c4e',  bg:'rgba(31,92,78,0.12)',  count:null },
     { id:'rapidssl',      label:'RapidSSL',       icon: Shield,      color:'#16a068',  bg:'rgba(22,160,104,0.12)', count:live.rapidCount, dot:'#16a068' },
     { id:'digicert',      label:'DigiCert',       icon: Building,    color:'#1f5c4e',  bg:'rgba(0,0,0,0.07)',  count:null, dot:live.dcConn?'#16a068':'#555' },
-    { id:'sectigo',       label:'Sectigo',        icon: Lock,        color:'#818cf8',  bg:'rgba(129,140,248,0.15)',count:null, dot:live.scConn?'#16a068':'#555' },
+    { id:'sectigo',       label:'Sectigo',        icon: Lock,        color:'#1f5c4e',  bg:'rgba(31,92,78,0.09)',count:null, dot:live.scConn?'#16a068':'#555' },
     { id:'shadow',        label:'Exposure',       icon: Search,      color:'#1f5c4e',  bg:'rgba(192,57,43,0.1)',count:live.exposure>0?live.exposure:null },
     { id:'consolidation', label:'Cost advisor',   icon: TrendingUp,  color:'#9a6400',  bg:'rgba(154,100,0,0.12)', count:null },
   ]
@@ -1694,12 +1694,12 @@ export default function CAIntelligenceHub({ nav }) {
           {/* Live health pill */}
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
             {live.exp30 > 0 ? (
-              <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, color:'#9a6400', background:'rgba(184,120,0,0.07)', border:'0.5px solid rgba(251,191,36,0.35)', borderRadius:20, padding:'5px 12px' }}>
+              <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, color:'#9a6400', background:'rgba(184,120,0,0.07)', border:'1px solid rgba(251,191,36,0.35)', borderRadius:20, padding:'5px 12px' }}>
                 <span style={{ width:6, height:6, borderRadius:'50%', background:'#9a6400' }}/>
                 {live.exp30} expiring soon
               </span>
             ) : (
-              <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, color:'#16a068', background:'rgba(22,160,104,0.07)', border:'0.5px solid rgba(74,222,128,0.3)', borderRadius:20, padding:'5px 12px' }}>
+              <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, color:'#16a068', background:'rgba(22,160,104,0.07)', border:'1px solid rgba(22,160,104,0.22)', borderRadius:20, padding:'5px 12px' }}>
                 <span style={{ width:6, height:6, borderRadius:'50%', background:'#16a068' }}/>
                 All certs healthy
               </span>
@@ -1719,7 +1719,7 @@ export default function CAIntelligenceHub({ nav }) {
                 {t.label}
                 {t.dot && (
                   <span style={{ position:'relative', width:7, height:7 }}>
-                    {t.dot==='#16a068' && <span style={{ position:'absolute', inset:-2, borderRadius:'50%', background:'rgba(74,222,128,0.35)', animation:'capulse 2.5s ease infinite'}}/>}
+                    {t.dot==='#16a068' && <span style={{ position:'absolute', inset:-2, borderRadius:'50%', background:'rgba(22,160,104,0.25)', animation:'capulse 2.5s ease infinite'}}/>}
                     <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:t.dot }}/>
                   </span>
                 )}

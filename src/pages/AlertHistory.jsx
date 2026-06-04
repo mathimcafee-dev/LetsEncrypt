@@ -85,7 +85,7 @@ export default function AlertHistory({ nav }) {
               </p>
             </div>
           </div>
-          <button className="v2-btn v2-btn-sm" onClick={() => nav('/alert-settings')}
+          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => nav('/alert-settings')}
             style={{ display:'flex', alignItems:'center', gap:5 }}>
             Settings <ChevronRight size={11}/>
           </button>

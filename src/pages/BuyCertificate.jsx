@@ -498,7 +498,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           </div>
 
           {err && (
-            <div style={{ background: 'rgba(239,68,68,0.1)', border: '0.5px solid rgba(220,38,38,0.3)',
+            <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(220,38,38,0.3)',
               borderRadius: 7, padding: '10px 14px', fontSize:12, color: 'rgba(239,83,80,0.3)',
               display: 'flex', alignItems: 'center', gap: 8 }}>
               <AlertTriangle size={13} style={{ flexShrink: 0 }}/> {err}
@@ -674,7 +674,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           {ord?.dns_auto_added
             ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(52,211,153,0.1)',
-                border: '0.5px solid rgba(52,211,153,0.3)', borderRadius: 7, padding: '10px 18px',
+                border: '1px solid rgba(52,211,153,0.3)', borderRadius: 7, padding: '10px 18px',
                 fontSize:13, color: '#16a068', fontWeight: 500 }}>
                 <RefreshCw size={13} className="spin" style={{color:'#16a068'}}/> DNS record added via {ord.dns_provider || 'provider'} · checking every 5s…
               </div>
@@ -841,7 +841,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
           <div style={{ background: 'rgba(31,92,78,0.12)', borderBottom: '1px solid rgba(0,0,0,0.1)',
             padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 28, height: 28, borderRadius: 7,
-              background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(22,160,104,0.22)',
+              background: 'rgba(22,160,104,0.09)', border: '1px solid rgba(22,160,104,0.22)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <ShieldCheck size={14} color="#4ade80" strokeWidth={2}/>
             </div>
@@ -889,7 +889,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
                 gap: 6, padding: '7px 10px', borderRadius: 7, fontSize: 11, fontWeight: 600,
                 cursor: certPem ? 'pointer' : 'not-allowed', fontFamily: F,
                 background: certCopied ? 'rgba(22,160,104,0.09)' : 'rgba(0,0,0,0.05)',
-                border: certCopied ? '0.5px solid rgba(74,222,128,0.3)' : '1px solid rgba(0,0,0,0.07)',
+                border: certCopied ? '0.5px solid rgba(22,160,104,0.22)' : '1px solid rgba(0,0,0,0.07)',
                 color: certCopied ? '#16a068' : certPem ? '#333333' : '#b0a8a0',
                 opacity: certPem ? 1 : 0.4, transition: 'all .15s' }}>
               {certCopied
@@ -937,7 +937,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
             <button onClick={goToDashboard}
               style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
                 borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: F,
-                background: 'rgba(74,222,128,0.12)', border: '0.5px solid rgba(74,222,128,0.3)',
+                background: 'rgba(22,160,104,0.09)', border: '1px solid rgba(22,160,104,0.22)',
                 color: '#16a068' }}>
               <Server size={11}/> View in dashboard
             </button>
