@@ -67,7 +67,7 @@ function AgentCard({ agent, onRefresh }) {
       <div
         onClick={() => setExpanded(v => !v)}
         style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) 120px 140px 140px 36px', alignItems:'center', padding:'14px 18px', cursor:'pointer', gap:12 }}
-        onMouseEnter={e => e.currentTarget.style.background='#000000'}
+        onMouseEnter={e => e.currentTarget.style.background='#e8f0f8'}
         onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}
       >
         {/* Server name + meta */}

@@ -839,7 +839,7 @@ export default function CAConnectors({ nav }) {
                       borderRadius:10, border:'1.5px solid rgba(0,0,0,0.08)', background:'transparent',
                       cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor='#111111'; e.currentTarget.style.background='transparent' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor='#111111'; e.currentTarget.style.background='#000000' }}>
+                    onMouseLeave={e => { e.currentTarget.style.borderColor='#111111'; e.currentTarget.style.background='#e8f0f8' }}>
                     <div style={{ width:34, height:34, borderRadius:8, background:'#f0f4fa',
                       display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                       <ExternalLink size={15} color="rgba(0,0,0,0.55)"/>
@@ -865,7 +865,7 @@ export default function CAConnectors({ nav }) {
                       borderRadius:10, border:'1.5px solid rgba(0,0,0,0.08)', background:'transparent',
                       cursor:'pointer', fontFamily:'inherit', textAlign:'left', transition:'all .15s' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor='#00a550'; e.currentTarget.style.background='transparent' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor='#111111'; e.currentTarget.style.background='#000000' }}>
+                    onMouseLeave={e => { e.currentTarget.style.borderColor='#111111'; e.currentTarget.style.background='#e8f0f8' }}>
                     <div style={{ width:34, height:34, borderRadius:8, background:'transparent',
                       display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                       <Shield size={15} color="#16a34a"/>

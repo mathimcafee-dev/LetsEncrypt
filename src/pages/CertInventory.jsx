@@ -136,7 +136,7 @@ function CertDetail({ cert, order, onClose, onDelete, onKeyDeleted, onInstall, o
 
   const ActionBtn = ({ icon:Icon, label, onClick, color='var(--v2-text)', disabled }) => (
     <button onClick={onClick} disabled={disabled} style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'10px 14px', fontSize:12, fontWeight:500, background:'var(--v2-surface)', color, border:'1px solid var(--v2-border)', borderRadius:6, cursor:disabled?'not-allowed':'pointer', fontFamily:'inherit', opacity:disabled?0.5:1 }}
-      onMouseEnter={e => !disabled && (e.currentTarget.style.background='#000000')}
+      onMouseEnter={e => !disabled && (e.currentTarget.style.background='#e8f0f8')}
       onMouseLeave={e => !disabled && (e.currentTarget.style.background='var(--v2-surface)')}
     >
       {Icon && <Icon size={13}/>} {label}
@@ -540,7 +540,7 @@ export default function CertInventory({ user, nav, onIssue }) {
       <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:'var(--v2-r-lg)', overflow:'hidden' }}>
         <div style={{ overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
         {/* Header */}
-        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'rgba(0,0,0,0.02)', borderBottom:'1px solid rgba(0,0,0,0.06)', fontSize:11, fontWeight:600, color:'#888888', letterSpacing:'.3px', textTransform:'uppercase', minWidth:0 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'10px 18px', background:'#f0f4fa', borderBottom:'1px solid rgba(0,119,182,0.1)', fontSize:11, fontWeight:600, color:'#0077b6', letterSpacing:'.3px', textTransform:'uppercase', minWidth:0 }}>
           <div>Domain</div>
           <div>Order ID</div>
           <div>Product</div>
@@ -569,9 +569,9 @@ export default function CertInventory({ user, nav, onIssue }) {
             <div key={cert.id}>
               <div
                 onClick={() => setExpanded(isExpanded ? null : cert.id)}
-                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'1px solid rgba(0,0,0,0.06)', background:isExpanded?'transparent':'var(--v2-surface)', transition:'background 0.1s', minWidth:0 }}
-                onMouseEnter={e => { if(!isExpanded) e.currentTarget.style.background='#000000' }}
-                onMouseLeave={e => { if(!isExpanded) e.currentTarget.style.background='var(--v2-surface)' }}
+                style={{ display:'grid', gridTemplateColumns:'1.4fr 80px 1.4fr 80px 1.6fr 100px 80px 36px', padding:'13px 18px', alignItems:'center', cursor:'pointer', borderBottom:'1px solid rgba(0,119,182,0.07)', background:isExpanded?'#f0f4fa':'#ffffff', transition:'background 0.1s', minWidth:0 }}
+                onMouseEnter={e => { if(!isExpanded) e.currentTarget.style.background='#e8f0f8' }}
+                onMouseLeave={e => { if(!isExpanded) e.currentTarget.style.background='#ffffff' }}
               >
                 {/* Domain */}
                 <div style={{ display:'flex', flexDirection:'column', gap:3, minWidth:0 }}>
