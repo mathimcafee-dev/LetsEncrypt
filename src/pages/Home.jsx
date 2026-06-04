@@ -89,6 +89,8 @@ function Term({title,lines}) {
 }
 
 function InventoryMockup() {
+  const [pulse,setPulse]=React.useState(true)
+  useEffect(()=>{const iv=setInterval(()=>setPulse(p=>!p),1200);return()=>clearInterval(iv)},[])
   const rows=[
     {d:'easysecurity.in',  days:196,grade:'A+',ca:'RapidSSL',auto:true, s:'active'  },
     {d:'api.shop.com',     days:18, grade:'B', ca:'Sectigo', auto:true, s:'warning' },
@@ -97,25 +99,50 @@ function InventoryMockup() {
   ]
   const sc=s=>s==='active'?GRN:s==='warning'?AMB:RED
   const gc=g=>g.startsWith('A')?GRN:g==='B'?AMB:RED
+  const sp=s=>s==='active'?{bg:'rgba(0,165,80,0.15)',c:GRN}:s==='warning'?{bg:'rgba(243,156,18,0.15)',c:AMB}:{bg:'rgba(231,76,60,0.15)',c:RED}
   return (
-    <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
-      <div style={{background:'#f0f4fa',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:'1px solid rgba(255,255,255,0.12)'}}>
+    <div style={{background:'#0f1923',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.25)'}}>
+      {/* Titlebar */}
+      <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
-        <span style={{fontSize:10,color:'rgba(255,255,255,0.48)',fontFamily:MONO,flex:1,textAlign:'center'}}>Inventory · 4 certificates</span>
-      </div>
-      <div style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'6px 14px',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
-        {['Domain','Days','Grade','CA','Auto','Status'].map(h=><div key={h} style={{fontSize:9.5,fontWeight:500,color:'rgba(255,255,255,0.4)',textTransform:'uppercase',letterSpacing:'0.05em',fontFamily:MONO}}>{h}</div>)}
-      </div>
-      {rows.map((r,i)=>(
-        <div key={r.d} style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'9px 14px',borderBottom:i<rows.length-1?'1px solid rgba(0,0,0,0.05)':'none',background:r.s==='critical'?'rgba(192,57,43,0.05)':r.s==='warning'?'rgba(154,100,0,0.04)':'transparent',alignItems:'center'}}>
-          <span style={{fontSize:11.5,fontWeight:500,color:'rgba(255,255,255,0.85)',fontFamily:MONO}}>{r.d}</span>
-          <span style={{fontSize:11,fontWeight:600,color:sc(r.s),fontFamily:MONO}}>{r.days}d</span>
-          <span style={{fontSize:11,fontWeight:700,color:gc(r.grade)}}>{r.grade}</span>
-          <span style={{fontSize:11,color:'rgba(255,255,255,0.5)'}}>{r.ca}</span>
-          <span style={{fontSize:10,fontWeight:500,color:r.auto?GRN:'rgba(255,255,255,0.3)'}}>{r.auto?'✓ ON':'— OFF'}</span>
-          <Pill status={r.s}/>
+        <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1,textAlign:'center'}}>Certificate inventory · 4 domains</span>
+        <div style={{display:'flex',alignItems:'center',gap:4,fontSize:9,color:'#3dbfb0',fontFamily:MONO}}>
+          <div style={{width:5,height:5,borderRadius:'50%',background:'#3dbfb0',opacity:pulse?1:0.25,transition:'opacity 0.4s'}}/>
+          Live
         </div>
-      ))}
+      </div>
+      {/* Sub-label */}
+      <div style={{padding:'6px 14px',borderBottom:'1px solid rgba(255,255,255,0.04)',background:'rgba(255,255,255,0.02)'}}>
+        <span style={{fontSize:9,color:'rgba(255,255,255,0.22)',fontFamily:MONO,textTransform:'uppercase',letterSpacing:'0.08em'}}>
+          Expiry · Health grade · Auto-renew status
+        </span>
+      </div>
+      {/* Column headers */}
+      <div style={{display:'grid',gridTemplateColumns:'2fr 52px 54px 80px 58px 74px',padding:'7px 14px',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+        {['Domain','Days','Grade','CA','Auto','Status'].map(h=>(
+          <div key={h} style={{fontSize:9,fontWeight:600,color:'rgba(255,255,255,0.28)',textTransform:'uppercase',letterSpacing:'0.07em',fontFamily:MONO}}>{h}</div>
+        ))}
+      </div>
+      {/* Data rows */}
+      {rows.map((r,i)=>{
+        const pill=sp(r.s)
+        return (
+          <div key={r.d} style={{
+            display:'grid',gridTemplateColumns:'2fr 52px 54px 80px 58px 74px',
+            padding:'10px 14px',
+            borderBottom:i<rows.length-1?'1px solid rgba(255,255,255,0.04)':'none',
+            background:r.s==='critical'?'rgba(231,76,60,0.04)':r.s==='warning'?'rgba(243,156,18,0.03)':'transparent',
+            alignItems:'center',
+          }}>
+            <span style={{fontSize:12,fontWeight:500,color:'rgba(255,255,255,0.85)',fontFamily:MONO}}>{r.d}</span>
+            <span style={{fontSize:12,fontWeight:700,color:sc(r.s),fontFamily:MONO}}>{r.days}d</span>
+            <span style={{fontSize:12,fontWeight:700,color:gc(r.grade),fontFamily:MONO}}>{r.grade}</span>
+            <span style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:MONO}}>{r.ca}</span>
+            <span style={{fontSize:10,fontWeight:600,color:r.auto?GRN:'rgba(255,255,255,0.22)',fontFamily:MONO}}>{r.auto?'✓ ON':'— OFF'}</span>
+            <span style={{fontSize:10,fontWeight:600,padding:'3px 9px',borderRadius:20,background:pill.bg,color:pill.c,fontFamily:MONO,display:'inline-block'}}>{r.s}</span>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -584,7 +611,10 @@ export default function Home({ nav }) {
             </div>
           </FadeUp>
           <FadeUp>
-            <div style={{fontSize:10,color:'rgba(255,255,255,0.48)',fontFamily:MONO,marginBottom:8,textTransform:'uppercase',letterSpacing:'0.05em',fontWeight:500}}>Certificate inventory — live expiry · health grade · auto-renew status</div>
+            <div style={{fontSize:10,color:'rgba(255,255,255,0.4)',fontFamily:MONO,marginBottom:8,textTransform:'uppercase',letterSpacing:'0.07em',fontWeight:500,display:'flex',alignItems:'center',gap:6}}>
+              <span style={{width:5,height:5,borderRadius:'50%',background:'#3dbfb0',display:'inline-block'}}/>
+              Certificate inventory — live expiry · health grade · auto-renew status
+            </div>
             <InventoryMockup/>
           </FadeUp>
         </div>
