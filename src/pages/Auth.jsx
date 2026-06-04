@@ -1,296 +1,286 @@
-import { useEffect, useState, useRef } from 'react'
-import React from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { Shield, Lock, CheckCircle, Zap, Eye, EyeOff, AlertTriangle, ArrowRight, RefreshCw } from 'lucide-react'
-import '../styles/design-v2.css'
+
+const FONT = "'Inter',system-ui,sans-serif"
+const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
+const BLUE = '#0077b6'
+const DARK = '#005a8a'
+const TEAL = '#3dbfb0'
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
-
-function SSLVaultTrustBadge({ compact = false }) {
-  const canvasRef = React.useRef(null)
-  React.useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    const W = compact ? 26 : 34
-    const H = compact ? 38 : 50
-    const STEPS = 13
-    let f = 0, raf
-    function draw() {
-      ctx.clearRect(0, 0, W, H)
-      const t = f * 0.044
-      const pts1 = [], pts2 = []
-      for (let i = 0; i <= STEPS; i++) {
-        const y = 3 + (i / STEPS) * (H - 6)
-        const phase = (i / STEPS) * Math.PI * 2.4 + t
-        pts1.push({ x: W/2 + Math.sin(phase) * (W/2 - 3), y, phase })
-        pts2.push({ x: W/2 + Math.sin(phase + Math.PI) * (W/2 - 3), y, phase })
-      }
-      for (let i = 0; i <= STEPS; i += 2) {
-        const depth = (Math.sin(pts1[i].phase) + 1) / 2
-        ctx.beginPath(); ctx.moveTo(pts1[i].x, pts1[i].y); ctx.lineTo(pts2[i].x, pts2[i].y)
-        ctx.strokeStyle = `rgba(192,57,43,${(0.08 + depth * 0.15).toFixed(2)})`; ctx.lineWidth = 0.7; ctx.stroke()
-      }
-      const drawStrand = (pts, col) => {
-        ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y)
-        for (let i = 1; i <= STEPS; i++) {
-          const mx = (pts[i-1].x + pts[i].x)/2, my = (pts[i-1].y + pts[i].y)/2
-          ctx.quadraticCurveTo(pts[i-1].x, pts[i-1].y, mx, my)
-        }
-        ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke()
-      }
-      drawStrand(pts1, '#0077b6'); drawStrand(pts2, '#e85555')
-      for (let i = 0; i <= STEPS; i++) {
-        const depth = (Math.sin(pts1[i].phase) + 1) / 2
-        const r = 1.4 + depth * 1.8
-        ctx.beginPath(); ctx.arc(pts1[i].x, pts1[i].y, r, 0, Math.PI*2)
-        ctx.fillStyle = `rgba(220,80,60,${(0.35 + depth * 0.65).toFixed(2)})`; ctx.fill()
-      }
-      for (let i = 0; i <= STEPS; i++) {
-        const depth = (Math.sin(pts2[i].phase + Math.PI) + 1) / 2
-        const r = 1.4 + depth * 1.8
-        ctx.beginPath(); ctx.arc(pts2[i].x, pts2[i].y, r, 0, Math.PI*2)
-        ctx.fillStyle = `rgba(192,57,43,${(0.25 + depth * 0.5).toFixed(2)})`; ctx.fill()
-      }
-      f++; raf = requestAnimationFrame(draw)
-    }
-    draw()
-    return () => cancelAnimationFrame(raf)
-  }, [compact])
-  const W = compact ? 26 : 34, H = compact ? 38 : 50
-  return (
-    <div style={{
-      display:'inline-flex', alignItems:'center', gap: compact ? 8 : 11,
-      padding: compact ? '6px 12px 6px 8px' : '9px 16px 9px 10px',
-      background:'#f0f4fa',
-      border:'1px solid rgba(0,119,182,0.25)',
-      borderRadius:10, position:'relative', overflow:'hidden',
-      minWidth: compact ? 0 : 240,
-      animation:'sv-sweep-anim 3.5s ease-in-out infinite',
-    }}>
-      <canvas ref={canvasRef} width={W} height={H} style={{flexShrink:0}} />
-      <div style={{display:'flex',flexDirection:'column',gap:2,flex:1}}>
-        <span style={{fontSize:7,fontWeight:700,color:'#e85555',letterSpacing:'.14em',textTransform:'uppercase'}}>
-          {compact ? 'Secured by' : 'Cryptographically Secured'}
-        </span>
-        <div style={{fontSize: compact ? 13 : 15, fontWeight:800, color:'#111111', lineHeight:1, letterSpacing:'.01em'}}>
-          SSLVault <span style={{color:'#0077b6', fontSize: compact ? 10 : 11, fontWeight:500}}>® {compact ? 'PKI' : 'easysecurity.in'}</span>
-        </div>
-        <span style={{fontSize: compact ? 8 : 9, color:'#6a2a2a', letterSpacing:'.03em'}}>
-          {compact ? '256-bit TLS encryption' : 'Certified PKI · GoGetSSL · RapidSSL DV'}
-        </span>
-        <div style={{width:'100%',height:2,background:'rgba(0,0,0,0.07)',borderRadius:1,marginTop:3,overflow:'hidden',position:'relative'}}>
-          <div style={{position:'absolute',left:'-60%',top:0,width:'40%',height:'100%',
-            background:'linear-gradient(90deg,transparent,#2a6b5c,rgba(220,60,40,.5),transparent)',
-            animation:'sv-scan-anim 2.4s linear infinite'}}/>
-        </div>
-      </div>
-      <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:1,flexShrink:0}}>
-        <span style={{fontSize: compact ? 14 : 18, fontWeight:900, color:'#e03030', lineHeight:1}}>256</span>
-        <span style={{fontSize:8,color:'#6a2a2a',letterSpacing:'.06em',textTransform:'uppercase'}}>Bit SSL</span>
-        {!compact && <div style={{display:'flex',alignItems:'center',gap:4,marginTop:4}}>
-          <div style={{width:5,height:5,borderRadius:'50%',background:'#0077b6',
-            animation:'sv-live-anim 1.2s ease-in-out infinite'}}/>
-          <span style={{fontSize:8,color:'#cc4444',fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase'}}>Live</span>
-        </div>}
-      </div>
-      <style>{`
-        @keyframes sv-sweep-anim{0%{box-shadow:inset -60px 0 30px -30px transparent}50%{box-shadow:inset -60px 0 30px -30px rgba(192,57,43,0.06)}100%{box-shadow:inset -60px 0 30px -30px transparent}}
-        @keyframes sv-scan-anim{0%{left:-60%}100%{left:120%}}
-        @keyframes sv-live-anim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.55)}}
-      `}</style>
-    </div>
-  )
-}
-
 export default function Auth({ nav }) {
   const isMobile = useIsMobile()
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPw, setShowPw]     = useState(false)
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState('')
-  const [message, setMessage]   = useState('')
-  const [mode, setMode]         = useState('login')
+  const [email, setEmail]             = useState('')
+  const [password, setPassword]       = useState('')
+  const [confirmPw, setConfirmPw]     = useState('')
+  const [showPw, setShowPw]           = useState(false)
+  const [loading, setLoading]         = useState(false)
+  const [error, setError]             = useState('')
+  const [mode, setMode]               = useState('login')
+  const [termLine, setTermLine]       = useState(0)
+  const [pulse, setPulse]             = useState(true)
 
-  const hashParams = new URLSearchParams(window.location.hash.replace('#', ''))
-  const isInviteHash = hashParams.get('type') === 'invite' || hashParams.get('type') === 'signup'
+  const hashParams = new URLSearchParams(window.location.hash.replace('#',''))
+  const isInviteHash = hashParams.get('type')==='invite'||hashParams.get('type')==='signup'
 
-  useEffect(() => {
-    if (isInviteHash) { setMode('set_password'); return }
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) nav('/')
+  useEffect(()=>{
+    if(isInviteHash){setMode('set_password');return}
+    supabase.auth.getSession().then(({data})=>{ if(data.session) nav('/') })
+    const {data:{subscription}} = supabase.auth.onAuthStateChange((event,session)=>{
+      if(event==='SIGNED_IN'&&isInviteHash){setMode('set_password');return}
+      if(event==='PASSWORD_RECOVERY'){setMode('set_password');return}
+      if(event==='SIGNED_IN'&&mode!=='set_password') nav('/')
+      if(event==='USER_UPDATED') nav('/')
     })
+    return ()=>subscription.unsubscribe()
+  },[])
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && isInviteHash) { setMode('set_password'); return }
-      if (event === 'PASSWORD_RECOVERY') { setMode('set_password'); return }
-      if (event === 'SIGNED_IN' && mode !== 'set_password') nav('/')
-      if (event === 'USER_UPDATED') nav('/')
-    })
-    return () => subscription.unsubscribe()
-  }, [])
+  // Terminal animation
+  useEffect(()=>{
+    const iv = setInterval(()=>setTermLine(l=>(l+1)%5), 2200)
+    return ()=>clearInterval(iv)
+  },[])
+
+  // Pulse dot
+  useEffect(()=>{
+    const iv = setInterval(()=>setPulse(p=>!p), 1200)
+    return ()=>clearInterval(iv)
+  },[])
 
   const handleSubmit = async () => {
-    if (mode === 'set_password') {
-      if (!password) { setError('Please enter a password'); return }
-      if (password.length < 8) { setError('Password must be at least 8 characters'); return }
-      if (password !== confirmPassword) { setError('Passwords do not match'); return }
-      setError(''); setLoading(true)
-      try {
-        const { error } = await supabase.auth.updateUser({ password })
-        if (error) throw error
-      } catch (err) { setError(err.message) }
-      setLoading(false)
-      return
+    if(mode==='set_password'){
+      if(!password){setError('Please enter a password');return}
+      if(password.length<8){setError('Password must be at least 8 characters');return}
+      if(password!==confirmPw){setError('Passwords do not match');return}
+      setError('');setLoading(true)
+      try{ const{error}=await supabase.auth.updateUser({password}); if(error) throw error }
+      catch(err){setError(err.message)}
+      setLoading(false);return
     }
-
-    if (!email || !password) { setError('Please enter your email and password'); return }
-    setError(''); setLoading(true)
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
-    } catch (err) { setError(err.message) }
+    if(!email||!password){setError('Please enter your email and password');return}
+    setError('');setLoading(true)
+    try{ const{error}=await supabase.auth.signInWithPassword({email,password}); if(error) throw error }
+    catch(err){setError(err.message)}
     setLoading(false)
   }
 
-  const perks = [
-    { icon:<Zap size={15} />,    color:'var(--v2-amber)',       title:'Unlimited certificates',   desc:'No cap on domains or issuances — ever.' },
-    { icon:<Shield size={15} />, color:'#111111',               title:'Free forever',              desc:'No credit card. No upgrade prompts. No catch.' },
-    { icon:<Lock size={15} />,   color:'#0077b6',       title:'Private keys stay private', desc:'AES-256 at rest. Keys never leave your server.' },
-    { icon:<CheckCircle size={15} />, color:'#111111',          title:'Auto-renewal included',     desc:'Agent-based or cron — certificates never expire.' },
+  const TERM_LINES = [
+    {text:'Polling certs expiring in 30 days…', c:'rgba(255,255,255,0.3)', prompt:'›'},
+    {text:'easysecurity.in — renewing via DNS-01 ✓', c:TEAL, prompt:'›'},
+    {text:'Cert issued · installing via cPanel UAPI ✓', c:TEAL, prompt:'›'},
+    {text:'CertVault updated · AES-256-GCM ✓', c:TEAL, prompt:'›'},
+    {text:'Next poll in 60s', c:'rgba(255,255,255,0.25)', prompt:'›'},
+  ]
+
+  const FEATURES = [
+    {icon:'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', label:'Unlimited certificates', sub:'No cap on domains or issuances — ever.'},
+    {icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', label:'AES-256 key vault', sub:'Keys encrypted at rest. Never leave your server.'},
+    {icon:'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15', label:'Zero-touch auto-renewal', sub:'VPS agent + DNS-01. Certificates never expire.'},
+    {icon:'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z', label:'47-day readiness', sub:'CA/B Forum SC-081v3 compliant. Ready for 2029.'},
   ]
 
   return (
-    <div className="v2-page" style={{ minHeight:'calc(100vh - 60px)', display:'flex', alignItems:'center' }}>
-      <div style={{ position:'fixed', top:60, left:0, right:0, height:2, background:'#0077b6', zIndex:10 }} />
+    <div style={{fontFamily:FONT, minHeight:'calc(100vh - 60px)', display:'flex', alignItems:'center', background:'#f8f9fa'}}>
+      <style>{`
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+        @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+        @keyframes termfade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+        .auth-input{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.12);background:#fff;font-size:13px;color:#111;font-family:${FONT};outline:none;transition:border-color .15s,box-shadow .15s}
+        .auth-input:focus{border-color:${BLUE};box-shadow:0 0 0 3px rgba(0,119,182,0.1)}
+        .auth-input::placeholder{color:#aaa}
+        .sign-btn{width:100%;padding:12px;border-radius:8px;background:${BLUE};border:none;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:${FONT};transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .sign-btn:hover{background:#0091d6}
+        .sign-btn:disabled{opacity:0.6;cursor:not-allowed}
+        .feat-icon{width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+      `}</style>
 
-      <div style={{ maxWidth:1060, margin:'0 auto', padding:'clamp(24px,6vw,60px) clamp(14px,3vw,24px)',
-                    display:'grid', gridTemplateColumns:'minmax(0,1fr) clamp(320px,35vw,420px)', gap:60,
-                    alignItems:'center', width:'100%' }}>
+      <div style={{
+        maxWidth: 1000, margin: '0 auto',
+        padding: 'clamp(16px,4vw,40px)',
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+        gap: 0, width: '100%',
+        borderRadius: 16,
+        overflow: 'hidden',
+        boxShadow: '0 8px 40px rgba(0,0,0,0.12)',
+        minHeight: isMobile ? 'auto' : 620,
+      }}>
 
-        {/* Left: value prop */}
-        <div>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8,
-                        background:'rgba(0,119,182,0.09)', border:'1px solid rgba(0,119,182,0.2)',
-                        borderRadius:100, padding:'4px 14px', marginBottom:24 }}>
-            <span className="v2-pulse" />
-            <span style={{ fontSize:11, fontWeight:500, color:'#0077b6' }}>Free · Open · Trusted</span>
-          </div>
-          <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, color:'#111111',
-                        lineHeight:1.08, letterSpacing:'-1.4px', marginBottom:6 }}>One account.</h1>
-          <h1 style={{ fontSize:'clamp(36px,4.5vw,52px)', fontWeight:700, lineHeight:1.08,
-                        letterSpacing:'-1.4px', marginBottom:20, color:'#0077b6' }}>Every certificate.</h1>
-          <p style={{ fontSize:15, color:'#333333', lineHeight:1.75, marginBottom:36, maxWidth:420 }}>
-            Sign in to manage your certificates, set expiry alerts, and deploy with one click.
-          </p>
-          <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-            {perks.map(({ icon, color, title, desc }) => (
-              <div key={title} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
-                <div style={{ width:32, height:32, borderRadius:'var(--v2-r-md)',
-                               background:'var(--v2-surface)', border:'1px solid var(--v2-border)',
-                               display:'flex', alignItems:'center', justifyContent:'center',
-                               flexShrink:0, color }}>{icon}</div>
-                <div>
-                  <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:2 }}>{title}</div>
-                  <div style={{ fontSize:12, color:'#555555', lineHeight:1.55 }}>{desc}</div>
+        {/* ── LEFT PANEL ── */}
+        {!isMobile && (
+          <div style={{background:BLUE, padding:'44px 40px', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
+            <div>
+              {/* Eyebrow */}
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:20}}>
+                <div style={{width:6,height:6,borderRadius:'50%',background:TEAL,opacity:pulse?1:.25,transition:'opacity 0.4s'}}/>
+                <span style={{fontSize:10,letterSpacing:'.14em',color:'rgba(255,255,255,.4)',textTransform:'uppercase',fontFamily:MONO}}>SSLVault · easysecurity.in</span>
+              </div>
+
+              {/* Title */}
+              <div style={{fontSize:32,fontWeight:700,color:'#fff',lineHeight:1.2,marginBottom:10,letterSpacing:'-0.5px'}}>
+                One account.<br/><span style={{color:TEAL}}>Every certificate.</span>
+              </div>
+              <p style={{fontSize:13,color:'rgba(255,255,255,.55)',lineHeight:1.7,marginBottom:28,maxWidth:340}}>
+                The only CLM platform with built-in 47-day readiness, AES-256 key vault, and zero-touch DNS automation.
+              </p>
+
+              {/* Features */}
+              <div style={{display:'flex',flexDirection:'column',gap:14,marginBottom:28}}>
+                {FEATURES.map(f=>(
+                  <div key={f.label} style={{display:'flex',alignItems:'flex-start',gap:12}}>
+                    <div className="feat-icon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d={f.icon}/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div style={{fontSize:12,fontWeight:600,color:'#fff',marginBottom:2}}>{f.label}</div>
+                      <div style={{fontSize:11,color:'rgba(255,255,255,.45)',lineHeight:1.5}}>{f.sub}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Terminal preview */}
+              <div style={{background:'#0f1923',borderRadius:10,overflow:'hidden'}}>
+                <div style={{background:'#1a2533',padding:'7px 12px',display:'flex',alignItems:'center',gap:6,borderBottom:'1px solid rgba(255,255,255,.06)'}}>
+                  <div style={{display:'flex',gap:4}}>
+                    {['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:7,height:7,borderRadius:'50%',background:c}}/>)}
+                  </div>
+                  <span style={{fontSize:9,color:'rgba(255,255,255,.3)',fontFamily:MONO,flex:1,textAlign:'center'}}>agent · auto-renew pipeline</span>
+                  <div style={{width:5,height:5,borderRadius:'50%',background:'#2ecc71',opacity:pulse?1:.3,transition:'opacity 0.4s'}}/>
                 </div>
+                <div style={{padding:'10px 12px',minHeight:90}}>
+                  {TERM_LINES.map((l,i)=>(
+                    <div key={i} style={{
+                      display:'flex',gap:7,fontSize:10,fontFamily:MONO,lineHeight:1.7,
+                      opacity: i <= termLine ? 1 : 0.15,
+                      color: i === termLine ? l.c : i < termLine ? 'rgba(255,255,255,0.2)' : 'transparent',
+                      transition: 'all 0.4s',
+                    }}>
+                      <span style={{color:'rgba(255,255,255,.25)',flexShrink:0}}>{l.prompt}</span>
+                      <span>{l.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom strip */}
+            <div style={{marginTop:20,paddingTop:16,borderTop:'1px solid rgba(255,255,255,.1)',display:'flex',gap:16,flexWrap:'wrap'}}>
+              {['RFC 8555','AES-256-GCM','CA/B Forum 2026','GoGetSSL','Netherlands PKI'].map(t=>(
+                <span key={t} style={{fontSize:9,color:'rgba(255,255,255,.3)',letterSpacing:'.07em',fontFamily:MONO,whiteSpace:'nowrap'}}>{t}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── RIGHT PANEL / FORM ── */}
+        <div style={{background:'#fff',padding: isMobile ? '36px 24px' : '44px 40px',display:'flex',flexDirection:'column',justifyContent:'center'}}>
+
+          {/* Header */}
+          <div style={{marginBottom:28}}>
+            <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
+              <div style={{width:40,height:40,borderRadius:10,background:BLUE,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <div>
+                <div style={{fontSize:16,fontWeight:700,color:'#111',letterSpacing:'-0.3px'}}>
+                  {mode==='set_password'?'Set your password':'Sign in to SSLVault'}
+                </div>
+                <div style={{fontSize:12,color:'#888',marginTop:1}}>
+                  {mode==='set_password'?'Choose a password to activate your account':'Welcome back — your certificates are waiting.'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Fields */}
+          {mode!=='set_password'&&(
+            <div style={{marginBottom:14}}>
+              <label style={{display:'block',fontSize:11,fontWeight:600,color:'#888',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:6}}>Email address</label>
+              <input className="auth-input" type="email" placeholder="you@example.com"
+                value={email} onChange={e=>setEmail(e.target.value)}
+                onKeyDown={e=>e.key==='Enter'&&handleSubmit()} autoFocus/>
+            </div>
+          )}
+
+          <div style={{marginBottom: mode==='set_password'?14:20}}>
+            <label style={{display:'block',fontSize:11,fontWeight:600,color:'#888',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:6}}>Password</label>
+            <div style={{position:'relative'}}>
+              <input className="auth-input" type={showPw?'text':'password'} placeholder="••••••••"
+                value={password} onChange={e=>setPassword(e.target.value)}
+                onKeyDown={e=>e.key==='Enter'&&handleSubmit()}
+                style={{paddingRight:38}}/>
+              <button onClick={()=>setShowPw(v=>!v)} style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:'#aaa',padding:2,display:'flex',alignItems:'center'}}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  {showPw
+                    ? <><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></>
+                    : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>
+                  }
+                </svg>
+              </button>
+            </div>
+            {mode==='set_password'&&<div style={{fontSize:11,color:'#aaa',marginTop:5}}>Minimum 8 characters.</div>}
+          </div>
+
+          {mode==='set_password'&&(
+            <div style={{marginBottom:20}}>
+              <label style={{display:'block',fontSize:11,fontWeight:600,color:'#888',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:6}}>Confirm password</label>
+              <input className="auth-input" type={showPw?'text':'password'} placeholder="Repeat password"
+                value={confirmPw} onChange={e=>setConfirmPw(e.target.value)}
+                onKeyDown={e=>e.key==='Enter'&&handleSubmit()}/>
+            </div>
+          )}
+
+          {/* Error */}
+          {error&&(
+            <div style={{background:'rgba(231,76,60,.06)',border:'1px solid rgba(231,76,60,.2)',borderRadius:8,padding:'9px 12px',marginBottom:14,fontSize:12,color:'#c0392b',display:'flex',alignItems:'center',gap:7}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              {error}
+            </div>
+          )}
+
+          {/* Submit */}
+          <button className="sign-btn" onClick={handleSubmit} disabled={loading}>
+            {loading
+              ? <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{animation:'spin 1s linear infinite'}}><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> {mode==='set_password'?'Setting password…':'Signing in…'}</>
+              : <>{mode==='set_password'?'Set password & continue':'Sign in'} <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>
+            }
+          </button>
+
+          {/* Trust signals */}
+          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:12,marginTop:14,flexWrap:'wrap'}}>
+            {[
+              ['M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z','Encrypted at rest'],
+              ['M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z','Row-level security'],
+              ['M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21','No key upload'],
+            ].map(([path,label])=>(
+              <div key={label} style={{display:'flex',alignItems:'center',gap:4,fontSize:10,color:'#aaa'}}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d={path}/></svg>
+                {label}
               </div>
             ))}
           </div>
-          <div style={{ marginTop:36, paddingTop:24, borderTop:'1px solid var(--v2-border)',
-                        fontSize:11, color:'#555555', lineHeight:1.6 }}>
+
+          {/* Divider + Contact */}
+          <div style={{height:'1px',background:'rgba(0,0,0,.06)',margin:'18px 0'}}/>
+          <div style={{textAlign:'center',fontSize:12,color:'#888'}}>
+            New to SSLVault?{' '}
+            <button onClick={()=>nav('/contact')} style={{background:'none',border:'none',cursor:'pointer',color:BLUE,fontWeight:600,fontSize:12,padding:0,fontFamily:FONT}}>
+              Contact us to get access
+            </button>
+          </div>
+
+          {/* Powered by */}
+          <div style={{marginTop:20,textAlign:'center',fontSize:10,color:'#ccc',fontFamily:MONO}}>
             Powered by RapidSSL · DigiCert trust chain · RFC 8555 ACME
           </div>
         </div>
-
-        {/* Right: form card */}
-        <div>
-          <div className="v2-card" style={{ padding:'min(32px,5vw) min(30px,4vw)', borderTop:'2px solid var(--v2-green)' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
-              <div style={{ width:40, height:40, background:'#0077b6', borderRadius:'var(--v2-r-lg)',
-                             display:'flex', alignItems:'center', justifyContent:'center',
-                             boxShadow:'0 0 0 4px rgba(0,0,0,0.07)' }}>
-                <Shield size={18} color='#fff' />
-              </div>
-              <div>
-                <div style={{ fontSize:16, fontWeight:700, color:'#111111', letterSpacing:'-0.3px' }}>
-                  {mode === 'set_password' ? 'Set your password' : 'Sign in to SSLVault'}
-                </div>
-                <div style={{ fontSize:12, color:'#555555' }}>
-                  {mode === 'set_password' ? 'Choose a password to activate your account' : 'Welcome back'}
-                </div>
-              </div>
-            </div>
-
-            {mode !== 'set_password' && <div style={{ marginBottom:14 }}>
-              <label className="v2-label">Email address</label>
-              <input className="v2-input" type="email" placeholder="you@example.com"
-                value={email} onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSubmit()} autoFocus />
-            </div>}
-
-            <div style={{ marginBottom:20 }}>
-              <label className="v2-label">Password</label>
-              <div style={{ position:'relative' }}>
-                <input className="v2-input" type={showPw ? 'text' : 'password'} placeholder="••••••••"
-                  value={password} onChange={e => setPassword(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSubmit()} style={{ paddingRight:40 }} />
-                <button onClick={() => setShowPw(v => !v)}
-                  style={{ position:'absolute', right:11, top:'50%', transform:'translateY(-50%)',
-                            background:'none', border:'none', cursor:'pointer',
-                            color:'#555555', padding:2, display:'flex' }}>
-                  {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-              </div>
-              {mode === 'set_password' && <div className="v2-label-help">Minimum 8 characters.</div>}
-            </div>
-
-            {mode === 'set_password' && (
-              <div style={{ marginBottom:20 }}>
-                <label className="v2-label">Confirm password</label>
-                <input className="v2-input" type={showPw ? 'text' : 'password'} placeholder="Repeat password"
-                  value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
-              </div>
-            )}
-
-            {error && <div className="v2-alert v2-alert-error" style={{ marginBottom:14 }}><AlertTriangle size={13} /> {error}</div>}
-            {message && <div className="v2-alert v2-alert-success" style={{ marginBottom:14 }}><CheckCircle size={13} /> {message}</div>}
-
-            <button className="v2-btn v2-btn-primary" onClick={handleSubmit} disabled={loading}
-              style={{ width:'100%', justifyContent:'center', padding:'12px', fontSize:14, marginBottom:16 }}>
-              {loading
-                ? <><RefreshCw size={13} className="spin" /> {mode === 'set_password' ? 'Setting password…' : 'Signing in…'}</>
-                : <>{mode === 'set_password' ? 'Set password & continue' : 'Sign in'} <ArrowRight size={13} /></>}
-            </button>
-
-            <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}>
-              <SSLVaultTrustBadge compact={true} />
-            </div>
-
-            <div style={{ textAlign:'center', fontSize:13, color:'#555555' }}>
-              New to SSLVault?{' '}
-              <button onClick={() => nav('/auth')}
-                style={{ background:'none', border:'none', cursor:'pointer',
-                          color:'#111111', fontWeight:600, fontSize:13,
-                          padding:0, textDecoration:'underline', textUnderlineOffset:2 }}>
-                Contact us to get access
-              </button>
-            </div>
-          </div>
-
-          <div style={{ marginTop:14, display:'flex', alignItems:'center', gap:7,
-                        justifyContent:'center', fontSize:11, color:'#555555' }}>
-            <Lock size={10} />
-            Encrypted at rest · Private keys never uploaded · Row-level security
-          </div>
-        </div>
       </div>
-      <style>{`.spin{animation:spin 1s linear infinite}@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }
