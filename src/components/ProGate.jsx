@@ -23,7 +23,7 @@ export default function ProGate({ isPro, nav, feature = 'This feature', compact 
   }
 
   return (
-    <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)',
                   borderRadius:'var(--v2-r-xl)', padding:'32px 36px', textAlign:'center',
                   position:'relative', overflow:'hidden' }}>
       {/* subtle purple glow */}

@@ -238,13 +238,13 @@ function InstallModal({ onClose }) {
       display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%', maxWidth:520,
         boxShadow:'0 20px 60px rgba(0,0,0,0.25)', overflow:'hidden' }}>
-        <div style={{ padding:'16px 20px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
+        <div style={{ padding:'16px 20px', borderBottom:'1px solid rgba(0,0,0,0.06)',
           display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div>
             <div style={{ fontSize:14, fontWeight:500, color:'#111111' }}>Install SSLVault agent</div>
             <div style={{ fontSize:11, color:'#888888', marginTop:2 }}>Run on your VPS or cPanel server (Linux)</div>
           </div>
-          <button onClick={onClose} style={{ width:28, height:28, borderRadius:6, border:'0.5px solid var(--v2-border)',
+          <button onClick={onClose} style={{ width:28, height:28, borderRadius:6, border:'1px solid var(--v2-border)',
             background:'var(--v2-surface)', cursor:'pointer', fontSize:16, color:'#333333',
             display:'flex', alignItems:'center', justifyContent:'center' }}>×</button>
         </div>
@@ -271,13 +271,13 @@ function InstallModal({ onClose }) {
 
             </div>
           ))}
-          <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:7, padding:'10px 12px' }}>
+          <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:7, padding:'10px 12px' }}>
             <div style={{ fontSize:11, color:'#111111', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and appears in this list within 1–2 minutes.
             </div>
           </div>
         </div>
-        <div style={{ padding:'12px 20px', borderTop:'0.5px solid var(--v2-border)', display:'flex', justifyContent:'flex-end' }}>
+        <div style={{ padding:'12px 20px', borderTop:'1px solid var(--v2-border)', display:'flex', justifyContent:'flex-end' }}>
           <button onClick={onClose} className="v2-btn v2-btn-sm">Close</button>
         </div>
       </div>
@@ -412,7 +412,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
 
           {/* Tab bar */}
           <div style={{ display:'flex', gap:1, padding:'10px 16px 0',
-            borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+            borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
             {[
               { id:'certs', label:'Certificates', icon:Shield },
               { id:'jobs',  label:'Recent jobs',  icon:Activity },
@@ -505,7 +505,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                     ['Connected',     fmtRel(agent.created_at)],
                   ].filter(([,v]) => v).map(([k,v]) => (
                     <div key={k} style={{ display:'flex', justifyContent:'space-between',
-                      padding:'5px 0', fontSize:12, borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+                      padding:'5px 0', fontSize:12, borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
                       <span style={{ color:'#888888' }}>{k}</span>
                       <span style={{ color:'#111111', fontFamily:'"JetBrains Mono",monospace', fontSize:11 }}>{v}</span>
                     </div>
@@ -518,7 +518,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                     Agent token
                   </div>
                   <div style={{ display:'flex', alignItems:'center', gap:8,
-                    background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
+                    background:'var(--v2-surface-3)', border:'1px solid var(--v2-border)',
                     borderRadius:7, padding:'8px 10px', marginBottom:12 }}>
                     <code style={{ fontSize:10, color:'#333333', fontFamily:'monospace',
                       flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
@@ -526,7 +526,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
                     </code>
                     <button onClick={copyToken}
                       style={{ fontSize:10, fontWeight:500, color:'#333333', padding:'3px 8px',
-                        border:'0.5px solid var(--v2-border)', borderRadius:4,
+                        border:'1px solid var(--v2-border)', borderRadius:4,
                         background:'var(--v2-surface)', cursor:'pointer', display:'flex', alignItems:'center', gap:4,
                         fontFamily:'inherit', flexShrink:0 }}>
                       {copied ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
@@ -547,7 +547,7 @@ function ServerCard({ agent, certs, onRefresh, onRemove }) {
           </div>
 
           {/* Footer actions */}
-          <div style={{ padding:'10px 16px', borderTop:'0.5px solid var(--v2-border)',
+          <div style={{ padding:'10px 16px', borderTop:'1px solid var(--v2-border)',
             display:'flex', gap:8, background:'var(--v2-surface-3)' }}>
             <button className="v2-btn v2-btn-sm"
               style={{ display:'flex', alignItems:'center', gap:5 }}
@@ -722,7 +722,7 @@ export default function Infrastructure({ user }) {
               onMouseEnter={e=>e.currentTarget.style.borderColor='#111111'}
               onMouseLeave={e=>e.currentTarget.style.borderColor=''}>
               <div style={{ width:36, height:36, borderRadius:8,
-                background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
+                background:'var(--v2-surface)', border:'1px solid var(--v2-border)',
                 display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                 <Server size={16} color="var(--v2-text-3)"/>
               </div>

@@ -264,7 +264,7 @@ function PageHeader({ counts, tab, onAdd, onAddBoth }) {
 function Tabs({ tab, setTab, counts }) {
   return (
     <div style={{ display:'flex', gap:2, background:'var(--v2-surface-3)',
-      borderRadius:10, padding:3, margin:'20px 0 18px', border:'0.5px solid var(--v2-border)' }}>
+      borderRadius:10, padding:3, margin:'20px 0 18px', border:'1px solid var(--v2-border)' }}>
       {[
         { key:'dns',     label:'DNS providers', icon:Globe,  count:counts.dns },
         { key:'servers', label:'Servers',        icon:Server, count:counts.servers },
@@ -323,7 +323,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
         cursor:'pointer', borderRadius:10, marginBottom:4, transition:'all .15s',
         background: selected ? 'var(--v2-surface-3)' : 'var(--v2-bg)',
-        border: selected ? '1px solid var(--v2-green)' : '0.5px solid var(--v2-border)',
+        border: selected ? '1px solid var(--v2-green)' : '1px solid var(--v2-border)',
         boxShadow: selected ? '0 0 0 2px rgba(14,127,192,0.12)' : 'none' }}
       onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='var(--v2-surface-3)';e.currentTarget.style.borderColor='var(--v2-border-2)'}}}
       onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='var(--v2-bg)';e.currentTarget.style.borderColor='var(--v2-border)'}}}>
@@ -385,7 +385,7 @@ function DnsRow({ cred, selected, onSelect, status }) {
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
         cursor:'pointer', borderRadius:10, marginBottom:4, transition:'all .15s',
         background: selected ? 'var(--v2-surface-3)' : 'var(--v2-bg)',
-        border: selected ? '1px solid var(--v2-green)' : '0.5px solid var(--v2-border)' }}
+        border: selected ? '1px solid var(--v2-green)' : '1px solid var(--v2-border)' }}
       onMouseEnter={e=>{if(!selected)e.currentTarget.style.background='var(--v2-surface-3)'}}
       onMouseLeave={e=>{if(!selected)e.currentTarget.style.background='var(--v2-bg)'}}>
       <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
@@ -420,7 +420,7 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
   const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#333333' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
   return (
-    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'1px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
         <div style={{ width:38, height:38, borderRadius:9, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, color:'#111111', flexShrink:0 }}>
@@ -480,7 +480,7 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '0.5px solid var(--v2-border)' }}>
+      <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid var(--v2-border)' }}>
         <a href={p.docs} target="_blank" rel="noopener noreferrer"
            className="v2-btn" style={{ flex: 1, justifyContent: 'center', textDecoration: 'none' }}>
           <ExternalLink size={11} strokeWidth={2} /> Provider docs
@@ -509,7 +509,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
         cursor:'pointer', borderRadius:10, marginBottom:4, transition:'all .15s',
         background: selected ? 'var(--v2-surface-3)' : 'var(--v2-bg)',
-        border: selected ? '1px solid var(--v2-green)' : '0.5px solid var(--v2-border)' }}
+        border: selected ? '1px solid var(--v2-green)' : '1px solid var(--v2-border)' }}
       onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='var(--v2-surface-3)';}}}
       onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='var(--v2-bg)';}}}>
       <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
@@ -557,7 +557,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       {isVPS && !agent ? (
         <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
           style={{ fontSize:11, color:'#111111', background:'transparent',
-            border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:6, cursor:'pointer',
+            border:'1px solid rgba(31,92,78,0.2)', borderRadius:6, cursor:'pointer',
             padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
             fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>
           Install agent <ChevronRight size={11} strokeWidth={2}/>
@@ -687,7 +687,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
     return `${Math.floor(m/60)}h ago`
   }
   return (
-    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'1px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div style={{
@@ -848,7 +848,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '0.5px solid var(--v2-border)' }}>
+      <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid var(--v2-border)' }}>
         <button className="v2-btn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => onEdit(server)}>
           <Edit3 size={11} strokeWidth={2} /> Edit
         </button>
@@ -871,7 +871,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
         }}>
           <div style={{
             background:'rgba(0,0,0,0.02)', borderRadius: 14, padding: 24, maxWidth: 480, width: '100%',
-            border: '0.5px solid var(--v2-border)', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
+            border: '1px solid var(--v2-border)', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
               <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(31,92,78,0.09)',
@@ -1163,7 +1163,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                       style={{
                         display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
                         borderRadius: 6, fontSize:11, fontWeight: 500, cursor: 'pointer',
-                        border: provider === key ? `1.5px solid ${prov.color}` : '0.5px solid var(--v2-border)',
+                        border: provider === key ? `1.5px solid ${prov.color}` : '1px solid var(--v2-border)',
                         background: provider === key ? `${prov.color}15` : 'var(--v2-surface)',
                         color: provider === key ? prov.color : 'var(--v2-text-2)',
                         fontFamily: 'inherit',
@@ -1241,7 +1241,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                           style={{
                             display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
                             borderRadius: 6, fontSize:11, fontWeight: 500, cursor: 'pointer',
-                            border: serverType === key ? `1.5px solid ${st.color}` : '0.5px solid var(--v2-border)',
+                            border: serverType === key ? `1.5px solid ${st.color}` : '1px solid var(--v2-border)',
                             background: serverType === key ? st.bg : 'var(--v2-surface)',
                             color: serverType === key ? st.color : 'var(--v2-text-2)',
                             fontFamily: 'inherit',
@@ -1471,7 +1471,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 <label className="v2-label">SSH into your server and run</label>
                 <div style={{ background:'#f4f1ec', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                padding: '7px 12px', borderBottom: '0.5px solid rgba(31,92,78,0.07)' }}>
+                                padding: '7px 12px', borderBottom: '1px solid rgba(31,92,78,0.07)' }}>
                     <div style={{ display: 'flex', gap: 5 }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#1f5c4e' }} />
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#f4f1ec' }} />
@@ -1729,7 +1729,7 @@ export default function DnsProviders({ nav }) {
   // Section label component
   const SectionLabel = ({ label, icon: Icon, color, count }) => (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'14px 16px 6px',
-      borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+      borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
       <div style={{ width:20, height:20, borderRadius:5, background:color,
         display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
         <Icon size={11} color="white" strokeWidth={2.2}/>
@@ -1742,7 +1742,7 @@ export default function DnsProviders({ nav }) {
   )
 
   const ListPanel = ({ children }) => (
-    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'1px solid var(--v2-border)',
       borderRadius:14, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       {children}
     </div>

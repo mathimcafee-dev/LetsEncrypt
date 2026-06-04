@@ -201,7 +201,7 @@ function PageHeader({ counts, tab, onAdd, onAddBoth }) {
 function Tabs({ tab, setTab, counts }) {
   return (
     <div style={{ display:'flex', gap:2, background:'var(--v2-surface-3)',
-      borderRadius:10, padding:3, margin:'20px 0 18px', border:'0.5px solid var(--v2-border)' }}>
+      borderRadius:10, padding:3, margin:'20px 0 18px', border:'1px solid var(--v2-border)' }}>
       {[
         { key:'dns',     label:'DNS providers',  icon:Globe,       count:counts.dns },
         { key:'servers', label:'Servers',         icon:Server,      count:counts.servers },
@@ -261,7 +261,7 @@ function DomainRow({ group, selected, onSelect, credStatus, agents }) {
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
         cursor:'pointer', borderRadius:10, marginBottom:4, transition:'all .15s',
         background: selected ? 'var(--v2-surface-3)' : 'var(--v2-bg)',
-        border: selected ? '1px solid var(--v2-green)' : '0.5px solid var(--v2-border)',
+        border: selected ? '1px solid var(--v2-green)' : '1px solid var(--v2-border)',
         boxShadow: selected ? '0 0 0 2px rgba(14,127,192,0.12)' : 'none' }}
       onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='var(--v2-surface-3)';e.currentTarget.style.borderColor='var(--v2-border-2)'}}}
       onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='var(--v2-bg)';e.currentTarget.style.borderColor='var(--v2-border)'}}}>
@@ -323,7 +323,7 @@ function DnsRow({ cred, selected, onSelect, status }) {
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
         cursor:'pointer', borderRadius:10, marginBottom:4, transition:'all .15s',
         background: selected ? 'var(--v2-surface-3)' : 'var(--v2-bg)',
-        border: selected ? '1px solid var(--v2-green)' : '0.5px solid var(--v2-border)' }}
+        border: selected ? '1px solid var(--v2-green)' : '1px solid var(--v2-border)' }}
       onMouseEnter={e=>{if(!selected)e.currentTarget.style.background='var(--v2-surface-3)'}}
       onMouseLeave={e=>{if(!selected)e.currentTarget.style.background='var(--v2-bg)'}}>
       <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
@@ -358,7 +358,7 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
   const p = PROVIDERS[cred.provider] || { name: cred.provider, mono: '?', color: '#333333' }
   const cls = status === 'healthy' ? 'green' : status === 'expired' ? 'amber' : 'grey'
   return (
-    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'1px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
         <div style={{ width:38, height:38, borderRadius:9, background:p.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700, color:'#111111', flexShrink:0 }}>
@@ -418,7 +418,7 @@ function DnsDetail({ cred, status, onTest, onDelete, testing, testResult }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '0.5px solid var(--v2-border)' }}>
+      <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid var(--v2-border)' }}>
         <a href={p.docs} target="_blank" rel="noopener noreferrer"
            className="v2-btn" style={{ flex: 1, justifyContent: 'center', textDecoration: 'none' }}>
           <ExternalLink size={11} strokeWidth={2} /> Provider docs
@@ -447,7 +447,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px',
         cursor:'pointer', borderRadius:10, marginBottom:4, transition:'all .15s',
         background: selected ? 'var(--v2-surface-3)' : 'var(--v2-bg)',
-        border: selected ? '1px solid var(--v2-green)' : '0.5px solid var(--v2-border)' }}
+        border: selected ? '1px solid var(--v2-green)' : '1px solid var(--v2-border)' }}
       onMouseEnter={e=>{if(!selected){e.currentTarget.style.background='var(--v2-surface-3)';}}}
       onMouseLeave={e=>{if(!selected){e.currentTarget.style.background='var(--v2-bg)';}}}>
       <div style={{ width:38, height:38, borderRadius:9, flexShrink:0,
@@ -495,7 +495,7 @@ function ServerRow({ server, selected, onSelect, agent, onInstallAgent }) {
       {isVPS && !agent ? (
         <button onClick={e=>{e.stopPropagation();onInstallAgent(server)}}
           style={{ fontSize:11, color:'#111111', background:'transparent',
-            border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:6, cursor:'pointer',
+            border:'1px solid rgba(31,92,78,0.2)', borderRadius:6, cursor:'pointer',
             padding:'5px 10px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:4,
             fontFamily:'inherit', flexShrink:0, whiteSpace:'nowrap' }}>
           Install agent <ChevronRight size={11} strokeWidth={2}/>
@@ -607,7 +607,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
     return `${Math.floor(m/60)}h ago`
   }
   return (
-    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'1px solid var(--v2-border)',
       borderRadius:14, padding:'18px', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div style={{
@@ -768,7 +768,7 @@ function ServerDetail({ server, agent, onDelete, onEdit, onInstallAgent, userId 
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '0.5px solid var(--v2-border)' }}>
+      <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid var(--v2-border)' }}>
         <button className="v2-btn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => onEdit(server)}>
           <Edit3 size={11} strokeWidth={2} /> Edit
         </button>
@@ -999,7 +999,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                       style={{
                         display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
                         borderRadius: 6, fontSize:11, fontWeight: 500, cursor: 'pointer',
-                        border: provider === key ? `1.5px solid ${prov.color}` : '0.5px solid var(--v2-border)',
+                        border: provider === key ? `1.5px solid ${prov.color}` : '1px solid var(--v2-border)',
                         background: provider === key ? `${prov.color}15` : 'var(--v2-surface)',
                         color: provider === key ? prov.color : 'var(--v2-text-2)',
                         fontFamily: 'inherit',
@@ -1077,7 +1077,7 @@ function UnifiedSetupModal({ onSave, onClose, userId, defaultMode = 'both', edit
                           style={{
                             display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
                             borderRadius: 6, fontSize:11, fontWeight: 500, cursor: 'pointer',
-                            border: serverType === key ? `1.5px solid ${st.color}` : '0.5px solid var(--v2-border)',
+                            border: serverType === key ? `1.5px solid ${st.color}` : '1px solid var(--v2-border)',
                             background: serverType === key ? st.bg : 'var(--v2-surface)',
                             color: serverType === key ? st.color : 'var(--v2-text-2)',
                             fontFamily: 'inherit',
@@ -1308,7 +1308,7 @@ function InstallAgentModal({ server, userId, onClose, onRegistered }) {
                 <label className="v2-label">SSH into your server and run</label>
                 <div style={{ background:'#f4f1ec', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                padding: '7px 12px', borderBottom: '0.5px solid rgba(31,92,78,0.07)' }}>
+                                padding: '7px 12px', borderBottom: '1px solid rgba(31,92,78,0.07)' }}>
                     <div style={{ display: 'flex', gap: 5 }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#1f5c4e' }} />
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background:'#f4f1ec' }} />
@@ -1629,7 +1629,7 @@ export default function Integrations({ nav }) {
   // Section label component
   const SectionLabel = ({ label, icon: Icon, color, count }) => (
     <div style={{ display:'flex', alignItems:'center', gap:8, padding:'14px 16px 6px',
-      borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+      borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
       <div style={{ width:20, height:20, borderRadius:5, background:color,
         display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
         <Icon size={11} color="white" strokeWidth={2.2}/>
@@ -1642,7 +1642,7 @@ export default function Integrations({ nav }) {
   )
 
   const ListPanel = ({ children }) => (
-    <div style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)',
+    <div style={{ background:'rgba(0,0,0,0.02)', border:'1px solid var(--v2-border)',
       borderRadius:14, overflow:'hidden', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
       {children}
     </div>
@@ -1668,7 +1668,7 @@ export default function Integrations({ nav }) {
         </div>
 
         {/* Tab bar — enterprise style */}
-        <div style={{ display:'flex', borderBottom:'0.5px solid rgba(0,0,0,0.07)', marginBottom:24, gap:0 }}>
+        <div style={{ display:'flex', borderBottom:'1px solid rgba(0,0,0,0.07)', marginBottom:24, gap:0 }}>
           {[
             { id:'dns',     label:'DNS Providers', count:credentials.length },
             { id:'servers', label:'Servers',        count:servers.length },
@@ -1713,7 +1713,7 @@ export default function Integrations({ nav }) {
                 Loading providers…
               </div>
             ) : credentials.length === 0 ? (
-              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
+              <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:8,
                 padding:'clamp(16px,20vw,60px) 32px', textAlign:'center' , overflowX:'auto'}}>
                 <Globe size={36} style={{ color:'#888888', marginBottom:14, display:'block', margin:'0 auto 14px' }}/>
                 <div style={{ fontSize:15, fontWeight:500, color:'#111111', marginBottom:6 }}>No DNS providers connected</div>
@@ -1726,11 +1726,11 @@ export default function Integrations({ nav }) {
                 </button>
               </div>
             ) : (
-              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
+              <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:8, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
                 {/* Table header */}
                 <div style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidth:640,
                   padding:'10px 20px', background:'var(--v2-surface-2)',
-                  borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+                  borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
                   {['Provider', 'Domain', 'API credentials', 'Status', 'Actions'].map(h => (
                     <div key={h} style={{ fontSize:11, fontWeight:600, color:'#888888',
                       textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
@@ -1749,7 +1749,7 @@ export default function Integrations({ nav }) {
                     <div key={cred.id}
 style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidth:640,
                         padding:'14px 20px', alignItems:'center',
-                        borderBottom: i < credentials.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                        borderBottom: i < credentials.length-1 ? '1px solid var(--v2-border)' : 'none',
                         background:'var(--v2-surface)', transition:'background .1s' }}
                       onMouseEnter={e => e.currentTarget.style.background='var(--v2-surface-2)'}
                       onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
@@ -1814,7 +1814,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                 })}
                 {/* Test result banner */}
                 {Object.entries(testResult).filter(([,v]) => v).map(([id, r]) => (
-                  <div key={id} style={{ padding:'10px 20px', borderTop:'0.5px solid var(--v2-border)',
+                  <div key={id} style={{ padding:'10px 20px', borderTop:'1px solid var(--v2-border)',
                     background: r.ok ? 'transparent' : 'rgba(31,92,78,0.09)', display:'flex', alignItems:'center', gap:8 }}>
                     {r.ok
                       ? <Check size={13} style={{ color:'#111111', flexShrink:0 }}/>
@@ -1848,7 +1848,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                 Loading servers…
               </div>
             ) : servers.length === 0 ? (
-              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
+              <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:8,
                 padding:'clamp(16px,20vw,60px) 32px', textAlign:'center' , overflowX:'auto'}}>
                 <Server size={36} style={{ color:'#888888', display:'block', margin:'0 auto 14px' }}/>
                 <div style={{ fontSize:15, fontWeight:500, color:'#111111', marginBottom:6 }}>No servers connected</div>
@@ -1861,11 +1861,11 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                 </button>
               </div>
             ) : (
-              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
+              <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:8, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
                 {/* Table header */}
                 <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidth:650,
                   padding:'10px 20px', background:'var(--v2-surface-2)',
-                  borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+                  borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
                   {['Server', 'Type', 'Domains', 'Agent', 'Actions'].map(h => (
                     <div key={h} style={{ fontSize:11, fontWeight:600, color:'#888888',
                       textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
@@ -1889,7 +1889,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1.5fr 1fr 120px 100px',minWidt
                     <div key={srv.id}
 style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidth:650,
                         padding:'14px 20px', alignItems:'center',
-                        borderBottom: i < servers.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                        borderBottom: i < servers.length-1 ? '1px solid var(--v2-border)' : 'none',
                         background:'var(--v2-surface)', transition:'background .1s' }}
                       onMouseEnter={e => e.currentTarget.style.background='var(--v2-surface-2)'}
                       onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
@@ -1914,7 +1914,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidt
                         {(srv.domains || []).slice(0,2).map(d => (
                           <span key={d} style={{ fontSize:11, fontFamily:'monospace', padding:'2px 7px',
                             borderRadius:4, background:'var(--v2-surface-3)', color:'#333333',
-                            border:'0.5px solid var(--v2-border)' }}>{d}</span>
+                            border:'1px solid var(--v2-border)' }}>{d}</span>
                         ))}
                         {(srv.domains||[]).length > 2 && (
                           <span style={{ fontSize:11, color:'#888888' }}>+{srv.domains.length-2}</span>
@@ -1983,7 +1983,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidt
             </div>
 
             {connections.length === 0 ? (
-              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8,
+              <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:8,
                 padding:'clamp(16px,20vw,60px) 32px', textAlign:'center' , overflowX:'auto'}}>
                 <Shield size={36} style={{ color:'#888888', display:'block', margin:'0 auto 14px' }}/>
                 <div style={{ fontSize:15, fontWeight:500, color:'#111111', marginBottom:6 }}>No CA connections</div>
@@ -1996,10 +1996,10 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidt
                 </button>
               </div>
             ) : (
-              <div style={{ background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:8, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
+              <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:8, overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
                 <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:650,
                   padding:'10px 20px', background:'var(--v2-surface-2)',
-                  borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+                  borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
                   {['Certificate authority', 'Label', 'Certs', 'Status', 'Actions'].map(h => (
                     <div key={h} style={{ fontSize:11, fontWeight:600, color:'#888888',
                       textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</div>
@@ -2013,7 +2013,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1.5fr 120px 120px',minWidt
                     <div key={conn.id}
 style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:650,
                         padding:'14px 20px', alignItems:'center',
-                        borderBottom: i < connections.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+                        borderBottom: i < connections.length-1 ? '1px solid var(--v2-border)' : 'none',
                         background:'var(--v2-surface)', transition:'background .1s' }}
                       onMouseEnter={e => e.currentTarget.style.background='var(--v2-surface-2)'}
                       onMouseLeave={e => e.currentTarget.style.background='var(--v2-surface)'}>
@@ -2072,7 +2072,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                   )
                 })}
                 {Object.entries(syncResult).filter(([,r]) => r).map(([id, r]) => (
-                  <div key={id} style={{ padding:'10px 20px', borderTop:'0.5px solid var(--v2-border)',
+                  <div key={id} style={{ padding:'10px 20px', borderTop:'1px solid var(--v2-border)',
                     background: r.ok ? 'transparent' : 'rgba(31,92,78,0.09)', display:'flex', alignItems:'center', gap:8 }}>
                     {r.ok
                       ? <Check size={13} style={{ color:'#111111' }}/>
@@ -2092,12 +2092,12 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                 alignItems:'center', justifyContent:'center', padding:20,
                 background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
                 <div style={{ background:'rgba(0,0,0,0.02)', borderRadius:14, width:'100%', maxWidth:480,
-                  boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
-                  <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
+                  boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'1px solid var(--v2-border)' }}>
+                  <div style={{ padding:'18px 22px 14px', borderBottom:'1px solid rgba(0,0,0,0.06)',
                     display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                     <div style={{ fontSize:15, fontWeight:500 }}>Connect a CA</div>
                     <button onClick={() => { setShowAdd(false); setAddCa(null) }} style={{ background:'none',
-                      border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                      border:'1px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
                       color:'#888888', padding:'4px 6px' }}><X size={14}/></button>
                   </div>
                   <div style={{ padding:'18px 22px 22px' }}>
@@ -2109,7 +2109,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                         </div>
                         {Object.entries(CA_DEFS).map(([key, def]) => (
                           <div key={key} onClick={() => openAdd(key)}
-                            style={{ padding:'14px 16px', borderRadius:10, border:'0.5px solid var(--v2-border)',
+                            style={{ padding:'14px 16px', borderRadius:10, border:'1px solid var(--v2-border)',
                               background:'rgba(0,0,0,0.02)', cursor:'pointer', display:'flex',
                               alignItems:'center', gap:12, transition:'all .15s' }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor=def.color; e.currentTarget.style.background=def.bg }}
@@ -2129,7 +2129,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                       <div>
                         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16,
                           padding:'10px 12px', borderRadius:8, background:'var(--v2-surface-3)',
-                          border:'0.5px solid var(--v2-border)' }}>
+                          border:'1px solid var(--v2-border)' }}>
                           <div style={{ width:30, height:30, borderRadius:7, background:CA_DEFS[addCa].bg,
                             display:'flex', alignItems:'center', justifyContent:'center',
                             fontWeight:700, fontSize:11, color:CA_DEFS[addCa].color, flexShrink:0 }}>
@@ -2208,8 +2208,8 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                 alignItems:'center', justifyContent:'center', padding:20,
                 background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
                 <div style={{ background:'rgba(0,0,0,0.02)', borderRadius:14, width:'100%', maxWidth:480,
-                  boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
-                  <div style={{ padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
+                  boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'1px solid var(--v2-border)' }}>
+                  <div style={{ padding:'18px 22px 14px', borderBottom:'1px solid rgba(0,0,0,0.06)',
                     display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                     <div>
                       <div style={{ fontSize:15, fontWeight:500 }}>Import certificate</div>
@@ -2218,13 +2218,13 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                       </div>
                     </div>
                     <button onClick={() => setShowImport(false)} style={{ background:'none',
-                      border:'0.5px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
+                      border:'1px solid var(--v2-border)', borderRadius:6, cursor:'pointer',
                       color:'#888888', padding:'4px 6px' }}><X size={14}/></button>
                   </div>
                   <div style={{ padding:'18px 22px 22px' }}>
                     {!importResult ? (
                       <>
-                        <div style={{ background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
+                        <div style={{ background:'var(--v2-surface-3)', border:'1px solid var(--v2-border)',
                           borderRadius:8, padding:'10px 12px', marginBottom:14,
                           display:'flex', gap:8, alignItems:'flex-start' }}>
                           <Info size={13} style={{ color:'#888888', flexShrink:0, marginTop:1 }}/>
@@ -2282,7 +2282,7 @@ style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 120px 140px',minWidth:
                   alignItems:'center', justifyContent:'center', padding:20,
                   background:'rgba(15,23,42,0.5)', backdropFilter:'blur(4px)' }}>
                   <div style={{ background:'rgba(0,0,0,0.02)', borderRadius:14, width:'100%', maxWidth:400,
-                    padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid var(--v2-border)' }}>
+                    padding:'24px', boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'1px solid var(--v2-border)' }}>
                     <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
                       <div style={{ width:32, height:32, borderRadius:8, background:'rgba(31,92,78,0.09)',
                         display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>

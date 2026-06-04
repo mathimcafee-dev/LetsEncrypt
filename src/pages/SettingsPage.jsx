@@ -54,7 +54,7 @@ function Toggle({ on, onClick, disabled }) {
 function Section({ title, icon: Icon, children, collapsible = false }) {
   const [open, setOpen] = useState(true)
   return (
-    <div style={{ background: 'transparent', border: '0.5px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
+    <div style={{ background: 'transparent', border: '1px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
       <div onClick={collapsible ? () => setOpen(v => !v) : undefined}
         style={{ padding: '11px 18px', borderBottom: open ? '1px solid rgba(0,0,0,0.07)' : 'none',
           fontSize:10, fontWeight: 700, color: '#1f5c4e', textTransform: 'uppercase',
@@ -74,7 +74,7 @@ function Section({ title, icon: Icon, children, collapsible = false }) {
 function Row({ label, desc, children, last }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
-      padding: '9px 0', borderBottom: last ? 'none' : '0.5px solid rgba(0,0,0,0.05)' }}>
+      padding: '9px 0', borderBottom: last ? 'none' : '1px solid rgba(0,0,0,0.05)' }}>
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize:12, fontWeight: 500, color: '#111111', marginBottom: 1 }}>{label}</div>
         {desc && <div style={{ fontSize:11, color: '#555555' }}>{desc}</div>}
@@ -248,7 +248,7 @@ function ApiKeysPanelFull_DISABLED({ user }) {
 
       {/* New key revealed */}
       {newKey && (
-        <div style={{ background: 'transparent', border: '0.5px solid rgba(31,92,78,0.2)', borderRadius: 8,
+        <div style={{ background: 'transparent', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 8,
           padding: '12px 14px', marginBottom: 16 }}>
           <div style={{ fontSize:11, fontWeight: 600, color: '#111111', marginBottom: 6 }}>
             ✓ Key created — copy it now, it won't be shown again
@@ -267,7 +267,7 @@ function ApiKeysPanelFull_DISABLED({ user }) {
       )}
 
       {/* Create new key */}
-      <div style={{ background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)',
+      <div style={{ background: 'var(--v2-surface-3)', border: '1px solid var(--v2-border)',
         borderRadius: 8, padding: '12px 14px', marginBottom: 16 }}>
         <div style={{ fontSize:11, fontWeight: 600, color: '#111111', marginBottom: 8 }}>Create new key</div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -298,10 +298,10 @@ function ApiKeysPanelFull_DISABLED({ user }) {
           <div style={{ fontSize:12, color: '#555555' }}>No API keys yet.</div>
         </div>
       ) : (
-        <div style={{ border: '0.5px solid var(--v2-border)', borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ border: '1px solid var(--v2-border)', borderRadius: 8, overflow: 'hidden' }}>
           {keys.map((k, i) => (
             <div key={k.id} style={{ display: 'flex', alignItems: 'center', gap: 12,
-              padding: '10px 14px', borderBottom: i < keys.length-1 ? '0.5px solid var(--v2-border)' : 'none' }}>
+              padding: '10px 14px', borderBottom: i < keys.length-1 ? '1px solid var(--v2-border)' : 'none' }}>
               <div style={{ width: 32, height: 32, borderRadius: 7, background: 'var(--v2-surface-3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Key size={13} color="var(--v2-text-3)" />
@@ -535,7 +535,7 @@ export default function SettingsPage({ user }) {
             </Row>
             <Row label="Plan" desc="Free for personal and indie use" last>
               <span style={{ fontSize:11, fontWeight: 600, color: '#111111', background: 'transparent',
-                border: '0.5px solid rgba(31,92,78,0.2)', borderRadius: 4, padding: '3px 8px' }}>Free</span>
+                border: '1px solid rgba(31,92,78,0.2)', borderRadius: 4, padding: '3px 8px' }}>Free</span>
             </Row>
           </Section>
 
@@ -690,7 +690,7 @@ export default function SettingsPage({ user }) {
             <Row label="Sign out" desc="Sign out on this device">
               <button onClick={handleSignOut}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent',
-                  color: '#1f5c4e', border: '0.5px solid var(--v2-border)', borderRadius: 6,
+                  color: '#1f5c4e', border: '1px solid var(--v2-border)', borderRadius: 6,
                   padding: '6px 12px', fontSize:11, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
                 <LogOut size={11}/> Sign out
               </button>
@@ -721,7 +721,7 @@ export default function SettingsPage({ user }) {
 
         {/* ── ALERT LOG TAB ───────────────────────────────────────────── */}
         {activeTab === 'log' && (
-          <div style={{ background: 'transparent', border: '0.5px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden' }}>
+          <div style={{ background: 'transparent', border: '1px solid var(--v2-border)', borderRadius: 10, overflow: 'hidden' }}>
             {/* Header */}
             <div style={{ padding: '12px 18px', borderBottom: '1px solid rgba(31,92,78,0.09)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
@@ -777,7 +777,7 @@ export default function SettingsPage({ user }) {
 
             {/* Pagination */}
             {logsTotal > 20 && (
-              <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(31,92,78,0.07)',
+              <div style={{ padding: '10px 18px', borderTop: '1px solid rgba(31,92,78,0.07)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontSize:11, color: '#555555' }}>
                   Showing {logsPage * 20 + 1}–{Math.min((logsPage + 1) * 20, logsTotal)} of {logsTotal}

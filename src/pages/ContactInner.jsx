@@ -48,7 +48,7 @@ export default function ContactInner({ nav }) {
 
       {/* Response time note */}
       <div style={{ display:'flex', alignItems:'center', gap:8, background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'14px 18px', marginBottom:16 }}>
-        <Clock size={13} color="rgba(240,237,232,0.45)"/>
+        <Clock size={13} color="#777777"/>
         <span style={{ fontSize:12, color:'#333333' }}>Typical response time: <strong style={{ color:'#111111' }}>1–2 business days</strong></span>
         <span style={{ marginLeft:'auto', fontSize:11, color:'#888888' }}>Based in Netherlands (CET)</span>
       </div>

@@ -33,7 +33,7 @@ function CopyBtn({ text }) {
   const [ok, setOk] = useState(false)
   return (
     <button onClick={() => { navigator.clipboard.writeText(text); setOk(true); setTimeout(() => setOk(false), 1800) }}
-      style={{ background: 'rgba(0,0,0,0.05)', border: '0.5px solid rgba(0,0,0,0.07)',
+      style={{ background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.07)',
         borderRadius: 4, cursor: 'pointer', color: ok ? '#1f5c4e' : '#888888',
         display: 'flex', alignItems: 'center', gap: 4, fontSize:10, padding: '3px 8px', fontFamily: 'inherit' }}>
       {ok ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
@@ -84,7 +84,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
           </div>
         ))}
       </div>
-      <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(0,0,0,0.05)',
+      <div style={{ padding: '10px 18px', borderTop: '1px solid rgba(0,0,0,0.05)',
         display: 'flex', alignItems: 'center', gap: 6 }}>
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#1f5c4e',
           boxShadow: '0 0 0 3px rgba(52,211,153,0.2)' }}/>
@@ -332,7 +332,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
     <div style={{ minHeight: embedded ? 'auto' : '100vh', background: 'transparent' }}>
 
       {/* Top bar — hidden when embedded inside CLM */}
-      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.05)',
+      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.05)',
         padding: '0 32px', display: embedded ? 'none' : 'flex', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 28, height: 28, background: '#1f5c4e',
@@ -355,7 +355,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       </div>
 
       {/* Progress — hidden when embedded */}
-      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.04)',
+      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.04)',
         padding: '0 32px', display: embedded ? 'none' : 'flex', alignItems: 'center', gap: 4, height: 40 }}>
         {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
           <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -379,9 +379,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* Certificate selection */}
-          <div style={{ background: 'rgba(0,0,0,0.02)', border: '0.5px solid rgba(0,0,0,0.05)',
+          <div style={{ background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.05)',
             borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.04)' }}>
+            <div style={{ padding: '12px 20px', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
               <span style={{ fontSize:11, fontWeight: 700, color: '#b5aea8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Certificate type</span>
             </div>
             <div style={{ padding: '18px 20px' }}>
@@ -389,7 +389,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 {PRODUCTS.map(p => (
                   <div key={p.code} onClick={() => setProduct(p.code)}
                     style={{ flex: 1, padding: '12px 16px', borderRadius: 8, cursor: 'pointer',
-                      border: product === p.code ? '1.5px solid #2a6b5c' : '0.5px solid rgba(0,0,0,0.06)',
+                      border: product === p.code ? '1.5px solid #2a6b5c' : '1px solid rgba(0,0,0,0.06)',
                       background: product === p.code ? 'rgba(14,127,192,0.1)' : 'rgba(0,0,0,0.02)',
                       transition: 'all 0.12s' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -431,7 +431,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   <input value={domain} onChange={e => setD(e.target.value)}
                     placeholder={PRODUCTS.find(p => p.code === product)?.wildcard ? 'yourdomain.com' : 'yourdomain.com'}
                     style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.03)',
-                      border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: 7, color: '#111111',
+                      border: '1px solid rgba(0,0,0,0.06)', borderRadius: 7, color: '#111111',
                       fontSize:15, fontFamily: 'var(--v2-font-mono)', fontWeight: 500,
                       padding: '11px 12px 11px 36px', outline: 'none' }}/>
                 </div>
@@ -456,9 +456,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           </div>
 
           {/* Contact details */}
-          <div style={{ background: 'rgba(0,0,0,0.02)', border: '0.5px solid rgba(0,0,0,0.05)',
+          <div style={{ background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.05)',
             borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.04)',
+            <div style={{ padding: '12px 20px', borderBottom: '1px solid rgba(0,0,0,0.04)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize:11, fontWeight: 700, color: '#b5aea8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact details</span>
               <span style={{ fontSize:10, color: '#111111' }}>Required by certificate authority</span>
@@ -473,7 +473,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                     </label>
                     <input value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph}
                       style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.03)',
-                        border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: 7, color: '#111111',
+                        border: '1px solid rgba(0,0,0,0.06)', borderRadius: 7, color: '#111111',
                         fontSize:13, fontFamily: 'inherit', padding: '9px 12px', outline: 'none' }}/>
                   </div>
                 ))}
@@ -490,7 +490,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                   </label>
                   <input value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph} type={f.type||'text'}
                     style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.03)',
-                      border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: 7, color: '#111111',
+                      border: '1px solid rgba(0,0,0,0.06)', borderRadius: 7, color: '#111111',
                       fontSize:13, fontFamily: 'inherit', padding: '9px 12px', outline: 'none' }}/>
                 </div>
               ))}
@@ -510,9 +510,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <CertPreview domain={clean(domain)} fn={fn} ln={ln} em={em} product={product} years={years}/>
 
-          <div style={{ background: 'transparent', border: '0.5px solid rgba(0,0,0,0.05)',
+          <div style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.05)',
             borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 18px', borderBottom: '0.5px solid rgba(0,0,0,0.04)' }}>
+            <div style={{ padding: '12px 18px', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
               <div style={{ fontSize:11, fontWeight: 700, color: '#b5aea8',
                 textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Order summary</div>
               {[
@@ -557,7 +557,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
   // ── DV ──────────────────────────────────────────────────────────────────────
   if (step === 'dv' && ord) return (
     <div style={{ minHeight: '100vh', background: 'transparent' }}>
-      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.05)',
+      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.05)',
         padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 10 }}>
         <Shield size={16} color="#1f5c4e"/>
         <span style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>Validate Domain Ownership</span>
@@ -568,7 +568,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         </div>
       </div>
 
-      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.04)',
+      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.04)',
         padding: '0 32px', display: 'flex', alignItems: 'center', gap: 4, height: 40 }}>
         {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
           <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -597,10 +597,10 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         </div>
 
         {/* DNS record card */}
-        <div style={{ background: 'transparent', border: '0.5px solid rgba(0,0,0,0.06)',
+        <div style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.06)',
           borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
           <div style={{ background: 'transparent', padding: '10px 16px',
-            display: 'flex', alignItems: 'center', gap: 6, borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
+            display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
             {['#1f5c4e','#ffbd2e','#27c93f'].map(c => (
               <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, display: 'block' }}/>
             ))}
@@ -618,7 +618,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             ].map(({ k, v, copy, accent, loading }) => (
               <div key={k} style={{ display: 'grid', gridTemplateColumns: '70px 1fr auto',
                 alignItems: 'center', padding: '10px 18px',
-                borderBottom: '0.5px solid rgba(0,0,0,0.03)' }}>
+                borderBottom: '1px solid rgba(0,0,0,0.03)' }}>
                 <span style={{ fontSize:10, fontWeight: 700, color: '#111111',
                   textTransform: 'uppercase', letterSpacing: '0.4px' }}>{k}</span>
                 <span style={{ fontSize:12, fontFamily: 'monospace',
@@ -637,7 +637,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           </div>
 
           {!(ord?.dcv_txt_value || ord?.dcv_cname_value) && (
-            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(0,0,0,0.05)',
+            <div style={{ padding: '10px 18px', borderTop: '1px solid rgba(0,0,0,0.05)',
               background: 'rgba(59,130,246,0.06)', display: 'flex', alignItems: 'center', gap: 8 }}>
               <RefreshCw size={11} className="spin" style={{ color: '#93c5fd', flexShrink: 0 }}/>
               <span style={{ fontSize:11, color: '#93c5fd', lineHeight: 1.5 }}>
@@ -646,7 +646,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             </div>
           )}
           {res?.dns_auto && (
-            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(0,0,0,0.05)',
+            <div style={{ padding: '10px 18px', borderTop: '1px solid rgba(0,0,0,0.05)',
               background: res.dns_auto.ok ? 'rgba(52,211,153,0.06)' : 'rgba(220,38,38,0.06)',
               display: 'flex', alignItems: 'flex-start', gap: 8 }}>
               {res.dns_auto.ok
@@ -660,7 +660,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
             </div>
           )}
           {res && res.ggs_status && res.ggs_status !== 'active' && !res.dns_auto && (
-            <div style={{ padding: '10px 18px', borderTop: '0.5px solid rgba(0,0,0,0.05)',
+            <div style={{ padding: '10px 18px', borderTop: '1px solid rgba(0,0,0,0.05)',
               background: 'rgba(245,158,11,0.06)', display: 'flex', gap: 8 }}>
               <AlertTriangle size={12} style={{ color: '#111111', flexShrink: 0, marginTop: 1 }}/>
               <span style={{ fontSize:11, color: '#9a6400' }}>
@@ -690,7 +690,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           }
           <button onClick={check} disabled={chk}
             style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(0,0,0,0.05)',
-              color: '#555555', border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: 7,
+              color: '#555555', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 7,
               padding: '10px 18px', fontSize:13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
             {chk ? <><RefreshCw size={13} className="spin"/> Checking…</> : <><RefreshCw size={13}/> Check Status</>}
           </button>
@@ -701,7 +701,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           </button>
         </div>
 
-        <div style={{ background: 'rgba(31,92,78,0.07)', border: '0.5px solid rgba(0,0,0,0.08)',
+        <div style={{ background: 'rgba(31,92,78,0.07)', border: '1px solid rgba(0,0,0,0.08)',
           borderRadius: 8, padding: '12px 16px', display: 'flex', gap: 10 }}>
           <Zap size={14} style={{ color: '#1f5c4e', flexShrink: 0, marginTop: 1 }}/>
           <div style={{ fontSize:12, color: '#b5aea8', lineHeight: 1.6 }}>
@@ -841,7 +841,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
           <div style={{ background: 'rgba(31,92,78,0.12)', borderBottom: '1px solid rgba(0,0,0,0.1)',
             padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 28, height: 28, borderRadius: 7,
-              background: 'rgba(74,222,128,0.12)', border: '0.5px solid rgba(22,160,104,0.22)',
+              background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(22,160,104,0.22)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <ShieldCheck size={14} color="#4ade80" strokeWidth={2}/>
             </div>
@@ -857,7 +857,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5,
               fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 20,
               background: 'rgba(22,160,104,0.09)', color: '#16a068',
-              border: '0.5px solid rgba(22,160,104,0.22)' }}>
+              border: '1px solid rgba(22,160,104,0.22)' }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a068',
                 animation: 'v2-pulse-anim 1.8s infinite' }}/>
               Active
@@ -873,7 +873,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
           ].filter(Boolean).map(({ label, value, mono, green }) => (
             <div key={label} style={{ display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', padding: '8px 16px',
-              borderBottom: '0.5px solid rgba(0,0,0,0.05)', gap: 12 }}>
+              borderBottom: '1px solid rgba(0,0,0,0.05)', gap: 12 }}>
               <span style={{ fontSize: 11, color: '#555555', flexShrink: 0 }}>{label}</span>
               <span style={{ fontSize: 11, fontWeight: 600,
                 color: green ? '#16a068' : '#ffffff',
@@ -889,7 +889,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
                 gap: 6, padding: '7px 10px', borderRadius: 7, fontSize: 11, fontWeight: 600,
                 cursor: certPem ? 'pointer' : 'not-allowed', fontFamily: F,
                 background: certCopied ? 'rgba(22,160,104,0.09)' : 'rgba(0,0,0,0.05)',
-                border: certCopied ? '0.5px solid rgba(74,222,128,0.3)' : '0.5px solid rgba(0,0,0,0.07)',
+                border: certCopied ? '0.5px solid rgba(74,222,128,0.3)' : '1px solid rgba(0,0,0,0.07)',
                 color: certCopied ? '#16a068' : certPem ? '#333333' : '#b0a8a0',
                 opacity: certPem ? 1 : 0.4, transition: 'all .15s' }}>
               {certCopied
@@ -900,7 +900,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
               style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 gap: 6, padding: '7px 10px', borderRadius: 7, fontSize: 11, fontWeight: 600,
                 cursor: certPem ? 'pointer' : 'not-allowed', fontFamily: F,
-                background: 'rgba(0,0,0,0.05)', border: '0.5px solid rgba(0,0,0,0.07)',
+                background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.07)',
                 color: certPem ? '#333333' : '#b0a8a0',
                 opacity: certPem ? 1 : 0.4 }}>
               <ArrowRight size={11}/> Download
@@ -961,7 +961,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
             <button onClick={goToDashboard}
               style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
                 borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: F,
-                background: 'rgba(31,92,78,0.09)', border: '0.5px solid rgba(31,92,78,0.2)',
+                background: 'rgba(31,92,78,0.09)', border: '1px solid rgba(31,92,78,0.2)',
                 color: '#1f5c4e' }}>
               <Server size={11}/> View in dashboard
             </button>
@@ -986,7 +986,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
                     gap: 8, padding: '14px 10px', borderRadius: 10, cursor: 'pointer',
                     fontFamily: F, textAlign: 'center', transition: 'all .15s',
                     background: accent ? 'rgba(31,92,78,0.07)' : 'rgba(0,0,0,0.02)',
-                    border: accent ? '1px solid rgba(31,92,78,0.25)' : '0.5px solid rgba(0,0,0,0.07)',
+                    border: accent ? '1px solid rgba(31,92,78,0.25)' : '1px solid rgba(0,0,0,0.07)',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31,92,78,0.09)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = accent ? 'rgba(31,92,78,0.07)' : 'rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = accent ? 'rgba(31,92,78,0.25)' : 'rgba(0,0,0,0.07)' }}>
@@ -1014,7 +1014,7 @@ function CertIssuedScreen({ domain, product, ord, user, onDashboard, onIssueAnot
             style={{ padding: '11px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600,
               cursor: 'pointer', fontFamily: F,
               background: 'rgba(0,0,0,0.05)', color: '#555555',
-              border: '0.5px solid rgba(0,0,0,0.07)' }}>
+              border: '1px solid rgba(0,0,0,0.07)' }}>
             Issue another
           </button>
         </div>

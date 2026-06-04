@@ -89,7 +89,7 @@ export default function AlertSettings({ nav }) {
 
   const inputStyle = {
     width:'100%', padding:'9px 12px', fontSize:12, borderRadius:8,
-    border:'0.5px solid var(--v2-border)', background:'var(--v2-surface)',
+    border:'1px solid var(--v2-border)', background:'var(--v2-surface)',
     color:'#111111', fontFamily:'inherit', outline:'none', boxSizing:'border-box',
   }
 
@@ -138,7 +138,7 @@ export default function AlertSettings({ nav }) {
             <button className="v2-btn v2-btn-sm" onClick={handleSave} disabled={saving}
               style={{ display:'flex', alignItems:'center', gap:5,
                 background: saved ? 'transparent' : undefined,
-                border: saved ? '0.5px solid rgba(31,92,78,0.2)' : undefined,
+                border: saved ? '1px solid rgba(31,92,78,0.2)' : undefined,
                 color: saved ? '#16a068' : undefined }}>
               {saving  ? <><RefreshCw size={11} style={{ animation:'spin .7s linear infinite' }}/> Saving…</> :
                saved   ? <><CheckCircle size={11}/> Saved</>   : <><Save size={11}/> Save</>}
@@ -157,7 +157,7 @@ export default function AlertSettings({ nav }) {
           </div>
         )}
         {testResult === 'ok' && (
-          <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:8,
+          <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8,
             padding:'10px 14px', marginBottom:14, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#111111' }}>
             <CheckCircle size={13} style={{ flexShrink:0 }}/> Test email sent to {user.email}
@@ -210,7 +210,7 @@ export default function AlertSettings({ nav }) {
                     <button key={d} onClick={() => toggleDay(d)} style={{
                       padding:'4px 12px', borderRadius:6, fontSize:12, fontWeight: on ? 600 : 400,
                       cursor:'pointer', fontFamily:'inherit',
-                      border: on ? '0.5px solid #2a6b5c' : '0.5px solid var(--v2-border)',
+                      border: on ? '0.5px solid #2a6b5c' : '1px solid var(--v2-border)',
                       background: on ? 'rgba(31,92,78,0.09)' : 'var(--v2-surface-3)',
                       color: on ? '#111111' : '#b0a8a0', transition:'all 0.1s',
                     }}>
@@ -271,7 +271,7 @@ export default function AlertSettings({ nav }) {
                 : extraEmails.map(e => (
                   <div key={e} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
                     padding:'6px 10px', borderRadius:6, marginBottom:5,
-                    background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
+                    background:'var(--v2-surface-3)', border:'1px solid var(--v2-border)',
                     fontSize:11, color:'#333333', fontFamily:'monospace' }}>
                     {e}
                     <button onClick={() => setExtraEmails(p => p.filter(x => x !== e))}
@@ -309,7 +309,7 @@ export default function AlertSettings({ nav }) {
                 { label:'Slack',      value: slackWebhook ? 'Configured' : 'Not set' },
               ].map(({ label, value, warn }) => (
                 <div key={label} style={{ display:'flex', justifyContent:'space-between',
-                  fontSize:11, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.04)' }}>
+                  fontSize:11, padding:'5px 0', borderBottom:'1px solid rgba(0,0,0,0.04)' }}>
                   <span style={{ color:'#888888' }}>{label}</span>
                   <span style={{ fontWeight:500, color: warn ? '#1f5c4e' : '#333333' }}>{value}</span>
                 </div>

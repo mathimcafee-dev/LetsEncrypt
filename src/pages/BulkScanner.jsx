@@ -81,7 +81,7 @@ export default function BulkScanner({ nav }) {
   return (
     <div className="v2-page">
       {/* Nav bar */}
-      <div style={{ background: 'var(--v2-surface)', borderBottom: '0.5px solid var(--v2-border)',
+      <div style={{ background: 'var(--v2-surface)', borderBottom: '1px solid var(--v2-border)',
         padding: '0 24px', height: 52, display: 'flex', alignItems: 'center',
         justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
@@ -92,7 +92,7 @@ export default function BulkScanner({ nav }) {
         </div>
         <button onClick={() => nav && nav('/auth')}
           style={{ fontSize:12, padding: '6px 14px', borderRadius: 7,
-            border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface)',
+            border: '1px solid var(--v2-border)', background: 'var(--v2-surface)',
             color: '#333333', cursor: 'pointer' }}>
           Sign in
         </button>
@@ -133,7 +133,7 @@ export default function BulkScanner({ nav }) {
             placeholder={'easysecurity.in\ngoogle.com\ngithub.com\n...up to 100 domains'}
             rows={6}
             style={{ width: '100%', fontSize:13, fontFamily: 'monospace', resize: 'vertical',
-              border: '0.5px solid var(--v2-border)', borderRadius: 8, padding: '10px 12px',
+              border: '1px solid var(--v2-border)', borderRadius: 8, padding: '10px 12px',
               color: '#111111', background:'rgba(0,0,0,0.02)', boxSizing: 'border-box', outline: 'none' }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
@@ -173,13 +173,13 @@ export default function BulkScanner({ nav }) {
                 { label: 'A / A+', val: (grades['A']||0)+(grades['A+']||0), color: '#16a068' },
                 { label: 'F / issues', val: (grades['F']||0), color: '#1f5c4e' },
               ].map(({ label, val, color }) => (
-                <div key={label} style={{ background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)',
+                <div key={label} style={{ background: 'var(--v2-surface)', border: '1px solid var(--v2-border)',
                   borderRadius: 10, padding: '10px 12px' }}>
                   <div style={{ fontSize:20, fontWeight: 600, color, fontFamily: 'monospace' }}>{val}</div>
                   <div style={{ fontSize:11, color: '#888888', marginTop: 2 }}>{label}</div>
                 </div>
               ))}
-              <div style={{ background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)',
+              <div style={{ background: 'var(--v2-surface)', border: '1px solid var(--v2-border)',
                 borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center',
                 justifyContent: 'center' }}>
                 <button onClick={() => exportCSV(results)}
@@ -195,7 +195,7 @@ export default function BulkScanner({ nav }) {
               {/* Head */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 52px 60px 52px 52px 52px 70px',
                 padding: '8px 14px', background:'rgba(0,0,0,0.02)',
-                borderBottom: '0.5px solid var(--v2-border)' }}>
+                borderBottom: '1px solid var(--v2-border)' }}>
                 {['Domain', 'Grade', 'Score', 'TLS', 'HSTS', 'CAA', 'Expiry'].map(h => (
                   <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
                     letterSpacing: '0.3px', textTransform: 'uppercase' }}>{h}</div>
@@ -208,7 +208,7 @@ export default function BulkScanner({ nav }) {
                   <div key={r.domain} style={{ display: 'grid',
                     gridTemplateColumns: '1fr 52px 60px 52px 52px 52px 70px',
                     padding: '10px 14px', alignItems: 'center',
-                    borderBottom: isLast ? 'none' : '0.5px solid var(--v2-border)' }}>
+                    borderBottom: isLast ? 'none' : '1px solid var(--v2-border)' }}>
                     <div style={{ fontSize:12, color: '#111111', fontWeight: 500,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {r.domain}

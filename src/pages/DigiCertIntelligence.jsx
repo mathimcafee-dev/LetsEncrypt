@@ -290,7 +290,7 @@ function PortfolioLayer({ apiKey }) {
       {/* Orders table */}
       <div className="v2-card" style={{ overflow: 'hidden', padding: 0 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr 1fr 1fr 1fr',
-          padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
+          padding: '8px 14px', borderBottom: '1px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Domain', 'Type', 'Status', 'Expires', 'Days left'].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
@@ -307,7 +307,7 @@ function PortfolioLayer({ apiKey }) {
           const d    = dLeft(exp)
           return (
             <div key={o.id} style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr 1fr 1fr 1fr',
-              padding: '9px 14px', borderBottom: i < filtered.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
+              padding: '9px 14px', borderBottom: i < filtered.length - 1 ? '1px solid var(--v2-border)' : 'none',
               alignItems: 'center', transition: 'background .1s' }}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-surface-3)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
@@ -324,7 +324,7 @@ function PortfolioLayer({ apiKey }) {
         })}
         {filtered.length > 200 && (
           <div style={{ padding: '10px 14px', fontSize:11, color: '#888888',
-            borderTop: '0.5px solid var(--v2-border)', textAlign: 'center' }}>
+            borderTop: '1px solid var(--v2-border)', textAlign: 'center' }}>
             Showing first 200 of {filtered.length} results — use search to narrow down
           </div>
         )}
@@ -393,7 +393,7 @@ function ValidationLayer({ apiKey }) {
       </div>
       <div className="v2-card" style={{ overflow: 'hidden', padding: 0, marginBottom: 20 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-          padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
+          padding: '8px 14px', borderBottom: '1px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Organisation', 'ID', 'OV status', 'EV status'].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
@@ -407,7 +407,7 @@ function ValidationLayer({ apiKey }) {
           const ev = org.validations?.find(v => v.type === 'ev')
           return (
             <div key={org.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-              padding: '9px 14px', borderBottom: i < orgs.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
+              padding: '9px 14px', borderBottom: i < orgs.length - 1 ? '1px solid var(--v2-border)' : 'none',
               alignItems: 'center' }}>
               <div>
                 <div style={{ fontSize:12, fontWeight: 500, color: '#111111' }}>{org.name}</div>
@@ -427,7 +427,7 @@ function ValidationLayer({ apiKey }) {
       </div>
       <div className="v2-card" style={{ overflow: 'hidden', padding: 0 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-          padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
+          padding: '8px 14px', borderBottom: '1px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Domain', 'DCV method', 'Validation expires', 'Days left'].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
@@ -441,7 +441,7 @@ function ValidationLayer({ apiKey }) {
           const d = dLeft(dcvExp)
           return (
             <div key={dom.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-              padding: '9px 14px', borderBottom: i < domains.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
+              padding: '9px 14px', borderBottom: i < domains.length - 1 ? '1px solid var(--v2-border)' : 'none',
               alignItems: 'center' }}>
               <div className="v2-mono" style={{ fontSize:12, fontWeight: 500, color: '#111111' }}>{dom.name}</div>
               <div style={{ fontSize:11, color: '#333333', textTransform: 'uppercase', fontSize:10 }}>
@@ -640,7 +640,7 @@ function ReissueLayer({ apiKey }) {
         ) : (
           <div className="v2-card" style={{ overflow: 'hidden', padding: 0 }}>
             <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(180px,100%),1fr))',
-              padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
+              padding: '8px 14px', borderBottom: '1px solid var(--v2-border)',
               background: 'var(--v2-surface-3)' }}>
               {['Certificate ID', 'Common name', 'Reissued', 'Expires'].map(h => (
                 <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
@@ -649,7 +649,7 @@ function ReissueLayer({ apiKey }) {
             </div>
             {history.map((r, i) => (
               <div key={r.id} style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(180px,100%),1fr))',
-                padding: '9px 14px', borderBottom: i < history.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
+                padding: '9px 14px', borderBottom: i < history.length - 1 ? '1px solid var(--v2-border)' : 'none',
                 alignItems: 'center' }}>
                 <div className="v2-mono" style={{ fontSize:11, color: '#333333' }}>#{r.id}</div>
                 <div className="v2-mono" style={{ fontSize:12, color: '#111111' }}>{r.common_name || '—'}</div>
@@ -900,7 +900,7 @@ export default function DigiCertIntelligence({ nav }) {
           </div>
           {apiKey && (
             <span style={{ marginLeft: 'auto', fontSize:10, fontWeight: 700, padding: '2px 8px',
-              borderRadius: 20, background: 'transparent', color: '#16a068', border: '0.5px solid rgba(31,92,78,0.2)',
+              borderRadius: 20, background: 'transparent', color: '#16a068', border: '1px solid rgba(31,92,78,0.2)',
               display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a068', display: 'inline-block' }}/>
               Connected
@@ -914,7 +914,7 @@ export default function DigiCertIntelligence({ nav }) {
           <>
             {/* Tab nav */}
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 24,
-              borderBottom: '0.5px solid var(--v2-border)', paddingBottom: 0 }}>
+              borderBottom: '1px solid var(--v2-border)', paddingBottom: 0 }}>
               {TABS.map(t => (
                 <button key={t.id} onClick={() => setTab(t.id)}
                   style={{ display: 'flex', alignItems: 'center', gap: 6,

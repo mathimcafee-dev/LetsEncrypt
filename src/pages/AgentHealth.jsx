@@ -154,11 +154,11 @@ function Drawer({ agent, tok, onClose, onDelete }) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.28)', zIndex: 40 }}/>
       {/* Panel */}
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, zIndex: 50,
-        background:'rgba(0,0,0,0.02)', borderLeft: '0.5px solid var(--v2-border)',
+        background:'rgba(0,0,0,0.02)', borderLeft: '1px solid var(--v2-border)',
         display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
 
         {/* Header */}
-        <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)',
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--v2-border)',
           display: 'flex', alignItems: 'center', gap: 12, position: 'sticky', top: 0,
           background:'rgba(0,0,0,0.02)', zIndex: 1 }}>
           <div style={{ width: 36, height: 36, borderRadius: 9, background: 'transparent',
@@ -183,7 +183,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
 
         {/* Quick stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 1,
-          borderBottom: '0.5px solid var(--v2-border)', background: 'var(--v2-border)' }}>
+          borderBottom: '1px solid var(--v2-border)', background: 'var(--v2-border)' }}>
           {[
             { label: 'Uptime',        val: fmtUptime(agent.uptime_seconds) },
             { label: 'Certs managed', val: agent.certs_managed ?? '—' },
@@ -198,7 +198,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
 
         {/* Metrics */}
         {(agent.cpu_pct != null || agent.mem_pct != null || agent.disk_pct != null) && (
-          <div style={{ padding: '14px 20px', borderBottom: '0.5px solid var(--v2-border)' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--v2-border)' }}>
             <div className="v2-section-label" style={{ marginBottom: 10 }}>Resources</div>
             {[
               { label: 'CPU',  value: agent.cpu_pct },
@@ -223,7 +223,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
         )}
 
         {/* Actions */}
-        <div style={{ padding: '14px 20px', borderBottom: '0.5px solid var(--v2-border)' }}>
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--v2-border)' }}>
           <div className="v2-section-label" style={{ marginBottom: 10 }}>Actions</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button className="v2-btn v2-btn-sm" onClick={copyCmd}
@@ -244,7 +244,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: '0.5px solid var(--v2-border)' }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--v2-border)' }}>
           {[
             { id: 'jobs',   label: 'Job history' },
             { id: 'events', label: 'Health events' },
@@ -274,7 +274,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
               </div>
             ) : jobs.map(job => (
               <div key={job.id} style={{ display: 'flex', gap: 10, padding: '8px 0',
-                borderBottom: '0.5px solid var(--v2-border)', alignItems: 'flex-start' }}>
+                borderBottom: '1px solid var(--v2-border)', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 3,
                   marginTop: 2, flexShrink: 0,
                   background: (statusColor[job.status]||'#444444')+'18',
@@ -302,7 +302,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
               </div>
             ) : events.map(ev => (
               <div key={ev.id} style={{ display: 'flex', gap: 10, padding: '8px 0',
-                borderBottom: '0.5px solid var(--v2-border)', alignItems: 'flex-start' }}>
+                borderBottom: '1px solid var(--v2-border)', alignItems: 'flex-start' }}>
                 <span style={{ fontSize:16, flexShrink: 0 }}>{eventIcon[ev.event_type] || '⚪'}</span>
                 <div>
                   <div style={{ fontSize:12, fontWeight: 500, color: '#111111',
@@ -328,7 +328,7 @@ function Drawer({ agent, tok, onClose, onDelete }) {
                 { label: 'Agent ID',      val: agent.id?.slice(0, 16) + '…' },
               ].map(({ label, val }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between',
-                  padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)' }}>
+                  padding: '8px 0', borderBottom: '1px solid var(--v2-border)' }}>
                   <span style={{ fontSize:12, color: '#888888' }}>{label}</span>
                   <span style={{ fontSize:12, color: '#111111', fontWeight: 500,
                     fontFamily: label === 'Agent ID' ? 'monospace' : 'inherit' }}>{val}</span>
@@ -363,7 +363,7 @@ function DeleteModal({ agent, tok, onClose, onDone }) {
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(240,237,232,0.32)', zIndex: 60 }}/>
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-        zIndex: 70, background:'rgba(0,0,0,0.02)', border: '0.5px solid var(--v2-border)',
+        zIndex: 70, background:'rgba(0,0,0,0.02)', border: '1px solid var(--v2-border)',
         borderRadius: 12, padding: '24px', width: 360 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
           <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(31,92,78,0.09)',
@@ -522,7 +522,7 @@ export default function AgentHealth({ user }) {
               placeholder="Search by name, hostname, IP, OS…"
               style={{ width: '100%', paddingLeft: 32, fontSize:13, boxSizing: 'border-box' }}/>
           </div>
-          <div style={{ display: 'flex', gap: 1, border: '0.5px solid var(--v2-border)', borderRadius: 8, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', gap: 1, border: '1px solid var(--v2-border)', borderRadius: 8, overflow: 'hidden' }}>
             {['all', 'online', 'offline', 'unknown'].map(s => (
               <button key={s} onClick={() => setFilterStatus(s)}
                 style={{ padding: '7px 12px', fontSize:11, fontWeight: filterStatus === s ? 500 : 400,
@@ -569,7 +569,7 @@ export default function AgentHealth({ user }) {
               gridTemplateColumns: '1.8fr 100px 90px 90px 90px 90px 70px 60px 80px',
               gap: 0, padding: '8px 16px',
               background: 'var(--v2-surface-3)',
-              borderBottom: '0.5px solid var(--v2-border)' }}>
+              borderBottom: '1px solid var(--v2-border)' }}>
               {['Server', 'Status', 'CPU', 'RAM', 'Disk', 'Last job', 'Result', 'Certs', 'Next renew'].map(h => (
                 <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
                   letterSpacing: '0.3px', textTransform: 'uppercase' }}>{h}</div>
@@ -589,7 +589,7 @@ export default function AgentHealth({ user }) {
                   style={{ display: 'grid',
                     gridTemplateColumns: '1.8fr 100px 90px 90px 90px 90px 70px 60px 80px',
                     gap: 0, padding: '12px 16px', cursor: 'pointer', alignItems: 'center',
-                    borderBottom: isLast ? 'none' : '0.5px solid var(--v2-border)',
+                    borderBottom: isLast ? 'none' : '1px solid var(--v2-border)',
                     background: drawer?.id === agent.id ? 'var(--v2-surface-3)' : 'transparent',
                     transition: 'background 0.15s' }}>
 
@@ -653,7 +653,7 @@ export default function AgentHealth({ user }) {
             })}
 
             {/* Footer summary */}
-            <div style={{ padding: '8px 16px', borderTop: '0.5px solid var(--v2-border)',
+            <div style={{ padding: '8px 16px', borderTop: '1px solid var(--v2-border)',
               background: 'var(--v2-surface-3)', display: 'flex', gap: 20 }}>
               <span style={{ fontSize:11, color: '#888888' }}>
                 {filtered.length} of {agents.length} agent{agents.length !== 1 ? 's' : ''} shown

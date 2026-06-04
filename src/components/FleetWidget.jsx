@@ -41,7 +41,7 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
           <span style={{ fontSize:13, fontWeight:600, color:'transparent' }}>Fleet overview</span>
           {allClear && (
             <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20,
-              background:'rgba(31,92,78,0.08)', color:'#5edb8a', border:'0.5px solid rgba(31,92,78,0.2)' }}>
+              background:'rgba(31,92,78,0.08)', color:'#5edb8a', border:'1px solid rgba(31,92,78,0.2)' }}>
               All clear ✓
             </span>
           )}
@@ -72,7 +72,7 @@ export default function FleetWidget({ certs, agents, loading, onRenew, nav }) {
       {/* Attention list */}
       {attention.length > 0 && (
         <div style={{ borderTop:'0.5px solid rgba(15,23,42,0.06)' }}>
-          <div style={{ padding:'8px 16px', background:'rgba(30,0,0,0.4)' }}>
+          <div style={{ padding:'8px 16px', background:'rgba(31,92,78,0.05)' }}>
             <span style={{ fontSize:11, fontWeight:600, color:'#b5aea8', textTransform:'uppercase', letterSpacing:'0.4px' }}>Needs attention</span>
           </div>
           {attention.map(c => {

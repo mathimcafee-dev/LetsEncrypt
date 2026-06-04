@@ -40,7 +40,7 @@ function StepRow({ step, title, subtitle, state }) {
     skipped: <span style={{width:22,height:22,borderRadius:'50%',background:'rgba(0,0,0,0.05)',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#888888'}}>—</span>,
   }
   return (
-    <div style={{display:'flex',gap:14,padding:'12px 0',borderBottom:'0.5px solid rgba(0,0,0,0.05)'}}>
+    <div style={{display:'flex',gap:14,padding:'12px 0',borderBottom:'1px solid rgba(0,0,0,0.05)'}}>
       <div style={{paddingTop:2,flexShrink:0}}>{icons[state]||icons.pending}</div>
       <div style={{flex:1,minWidth:0}}>
         <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>
@@ -80,7 +80,7 @@ function SavedServerCard({ server, selected, onClick }) {
     <button onClick={onClick} style={{
       width:'100%', textAlign:'left', padding:'12px 14px', borderRadius:8,
       cursor:'pointer', fontFamily:'inherit',
-      border: selected ? '2px solid #2a6b5c' : '0.5px solid rgba(0,0,0,0.08)',
+      border: selected ? '2px solid #2a6b5c' : '1px solid rgba(0,0,0,0.08)',
       background: selected ? 'rgba(0,0,0,0.07)' : 'rgba(0,0,0,0.03)',
       transition:'all 0.15s',
     }}>
@@ -294,7 +294,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
   // ── Shared styles ─────────────────────────────────────────────────────
   const modalBg = { position:'fixed', inset:0, zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:20, background:'rgba(0,0,0,0.45)', backdropFilter:'blur(6px)' }
   const card = { background:'#f4f1ec', border:'1px solid rgba(31,92,78,0.2)', borderRadius:14, width:'100%', maxWidth:520, maxHeight:'90vh', overflowY:'auto', boxShadow:'0 24px 64px rgba(0,0,0,0.6)' }
-  const header = { padding:'18px 22px 14px', borderBottom:'0.5px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, background:'#f4f1ec', zIndex:10, borderRadius:'14px 14px 0 0' }
+  const header = { padding:'18px 22px 14px', borderBottom:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, background:'#f4f1ec', zIndex:10, borderRadius:'14px 14px 0 0' }
   const body = { padding:'20px 22px 24px' }
   const certBanner = { background:'rgba(22,160,104,0.07)', border:'0.5px solid rgba(74,222,128,0.2)', borderRadius:8, padding:'10px 14px', marginBottom:20, display:'flex', alignItems:'center', gap:10 }
 
@@ -351,7 +351,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
                   <button key={t.key} onClick={() => setServerType(t.key)} style={{
                     flex:1, textAlign:'left', padding:'12px 14px', borderRadius:8,
                     cursor:'pointer', fontFamily:'inherit', transition:'all 0.15s',
-                    border: serverType===t.key ? '2px solid #2a6b5c' : '0.5px solid rgba(0,0,0,0.08)',
+                    border: serverType===t.key ? '2px solid #2a6b5c' : '1px solid rgba(0,0,0,0.08)',
                     background: serverType===t.key ? 'rgba(0,0,0,0.07)' : 'rgba(0,0,0,0.03)',
                   }}>
                     <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
@@ -410,7 +410,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
 
               {/* New server form */}
               {(useNew || savedServers.length === 0) && (
-                <div style={{background:'rgba(0,0,0,0.02)',border:'0.5px solid rgba(0,0,0,0.07)',borderRadius:8,padding:'16px',marginBottom:16}}>
+                <div style={{background:'rgba(0,0,0,0.02)',border:'1px solid rgba(0,0,0,0.07)',borderRadius:8,padding:'16px',marginBottom:16}}>
                   <div style={{fontSize:11,fontWeight:700,color:'#888888',marginBottom:14,textTransform:'uppercase',letterSpacing:'0.6px'}}>New cPanel Server</div>
                   <Field label='Domain or Hostname' required hint='Your domain or cPanel hostname. SSLVault auto-detects the correct server.'>
                     <input value={hostname} onChange={e=>setHostname(e.target.value)} placeholder='freecerts.site or server11.host.com' style={INP}/>
@@ -461,7 +461,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
 
               <div style={{display:'flex',gap:8}}>
                 {savedServers.length === 0 && (
-                  <button onClick={()=>setPhase('select_type')} style={{padding:'10px 16px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.08)',background:'rgba(0,0,0,0.04)',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#333333'}}>Back</button>
+                  <button onClick={()=>setPhase('select_type')} style={{padding:'10px 16px',borderRadius:8,border:'1px solid rgba(0,0,0,0.08)',background:'rgba(0,0,0,0.04)',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#333333'}}>Back</button>
                 )}
                 <button onClick={handleInstall} disabled={busy} style={{flex:1,padding:'11px',background:busy?'rgba(0,0,0,0.1)':'#1f5c4e',color:'white',border:'none',borderRadius:8,fontSize:13,fontWeight:700,cursor:busy?'wait':'pointer',fontFamily:'inherit'}}>
                   {busy ? 'Installing...' : 'Install Certificate'}
@@ -568,7 +568,7 @@ export default function CpanelInstall({ cert, userId, onClose, onSuccess }) {
 
               <div style={{display:'flex',gap:8,marginTop:14}}>
                 {phase === 'error' && (
-                  <button onClick={()=>{setPhase('configure');setBusy(false)}} style={{flex:1,padding:'10px',border:'0.5px solid rgba(0,0,0,0.08)',borderRadius:8,background:'rgba(0,0,0,0.04)',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#333333'}}>Try again</button>
+                  <button onClick={()=>{setPhase('configure');setBusy(false)}} style={{flex:1,padding:'10px',border:'1px solid rgba(0,0,0,0.08)',borderRadius:8,background:'rgba(0,0,0,0.04)',cursor:'pointer',fontFamily:'inherit',fontSize:13,color:'#333333'}}>Try again</button>
                 )}
                 <button onClick={()=>{if(phase==='done'&&onSuccess)onSuccess();onClose()}} style={{flex:1,padding:'10px',background:phase==='done'?'#1f5c4e':'rgba(0,0,0,0.06)',color:'#111111',border:'none',borderRadius:8,cursor:'pointer',fontFamily:'inherit',fontSize:13,fontWeight:700}}>
                   {phase==='done'?'Done':'Close'}

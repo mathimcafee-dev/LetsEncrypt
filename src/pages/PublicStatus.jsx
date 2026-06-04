@@ -64,7 +64,7 @@ export default function PublicStatus({ username: propUsername, nav }) {
   return (
     <div style={{ minHeight: '100vh', background: 'transparent' }}>
       {/* Nav */}
-      <div style={{ background:'#f4f1ec', borderBottom: '0.5px solid rgba(0,0,0,0.08)',
+      <div style={{ background:'#f4f1ec', borderBottom: '1px solid rgba(0,0,0,0.08)',
         padding: '0 24px', height: 52, display: 'flex', alignItems: 'center',
         justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}

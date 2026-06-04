@@ -176,7 +176,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
   if (step === 'auth') return (
     <div style={M}>
       <div style={W}>
-        <div style={{ padding: '16px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Reveal private key</div>
             <div style={{ fontSize: 11, color: '#888888', marginTop: 2, fontFamily: 'monospace' }}>{keyEntry.domain}</div>
@@ -208,7 +208,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
   return (
     <div style={M}>
       <div style={W}>
-        <div style={{ padding: '16px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Private key — {keyEntry.domain}</div>
             {pem && <div style={{ fontSize: 11, color: '#1f5c4e', marginTop: 2 }}>Auto-closes in {countdown}s</div>}
@@ -220,7 +220,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
           {fetchErr && <div style={{ fontSize: 12, color: '#1f5c4e', padding: '12px 0' }}>{fetchErr}</div>}
           {pem && (
             <>
-              <div style={{ position: 'relative', background: '#000', border: '0.5px solid rgba(0,0,0,0.07)', borderRadius: 8, padding: '12px 14px', fontFamily: '"JetBrains Mono",monospace', fontSize: 11, color: '#16a068', maxHeight: 200, overflow: 'auto', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{pem}</div>
+              <div style={{ position: 'relative', background: '#000', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 8, padding: '12px 14px', fontFamily: '"JetBrains Mono",monospace', fontSize: 11, color: '#16a068', maxHeight: 200, overflow: 'auto', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{pem}</div>
               <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                 <button onClick={() => { navigator.clipboard.writeText(pem); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
                   style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px', fontSize: 12, fontWeight: 600, borderRadius: 7, background: '#1f5c4e', color: '#fff', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
@@ -240,7 +240,7 @@ const auditColors = { reveal: '#818cf8', rotate: '#9a6400', archive: '#1f5c4e', 
 function AuditRow({ entry }) {
   const color = auditColors[entry.action] || '#b0a8a0'
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '0.5px solid rgba(0,0,0,0.05)', fontSize: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: 12 }}>
       <div style={{ width: 28, height: 28, borderRadius: 6, flexShrink: 0, background: `${color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Activity size={12} color={color} />
       </div>
@@ -285,13 +285,13 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
       </div>
 
       {open && (
-        <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.05)', padding: '16px 16px 16px 20px' }}>
+        <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', padding: '16px 16px 16px 20px' }}>
           {isExpiringSoon && keyEntry.status === 'active' && (
-            <div style={{ background: 'rgba(192,57,43,0.07)', border: '0.5px solid rgba(192,57,43,0.2)', borderRadius: 8, padding: '9px 12px', marginBottom: 12, fontSize: 11, color: '#1f5c4e' }}>
+            <div style={{ background: 'rgba(192,57,43,0.07)', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 8, padding: '9px 12px', marginBottom: 12, fontSize: 11, color: '#1f5c4e' }}>
               <AlertTriangle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }} /><strong>Expiring in {days} days</strong> — rotate now.
             </div>
           )}
-          <div style={{ background: '#f4f1ec', border: '0.5px solid rgba(0,0,0,0.06)', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          <div style={{ background: '#f4f1ec', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
             <Lock size={13} color="#b0a8a0" style={{ flexShrink: 0 }} />
             <EntropyDots />
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.8px', color: '#888888', fontFamily: '"JetBrains Mono",monospace', flexShrink: 0 }}>ENCRYPTED</span>
@@ -313,7 +313,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
               { label: 'Rotations', value: keyEntry.rotation_count ?? 0 },
               { label: 'Key size', value: `${keyEntry.key_size || 2048} bit` },
             ].map(({ label, value }) => (
-              <div key={label} style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 8, padding: '9px 12px', border: '0.5px solid rgba(0,0,0,0.05)' }}>
+              <div key={label} style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 8, padding: '9px 12px', border: '1px solid rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize: 9, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>{label}</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#111111' }}>{String(value)}</div>
               </div>
@@ -353,7 +353,7 @@ function BindRow({ cert, onCheck, checking }) {
   const isChecking = checking === cert.id
   const expiry = fmtExpiry(cert.expires_at)
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 120px 100px 110px 90px', alignItems: 'center', gap: 0, padding: '0 18px', height: 54, borderBottom: '0.5px solid rgba(0,0,0,0.05)', transition: 'background .12s', background: cert.certbind_status && cert.certbind_status !== 'bound' ? 'rgba(248,113,113,0.03)' : 'transparent' }}
+    <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 120px 100px 110px 90px', alignItems: 'center', gap: 0, padding: '0 18px', height: 54, borderBottom: '1px solid rgba(0,0,0,0.05)', transition: 'background .12s', background: cert.certbind_status && cert.certbind_status !== 'bound' ? 'rgba(248,113,113,0.03)' : 'transparent' }}
       onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.02)'}
       onMouseLeave={e => e.currentTarget.style.background = cert.certbind_status && cert.certbind_status !== 'bound' ? 'rgba(248,113,113,0.03)' : 'transparent'}>
       <div style={{ display: 'flex', alignItems: 'center' }}><PulseDot color={s.dot} animate={cert.certbind_status === 'bound'} /></div>
@@ -574,7 +574,7 @@ export default function KeyIntelligence({ nav }) {
         </div>
 
         {/* Security strip */}
-        <div style={{ background: 'rgba(192,57,43,0.06)', border: '0.5px solid rgba(192,57,43,0.22)', borderRadius: 9, padding: '10px 16px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ background: 'rgba(192,57,43,0.06)', border: '1px solid rgba(192,57,43,0.22)', borderRadius: 9, padding: '10px 16px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ position: 'relative', flexShrink: 0, width: 8, height: 8 }}>
             <div style={{ position: 'absolute', inset: '-3px', borderRadius: '50%', background: 'rgba(22,160,104,0.12)', animation: 'dotpulse 2s ease infinite' }} />
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a068', position: 'relative' }} />
@@ -615,7 +615,7 @@ export default function KeyIntelligence({ nav }) {
         )}
 
         {/* Tab bar — bright distinct colours per tab */}
-        <div style={{ display: 'flex', gap: 1, borderBottom: '0.5px solid rgba(0,0,0,0.06)', marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 1, borderBottom: '1px solid rgba(0,0,0,0.06)', marginBottom: 20 }}>
           {[
             { key: 'vault',   label: 'Vault',      count: activeKeys.length,   icon: Lock,         color: TAB_COLORS.vault.color   },
             { key: 'bind',    label: 'Bind check',  count: bindCerts.length,    icon: CheckCircle2, color: TAB_COLORS.bind.color    },
@@ -666,7 +666,7 @@ export default function KeyIntelligence({ nav }) {
               </div>
             )}
             <div style={{ border: '1px solid rgba(0,0,0,0.08)', borderRadius: 10, overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 120px 100px 110px 90px', padding: '0 18px', height: 36, alignItems: 'center', background: 'rgba(0,0,0,0.02)', borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 120px 100px 110px 90px', padding: '0 18px', height: 36, alignItems: 'center', background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                 {['', 'Domain', 'Install path', 'Checked', 'Status', ''].map((h, i) => (
                   <div key={i} style={{ fontSize: 9, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{h}</div>
                 ))}
@@ -685,7 +685,7 @@ export default function KeyIntelligence({ nav }) {
                 sortedBind.map(cert => <BindRow key={cert.id} cert={cert} onCheck={runCheck} checking={checking} />)
               )}
               {!bindLoading && bindCerts.length > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 18px', background: 'rgba(0,0,0,0.02)', borderTop: '0.5px solid rgba(0,0,0,0.05)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 18px', background: 'rgba(0,0,0,0.02)', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
                   <div style={{ fontSize: 11, color: '#888888' }}>
                     {lastRefresh ? `Last checked ${lastRefresh.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}` : 'Not yet checked'}
                     {agents.length > 0 && <span style={{ marginLeft: 12 }}><PulseDot color={onlineAgents > 0 ? '#16a068' : '#b0a8a0'} animate={onlineAgents > 0} /><span style={{ marginLeft: 5 }}>{onlineAgents}/{agents.length} agent{agents.length !== 1 ? 's' : ''} online</span></span>}
@@ -714,7 +714,7 @@ export default function KeyIntelligence({ nav }) {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ background: 'rgba(248,113,113,0.06)', border: '0.5px solid rgba(192,57,43,0.12)', borderRadius: 8, padding: '9px 14px', fontSize: 11, color: '#1f5c4e', marginBottom: 4 }}>
+              <div style={{ background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(192,57,43,0.12)', borderRadius: 8, padding: '9px 14px', fontSize: 11, color: '#1f5c4e', marginBottom: 4 }}>
                 <AlertTriangle size={11} style={{ verticalAlign: '-1px', marginRight: 5 }} />These keys are retained for 30 days as rollback, then permanently destroyed.
               </div>
               {archivedKeys.map(k => (
@@ -727,7 +727,7 @@ export default function KeyIntelligence({ nav }) {
         {/* ── AUDIT TAB ── */}
         {tab === 'audit' && (
           <div className="v2-card" style={{ overflow: 'hidden' }}>
-            <div style={{ padding: '10px 16px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ padding: '10px 16px', borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ flex: 1, fontSize: 12, color: '#333333', fontWeight: 500 }}>
                 {auditFilter ? <>Audit log for <strong>{auditFilter}</strong><button onClick={() => setAuditFilter(null)} style={{ marginLeft: 8, fontSize: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#888888' }}>(clear)</button></> : `All events · ${audit.length} total`}
               </div>
@@ -747,7 +747,7 @@ export default function KeyIntelligence({ nav }) {
         {rotateConfirm && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
             <div style={{ background: 'var(--v2-surface)', borderRadius: 12, width: '100%', maxWidth: 440, overflow: 'hidden' }}>
-              <div style={{ padding: '16px 20px', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
+              <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#111111' }}>Rotate key for {rotateConfirm.domain}?</div>
                 <div style={{ fontSize: 11, color: '#888888', marginTop: 3 }}>A new certificate and key will be issued and deployed automatically</div>
               </div>
@@ -757,7 +757,7 @@ export default function KeyIntelligence({ nav }) {
                 </div>
                 <div style={{ fontSize: 13, color: '#333333', lineHeight: 1.6 }}>This dispatches a renew job for <strong>{rotateConfirm.domain}</strong>. The old key is archived immediately after the new key is stored.</div>
               </div>
-              <div style={{ padding: '12px 20px', borderTop: '0.5px solid rgba(0,0,0,0.06)', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <div style={{ padding: '12px 20px', borderTop: '1px solid rgba(0,0,0,0.06)', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                 <button className="v2-btn v2-btn-sm" onClick={() => setRotateConfirm(null)}>Cancel</button>
                 <button onClick={() => handleRotate(rotateConfirm)} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', background: '#1f5c4e', color: '#fff', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                   <RotateCcw size={12} /> Rotate now

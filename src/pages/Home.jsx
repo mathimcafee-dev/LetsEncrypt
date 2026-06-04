@@ -718,7 +718,7 @@ export default function Home({ nav }) {
                     </div>
                   </Card>
                 ))}
-                <Card style={{display:'flex',gap:9,alignItems:'flex-start',padding:'10px 12px',background:'rgba(248,113,113,0.05)',border:'1px solid rgba(248,113,113,0.12)'}}>
+                <Card style={{display:'flex',gap:9,alignItems:'flex-start',padding:'10px 12px',background:'rgba(248,113,113,0.05)',border:'1px solid rgba(192,57,43,0.2)'}}>
                   <span style={{fontSize:13,flexShrink:0}}>🚨</span>
                   <div>
                     <div style={{fontSize:11.5,fontWeight:600,color:RED,marginBottom:2}}>What CertBind catches that others miss</div>

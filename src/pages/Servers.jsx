@@ -27,7 +27,7 @@ function JobRow({ job }) {
     ? <XCircle size={12} color="#1f5c4e"/>
     : <Clock size={12} color="#1f5c4e"/>
   return (
-    <div style={{ display:'flex', alignItems:'center', gap:10, padding:'7px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:11 }}>
+    <div style={{ display:'flex', alignItems:'center', gap:10, padding:'7px 0', borderBottom:'1px solid rgba(0,0,0,0.06)', fontSize:11 }}>
       {icon}
       <span style={{ color:'#111111', fontFamily:'var(--font-mono, monospace)', fontSize:11 }}>{job.domain || '—'}</span>
       <span style={{ color:'#555555', fontSize:10, marginLeft:'auto' }}>{fmtRelative(job.completed_at || job.created_at)}</span>
@@ -76,13 +76,13 @@ function AgentCard({ agent, onRefresh }) {
             <span style={{ fontSize:13, fontWeight:600, color:'#111111', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
               {agent.nickname || agent.hostname || 'Unnamed server'}
             </span>
-            {agent.is_sandbox && <span style={{ fontSize:9, color:'#1f5c4e', background:'rgba(239,68,68,0.08)', border:'0.5px solid #F2C4BC', borderRadius:3, padding:'1px 5px', fontWeight:500, flexShrink:0 }}>SANDBOX</span>}
+            {agent.is_sandbox && <span style={{ fontSize:9, color:'#1f5c4e', background:'rgba(239,68,68,0.08)', border:'0.5px solid rgba(154,100,0,0.2)', borderRadius:3, padding:'1px 5px', fontWeight:500, flexShrink:0 }}>SANDBOX</span>}
           </div>
           <div style={{ fontSize:11, color:'#555555', fontFamily:'var(--font-mono, monospace)' }}>
             {agent.ip_address || agent.hostname || '—'}
-            {agent.os && <span style={{ marginLeft:8, color:'#dddddd' }}>·</span>}
+            {agent.os && <span style={{ marginLeft:8, color:'#666666' }}>·</span>}
             {agent.os && <span style={{ marginLeft:8 }}>{agent.os}</span>}
-            {agent.web_server && <span style={{ marginLeft:8, color:'#dddddd' }}>·</span>}
+            {agent.web_server && <span style={{ marginLeft:8, color:'#666666' }}>·</span>}
             {agent.web_server && <span style={{ marginLeft:8 }}>{agent.web_server}</span>}
           </div>
         </div>
@@ -112,7 +112,7 @@ function AgentCard({ agent, onRefresh }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'rgba(0,0,0,0.02)', padding:'16px 18px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:24 }}>
+        <div style={{ borderTop:'1px solid var(--v2-border)', background:'rgba(0,0,0,0.02)', padding:'16px 18px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:24 }}>
           {/* Server info */}
           <div>
             <div style={{ fontSize:10, fontWeight:500, color:'#555555', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:10 }}>Server Info</div>
@@ -125,7 +125,7 @@ function AgentCard({ agent, onRefresh }) {
               ['Agent Version', agent.agent_version ? `v${agent.agent_version}` : null],
               ['Connected', fmtRelative(agent.created_at)],
             ].map(([k, v]) => v ? (
-              <div key={k} style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', fontSize:12, borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+              <div key={k} style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', fontSize:12, borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
                 <span style={{ color:'#555555' }}>{k}</span>
                 <span style={{ color:'#111111', fontFamily:'var(--font-mono, monospace)', fontSize:11 }}>{v}</span>
               </div>
@@ -134,11 +134,11 @@ function AgentCard({ agent, onRefresh }) {
             {/* Agent token */}
             <div style={{ marginTop:12 }}>
               <div style={{ fontSize:10, fontWeight:500, color:'#555555', textTransform:'uppercase', letterSpacing:'.5px', marginBottom:6 }}>Agent Token</div>
-              <div style={{ display:'flex', alignItems:'center', gap:8, background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)', borderRadius:6, padding:'8px 10px' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8, background:'var(--v2-surface)', border:'1px solid var(--v2-border)', borderRadius:6, padding:'8px 10px' }}>
                 <code style={{ fontSize:10, color:'#333333', fontFamily:'var(--font-mono, monospace)', flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                   {agent.agent_token ? `${agent.agent_token.substring(0,24)}…` : '—'}
                 </code>
-                <button onClick={copyToken} style={{ flexShrink:0, fontSize:10, fontWeight:500, color:'#555555', padding:'4px 8px', border:'0.5px solid var(--v2-border)', borderRadius:4, background:'var(--v2-surface)', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
+                <button onClick={copyToken} style={{ flexShrink:0, fontSize:10, fontWeight:500, color:'#555555', padding:'4px 8px', border:'1px solid var(--v2-border)', borderRadius:4, background:'var(--v2-surface)', cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, fontFamily:'inherit' }}>
                   {copied ? <><Check size={10}/> Copied</> : <><Copy size={10}/> Copy</>}
                 </button>
               </div>
@@ -188,26 +188,26 @@ function InstallModal({ onClose }) {
   return (
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.45)', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
       <div style={{ background:'#ffffff', borderRadius:14, width:'100%', maxWidth:540, boxShadow:'0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08)', overflow:'hidden', border:'1px solid rgba(0,0,0,0.08)' }}>
-        <div style={{ padding:'18px 22px', borderBottom:'0.5px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div style={{ padding:'18px 22px', borderBottom:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div>
             <div style={{ fontSize:14, fontWeight:500, color:'#111111' }}>Install SSLVault Agent</div>
             <div style={{ fontSize:11, color:'#555555', marginTop:2 }}>Run on your VPS or cPanel server (Linux)</div>
           </div>
-          <button onClick={onClose} style={{ width:28, height:28, border:'0.5px solid var(--v2-border)', borderRadius:6, background:'var(--v2-surface)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'#333333', fontSize:16 }}>×</button>
+          <button onClick={onClose} style={{ width:28, height:28, border:'1px solid var(--v2-border)', borderRadius:6, background:'var(--v2-surface)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'#333333', fontSize:16 }}>×</button>
         </div>
         <div style={{ padding:'20px 22px' }}>
           <div style={{ fontSize:11, fontWeight:500, color:'#333333', marginBottom:8 }}>1. Install the agent</div>
           <CmdBlock cmd={cmd1} id="install"/>
           <div style={{ fontSize:11, fontWeight:500, color:'#333333', margin:'14px 0 8px' }}>2. Verify it's running</div>
           <CmdBlock cmd={cmd2} id="verify"/>
-          <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:6, padding:'10px 12px', marginTop:14 }}>
+          <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:6, padding:'10px 12px', marginTop:14 }}>
             <div style={{ fontSize:11, color:'#111111', lineHeight:1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-renews certificates, and reports its status here. It will appear in this list within 1–2 minutes of installation.
             </div>
           </div>
         </div>
-        <div style={{ padding:'12px 22px', borderTop:'0.5px solid var(--v2-border)', display:'flex', justifyContent:'flex-end' }}>
-          <button onClick={onClose} style={{ fontSize:12, fontWeight:500, padding:'8px 16px', borderRadius:6, border:'0.5px solid var(--v2-border)', background:'var(--v2-surface)', cursor:'pointer', fontFamily:'inherit', color:'#111111' }}>Close</button>
+        <div style={{ padding:'12px 22px', borderTop:'1px solid var(--v2-border)', display:'flex', justifyContent:'flex-end' }}>
+          <button onClick={onClose} style={{ fontSize:12, fontWeight:500, padding:'8px 16px', borderRadius:6, border:'1px solid var(--v2-border)', background:'var(--v2-surface)', cursor:'pointer', fontFamily:'inherit', color:'#111111' }}>Close</button>
         </div>
       </div>
     </div>
@@ -259,7 +259,7 @@ export default function ServersPage({ user }) {
           <div style={{ fontSize:11, color:'#555555' }}>Persistent agents auto-renew certificates every 5 minutes</div>
         </div>
         <div style={{ display:'flex', gap:8, flexShrink:0 }}>
-          <button onClick={refresh} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'var(--v2-surface)', color:'#333333', border:'0.5px solid var(--v2-border)', padding:'7px 12px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={refresh} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'var(--v2-surface)', color:'#333333', border:'1px solid var(--v2-border)', padding:'7px 12px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>
             <RefreshCw size={12} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }}/> Refresh
           </button>
           <button onClick={() => setShowInstall(true)} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#f4f1ec', color:'#111111', border:'none', padding:'7px 14px', borderRadius:6, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}>

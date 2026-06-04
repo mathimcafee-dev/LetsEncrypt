@@ -29,7 +29,7 @@ export default function Terms({ nav }) {
       {/* TLDR CARD */}
       <section style={{position:'relative',padding:'30px 0 50px'}}>
         <div style={{maxWidth:820,margin:'0 auto',padding:'0 24px'}}>
-          <div style={{background:'linear-gradient(135deg,#fde8e4,#fef9c3)',borderRadius:18,padding:'min(28px,5vw) min(32px,4vw)',border:'1.5px solid #F2C4BC',display:'flex',gap:18,alignItems:'flex-start'}}>
+          <div style={{background:'linear-gradient(135deg,rgba(154,100,0,0.07),#fef9c3)',borderRadius:18,padding:'min(28px,5vw) min(32px,4vw)',border:'1.5px solid rgba(154,100,0,0.2)',display:'flex',gap:18,alignItems:'flex-start'}}>
             <div style={{width:42,height:42,borderRadius:11,background:'#f4f1ec',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(217,119,6,0.3)'}}>
               <AlertTriangle size={20} color='#000000'/>
             </div>

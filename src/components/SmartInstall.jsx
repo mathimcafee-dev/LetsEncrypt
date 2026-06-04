@@ -13,7 +13,7 @@ function CopyBtn({ text }) {
   return (
     <button onClick={() => { navigator.clipboard.writeText(text).catch(()=>{}); setOk(true); setTimeout(()=>setOk(false),2000) }}
       style={{ background:'none', border:'0.5px solid #cccccc', borderRadius:5, cursor:'pointer',
-        color: ok ? '#16a068' : 'rgba(240,237,232,0.45)', display:'flex', alignItems:'center',
+        color: ok ? '#16a068' : '#777777', display:'flex', alignItems:'center',
         gap:4, fontSize:11, padding:'3px 8px', fontFamily:'inherit', flexShrink:0 }}>
       {ok ? <><Check size={11}/> Copied</> : <><Copy size={11}/> Copy</>}
     </button>

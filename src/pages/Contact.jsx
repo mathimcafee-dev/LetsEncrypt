@@ -56,7 +56,7 @@ export default function Contact({ nav }) {
               Compose email <ArrowRight size={13} />
             </a>
           </div>
-          <div style={{ marginTop:28, paddingTop:20, borderTop:'0.5px solid var(--v2-border)',
+          <div style={{ marginTop:28, paddingTop:20, borderTop:'1px solid var(--v2-border)',
                         display:'flex', justifyContent:'center', gap:28, flexWrap:'wrap' }}>
             {[
               { icon:<Clock size={12} />,  label:'Reply within 1–2 days' },
@@ -90,7 +90,7 @@ export default function Contact({ nav }) {
             ].map(({ icon:Icon, label, body, color }) => (
               <div key={label} className="v2-card" style={{ padding:'20px 22px', display:'flex', gap:14, alignItems:'flex-start' }}>
                 <div style={{ width:32, height:32, borderRadius:'var(--v2-r-md)',
-                              background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
+                              background:'var(--v2-surface-3)', border:'1px solid var(--v2-border)',
                               display:'flex', alignItems:'center', justifyContent:'center',
                               flexShrink:0, color }}>
                   <Icon size={14} />
@@ -119,7 +119,7 @@ export default function Contact({ nav }) {
 
         {/* ── OTHER CHANNELS ────────────────────────────────────────── */}
         <div className="v2-card" style={{ overflow:'hidden' }}>
-          <div style={{ padding:'16px 20px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
+          <div style={{ padding:'16px 20px', borderBottom:'1px solid rgba(0,0,0,0.06)',
                         fontSize:12, fontWeight:600, color:'#111111' }}>
             Other ways to reach us
           </div>
@@ -134,7 +134,7 @@ export default function Contact({ nav }) {
               cta:'Browse docs' },
           ].map(({ icon, label, sub, href, action, cta }) => (
             <div key={label} style={{ display:'flex', alignItems:'center', gap:14,
-                                       padding:'14px 20px', borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+                                       padding:'14px 20px', borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
               <div className="v2-icontile">{icon}</div>
               <div style={{ flex:1, minWidth:0 }}>
                 <div style={{ fontSize:13, fontWeight:600, color:'#111111' }}>{label}</div>

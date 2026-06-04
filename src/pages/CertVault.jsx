@@ -140,7 +140,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
         animation:'modalIn .2s cubic-bezier(.16,1,.3,1)' }}>
 
         {/* Header */}
-        <div style={{ padding:'16px 20px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
+        <div style={{ padding:'16px 20px', borderBottom:'1px solid rgba(0,0,0,0.06)',
           display:'flex', alignItems:'center', gap:10 }}>
           <div style={{ width:34, height:34, borderRadius:9,
             background: step==='auth' ? 'transparent' : 'transparent',
@@ -203,7 +203,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
           {/* ── STEP 1: Password gate ── */}
           {step === 'auth' && (
             <form onSubmit={verifyPassword}>
-              <div style={{ background:'var(--v2-surface-3)', border:'0.5px solid var(--v2-border)',
+              <div style={{ background:'var(--v2-surface-3)', border:'1px solid var(--v2-border)',
                 borderRadius:9, padding:'12px 14px', marginBottom:14, fontSize:11,
                 color:'#333333', lineHeight:1.6 }}>
                 <Lock size={11} style={{ verticalAlign:'-1px', marginRight:5, color:'#111111' }}/>
@@ -281,7 +281,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
                 </div>
               ) : (
                 <>
-                  <div style={{ background:'rgba(239,68,68,0.08)', border:'0.5px solid #F2C4BC', borderRadius:8,
+                  <div style={{ background:'rgba(239,68,68,0.08)', border:'0.5px solid rgba(154,100,0,0.2)', borderRadius:8,
                     padding:'9px 12px', marginBottom:12, fontSize:11, color:'#1f5c4e',
                     display:'flex', alignItems:'center', gap:7 }}>
                     <AlertTriangle size={11} style={{ flexShrink:0 }}/>
@@ -343,7 +343,7 @@ function AuditRow({ entry }) {
   }
   return (
     <div style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px',
-      borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:12 }}>
+      borderBottom:'1px solid rgba(0,0,0,0.06)', fontSize:12 }}>
       <div style={{ width:28, height:28, borderRadius:6, flexShrink:0,
         background:`${actionColors[entry.action] || '#aaaaaa'}12`,
         display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -472,7 +472,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
 
       {/* ── Expanded panel ── */}
       {open && (
-        <div style={{ borderTop:'0.5px solid rgba(0,0,0,0.05)', padding:'16px 16px 16px 20px' }}>
+        <div style={{ borderTop:'1px solid rgba(0,0,0,0.05)', padding:'16px 16px 16px 20px' }}>
 
           {/* Expiry warning */}
           {isExpiringSoon && keyEntry.status === 'active' && (
@@ -484,7 +484,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
           )}
 
           {/* Entropy visualisation */}
-          <div style={{ background:'#f4f1ec', border:'0.5px solid rgba(0,0,0,0.06)',
+          <div style={{ background:'#f4f1ec', border:'1px solid rgba(0,0,0,0.06)',
             borderRadius:8, padding:'10px 14px', display:'flex', alignItems:'center',
             gap:12, marginBottom:12 }}>
             <Lock size={13} color="#b0a8a0" style={{ flexShrink:0 }}/>
@@ -523,7 +523,7 @@ function KeyCard({ keyEntry, onRotate, rotating, onReveal, onViewAudit }) {
               { label:'Key size',      value: `${keyEntry.key_size || 2048} bit` },
             ].map(({ label, value }) => (
               <div key={label} style={{ background:'rgba(0,0,0,0.03)',
-                borderRadius:8, padding:'9px 12px', border:'0.5px solid rgba(0,0,0,0.05)' }}>
+                borderRadius:8, padding:'9px 12px', border:'1px solid rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize:9, fontWeight:700, color:'#888888',
                   textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:4 }}>{label}</div>
                 <div style={{ fontSize:13, fontWeight:700, color:'#111111' }}>{String(value)}</div>
@@ -762,7 +762,7 @@ export default function CertVault({ nav }) {
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <h1 className="v2-h1">CertVault Vault</h1>
                 <span style={{ fontSize:9, fontWeight:700, color:'#111111',
-                  background:'rgba(239,68,68,0.08)', border:'0.5px solid #F2C4BC',
+                  background:'rgba(239,68,68,0.08)', border:'0.5px solid rgba(154,100,0,0.2)',
                   borderRadius:4, padding:'2px 7px', textTransform:'uppercase',
                   letterSpacing:'0.4px' }}>PRO</span>
               </div>
@@ -820,7 +820,7 @@ export default function CertVault({ nav }) {
           </div>
         )}
         {rotateSuccess && (
-          <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:8,
+          <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8,
             padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center',
             gap:8, fontSize:12, color:'#111111' }}>
             <CheckCircle size={13} style={{ flexShrink:0 }}/>
@@ -832,7 +832,7 @@ export default function CertVault({ nav }) {
         )}
 
         {/* Tabs */}
-        <div style={{ display:'flex', gap:1, borderBottom:'0.5px solid rgba(0,0,0,0.06)',
+        <div style={{ display:'flex', gap:1, borderBottom:'1px solid rgba(0,0,0,0.06)',
           marginBottom:20 }}>
           {[
             { key:'vault',    label:'Vault',     count:activeKeys.length   },
@@ -910,7 +910,7 @@ export default function CertVault({ nav }) {
                 </div>
               ) : (
                 <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                  <div style={{ background:'rgba(239,68,68,0.08)', border:'0.5px solid #F2C4BC', borderRadius:8,
+                  <div style={{ background:'rgba(239,68,68,0.08)', border:'0.5px solid rgba(154,100,0,0.2)', borderRadius:8,
                     padding:'10px 14px', fontSize:11, color:'#1f5c4e', marginBottom:4 }}>
                     <AlertTriangle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
                     These keys are retained for 30 days as rollback, then permanently destroyed.
@@ -929,7 +929,7 @@ export default function CertVault({ nav }) {
             {/* AUDIT TAB */}
             {tab === 'audit' && (
               <div className="v2-card" style={{ overflow:'hidden' }}>
-                <div style={{ padding:'10px 16px', borderBottom:'0.5px solid rgba(0,0,0,0.06)',
+                <div style={{ padding:'10px 16px', borderBottom:'1px solid rgba(0,0,0,0.06)',
                   display:'flex', alignItems:'center', gap:10 }}>
                   <div style={{ flex:1, fontSize:12, color:'#333333', fontWeight:500 }}>
                     {auditFilter
@@ -966,7 +966,7 @@ export default function CertVault({ nav }) {
             display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
             <div style={{ background:'var(--v2-surface)', borderRadius:12, width:'100%',
               maxWidth:440, boxShadow:'0 20px 60px rgba(0,0,0,0.25)', overflow:'hidden' }}>
-              <div style={{ padding:'16px 20px', borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+              <div style={{ padding:'16px 20px', borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
                 <div style={{ fontSize:14, fontWeight:500, color:'#111111' }}>
                   Rotate key for {rotateConfirm.domain}?
                 </div>
@@ -975,7 +975,7 @@ export default function CertVault({ nav }) {
                 </div>
               </div>
               <div style={{ padding:'16px 20px' }}>
-                <div style={{ background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:8,
+                <div style={{ background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8,
                   padding:'10px 12px', marginBottom:14, fontSize:11, color:'#333333' }}>
                   <CheckCircle size={11} style={{ verticalAlign:'-1px', marginRight:5 }}/>
                   <strong>Zero downtime</strong> — new cert installs before old key is archived.
@@ -986,7 +986,7 @@ export default function CertVault({ nav }) {
                   The old key will be archived immediately after the new key is stored in the vault.
                 </div>
               </div>
-              <div style={{ padding:'12px 20px', borderTop:'0.5px solid var(--v2-border)',
+              <div style={{ padding:'12px 20px', borderTop:'1px solid var(--v2-border)',
                 display:'flex', gap:8, justifyContent:'flex-end' }}>
                 <button className="v2-btn v2-btn-sm" onClick={() => setRotateConfirm(null)}>
                   Cancel

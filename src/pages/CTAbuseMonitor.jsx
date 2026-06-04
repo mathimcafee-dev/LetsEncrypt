@@ -81,7 +81,7 @@ function DetailPanel({ shadow, status, onDismiss, onMark, onClose, dismissing })
           { label: 'Detected',      val: timeAgo(shadow.found_at) },
           { label: 'Source',        val: shadow.ct_source || 'CT log scan' },
         ].map(({ label, val }) => (
-          <div key={label} style={{ padding: '6px 0', borderBottom: '0.5px solid var(--v2-border)',
+          <div key={label} style={{ padding: '6px 0', borderBottom: '1px solid var(--v2-border)',
             display: 'flex', gap: 8, alignItems: 'flex-start' }}>
             <span style={{ fontSize:11, color: '#888888', minWidth: 100, flexShrink: 0 }}>{label}</span>
             <span style={{ fontSize:11, color: '#111111', fontWeight: 500,
@@ -267,7 +267,7 @@ export default function CTAbuseMonitor({ user }) {
         )}
 
         {flagged === 0 && !loading && shadows.length > 0 && (
-          <div style={{ background: 'transparent', border: '0.5px solid rgba(31,92,78,0.2)', borderRadius: 10,
+          <div style={{ background: 'transparent', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 10,
             padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
             <Shield size={15} color="#16a34a" style={{ flexShrink: 0 }}/>
             <div style={{ fontSize:13, color: '#111111', fontWeight: 500 }}>
@@ -296,7 +296,7 @@ export default function CTAbuseMonitor({ user }) {
 
         {/* Filter + search */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', gap: 1, border: '0.5px solid var(--v2-border)', borderRadius: 8, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', gap: 1, border: '1px solid var(--v2-border)', borderRadius: 8, overflow: 'hidden' }}>
             {[
               { key: 'all',        label: 'All' },
               { key: 'flagged',    label: 'Flagged' },
@@ -352,7 +352,7 @@ export default function CTAbuseMonitor({ user }) {
               {/* Table head */}
               <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 120px 100px 90px 90px 80px',
                 padding: '8px 16px', background: 'var(--v2-surface-3)',
-                borderBottom: '0.5px solid var(--v2-border)' }}>
+                borderBottom: '1px solid var(--v2-border)' }}>
                 {['Domain', 'Issuing CA', 'Org', 'Issued', 'Expires', 'Status'].map(h => (
                   <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
                     textTransform: 'uppercase', letterSpacing: '0.3px' }}>{h}</div>
@@ -369,7 +369,7 @@ export default function CTAbuseMonitor({ user }) {
                     style={{ display: 'grid', gridTemplateColumns: '1.8fr 120px 100px 90px 90px 80px',
                       padding: '10px 16px', cursor: 'pointer', alignItems: 'center',
                       background: isSelected ? cfg.bg : 'var(--v2-bg)',
-                      borderBottom: isLast ? 'none' : '0.5px solid var(--v2-border)',
+                      borderBottom: isLast ? 'none' : '1px solid var(--v2-border)',
                       borderLeft: `3px solid ${isSelected || s._status !== 'known' ? cfg.leftBorder : 'transparent'}`,
                       transition: 'background .12s' }}>
 
@@ -418,7 +418,7 @@ export default function CTAbuseMonitor({ user }) {
           <button onClick={() => setShowWatched(v => !v)}
             style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer',
-              borderBottom: showWatched ? '0.5px solid var(--v2-border)' : 'none' }}>
+              borderBottom: showWatched ? '1px solid var(--v2-border)' : 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Shield size={14} color="var(--v2-accent)"/>
               <span style={{ fontSize:13, fontWeight: 500, color: '#111111' }}>
@@ -468,7 +468,7 @@ export default function CTAbuseMonitor({ user }) {
 
                   return (
                     <div key={w.id} style={{ display: 'flex', alignItems: 'center', gap: 12,
-                      padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)' }}>
+                      padding: '8px 0', borderBottom: '1px solid var(--v2-border)' }}>
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor,
                         flexShrink: 0, animation: !hasFlagged && !hasSuspicious ? 'ctpulse 2.5s ease infinite' : 'none' }}/>
                       <div style={{ flex: 1, minWidth: 0 }}>

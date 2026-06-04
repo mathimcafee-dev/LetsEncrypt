@@ -105,10 +105,10 @@ export default function VulnScanner({ domain, session }) {
     <div style={{ marginTop:12 }}>
       {/* Trigger row */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-        padding:'10px 14px', background:'rgba(30,0,0,0.4)', border:'0.5px solid rgba(15,23,42,0.08)',
+        padding:'10px 14px', background:'rgba(31,92,78,0.05)', border:'0.5px solid rgba(15,23,42,0.08)',
         borderRadius: result ? '8px 8px 0 0' : 8 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <Bug size={14} color="rgba(240,237,232,0.45)"/>
+          <Bug size={14} color="#777777"/>
           <span style={{ fontSize:13, fontWeight:500, color:'#333333' }}>SSL Vulnerability Scan</span>
           {result && <GradeBadge grade={result.grade}/>}
         </div>

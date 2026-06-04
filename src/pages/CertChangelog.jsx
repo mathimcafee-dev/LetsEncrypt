@@ -165,7 +165,7 @@ export default function CertChangelog({ user }) {
           </div>
           <select value={filter} onChange={e => setFilter(e.target.value)}
             style={{ fontSize:12, padding: '0 10px', borderRadius: 8,
-              border: '0.5px solid var(--v2-border)', background:'rgba(0,0,0,0.02)', color: '#111111' }}>
+              border: '1px solid var(--v2-border)', background:'rgba(0,0,0,0.02)', color: '#111111' }}>
             {eventTypes.map(t => (
               <option key={t} value={t}>{t === 'all' ? 'All events' : t.replace(/_/g, ' ')}</option>
             ))}
@@ -255,7 +255,7 @@ export default function CertChangelog({ user }) {
                       {/* Meta details */}
                       {isExp && hasMeta && (
                         <div style={{ marginTop: 6, background: 'var(--v2-surface-3)',
-                          border: '0.5px solid var(--v2-border)', borderRadius: 6,
+                          border: '1px solid var(--v2-border)', borderRadius: 6,
                           padding: '8px 10px', fontSize:11, fontFamily: 'monospace',
                           color: '#333333' }}>
                           {Object.entries(ev.meta).map(([k, v]) => (

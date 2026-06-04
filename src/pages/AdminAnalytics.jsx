@@ -116,21 +116,21 @@ export default function AdminAnalytics({ user }) {
           {reqLoading ? (
             <div style={{padding:'20px',textAlign:'center',color:'#888888',fontSize:13}}>Loading…</div>
           ) : requests.filter(r=>r.status==='pending').length === 0 ? (
-            <div style={{padding:'16px',background:'var(--v2-surface-2)',borderRadius:8,border:'0.5px solid var(--v2-border)',
+            <div style={{padding:'16px',background:'var(--v2-surface-2)',borderRadius:8,border:'1px solid var(--v2-border)',
               textAlign:'center',color:'#888888',fontSize:13}}>
               No pending signup requests
             </div>
           ) : (
-            <div style={{border:'0.5px solid var(--v2-border)',borderRadius:8,overflowX:'auto'}}>
+            <div style={{border:'1px solid var(--v2-border)',borderRadius:8,overflowX:'auto'}}>
               <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:640,padding:'8px 16px',
-                background:'var(--v2-surface-2)',borderBottom:'0.5px solid rgba(0,0,0,0.06)'}}>
+                background:'var(--v2-surface-2)',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
                 {['Email','Status','Requested','Actions'].map(h=>(
                   <div key={h} style={{fontSize:10,fontWeight:700,color:'#888888',textTransform:'uppercase',letterSpacing:'0.4px'}}>{h}</div>
                 ))}
               </div>
               {requests.map((req,i)=>(
                 <div key={req.id} style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 160px',minWidth:640,
-                  padding:'10px 16px',borderBottom:i<requests.length-1?'0.5px solid var(--v2-border)':'none',
+                  padding:'10px 16px',borderBottom:i<requests.length-1?'1px solid var(--v2-border)':'none',
                   background:i%2===0?'transparent':'var(--v2-surface-2)',alignItems:'center'}}>
                   <div style={{fontSize:12,fontWeight:500,color:'#111111'}}>{req.email}</div>
                   <div>
@@ -147,7 +147,7 @@ export default function AdminAnalytics({ user }) {
                   <div style={{display:'flex',gap:6}}>
                     {req.status==='pending' && (<>
                       <button onClick={()=>handleApprove(req.user_id)}
-                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'0.5px solid rgba(31,92,78,0.2)',
+                        style={{fontSize:11,padding:'4px 10px',borderRadius:6,border:'1px solid rgba(31,92,78,0.2)',
                           background:'transparent',color:'#16a068',cursor:'pointer',fontWeight:600}}>
                         ✓ Approve
                       </button>

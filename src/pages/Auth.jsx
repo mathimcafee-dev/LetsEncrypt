@@ -175,7 +175,7 @@ export default function Auth({ nav }) {
         {/* Left: value prop */}
         <div>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8,
-                        background:'rgba(31,92,78,0.09)', border:'0.5px solid rgba(31,92,78,0.2)',
+                        background:'rgba(31,92,78,0.09)', border:'1px solid rgba(31,92,78,0.2)',
                         borderRadius:100, padding:'4px 14px', marginBottom:24 }}>
             <span className="v2-pulse" />
             <span style={{ fontSize:11, fontWeight:500, color:'#1f5c4e' }}>Free · Open · Trusted</span>
@@ -191,7 +191,7 @@ export default function Auth({ nav }) {
             {perks.map(({ icon, color, title, desc }) => (
               <div key={title} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
                 <div style={{ width:32, height:32, borderRadius:'var(--v2-r-md)',
-                               background:'var(--v2-surface)', border:'0.5px solid var(--v2-border)',
+                               background:'var(--v2-surface)', border:'1px solid var(--v2-border)',
                                display:'flex', alignItems:'center', justifyContent:'center',
                                flexShrink:0, color }}>{icon}</div>
                 <div>
@@ -201,7 +201,7 @@ export default function Auth({ nav }) {
               </div>
             ))}
           </div>
-          <div style={{ marginTop:36, paddingTop:24, borderTop:'0.5px solid var(--v2-border)',
+          <div style={{ marginTop:36, paddingTop:24, borderTop:'1px solid var(--v2-border)',
                         fontSize:11, color:'#555555', lineHeight:1.6 }}>
             Powered by RapidSSL · DigiCert trust chain · RFC 8555 ACME
           </div>

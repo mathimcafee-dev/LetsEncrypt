@@ -12,7 +12,7 @@ function CopyBtn({ text }) {
   }
   return (
     <button onClick={copy} style={{ background:'none', border:'0.5px solid #e8edf2', borderRadius:5,
-      cursor:'pointer', color: ok ? '#1f5c4e' : 'rgba(240,237,232,0.45)', display:'flex', alignItems:'center',
+      cursor:'pointer', color: ok ? '#1f5c4e' : '#777777', display:'flex', alignItems:'center',
       gap:4, fontSize:11, padding:'3px 8px', fontFamily:'inherit' }}>
       {ok ? <><Check size={11}/> Copied</> : <><Copy size={11}/> Copy</>}
     </button>
@@ -376,7 +376,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
                 </div>
               ) : (
                 <div>
-                  <div style={{ background:'rgba(31,92,78,0.08)', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:8,
+                  <div style={{ background:'rgba(31,92,78,0.08)', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8,
                     padding:'12px 14px', marginBottom:14, fontSize:12, color:'#1f5c4e', lineHeight:1.7 }}>
                     No agent connected yet. Run this on your server to install the SSLVault agent.
                     Once connected, cert installs and renewals are fully automatic.
@@ -434,7 +434,7 @@ export default function AgentInstall({ cert, userId, onClose, onOpenCpanel }) {
 
           {hostType === 'shared' && (
             <div>
-              <div style={{ background:'rgba(31,92,78,0.08)', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:8,
+              <div style={{ background:'rgba(31,92,78,0.08)', border:'1px solid rgba(31,92,78,0.2)', borderRadius:8,
                 padding:'12px 14px', marginBottom:16, fontSize:12, color:'#1f5c4e', lineHeight:1.7 }}>
                 SSLVault installs directly via cPanel's API — no PHP file, no upload, nothing in public_html.
                 Your credentials are encrypted in Supabase Vault and never exposed.

@@ -55,22 +55,22 @@ export default function ETSIIntelligence({ nav }) {
         .ei-stats{display:flex;gap:28px;flex-wrap:wrap}
         .ei-sn{font-size:22px;font-weight:600;color:#ffffff;line-height:1}
         .ei-sl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
-        .ei-tabs{background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
+        .ei-tabs{background:var(--v2-surface-2);border-bottom:1px solid var(--v2-border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
         .ei-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:20px;cursor:pointer;margin-bottom:-0.5px;white-space:nowrap}
         .ei-tab:hover{color:var(--v2-text)}
         .ei-tab.on{color:var(--v2-text);border-bottom-color:var(--v2-text)}
         .ei-body{padding:20px clamp(12px,24px,24px);max-width:min(900px,100%)}
         .ei-section{margin-bottom:28px}
-        .ei-sh{font-size:13px;font-weight:600;color:var(--v2-text);margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--v2-border)}
+        .ei-sh{font-size:13px;font-weight:600;color:var(--v2-text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--v2-border)}
         .ei-p{font-size:13px;color:var(--v2-text-2);line-height:1.8;margin-bottom:10px}
-        .std-card{background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px;margin-bottom:10px}
+        .std-card{background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px;margin-bottom:10px}
         .tl-row{display:flex;gap:12px;margin-bottom:14px}
         .tl-yr{font-family:${MONO};font-size:10px;font-weight:700;color:var(--v2-text-3);min-width:38px;text-align:right;padding-top:3px;flex-shrink:0}
         .tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
         .tl-spine{display:flex;flex-direction:column;align-items:center;width:16px;flex-shrink:0}
         .tl-line{width:1px;background:var(--v2-border);flex:1;min-height:14px;margin-top:3px}
-        .init-card{background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px;margin-bottom:10px}
-        .link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--v2-border)}
+        .init-card{background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px;margin-bottom:10px}
+        .link-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--v2-border)}
         .link-row:last-child{border-bottom:none}
       
         @media(max-width:min(767px,100%)){
@@ -126,7 +126,7 @@ export default function ETSIIntelligence({ nav }) {
               <div className="ei-sh">Headquarters and governance</div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'6px 16px' }}>
                 {[['Founded','1988'],['HQ','Sophia Antipolis, France'],['Members','900+ organisations'],['Funding','EU Commission + membership fees'],['Technical body','ESI Technical Committee (TC ESI)'],['Region','Europe (standards adopted globally)'],['Chair','Various TC ESI chairs'],['Secretariat','ETSI Secretariat, Sophia Antipolis']].map(([k,v])=>(
-                  <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:12 }}>
+                  <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'1px solid rgba(0,0,0,0.06)', fontSize:12 }}>
                     <span style={{ color:'#888888', minWidth:100, flexShrink:0 }}>{k}</span>
                     <span style={{ color:'#111111', fontWeight:500 }}>{v}</span>
                   </div>

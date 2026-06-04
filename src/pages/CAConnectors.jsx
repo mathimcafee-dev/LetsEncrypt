@@ -286,7 +286,7 @@ export default function CAConnectors({ nav }) {
 
         {/* Expiry alert */}
         {expiring30.length > 0 && (
-          <div style={{ background: 'rgba(239,68,68,0.08)', border: '0.5px solid #F2C4BC', borderRadius: 10,
+          <div style={{ background: 'rgba(239,68,68,0.08)', border: '0.5px solid rgba(154,100,0,0.2)', borderRadius: 10,
             padding: '12px 16px', marginBottom: 20, display: 'flex', gap: 10, alignItems: 'center' }}>
             <AlertTriangle size={15} style={{ color: '#111111', flexShrink: 0 }}/>
             <div style={{ fontSize:12, color: '#1f5c4e' }}>
@@ -306,7 +306,7 @@ export default function CAConnectors({ nav }) {
             return (
               <div key={conn.id} className="v2-card" style={{ overflow: 'hidden',
                 borderColor: conn.status === 'active' ? `${def.color || '#444444'}30` : 'rgba(0,0,0,0.1)' }}>
-                <div style={{ padding: '13px 14px', borderBottom: '0.5px solid var(--v2-border)',
+                <div style={{ padding: '13px 14px', borderBottom: '1px solid var(--v2-border)',
                   display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 36, height: 36, borderRadius: 8, background: def.bg || '#000000',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -439,7 +439,7 @@ export default function CAConnectors({ nav }) {
         </div>
         <div className="v2-card" style={{ overflow: 'hidden', padding: 0 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-            padding: '9px 16px', borderBottom: '0.5px solid var(--v2-border)',
+            padding: '9px 16px', borderBottom: '1px solid var(--v2-border)',
             background: 'var(--v2-surface-3)' }}>
             {['Domain / SANs', 'CA source', 'Issuer', 'Expires', 'Status', ''].map(h => (
               <div key={h} style={{ fontSize:11, fontWeight: 500, color: '#888888',
@@ -466,7 +466,7 @@ export default function CAConnectors({ nav }) {
             </div>
           ) : certs.map((cert, i) => (
             <div key={cert.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-              padding: '10px 16px', borderBottom: i < certs.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
+              padding: '10px 16px', borderBottom: i < certs.length - 1 ? '1px solid var(--v2-border)' : 'none',
               alignItems: 'center', transition: 'background .12s' }}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-surface-3)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
@@ -492,7 +492,7 @@ export default function CAConnectors({ nav }) {
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 4,
                     fontSize:10, fontWeight: 600, padding: '4px 9px', borderRadius: 6,
                     background: 'transparent', color: '#111111',
-                    border: '0.5px solid rgba(31,92,78,0.2)', cursor: 'pointer',
+                    border: '1px solid rgba(31,92,78,0.2)', cursor: 'pointer',
                     fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'all .15s' }}
                   onMouseEnter={e => { e.currentTarget.style.background='#111111'; e.currentTarget.style.color='#000000' }}
                   onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#111111' }}>
@@ -509,12 +509,12 @@ export default function CAConnectors({ nav }) {
             alignItems: 'center', justifyContent: 'center', padding: 20,
             background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}>
             <div style={{ background:'rgba(0,0,0,0.02)', borderRadius: 14, width: '100%', maxWidth: 480,
-              boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '0.5px solid var(--v2-border)' }}>
-              <div style={{ padding: '18px 22px 14px', borderBottom: '0.5px solid var(--v2-border)',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '1px solid var(--v2-border)' }}>
+              <div style={{ padding: '18px 22px 14px', borderBottom: '1px solid var(--v2-border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ fontSize:15, fontWeight: 500 }}>Connect a CA</div>
                 <button onClick={() => setShowAdd(false)} style={{ background: 'none',
-                  border: '0.5px solid var(--v2-border)', borderRadius: 6, cursor: 'pointer',
+                  border: '1px solid var(--v2-border)', borderRadius: 6, cursor: 'pointer',
                   color: '#888888', padding: '4px 6px' }}><X size={14}/></button>
               </div>
               <div style={{ padding: '18px 22px 22px' }}>
@@ -527,7 +527,7 @@ export default function CAConnectors({ nav }) {
                     </div>
                     {Object.entries(CA_DEFS).map(([key, def]) => (
                       <div key={key} onClick={() => { setAddCa(key); setAddLabel(def.name); setAddFields({}); setAddError('') }}
-                        style={{ padding: '14px 16px', borderRadius: 10, border: '0.5px solid var(--v2-border)',
+                        style={{ padding: '14px 16px', borderRadius: 10, border: '1px solid var(--v2-border)',
                           background:'rgba(0,0,0,0.02)', cursor: 'pointer', display: 'flex',
                           alignItems: 'center', gap: 12, transition: 'all .15s' }}
                         onMouseEnter={e => { e.currentTarget.style.borderColor = def.color; e.currentTarget.style.background = def.bg }}
@@ -550,7 +550,7 @@ export default function CAConnectors({ nav }) {
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16,
                       padding: '10px 12px', borderRadius: 8, background: 'var(--v2-surface-3)',
-                      border: '0.5px solid var(--v2-border)' }}>
+                      border: '1px solid var(--v2-border)' }}>
                       <div style={{ width: 30, height: 30, borderRadius: 7,
                         background: CA_DEFS[addCa].bg, display: 'flex', alignItems: 'center',
                         justifyContent: 'center', fontWeight: 700, fontSize:11,
@@ -635,8 +635,8 @@ export default function CAConnectors({ nav }) {
             alignItems: 'center', justifyContent: 'center', padding: 20,
             background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}>
             <div style={{ background:'rgba(0,0,0,0.02)', borderRadius: 14, width: '100%', maxWidth: 480,
-              boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '0.5px solid var(--v2-border)' }}>
-              <div style={{ padding: '18px 22px 14px', borderBottom: '0.5px solid var(--v2-border)',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '1px solid var(--v2-border)' }}>
+              <div style={{ padding: '18px 22px 14px', borderBottom: '1px solid var(--v2-border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ fontSize:15, fontWeight: 500 }}>Import certificate</div>
@@ -645,14 +645,14 @@ export default function CAConnectors({ nav }) {
                   </div>
                 </div>
                 <button onClick={() => setShowImport(false)} style={{ background: 'none',
-                  border: '0.5px solid var(--v2-border)', borderRadius: 6, cursor: 'pointer',
+                  border: '1px solid var(--v2-border)', borderRadius: 6, cursor: 'pointer',
                   color: '#888888', padding: '4px 6px' }}><X size={14}/></button>
               </div>
               <div style={{ padding: '18px 22px 22px' }}>
                 {!importResult ? (
                   <>
                     {/* No private key notice */}
-                    <div style={{ background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)',
+                    <div style={{ background: 'var(--v2-surface-3)', border: '1px solid var(--v2-border)',
                       borderRadius: 8, padding: '10px 12px', marginBottom: 14,
                       display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                       <Info size={13} style={{ color: '#888888', flexShrink: 0, marginTop: 1 }}/>
@@ -700,7 +700,7 @@ export default function CAConnectors({ nav }) {
                           : null],
                       ].filter(([,v]) => v).map(([k,v]) => (
                         <div key={k} style={{ display: 'flex', justifyContent: 'space-between',
-                          padding: '5px 0', borderBottom: '0.5px solid var(--v2-border)', fontSize:12 }}>
+                          padding: '5px 0', borderBottom: '1px solid var(--v2-border)', fontSize:12 }}>
                           <span style={{ color: '#888888' }}>{k}</span>
                           <span style={{ color: '#111111', fontFamily: k === 'Domain' ? 'monospace' : 'inherit',
                             textAlign: 'right', maxWidth: 260, wordBreak: 'break-word' }}>{v}</span>
@@ -739,7 +739,7 @@ export default function CAConnectors({ nav }) {
               alignItems: 'center', justifyContent: 'center', padding: 20,
               background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}>
               <div style={{ background:'rgba(0,0,0,0.02)', borderRadius: 14, width: '100%', maxWidth: 400,
-                padding: '24px', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '0.5px solid var(--v2-border)' }}>
+                padding: '24px', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', border: '1px solid var(--v2-border)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                   <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(31,92,78,0.09)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -803,11 +803,11 @@ export default function CAConnectors({ nav }) {
               background:'rgba(15,23,42,0.55)', backdropFilter:'blur(4px)' }}
               onClick={e => e.target===e.currentTarget && setRenewModal(null)}>
               <div style={{ background:'transparent', borderRadius:16, width:'100%', maxWidth:420,
-                boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid rgba(0,0,0,0.08)',
+                boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'1px solid rgba(0,0,0,0.08)',
                 overflow:'hidden' }}>
 
                 {/* Header */}
-                <div style={{ padding:'18px 20px 14px', borderBottom:'0.5px solid rgba(31,92,78,0.07)',
+                <div style={{ padding:'18px 20px 14px', borderBottom:'1px solid rgba(31,92,78,0.07)',
                   display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <div>
                     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
@@ -821,7 +821,7 @@ export default function CAConnectors({ nav }) {
                       fontFamily:'monospace' }}>{renewModal.domain}</div>
                   </div>
                   <button onClick={() => setRenewModal(null)}
-                    style={{ background:'transparent', border:'0.5px solid rgba(0,0,0,0.08)', borderRadius:7,
+                    style={{ background:'transparent', border:'1px solid rgba(0,0,0,0.08)', borderRadius:7,
                       cursor:'pointer', color:'#888888', padding:'5px', display:'flex' }}>
                     <X size={14}/>
                   </button>
@@ -875,7 +875,7 @@ export default function CAConnectors({ nav }) {
                         Renew via SSLVault
                         <span style={{ marginLeft:7, fontSize:9, fontWeight:700, padding:'2px 7px',
                           borderRadius:20, background:'transparent', color:'#16a068',
-                          border:'0.5px solid rgba(31,92,78,0.2)' }}>Recommended</span>
+                          border:'1px solid rgba(31,92,78,0.2)' }}>Recommended</span>
                       </div>
                       <div style={{ fontSize:11, color:'#333333', lineHeight:1.5 }}>
                         Issue a fresh RapidSSL DV certificate through SSLVault — RapidSSL CA API,
@@ -907,10 +907,10 @@ export default function CAConnectors({ nav }) {
             background:'rgba(15,23,42,0.55)', backdropFilter:'blur(4px)' }}
             onClick={e => e.target===e.currentTarget && !deletingAll && setDelAllModal(false)}>
             <div style={{ background:'transparent', borderRadius:16, width:'100%', maxWidth:400,
-              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'0.5px solid rgba(0,0,0,0.08)', overflow:'hidden' }}>
+              boxShadow:'0 24px 64px rgba(0,0,0,0.18)', border:'1px solid rgba(0,0,0,0.08)', overflow:'hidden' }}>
 
               {/* Header */}
-              <div style={{ padding:'18px 20px 14px', borderBottom:'0.5px solid rgba(31,92,78,0.07)',
+              <div style={{ padding:'18px 20px 14px', borderBottom:'1px solid rgba(31,92,78,0.07)',
                 display:'flex', alignItems:'center', gap:12 }}>
                 <div style={{ width:36, height:36, borderRadius:9, background:'rgba(31,92,78,0.09)', flexShrink:0,
                   display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -950,7 +950,7 @@ export default function CAConnectors({ nav }) {
 
                 <div style={{ display:'flex', gap:8 }}>
                   <button onClick={() => setDelAllModal(false)} disabled={deletingAll}
-                    style={{ flex:1, padding:'9px', border:'0.5px solid rgba(0,0,0,0.08)', borderRadius:8,
+                    style={{ flex:1, padding:'9px', border:'1px solid rgba(0,0,0,0.08)', borderRadius:8,
                       background:'transparent', cursor:'pointer', fontFamily:'inherit', fontSize:12, fontWeight:600 }}>
                     Cancel
                   </button>

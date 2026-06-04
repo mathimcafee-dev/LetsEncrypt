@@ -92,7 +92,7 @@ export default function AlertHistory({ nav }) {
         </div>
 
         {/* Tabs */}
-        <div style={{ display:'flex', gap:1, borderBottom:'0.5px solid rgba(0,0,0,0.06)', marginBottom:20 }}>
+        <div style={{ display:'flex', gap:1, borderBottom:'1px solid rgba(0,0,0,0.06)', marginBottom:20 }}>
           {TABS.map(t => (
             <button key={t.key} onClick={() => { setFilter(t.key); setSelected(null) }}
               style={{ padding:'8px 14px', fontSize:12, fontWeight:filter===t.key?500:400,
@@ -128,7 +128,7 @@ export default function AlertHistory({ nav }) {
               const isSelected = selected?.id === a.id
               return (
                 <div key={a.id} onClick={() => setSelected(a)} style={{ padding:'10px 14px', cursor:'pointer',
-                  borderBottom:'0.5px solid rgba(0,0,0,0.04)',
+                  borderBottom:'1px solid rgba(0,0,0,0.04)',
                   background: isSelected ? 'rgba(31,92,78,0.07)' : 'transparent',
                   borderLeft: isSelected ? '2px solid #2a6b5c' : '2px solid transparent',
                   transition:'all 0.12s' }}>
@@ -182,7 +182,7 @@ export default function AlertHistory({ nav }) {
                   { label:'Cert ID',   value: selected.cert_id ? selected.cert_id.slice(0,20)+'…' : '—', mono: true },
                 ].map(({ label, value, mono }) => (
                   <div key={label} style={{ display:'flex', padding:'8px 0',
-                    borderBottom:'0.5px solid rgba(0,0,0,0.04)' }}>
+                    borderBottom:'1px solid rgba(0,0,0,0.04)' }}>
                     <span style={{ width:80, flexShrink:0, fontSize:11, color:'#888888' }}>{label}</span>
                     <span style={{ fontSize:12, color:'#333333', fontWeight:500,
                       fontFamily: mono ? 'monospace' : 'inherit' }}>{value}</span>

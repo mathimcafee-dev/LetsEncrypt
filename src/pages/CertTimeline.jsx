@@ -425,7 +425,7 @@ export default function CertTimeline({ user }) {
                                   { label: 'Live on server', value: row.is_live_on_server ? '✓ Yes' : '✗ Not confirmed',
                                     color: row.is_live_on_server ? '#16a068' : '#9a6400' },
                                 ].map((m, mi) => (
-                                  <div key={m.label} style={{ paddingRight: 20, marginRight: 20, borderRight: mi < 3 ? '0.5px solid rgba(0,0,0,0.06)' : 'none' }}>
+                                  <div key={m.label} style={{ paddingRight: 20, marginRight: 20, borderRight: mi < 3 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                                     <div style={{ fontSize: 9, fontWeight: 700, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 3 }}>{m.label}</div>
                                     <div style={{ fontSize: 12, color: m.color || '#333333', fontWeight: 600 }}>{m.value}</div>
                                   </div>

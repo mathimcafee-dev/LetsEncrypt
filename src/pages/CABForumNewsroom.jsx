@@ -140,7 +140,7 @@ function BallotRow({ b, onClick }) {
   return (
     <div onClick={() => onClick(b)} style={{
       cursor:'pointer', padding:'12px 16px',
-      borderBottom:'0.5px solid rgba(0,0,0,0.06)',
+      borderBottom:'1px solid rgba(0,0,0,0.06)',
       transition:'background .1s',
     }}
     onMouseEnter={e => e.currentTarget.style.background='var(--v2-hover)'}
@@ -257,7 +257,7 @@ export default function CABForumNewsroom({ nav }) {
     <div className="v2-page">
       <style>{`
         .cabf-page { font-family: ${S.font} }
-        .sync-bar { background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:7px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--v2-text-2);gap:12px;flex-wrap:wrap }
+        .sync-bar { background:var(--v2-surface-2);border-bottom:1px solid var(--v2-border);padding:7px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--v2-text-2);gap:12px;flex-wrap:wrap }
         .live-dot { display:inline-block;width:6px;height:6px;border-radius:50%;background:#22c55e;margin-right:5px;vertical-align:middle;animation:blink 2.4s infinite }
         @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
         .hero-band { background:#1f5c4e;padding:32px 24px 28px;color:#ffffff }
@@ -268,29 +268,29 @@ export default function CABForumNewsroom({ nav }) {
         .hero-stats { display:flex;gap:28px;flex-wrap:wrap }
         .hstat-n { font-size:22px;font-weight:600;color:#ffffff;font-variant-numeric:tabular-nums;line-height:1 }
         .hstat-l { font-size:10px;color:rgba(255,255,255,.4);margin-top:3px;letter-spacing:.05em;text-transform:uppercase }
-        .compliance-alert { background:var(--v2-amber-bg);border-bottom:0.5px solid var(--v2-amber-border);padding:9px 24px;display:flex;align-items:center;gap:12px;font-size:12px;flex-wrap:wrap }
+        .compliance-alert { background:var(--v2-amber-bg);border-bottom:1px solid var(--v2-amber-border);padding:9px 24px;display:flex;align-items:center;gap:12px;font-size:12px;flex-wrap:wrap }
         .ca-text { color:var(--v2-amber-text);flex:1;font-weight:500 }
         .ca-days { font-family:${S.mono};font-size:14px;font-weight:600;color:var(--v2-amber-text) }
-        .page-tabs { border-bottom:0.5px solid var(--v2-border);padding:0 24px;display:flex;gap:0;background:var(--v2-surface-2) }
+        .page-tabs { border-bottom:1px solid var(--v2-border);padding:0 24px;display:flex;gap:0;background:var(--v2-surface-2) }
         .page-tab { background:none;border:none;border-bottom:1.5px solid transparent;font-family:${S.font};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:22px;cursor:pointer;margin-bottom:-0.5px;transition:color .12s;display:flex;align-items:center;gap:7px }
         .page-tab:hover { color:var(--v2-text) }
         .page-tab.on { color:var(--v2-text);border-bottom-color:var(--v2-text) }
         .page-tab .cnt { font-size:10px;font-weight:500;background:var(--v2-hover);border-radius:100px;padding:1px 7px;color:var(--v2-text-3) }
         .page-tab.on .cnt { background:var(--v2-text);color:#ffffff }
         .content-grid { display:grid;grid-template-columns:1fr 300px;gap:0;align-items:start }
-        .main-pane { border-right:0.5px solid var(--v2-border);min-height:600px }
+        .main-pane { border-right:1px solid var(--v2-border);min-height:600px }
         .side-pane { padding:16px }
-        .pane-head { display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid var(--v2-border);background:var(--v2-surface-2);flex-wrap:wrap;gap:8px }
+        .pane-head { display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--v2-border);background:var(--v2-surface-2);flex-wrap:wrap;gap:8px }
         .pane-label { font-size:11px;letter-spacing:.06em;color:var(--v2-text-3);text-transform:uppercase;font-weight:500 }
-        .filter-bar { padding:9px 14px;border-bottom:0.5px solid var(--v2-border);background:var(--v2-surface-2);display:flex;gap:5px;flex-wrap:wrap;align-items:center }
-        .fchip { font-size:11px;font-weight:500;padding:3px 10px;border-radius:var(--v2-r-sm);border:0.5px solid transparent;color:var(--v2-text-2);background:transparent;font-family:${S.font};cursor:pointer;transition:background .1s }
+        .filter-bar { padding:9px 14px;border-bottom:1px solid var(--v2-border);background:var(--v2-surface-2);display:flex;gap:5px;flex-wrap:wrap;align-items:center }
+        .fchip { font-size:11px;font-weight:500;padding:3px 10px;border-radius:var(--v2-r-sm);border:1px solid transparent;color:var(--v2-text-2);background:transparent;font-family:${S.font};cursor:pointer;transition:background .1s }
         .fchip:hover { background:var(--v2-hover) }
         .fchip.on { background:var(--v2-surface);border-color:var(--v2-border-strong);color:var(--v2-text);box-shadow:var(--v2-shadow-sm) }
-        .side-card { background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);overflow:hidden;margin-bottom:14px }
-        .sc-head { padding:10px 12px;border-bottom:0.5px solid var(--v2-border);background:var(--v2-surface-2) }
+        .side-card { background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-xl);overflow:hidden;margin-bottom:14px }
+        .sc-head { padding:10px 12px;border-bottom:1px solid var(--v2-border);background:var(--v2-surface-2) }
         .sc-title { font-size:11px;letter-spacing:.06em;color:var(--v2-text-3);text-transform:uppercase;font-weight:500 }
         .sc-body { padding:10px 12px }
-        .deadline-row { display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:0.5px solid var(--v2-border) }
+        .deadline-row { display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--v2-border) }
         .deadline-row:last-child { border-bottom:none }
         .dl-n { font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;font-family:${S.mono};line-height:1 }
         .dl-unit { font-size:9px;color:var(--v2-text-3);text-transform:uppercase;letter-spacing:.04em }
@@ -306,24 +306,24 @@ export default function CABForumNewsroom({ nav }) {
         .tl-event { font-size:12px;font-weight:500;color:var(--v2-text);margin-bottom:4px;line-height:1.4 }
         .tl-desc { font-size:11px;color:var(--v2-text-2);line-height:1.6 }
         .tl-tags { display:flex;gap:4px;flex-wrap:wrap;margin-top:6px }
-        .wg-card { background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:16px;margin-bottom:12px;cursor:pointer;transition:border-color .12s }
+        .wg-card { background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:16px;margin-bottom:12px;cursor:pointer;transition:border-color .12s }
         .wg-card:hover { border-color:var(--v2-border-strong) }
         .wg-card.selected { border-color:var(--v2-green-border);background:var(--v2-green-bg) }
         .wg-top { display:flex;align-items:flex-start;gap:12px;margin-bottom:10px }
         .wg-badge { width:36px;height:36px;border-radius:var(--v2-r-lg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#ffffff;flex-shrink:0;letter-spacing:.02em }
-        .wg-meta { display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--v2-border) }
+        .wg-meta { display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-top:10px;padding-top:10px;border-top:1px solid var(--v2-border) }
         .wm-k { font-size:10px;color:var(--v2-text-3);margin-bottom:2px }
         .wm-v { font-size:12px;font-weight:500;color:var(--v2-text) }
         .member-grid { display:flex;flex-wrap:wrap;gap:5px }
-        .mem-pill { font-size:10px;padding:2px 9px;border-radius:20px;background:var(--v2-surface-3,var(--v2-hover));border:0.5px solid var(--v2-border);color:var(--v2-text-2);cursor:pointer;transition:all .1s }
+        .mem-pill { font-size:10px;padding:2px 9px;border-radius:20px;background:var(--v2-surface-3,var(--v2-hover));border:1px solid var(--v2-border);color:var(--v2-text-2);cursor:pointer;transition:all .1s }
         .mem-pill:hover { background:var(--v2-green-bg);color:var(--v2-green-text);border-color:var(--v2-green-border) }
         .ballot-detail-panel { background:var(--v2-surface);border:0.5px solid var(--v2-green-border);border-radius:var(--v2-r-xl);padding:16px;margin:0 16px 16px }
         .bdp-title { font-size:15px;font-weight:600;color:var(--v2-text);margin-bottom:8px;line-height:1.3 }
-        .bdp-field { padding:7px 0;border-bottom:0.5px solid var(--v2-border);display:flex;gap:12px }
+        .bdp-field { padding:7px 0;border-bottom:1px solid var(--v2-border);display:flex;gap:12px }
         .bdp-field:last-child { border-bottom:none }
         .bdp-k { font-size:11px;color:var(--v2-text-3);min-width:90px;flex-shrink:0 }
         .bdp-v { font-size:12px;color:var(--v2-text);font-weight:500 }
-        @media(max-width:900px){.content-grid{grid-template-columns:1fr}.side-pane{border-top:0.5px solid var(--v2-border)}}
+        @media(max-width:900px){.content-grid{grid-template-columns:1fr}.side-pane{border-top:1px solid var(--v2-border)}}
         @media(max-width:min(767px,100%)){
           .hero-band{padding:20px 14px 18px}
           .hero-h1{font-size:20px}
@@ -340,7 +340,7 @@ export default function CABForumNewsroom({ nav }) {
           .ballot-detail-panel{margin:0 10px 10px}
         }
         /* ── Ballot row layout ─────────────────────────────── */
-        .v2-list-row { display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:0.5px solid var(--v2-border);transition:background .1s }
+        .v2-list-row { display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid var(--v2-border);transition:background .1s }
         .v2-list-row:hover { background:var(--v2-hover) }
         .v2-list-row:last-child { border-bottom:none }
         .v2-row-body { flex:1;min-width:0 }
@@ -355,10 +355,10 @@ export default function CABForumNewsroom({ nav }) {
         .chip-green { background:var(--v2-green-bg);color:var(--v2-green-text);border:0.5px solid var(--v2-green-border) }
         .chip-amber { background:var(--v2-amber-bg);color:var(--v2-amber-text);border:0.5px solid var(--v2-amber-border) }
         .chip-red { background:var(--v2-red-bg);color:var(--v2-red-text);border:0.5px solid var(--v2-red-border) }
-        .chip-blue { background:rgba(31,92,78,0.09);color:#2a6b5c;border:0.5px solid rgba(31,92,78,0.2) }
-        .chip-grey { background:var(--v2-surface-3,var(--v2-hover));color:var(--v2-text-3);border:0.5px solid var(--v2-border) }
+        .chip-blue { background:rgba(31,92,78,0.09);color:#2a6b5c;border:1px solid rgba(31,92,78,0.2) }
+        .chip-grey { background:var(--v2-surface-3,var(--v2-hover));color:var(--v2-text-3);border:1px solid var(--v2-border) }
         /* ── Callouts ──────────────────────────────────────── */
-        .v2-callout { padding:12px 14px;border-radius:var(--v2-r-lg);border:0.5px solid var(--v2-border);margin-bottom:10px }
+        .v2-callout { padding:12px 14px;border-radius:var(--v2-r-lg);border:1px solid var(--v2-border);margin-bottom:10px }
         .v2-callout.tip { background:var(--v2-green-bg);border-color:var(--v2-green-border) }
         .v2-callout-title { font-size:11px;font-weight:700;color:var(--v2-green-text);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px }
         /* ── Mobile ballot rows ────────────────────────────── */
@@ -443,7 +443,7 @@ export default function CABForumNewsroom({ nav }) {
             <div className="pane-head">
               <span className="pane-label">All ballots — plain English explained</span>
               <div style={{ display: 'flex', gap: 7, alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border-strong)', borderRadius: 'var(--v2-r-md)', padding: '5px 10px', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'var(--v2-surface)', border: '1px solid var(--v2-border-strong)', borderRadius: 'var(--v2-r-md)', padding: '5px 10px', flex: 1 }}>
                   <Search size={13} color="var(--v2-text-3)" />
                   <input type="text" placeholder="Search ballots…" value={query} onChange={e => setQuery(e.target.value)}
                     style={{ border: 'none', outline: 'none', background: 'transparent', fontSize:12, color: '#111111', fontFamily: S.font, width: 160 }} />
@@ -530,7 +530,7 @@ export default function CABForumNewsroom({ nav }) {
               <div className="sc-head"><span className="sc-title">Critical ballots</span></div>
               <div className="sc-body">
                 {criticalBallots.slice(0, 5).map(b => (
-                  <div key={b.ballot_id} onClick={() => setSelectedBallot(b)} style={{ padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)', cursor: 'pointer' }}>
+                  <div key={b.ballot_id} onClick={() => setSelectedBallot(b)} style={{ padding: '8px 0', borderBottom: '1px solid var(--v2-border)', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
                       <span style={{ fontFamily: S.mono, fontSize:10, fontWeight: 600, color: '#333333' }}>{b.ballot_id}</span>
                       <Chip cls="chip-red">Critical</Chip>
@@ -551,7 +551,7 @@ export default function CABForumNewsroom({ nav }) {
                   { name: 'Code Signing BR', version: 'v3.8', date: 'Aug 2024', ballot: 'CSC-25' },
                   { name: 'Network Security BR', version: 'v2.0.5', date: 'Jul 2025', ballot: 'NS-008' },
                 ].map(({ name, version, date, ballot }) => (
-                  <div key={name} style={{ padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div key={name} style={{ padding: '8px 0', borderBottom: '1px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <div style={{ fontSize:11, fontWeight: 500, color: '#111111' }}>{name}</div>
                       <div style={{ fontSize:10, color: '#888888' }}>{date} · {ballot}</div>
@@ -574,7 +574,7 @@ export default function CABForumNewsroom({ nav }) {
                   { role: 'NetSec WG Chair', name: 'Clint Wilson', org: 'Apple' },
                   { role: 'Code Signing WG Chair', name: 'Martijn Katerbarg', org: 'Sectigo' },
                 ].map(({ role, name, org }) => (
-                  <div key={role} style={{ padding: '7px 0', borderBottom: '0.5px solid var(--v2-border)' }}>
+                  <div key={role} style={{ padding: '7px 0', borderBottom: '1px solid var(--v2-border)' }}>
                     <div style={{ fontSize:10, color: '#888888', marginBottom: 2 }}>{role}</div>
                     <div style={{ fontSize:12, fontWeight: 500, color: '#111111' }}>{name} <span style={{ fontWeight: 400, color: '#333333' }}>· {org}</span></div>
                   </div>
@@ -707,7 +707,7 @@ export default function CABForumNewsroom({ nav }) {
                   <div><div className="wm-k">Ballot prefix</div><div className="wm-v" style={{ fontFamily: S.mono, fontSize:11 }}>{wg.ballotPrefix}-xxx</div></div>
                 </div>
                 {selectedWG?.id === wg.id && (
-                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: '0.5px solid var(--v2-border)' }}>
+                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--v2-border)' }}>
                     <a href={wg.docs} target="_blank" rel="noreferrer" className="v2-btn" style={{ gap: 5, textDecoration: 'none', display: 'inline-flex' }}>
                       <ExternalLink size={12} /> View on CAB Forum website ↗
                     </a>
@@ -728,7 +728,7 @@ export default function CABForumNewsroom({ nav }) {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 14 }}>
             <div className="v2-card">
-              <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>Certification Authorities</div>
                 <Chip cls="chip-blue">{CA_MEMBERS.length} CAs</Chip>
               </div>
@@ -739,7 +739,7 @@ export default function CABForumNewsroom({ nav }) {
               </div>
             </div>
             <div className="v2-card">
-              <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--v2-border)', display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>Certificate Consumers (Browsers & OS)</div>
                 <Chip cls="chip-green">{BROWSER_MEMBERS.length} consumers</Chip>
               </div>
@@ -753,7 +753,7 @@ export default function CABForumNewsroom({ nav }) {
               </div>
             </div>
             <div className="v2-card">
-              <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)' }}>
+              <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--v2-border)' }}>
                 <div style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>Associates & Interested Parties</div>
               </div>
               <div style={{ padding: 14 }}>
@@ -768,7 +768,7 @@ export default function CABForumNewsroom({ nav }) {
               </div>
             </div>
             <div className="v2-card">
-              <div style={{ padding: '12px 14px', borderBottom: '0.5px solid var(--v2-border)' }}>
+              <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--v2-border)' }}>
                 <div style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>How membership works</div>
               </div>
               <div style={{ padding: 14 }}>
@@ -778,7 +778,7 @@ export default function CABForumNewsroom({ nav }) {
                   { title: 'Associates', desc: 'Organisations with close relationships to PKI — auditors (KPMG, Deloitte), standards bodies (ETSI, WebTrust), and government PKI programs.' },
                   { title: 'Interested Parties', desc: 'Individual experts and organisations who contribute to discussions without voting rights. EFF, Cloudflare, ICANN, Netflix are examples.' },
                 ].map(({ title, desc }) => (
-                  <div key={title} style={{ padding: '8px 0', borderBottom: '0.5px solid var(--v2-border)' }}>
+                  <div key={title} style={{ padding: '8px 0', borderBottom: '1px solid var(--v2-border)' }}>
                     <div style={{ fontSize:12, fontWeight: 500, color: '#111111', marginBottom: 3 }}>{title}</div>
                     <div style={{ fontSize:11, color: '#333333', lineHeight: 1.5 }}>{desc}</div>
                   </div>

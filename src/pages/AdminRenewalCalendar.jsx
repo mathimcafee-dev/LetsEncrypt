@@ -86,7 +86,7 @@ function TabBar({ tab, setTab, counts }) {
               fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 10,
               background: t.warn && tab !== t.id ? 'rgba(192,57,43,0.2)' : 'rgba(0,0,0,0.08)',
               color: t.warn && tab !== t.id ? '#1f5c4e' : 'rgba(255,255,255,0.7)',
-              border: t.warn && tab !== t.id ? '0.5px solid rgba(192,57,43,0.2)' : 'none',
+              border: t.warn && tab !== t.id ? '1px solid rgba(192,57,43,0.2)' : 'none',
             }}>{t.count}</span>
           )}
         </button>
@@ -116,7 +116,7 @@ function EventRow({ ev, cert }) {
     <div style={{
       display: 'flex', alignItems: 'center', gap: 10,
       padding: '10px 16px',
-      borderBottom: '0.5px solid rgba(0,0,0,0.05)',
+      borderBottom: '1px solid rgba(0,0,0,0.05)',
       background: ev.status === 'failed' ? 'rgba(248,113,113,0.05)' : 'transparent',
     }}>
       {/* Status dot */}
@@ -196,7 +196,7 @@ function AlertRow({ alert, onResolve, resolving }) {
     <div style={{
       display: 'flex', alignItems: 'flex-start', gap: 10,
       padding: '12px 16px',
-      borderBottom: '0.5px solid rgba(192,57,43,0.1)',
+      borderBottom: '1px solid rgba(192,57,43,0.1)',
       background: 'rgba(248,113,113,0.05)',
     }}>
       <AlertTriangle size={13} strokeWidth={2} color="#f87171" style={{ flexShrink: 0, marginTop: 2 }} />
@@ -397,7 +397,7 @@ export default function AdminRenewalCalendar({ user }) {
             <>
               <div style={{ padding: '8px 16px', fontSize: 10, fontWeight: 700, color: '#1f5c4e',
                 textTransform: 'uppercase', letterSpacing: '0.5px',
-                borderBottom: '0.5px solid rgba(192,57,43,0.1)',
+                borderBottom: '1px solid rgba(192,57,43,0.1)',
                 background: 'rgba(248,113,113,0.06)' }}>
                 Open alerts — {alerts.length}
               </div>
@@ -425,7 +425,7 @@ export default function AdminRenewalCalendar({ user }) {
               display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px',
               fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)',
               textTransform: 'uppercase', letterSpacing: '0.5px',
-              borderBottom: '0.5px solid rgba(0,0,0,0.06)',
+              borderBottom: '1px solid rgba(0,0,0,0.06)',
               background: 'rgba(0,0,0,0.02)',
             }}>
               <div style={{ width: 8, flexShrink: 0 }} />
@@ -439,7 +439,7 @@ export default function AdminRenewalCalendar({ user }) {
             ))}
             <div style={{
               padding: '8px 16px', fontSize: 10, color: 'rgba(255,255,255,0.25)',
-              borderTop: '0.5px solid rgba(0,0,0,0.05)', textAlign: 'right',
+              borderTop: '1px solid rgba(0,0,0,0.05)', textAlign: 'right',
             }}>
               {tabEvents.length} event{tabEvents.length !== 1 ? 's' : ''}
             </div>

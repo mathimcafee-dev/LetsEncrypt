@@ -143,7 +143,7 @@ function ServerCard({ agent, certs }) {
           {expiringSoon > 0 && (
             <div style={{
               padding: '4px 10px', borderRadius: 20,
-              background: 'rgba(239,68,68,0.08)', border: '1px solid #F2C4BC',
+              background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(154,100,0,0.2)',
               fontSize:11, fontWeight: 600, color: '#111111',
               display: 'flex', alignItems: 'center', gap: 4,
             }}>
@@ -255,7 +255,7 @@ function DnsCard({ cred, onDelete, deletingId }) {
         <div style={{ display:'flex', alignItems:'center', gap:6 }}>
           <span style={{ fontSize:11, color:'#1f5c4e' }}>Remove?</span>
           <button onClick={() => onDelete(cred.id)} style={{
-            background:'rgba(192,57,43,0.1)', border:'1px solid rgba(248,113,113,0.4)',
+            background:'rgba(192,57,43,0.1)', border:'1px solid rgba(192,57,43,0.2)',
             cursor:'pointer', color:'#1f5c4e', padding:'4px 10px', borderRadius:6,
             fontSize:11, fontWeight:600, fontFamily:'inherit'
           }}>Yes</button>
@@ -1232,7 +1232,7 @@ export default function MyServers({ user }) {
                                 style={{padding:'5px 10px',fontSize:11,background:'rgba(31,92,78,0.07)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:6,cursor:'pointer',fontFamily:'inherit',color:'#333333',display:'flex',alignItems:'center',gap:4}}>
                                 <RefreshCw size={11} style={{animation:caSyncing===conn.id?'spin .8s linear infinite':'none'}}/>{caSyncing===conn.id?'Syncing':'Sync'}</button>
                               <button onClick={()=>setCaDelConn(conn.id)}
-                                style={{width:26,height:26,display:'flex',alignItems:'center',justifyContent:'center',background:'none',border:'1px solid rgba(248,113,113,0.4)',borderRadius:5,cursor:'pointer',color:'#1f5c4e'}}><Trash2 size={11}/></button>
+                                style={{width:26,height:26,display:'flex',alignItems:'center',justifyContent:'center',background:'none',border:'1px solid rgba(192,57,43,0.2)',borderRadius:5,cursor:'pointer',color:'#1f5c4e'}}><Trash2 size={11}/></button>
                             </div>
                           </div>
                           {res&&(<div style={{padding:'8px 18px',borderTop:'1px solid rgba(31,92,78,0.08)',background:res.ok?'rgba(74,222,128,0.05)':'rgba(31,92,78,0.07)',display:'flex',alignItems:'center',gap:7}}>

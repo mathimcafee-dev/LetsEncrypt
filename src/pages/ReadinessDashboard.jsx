@@ -418,7 +418,7 @@ export default function ReadinessDashboard({ user, onNav }) {
                               <button
                                 onClick={() => onNav('integrations')}
                                 style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
-                                  background:'rgba(31,92,78,0.08)', border:'0.5px solid rgba(31,92,78,0.2)',
+                                  background:'rgba(31,92,78,0.08)', border:'1px solid rgba(31,92,78,0.2)',
                                   color:'#1f5c4e', fontFamily:'inherit', whiteSpace:'nowrap' }}>
                                 + DNS provider
                               </button>
@@ -427,7 +427,7 @@ export default function ReadinessDashboard({ user, onNav }) {
                               <button
                                 onClick={() => onNav('my-servers')}
                                 style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:5, cursor:'pointer',
-                                  background:'rgba(31,92,78,0.08)', border:'0.5px solid rgba(31,92,78,0.2)',
+                                  background:'rgba(31,92,78,0.08)', border:'1px solid rgba(31,92,78,0.2)',
                                   color:'#1f5c4e', fontFamily:'inherit', whiteSpace:'nowrap' }}>
                                 + Install agent
                               </button>

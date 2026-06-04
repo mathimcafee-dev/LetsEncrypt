@@ -32,7 +32,7 @@ const DNS_PROVIDERS = [
 
 // ── Shared style tokens ───────────────────────────────────────────────────────
 const S = {
-  card:    { background: 'rgba(0,0,0,0.05)', border: '0.5px solid rgba(0,0,0,0.07)', borderRadius: 14, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' },
+  card:    { background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 14, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' },
   input:   { width: '100%', padding: '10px 14px', fontSize: 13, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.09)', color: '#fff', outline: 'none', boxSizing: 'border-box', transition: 'border-color .15s' },
   label:   { display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#888888', marginBottom: 6 },
   btnPri:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Montserrat,system-ui,sans-serif', borderRadius: 7, background: '#1f5c4e', color: '#fff', border: 'none', cursor: 'pointer', transition: 'background .15s', whiteSpace: 'nowrap' },
@@ -186,7 +186,7 @@ function StepDNS({ data, onChange, onNext, onBack }) {
           </div>
         )}
         {selected && !selected.field1 && (
-          <div style={{ marginTop: 14, background: 'rgba(31,92,78,0.07)', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 7, padding: '10px 12px', fontSize: 12, color: '#333333', lineHeight: 1.6 }}>
+          <div style={{ marginTop: 14, background: 'rgba(31,92,78,0.07)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 7, padding: '10px 12px', fontSize: 12, color: '#333333', lineHeight: 1.6 }}>
             Manual DNS — SSLVault will show you a TXT record to add at your registrar after setup.
           </div>
         )}
@@ -360,7 +360,7 @@ function StepServer({ data, onChange, onNext, onBack, user, installCmd }) {
         )}
       </div>
 
-      <div style={{ padding: '12px 24px 16px', display: 'flex', justifyContent: 'space-between', borderTop: '0.5px solid rgba(0,0,0,0.05)' }}>
+      <div style={{ padding: '12px 24px 16px', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
         <button style={S.btnSec} onClick={onBack}
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.08)'}
           onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}>
@@ -432,7 +432,7 @@ function StepDone({ data, onClose, nav }) {
             </span>
           </div>
         </div>
-        <div style={{ padding: '12px 24px 16px', display: 'flex', justifyContent: 'flex-end', borderTop: '0.5px solid rgba(0,0,0,0.05)' }}>
+        <div style={{ padding: '12px 24px 16px', display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
           <button style={S.btnPri} onClick={() => { onClose(); nav('/buy') }}
             onMouseEnter={e => e.currentTarget.style.background = '#2e7a68'}
             onMouseLeave={e => e.currentTarget.style.background = '#1f5c4e'}>
@@ -462,7 +462,7 @@ function StepDone({ data, onClose, nav }) {
           ['Server',       'Shared hosting / cPanel'],
           ['cPanel host',  data.cpUrl || '—'],
         ].map(([k, v]) => (
-          <div key={k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '0.5px solid rgba(0,0,0,0.05)', fontSize: 12 }}>
+          <div key={k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: 12 }}>
             <span style={{ color: '#888888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', fontSize: 11 }}>{k}</span>
             <span style={{ color: '#333333', fontWeight: 600, ...S.mono, fontSize: 11 }}>{v}</span>
           </div>
@@ -474,7 +474,7 @@ function StepDone({ data, onClose, nav }) {
           </span>
         </div>
       </div>
-      <div style={{ padding: '12px 24px 16px', display: 'flex', justifyContent: 'flex-end', borderTop: '0.5px solid rgba(0,0,0,0.05)' }}>
+      <div style={{ padding: '12px 24px 16px', display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
         <button style={S.btnPri} onClick={() => { onClose(); nav('/buy') }}
           onMouseEnter={e => e.currentTarget.style.background = '#2e7a68'}
           onMouseLeave={e => e.currentTarget.style.background = '#1f5c4e'}>
@@ -554,7 +554,7 @@ export default function AddDomainWizard({ user, onClose, nav }) {
             )}
           </div>
           <button onClick={onClose}
-            style={{ width: 28, height: 28, borderRadius: 6, border: '0.5px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.05)', cursor: 'pointer', color: '#333333', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.05)', cursor: 'pointer', color: '#333333', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <X size={13} />
           </button>
         </div>

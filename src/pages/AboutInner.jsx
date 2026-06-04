@@ -40,7 +40,7 @@ export default function AboutInner({ nav }) {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:16 }}>
         {PILLARS.map(({ icon:Icon, title, body }) => (
           <div key={title} style={{ background:'transparent', border:'0.5px solid #e8edf2', borderRadius:8, padding:'20px 22px' }}>
-            <div style={{ width:32, height:32, background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
+            <div style={{ width:32, height:32, background:'transparent', border:'1px solid rgba(31,92,78,0.2)', borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}>
               <Icon size={15} color="#1f5c4e"/>
             </div>
             <div style={{ fontSize:13, fontWeight:500, color:'#111111', marginBottom:6 }}>{title}</div>
@@ -61,7 +61,7 @@ export default function AboutInner({ nav }) {
             ['Agent', 'Bash daemon, systemd'],
             ['DNS', 'Cloudflare · Vercel · cPanel'],
           ].map(([k, v]) => (
-            <div key={k} style={{ padding:'10px 12px', background:'transparent', borderRadius:6, border:'0.5px solid rgba(31,92,78,0.07)' }}>
+            <div key={k} style={{ padding:'10px 12px', background:'transparent', borderRadius:6, border:'1px solid rgba(31,92,78,0.07)' }}>
               <div style={{ fontSize:9, fontWeight:500, color:'#888888', textTransform:'uppercase', letterSpacing:'.4px', marginBottom:4 }}>{k}</div>
               <div style={{ fontSize:12, color:'#111111', fontFamily:"'JetBrains Mono',monospace" }}>{v}</div>
             </div>

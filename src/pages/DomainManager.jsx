@@ -70,7 +70,7 @@ function CopyBtn({ text, size = 10 }) {
   const [done, setDone] = useState(false)
   return (
     <button onClick={() => { navigator.clipboard.writeText(text); setDone(true); setTimeout(() => setDone(false), 1500) }}
-      style={{ fontSize: size, fontWeight: 500, color: '#555555', padding: '3px 7px', border: '0.5px solid var(--v2-border)', borderRadius: 4, background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit', flexShrink: 0 }}>
+      style={{ fontSize: size, fontWeight: 500, color: '#555555', padding: '3px 7px', border: '1px solid var(--v2-border)', borderRadius: 4, background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit', flexShrink: 0 }}>
       {done ? <><Check size={size} /> Copied</> : <><Copy size={size} /> Copy</>}
     </button>
   )
@@ -102,12 +102,12 @@ function InstallModal({ onClose }) {
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ background: '#ffffff', borderRadius: 14, width: '100%', maxWidth: 520, boxShadow: '0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)' }}>
-        <div style={{ padding: '16px 20px', borderBottom: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 500, color: '#111111' }}>Install SSLVault agent</div>
             <div style={{ fontSize: 11, color: '#555555', marginTop: 2 }}>Run on your Linux VPS — installs in 60 seconds</div>
           </div>
-          <button onClick={onClose} style={{ width: 28, height: 28, borderRadius: 6, border: '0.5px solid var(--v2-border)', background: 'var(--v2-surface)', cursor: 'pointer', fontSize: 16, color: '#333333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+          <button onClick={onClose} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--v2-border)', background: 'var(--v2-surface)', cursor: 'pointer', fontSize: 16, color: '#333333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
         </div>
         <div style={{ padding: '18px 20px' }}>
           {[
@@ -122,13 +122,13 @@ function InstallModal({ onClose }) {
               </div>
             </div>
           ))}
-          <div style={{ background: 'transparent', border: '0.5px solid rgba(31,92,78,0.2)', borderRadius: 7, padding: '10px 12px' }}>
+          <div style={{ background: 'transparent', border: '1px solid rgba(31,92,78,0.2)', borderRadius: 7, padding: '10px 12px' }}>
             <div style={{ fontSize: 11, color: '#111111', lineHeight: 1.6 }}>
               The agent polls SSLVault every 5 minutes, auto-installs and auto-renews certificates, and appears in Domain Manager within 1–2 minutes.
             </div>
           </div>
         </div>
-        <div style={{ padding: '12px 20px', borderTop: '0.5px solid var(--v2-border)', display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ padding: '12px 20px', borderTop: '1px solid var(--v2-border)', display: 'flex', justifyContent: 'flex-end' }}>
           <button onClick={onClose} className="v2-btn v2-btn-sm">Close</button>
         </div>
       </div>
@@ -183,7 +183,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
         style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', background: 'var(--v2-surface)', cursor: 'pointer' }}>
 
         {/* Domain icon */}
-        <div style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--v2-surface-3)', border: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--v2-surface-3)', border: '1px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Globe size={15} color="var(--v2-text-3)" />
         </div>
 
@@ -220,7 +220,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
         <div style={{ borderTop: `0.5px solid ${borderColor}`, background: 'var(--v2-surface)', animation: 'slideDown .18s ease' }}>
 
           {/* Tab bar */}
-          <div style={{ display: 'flex', gap: 1, padding: '10px 16px 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
+          <div style={{ display: 'flex', gap: 1, padding: '10px 16px 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
             {[
               { id: 'overview', label: 'Overview',   icon: Globe },
               { id: 'cert',     label: 'Certificate', icon: Shield },
@@ -260,7 +260,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                 </div>
 
                 {/* Server / install method */}
-                <div style={{ padding: '12px 14px', background: 'var(--v2-surface-3)', borderRadius: 8, border: '0.5px solid var(--v2-border)' }}>
+                <div style={{ padding: '12px 14px', background: 'var(--v2-surface-3)', borderRadius: 8, border: '1px solid var(--v2-border)' }}>
                   <div style={{ fontSize: 10, fontWeight: 600, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Server</div>
                   {agent ? (
                     <>
@@ -283,7 +283,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                 </div>
 
                 {/* DNS */}
-                <div style={{ padding: '12px 14px', background: 'var(--v2-surface-3)', borderRadius: 8, border: '0.5px solid var(--v2-border)' }}>
+                <div style={{ padding: '12px 14px', background: 'var(--v2-surface-3)', borderRadius: 8, border: '1px solid var(--v2-border)' }}>
                   <div style={{ fontSize: 10, fontWeight: 600, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>DNS</div>
                   {dnsCredentials.length > 0 ? (
                     dnsCredentials.map(d => (
@@ -299,7 +299,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
 
                 {/* GGS order quick info */}
                 {cert?.ggs_order_id && (
-                  <div style={{ padding: '12px 14px', background: 'var(--v2-surface-3)', borderRadius: 8, border: '0.5px solid var(--v2-border)' }}>
+                  <div style={{ padding: '12px 14px', background: 'var(--v2-surface-3)', borderRadius: 8, border: '1px solid var(--v2-border)' }}>
                     <div style={{ fontSize: 10, fontWeight: 600, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Order</div>
                     <div style={{ fontSize: 11, color: '#555555', marginBottom: 3 }}>GGS #{cert.ggs_order_id}</div>
                     <div style={{ fontSize: 11, color: '#555555' }}>
@@ -337,7 +337,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                         ['Key size',     cert.key_size_bits ? `${cert.key_size_bits} bit` : null],
                         ['DCV method',   cert.dcv_method],
                       ].filter(([, v]) => v).map(([k, v]) => (
-                        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 12, borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
+                        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 12, borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                           <span style={{ color: '#555555' }}>{k}</span>
                           <span style={{ color: '#111111', fontFamily: 'monospace', fontSize: 11, textAlign: 'right', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{String(v)}</span>
                         </div>
@@ -385,7 +385,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                         ['Connected',      fmtRel(agent.created_at)],
                         ['Certs managed',  agent.certs_managed != null ? String(agent.certs_managed) : null],
                       ].filter(([, v]) => v).map(([k, v]) => (
-                        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 12, borderBottom: '0.5px solid rgba(0,0,0,0.05)' }}>
+                        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 12, borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                           <span style={{ color: '#555555' }}>{k}</span>
                           <span style={{ color: '#111111', fontFamily: 'monospace', fontSize: 11 }}>{v}</span>
                         </div>
@@ -419,7 +419,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
                           await supabase.from('persistent_agents').delete().eq('id', agent.id)
                           onRemoveAgent?.(agent.id)
                         }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 500, color: '#1f5c4e', background: 'none', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', fontFamily: 'inherit' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 500, color: '#1f5c4e', background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', fontFamily: 'inherit' }}>
                         <Trash2 size={11} />{removing ? 'Removing…' : 'Remove agent'}
                       </button>
                     </div>
@@ -499,7 +499,7 @@ function UnlinkedAgents({ agents, onRefresh, onRemove }) {
       {agents.map(agent => {
         const st = agentStatus(agent.last_seen_at, agent.status)
         return (
-          <div key={agent.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', border: '0.5px solid var(--v2-border)', borderRadius: 9, marginBottom: 6, background: 'var(--v2-surface)' }}>
+          <div key={agent.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', border: '1px solid var(--v2-border)', borderRadius: 9, marginBottom: 6, background: 'var(--v2-surface)' }}>
             <StatusDot st={st} size={8} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12, fontWeight: 500, color: '#111111' }}>{agent.nickname || agent.hostname || 'Unnamed'}</div>
@@ -512,7 +512,7 @@ function UnlinkedAgents({ agents, onRefresh, onRemove }) {
               await supabase.from('agent_jobs').delete().eq('agent_id', agent.id)
               await supabase.from('persistent_agents').delete().eq('id', agent.id)
               onRemove?.(agent.id)
-            }} style={{ fontSize: 10, color: '#1f5c4e', background: 'none', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: 5, padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
+            }} style={{ fontSize: 10, color: '#1f5c4e', background: 'none', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 5, padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
               <Trash2 size={10} />
             </button>
           </div>
@@ -659,7 +659,7 @@ export default function DomainManager({ user, nav }) {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search domains…"
-              style={{ width: '100%', background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)', borderRadius: 8, padding: '9px 12px 9px 34px', fontSize: 13, color: '#111111', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}
+              style={{ width: '100%', background: 'var(--v2-surface)', border: '1px solid var(--v2-border)', borderRadius: 8, padding: '9px 12px 9px 34px', fontSize: 13, color: '#111111', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}
             />
             {search && (
               <button onClick={() => setSearch('')} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#555555', display: 'flex', alignItems: 'center' }}>
@@ -707,7 +707,7 @@ export default function DomainManager({ user, nav }) {
               style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 16px', border: '0.5px dashed var(--v2-border)', borderRadius: 10, background: 'var(--v2-surface-3)', cursor: 'pointer', marginTop: 4, transition: 'border-color .15s' }}
               onMouseEnter={e => e.currentTarget.style.borderColor = '#111111'}
               onMouseLeave={e => e.currentTarget.style.borderColor = ''}>
-              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--v2-surface)', border: '0.5px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--v2-surface)', border: '1px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Server size={16} color="var(--v2-text-3)" />
               </div>
               <div style={{ flex: 1 }}>

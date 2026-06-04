@@ -1049,7 +1049,7 @@ const CertHistory = forwardRef(function CertHistory({ cert, session }, ref) {
       />
 
       {/* Tab bar */}
-      <div style={{ display:'flex', borderBottom:'0.5px solid rgba(0,0,0,0.07)', marginBottom:14 }}>
+      <div style={{ display:'flex', borderBottom:'1px solid rgba(0,0,0,0.07)', marginBottom:14 }}>
         {[['reissues','Reissue History'], ['renewals','Renewals']].map(([k,l]) => (
           <button key={k} onClick={() => setTab(k)} style={{
             fontSize:11, fontWeight:500, padding:'5px 14px', border:'none', background:'none',
@@ -1265,7 +1265,7 @@ function PqcRow({ cert, onRefresh }) {
   const noPem = !cert.cert_pem
 
   return (
-    <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:6 }}>
+    <div style={{ border:'1px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:6 }}>
       <div onClick={()=>risk&&setOpen(o=>!o)}
         style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
           padding:'11px 14px', background:'rgba(0,0,0,0.02)',
@@ -1299,7 +1299,7 @@ function PqcRow({ cert, onRefresh }) {
           {!noPem && (
             <button onClick={runCheck} disabled={checking}
               style={{ display:'flex', alignItems:'center', gap:4, fontSize:11,
-                color:'#1f5c4e', background:'rgba(248,113,113,0.12)', border:'0.5px solid #F2C4BC',
+                color:'#1f5c4e', background:'rgba(248,113,113,0.12)', border:'0.5px solid rgba(154,100,0,0.2)',
                 borderRadius:6, padding:'4px 10px', cursor:checking?'wait':'pointer',
                 fontFamily:'inherit', fontWeight:500, flexShrink:0 }}>
               {checking
@@ -1311,7 +1311,7 @@ function PqcRow({ cert, onRefresh }) {
       </div>
 
       {open && (result || risk) && (
-        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-surface-3)', padding:'14px' }}>
+        <div style={{ borderTop:'1px solid var(--v2-border)', background:'var(--v2-surface-3)', padding:'14px' }}>
           {(() => {
             const d = result || {
               algorithm:cert.key_algorithm, bits:cert.key_size_bits,
@@ -1342,7 +1342,7 @@ function PqcRow({ cert, onRefresh }) {
                     ['Risk level', d.label || '--'],
                     ['Deadline',   d.deadline || '--'],
                   ].map(([k,v])=>(
-                    <div key={k} style={{ background:'rgba(0,0,0,0.02)', borderRadius:7, padding:'9px 11px', border:'0.5px solid var(--v2-border)' }}>
+                    <div key={k} style={{ background:'rgba(0,0,0,0.02)', borderRadius:7, padding:'9px 11px', border:'1px solid var(--v2-border)' }}>
                       <div style={{ fontSize:10, color:'#555555', marginBottom:3, textTransform:'uppercase', letterSpacing:'0.4px' }}>{k}</div>
                       <div style={{ fontSize:12, fontWeight:500, color: k==='Risk level'?riskDef.color:'#111111',
                         fontFamily: k==='Algorithm'||k==='Key size' ? 'monospace' : 'inherit' }}>{v}</div>
@@ -1360,7 +1360,7 @@ function PqcRow({ cert, onRefresh }) {
                 )}
 
                 {/* NIST context */}
-                <div style={{ fontSize:11, color:'#555555', lineHeight:1.6, borderTop:'0.5px solid var(--v2-border)', paddingTop:10, marginTop:4 }}>
+                <div style={{ fontSize:11, color:'#555555', lineHeight:1.6, borderTop:'1px solid var(--v2-border)', paddingTop:10, marginTop:4 }}>
                   NIST finalized ML-DSA (CRYSTALS-Dilithium), SLH-DSA (SPHINCS+), and ML-KEM (CRYSTALS-Kyber) in August 2024.
                   RSA and ECDSA will be deprecated for sensitive data by 2030–2035.{' '}
                   <span style={{ color:'#1f5c4e', cursor:'pointer' }}
@@ -1416,7 +1416,7 @@ function TlsPostureRow({ cert, onRefresh }) {
   }
 
   return (
-    <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:6 }}>
+    <div style={{ border:'1px solid var(--v2-border)', borderRadius:10, overflow:'hidden', marginBottom:6 }}>
       {/* Header row -- always visible */}
       <div onClick={() => grade && setOpen(o => !o)}
         style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
@@ -1459,7 +1459,7 @@ function TlsPostureRow({ cert, onRefresh }) {
 
       {/* Expandable results */}
       {open && result && (
-        <div style={{ borderTop:'0.5px solid var(--v2-border)', background:'var(--v2-surface-3)',
+        <div style={{ borderTop:'1px solid var(--v2-border)', background:'var(--v2-surface-3)',
           padding:'12px 14px' }}>
           {/* Score bar */}
           <div style={{ marginBottom:12 }}>
@@ -1475,7 +1475,7 @@ function TlsPostureRow({ cert, onRefresh }) {
           {/* Individual checks */}
           {Object.entries(result).map(([key, check]) => (
             <div key={key} style={{ display:'flex', alignItems:'flex-start', gap:10,
-              padding:'7px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}
+              padding:'7px 0', borderBottom:'1px solid rgba(0,0,0,0.06)' }}
               className="tls-check-row">
               <div style={{ width:18, height:18, borderRadius:'50%', flexShrink:0, marginTop:1,
                 background: check.pass ? 'transparent' : 'rgba(31,92,78,0.09)',
@@ -1606,12 +1606,12 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
     const [ok, setOk] = useState(false)
     if (!value) return null
     return (
-      <div style={{ display:'flex', flexDirection:'column', gap:2, padding:'8px 0', borderBottom:'0.5px solid rgba(0,0,0,0.05)' }}>
+      <div style={{ display:'flex', flexDirection:'column', gap:2, padding:'8px 0', borderBottom:'1px solid rgba(0,0,0,0.05)' }}>
         <span style={{ fontSize:10, color:'#555555', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.4px' }}>{label}</span>
         <div style={{ display:'flex', alignItems:'center', gap:6 }}>
           <span style={{ fontSize:12, color:'#111111', fontFamily: mono ? 'monospace' : 'inherit', wordBreak:'break-all' }}>{value}</span>
           {copy && <button onClick={() => { navigator.clipboard.writeText(value); setOk(true); setTimeout(() => setOk(false), 1500) }}
-            style={{ background:'none', border:'0.5px solid rgba(0,0,0,0.08)', borderRadius:3, cursor:'pointer',
+            style={{ background:'none', border:'1px solid rgba(0,0,0,0.08)', borderRadius:3, cursor:'pointer',
               color: ok ? '#16a068' : '#b0a8a0', fontSize:10, padding:'1px 6px', fontFamily:'inherit' }}>
             {ok ? '✓' : 'Copy'}
           </button>}
@@ -1666,7 +1666,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               {cancelling ? 'Cancelling…' : 'Yes'}
             </button>
             <button onClick={() => setCancelConfirm(false)}
-              style={{ fontSize:11, color:'#555555', background:'none', border:'0.5px solid rgba(0,0,0,0.09)',
+              style={{ fontSize:11, color:'#555555', background:'none', border:'1px solid rgba(0,0,0,0.09)',
                 borderRadius:5, padding:'5px 10px', cursor:'pointer', fontFamily:'inherit' }}>
               No
             </button>
@@ -1775,7 +1775,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
                     {copy && value && (
                       <button onClick={() => navigator.clipboard.writeText(value)}
                         style={{ fontSize:10, color:'#555555', background:'none',
-                          border:'0.5px solid rgba(0,0,0,0.08)', borderRadius:3,
+                          border:'1px solid rgba(0,0,0,0.08)', borderRadius:3,
                           padding:'1px 6px', cursor:'pointer', fontFamily:'inherit', flexShrink:0 }}>
                         Copy
                       </button>
@@ -1846,7 +1846,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           {cert.cert_pem ? (
             <>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                padding:'12px 14px', borderRadius:8, border:'0.5px solid rgba(0,0,0,0.07)',
+                padding:'12px 14px', borderRadius:8, border:'1px solid rgba(0,0,0,0.07)',
                 background:'rgba(0,0,0,0.02)' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                   <FileText size={16} color="#1f5c4e"/>
@@ -1864,7 +1864,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               </div>
               {cert.ca_pem && (
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                  padding:'12px 14px', borderRadius:8, border:'0.5px solid rgba(0,0,0,0.07)',
+                  padding:'12px 14px', borderRadius:8, border:'1px solid rgba(0,0,0,0.07)',
                   background:'rgba(0,0,0,0.02)' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                     <FileText size={16} color="#b0a8a0"/>
@@ -1888,7 +1888,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             </div>
           )}
           {/* Private key via KeyLocker */}
-          <div style={{ padding:'12px 14px', borderRadius:8, border:'0.5px solid rgba(31,92,78,0.2)',
+          <div style={{ padding:'12px 14px', borderRadius:8, border:'1px solid rgba(31,92,78,0.2)',
             background:'rgba(192,57,43,0.05)', marginTop:4 }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
               <Lock size={14} color="#1f5c4e"/>
@@ -1901,7 +1901,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
             </div>
             <button onClick={() => nav('/certvault')}
               style={{ marginTop:8, fontSize:11, fontWeight:600, color:'#1f5c4e',
-                background:'transparent', border:'0.5px solid rgba(31,92,78,0.2)',
+                background:'transparent', border:'1px solid rgba(31,92,78,0.2)',
                 borderRadius:5, padding:'5px 12px', cursor:'pointer', fontFamily:'inherit' }}>
               Open CertVault →
             </button>
@@ -1976,7 +1976,7 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
               display:'flex', alignItems:'center', justifyContent:'space-between',
               padding:'10px 14px', borderRadius:8,
               background:'rgba(0,0,0,0.02)',
-              border:'0.5px solid rgba(0,0,0,0.06)',
+              border:'1px solid rgba(0,0,0,0.06)',
             }}>
               <span style={{ fontSize:12, color:'#555555' }}>{label}</span>
               <span style={{ fontSize:12, fontWeight:600,
@@ -2044,12 +2044,12 @@ function EmbedTab({ cert }) {
         </div>
         <button onClick={copyWidget}
           style={{ display:'flex', alignItems:'center', gap:5, background:'none',
-            border:'0.5px solid var(--v2-border)', borderRadius:6, padding:'6px 12px',
+            border:'1px solid var(--v2-border)', borderRadius:6, padding:'6px 12px',
             fontSize:11, cursor:'pointer', color:'#333333', fontFamily:'inherit' }}>
           {copiedW ? <><Check size={10} color="#16a34a"/> Copied!</> : <><Copy size={10}/> Copy snippet</>}
         </button>
       </div>
-      <div style={{ borderTop:'0.5px solid var(--v2-border)', paddingTop:14 }}>
+      <div style={{ borderTop:'1px solid var(--v2-border)', paddingTop:14 }}>
         <div style={{ fontSize:11, fontWeight:600, color:'#111111', marginBottom:4 }}>
           Public SSL status page
         </div>
@@ -2062,7 +2062,7 @@ function EmbedTab({ cert }) {
         </div>
         <button onClick={copyStatus}
           style={{ display:'flex', alignItems:'center', gap:5, background:'none',
-            border:'0.5px solid var(--v2-border)', borderRadius:6, padding:'6px 12px',
+            border:'1px solid var(--v2-border)', borderRadius:6, padding:'6px 12px',
             fontSize:11, cursor:'pointer', color:'#333333', fontFamily:'inherit' }}>
           {copiedS ? <><Check size={10} color="#16a34a"/> Copied!</> : <><Share2 size={10}/> Copy status link</>}
         </button>
@@ -2160,7 +2160,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
               </span>
             )}
             <span style={{ fontSize:10, padding:'1px 7px', borderRadius:20,
-              background:'rgba(0,0,0,0.02)', color:'#555555', border:'0.5px solid var(--v2-border)' }}>
+              background:'rgba(0,0,0,0.02)', color:'#555555', border:'1px solid var(--v2-border)' }}>
               {primary.cert_type || primary.issuer || 'RapidSSL Standard'}
             </span>
           </div>
@@ -2177,7 +2177,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
           </div>
           {(hasVersions || hasMultipleSubs) && (
             <button onClick={e => { e.stopPropagation(); setExpanded(!expanded) }}
-              style={{ background:'rgba(0,0,0,0.02)', border:'0.5px solid var(--v2-border)', borderRadius:6,
+              style={{ background:'rgba(0,0,0,0.02)', border:'1px solid var(--v2-border)', borderRadius:6,
                 padding:'4px 8px', fontSize:10, color:'#333333', cursor:'pointer',
                 display:'flex', alignItems:'center', gap:3, fontFamily:'inherit', flexShrink:0 }}>
               {expanded ? '▲ Hide' : '▼ Expand'}
@@ -2346,7 +2346,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                     <div key={v.id}
                       onClick={() => onSelect(v.id)}
                       style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 14px',
-                        borderTop:`0.5px solid var(--v2-border)`,
+                        borderTop:`1px solid var(--v2-border)`,
                         background: isLive ? 'transparent' : selected===v.id ? 'transparent' : 'var(--v2-surface)',
                         cursor:'pointer',
                         opacity: isLive ? 1 : wasInstalled ? 0.5 : neverInstalled && vi > 0 ? 0.4 : 1,
@@ -2364,7 +2364,7 @@ function DomainGroup({ primary, versions, index, selected, onSelect }) {
                         {isLive && <Globe size={14} color="white"/>}
                         {wasInstalled && (
                           <>
-                            <Server size={12} color="rgba(240,237,232,0.45)"/>
+                            <Server size={12} color="#777777"/>
                             <div style={{ position:'absolute', top:'50%', left:3, right:3, height:1.5, background:'#666666', transform:'rotate(-25deg)', transformOrigin:'center' }}/>
                           </>
                         )}

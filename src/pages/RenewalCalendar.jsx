@@ -66,7 +66,7 @@ function DayCell({ day, certs, isToday, isSelected, onClick }) {
           ? `2px solid ${accentColor || ACCENT}`
           : hasCerts
             ? `0.5px solid ${st ? st.border : 'var(--v2-border)'}`
-            : `0.5px solid var(--v2-border)`,
+            : `1px solid var(--v2-border)`,
         borderLeft: accentColor ? `3px solid ${accentColor}` : undefined,
         cursor:    hasCerts ? 'pointer' : 'default',
         transition:'box-shadow .15s ease',
@@ -116,12 +116,12 @@ function DetailPanel({ label, certs, onClose }) {
   return (
     <div style={{
       marginTop: 10, borderRadius: 10, overflow: 'hidden',
-      border: '0.5px solid var(--v2-border)',
+      border: '1px solid var(--v2-border)',
       animation: 'slideDown .18s ease',
     }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
         padding:'9px 14px', background:'var(--v2-surface-3)',
-        borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+        borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
         <span style={{ fontSize:12, fontWeight:500, color:'#111111' }}>
           {certs.length} cert{certs.length!==1?'s':''} — {label}
         </span>
@@ -131,7 +131,7 @@ function DetailPanel({ label, certs, onClose }) {
       {/* Col headers */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
         padding:'6px 14px', background:'var(--v2-surface-3)',
-        borderBottom:'0.5px solid rgba(0,0,0,0.06)' }}>
+        borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
         {['Domain','Issuer','Expires','Days'].map(h => (
           <div key={h} style={{ fontSize:9, fontWeight:600, color:'#888888',
             textTransform:'uppercase', letterSpacing:'0.3px' }}>{h}</div>
@@ -144,7 +144,7 @@ function DetailPanel({ label, certs, onClose }) {
         return (
           <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 70px',minWidth:400,
             padding:'9px 14px', alignItems:'center',
-            borderBottom: i<certs.length-1 ? '0.5px solid var(--v2-border)' : 'none',
+            borderBottom: i<certs.length-1 ? '1px solid var(--v2-border)' : 'none',
             background: 'rgba(0,0,0,0.03)',
           }}>
             <div>
@@ -290,12 +290,12 @@ function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
       </div>
 
       {/* Time rows */}
-      <div style={{ border:'0.5px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
+      <div style={{ border:'1px solid var(--v2-border)', borderRadius:8, overflow:'hidden' }}>
         {Array.from({length:10}, (_,i) => i+8).map(hour => (
           <div key={hour} style={{ display:'grid', gridTemplateColumns:'50px repeat(auto-fill,minmax(100px,1fr))',
-            borderBottom:'0.5px solid rgba(0,0,0,0.06)', minHeight:48 }}>
+            borderBottom:'1px solid rgba(0,0,0,0.06)', minHeight:48 }}>
             <div style={{ fontSize:9, color:'#888888', padding:'5px 8px',
-              borderRight:'0.5px solid var(--v2-border)', background:'var(--v2-surface-3)',
+              borderRight:'1px solid var(--v2-border)', background:'var(--v2-surface-3)',
               display:'flex', alignItems:'flex-start', justifyContent:'flex-end' }}>
               {hour}:00
             </div>
@@ -307,7 +307,7 @@ function WeekView({ certs, viewYear, viewMonth, viewWeek, today }) {
               return (
                 <div key={di} onClick={() => showCerts&&setSelectedDate(selectedDate===key?null:key)}
                   style={{ background: isToday?'rgba(30,0,0,0.4)':'transparent',
-                    borderRight:'0.5px solid var(--v2-border)',
+                    borderRight:'1px solid var(--v2-border)',
                     padding:3, cursor:showCerts?'pointer':'default' }}>
                   {showCerts && dc.slice(0,2).map((c,ci) => {
                     const s = certStatus(c.expires_at)

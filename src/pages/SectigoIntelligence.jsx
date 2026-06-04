@@ -127,7 +127,7 @@ function CredPanel({ onConnect }) {
     <div className="v2-card v2-card-pad" style={{ maxWidth: 480, margin: '48px auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(239,68,68,0.08)',
-          border: '1px solid #F2C4BC', display: 'flex', alignItems: 'center',
+          border: '1px solid rgba(154,100,0,0.2)', display: 'flex', alignItems: 'center',
           justifyContent: 'center', fontWeight: 800, fontSize:14, color: '#111111' }}>SC</div>
         <div>
           <div style={{ fontWeight: 600, fontSize:15, color: '#111111' }}>Connect Sectigo SCM</div>
@@ -251,7 +251,7 @@ function InventoryLayer({ creds }) {
 
       <div className="v2-card" style={{ overflow: 'hidden', padding: 0 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr 1fr 1fr 1fr',
-          padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
+          padding: '8px 14px', borderBottom: '1px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Domain', 'Type', 'Status', 'Expires', 'Days left'].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
@@ -268,7 +268,7 @@ function InventoryLayer({ creds }) {
           const typ = c.certType || c.type || c.product || '—'
           return (
             <div key={c.id || i} style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr 1fr 1fr 1fr',
-              padding: '9px 14px', borderBottom: i < filtered.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
+              padding: '9px 14px', borderBottom: i < filtered.length - 1 ? '1px solid var(--v2-border)' : 'none',
               alignItems: 'center', transition: 'background .1s' }}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--v2-surface-3)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
@@ -319,7 +319,7 @@ function OrgsLayer({ creds }) {
 
       <div className="v2-card" style={{ overflow: 'hidden', padding: 0 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-          padding: '8px 14px', borderBottom: '0.5px solid var(--v2-border)',
+          padding: '8px 14px', borderBottom: '1px solid var(--v2-border)',
           background: 'var(--v2-surface-3)' }}>
           {['Organisation', 'City / Country', 'Status', 'Cert types'].map(h => (
             <div key={h} style={{ fontSize:10, fontWeight: 600, color: '#888888',
@@ -330,7 +330,7 @@ function OrgsLayer({ creds }) {
           <div style={{ padding: 20, textAlign: 'center', color: '#888888', fontSize:12 }}>No organisations found</div>
         ) : orgs.map((org, i) => (
           <div key={org.id || i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
-            padding: '9px 14px', borderBottom: i < orgs.length - 1 ? '0.5px solid var(--v2-border)' : 'none',
+            padding: '9px 14px', borderBottom: i < orgs.length - 1 ? '1px solid var(--v2-border)' : 'none',
             alignItems: 'center' }}>
             <div>
               <div style={{ fontSize:12, fontWeight: 500, color: '#111111' }}>{org.name || org.commonName || '—'}</div>
@@ -413,7 +413,7 @@ function AnalyticsLayer({ creds }) {
               <div className="v2-mono" style={{ fontSize:12, fontWeight: 700, color: '#111111', minWidth: 28, textAlign: 'right' }}>{count}</div>
             </div>
           ))}
-          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '0.5px solid var(--v2-border)',
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--v2-border)',
             fontSize:12, color: '#888888' }}>
             Total: <strong style={{ color: '#111111' }}>{data.total}</strong>
           </div>
@@ -466,13 +466,13 @@ export default function SectigoIntelligence({ nav }) {
           <span style={{ color: 'var(--v2-border)', fontSize:12 }}>/</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
             <div style={{ width: 22, height: 22, borderRadius: 6, background: 'rgba(239,68,68,0.08)',
-              border: '1px solid #F2C4BC', display: 'flex', alignItems: 'center',
+              border: '1px solid rgba(154,100,0,0.2)', display: 'flex', alignItems: 'center',
               justifyContent: 'center', fontWeight: 800, fontSize: 9, color: '#111111' }}>SC</div>
             <span style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>Sectigo Intelligence</span>
           </div>
           {creds && (
             <span style={{ marginLeft: 'auto', fontSize:10, fontWeight: 700, padding: '2px 8px',
-              borderRadius: 20, background: 'transparent', color: '#16a068', border: '0.5px solid rgba(31,92,78,0.2)',
+              borderRadius: 20, background: 'transparent', color: '#16a068', border: '1px solid rgba(31,92,78,0.2)',
               display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a068', display: 'inline-block' }}/>
               Connected
@@ -486,7 +486,7 @@ export default function SectigoIntelligence({ nav }) {
           <>
             {/* Tab nav */}
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 24,
-              borderBottom: '0.5px solid var(--v2-border)', paddingBottom: 0 }}>
+              borderBottom: '1px solid var(--v2-border)', paddingBottom: 0 }}>
               {TABS.map(t => (
                 <button key={t.id} onClick={() => setTab(t.id)}
                   style={{ display: 'flex', alignItems: 'center', gap: 6,

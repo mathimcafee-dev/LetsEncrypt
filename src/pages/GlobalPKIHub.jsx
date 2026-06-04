@@ -170,8 +170,8 @@ export default function GlobalPKIHub({ nav }) {
   return (
     <div className="v2-page" style={{ fontFamily: FONT }}>
       <style>{`
-        .hub-sync{background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:7px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--v2-text-2);gap:12px;flex-wrap:wrap}
-        .hub-alert{background:var(--v2-amber-bg,#fde8e4);border-bottom:0.5px solid var(--v2-amber-border,#F2C4BC);padding:9px 24px;display:flex;align-items:center;gap:12px;font-size:12px;flex-wrap:wrap}
+        .hub-sync{background:var(--v2-surface-2);border-bottom:1px solid var(--v2-border);padding:7px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--v2-text-2);gap:12px;flex-wrap:wrap}
+        .hub-alert{background:var(--v2-amber-bg,rgba(154,100,0,0.07));border-bottom:1px solid var(--v2-amber-border,rgba(154,100,0,0.2));padding:9px 24px;display:flex;align-items:center;gap:12px;font-size:12px;flex-wrap:wrap}
         .hub-hero{background:#1f5c4e;padding:36px 24px 30px;color:#ffffff}
         .hub-eyebrow{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;font-weight:500;margin-bottom:8px}
         .hub-h1{font-size:28px;font-weight:600;letter-spacing:-.5px;color:#ffffff;line-height:1.15;margin-bottom:10px}
@@ -180,27 +180,27 @@ export default function GlobalPKIHub({ nav }) {
         .hub-stats{display:flex;gap:30px;flex-wrap:wrap}
         .hub-sn{font-size:24px;font-weight:600;color:#ffffff;font-variant-numeric:tabular-nums;line-height:1}
         .hub-sl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
-        .hub-tabs{background:var(--v2-surface-2);border-bottom:0.5px solid var(--v2-border);padding:0 24px;display:flex;gap:0}
+        .hub-tabs{background:var(--v2-surface-2);border-bottom:1px solid var(--v2-border);padding:0 24px;display:flex;gap:0}
         .hub-tab{background:none;border:none;border-bottom:1.5px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:var(--v2-text-2);padding:11px 4px 12px;margin-right:22px;cursor:pointer;margin-bottom:-0.5px;display:flex;align-items:center;gap:7px;transition:color .12s;white-space:nowrap}
         .hub-tab:hover{color:var(--v2-text)}
         .hub-tab.on{color:var(--v2-text);border-bottom-color:var(--v2-text)}
         .hub-tab .cnt{font-size:10px;font-weight:500;background:var(--v2-hover);border-radius:100px;padding:1px 7px;color:var(--v2-text-3)}
         .hub-tab.on .cnt{background:var(--v2-text);color:#ffffff}
-        .fbar{padding:9px 14px;border-bottom:0.5px solid var(--v2-border);background:var(--v2-surface-2);display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-        .fchip{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;border:0.5px solid transparent;color:var(--v2-text-2);background:transparent;font-family:${FONT};cursor:pointer}
+        .fbar{padding:9px 14px;border-bottom:1px solid var(--v2-border);background:var(--v2-surface-2);display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+        .fchip{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid transparent;color:var(--v2-text-2);background:transparent;font-family:${FONT};cursor:pointer}
         .fchip:hover{background:var(--v2-hover)}
         .fchip.on{background:var(--v2-surface);border-color:var(--v2-border-strong);color:var(--v2-text)}
         .org-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:16px}
-        .org-card{background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:16px;cursor:pointer;transition:border-color .12s;display:flex;flex-direction:column;gap:10px}
-        .org-card:hover{border-color:var(--v2-border-strong)}
+        .org-card{background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:16px;cursor:pointer;transition:all .12s;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+        .org-card:hover{border-color:rgba(31,92,78,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.08);transform:translateY(-1px)}
         .org-card.active{border-color:var(--v2-green-border);background:var(--v2-green-bg)}
         .org-header{display:flex;align-items:flex-start;gap:12px}
         .org-badge{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#ffffff;flex-shrink:0;letter-spacing:.02em;line-height:1.2;text-align:center}
-        .org-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;padding-top:10px;border-top:0.5px solid var(--v2-border);font-size:11px}
+        .org-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;padding-top:10px;border-top:1px solid var(--v2-border);font-size:11px}
         .om-k{color:var(--v2-text-3)}
         .om-v{color:var(--v2-text);font-weight:500;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-        .detail-panel{border-top:0.5px solid var(--v2-border);padding:16px 20px;background:var(--v2-surface-2)}
-        .std-row{display:flex;gap:10px;padding:12px 16px;border-bottom:0.5px solid var(--v2-border);cursor:pointer;transition:background .1s;align-items:flex-start}
+        .detail-panel{border-top:1px solid var(--v2-border);padding:16px 20px;background:var(--v2-surface-2)}
+        .std-row{display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid var(--v2-border);cursor:pointer;transition:background .1s;align-items:flex-start}
         .std-row:hover{background:var(--v2-surface-2)}
         .std-row.active{background:var(--v2-green-bg);border-left:2px solid var(--v2-green-border)}
         .std-id-col{min-width:100px;flex-shrink:0}
@@ -216,20 +216,20 @@ export default function GlobalPKIHub({ nav }) {
         .tl-event{font-size:12px;font-weight:500;color:var(--v2-text);margin-bottom:4px;line-height:1.4}
         .tl-desc{font-size:11px;color:var(--v2-text-2);line-height:1.6}
         .pqc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:16px}
-        .pqc-card{background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px}
+        .pqc-card{background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px}
         .pqc-status{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:8px}
-        .readiness-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--v2-border)}
+        .readiness-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--v2-border)}
         .readiness-row:last-child{border-bottom:none}
         .readiness-org{font-size:12px;font-weight:600;min-width:100px;color:var(--v2-text)}
         .readiness-bar{flex:1;height:6px;border-radius:3px;background:var(--v2-hover);overflow:hidden}
         .readiness-fill{height:100%;border-radius:3px;transition:width .6s}
         .events-list{padding:16px}
-        .event-card{background:var(--v2-surface);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
-        .event-date-box{background:var(--v2-surface-2);border:0.5px solid var(--v2-border);border-radius:var(--v2-r-lg);padding:8px 10px;text-align:center;min-width:52px;flex-shrink:0}
+        .event-card{background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-xl);padding:14px 16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
+        .event-date-box{background:var(--v2-surface-2);border:1px solid var(--v2-border);border-radius:var(--v2-r-lg);padding:8px 10px;text-align:center;min-width:52px;flex-shrink:0}
         .ev-day{font-size:18px;font-weight:700;color:var(--v2-text);font-family:${MONO};line-height:1}
         .ev-mon{font-size:10px;color:var(--v2-text-3);text-transform:uppercase;letter-spacing:.06em}
         .ev-yr{font-size:10px;color:var(--v2-text-3);font-family:${MONO}}
-        .side-info{background:var(--v2-surface-2);border-left:0.5px solid var(--v2-border);padding:16px;min-width:260px;max-width:300px;flex-shrink:0}
+        .side-info{background:var(--v2-surface-2);border-left:1px solid var(--v2-border);padding:16px;min-width:260px;max-width:300px;flex-shrink:0}
         .si-head{font-size:11px;letter-spacing:.06em;color:var(--v2-text-3);text-transform:uppercase;font-weight:500;margin-bottom:10px}
         @media(max-width:min(800px,100%)){.org-grid{grid-template-columns:1fr}.pqc-grid{grid-template-columns:1fr}}
       `}</style>
@@ -301,7 +301,7 @@ export default function GlobalPKIHub({ nav }) {
               <button key={t} className={`fchip${tlFilter===t?' on':''}`} onClick={()=>setTlFilter(t)}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>
             ))}
           </div>
-          <div style={{ display:'flex', alignItems:'center', gap:7, background:'var(--v2-surface)', border:'0.5px solid var(--v2-border-strong)', borderRadius:'var(--v2-r-md)', padding:'5px 10px', marginLeft:8 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:7, background:'var(--v2-surface)', border:'1px solid var(--v2-border-strong)', borderRadius:'var(--v2-r-md)', padding:'5px 10px', marginLeft:8 }}>
             <Search size={13} color="var(--v2-text-3)" />
             <input type="text" placeholder="Search…" value={query} onChange={e=>setQuery(e.target.value)}
               style={{ border:'none', outline:'none', background:'transparent', fontSize:12, color:'#111111', fontFamily:FONT, width:160 }} />
@@ -342,7 +342,7 @@ export default function GlobalPKIHub({ nav }) {
                     { k:'Governance', v:selectedOrg.governance },
                     { k:'Membership', v:selectedOrg.membership_type },
                   ].map(({ k, v }) => v && (
-                    <div key={k} style={{ display:'flex', gap:10, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:11 }}>
+                    <div key={k} style={{ display:'flex', gap:10, padding:'5px 0', borderBottom:'1px solid rgba(0,0,0,0.06)', fontSize:11 }}>
                       <span style={{ color:'#888888', minWidth:80, flexShrink:0 }}>{k}</span>
                       <span style={{ color:'#111111', fontWeight:500, fontSize:11 }}>{v}</span>
                     </div>
@@ -468,7 +468,7 @@ export default function GlobalPKIHub({ nav }) {
                 { k:'Status', v:selectedStd.status },
                 { k:'Published', v:fmtDate(selectedStd.published_date) },
               ].filter(x=>x.v).map(({ k, v }) => (
-                <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'0.5px solid rgba(0,0,0,0.06)', fontSize:11 }}>
+                <div key={k} style={{ display:'flex', gap:8, padding:'5px 0', borderBottom:'1px solid rgba(0,0,0,0.06)', fontSize:11 }}>
                   <span style={{ color:'#888888', minWidth:70, flexShrink:0 }}>{k}</span>
                   <span style={{ color:'#111111', fontWeight:500 }}>{v}</span>
                 </div>
