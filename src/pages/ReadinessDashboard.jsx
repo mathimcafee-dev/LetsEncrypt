@@ -1,6 +1,7 @@
 // ReadinessDashboard.jsx v4 — Sharp Comodo-theme design
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
+import PageHero from '../components/PageHero'
 import { CheckCircle, XCircle, RefreshCw, ExternalLink, ChevronUp, ChevronDown, Shield } from 'lucide-react'
 import '../styles/design-v2.css'
 
@@ -189,38 +190,14 @@ export default function ReadinessDashboard({ user, onNav }) {
 
   return (
     <div className="v2-page" style={{ fontFamily:F }}>
-      <div className="v2-container" style={{ maxWidth:1200, paddingTop:8, paddingBottom:40 }}>
-
-        {/* ── Page Header ── */}
-        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between',
-          marginBottom:24, gap:16, flexWrap:'wrap' }}>
-          <div>
-            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-              <div style={{ width:36, height:36, borderRadius:10, background:'rgba(0,0,0,0.08)',
-                border:'1px solid rgba(0,119,182,0.4)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <Shield size={18} color="#0077b6"/>
-              </div>
-              <div>
-                <div style={{ fontSize:9, fontWeight:700, color:'#0077b6', letterSpacing:'1.5px',
-                  textTransform:'uppercase', marginBottom:2 }}>CA/B Forum SC-081v3</div>
-                <h1 style={{ fontSize:22, fontWeight:800, color:'#111111', margin:0, letterSpacing:'-0.5px' }}>
-                  47-Day Readiness
-                </h1>
-              </div>
-            </div>
-            <p style={{ fontSize:13, color:'#555555', margin:0, maxWidth:480, lineHeight:1.6 }}>
-              How ready is your fleet for shorter certificate lifetimes?
-            </p>
-          </div>
-          <a href="https://cabforum.org/working-groups/server/baseline-requirements/requirements/"
-            target="_blank" rel="noreferrer"
-            style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, fontWeight:600,
-              color:'#0077b6', textDecoration:'none', padding:'7px 12px', borderRadius:8,
-              background:'rgba(0,119,182,0.08)', border:'1px solid rgba(0,0,0,0.1)',
-              transition:'all .15s', whiteSpace:'nowrap' }}>
-            <ExternalLink size={12}/> View SC-081v3
-          </a>
-        </div>
+      <PageHero
+        eyebrow="CA/B Forum SC-081v3"
+        title="47-Day Readiness"
+        subtitle="How ready is your fleet for shorter certificate lifetimes? Track automation readiness, compliance deadlines, and certificate health across your entire portfolio."
+        stats={[{n:'200d',l:'Mar 2026'},{n:'100d',l:'Mar 2027'},{n:'47d',l:'Mar 2029'},{n:'10d',l:'DCV reuse'}]}
+        tags={['SC081v3 · in effect','Auto-renew required','DNS-01 automation','VPS agent','cPanel UAPI','Zero-touch pipeline']}
+      />
+      <div className="v2-container" style={{ maxWidth:1200, paddingTop:24, paddingBottom:40 }}>
 
         {/* ── Fleet Score + Summary Cards ── */}
         <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:16, marginBottom:20 }}>

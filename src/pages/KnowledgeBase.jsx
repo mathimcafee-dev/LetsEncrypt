@@ -1,5 +1,6 @@
 // KnowledgeBase.jsx — SSLVault docs v2 (kb-refresh)
 import { useState, useEffect } from 'react'
+import PageHero from '../components/PageHero'
 
 const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
@@ -187,12 +188,14 @@ export default function KnowledgeBase({ nav }) {
       <div style={{ maxWidth:860, margin:'0 auto', padding:'clamp(40px,6vw,72px) clamp(20px,4vw,40px) 100px' }}>
 
         {/* Header */}
-        <div style={{ marginBottom:48 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:C.teal, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:14 }}>Documentation</div>
-          <h1 style={{ fontSize:'clamp(28px,4vw,44px)', fontWeight:700, color:C.heading, letterSpacing:'-1px', lineHeight:1.1, marginBottom:16 }}>Knowledge Base</h1>
-          <p style={{ fontSize:15, color:C.body, maxWidth:540, lineHeight:1.8, marginBottom:28 }}>
-            Complete documentation for SSLVault — issue, monitor, auto-renew, and secure certificates across every server and CA.
-          </p>
+        <PageHero
+          eyebrow="SSLVault Documentation"
+          title="Knowledge Base"
+          subtitle="Complete documentation for SSLVault — issue, monitor, auto-renew, and secure certificates across every server and CA."
+          stats={[{n:'13',l:'Articles'},{n:'46',l:'FAQs'},{n:'RFC 8555',l:'ACME standard'},{n:'AES-256',l:'Key vault'}]}
+          tags={['Getting started','Install guide','API reference','cPanel','VPS agent','DNS automation','Troubleshooting']}
+        />
+        <div style={{marginBottom:48,marginTop:32}}>
 
           {/* Search */}
           <div style={{ position:'relative', maxWidth:440 }}>

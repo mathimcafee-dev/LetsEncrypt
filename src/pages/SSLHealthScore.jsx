@@ -1,6 +1,7 @@
 // SSLHealthScore.jsx — Grade A-F per domain · HSTS · CAA · Expiry · Cert validity
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
+import PageHero from '../components/PageHero'
 import {
   Trophy, RefreshCw, Shield, ShieldOff, AlertTriangle,
   CheckCircle, XCircle, Clock, Globe, Plus, X, ChevronDown, ChevronUp
@@ -212,23 +213,14 @@ export default function SSLHealthScore({ user }) {
 
   return (
     <div className="v2-page">
-      <div className="v2-container" style={{ maxWidth: 860 }}>
-
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-          marginBottom: 20, paddingTop: 8, gap: 12 }}>
-          <div>
-            <h1 className="v2-h1" style={{ fontSize:22 }}>SSL health score</h1>
-            <p style={{ fontSize:13, color: '#888888', marginTop: 4 }}>
-              Grade A–F across TLS reachability, HSTS, CAA records and expiry
-            </p>
-          </div>
-          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => load()}
-            style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <RefreshCw size={11} style={loading ? { animation: 'spin .8s linear infinite' } : {}} />
-            Refresh all
-          </button>
-        </div>
+      <PageHero
+        eyebrow="SSLVault · Fleet Intelligence"
+        title="SSL Health Score"
+        subtitle="Grade A–F across TLS reachability, HSTS, CAA records and expiry. Scan your entire domain fleet instantly."
+        stats={[{n:'A–F',l:'Grade scale'},{n:'HSTS',l:'Enforced check'},{n:'CAA',l:'DNS security'},{n:'TLS 1.3',l:'Protocol check'}]}
+        tags={['TLS reachability','HSTS enforcement','CAA records','Expiry tracking','Grade A+','Auto-scan','CSV export']}
+      />
+      <div className="v2-container" style={{ maxWidth: 860, paddingTop:24 }}>
 
         {/* Summary cards */}
         {scores.length > 0 && (

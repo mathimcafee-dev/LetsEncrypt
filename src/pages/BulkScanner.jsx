@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Scan, RefreshCw, CheckCircle, XCircle, AlertTriangle, Download, X, Shield } from 'lucide-react'
 import '../styles/design-v2.css'
+import PageHero from '../components/PageHero'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
@@ -80,39 +81,14 @@ export default function BulkScanner({ nav }) {
 
   return (
     <div className="v2-page">
-      {/* Nav bar */}
-      <div style={{ background: 'var(--v2-surface)', borderBottom: '1px solid var(--v2-border)',
-        padding: '0 24px', height: 52, display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-          onClick={() => nav && nav('/')}>
-          <Shield size={18} color="#0077b6" />
-          <span style={{ fontSize:14, fontWeight: 600, color: '#111111' }}>SSLVault</span>
-          <span style={{ fontSize:11, color: '#888888', fontWeight: 400 }}>· Bulk Scanner</span>
-        </div>
-        <button onClick={() => nav && nav('/auth')}
-          style={{ fontSize:12, padding: '6px 14px', borderRadius: 7,
-            border: '1px solid var(--v2-border)', background: 'var(--v2-surface)',
-            color: '#333333', cursor: 'pointer' }}>
-          Sign in
-        </button>
-      </div>
-
+      <PageHero
+        eyebrow="SSLVault · Free tool"
+        title="Bulk SSL Scanner"
+        subtitle="Paste up to 100 domains — get instant SSL grades, expiry, HSTS and CAA checks. No account needed."
+        stats={[{n:'100',l:'Domains at once'},{n:'A–F',l:'Grade scale'},{n:'HSTS',l:'+ CAA check'},{n:'Free',l:'No login'}]}
+        tags={['No account needed','Up to 100 domains','TLS check','HSTS enforcement','CAA records','Expiry tracking','CSV export']}
+      />
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '32px 24px' }}>
-
-        {/* Hero */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, background: 'transparent',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 14px' }}>
-            <Scan size={22} color="#16a34a" />
-          </div>
-          <h1 style={{ fontSize:26, fontWeight: 600, color: '#111111', margin: '0 0 8px',
-            letterSpacing: '-0.4px' }}>Bulk SSL scanner</h1>
-          <p style={{ fontSize:14, color: '#888888', margin: 0 }}>
-            Paste up to 100 domains — get instant SSL grades, expiry, HSTS and CAA checks. No account needed.
-          </p>
-        </div>
 
         {/* Input */}
         <div style={{ background: 'var(--v2-surface)', border: '1px solid var(--v2-border)', borderRadius: 'var(--v2-r-lg)', padding: 20, marginBottom: 16 }}>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PageHero from '../components/PageHero'
 
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
@@ -178,26 +179,14 @@ export default function Pricing({ nav }) {
       <div style={{maxWidth:1080,margin:'0 auto',padding:`clamp(48px,8vw,80px) ${P} 100px`}}>
 
         {/* ── HERO ── */}
-        <div style={{textAlign:'center',marginBottom:72}}>
-          <div style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:10,fontWeight:700,
-            color:TEAL,letterSpacing:'2px',textTransform:'uppercase',padding:'5px 16px',
-            border:`1px solid ${LINE2}`,borderRadius:20,marginBottom:24,fontFamily:MONO}}>
-            ◆ SSLVault Pricing
-          </div>
-          <h1 style={{fontSize:'clamp(32px,5vw,56px)',fontWeight:900,letterSpacing:'-2px',lineHeight:1.06,marginBottom:18}}>
-            Professional CLM.<br/>
-            <span style={{color:TEAL}}>Transparent pricing.</span>
-          </h1>
-          <p style={{fontSize:16,color:BODY,maxWidth:540,margin:'0 auto 20px',lineHeight:1.8}}>
-            The complete certificate lifecycle management platform — agents, auto-renewal,
-            DNS automation, CertBind, CA intelligence, AES-256 key vault,
-            47-day readiness. Certificates at RapidSSL partner rates.
-          </p>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
-            <span style={{width:7,height:7,borderRadius:'50%',background:GREEN,display:'inline-block',animation:'blink 2s ease infinite'}}/>
-            <span style={{fontSize:12,color:BODY,fontFamily:MONO}}>Netherlands-based PKI engineer · Certified PKI Specialist · GDPR compliant</span>
-          </div>
-        </div>
+        <PageHero
+          eyebrow="SSLVault Pricing"
+          title="Professional CLM."
+          titleAccent="Transparent pricing."
+          subtitle="The complete certificate lifecycle management platform — agents, auto-renewal, DNS automation, CertBind, CA intelligence, AES-256 key vault, 47-day readiness. Certificates at RapidSSL partner rates."
+          stats={[{n:'3',l:'Plans'},{n:'47d',l:'Ready'},{n:'∞',l:'Renewals'},{n:'AES-256',l:'Key vault'}]}
+          tags={['RapidSSL partner','AES-256-GCM','47-day ready','DNS automation','CA/B Forum 2026','GDPR compliant','Netherlands PKI']}
+        />
 
         {/* ── PLAN CARDS ── */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginBottom:56,
