@@ -1011,23 +1011,34 @@ export default function Home({ nav }) {
               </div>
             </FadeUp>
             <FadeUp delay={80}>
-              <div style={{display:'flex',flexDirection:'column',gap:6}}>
-                {[{name:'Venafi TLS Protect',price:'$250k+/yr',notes:'Enterprise only · No cert issuance · No cPanel',hi:false},{name:'Keyfactor Command',price:'$75–200k/yr',notes:'Mid-market · Complex setup · No free tier',hi:false},{name:'SSLVault CLM',price:'Partner rates',notes:'Full CLM · Agent + cPanel + DNS · All cert types',hi:true}].map(c=>(
-                  <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(61,191,176,0.08)':'rgba(255,255,255,0.03)',border:`1px solid ${c.hi?'rgba(61,191,176,0.3)':'rgba(255,255,255,0.07)'}`,borderRadius:9,borderLeft:c.hi?`3px solid #3dbfb0`:'3px solid transparent'}}>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:12,fontWeight:c.hi?600:400,color:c.hi?'rgba(255,255,255,0.95)':'rgba(255,255,255,0.6)'}}>{c.name}</div>
-                      <div style={{fontSize:10,color:'rgba(255,255,255,0.3)',marginTop:2,fontFamily:MONO}}>{c.notes}</div>
-                    </div>
-                    <div style={{fontSize:13,fontWeight:c.hi?700:400,color:c.hi?'#3dbfb0':'rgba(255,255,255,0.35)',fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
-                  </div>
-                ))}
-                <div style={{marginTop:6,display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(260px,100%),1fr))',gap:4}}>
-                  {[['DigiCert','Trust chain · 99.9% browser'],['RapidSSL','CA partner · wholesale pricing'],['RFC 8555','ACME v2 · no lock-in'],['AES-256','Military-grade key storage'],['GDPR','Netherlands-based PKI engineer'],['No ads','No tracking · no reselling']].map(([val,sub])=>(
-                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'#0f1923',border:'1px solid rgba(255,255,255,0.06)',borderRadius:7,alignItems:'center'}}>
-                      <div style={{fontSize:10,fontWeight:600,color:'#3dbfb0',fontFamily:MONO,minWidth:58}}>{val}</div>
-                      <div style={{fontSize:10,color:'rgba(255,255,255,0.4)',lineHeight:1.4}}>{sub}</div>
+              <div style={{background:'#0f1923',borderRadius:12,overflow:'hidden',border:'1px solid rgba(255,255,255,0.07)'}}>
+                {/* Titlebar */}
+                <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                  <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
+                  <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1,textAlign:'center'}}>CLM market · pricing comparison</span>
+                </div>
+                <div style={{padding:'12px',display:'flex',flexDirection:'column',gap:6}}>
+                  {/* Competitor rows */}
+                  {[{name:'Venafi TLS Protect',price:'$250k+/yr',notes:'Enterprise only · No cert issuance · No cPanel',hi:false},{name:'Keyfactor Command',price:'$75–200k/yr',notes:'Mid-market · Complex setup · No free tier',hi:false},{name:'SSLVault CLM',price:'Partner rates',notes:'Full CLM · Agent + cPanel + DNS · All cert types',hi:true}].map(c=>(
+                    <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(61,191,176,0.06)':'rgba(255,255,255,0.02)',border:`1px solid ${c.hi?'rgba(61,191,176,0.25)':'rgba(255,255,255,0.05)'}`,borderRadius:8,borderLeft:c.hi?'3px solid #3dbfb0':'3px solid transparent'}}>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:12,fontWeight:c.hi?600:400,color:c.hi?'rgba(255,255,255,0.95)':'rgba(255,255,255,0.45)'}}>{c.name}</div>
+                        <div style={{fontSize:10,color:'rgba(255,255,255,0.25)',marginTop:2,fontFamily:MONO}}>{c.notes}</div>
+                      </div>
+                      <div style={{fontSize:13,fontWeight:c.hi?700:400,color:c.hi?'#3dbfb0':'rgba(255,255,255,0.3)',fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
                     </div>
                   ))}
+                  {/* Divider */}
+                  <div style={{height:'1px',background:'rgba(255,255,255,0.05)',margin:'2px 0'}}/>
+                  {/* Trust badge rows */}
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(240px,100%),1fr))',gap:4}}>
+                    {[['DigiCert','Trust chain · 99.9% browser'],['RapidSSL','CA partner · wholesale pricing'],['RFC 8555','ACME v2 · no lock-in'],['AES-256','Military-grade key storage'],['GDPR','Netherlands-based PKI engineer'],['No ads','No tracking · no reselling']].map(([val,sub])=>(
+                      <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'rgba(255,255,255,0.02)',border:'1px solid rgba(255,255,255,0.04)',borderRadius:7,alignItems:'center'}}>
+                        <div style={{fontSize:10,fontWeight:600,color:'#3dbfb0',fontFamily:MONO,minWidth:55}}>{val}</div>
+                        <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',lineHeight:1.4}}>{sub}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </FadeUp>
