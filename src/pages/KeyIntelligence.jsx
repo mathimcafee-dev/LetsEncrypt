@@ -579,7 +579,7 @@ export default function KeyIntelligence({ nav }) {
             <div style={{ position: 'absolute', inset: '-3px', borderRadius: '50%', background: 'rgba(0,165,80,0.12)', animation: 'dotpulse 2s ease infinite' }} />
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#00a550', position: 'relative' }} />
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
+          <div style={{ fontSize: 11, color: '#0077b6', fontWeight: 500 }}>
             AES-256-GCM encrypted · Envelope key hierarchy · Immutable audit log · Keys never stored in plaintext
           </div>
         </div>
