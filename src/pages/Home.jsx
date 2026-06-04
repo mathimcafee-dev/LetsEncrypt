@@ -98,7 +98,7 @@ function InventoryMockup() {
   const sc=s=>s==='active'?GRN:s==='warning'?AMB:RED
   const gc=g=>g.startsWith('A')?GRN:g==='B'?AMB:RED
   return (
-    <div style={{background:'#111111',border:`1px solid rgba(0,0,0,0.1)`,borderRadius:6,overflow:'hidden'}}>
+    <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
       <div style={{background:'#f4f1ec',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:`1px solid ${LN}`}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
         <span style={{fontSize:10,color:T3,fontFamily:MONO,flex:1,textAlign:'center'}}>Inventory · 4 certificates</span>
@@ -107,7 +107,7 @@ function InventoryMockup() {
         {['Domain','Days','Grade','CA','Auto','Status'].map(h=><div key={h} style={{fontSize:9.5,fontWeight:500,color:'rgba(255,255,255,0.4)',textTransform:'uppercase',letterSpacing:'0.05em',fontFamily:MONO}}>{h}</div>)}
       </div>
       {rows.map((r,i)=>(
-        <div key={r.d} style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'9px 14px',borderBottom:i<rows.length-1?'1px solid rgba(0,0,0,0.05)':'none',background:r.s==='critical'?'rgba(192,57,43,0.08)':r.s==='warning'?'rgba(154,100,0,0.08)':'transparent',alignItems:'center'}}>
+        <div key={r.d} style={{display:'grid',gridTemplateColumns:'2fr 50px 52px 80px 55px 68px',padding:'9px 14px',borderBottom:i<rows.length-1?'1px solid rgba(0,0,0,0.05)':'none',background:r.s==='critical'?'rgba(192,57,43,0.05)':r.s==='warning'?'rgba(154,100,0,0.04)':'transparent',alignItems:'center'}}>
           <span style={{fontSize:11.5,fontWeight:500,color:'rgba(255,255,255,0.85)',fontFamily:MONO}}>{r.d}</span>
           <span style={{fontSize:11,fontWeight:600,color:sc(r.s),fontFamily:MONO}}>{r.days}d</span>
           <span style={{fontSize:11,fontWeight:700,color:gc(r.grade)}}>{r.grade}</span>
@@ -200,98 +200,30 @@ const TICKER=['RFC 8555 · ACME v2','RapidSSL Partner','AES-256-GCM','TLS 1.3','
 
 
 function SSLVaultTrustBadge({ compact = false }) {
-  const canvasRef = React.useRef(null)
-  React.useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    const W = compact ? 26 : 34
-    const H = compact ? 38 : 50
-    const STEPS = 13
-    let f = 0, raf
-    function draw() {
-      ctx.clearRect(0, 0, W, H)
-      const t = f * 0.044
-      const pts1 = [], pts2 = []
-      for (let i = 0; i <= STEPS; i++) {
-        const y = 3 + (i / STEPS) * (H - 6)
-        const phase = (i / STEPS) * Math.PI * 2.4 + t
-        pts1.push({ x: W/2 + Math.sin(phase) * (W/2 - 3), y, phase })
-        pts2.push({ x: W/2 + Math.sin(phase + Math.PI) * (W/2 - 3), y, phase })
-      }
-      for (let i = 0; i <= STEPS; i += 2) {
-        const depth = (Math.sin(pts1[i].phase) + 1) / 2
-        ctx.beginPath(); ctx.moveTo(pts1[i].x, pts1[i].y); ctx.lineTo(pts2[i].x, pts2[i].y)
-        ctx.strokeStyle = `rgba(192,57,43,${(0.08 + depth * 0.15).toFixed(2)})`; ctx.lineWidth = 0.7; ctx.stroke()
-      }
-      const drawStrand = (pts, col) => {
-        ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y)
-        for (let i = 1; i <= STEPS; i++) {
-          const mx = (pts[i-1].x + pts[i].x)/2, my = (pts[i-1].y + pts[i].y)/2
-          ctx.quadraticCurveTo(pts[i-1].x, pts[i-1].y, mx, my)
-        }
-        ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke()
-      }
-      drawStrand(pts1, '#1f5c4e'); drawStrand(pts2, '#e85555')
-      for (let i = 0; i <= STEPS; i++) {
-        const depth = (Math.sin(pts1[i].phase) + 1) / 2
-        const r = 1.4 + depth * 1.8
-        ctx.beginPath(); ctx.arc(pts1[i].x, pts1[i].y, r, 0, Math.PI*2)
-        ctx.fillStyle = `rgba(220,80,60,${(0.35 + depth * 0.65).toFixed(2)})`; ctx.fill()
-      }
-      for (let i = 0; i <= STEPS; i++) {
-        const depth = (Math.sin(pts2[i].phase + Math.PI) + 1) / 2
-        const r = 1.4 + depth * 1.8
-        ctx.beginPath(); ctx.arc(pts2[i].x, pts2[i].y, r, 0, Math.PI*2)
-        ctx.fillStyle = `rgba(192,57,43,${(0.25 + depth * 0.5).toFixed(2)})`; ctx.fill()
-      }
-      f++; raf = requestAnimationFrame(draw)
-    }
-    draw()
-    return () => cancelAnimationFrame(raf)
-  }, [compact])
-  const W = compact ? 26 : 34, H = compact ? 38 : 50
   return (
     <div style={{
-      display:'inline-flex', alignItems:'center', gap: compact ? 8 : 11,
-      padding: compact ? '6px 12px 6px 8px' : '9px 16px 9px 10px',
-      background:'#f4f1ec',
-      border:'1px solid rgba(31,92,78,0.25)',
-      borderRadius:10, position:'relative', overflow:'hidden',
-      minWidth: compact ? 0 : 240,
-      animation:'sv-sweep-anim 3.5s ease-in-out infinite',
+      display:'inline-flex', alignItems:'center', gap:12,
+      padding: compact ? '7px 14px' : '12px 18px',
+      background:'#ffffff', border:'1px solid rgba(31,92,78,0.2)',
+      borderRadius:10, boxShadow:'0 1px 4px rgba(0,0,0,0.08)',
+      minWidth: compact ? 0 : 260,
     }}>
-      <canvas ref={canvasRef} width={W} height={H} style={{flexShrink:0}} />
-      <div style={{display:'flex',flexDirection:'column',gap:2,flex:1}}>
-        <span style={{fontSize:7,fontWeight:700,color:'#e85555',letterSpacing:'.14em',textTransform:'uppercase'}}>
-          {compact ? 'Secured by' : 'Cryptographically Secured'}
-        </span>
-        <div style={{fontSize: compact ? 13 : 15, fontWeight:800, color:'#111111', lineHeight:1, letterSpacing:'.01em'}}>
-          SSLVault <span style={{color:'#1f5c4e', fontSize: compact ? 10 : 11, fontWeight:500}}>® {compact ? 'PKI' : 'easysecurity.in'}</span>
-        </div>
-        <span style={{fontSize: compact ? 8 : 9, color:'#6a2a2a', letterSpacing:'.03em'}}>
-          {compact ? '256-bit TLS encryption' : 'Certified PKI · GoGetSSL · RapidSSL DV'}
-        </span>
-        <div style={{width:'100%',height:2,background:'rgba(0,0,0,0.07)',borderRadius:1,marginTop:3,overflow:'hidden',position:'relative'}}>
-          <div style={{position:'absolute',left:'-60%',top:0,width:'40%',height:'100%',
-            background:'linear-gradient(90deg,transparent,#1f5c4e,rgba(22,160,104,.4),transparent)',
-            animation:'sv-scan-anim 2.4s linear infinite'}}/>
+      <div style={{width:compact?28:36,height:compact?28:36,background:'#1f5c4e',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+        <svg width={compact?12:16} height={compact?12:16} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div style={{flex:1}}>
+        <div style={{fontSize:compact?7:8,fontWeight:700,color:'#1f5c4e',letterSpacing:'.12em',textTransform:'uppercase',marginBottom:2}}>{compact?'Secured':'Cryptographically Secured'}</div>
+        <div style={{fontSize:compact?12:14,fontWeight:800,color:'#111111',lineHeight:1,letterSpacing:'-.3px'}}>SSLVault <span style={{fontWeight:400,color:'#888',fontSize:compact?9:10}}>easysecurity.in</span></div>
+        {!compact&&<div style={{fontSize:9,color:'#888',marginTop:3,letterSpacing:'.02em'}}>Certified PKI · RapidSSL · AES-256-GCM</div>}
+      </div>
+      <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:2,flexShrink:0}}>
+        <div style={{fontSize:compact?13:16,fontWeight:900,color:'#1f5c4e',lineHeight:1,fontFamily:MONO}}>256</div>
+        <div style={{fontSize:7,color:'#888',letterSpacing:'.08em',textTransform:'uppercase'}}>bit TLS</div>
+        <div style={{display:'flex',alignItems:'center',gap:3,marginTop:2}}>
+          <div style={{width:5,height:5,borderRadius:'50%',background:'#16a068'}}/>
+          <span style={{fontSize:7,color:'#16a068',fontWeight:700,letterSpacing:'.06em'}}>LIVE</span>
         </div>
       </div>
-      <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:1,flexShrink:0}}>
-        <span style={{fontSize: compact ? 14 : 18, fontWeight:900, color:'#e03030', lineHeight:1}}>256</span>
-        <span style={{fontSize:8,color:'#6a2a2a',letterSpacing:'.06em',textTransform:'uppercase'}}>Bit SSL</span>
-        {!compact && <div style={{display:'flex',alignItems:'center',gap:4,marginTop:4}}>
-          <div style={{width:5,height:5,borderRadius:'50%',background:'#1f5c4e',
-            animation:'sv-live-anim 1.2s ease-in-out infinite'}}/>
-          <span style={{fontSize:8,color:'#cc4444',fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase'}}>Live</span>
-        </div>}
-      </div>
-      <style>{`
-        @keyframes sv-sweep-anim{0%{box-shadow:inset -60px 0 30px -30px transparent}50%{box-shadow:inset -60px 0 30px -30px rgba(192,57,43,0.06)}100%{box-shadow:inset -60px 0 30px -30px transparent}}
-        @keyframes sv-scan-anim{0%{left:-60%}100%{left:120%}}
-        @keyframes sv-live-anim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.55)}}
-      `}</style>
     </div>
   )
 }
@@ -802,9 +734,9 @@ export default function Home({ nav }) {
             <FadeUp delay={80}>
               <div style={{display:'flex',flexDirection:'column',gap:5}}>
                 {[{name:'Venafi TLS Protect',price:'$250k+/yr',notes:'Enterprise only · No cert issuance · No cPanel',hi:false},{name:'Keyfactor Command',price:'$75–200k/yr',notes:'Mid-market · Complex setup · No free tier',hi:false},{name:'SSLVault CLM',price:'Partner rates',notes:'Full CLM · Agent + cPanel + DNS · All cert types',hi:true}].map(c=>(
-                  <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(0,0,0,0.03)':BG3,border:`1px solid ${c.hi?LN3:LN}`,borderRadius:5}}>
-                    <div style={{flex:1}}><div style={{fontSize:12,fontWeight:c.hi?600:500,color:T1}}>{c.name}</div><div style={{fontSize:11,color:T3,marginTop:2}}>{c.notes}</div></div>
-                    <div style={{fontSize:13,fontWeight:c.hi?600:400,color:c.hi?T1:T3,fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
+                  <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(31,92,78,0.06)':'#ffffff',border:`1px solid ${c.hi?'rgba(31,92,78,0.25)':LN}`,borderRadius:8,boxShadow:c.hi?'0 1px 4px rgba(31,92,78,0.1)':'none'}}>
+                    <div style={{flex:1}}><div style={{fontSize:12,fontWeight:c.hi?700:500,color:c.hi?'#1f5c4e':T1}}>{c.name}</div><div style={{fontSize:11,color:T3,marginTop:2}}>{c.notes}</div></div>
+                    <div style={{fontSize:13,fontWeight:c.hi?700:400,color:c.hi?'#1f5c4e':T3,fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
                   </div>
                 ))}
                 <div style={{marginTop:5,display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
