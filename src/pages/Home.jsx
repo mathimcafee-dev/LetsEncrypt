@@ -243,37 +243,53 @@ function CertVaultMockup() {
 }
 
 function ReadinessMockup() {
+  const [pulse,setPulse]=React.useState(true)
+  useEffect(()=>{const iv=setInterval(()=>setPulse(p=>!p),1200);return()=>clearInterval(iv)},[])
   const certs=[{d:'easysecurity.in',s:92,label:'Ready',c:GRN},{d:'api.shop.com',s:58,label:'At Risk',c:AMB},{d:'staging.portal.io',s:24,label:'Will Break',c:RED}]
+  const milestones=[{d:'Mar 2026',v:'200d',c:RED,status:'IN EFFECT'},{d:'Mar 2027',v:'100d',c:AMB,status:'UPCOMING'},{d:'Mar 2029',v:'47d',c:GRN,status:'PLANNED'}]
   return (
-    <div style={{background:'#111111',border:'none',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.08)'}}>
-      <div style={{background:'#f0f4fa',padding:'9px 14px',display:'flex',alignItems:'center',gap:6,borderBottom:'1px solid rgba(255,255,255,0.12)'}}>
+    <div style={{background:'#0f1923',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.25)'}}>
+      {/* Titlebar */}
+      <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
         <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
-        <span style={{fontSize:10,color:'rgba(0,0,0,0.45)',fontFamily:MONO,flex:1,textAlign:'center'}}>47-Day Readiness · CA/B Forum</span>
+        <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1,textAlign:'center'}}>47-Day Readiness · CA/B Forum SC-081v3</span>
+        <div style={{display:'flex',alignItems:'center',gap:4,fontSize:9,color:'#3dbfb0',fontFamily:MONO}}>
+          <div style={{width:5,height:5,borderRadius:'50%',background:'#3dbfb0',opacity:pulse?1:0.25,transition:'opacity 0.4s'}}/>
+          Live
+        </div>
       </div>
       <div style={{padding:'12px'}}>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:5,marginBottom:10}}>
-          {[{d:'Mar 2026',v:'200d',c:RED},{d:'Mar 2027',v:'100d',c:AMB},{d:'Mar 2029',v:'47d',c:GRN}].map(m=>(
-            <div key={m.d} style={{padding:'8px',borderRadius:4,background:'#f0f4fa',border:'1px solid rgba(0,0,0,0.08)'}}>
-              <div style={{fontSize:9.5,fontWeight:600,color:m.c,marginBottom:2,fontFamily:MONO}}>{m.d}</div>
-              <div style={{fontSize:18,fontWeight:700,color:m.c,fontFamily:MONO}}>{m.v}</div>
-              <div style={{fontSize:9,color:'rgba(0,0,0,0.45)'}}>max validity</div>
+        {/* Milestone cards */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:6,marginBottom:10}}>
+          {milestones.map(m=>(
+            <div key={m.d} style={{padding:'9px 10px',borderRadius:7,background:'rgba(255,255,255,0.04)',border:`1px solid rgba(255,255,255,0.07)`}}>
+              <div style={{fontSize:9,fontWeight:700,color:m.c,fontFamily:MONO,letterSpacing:'0.06em',marginBottom:3}}>{m.d}</div>
+              <div style={{fontSize:20,fontWeight:700,color:m.c,fontFamily:MONO,lineHeight:1,marginBottom:3}}>{m.v}</div>
+              <div style={{fontSize:8,color:'rgba(255,255,255,0.3)',fontFamily:MONO,letterSpacing:'0.05em'}}>{m.status}</div>
             </div>
           ))}
         </div>
-        {certs.map(c=>(
-          <div key={c.d} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 10px',borderRadius:4,background:'#ffffff',marginBottom:5,border:'1px solid rgba(0,0,0,0.08)'}}>
-            <div style={{position:'relative',width:32,height:32,flexShrink:0}}>
-              <svg width="32" height="32" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="3"/>
-                <circle cx="18" cy="18" r="14" fill="none" stroke={c.c} strokeWidth="3" strokeDasharray={`${2*Math.PI*14}`} strokeDashoffset={`${2*Math.PI*14*(1-c.s/100)}`} strokeLinecap="round" transform="rotate(-90 18 18)"/>
+        {/* Cert score rows */}
+        {certs.map((c,i)=>(
+          <div key={c.d} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 10px',borderRadius:7,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.06)',marginBottom:i<certs.length-1?6:0}}>
+            {/* Score ring */}
+            <div style={{position:'relative',width:34,height:34,flexShrink:0}}>
+              <svg width="34" height="34" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="3"/>
+                <circle cx="18" cy="18" r="14" fill="none" stroke={c.c} strokeWidth="3"
+                  strokeDasharray={`${2*Math.PI*14}`}
+                  strokeDashoffset={`${2*Math.PI*14*(1-c.s/100)}`}
+                  strokeLinecap="round" transform="rotate(-90 18 18)"/>
               </svg>
-              <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:700,color:c.c}}>{c.s}</div>
+              <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:700,color:c.c,fontFamily:MONO}}>{c.s}</div>
             </div>
+            {/* Domain + sub */}
             <div style={{flex:1}}>
-              <div style={{fontSize:11,fontWeight:500,color:'#111111',fontFamily:MONO}}>{c.d}</div>
-              <div style={{fontSize:10,color:'rgba(0,0,0,0.45)'}}>Automation checklist</div>
+              <div style={{fontSize:12,fontWeight:500,color:'rgba(255,255,255,0.85)',fontFamily:MONO,marginBottom:2}}>{c.d}</div>
+              <div style={{fontSize:9,color:'rgba(255,255,255,0.3)',fontFamily:MONO}}>Automation checklist</div>
             </div>
-            <span style={{fontSize:10,fontWeight:500,color:c.c,background:c.c+'18',padding:'2px 7px',borderRadius:3,fontFamily:MONO}}>{c.label}</span>
+            {/* Status pill */}
+            <span style={{fontSize:10,fontWeight:600,color:c.c,background:`${c.c}20`,border:`1px solid ${c.c}40`,padding:'3px 9px',borderRadius:20,fontFamily:MONO,whiteSpace:'nowrap'}}>{c.label}</span>
           </div>
         ))}
       </div>
@@ -678,7 +694,10 @@ export default function Home({ nav }) {
             </FadeUp>
             <FadeUp delay={80}>
               <div>
-                <div style={{fontSize:10,color:'rgba(255,255,255,0.48)',fontFamily:MONO,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:10,fontWeight:500}}>📋 CA/B Forum compliance scoring</div>
+                <div style={{fontSize:10,color:'rgba(255,255,255,0.4)',fontFamily:MONO,textTransform:'uppercase',letterSpacing:'0.07em',marginBottom:10,fontWeight:500,display:'flex',alignItems:'center',gap:6}}>
+                  <span style={{width:5,height:5,borderRadius:'50%',background:'#3dbfb0',display:'inline-block'}}/>
+                  CA/B Forum compliance scoring
+                </div>
                 <ReadinessMockup/>
               </div>
             </FadeUp>
