@@ -1,290 +1,61 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Search, Download, RefreshCw, ShieldCheck, Copy, FileDown, ChevronRight, Globe, AlertTriangle, Clock, CheckCircle, XCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
-// ── Constants ─────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const SYNC_FN = `${SUPABASE_URL}/functions/v1/ccadb-sync`
 const PAGE_SIZE = 10000
+const MONO = "'JetBrains Mono',monospace"
+const FONT = "'Segoe UI',-apple-system,system-ui,sans-serif"
+const BLUE = '#0077b6'
+const DARK = '#005a8a'
 
-const STORE_META = {
-  Chrome:    { icon: '🌐', color: '#333333' },
-  Mozilla:   { icon: '🦊', color: '#0077b6' },
-  Apple:     { icon: '🍎', color: '#111111' },
-  Microsoft: { icon: '🪟', color: '#111111' },
+const ALL_STORES = ['Chrome','Mozilla','Apple','Microsoft']
+
+const avatarColor = (name='') => {
+  const colors = [DARK,'#1b5e20','#4a148c','#b71c1c','#00695c','#1a237e','#37474f','#0d47a1']
+  let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))&0xffffffff
+  return colors[Math.abs(h)%colors.length]
 }
-
-const ALL_STORES = ['Chrome', 'Mozilla', 'Apple', 'Microsoft']
-
-// ── Helpers ───────────────────────────────────────────────────────────
-const scoreColor = (n) =>
-  n == null ? 'var(--v2-text-3)'
-  : n >= 80  ? 'var(--v2-green-text)'
-  : n >= 50  ? 'var(--v2-amber-text)'
-  :            'var(--v2-red-text)'
-
-const scoreClass = (n) =>
-  n == null ? '' : n >= 80 ? '' : n >= 50 ? ' amber' : ' red'
-
-const statusRowClass = (s) =>
-  s === 'Active' ? 'status-green' : s === 'Revoked' || s === 'Distrusted' ? 'status-red' : 'status-amber'
-
-const fmtDate = (iso) => {
-  if (!iso) return '—'
-  try { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) }
-  catch { return iso }
+const initials = (name='') => {
+  const w=name.replace(/[^a-zA-Z\s]/g,'').trim().split(/\s+/)
+  if(w.length>=2) return (w[0][0]+w[w.length-1][0]).toUpperCase()
+  return name.slice(0,2).toUpperCase()
 }
-
-const avatarColor = (name = '') => {
-  const colors = ['#111111','#111111','#111111','#00a550','#0077b6','#111111','#0077b6','#111111','#0077b6','#111111']
-  let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff
-  return colors[Math.abs(h) % colors.length]
-}
-
-const initials = (name = '') => {
-  const w = name.replace(/[^a-zA-Z\s]/g, '').trim().split(/\s+/)
-  if (w.length >= 2) return (w[0][0] + w[w.length - 1][0]).toUpperCase()
-  return name.slice(0, 2).toUpperCase()
-}
+const fmtDate = iso => { if(!iso) return '—'; try { return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) } catch { return iso } }
 
 function computeScore(cert) {
-  if (!cert) return null
-  let s = 100
-  const algo = (cert.key_algorithm || '').toLowerCase()
-  const sig = (cert.signature_hash_algorithm || '').toLowerCase()
-  const status = cert.status || ''
-  const validTo = cert.valid_to ? new Date(cert.valid_to) : null
-  const now = new Date()
-
-  if (sig.includes('sha1') || sig.includes('md5')) s -= 40
-  if (algo.includes('rsa')) {
-    const bits = parseInt((cert.public_key_size || '0').replace(/[^0-9]/g, ''))
-    if (bits > 0 && bits < 2048) s -= 30
-  }
-  if (status === 'Revoked' || status === 'Distrusted') s -= 60
-  if (validTo) {
-    const days = (validTo - now) / 86400000
-    if (days < 0) s -= 30
-    else if (days < 90) s -= 15
-    else if (days < 365) s -= 5
-  }
-  const stores = cert.mozilla_trusted || cert.microsoft_trusted || cert.apple_trusted || cert.chrome_trusted
-  if (!stores) s -= 10
-  return Math.max(0, Math.min(100, s))
+  if(!cert) return null
+  let s=100
+  const sig=(cert.signature_hash_algorithm||'').toLowerCase()
+  const status=cert.status||''
+  const validTo=cert.valid_to?new Date(cert.valid_to):null
+  const now=new Date()
+  if(sig.includes('sha1')||sig.includes('md5')) s-=40
+  const bits=parseInt((cert.public_key_size||'0').replace(/[^0-9]/g,''))
+  if(bits>0&&bits<2048) s-=30
+  if(status==='Revoked'||status==='Distrusted') s-=60
+  if(validTo){ const days=(validTo-now)/86400000; if(days<0) s-=30; else if(days<90) s-=15; else if(days<365) s-=5 }
+  if(!(cert.mozilla_trusted||cert.microsoft_trusted||cert.apple_trusted||cert.chrome_trusted)) s-=10
+  return Math.max(0,Math.min(100,s))
 }
-
-// ── Sub-components ────────────────────────────────────────────────────
-function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
-
-function CertAvatar({ name, size = 30 }) {
-  return (
-    <div style={{
-      width: size, height: size, borderRadius: 6, flexShrink: 0,
-      background: avatarColor(name), display: 'flex', alignItems: 'center',
-      justifyContent: 'center', fontSize:11, fontWeight: 700, color: '#111111', letterSpacing: '0.2px'
-    }}>
-      {initials(name)}
-    </div>
-  )
-}
-
-function StatusChip({ status }) {
-  const map = {
-    Active:     { cls: 'chip-blue',   label: 'Active' },
-    Revoked:    { cls: 'chip-red',    label: 'Revoked' },
-    Distrusted: { cls: 'chip-red',    label: 'Distrusted' },
-    Expired:    { cls: 'chip-amber',  label: 'Expired' },
-    Expiring:   { cls: 'chip-amber',  label: 'Expiring' },
-  }
-  const m = map[status] || { cls: 'chip-grey', label: status || '—' }
-  return <span className={`v2-chip ${m.cls}`}>{m.label}</span>
-}
-
-function TypeChip({ type }) {
-  return (
-    <span className={`v2-chip ${type === 'Root CA' ? 'chip-blue' : 'chip-grey'}`}>
-      {type === 'Root CA' ? 'Root CA' : 'Intermediate'}
-    </span>
-  )
-}
-
-function ScoreBanner({ score, cert }) {
-  const cls = scoreClass(score)
-  const bars = [
-    { label: 'Crypto strength', val: computeCryptoScore(cert) },
-    { label: 'Chain validity',  val: score != null && score >= 80 ? 100 : 60 },
-    { label: 'BR compliance',   val: computeBRScore(cert) },
-    { label: 'Revocation',      val: cert?.status === 'Active' ? 95 : 20 },
-  ]
-  return (
-    <div className={`score-banner${cls}`}>
-      <div style={{ flexShrink: 0 }}>
-        <div className="score-num">
-          {score ?? '—'}
-          {score != null && <span style={{ fontSize:14, fontWeight: 400, opacity: 0.5 }}>/100</span>}
-        </div>
-        <div className="score-label">PKI Trust Score</div>
-      </div>
-      <div className="score-bars" style={{ flex: 1 }}>
-        {bars.map(({ label, val }) => (
-          <div key={label} className="sbar">
-            <div className="sbar-lbl">{label}</div>
-            <div className="sbar-track">
-              <div className={`sbar-fill${val < 50 ? ' red' : val < 75 ? ' amber' : ''}`} style={{ width: val + '%' }} />
-            </div>
-            <div className="sbar-n">{val}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 function computeCryptoScore(cert) {
-  if (!cert) return 0
-  const sig = (cert.signature_hash_algorithm || '').toLowerCase()
-  if (sig.includes('sha1') || sig.includes('md5')) return 20
-  const bits = parseInt((cert.public_key_size || '0').replace(/[^0-9]/g, ''))
-  if (bits > 0 && bits < 2048) return 40
+  if(!cert) return 0
+  const sig=(cert.signature_hash_algorithm||'').toLowerCase()
+  if(sig.includes('sha1')||sig.includes('md5')) return 20
+  const bits=parseInt((cert.public_key_size||'0').replace(/[^0-9]/g,''))
+  if(bits>0&&bits<2048) return 40
   return 95
 }
 function computeBRScore(cert) {
-  if (!cert) return 0
-  if (cert.status === 'Distrusted') return 10
-  if (cert.status === 'Revoked') return 20
+  if(!cert) return 0
+  if(cert.status==='Distrusted') return 10
+  if(cert.status==='Revoked') return 20
   return 96
 }
+const scoreColor = n => n==null?'#888':n>=80?'#00a550':n>=50?'#f39c12':'#e74c3c'
 
-function FieldGrid({ rows }) {
-  return (
-    <div className="field-grid">
-      {rows.map(({ k, v, cls }) => (
-        <div key={k} className="field-cell">
-          <div className="fk">{k}</div>
-          <div className={`fv${cls ? ' ' + cls : ''}`}>{v || '—'}</div>
-        </div>
-      ))}
-    </div>
-  )
-}
+function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}
 
-function TrustStoreGrid({ cert }) {
-  const trusted = {
-    Chrome:    cert?.chrome_trusted,
-    Mozilla:   cert?.mozilla_trusted,
-    Apple:     cert?.apple_trusted,
-    Microsoft: cert?.microsoft_trusted,
-  }
-  const distrusted = cert?.status === 'Distrusted'
-  return (
-    <div className="store-grid">
-      {ALL_STORES.map(s => {
-        const t = trusted[s]
-        const cls = t && !distrusted ? 'trusted' : distrusted && t ? 'distrusted' : ''
-        return (
-          <div key={s} className={`store-card ${cls}`}>
-            <span style={{ fontSize:18 }}>{STORE_META[s].icon}</span>
-            <div>
-              <div className="store-name">{s}</div>
-              <div className={`store-status ${t && !distrusted ? 'ok' : distrusted && t ? 'bad' : 'no'}`}>
-                {t && !distrusted ? 'Trusted' : distrusted && t ? 'Distrusted' : 'Not included'}
-              </div>
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-function ChainView({ cert }) {
-  const isInter = cert?.cert_type !== 'Root CA'
-  const isExpiring = cert?.status === 'Expiring'
-  return (
-    <div className="chain-wrap">
-      {isInter && (
-        <div className="chain-item">
-          <div className="chain-line">
-            <div className="chain-circle filled" />
-            <div className="chain-connector-v" />
-          </div>
-          <div className="chain-card">
-            <div className="cc-top">
-              <span className="v2-chip chip-blue">Root CA</span>
-              <span className="cc-name" style={{ fontSize:11, color: '#333333' }}>
-                Issuing root — {cert?.ca_owner}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="chain-item">
-        <div className="chain-line">
-          <div className={`chain-circle ${cert?.cert_type === 'Root CA' ? 'filled' : isExpiring ? 'amber' : ''}`} />
-          {cert?.cert_type === 'Root CA' && <div className="chain-connector-v" />}
-        </div>
-        <div className="chain-card focused">
-          <div className="cc-top">
-            <TypeChip type={cert?.cert_type} />
-            <StatusChip status={cert?.status} />
-            {cert?.ev_capable && <span className="v2-chip chip-amber">EV capable</span>}
-          </div>
-          <div className="cc-meta">
-            <span>{cert?.ca_owner}</span>
-            <span style={{ color: '#888888' }}>·</span>
-            <span>{cert?.key_algorithm}</span>
-            <span style={{ color: '#888888' }}>·</span>
-            <span>{fmtDate(cert?.valid_from)} → {fmtDate(cert?.valid_to)}</span>
-          </div>
-        </div>
-      </div>
-      {cert?.cert_type === 'Root CA' && (
-        <div className="chain-item">
-          <div className="chain-line">
-            <div className="chain-circle grey" />
-          </div>
-          <div className="chain-card" style={{ opacity: 0.6 }}>
-            <div className="cc-top"><span className="v2-chip chip-grey">Sub-CAs</span></div>
-            <div className="cc-meta">Issued intermediates chain to this root</div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function IntelStrip({ cert }) {
-  if (!cert) return null
-  const sig = cert.signature_hash_algorithm || '—'
-  const algo = cert.key_algorithm || '—'
-  const validTo = cert.valid_to ? new Date(cert.valid_to) : null
-  const daysLeft = validTo ? Math.round((validTo - new Date()) / 86400000) : null
-  const items = [
-    { label: 'Key algorithm', val: algo, good: !algo.toLowerCase().includes('dsa') },
-    { label: 'Signature hash', val: sig, good: !sig.toLowerCase().includes('sha1') && !sig.toLowerCase().includes('md5'), warn: sig === '—' },
-    { label: 'Valid to', val: daysLeft != null ? `${daysLeft}d left` : fmtDate(cert.valid_to), good: daysLeft == null || daysLeft > 365, warn: daysLeft != null && daysLeft <= 365 && daysLeft > 0, bad: daysLeft != null && daysLeft <= 0 },
-    { label: 'Key size', val: cert.public_key_size || '—', good: parseInt((cert.public_key_size||'0')) >= 2048 },
-    { label: 'Status', val: cert.status || '—', good: cert.status === 'Active', bad: cert.status === 'Revoked' || cert.status === 'Distrusted' },
-    { label: 'CAB Forum', val: cert.status === 'Distrusted' ? 'Violations' : cert.status === 'Active' ? 'Compliant' : 'Check', good: cert.status === 'Active', bad: cert.status === 'Distrusted' },
-    { label: 'EV capable', val: cert.ev_capable ? 'Yes' : 'No', good: cert.ev_capable },
-    { label: '47-day ready', val: cert.cert_type !== 'Root CA' ? 'Check CA' : 'N/A' },
-  ]
-  return (
-    <div className="intel-strip">
-      <div className="intel-title">Intelligence signals</div>
-      <div className="intel-row">
-        {items.map(({ label, val, good, warn, bad }) => (
-          <div key={label} className={`intel-card${good ? ' good' : warn ? ' warn' : bad ? ' bad' : ''}`}>
-            <div className="ic-lbl">{label}</div>
-            <div className="ic-val">{val}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// ── Main page ─────────────────────────────────────────────────────────
 export default function CATrustExplorer({ nav }) {
   const isMobile = useIsMobile()
   const [certs, setCerts] = useState([])
@@ -302,597 +73,520 @@ export default function CATrustExplorer({ nav }) {
   const [popularCAs, setPopularCAs] = useState([])
   const searchRef = useRef(null)
 
-  // ── Load data ──────────────────────────────────────────────────────
   const loadCerts = useCallback(async () => {
     setLoading(true)
     try {
-      // Get total count
-      const { count } = await supabase
-        .from('ca_certificates')
-        .select('*', { count: 'exact', head: true })
-      setTotalCount(count || 0)
-
-      // Get last sync
-      const { data: syncRow } = await supabase
-        .from('ca_sync_log')
-        .select('synced_at,records_upserted')
-        .order('synced_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-      if (syncRow?.synced_at) setSyncedAt(syncRow.synced_at)
-
-      // Load page
-      const { data, error } = await supabase
-        .from('ca_certificates')
+      const { count } = await supabase.from('ca_certificates').select('*',{count:'exact',head:true})
+      setTotalCount(count||0)
+      const { data: syncRow } = await supabase.from('ca_sync_log').select('synced_at').order('synced_at',{ascending:false}).limit(1).maybeSingle()
+      if(syncRow?.synced_at) setSyncedAt(syncRow.synced_at)
+      const { data } = await supabase.from('ca_certificates')
         .select('id,ca_owner,common_name,cert_type,status,key_algorithm,public_key_size,signature_hash_algorithm,valid_from,valid_to,sha256_fingerprint,country,mozilla_trusted,microsoft_trusted,apple_trusted,chrome_trusted,ev_capable,pem_info,ccadb_record_id')
-        .order('ca_owner', { ascending: true })
-        .limit(PAGE_SIZE)
-      if (error) throw error
-      setCerts(data || [])
-      setFiltered(data || [])
-      if (data?.length) setSelected(data[0])
-
-      // Popular CAs — top operators by root count + all-4-store trust
-      // Group by ca_owner, pick 1 representative root per owner (the most trusted one)
-      const ownerMap = new Map()
-      for (const cert of (data || [])) {
-        if (cert.cert_type !== 'Root CA' || cert.status !== 'Active') continue
-        const owner = cert.ca_owner || ''
-        const stores = [cert.chrome_trusted, cert.mozilla_trusted, cert.apple_trusted, cert.microsoft_trusted].filter(Boolean).length
-        if (!ownerMap.has(owner) || stores > ownerMap.get(owner).stores) {
-          ownerMap.set(owner, { ...cert, stores })
-        }
+        .order('ca_owner',{ascending:true}).limit(PAGE_SIZE)
+      setCerts(data||[]); setFiltered(data||[])
+      if(data?.length) setSelected(data[0])
+      const ownerMap=new Map()
+      for(const cert of (data||[])){
+        if(cert.cert_type!=='Root CA'||cert.status!=='Active') continue
+        const owner=cert.ca_owner||''
+        const stores=[cert.chrome_trusted,cert.mozilla_trusted,cert.apple_trusted,cert.microsoft_trusted].filter(Boolean).length
+        if(!ownerMap.has(owner)||stores>ownerMap.get(owner).stores) ownerMap.set(owner,{...cert,stores})
       }
-      const popularSorted = Array.from(ownerMap.values())
-        .sort((a, b) => b.stores - a.stores || a.ca_owner.localeCompare(b.ca_owner))
-        .slice(0, 18)
-      setPopularCAs(popularSorted)
-    } catch (e) {
-      console.error('CATrustExplorer load:', e)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+      setPopularCAs(Array.from(ownerMap.values()).sort((a,b)=>b.stores-a.stores||a.ca_owner.localeCompare(b.ca_owner)).slice(0,18))
+    } catch(e){ console.error(e) } finally { setLoading(false) }
+  },[])
 
-  useEffect(() => { loadCerts() }, [loadCerts])
+  useEffect(()=>{ loadCerts() },[loadCerts])
 
-  // ── Search + filter ────────────────────────────────────────────────
-  const applyFilter = useCallback(async (tab, q) => {
+  const applyFilter = useCallback(async (tab,q) => {
     setLoading(true)
     try {
-      let qb = supabase.from('ca_certificates').select('id,ca_owner,common_name,cert_type,status,key_algorithm,public_key_size,signature_hash_algorithm,valid_from,valid_to,sha256_fingerprint,country,mozilla_trusted,microsoft_trusted,apple_trusted,chrome_trusted,ev_capable,pem_info,ccadb_record_id').limit(PAGE_SIZE)
-      if (q) qb = qb.or(`common_name.ilike.%${q}%,ca_owner.ilike.%${q}%,sha256_fingerprint.ilike.%${q}%`)
-      if (tab === 'root') qb = qb.eq('cert_type', 'Root CA')
-      else if (tab === 'inter') qb = qb.neq('cert_type', 'Root CA')
-      else if (tab === 'tls') qb = qb.eq('cert_type', 'Root CA').or('chrome_trusted.eq.true,mozilla_trusted.eq.true,apple_trusted.eq.true,microsoft_trusted.eq.true')
-      else if (tab === 'all4') qb = qb.eq('chrome_trusted', true).eq('mozilla_trusted', true).eq('apple_trusted', true).eq('microsoft_trusted', true)
-      else if (tab === 'ev') qb = qb.eq('ev_capable', true).eq('cert_type', 'Root CA')
-      else if (tab === 'expiring') qb = qb.eq('status', 'Expiring')
-      else if (tab === 'distrust') qb = qb.eq('status', 'Distrusted')
-      qb = qb.order('ca_owner', { ascending: true })
+      let qb=supabase.from('ca_certificates').select('id,ca_owner,common_name,cert_type,status,key_algorithm,public_key_size,signature_hash_algorithm,valid_from,valid_to,sha256_fingerprint,country,mozilla_trusted,microsoft_trusted,apple_trusted,chrome_trusted,ev_capable,pem_info,ccadb_record_id').limit(PAGE_SIZE)
+      if(q) qb=qb.or(`common_name.ilike.%${q}%,ca_owner.ilike.%${q}%,sha256_fingerprint.ilike.%${q}%`)
+      if(tab==='root') qb=qb.eq('cert_type','Root CA')
+      else if(tab==='inter') qb=qb.neq('cert_type','Root CA')
+      else if(tab==='tls') qb=qb.eq('cert_type','Root CA').or('chrome_trusted.eq.true,mozilla_trusted.eq.true,apple_trusted.eq.true,microsoft_trusted.eq.true')
+      else if(tab==='all4') qb=qb.eq('chrome_trusted',true).eq('mozilla_trusted',true).eq('apple_trusted',true).eq('microsoft_trusted',true)
+      else if(tab==='ev') qb=qb.eq('ev_capable',true).eq('cert_type','Root CA')
+      else if(tab==='expiring') qb=qb.eq('status','Expiring')
+      else if(tab==='distrust') qb=qb.eq('status','Distrusted')
+      qb=qb.order('ca_owner',{ascending:true})
       const { data } = await qb
-      setFiltered(data || [])
-      if (data?.length) setSelected(data[0])
-    } catch (e) {
-      console.error('filter:', e)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+      setFiltered(data||[])
+      if(data?.length) setSelected(data[0])
+    } catch(e){ console.error(e) } finally { setLoading(false) }
+  },[])
 
-  const handleSearch = useCallback((v) => {
-    setQuery(v)
-    applyFilter(activeTab, v)
-  }, [activeTab, applyFilter])
+  const handleSearch = useCallback((v)=>{ setQuery(v); applyFilter(activeTab,v) },[activeTab,applyFilter])
+  const handleTab = useCallback((tab)=>{ setActiveTab(tab); applyFilter(tab,query) },[query,applyFilter])
 
-  const handleTab = useCallback((tab) => {
-    setActiveTab(tab)
-    applyFilter(tab, query)
-  }, [query, applyFilter])
-
-  // ── Sync ───────────────────────────────────────────────────────────
   const triggerSync = async () => {
-    setSyncing(true)
-    setSyncMsg('Fetching CCADB data…')
+    setSyncing(true); setSyncMsg('Fetching CCADB data…')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const res = await fetch(SYNC_FN, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${session?.access_token}`, 'Content-Type': 'application/json' },
-      })
+      const { data:{session} } = await supabase.auth.getSession()
+      const res = await fetch(SYNC_FN,{method:'POST',headers:{'Authorization':`Bearer ${session?.access_token}`,'Content-Type':'application/json'}})
       const json = await res.json()
-      setSyncMsg(json.message || 'Sync complete')
-      await loadCerts()
-    } catch (e) {
-      setSyncMsg('Sync failed — ' + e.message)
-    } finally {
-      setSyncing(false)
-      setTimeout(() => setSyncMsg(''), 4000)
-    }
+      setSyncMsg(json.message||'Sync complete'); await loadCerts()
+    } catch(e){ setSyncMsg('Sync failed — '+e.message) }
+    setSyncing(false); setTimeout(()=>setSyncMsg(''),4000)
   }
 
-  // ── Copy helpers ───────────────────────────────────────────────────
-  const copyText = (text) => {
-    navigator.clipboard?.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1800)
-  }
+  const copyText = (text) => { navigator.clipboard?.writeText(text); setCopied(true); setTimeout(()=>setCopied(false),1800) }
 
-  // ── Stat counts ────────────────────────────────────────────────────
   const counts = {
-    all:       certs.length,
-    root:      certs.filter(c => c.cert_type === 'Root CA').length,
-    inter:     certs.filter(c => c.cert_type !== 'Root CA').length,
-    tls:       certs.filter(c => c.cert_type === 'Root CA' && (c.chrome_trusted || c.mozilla_trusted || c.apple_trusted || c.microsoft_trusted)).length,
-    smime:     certs.filter(c => c.cert_type === 'Root CA' && !c.chrome_trusted && !c.mozilla_trusted && c.microsoft_trusted).length,
-    ev:        certs.filter(c => c.ev_capable && c.cert_type === 'Root CA').length,
-    all4:      certs.filter(c => c.chrome_trusted && c.mozilla_trusted && c.apple_trusted && c.microsoft_trusted).length,
-    distrust:  certs.filter(c => c.status === 'Distrusted').length,
-    expiring:  certs.filter(c => c.status === 'Expiring').length,
-    revoked:   certs.filter(c => c.status === 'Revoked').length,
+    all: certs.length,
+    root: certs.filter(c=>c.cert_type==='Root CA').length,
+    inter: certs.filter(c=>c.cert_type!=='Root CA').length,
+    tls: certs.filter(c=>c.cert_type==='Root CA'&&(c.chrome_trusted||c.mozilla_trusted||c.apple_trusted||c.microsoft_trusted)).length,
+    all4: certs.filter(c=>c.chrome_trusted&&c.mozilla_trusted&&c.apple_trusted&&c.microsoft_trusted).length,
+    ev: certs.filter(c=>c.ev_capable&&c.cert_type==='Root CA').length,
+    expiring: certs.filter(c=>c.status==='Expiring').length,
+    distrust: certs.filter(c=>c.status==='Distrusted').length,
   }
 
   const score = selected ? computeScore(selected) : null
 
-  // ── Sync age ───────────────────────────────────────────────────────
-  const syncAge = syncedAt ? (() => {
-    const h = Math.round((Date.now() - new Date(syncedAt)) / 3600000)
-    return h < 1 ? 'just now' : h < 24 ? `${h}h ago` : `${Math.round(h/24)}d ago`
+  const syncAge = syncedAt ? (()=>{
+    const h=Math.round((Date.now()-new Date(syncedAt))/3600000)
+    return h<1?'just now':h<24?`${h}h ago`:`${Math.round(h/24)}d ago`
   })() : 'never'
 
-  // ── Render ─────────────────────────────────────────────────────────
-  return (
-    <div className="v2-page ca-explorer">
-      {/* Inline styles — all tokens from design-v2.css */}
-      <style>{`
-        .ca-explorer { font-family:'Segoe UI',-apple-system,system-ui,sans-serif }
-        .sync-bar { background:var(--v2-surface-2);border-bottom:1px solid var(--v2-border);padding:7px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--v2-text-2);gap:12px;flex-wrap:wrap }
-        .live-dot { display:inline-block;width:6px;height:6px;border-radius:50%;background:#22c55e;margin-right:5px;vertical-align:middle;animation:blink 2.4s infinite }
-        @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-        .stats-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:18px }
-        .stat-tile { background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-lg);padding:12px 14px;cursor:pointer;transition:border-color .12s,background .12s;user-select:none }
-        .stat-tile:hover { background:var(--v2-surface-3);border-color:var(--v2-border-strong) }
-        .stat-tile.active { background:var(--v2-green-bg);border-color:var(--v2-green-border) }
-        .stat-val { font-size:20px;font-weight:600;letter-spacing:-0.4px;color:var(--v2-text);font-feature-settings:'tnum' }
-        .stat-tile.active .stat-val { color:var(--v2-green-text) }
-        .stat-lbl { font-size:10px;letter-spacing:0.4px;color:var(--v2-text-3);text-transform:uppercase;font-weight:500;margin-top:4px;display:flex;align-items:center;gap:5px }
-        .sdot { display:inline-block;width:5px;height:5px;border-radius:50%;flex-shrink:0 }
-        .split { display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start }
-        .list-panel { background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-xl);overflow:hidden }
-        .search-bar { padding:10px 12px;border-bottom:1px solid var(--v2-border);background:var(--v2-surface-2);display:flex;align-items:center;gap:8px }
-        .search-bar input { flex:1;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;color:var(--v2-text) }
-        .search-bar input::placeholder { color:var(--v2-text-3) }
-        .fbar { padding:8px 10px;border-bottom:1px solid var(--v2-border);background:var(--v2-surface-2);display:flex;gap:4px;flex-wrap:wrap }
-        .fchip { font-size:11px;font-weight:500;padding:2px 8px;border-radius:var(--v2-r-sm);border:1px solid transparent;color:var(--v2-text-2);background:transparent;font-family:inherit;cursor:pointer;transition:background .1s }
-        .fchip:hover { background:var(--v2-hover) }
-        .fchip.on { background:var(--v2-surface);border-color:var(--v2-border-strong);color:var(--v2-text);box-shadow:var(--v2-shadow-sm) }
-        .cert-list { max-height:520px;overflow-y:auto }
-        .cert-list::-webkit-scrollbar { width:4px }
-        .cert-list::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.06);border-radius:2px }
-        .list-row { position:relative;display:flex;align-items:center;gap:10px;padding:11px 14px 11px 16px;border-bottom:1px solid var(--v2-border);cursor:pointer;transition:background .1s }
-        .list-row:last-child { border-bottom:none }
-        .list-row:hover { background:var(--v2-surface-3) }
-        .list-row.selected { background:var(--v2-surface-3) }
-        .list-row::before { content:'';position:absolute;left:0;top:0;bottom:0;width:2px;border-radius:0 2px 2px 0 }
-        .status-green::before { background:var(--v2-green) }
-        .status-amber::before { background:var(--v2-amber) }
-        .status-red::before   { background:var(--v2-red) }
-        .row-body { flex:1;min-width:0 }
-        .row-title { font-size:12px;font-weight:500;color:var(--v2-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px }
-        .row-meta { font-size:11px;color:var(--v2-text-2);display:flex;gap:8px;align-items:center }
-        .row-score { font-size:11px;font-weight:600;font-feature-settings:'tnum';min-width:22px;text-align:right;flex-shrink:0 }
-        .chip-blue { color:var(--v2-green-text);background:var(--v2-green-bg);border-color:var(--v2-green-border) }
-        .chip-amber { color:var(--v2-amber-text);background:var(--v2-amber-bg);border-color:var(--v2-amber-border) }
-        .chip-red { color:var(--v2-red-text);background:var(--v2-red-bg);border-color:var(--v2-red-border) }
-        .chip-grey { color:var(--v2-text-2);background:var(--v2-hover);border-color:var(--v2-border) }
-        .chip-amber { color:#2a6b5c;background:rgba(0,119,182,0.08);border-color:rgba(0,0,0,0.1) }
-        .detail-panel { background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-xl);overflow:hidden }
-        .dp-header { padding:14px 16px;border-bottom:1px solid var(--v2-border);display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--v2-surface-2);flex-wrap:wrap }
-        .dp-title { font-size:14px;font-weight:600;color:var(--v2-text);letter-spacing:-0.2px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 }
-        .dp-actions { display:flex;gap:6px;flex-shrink:0 }
-        .dp-body { padding:16px;max-height:480px;overflow-y:auto }
-        .dp-body::-webkit-scrollbar { width:4px }
-        .dp-body::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.06);border-radius:2px }
-        .score-banner { background:var(--v2-green-bg);border:0.5px solid var(--v2-green-border);border-radius:var(--v2-r-lg);padding:12px 14px;display:flex;align-items:center;gap:14px;margin-bottom:16px }
-        .score-banner.amber { background:var(--v2-amber-bg);border-color:var(--v2-amber-border) }
-        .score-banner.red { background:var(--v2-red-bg);border-color:var(--v2-red-border) }
-        .score-num { font-size:28px;font-weight:700;color:var(--v2-green-text);letter-spacing:-0.5px;font-feature-settings:'tnum';line-height:1 }
-        .score-banner.amber .score-num { color:var(--v2-amber-text) }
-        .score-banner.red .score-num   { color:var(--v2-red-text) }
-        .score-label { font-size:11px;color:var(--v2-green-text-2);margin-top:2px }
-        .score-banner.amber .score-label { color:var(--v2-amber-text) }
-        .score-banner.red .score-label   { color:var(--v2-red-text) }
-        .score-bars { flex:1 }
-        .sbar { display:flex;align-items:center;gap:8px;margin-bottom:5px }
-        .sbar-lbl { font-size:10px;color:var(--v2-text-3);min-width:72px;letter-spacing:0.2px }
-        .sbar-track { flex:1;height:3px;background:var(--v2-hover);border-radius:100px;overflow:hidden }
-        .sbar-fill { height:100%;border-radius:100px;background:var(--v2-green);transition:width .3s }
-        .sbar-fill.amber { background:var(--v2-amber) }
-        .sbar-fill.red   { background:var(--v2-red) }
-        .sbar-n { font-size:10px;color:var(--v2-text-3);min-width:22px;text-align:right;font-feature-settings:'tnum' }
-        .ds-title { font-size:11px;letter-spacing:0.4px;color:var(--v2-text-3);text-transform:uppercase;font-weight:500;margin:14px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--v2-border) }
-        .field-grid { display:grid;grid-template-columns:1fr 1fr;gap:0 }
-        .field-cell { padding:7px 0;border-bottom:1px solid var(--v2-border) }
-        .field-cell:nth-last-child(-n+2) { border-bottom:none }
-        .fk { font-size:11px;color:var(--v2-text-3);margin-bottom:2px }
-        .fv { font-size:12px;color:var(--v2-text);font-weight:500 }
-        .fv.mono { font-family:'JetBrains Mono','JetBrains Mono',monospace;font-size:10px;color:var(--v2-text-2);word-break:break-all;font-weight:400 }
-        .fv.ok   { color:var(--v2-green-text) }
-        .fv.warn { color:var(--v2-amber-text) }
-        .fv.bad  { color:var(--v2-red-text) }
-        .fp-box  { font-family:'JetBrains Mono','JetBrains Mono',monospace;font-size:10px;color:var(--v2-text-2);line-height:1.7;background:var(--v2-surface-3);border:1px solid var(--v2-border);border-radius:var(--v2-r-md);padding:8px 10px;word-break:break-all;cursor:pointer;transition:border-color .12s }
-        .fp-box:hover { border-color:var(--v2-border-strong) }
-        .store-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px }
-        .store-card { background:var(--v2-surface-3);border:1px solid var(--v2-border);border-radius:var(--v2-r-lg);padding:10px 12px;display:flex;align-items:center;gap:10px }
-        .store-card.trusted    { border-color:var(--v2-green-border);background:var(--v2-green-bg) }
-        .store-card.distrusted { border-color:var(--v2-red-border);background:var(--v2-red-bg) }
-        .store-name { font-size:12px;font-weight:500;color:var(--v2-text) }
-        .store-status { font-size:11px;margin-top:1px }
-        .store-status.ok  { color:var(--v2-green-text) }
-        .store-status.no  { color:var(--v2-text-3) }
-        .store-status.bad { color:var(--v2-red-text) }
-        .chain-wrap { margin-top:4px }
-        .chain-item { display:flex;gap:10px;margin-bottom:4px }
-        .chain-line { display:flex;flex-direction:column;align-items:center;width:18px;flex-shrink:0 }
-        .chain-circle { width:10px;height:10px;border-radius:50%;border:1.5px solid var(--v2-green);background:var(--v2-surface);margin-top:4px;flex-shrink:0 }
-        .chain-circle.filled { background:var(--v2-green) }
-        .chain-circle.grey   { border-color:var(--v2-grey-dot) }
-        .chain-circle.amber  { border-color:var(--v2-amber) }
-        .chain-connector-v { width:1px;background:var(--v2-border);flex:1;min-height:16px;margin:2px 0 }
-        .chain-card { flex:1;background:var(--v2-surface-3);border:1px solid var(--v2-border);border-radius:var(--v2-r-lg);padding:10px 12px;margin-bottom:8px }
-        .chain-card.focused { border-color:var(--v2-green-border);background:var(--v2-green-bg) }
-        .chain-card.amber   { border-color:var(--v2-amber-border);background:var(--v2-amber-bg) }
-        .cc-top { display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap }
-        .cc-meta { font-size:11px;color:var(--v2-text-2);display:flex;gap:10px;flex-wrap:wrap }
-        .intel-strip { border-top:1px solid var(--v2-border);padding:12px 16px;background:var(--v2-surface-2) }
-        .intel-title { font-size:11px;letter-spacing:0.4px;color:var(--v2-text-3);text-transform:uppercase;font-weight:500;margin-bottom:8px }
-        .intel-row { display:flex;gap:8px;overflow-x:auto;padding-bottom:4px }
-        .intel-row::-webkit-scrollbar { height:3px }
-        .intel-row::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.06) }
-        .intel-card { background:var(--v2-surface);border:1px solid var(--v2-border);border-radius:var(--v2-r-lg);padding:9px 12px;flex-shrink:0;min-width:110px }
-        .intel-card.warn { border-color:var(--v2-amber-border);background:var(--v2-amber-bg) }
-        .intel-card.good { border-color:var(--v2-green-border);background:var(--v2-green-bg) }
-        .intel-card.bad  { border-color:var(--v2-red-border);background:var(--v2-red-bg) }
-        .ic-lbl { font-size:10px;letter-spacing:0.3px;color:var(--v2-text-3);text-transform:uppercase;font-weight:500;margin-bottom:3px }
-        .ic-val { font-size:12px;font-weight:600;color:var(--v2-text) }
-        .intel-card.warn .ic-val { color:var(--v2-amber-text) }
-        .intel-card.good .ic-val { color:var(--v2-green-text) }
-        .intel-card.bad  .ic-val { color:var(--v2-red-text) }
-        .pem-block { background:transparent;border-radius:var(--v2-r-lg);overflow:hidden;border:0.5px solid #1a1a1a;margin-top:4px }
-        .pem-head { display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid rgba(0,0,0,0.05);background:transparent }
-        .pem-dots { display:flex;gap:4px }
-        .pem-body { padding:10px 12px;font-family:'JetBrains Mono','JetBrains Mono',monospace;font-size:10px;color:#b0a8a0;line-height:1.6;word-break:break-all;max-height:80px;overflow:hidden;position:relative }
-        .pem-fade { position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(transparent,#0a0a0a) }
-        .callout-warn { background:var(--v2-amber-bg);border:0.5px solid var(--v2-amber-border);border-left:2px solid var(--v2-amber);border-radius:var(--v2-r-md);padding:10px 12px;font-size:12px;color:var(--v2-amber-text);margin-bottom:14px }
-        .callout-bad  { background:var(--v2-red-bg);border:0.5px solid var(--v2-red-border);border-left:2px solid var(--v2-red);border-radius:var(--v2-r-md);padding:10px 12px;font-size:12px;color:var(--v2-red-text);margin-bottom:14px }
-        .empty-state { text-align:center;padding:48px 24px;color:var(--v2-text-3) }
-        .loading-rows { padding:16px;display:flex;flex-direction:column;gap:10px }
-        .skeleton { background:linear-gradient(90deg,var(--v2-hover) 25%,var(--v2-surface-2) 50%,var(--v2-hover) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--v2-r-md);height:14px }
-        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-        @media(max-width:min(900px,100%)){.split{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
-      
-        @media(max-width:min(767px,100%)){
-          [class*="-hero"],[class*="-band"]{padding:20px 14px 18px!important}
-          [class*="-body"]{padding:14px!important}
-          [class*="-tabs"]{padding:0 10px!important;overflow-x:auto!important}
-          .content-grid{grid-template-columns:1fr!important}
-        }`}</style>
+  const P = isMobile ? '16px' : '24px'
 
-      {/* Sync banner */}
-      <div className="sync-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span className="live-dot" />
-          <span>CCADB data · synced {syncAge}</span>
-          <span style={{ color: '#888888' }}>·</span>
-          <span>{totalCount ? totalCount.toLocaleString() : '—'} certificates indexed</span>
-          <span style={{ color: '#888888' }}>·</span>
-          <span>Sources: Mozilla · Apple · Chrome · Microsoft root stores</span>
-          {syncMsg && <span style={{ color: 'var(--v2-amber-text)', fontWeight: 500 }}>{syncMsg}</span>}
+  const exportCSV = () => {
+    if(!filtered.length) return
+    const headers=['Common Name','Owner','Country','Status','Algorithm','Key Size','Valid From','Valid To']
+    const rows=filtered.map(c=>[c.common_name||'',c.ca_owner||'',c.country||'',c.status||'',c.key_algorithm||'',c.public_key_size||'',c.valid_from||'',c.valid_to||''].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','))
+    const csv=[headers.join(','),...rows].join('\n')
+    const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='ca-trust-store.csv'; a.click()
+  }
+
+  return (
+    <div style={{fontFamily:FONT,background:'#f8f9fa',minHeight:'100vh'}}>
+      <style>{`
+        .cat-hero{background:${BLUE};padding:36px ${P} 0;color:#fff}
+        .cat-hero-grid{display:grid;grid-template-columns:${isMobile?'1fr':'1fr 1fr'};gap:24px;align-items:start}
+        .cat-eyebrow{font-size:10px;letter-spacing:.14em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px}
+        .cat-h1{font-size:${isMobile?'22px':'28px'};font-weight:600;line-height:1.2;margin-bottom:10px;color:#fff}
+        .cat-h1 span{color:#3dbfb0}
+        .cat-sub{font-size:13px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:20px}
+        .cat-stats{display:flex;gap:${isMobile?'14px':'28px'};flex-wrap:wrap;margin-bottom:0}
+        .cat-sn{font-size:${isMobile?'18px':'22px'};font-weight:600;color:#fff;line-height:1}
+        .cat-sl{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+        .cat-strip{background:rgba(0,0,0,.15);margin:24px -${P} 0;padding:10px ${P};display:flex;align-items:center;gap:16px;border-top:0.5px solid rgba(255,255,255,.1);flex-wrap:wrap}
+        .cat-tag{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;font-family:${MONO};white-space:nowrap}
+        .cat-sync-bar{background:#fff;border-bottom:1px solid rgba(0,0,0,.08);padding:8px ${P};display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#666;gap:12px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+        .cat-tabs{background:#fff;border-bottom:1px solid rgba(0,0,0,.08);padding:0 ${P};display:flex;gap:0;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+        .cat-tabs::-webkit-scrollbar{display:none}
+        .cat-tab{background:none;border:none;border-bottom:2px solid transparent;font-family:${FONT};font-size:13px;font-weight:500;color:#666;padding:12px 4px 11px;margin-right:20px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:color .12s;flex-shrink:0}
+        .cat-tab:hover{color:#111}
+        .cat-tab.on{color:${BLUE};border-bottom-color:${BLUE}}
+        .cat-cnt{font-size:11px;background:#f0f4fa;border-radius:20px;padding:1px 7px;color:#666}
+        .cat-tab.on .cat-cnt{background:${BLUE};color:#fff}
+        .cat-main{padding:${P};max-width:1400px;margin:0 auto}
+        .popular-strip{margin-bottom:18px}
+        .popular-title{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+        .popular-grid{display:flex;gap:7px;flex-wrap:wrap}
+        .popular-btn{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;border:1px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;font-family:${FONT};transition:all .12s;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+        .popular-btn:hover{border-color:rgba(0,119,182,.3);box-shadow:0 2px 8px rgba(0,119,182,.08)}
+        .popular-btn.sel{border-color:${BLUE};background:rgba(0,119,182,.05);box-shadow:0 0 0 2px rgba(0,119,182,.12)}
+        .split-grid{display:grid;grid-template-columns:${isMobile?'1fr':'320px 1fr'};gap:14px;align-items:start}
+        .list-panel{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+        .list-search{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid #f0f0f0;background:#fafbfc}
+        .list-search input{flex:1;border:none;outline:none;background:transparent;font-family:${FONT};font-size:13px;color:#111}
+        .list-search input::placeholder{color:#aaa}
+        .cert-list{max-height:560px;overflow-y:auto}
+        .cert-list::-webkit-scrollbar{width:4px}
+        .cert-list::-webkit-scrollbar-thumb{background:rgba(0,0,0,.06);border-radius:2px}
+        .cert-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #f5f5f5;cursor:pointer;transition:background .1s;position:relative}
+        .cert-row:last-child{border-bottom:none}
+        .cert-row:hover{background:#f8fafc}
+        .cert-row.sel{background:rgba(0,119,182,.04)}
+        .cert-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:0 2px 2px 0}
+        .cert-row.s-active::before{background:#00a550}
+        .cert-row.s-revoked::before,.cert-row.s-distrusted::before{background:#e74c3c}
+        .cert-row.s-expiring::before{background:#f39c12}
+        .row-name{font-size:12px;font-weight:500;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+        .row-meta{font-size:11px;color:#888;display:flex;gap:6px;align-items:center}
+        .avatar{border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+        .detail-panel{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+        .dp-topbar{background:${BLUE};padding:14px 18px;display:flex;align-items:flex-start;gap:14px}
+        .dp-name{font-size:15px;font-weight:600;color:#fff;line-height:1.3;flex:1}
+        .dp-owner{font-size:11px;color:rgba(255,255,255,.6);margin-top:3px}
+        .dp-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+        .dp-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;font-family:${FONT};font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap}
+        .dp-btn-ghost{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff}
+        .dp-btn-ghost:hover{background:rgba(255,255,255,.25)}
+        .dp-btn-solid{background:#fff;border:1px solid rgba(255,255,255,.3);color:${BLUE}}
+        .dp-btn-solid:hover{background:rgba(255,255,255,.9)}
+        .dp-body{padding:18px;max-height:520px;overflow-y:auto}
+        .dp-body::-webkit-scrollbar{width:4px}
+        .dp-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.06);border-radius:2px}
+        .score-row{display:flex;align-items:center;gap:16px;background:#f8fafc;border:1px solid rgba(0,0,0,.06);border-radius:10px;padding:14px 16px;margin-bottom:18px}
+        .score-circle{width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-family:${MONO}}
+        .score-n{font-size:20px;font-weight:700;line-height:1}
+        .score-sub{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+        .sbars{flex:1}
+        .sbar{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+        .sbar:last-child{margin-bottom:0}
+        .sbar-l{font-size:10px;color:#888;min-width:90px}
+        .sbar-track{flex:1;height:4px;background:#f0f0f0;border-radius:100px;overflow:hidden}
+        .sbar-fill{height:100%;border-radius:100px;transition:width .4s}
+        .sbar-n{font-size:10px;color:#888;min-width:24px;text-align:right;font-family:${MONO}}
+        .section-hd{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0}
+        .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+        .field-cell{padding:8px 0;border-bottom:1px solid #f8f8f8}
+        .field-cell:nth-last-child(-n+2){border-bottom:none}
+        .fk{font-size:10px;color:#888;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+        .fv{font-size:12px;color:#111;font-weight:500}
+        .fv.mono{font-family:${MONO};font-size:10px;color:#555;word-break:break-all;font-weight:400}
+        .fv.ok{color:#00a550}
+        .fv.warn{color:#f39c12}
+        .fv.bad{color:#e74c3c}
+        .fp-box{font-family:${MONO};font-size:10px;color:#555;line-height:1.7;background:#f8f9fa;border:1px solid rgba(0,0,0,.06);border-radius:8px;padding:10px 12px;word-break:break-all;cursor:pointer;transition:border-color .12s}
+        .fp-box:hover{border-color:rgba(0,119,182,.3)}
+        .store-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .store-card{border:1px solid rgba(0,0,0,.07);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;background:#fafbfc}
+        .store-card.trusted{border-color:rgba(0,165,80,.25);background:rgba(0,165,80,.06)}
+        .store-card.distrusted{border-color:rgba(231,76,60,.25);background:rgba(231,76,60,.06)}
+        .store-nm{font-size:12px;font-weight:600;color:#111}
+        .store-st{font-size:11px;margin-top:2px}
+        .store-st.ok{color:#00a550}
+        .store-st.no{color:#aaa}
+        .store-st.bad{color:#e74c3c}
+        .chain-item{display:flex;gap:10px;margin-bottom:4px}
+        .chain-line{display:flex;flex-direction:column;align-items:center;width:18px;flex-shrink:0}
+        .chain-dot{width:10px;height:10px;border-radius:50%;border:2px solid #00a550;background:#fff;margin-top:4px;flex-shrink:0}
+        .chain-dot.filled{background:#00a550}
+        .chain-dot.grey{border-color:#ccc}
+        .chain-vline{width:1px;background:#e0e0e0;flex:1;min-height:16px;margin:2px 0}
+        .chain-card{flex:1;background:#fafbfc;border:1px solid rgba(0,0,0,.07);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+        .chain-card.focus{border-color:rgba(0,119,182,.25);background:rgba(0,119,182,.04)}
+        .intel-strip{border-top:1px solid #f0f0f0;padding:14px 18px;background:#fafbfc}
+        .intel-title{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+        .intel-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+        .intel-row::-webkit-scrollbar{height:3px}
+        .intel-card{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:8px;padding:9px 12px;flex-shrink:0;min-width:110px}
+        .intel-card.good{border-color:rgba(0,165,80,.25);background:rgba(0,165,80,.06)}
+        .intel-card.warn{border-color:rgba(243,156,18,.25);background:rgba(243,156,18,.06)}
+        .intel-card.bad{border-color:rgba(231,76,60,.25);background:rgba(231,76,60,.06)}
+        .ic-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+        .ic-val{font-size:12px;font-weight:600;color:#111}
+        .intel-card.good .ic-val{color:#00a550}
+        .intel-card.warn .ic-val{color:#f39c12}
+        .intel-card.bad .ic-val{color:#e74c3c}
+        .empty-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center}
+        .callout-bad{background:rgba(231,76,60,.06);border:1px solid rgba(231,76,60,.2);border-left:3px solid #e74c3c;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#c0392b;margin-bottom:14px}
+        .callout-warn{background:rgba(243,156,18,.06);border:1px solid rgba(243,156,18,.2);border-left:3px solid #f39c12;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#e67e22;margin-bottom:14px}
+        .pill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+        .loading-row{height:12px;background:linear-gradient(90deg,#f0f0f0 25%,#f8f8f8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;margin:10px 14px}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+        @media(max-width:768px){.split-grid{grid-template-columns:1fr}.cat-hero-grid{grid-template-columns:1fr}.hero-right-hide{display:none}}
+      `}</style>
+
+      {/* ── SYNC BAR ── */}
+      <div className="cat-sync-bar">
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#22c55e'}}/>
+          <span>CCADB data · synced {syncAge} · {totalCount?totalCount.toLocaleString():'—'} certificates indexed</span>
+          <span style={{color:'#ccc'}}>·</span>
+          <span style={{color:'#888'}}>Mozilla · Apple · Chrome · Microsoft</span>
+          {syncMsg&&<span style={{color:'#e67e22',fontWeight:600}}>{syncMsg}</span>}
         </div>
-        <div style={{ display: 'flex', gap: 7 }}>
-          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', gap: 5 }}
-            onClick={() => {
-              if (!filtered.length) return
-              const headers = ['Common Name','Owner','Country','Status','Algorithm','Key Size','Valid From','Valid To','Trust Store']
-              const rows = filtered.map(c => [
-                c.common_name || '', c.owner_name || c.ca_owner || '',
-                c.country || '', c.status || '', c.key_algorithm || '',
-                c.key_size_bits || '', c.valid_from || '', c.valid_till || '',
-                c.trust_store || ''
-              ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','))
-              const csv = [headers.join(','), ...rows].join('\n')
-              const a = document.createElement('a')
-              a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv)
-              a.download = 'ca-trust-store.csv'
-              a.click()
-            }}>
-            <Download size={13} /> Export CSV
+        <div style={{display:'flex',gap:7}}>
+          <button onClick={exportCSV} style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 12px',borderRadius:6,border:'1px solid rgba(0,0,0,.12)',background:'#fff',color:'#444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:FONT}}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
           </button>
-          <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={triggerSync} disabled={syncing} style={{ gap: 5 }}>
-            <RefreshCw size={13} className={syncing ? 'spin' : ''} />
-            {syncing ? 'Syncing…' : 'Sync now'}
+          <button onClick={triggerSync} disabled={syncing} style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 12px',borderRadius:6,border:'1px solid rgba(0,0,0,.12)',background:'#fff',color:'#444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:FONT}}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            {syncing?'Syncing…':'Sync now'}
           </button>
         </div>
       </div>
 
-      <div className="v2-container">
-
-        {/* Hero */}
-        <div style={{ marginBottom: 18 }}>
-          <h1 className="v2-h1">CA Trust Store Explorer</h1>
-          <p className="v2-subtitle">Every publicly-trusted Root and Intermediate CA, sourced live from CCADB · CAB Forum compliant</p>
-        </div>
-
-        {/* Stat tiles */}
-        <div className="stats-grid">
-          {[
-            { key: 'all',      val: totalCount || counts.all, label: 'Total certs',      color: 'var(--v2-green)' },
-            { key: 'root',     val: counts.root,              label: 'Root CAs',          color: 'var(--v2-green)' },
-            { key: 'inter',    val: counts.inter,             label: 'Intermediates',     color: 'var(--v2-grey-dot)' },
-            { key: 'all4',     val: counts.all4,              label: 'All 4 stores',      color: 'var(--v2-green)' },
-            { key: 'ev',       val: counts.ev,                label: 'EV capable',        color: '#111111', valColor: '#0077b6' },
-            { key: 'distrust', val: counts.distrust,          label: 'Distrusted',        color: 'var(--v2-red)', valColor: 'var(--v2-red-text)' },
-          ].map(({ key, val, label, color, valColor }) => (
-            <div key={key} className={`stat-tile${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
-              <div className="stat-val" style={valColor && activeTab !== key ? { color: valColor } : {}}>{val}</div>
-              <div className="stat-lbl">
-                <span className="sdot" style={{ background: color }} />
-                {label}
-              </div>
+      {/* ── HERO ── */}
+      <div className="cat-hero">
+        <div className="cat-hero-grid">
+          <div>
+            <div className="cat-eyebrow">SSLVault · CA Trust Store Explorer</div>
+            <h1 className="cat-h1">Every trusted CA.<br/><span>One explorer.</span></h1>
+            <p className="cat-sub">Every publicly-trusted Root and Intermediate CA, sourced live from CCADB. PKI Trust Score, chain verification, and PEM download for each certificate.</p>
+            <div className="cat-stats">
+              {[[totalCount||counts.all,'Total certs'],[counts.root,'Root CAs'],[counts.all4,'All 4 stores'],[counts.ev,'EV capable'],[counts.distrust,'Distrusted']].map(([n,l])=>(
+                <div key={l}><div className="cat-sn">{typeof n==='number'?n.toLocaleString():n}</div><div className="cat-sl">{l}</div></div>
+              ))}
             </div>
+          </div>
+          <div className="hero-right-hide" style={{paddingTop:8}}>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+              {[{label:'CCADB',title:'Common CA Database',sub:'Apple · Chrome · Mozilla · Microsoft',color:'#00a550'},{label:'CAB Forum',title:'CA/Browser Forum compliance',sub:'Baseline Requirements enforced',color:'#0077b6'},{label:'PQC',title:'Post-quantum ready',sub:'FIPS 203/204/205 tracking',color:'#f39c12'},{label:'OCSP',title:'Revocation infrastructure',sub:'CRL availability mandated',color:'#888'}].map(b=>(
+                <div key={b.label} style={{background:'rgba(255,255,255,.1)',border:'0.5px solid rgba(255,255,255,.18)',borderRadius:8,padding:'12px 14px'}}>
+                  <div style={{fontSize:9,fontWeight:700,color:b.color,fontFamily:MONO,letterSpacing:'.06em',marginBottom:4}}>{b.label}</div>
+                  <div style={{fontSize:12,color:'#fff',fontWeight:600,marginBottom:2}}>{b.title}</div>
+                  <div style={{fontSize:10,color:'rgba(255,255,255,.45)'}}>{b.sub}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="cat-strip">
+          {['CCADB Live','6,200+ CAs indexed','SHA-256 fingerprints','PKI Trust Score','PEM download','Chain verify','EV tracking','Distrust monitoring'].map(t=>(
+            <span key={t} className="cat-tag">{t}</span>
           ))}
         </div>
+      </div>
 
-        {/* Tab bar — by usage/capability */}
-        <div className="v2-tablist">
-          {[
-            { key: 'all',      label: 'All' },
-            { key: 'root',     label: 'Root CAs' },
-            { key: 'inter',    label: 'Intermediates' },
-            { key: 'tls',      label: 'TLS / HTTPS' },
-            { key: 'all4',     label: 'All 4 Stores' },
-            { key: 'ev',       label: 'EV Capable' },
-            { key: 'expiring', label: 'Expiring' },
-            { key: 'distrust', label: 'Distrusted' },
-          ].map(({ key, label }) => (
-            <button key={key} className={`v2-tablist-btn${activeTab === key ? ' active' : ''}`} onClick={() => handleTab(key)}>
-              {label} <span className="v2-tab-count">{counts[key] ?? 0}</span>
-            </button>
-          ))}
-        </div>
+      {/* ── TABS ── */}
+      <div className="cat-tabs">
+        {[['all','All',totalCount||counts.all],['root','Root CAs',counts.root],['inter','Intermediates',counts.inter],['tls','TLS / HTTPS',counts.tls],['all4','All 4 Stores',counts.all4],['ev','EV Capable',counts.ev],['expiring','Expiring',counts.expiring],['distrust','Distrusted',counts.distrust]].map(([id,label,cnt])=>(
+          <button key={id} className={`cat-tab${activeTab===id?' on':''}`} onClick={()=>handleTab(id)}>
+            {label} <span className="cat-cnt">{cnt}</span>
+          </button>
+        ))}
+      </div>
 
-        {/* Popular CAs strip */}
-        {popularCAs.length > 0 && (
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize:11, letterSpacing: '0.4px', color: '#888888', textTransform: 'uppercase', fontWeight: 500, marginBottom: 10 }}>
-              Popular CAs
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {popularCAs.map(c => {
-                const sc = computeScore(c)
-                const isSelected = selected?.id === c.id
-                return (
-                  <button key={c.id} onClick={() => setSelected(c)} style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    padding: '7px 12px', borderRadius: 'var(--v2-r-lg)',
-                    border: `0.5px solid ${isSelected ? 'var(--v2-green-border)' : 'var(--v2-border-strong)'}`,
-                    background: isSelected ? 'var(--v2-green-bg)' : 'var(--v2-surface)',
-                    cursor: 'pointer', fontFamily: 'inherit', transition: 'all .12s',
-                    boxShadow: 'var(--v2-shadow-sm)'
-                  }}>
-                    <div style={{
-                      width: 22, height: 22, borderRadius: 5, flexShrink: 0,
-                      background: avatarColor(c.ca_owner || ''),
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 9, fontWeight: 700, color: '#111111'
-                    }}>
-                      {initials(c.ca_owner || c.common_name || '?')}
-                    </div>
-                    <span style={{ fontSize:12, fontWeight: 600, color: isSelected ? 'var(--v2-green-text)' : 'var(--v2-text)', whiteSpace: 'nowrap' }}>
-                      {c.ca_owner?.replace('Inc.','').replace('nv-sa','').trim() || c.common_name}
-                    </span>
-                    <span style={{ display:'flex', gap: 3, alignItems:'center' }}>
-                      {c.chrome_trusted    && <span title="Chrome"    style={{width:5,height:5,borderRadius:'50%',background:'#444444',display:'inline-block',flexShrink:0}}/>}
-                      {c.mozilla_trusted   && <span title="Mozilla"   style={{width:5,height:5,borderRadius:'50%',background:'#0077b6',display:'inline-block',flexShrink:0}}/>}
-                      {c.apple_trusted     && <span title="Apple"     style={{width:5,height:5,borderRadius:'50%',background:'#f0f4fa',display:'inline-block',flexShrink:0}}/>}
-                      {c.microsoft_trusted && <span title="Microsoft" style={{width:5,height:5,borderRadius:'50%',background:'#f0f4fa',display:'inline-block',flexShrink:0}}/>}
-                    </span>
-                    {c.ev_capable && <span style={{fontSize:9,color:'#0077b6',fontWeight:600}}>EV</span>}
-                  </button>
-                )
-              })}
+      {/* ── MAIN ── */}
+      <div className="cat-main">
+
+        {/* Popular CAs */}
+        {popularCAs.length>0&&(
+          <div className="popular-strip">
+            <div className="popular-title">Popular CAs</div>
+            <div className="popular-grid">
+              {popularCAs.map(c=>(
+                <button key={c.id} className={`popular-btn${selected?.id===c.id?' sel':''}`} onClick={()=>setSelected(c)}>
+                  <div className="avatar" style={{width:24,height:24,background:avatarColor(c.ca_owner||''),fontSize:9}}>{initials(c.ca_owner||c.common_name||'?')}</div>
+                  <span style={{fontSize:12,fontWeight:600,color:selected?.id===c.id?BLUE:'#111'}}>{c.ca_owner?.replace('Inc.','').replace('nv-sa','').trim()||c.common_name}</span>
+                  <span style={{display:'flex',gap:3}}>
+                    {c.chrome_trusted&&<span style={{width:5,height:5,borderRadius:'50%',background:'#4285f4',display:'block'}} title="Chrome"/>}
+                    {c.mozilla_trusted&&<span style={{width:5,height:5,borderRadius:'50%',background:'#ff6611',display:'block'}} title="Mozilla"/>}
+                    {c.apple_trusted&&<span style={{width:5,height:5,borderRadius:'50%',background:'#555',display:'block'}} title="Apple"/>}
+                    {c.microsoft_trusted&&<span style={{width:5,height:5,borderRadius:'50%',background:'#00a4ef',display:'block'}} title="Microsoft"/>}
+                  </span>
+                  {c.ev_capable&&<span style={{fontSize:9,fontWeight:700,color:BLUE,background:'rgba(0,119,182,.1)',padding:'1px 5px',borderRadius:4}}>EV</span>}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Split layout */}
-        <div className="split">
+        {/* Split: list + detail */}
+        <div className="split-grid">
 
-          {/* Left: list */}
+          {/* LIST */}
           <div className="list-panel">
-            <div className="search-bar">
-              <Search size={15} color="var(--v2-text-3)" style={{ flexShrink: 0 }} />
-              <input
-                ref={searchRef}
-                type="text"
-                placeholder="Search CA name, owner, fingerprint…"
-                value={query}
-                onChange={e => handleSearch(e.target.value)}
-              />
+            <div className="list-search">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input ref={searchRef} placeholder="Search CA name, owner, fingerprint…" value={query} onChange={e=>handleSearch(e.target.value)}/>
             </div>
-            <div className="fbar">
-              {['Root CA', 'Intermediate', 'Active', 'Revoked', 'EV', 'RSA', 'ECDSA'].map(f => (
-                <button key={f} className="fchip on" onClick={e => e.currentTarget.classList.toggle('on')}>{f}</button>
-              ))}
+            <div style={{padding:'6px 10px',borderBottom:'1px solid #f0f0f0',background:'#fafbfc',fontSize:11,color:'#888'}}>
+              {filtered.length.toLocaleString()} certificates
             </div>
             <div className="cert-list">
-              {loading ? (
-                <div className="loading-rows">
-                  {[...Array(8)].map((_, i) => (
-                    <div key={i} className="skeleton" style={{ width: i % 2 === 0 ? '80%' : '60%' }} />
-                  ))}
+              {loading?(
+                [...Array(10)].map((_,i)=><div key={i} className="loading-row" style={{width:i%2===0?'75%':'55%'}}/>)
+              ):filtered.length===0?(
+                <div className="empty-panel">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" style={{marginBottom:12}}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <div style={{fontSize:13,fontWeight:600,color:'#555'}}>No certificates found</div>
+                  <div style={{fontSize:12,color:'#aaa',marginTop:4}}>Try a different search or filter</div>
                 </div>
-              ) : filtered.length === 0 ? (
-                <div className="empty-state">
-                  <Globe size={28} style={{ marginBottom: 8 }} />
-                  <div style={{ fontSize:13, fontWeight: 500 }}>No certificates found</div>
-                  <div style={{ fontSize:12, marginTop: 4 }}>Try a different search or run a sync</div>
-                </div>
-              ) : (
-                filtered.map((c, i) => {
-                  const sc = computeScore(c)
-                  return (
-                    <div
-                      key={c.id}
-                      className={`list-row ${statusRowClass(c.status)}${selected?.id === c.id ? ' selected' : ''}`}
-                      onClick={() => setSelected(c)}
-                    >
-                      <CertAvatar name={c.ca_owner || c.common_name || '?'} />
-                      <div className="row-body">
-                        <div className="row-title">{c.common_name || c.ca_owner}</div>
-                        <div className="row-meta">
-                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>
-                            {c.ca_owner}
-                          </span>
-                          <span style={{ color: '#888888' }}>·</span>
-                          <span className={`v2-chip ${c.cert_type === 'Root CA' ? 'chip-blue' : 'chip-grey'}`} style={{ fontSize: 9 }}>
-                            {c.cert_type === 'Root CA' ? 'Root' : 'Int.'}
-                          </span>
-                        </div>
+              ):filtered.map(c=>{
+                const sc=computeScore(c)
+                const sClass=c.status==='Active'?'s-active':c.status==='Revoked'?'s-revoked':c.status==='Distrusted'?'s-distrusted':c.status==='Expiring'?'s-expiring':''
+                return(
+                  <div key={c.id} className={`cert-row ${sClass}${selected?.id===c.id?' sel':''}`} onClick={()=>setSelected(c)}>
+                    <div className="avatar" style={{width:30,height:30,background:avatarColor(c.ca_owner||c.common_name||''),fontSize:10}}>{initials(c.ca_owner||c.common_name||'?')}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div className="row-name">{c.common_name||c.ca_owner}</div>
+                      <div className="row-meta">
+                        <span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:110}}>{c.ca_owner}</span>
+                        <span style={{color:'#ccc'}}>·</span>
+                        <span className="pill" style={{background:c.cert_type==='Root CA'?'rgba(0,119,182,.08)':'rgba(0,0,0,.05)',color:c.cert_type==='Root CA'?BLUE:'#888',border:`1px solid ${c.cert_type==='Root CA'?'rgba(0,119,182,.2)':'rgba(0,0,0,.08)'}`}}>{c.cert_type==='Root CA'?'Root':'Int.'}</span>
                       </div>
-                      <div className="row-score" style={{ color: scoreColor(sc) }}>{sc ?? '—'}</div>
                     </div>
-                  )
-                })
-              )}
+                    <div style={{fontSize:12,fontWeight:700,color:scoreColor(sc),fontFamily:MONO,flexShrink:0}}>{sc??'—'}</div>
+                  </div>
+                )
+              })}
             </div>
           </div>
 
-          {/* Right: detail */}
+          {/* DETAIL */}
           <div className="detail-panel">
-            {selected ? (
+            {selected?(
               <>
-                <div className="dp-header">
-                  <div className="dp-title">{selected.common_name || selected.ca_owner}</div>
+                {/* Top bar */}
+                <div className="dp-topbar">
+                  <div style={{flex:1,minWidth:0}}>
+                    <div className="dp-name">{selected.common_name||selected.ca_owner}</div>
+                    <div className="dp-owner">{selected.ca_owner}{selected.country?` · ${selected.country}`:''}</div>
+                    <div style={{display:'flex',gap:6,marginTop:8,flexWrap:'wrap'}}>
+                      <span className="pill" style={{background:selected.cert_type==='Root CA'?'rgba(255,255,255,.2)':'rgba(255,255,255,.12)',color:'#fff',border:'1px solid rgba(255,255,255,.3)'}}>{selected.cert_type||'Unknown'}</span>
+                      <span className="pill" style={{background:selected.status==='Active'?'rgba(0,165,80,.25)':selected.status==='Distrusted'?'rgba(231,76,60,.25)':'rgba(243,156,18,.2)',color:'#fff',border:'1px solid rgba(255,255,255,.2)'}}>{selected.status||'—'}</span>
+                      {selected.ev_capable&&<span className="pill" style={{background:'rgba(255,255,255,.2)',color:'#fff',border:'1px solid rgba(255,255,255,.3)'}}>EV capable</span>}
+                    </div>
+                  </div>
                   <div className="dp-actions">
-                    <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={() => copyText(selected.sha256_fingerprint || '')} style={{ gap: 5 }}>
-                      <Copy size={12} /> {copied ? 'Copied!' : 'SHA-256'}
+                    <button className="dp-btn dp-btn-ghost" onClick={()=>copyText(selected.sha256_fingerprint||'')}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      {copied?'Copied!':'SHA-256'}
                     </button>
-                    <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', gap: 5 }} disabled={pemDownloading} onClick={async () => {
-                        if (!selected?.sha256_fingerprint) return
-                        setPemDownloading(true)
-                        try {
-                          const fname = (selected.common_name || selected.ca_owner || 'certificate').replace(/[^a-z0-9]/gi, '_')
-                          const url = `https://frthcwkntciaakqsppss.supabase.co/functions/v1/ccadb-pem?fp=${selected.sha256_fingerprint}&name=${encodeURIComponent(fname)}`
-                          const res = await fetch(url)
-                          if (!res.ok) { alert('PEM not available in CCADB for this certificate'); return }
-                          const blob = await res.blob()
-                          const objUrl = URL.createObjectURL(blob)
-                          const a = document.createElement('a')
-                          a.href = objUrl; a.download = fname + '.pem'
-                          document.body.appendChild(a); a.click()
-                          document.body.removeChild(a); URL.revokeObjectURL(objUrl)
-                        } catch(e) { alert('Download failed: ' + e.message) }
-                        finally { setPemDownloading(false) }
-                      }}>
-                      <FileDown size={12} /> {pemDownloading ? 'Fetching…' : 'Download PEM'}
+                    <button className="dp-btn dp-btn-ghost" disabled={pemDownloading} onClick={async()=>{
+                      if(!selected?.sha256_fingerprint) return
+                      setPemDownloading(true)
+                      try {
+                        const fname=(selected.common_name||selected.ca_owner||'cert').replace(/[^a-z0-9]/gi,'_')
+                        const res=await fetch(`https://frthcwkntciaakqsppss.supabase.co/functions/v1/ccadb-pem?fp=${selected.sha256_fingerprint}&name=${encodeURIComponent(fname)}`)
+                        if(!res.ok){alert('PEM not available for this certificate');return}
+                        const blob=await res.blob(); const url=URL.createObjectURL(blob)
+                        const a=document.createElement('a'); a.href=url; a.download=fname+'.pem'
+                        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url)
+                      } catch(e){alert('Download failed: '+e.message)} finally{setPemDownloading(false)}
+                    }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      {pemDownloading?'Fetching…':'Download PEM'}
                     </button>
-                    <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s', background:'#f0f4fa', color: '#111111', borderColor: '#111111', gap: 5 }}
-                      onClick={() => {
-                        const fp = selected?.sha256_fingerprint || selected?.fingerprint
-                        if (fp) window.open(`https://crt.sh/?q=${encodeURIComponent(fp)}`, '_blank')
-                        else window.open(`https://crt.sh/?q=${encodeURIComponent(selected?.common_name || '')}`, '_blank')
-                      }}>
-                      <ShieldCheck size={12} /> Verify chain
+                    <button className="dp-btn dp-btn-solid" onClick={()=>{
+                      const fp=selected?.sha256_fingerprint
+                      window.open(fp?`https://crt.sh/?q=${encodeURIComponent(fp)}`:`https://crt.sh/?q=${encodeURIComponent(selected?.common_name||'')}`, '_blank')
+                    }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      Verify chain
                     </button>
                   </div>
                 </div>
 
                 <div className="dp-body">
                   {/* Callouts */}
-                  {selected.status === 'Distrusted' && (
-                    <div className="callout-bad">
-                      <strong>Distrusted by root programs</strong> — certificates issued from this root may be rejected by modern browsers. Do not deploy.
-                    </div>
-                  )}
-                  {selected.status === 'Expiring' && (
-                    <div className="callout-warn">
-                      <strong>Expiring soon</strong> — this certificate's validity period ends within 12 months. Plan migration now.
-                    </div>
-                  )}
+                  {selected.status==='Distrusted'&&<div className="callout-bad"><strong>Distrusted by root programs</strong> — certificates from this root may be rejected by modern browsers. Do not deploy.</div>}
+                  {selected.status==='Expiring'&&<div className="callout-warn"><strong>Expiring soon</strong> — this certificate's validity period ends within 12 months. Plan migration now.</div>}
 
                   {/* Score */}
-                  <ScoreBanner score={score} cert={selected} />
+                  <div className="score-row">
+                    <div className="score-circle" style={{background:score>=80?'rgba(0,165,80,.1)':score>=50?'rgba(243,156,18,.1)':'rgba(231,76,60,.1)',border:`2px solid ${scoreColor(score)}`}}>
+                      <div className="score-n" style={{color:scoreColor(score)}}>{score??'—'}</div>
+                      <div className="score-sub">score</div>
+                    </div>
+                    <div className="sbars">
+                      {[['Crypto strength',computeCryptoScore(selected)],['Chain validity',score>=80?100:60],['BR compliance',computeBRScore(selected)],['Revocation',selected.status==='Active'?95:20]].map(([l,v])=>(
+                        <div key={l} className="sbar">
+                          <div className="sbar-l">{l}</div>
+                          <div className="sbar-track"><div className="sbar-fill" style={{width:v+'%',background:v<50?'#e74c3c':v<75?'#f39c12':'#00a550'}}/></div>
+                          <div className="sbar-n">{v}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-                  {/* Identity */}
-                  <div className="ds-title">Certificate identity</div>
-                  <FieldGrid rows={[
-                    { k: 'Common name', v: selected.common_name },
-                    { k: 'CA owner',    v: selected.ca_owner },
-                    { k: 'Type',        v: selected.cert_type,                    cls: selected.cert_type === 'Root CA' ? 'ok' : '' },
-                    { k: 'Country',     v: selected.country },
-                    { k: 'Key algo',    v: selected.key_algorithm,                cls: selected.key_algorithm?.toLowerCase().includes('sha1') ? 'warn' : 'ok' },
-                    { k: 'Sig. hash',   v: selected.signature_hash_algorithm,     cls: selected.signature_hash_algorithm?.toLowerCase().includes('sha1') ? 'warn' : 'ok' },
-                    { k: 'Valid from',  v: fmtDate(selected.valid_from) },
-                    { k: 'Valid to',    v: fmtDate(selected.valid_to),            cls: selected.status === 'Expiring' ? 'warn' : selected.status === 'Expired' ? 'bad' : '' },
-                  ]} />
+                  {/* Certificate identity */}
+                  <div className="section-hd">Certificate identity</div>
+                  <div className="field-grid">
+                    {[['Common name',selected.common_name,null],['CA owner',selected.ca_owner,null],['Type',selected.cert_type,selected.cert_type==='Root CA'?'ok':''],['Country',selected.country,null],['Key algorithm',selected.key_algorithm,selected.key_algorithm?.toLowerCase().includes('sha1')?'warn':'ok'],['Sig. hash',selected.signature_hash_algorithm,selected.signature_hash_algorithm?.toLowerCase().includes('sha1')?'warn':'ok'],['Valid from',fmtDate(selected.valid_from),null],['Valid to',fmtDate(selected.valid_to),selected.status==='Expiring'?'warn':selected.status==='Expired'?'bad':'']].map(([k,v,cls])=>(
+                      <div key={k} className="field-cell"><div className="fk">{k}</div><div className={`fv${cls?' '+cls:''}`}>{v||'—'}</div></div>
+                    ))}
+                  </div>
 
                   {/* Fingerprint */}
-                  {selected.sha256_fingerprint && (
+                  {selected.sha256_fingerprint&&(
                     <>
-                      <div className="ds-title">SHA-256 fingerprint</div>
-                      <div className="fp-box" onClick={() => copyText(selected.sha256_fingerprint)} title="Click to copy">
-                        {selected.sha256_fingerprint}
-                      </div>
+                      <div className="section-hd">SHA-256 fingerprint</div>
+                      <div className="fp-box" onClick={()=>copyText(selected.sha256_fingerprint)} title="Click to copy">{selected.sha256_fingerprint}</div>
                     </>
                   )}
 
-                  {/* Root store trust */}
-                  <div className="ds-title">Root store trust</div>
-                  <TrustStoreGrid cert={selected} />
+                  {/* Trust stores */}
+                  <div className="section-hd">Root store trust</div>
+                  <div className="store-grid">
+                    {ALL_STORES.map(s=>{
+                      const t=selected[`${s.toLowerCase()}_trusted`]
+                      const icons={'Chrome':'🌐','Mozilla':'🦊','Apple':'🍎','Microsoft':'🪟'}
+                      return(
+                        <div key={s} className={`store-card${t&&selected.status!=='Distrusted'?' trusted':selected.status==='Distrusted'&&t?' distrusted':''}`}>
+                          <span style={{fontSize:18}}>{icons[s]}</span>
+                          <div><div className="store-nm">{s}</div><div className={`store-st ${t&&selected.status!=='Distrusted'?'ok':selected.status==='Distrusted'&&t?'bad':'no'}`}>{t&&selected.status!=='Distrusted'?'Trusted':selected.status==='Distrusted'&&t?'Distrusted':'Not included'}</div></div>
+                        </div>
+                      )
+                    })}
+                  </div>
 
                   {/* Chain */}
-                  <div className="ds-title">Trust chain</div>
-                  <ChainView cert={selected} />
+                  <div className="section-hd">Trust chain</div>
+                  <div>
+                    {selected.cert_type!=='Root CA'&&(
+                      <div className="chain-item">
+                        <div className="chain-line"><div className="chain-dot filled"/><div className="chain-vline"/></div>
+                        <div className="chain-card"><div style={{display:'flex',gap:6,alignItems:'center',marginBottom:4}}><span className="pill" style={{background:'rgba(0,119,182,.08)',color:BLUE,border:`1px solid rgba(0,119,182,.2)`}}>Root CA</span></div><div style={{fontSize:11,color:'#666'}}>Issuing root — {selected.ca_owner}</div></div>
+                      </div>
+                    )}
+                    <div className="chain-item">
+                      <div className="chain-line"><div className={`chain-dot${selected.cert_type==='Root CA'?' filled':''}`}/>{selected.cert_type==='Root CA'&&<div className="chain-vline"/>}</div>
+                      <div className="chain-card focus">
+                        <div style={{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap',marginBottom:6}}>
+                          <span className="pill" style={{background:selected.cert_type==='Root CA'?'rgba(0,119,182,.08)':'rgba(0,0,0,.05)',color:selected.cert_type==='Root CA'?BLUE:'#888',border:`1px solid ${selected.cert_type==='Root CA'?'rgba(0,119,182,.2)':'rgba(0,0,0,.08)'}`}}>{selected.cert_type}</span>
+                          <span className="pill" style={{background:selected.status==='Active'?'rgba(0,165,80,.08)':'rgba(231,76,60,.08)',color:selected.status==='Active'?'#00a550':'#e74c3c',border:`1px solid ${selected.status==='Active'?'rgba(0,165,80,.2)':'rgba(231,76,60,.2)'}`}}>{selected.status}</span>
+                          {selected.ev_capable&&<span className="pill" style={{background:'rgba(243,156,18,.08)',color:'#e67e22',border:'1px solid rgba(243,156,18,.2)'}}>EV</span>}
+                        </div>
+                        <div style={{fontSize:11,color:'#666'}}>{selected.ca_owner} · {selected.key_algorithm} · {fmtDate(selected.valid_from)} → {fmtDate(selected.valid_to)}</div>
+                      </div>
+                    </div>
+                    {selected.cert_type==='Root CA'&&(
+                      <div className="chain-item">
+                        <div className="chain-line"><div className="chain-dot grey"/></div>
+                        <div className="chain-card" style={{opacity:.5}}><div style={{display:'flex',gap:6,alignItems:'center',marginBottom:4}}><span className="pill" style={{background:'rgba(0,0,0,.05)',color:'#888',border:'1px solid rgba(0,0,0,.08)'}}>Sub-CAs</span></div><div style={{fontSize:11,color:'#888'}}>Issued intermediates chain to this root</div></div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* PEM */}
-                  {selected.pem_info && (
+                  {selected.pem_info&&(
                     <>
-                      <div className="ds-title">Certificate PEM</div>
-                      <div className="pem-block">
-                        <div className="pem-head">
-                          <div className="pem-dots">
-                            <span style={{ background: '#0077b6', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
-                            <span style={{ background: '#ffbd2e', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
-                            <span style={{ background: '#27c93f', width: 8, height: 8, borderRadius: '50%', display: 'block' }} />
-                          </div>
-                          <button
-                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#888888', fontSize:11, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}
-                            onClick={() => copyText(selected.pem_info)}
-                          >
-                            <Copy size={11} /> Copy PEM
-                          </button>
+                      <div className="section-hd">Certificate PEM</div>
+                      <div style={{background:'#111',borderRadius:8,overflow:'hidden'}}>
+                        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 12px',borderBottom:'1px solid rgba(255,255,255,.08)'}}>
+                          <div style={{display:'flex',gap:5}}>{['#e74c3c','#f39c12','#2ecc71'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
+                          <button onClick={()=>copyText(selected.pem_info)} style={{background:'none',border:'none',color:'rgba(255,255,255,.5)',fontSize:11,cursor:'pointer',fontFamily:FONT}}>Copy PEM</button>
                         </div>
-                        <div className="pem-body">
-                          -----BEGIN CERTIFICATE-----<br />{selected.pem_info}<br />-----END CERTIFICATE-----
-                          <div className="pem-fade" />
+                        <div style={{padding:'12px',fontFamily:MONO,fontSize:10,color:'#a8b8c8',lineHeight:1.7,wordBreak:'break-all',maxHeight:80,overflow:'hidden',position:'relative'}}>
+                          -----BEGIN CERTIFICATE-----<br/>{selected.pem_info}<br/>-----END CERTIFICATE-----
+                          <div style={{position:'absolute',bottom:0,left:0,right:0,height:28,background:'linear-gradient(transparent,#111)'}}/>
                         </div>
                       </div>
                     </>
                   )}
                 </div>
 
-                <IntelStrip cert={selected} />
+                {/* Intelligence strip */}
+                <div className="intel-strip">
+                  <div className="intel-title">Intelligence signals</div>
+                  <div className="intel-row">
+                    {[
+                      {l:'Key algorithm',v:selected.key_algorithm||'—',good:!(selected.key_algorithm||'').toLowerCase().includes('dsa')},
+                      {l:'Signature hash',v:selected.signature_hash_algorithm||'—',good:!(selected.signature_hash_algorithm||'').toLowerCase().includes('sha1')},
+                      {l:'Valid to',v:(()=>{const validTo=selected.valid_to?new Date(selected.valid_to):null;const d=validTo?Math.round((validTo-new Date())/86400000):null;return d!=null?`${d}d left`:fmtDate(selected.valid_to)})(),good:(()=>{const validTo=selected.valid_to?new Date(selected.valid_to):null;const d=validTo?Math.round((validTo-new Date())/86400000):null;return d==null||d>365})(),warn:(()=>{const validTo=selected.valid_to?new Date(selected.valid_to):null;const d=validTo?Math.round((validTo-new Date())/86400000):null;return d!=null&&d<=365&&d>0})()},
+                      {l:'Key size',v:selected.public_key_size||'—',good:parseInt((selected.public_key_size||'0'))>=2048},
+                      {l:'Status',v:selected.status||'—',good:selected.status==='Active',bad:selected.status==='Revoked'||selected.status==='Distrusted'},
+                      {l:'CAB Forum',v:selected.status==='Distrusted'?'Violations':selected.status==='Active'?'Compliant':'Check',good:selected.status==='Active',bad:selected.status==='Distrusted'},
+                      {l:'EV capable',v:selected.ev_capable?'Yes':'No',good:!!selected.ev_capable},
+                      {l:'47-day ready',v:selected.cert_type!=='Root CA'?'Check CA':'N/A'},
+                    ].map(({l,v,good,warn,bad})=>(
+                      <div key={l} className={`intel-card${good?' good':warn?' warn':bad?' bad':''}`}>
+                        <div className="ic-lbl">{l}</div>
+                        <div className="ic-val">{v}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </>
-            ) : (
-              <div className="empty-state">
-                <ShieldCheck size={32} style={{ marginBottom: 12, color: '#888888' }} />
-                <div style={{ fontSize:13, fontWeight: 500, color: '#333333' }}>Select a certificate</div>
-                <div style={{ fontSize:12, color: '#888888', marginTop: 4 }}>Click any row in the list to inspect it</div>
+            ):(
+              <div className="empty-panel">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" style={{marginBottom:14}}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div style={{fontSize:14,fontWeight:600,color:'#555',marginBottom:6}}>Select a certificate</div>
+                <div style={{fontSize:12,color:'#aaa'}}>Click any row in the list to inspect its PKI details</div>
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>
