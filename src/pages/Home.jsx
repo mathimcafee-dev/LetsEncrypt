@@ -533,56 +533,57 @@ export default function Home({ nav }) {
               </div>
             </div>
 
-            {/* ── Right: live fleet card ── */}
+            {/* ── Right: live fleet terminal ── */}
             <div>
-              {/* Glass card */}
-              <div style={{background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:16,padding:'20px',backdropFilter:'blur(8px)'}}>
-
-                {/* Card header */}
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
-                  <div style={{display:'flex',alignItems:'center',gap:6}}>
-                    <div style={{width:8,height:8,borderRadius:'50%',background:'#00a550',animation:'blink 2.4s ease infinite'}}/>
-                    <span style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.9)',letterSpacing:'.07em',fontFamily:MONO}}>LIVE FLEET</span>
+              <div style={{background:'#0f1923',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.25)'}}>
+                {/* Titlebar */}
+                <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                  <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
+                  <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1,textAlign:'center'}}>Live fleet · real data</span>
+                  <div style={{display:'flex',alignItems:'center',gap:4,fontSize:9,color:GRN,fontFamily:MONO}}>
+                    <div style={{width:5,height:5,borderRadius:'50%',background:GRN,animation:'blink 2.4s ease infinite'}}/>
+                    Live
                   </div>
-                  <span style={{fontSize:10,color:'rgba(255,255,255,0.4)',fontFamily:MONO}}>REAL DATA</span>
                 </div>
 
                 {/* Cert rows */}
-                {[
-                  {domain:'easysecurity.in', days:196, grade:'A+', method:'cPanel'},
-                  {domain:'freecerts.site',  days:196, grade:'A+', method:'Agent'},
-                ].map((c,i)=>(
-                  <div key={c.domain} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:10,padding:'12px 14px',marginBottom:8}}>
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-                      <div style={{display:'flex',alignItems:'center',gap:7}}>
-                        <div style={{width:6,height:6,borderRadius:'50%',background:'#00a550',flexShrink:0}}/>
-                        <span style={{fontSize:12,fontWeight:700,color:'#ffffff',fontFamily:MONO}}>{c.domain}</span>
+                <div style={{padding:'10px 12px',display:'flex',flexDirection:'column',gap:7}}>
+                  {[
+                    {domain:'easysecurity.in', days:196, grade:'A+', method:'cPanel'},
+                    {domain:'freecerts.site',  days:196, grade:'A+', method:'Agent'},
+                  ].map(c=>(
+                    <div key={c.domain} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:8,padding:'11px 13px'}}>
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:9}}>
+                        <div style={{display:'flex',alignItems:'center',gap:7}}>
+                          <div style={{width:6,height:6,borderRadius:'50%',background:GRN,flexShrink:0}}/>
+                          <span style={{fontSize:12,fontWeight:600,color:'rgba(255,255,255,0.9)',fontFamily:MONO}}>{c.domain}</span>
+                        </div>
+                        <span style={{fontSize:9,fontWeight:700,color:GRN,background:'rgba(0,165,80,0.15)',border:'1px solid rgba(0,165,80,0.25)',borderRadius:20,padding:'2px 8px',letterSpacing:'.06em',fontFamily:MONO}}>LIVE</span>
                       </div>
-                      <span style={{fontSize:9,fontWeight:800,color:'#00a550',background:'rgba(0,165,80,0.15)',border:'1px solid rgba(0,165,80,0.3)',borderRadius:4,padding:'2px 7px',letterSpacing:'.06em'}}>LIVE</span>
+                      <div style={{display:'flex',gap:14,alignItems:'center'}}>
+                        <div><span style={{fontSize:20,fontWeight:700,color:'rgba(255,255,255,0.9)',fontFamily:MONO}}>{c.days}d</span><span style={{fontSize:10,color:'rgba(255,255,255,0.3)',marginLeft:4}}>left</span></div>
+                        <span style={{fontSize:13,fontWeight:700,color:GRN,fontFamily:MONO}}>{c.grade}</span>
+                        <span style={{fontSize:11,color:'rgba(255,255,255,0.4)',fontFamily:MONO}}>{c.method}</span>
+                        <div style={{marginLeft:'auto',fontSize:11,fontWeight:600,color:GRN,fontFamily:MONO}}>✓ auto-renew</div>
+                      </div>
                     </div>
-                    <div style={{display:'flex',gap:16,alignItems:'center'}}>
-                      <div><span style={{fontSize:18,fontWeight:900,color:'#ffffff',fontFamily:MONO}}>{c.days}d</span><span style={{fontSize:10,color:'rgba(255,255,255,0.4)',marginLeft:4}}>left</span></div>
-                      <div style={{fontSize:13,fontWeight:700,color:'#00a550'}}>{c.grade}</div>
-                      <div style={{fontSize:11,color:'rgba(255,255,255,0.5)'}}>{c.method}</div>
-                      <div style={{marginLeft:'auto',fontSize:11,fontWeight:600,color:'#00a550'}}>✓ auto-renew</div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
 
                 {/* Stats row */}
-                <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginTop:4}}>
-                  {[{val:'100',label:'SLA score',color:'#ffffff'},{val:'2/2',label:'Live certs',color:'#00a550'},{val:'0',label:'Expiring',color:'rgba(255,255,255,0.4)'}].map(s=>(
-                    <div key={s.label} style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:8,padding:'10px',textAlign:'center'}}>
-                      <div style={{fontSize:16,fontWeight:900,color:s.color,fontFamily:MONO,lineHeight:1}}>{s.val}</div>
-                      <div style={{fontSize:9,color:'rgba(255,255,255,0.4)',marginTop:4,letterSpacing:'.04em'}}>{s.label.toUpperCase()}</div>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:1,background:'rgba(255,255,255,0.04)',margin:'0 12px 12px',borderRadius:8,overflow:'hidden',border:'1px solid rgba(255,255,255,0.06)'}}>
+                  {[{val:'100',label:'SLA SCORE',color:'rgba(255,255,255,0.85)'},{val:'2/2',label:'LIVE CERTS',color:GRN},{val:'0',label:'EXPIRING',color:'rgba(255,255,255,0.35)'}].map((s,i)=>(
+                    <div key={s.label} style={{padding:'12px',textAlign:'center',borderLeft:i>0?'1px solid rgba(255,255,255,0.06)':'none'}}>
+                      <div style={{fontSize:18,fontWeight:700,color:s.color,fontFamily:MONO,lineHeight:1}}>{s.val}</div>
+                      <div style={{fontSize:8,color:'rgba(255,255,255,0.28)',marginTop:5,letterSpacing:'.06em',fontFamily:MONO}}>{s.label}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* Trust tags */}
-                <div style={{display:'flex',gap:5,flexWrap:'wrap',marginTop:12,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.08)'}}>
+                <div style={{display:'flex',gap:5,flexWrap:'wrap',padding:'0 12px 12px',borderTop:'1px solid rgba(255,255,255,0.05)',paddingTop:10}}>
                   {['RFC 8555','AES-256-GCM','RapidSSL','CA/B 2026','DNS-01'].map(t=>(
-                    <span key={t} style={{fontSize:9,fontWeight:700,color:'rgba(255,255,255,0.55)',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:4,padding:'2px 8px',fontFamily:MONO,letterSpacing:'.05em'}}>{t}</span>
+                    <span key={t} style={{fontSize:9,fontWeight:600,color:'rgba(61,191,176,0.6)',background:'rgba(61,191,176,0.06)',border:'1px solid rgba(61,191,176,0.15)',borderRadius:20,padding:'2px 8px',fontFamily:MONO,letterSpacing:'.05em'}}>{t}</span>
                   ))}
                 </div>
               </div>
@@ -738,22 +739,27 @@ export default function Home({ nav }) {
             </div>
           </FadeUp>
           <FadeUp>
-            <Card>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:24}}>
-                <div style={{width:6,height:6,borderRadius:'50%',background:'#00a550',animation:'blink 2s ease infinite'}}/>
-                <span style={{fontSize:12,fontWeight:600,color:'#ffffff'}}>CA/B Forum maximum validity mandate — action required now</span>
+            <div style={{background:'#0f1923',borderRadius:12,overflow:'hidden',border:'1px solid rgba(255,255,255,0.07)'}}>
+              {/* Titlebar */}
+              <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
+                <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1,textAlign:'center'}}>CA/B Forum · SC-081v3 · maximum validity mandate</span>
+                <div style={{display:'flex',alignItems:'center',gap:4,fontSize:9,color:RED,fontFamily:MONO}}>
+                  <div style={{width:5,height:5,borderRadius:'50%',background:RED,animation:'blink 2s ease infinite'}}/>
+                  Action required
+                </div>
               </div>
-              <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:isMobile?20:0}}>
-                {[{date:'March 15, 2026',limit:'200 days',status:'IN EFFECT',color:RED,action:'200-day maximum is now enforced. Certificates issued with longer validity are rejected by all major browsers.'},{date:'March 15, 2027',limit:'100 days',status:'UPCOMING',color:AMB,action:'Manual renewal every 100 days is operationally unsustainable. Automation becomes a hard requirement.'},{date:'March 15, 2029',limit:'47 days',status:'PLANNED',color:GRN,action:"Full zero-touch automation required. SSLVault's agent + DNS automation handles this end-to-end today."}].map((m,i)=>(
-                  <div key={m.date} style={{padding:isMobile?'14px 0':'0 24px',borderLeft:!isMobile&&i>0?`1px solid ${LN}`:'none'}}>
-                    <div style={{fontSize:9.5,fontWeight:700,color:m.color,fontFamily:MONO,letterSpacing:'0.08em',marginBottom:6}}>{m.status}</div>
-                    <div style={{fontSize:10,color:'rgba(255,255,255,0.48)',fontFamily:MONO,marginBottom:4}}>{m.date}</div>
-                    <div style={{fontSize:30,fontWeight:700,color:m.color,fontFamily:MONO,letterSpacing:'-1px',marginBottom:9}}>{m.limit}</div>
-                    <div style={{fontSize:12.5,color:'rgba(255,255,255,0.72)',lineHeight:1.7}}>{m.action}</div>
+              <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:0}}>
+                {[{date:'March 15, 2026',limit:'200d',status:'IN EFFECT',color:RED,action:'200-day maximum is now enforced. Certificates issued with longer validity are rejected by all major browsers.'},{date:'March 15, 2027',limit:'100d',status:'UPCOMING',color:AMB,action:'Manual renewal every 100 days is operationally unsustainable. Automation becomes a hard requirement.'},{date:'March 15, 2029',limit:'47d',status:'PLANNED',color:GRN,action:"Full zero-touch automation required. SSLVault's agent + DNS automation handles this end-to-end today."}].map((m,i)=>(
+                  <div key={m.date} style={{padding:'20px 22px',borderLeft:!isMobile&&i>0?'1px solid rgba(255,255,255,0.06)':'none',borderTop:isMobile&&i>0?'1px solid rgba(255,255,255,0.06)':'none'}}>
+                    <div style={{fontSize:9,fontWeight:700,color:m.color,fontFamily:MONO,letterSpacing:'.08em',marginBottom:5}}>{m.status}</div>
+                    <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,marginBottom:8}}>{m.date}</div>
+                    <div style={{fontSize:36,fontWeight:700,color:m.color,fontFamily:MONO,letterSpacing:'-1px',lineHeight:1,marginBottom:10}}>{m.limit}</div>
+                    <div style={{fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.7}}>{m.action}</div>
                   </div>
                 ))}
               </div>
-            </Card>
+            </div>
           </FadeUp>
         </div>
       </section>
@@ -1083,7 +1089,21 @@ export default function Home({ nav }) {
             ))}
           </div>
           <div style={{marginBottom:20,display:'flex',justifyContent:'center'}}>
-            <SSLVaultTrustBadge />
+            <div style={{background:'#0f1923',border:'1px solid rgba(255,255,255,0.08)',borderRadius:10,padding:'10px 20px',display:'inline-flex',alignItems:'center',gap:16,flexWrap:'wrap',justifyContent:'center'}}>
+              <div style={{width:28,height:28,borderRadius:7,background:'rgba(61,191,176,0.12)',border:'1px solid rgba(61,191,176,0.2)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3dbfb0" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              {[['AES-256-GCM','Key vault'],['RFC 8555','ACME v2'],['RapidSSL','CA partner'],['GDPR','NL-based'],['No ads','No tracking']].map(([val,sub])=>(
+                <div key={val} style={{textAlign:'center'}}>
+                  <div style={{fontSize:11,fontWeight:600,color:'#3dbfb0',fontFamily:MONO,lineHeight:1}}>{val}</div>
+                  <div style={{fontSize:9,color:'rgba(255,255,255,0.3)',marginTop:2}}>{sub}</div>
+                </div>
+              ))}
+              <div style={{display:'flex',alignItems:'center',gap:4,fontSize:9,color:GRN,fontFamily:MONO}}>
+                <div style={{width:5,height:5,borderRadius:'50%',background:GRN}}/>
+                LIVE
+              </div>
+            </div>
           </div>
           <div style={{borderTop:`1px solid rgba(0,0,0,0.06)`,paddingTop:18,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.35)',fontFamily:MONO}}>Made with ♥ towards PKI · Built by a real PKI engineer</span>
