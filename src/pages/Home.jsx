@@ -66,7 +66,7 @@ function BtnGhost({label,onClick}) {
   </button>
 }
 function Card({children,style={}}) {
-  return <div style={{background:'#ffffff',border:`1px solid ${LN}`,borderRadius:6,padding:'20px',...style}}>{children}</div>
+  return <div style={{background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.2)',borderRadius:6,padding:'20px',...style}}>{children}</div>
 }
 function Term({title,lines}) {
   return (
@@ -141,7 +141,7 @@ function CertVaultMockup() {
               {[['Algorithm',k.alg],['Rotations','2'],['Last access',k.last]].map(([l,v])=>(
                 <div key={l} style={{background:'#f0f4fa',borderRadius:3,padding:'5px 7px'}}>
                   <div style={{fontSize:9,color:T3,textTransform:'uppercase',letterSpacing:'0.3px',marginBottom:2}}>{l}</div>
-                  <div style={{fontSize:11,fontWeight:500,color:T1,fontFamily:MONO}}>{v}</div>
+                  <div style={{fontSize:11,fontWeight:500,color:'#ffffff',fontFamily:MONO}}>{v}</div>
                 </div>
               ))}
             </div>
@@ -240,12 +240,12 @@ export default function Home({ nav }) {
   const P = 'clamp(20px,5vw,48px)'
 
   return (
-    <div style={{fontFamily:F,position:'relative',background:'#f0f4fa',color:T1,overflowX:'hidden'}}>
+    <div style={{fontFamily:F,position:'relative',background:'#0077b6',color:T1,overflowX:'hidden'}}>
 
       <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}::selection{background:rgba(0,119,182,0.15);color:#111}@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
       {/* ── NAV ── */}
-      <header style={{position:'sticky',top:0,zIndex:200,background:'#ffffff',borderBottom:'1px solid rgba(0,0,0,0.08)',boxShadow:'0 1px 0 rgba(0,0,0,0.04)',height:54,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
+      <header style={{position:'sticky',top:0,zIndex:200,background:'#005a8a',borderBottom:'1px solid rgba(0,0,0,0.15)',boxShadow:'0 1px 0 rgba(0,0,0,0.1)',height:54,display:'flex',alignItems:'center',padding:`0 ${P}`,justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',flexShrink:0}} onClick={()=>nav('/')}>
           <div style={{width:22,height:22,background:'#0077b6',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -283,7 +283,7 @@ export default function Home({ nav }) {
       </header>
 
       {/* ── HERO ── */}
-      <section style={{background:'#f0f4fa',borderBottom:`1px solid ${LN}`,overflow:'hidden'}}>
+      <section style={{background:'#0077b6',borderBottom:'1px solid rgba(255,255,255,0.1)',overflow:'hidden'}}>
         <div style={{display:'flex',flexDirection:isMobile?'column':'row',minHeight:isMobile?'auto':500}}>
 
           {/* Left: teal dark panel */}
@@ -374,7 +374,7 @@ export default function Home({ nav }) {
       </div>
 
       {/* ── PLATFORM ── */}
-      <section id="platform" style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="platform" style={{background:'#0077b6',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start',marginBottom:48}}>
@@ -385,9 +385,9 @@ export default function Home({ nav }) {
               </div>
               <div>
                 {[{n:'/ 01',t:'Issue',d:'Submit to RapidSSL via ACME v2. DNS-01 auto-validated via your provider API.'},{n:'/ 02',t:'Install',d:'VPS agent deploys to Nginx/Apache. cPanel auto-install via UAPI. Both paths are zero-touch — cron runs every 2 minutes.'},{n:'/ 03',t:'Monitor',d:'Expiry tracking, health scoring A–F, CT log abuse detection, CA/B Forum compliance.'},{n:'/ 04',t:'Renew',d:'Auto-renews 30 days before expiry. New cert deployed before old one expires.'}].map((s,i)=>(
-                  <div key={s.n} style={{display:'flex',gap:16,padding:'16px 0',borderBottom:i<3?`1px solid ${LN}`:'none'}}>
-                    <span style={{fontSize:11,color:T3,width:32,flexShrink:0,marginTop:1,fontFamily:MONO}}>{s.n}</span>
-                    <div><div style={{fontSize:13,fontWeight:600,color:T1,marginBottom:4}}>{s.t}</div><div style={{fontSize:12.5,color:T2,lineHeight:1.65}}>{s.d}</div></div>
+                  <div key={s.n} style={{display:'flex',gap:16,padding:'16px 0',borderBottom:i<3?'1px solid rgba(255,255,255,0.1)':'none'}}>
+                    <span style={{fontSize:11,color:'rgba(255,255,255,0.4)',width:32,flexShrink:0,marginTop:1,fontFamily:MONO}}>{s.n}</span>
+                    <div><div style={{fontSize:13,fontWeight:600,color:'#ffffff',marginBottom:4}}>{s.t}</div><div style={{fontSize:12.5,color:'rgba(255,255,255,0.65)',lineHeight:1.65}}>{s.d}</div></div>
                   </div>
                 ))}
               </div>
@@ -401,7 +401,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="features" style={{background:'#005a8a',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp><div style={{marginBottom:44,maxWidth:480}}>
               <Eyebrow>All capabilities</Eyebrow>
@@ -421,15 +421,15 @@ export default function Home({ nav }) {
               {icon:'🏛',title:'Industry Intelligence',specs:['6,200+ CAs from CCADB live','CAB Forum ballot tracker','12 PKI bodies deep-dive','PQC migration tracker'],badge:'PKI Hub'},
               {icon:'🔬',title:'CA Trust Store',specs:['Every root & intermediate CA indexed','PKI Trust Score per certificate','Filter by trust store · algorithm','CSV export · PEM download'],badge:'CCADB'},
             ].map(f=>(
-              <div key={f.title} style={{background:'#ffffff',padding:'20px',border:'1px solid rgba(0,0,0,0.08)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.05)',display:'flex',flexDirection:'column',gap:0}}>
+              <div key={f.title} style={{background:'rgba(255,255,255,0.1)',padding:'20px',border:'1px solid rgba(255,255,255,0.2)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.1)',display:'flex',flexDirection:'column',gap:0}}>
                 <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:10}}>
                   <span style={{fontSize:22}}>{f.icon}</span>
-                  <span style={{fontSize:9,fontWeight:800,color:'#0077b6',background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',borderRadius:4,padding:'2px 7px',letterSpacing:'.06em',fontFamily:MONO}}>{f.badge}</span>
+                  <span style={{fontSize:9,fontWeight:800,color:'#0077b6',background:'#ffffff',border:'none',borderRadius:4,padding:'2px 7px',letterSpacing:'.06em',fontFamily:MONO}}>{f.badge}</span>
                 </div>
                 <div style={{fontSize:13,fontWeight:700,color:'#111111',marginBottom:10,letterSpacing:'-.01em'}}>{f.title}</div>
                 {f.specs.map(s=><div key={s} style={{display:'flex',alignItems:'flex-start',gap:7,marginBottom:5}}>
-                  <span style={{color:'rgba(0,119,182,0.5)',fontSize:11,marginTop:2,flexShrink:0,fontWeight:600}}>—</span>
-                  <span style={{fontSize:12,color:'#555555',lineHeight:1.55}}>{s}</span>
+                  <span style={{color:'rgba(255,255,255,0.3)',fontSize:11,marginTop:2,flexShrink:0,fontWeight:600}}>—</span>
+                  <span style={{fontSize:12,color:'rgba(255,255,255,0.65)',lineHeight:1.55}}>{s}</span>
                 </div>)}
               </div>
             ))}
@@ -438,12 +438,12 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── SECURITY CONTROLS ── */}
-      <section style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#005a8a',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
               <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
-                <span style={{fontSize:10,fontWeight:700,color:'#0077b6',background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>SECURITY CONTROLS</span>
+                <span style={{fontSize:10,fontWeight:700,color:'#ffffff',background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>SECURITY CONTROLS</span>
               </div>
               <H2 style={{marginBottom:12,color:'#111111'}}>Enterprise PKI controls. Not an afterthought.</H2>
               <Body>CertVault and 47-Day Readiness are built into every account — not a paid add-on.</Body>
@@ -467,7 +467,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── SECURITY SPECS ── */}
-      <section id="security" style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section id="security" style={{background:'#005a8a',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start',marginBottom:44}}>
@@ -479,7 +479,7 @@ export default function Home({ nav }) {
               </div>
               <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:1,background:LN,border:`1px solid ${LN}`,borderRadius:6,overflow:'hidden'}}>
                 {[{spec:'AES-256-GCM',title:'Key encryption',desc:'DEK wrapped with KEK. Keys never in plaintext.'},{spec:'RFC 8555',title:'ACME v2',desc:'DNS-01 challenge. Auto-validated via provider API.'},{spec:'CT monitoring',title:'Cert transparency',desc:'crt.sh queries for every cert ever issued.'},{spec:'CAA + HSTS',title:'DNS security',desc:'CAA prevents unauthorised CA issuance.'},{spec:'TLS 1.2 / 1.3',title:'TLS posture',desc:'ECDHE + PFS. HSTS max-age verified.'},{spec:'Append-only',title:'Audit trail',desc:'Every access logged. CSV export for SOC 2.'}].map(s=>(
-                  <div key={s.spec} style={{background:'#f0f4fa',padding:'14px',borderRadius:8}}>
+                  <div key={s.spec} style={{background:'rgba(255,255,255,0.08)',padding:'14px',borderRadius:8,border:'1px solid rgba(255,255,255,0.15)'}}>
                     <div style={{fontSize:9.5,fontWeight:600,color:T3,fontFamily:MONO,letterSpacing:'0.05em',marginBottom:5}}>{s.spec}</div>
                     <div style={{fontSize:12,fontWeight:600,color:T1,marginBottom:4}}>{s.title}</div>
                     <div style={{fontSize:11.5,color:T2,lineHeight:1.6}}>{s.desc}</div>
@@ -510,7 +510,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── DNS ── */}
-      <section style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#0077b6',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'center'}}>
             <FadeUp>
@@ -546,7 +546,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── ARCHITECTURE ── */}
-      <section style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#005a8a',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:40,flexWrap:'wrap',gap:16}}>
@@ -575,12 +575,12 @@ export default function Home({ nav }) {
                     </div>
                     <div style={{height:2,width:28,background:s.accent,borderRadius:99,opacity:.7}}/>
                     <div style={{fontSize:13,fontWeight:700,color:T1,letterSpacing:'-.01em',lineHeight:1.3}}>{s.title}</div>
-                    <div style={{fontSize:11.5,color:s.bg?'rgba(255,255,255,0.6)':T2,lineHeight:1.65,flex:1}}>{s.desc}</div>
+                    <div style={{fontSize:11.5,color:'rgba(255,255,255,0.7)',lineHeight:1.65,flex:1}}>{s.desc}</div>
                   </div>
                   {i<arr.length-1&&!isMobile&&(
                     <div style={{width:28,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,paddingBottom:20}}>
                       <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
-                        <path d="M0 6h13M9 1l5 5-5 5" stroke="rgba(0,119,182,0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M0 6h13M9 1l5 5-5 5" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
                   )}
@@ -592,12 +592,12 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── INDUSTRY INTELLIGENCE ── */}
-      <section style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#005a8a',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{marginBottom:44}}>
               <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
-                <span style={{fontSize:10,fontWeight:700,color:'#0077b6',background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>INDUSTRY INTELLIGENCE</span>
+                <span style={{fontSize:10,fontWeight:700,color:'#ffffff',background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',borderRadius:5,padding:'3px 10px',letterSpacing:'.07em',fontFamily:MONO}}>INDUSTRY INTELLIGENCE</span>
               </div>
               <H2 style={{marginBottom:12,maxWidth:520}}>The deepest PKI intelligence platform on the web.</H2>
               <Body style={{maxWidth:500}}>Not just a certificate manager — a living knowledge base covering every CA, standard, governance body, and cryptographic transition shaping the industry.</Body>
@@ -605,21 +605,21 @@ export default function Home({ nav }) {
           </FadeUp>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)',gap:16,marginBottom:16}}>
             {[{icon:'🏛',title:'CA Trust Store',sub:'6,200+ root & intermediate CAs',desc:'Every CA in Chrome, Firefox, Apple, and Microsoft trust stores — live from CCADB. Search by operator, algorithm, region. PKI Trust Score per cert.',badge:'CCADB Live',path:'/ca-trust-explorer',stats:[['6,200+','CAs indexed'],['4','Trust stores'],['Daily','CCADB sync']]},{icon:'⚖️',title:'CAB Forum Intelligence',sub:'Ballots, timelines & compliance',desc:'Every CAB Forum ballot tracked with plain-English summaries. 47-day countdown, SC081v3 compliance deadlines, 5 working groups, full PKI history timeline from 2005.',badge:'Live sync',path:'/cab-forum',stats:[['47-day','2029 mandate'],['5','Working groups'],['Real-time','Ballot feed']]},{icon:'🌍',title:'Global PKI Hub',sub:'12 bodies · 22 standards · PQC tracker',desc:'CAB Forum, ETSI ESI, NIST, IETF, APKIC, eIDAS 2.0, PKI Consortium, CSC, FIDO, WebTrust, CCADB, ITU-T — each with deep-dive pages, standards library, and PQC migration status.',badge:'PQC Ready',path:'/pki-hub',stats:[['12','PKI bodies'],['3','NIST PQC finals'],['2026','Amsterdam conf.']]}].map(item=>(
-              <div key={item.title} onClick={()=>nav(item.path)} style={{background:'#ffffff',padding:'22px',cursor:'pointer',transition:'all .12s',height:'100%',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(0,0,0,0.08)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}
-                  onMouseEnter={e=>{e.currentTarget.style.background='#f0f4fa';e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'}} onMouseLeave={e=>{e.currentTarget.style.background='#ffffff';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'}}>
+              <div key={item.title} onClick={()=>nav(item.path)} style={{background:'rgba(255,255,255,0.1)',padding:'22px',cursor:'pointer',transition:'all .12s',height:'100%',display:'flex',flexDirection:'column',gap:14,border:'1px solid rgba(255,255,255,0.2)',borderRadius:12,boxShadow:'0 1px 3px rgba(0,0,0,0.1)'}}
+                  onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.18)';e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'}} onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.1)';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'}}>
                   <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
                     <span style={{fontSize:26}}>{item.icon}</span>
                     <Tag>{item.badge}</Tag>
                   </div>
                   <div>
-                    <div style={{fontSize:13,fontWeight:600,color:T1,marginBottom:3}}>{item.title}</div>
-                    <div style={{fontSize:10.5,color:T3,fontFamily:MONO,marginBottom:9}}>{item.sub}</div>
-                    <div style={{fontSize:12,color:T2,lineHeight:1.7}}>{item.desc}</div>
+                    <div style={{fontSize:13,fontWeight:600,color:'#ffffff',marginBottom:3}}>{item.title}</div>
+                    <div style={{fontSize:10.5,color:'rgba(255,255,255,0.5)',fontFamily:MONO,marginBottom:9}}>{item.sub}</div>
+                    <div style={{fontSize:12,color:'rgba(255,255,255,0.65)',lineHeight:1.7}}>{item.desc}</div>
                   </div>
-                  <div style={{display:'flex',borderTop:`1px solid ${LN}`,paddingTop:12,marginTop:'auto'}}>
+                  <div style={{display:'flex',borderTop:'1px solid rgba(255,255,255,0.15)',paddingTop:12,marginTop:'auto'}}>
                     {item.stats.map(([val,label],i)=>(
-                      <div key={label} style={{flex:1,paddingLeft:i>0?12:0,borderLeft:i>0?`1px solid ${LN}`:'none',marginLeft:i>0?12:0}}>
-                        <div style={{fontSize:12,fontWeight:600,color:T1,fontFamily:MONO,marginBottom:1}}>{val}</div>
+                      <div key={label} style={{flex:1,paddingLeft:i>0?12:0,borderLeft:i>0?'1px solid rgba(255,255,255,0.15)':'none',marginLeft:i>0?12:0}}>
+                        <div style={{fontSize:12,fontWeight:600,color:'#ffffff',fontFamily:MONO,marginBottom:1}}>{val}</div>
                         <div style={{fontSize:10,color:T3}}>{label}</div>
                       </div>
                     ))}
@@ -632,12 +632,12 @@ export default function Home({ nav }) {
             <Card style={{display:'flex',gap:16,alignItems:'flex-start',flexWrap:'wrap'}}>
               <span style={{fontSize:22,flexShrink:0}}>⚛️</span>
               <div style={{flex:1,minWidth:240}}>
-                <div style={{fontSize:13,fontWeight:600,color:T1,marginBottom:4}}>Post-Quantum Cryptography migration tracker — live</div>
-                <div style={{fontSize:12,color:T2,lineHeight:1.7}}>NIST finalised ML-KEM (FIPS 203), ML-DSA (FIPS 204), and SLH-DSA (FIPS 205) in August 2024. The PKI Hub tracks every body's PQC readiness — from IETF LAMPS WG certificate profiles to ETSI EN 319 updates.</div>
+                <div style={{fontSize:13,fontWeight:600,color:'#ffffff',marginBottom:4}}>Post-Quantum Cryptography migration tracker — live</div>
+                <div style={{fontSize:12,color:'rgba(255,255,255,0.65)',lineHeight:1.7}}>NIST finalised ML-KEM (FIPS 203), ML-DSA (FIPS 204), and SLH-DSA (FIPS 205) in August 2024. The PKI Hub tracks every body's PQC readiness — from IETF LAMPS WG certificate profiles to ETSI EN 319 updates.</div>
               </div>
               <div style={{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center',flexShrink:0}}>
                 {[['ML-KEM','FIPS 203'],['ML-DSA','FIPS 204'],['SLH-DSA','FIPS 205']].map(([alg,fips])=>(
-                  <div key={alg} style={{background:'#f0f4fa',border:`1px solid ${LN}`,borderRadius:4,padding:'6px 10px',textAlign:'center'}}>
+                  <div key={alg} style={{background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.2)',borderRadius:4,padding:'6px 10px',textAlign:'center'}}>
                     <div style={{fontSize:11,fontWeight:600,color:T1,fontFamily:MONO}}>{alg}</div>
                     <div style={{fontSize:9.5,color:T3,marginTop:1}}>{fips}</div>
                   </div>
@@ -650,7 +650,7 @@ export default function Home({ nav }) {
       </section>
 
       {/* ── CERTBIND ── */}
-      <section style={{background:'#f0f4fa',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#005a8a',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <FadeUp>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:18}}>
@@ -659,11 +659,11 @@ export default function Home({ nav }) {
             </div>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:72,alignItems:'center',marginBottom:40}}>
               <div>
-                <h2 style={{fontSize:`clamp(22px,3.5vw,40px)`,fontWeight:700,letterSpacing:'-1px',lineHeight:1.12,color:T1,marginBottom:16}}>
-                  Every other CLM tells you what cert you issued.<br/><span style={{color:T3}}>SSLVault proves what's actually running.</span>
+                <h2 style={{fontSize:`clamp(22px,3.5vw,40px)`,fontWeight:700,letterSpacing:'-1px',lineHeight:1.12,color:'#ffffff',marginBottom:16}}>
+                  Every other CLM tells you what cert you issued.<br/><span style={{color:'rgba(255,255,255,0.45)'}}>SSLVault proves what's actually running.</span>
                 </h2>
-                <p style={{fontSize:14,color:T2,lineHeight:1.8,marginBottom:20,maxWidth:440}}>A certificate can be valid. HTTPS can be green. Your CLM can show everything healthy. And your server can be serving a mismatched key, a rogue cert, or half a load balancer pool — and nobody knows.</p>
-                <p style={{fontSize:14,color:T2,lineHeight:1.8,marginBottom:28,maxWidth:440}}>CertBind closes that gap with continuous, cryptographic proof — every 5 minutes.</p>
+                <p style={{fontSize:14,color:'rgba(255,255,255,0.75)',lineHeight:1.8,marginBottom:20,maxWidth:440}}>A certificate can be valid. HTTPS can be green. Your CLM can show everything healthy. And your server can be serving a mismatched key, a rogue cert, or half a load balancer pool — and nobody knows.</p>
+                <p style={{fontSize:14,color:'rgba(255,255,255,0.75)',lineHeight:1.8,marginBottom:28,maxWidth:440}}>CertBind closes that gap with continuous, cryptographic proof — every 5 minutes.</p>
                 <div style={{display:'flex',gap:10}}><BtnPrimary label="See CertBind" onClick={()=>nav('/auth')}/><BtnGhost label="Read how it works" onClick={()=>nav('/knowledge-base')}/></div>
               </div>
               <div style={{display:'flex',flexDirection:'column',gap:6}}>
@@ -687,10 +687,10 @@ export default function Home({ nav }) {
                     </div>
                   </Card>
                 ))}
-                <Card style={{display:'flex',gap:9,alignItems:'flex-start',padding:'10px 12px',background:'rgba(248,113,113,0.05)',border:'1px solid rgba(192,57,43,0.2)'}}>
+                <Card style={{display:'flex',gap:9,alignItems:'flex-start',padding:'10px 12px',background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.2)'}}>
                   <span style={{fontSize:13,flexShrink:0}}>🚨</span>
                   <div>
-                    <div style={{fontSize:11.5,fontWeight:600,color:RED,marginBottom:2}}>What CertBind catches that others miss</div>
+                    <div style={{fontSize:11.5,fontWeight:600,color:'#ff9999',marginBottom:2}}>What CertBind catches that others miss</div>
                     <div style={{fontSize:10.5,color:T3,fontFamily:MONO,lineHeight:1.7}}>key_mismatch · cert_mismatch · chain_anomaly · partial_deploy</div>
                   </div>
                 </Card>
@@ -705,7 +705,7 @@ export default function Home({ nav }) {
                   <div key={s.title} style={{background:s.bg,border:`1px solid ${s.bd}`,borderRadius:6,padding:'16px'}}>
                     <div style={{fontSize:9.5,fontWeight:700,color:s.color,fontFamily:MONO,letterSpacing:'0.05em',marginBottom:8}}>{s.status.toUpperCase()}</div>
                     <div style={{fontSize:13,fontWeight:600,color:T1,marginBottom:8}}>{s.title}</div>
-                    <div style={{fontSize:12,color:T2,lineHeight:1.75,marginBottom:9}}>{s.scenario}</div>
+                    <div style={{fontSize:12,color:'rgba(255,255,255,0.65)',lineHeight:1.75,marginBottom:9}}>{s.scenario}</div>
                     <div style={{fontSize:11,fontWeight:500,color:s.color,lineHeight:1.5}}>{s.impact}</div>
                   </div>
                 ))}
@@ -719,13 +719,13 @@ export default function Home({ nav }) {
 
 
       {/* ── MISSION ── */}
-      <section style={{background:'#ffffff',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:`1px solid ${LN}`}}>
+      <section style={{background:'#0077b6',padding:`clamp(64px,8vw,96px) ${P}`,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:isMobile?40:80,alignItems:'flex-start'}}>
             <FadeUp>
               <div>
-                <div style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid rgba(0,119,182,0.2)',borderRadius:99,padding:'5px 14px',marginBottom:20,background:'rgba(0,119,182,0.04)'}}>
-                  <span style={{fontSize:11,fontWeight:600,color:'#0077b6',letterSpacing:'.06em'}}>Why we built this</span>
+                <div style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid rgba(255,255,255,0.3)',borderRadius:99,padding:'5px 14px',marginBottom:20,background:'rgba(255,255,255,0.1)'}}>
+                  <span style={{fontSize:11,fontWeight:600,color:'rgba(255,255,255,0.9)',letterSpacing:'.06em'}}>Why we built this</span>
                 </div>
                 <H2 style={{marginBottom:14}}>PKI expertise shouldn't require a $250k contract.</H2>
                 <Body style={{marginBottom:16}}>SSLVault is built by a Certified PKI Specialist with deep CA industry experience. The same automation enterprise teams pay hundreds of thousands for — available without the procurement cycle.</Body>
@@ -739,15 +739,15 @@ export default function Home({ nav }) {
             <FadeUp delay={80}>
               <div style={{display:'flex',flexDirection:'column',gap:5}}>
                 {[{name:'Venafi TLS Protect',price:'$250k+/yr',notes:'Enterprise only · No cert issuance · No cPanel',hi:false},{name:'Keyfactor Command',price:'$75–200k/yr',notes:'Mid-market · Complex setup · No free tier',hi:false},{name:'SSLVault CLM',price:'Partner rates',notes:'Full CLM · Agent + cPanel + DNS · All cert types',hi:true}].map(c=>(
-                  <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(0,119,182,0.06)':'#ffffff',border:`1px solid ${c.hi?'rgba(0,119,182,0.25)':LN}`,borderRadius:8,boxShadow:c.hi?'0 1px 4px rgba(0,119,182,0.1)':'none'}}>
-                    <div style={{flex:1}}><div style={{fontSize:12,fontWeight:c.hi?700:500,color:c.hi?'#0077b6':T1}}>{c.name}</div><div style={{fontSize:11,color:T3,marginTop:2}}>{c.notes}</div></div>
-                    <div style={{fontSize:13,fontWeight:c.hi?700:400,color:c.hi?'#0077b6':T3,fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
+                  <div key={c.name} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:c.hi?'rgba(255,255,255,0.2)':'rgba(255,255,255,0.08)',border:`1px solid ${c.hi?'rgba(255,255,255,0.45)':'rgba(255,255,255,0.15)'}`,borderRadius:8}}>
+                    <div style={{flex:1}}><div style={{fontSize:12,fontWeight:c.hi?700:500,color:'#ffffff'}}>{c.name}</div><div style={{fontSize:11,color:T3,marginTop:2}}>{c.notes}</div></div>
+                    <div style={{fontSize:13,fontWeight:c.hi?700:400,color:c.hi?'#ffffff':'rgba(255,255,255,0.5)',fontFamily:MONO,whiteSpace:'nowrap'}}>{c.price}</div>
                   </div>
                 ))}
                 <div style={{marginTop:5,display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:4}}>
                   {[['DigiCert','Trust chain · 99.9% browser'],['RapidSSL','CA partner · wholesale pricing'],['RFC 8555','ACME v2 · no lock-in'],['AES-256','Military-grade key storage'],['GDPR','Netherlands-based PKI engineer 🇳🇱'],['No ads','No tracking · no reselling']].map(([val,sub])=>(
-                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'#f0f4fa',border:`1px solid ${LN}`,borderRadius:6,alignItems:'center'}}>
-                      <div style={{fontSize:11,fontWeight:500,color:T1,fontFamily:MONO,minWidth:65}}>{val}</div>
+                    <div key={val} style={{display:'flex',gap:9,padding:'8px 10px',background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.18)',borderRadius:6,alignItems:'center'}}>
+                      <div style={{fontSize:11,fontWeight:500,color:'#ffffff',fontFamily:MONO,minWidth:65}}>{val}</div>
                       <div style={{fontSize:10.5,color:T3,lineHeight:1.4}}>{sub}</div>
                     </div>
                   ))}
