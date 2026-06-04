@@ -716,14 +716,20 @@ export default function Home({ nav }) {
                 <Body style={{marginBottom:20}}>Every layer of SSLVault is built on auditable open standards. RFC 8555 for issuance, AES-256-GCM for storage, CT logs for transparency.</Body>
                 <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>{['RFC 8555','AES-256-GCM','TLS 1.3','CT Logs','CAA Records','HSTS','SHA-256'].map(t=><Tag key={t}>{t}</Tag>)}</div>
               </div>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))',gap:1,background:LN,border:'1px solid rgba(255,255,255,0.14)',borderRadius:6,overflow:'hidden'}}>
-                {[{spec:'AES-256-GCM',title:'Key encryption',desc:'DEK wrapped with KEK. Keys never in plaintext.'},{spec:'RFC 8555',title:'ACME v2',desc:'DNS-01 challenge. Auto-validated via provider API.'},{spec:'CT monitoring',title:'Cert transparency',desc:'crt.sh queries for every cert ever issued.'},{spec:'CAA + HSTS',title:'DNS security',desc:'CAA prevents unauthorised CA issuance.'},{spec:'TLS 1.2 / 1.3',title:'TLS posture',desc:'ECDHE + PFS. HSTS max-age verified.'},{spec:'Append-only',title:'Audit trail',desc:'Every access logged. CSV export for SOC 2.'}].map(s=>(
-                  <div key={s.spec} style={{background:'rgba(255,255,255,0.08)',padding:'14px',borderRadius:8,border:'1px solid rgba(255,255,255,0.15)'}}>
-                    <div style={{fontSize:9.5,fontWeight:600,color:'rgba(255,255,255,0.48)',fontFamily:MONO,letterSpacing:'0.05em',marginBottom:5}}>{s.spec}</div>
-                    <div style={{fontSize:12,fontWeight:600,color:'#ffffff',marginBottom:4}}>{s.title}</div>
-                    <div style={{fontSize:11.5,color:'rgba(255,255,255,0.72)',lineHeight:1.6}}>{s.desc}</div>
-                  </div>
-                ))}
+              <div style={{background:'#0f1923',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.25)'}}>
+                <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                  <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
+                  <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1,textAlign:'center'}}>Security specifications · open standards</span>
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(260px,100%),1fr))',gap:1,background:'rgba(255,255,255,0.04)'}}>
+                  {[{spec:'AES-256-GCM',title:'Key encryption',desc:'DEK wrapped with KEK. Keys never in plaintext.'},{spec:'RFC 8555',title:'ACME v2',desc:'DNS-01 challenge. Auto-validated via provider API.'},{spec:'CT monitoring',title:'Cert transparency',desc:'crt.sh queries for every cert ever issued.'},{spec:'CAA + HSTS',title:'DNS security',desc:'CAA prevents unauthorised CA issuance.'},{spec:'TLS 1.2 / 1.3',title:'TLS posture',desc:'ECDHE + PFS. HSTS max-age verified.'},{spec:'Append-only',title:'Audit trail',desc:'Every access logged. CSV export for SOC 2.'}].map(s=>(
+                    <div key={s.spec} style={{background:'rgba(255,255,255,0.03)',padding:'14px 16px',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+                      <div style={{fontSize:9,fontWeight:600,color:'#3dbfb0',fontFamily:MONO,letterSpacing:'0.07em',marginBottom:5,textTransform:'uppercase'}}>{s.spec}</div>
+                      <div style={{fontSize:12,fontWeight:600,color:'rgba(255,255,255,0.9)',marginBottom:4}}>{s.title}</div>
+                      <div style={{fontSize:11,color:'rgba(255,255,255,0.45)',lineHeight:1.65}}>{s.desc}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </FadeUp>
@@ -890,34 +896,47 @@ export default function Home({ nav }) {
                 <p style={{fontSize:14,color:'rgba(255,255,255,0.75)',lineHeight:1.8,marginBottom:28,maxWidth:440}}>CertBind closes that gap with continuous, cryptographic proof — every 5 minutes.</p>
                 <div style={{display:'flex',gap:10}}><BtnPrimary label="See CertBind" onClick={()=>nav('/auth')}/><BtnGhost label="Read how it works" onClick={()=>nav('/knowledge-base')}/></div>
               </div>
-              <div style={{display:'flex',flexDirection:'column',gap:6}}>
-                <Card style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 14px'}}>
-                  <div style={{display:'flex',alignItems:'center',gap:9}}>
-                    <span style={{fontSize:13}}>🔗</span>
-                    <span style={{fontSize:12,fontWeight:500,color:'#111111',fontFamily:MONO}}>CertBind</span>
-                    <span style={{fontSize:9.5,fontWeight:600,color:GRN,background:'rgba(0,165,80,0.09)',border:'1px solid rgba(0,165,80,0.14)',borderRadius:3,padding:'1px 7px',fontFamily:MONO}}>ACTIVE</span>
+              <div style={{display:'flex',flexDirection:'column',gap:0,background:'#0f1923',borderRadius:12,overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.25)'}}>
+                {/* Titlebar */}
+                <div style={{background:'#1a2533',padding:'9px 14px',display:'flex',alignItems:'center',gap:8,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                  <div style={{display:'flex',gap:5}}>{['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{width:8,height:8,borderRadius:'50%',background:c}}/>)}</div>
+                  <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,flex:1,textAlign:'center'}}>CertBind · cryptographic binding</span>
+                  <span style={{fontSize:9,fontWeight:600,color:GRN,background:'rgba(0,165,80,0.15)',border:'1px solid rgba(0,165,80,0.25)',borderRadius:20,padding:'1px 8px',fontFamily:MONO}}>ACTIVE</span>
+                </div>
+                {/* Header row */}
+                <div style={{padding:'10px 14px',borderBottom:'1px solid rgba(255,255,255,0.05)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GRN} strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <span style={{fontSize:12,fontWeight:500,color:'rgba(255,255,255,0.85)',fontFamily:MONO}}>CertBind</span>
                   </div>
-                  <span style={{fontSize:10.5,color:'rgba(255,255,255,0.48)',fontFamily:MONO}}>4/4 domains bound</span>
-                </Card>
-                {[{n:'01',label:'Key-Cert Binding Proof',status:'VERIFIED',desc:'Agent signs nonce · key ↔ cert proven cryptographically'},{n:'02',label:'Live TLS Fingerprint',status:'MATCH',desc:'SHA-256 of served cert matches issued cert on every poll'},{n:'03',label:'Chain Integrity',status:'CLEAN',desc:'No unexpected intermediates · no SSL inspection proxy'},{n:'04',label:'Multi-Node Consistency',status:'7/7 NODES',desc:'All load balancer nodes serving correct certificate'}].map(l=>(
-                  <Card key={l.n} style={{display:'flex',gap:10,alignItems:'flex-start',padding:'10px 12px'}}>
-                    <div style={{width:20,height:20,borderRadius:3,background:'#f0f4fa',display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:700,color:'rgba(255,255,255,0.48)',fontFamily:MONO,flexShrink:0}}>{l.n}</div>
+                  <span style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO}}>4/4 domains bound</span>
+                </div>
+                {/* Check rows */}
+                {[
+                  {n:'01',label:'Key-Cert Binding Proof',status:'VERIFIED',c:GRN,desc:'Agent signs nonce · key ↔ cert proven cryptographically'},
+                  {n:'02',label:'Live TLS Fingerprint',status:'MATCH',c:GRN,desc:'SHA-256 of served cert matches issued cert on every poll'},
+                  {n:'03',label:'Chain Integrity',status:'CLEAN',c:GRN,desc:'No unexpected intermediates · no SSL inspection proxy'},
+                  {n:'04',label:'Multi-Node Consistency',status:'7/7 NODES',c:GRN,desc:'All load balancer nodes serving correct certificate'},
+                ].map((l,i,arr)=>(
+                  <div key={l.n} style={{display:'flex',gap:10,alignItems:'flex-start',padding:'10px 14px',borderBottom:i<arr.length-1?'1px solid rgba(255,255,255,0.04)':'none',background:'rgba(255,255,255,0.02)'}}>
+                    <div style={{width:22,height:22,borderRadius:5,background:'rgba(0,165,80,0.12)',border:'1px solid rgba(0,165,80,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:700,color:GRN,fontFamily:MONO,flexShrink:0}}>{l.n}</div>
                     <div style={{flex:1}}>
-                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:2}}>
-                        <span style={{fontSize:12,fontWeight:500,color:'#111111'}}>{l.label}</span>
-                        <span style={{fontSize:9.5,fontWeight:600,color:GRN,fontFamily:MONO}}>{l.status}</span>
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:3}}>
+                        <span style={{fontSize:12,fontWeight:500,color:'rgba(255,255,255,0.85)'}}>{l.label}</span>
+                        <span style={{fontSize:9.5,fontWeight:700,color:l.c,fontFamily:MONO,letterSpacing:'0.04em'}}>{l.status}</span>
                       </div>
-                      <div style={{fontSize:10.5,color:'rgba(255,255,255,0.48)',fontFamily:MONO}}>{l.desc}</div>
+                      <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO}}>{l.desc}</div>
                     </div>
-                  </Card>
-                ))}
-                <Card style={{display:'flex',gap:9,alignItems:'flex-start',padding:'10px 12px',background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.2)'}}>
-                  <span style={{fontSize:13,flexShrink:0}}>🚨</span>
-                  <div>
-                    <div style={{fontSize:11.5,fontWeight:600,color:'#ff9999',marginBottom:2}}>What CertBind catches that others miss</div>
-                    <div style={{fontSize:10.5,color:'#888888',fontFamily:MONO,lineHeight:1.7}}>key_mismatch · cert_mismatch · chain_anomaly · partial_deploy</div>
                   </div>
-                </Card>
+                ))}
+                {/* Footer alert */}
+                <div style={{display:'flex',gap:10,alignItems:'flex-start',padding:'10px 14px',background:'rgba(231,76,60,0.06)',borderTop:'1px solid rgba(231,76,60,0.12)'}}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" style={{flexShrink:0,marginTop:1}}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <div>
+                    <div style={{fontSize:11,fontWeight:600,color:'#e74c3c',marginBottom:3}}>What CertBind catches that others miss</div>
+                    <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',fontFamily:MONO,lineHeight:1.7}}>key_mismatch · cert_mismatch · chain_anomaly · partial_deploy</div>
+                  </div>
+                </div>
               </div>
             </div>
           </FadeUp>
