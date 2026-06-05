@@ -118,27 +118,19 @@ function OverviewTab({ user }) {
       const orders = o.data || []
       const keys   = k.data || []
       const now    = new Date()
-
       const active     = certs.filter(c => c.status === 'active')
       const expiring30 = active.filter(c => c.expires_at && Math.ceil((new Date(c.expires_at)-now)/86400000) <= 30)
       const expiring7  = active.filter(c => c.expires_at && Math.ceil((new Date(c.expires_at)-now)/86400000) <= 7)
       const thisMonth  = orders.filter(o => new Date(o.created_at) > new Date(now.getFullYear(), now.getMonth(), 1))
-
       const grades = { 'A+':0, A:0, B:0, C:0, D:0, F:0, '—':0 }
-      active.forEach(c => {
-        if (c.tls_grade && grades[c.tls_grade] !== undefined) grades[c.tls_grade]++
-        else grades['—']++
-      })
-
-      const bySource = {}
-      active.forEach(c => { const s = c.source||'unknown'; bySource[s]=(bySource[s]||0)+1 })
-
+      active.forEach(c => { if (c.tls_grade && grades[c.tls_grade] !== undefined) grades[c.tls_grade]++; else grades['—']++ })
+      const byCA = {}
+      active.forEach(c => { const s = c.source||'unknown'; byCA[s]=(byCA[s]||0)+1 })
       const deployed = active.filter(c => c.install_method === 'agent' || c.install_method === 'cpanel').length
       const keyVault = keys.filter(k => k.status === 'active').length
-
       setStats({ total:certs.length, active:active.length, expiring30:expiring30.length,
         expiring7:expiring7.length, thisMonth:thisMonth.length, orders:orders.length,
-        grades, bySource, deployed, keyVault })
+        grades, byCA, deployed, keyVault, healthy: active.length - expiring30.length })
       setLoading(false)
     })
   }, [user])
@@ -150,124 +142,162 @@ function OverviewTab({ user }) {
   )
 
   const { total=0, active=0, expiring30=0, expiring7=0, thisMonth=0,
-          grades={}, bySource={}, deployed=0, keyVault=0 } = stats || {}
+          grades={}, byCA={}, deployed=0, keyVault=0, healthy=0 } = stats || {}
 
-  const gradeEntries = [['A+','#111111'],['A','#0091d6'],['B','#0091d6'],
-    ['C','#0077b6'],['D','#0077b6'],['F','#0091d6'],['—','#666666']]
+  const F = "'Inter',system-ui,sans-serif"
+  const gradeEntries = [['A+','#00a550'],['A','#2ecc71'],['B','#0077b6'],['C','#f39c12'],['D','#e67e22'],['F','#e74c3c'],['—','#666666']]
   const maxGrade = Math.max(...gradeEntries.map(([g]) => grades[g]||0), 1)
 
+  const KPI = [
+    { label:'Total certs',    val: total,      sub: `${active} active`,             color:'#111111', accent:'rgba(0,0,0,0.04)',      border:'rgba(0,0,0,0.08)' },
+    { label:'Expired',        val: 0,           sub: '—',                            color:'#555555', accent:'rgba(0,0,0,0.03)',      border:'rgba(0,0,0,0.06)' },
+    { label:'≤ 7 days',       val: expiring7,   sub: expiring7>0?'Critical':'None',  color: expiring7>0?'#e74c3c':'#555555', accent: expiring7>0?'rgba(231,76,60,0.07)':'rgba(0,0,0,0.03)', border: expiring7>0?'rgba(231,76,60,0.2)':'rgba(0,0,0,0.06)' },
+    { label:'≤ 30 days',      val: expiring30,  sub: expiring30>0?'Expiring soon':'All good', color: expiring30>0?'#f39c12':'#555555', accent: expiring30>0?'rgba(243,156,18,0.07)':'rgba(0,0,0,0.03)', border: expiring30>0?'rgba(243,156,18,0.2)':'rgba(0,0,0,0.06)' },
+    { label:'Healthy >90d',   val: healthy,     sub: 'No action needed',             color: healthy>0?'#00a550':'#555555', accent: healthy>0?'rgba(0,165,80,0.07)':'rgba(0,0,0,0.03)', border: healthy>0?'rgba(0,165,80,0.2)':'rgba(0,0,0,0.06)' },
+  ]
+
   return (
-    <div>
-      {/* KPI strip */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:8, marginBottom:16 }}>
-        <StatCard label="Active certs" val={active} sub={`of ${total} total`}
-          color={active>0?'#111111':'var(--v2-text-1)'}/>
-        <StatCard label="Expiring ≤ 30d" val={expiring30} sub={expiring7>0?`${expiring7} within 7 days`:'none critical'}
-          color={expiring30>0?'#0077b6':'var(--v2-text-1)'} bg={expiring30>0?'rgba(230,126,34,0.12)':undefined}/>
-        <StatCard label="Deployed to servers" val={deployed} sub="agent or cPanel"
-          color={deployed>0?'#111111':'var(--v2-text-1)'}/>
-        <StatCard label="Keys in vault" val={keyVault} sub="AES-256 encrypted"
-          color="#0077b6"/>
+    <div style={{ fontFamily: F }}>
+
+      {/* KPI strip — matches screenshot style */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:20 }}>
+        {KPI.map(s => (
+          <div key={s.label} style={{ padding:'16px', borderRadius:10,
+            background:'#0a0e1a', border:`1px solid rgba(255,255,255,0.07)` }}>
+            <div style={{ fontSize:11, color:'#94a3b8', marginBottom:8, fontWeight:500 }}>{s.label}</div>
+            <div style={{ fontSize:28, fontWeight:800, color: s.val>0&&s.label!=='Total certs'&&s.label!=='Healthy >90d' ? s.color : s.label==='Healthy >90d'&&s.val>0 ? '#00a550' : '#e2e8f0',
+              fontFamily:"'JetBrains Mono',monospace", lineHeight:1 }}>{s.val}</div>
+          </div>
+        ))}
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap:12, marginBottom:12 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
 
-        {/* TLS grade distribution */}
-        <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)',
-          borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
-          <div style={{ fontSize:11, fontWeight:600, color:'#555555', textTransform:'uppercase',
-            letterSpacing:'0.4px', marginBottom:14 }}>TLS grade distribution</div>
-          {gradeEntries.map(([g, color]) => (
-            <div key={g} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:9 }}>
-              <span style={{ width:24, fontSize:11, fontWeight:700, color, fontFamily:'monospace', textAlign:'center' }}>{g}</span>
-              <div style={{ flex:1, height:22, background:'rgba(0,0,0,0.02)', borderRadius:6, overflow:'hidden', position:'relative' }}>
-                {(grades[g]||0) > 0 && (
+        {/* Portfolio by CA */}
+        <div style={{ background:'#0a0e1a', border:'1px solid rgba(255,255,255,0.07)',
+          borderRadius:10, padding:'16px' }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'#94a3b8', textTransform:'uppercase',
+            letterSpacing:'0.6px', marginBottom:16 }}>Portfolio by CA</div>
+          {Object.keys(byCA).length === 0 ? (
+            <div style={{ fontSize:12, color:'#64748b' }}>No certificates yet</div>
+          ) : Object.entries(byCA).map(([src, count]) => {
+            const label = src === 'gogetssl' ? 'RapidSSL' : src.charAt(0).toUpperCase()+src.slice(1)
+            const isNative = src === 'gogetssl'
+            return (
+              <div key={src} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+                marginBottom:10, padding:'10px 12px', borderRadius:8,
+                background: isNative ? 'rgba(0,119,182,0.12)' : 'rgba(255,255,255,0.04)',
+                border: isNative ? '1px solid rgba(0,119,182,0.25)' : '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                  <div style={{ width:28, height:28, borderRadius:6, flexShrink:0,
+                    background: isNative ? '#0077b6' : 'rgba(255,255,255,0.08)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    fontSize:9, fontWeight:800, color: isNative ? '#fff' : '#94a3b8' }}>
+                    {isNative ? 'GGS' : label.slice(0,2).toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:600, color:'#e2e8f0' }}>{label}</div>
+                    <div style={{ fontSize:10, color: isNative ? '#60a5fa' : '#64748b' }}>
+                      {isNative ? 'SSLVault native · always active' : 'Not connected'}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ fontSize:20, fontWeight:800, color:'#e2e8f0',
+                  fontFamily:"'JetBrains Mono',monospace" }}>{count}</div>
+              </div>
+            )
+          })}
+          {/* DigiCert / Sectigo placeholders */}
+          {['DigiCert','Sectigo'].map(ca => (
+            <div key={ca} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+              marginBottom:10, padding:'10px 12px', borderRadius:8,
+              background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                <div style={{ width:28, height:28, borderRadius:6, flexShrink:0,
+                  background: ca==='DigiCert'?'rgba(0,100,200,0.2)':'rgba(180,0,0,0.15)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  fontSize:9, fontWeight:800, color: ca==='DigiCert'?'#60a5fa':'#f87171' }}>
+                  {ca.slice(0,2).toUpperCase()}
+                </div>
+                <div>
+                  <div style={{ fontSize:13, fontWeight:600, color:'#64748b' }}>{ca}</div>
+                  <div style={{ fontSize:10, color:'#475569' }}>Not connected</div>
+                </div>
+              </div>
+              <button style={{ fontSize:10, padding:'4px 10px', borderRadius:6, cursor:'pointer',
+                background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)',
+                color:'#94a3b8', fontFamily:F }}>Click to connect</button>
+            </div>
+          ))}
+        </div>
+
+        {/* Expiry Risk */}
+        <div style={{ background:'#0a0e1a', border:'1px solid rgba(255,255,255,0.07)',
+          borderRadius:10, padding:'16px' }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'#94a3b8', textTransform:'uppercase',
+            letterSpacing:'0.6px', marginBottom:16 }}>Expiry risk — all CAs</div>
+          {[
+            { label:'Expired',   val:0,         color:'#e74c3c', bg:'rgba(231,76,60,0.12)'   },
+            { label:'≤ 7 days',  val:expiring7, color:'#f39c12', bg:'rgba(243,156,18,0.12)'  },
+            { label:'≤ 30 days', val:expiring30,color:'#0077b6', bg:'rgba(0,119,182,0.12)'   },
+            { label:'≤ 90 days', val:0,         color:'#555555', bg:'transparent'             },
+            { label:'Healthy',   val:healthy,   color:'#00a550', bg:'rgba(0,165,80,0.12)'    },
+          ].map(({ label, val, color, bg }) => (
+            <div key={label} style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10 }}>
+              <div style={{ fontSize:12, color:'#94a3b8', width:80, flexShrink:0 }}>{label}</div>
+              <div style={{ flex:1, height:22, background:'rgba(255,255,255,0.04)', borderRadius:6, overflow:'hidden', position:'relative' }}>
+                {val > 0 && (
                   <div style={{ position:'absolute', left:0, top:0, bottom:0,
-                    width:`${Math.max(8, Math.round(((grades[g]||0)/maxGrade)*100))}%`,
-                    background:gradeStyle(g==='—'?'Z':g).bg,
-                    borderRight:`2px solid ${color}`,
+                    width: `${Math.max(8, Math.min(100, Math.round((val/Math.max(total,1))*100)))}%`,
+                    background: bg, borderRight:`2px solid ${color}`,
                     display:'flex', alignItems:'center', paddingLeft:8,
-                    transition:'width .6s cubic-bezier(.16,1,.3,1)' }}>
-                    <span style={{ fontSize:10, fontWeight:700, color }}>{grades[g]}</span>
+                    transition:'width .6s' }}>
+                    <span style={{ fontSize:11, fontWeight:700, color }}>{val}</span>
                   </div>
                 )}
-                {(grades[g]||0) === 0 && (
+                {val === 0 && (
                   <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)',
-                    fontSize:10, color:'#555555' }}>0</span>
+                    fontSize:11, color:'#475569', fontWeight:600 }}>0</span>
                 )}
               </div>
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Source & activity */}
-        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-          <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)',
-            borderRadius:10, padding:'14px 16px', flex:1 , overflowX:'auto'}}>
-            <div style={{ fontSize:11, fontWeight:600, color:'#555555', textTransform:'uppercase',
-              letterSpacing:'0.4px', marginBottom:12 }}>Certificate sources</div>
-            {Object.entries(bySource).length === 0 ? (
-              <div style={{ fontSize:12, color:'#555555' }}>No certificates yet</div>
-            ) : Object.entries(bySource).map(([src, count]) => (
-              <div key={src} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
-                marginBottom:8, padding:'7px 10px', borderRadius:8, background:'rgba(0,0,0,0.02)',
-                border:'1px solid var(--v2-border)' }}>
-                <span style={{ fontSize:12, color:'#111111', fontWeight:500, textTransform:'capitalize' }}>
-                  {src === 'gogetssl' ? 'RapidSSL (SSLVault)' : src}
-                </span>
-                <span style={{ fontSize:13, fontWeight:700, color:'#111111', fontFamily:'"JetBrains Mono",monospace' }}>{count}</span>
-              </div>
-            ))}
+      {/* Activity row */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+        <div style={{ background:'#0a0e1a', border:'1px solid rgba(255,255,255,0.07)',
+          borderRadius:10, padding:'16px' }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'#94a3b8', textTransform:'uppercase',
+            letterSpacing:'0.6px', marginBottom:12 }}>Deployment</div>
+          <div style={{ display:'flex', gap:20 }}>
+            <div>
+              <div style={{ fontSize:24, fontWeight:800, color:'#e2e8f0', fontFamily:"'JetBrains Mono',monospace" }}>{deployed}</div>
+              <div style={{ fontSize:10, color:'#64748b', marginTop:3 }}>deployed to servers</div>
+            </div>
+            <div>
+              <div style={{ fontSize:24, fontWeight:800, color:'#60a5fa', fontFamily:"'JetBrains Mono',monospace" }}>{keyVault}</div>
+              <div style={{ fontSize:10, color:'#64748b', marginTop:3 }}>keys in vault</div>
+            </div>
           </div>
-          <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)',
-            borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
-            <div style={{ fontSize:11, fontWeight:600, color:'#555555', textTransform:'uppercase',
-              letterSpacing:'0.4px', marginBottom:10 }}>Activity</div>
-            <div style={{ display:'flex', gap:16 }}>
-              <div>
-                <div style={{ fontSize:20, fontWeight:700, color:'#111111', fontFamily:'"JetBrains Mono",monospace' }}>{thisMonth}</div>
-                <div style={{ fontSize:10, color:'#555555' }}>orders this month</div>
-              </div>
-              <div>
-                <div style={{ fontSize:20, fontWeight:700, color:'#111111', fontFamily:'"JetBrains Mono",monospace' }}>{active}</div>
-                <div style={{ fontSize:10, color:'#555555' }}>certs active</div>
-              </div>
+        </div>
+        <div style={{ background:'#0a0e1a', border:'1px solid rgba(255,255,255,0.07)',
+          borderRadius:10, padding:'16px' }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'#94a3b8', textTransform:'uppercase',
+            letterSpacing:'0.6px', marginBottom:12 }}>Activity</div>
+          <div style={{ display:'flex', gap:20 }}>
+            <div>
+              <div style={{ fontSize:24, fontWeight:800, color:'#e2e8f0', fontFamily:"'JetBrains Mono',monospace" }}>{thisMonth}</div>
+              <div style={{ fontSize:10, color:'#64748b', marginTop:3 }}>orders this month</div>
+            </div>
+            <div>
+              <div style={{ fontSize:24, fontWeight:800, color:'#e2e8f0', fontFamily:"'JetBrains Mono',monospace" }}>{active}</div>
+              <div style={{ fontSize:10, color:'#64748b', marginTop:3 }}>certs active</div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Expiry health bar */}
-      {active > 0 && (
-        <div style={{ background:'var(--v2-surface)', border:'1px solid var(--v2-border)',
-          borderRadius:10, padding:'14px 16px' , overflowX:'auto'}}>
-          <div style={{ fontSize:11, fontWeight:600, color:'#555555', textTransform:'uppercase',
-            letterSpacing:'0.4px', marginBottom:12 }}>Fleet health</div>
-          <div style={{ display:'flex', height:12, borderRadius:8, overflow:'hidden', gap:1 }}>
-            {[
-              { n:expiring7,             color:'#0077b6', label:'Critical' },
-              { n:expiring30-expiring7,  color:'#0077b6', label:'Expiring' },
-              { n:active-expiring30,     color:'#111111', label:'Healthy' },
-            ].map(({ n, color, label }) => n > 0 && (
-              <div key={label} title={`${label}: ${n}`}
-                style={{ flex:n, background:color, minWidth:4, transition:'flex .6s' }}/>
-            ))}
-          </div>
-          <div style={{ display:'flex', gap:16, marginTop:8 }}>
-            {[
-              { label:'Critical (≤7d)', n:expiring7,  color:'#0077b6' },
-              { label:'Expiring (≤30d)', n:expiring30, color:'#0077b6' },
-              { label:'Healthy',        n:active-expiring30, color:'#111111' },
-            ].map(({ label, n, color }) => (
-              <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
-                <div style={{ width:8, height:8, borderRadius:2, background:color }}/>
-                <span style={{ fontSize:10, color:'#555555' }}>{label}: </span>
-                <span style={{ fontSize:10, fontWeight:600, color }}>{n}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
