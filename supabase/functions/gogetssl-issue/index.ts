@@ -630,6 +630,21 @@ serve(async (req) => {
         .single()
       if (dbErr) return json({ error: dbErr.message }, 500)
 
+      // Mark any previous active ssl_orders for this domain as superseded.
+      // Runs ONLY after new order is safely inserted. Silent-fail — never blocks issuance.
+      // No GGS revocation — that is a separate user-triggered action.
+      try {
+        await adminDb().from('ssl_orders')
+          .update({ status: 'superseded', updated_at: now })
+          .eq('user_id', user.id)
+          .eq('domain', cleanDomain)
+          .eq('status', 'active')
+          .neq('id', saved.id)
+        console.log('[place_order] superseded old active orders for', cleanDomain)
+      } catch (e: any) {
+        console.warn('[place_order] supersede old orders failed (non-fatal):', e.message)
+      }
+
       // Save contact profile for next order
       await adminDb().from('domain_profiles').upsert({
         user_id: user.id, domain: cleanDomain,
