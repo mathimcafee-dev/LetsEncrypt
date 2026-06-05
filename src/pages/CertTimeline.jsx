@@ -448,7 +448,7 @@ export default function CertTimeline({ user }) {
                                 return (
                                   <div>
                                     {/* Dynamic Two-Column Event Timeline */}
-                                    (() => {
+                                    {(() => {
                                       const certEvents = row.events.filter(e =>
                                         ['cert_warning_30d','cert_warning_14d','cert_warning_7d','cert_warning_1d','cert_reissue','30d_warning','14d_warning','7d_warning','final_warning','auto_reissue'].includes(e.event_type)
                                       ).sort((a,b) => new Date(a.scheduled_date) - new Date(b.scheduled_date))
@@ -552,7 +552,7 @@ export default function CertTimeline({ user }) {
                                           />
                                         </div>
                                       )
-                                    })()
+                                    })()} 
 {/* Reissue vs Renewal explainer */}
                                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:14, marginTop:4 }}>
                                       <div style={{ background:'rgba(0,119,182,0.06)', border:'1px solid rgba(0,119,182,0.18)', borderRadius:8, padding:'8px 12px', display:'flex', gap:8, alignItems:'flex-start' }}>

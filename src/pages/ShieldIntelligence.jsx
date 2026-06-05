@@ -149,11 +149,11 @@ function OverviewTab({ user }) {
   const maxGrade = Math.max(...gradeEntries.map(([g]) => grades[g]||0), 1)
 
   const KPI = [
-    { label:'Total certs',    val: total,      sub: `${active} active`,             color:'#111111', accent:'rgba(0,0,0,0.04)',      border:'rgba(0,0,0,0.08)' },
-    { label:'Expired',        val: 0,           sub: '—',                            color:'#555555', accent:'rgba(0,0,0,0.03)',      border:'rgba(0,0,0,0.06)' },
-    { label:'≤ 7 days',       val: expiring7,   sub: expiring7>0?'Critical':'None',  color: expiring7>0?'#e74c3c':'#555555', accent: expiring7>0?'rgba(231,76,60,0.07)':'rgba(0,0,0,0.03)', border: expiring7>0?'rgba(231,76,60,0.2)':'rgba(0,0,0,0.06)' },
-    { label:'≤ 30 days',      val: expiring30,  sub: expiring30>0?'Expiring soon':'All good', color: expiring30>0?'#f39c12':'#555555', accent: expiring30>0?'rgba(243,156,18,0.07)':'rgba(0,0,0,0.03)', border: expiring30>0?'rgba(243,156,18,0.2)':'rgba(0,0,0,0.06)' },
-    { label:'Healthy >90d',   val: healthy,     sub: 'No action needed',             color: healthy>0?'#00a550':'#555555', accent: healthy>0?'rgba(0,165,80,0.07)':'rgba(0,0,0,0.03)', border: healthy>0?'rgba(0,165,80,0.2)':'rgba(0,0,0,0.06)' },
+    { label:'Total certs',    val: total,      sub: `${active} active`,             color:'#111111', accent:'#ffffff',      border:'rgba(0,119,182,0.12)' },
+    { label:'Expired',        val: 0,           sub: '—',                            color:'#888888', accent:'#ffffff',      border:'rgba(0,119,182,0.12)' },
+    { label:'≤ 7 days',       val: expiring7,   sub: expiring7>0?'Critical':'None',  color: expiring7>0?'#c0392b':'#888888', accent: expiring7>0?'rgba(192,57,43,0.05)':'#ffffff', border: expiring7>0?'rgba(192,57,43,0.25)':'rgba(0,119,182,0.12)' },
+    { label:'≤ 30 days',      val: expiring30,  sub: expiring30>0?'Expiring soon':'All good', color: expiring30>0?'#9a6400':'#888888', accent: expiring30>0?'rgba(154,100,0,0.05)':'#ffffff', border: expiring30>0?'rgba(154,100,0,0.25)':'rgba(0,119,182,0.12)' },
+    { label:'Healthy >90d',   val: healthy,     sub: 'No action needed',             color: healthy>0?'#00a550':'#888888', accent: healthy>0?'rgba(0,165,80,0.05)':'#ffffff', border: healthy>0?'rgba(0,165,80,0.25)':'rgba(0,119,182,0.12)' },
   ]
 
   return (
@@ -162,13 +162,14 @@ function OverviewTab({ user }) {
       {/* KPI strip */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:20 }}>
         {KPI.map(s => (
-          <div key={s.label} style={{ padding:'16px', borderRadius:10,
+          <div key={s.label} style={{ padding:'16px 18px', borderRadius:10,
             background: s.accent || '#ffffff',
-            border: `1px solid ${s.border || 'rgba(0,0,0,0.08)'}`,
-            boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
-            <div style={{ fontSize:11, color:'#888888', marginBottom:8, fontWeight:500, textTransform:'uppercase', letterSpacing:'0.4px' }}>{s.label}</div>
-            <div style={{ fontSize:28, fontWeight:800, color: s.color || '#111111',
-              fontFamily:"'JetBrains Mono',monospace", lineHeight:1 }}>{s.val}</div>
+            border: `1px solid ${s.border || 'rgba(0,119,182,0.12)'}`,
+            boxShadow:'0 1px 4px rgba(0,119,182,0.06)' }}>
+            <div style={{ fontSize:10, color:'#888888', marginBottom:10, fontWeight:600, textTransform:'uppercase', letterSpacing:'0.5px' }}>{s.label}</div>
+            <div style={{ fontSize:30, fontWeight:800, color: s.color || '#111111',
+              fontFamily:"'JetBrains Mono',monospace", lineHeight:1, marginBottom:6 }}>{s.val}</div>
+            {s.sub && <div style={{ fontSize:10, color:'#999999', fontWeight:500 }}>{s.sub}</div>}
           </div>
         ))}
       </div>
@@ -176,9 +177,9 @@ function OverviewTab({ user }) {
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
 
         {/* Portfolio by CA */}
-        <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)',
-          borderRadius:10, padding:'16px', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize:11, fontWeight:700, color:'#888888', textTransform:'uppercase',
+        <div style={{ background:'#ffffff', border:'1px solid rgba(0,119,182,0.12)',
+          borderRadius:10, padding:'16px', boxShadow:'0 1px 4px rgba(0,119,182,0.06)' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'#888888', textTransform:'uppercase',
             letterSpacing:'0.6px', marginBottom:16 }}>Portfolio by CA</div>
           {Object.keys(byCA).length === 0 ? (
             <div style={{ fontSize:12, color:'#888888' }}>No certificates yet</div>
@@ -188,18 +189,18 @@ function OverviewTab({ user }) {
             return (
               <div key={src} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
                 marginBottom:10, padding:'10px 12px', borderRadius:8,
-                background: isNative ? 'rgba(0,119,182,0.06)' : 'rgba(0,0,0,0.02)',
-                border: isNative ? '1px solid rgba(0,119,182,0.2)' : '1px solid rgba(0,0,0,0.06)' }}>
+                background: isNative ? 'rgba(0,119,182,0.06)' : '#f8fafc',
+                border: isNative ? '1px solid rgba(0,119,182,0.2)' : '1px solid rgba(0,119,182,0.1)' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                   <div style={{ width:32, height:32, borderRadius:8, flexShrink:0,
-                    background: isNative ? '#0077b6' : 'rgba(0,0,0,0.06)',
+                    background: isNative ? '#0077b6' : '#e8f0f8',
                     display:'flex', alignItems:'center', justifyContent:'center',
-                    fontSize:9, fontWeight:800, color: isNative ? '#fff' : '#888888' }}>
+                    fontSize:9, fontWeight:800, color: isNative ? '#fff' : '#0077b6' }}>
                     {isNative ? 'GGS' : label.slice(0,2).toUpperCase()}
                   </div>
                   <div>
                     <div style={{ fontSize:13, fontWeight:600, color:'#111111' }}>{label}</div>
-                    <div style={{ fontSize:10, color: isNative ? '#0077b6' : '#888888' }}>
+                    <div style={{ fontSize:10, color: isNative ? '#0077b6' : '#999999' }}>
                       {isNative ? 'SSLVault native · always active' : 'Not connected'}
                     </div>
                   </div>
@@ -212,30 +213,35 @@ function OverviewTab({ user }) {
           {['DigiCert','Sectigo'].map(ca => (
             <div key={ca} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
               marginBottom:10, padding:'10px 12px', borderRadius:8,
-              background:'rgba(0,0,0,0.02)', border:'1px solid rgba(0,0,0,0.06)' }}>
+              background:'#f8fafc', border:'1px solid rgba(0,119,182,0.1)' }}>
               <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                 <div style={{ width:32, height:32, borderRadius:8, flexShrink:0,
-                  background: ca==='DigiCert'?'rgba(0,100,200,0.08)':'rgba(180,0,0,0.07)',
+                  background: ca==='DigiCert'?'rgba(0,119,182,0.1)':'rgba(0,119,182,0.08)',
                   display:'flex', alignItems:'center', justifyContent:'center',
-                  fontSize:9, fontWeight:800, color: ca==='DigiCert'?'#0077b6':'#c0392b' }}>
+                  fontSize:9, fontWeight:800, color:'#0077b6' }}>
                   {ca.slice(0,2).toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontSize:13, fontWeight:500, color:'#555555' }}>{ca}</div>
-                  <div style={{ fontSize:10, color:'#aaaaaa' }}>Not connected</div>
+                  <div style={{ fontSize:13, fontWeight:500, color:'#333333' }}>{ca}</div>
+                  <div style={{ fontSize:10, color:'#999999' }}>Not connected</div>
                 </div>
               </div>
-              <button style={{ fontSize:10, padding:'5px 12px', borderRadius:6, cursor:'pointer',
-                background:'rgba(0,0,0,0.04)', border:'1px solid rgba(0,0,0,0.1)',
-                color:'#555555', fontFamily:F }}>Click to connect</button>
+              <button style={{ fontSize:11, padding:'5px 14px', borderRadius:6, cursor:'pointer',
+                background:'#ffffff', border:'1px solid rgba(0,119,182,0.3)',
+                color:'#0077b6', fontFamily:F, fontWeight:600,
+                transition:'all .15s' }}
+                onMouseEnter={e=>{e.currentTarget.style.background='rgba(0,119,182,0.06)'}}
+                onMouseLeave={e=>{e.currentTarget.style.background='#ffffff'}}>
+                Connect
+              </button>
             </div>
           ))}
         </div>
 
         {/* Expiry Risk */}
-        <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)',
-          borderRadius:10, padding:'16px', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize:11, fontWeight:700, color:'#888888', textTransform:'uppercase',
+        <div style={{ background:'#ffffff', border:'1px solid rgba(0,119,182,0.12)',
+          borderRadius:10, padding:'16px', boxShadow:'0 1px 4px rgba(0,119,182,0.06)' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'#888888', textTransform:'uppercase',
             letterSpacing:'0.6px', marginBottom:16 }}>Expiry risk — all CAs</div>
           {[
             { label:'Expired',   val:0,         color:'#c0392b', bg:'rgba(192,57,43,0.08)'  },
@@ -246,7 +252,7 @@ function OverviewTab({ user }) {
           ].map(({ label, val, color, bg }) => (
             <div key={label} style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10 }}>
               <div style={{ fontSize:12, color:'#555555', width:80, flexShrink:0 }}>{label}</div>
-              <div style={{ flex:1, height:22, background:'rgba(0,0,0,0.03)', borderRadius:6, overflow:'hidden', position:'relative' }}>
+              <div style={{ flex:1, height:22, background:'rgba(0,119,182,0.06)', borderRadius:6, overflow:'hidden', position:'relative' }}>
                 {val > 0 && (
                   <div style={{ position:'absolute', left:0, top:0, bottom:0,
                     width:`${Math.max(8, Math.min(100, Math.round((val/Math.max(total,1))*100)))}%`,
@@ -268,9 +274,9 @@ function OverviewTab({ user }) {
 
       {/* Activity row */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-        <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)',
-          borderRadius:10, padding:'16px', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize:11, fontWeight:700, color:'#888888', textTransform:'uppercase',
+        <div style={{ background:'#ffffff', border:'1px solid rgba(0,119,182,0.12)',
+          borderRadius:10, padding:'16px', boxShadow:'0 1px 4px rgba(0,119,182,0.06)' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'#888888', textTransform:'uppercase',
             letterSpacing:'0.6px', marginBottom:12 }}>Deployment</div>
           <div style={{ display:'flex', gap:24 }}>
             <div>
@@ -283,9 +289,9 @@ function OverviewTab({ user }) {
             </div>
           </div>
         </div>
-        <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)',
-          borderRadius:10, padding:'16px', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize:11, fontWeight:700, color:'#888888', textTransform:'uppercase',
+        <div style={{ background:'#ffffff', border:'1px solid rgba(0,119,182,0.12)',
+          borderRadius:10, padding:'16px', boxShadow:'0 1px 4px rgba(0,119,182,0.06)' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'#888888', textTransform:'uppercase',
             letterSpacing:'0.6px', marginBottom:12 }}>Activity</div>
           <div style={{ display:'flex', gap:24 }}>
             <div>
@@ -303,7 +309,6 @@ function OverviewTab({ user }) {
   )
 }
 
-(must be a component — no hooks inside .map) ──────
 function DomainScoreRow({ s, scanning, onRescan }) {
   const [expanded, setExpanded] = useState(false)
   const style = gradeStyle(s.grade)
