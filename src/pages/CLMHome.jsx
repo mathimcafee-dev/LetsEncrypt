@@ -16,8 +16,6 @@ import CAIntelligenceHub from './CAIntelligenceHub'
 import AgentHealth from './AgentHealth'
 import SSLHealthScore from './SSLHealthScore'
 import CertChangelog from './CertChangelog'
-import BulkScanner from './BulkScanner'
-import BulkIssuePage from './BulkIssuePage'
 import RenewalCalendar from './RenewalCalendar'
 import AdminRenewalCalendar from './AdminRenewalCalendar'
 import CertTimeline from './CertTimeline'
@@ -104,7 +102,6 @@ export default function CLMHome({ user, nav, initialSection }) {
     { group:'Manage', items:[
       {id:'dashboard',         label:'Dashboard',        icon:LayoutDashboard},
       {id:'issue',             label:'Issue cert',       icon:Plus},
-      {id:'bulk-issue',        label:'Bulk issuance',    icon:Upload},
       {id:'cert-timeline',     label:'Certificate Timeline', icon:CalendarDays},
     ]},
     { group:'Monitor', items:[
@@ -128,7 +125,6 @@ export default function CLMHome({ user, nav, initialSection }) {
   ]
 
   const TITLES = {
-    dashboard:'Dashboard', issue:'Issue cert', 'bulk-issue':'Bulk Issuance', readiness:'47-Day Readiness',
     'renewal-calendar':'Renewal calendar', certvault:'CertVault', certbind:'CertBind',
     'domain-manager':'Domain Manager', 'my-servers':'Domain Manager',
     'infrastructure':'Domain Manager', 'servers':'Domain Manager', 'agent-health':'Domain Manager',
@@ -143,7 +139,6 @@ export default function CLMHome({ user, nav, initialSection }) {
     if(sec==='dashboard')        return <Dashboard nav={sideNav} onIssue={()=>go('issue')} onOpenAI={()=>setAiOpen(true)}/>
     if(sec==='readiness')        return <ReadinessDashboard user={user} onNav={go}/>
     if(sec==='issue')            return <BuyCertificate nav={sideNav} embedded onDashboard={()=>go('dashboard')} onIssueAnother={()=>go('issue')}/>
-    if(sec==='bulk-issue')       return <BulkIssuePage nav={sideNav}/>
     if(sec==='integrations')     return <Integrations nav={sideNav}/>
     if(sec==='install')          return <Install nav={sideNav}/>
     if(sec==='kb')               return <KnowledgeBase nav={sideNav}/>
