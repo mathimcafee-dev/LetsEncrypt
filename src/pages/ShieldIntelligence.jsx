@@ -159,13 +159,15 @@ function OverviewTab({ user }) {
   return (
     <div style={{ fontFamily: F }}>
 
-      {/* KPI strip — matches screenshot style */}
+      {/* KPI strip */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:20 }}>
         {KPI.map(s => (
           <div key={s.label} style={{ padding:'16px', borderRadius:10,
-            background:'#0a0e1a', border:`1px solid rgba(255,255,255,0.07)` }}>
-            <div style={{ fontSize:11, color:'#94a3b8', marginBottom:8, fontWeight:500 }}>{s.label}</div>
-            <div style={{ fontSize:28, fontWeight:800, color: s.val>0&&s.label!=='Total certs'&&s.label!=='Healthy >90d' ? s.color : s.label==='Healthy >90d'&&s.val>0 ? '#00a550' : '#e2e8f0',
+            background: s.accent || '#ffffff',
+            border: `1px solid ${s.border || 'rgba(0,0,0,0.08)'}`,
+            boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div style={{ fontSize:11, color:'#888888', marginBottom:8, fontWeight:500, textTransform:'uppercase', letterSpacing:'0.4px' }}>{s.label}</div>
+            <div style={{ fontSize:28, fontWeight:800, color: s.color || '#111111',
               fontFamily:"'JetBrains Mono',monospace", lineHeight:1 }}>{s.val}</div>
           </div>
         ))}
@@ -174,82 +176,81 @@ function OverviewTab({ user }) {
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
 
         {/* Portfolio by CA */}
-        <div style={{ background:'#0a0e1a', border:'1px solid rgba(255,255,255,0.07)',
-          borderRadius:10, padding:'16px' }}>
-          <div style={{ fontSize:11, fontWeight:700, color:'#94a3b8', textTransform:'uppercase',
+        <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)',
+          borderRadius:10, padding:'16px', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'#888888', textTransform:'uppercase',
             letterSpacing:'0.6px', marginBottom:16 }}>Portfolio by CA</div>
           {Object.keys(byCA).length === 0 ? (
-            <div style={{ fontSize:12, color:'#64748b' }}>No certificates yet</div>
+            <div style={{ fontSize:12, color:'#888888' }}>No certificates yet</div>
           ) : Object.entries(byCA).map(([src, count]) => {
             const label = src === 'gogetssl' ? 'RapidSSL' : src.charAt(0).toUpperCase()+src.slice(1)
             const isNative = src === 'gogetssl'
             return (
               <div key={src} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
                 marginBottom:10, padding:'10px 12px', borderRadius:8,
-                background: isNative ? 'rgba(0,119,182,0.12)' : 'rgba(255,255,255,0.04)',
-                border: isNative ? '1px solid rgba(0,119,182,0.25)' : '1px solid rgba(255,255,255,0.06)' }}>
+                background: isNative ? 'rgba(0,119,182,0.06)' : 'rgba(0,0,0,0.02)',
+                border: isNative ? '1px solid rgba(0,119,182,0.2)' : '1px solid rgba(0,0,0,0.06)' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                  <div style={{ width:28, height:28, borderRadius:6, flexShrink:0,
-                    background: isNative ? '#0077b6' : 'rgba(255,255,255,0.08)',
+                  <div style={{ width:32, height:32, borderRadius:8, flexShrink:0,
+                    background: isNative ? '#0077b6' : 'rgba(0,0,0,0.06)',
                     display:'flex', alignItems:'center', justifyContent:'center',
-                    fontSize:9, fontWeight:800, color: isNative ? '#fff' : '#94a3b8' }}>
+                    fontSize:9, fontWeight:800, color: isNative ? '#fff' : '#888888' }}>
                     {isNative ? 'GGS' : label.slice(0,2).toUpperCase()}
                   </div>
                   <div>
-                    <div style={{ fontSize:13, fontWeight:600, color:'#e2e8f0' }}>{label}</div>
-                    <div style={{ fontSize:10, color: isNative ? '#60a5fa' : '#64748b' }}>
+                    <div style={{ fontSize:13, fontWeight:600, color:'#111111' }}>{label}</div>
+                    <div style={{ fontSize:10, color: isNative ? '#0077b6' : '#888888' }}>
                       {isNative ? 'SSLVault native · always active' : 'Not connected'}
                     </div>
                   </div>
                 </div>
-                <div style={{ fontSize:20, fontWeight:800, color:'#e2e8f0',
+                <div style={{ fontSize:22, fontWeight:800, color:'#111111',
                   fontFamily:"'JetBrains Mono',monospace" }}>{count}</div>
               </div>
             )
           })}
-          {/* DigiCert / Sectigo placeholders */}
           {['DigiCert','Sectigo'].map(ca => (
             <div key={ca} style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
               marginBottom:10, padding:'10px 12px', borderRadius:8,
-              background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.05)' }}>
+              background:'rgba(0,0,0,0.02)', border:'1px solid rgba(0,0,0,0.06)' }}>
               <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                <div style={{ width:28, height:28, borderRadius:6, flexShrink:0,
-                  background: ca==='DigiCert'?'rgba(0,100,200,0.2)':'rgba(180,0,0,0.15)',
+                <div style={{ width:32, height:32, borderRadius:8, flexShrink:0,
+                  background: ca==='DigiCert'?'rgba(0,100,200,0.08)':'rgba(180,0,0,0.07)',
                   display:'flex', alignItems:'center', justifyContent:'center',
-                  fontSize:9, fontWeight:800, color: ca==='DigiCert'?'#60a5fa':'#f87171' }}>
+                  fontSize:9, fontWeight:800, color: ca==='DigiCert'?'#0077b6':'#c0392b' }}>
                   {ca.slice(0,2).toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontSize:13, fontWeight:600, color:'#64748b' }}>{ca}</div>
-                  <div style={{ fontSize:10, color:'#475569' }}>Not connected</div>
+                  <div style={{ fontSize:13, fontWeight:500, color:'#555555' }}>{ca}</div>
+                  <div style={{ fontSize:10, color:'#aaaaaa' }}>Not connected</div>
                 </div>
               </div>
-              <button style={{ fontSize:10, padding:'4px 10px', borderRadius:6, cursor:'pointer',
-                background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)',
-                color:'#94a3b8', fontFamily:F }}>Click to connect</button>
+              <button style={{ fontSize:10, padding:'5px 12px', borderRadius:6, cursor:'pointer',
+                background:'rgba(0,0,0,0.04)', border:'1px solid rgba(0,0,0,0.1)',
+                color:'#555555', fontFamily:F }}>Click to connect</button>
             </div>
           ))}
         </div>
 
         {/* Expiry Risk */}
-        <div style={{ background:'#0a0e1a', border:'1px solid rgba(255,255,255,0.07)',
-          borderRadius:10, padding:'16px' }}>
-          <div style={{ fontSize:11, fontWeight:700, color:'#94a3b8', textTransform:'uppercase',
+        <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)',
+          borderRadius:10, padding:'16px', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'#888888', textTransform:'uppercase',
             letterSpacing:'0.6px', marginBottom:16 }}>Expiry risk — all CAs</div>
           {[
-            { label:'Expired',   val:0,         color:'#e74c3c', bg:'rgba(231,76,60,0.12)'   },
-            { label:'≤ 7 days',  val:expiring7, color:'#f39c12', bg:'rgba(243,156,18,0.12)'  },
-            { label:'≤ 30 days', val:expiring30,color:'#0077b6', bg:'rgba(0,119,182,0.12)'   },
-            { label:'≤ 90 days', val:0,         color:'#555555', bg:'transparent'             },
-            { label:'Healthy',   val:healthy,   color:'#00a550', bg:'rgba(0,165,80,0.12)'    },
+            { label:'Expired',   val:0,         color:'#c0392b', bg:'rgba(192,57,43,0.08)'  },
+            { label:'≤ 7 days',  val:expiring7, color:'#c0392b', bg:'rgba(192,57,43,0.06)'  },
+            { label:'≤ 30 days', val:expiring30,color:'#9a6400', bg:'rgba(154,100,0,0.06)'  },
+            { label:'≤ 90 days', val:0,         color:'#888888', bg:'transparent'            },
+            { label:'Healthy',   val:healthy,   color:'#00a550', bg:'rgba(0,165,80,0.08)'   },
           ].map(({ label, val, color, bg }) => (
             <div key={label} style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10 }}>
-              <div style={{ fontSize:12, color:'#94a3b8', width:80, flexShrink:0 }}>{label}</div>
-              <div style={{ flex:1, height:22, background:'rgba(255,255,255,0.04)', borderRadius:6, overflow:'hidden', position:'relative' }}>
+              <div style={{ fontSize:12, color:'#555555', width:80, flexShrink:0 }}>{label}</div>
+              <div style={{ flex:1, height:22, background:'rgba(0,0,0,0.03)', borderRadius:6, overflow:'hidden', position:'relative' }}>
                 {val > 0 && (
                   <div style={{ position:'absolute', left:0, top:0, bottom:0,
-                    width: `${Math.max(8, Math.min(100, Math.round((val/Math.max(total,1))*100)))}%`,
-                    background: bg, borderRight:`2px solid ${color}`,
+                    width:`${Math.max(8, Math.min(100, Math.round((val/Math.max(total,1))*100)))}%`,
+                    background:bg, borderRight:`2px solid ${color}`,
                     display:'flex', alignItems:'center', paddingLeft:8,
                     transition:'width .6s' }}>
                     <span style={{ fontSize:11, fontWeight:700, color }}>{val}</span>
@@ -257,7 +258,7 @@ function OverviewTab({ user }) {
                 )}
                 {val === 0 && (
                   <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)',
-                    fontSize:11, color:'#475569', fontWeight:600 }}>0</span>
+                    fontSize:11, color:'#aaaaaa', fontWeight:500 }}>0</span>
                 )}
               </div>
             </div>
@@ -267,33 +268,33 @@ function OverviewTab({ user }) {
 
       {/* Activity row */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-        <div style={{ background:'#0a0e1a', border:'1px solid rgba(255,255,255,0.07)',
-          borderRadius:10, padding:'16px' }}>
-          <div style={{ fontSize:11, fontWeight:700, color:'#94a3b8', textTransform:'uppercase',
+        <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)',
+          borderRadius:10, padding:'16px', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'#888888', textTransform:'uppercase',
             letterSpacing:'0.6px', marginBottom:12 }}>Deployment</div>
-          <div style={{ display:'flex', gap:20 }}>
+          <div style={{ display:'flex', gap:24 }}>
             <div>
-              <div style={{ fontSize:24, fontWeight:800, color:'#e2e8f0', fontFamily:"'JetBrains Mono',monospace" }}>{deployed}</div>
-              <div style={{ fontSize:10, color:'#64748b', marginTop:3 }}>deployed to servers</div>
+              <div style={{ fontSize:26, fontWeight:800, color:'#111111', fontFamily:"'JetBrains Mono',monospace" }}>{deployed}</div>
+              <div style={{ fontSize:10, color:'#888888', marginTop:3 }}>deployed to servers</div>
             </div>
             <div>
-              <div style={{ fontSize:24, fontWeight:800, color:'#60a5fa', fontFamily:"'JetBrains Mono',monospace" }}>{keyVault}</div>
-              <div style={{ fontSize:10, color:'#64748b', marginTop:3 }}>keys in vault</div>
+              <div style={{ fontSize:26, fontWeight:800, color:'#0077b6', fontFamily:"'JetBrains Mono',monospace" }}>{keyVault}</div>
+              <div style={{ fontSize:10, color:'#888888', marginTop:3 }}>keys in vault</div>
             </div>
           </div>
         </div>
-        <div style={{ background:'#0a0e1a', border:'1px solid rgba(255,255,255,0.07)',
-          borderRadius:10, padding:'16px' }}>
-          <div style={{ fontSize:11, fontWeight:700, color:'#94a3b8', textTransform:'uppercase',
+        <div style={{ background:'#ffffff', border:'1px solid rgba(0,0,0,0.08)',
+          borderRadius:10, padding:'16px', boxShadow:'0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'#888888', textTransform:'uppercase',
             letterSpacing:'0.6px', marginBottom:12 }}>Activity</div>
-          <div style={{ display:'flex', gap:20 }}>
+          <div style={{ display:'flex', gap:24 }}>
             <div>
-              <div style={{ fontSize:24, fontWeight:800, color:'#e2e8f0', fontFamily:"'JetBrains Mono',monospace" }}>{thisMonth}</div>
-              <div style={{ fontSize:10, color:'#64748b', marginTop:3 }}>orders this month</div>
+              <div style={{ fontSize:26, fontWeight:800, color:'#111111', fontFamily:"'JetBrains Mono',monospace" }}>{thisMonth}</div>
+              <div style={{ fontSize:10, color:'#888888', marginTop:3 }}>orders this month</div>
             </div>
             <div>
-              <div style={{ fontSize:24, fontWeight:800, color:'#e2e8f0', fontFamily:"'JetBrains Mono',monospace" }}>{active}</div>
-              <div style={{ fontSize:10, color:'#64748b', marginTop:3 }}>certs active</div>
+              <div style={{ fontSize:26, fontWeight:800, color:'#111111', fontFamily:"'JetBrains Mono',monospace" }}>{active}</div>
+              <div style={{ fontSize:10, color:'#888888', marginTop:3 }}>certs active</div>
             </div>
           </div>
         </div>
@@ -302,7 +303,7 @@ function OverviewTab({ user }) {
   )
 }
 
-// ── TLS domain row (must be a component — no hooks inside .map) ──────
+(must be a component — no hooks inside .map) ──────
 function DomainScoreRow({ s, scanning, onRescan }) {
   const [expanded, setExpanded] = useState(false)
   const style = gradeStyle(s.grade)
@@ -883,15 +884,15 @@ export default function ShieldIntelligence({ user }) {
           </div>
 
           {/* Tab bar */}
-          <div style={{ display:'flex', gap:2, borderBottom:'1px solid rgba(0,0,0,0.06)', marginBottom:20 }}>
+          <div style={{ display:'flex', gap:2, borderBottom:'1px solid rgba(0,0,0,0.1)', marginBottom:20, background:'rgba(0,0,0,0.02)', padding:'0 4px', borderRadius:'8px 8px 0 0' }}>
             {TABS.map(({ id, label, icon:Icon }) => (
               <button key={id} onClick={() => setTab(id)}
                 style={{ display:'flex', alignItems:'center', gap:6,
                   padding:'7px 14px 8px', fontSize:12,
                   fontWeight:tab===id?600:400, fontFamily:'inherit',
                   background:'none', border:'none', cursor:'pointer',
-                  borderBottom:tab===id?'2px solid var(--v2-green)':'2px solid transparent',
-                  color:tab===id?'var(--v2-green)':'var(--v2-text-3)',
+                  borderBottom:tab===id?'2px solid #0077b6':'2px solid transparent',
+                  color:tab===id?'#0077b6':'#888888',
                   marginBottom:-1, transition:'all .15s' }}>
                 <Icon size={13}/>
                 {label}
