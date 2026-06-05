@@ -504,6 +504,24 @@ export default function CertTimeline({ user }) {
                                       })}
                                     </div>
 
+                                    {/* Reissue vs Renewal explainer */}
+                                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:14, marginTop:4 }}>
+                                      <div style={{ background:'rgba(0,119,182,0.06)', border:'1px solid rgba(0,119,182,0.18)', borderRadius:8, padding:'8px 12px', display:'flex', gap:8, alignItems:'flex-start' }}>
+                                        <div style={{ width:8, height:8, borderRadius:'50%', background:'#0077b6', flexShrink:0, marginTop:3 }}/>
+                                        <div>
+                                          <div style={{ fontSize:10, fontWeight:700, color:'#0077b6', marginBottom:2 }}>AUTO-REISSUE</div>
+                                          <div style={{ fontSize:10, color:'#555555', lineHeight:1.5 }}>Triggers <strong>1 day before cert expiry</strong>. Same subscription — fresh cert file. Free &amp; automatic.</div>
+                                        </div>
+                                      </div>
+                                      <div style={{ background:'rgba(0,165,80,0.06)', border:'1px solid rgba(0,165,80,0.18)', borderRadius:8, padding:'8px 12px', display:'flex', gap:8, alignItems:'flex-start' }}>
+                                        <div style={{ width:8, height:8, borderRadius:'50%', background:'#00a550', flexShrink:0, marginTop:3 }}/>
+                                        <div>
+                                          <div style={{ fontSize:10, fontWeight:700, color:'#00a550', marginBottom:2 }}>AUTO-RENEWAL</div>
+                                          <div style={{ fontSize:10, color:'#555555', lineHeight:1.5 }}>Triggers <strong>30 days before subscription ends</strong>. New order — new 12-month subscription.</div>
+                                        </div>
+                                      </div>
+                                    </div>
+
                                     {/* Legend */}
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 14, marginTop: 4 }}>
                                       {[
