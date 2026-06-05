@@ -576,8 +576,13 @@ export default function BulkIssuePage({ nav }) {
                 </div>
                 <div>
                   <div style={{fontSize:15,fontWeight:600,color:'#fff'}}>
-                    {job.status==='completed'?'All certificates issued':
-                     job.status==='partial'?`Partial — ${job.completed} issued, ${job.failed_count} failed`:'Job failed'}
+                    {job.status==='completed' && job.completed === job.total_domains && job.completed > 0
+                      ? 'All certificates issued'
+                      : job.status==='completed' && job.completed === 0
+                      ? 'Orders placed — DNS validation in progress'
+                      : job.status==='partial'
+                      ? `Partial — ${job.completed} issued, ${job.failed_count} failed`
+                      : 'Job failed'}
                   </div>
                   <div style={{fontSize:11,color:'rgba(255,255,255,0.65)',marginTop:2,fontFamily:MONO}}>Job {jobId?.slice(0,8)}</div>
                 </div>
