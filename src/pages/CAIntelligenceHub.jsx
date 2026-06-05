@@ -1604,7 +1604,7 @@ function ConsolidationTab({ tok, nav }) {
 export default function CAIntelligenceHub({ nav }) {
   const [tok,  setTok]  = useState('')
   const [tab,  setTab]  = useState('overview')
-  const [live, setLive] = useState({ total:0, exp30:0, caCount:1, exposure:0, rapidCount:0, dcConn:false, scConn:false })
+  const [live, setLive] = useState({ total:0, exp30:0, healthy:0, caCount:1, rapidCount:0, dcConn:false, scConn:false })
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data:{ session } }) => {
@@ -1613,19 +1613,21 @@ export default function CAIntelligenceHub({ nav }) {
       Promise.all([
         supabase.from('ssl_orders').select('id,valid_till,status').eq('status','active'),
         supabase.from('ca_connections').select('ca_type,status').eq('status','active'),
-        callCA(session.access_token, { action:'get_shadow_certs' }),
-      ]).then(([orders, conns, shadows]) => {
+      ]).then(([orders, conns]) => {
         const now  = Date.now()
         const ords = orders.data || []
         const cs   = conns.data  || []
-        const shad = (shadows.shadows || [])
         const exp30 = ords.filter(o => {
           const d = o.valid_till ? Math.ceil((new Date(o.valid_till)-now)/86400000) : null
           return d!==null && d>0 && d<=30
         }).length
+        const healthy = ords.filter(o => {
+          const d = o.valid_till ? Math.ceil((new Date(o.valid_till)-now)/86400000) : null
+          return d!==null && d>90
+        }).length
         const dc = cs.some(c=>c.ca_type==='digicert')
         const sc = cs.some(c=>c.ca_type==='sectigo')
-        setLive({ total:ords.length, exp30, caCount:1+(dc?1:0)+(sc?1:0), exposure:shad.length, rapidCount:ords.length, dcConn:dc, scConn:sc })
+        setLive({ total:ords.length, exp30, healthy, caCount:1+(dc?1:0)+(sc?1:0), rapidCount:ords.length, dcConn:dc, scConn:sc })
       }).catch(()=>{})
     })
     const { data:{ subscription } } = supabase.auth.onAuthStateChange((_e,s)=>{ setTok(s?.access_token||'') })
@@ -1633,75 +1635,108 @@ export default function CAIntelligenceHub({ nav }) {
   }, [])
 
   const TABS = [
-    { id:'overview',      label:'Overview',       icon: BarChart2,   color:'#0077b6',  bg:'rgba(0,119,182,0.12)',  count:null },
-    { id:'rapidssl',      label:'RapidSSL',       icon: Shield,      color:'#00a550',  bg:'rgba(0,165,80,0.12)', count:live.rapidCount, dot:'#00a550' },
-    { id:'digicert',      label:'DigiCert',       icon: Building,    color:'#0077b6',  bg:'rgba(0,0,0,0.07)',  count:null, dot:live.dcConn?'#00a550':'#555' },
-    { id:'sectigo',       label:'Sectigo',        icon: Lock,        color:'#0077b6',  bg:'rgba(0,119,182,0.09)',count:null, dot:live.scConn?'#00a550':'#555' },
-    { id:'shadow',        label:'Exposure',       icon: Search,      color:'#0077b6',  bg:'rgba(192,57,43,0.1)',count:live.exposure>0?live.exposure:null },
-    { id:'consolidation', label:'Cost advisor',   icon: TrendingUp,  color:'#9a6400',  bg:'rgba(154,100,0,0.12)', count:null },
+    { id:'overview', label:'Overview',  icon: BarChart2, dot:null },
+    { id:'rapidssl', label:'RapidSSL',  icon: Shield,    dot:'#10b981', count:live.rapidCount },
+    { id:'digicert', label:'DigiCert',  icon: Building,  dot:live.dcConn?'#10b981':'#aaaaaa' },
+    { id:'sectigo',  label:'Sectigo',   icon: Lock,      dot:live.scConn?'#10b981':'#aaaaaa' },
   ]
 
-  const active = TABS.find(t=>t.id===tab)
+  const STAT_CARDS = [
+    { value: live.total,   label: 'Total Certs',    color: '#0e7fc0' },
+    { value: live.healthy, label: 'Healthy',         color: '#10b981' },
+    { value: live.exp30,   label: 'Expiring Soon',   color: live.exp30 > 0 ? '#f59e0b' : '#10b981' },
+    { value: 3,            label: 'CA Integrations', color: '#0e7fc0' },
+  ]
 
   return (
-    <div className="v2-page" style={{fontFamily:'inherit'}}>
+    <div style={{ fontFamily:"Segoe UI,system-ui,sans-serif", background:'#fafaf9', minHeight:'100vh' }}>
       <style>{`
         @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
         @keyframes capulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(2.8);opacity:0}}
-        .pki-tab{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;background:none;border:none;border-bottom:2px solid transparent;transition:all .15s;color:#666;white-space:nowrap}
-        .pki-tab:hover{color:#111}
-        .pki-tab.on{font-weight:600;border-bottom-color:#0077b6;color:#0077b6}
-        .pki-count{font-size:10px;font-weight:500;padding:1px 7px;border-radius:20px;background:#f0f4fa;color:#666;transition:all .15s}
-        .pki-tab.on .pki-count{background:#0077b6;color:#fff}
+        .pki-tab{display:inline-flex;align-items:center;gap:7px;padding:11px 18px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;background:none;border:none;border-bottom:2px solid transparent;transition:all .15s;color:#666666;white-space:nowrap;margin-bottom:-1px}
+        .pki-tab:hover{color:#111111}
+        .pki-tab.on{font-weight:600;border-bottom-color:#0e7fc0;color:#0e7fc0}
+        .pki-count{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:#f0f4fa;color:#666666;transition:all .15s}
+        .pki-tab.on .pki-count{background:#0e7fc0;color:#fff}
+        .pki-tab-bar{background:#fff;border-bottom:1px solid #e8e8e6;padding:0 32px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
       `}</style>
 
-      <PageHero
-        eyebrow="SSLVault · CA Intelligence"
-        title="PKI Intelligence"
-        subtitle={`Unified visibility across ${live.caCount} of 3 CAs · ${live.total} certificates tracked`}
-        stats={[{n:live.total||0,l:'Total certs'},{n:live.healthy||0,l:'Healthy'},{n:live.exp30||0,l:'Expiring soon'},{n:'3',l:'CA integrations'}]}
-        tags={['GoGetSSL · RapidSSL · DigiCert','CCADB indexed','47-day ready','Auto-renew','CA/B Forum 2026']}
-        syncBar={null}
-        alertBar={live.exp30>0?(
-          <div style={{background:'rgba(243,156,18,0.1)',borderBottom:'1px solid rgba(243,156,18,0.25)',padding:'9px 24px',display:'flex',alignItems:'center',gap:10,fontSize:12,color:'#e67e22',fontWeight:500}}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            {live.exp30} certificate{live.exp30>1?'s':''} expiring within 30 days — action required
+      {/* ── Header band ── */}
+      <div style={{ background:'#0e7fc0', padding:'28px 32px 24px' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <div style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.65)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:6 }}>
+            SSLVault · CA Intelligence
           </div>
-        ):null}
-      />
+          <h1 style={{ fontSize:26, fontWeight:700, color:'#ffffff', margin:'0 0 4px', letterSpacing:'-0.3px' }}>
+            PKI Intelligence
+          </h1>
+          <p style={{ fontSize:13, color:'rgba(255,255,255,0.75)', margin:'0 0 20px' }}>
+            Unified visibility across {live.caCount} of 3 CAs · {live.total} certificate{live.total!==1?'s':''} tracked
+          </p>
 
-      <div style={{background:'#fff',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 24px',display:'flex',gap:0,overflowX:'auto',scrollbarWidth:'none',position:'sticky',top:0,zIndex:100,boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
-        {TABS.map(t=>{
-          const on=tab===t.id
-          return(
-            <button key={t.id} className={'pki-tab'+(on?' on':'')} onClick={()=>setTab(t.id)}>
-              <t.icon size={12}/>
-              {t.label}
-              {t.dot&&(
-                <span style={{position:'relative',width:7,height:7}}>
-                  {t.dot==='#00a550'&&<span style={{position:'absolute',inset:-2,borderRadius:'50%',background:'rgba(0,165,80,0.25)',animation:'capulse 2.5s ease infinite'}}/>}
-                  <span style={{position:'absolute',inset:0,borderRadius:'50%',background:t.dot}}/>
-                </span>
-              )}
-              {t.count!=null&&<span className="pki-count">{t.count}</span>}
-            </button>
-          )
-        })}
+          {/* Stat cards */}
+          <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+            {STAT_CARDS.map(s => (
+              <div key={s.label} style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.18)', borderRadius:10, padding:'10px 18px', minWidth:110 }}>
+                <div style={{ fontSize:22, fontWeight:700, color:'#ffffff', lineHeight:1.1 }}>{s.value}</div>
+                <div style={{ fontSize:11, color:'rgba(255,255,255,0.7)', marginTop:2, fontWeight:500 }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tag row */}
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginTop:14 }}>
+            {['GoGetSSL · RapidSSL · DigiCert','CCADB indexed','47-day ready','Auto-renew','CA/B Forum 2026'].map(tag => (
+              <span key={tag} style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20, background:'rgba(255,255,255,0.15)', color:'rgba(255,255,255,0.9)', border:'1px solid rgba(255,255,255,0.2)' }}>
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Alert bar */}
+          {live.exp30 > 0 && (
+            <div style={{ marginTop:14, background:'rgba(245,158,11,0.15)', border:'1px solid rgba(245,158,11,0.35)', borderRadius:8, padding:'9px 14px', display:'flex', alignItems:'center', gap:8, fontSize:12, color:'#fde68a', fontWeight:500 }}>
+              <AlertTriangle size={13}/>
+              {live.exp30} certificate{live.exp30>1?'s':''} expiring within 30 days — action required
+            </div>
+          )}
+        </div>
       </div>
 
-      <div style={{maxWidth:1100,margin:'0 auto',padding:'24px 24px 60px'}}>
+      {/* ── Tab bar ── */}
+      <div className="pki-tab-bar">
+        <div style={{ maxWidth:1100, margin:'0 auto', display:'flex' }}>
+          {TABS.map(t => {
+            const on = tab === t.id
+            return (
+              <button key={t.id} className={'pki-tab'+(on?' on':'')} onClick={()=>setTab(t.id)}>
+                <t.icon size={13}/>
+                {t.label}
+                {t.dot && (
+                  <span style={{ position:'relative', width:7, height:7, flexShrink:0 }}>
+                    {t.dot==='#10b981' && <span style={{ position:'absolute', inset:-2, borderRadius:'50%', background:'rgba(16,185,129,0.25)', animation:'capulse 2.5s ease infinite' }}/>}
+                    <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:t.dot }}/>
+                  </span>
+                )}
+                {t.count != null && <span className="pki-count">{t.count}</span>}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ── Tab content ── */}
+      <div style={{ maxWidth:1100, margin:'0 auto', padding:'24px 32px 60px' }}>
         {!tok ? (
           <div style={{ textAlign:'center', padding:60, color:'#888888', fontSize:13 }}>
             <Spinner/><span style={{ marginLeft:8 }}>Loading session…</span>
           </div>
         ) : (
           <>
-            {tab==='overview'      && <OverviewTab      tok={tok} nav={nav} onSwitchCA={setTab}/>}
-            {tab==='rapidssl'      && <RapidSSLTab      tok={tok} nav={nav}/>}
-            {tab==='digicert'      && <DigiCertTab      tok={tok} nav={nav}/>}
-            {tab==='sectigo'       && <SectigoTab       tok={tok}/>}
-            {tab==='shadow'        && <ShadowITTab      tok={tok} nav={nav}/>}
-            {tab==='consolidation' && <ConsolidationTab tok={tok} nav={nav}/>}
+            {tab==='overview' && <OverviewTab      tok={tok} nav={nav} onSwitchCA={setTab}/>}
+            {tab==='rapidssl' && <RapidSSLTab      tok={tok} nav={nav}/>}
+            {tab==='digicert' && <DigiCertTab      tok={tok} nav={nav}/>}
+            {tab==='sectigo'  && <SectigoTab       tok={tok}/>}
           </>
         )}
       </div>
