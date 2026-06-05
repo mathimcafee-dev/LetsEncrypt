@@ -1,4 +1,4 @@
-// gogetssl-issue v3 — Clean, correct implementation
+// gogetssl-issue v121 — Original handlers restored + dispatchInstall fixed for persistent_agents
 //
 // FLOWS:
 //   place_order  → new GGS order + new ssl_orders row + auto DNS + auto poll
@@ -1215,26 +1215,32 @@ async function dispatchInstall(userId: string, domain: string, ggsOrderId: numbe
     }
 
     if (installMethod === 'agent') {
-      const { data: serverRows } = await adminDb()
-        .from('server_credentials')
-        .select('id, agent_id')
-        .eq('user_id', userId)
-        .not('agent_id', 'is', null)
-      for (const row of (serverRows || [])) {
+      // v121 FIX: use persistent_agents (primary) instead of server_credentials
+      let agentIds: string[] = []
+      const { data: paRows } = await adminDb().from('persistent_agents')
+        .select('id').eq('user_id', userId).eq('status', 'online')
+      agentIds = (paRows || []).map((r: any) => r.id)
+      // Fallback: server_credentials with agent_id
+      if (!agentIds.length) {
+        const { data: scRows } = await adminDb().from('server_credentials')
+          .select('agent_id').eq('user_id', userId).not('agent_id', 'is', null)
+        for (const r of (scRows || [])) if (r.agent_id) agentIds.push(r.agent_id)
+      }
+      for (const agentId of agentIds) {
         const { data: existing } = await adminDb().from('agent_jobs').select('id')
-          .eq('agent_id', row.agent_id).eq('cert_id', cert.id).in('status', ['queued','claimed']).maybeSingle()
+          .eq('agent_id', agentId).eq('cert_id', cert.id).in('status', ['queued','claimed']).maybeSingle()
         if (!existing) {
           await adminDb().from('agent_jobs').insert({
-            agent_id:   row.agent_id,
-            user_id:    userId,
-            cert_id:    cert.id,
-            job_type:   'install',
-            status:     'queued',
-            cert_pem:   cert.cert_pem || '',
-            ca_pem:     cert.ca_pem  || '',
-            key_pem:    '',
+            agent_id: agentId,
+            user_id:  userId,
+            cert_id:  cert.id,
+            job_type: 'install',
+            status:   'queued',
+            cert_pem: cert.cert_pem || '',
+            key_pem:  '',
             domain,
           })
+          console.log('[dispatch] queued agent job for', domain, 'agent', agentId)
         }
       }
     } else if (installMethod === 'cpanel' && installCredId) {
