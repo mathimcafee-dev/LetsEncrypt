@@ -447,64 +447,113 @@ export default function CertTimeline({ user }) {
 
                                 return (
                                   <div>
-                                    {/* Rail SVG */}
-                                    <div style={{ position: 'relative', height: 130, margin: '0 4px 6px', userSelect: 'none' }}>
+                                    {/* Dynamic Two-Column Event Timeline */}
+                                    (() => {
+                                      const certEvents = row.events.filter(e =>
+                                        ['cert_warning_30d','cert_warning_14d','cert_warning_7d','cert_warning_1d','cert_reissue','30d_warning','14d_warning','7d_warning','final_warning','auto_reissue'].includes(e.event_type)
+                                      ).sort((a,b) => new Date(a.scheduled_date) - new Date(b.scheduled_date))
 
-                                      {/* Phase labels */}
-                                      {[
-                                        { label: 'Issued',    cx: 3 },
-                                        { label: 'Cert zone', cx: pct(row.expires_at) - 8 },
-                                        { label: 'Sub zone',  cx: Math.max(pct(row.expires_at) + 4, 60) },
-                                        { label: 'Sub end',   cx: 95 },
-                                      ].map(ph => (
-                                        <div key={ph.label} style={{ position: 'absolute', top: 30, left: ph.cx + '%', fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(0,0,0,0.09)', whiteSpace: 'nowrap', transform: 'translateX(-50%)' }}>
-                                          {ph.label}
-                                        </div>
-                                      ))}
+                                      const subEvents = row.events.filter(e =>
+                                        ['sub_warning_30d','sub_warning_14d','sub_warning_7d','sub_warning_1d','sub_end','sub_30d','sub_14d','renewal'].includes(e.event_type)
+                                      ).sort((a,b) => new Date(a.scheduled_date) - new Date(b.scheduled_date))
 
-                                      {/* Rail track */}
-                                      <div style={{ position: 'absolute', top: RAIL_MID, left: 0, right: 0, height: 3, background: 'rgba(0,0,0,0.05)', borderRadius: 2 }} />
+                                      const isKeyEvent = (type) => ['cert_reissue','auto_reissue','sub_end','renewal'].includes(type)
+                                      const isRenewal  = (type) => ['sub_end','renewal'].includes(type)
 
-                                      {/* Progress fill */}
-                                      <div style={{ position: 'absolute', top: RAIL_MID, left: 0, width: todayPct + '%', height: 3, background: 'rgba(0,119,182,0.3)', borderRadius: 2 }} />
-
-                                      {/* Today pin */}
-                                      <div style={{ position: 'absolute', top: RAIL_MID - 8, left: todayPct + '%', transform: 'translateX(-50%)', width: 2, height: 19, background: '#fff', borderRadius: 1 }} />
-                                      <div style={{ position: 'absolute', top: RAIL_MID + 13, left: todayPct + '%', transform: 'translateX(-50%)', fontSize: 8, fontWeight: 800, letterSpacing: '0.7px', color: '#fff', whiteSpace: 'nowrap' }}>TODAY</div>
-
-                                      {/* Event nodes — staggered above/below */}
-                                      {row.events.map((ev, idx) => {
+                                      const EventRow = ({ ev, isLast }) => {
                                         const { label, color } = eventTypeLabel(ev.event_type)
                                         const d      = daysFromNow(ev.scheduled_date)
                                         const isPast = d !== null && d < 0
                                         const isDone = ev.status === 'completed' || ev.status === 'sent'
-                                        const p      = pct(ev.scheduled_date)
-                                        const above  = idx % 2 === 0
-                                        const nodeTop  = above ? RAIL_MID - 34 : RAIL_MID + 18
-                                        const stemTop  = above ? nodeTop + 16 : RAIL_MID + 3
-                                        const stemH    = above ? RAIL_MID - nodeTop - 16 : nodeTop - RAIL_MID - 3
-                                        const dateLblT = above ? nodeTop - 15 : nodeTop + 19
-                                        const nodeColor = isDone ? '#00a550' : color
-                                        const nodeBg    = isDone ? 'rgba(0,165,80,0.11)' : color + '18'
+                                        const key_ev = isKeyEvent(ev.event_type)
+                                        const renew  = isRenewal(ev.event_type)
+
+                                        const dotColor  = isDone ? '#00a550' : key_ev ? (renew ? '#00a550' : '#0077b6') : color
+                                        const cardBg    = key_ev ? (renew ? 'rgba(0,165,80,0.06)' : 'rgba(0,119,182,0.06)') : 'transparent'
+                                        const cardBorder= key_ev ? (renew ? '1px solid rgba(0,165,80,0.2)' : '1px solid rgba(0,119,182,0.2)') : '1px solid transparent'
+                                        const labelColor= isDone ? '#00a550' : key_ev ? dotColor : '#555555'
+                                        const labelWeight = key_ev ? 700 : 500
+
+                                        const pillBg    = d === null ? 'transparent'
+                                          : isPast ? 'rgba(0,0,0,0.04)'
+                                          : d <= 7  ? 'rgba(192,57,43,0.08)'
+                                          : d <= 30 ? 'rgba(251,191,36,0.12)'
+                                          : 'rgba(0,165,80,0.08)'
+                                        const pillColor = d === null ? '#555555'
+                                          : isPast ? '#888888'
+                                          : d <= 7  ? '#c0392b'
+                                          : d <= 30 ? '#9a6400'
+                                          : '#00a550'
 
                                         return (
-                                          <div key={ev.id}>
-                                            {/* Stem */}
-                                            <div style={{ position: 'absolute', left: p + '%', top: stemTop, width: 1.5, height: Math.abs(stemH), background: 'rgba(0,0,0,0.07)', transform: 'translateX(-50%)' }} />
-                                            {/* Date label */}
-                                            <div style={{ position: 'absolute', left: p + '%', top: dateLblT, fontSize: 8, color: '#555555', whiteSpace: 'nowrap', transform: 'translateX(-50%)', fontWeight: 600 }}>
-                                              {fmtDateShort(ev.scheduled_date)}
+                                          <div style={{ display:'flex', gap:10, position:'relative' }}>
+                                            {/* Vertical connector line */}
+                                            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', flexShrink:0 }}>
+                                              <div style={{
+                                                width: key_ev ? 12 : 8,
+                                                height: key_ev ? 12 : 8,
+                                                borderRadius:'50%',
+                                                background: isDone ? '#00a550' : cardBg,
+                                                border: `2px solid ${dotColor}`,
+                                                flexShrink:0, marginTop:3, zIndex:1,
+                                                boxShadow: key_ev ? `0 0 0 3px ${dotColor}18` : 'none'
+                                              }}/>
+                                              {!isLast && <div style={{ width:1.5, flex:1, background:'rgba(0,0,0,0.06)', marginTop:3 }}/>}
                                             </div>
-                                            {/* Node */}
-                                            <div style={{ position: 'absolute', left: p + '%', top: nodeTop, width: 16, height: 16, borderRadius: '50%', border: `2px solid ${nodeColor}`, background: nodeBg, transform: 'translateX(-50%)', cursor: 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
-                                              {(isDone || isPast) && <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00a550' }} />}
+                                            {/* Card */}
+                                            <div style={{
+                                              flex:1, marginBottom: isLast ? 0 : 8,
+                                              padding: key_ev ? '8px 10px' : '4px 8px',
+                                              borderRadius:8, background:cardBg, border:cardBorder,
+                                            }}>
+                                              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:6 }}>
+                                                <span style={{ fontSize: key_ev ? 11 : 10, fontWeight:labelWeight, color:labelColor, letterSpacing: key_ev ? '0.02em' : 0 }}>
+                                                  {key_ev && (ev.event_type === 'cert_reissue' || ev.event_type === 'auto_reissue') ? '⟳ ' : ''}
+                                                  {key_ev && isRenewal(ev.event_type) ? '↻ ' : ''}
+                                                  {label}
+                                                </span>
+                                                <span style={{ fontSize:9, fontWeight:600, padding:'1px 6px', borderRadius:10, background:pillBg, color:pillColor, whiteSpace:'nowrap', flexShrink:0 }}>
+                                                  {isPast ? 'done' : d !== null ? `in ${d}d` : '—'}
+                                                </span>
+                                              </div>
+                                              <div style={{ fontSize:10, color:'#888888', marginTop:2 }}>
+                                                {fmtDate(ev.scheduled_date)}
+                                              </div>
                                             </div>
                                           </div>
                                         )
-                                      })}
-                                    </div>
+                                      }
 
-                                    {/* Reissue vs Renewal explainer */}
+                                      const Column = ({ title, events, accentColor, emptyText }) => (
+                                        <div style={{ flex:1, minWidth:0 }}>
+                                          <div style={{ fontSize:9, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.7px', color:accentColor, marginBottom:10, paddingBottom:6, borderBottom:`1px solid ${accentColor}30` }}>
+                                            {title}
+                                          </div>
+                                          {events.length === 0
+                                            ? <div style={{ fontSize:11, color:'#888888', fontStyle:'italic' }}>{emptyText}</div>
+                                            : events.map((ev, i) => <EventRow key={ev.id} ev={ev} isLast={i === events.length - 1} />)
+                                          }
+                                        </div>
+                                      )
+
+                                      return (
+                                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20, marginBottom:14, paddingTop:4 }}>
+                                          <Column
+                                            title="Cert lifecycle"
+                                            events={certEvents}
+                                            accentColor="#0077b6"
+                                            emptyText="No cert events scheduled"
+                                          />
+                                          <Column
+                                            title="Subscription"
+                                            events={subEvents}
+                                            accentColor="#00a550"
+                                            emptyText="No subscription events scheduled"
+                                          />
+                                        </div>
+                                      )
+                                    })()
+{/* Reissue vs Renewal explainer */}
                                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:14, marginTop:4 }}>
                                       <div style={{ background:'rgba(0,119,182,0.06)', border:'1px solid rgba(0,119,182,0.18)', borderRadius:8, padding:'8px 12px', display:'flex', gap:8, alignItems:'flex-start' }}>
                                         <div style={{ width:8, height:8, borderRadius:'50%', background:'#0077b6', flexShrink:0, marginTop:3 }}/>
