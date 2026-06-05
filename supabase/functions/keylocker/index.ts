@@ -210,10 +210,10 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   try {
-    // Two auth modes:
+    // Three auth modes:
     // 1. Normal: user JWT -> auth.getUser()
-    // 2. Bulk: service role key + _bulk_user_id in body -> trust user_id directly
-    //    Called from gogetssl-issue when bulk-process-cron places orders
+    // 2. Bulk store: service role key + _bulk_user_id in body (from bulk-process-cron)
+    // 3. Service fetch: service role key + user_id in body (from cpanel-install/agent-install)
     const authHeader = req.headers.get('Authorization') || ''
     const bearer     = authHeader.replace(/^Bearer\s+/i, '').trim()
     const SVC_KEY    = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
@@ -224,8 +224,10 @@ serve(async (req) => {
     const { action } = body
 
     let user: { id: string }
-    if (isSvcRole && body._bulk_user_id) {
-      user = { id: body._bulk_user_id as string }
+    // Accept _bulk_user_id (store path) OR user_id (fetch path) when called with service role
+    const svcUserId = body._bulk_user_id || body.user_id
+    if (isSvcRole && svcUserId) {
+      user = { id: svcUserId as string }
     } else {
       const supabase = createClient(
         Deno.env.get('SUPABASE_URL')!,
@@ -607,3 +609,4 @@ function json(data: unknown, status = 200) {
     headers: { ...CORS, 'Content-Type': 'application/json' },
   })
 }
+
