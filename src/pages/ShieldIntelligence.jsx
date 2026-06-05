@@ -889,16 +889,16 @@ export default function ShieldIntelligence({ user }) {
           </div>
 
           {/* Tab bar */}
-          <div style={{ display:'flex', gap:2, borderBottom:'1px solid rgba(0,0,0,0.1)', marginBottom:20, background:'rgba(0,0,0,0.02)', padding:'0 4px', borderRadius:'8px 8px 0 0' }}>
+          <div style={{ display:'flex', gap:0, borderBottom:'2px solid rgba(0,119,182,0.15)', marginBottom:20 }}>
             {TABS.map(({ id, label, icon:Icon }) => (
               <button key={id} onClick={() => setTab(id)}
                 style={{ display:'flex', alignItems:'center', gap:6,
-                  padding:'7px 14px 8px', fontSize:12,
-                  fontWeight:tab===id?600:400, fontFamily:'inherit',
+                  padding:'8px 18px 10px', fontSize:13,
+                  fontWeight:tab===id?700:500, fontFamily:'inherit',
                   background:'none', border:'none', cursor:'pointer',
                   borderBottom:tab===id?'2px solid #0077b6':'2px solid transparent',
-                  color:tab===id?'#0077b6':'#888888',
-                  marginBottom:-1, transition:'all .15s' }}>
+                  color:tab===id?'#0077b6':'#333333',
+                  marginBottom:-2, transition:'all .15s' }}>
                 <Icon size={13}/>
                 {label}
               </button>
