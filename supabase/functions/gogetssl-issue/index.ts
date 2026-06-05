@@ -1112,6 +1112,54 @@ serve(async (req) => {
       return json({ ok: true, products: entries.filter(({ name }) => name.toLowerCase().includes('rapidssl')) })
     }
 
+        // ── CANCEL ORDER ─────────────────────────────────────────────────
+    // Revokes at GoGetSSL + marks DB as cancelled. Called by Cancel button.
+    if (action === 'cancel_order') {
+      const { cert_id } = body
+      if (!cert_id) return json({ error: 'cert_id required' }, 400)
+
+      const { data: cert } = await adminDb()
+        .from('certificates')
+        .select('id, domain, ggs_order_id, status, issued_at, user_id')
+        .eq('id', cert_id)
+        .eq('user_id', user.id)
+        .single()
+      if (!cert) return json({ error: 'Certificate not found' }, 404)
+      if (!cert.ggs_order_id) return json({ error: 'No GGS order on this certificate' }, 400)
+      if (cert.status === 'cancelled' || cert.status === 'revoked') {
+        return json({ error: 'Already cancelled or revoked', code: 'already_cancelled' }, 400)
+      }
+
+      if (cert.issued_at) {
+        const daysSinceIssue = (Date.now() - new Date(cert.issued_at).getTime()) / 86400000
+        if (daysSinceIssue > 30) {
+          return json({ error: 'Cancellation only available within 30 days of issuance', code: 'cancellation_not_eligible' }, 400)
+        }
+      }
+
+      // Revoke at GoGetSSL (best-effort — DB cleanup always runs)
+      try {
+        const authKey = await ggsAuth()
+        const revokeRes = await ggsPost(authKey, `/orders/${cert.ggs_order_id}/revoke/`, {
+          revoke_reason: 'cessationOfOperation',
+        })
+        console.log('[cancel_order] GGS revoke:', JSON.stringify(revokeRes).slice(0, 200))
+      } catch (e: any) {
+        console.warn('[cancel_order] GGS revoke failed (continuing DB cleanup):', e.message)
+      }
+
+      await adminDb().from('ssl_orders')
+        .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+        .eq('ggs_order_id', cert.ggs_order_id)
+
+      await adminDb().from('certificates')
+        .update({ status: 'revoked', updated_at: new Date().toISOString() })
+        .eq('id', cert_id)
+
+      console.log(`[cancel_order] Cancelled ${cert.domain} GGS#${cert.ggs_order_id}`)
+      return json({ ok: true, domain: cert.domain, ggs_order_id: cert.ggs_order_id })
+    }
+
     return json({ error: `Unknown action: ${action}` }, 400)
 
   } catch (e: any) {
