@@ -45,7 +45,7 @@ const LINE  = 'rgba(0,0,0,0.07)'
 const LINE2 = 'rgba(0,0,0,0.12)'
 const INK   = 'rgba(0,0,0,0.06)'
 const BODY  = '#6b6b6b'
-const MUTED = '#9a9a9a'
+const MUTED = '#64748b'
 const BLUE  = '#0077b6'
 const BLUEH = '#0091d6'
 const GREEN = '#00a550'
@@ -177,14 +177,14 @@ export default function CLMHome({ user, nav, initialSection }) {
         padding:'8px 12px 8px 16px',
         width:'100%', textAlign:'left', fontFamily:F,
         fontSize:13, fontWeight:on?500:400,
-        color: on ? '#0077b6' : BODY,
-        background: on ? 'rgba(0,119,182,0.12)' : 'transparent',
-        borderLeft: `2px solid ${on ? BLUE : 'transparent'}`,
+        color: on ? '#60c8ff' : BODY,
+        background: on ? 'rgba(0,119,182,0.35)' : 'transparent',
+        borderLeft: `3px solid ${on ? '#60c8ff' : 'transparent'}`,
         border:'none', cursor:'pointer',
         borderRadius:'0 6px 6px 0',
         marginBottom:1, transition:'all 0.1s',
       }}
-        onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(0,119,182,0.08)';e.currentTarget.style.color='#0077b6'}}}
+        onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(255,255,255,0.07)';e.currentTarget.style.color='#e2e8f0'}}}
         onMouseLeave={e=>{if(!on){e.currentTarget.style.background='transparent';e.currentTarget.style.color=BODY}}}>
         <Icon size={14} strokeWidth={on?2.2:1.8} color={on?BLUE:undefined} style={{flexShrink:0}}/>
         <span style={{flex:1}}>{label}</span>
@@ -197,14 +197,14 @@ export default function CLMHome({ user, nav, initialSection }) {
   const Sidebar = () => (
     <div style={{display:'flex',flexDirection:'column',height:'100%'}}>
       {/* Logo */}
-      <div style={{padding:'16px 16px 14px',borderBottom:`1px solid ${LINE}`,flexShrink:0}}>
+      <div style={{padding:'16px 16px 14px',borderBottom:`1px solid rgba(255,255,255,0.08)`,flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{width:30,height:30,borderRadius:8,background:BLUE,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <div>
-            <div style={{fontSize:13,fontWeight:700,color:'#111111',letterSpacing:'-0.2px',lineHeight:1.2}}>SSLVault</div>
-            <div style={{fontSize:10,color:MUTED,marginTop:1}}>Certificate Manager</div>
+            <div style={{fontSize:13,fontWeight:700,color:'#f1f5f9',letterSpacing:'-0.2px',lineHeight:1.2}}>SSLVault</div>
+            <div style={{fontSize:10,color:'#64748b',marginTop:1}}>Certificate Manager</div>
           </div>
         </div>
       </div>
@@ -214,7 +214,7 @@ export default function CLMHome({ user, nav, initialSection }) {
         {NAV.map(({group,items})=>(
           <div key={group} style={{marginBottom:4}}>
             <div style={{padding:'6px 8px 2px 10px'}}>
-              <span style={{fontSize:10,fontWeight:600,letterSpacing:'0.06em',textTransform:'uppercase',color:MUTED}}>{group}</span>
+              <span style={{fontSize:10,fontWeight:600,letterSpacing:'0.06em',textTransform:'uppercase',color:'#475569'}}>{group}</span>
             </div>
             {items.map(it=><NavItem key={it.id} {...it}/>)}
           </div>
@@ -222,12 +222,12 @@ export default function CLMHome({ user, nav, initialSection }) {
       </div>
 
       {/* Bottom nav */}
-      <div style={{borderTop:`1px solid ${LINE}`,padding:'8px 8px 4px'}}>
+      <div style={{borderTop:`1px solid rgba(255,255,255,0.08)`,padding:'8px 8px 4px'}}>
         {BOTTOM.map(it=><NavItem key={it.id} {...it}/>)}
       </div>
 
       {/* User */}
-      <div style={{borderTop:`1px solid ${LINE}`,padding:'12px 14px',flexShrink:0}}>
+      <div style={{borderTop:`1px solid rgba(255,255,255,0.08)`,padding:'12px 14px',flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,#0077b6,#0091d6)`,
             display:'flex',alignItems:'center',justifyContent:'center',
@@ -235,7 +235,7 @@ export default function CLMHome({ user, nav, initialSection }) {
             {initials}
           </div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:12,fontWeight:500,color:'#111111',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+            <div style={{fontSize:12,fontWeight:500,color:'#e2e8f0',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
               {email.split('@')[0]}
             </div>
             <div style={{fontSize:10,color:MUTED,marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
@@ -351,7 +351,7 @@ export default function CLMHome({ user, nav, initialSection }) {
 
         {/* Sidebar */}
         <nav ref={sideRef} style={{
-          width:240, background:'#ffffff', borderRight:`1px solid rgba(0,0,0,0.09)`,
+          width:240, background:'#0a2540', borderRight:`1px solid rgba(0,0,0,0.18)`,
           flexShrink:0, overflowY:'auto',
           ...(isMobile
             ? {position:'fixed',left:0,top:50,bottom:0,zIndex:40,
