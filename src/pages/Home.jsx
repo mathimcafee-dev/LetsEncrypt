@@ -123,21 +123,22 @@ export default function Home({ nav }) {
 
       <PublicNav nav={nav}/>
 
-      {/* ── HERO: LIVE SCAN ── */}
+      {/* ── HERO: ZERO-TOUCH WITNESSED CLM ── */}
       <header style={{ background: `linear-gradient(160deg, ${BLUE} 0%, #006aa3 60%, #005d90 100%)`, color: '#fff', padding: `${isMobile ? 44 : 64}px 0 0`, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', right: -180, top: -180, width: 520, height: 520, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.10), transparent 65%)' }}/>
         <div style={wrap}>
-          <h1 style={{ fontFamily: DM, fontSize: isMobile ? 32 : 46, lineHeight: 1.1, fontWeight: 900, textAlign: 'center', letterSpacing: '-0.01em', margin: 0 }}>
-            Check any domain's SSL.<br/><span style={{ color: '#a8e0ff' }}>Right now. Free.</span>
+          <h1 style={{ fontFamily: DM, fontSize: isMobile ? 32 : 46, lineHeight: 1.12, fontWeight: 900, textAlign: 'center', letterSpacing: '-0.01em', margin: 0 }}>
+            Zero human steps.<br/><span style={{ color: '#a8e0ff' }}>Every step witnessed.</span>
           </h1>
-          <p style={{ textAlign: 'center', fontSize: isMobile ? 14 : 16, color: 'rgba(255,255,255,0.85)', maxWidth: 620, margin: '16px auto 30px', lineHeight: 1.65 }}>
-            Type a domain and get an instant security report — validity, expiry, issuer.
-            Then see what happens when every one of those checks is recorded forever.
+          <p style={{ textAlign: 'center', fontSize: isMobile ? 14 : 16, color: 'rgba(255,255,255,0.88)', maxWidth: 660, margin: '18px auto 0', lineHeight: 1.65 }}>
+            SSLVault runs your entire certificate lifecycle hands-off — order, validate, issue,
+            install, renew — and seals every stage into a tamper-evident evidence ledger
+            your auditor can verify.
           </p>
-          <ScanWidget isMobile={isMobile}/>
-          <p style={{ textAlign: 'center', fontSize: 11.5, color: 'rgba(255,255,255,0.65)', margin: '14px 0 0' }}>
-            No signup. Powered by the same engine that monitors every SSLVault-managed certificate.
-          </p>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginTop: 30 }}>
+            <button onClick={() => nav('/auth')} style={{ background: '#fff', color: BLUE, border: 'none', borderRadius: 10, padding: '13px 28px', fontSize: 14.5, fontWeight: 800, fontFamily: DM, cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }}>Start free →</button>
+            <button onClick={() => nav('/verify')} style={{ background: 'transparent', color: '#fff', border: '1.5px solid rgba(255,255,255,0.55)', borderRadius: 10, padding: '13px 24px', fontSize: 14.5, fontWeight: 700, fontFamily: DM, cursor: 'pointer' }}>Verify a live report</button>
+          </div>
           <div style={{ display: 'flex', gap: isMobile ? 16 : 34, justifyContent: 'center', padding: '22px 0 26px', fontSize: 12.5, color: 'rgba(255,255,255,0.88)', marginTop: 34, borderTop: '1px solid rgba(255,255,255,0.14)', flexWrap: 'wrap' }}>
             <span>✓ <b style={{ color: '#fff' }}>RapidSSL · DigiCert</b> trust chain</span>
             <span>✓ <b style={{ color: '#fff' }}>Zero-touch</b> issue → install → renew</span>
@@ -146,13 +147,36 @@ export default function Home({ nav }) {
         </div>
       </header>
 
+      {/* ── WITNESSED AUTOMATION TIMELINE ── */}
+      <section style={{ background: BG, padding: `${isMobile ? 48 : 64}px 0` }}>
+        <div style={wrap}>
+          <h2 style={{ textAlign: 'center', fontFamily: DM, fontSize: isMobile ? 24 : 30, fontWeight: 800, color: '#0d1117', letterSpacing: '-0.01em', margin: 0 }}>The full lifecycle, hands-off — and on the record.</h2>
+          <p style={{ textAlign: 'center', fontSize: 13.5, color: '#5a6776', margin: '10px auto 44px', maxWidth: 560, lineHeight: 1.7 }}>
+            The full certificate lifecycle runs hands-off — and each stage writes a sealed entry into your evidence ledger as it completes.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(6,1fr)', gap: isMobile ? 22 : 0, position: 'relative' }}>
+            {!isMobile && <div style={{ position: 'absolute', top: 26, left: '8.3%', right: '8.3%', height: 3, background: `linear-gradient(90deg,${BLUE},${BLUE2})`, borderRadius: 2 }}/>}
+            {timeline.map((s, i) => (
+              <div key={i} style={{ textAlign: 'center', position: 'relative', padding: '0 8px' }}>
+                <div style={{ width: 52, height: 52, borderRadius: '50%', background: s.last ? BLUE : '#fff', border: `3px solid ${BLUE}`, margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1, fontSize: 20, boxShadow: '0 4px 14px rgba(0,119,182,0.18)', color: s.last ? '#fff' : undefined }}>
+                  {s.last ? <CheckCircle size={22} color="#fff"/> : s.e}
+                </div>
+                <h6 style={{ fontSize: 12.5, fontFamily: DM, fontWeight: 800, color: '#0d1117', marginBottom: 4, marginTop: 0 }}>{s.t}</h6>
+                <p style={{ fontSize: 10.5, color: '#5a6776', lineHeight: 1.55, margin: 0 }}>{s.d}</p>
+                <div style={{ fontSize: 9, color: BLUE, fontFamily: MONO, fontWeight: 700, marginTop: 5 }}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── BRIDGE → WITNESS ── */}
       <section style={{ padding: `${isMobile ? 48 : 70}px 0`, background: '#fff' }}>
         <div style={{ ...wrap, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.05fr 1fr', gap: isMobile ? 40 : 54, alignItems: 'center' }}>
           <div>
             <span style={{ display: 'inline-block', fontSize: 10.5, fontWeight: 800, letterSpacing: '.1em', textTransform: 'uppercase', color: BLUE, fontFamily: MONO, background: 'rgba(0,119,182,0.07)', border: `1px solid ${BORDER}`, borderRadius: 20, padding: '5px 14px', marginBottom: 16 }}>COMPLIANCE WITNESS</span>
             <h2 style={{ fontFamily: DM, fontSize: isMobile ? 25 : 32, lineHeight: 1.18, fontWeight: 800, color: '#0d1117', marginBottom: 14, letterSpacing: '-0.01em', marginTop: 0 }}>
-              That was one check.<br/>SSLVault does it <span style={{ color: BLUE }}>continuously — and proves it.</span>
+              Automation you don't have to<br/>trust blindly — <span style={{ color: BLUE }}>it proves itself.</span>
             </h2>
             <p style={{ fontSize: 14.5, color: '#3d4a58', lineHeight: 1.75, marginBottom: 14, marginTop: 0 }}>
               Every issuance, renewal, installation and verification is written to an append-only,
@@ -193,29 +217,6 @@ export default function Home({ nav }) {
         </div>
       </section>
 
-      {/* ── WITNESSED AUTOMATION TIMELINE ── */}
-      <section style={{ background: BG, padding: `${isMobile ? 48 : 64}px 0` }}>
-        <div style={wrap}>
-          <h2 style={{ textAlign: 'center', fontFamily: DM, fontSize: isMobile ? 24 : 30, fontWeight: 800, color: '#0d1117', letterSpacing: '-0.01em', margin: 0 }}>Zero human steps. Every step witnessed.</h2>
-          <p style={{ textAlign: 'center', fontSize: 13.5, color: '#5a6776', margin: '10px auto 44px', maxWidth: 560, lineHeight: 1.7 }}>
-            The full certificate lifecycle runs hands-off — and each stage writes a sealed entry into your evidence ledger as it completes.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(6,1fr)', gap: isMobile ? 22 : 0, position: 'relative' }}>
-            {!isMobile && <div style={{ position: 'absolute', top: 26, left: '8.3%', right: '8.3%', height: 3, background: `linear-gradient(90deg,${BLUE},${BLUE2})`, borderRadius: 2 }}/>}
-            {timeline.map((s, i) => (
-              <div key={i} style={{ textAlign: 'center', position: 'relative', padding: '0 8px' }}>
-                <div style={{ width: 52, height: 52, borderRadius: '50%', background: s.last ? BLUE : '#fff', border: `3px solid ${BLUE}`, margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1, fontSize: 20, boxShadow: '0 4px 14px rgba(0,119,182,0.18)', color: s.last ? '#fff' : undefined }}>
-                  {s.last ? <CheckCircle size={22} color="#fff"/> : s.e}
-                </div>
-                <h6 style={{ fontSize: 12.5, fontFamily: DM, fontWeight: 800, color: '#0d1117', marginBottom: 4, marginTop: 0 }}>{s.t}</h6>
-                <p style={{ fontSize: 10.5, color: '#5a6776', lineHeight: 1.55, margin: 0 }}>{s.d}</p>
-                <div style={{ fontSize: 9, color: BLUE, fontFamily: MONO, fontWeight: 700, marginTop: 5 }}>{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── SHIPPED THIS QUARTER ── */}
       <section style={{ padding: `${isMobile ? 48 : 64}px 0`, background: '#fff' }}>
         <div style={wrap}>
@@ -247,6 +248,17 @@ export default function Home({ nav }) {
               <span style={{ color: '#1a7d43', marginRight: 5 }}>✓</span>{f}
             </span>
           ))}
+        </div>
+      </section>
+
+      {/* ── FREE SCANNER UTILITY ── */}
+      <section style={{ background: `linear-gradient(160deg, ${BLUE} 0%, #006aa3 60%, #005d90 100%)`, color: '#fff', padding: `${isMobile ? 40 : 54}px 0` }}>
+        <div style={wrap}>
+          <h2 style={{ textAlign: 'center', fontFamily: DM, fontSize: isMobile ? 22 : 26, fontWeight: 800, margin: 0, letterSpacing: '-0.01em' }}>Try the engine — scan any domain free</h2>
+          <p style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.8)', maxWidth: 560, margin: '10px auto 22px', lineHeight: 1.6 }}>
+            The same scanner that continuously monitors every SSLVault-managed certificate. No signup.
+          </p>
+          <ScanWidget isMobile={isMobile}/>
         </div>
       </section>
 
