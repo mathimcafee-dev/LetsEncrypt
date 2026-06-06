@@ -468,10 +468,14 @@ export default function ComplianceWitness({ user }) {
     setBackfilling(false)
   }
 
-  function buildReportHTML(pkg) {
+  function buildReportHTML(pkg, extras = {}) {
     const dossiers = pkg.dossiers || []
     const events   = pkg.events || []
     const controls = pkg.controls || {}
+    const certsAll = pkg.certs || []
+    const certMap  = new Map(certsAll.map(c => [c.id, c]))
+    const sched    = extras.schedule || null
+    const aDates   = extras.auditDates || []
     const genDate  = new Date(pkg.generated_at).toLocaleString('en-GB', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
     const esc = s => String(s ?? '').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))
     const fmtT = iso => { try { return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) } catch { return iso } }
@@ -552,6 +556,9 @@ export default function ComplianceWitness({ user }) {
     // ── §1 Certificate inventory rows ──
     const invRows = dossiers.map(d => {
       const c = d.crypto_summary || {}
+      const domCerts = certsAll.filter(x => x.domain === d.domain)
+      const supCount = domCerts.filter(x => !(x.is_current && x.status === 'active')).length
+      const histCell = domCerts.length ? `${domCerts.length} total · ${supCount} superseded` : '—'
       const dCrit = (d.gaps||[]).filter(g=>g.severity==='critical').length
       const st = dCrit > 0 ? '<span class="pill pr">Needs attention</span>'
         : (d.gaps||[]).length > 0 ? '<span class="pill pa">Minor items open</span>'
@@ -563,6 +570,7 @@ export default function ComplianceWitness({ user }) {
         <td class="mono">${c.signature ? esc(c.signature) : '<em class="muted">—</em>'}</td>
         <td>${c.tls_grade ? `<span class="pill pg">${esc(c.tls_grade)}</span>` : '<em class="muted">—</em>'}</td>
         <td>${d.first_witnessed_at ? fmtD(d.first_witnessed_at) : '—'}</td>
+        <td>${histCell}</td>
         <td class="num"><strong>${d.audit_score||0}</strong>/100</td>
         <td class="num"><strong>${d.readiness_score||0}</strong>/100</td>
         <td>${st}</td>
@@ -657,16 +665,48 @@ export default function ComplianceWitness({ user }) {
     // ── Appendix A: event ledger ──
     const eventRows = events.map((ev, i) => {
       const ep = EVENT_LABEL[ev.event_type] || { label: ev.event_type, result:'—', cls:'px' }
+      const cert = ev.cert_id ? certMap.get(ev.cert_id) : null
+      const isIssuance = ev.event_type === 'issued' || ev.event_type === 'renewed'
+      // CA issue dates carry date-only precision (midnight UTC) — never render an invented clock time
+      let midnightUTC = false
+      try { midnightUTC = new Date(ev.event_ts).toISOString().slice(11,19) === '00:00:00' } catch { /* noop */ }
+      const tsCell = (isIssuance && midnightUTC)
+        ? `${fmtD(ev.event_ts)}<div class="ev-note">date per CA</div>`
+        : fmtT(ev.event_ts)
+      const serial  = ev.details?.serial || cert?.serial_number || null
+      const orderId = ev.details?.ggs_order_id || cert?.ggs_order_id || null
+      const idBits  = [serial ? `Serial ${esc(String(serial))}` : null, orderId ? `Order ${esc(String(orderId))}` : null].filter(Boolean).join(' · ')
+      const certPill = (isIssuance && cert)
+        ? (cert.is_current && cert.status === 'active'
+            ? ' <span class="pill pg">Active</span>'
+            : cert.status === 'revoked'
+              ? ' <span class="pill px">Superseded</span>'
+              : ` <span class="pill px">${esc(cert.status)}</span>`)
+        : ''
       return `<tr>
         <td class="num">${events.length - i}</td>
-        <td class="mono ts">${fmtT(ev.event_ts)}</td>
-        <td>${esc(ep.label)}</td>
+        <td class="mono ts">${tsCell}</td>
+        <td>${esc(ep.label)}${certPill}${idBits ? `<div class="ev-note">${idBits}</div>` : ''}</td>
         <td class="mono">${esc(ev.domain)}</td>
         <td><span class="pill ${ep.cls}">${ep.result}</span></td>
         <td class="hash" title="${esc(ev.event_hash||'')}">${esc((ev.event_hash||'').substring(0,12))}…</td>
       </tr>`}).join('')
 
     const standardsCovered = FW_FIELDS.map(([fw]) => FRAMEWORKS_R[fw].name).join(' · ')
+
+    // ── §7 Audit calendar & scheduled delivery ──
+    const calRows = aDates.map(a => {
+      const dl = Math.ceil((new Date(a.audit_date).getTime() - Date.now()) / 86400000)
+      return `<tr><td><strong>${esc(a.framework)}</strong></td><td>${esc(a.label||'—')}</td><td>${fmtD(a.audit_date)}</td><td class="num">${dl >= 0 ? `<span class="pill ${dl <= 30 ? 'pa' : 'pg'}">${dl} days</span>` : '<span class="pill px">passed</span>'}</td></tr>`
+    }).join('')
+    const schedLine = (sched && sched.enabled)
+      ? `<span class="pill pg">✓ Enabled</span> This report is delivered automatically on <strong>day ${sched.day_of_month}</strong> of every month to <strong>${esc((sched.recipient_emails||[]).join(', '))}</strong>${sched.last_sent_at ? ` · last delivered ${fmtD(sched.last_sent_at)}` : ''} — evidence collection and reporting operate continuously, not on demand.`
+      : ''
+    const calSection = (aDates.length > 0 || schedLine) ? `
+  <h2><span class="sec">§7</span>Audit Calendar &amp; Scheduled Delivery</h2>
+  <div class="secnote">Upcoming audits this evidence is being prepared for, and the automatic delivery control.</div>
+  ${schedLine ? `<div class="schedline">${schedLine}</div>` : ''}
+  ${aDates.length > 0 ? `<table><thead><tr><th>Framework</th><th>Label</th><th>Audit date</th><th class="num">Countdown</th></tr></thead><tbody>${calRows}</tbody></table>` : ''}` : ''
 
     return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Certificate Compliance Evidence Report — SSLVault</title>
@@ -706,6 +746,8 @@ export default function ComplianceWitness({ user }) {
   .ctrl-id { font-family:monospace; font-size:10px; background:#eef4f9; border:1px solid var(--bd2); border-radius:4px; padding:0 5px; color:var(--blue); margin-right:3px; white-space:nowrap; display:inline-block; margin-bottom:2px; }
   .muted { color:#98a4b0; }
   td.ts { white-space:nowrap; color:var(--mut); font-size:11px; }
+  .ev-note { font-size:10px; color:#98a4b0; margin-top:2px; }
+  .schedline { background:#f0faf4; border:1px solid #bfe5cd; border-radius:10px; padding:11px 16px; font-size:12.5px; color:#1a232e; margin-bottom:12px; }
   td.hash { font-family:monospace; font-size:10px; color:#98a4b0; width:110px; }
   .glos td { font-size:11.5px; padding:6px 10px; }
   .glos td:first-child { font-weight:700; white-space:nowrap; width:210px; }
@@ -749,7 +791,7 @@ export default function ComplianceWitness({ user }) {
   <h2><span class="sec">§1</span>Certificate Inventory</h2>
   <div class="secnote">All certificates under continuous management at report generation.</div>
   <table><thead><tr>
-    <th>Domain</th><th>Issuer (CA)</th><th>Key</th><th>Signature</th><th>TLS grade</th><th>Monitored since</th><th class="num">Evidence</th><th class="num">Readiness</th><th>Status</th>
+    <th>Domain</th><th>Issuer (CA)</th><th>Key</th><th>Signature</th><th>TLS grade</th><th>Monitored since</th><th>Issuance history</th><th class="num">Evidence</th><th class="num">Readiness</th><th>Status</th>
   </tr></thead><tbody>${invRows}</tbody></table>
 
   <!-- 2. COVERAGE & RENEWAL -->
@@ -786,6 +828,8 @@ export default function ComplianceWitness({ user }) {
     <th class="num">#</th><th>Severity</th><th>Domain</th><th>Control</th><th>Finding</th><th>Remediation</th><th>Standard</th>
   </tr></thead><tbody>${gapRows}</tbody></table>
 
+  ${calSection}
+
   <!-- APPENDIX A: LEDGER -->
   <h2><span class="sec">A</span>Appendix A — Event Ledger (full history)</h2>
   <div class="secnote">Every recorded event, newest first. Each entry is hash-chained to the previous one; altering any past record visibly breaks the chain.</div>
@@ -810,6 +854,7 @@ export default function ComplianceWitness({ user }) {
     <div style="flex:1">
     <strong>Report Integrity Code (SHA-256)</strong> — anyone can use this code to verify the underlying data was not altered after ${genDate}. The seal on this report carries the first 8 characters (<span style="font-family:monospace;font-weight:700;color:#0077b6">${hashSnip}</span>) — if the seal code and the integrity code below don't match, the report has been tampered with:
     <div class="pkg-hash">${esc(pkg.package_hash)}</div>
+    <p style="margin-top:8px"><strong>Verify independently:</strong> paste the integrity code (or the 8-character seal code) at <span style="color:#0077b6;font-weight:700">https://easysecurity.in/verify</span> to confirm this report was genuinely generated by SSLVault Compliance Witness and has not been altered.</p>
     <p style="margin-top:12px">Generated automatically by SSLVault Compliance Witness (easysecurity.in). The underlying event ledger is append-only and tamper-evident. The machine-readable JSON export contains the complete hash chain for programmatic verification.</p>
     </div>
   </div>
@@ -819,10 +864,18 @@ export default function ComplianceWitness({ user }) {
     setExportLoading(true)
     try {
       const pkg = await callWitness('get_evidence_package', selectedDomain ? { domain: selectedDomain } : {})
+      // Attach certificate statuses (RLS-scoped) so the report can label Active vs Superseded honestly
+      if (!pkg.certs) {
+        try {
+          const { data: certRows } = await supabase.from('certificates')
+            .select('id,domain,status,is_current,serial_number,ggs_order_id')
+          pkg.certs = certRows || []
+        } catch { pkg.certs = [] }
+      }
       const dateStr = new Date().toISOString().split('T')[0]
       if (format === 'html') {
         // Human-readable report — opens in new tab, printable to PDF
-        const html = buildReportHTML(pkg)
+        const html = buildReportHTML(pkg, { schedule, auditDates })
         const win = window.open('', '_blank')
         if (win) { win.document.write(html); win.document.close() }
         else {

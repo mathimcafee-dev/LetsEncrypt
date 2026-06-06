@@ -58,6 +58,7 @@ import AlertSettings from './pages/AlertSettings'
 import AlertHistory from './pages/AlertHistory'
 import SLAReportViewer from './pages/SLAReportViewer'
 import WitnessViewer from './pages/WitnessViewer'
+import VerifyReport from './pages/VerifyReport'
 
 
 export default function App() {
@@ -125,7 +126,7 @@ const _build = 1779297041 // cache bust
   }
 
   // Home page has its own nav built-in — exclude it to avoid duplicate
-  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness', '/domain-manager', '/issue-cert', '/cert-timeline', '/compliance-centre', '/security-monitor', '/posture', '/sla-dashboard', '/sla-report', '/witness']
+  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness', '/domain-manager', '/issue-cert', '/cert-timeline', '/compliance-centre', '/security-monitor', '/posture', '/sla-dashboard', '/sla-report', '/witness', '/verify']
   const showPublicNav = !authLoading && !user && !SELF_NAV_PAGES.includes(page)
 
   return (
@@ -150,6 +151,7 @@ const _build = 1779297041 // cache bust
       {page === '/posture' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="posture" /> : <Auth nav={nav} />)}
       {page === '/sla-report' && <SLAReportViewer />}
       {page === '/witness' && <WitnessViewer />}
+      {page === '/verify' && <VerifyReport />}
       {page === '/dashboard' && <Dashboard nav={nav} />}
       {page === '/integrations' && <Integrations nav={nav} />}
       {page === '/install' && <Install nav={nav} />}
