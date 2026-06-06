@@ -20,7 +20,6 @@ import RenewalCalendar from './RenewalCalendar'
 import AdminRenewalCalendar from './AdminRenewalCalendar'
 import CertTimeline from './CertTimeline'
 import CTAbuseMonitor from './CTAbuseMonitor'
-import ShieldIntelligence from './ShieldIntelligence'
 import ReadinessDashboard from './ReadinessDashboard'
 import Infrastructure from './Infrastructure'
 import MyServers from './MyServers'
@@ -154,7 +153,7 @@ export default function CLMHome({ user, nav, initialSection }) {
     if(sec==='key-intelligence') return <KeyIntelligence nav={sideNav}/>
     if(sec==='settings')         return <SettingsPage user={user}/>
     if(sec==='ca-intelligence')  return <CAIntelligenceHub nav={sideNav}/>
-    if(sec==='shield')           return <ShieldIntelligence user={user}/>
+    if(sec==='shield')           return <CAIntelligenceHub nav={nav}/>
     if(sec==='cert-timeline')    return <CertTimeline user={user}/>
     if(sec==='renewal-calendar') return <RenewalCalendar user={user}/>
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
