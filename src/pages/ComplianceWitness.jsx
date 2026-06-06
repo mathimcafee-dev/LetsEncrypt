@@ -345,6 +345,7 @@ export default function ComplianceWitness({ user }) {
   const [showShare,     setShowShare]     = useState(false)
   const [exportLoading, setExportLoading] = useState(false)
   const [backfillMsg,   setBackfillMsg]   = useState('')
+  const [refreshing,    setRefreshing]    = useState(false)
 
   const load = useCallback(async () => {
     try {
@@ -373,29 +374,132 @@ export default function ComplianceWitness({ user }) {
     setBackfilling(false)
   }
 
-  async function downloadEvidencePackage() {
+  function buildReportHTML(pkg) {
+    const dossiers = pkg.dossiers || []
+    const events   = pkg.events || []
+    const controls = pkg.controls || {}
+    const genDate  = new Date(pkg.generated_at).toLocaleString('en-GB', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
+    const FRAMEWORKS_R = { SOC2:'SOC 2 Type II', ISO:'ISO 27001:2022', CABF:'CA/B Forum SC-081v3', NIS2:'NIS2 Article 21', PCI:'PCI DSS v4' }
+    const EVENT_LABELS = { issued:'Certificate Issued', renewed:'Certificate Renewed', installed:'Installed on Server', binding_verified:'Cryptographic Binding Verified', dcv_validated:'DCV Validated', key_rotated:'Key Rotated', auto_renew_triggered:'Auto-Renewal Triggered', revoked:'Certificate Revoked', agent_heartbeat:'Agent Heartbeat', expiry_warning:'Expiry Warning' }
+    const esc = s => String(s ?? '').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))
+    const fmtT = iso => { try { return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) } catch { return iso } }
+
+    const dossierSections = dossiers.map(d => {
+      const fwRows = [
+        ['SOC2', d.soc2_controls_met||[]], ['ISO', d.iso27001_controls_met||[]],
+        ['CABF', d.cabf_controls_met||[]], ['NIS2', d.nis2_controls_met||[]],
+      ].map(([fw, ctrls]) => `
+        <tr>
+          <td class="fw">${FRAMEWORKS_R[fw]}</td>
+          <td>${ctrls.length === 0 ? '<em class="none">No evidence recorded</em>' : ctrls.map(c => `<div class="ctrl"><strong>${esc(c)}</strong> — ${esc(controls[c]||'')}</div>`).join('')}</td>
+        </tr>`).join('')
+      const gapRows = (d.gaps||[]).map(g => `
+        <div class="gap gap-${esc(g.severity)}">
+          <div class="gap-head"><strong>${esc(g.control)}</strong> <span class="sev">${esc(g.severity).toUpperCase()}</span></div>
+          <div class="gap-msg">${esc(g.message)}</div>
+          <div class="gap-fw">${esc(g.framework)} · Remediation: ${esc(g.action)}</div>
+        </div>`).join('')
+      return `
+        <div class="dossier">
+          <h2>${esc(d.domain)}</h2>
+          <div class="meta">Witnessed since ${fmtT(d.first_witnessed_at)} · Last event ${fmtT(d.last_event_at)} · Audit score <strong>${d.audit_score||0}/100</strong> · Readiness <strong>${d.readiness_score||0}/100</strong></div>
+          <h3>Control Coverage</h3>
+          <table class="ctrl-table"><thead><tr><th>Framework</th><th>Controls Evidenced</th></tr></thead><tbody>${fwRows}</tbody></table>
+          ${(d.gaps||[]).length > 0 ? `<h3>Identified Gaps (${d.gaps.length})</h3>${gapRows}` : '<p class="allclear">✓ No control gaps identified</p>'}
+        </div>`
+    }).join('')
+
+    const eventRows = events.map(ev => `
+      <tr>
+        <td class="ts">${fmtT(ev.event_ts)}</td>
+        <td>${esc(EVENT_LABELS[ev.event_type] || ev.event_type)}</td>
+        <td class="mono">${esc(ev.domain)}</td>
+        <td class="ctrls">${(ev.controls_met||[]).join(', ')}</td>
+        <td class="hash">${esc((ev.event_hash||'').substring(0,16))}…</td>
+      </tr>`).join('')
+
+    return `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>SSLVault Compliance Evidence Report</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, sans-serif; color: #0d1117; max-width: 900px; margin: 0 auto; padding: 40px 32px; line-height: 1.6; }
+  .header { border-bottom: 3px solid #0077b6; padding-bottom: 20px; margin-bottom: 28px; }
+  .header h1 { font-size: 24px; margin: 0 0 6px; color: #0077b6; }
+  .header .sub { font-size: 13px; color: #555; }
+  .summary { display: flex; gap: 24px; flex-wrap: wrap; background: #f0f7fc; border: 1px solid #cfe5f2; border-radius: 10px; padding: 16px 20px; margin-bottom: 28px; font-size: 13px; }
+  .summary div strong { display:block; font-size: 20px; color: #0077b6; }
+  h2 { font-size: 18px; color: #0077b6; border-bottom: 1px solid #e0ecf5; padding-bottom: 6px; margin-top: 36px; font-family: 'Courier New', monospace; }
+  h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #555; margin: 20px 0 10px; }
+  .meta { font-size: 12px; color: #666; margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; padding: 8px 10px; background: #f0f7fc; border-bottom: 2px solid #cfe5f2; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #555; }
+  td { padding: 8px 10px; border-bottom: 1px solid #e8eef4; vertical-align: top; }
+  td.fw { font-weight: 700; color: #0077b6; width: 170px; }
+  .ctrl { margin-bottom: 4px; } .ctrl strong { font-family: monospace; font-size: 11px; color: #0d1117; }
+  .none { color: #c0392b; }
+  .gap { border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid; }
+  .gap-critical { background: #fdf0ee; border-color: #ebc4bd; } .gap-high { background: #fdf8ee; border-color: #e8d5ab; } .gap-medium, .gap-low { background: #eef6fb; border-color: #c5dded; }
+  .sev { font-size: 10px; font-weight: 800; padding: 1px 8px; border-radius: 10px; background: rgba(0,0,0,0.07); margin-left: 8px; }
+  .gap-msg { font-size: 12px; margin-top: 3px; } .gap-fw { font-size: 11px; color: #0077b6; margin-top: 3px; }
+  .allclear { color: #00a550; font-weight: 600; font-size: 13px; }
+  td.ts { white-space: nowrap; width: 130px; color: #555; } td.mono { font-family: monospace; font-size: 11px; }
+  td.ctrls { font-size: 10px; color: #00a550; } td.hash { font-family: monospace; font-size: 10px; color: #999; }
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #e0ecf5; font-size: 11px; color: #777; }
+  .pkg-hash { font-family: monospace; font-size: 10px; word-break: break-all; background: #f5f8fa; padding: 8px 12px; border-radius: 6px; margin-top: 6px; }
+  @media print { body { padding: 16px } }
+</style></head><body>
+  <div class="header">
+    <h1>Certificate Compliance Evidence Report</h1>
+    <div class="sub">Generated by SSLVault Compliance Witness · ${genDate} · Account: ${esc(pkg.account_email)}</div>
+  </div>
+  <div class="summary">
+    <div><strong>${dossiers.length}</strong> Domains</div>
+    <div><strong>${events.length}</strong> Ledger Events</div>
+    <div><strong>${dossiers.reduce((s,d)=>s+(d.gaps?.length||0),0)}</strong> Open Gaps</div>
+    <div><strong>${[...new Set(dossiers.flatMap(d=>[...(d.soc2_controls_met||[]),...(d.iso27001_controls_met||[]),...(d.cabf_controls_met||[]),...(d.nis2_controls_met||[])]))].length}</strong> Controls Documented</div>
+  </div>
+  ${dossierSections}
+  <h2 style="font-family:'Segoe UI',sans-serif">Immutable Event Ledger</h2>
+  <p style="font-size:12px;color:#666">Every event is SHA-256 hash-chained to the previous event. Altering any historical record breaks the chain and is detectable.</p>
+  <table><thead><tr><th>Timestamp</th><th>Event</th><th>Domain</th><th>Controls Satisfied</th><th>Chain Hash</th></tr></thead><tbody>${eventRows}</tbody></table>
+  <div class="footer">
+    <strong>Package Integrity Hash (SHA-256)</strong> — auditors can verify this report was not altered after generation:
+    <div class="pkg-hash">${esc(pkg.package_hash)}</div>
+    <p style="margin-top:12px">This report was generated automatically by SSLVault Compliance Witness (easysecurity.in). The event ledger is append-only and tamper-evident. For framework mapping methodology, contact the account owner.</p>
+  </div>
+</body></html>`
+  }
+
+  async function downloadEvidencePackage(format = 'html') {
     setExportLoading(true)
     try {
       const pkg = await callWitness('get_evidence_package', selectedDomain ? { domain: selectedDomain } : {})
-      // Build evidence JSON
-      const evidencePackage = {
-        meta: {
-          product: 'SSLVault Compliance Witness',
-          generated_at: pkg.generated_at,
-          account: pkg.account_email,
-          package_hash: pkg.package_hash,
-          note: 'This package was generated automatically by SSLVault. The package_hash (SHA-256) can be used to verify package integrity.',
-        },
-        dossiers: pkg.dossiers,
-        event_ledger: pkg.events,
-        control_framework: pkg.controls,
+      const dateStr = new Date().toISOString().split('T')[0]
+      if (format === 'html') {
+        // Human-readable report — opens in new tab, printable to PDF
+        const html = buildReportHTML(pkg)
+        const win = window.open('', '_blank')
+        if (win) { win.document.write(html); win.document.close() }
+        else {
+          const blob = new Blob([html], { type: 'text/html' })
+          const a = document.createElement('a')
+          a.href = URL.createObjectURL(blob)
+          a.download = `sslvault-evidence-report-${dateStr}.html`
+          a.click()
+          URL.revokeObjectURL(a.href)
+        }
+      } else {
+        // Machine-readable JSON for auditor tooling
+        const evidencePackage = {
+          meta: { product: 'SSLVault Compliance Witness', generated_at: pkg.generated_at, account: pkg.account_email, package_hash: pkg.package_hash },
+          dossiers: pkg.dossiers, event_ledger: pkg.events, control_framework: pkg.controls,
+        }
+        const blob = new Blob([JSON.stringify(evidencePackage, null, 2)], { type: 'application/json' })
+        const a = document.createElement('a')
+        a.href = URL.createObjectURL(blob)
+        a.download = `sslvault-evidence-data-${dateStr}.json`
+        a.click()
+        URL.revokeObjectURL(a.href)
       }
-      const blob = new Blob([JSON.stringify(evidencePackage, null, 2)], { type: 'application/json' })
-      const a = document.createElement('a')
-      a.href = URL.createObjectURL(blob)
-      a.download = `sslvault-compliance-witness-${new Date().toISOString().split('T')[0]}.json`
-      a.click()
-      URL.revokeObjectURL(a.href)
     } catch(e) { alert('Export failed: ' + e.message) }
     setExportLoading(false)
   }
@@ -465,9 +569,9 @@ export default function ComplianceWitness({ user }) {
               style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: '#fff', border: `1.5px solid ${BORDER}`, borderRadius: 9, color: '#3d4a58', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: F, boxShadow: '0 1px 4px rgba(0,119,182,0.06)' }}>
               <Share2 size={12}/> Share with Auditor
             </button>
-            <button onClick={() => load()}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: '#fff', border: `1.5px solid ${BORDER}`, borderRadius: 9, color: '#3d4a58', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: F, boxShadow: '0 1px 4px rgba(0,119,182,0.06)' }}>
-              <RefreshCw size={12}/> Refresh
+            <button onClick={async () => { setRefreshing(true); await load(); setRefreshing(false) }} disabled={refreshing}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: '#fff', border: `1.5px solid ${BORDER}`, borderRadius: 9, color: '#3d4a58', fontSize: 12, fontWeight: 600, cursor: refreshing ? 'wait' : 'pointer', fontFamily: F, boxShadow: '0 1px 4px rgba(0,119,182,0.06)' }}>
+              <RefreshCw size={12} style={refreshing ? { animation: 'spin .8s linear infinite' } : {}}/> {refreshing ? 'Refreshing…' : 'Refresh'}
             </button>
           </div>
         </div>
@@ -727,16 +831,23 @@ export default function ComplianceWitness({ user }) {
                   ))}
                 </div>
 
-                <button onClick={downloadEvidencePackage} disabled={exportLoading}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '13px 28px', background: exportLoading ? 'rgba(0,119,182,0.4)' : BLUE, color: '#fff', border: 'none', borderRadius: 11, fontSize: 14, fontWeight: 800, cursor: exportLoading ? 'not-allowed' : 'pointer', fontFamily: F, boxShadow: exportLoading ? undefined : '0 4px 16px rgba(0,119,182,0.3)', letterSpacing: '-0.1px' }}
-                  onMouseEnter={e => { if (!exportLoading) { e.currentTarget.style.background = '#0068a0'; e.currentTarget.style.transform = 'translateY(-1px)' } }}
-                  onMouseLeave={e => { if (!exportLoading) { e.currentTarget.style.background = BLUE; e.currentTarget.style.transform = 'translateY(0)' } }}>
-                  {exportLoading
-                    ? <><div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', animation: 'spin .7s linear infinite' }}/> Generating…</>
-                    : <><Download size={15}/> Download Evidence Package</>}
-                </button>
-                <div style={{ fontSize: 11, color: '#7a8694', marginTop: 10, lineHeight: 1.6 }}>
-                  JSON format · includes package integrity hash · suitable for auditor submission
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <button onClick={() => downloadEvidencePackage('html')} disabled={exportLoading}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '13px 24px', background: exportLoading ? 'rgba(0,119,182,0.4)' : BLUE, color: '#fff', border: 'none', borderRadius: 11, fontSize: 14, fontWeight: 800, cursor: exportLoading ? 'not-allowed' : 'pointer', fontFamily: F, boxShadow: exportLoading ? undefined : '0 4px 16px rgba(0,119,182,0.3)', letterSpacing: '-0.1px' }}
+                    onMouseEnter={e => { if (!exportLoading) { e.currentTarget.style.background = '#0068a0'; e.currentTarget.style.transform = 'translateY(-1px)' } }}
+                    onMouseLeave={e => { if (!exportLoading) { e.currentTarget.style.background = BLUE; e.currentTarget.style.transform = 'translateY(0)' } }}>
+                    {exportLoading
+                      ? <><div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', animation: 'spin .7s linear infinite' }}/> Generating…</>
+                      : <><FileText size={15}/> View Evidence Report</>}
+                  </button>
+                  <button onClick={() => downloadEvidencePackage('json')} disabled={exportLoading}
+                    style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '13px 20px', background: '#fff', border: `1.5px solid ${BORDER}`, borderRadius: 11, fontSize: 13, fontWeight: 600, cursor: exportLoading ? 'not-allowed' : 'pointer', fontFamily: F, color: '#3d4a58' }}>
+                    <Download size={13}/> Raw JSON Data
+                  </button>
+                </div>
+                <div style={{ fontSize: 11, color: '#7a8694', marginTop: 12, lineHeight: 1.7 }}>
+                  <strong style={{ color: '#0d1117' }}>Evidence Report</strong> — formatted report that opens in a new tab. Use your browser's Print → Save as PDF to hand it to your auditor.<br/>
+                  <strong style={{ color: '#0d1117' }}>Raw JSON</strong> — machine-readable data with the full hash chain, for auditors who verify programmatically.
                 </div>
               </div>
             </div>

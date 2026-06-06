@@ -57,6 +57,7 @@ import VaultBrainPage from './pages/VaultBrainPage'
 import AlertSettings from './pages/AlertSettings'
 import AlertHistory from './pages/AlertHistory'
 import SLAReportViewer from './pages/SLAReportViewer'
+import WitnessViewer from './pages/WitnessViewer'
 
 
 export default function App() {
@@ -124,7 +125,7 @@ const _build = 1779297041 // cache bust
   }
 
   // Home page has its own nav built-in — exclude it to avoid duplicate
-  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness', '/domain-manager', '/issue-cert', '/cert-timeline', '/compliance-centre', '/security-monitor', '/posture', '/sla-dashboard', '/sla-report']
+  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness', '/domain-manager', '/issue-cert', '/cert-timeline', '/compliance-centre', '/security-monitor', '/posture', '/sla-dashboard', '/sla-report', '/witness']
   const showPublicNav = !authLoading && !user && !SELF_NAV_PAGES.includes(page)
 
   return (
@@ -148,6 +149,7 @@ const _build = 1779297041 // cache bust
       {page === '/security-monitor' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="shield" /> : <Auth nav={nav} />)}
       {page === '/posture' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="posture" /> : <Auth nav={nav} />)}
       {page === '/sla-report' && <SLAReportViewer />}
+      {page === '/witness' && <WitnessViewer />}
       {page === '/dashboard' && <Dashboard nav={nav} />}
       {page === '/integrations' && <Integrations nav={nav} />}
       {page === '/install' && <Install nav={nav} />}
