@@ -492,10 +492,10 @@ export default function ComplianceWitness({ user }) {
         <circle cx="100" cy="100" r="97" fill="#fff" stroke="url(#sealGrad)" stroke-width="3"/>
         <circle cx="100" cy="100" r="88" fill="none" stroke="#0077b6" stroke-width="1" stroke-dasharray="2.5 3.5" opacity="0.55"/>
         <circle cx="100" cy="100" r="62" fill="none" stroke="rgba(0,119,182,0.18)" stroke-width="1"/>
-        <text font-family="'DM Sans','Segoe UI',sans-serif" font-size="12.5" font-weight="800" fill="#0077b6" letter-spacing="2.5">
+        <text font-family="'DM Sans','Segoe UI',sans-serif" font-size="10.5" font-weight="800" fill="#0077b6" letter-spacing="1.2">
           <textPath href="#arcTop" startOffset="50%" text-anchor="middle">SSLVAULT COMPLIANCE WITNESS</textPath>
         </text>
-        <text font-family="'DM Sans','Segoe UI',sans-serif" font-size="10.5" font-weight="700" fill="#5a86a8" letter-spacing="2.2">
+        <text font-family="'DM Sans','Segoe UI',sans-serif" font-size="9.5" font-weight="700" fill="#5a86a8" letter-spacing="1.4">
           <textPath href="#arcBot" startOffset="50%" text-anchor="middle">TAMPER-EVIDENT EVIDENCE</textPath>
         </text>
         <g transform="translate(100,76)">

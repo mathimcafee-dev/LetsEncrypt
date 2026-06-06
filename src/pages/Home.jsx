@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import TrustSeal from '../components/TrustSeal'
+import TrustSeal, { SiteTrustBadge } from '../components/TrustSeal'
 import { supabase } from '../lib/supabase'
 
 // ── Resend.com design tokens — pure black/white ────────────────────────
@@ -1100,12 +1100,13 @@ export default function Home({ nav }) {
       {/* ── FOOTER ── */}
       <footer style={{background:'#111111',borderTop:`1px solid rgba(255,255,255,0.08)`,padding:`clamp(36px,5vw,52px) ${P} clamp(22px,3vw,32px)`}}>
         <div style={{maxWidth:1100,margin:'0 auto'}}>
-          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:32,paddingBottom:24,borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:32,paddingBottom:24,borderBottom:'1px solid rgba(255,255,255,0.08)',flexWrap:'wrap'}}>
             <div style={{width:20,height:20,background:'rgba(255,255,255,0.12)',borderRadius:3,display:'flex',alignItems:'center',justifyContent:'center'}}>
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke='#ffffff' strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
             <span style={{fontSize:13,fontWeight:600,color:'#ffffff'}}>SSLVault</span>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.35)',fontFamily:MONO,marginLeft:4}}>PKI-first CLM · Built by a real PKI engineer</span>
+            <div style={{marginLeft:'auto'}}><SiteTrustBadge dark/></div>
           </div>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr 1fr':'repeat(auto-fill,minmax(140px,1fr))',gap:24,marginBottom:32}}>
             {[{title:'Product',links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]]},{title:'Support',links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CAA Checker',()=>nav('/caa-check')]]},{title:'Intelligence',links:[['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum',()=>nav('/cab-forum')],['PKI Hub',()=>nav('/pki-hub')]]},{title:'Security',links:[['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']]},{title:'Protocol',links:[['RFC 8555','#security'],['DNS-01','#security'],['AES-256-GCM','#security']]},{title:'Company',links:[['About',()=>nav('/about')],['Contact',()=>nav('/contact')]]}].map(col=>(

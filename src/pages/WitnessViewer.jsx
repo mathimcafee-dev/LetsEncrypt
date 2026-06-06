@@ -38,10 +38,10 @@ function TrustSeal({ size = 110, code = '' }) {
       <circle cx="100" cy="100" r="97" fill="#fff" stroke="url(#vsealGrad)" strokeWidth="3"/>
       <circle cx="100" cy="100" r="88" fill="none" stroke="#0077b6" strokeWidth="1" strokeDasharray="2.5 3.5" opacity="0.55"/>
       <circle cx="100" cy="100" r="62" fill="none" stroke="rgba(0,119,182,0.18)" strokeWidth="1"/>
-      <text fontFamily="'DM Sans','Segoe UI',sans-serif" fontSize="12.5" fontWeight="800" fill="#0077b6" letterSpacing="2.5">
+      <text fontFamily="'DM Sans','Segoe UI',sans-serif" fontSize="10.5" fontWeight="800" fill="#0077b6" letterSpacing="1.2">
         <textPath href="#vArcTop" startOffset="50%" textAnchor="middle">SSLVAULT COMPLIANCE WITNESS</textPath>
       </text>
-      <text fontFamily="'DM Sans','Segoe UI',sans-serif" fontSize="10.5" fontWeight="700" fill="#5a86a8" letterSpacing="2.2">
+      <text fontFamily="'DM Sans','Segoe UI',sans-serif" fontSize="9.5" fontWeight="700" fill="#5a86a8" letterSpacing="1.4">
         <textPath href="#vArcBot" startOffset="50%" textAnchor="middle">TAMPER-EVIDENT EVIDENCE</textPath>
       </text>
       <g transform="translate(100,76)">

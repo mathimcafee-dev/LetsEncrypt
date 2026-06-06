@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import TrustSeal from '../components/TrustSeal'
+import TrustSeal, { SiteTrustBadge } from '../components/TrustSeal'
 import { supabase } from '../lib/supabase'
 
 const FONT = "'Inter',system-ui,sans-serif"
@@ -277,6 +277,11 @@ export default function Auth({ nav }) {
             <button onClick={()=>nav('/contact')} style={{background:'none',border:'none',cursor:'pointer',color:BLUE,fontWeight:600,fontSize:12,padding:0,fontFamily:FONT}}>
               Contact us to get access
             </button>
+          </div>
+
+          {/* Site trust badge */}
+          <div style={{display:'flex',justifyContent:'center',marginTop:22}}>
+            <SiteTrustBadge/>
           </div>
 
           {/* Powered by */}
