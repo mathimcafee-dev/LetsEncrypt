@@ -326,10 +326,10 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         return (
           <div key={n} style={{ display:'flex', alignItems:'center', flex:i<2?1:'none' }}>
             <div style={{ display:'flex', alignItems:'center', gap:7, flexShrink:0 }}>
-              <div style={{ width:27,height:27,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:800,transition:'all .2s',background:done?'#00a550':active?BLUE:'rgba(0,119,182,0.08)',color:done||active?'#fff':'#7a8694',boxShadow:active?`0 0 0 4px rgba(0,119,182,0.14)`:done?'0 0 0 3px rgba(0,165,80,0.12)':undefined }}>
+              <div style={{ width:27,height:27,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:800,transition:'all .2s',background:done?'#1a7d43':active?BLUE:'#fff',color:done||active?'#fff':'#7a8694',border:done||active?'none':'1.5px solid rgba(0,119,182,0.2)',boxShadow:active?`0 0 0 4px rgba(0,119,182,0.14)`:undefined }}>
                 {done?<Check size={12}/>:n}
               </div>
-              <span style={{ fontSize:11,fontWeight:active?700:500,color:active?BLUE:done?'#00a550':'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em',whiteSpace:'nowrap' }}>{label}</span>
+              <span style={{ fontSize:10,fontWeight:active?800:600,color:active?BLUE:done?'#1a7d43':'#7a8694',textTransform:'uppercase',letterSpacing:'0.08em',whiteSpace:'nowrap',fontFamily:MONO }}>{label}</span>
             </div>
             {i<2&&<div style={{ flex:1,height:2,borderRadius:1,margin:'0 10px',background:done?'rgba(0,165,80,0.25)':'rgba(0,119,182,0.1)',transition:'background .3s' }}/>}
           </div>
@@ -364,19 +364,23 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       <div style={{ maxWidth:embedded?'100%':1100, margin:'0 auto', padding:embedded?'16px 20px 40px':'32px 32px 72px', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr clamp(280px,30vw,340px)', gap:24, alignItems:'start', fontFamily:F }}>
 
         <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+          <div style={{ marginBottom:18 }}>
+            <h1 style={{ margin:0, fontSize:24, fontWeight:900, fontFamily:"'DM Sans','Inter',sans-serif", color:'#0d1117', letterSpacing:'-0.01em' }}>Request a certificate</h1>
+            <div style={{ fontSize:12.5, color:'#5a6776', marginTop:4 }}>RapidSSL DV on the DigiCert trust chain · issued in ~5 minutes · auto-renews forever</div>
+          </div>
           <StepBar current={1}/>
 
           {/* Cert type card */}
           <div style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', marginBottom:18, boxShadow:'0 2px 10px rgba(0,119,182,0.06)' }}>
-            <div style={{ padding:'13px 20px', borderBottom:`1px solid ${BORDER}`, background:BLUE_BG }}>
-              <span style={{ fontSize:11,fontWeight:700,color:BLUE,textTransform:'uppercase',letterSpacing:'0.06em' }}>Certificate Type</span>
+            <div style={{ padding:'14px 20px', borderBottom:'1px solid #e8eef4', background:'#fff' }}>
+              <span style={{ fontSize:13,fontWeight:800,color:'#0d1117',fontFamily:"'DM Sans','Inter',sans-serif",letterSpacing:'-0.01em' }}>Certificate Type</span>
             </div>
             <div style={{ padding:'18px 20px' }}>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
                 {PRODUCTS.map(p=>(
                   <div key={p.code} onClick={()=>setProduct(p.code)}
                     style={{ padding:'16px 14px', borderRadius:12, cursor:'pointer', transition:'all .18s',
-                      background:product===p.code?BLUE_BG:'#f8fafd',
+                      background:product===p.code?BLUE_BG:'#fff',
                       border:product===p.code?`2px solid ${BLUE}`:`1.5px solid rgba(0,119,182,0.12)`,
                       boxShadow:product===p.code?`0 0 0 3px rgba(0,119,182,0.08), 0 2px 8px rgba(0,119,182,0.1)`:undefined,
                       position:'relative' }}>
@@ -403,9 +407,9 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 <div style={{ position:'relative' }}>
                   <Globe size={15} style={{ position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',color:'#7a8694',pointerEvents:'none' }}/>
                   <input value={domain} onChange={e=>setD(e.target.value)} placeholder="yourdomain.com"
-                    style={{ width:'100%',boxSizing:'border-box',background:'#f8fafd',border:`1.5px solid rgba(0,119,182,0.15)`,borderRadius:10,color:'#0d1117',fontSize:16,fontFamily:MONO,fontWeight:700,padding:'14px 16px 14px 40px',outline:'none',transition:'all .15s',letterSpacing:'-0.2px' }}
+                    style={{ width:'100%',boxSizing:'border-box',background:'#fff',border:`1.5px solid rgba(0,119,182,0.18)`,borderRadius:10,color:'#0d1117',fontSize:16,fontFamily:MONO,fontWeight:700,padding:'14px 16px 14px 40px',outline:'none',transition:'all .15s',letterSpacing:'-0.2px' }}
                     onFocus={e=>{e.target.style.borderColor=BLUE;e.target.style.boxShadow='0 0 0 3px rgba(0,119,182,0.1)';e.target.style.background='#fff'}}
-                    onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.15)';e.target.style.boxShadow='none';e.target.style.background='#f8fafd'}}/>
+                    onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.15)';e.target.style.boxShadow='none';e.target.style.background='#fff'}}/>
                 </div>
               </div>
 
@@ -425,8 +429,8 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
           {/* Contact card */}
           <div style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', marginBottom:18, boxShadow:'0 2px 10px rgba(0,119,182,0.06)' }}>
-            <div style={{ padding:'13px 20px', borderBottom:`1px solid ${BORDER}`, background:BLUE_BG, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-              <span style={{ fontSize:11,fontWeight:700,color:BLUE,textTransform:'uppercase',letterSpacing:'0.06em' }}>Contact Details</span>
+            <div style={{ padding:'14px 20px', borderBottom:'1px solid #e8eef4', background:'#fff', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <span style={{ fontSize:13,fontWeight:800,color:'#0d1117',fontFamily:"'DM Sans','Inter',sans-serif",letterSpacing:'-0.01em' }}>Contact Details</span>
               <span style={{ fontSize:11,color:'#7a8694' }}>Required by certificate authority</span>
             </div>
             <div style={{ padding:'18px 20px', display:'flex', flexDirection:'column', gap:14 }}>
@@ -468,8 +472,8 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           <CertPreview domain={clean(domain)} fn={fn} ln={ln} em={em} product={product} years={years}/>
 
           <div style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', boxShadow:'0 2px 10px rgba(0,119,182,0.06)' }}>
-            <div style={{ padding:'13px 20px', borderBottom:`1px solid ${BORDER}`, background:BLUE_BG }}>
-              <span style={{ fontSize:11,fontWeight:700,color:BLUE,textTransform:'uppercase',letterSpacing:'0.06em' }}>Order Summary</span>
+            <div style={{ padding:'14px 20px', borderBottom:'1px solid #e8eef4', background:'#fff' }}>
+              <span style={{ fontSize:13,fontWeight:800,color:'#0d1117',fontFamily:"'DM Sans','Inter',sans-serif",letterSpacing:'-0.01em' }}>Order Summary</span>
             </div>
             <div style={{ padding:'16px 20px' }}>
               {[{k:'Certificate',v:PRODUCTS.find(p=>p.code===product)?.name||'RapidSSL DV'},{k:'Validity',v:`${years} year${years>1?'s':''}`},{k:'Auto-renewal',v:'Included',acc:true},{k:'DNS validation',v:'Automatic (CNAME)',acc:true},{k:'Powered by',v:'RapidSSL · DigiCert'}].map(({k,v,acc})=>(
@@ -479,7 +483,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 </div>
               ))}
               <button onClick={place} disabled={busy}
-                style={{ width:'100%',background:busy?'rgba(0,119,182,0.35)':'#0077b6',color:'#fff',border:'none',borderRadius:10,padding:'14px',fontSize:14,fontWeight:800,cursor:busy?'not-allowed':'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,fontFamily:F,transition:'all .18s',marginTop:6,boxShadow:busy?undefined:'0 4px 16px rgba(0,119,182,0.32)',letterSpacing:'-0.1px' }}
+                style={{ width:'100%',background:busy?'rgba(0,119,182,0.35)':'#0077b6',color:'#fff',border:'none',borderRadius:10,padding:'14px',fontSize:14,fontWeight:800,cursor:busy?'not-allowed':'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,fontFamily:"'DM Sans','Inter',sans-serif",transition:'all .18s',marginTop:6,boxShadow:busy?undefined:'0 4px 16px rgba(0,119,182,0.32)',letterSpacing:'-0.1px' }}
                 onMouseEnter={e=>{if(!busy){e.currentTarget.style.background='#0068a0';e.currentTarget.style.transform='translateY(-1px)';e.currentTarget.style.boxShadow='0 6px 22px rgba(0,119,182,0.42)'}}}
                 onMouseLeave={e=>{if(!busy){e.currentTarget.style.background='#0077b6';e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,119,182,0.32)'}}}>
                 {busy?<><div style={{ width:14,height:14,borderRadius:'50%',border:'2px solid rgba(255,255,255,0.3)',borderTopColor:'#fff',animation:'spin .7s linear infinite' }}/> Placing order…</>:<><Lock size={14}/> Issue Certificate <ArrowRight size={13}/></>}
@@ -508,11 +512,11 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
         {/* Status badge + title */}
         <div style={{ marginBottom:28 }}>
-          <div style={{ display:'inline-flex',alignItems:'center',gap:7,background:'rgba(245,158,11,0.08)',border:'1px solid rgba(245,158,11,0.22)',borderRadius:20,padding:'5px 14px',marginBottom:16 }}>
-            <div style={{ width:7,height:7,borderRadius:'50%',background:'#f59e0b',animation:'pulse 2s infinite' }}/>
+          <div style={{ display:'inline-flex',alignItems:'center',gap:7,background:'#faf0d8',border:'1px solid #ecd9a8',borderRadius:20,padding:'5px 14px',marginBottom:16 }}>
+            <div style={{ width:7,height:7,borderRadius:'50%',background:'#9a6400',animation:'pulse 2s infinite' }}/>
             <span style={{ fontSize:11,fontWeight:700,color:'#9a6400',letterSpacing:'0.04em' }}>AWAITING DNS VALIDATION</span>
           </div>
-          <h2 style={{ fontSize:24,fontWeight:800,color:'#0d1117',letterSpacing:'-0.4px',margin:'0 0 8px',fontFamily:F }}>Add a TXT record to prove ownership</h2>
+          <h2 style={{ fontSize:24,fontWeight:900,color:'#0d1117',letterSpacing:'-0.01em',margin:'0 0 8px',fontFamily:"'DM Sans','Inter',sans-serif" }}>Add a TXT record to prove ownership</h2>
           <p style={{ fontSize:13,color:'#7a8694',margin:0,lineHeight:1.6 }}>
             Add a <strong style={{ color:'#0d1117' }}>TXT record</strong> to your DNS for{' '}
             <strong style={{ color:BLUE,fontFamily:MONO }}>{ord.domain||clean(domain)}</strong>
@@ -523,7 +527,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ background:'#ffffff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', marginBottom:20, boxShadow:'0 2px 12px rgba(0,119,182,0.08)' }}>
           <div style={{ background:BLUE_BG, padding:'11px 18px', display:'flex', alignItems:'center', gap:7, borderBottom:`1px solid ${BORDER}` }}>
             <div style={{ display:'flex', gap:5 }}>
-              {['#b03425','#f59e0b','#00a550'].map(c=><span key={c} style={{ width:9,height:9,borderRadius:'50%',background:c,display:'block' }}/>)}
+              {['#b03425','#9a6400','#00a550'].map(c=><span key={c} style={{ width:9,height:9,borderRadius:'50%',background:c,display:'block' }}/>)}
             </div>
             <span style={{ fontSize:11,fontWeight:600,color:'#3d4a58',fontFamily:MONO,marginLeft:5 }}>DNS record · TXT</span>
             <span style={{ marginLeft:'auto',fontFamily:MONO,fontSize:10,fontWeight:700,color:BLUE }}>GGS #{ord.ggs_order_id||'—'}</span>
