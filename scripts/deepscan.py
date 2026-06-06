@@ -60,11 +60,16 @@ def run_one(scan):
     req("PATCH", f"/rest/v1/deep_scans?id=eq.{sid}", {"status": "running", "started_at": now()})
     out = f"/tmp/{sid}.json"
     try:
-        subprocess.run(
-            ["./testssl.sh/testssl.sh", "--jsonfile", out, "--severity", "LOW",
-             "--quiet", "--color", "0", "--warnings", "batch", "--openssl-timeout", "30",
-             "--connect-timeout", "30", domain],
-            timeout=280, check=False, capture_output=True)
+        # --fast + targeted sections (protocols, vulns, server defaults) keeps the
+        # scan well under the runner timeout while still producing the headline report.
+        proc = subprocess.run(
+            ["bash", "./testssl.sh/testssl.sh", "--jsonfile", out, "--severity", "LOW",
+             "--fast", "-p", "-U", "-S", "--quiet", "--color", "0", "--warnings", "batch",
+             "--openssl-timeout", "20", "--connect-timeout", "20", domain],
+            timeout=300, check=False, capture_output=True, text=True)
+        if not os.path.exists(out):
+            tail = (proc.stderr or proc.stdout or "")[-300:]
+            raise RuntimeError(f"testssl produced no JSON (exit {proc.returncode}): {tail}")
         summary, grade = parse(out)
         req("PATCH", f"/rest/v1/deep_scans?id=eq.{sid}",
             {"status": "done", "grade": grade, "summary": summary, "finished_at": now()})
