@@ -95,7 +95,7 @@ export default function CLMHome({ user, nav, initialSection }) {
     ]},
     { group:'Prove', items:[
       {id:'compliance-witness',  label:'Compliance Witness', icon:Fingerprint, badge:'NEW'},
-      {id:'compliance-centre',   label:'Compliance',         icon:ClipboardCheck},
+      {id:'compliance-centre',   label:'Readiness',          icon:ClipboardCheck},
     ]},
     { group:'Intelligence', items:[
       {id:'ca-intelligence',   label:'PKI Intelligence', icon:TrendingUp},
@@ -112,7 +112,7 @@ export default function CLMHome({ user, nav, initialSection }) {
     'domain-manager':'Domain Manager', 'my-servers':'Domain Manager',
     'infrastructure':'Domain Manager', 'servers':'Domain Manager', 'agent-health':'Domain Manager',
     shield:'PKI Intelligence',
-    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage', 'compliance-centre':'Compliance', 'compliance-witness':'Compliance Witness',
+    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage', 'compliance-centre':'Mandate Readiness', 'compliance-witness':'Compliance Witness',
     'admin-calendar':'Admin Calendar',
     'cert-timeline':'Cert Timeline',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
@@ -153,10 +153,10 @@ export default function CLMHome({ user, nav, initialSection }) {
     const on = sec===id
     return (
       <button onClick={()=>go(id)} style={{
-        display:'flex', alignItems:'center', gap:11,
-        margin:0, padding:'11px 16px 11px 17px',
+        display:'flex', alignItems:'center', gap:9,
+        margin:0, padding:'8px 14px 8px 14px',
         width:'100%', textAlign:'left', fontFamily:F,
-        fontSize:13.5, fontWeight:on?700:500, letterSpacing:'-0.01em', lineHeight:1.2,
+        fontSize:13, fontWeight:on?700:500, letterSpacing:'-0.01em', lineHeight:1.2,
         color: on ? '#fff' : 'rgba(255,255,255,0.85)',
         background: on ? 'rgba(0,0,0,0.22)' : 'transparent',
         borderLeft: on ? '3px solid #fff' : '3px solid transparent',
@@ -167,7 +167,7 @@ export default function CLMHome({ user, nav, initialSection }) {
         onMouseLeave={e=>{if(!on){e.currentTarget.style.background='transparent';e.currentTarget.style.color='rgba(255,255,255,0.85)'}}}>
         <Icon size={16} strokeWidth={on?2.2:1.9} style={{flexShrink:0, opacity:0.92}}/>
         <span style={{flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{label}</span>
-        {badge&&!on&&<span style={{fontSize:8.5,fontWeight:800,padding:'2px 6px',borderRadius:5,
+        {badge&&!on&&<span style={{fontSize:8,fontWeight:800,padding:'1.5px 5px',borderRadius:5,
           background:'rgba(255,255,255,0.22)',color:'#fff',letterSpacing:'0.05em',flexShrink:0}}>{badge}</span>}
       </button>
     )
@@ -176,7 +176,7 @@ export default function CLMHome({ user, nav, initialSection }) {
   const Sidebar = () => (
     <div style={{display:'flex',flexDirection:'column',height:'100%'}}>
       {/* Logo */}
-      <div style={{padding:'16px 16px 14px',background:'#0d1117',borderBottom:'1px solid rgba(0,0,0,0.25)',flexShrink:0}}>
+      <div style={{padding:'12px 14px 11px',background:'#0d1117',borderBottom:'1px solid rgba(0,0,0,0.25)',flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{width:30,height:30,borderRadius:8,background:GRAD,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -192,7 +192,7 @@ export default function CLMHome({ user, nav, initialSection }) {
       <div style={{flex:1,overflowY:'auto',padding:'4px 0 8px'}}>
         {NAV.map(({group,items})=>(
           <div key={group}>
-            <div style={{padding:'16px 20px 6px'}}>
+            <div style={{padding:'12px 14px 4px'}}>
               <span style={{fontSize:9,fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,255,255,0.55)',fontFamily:MONO}}>{group}</span>
             </div>
             {items.map(it=><NavItem key={it.id} {...it}/>)}
@@ -201,12 +201,12 @@ export default function CLMHome({ user, nav, initialSection }) {
       </div>
 
       {/* Bottom nav */}
-      <div style={{borderTop:'1px solid rgba(255,255,255,0.18)',padding:'8px 0 4px'}}>
+      <div style={{borderTop:'1px solid rgba(255,255,255,0.18)',padding:'4px 0 2px'}}>
         {BOTTOM.map(it=><NavItem key={it.id} {...it}/>)}
       </div>
 
       {/* User */}
-      <div style={{borderTop:'1px solid rgba(255,255,255,0.18)',background:'rgba(0,0,0,0.14)',padding:'12px 14px',flexShrink:0}}>
+      <div style={{borderTop:'1px solid rgba(255,255,255,0.18)',background:'rgba(0,0,0,0.14)',padding:'9px 12px',flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div style={{width:30,height:30,borderRadius:'50%',background:GRAD,
             display:'flex',alignItems:'center',justifyContent:'center',

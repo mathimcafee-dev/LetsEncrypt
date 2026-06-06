@@ -168,7 +168,7 @@ export default function ComplianceCentre({ nav, user }) {
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:5 }}>
               <Shield size={20} color="#0077b6"/>
-              <span style={{ fontSize:24, fontWeight:900, color:'#111111', fontFamily:"'DM Sans','Inter',sans-serif", letterSpacing:'-0.01em' }}>Compliance Centre</span>
+              <span style={{ fontSize:24, fontWeight:900, color:'#111111', fontFamily:"'DM Sans','Inter',sans-serif", letterSpacing:'-0.01em' }}>Mandate Readiness</span>
               {hasSla && <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:99, background:'rgba(0,119,182,0.08)', border:'1px solid rgba(0,119,182,0.25)', color:'#0077b6', letterSpacing:'.08em', fontFamily:"'JetBrains Mono',monospace" }}>{(sub.plan||'PREMIUM').toUpperCase()}</span>}
             </div>
             <div style={{ fontSize:12, color:'#999999' }}>47-Day mandate readiness + SLA compliance + certificate health</div>
